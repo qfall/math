@@ -3,6 +3,7 @@
 
 use flint_sys::fmpz::fmpz;
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct Z {
     pub(crate) value: fmpz,

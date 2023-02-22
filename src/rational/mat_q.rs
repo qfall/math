@@ -3,6 +3,7 @@
 
 use flint_sys::fmpq_mat::fmpq_mat_struct;
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct MatQ {
     pub(crate) matrix: fmpq_mat_struct,

@@ -3,6 +3,7 @@
 
 use flint_sys::fmpz_mat::fmpz_mat_struct;
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct MatZ {
     pub(crate) matrix: fmpz_mat_struct,
