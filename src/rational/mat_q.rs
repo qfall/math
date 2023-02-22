@@ -1,5 +1,5 @@
 //! `MatQ` is a type of matrix with arbritrary rational entries.
-//! This implementation uses the [Flint](https://flintlib.org/) library.
+//! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use flint_sys::fmpq_mat::fmpq_mat_struct;
 

@@ -1,5 +1,5 @@
 //! `Q` is a type for arbritrary rationals.
-//! This implementation uses the [Flint](https://flintlib.org/) library.
+//! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use flint_sys::fmpq::fmpq;
 
