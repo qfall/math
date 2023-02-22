@@ -1,9 +1,9 @@
-//! `Z` is a type for arbritrary integers.
+//! `Z` is a type for integers with arbritrary length.
 //! This implementation uses the [Flint](https://flintlib.org/) library.
 
 use flint_sys::fmpz::fmpz;
 
 #[derive(Debug)]
 pub struct Z {
-    value: fmpz,
+    pub(crate) value: fmpz,
 }
