@@ -4,6 +4,7 @@
 use flint_sys::fmpz::fmpz;
 use flint_sys::fmpz_mod::fmpz_mod_ctx;
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct Zq {
     pub(crate) value: fmpz,

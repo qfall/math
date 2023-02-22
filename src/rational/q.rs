@@ -3,6 +3,7 @@
 
 use flint_sys::fmpq::fmpq;
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct Q {
     pub(crate) value: fmpq,
