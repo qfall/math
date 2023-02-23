@@ -11,6 +11,7 @@ use flint_sys::{
 
 use crate::error::MathError;
 
+#[derive(Debug)]
 pub struct Modulus {
     pub(crate) modulus: fmpz_mod_ctx,
 }
@@ -23,19 +24,17 @@ impl FromStr for Modulus {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // TODO: first create a Z, and then use the fmpz value from Z
         let mut modulus_fmpz = MaybeUninit::uninit();
-        let c_string = CString::new(s).unwrap_or_else(|_| {
-            panic!(
-                "The given string ({:?}) is not a valid input for the CString constructor",
-                s
-            )
-        });
+        let c_string = match CString::new(s) {
+            Ok(c_string) => c_string,
+            Err(_) => return Err(MathError::InvalidStringToModulusInput(s.to_owned())),
+        };
         let p: *const c_char = c_string.as_ptr();
         unsafe {
             fmpz_init(modulus_fmpz.as_mut_ptr());
         }
         let mut modulus_fmpz = unsafe { modulus_fmpz.assume_init() };
         if -1 == unsafe { fmpz_set_str(&mut modulus_fmpz, p, 10) } {
-            return Err(todo!());
+            return Err(MathError::InvalidStringToModulusInput(s.to_owned()));
         }
 
         match ctx_init(modulus_fmpz) {
@@ -47,7 +46,9 @@ impl FromStr for Modulus {
 
 fn ctx_init(n: fmpz) -> Result<fmpz_mod_ctx, MathError> {
     if unsafe { fmpz_cmp(&n, &fmpz(0)) <= 0 } {
-        return Err(todo!());
+        return Err(MathError::InvalidStringToModulusInput(
+            "(The provided value was not greater than 0)".to_owned(),
+        ));
     }
     let mut ctx = MaybeUninit::uninit();
     unsafe {

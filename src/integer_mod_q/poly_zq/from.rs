@@ -16,7 +16,7 @@ impl FromStr for PolyZq {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (poly_s, modulus) = match s.split_once(" mod ") {
             Some((poly_s, modulus)) => (poly_s, modulus),
-            None => return Err(todo!()),
+            None => return Err(MathError::InvalidStringToPolyModulusInput(s.to_owned())),
         };
         let poly_z = PolyZ::from_str(poly_s)?;
         let modulus = Modulus::from_str(modulus)?;

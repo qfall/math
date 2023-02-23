@@ -55,7 +55,7 @@ impl FromStr for PolyZ {
 
         // -1 is returned if the string is an invalid input
         if -1 == unsafe { fmpz_poly_set_str(&mut res.poly, p) } {
-            return Err(todo!());
+            return Err(MathError::InvalidStringToPolyInput(s.to_owned()));
         }
 
         Ok(res)

@@ -23,4 +23,12 @@ pub enum MathError {
     /// parse string to int error
     #[error("invalid string input to parse to int {0}")]
     InvalidStringToIntInput(#[from] ParseIntError),
+    #[error("invalid string input to parse to polynomial {0}\nThe format must be '[#number of coefficients]  [0th coefficient] [1st coefficient] ...'")]
+    InvalidStringToPolyInput(String),
+    #[error("invalid string input to parse to polynomial mod q {0}\nThe format must be '[#number of coefficients]  [0th coefficient] [1st coefficient] ... mod [modulus]'")]
+    InvalidStringToPolyModulusInput(String),
+    #[error(
+        "invalid string input to parse to a modulus {0}\nThe format must be '[1,...,9][0,1,...,9]*"
+    )]
+    InvalidStringToModulusInput(String),
 }

@@ -8,6 +8,7 @@ pub mod conversions;
 #[doc(hidden)]
 pub mod from;
 
+#[derive(Debug)]
 pub struct PolyZ {
     pub(crate) poly: fmpz_poly_struct,
 }

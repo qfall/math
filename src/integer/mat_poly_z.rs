@@ -9,6 +9,7 @@ pub mod conversions;
 pub mod from;
 
 #[allow(dead_code)]
+#[derive(Debug)]
 pub struct MatPolyZ {
     pub(crate) mat: fmpz_poly_mat_struct,
 }

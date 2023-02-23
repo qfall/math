@@ -55,7 +55,7 @@ impl FromStr for PolyQ {
 
         // -1 is returned if the string is an invalid input
         if -1 == unsafe { fmpq_poly_set_str(&mut res.poly, p) } {
-            return Err(todo!());
+            return Err(MathError::InvalidStringToPolyInput(s.to_owned()));
         }
 
         Ok(res)
