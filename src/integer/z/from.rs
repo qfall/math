@@ -7,6 +7,7 @@
 use flint_sys::fmpz::{fmpz, fmpz_init_set_si};
 
 use super::Z;
+use crate::macros;
 
 impl Z {
     /// Create a new Integer that can grow arbitrary large.
@@ -30,6 +31,8 @@ impl Z {
     }
 }
 
+macros::from_trait!(i64, Z, Z::from_i64);
+
 #[cfg(test)]
 mod tests {
     use super::Z;
@@ -46,5 +49,11 @@ mod tests {
     #[test]
     fn from_i64_max_negative() {
         Z::from_i64(i64::MIN);
+    }
+
+    // Ensure that the from trait is available for i64 values
+    #[test]
+    fn from_i64_trait() {
+        let _ = Z::from(-10i64);
     }
 }
