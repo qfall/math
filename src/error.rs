@@ -6,7 +6,10 @@ use thiserror::Error;
 /// `MathError` defines this crate's error enum, which can hold all sorts of errors occurring in this crate.
 ///
 /// Possible entries:
-/// - `InvalidStringToIntInput` is thrown if an invalid string is given to construct a data type
+/// * `InvalidStringToIntInput` is thrown if an invalid string is given to construct an integer
+/// * `InvalidStringToPolyInput` is thrown if an invalid string is given to construct a polynomial
+/// * `InvalidStringToPolyModulusInput` is thrown if an invalid string is given to construct a polynomial that has a modulus
+/// * `InvalidStringToModulusInput` is thrown if an invalid string is given to construct a modulus
 ///
 /// # Example
 /// ```
@@ -23,12 +26,15 @@ pub enum MathError {
     /// parse string to int error
     #[error("invalid string input to parse to int {0}")]
     InvalidStringToIntInput(#[from] ParseIntError),
+    /// parse string to poly error
     #[error("invalid string input to parse to polynomial {0}\nThe format must be '[#number of coefficients]  [0th coefficient] [1st coefficient] ...'")]
     InvalidStringToPolyInput(String),
+    /// parse string to poly with modulus error
     #[error("invalid string input to parse to polynomial mod q {0}\nThe format must be '[#number of coefficients]  [0th coefficient] [1st coefficient] ... mod [modulus]'")]
     InvalidStringToPolyModulusInput(String),
     #[error(
         "invalid string input to parse to a modulus {0}\nThe format must be '[1,...,9][0,1,...,9]*"
     )]
+    /// parse string to modulus error
     InvalidStringToModulusInput(String),
 }

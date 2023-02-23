@@ -18,7 +18,7 @@ impl fmt::Display for PolyQ {
     /// use std::str::FromStr;
     /// use core::fmt;
     ///
-    /// let poly = PolyQ::from_str("4  0 1 2 3").unwrap();
+    /// let poly = PolyQ::from_str("4  0 1 2/5 -3/2").unwrap();
     /// println!("{}", poly);
     /// ```
     ///
@@ -27,7 +27,7 @@ impl fmt::Display for PolyQ {
     /// use math::rational::poly_q::PolyQ;
     /// use std::str::FromStr;
     ///
-    /// let poly = PolyQ::from_str("4  0 1 2 3").unwrap();
+    /// let poly = PolyQ::from_str("4  0 1 2/5 -3/2").unwrap();
     /// let poly_string = poly.to_string();
     /// ```
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
