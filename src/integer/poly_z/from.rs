@@ -1,7 +1,8 @@
-//! Implementations of the [From](std::str::FromStr) trait for [PolyZ].
+//! Implementations to create a [PolyZ] value from other types..
+//! For each reasonable type, an explicit function with the format
+//! `from_<type_name>` and the [From] trait should be implemented.
 //!
-//! This module contains all options to create a polynomial of type [PolyZ].
-
+//! The explicit functions contain the documentation.
 use std::{
     ffi::{c_char, CString},
     mem::MaybeUninit,
@@ -15,8 +16,7 @@ use crate::error::MathError;
 use super::PolyZ;
 
 impl PolyZ {
-    /// Creates an initialization of a [PolyZ] which can not yet be used. It
-    /// needs to be assigned coefficients.
+    /// Inititializes a [PolyZ].
     /// This method is used to first construct a [PolyZ] and then later assign
     /// the corresponding efficients with methods from FLINT.
     ///

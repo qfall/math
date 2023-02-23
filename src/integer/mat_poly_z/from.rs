@@ -1,7 +1,8 @@
-//! Implementations of the [From](std::str::FromStr) trait for [MatPolyZ].
+//! Implementations to create a [MatPolyZ] value from other types..
+//! For each reasonable type, an explicit function with the format
+//! `from_<type_name>` and the [From] trait should be implemented.
 //!
-//! This module contains all options to create a polynomial of type [MatPolyZ].
-
+//! The explicit functions contain the documentation.
 use std::mem::MaybeUninit;
 
 use flint_sys::fmpz_poly_mat::fmpz_poly_mat_init;
@@ -9,8 +10,7 @@ use flint_sys::fmpz_poly_mat::fmpz_poly_mat_init;
 use super::MatPolyZ;
 
 impl MatPolyZ {
-    /// Creates an initialization of a [MatPolyZ] which can not yet be used. It
-    /// needs to be assigned coefficients.
+    /// Inititializes a [MatPolyZ].
     /// This method is used to internally initialize a [MatPolyZ] with the
     /// provided size.
     ///

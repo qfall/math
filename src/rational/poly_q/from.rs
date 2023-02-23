@@ -1,6 +1,8 @@
-//! Implementations of the [From](std::str::FromStr) trait for [PolyQ].
+//! Implementations to create a [PolyQ] value from other types..
+//! For each reasonable type, an explicit function with the format
+//! `from_<type_name>` and the [From] trait should be implemented.
 //!
-//! This module contains all options to create a polynomial of type [PolyQ].
+//! The explicit functions contain the documentation.
 
 use std::{
     ffi::{c_char, CString},
@@ -15,8 +17,7 @@ use crate::error::MathError;
 use super::PolyQ;
 
 impl PolyQ {
-    /// Creates an initialization of a [PolyQ] which can not yet be used. It
-    /// needs to be assigned coefficients.
+    /// Initializes a [PolyQ].
     /// This method is used to first construct a [PolyQ] and then later assign
     /// the corresponding efficients with methods from FLINT.
     ///

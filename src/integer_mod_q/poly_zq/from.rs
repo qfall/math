@@ -1,6 +1,8 @@
-//! Implementations of the [From](std::str::FromStr) trait for [PolyZq].
+//! Implementations to create a [PolyZq] value from other types..
+//! For each reasonable type, an explicit function with the format
+//! `from_<type_name>` and the [From] trait should be implemented.
 //!
-//! This module contains all options to create a polynomial of type [PolyZq].
+//! The explicit functions contain the documentation.
 
 use std::{mem::MaybeUninit, str::FromStr};
 

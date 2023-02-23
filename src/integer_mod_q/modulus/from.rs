@@ -1,6 +1,8 @@
-//! Implementations of the [From](std::str::FromStr) trait for [Modulus].
+//! Implementations to create a [Modulus] value from other types..
+//! For each reasonable type, an explicit function with the format
+//! `from_<type_name>` and the [From] trait should be implemented.
 //!
-//! This module contains all options to create a modulus of type [Modulus].
+//! The explicit functions contain the documentation.
 
 use std::{
     ffi::{c_char, CString},
