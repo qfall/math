@@ -14,7 +14,7 @@ impl fmt::Display for PolyQ {
     ///
     /// # Example 1
     /// ```rust
-    /// use math::rational::poly_q::PolyQ;
+    /// use math::rational::PolyQ;
     /// use std::str::FromStr;
     /// use core::fmt;
     ///

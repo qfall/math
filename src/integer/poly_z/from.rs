@@ -37,10 +37,10 @@ impl FromStr for PolyZ {
     ///
     /// # Example
     /// ```rust
-    /// use math::integer::poly_z::PolyZ;
+    /// use math::integer::PolyZ;
     /// use std::str::FromStr;
     ///
-    /// let poly = PolyZ::from_str("4  0 1 2 3");
+    /// let poly = PolyZ::from_str("4  0 1 2 3").unwrap();
     /// ```
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut res = Self::init();

@@ -20,7 +20,7 @@ impl FromStr for PolyZq {
     ///
     /// # Example
     /// ```rust
-    /// use math::integer_mod_q::poly_zq::PolyZq;
+    /// use math::integer_mod_q::PolyZq;
     /// use std::str::FromStr;
     ///
     /// let poly = PolyZq::from_str("4  0 1 -2 3 mod 42").unwrap();

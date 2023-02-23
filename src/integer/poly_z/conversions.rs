@@ -14,7 +14,7 @@ impl fmt::Display for PolyZ {
     ///
     /// # Example 1
     /// ```rust
-    /// use math::integer::poly_z::PolyZ;
+    /// use math::integer::PolyZ;
     /// use std::str::FromStr;
     /// use core::fmt;
     ///

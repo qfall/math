@@ -27,7 +27,7 @@ impl FromStr for Modulus {
     ///
     /// # Example
     /// ```rust
-    /// use math::integer_mod_q::modulus::Modulus;
+    /// use math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
     ///
     /// let modulus = Modulus::from_str("42").unwrap();
@@ -58,6 +58,10 @@ impl FromStr for Modulus {
     }
 }
 
+/// Inititializes the FLINT-context object using a [fmpz]-value as input
+///
+/// Input parameters:
+/// * s: the value the modulus should have as [fmpz]
 fn ctx_init(n: fmpz) -> Result<fmpz_mod_ctx, MathError> {
     if unsafe { fmpz_cmp(&n, &fmpz(0)) <= 0 } {
         return Err(MathError::InvalidStringToModulusInput(

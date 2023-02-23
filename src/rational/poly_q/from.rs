@@ -37,10 +37,10 @@ impl FromStr for PolyQ {
     ///
     /// # Example
     /// ```rust
-    /// use math::rational::poly_q::PolyQ;
+    /// use math::rational::PolyQ;
     /// use std::str::FromStr;
     ///
-    /// let poly = PolyQ::from_str("4  0 1/3 2/10 -3/2");
+    /// let poly = PolyQ::from_str("4  0 1/3 2/10 -3/2").unwrap();
     /// ```
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut res = Self::init();
