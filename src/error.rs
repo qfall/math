@@ -39,14 +39,18 @@ pub enum MathError {
     /// parse string to poly error
     #[error(
         "invalid string input to parse to polynomial {0}\nThe format must 
-    be '[#number of coefficients]  [0th coefficient] [1st coefficient] ...'"
+    be '[#number of coefficients]  [0th coefficient] [1st coefficient] ...'. 
+    Note that the after the number of coefficients, there are two 
+    whitespaces."
     )]
     InvalidStringToPolyInput(String),
     /// parse string to poly with modulus error
     #[error(
         "invalid string input to parse to polynomial mod q {0}\nThe format must 
         be '[#number of coefficients]  [0th coefficient] [1st coefficient] ... 
-    mod [modulus]'"
+    mod [modulus]'. 
+    Note that the after the number of coefficients, there are two 
+    whitespaces."
     )]
     InvalidStringToPolyModulusInput(String),
     #[error(
