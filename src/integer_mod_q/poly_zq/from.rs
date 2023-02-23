@@ -29,3 +29,47 @@ impl FromStr for PolyZq {
         }
     }
 }
+
+#[cfg(test)]
+mod test {
+    use std::str::FromStr;
+
+    use crate::integer_mod_q::poly_zq::PolyZq;
+
+    // tests whether a correctly formatted string outputs an instantiation of a polynomial mod q, i.e. does not return an error
+    #[test]
+    fn from_str_working_example() {
+        assert!(PolyZq::from_str("4  0 1 -2 3 mod 42").is_ok())
+    }
+
+    // tests whether a falsely formatted string (wrong whitespaces) returns an error
+    #[test]
+    fn from_str_false_format_whitespaces() {
+        assert!(PolyZq::from_str("4  0 1 -2 3 mod 4 2").is_err());
+    }
+
+    // tests whether a falsely formatted string (wrong symbols) returns an error
+    #[test]
+    fn from_str_false_format_symbols() {
+        assert!(PolyZq::from_str("1  ba mod 42").is_err());
+        assert!(PolyZq::from_str("1  1 mod ba").is_err());
+    }
+
+    // tests whether a false string (negative modulus) returns an error
+    #[test]
+    fn from_str_false_sign() {
+        assert!(PolyZq::from_str("4  0 1 -2 3 mod -42").is_err());
+    }
+
+    // tests whether a falsely formatted string (missing double-space) returns an error
+    #[test]
+    fn from_str_false_format() {
+        assert!(PolyZq::from_str("4 0 1 -2 3 mod 42").is_err());
+    }
+
+    // tests whether a falsely formatted string (wrong number of total coefficients) returns an error
+    #[test]
+    fn from_str_false_number_of_coefficient() {
+        assert!(PolyZq::from_str("5  0 1 -2 3 mod 42").is_err());
+    }
+}
