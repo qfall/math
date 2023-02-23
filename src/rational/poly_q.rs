@@ -13,9 +13,9 @@ pub mod from;
 /// [PolyQ] is a type of polynomial with arbitrarily many coefficients of type
 /// [Q](crate::rational::q::Q).
 ///
-/// Attributes:
-/// - `poly`: holds the content of the polynomial
-///
+// Attributes:
+// - `poly`: holds the content of the polynomial
+//
 /// # Example
 /// ```rust
 /// use math::rational::PolyQ;

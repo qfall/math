@@ -16,10 +16,10 @@ pub mod from;
 /// [PolyZq] is a type of polynomial with arbitrarily many coefficients of type
 /// [Zq](crate::integer_mod_q::z_q::Zq).
 ///
-/// Attributes:
-/// - `poly`: holds the content of the polynomial
-/// - `modulus`: holds the value of the modulus
-///
+// Attributes:
+// - `poly`: holds the content of the polynomial
+// - `modulus`: holds the value of the modulus
+//
 /// # Example
 /// ```rust
 /// use math::integer_mod_q::PolyZq;

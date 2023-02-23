@@ -13,9 +13,9 @@ pub mod from;
 /// [PolyZ] is a type of polynomial with arbitrarily many coefficients of type
 /// [Z](crate::integer::z::Z)
 ///
-/// Attributes:
-/// - `poly`: holds the content of the polynomial
-///
+// Attributes:
+// - `poly`: holds the content of the polynomial
+//
 /// # Example
 /// ```rust
 /// use math::integer::PolyZ;

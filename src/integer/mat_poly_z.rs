@@ -14,9 +14,9 @@ pub mod from;
 /// [MatPolyZ] is a matrix of size at most 63 bits with entries of
 /// [PolyZ](crate::integer::PolyZ).
 ///
-/// Attributes:
-/// - `mat`: holds the content of the matrix
-///
+// Attributes:
+// - `mat`: holds the content of the matrix
+//
 /// # Example(s)
 /// [TODO: Code examples]
 pub struct MatPolyZ {

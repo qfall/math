@@ -11,9 +11,9 @@ pub mod from;
 #[derive(Debug)]
 /// [Modulus] is a type of a positive nonnegative integer that is used in order to do modulus operations.
 ///
-/// Attributes:
-/// - `modulus`: holds the value of the modulus
-///
+// Attributes:
+// - `modulus`: holds the value of the modulus
+//
 /// # Example
 /// ```rust
 /// use math::integer_mod_q::Modulus;
