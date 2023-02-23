@@ -10,6 +10,13 @@ pub mod from;
 
 #[allow(dead_code)]
 #[derive(Debug)]
+/// [MatPolyZ] is a type matrix with entries that are polynomials with integer coefficients of arbitrary length.
+///
+/// Attributes:
+/// - `mat`: holds the content of the matrix
+///
+/// # Example(s)
+/// [TODO: Code examples]
 pub struct MatPolyZ {
     pub(crate) mat: fmpz_poly_mat_struct,
 }

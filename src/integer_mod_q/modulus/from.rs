@@ -23,7 +23,7 @@ impl FromStr for Modulus {
     /// Create a modulus, which corresponds to a positive nonnegative integer using a string as input.
     ///
     /// Parameters:
-    /// - s: the polynomial of form: "[1,...,9][0,1,...,9]*"
+    /// - `s`: the polynomial of form: "[1,...,9][0,1,...,9]*"
     /// Returns a [Modulus] or an error, if the provided string was not formatted correctly.
     ///
     /// # Example
@@ -64,7 +64,7 @@ impl FromStr for Modulus {
 /// Inititializes the FLINT-context object using a [fmpz]-value as input
 ///
 /// Parameters:
-/// - s: the value the modulus should have as [fmpz]
+/// - `s`: the value the modulus should have as [fmpz]
 /// Returns an inititialized context object [fmpz_mod_ctx] or an error, if the provided value was not greater than 0.
 ///
 /// # Errors and Failures

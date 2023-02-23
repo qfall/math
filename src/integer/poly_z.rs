@@ -9,6 +9,18 @@ pub mod conversions;
 pub mod from;
 
 #[derive(Debug)]
+/// [PolyZ] is a type of polynomial with integer coefficients of arbitrary length.
+///
+/// Attributes:
+/// - `poly`: holds the content of the polynomial
+///
+/// # Example
+/// ```rust
+/// use math::integer::PolyZ;
+/// use std::str::FromStr;
+///
+/// let poly = PolyZ::from_str("4  0 1 2 3").unwrap();
+/// ```
 pub struct PolyZ {
     pub(crate) poly: fmpz_poly_struct,
 }

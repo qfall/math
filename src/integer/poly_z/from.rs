@@ -35,7 +35,7 @@ impl FromStr for PolyZ {
     /// Create a new polynomial with integer coefficients of arbitrary length using a string as input.
     ///
     /// Parameters:
-    /// - s: the polynomial of form: "[#number of coefficients]  [0th coefficient] [1st coefficient] ..."
+    /// - `s`: the polynomial of form: "[#number of coefficients]  [0th coefficient] [1st coefficient] ..."
     /// Returns a [PolyZ] or an error, if the provided string was not formatted correctly.
     ///
     /// # Example

@@ -16,7 +16,7 @@ impl FromStr for PolyZq {
     /// Creating a polynomial with integer coefficients modulo q of arbitrary length using a string as input.
     ///
     /// Parameters:
-    /// - s: the polynomial of form: "[#number of coefficients]  [0th coefficient] [1st coefficient] ... mod [modulus]"
+    /// - `s`: the polynomial of form: "[#number of coefficients]  [0th coefficient] [1st coefficient] ... mod [modulus]"
     /// Returns a [PolyZq] or an error, if the provided string was not formatted correctly.
     ///
     /// # Example
