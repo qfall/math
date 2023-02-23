@@ -17,6 +17,8 @@ use super::PolyQ;
 impl PolyQ {
     /// Creates an initialization of a [PolyQ] which can not yet be used. It needs to be assigned coefficients.
     /// This method is used to first construct a [PolyQ] and then later assign the corresponding efficients with methods from FLINT.
+    ///
+    /// Returns an inititialized [PolyQ].
     fn init() -> Self {
         let mut poly = MaybeUninit::uninit();
         unsafe {
@@ -32,8 +34,9 @@ impl FromStr for PolyQ {
 
     /// Create a new polynomial with integer coefficients of arbitrary length using a string as input.
     ///
-    /// Input parameters:
-    /// * s: the polynomial of form: "[#number of coefficients]  [0th coefficient] [1st coefficient] ..."
+    /// Parameters:
+    /// - s: the polynomial of form: "[#number of coefficients]  [0th coefficient] [1st coefficient] ..."
+    /// Returns a [PolyQ] or an error, if the provided string was not formatted correctly.
     ///
     /// # Example
     /// ```rust
@@ -42,6 +45,9 @@ impl FromStr for PolyQ {
     ///
     /// let poly = PolyQ::from_str("4  0 1/3 2/10 -3/2").unwrap();
     /// ```
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [MathError::InvalidStringToPolyInput] if the provided string was not formatted correctly or the number of
+    /// coefficients was smaller than the number provided at the start of the provided string.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut res = Self::init();
 

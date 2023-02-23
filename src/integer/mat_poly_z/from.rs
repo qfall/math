@@ -11,6 +11,11 @@ use super::MatPolyZ;
 impl MatPolyZ {
     /// Creates an initialization of a [MatPolyZ] which can not yet be used. It needs to be assigned coefficients.
     /// This method is used to first construct a [MatPolyZ] and then later assign the corresponding efficients with methods from FLINT.
+    ///
+    /// Parameters
+    /// - `nrwos`: specifies the number of rows
+    /// - `ncols`: specifies the number of columns
+    /// Returns an inititialized [MatPolyZ].
     #[allow(dead_code)]
     fn init(nrows: i64, ncols: i64) -> Self {
         let mut mat = MaybeUninit::uninit();

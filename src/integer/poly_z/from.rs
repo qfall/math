@@ -17,6 +17,8 @@ use super::PolyZ;
 impl PolyZ {
     /// Creates an initialization of a [PolyZ] which can not yet be used. It needs to be assigned coefficients.
     /// This method is used to first construct a [PolyZ] and then later assign the corresponding efficients with methods from FLINT.
+    ///
+    /// Returns an inititialized [PolyZ].
     fn init() -> Self {
         let mut poly = MaybeUninit::uninit();
         unsafe {
@@ -32,8 +34,9 @@ impl FromStr for PolyZ {
 
     /// Create a new polynomial with integer coefficients of arbitrary length using a string as input.
     ///
-    /// Input parameters:
-    /// * s: the polynomial of form: "[#number of coefficients]  [0th coefficient] [1st coefficient] ..."
+    /// Parameters:
+    /// - s: the polynomial of form: "[#number of coefficients]  [0th coefficient] [1st coefficient] ..."
+    /// Returns a [PolyZ] or an error, if the provided string was not formatted correctly.
     ///
     /// # Example
     /// ```rust
@@ -42,6 +45,10 @@ impl FromStr for PolyZ {
     ///
     /// let poly = PolyZ::from_str("4  0 1 2 3").unwrap();
     /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [MathError::InvalidStringToPolyInput] if the provided string was not formatted correctly or the number of
+    /// coefficients was smaller than the number provided at the start of the provided string.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut res = Self::init();
 

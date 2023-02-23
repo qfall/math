@@ -22,8 +22,9 @@ impl FromStr for Modulus {
 
     /// Create a modulus, which corresponds to a positive nonnegative integer using a string as input.
     ///
-    /// Input parameters:
-    /// * s: the polynomial of form: "[1,...,9][0,1,...,9]*"
+    /// Parameters:
+    /// - s: the polynomial of form: "[1,...,9][0,1,...,9]*"
+    /// Returns a [Modulus] or an error, if the provided string was not formatted correctly.
     ///
     /// # Example
     /// ```rust
@@ -32,6 +33,8 @@ impl FromStr for Modulus {
     ///
     /// let modulus = Modulus::from_str("42").unwrap();
     /// ```
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [MathError::InvalidStringToModulusInput] if the provided string was not formatted correctly or the value was not greater than 0.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // TODO: first create a Z, and then use the fmpz value from Z
         if s.contains(char::is_whitespace) {
@@ -60,8 +63,12 @@ impl FromStr for Modulus {
 
 /// Inititializes the FLINT-context object using a [fmpz]-value as input
 ///
-/// Input parameters:
-/// * s: the value the modulus should have as [fmpz]
+/// Parameters:
+/// - s: the value the modulus should have as [fmpz]
+/// Returns an inititialized context object [fmpz_mod_ctx] or an error, if the provided value was not greater than 0.
+///
+/// # Errors and Failures
+/// - Returns a [`MathError`] of type [MathError::InvalidStringToModulusInput] if the provided value is not greater than 0.
 fn ctx_init(n: fmpz) -> Result<fmpz_mod_ctx, MathError> {
     if unsafe { fmpz_cmp(&n, &fmpz(0)) <= 0 } {
         return Err(MathError::InvalidStringToModulusInput(

@@ -15,8 +15,9 @@ impl FromStr for PolyZq {
 
     /// Creating a polynomial with integer coefficients modulo q of arbitrary length using a string as input.
     ///
-    /// Input parameters:
-    /// * s: the polynomial of form: "[#number of coefficients]  [0th coefficient] [1st coefficient] ... mod [modulus]"
+    /// Parameters:
+    /// - s: the polynomial of form: "[#number of coefficients]  [0th coefficient] [1st coefficient] ... mod [modulus]"
+    /// Returns a [PolyZq] or an error, if the provided string was not formatted correctly.
     ///
     /// # Example
     /// ```rust
@@ -25,6 +26,10 @@ impl FromStr for PolyZq {
     ///
     /// let poly = PolyZq::from_str("4  0 1 -2 3 mod 42").unwrap();
     /// ```
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [MathError::InvalidStringToPolyModulusInput] if the provided string was not formatted correctly.
+    /// - Returns a [`MathError`] of type [MathError::InvalidStringToPolyInput] if the provided half of the string was not formatted correctly to create a polynomial.
+    /// - Returns a [`MathError`] of type [MathError::InvalidStringToModulusInput] if the provided half of the string was not formatted correctly to create a modulus.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (poly_s, modulus) = match s.split_once(" mod ") {
             Some((poly_s, modulus)) => (poly_s, modulus),

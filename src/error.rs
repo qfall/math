@@ -6,10 +6,10 @@ use thiserror::Error;
 /// `MathError` defines this crate's error enum, which can hold all sorts of errors occurring in this crate.
 ///
 /// Possible entries:
-/// * `InvalidStringToIntInput` is thrown if an invalid string is given to construct an integer
-/// * `InvalidStringToPolyInput` is thrown if an invalid string is given to construct a polynomial
-/// * `InvalidStringToPolyModulusInput` is thrown if an invalid string is given to construct a polynomial that has a modulus
-/// * `InvalidStringToModulusInput` is thrown if an invalid string is given to construct a modulus
+/// - `InvalidStringToIntInput` is thrown if an invalid string is given to construct an integer
+/// - `InvalidStringToPolyInput` is thrown if an invalid string is given to construct a polynomial
+/// - `InvalidStringToPolyModulusInput` is thrown if an invalid string is given to construct a polynomial that has a modulus
+/// - `InvalidStringToModulusInput` is thrown if an invalid string is given to construct a modulus
 ///
 /// # Example
 /// ```
