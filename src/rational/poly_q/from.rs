@@ -45,12 +45,10 @@ impl FromStr for PolyQ {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut res = Self::init();
 
-        let c_string = CString::new(s).unwrap_or_else(|_| {
-            panic!(
-                "The given string ({:?}) is not a valid input for the CString constructor",
-                s
-            )
-        });
+        let c_string = match CString::new(s) {
+            Ok(c_string) => c_string,
+            Err(_) => return Err(MathError::InvalidStringToPolyInput(s.to_owned())),
+        };
         let p: *const c_char = c_string.as_ptr();
 
         // -1 is returned if the string is an invalid input
