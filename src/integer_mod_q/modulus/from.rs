@@ -22,6 +22,9 @@ impl FromStr for Modulus {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // TODO: first create a Z, and then use the fmpz value from Z
+        if s.contains(char::is_whitespace) {
+            return Err(MathError::InvalidStringToModulusInput(s.to_owned()));
+        }
         let mut modulus_fmpz = MaybeUninit::uninit();
         let c_string = match CString::new(s) {
             Ok(c_string) => c_string,
@@ -53,5 +56,36 @@ fn ctx_init(n: fmpz) -> Result<fmpz_mod_ctx, MathError> {
     unsafe {
         fmpz_mod_ctx_init(ctx.as_mut_ptr(), &n);
         Ok(ctx.assume_init())
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use std::str::FromStr;
+
+    use crate::integer_mod_q::modulus::Modulus;
+
+    // tests whether a correctly formatted string outputs an instantiation of a Modulus, i.e. does not return an error
+    #[test]
+    fn from_str_working_example() {
+        let _ = Modulus::from_str("42").unwrap();
+    }
+
+    // tests whether a falsely formatted string (wrong whitespaces) returns an error
+    #[test]
+    fn from_str_false_format_whitespaces() {
+        assert!(Modulus::from_str("4 2").is_err());
+    }
+
+    // tests whether a falsely formatted string (wrong symbols) returns an error
+    #[test]
+    fn from_str_false_format_symbols() {
+        assert!(Modulus::from_str("b a").is_err());
+    }
+
+    // tests whether a false string (negative) returns an error
+    #[test]
+    fn from_str_false_sign() {
+        assert!(Modulus::from_str("-42").is_err());
     }
 }
