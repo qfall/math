@@ -23,7 +23,7 @@ impl FromStr for Modulus {
     /// Create a modulus, which corresponds to a positive nonnegative integer using a string as input.
     ///
     /// Input parameters:
-    /// * s: the polynomial of form: "[1,...,9][0,1,...,9]^*"
+    /// * s: the polynomial of form: "[1,...,9][0,1,...,9]*"
     ///
     /// # Example
     /// ```rust
