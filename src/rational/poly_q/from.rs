@@ -15,8 +15,10 @@ use crate::error::MathError;
 use super::PolyQ;
 
 impl PolyQ {
-    /// Creates an initialization of a [PolyQ] which can not yet be used. It needs to be assigned coefficients.
-    /// This method is used to first construct a [PolyQ] and then later assign the corresponding efficients with methods from FLINT.
+    /// Creates an initialization of a [PolyQ] which can not yet be used. It
+    /// needs to be assigned coefficients.
+    /// This method is used to first construct a [PolyQ] and then later assign
+    /// the corresponding efficients with methods from FLINT.
     ///
     /// Returns an inititialized [PolyQ].
     fn init() -> Self {
@@ -32,11 +34,14 @@ impl PolyQ {
 impl FromStr for PolyQ {
     type Err = MathError;
 
-    /// Create a new polynomial with integer coefficients of arbitrary length using a string as input.
+    /// Create a new polynomial with integer coefficients of arbitrary length
+    /// using a string as input.
     ///
     /// Parameters:
-    /// - `s`: the polynomial of form: "[#number of coefficients]  [0th coefficient] [1st coefficient] ..."
-    /// Returns a [PolyQ] or an error, if the provided string was not formatted correctly.
+    /// - `s`: the polynomial of form: "[#number of coefficients]  [0th
+    /// coefficient] [1st coefficient] ..."
+    /// Returns a [PolyQ] or an error, if the provided string was not formatted
+    /// correctly.
     ///
     /// # Example
     /// ```rust
@@ -46,8 +51,10 @@ impl FromStr for PolyQ {
     /// let poly = PolyQ::from_str("4  0 1/3 2/10 -3/2").unwrap();
     /// ```
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [MathError::InvalidStringToPolyInput] if the provided string was not formatted correctly or the number of
-    /// coefficients was smaller than the number provided at the start of the provided string.
+    /// - Returns a [`MathError`] of type [MathError::InvalidStringToPolyInput]
+    /// if the provided string was not formatted correctly or the number of
+    /// coefficients was smaller than the number provided at the start of the
+    /// provided string.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut res = Self::init();
 
@@ -72,19 +79,22 @@ mod test {
 
     use crate::rational::poly_q::PolyQ;
 
-    // tests whether a correctly formatted string outputs an instantiation of a polynomial, i.e. does not return an error
+    // tests whether a correctly formatted string outputs an instantiation of a
+    // polynomial, i.e. does not return an error
     #[test]
     fn from_str_working_example() {
         assert!(PolyQ::from_str("3  1 2/5 -3/2").is_ok());
     }
 
-    // tests whether a falsely formatted string (missing double-space) returns an error
+    // tests whether a falsely formatted string (missing double-space) returns
+    // an error
     #[test]
     fn from_str_false_format() {
         assert!(PolyQ::from_str("3 1 2/5 -3/2").is_err());
     }
 
-    // tests whether a falsely formatted string (wrong number of total coefficients) returns an error
+    // tests whether a falsely formatted string (wrong number of total
+    // coefficients) returns an error
     #[test]
     fn from_str_false_number_of_coefficient() {
         assert!(PolyQ::from_str("4  1 2/5 -3/2").is_err());

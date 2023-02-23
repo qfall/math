@@ -1,6 +1,7 @@
 //! Implementations of conversions from and to type [PolyQ].
 //!
-//! This module contains all options convert a polynomial of type [PolyQ]. This includes the 'Display' trait.
+//! This module contains all options convert a polynomial of type [PolyQ]. This
+//! includes the 'Display' trait.
 
 use core::fmt;
 use std::ffi::CStr;
@@ -45,7 +46,8 @@ mod test {
 
     use crate::rational::poly_q::PolyQ;
 
-    // tests whether a polynomial that is created using a string, returns the same string, when it is converted back to a string
+    // tests whether a polynomial that is created using a string, returns the
+    // same string, when it is converted back to a string
     #[test]
     fn to_string_working_keeps_same_string() {
         let cmp_string = "3  1 2 -3";
@@ -54,7 +56,8 @@ mod test {
         assert_eq!(cmp_string, cmp.to_string())
     }
 
-    // tests whether a polynomial that is created using a string, returns a string that can be used to create a polynomial
+    // tests whether a polynomial that is created using a string, returns a
+    // string that can be used to create a polynomial
     #[test]
     fn to_string_working_use_result_of_to_string_as_input() {
         let cmp_string = "3  1 2 -3";

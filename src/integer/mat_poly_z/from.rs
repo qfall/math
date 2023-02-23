@@ -9,8 +9,10 @@ use flint_sys::fmpz_poly_mat::fmpz_poly_mat_init;
 use super::MatPolyZ;
 
 impl MatPolyZ {
-    /// Creates an initialization of a [MatPolyZ] which can not yet be used. It needs to be assigned coefficients.
-    /// This method is used to first construct a [MatPolyZ] and then later assign the corresponding efficients with methods from FLINT.
+    /// Creates an initialization of a [MatPolyZ] which can not yet be used. It
+    /// needs to be assigned coefficients.
+    /// This method is used to first construct a [MatPolyZ] and then later
+    /// assign the corresponding efficients with methods from FLINT.
     ///
     /// Parameters
     /// - `nrwos`: specifies the number of rows

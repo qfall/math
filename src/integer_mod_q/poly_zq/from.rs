@@ -13,11 +13,14 @@ use super::PolyZq;
 impl FromStr for PolyZq {
     type Err = MathError;
 
-    /// Creating a polynomial with integer coefficients modulo q of arbitrary length using a string as input.
+    /// Creating a polynomial with integer coefficients modulo q of arbitrary
+    /// length using a string as input.
     ///
     /// Parameters:
-    /// - `s`: the polynomial of form: "[#number of coefficients]  [0th coefficient] [1st coefficient] ... mod [modulus]"
-    /// Returns a [PolyZq] or an error, if the provided string was not formatted correctly.
+    /// - `s`: the polynomial of form: "[#number of coefficients]  [0th
+    /// coefficient] [1st coefficient] ... mod [modulus]"
+    /// Returns a [PolyZq] or an error, if the provided string was not
+    /// formatted correctly.
     ///
     /// # Example
     /// ```rust
@@ -27,9 +30,15 @@ impl FromStr for PolyZq {
     /// let poly = PolyZq::from_str("4  0 1 -2 3 mod 42").unwrap();
     /// ```
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [MathError::InvalidStringToPolyModulusInput] if the provided string was not formatted correctly.
-    /// - Returns a [`MathError`] of type [MathError::InvalidStringToPolyInput] if the provided half of the string was not formatted correctly to create a polynomial.
-    /// - Returns a [`MathError`] of type [MathError::InvalidStringToModulusInput] if the provided half of the string was not formatted correctly to create a modulus.
+    /// - Returns a [`MathError`] of type
+    /// [MathError::InvalidStringToPolyModulusInput] if the provided string was
+    /// not formatted correctly.
+    /// - Returns a [`MathError`] of type [MathError::InvalidStringToPolyInput]
+    /// if the provided half of the string was not formatted correctly to
+    /// create a polynomial.
+    /// - Returns a [`MathError`] of type
+    /// [MathError::InvalidStringToModulusInput] if the provided half of the
+    /// string was not formatted correctly to create a modulus.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (poly_s, modulus) = match s.split_once(" mod ") {
             Some((poly_s, modulus)) => (poly_s, modulus),
@@ -53,13 +62,15 @@ mod test {
 
     use crate::integer_mod_q::poly_zq::PolyZq;
 
-    // tests whether a correctly formatted string outputs an instantiation of a polynomial mod q, i.e. does not return an error
+    // tests whether a correctly formatted string outputs an instantiation of a
+    // polynomial mod q, i.e. does not return an error
     #[test]
     fn from_str_working_example() {
         assert!(PolyZq::from_str("4  0 1 -2 3 mod 42").is_ok())
     }
 
-    // tests whether a falsely formatted string (wrong whitespaces) returns an error
+    // tests whether a falsely formatted string (wrong whitespaces) returns an
+    // error
     #[test]
     fn from_str_false_format_whitespaces() {
         assert!(PolyZq::from_str("4  0 1 -2 3 mod 4 2").is_err());
@@ -78,13 +89,15 @@ mod test {
         assert!(PolyZq::from_str("4  0 1 -2 3 mod -42").is_err());
     }
 
-    // tests whether a falsely formatted string (missing double-space) returns an error
+    // tests whether a falsely formatted string (missing double-space) returns
+    // an error
     #[test]
     fn from_str_false_format() {
         assert!(PolyZq::from_str("4 0 1 -2 3 mod 42").is_err());
     }
 
-    // tests whether a falsely formatted string (wrong number of total coefficients) returns an error
+    // tests whether a falsely formatted string (wrong number of total
+    // coefficients) returns an error
     #[test]
     fn from_str_false_number_of_coefficient() {
         assert!(PolyZq::from_str("5  0 1 -2 3 mod 42").is_err());

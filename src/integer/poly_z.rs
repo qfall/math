@@ -1,4 +1,5 @@
-//! [PolyZ] is a type of polynomial with integer coefficients of arbitrary length.
+//! [PolyZ] is a type of polynomial with integer coefficients of arbitrary
+//! length.
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use flint_sys::fmpz_poly::fmpz_poly_struct;
@@ -9,7 +10,8 @@ pub mod conversions;
 pub mod from;
 
 #[derive(Debug)]
-/// [PolyZ] is a type of polynomial with integer coefficients of arbitrary length.
+/// [PolyZ] is a type of polynomial with integer coefficients of arbitrary
+/// length.
 ///
 /// Attributes:
 /// - `poly`: holds the content of the polynomial
