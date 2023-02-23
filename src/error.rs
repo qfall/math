@@ -1,5 +1,5 @@
 //! This module contains this crate's error enum. This enum can hold all sorts
-//! of errors occuring in this crate s.t. error propagation is simple for
+//! of errors occurring in this crate s.t. error propagation is simple for
 //! developers of this crate and all sorts of thrown errors and error types can
 //! be easily found and accessed by developers using this crate. Furthermore,
 //! the actual errors are wrapped s.t. all information about the error can be

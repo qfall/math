@@ -1,5 +1,5 @@
-//! [MatPolyZ] is a type matrix with entries that are polynomials with integer
-//! coefficients of arbitrary length.
+//! [MatPolyZ] is a matrix of size at most 63 bits with entries of
+//! [PolyZ](crate::integer::PolyZ).
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use flint_sys::fmpz_poly_mat::fmpz_poly_mat_struct;
@@ -11,8 +11,8 @@ pub mod from;
 
 #[allow(dead_code)]
 #[derive(Debug)]
-/// [MatPolyZ] is a type matrix with entries that are polynomials with integer
-/// coefficients of arbitrary length.
+/// [MatPolyZ] is a matrix of size at most 63 bits with entries of
+/// [PolyZ](crate::integer::PolyZ).
 ///
 /// Attributes:
 /// - `mat`: holds the content of the matrix

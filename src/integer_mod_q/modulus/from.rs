@@ -1,4 +1,4 @@
-//! Implementations of the 'From' trait for [Modulus].
+//! Implementations of the [From](std::str::FromStr) trait for [Modulus].
 //!
 //! This module contains all options to create a modulus of type [Modulus].
 

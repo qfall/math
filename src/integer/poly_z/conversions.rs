@@ -1,7 +1,7 @@
 //! Implementations of conversions from and to type [PolyZ].
 //!
 //! This module contains all options convert a polynomial of type [PolyZ]. This
-//! includes the 'Display' trait.
+//! includes the [Display](std::fmt::Display) trait.
 
 use core::fmt;
 use std::ffi::CStr;

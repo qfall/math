@@ -1,5 +1,5 @@
-//! [PolyQ] is a type of polynomial with integer coefficients of arbitrary
-//! length.
+//! [PolyQ] is a type of polynomial with arbitrarily many coefficients of type
+//! [Q](crate::rational::q::Q).
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use flint_sys::fmpq_poly::fmpq_poly_struct;
@@ -10,8 +10,8 @@ pub mod conversions;
 pub mod from;
 
 #[derive(Debug)]
-/// [PolyQ] is a type of polynomial with integer coefficients of arbitrary
-/// length.
+/// [PolyQ] is a type of polynomial with arbitrarily many coefficients of type
+/// [Q](crate::rational::q::Q).
 ///
 /// Attributes:
 /// - `poly`: holds the content of the polynomial

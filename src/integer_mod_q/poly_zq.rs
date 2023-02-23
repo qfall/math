@@ -1,4 +1,5 @@
-//! [PolyZq] is a type of polynomial with integer coefficients modulo q of arbitrary length.
+//! [PolyZq] is a type of polynomial with arbitrarily many coefficients of type
+//! [Zq](crate::integer_mod_q::z_q::Zq).
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_struct;
@@ -12,7 +13,8 @@ pub mod from;
 
 #[allow(dead_code)]
 #[derive(Debug)]
-/// [PolyZq] is a type of polynomial with integer coefficients modulo q of arbitrary length.
+/// [PolyZq] is a type of polynomial with arbitrarily many coefficients of type
+/// [Zq](crate::integer_mod_q::z_q::Zq).
 ///
 /// Attributes:
 /// - `poly`: holds the content of the polynomial

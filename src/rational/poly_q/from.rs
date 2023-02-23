@@ -1,4 +1,4 @@
-//! Implementations of the 'From' trait for [PolyQ].
+//! Implementations of the [From](std::str::FromStr) trait for [PolyQ].
 //!
 //! This module contains all options to create a polynomial of type [PolyQ].
 
@@ -34,8 +34,8 @@ impl PolyQ {
 impl FromStr for PolyQ {
     type Err = MathError;
 
-    /// Create a new polynomial with integer coefficients of arbitrary length
-    /// using a string as input.
+    /// Create a new polynomial with arbitrarily many coefficients of type
+    /// [Q](crate::rational::q::Q).
     ///
     /// Parameters:
     /// - `s`: the polynomial of form: "[#number of coefficients]  [0th

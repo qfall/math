@@ -4,6 +4,8 @@
 use flint_sys::fmpz_mod::fmpz_mod_ctx;
 
 #[doc(hidden)]
+pub mod conversions;
+#[doc(hidden)]
 pub mod from;
 
 #[derive(Debug)]

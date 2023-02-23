@@ -1,4 +1,4 @@
-//! Implementations of the 'From' trait for [PolyZq].
+//! Implementations of the [From](std::str::FromStr) trait for [PolyZq].
 //!
 //! This module contains all options to create a polynomial of type [PolyZq].
 
@@ -13,8 +13,8 @@ use super::PolyZq;
 impl FromStr for PolyZq {
     type Err = MathError;
 
-    /// Creating a polynomial with integer coefficients modulo q of arbitrary
-    /// length using a string as input.
+    /// Creating a polynomial with arbitrarily many coefficients of type
+    /// [Zq](crate::integer_mod_q::z_q::Zq).
     ///
     /// Parameters:
     /// - `s`: the polynomial of form: "[#number of coefficients]  [0th

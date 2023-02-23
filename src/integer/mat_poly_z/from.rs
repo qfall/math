@@ -1,4 +1,4 @@
-//! Implementations of the 'From' trait for [MatPolyZ].
+//! Implementations of the [From](std::str::FromStr) trait for [MatPolyZ].
 //!
 //! This module contains all options to create a polynomial of type [MatPolyZ].
 
@@ -11,8 +11,8 @@ use super::MatPolyZ;
 impl MatPolyZ {
     /// Creates an initialization of a [MatPolyZ] which can not yet be used. It
     /// needs to be assigned coefficients.
-    /// This method is used to first construct a [MatPolyZ] and then later
-    /// assign the corresponding efficients with methods from FLINT.
+    /// This method is used to internally initialize a [MatPolyZ] with the
+    /// provided size.
     ///
     /// Parameters
     /// - `nrwos`: specifies the number of rows
