@@ -13,6 +13,18 @@ use super::PolyZq;
 impl FromStr for PolyZq {
     type Err = MathError;
 
+    /// Creating a polynomial with integer coefficients modulo q of arbitrary length using a string as input.
+    ///
+    /// Input parameters:
+    /// * s: the polynomial of form: "[#number of coefficients]  [0th coefficient] [1st coefficient] ... mod [modulus]"
+    ///
+    /// # Example
+    /// ```rust
+    /// use math::integer_mod_q::poly_zq::PolyZq;
+    /// use std::str::FromStr;
+    ///
+    /// let poly = PolyZq::from_str("4  0 1 -2 3 mod 42").unwrap();
+    /// ```
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (poly_s, modulus) = match s.split_once(" mod ") {
             Some((poly_s, modulus)) => (poly_s, modulus),

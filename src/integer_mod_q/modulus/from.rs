@@ -20,6 +20,18 @@ use super::Modulus;
 impl FromStr for Modulus {
     type Err = MathError;
 
+    /// Create a modulus, which corresponds to a positive nonnegative integer using a string as input.
+    ///
+    /// Input parameters:
+    /// * s: the polynomial of form: "[1,...,9][0,1,...,9]^*"
+    ///
+    /// # Example
+    /// ```rust
+    /// use math::integer_mod_q::modulus::Modulus;
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = Modulus::from_str("42").unwrap();
+    /// ```
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // TODO: first create a Z, and then use the fmpz value from Z
         if s.contains(char::is_whitespace) {
