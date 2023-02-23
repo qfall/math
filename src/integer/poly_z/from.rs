@@ -69,7 +69,7 @@ mod test {
     // tests whether a correctly formatted string outputs an instantiation of a polynomial, i.e. does not return an error
     #[test]
     fn from_str_working_example() {
-        let _ = PolyZ::from_str("3  1 2 -3").unwrap();
+        assert!(PolyZ::from_str("3  1 2 -3").is_ok());
     }
 
     // tests whether a falsely formatted string (missing double-space) returns an error

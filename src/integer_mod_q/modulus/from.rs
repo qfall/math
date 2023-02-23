@@ -84,7 +84,7 @@ mod test {
     // tests whether a correctly formatted string outputs an instantiation of a Modulus, i.e. does not return an error
     #[test]
     fn from_str_working_example() {
-        let _ = Modulus::from_str("42").unwrap();
+        assert!(Modulus::from_str("42").is_ok());
     }
 
     // tests whether a falsely formatted string (wrong whitespaces) returns an error
