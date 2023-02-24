@@ -32,10 +32,11 @@ pub enum MathError {
     /// parse string to int error
     #[error("invalid string input to parse to int {0}")]
     InvalidStringToIntInput(#[from] ParseIntError),
+    
+    /// parse string to modulus error
     #[error(
         "invalid string input to parse to a modulus {0}\nThe format must be '
-        [1,...,9][0,1,...,9]*"
+        [1,...,9][0,1,...,9]*'"
     )]
-    /// parse string to modulus error
     InvalidStringToModulusInput(String),
 }
