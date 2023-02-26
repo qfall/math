@@ -13,7 +13,7 @@ impl Z {
     /// Create a new Integer that can grow arbitrary large.
     ///
     /// Input parameters:
-    /// * initial: the initial value the integer should have
+    /// * value: the initial value the integer should have
     ///
     /// Output:
     /// * The new integer
@@ -24,9 +24,9 @@ impl Z {
     ///
     /// let a: Z = Z::from_i64(42);
     /// ```
-    pub fn from_i64(initial: i64) -> Self {
+    pub fn from_i64(value: i64) -> Self {
         let mut ret_value = fmpz(0);
-        unsafe { fmpz_init_set_si(&mut ret_value, initial) }
+        unsafe { fmpz_init_set_si(&mut ret_value, value) }
         Z { value: ret_value }
     }
 }
