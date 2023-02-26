@@ -4,7 +4,7 @@
 //!
 //! The explicit functions contain the documentation.
 
-use flint_sys::fmpz::{fmpz, fmpz_init_set_si};
+use flint_sys::fmpz::{fmpz, fmpz_init_set_si, fmpz_init_set_ui};
 
 use super::Z;
 use crate::macros;
@@ -29,9 +29,31 @@ impl Z {
         unsafe { fmpz_init_set_si(&mut ret_value, value) }
         Z { value: ret_value }
     }
+
+    /// Create a new Integer that can grow arbitrary large.
+    ///
+    /// Input parameters:
+    /// * value: the initial value the integer should have
+    ///
+    /// Output:
+    /// * The new integer
+    ///
+    /// # Example
+    /// ```rust
+    /// use math::integer::Z;
+    ///
+    /// let a: Z = Z::from_i64(42);
+    /// ```
+    pub fn from_u64(value: u64) -> Self {
+        let mut ret_value = fmpz(0);
+        unsafe { fmpz_init_set_ui(&mut ret_value, value) }
+        Z { value: ret_value }
 }
 
+// Generate From trait for the different types.
 macros::from_trait!(i64, Z, Z::from_i64);
+
+macros::from_trait!(u64, Z, Z::from_u64);
 
 #[cfg(test)]
 mod tests {
