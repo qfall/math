@@ -9,8 +9,8 @@
 /// * Implementation code for the [From] Trait with signature (`impl From<*source_type*> for *destination_type*`)
 macro_rules! from_trait {
     ($source_type:ident, $destination_type:ident, $function:expr) => {
-        #[doc=stringify!(Convert [$source_type] to [$destination_type] using [$function].)]
         impl From<$source_type> for $destination_type {
+            #[doc=stringify!(Convert [$source_type] to [$destination_type] using [$function].)]
             fn from(value: $source_type) -> $destination_type {
                 $function(value)
             }
