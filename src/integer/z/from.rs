@@ -42,7 +42,7 @@ impl Z {
     /// ```rust
     /// use math::integer::Z;
     ///
-    /// let a: Z = Z::from_i64(42);
+    /// let a: Z = Z::from_u64(42);
     /// ```
     pub fn from_u64(value: u64) -> Self {
         let mut ret_value = fmpz(0);
