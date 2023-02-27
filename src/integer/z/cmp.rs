@@ -3,7 +3,7 @@ use super::Z;
 use flint_sys::fmpz::fmpz_equal;
 
 impl PartialEq for Z {
-    /// Checks if two integers are equal.
+    /// Checks if two integers are equal. Used by the `==` and `!=` operators.
     ///
     /// Input parameters:
     /// * other: the other value that is used to compare the elements
@@ -34,7 +34,9 @@ mod tests {
         let a = Z::from_i64(42);
         let b = Z::from_i64(24);
 
+        assert!(a != b);
         assert_ne!(a, b);
+        assert_ne!(b, a);
     }
 
     // Test for equality with a large number that uses FLINT's pointer representation.
@@ -43,7 +45,10 @@ mod tests {
         let a = Z::from_u64(u64::MAX);
         let b = Z::from_u64(u64::MAX);
 
+        assert!(a == b);
         assert_eq!(a, b);
+        assert_eq!(b, a);
+        assert_eq!(a, a);
     }
 
     // Test for non equality with large numbers that use FLINT's pointer representation.
@@ -53,6 +58,6 @@ mod tests {
         let b = Z::from_u64(u64::MAX - 1);
 
         assert_ne!(a, b);
-        assert!(a != b);
+        assert_ne!(b, a);
     }
 }
