@@ -139,7 +139,7 @@ mod test_ctx_init {
 mod test_from_str {
     use std::str::FromStr;
 
-    use crate::integer_mod_q::modulus::Modulus;
+    use super::Modulus;
 
     // tests whether a correctly formatted string outputs an instantiation of a
     // Modulus, i.e. does not return an error
