@@ -6,7 +6,8 @@ impl PartialEq for Z {
     /// Checks if two integers are equal. Used by the `==` and `!=` operators.
     ///
     /// Input parameters:
-    /// * other: the other value that is used to compare the elements
+    /// - other: the other value that is used to compare the elements
+    /// Returns `true` if the elements are equal, otherwise `false`.
     ///
     /// # Example
     /// ```rust
