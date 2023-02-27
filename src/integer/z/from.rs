@@ -13,10 +13,8 @@ impl Z {
     /// Create a new Integer that can grow arbitrary large.
     ///
     /// Input parameters:
-    /// * value: the initial value the integer should have
-    ///
-    /// Output:
-    /// * The new integer
+    /// - value: the initial value the integer should have
+    /// Returns the new integer.
     ///
     /// # Example
     /// ```rust
@@ -33,10 +31,8 @@ impl Z {
     /// Create a new Integer that can grow arbitrary large.
     ///
     /// Input parameters:
-    /// * value: the initial value the integer should have
-    ///
-    /// Output:
-    /// * The new integer
+    /// - value: the initial value the integer should have
+    /// Returns the new integer.
     ///
     /// # Example
     /// ```rust

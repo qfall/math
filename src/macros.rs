@@ -1,12 +1,12 @@
-/// Implements the [From] trait for a given type. It requires an already written conversion function (e.g. form_i64).
+/// Implements the [From] trait for a given type. It requires an already written
+/// conversion function (e.g. form_i64).
 ///
 /// Input parameters:
-/// * source_type: the source identifier (e.g. i64, u32,...).
-/// * destination_type: the destination identifier (e.g. Z, MatZ).
-/// * function: The function that needs to be called for the conversion (e.g. Z::from_i64)
-///
-/// Output:
-/// * Implementation code for the [From] Trait with signature (`impl From<*source_type*> for *destination_type*`)
+/// - source_type: the source identifier (e.g. i64, u32,...).
+/// - destination_type: the destination identifier (e.g. Z, MatZ).
+/// - function: The function that needs to be called for the conversion (e.g. Z::from_i64)
+/// Returns the Implementation code for the [From] Trait with the signature:
+/// ```impl From<*source_type*> for *destination_type*```
 macro_rules! from_trait {
     ($source_type:ident, $destination_type:ident, $function:expr) => {
         impl From<$source_type> for $destination_type {
@@ -35,13 +35,11 @@ pub(crate) use from_trait;
 /// The macro is supposed to be used inside of an `impl` block for the destination type.
 ///
 /// Input parameters:
-/// * source_type: The source identifier (e.g. i64, u32,...).
-/// * bridge_type: Type used for casting before calling the function.
-/// * destination_type: Return type of the generated function (e.g. Z, MatZ).
-/// * function: The function that needs to be called for the conversion (e.g. Z::from_i64).
-///
-/// Output:
-/// * Implementation code for the function `from_<source_type>`
+/// - source_type: The source identifier (e.g. i64, u32,...).
+/// - bridge_type: Type used for casting before calling the function.
+/// - destination_type: Return type of the generated function (e.g. Z, MatZ).
+/// - function: The function that needs to be called for the conversion (e.g. Z::from_i64).
+/// Returns the Implementation code for the function `from_<source_type>`.
 ///
 /// # Example
 /// ```ignore
