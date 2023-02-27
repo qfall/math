@@ -35,7 +35,13 @@ pub enum MathError {
     /// parse string to modulus error
     #[error(
         "invalid string input to parse to a modulus {0}. \
-        The format must be '[0-9]+' and not all zeros"
+        The format must be '[0-9]+' and not all zeros."
     )]
+    /// parse integer to modulus error
     InvalidStringToModulusInput(String),
+    #[error(
+        "invalid integer input to parse to a modulus {0}. \
+        The value must be larger than 0."
+    )]
+    InvalidIntToModulus(String),
 }

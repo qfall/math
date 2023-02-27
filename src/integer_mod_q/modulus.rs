@@ -6,8 +6,8 @@
 
 use flint_sys::fmpz_mod::fmpz_mod_ctx;
 
-pub mod conversions;
 pub mod from;
+pub mod to_string;
 
 #[derive(Debug)]
 /// [Modulus] is a type of a positive non-zero integer that is used
