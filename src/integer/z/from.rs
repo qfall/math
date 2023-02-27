@@ -4,10 +4,14 @@
 //!
 //! The explicit functions contain the documentation.
 
-use flint_sys::fmpz::{fmpz, fmpz_init_set_si};
+use flint_sys::fmpz::{fmpz, fmpz_init_set_si, fmpz_set, fmpz_set_str};
 
 use super::Z;
-use crate::macros;
+use crate::{error::MathError, macros};
+use std::{
+    ffi::{c_char, CString},
+    str::FromStr,
+};
 
 impl Z {
     /// Create a new Integer that can grow arbitrary large.
@@ -29,12 +33,68 @@ impl Z {
         unsafe { fmpz_init_set_si(&mut ret_value, initial) }
         Z { value: ret_value }
     }
+
+    /// Create a new [`Z`] with an internally copied value that can grow arbitrary large.
+    /// It is initialized with the specified initial value.
+    ///
+    /// Input parameters:
+    /// * value: the initial value the integer should have
+    ///
+    /// Note: If you want to use the provided value later on, call this method with a copied fmpz.
+    pub(crate) fn from_fmpz_copy(value: &fmpz) -> Self {
+        let mut copy = fmpz(0);
+        unsafe { fmpz_set(&mut copy, value) };
+        Z { value: copy }
+    }
 }
 
 macros::from_trait!(i64, Z, Z::from_i64);
 
+impl FromStr for Z {
+    type Err = MathError;
+
+    /// Create a [Z] integer from a string
+    ///
+    /// Parameters:
+    /// - `s`: the integer
+    /// Returns a [Z] or an error, if the provided string was not formatted
+    /// correctly.
+    ///
+    /// # Example:
+    /// ```rust
+    /// use std::str::FromStr;
+    /// use math::integer::z::Z;
+    ///  
+    /// let a: Z = "100".parse().unwrap();
+    /// let b: Z = Z::from_str("100").unwrap();
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [MathError::InvalidStringToIntInput]
+    /// if the provided string was not formatted correctly.
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let mut value: fmpz = fmpz(0);
+
+        let c_string = match CString::new(s) {
+            Ok(c_string) => c_string,
+            Err(_) => return Err(MathError::InvalidStringToIntInput(s.to_owned())),
+        };
+
+        let p: *const c_char = c_string.as_ptr();
+
+        // -1 is returned if the string is an invalid input.
+        if -1 == unsafe { fmpz_set_str(&mut value, p, 10) } {
+            return Err(MathError::InvalidStringToIntInput(s.to_owned()));
+        }
+
+        Ok(Z { value })
+    }
+}
+
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
+
     use super::Z;
 
     // Ensure that initialization with large numbers works.
@@ -55,5 +115,47 @@ mod tests {
     #[test]
     fn from_i64_trait() {
         let _ = Z::from(-10i64);
+    }
+
+    // Ensure that initialization with large numbers works.
+    #[test]
+    fn from_str_max_positive() {
+        let _ = Z::from_str(&(i64::MAX).to_string()).unwrap();
+    }
+
+    // Ensure that initialization with large numbers (larger than i64) works.
+    #[test]
+    fn from_str_big_positive() {
+        let _ = Z::from_str("10000000000000000000000000000000").unwrap();
+    }
+
+    // Ensure that initialization with large negative numbers works.
+    #[test]
+    fn from_str_min_positive() {
+        let _ = Z::from_str(&(i64::MIN).to_string()).unwrap();
+    }
+
+    // Ensure that initialization with large negative numbers (larger than i64) works.
+    #[test]
+    fn from_str_small_positive() {
+        let _ = Z::from_str("-10000000000000000000000000000000").unwrap();
+    }
+
+    // Ensure that wrong initialization yields an Error.
+    #[test]
+    fn from_str_error1() {
+        assert!(Z::from_str("hbrkt35itu3gg").is_err());
+    }
+
+    // Ensure that wrong initialization yields an Error.
+    #[test]
+    fn from_str_error2() {
+        assert!(Z::from_str("3-2").is_err());
+    }
+
+    // Ensure that wrong initialization yields an Error.
+    #[test]
+    fn from_str_error3() {
+        assert!(Z::from_str("876/543").is_err());
     }
 }
