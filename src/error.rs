@@ -13,9 +13,9 @@ use thiserror::Error;
 ///
 /// Possible entries:
 /// - `InvalidStringToIntInput` is thrown if an invalid string is given to
-/// construct an integer
+/// construct an integer.
 /// - `InvalidStringToModulusInput` is thrown if an invalid string is given to
-/// construct a modulus
+/// construct a modulus.
 ///
 /// # Example
 /// ```
@@ -34,8 +34,8 @@ pub enum MathError {
     InvalidStringToIntInput(#[from] ParseIntError),
     /// parse string to modulus error
     #[error(
-        "invalid string input to parse to a modulus {0}\nThe format must be '
-        [1,...,9][0,1,...,9]*'"
+        "invalid string input to parse to a modulus {0}. \
+        The format must be '[0-9]+' and not all zeros"
     )]
     InvalidStringToModulusInput(String),
 }
