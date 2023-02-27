@@ -1,5 +1,6 @@
 pub mod mat_z;
-pub mod poly_z;
+#[doc(hidden)]
+mod poly_z;
 pub mod z;
 
 pub use mat_z::MatZ;

@@ -4,10 +4,8 @@
 
 use flint_sys::fmpz_poly::fmpz_poly_struct;
 
-#[doc(hidden)]
-pub mod conversions;
-#[doc(hidden)]
 pub mod from;
+pub mod to_string;
 
 #[derive(Debug)]
 /// [PolyZ] is a type of polynomial with arbitrarily many coefficients of type

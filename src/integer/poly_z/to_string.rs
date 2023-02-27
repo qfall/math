@@ -25,7 +25,7 @@ impl fmt::Display for PolyZ {
     ///
     /// # Example 2
     /// ```rust
-    /// use math::integer::poly_z::PolyZ;
+    /// use math::integer::PolyZ;
     /// use std::str::FromStr;
     ///
     /// let poly = PolyZ::from_str("4  0 1 2 3").unwrap();
@@ -44,7 +44,7 @@ impl fmt::Display for PolyZ {
 mod test {
     use std::str::FromStr;
 
-    use crate::integer::poly_z::PolyZ;
+    use super::PolyZ;
 
     // tests whether a polynomial that is created using a string, returns the
     // same string, when it is converted back to a string

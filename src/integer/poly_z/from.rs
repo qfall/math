@@ -78,7 +78,7 @@ impl FromStr for PolyZ {
 mod test {
     use std::str::FromStr;
 
-    use crate::integer::poly_z::PolyZ;
+    use super::PolyZ;
 
     // tests whether a correctly formatted string outputs an instantiation of a
     // polynomial, i.e. does not return an error
