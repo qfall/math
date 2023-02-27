@@ -1,15 +1,17 @@
-//! [Modulus] is a type of a positive nonnegative integer that is used in order to do modulus operations.
+//! [Modulus] is a type of a positive non-zero integer that is used in order to
+//! do modulus operations. The modulus type itself is also used for
+//! optimizations.
+//!
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use flint_sys::fmpz_mod::fmpz_mod_ctx;
 
-#[doc(hidden)]
 pub mod conversions;
-#[doc(hidden)]
 pub mod from;
 
 #[derive(Debug)]
-/// [Modulus] is a type of a positive nonnegative integer that is used in order to do modulus operations.
+/// [Modulus] is a type of a positive non-zero integer that is used
+/// to do modulus operations.
 ///
 // Attributes:
 // - `modulus`: holds the value of the modulus

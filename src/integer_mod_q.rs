@@ -1,5 +1,6 @@
 pub mod mat_zq;
-pub mod modulus;
+#[doc(hidden)]
+mod modulus;
 pub mod z_q;
 
 pub use modulus::Modulus;
