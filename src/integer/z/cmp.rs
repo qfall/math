@@ -38,43 +38,142 @@ impl PartialEq for Z {
 // This is not guaranteed by the [`PartialEq`] trait.
 impl Eq for Z {}
 
+/// Test that the [`PartialEq`] trait is correctly implemented.
 #[cfg(test)]
-mod test_equal {
+mod test_partial_eq {
+    // Test case structure:
+    // 1. Different ways to use equal and not equal.
+    // 2. Test different combinations of equal and not equal with different
+    //    parameter length combinations.
+    //    Not equal test are inverted equal tests.
+
     use super::Z;
 
-    // Assert 42 != 24
+    // Demonstrate the different ways to use equal.
+    // We assume that they behave the same in the other tests.
     #[test]
-    fn not_equal() {
-        let a = Z::from_i64(42);
-        let b = Z::from_i64(24);
+    fn equal_call_methods() {
+        let one_1 = Z::from(1);
+        let one_2 = Z::from(1);
 
-        assert!(a != b);
-        assert!(&a != &b);
-        assert_ne!(a, b);
-        assert_ne!(b, a);
+        assert!(one_1 == one_2);
+        assert!(&one_1 == &one_2);
+        assert!(one_1.eq(&one_2));
+        assert!(Z::eq(&one_1, &one_2));
+        assert_eq!(one_1, one_2);
     }
 
-    // Test for equality with a large number that uses FLINT's pointer representation.
+    // Demonstrate the different ways to use not equal.
+    // We assume that they behave the same in the other tests.
     #[test]
-    fn equal_u64_max() {
-        let a = Z::from_u64(u64::MAX);
-        let b = Z::from_u64(u64::MAX);
+    fn not_equal_call_methods() {
+        let one = Z::from(1);
+        let two = Z::from(2);
 
-        assert!(a == b);
-        assert!(&a == &b);
-        assert_eq!(a, b);
-        assert_eq!(b, a);
-        assert_eq!(a, a);
+        assert!(one != two);
+        assert!(&one != &two);
+        assert!(one.ne(&two));
+        assert!(Z::ne(&one, &two));
+        assert_ne!(one, two);
     }
 
-    // Test for non equality with large numbers that use FLINT's pointer representation.
+    // Test equal with small positive and negative numbers.
+    #[test]
+    fn equal_small() {
+        let small_1 = Z::from(10);
+        let small_2 = Z::from(10);
+        let negative = Z::from(-1);
+
+        assert!(small_1 == small_2);
+        assert!(small_2 == small_1);
+        assert!(small_1 == small_1);
+        assert!(!(small_1 == negative));
+        assert!(!(negative == small_1));
+    }
+
+    // Test not equal with small positive and negative numbers.
+    #[test]
+    fn not_equal_small() {
+        let small_1 = Z::from(10);
+        let small_2 = Z::from(10);
+        let negative = Z::from(-1);
+
+        assert!(!(small_1 != small_2));
+        assert!(!(small_2 != small_1));
+        assert!(!(small_1 != small_1));
+        assert!(small_1 != negative);
+        assert!(negative != small_1);
+    }
+
+    // Test equal with a large [`Z`]
+    // (uses FLINT's pointer representation)
+    #[test]
+    fn equal_large() {
+        let max_1 = Z::from(u64::MAX);
+        let max_2 = Z::from(u64::MAX);
+        let min = Z::from(i64::MIN);
+
+        assert!(max_1 == max_2);
+        assert!(max_2 == max_1);
+        assert!(max_1 == max_1);
+        assert!(min == min);
+        assert!(!(max_1 == min));
+        assert!(!(min == max_1));
+    }
+
+    // Test not equal with a large [`Z`]
+    // (uses FLINT's pointer representation)
     #[test]
     fn not_equal_large() {
-        let a = Z::from_u64(u64::MAX);
-        let b = Z::from_u64(u64::MAX - 1);
+        let max_1 = Z::from(u64::MAX);
+        let max_2 = Z::from(u64::MAX);
+        let min = Z::from(i64::MIN);
 
-        assert_ne!(a, b);
-        assert_ne!(&a, &b);
-        assert_ne!(b, a);
+        assert!(!(max_1 != max_2));
+        assert!(!(max_2 != max_1));
+        assert!(!(max_1 != max_1));
+        assert!(!(min != min));
+        assert!(max_1 != min);
+        assert!(min != max_1);
+    }
+
+    // Test equal with a large [`Z`] (uses FLINT's pointer representation)
+    // and small [`Z`] (no pointer representation).
+    #[test]
+    fn equal_large_small() {
+        let max = Z::from(u64::MAX);
+        let small_positive = Z::from(1);
+        let small_negative = Z::from(-1);
+        let min = Z::from(i64::MIN);
+
+        assert!(!(max == small_negative));
+        assert!(!(small_negative == max));
+        assert!(!(max == small_positive));
+        assert!(!(small_positive == max));
+
+        assert!(!(min == small_negative));
+        assert!(!(small_negative == min));
+        assert!(!(min == small_positive));
+        assert!(!(small_positive == min));
+    }
+
+    // Test not equal with a large [`Z`] (uses FLINT's pointer representation)
+    // and small [`Z`] (no pointer representation).
+    #[test]
+    fn not_equal_large_small() {
+        let max = Z::from(u64::MAX);
+        let small_positive = Z::from(1);
+        let small_negative = Z::from(-1);
+        let min = Z::from(i64::MIN);
+
+        assert!(max != small_negative);
+        assert!(small_negative != max);
+        assert!(max != small_positive);
+        assert!(small_positive != max);
+
+        assert!(min != small_negative);
+        assert!(small_negative != min);
+        assert!(min != small_positive);
+        assert!(small_positive != min);
     }
 }
