@@ -1,10 +1,12 @@
 /// Implements the [From] trait for a given type. It requires an already written
-/// conversion function (e.g. form_i64).
+/// conversion function (e.g. [Z::from_i64()](crate::integer::Z::from_i64())).
 ///
 /// Input parameters:
-/// - source_type: the source identifier (e.g. [i64], [u32],...).
-/// - destination_type: the destination identifier (e.g. Z, MatZ).
-/// - function: The function that needs to be called for the conversion (e.g. Z::from_i64)
+/// - source_type: the source identifier (e.g. [i64], [u32], ...).
+/// - destination_type: the destination identifier 
+///   (e.g. [Z](crate::integer::Z), [MatZ](crate::integer::MatZ)).
+/// - function: The function that needs to be called for the conversion
+///   (e.g. [Z::from_i64()])
 /// Returns the Implementation code for the [From] Trait with the signature:
 /// ```impl From<*source_type*> for *destination_type*```
 macro_rules! from_trait {
@@ -35,10 +37,12 @@ pub(crate) use from_trait;
 /// The macro is supposed to be used inside of an `impl` block for the destination type.
 ///
 /// Input parameters:
-/// - source_type: The source identifier (e.g. [i64], [u32],...).
+/// - source_type: The source identifier (e.g. [i64], [u32], ...).
 /// - bridge_type: Type used for casting before calling the function.
-/// - destination_type: Return type of the generated function (e.g. [Z](crate::integer::Z), [MatZ](crate::integer::MatZ)).
-/// - function: The function that needs to be called for the conversion (e.g. Z::from_i64).
+/// - destination_type: Return type of the generated function
+///   (e.g. [Z](crate::integer::Z), [MatZ](crate::integer::MatZ)).
+/// - function: The function that needs to be called for the conversion
+///   (e.g. [Z::from_i64()]).
 /// Returns the Implementation code for the function `from_<source_type>`.
 ///
 /// # Example
@@ -55,7 +59,11 @@ macro_rules! from_type {
     ($source_type:ident, $bridge_type:ident, $destination_type:ident, $( $function:ident )::*) => {
         // This macro could be modified to create it's own `impl` block and also
         // automatically create the corresponding [From] trait. However, this
-        // also adds a new `impl` block in the documentation.
+        // also adds a new `impl` block in the documentation. This is discussed in the
+        // rust-lang issues [82408](https://github.com/rust-lang/rust/issues/82408) 
+        // and [52563](https://github.com/rust-lang/rust/issues/52563).
+        // Once this is resolved, it can be implemented by uncommenting the following
+        // comments in this block.
 
         // impl $destination_type {
             paste::paste! {
