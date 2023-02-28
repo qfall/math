@@ -2,7 +2,7 @@
 /// conversion function (e.g. form_i64).
 ///
 /// Input parameters:
-/// - source_type: the source identifier (e.g. i64, u32,...).
+/// - source_type: the source identifier (e.g. [i64], [u32],...).
 /// - destination_type: the destination identifier (e.g. Z, MatZ).
 /// - function: The function that needs to be called for the conversion (e.g. Z::from_i64)
 /// Returns the Implementation code for the [From] Trait with the signature:
@@ -27,7 +27,7 @@ pub(crate) use from_trait;
 ///
 /// This macro is intended to be used to quickly create implementations for
 /// similar types that can be casted into each other.
-/// For example, for `i8`, `i16`, and `i32` given a working conversion for `i64`.
+/// For example, for [i8], [i16], and [i32] given a working conversion for [i64].
 ///
 /// A short documentation is automatically included with the pattern:
 /// > "Convert <source_type> to <destination_type> using < function>."
@@ -35,9 +35,9 @@ pub(crate) use from_trait;
 /// The macro is supposed to be used inside of an `impl` block for the destination type.
 ///
 /// Input parameters:
-/// - source_type: The source identifier (e.g. i64, u32,...).
+/// - source_type: The source identifier (e.g. [i64], [u32],...).
 /// - bridge_type: Type used for casting before calling the function.
-/// - destination_type: Return type of the generated function (e.g. Z, MatZ).
+/// - destination_type: Return type of the generated function (e.g. [Z](crate::integer::Z), [MatZ](crate::integer::MatZ)).
 /// - function: The function that needs to be called for the conversion (e.g. Z::from_i64).
 /// Returns the Implementation code for the function `from_<source_type>`.
 ///

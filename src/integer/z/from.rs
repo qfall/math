@@ -12,7 +12,7 @@ use crate::macros;
 impl Z {
     /// Create a new Integer that can grow arbitrary large.
     ///
-    /// Input parameters:
+    /// Parameters:
     /// - value: the initial value the integer should have
     /// Returns the new integer.
     ///
@@ -30,7 +30,7 @@ impl Z {
 
     /// Create a new Integer that can grow arbitrary large.
     ///
-    /// Input parameters:
+    /// Parameters:
     /// - value: the initial value the integer should have
     /// Returns the new integer.
     ///
@@ -68,7 +68,7 @@ macros::from_trait!(u16, Z, Z::from_u16);
 macros::from_trait!(u8, Z, Z::from_u8);
 
 #[cfg(test)]
-mod tests {
+mod tests_from_int {
     use super::Z;
 
     // Ensure that initialization with large numbers works.
@@ -109,7 +109,7 @@ mod tests {
         let _ = Z::from_u64(u64::MAX);
     }
 
-    // Ensure that the from trait is available for singed and unsigned integers
+    // Ensure that the 'From' trait is available for singed and unsigned integers
     // of 8, 16, 32, and 64 bit length. Tested with their maximum value.
     #[test]
     fn from_trait_max() {
@@ -126,7 +126,7 @@ mod tests {
         let _ = Z::from(u64::MAX);
     }
 
-    // Ensure that the from trait is available for singed and unsigned integers
+    // Ensure that the 'From' trait is available for singed and unsigned integers
     // of 8, 16, 32, and 64 bit length. Tested with their minimum value.
     #[test]
     fn from_trait_min() {
