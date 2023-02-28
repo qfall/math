@@ -3,7 +3,7 @@
 ///
 /// Input parameters:
 /// - source_type: the source identifier (e.g. [i64], [u32], ...).
-/// - destination_type: the destination identifier 
+/// - destination_type: the destination identifier
 ///   (e.g. [Z](crate::integer::Z), [MatZ](crate::integer::MatZ)).
 /// - function: The function that needs to be called for the conversion
 ///   (e.g. [Z::from_i64()])
@@ -60,7 +60,7 @@ macro_rules! from_type {
         // This macro could be modified to create it's own `impl` block and also
         // automatically create the corresponding [From] trait. However, this
         // also adds a new `impl` block in the documentation. This is discussed in the
-        // rust-lang issues [82408](https://github.com/rust-lang/rust/issues/82408) 
+        // rust-lang issues [82408](https://github.com/rust-lang/rust/issues/82408)
         // and [52563](https://github.com/rust-lang/rust/issues/52563).
         // Once this is resolved, it can be implemented by uncommenting the following
         // comments in this block.
