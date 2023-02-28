@@ -26,7 +26,7 @@ impl PartialEq for Z {
 impl Eq for Z {}
 
 #[cfg(test)]
-mod tests {
+mod test_equal {
     use super::Z;
 
     // Assert 42 != 24
