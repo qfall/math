@@ -1,3 +1,6 @@
+//! Implementations to compare [`Z`] with other values.
+//! This uses the traits from [`std::cmp`].
+
 use super::Z;
 
 use flint_sys::fmpz::fmpz_equal;
@@ -5,24 +8,34 @@ use flint_sys::fmpz::fmpz_equal;
 impl PartialEq for Z {
     /// Checks if two integers are equal. Used by the `==` and `!=` operators.
     ///
-    /// Input parameters:
+    /// Parameters:
     /// - other: the other value that is used to compare the elements
+    ///
     /// Returns `true` if the elements are equal, otherwise `false`.
     ///
     /// # Example
     /// ```rust
     /// use math::integer::Z;
+    /// let a: Z = Z::from(42);
+    /// let b: Z = Z::from(24);
     ///
-    /// let a: Z = Z::from_i64(42);
-    /// let b: Z = Z::from_i64(24);
+    /// // These are all equivalent and return false.
     /// let compared: bool = (a == b);
+    /// # assert!(!compared);
+    /// let compared: bool = (&a == &b);
+    /// # assert!(!compared);
+    /// let compared: bool = (a.eq(&b));
+    /// # assert!(!compared);
+    /// let compared: bool = (Z::eq(&a,&b));
+    /// # assert!(!compared);
     /// ```
     fn eq(&self, other: &Self) -> bool {
         unsafe { 1 == fmpz_equal(&self.value, &other.value) }
     }
 }
 
-// always a == a
+// With the [`Eq`] trait, `a == a` is always true.
+// This is not guaranteed by the [`PartialEq`] trait.
 impl Eq for Z {}
 
 #[cfg(test)]
