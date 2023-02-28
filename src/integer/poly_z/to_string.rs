@@ -11,7 +11,7 @@ use flint_sys::fmpz_poly::fmpz_poly_get_str;
 use super::PolyZ;
 
 impl fmt::Display for PolyZ {
-    /// Allows to convert a polynomial of type [PolyZ] into a String.
+    /// Allows to convert a polynomial of type [PolyZ] into a [String].
     ///
     /// # Example 1
     /// ```rust
@@ -41,7 +41,7 @@ impl fmt::Display for PolyZ {
 }
 
 #[cfg(test)]
-mod test {
+mod test_to_string {
     use std::str::FromStr;
 
     use super::PolyZ;
@@ -49,7 +49,7 @@ mod test {
     // tests whether a polynomial that is created using a string, returns the
     // same string, when it is converted back to a string
     #[test]
-    fn to_string_working_keeps_same_string() {
+    fn working_keeps_same_string() {
         let cmp_string = "3  1 2 -3";
         let cmp = PolyZ::from_str(cmp_string).unwrap();
 
@@ -59,7 +59,7 @@ mod test {
     // tests whether a polynomial that is created using a string, returns a
     // string that can be used to create a polynomial
     #[test]
-    fn to_string_working_use_result_of_to_string_as_input() {
+    fn working_use_result_of_to_string_as_input() {
         let cmp_string = "3  1 2 -3";
         let cmp = PolyZ::from_str(cmp_string).unwrap();
 
