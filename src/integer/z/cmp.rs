@@ -36,6 +36,7 @@ mod tests {
         let b = Z::from_i64(24);
 
         assert!(a != b);
+        assert!(&a != &b);
         assert_ne!(a, b);
         assert_ne!(b, a);
     }
@@ -47,6 +48,7 @@ mod tests {
         let b = Z::from_u64(u64::MAX);
 
         assert!(a == b);
+        assert!(&a == &b);
         assert_eq!(a, b);
         assert_eq!(b, a);
         assert_eq!(a, a);
@@ -59,6 +61,7 @@ mod tests {
         let b = Z::from_u64(u64::MAX - 1);
 
         assert_ne!(a, b);
+        assert_ne!(&a, &b);
         assert_ne!(b, a);
     }
 }
