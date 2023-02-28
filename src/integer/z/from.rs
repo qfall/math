@@ -4,7 +4,7 @@
 //!
 //! The explicit functions contain the documentation.
 
-use flint_sys::fmpz::{fmpz, fmpz_init_set_si, fmpz_set, fmpz_set_str};
+use flint_sys::fmpz::{fmpz, fmpz_init_set_si, fmpz_set_str};
 
 use super::Z;
 use crate::{error::MathError, macros};
@@ -32,19 +32,6 @@ impl Z {
         let mut ret_value = fmpz(0);
         unsafe { fmpz_init_set_si(&mut ret_value, initial) }
         Z { value: ret_value }
-    }
-
-    /// Create a new [`Z`] with an internally copied value that can grow arbitrary large.
-    /// It is initialized with the specified initial value.
-    ///
-    /// Input parameters:
-    /// * value: the initial value the integer should have
-    ///
-    /// Note: If you want to use the provided value later on, call this method with a copied fmpz.
-    pub(crate) fn from_fmpz_copy(value: &fmpz) -> Self {
-        let mut copy = fmpz(0);
-        unsafe { fmpz_set(&mut copy, value) };
-        Z { value: copy }
     }
 }
 
@@ -75,16 +62,13 @@ impl FromStr for Z {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut value: fmpz = fmpz(0);
 
-        let c_string = match CString::new(s) {
-            Ok(c_string) => c_string,
-            Err(_) => return Err(MathError::InvalidStringToIntInput(s.to_owned())),
-        };
+        let c_string = CString::new(s)?;
 
         let p: *const c_char = c_string.as_ptr();
 
         // -1 is returned if the string is an invalid input.
         if -1 == unsafe { fmpz_set_str(&mut value, p, 10) } {
-            return Err(MathError::InvalidStringToIntInput(s.to_owned()));
+            return Err(MathError::InvalidStringToZInput(s.to_owned()));
         }
 
         Ok(Z { value })
