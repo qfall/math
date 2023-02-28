@@ -9,6 +9,8 @@ use thiserror::Error;
 /// - `InvalidStringToIntInput` is thrown if an invalid string is given to construct a data type
 /// - `InvalidStringToPolyInput` is thrown if an invalid string is given to
 /// construct a polynomial
+/// - `InvalidStringToPolyMissingWhiteSpace` is thrown if an invalid string
+/// is given to construct a polynomial which did not contain two whitespaces
 ///
 /// # Example
 /// ```
@@ -33,4 +35,11 @@ pub enum MathError {
         whitespaces."
     )]
     InvalidStringToPolyInput(String),
+    /// parse string to poly error with missing whitespaces
+    #[error(
+        "invalid string input to parse to polynomial {0}\n \
+        The string did not contain two whitespaces at the start. Please note, 
+        that there have to two whitespaces at the start."
+    )]
+    InvalidStringToPolyMissingWhitespace(String),
 }
