@@ -42,6 +42,7 @@ impl FromStr for Z {
     ///
     /// Parameters:
     /// - `s`: the integer value
+    ///
     /// Returns a [`Z`] or an error, if the provided string was not formatted
     /// correctly.
     ///
@@ -62,6 +63,12 @@ impl FromStr for Z {
     /// [InvalidStringToZInput](MathError::InvalidStringToZInput)
     /// if the provided string was not formatted correctly.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
+        for c in s.chars() {
+            if c.is_whitespace() {
+                return Err(MathError::InvalidStringToZInput(s.to_owned()));
+            }
+        }
+
         // since |value| = |0| < 62 bits, we do not need to free the allocated space manually
         let mut value: fmpz = fmpz(0);
 
@@ -153,5 +160,29 @@ mod tests_from_str {
     #[test]
     fn error_rational() {
         assert!(Z::from_str("876/543").is_err());
+    }
+
+    // Ensure that wrong initialization yields an Error.
+    #[test]
+    fn whitespace_mid() {
+        assert!(Z::from_str("876 543").is_err());
+    }
+
+    // Ensure that wrong initialization yields an Error.
+    #[test]
+    fn whitespace_start() {
+        assert!(Z::from_str(" 876543").is_err());
+    }
+
+    // Ensure that wrong initialization yields an Error.
+    #[test]
+    fn whitespace_end() {
+        assert!(Z::from_str("876543 ").is_err());
+    }
+
+    // Ensure that wrong initialization yields an Error.
+    #[test]
+    fn whitespace_minus() {
+        assert!(Z::from_str("- 876543").is_err());
     }
 }

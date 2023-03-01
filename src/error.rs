@@ -8,8 +8,8 @@ use thiserror::Error;
 ///
 /// Possible entries:
 /// - `InvalidStringToIntInput` is thrown if an invalid string is given to construct an Int
-/// - `InvalidStringToZInput` is thrown if an invalid string is given to construct a Z
-/// - `InvalidStringToCStringInput` is thrown if an invalid string is given to construct a CString
+/// - `InvalidStringToZInput` is thrown if an invalid string is given to construct a [`Z`](crate::integer::Z)
+/// - `InvalidStringToCStringInput` is thrown if an invalid string is given to construct a [`CString`](std::ffi::CString)
 ///
 /// # Example
 /// ```
@@ -26,10 +26,10 @@ pub enum MathError {
     /// parse string to int error
     #[error("invalid string input to parse to int {0}")]
     InvalidStringToIntInput(#[from] ParseIntError),
-    /// parse string to Z error
+    /// parse string to [`Z`](crate::integer::Z) error
     #[error("invalid string input to parse to Z {0}")]
     InvalidStringToZInput(String),
-    /// parse string to CString error
+    /// parse string to [`CString`](std::ffi::CString) error
     #[error("invalid string input to parse to CString {0}")]
     InvalidStringToCStringInput(#[from] NulError),
 }
