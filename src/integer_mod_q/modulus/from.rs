@@ -21,10 +21,10 @@ impl FromStr for Modulus {
     /// Create a [`Modulus`] from a string with a decimal number.
     ///
     /// Parameters:
-    /// - `s`: the polynomial of form: "[0-9]+" and not all zeros
+    /// - `s`: the modulus of form: "[0-9]+" and not all zeros
     ///
-    /// Returns a [`Modulus`] or an error, if the provided string was not
-    /// formatted correctly.
+    /// Returns a [`Modulus`] or an [`MathError`], if the provided string is not
+    /// a valid modulus.
     ///
     /// # Example
     /// ```rust
@@ -38,6 +38,8 @@ impl FromStr for Modulus {
     /// - Returns a [`MathError`] of type
     /// [`InvalidStringToModulusInput`](MathError::InvalidStringToModulusInput) if the provided string was not
     /// formatted correctly, e.g., not a number or not greater zero.
+    /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
+    /// if the provided value is not greater than zero.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // TODO: first create a Z, and then use the fmpz value from Z
         if s.contains(char::is_whitespace) {
@@ -71,12 +73,12 @@ impl FromStr for Modulus {
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
-/// if the provided value is not greater than 0.
+/// if the provided value is not greater than zero.
 fn ctx_init(n: &fmpz) -> Result<fmpz_mod_ctx, MathError> {
     if unsafe { fmpz_cmp(n, &fmpz(0)) <= 0 } {
         // TODO: include the string representation of the input value in the error
         return Err(MathError::InvalidIntToModulus(
-            ".The provided value was not greater than 0".to_owned(),
+            ".The provided value was not greater than zero".to_owned(),
         ));
     }
     let mut ctx = MaybeUninit::uninit();
