@@ -12,7 +12,7 @@ use std::{mem::MaybeUninit, str::FromStr};
 impl FromStr for PolyZq {
     type Err = MathError;
 
-    // TODO: the second whitespace is not shown in tthe Rust-docu
+    // TODO: the second whitespace is not shown in the Rust-documentation
     /// Creating a polynomial with arbitrarily many coefficients of type
     /// [`Zq`](crate::integer_mod_q::z_q::Zq).
     ///
