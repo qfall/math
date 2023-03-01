@@ -3,6 +3,9 @@
 
 use flint_sys::fmpz::fmpz;
 
+mod cmp;
+mod from;
+
 #[allow(dead_code)]
 #[derive(Debug)]
 pub struct Z {
