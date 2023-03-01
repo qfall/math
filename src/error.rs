@@ -7,6 +7,10 @@ use thiserror::Error;
 ///
 /// Possible entries:
 /// - `InvalidStringToIntInput` is thrown if an invalid string is given to construct a data type
+/// - `InvalidStringToPolyInput` is thrown if an invalid string is given to
+/// construct a polynomial
+/// - `InvalidStringToPolyMissingWhiteSpace` is thrown if an invalid string
+/// is given to construct a polynomial which did not contain two whitespaces
 ///
 /// # Example
 /// ```
@@ -23,4 +27,20 @@ pub enum MathError {
     /// parse string to int error
     #[error("invalid string input to parse to int {0}")]
     InvalidStringToIntInput(#[from] ParseIntError),
+    /// parse string to poly error
+    #[error(
+        "invalid string input to parse to polynomial {0}\nThe format must 
+        be '[#number of coefficients]  [0th coefficient] [1st coefficient] ...'. 
+        Note that the after the number of coefficients, there are two 
+        whitespaces."
+    )]
+    InvalidStringToPolyInput(String),
+    /// parse string to poly error with missing whitespaces
+    #[error(
+        "invalid string input to parse to polynomial {0}\n \
+        The string did not contain two whitespaces at the start. Please note, 
+        that there have to two whitespaces between number of coefficients 
+        and the first coefficient"
+    )]
+    InvalidStringToPolyMissingWhitespace(String),
 }
