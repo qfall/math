@@ -49,8 +49,8 @@ impl FromStr for Modulus {
             Err(_) => return Err(MathError::InvalidStringToModulusInput(s.to_owned())),
         };
         if -1 == unsafe { fmpz_set_str(&mut modulus_fmpz, c_string.as_ptr(), 10) } {
-            // fmpz value does not have to be cleared, since it is only 0, if
-            // the set string did not work
+            // `modulus_fmpz` stays 0, if the set string did not work. Therefore, FLINT
+            // is not using pointers here and  explicitly freeing it is not necessary.
             return Err(MathError::InvalidStringToModulusInput(s.to_owned()));
         }
 
@@ -61,12 +61,12 @@ impl FromStr for Modulus {
     }
 }
 
-/// Inititializes the FLINT-context object using a [`fmpz`]-value as input
+/// Initializes the FLINT-context object using a [`fmpz`]-value as input
 ///
 /// Parameters:
 /// - `s`: the value the modulus should have as [`fmpz`]
 ///
-/// Returns an inititialized context object [`fmpz_mod_ctx`] or an error, if the
+/// Returns an initialized context object [`fmpz_mod_ctx`] or an error, if the
 /// provided value was not greater than zero.
 ///
 /// # Errors and Failures
@@ -97,9 +97,13 @@ mod test_ctx_init {
 
     use super::ctx_init;
 
-    // tests whether a small mdoulus ist instantiated correctly
+    // tests whether a small modulus ist instantiated correctly
     #[test]
-    fn working_example() {}
+    fn working_example() {
+        // fmpz(100) does not have to be manually cleared, since it is smaller
+        // than 62 bits
+        assert!(ctx_init(&fmpz(100)).is_err())
+    }
 
     // tests whether a large modulus (> 64 bits) is instantiated correctly
     #[test]
@@ -114,7 +118,7 @@ mod test_ctx_init {
 
         assert!(ctx.is_ok());
 
-        // now we have to clear ctx and value, since both are large
+        // now we have to clear ctx and value
         unsafe {
             fmpz_clear(&mut value);
             fmpz_mod_ctx_clear(&mut ctx.unwrap());
