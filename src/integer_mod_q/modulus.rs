@@ -1,4 +1,4 @@
-//! [Modulus] is a type of a positive non-zero integer that is used in order to
+//! [`Modulus`] is a type of a positive non-zero integer that is used in order to
 //! do modulus operations. The modulus type itself is also used for
 //! optimizations.
 //!
@@ -10,7 +10,7 @@ pub mod from;
 pub mod to_string;
 
 #[derive(Debug)]
-/// [Modulus] is a type of a positive non-zero integer that is used
+/// [`Modulus`] is a type of a positive non-zero integer that is used
 /// to do modulus operations.
 ///
 // Attributes:

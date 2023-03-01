@@ -1,6 +1,6 @@
-//! Implementations to create a [Modulus] value from other types.
+//! Implementations to create a [`Modulus`] value from other types.
 //! For each reasonable type, an explicit function with the format
-//! `from_<type_name>` and the [From] trait should be implemented.
+//! `from_<type_name>` and the [`From`] trait should be implemented.
 //!
 //! The explicit functions contain the documentation.
 
@@ -18,11 +18,12 @@ use super::Modulus;
 impl FromStr for Modulus {
     type Err = MathError;
 
-    /// Create a [Modulus] from a string with a decimal number.
+    /// Create a [`Modulus`] from a string with a decimal number.
     ///
     /// Parameters:
     /// - `s`: the polynomial of form: "[0-9]+" and not all zeros
-    /// Returns a [Modulus] or an error, if the provided string was not
+    ///
+    /// Returns a [`Modulus`] or an error, if the provided string was not
     /// formatted correctly.
     ///
     /// # Example
@@ -33,8 +34,9 @@ impl FromStr for Modulus {
     /// let modulus = Modulus::from_str("42").unwrap();
     /// ```
     /// # Errors and Failures
+    ///
     /// - Returns a [`MathError`] of type
-    /// [MathError::InvalidStringToModulusInput] if the provided string was not
+    /// [`InvalidStringToModulusInput`](MathError::InvalidStringToModulusInput) if the provided string was not
     /// formatted correctly, e.g., not a number or not greater zero.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // TODO: first create a Z, and then use the fmpz value from Z
@@ -59,15 +61,16 @@ impl FromStr for Modulus {
     }
 }
 
-/// Inititializes the FLINT-context object using a [fmpz]-value as input
+/// Inititializes the FLINT-context object using a [`fmpz`]-value as input
 ///
 /// Parameters:
-/// - `s`: the value the modulus should have as [fmpz]
-/// Returns an inititialized context object [fmpz_mod_ctx] or an error, if the
+/// - `s`: the value the modulus should have as [`fmpz`]
+///
+/// Returns an inititialized context object [`fmpz_mod_ctx`] or an error, if the
 /// provided value was not greater than zero.
 ///
 /// # Errors and Failures
-/// - Returns a [`MathError`] of type [MathError::InvalidIntToModulus]
+/// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
 /// if the provided value is not greater than 0.
 fn ctx_init(n: &fmpz) -> Result<fmpz_mod_ctx, MathError> {
     if unsafe { fmpz_cmp(n, &fmpz(0)) <= 0 } {
