@@ -54,17 +54,17 @@ impl FromStr for PolyZ {
     /// - Returns a [`MathError`] of type [`MathError::InvalidStringToPolyInput`]
     /// if the provided string was not formatted correctly or the number of
     /// coefficients was smaller than the number provided at the start of the
-    /// provided string. Returns a [`MathError`] of type
-    /// [`MathError::InvalidStringToPolyMissingWhitespace`]
+    /// provided string.
+    /// - Returns a [`MathError`] of type
+    /// [`InvalidStringToPolyMissingWhitespace`](MathError::InvalidStringToPolyMissingWhitespace)
     /// if the provided value did not contain two whitespaces.
+    /// - Returns a [`MathError`] of type
+    /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
+    /// if the provided string contains a Null Byte.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut res = Self::init();
 
-        // TODO use the C_String error, once it is included
-        let c_string = match CString::new(s) {
-            Ok(c_string) => c_string,
-            Err(_) => return Err(MathError::InvalidStringToPolyInput(s.to_owned())),
-        };
+        let c_string = CString::new(s)?;
 
         // 0 is returned if the string is a valid input
         // additionally if it was not succesfull, test if the provided value 's' actually
