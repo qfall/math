@@ -3,12 +3,10 @@
 //!
 //! This includes the [`Display`](std::fmt::Display) trait.
 
-use core::fmt;
-use std::ffi::CStr;
-
-use flint_sys::fmpz_poly::fmpz_poly_get_str;
-
 use super::PolyZ;
+use core::fmt;
+use flint_sys::fmpz_poly::fmpz_poly_get_str;
+use std::ffi::CStr;
 
 impl fmt::Display for PolyZ {
     /// Allows to convert a polynomial of type [`PolyZ`] into a [`String`].

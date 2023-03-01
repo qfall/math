@@ -3,13 +3,11 @@
 //! `from_<type_name>` and the [`From`] trait should be implemented.
 //!
 //! The explicit functions contain the documentation.
-use std::{ffi::CString, mem::MaybeUninit, str::FromStr};
-
-use flint_sys::fmpz_poly::{fmpz_poly_init, fmpz_poly_set_str};
-
-use crate::error::MathError;
 
 use super::PolyZ;
+use crate::error::MathError;
+use flint_sys::fmpz_poly::{fmpz_poly_init, fmpz_poly_set_str};
+use std::{ffi::CString, mem::MaybeUninit, str::FromStr};
 
 impl PolyZ {
     /// Inititializes a [`PolyZ`].
