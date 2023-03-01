@@ -1,7 +1,7 @@
 //! This module contains all options to convert a modulus of type
-//! [PolyZ] into a [String].
+//! [`PolyZ`] into a [`String`].
 //!
-//! This includes the [Display](std::fmt::Display) trait.
+//! This includes the [`Display`](std::fmt::Display) trait.
 
 use core::fmt;
 use std::ffi::CStr;
@@ -11,7 +11,7 @@ use flint_sys::fmpz_poly::fmpz_poly_get_str;
 use super::PolyZ;
 
 impl fmt::Display for PolyZ {
-    /// Allows to convert a polynomial of type [PolyZ] into a [String].
+    /// Allows to convert a polynomial of type [`PolyZ`] into a [`String`].
     ///
     /// # Example 1
     /// ```rust
