@@ -1,22 +1,19 @@
-//! Implementations to create a [`PolyZ`] value from other types..
+//! Implementations to create a [`PolyZ`] value from other types.
 //! For each reasonable type, an explicit function with the format
 //! `from_<type_name>` and the [`From`] trait should be implemented.
 //!
 //! The explicit functions contain the documentation.
-use std::{ffi::CString, mem::MaybeUninit, str::FromStr};
-
-use flint_sys::fmpz_poly::{fmpz_poly_init, fmpz_poly_set_str};
-
-use crate::error::MathError;
 
 use super::PolyZ;
+use crate::error::MathError;
+use flint_sys::fmpz_poly::{fmpz_poly_init, fmpz_poly_set_str};
+use std::{ffi::CString, mem::MaybeUninit, str::FromStr};
 
 impl PolyZ {
-    /// Inititializes a [`PolyZ`].
-    /// This method is used to first construct a [`PolyZ`] and then later assign
-    /// the corresponding efficients with methods from FLINT.
+    /// Initializes a [`PolyZ`].
+    /// This method is used to initialize [`PolyZ`] internally.
     ///
-    /// Returns an inititialized [`PolyZ`].
+    /// Returns an initialized [`PolyZ`].
     fn init() -> Self {
         let mut poly = MaybeUninit::uninit();
         unsafe {
@@ -30,14 +27,15 @@ impl PolyZ {
 impl FromStr for PolyZ {
     type Err = MathError;
 
-    // TODO: the second whitespace is not shown in tthe Rust-docu
+    // TODO: the second whitespace is not shown in the Rust-documentation
     /// Create a new polynomial with arbitrarily many coefficients of type
     /// [`Z`](crate::integer::z::Z).
     ///
     /// Parameters:
-    /// - `s`: the polynomial of form: `"[#number of coefficients]  [0th coefficient] [1st coefficient] ..."`.
+    /// - `s`: the polynomial of form:
+    /// `"[#number of coefficients]  [0th coefficient] [1st coefficient] ..."`.
     ///  Note that the `[#number of coefficients]` and `[0th coefficient]`
-    ///  are devided by two spaces.
+    ///  are divided by two spaces.
     ///
     /// Returns a [`PolyZ`] or an error, if the provided string was not formatted
     /// correctly.
@@ -54,20 +52,20 @@ impl FromStr for PolyZ {
     /// - Returns a [`MathError`] of type [`MathError::InvalidStringToPolyInput`]
     /// if the provided string was not formatted correctly or the number of
     /// coefficients was smaller than the number provided at the start of the
-    /// provided string. Returns a [`MathError`] of type
-    /// [`MathError::InvalidStringToPolyMissingWhitespace`]
+    /// provided string.
+    /// - Returns a [`MathError`] of type
+    /// [`InvalidStringToPolyMissingWhitespace`](MathError::InvalidStringToPolyMissingWhitespace)
     /// if the provided value did not contain two whitespaces.
+    /// - Returns a [`MathError`] of type
+    /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
+    /// if the provided string contains a Null Byte.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut res = Self::init();
 
-        // TODO use the C_String error, once it is included
-        let c_string = match CString::new(s) {
-            Ok(c_string) => c_string,
-            Err(_) => return Err(MathError::InvalidStringToPolyInput(s.to_owned())),
-        };
+        let c_string = CString::new(s)?;
 
         // 0 is returned if the string is a valid input
-        // additionally if it was not succesfull, test if the provided value 's' actually
+        // additionally if it was not successfully, test if the provided value 's' actually
         // contains two whitespaces, since this might be a common error
         match unsafe { fmpz_poly_set_str(&mut res.poly, c_string.as_ptr()) } {
             0 => Ok(res),
