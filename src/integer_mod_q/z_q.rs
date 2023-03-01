@@ -3,6 +3,7 @@
 
 use flint_sys::fmpz::fmpz;
 
+mod from;
 
 #[allow(dead_code)]
 #[derive(Debug)]

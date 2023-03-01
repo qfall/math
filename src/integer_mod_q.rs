@@ -4,3 +4,4 @@ mod modulus;
 pub mod z_q;
 
 pub use modulus::Modulus;
+pub use z_q::Zq;
