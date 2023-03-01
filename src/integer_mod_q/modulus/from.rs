@@ -102,7 +102,7 @@ mod test_ctx_init {
     fn working_example() {
         // fmpz(100) does not have to be manually cleared, since it is smaller
         // than 62 bits
-        assert!(ctx_init(&fmpz(100)).is_err())
+        assert!(ctx_init(&fmpz(100)).is_ok())
     }
 
     // tests whether a large modulus (> 64 bits) is instantiated correctly
