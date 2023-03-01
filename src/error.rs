@@ -25,6 +25,9 @@ use thiserror::Error;
 /// construct a polynomial
 /// - `InvalidStringToPolyMissingWhiteSpace` is thrown if an invalid string
 /// is given to construct a polynomial which did not contain two whitespaces
+/// - `InvalidStringToPolyModulusInput` is thrown if an invalid string is given
+/// to construct a [`PolyZq`](crate::integer_mod_q::PolyZq), i.e. it is
+/// not formatted correctly.
 ///
 /// # Example
 /// ```
@@ -75,4 +78,14 @@ pub enum MathError {
         and the first coefficient"
     )]
     InvalidStringToPolyMissingWhitespace(String),
+    /// parse string to poly with modulus error
+    #[error(
+        "invalid string input to parse to polynomial mod q {0}.
+        The format must \
+        be '[#number of coefficients]  [0th coefficient] [1st coefficient] ... \
+        mod [modulus]'. 
+        Note that the after the number of coefficients, there are two \
+        whitespaces."
+    )]
+    InvalidStringToPolyModulusInput(String),
 }
