@@ -52,6 +52,7 @@ mod test_partial_eq {
     // Demonstrate the different ways to use equal.
     // We assume that they behave the same in the other tests.
     #[test]
+    #[allow(clippy::op_ref)]
     fn equal_call_methods() {
         let one_1 = Z::from(1);
         let one_2 = Z::from(1);
@@ -66,6 +67,7 @@ mod test_partial_eq {
     // Demonstrate the different ways to use not equal.
     // We assume that they behave the same in the other tests.
     #[test]
+    #[allow(clippy::op_ref)]
     fn not_equal_call_methods() {
         let one = Z::from(1);
         let two = Z::from(2);
