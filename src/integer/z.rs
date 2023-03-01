@@ -3,9 +3,9 @@
 
 use flint_sys::fmpz::fmpz;
 
+mod arithmetic;
 mod cmp;
 mod from;
-mod arithmetic;
 
 #[allow(dead_code)]
 #[derive(Debug)]
