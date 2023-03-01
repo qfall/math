@@ -17,9 +17,9 @@ use thiserror::Error;
 /// construct an integer.
 /// - `InvalidStringToModulusInput` is thrown if an invalid string is given to
 /// construct a modulus.
-/// - `InvalidStringToZInput` is thrown if an invalid string is given to 
+/// - `InvalidStringToZInput` is thrown if an invalid string is given to
 /// construct a [`Z`](crate::integer::Z)
-/// - `InvalidStringToCStringInput` is thrown if an invalid string is given to 
+/// - `InvalidStringToCStringInput` is thrown if an invalid string is given to
 /// construct a [`CString`](std::ffi::CString)
 /// - `InvalidStringToPolyInput` is thrown if an invalid string is given to
 /// construct a polynomial
