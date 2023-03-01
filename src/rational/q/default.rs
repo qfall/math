@@ -5,9 +5,7 @@ use flint_sys::{fmpq::fmpq, fmpz::fmpz};
 use super::Q;
 
 impl Default for Q {
-    /// Create a default [`Q`] rational from a in form of `0/1`.
-    ///
-    /// Returns a [`Q`].
+    /// Returns an instantiation of [`Q`] with value '0/1'.
     ///
     /// # Example:
     /// ```rust
@@ -27,12 +25,27 @@ impl Default for Q {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests_init {
+
+    use flint_sys::{
+        fmpq::{fmpq, fmpq_equal},
+        fmpz::fmpz,
+    };
+
     use super::Q;
 
+    // TODO add cmp test
     // Ensure that initialization of default value works.
     #[test]
-    fn from_i64_max_positive() {
-        let _: Q = Q::default();
+    fn init() {
+        unsafe {
+            fmpq_equal(
+                &Q::default().value,
+                &fmpq {
+                    num: fmpz(0),
+                    den: fmpz(1),
+                },
+            );
+        }
     }
 }
