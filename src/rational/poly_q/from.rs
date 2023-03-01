@@ -1,4 +1,4 @@
-//! Implementations to create a [`PolyQ`] value from other types..
+//! Implementations to create a [`PolyQ`] value from other types.
 //! For each reasonable type, an explicit function with the format
 //! `from_<type_name>` and the [`From`] trait should be implemented.
 //!
