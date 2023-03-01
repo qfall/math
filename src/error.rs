@@ -4,10 +4,12 @@ use std::{ffi::NulError, num::ParseIntError};
 
 use thiserror::Error;
 
-/// `MathError` defines this crate's error enum, which can hold all sorts of errors occurring in this crate.
+/// [`MathError`] defines this crate's error enum, which can hold all sorts of errors occurring in this crate.
 ///
 /// Possible entries:
-/// - `InvalidStringToIntInput` is thrown if an invalid string is given to construct a data type
+/// - `InvalidStringToIntInput` is thrown if an invalid string is given to construct an Int
+/// - `InvalidStringToZInput` is thrown if an invalid string is given to construct a Z
+/// - `InvalidStringToCStringInput` is thrown if an invalid string is given to construct a CString
 ///
 /// # Example
 /// ```
@@ -30,10 +32,4 @@ pub enum MathError {
     /// parse string to CString error
     #[error("invalid string input to parse to CString {0}")]
     InvalidStringToCStringInput(#[from] NulError),
-    /// parse int error
-    #[error("invalid integer input to parse {0}")]
-    InvalidIntInput(String),
-    /// out of bounds error
-    #[error("input value is out of bounds {0}")]
-    OutOfBounds(String),
 }
