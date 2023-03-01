@@ -75,4 +75,7 @@ pub enum MathError {
         and the first coefficient"
     )]
     InvalidStringToPolyMissingWhitespace(String),
+    /// parse string to [`Q`](crate::rational::Q) error
+    #[error("invalid string input to parse to Q {0}")]
+    InvalidStringToQInput(String),
 }
