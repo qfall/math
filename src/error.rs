@@ -5,10 +5,11 @@
 //! the actual errors are wrapped s.t. all information about the error can be
 //! unwrapped again.
 
-use std::num::ParseIntError;
+use std::{ffi::NulError, num::ParseIntError};
+
 use thiserror::Error;
 
-/// `MathError` defines this crate's error enum, which can hold all sorts of
+/// [`MathError`] defines this crate's error enum, which can hold all sorts of
 /// errors occurring in this crate.
 ///
 /// Possible entries:
@@ -16,6 +17,10 @@ use thiserror::Error;
 /// construct an integer.
 /// - `InvalidStringToModulusInput` is thrown if an invalid string is given to
 /// construct a modulus.
+/// - `InvalidStringToZInput` is thrown if an invalid string is given to
+/// construct a [`Z`](crate::integer::Z)
+/// - `InvalidStringToCStringInput` is thrown if an invalid string is given to
+/// construct a [`CString`](std::ffi::CString)
 /// - `InvalidStringToPolyInput` is thrown if an invalid string is given to
 /// construct a polynomial
 /// - `InvalidStringToPolyMissingWhiteSpace` is thrown if an invalid string
@@ -36,6 +41,12 @@ pub enum MathError {
     /// parse string to int error
     #[error("invalid string input to parse to int {0}")]
     InvalidStringToIntInput(#[from] ParseIntError),
+    /// parse string to [`Z`](crate::integer::Z) error
+    #[error("invalid string input to parse to Z {0}")]
+    InvalidStringToZInput(String),
+    /// parse string to [`CString`](std::ffi::CString) error
+    #[error("invalid string input to parse to CString {0}")]
+    InvalidStringToCStringInput(#[from] NulError),
     /// parse string to modulus error
     #[error(
         "invalid string input to parse to a modulus {0}. \
