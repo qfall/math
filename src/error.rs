@@ -10,6 +10,10 @@ use thiserror::Error;
 /// - `InvalidStringToIntInput` is thrown if an invalid string is given to construct an Int
 /// - `InvalidStringToZInput` is thrown if an invalid string is given to construct a [`Z`](crate::integer::Z)
 /// - `InvalidStringToCStringInput` is thrown if an invalid string is given to construct a [`CString`](std::ffi::CString)
+/// - `InvalidStringToPolyInput` is thrown if an invalid string is given to
+/// construct a polynomial
+/// - `InvalidStringToPolyMissingWhiteSpace` is thrown if an invalid string
+/// is given to construct a polynomial which did not contain two whitespaces
 ///
 /// # Example
 /// ```
@@ -32,4 +36,20 @@ pub enum MathError {
     /// parse string to [`CString`](std::ffi::CString) error
     #[error("invalid string input to parse to CString {0}")]
     InvalidStringToCStringInput(#[from] NulError),
+    /// parse string to poly error
+    #[error(
+        "invalid string input to parse to polynomial {0}\nThe format must 
+        be '[#number of coefficients]  [0th coefficient] [1st coefficient] ...'. 
+        Note that the after the number of coefficients, there are two 
+        whitespaces."
+    )]
+    InvalidStringToPolyInput(String),
+    /// parse string to poly error with missing whitespaces
+    #[error(
+        "invalid string input to parse to polynomial {0}\n \
+        The string did not contain two whitespaces at the start. Please note, 
+        that there have to two whitespaces between number of coefficients 
+        and the first coefficient"
+    )]
+    InvalidStringToPolyMissingWhitespace(String),
 }
