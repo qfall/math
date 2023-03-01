@@ -4,6 +4,7 @@
 use flint_sys::fmpz::fmpz;
 
 mod cmp;
+mod default;
 mod from;
 
 #[allow(dead_code)]
