@@ -1,4 +1,4 @@
-//! This module contains all options to convert a modulus of type
+//! This module contains all options to convert a polynomial of type
 //! [`PolyZ`] into a [`String`].
 //!
 //! This includes the [`Display`](std::fmt::Display) trait.
