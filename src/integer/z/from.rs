@@ -4,7 +4,7 @@
 //!
 //! The explicit functions contain the documentation.
 
-use flint_sys::fmpz::{fmpz, fmpz_init_set_si, fmpz_set_str, fmpz_init_set_ui};
+use flint_sys::fmpz::{fmpz, fmpz_init_set_si, fmpz_init_set_ui, fmpz_set_str};
 
 use super::Z;
 use crate::{error::MathError, macros};
