@@ -11,10 +11,9 @@ use std::{ffi::CString, mem::MaybeUninit, str::FromStr};
 
 impl PolyQ {
     /// Initializes a [`PolyQ`].
-    /// This method is used to first construct a [`PolyQ`] and then later assign
-    /// the corresponding efficients with methods from FLINT.
+    /// This method is used to initialize a [`PolyQ`] internally.
     ///
-    /// Returns an inititialized [`PolyQ`].
+    /// Returns an initialized [`PolyQ`].
     fn init() -> Self {
         let mut poly = MaybeUninit::uninit();
         unsafe {
@@ -28,14 +27,14 @@ impl PolyQ {
 impl FromStr for PolyQ {
     type Err = MathError;
 
-    // TODO: the second whitespace is not shown in tthe Rust-docu
+    // TODO: the second whitespace is not shown in the Rust-documentation
     /// Create a new polynomial with arbitrarily many coefficients of type
     /// [`Q`](crate::rational::q::Q).
     ///
     /// Parameters:
     /// - `s`: the polynomial of form: "`[#number of coefficients]  [0th coefficient] [1st coefficient] ...`"
     /// Note that the `[#number of coefficients]` and `[0th coefficient]`
-    /// are devided by two spaces.
+    /// are divided by two spaces.
     ///
     /// Returns a [`PolyQ`] or an error, if the provided string was not formatted
     /// correctly.
@@ -64,7 +63,7 @@ impl FromStr for PolyQ {
         let c_string = CString::new(s)?;
 
         // 0 is returned if the string is a valid input
-        // additionally if it was not succesfull, test if the provided value 's' actually
+        // additionally if it was not successfully, test if the provided value 's' actually
         // contains two whitespaces, since this might be a common error
         match unsafe { fmpq_poly_set_str(&mut res.poly, c_string.as_ptr()) } {
             0 => Ok(res),
