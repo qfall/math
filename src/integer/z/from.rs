@@ -63,10 +63,8 @@ impl FromStr for Z {
     /// [InvalidStringToZInput](MathError::InvalidStringToZInput)
     /// if the provided string was not formatted correctly.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        for c in s.chars() {
-            if c.is_whitespace() {
-                return Err(MathError::InvalidStringToZInput(s.to_owned()));
-            }
+        if s.contains(char::is_whitespace) {
+            return Err(MathError::InvalidStringToZInput(s.to_owned()));
         }
 
         // since |value| = |0| < 62 bits, we do not need to free the allocated space manually
