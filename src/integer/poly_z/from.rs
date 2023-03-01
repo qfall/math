@@ -35,7 +35,8 @@ impl FromStr for PolyZ {
     ///
     /// Parameters:
     /// - `s`: the polynomial of form: "[#number of coefficients]  [0th
-    /// coefficient] [1st coefficient] ..."
+    /// coefficient] [1st coefficient] ...". Note that the [#number of coefficients] and [0th
+    /// coefficient] are devided by two spaces.
     /// Returns a [PolyZ] or an error, if the provided string was not formatted
     /// correctly.
     ///

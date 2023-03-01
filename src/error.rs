@@ -39,7 +39,8 @@ pub enum MathError {
     #[error(
         "invalid string input to parse to polynomial {0}\n \
         The string did not contain two whitespaces at the start. Please note, 
-        that there have to two whitespaces at the start."
+        that there have to two whitespaces between number of coefficients 
+        and the first coefficient"
     )]
     InvalidStringToPolyMissingWhitespace(String),
 }
