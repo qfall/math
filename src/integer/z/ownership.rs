@@ -1,4 +1,5 @@
-//! This module contains implementations of functions important for ownership such as the [`Clone`] and [`Drop`] trait.
+//! This module contains implementations of functions
+//! important for ownership such as the [`Clone`] and [`Drop`] trait.
 //!
 //! The explicit functions contain the documentation.
 //!
@@ -25,6 +26,8 @@ impl Clone for Z {
     /// let b = a.clone();
     /// ```
     fn clone(&self) -> Self {
+        // a fresh fmpz value is created, set to the same value as the cloned one,
+        // and wrapped in a new [`Z`] value. Hence, a fresh deep clone is created.
         let mut value = fmpz(0);
         unsafe { fmpz_set(&mut value, &self.value) };
         Self { value }
@@ -49,6 +52,13 @@ impl Drop for Z {
     /// drop(a); // explicitly drops a's value
     /// ```
     fn drop(&mut self) {
+        // According to FLINT's documentation:
+        // "Clears the given fmpz_t, releasing any memory associated with it,
+        // either back to the stack or the OS, depending on whether the reentrant
+        // or non-reentrant version of FLINT is built."
+        // Hence, any memory allocated for values bigger than 2^62 is freed. The left
+        // `i64` value is dropped automatically when the variable runs out of scope.
+
         unsafe { fmpz_clear(&mut self.value) }
     }
 }
@@ -59,7 +69,8 @@ mod test_clone {
 
     use super::Z;
 
-    // check if large positive and negative values are cloned correctly and stored at different places
+    // check if large positive and negative values are cloned correctly
+    // additionally check if values are stored at different places in memory
     #[test]
     fn large_int() {
         let max_1 = Z::from(u64::MAX);
@@ -74,7 +85,8 @@ mod test_clone {
         assert_eq!(min_1, min_2);
     }
 
-    // check if small positive, negative and zero values are cloned correctly and kept on the stack
+    // check if small positive, negative and zero values are cloned correctly
+    // additionally, check if the values are kept on the stack
     #[test]
     fn small_int() {
         let pos_1 = Z::from(16);
