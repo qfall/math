@@ -116,3 +116,44 @@ mod test_clone {
         assert_eq!(a, Z::from(5));
     }
 }
+
+/// Test that the [`Drop`] trait is correctly implemented.
+#[cfg(test)]
+mod test_drop {
+
+    use super::Z;
+
+    // Check whether freed memory is reused afterwards
+    #[test]
+    fn free_memory() {
+        let a = Z::from(u64::MAX);
+        let b = Z { value: a.value };
+
+        drop(a);
+
+        // instantiate different [`Z`] value to check if memory slot is reused for different value
+        let c = Z::from(i64::MIN);
+        assert_eq!(c.value.0, b.value.0);
+
+        // memory slots differ due to previously created large integer
+        assert_ne!(b.value.0, Z::from(u64::MAX).value.0);
+    }
+
+    // This test shows why false copies are a problem, which are prevented for users of the library
+    // due to attribute privacy of the `value` attribute in [`Z`]
+    #[test]
+    fn memory_equality() {
+        let a = Z::from(u64::MAX);
+        // false clone/ copy of [`Z`] value allows for the [`fmpz`] value to be kept alive
+        // after one reference was dropped and its referenced memory was freed
+        let b = Z { value: a.value };
+
+        drop(a);
+
+        // any large new integer created is filled in the same memory space
+        // as fmpz_equal first checks whether the pointers point to the same point in memory
+        // and are then assumed to be the same, as they both point to the same value, these
+        // values are equal afterwards. Even though, `b` pointed to a different value previously.
+        assert_eq!(b, Z::from(i64::MIN));
+    }
+}
