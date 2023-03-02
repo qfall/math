@@ -25,6 +25,9 @@ use thiserror::Error;
 /// construct a polynomial
 /// - `InvalidStringToPolyMissingWhiteSpace` is thrown if an invalid string
 /// is given to construct a polynomial which did not contain two whitespaces
+/// - `InvalidStringToQInput` is thrown if an invalid string is given to
+/// construct a [`Q`](crate::rational::Q)
+/// - `DivisionByZeroError` is thrown if it is tryed to perform a division by `0`
 ///
 /// # Example
 /// ```
@@ -78,4 +81,7 @@ pub enum MathError {
     /// parse string to [`Q`](crate::rational::Q) error
     #[error("invalid string input to parse to Q {0}")]
     InvalidStringToQInput(String),
+    /// division by zero error
+    #[error("the divison by zero is not possible {0}")]
+    DivisionByZeroError(String),
 }

@@ -1,6 +1,6 @@
 pub mod mat_q;
 mod poly_q;
-pub mod q;
+mod q;
 
 pub use poly_q::PolyQ;
 pub use q::Q;
