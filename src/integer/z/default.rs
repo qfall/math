@@ -1,7 +1,5 @@
 //! Default value for a [`Z`].
 
-use flint_sys::fmpz::fmpz;
-
 use super::Z;
 
 impl Default for Z {
@@ -15,7 +13,7 @@ impl Default for Z {
     /// let a: Z = Z::default();
     /// ```
     fn default() -> Self {
-        Z { value: fmpz(0) }
+        Z::from(0)
     }
 }
 

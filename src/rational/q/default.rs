@@ -15,6 +15,7 @@ impl Default for Q {
     /// let a: Q = Q::default();
     /// ```
     fn default() -> Self {
+        // TODO use from
         Q {
             value: fmpq {
                 num: fmpz(0),
@@ -38,14 +39,14 @@ mod tests_init {
     // Ensure that initialization of default value works.
     #[test]
     fn init() {
-        unsafe {
+        assert!(unsafe {
             fmpq_equal(
                 &Q::default().value,
                 &fmpq {
                     num: fmpz(0),
                     den: fmpz(1),
                 },
-            );
-        }
+            ) != 0
+        });
     }
 }
