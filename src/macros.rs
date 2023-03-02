@@ -84,3 +84,17 @@ macro_rules! from_type {
 }
 
 pub(crate) use from_type;
+
+macro_rules! evaluate_poly {
+    ($source_type:ident, $bridge_type:ident, $destination_type:ident, $( $function:ident )::*) => {
+        paste::paste! {
+            // TODO: Doc comment not completely working yet. Has to be fixed.
+            #[doc = "Evaluate polynomial using [`" $source_type "`] and get a result of type [`" $destination_type "`] using [`" $($function)"::"* "`]."]
+            pub fn [<evaluate_ $source_type>](&self, value: $source_type) -> $destination_type {
+                self.$($function)::*(&$bridge_type::from(value))
+            }
+        }
+    };
+}
+
+pub(crate) use evaluate_poly;
