@@ -1,6 +1,6 @@
 //! Implementations to create a [`Q`] value from other types.
 //! For each reasonable type, an explicit function with the format
-//! `from_<type_name>` and the [From] trait should be implemented.
+//! `from_<type_name>` and the [`From`] trait should be implemented.
 //!
 //! The explicit functions contain the documentation.
 
@@ -19,13 +19,13 @@ impl FromStr for Q {
     type Err = MathError;
 
     /// Create a [`Q`] rational from a [`String`]
-    /// In the string should be two decimal numbers seperated by `/`.
+    /// In the string should be two decimal numbers separated by `/`.
     /// Optionally, before one or both of them can be a `-`.
-    /// The format of that string looks like this `-12/53`
+    /// The format of that string looks like this `-12/53`.
     ///
-    /// If the number is a [`Z`](crate::integer::z::Z) integer the string can
-    /// also be in the format as a [`Z`](crate::integer::z::Z) string.
-    /// The format of that string looks like this `-12`
+    /// If the number is an integer, the string can be in the format of one.
+    /// The format of that string looks like this `-12`.
+    /// It is automatically transformed to `-12/1`.
     ///
     /// Parameters:
     /// - `s`: the rational value
@@ -33,7 +33,7 @@ impl FromStr for Q {
     /// Returns a [`Q`] or an error, if the provided string was not formatted
     /// correctly.
     ///
-    /// # Example 1:
+    /// # Examples
     /// ```rust
     /// use std::str::FromStr;
     /// use math::rational::Q;
@@ -42,7 +42,6 @@ impl FromStr for Q {
     /// let b: Q = Q::from_str("100/3").unwrap();
     /// ```
     ///
-    /// # Example 2:
     /// ```rust
     /// use std::str::FromStr;
     /// use math::rational::Q;
@@ -51,7 +50,6 @@ impl FromStr for Q {
     /// let b: Q = Q::from_str("10/-3").unwrap();
     /// ```
     ///
-    /// # Example 3:
     /// ```rust
     /// use std::str::FromStr;
     /// use math::rational::Q;
@@ -62,10 +60,10 @@ impl FromStr for Q {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [InvalidStringToQInput](MathError::InvalidStringToQInput)
+    /// [`InvalidStringToQInput`](MathError::InvalidStringToQInput)
     /// if the provided string was not formatted correctly.
     /// - Returns a [`MathError`] of type
-    /// [DivisionByZeroError](MathError::DivisionByZeroError)
+    /// [`DivisionByZeroError`](MathError::DivisionByZeroError)
     /// if the provided string has `0` as the denominator.
     fn from_str(s: &str) -> Result<Self, MathError> {
         if s.contains(char::is_whitespace) {
@@ -89,8 +87,9 @@ impl FromStr for Q {
             return Err(MathError::InvalidStringToQInput(s.to_owned()));
         };
 
-        // since `value.num` is not set to `0`, if an error occurs, we do need
-        // to free the allocated space manually
+        // since only `value.den` is set to `0` and not `value.num`, if an error
+        // occurs, we do need to free the allocated space of the nominator
+        // manually by using `fmpq_clear`
         match unsafe { fmpz_is_zero(&value.den) } {
             0 => Ok(Q { value }),
             _ => {
@@ -193,7 +192,7 @@ mod tests_from_str {
 
     // Ensure that wrong initialization yields an Error.
     #[test]
-    fn error_two_divisons() {
+    fn error_two_divisions() {
         assert!(Q::from_str("3/2/4").is_err());
     }
 
