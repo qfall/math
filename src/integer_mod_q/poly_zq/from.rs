@@ -19,7 +19,7 @@ impl FromStr for PolyZq {
     ///
     /// Parameters:
     /// - `s`: the polynomial of form:
-    /// "`[#number of coefficients]  [0th coefficient] [1st coefficient] ... mod [modulus]`".
+    /// "`[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴...⌴mod⌴[modulus]`".
     /// Note that the `[#number of coefficients]` and `[0th coefficient]`
     /// are divided by two spaces.
     ///

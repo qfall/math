@@ -33,7 +33,7 @@ impl FromStr for PolyQ {
     /// [`Q`](crate::rational::q::Q).
     ///
     /// Parameters:
-    /// - `s`: the polynomial of form: "`[#number of coefficients]  [0th coefficient] [1st coefficient] ...`"
+    /// - `s`: the polynomial of form: "`[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴...`"
     /// Note that the `[#number of coefficients]` and `[0th coefficient]`
     /// are devided by two spaces.
     ///
