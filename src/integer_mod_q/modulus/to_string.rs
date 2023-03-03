@@ -42,7 +42,7 @@ impl fmt::Display for Modulus {
         // instantiated object
         let msg = "We expect the pointer to point to a real value and the c_string 
         not to be null. Hence we expect that this error does not occur";
-        let return_str = unsafe { CStr::from_ptr(c_str_ptr).to_str().expect(msg) };
+        let return_str = unsafe { CStr::from_ptr(c_str_ptr).to_str().expect(msg).to_owned() };
 
         unsafe { libc::free(c_str_ptr as *mut libc::c_void) };
 
