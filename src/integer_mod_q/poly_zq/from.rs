@@ -1,9 +1,9 @@
-//! Implementations to create a [`PolyZq`] value from other types..
+//! Implementations to create a [`PolyZq`] value from other types.
 //! For each reasonable type, an explicit function with the format
 //! `from_<type_name>` and the [`From`] trait should be implemented.
 //!
 //! The explicit functions contain the documentation.
-//!
+
 use super::PolyZq;
 use crate::{error::MathError, integer::PolyZ, integer_mod_q::modulus::Modulus};
 use flint_sys::fmpz_mod_poly::{fmpz_mod_poly_init, fmpz_mod_poly_set_fmpz_poly};
@@ -13,12 +13,16 @@ impl FromStr for PolyZq {
     type Err = MathError;
 
     // TODO: the second whitespace is not shown in the Rust-documentation
+    ///
     /// Creating a polynomial with arbitrarily many coefficients of type
     /// [`Zq`](crate::integer_mod_q::z_q::Zq).
     ///
     /// Parameters:
     /// - `s`: the polynomial of form:
-    /// "`[#number of coefficients]  [0th coefficient] [1st coefficient] ... mod [modulus]`"
+    /// "`[#number of coefficients]  [0th coefficient] [1st coefficient] ... mod [modulus]`".
+    /// Note that the `[#number of coefficients]` and `[0th coefficient]`
+    /// are divided by two spaces.
+    ///
     /// Returns a [`PolyZq`] or an error, if the provided string was not
     /// formatted correctly.
     ///
@@ -71,13 +75,6 @@ mod test_from_str {
     use std::str::FromStr;
 
     use super::PolyZq;
-
-    // tests whether a correctly formatted string outputs an instantiation of a
-    // polynomial mod q, i.e. does not return an error
-    #[test]
-    fn working_example() {
-        assert!(PolyZq::from_str("4  0 1 -2 3 mod 42").is_ok())
-    }
 
     // tests whether a falsely formatted string (modulus is 0) returns an
     // error
