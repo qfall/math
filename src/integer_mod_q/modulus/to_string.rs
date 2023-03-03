@@ -12,7 +12,7 @@ use std::{ffi::CStr, ptr::null_mut};
 impl fmt::Display for Modulus {
     /// Allows to convert a modulus of type [`Modulus`] into a [`String`].
     ///
-    /// # Example 1
+    /// # Examples
     /// ```rust
     /// use math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
@@ -22,7 +22,6 @@ impl fmt::Display for Modulus {
     /// println!("{}", modulus);
     /// ```
     ///
-    /// # Example 2
     /// ```rust
     /// use math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
@@ -41,7 +40,10 @@ impl fmt::Display for Modulus {
         //
         // c_string should not be null either, since we call this method on an
         // instantiated object
-        let return_str = unsafe { CStr::from_ptr(c_str_ptr).to_str().unwrap().to_owned() };
+        let msg = "We expect the pointer to point to a real value and the c_string 
+        not to be null. Hence we expect that this error does not occur";
+        let return_str = unsafe { CStr::from_ptr(c_str_ptr).to_str().expect(msg) };
+
         unsafe { libc::free(c_str_ptr as *mut libc::c_void) };
 
         write!(f, "{}", return_str)
@@ -54,7 +56,7 @@ mod test_to_string {
 
     use crate::integer_mod_q::Modulus;
 
-    // tests whether a large modulus works in a roundtrip
+    /// tests whether a large modulus works in a roundtrip
     #[test]
     fn working_large() {
         let cmp_string = "1".repeat(65);
@@ -63,7 +65,7 @@ mod test_to_string {
         assert_eq!(cmp_string, cmp.to_string())
     }
 
-    // tests whether a positive modulus works in a roundtrip
+    /// tests whether a positive modulus works in a roundtrip
     #[test]
     fn working_positive() {
         let cmp_string = "42";
@@ -72,8 +74,8 @@ mod test_to_string {
         assert_eq!(cmp_string, cmp.to_string())
     }
 
-    // tests whether a modulus that is created using a string, returns a
-    // string that can be used to create a [`Modulus`]
+    /// tests whether a modulus that is created using a string, returns a
+    /// string that can be used to create a [`Modulus`]
     #[test]
     fn working_use_result_of_to_string_as_input() {
         let cmp_string = "42";
