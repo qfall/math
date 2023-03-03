@@ -26,6 +26,12 @@ use thiserror::Error;
 /// - `InvalidStringToPolyMissingWhiteSpace` is thrown if an invalid string
 /// is given to construct a polynomial which did not contain two whitespaces
 /// - `OutOfBounds` is thrown if a provided index is not in a desired range
+/// - `InvalidStringToMatZInput` is thrown if an invalid string is given to
+/// construct a [`MatZ`](crate::integer::MatZ)
+/// - `InvalidStringToMatrixInput` is thrown if an invalid string is given to
+/// construct a Matrix
+/// - `InvalidSIntInput` is thrown if an invalid integer is given to address a
+/// row/column in a matrix
 ///
 /// # Example
 /// ```
@@ -82,4 +88,10 @@ pub enum MathError {
     The index has to {0}, and the provided value is {1}"
     )]
     OutOfBounds(String, String),
+    /// parse string to MatZ error
+    #[error("invalid string input to parse to MatZ {0}")]
+    InvalidStringToMatZInput(String),
+    /// parse int error
+    #[error("invalid integer input to parse {0}")]
+    InvalidIntInput(String),
 }
