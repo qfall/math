@@ -32,6 +32,7 @@ use thiserror::Error;
 /// construct a Matrix
 /// - `InvalidSIntInput` is thrown if an invalid integer is given to address a
 /// row/column in a matrix
+/// - `OutOfBounds` is thrown if an integer is outside of the possible inputs
 ///
 /// # Example
 /// ```

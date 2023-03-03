@@ -37,7 +37,6 @@ impl MatZ {
                 ),
                 format!("({},{})", row, column,),
             ));
-        }
 
         // since `self.matrix` is a correct fmpz matrix and both row and column
         // are previously checked to be inside of the matrix, no errors
