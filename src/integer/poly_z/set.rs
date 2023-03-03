@@ -1,8 +1,6 @@
 //! Implementations to set coefficients for a [`PolyZ`] value from other types.
 //! Each reasonable type should be used to set a coefficient.
 
-// fmpz_poly_set_coeff_fmpz
-
 use std::fmt::Display;
 
 use flint_sys::fmpz_poly::fmpz_poly_set_coeff_fmpz;
