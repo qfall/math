@@ -104,7 +104,6 @@ pub(crate) use from_type;
 /// ```impl *trait*<&*type*> for *type*```
 macro_rules! arithmetic_trait {
     ($meta:meta,$trait:ident, $trait_function:ident, $type:ident, $function:expr, $default:expr) => {
-
         impl $trait for &$type {
             type Output = $type;
             #[$meta]
@@ -119,7 +118,7 @@ macro_rules! arithmetic_trait {
 
         impl $trait for $type {
             type Output = $type;
-            
+
             fn $trait_function(self, other: Self) -> Self::Output {
                 (&self).add(&other)
             }
