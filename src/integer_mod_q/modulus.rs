@@ -17,11 +17,24 @@ pub mod to_string;
 // - `modulus`: holds the value of the modulus
 //
 /// # Example
+/// Create [`Modulus`] from [`str`]:
 /// ```rust
 /// use math::integer_mod_q::Modulus;
 /// use std::str::FromStr;
 ///
 /// let modulus = Modulus::from_str("42").unwrap();
+/// ```
+///
+/// Create [`Modulus`] from [`Z`](crate::integer::Z):
+/// ```rust
+/// # use math::integer_mod_q::Modulus;
+/// # use math::integer::Z;
+/// let value = Z::from(10);
+///
+/// let modulus: Modulus = (&value).try_into().unwrap();
+/// let modulus: Modulus = <&Z>::try_into(&value).unwrap();
+/// let modulus = Modulus::try_from_z(&value).unwrap();
+/// let modulus = Modulus::try_from(&value).unwrap();
 /// ```
 #[allow(dead_code)]
 pub struct Modulus {
