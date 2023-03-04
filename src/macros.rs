@@ -120,7 +120,7 @@ macro_rules! arithmetic_trait {
             type Output = $type;
 
             fn $trait_function(self, other: Self) -> Self::Output {
-                (&self).add(&other)
+                (&self).$trait_function(&other)
             }
         }
 
@@ -128,7 +128,7 @@ macro_rules! arithmetic_trait {
             type Output = $type;
 
             fn $trait_function(self, other: $type) -> Self::Output {
-                self.add(&other)
+                self.$trait_function(&other)
             }
         }
 
@@ -136,7 +136,7 @@ macro_rules! arithmetic_trait {
             type Output = $type;
 
             fn $trait_function(self, other: &Self) -> Self::Output {
-                (&self).add(other)
+                (&self).$trait_function(other)
             }
         }
     };

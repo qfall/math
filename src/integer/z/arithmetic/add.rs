@@ -10,8 +10,10 @@ arithmetic_trait!(
     doc = "Implements the [`Add`] trait for two [`Z`] values. \n
 [`Add`] is implemented for any combination of [`Z`] and borrowed [`Z`].\n\n
 
- Input parameters:\n
- * `other`: specifies the value to add to `self`\n\n
+ Parameters:\n
+ - `other`: specifies the value to add to `self`\n\n
+
+Returns the sum of both numbers as a [`Z`].\n\n
 
  # Example\n
  ```rust
