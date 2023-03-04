@@ -10,7 +10,7 @@ use std::fmt::Display;
 /// - `coordinate`: the coordinate that has to be converted into an [`i64`].
 ///
 /// Returns an [`i64`] representation of the coordinate or an error, if the
-/// coordinate does not fullfil all conditions.
+/// coordinate does not fulfill all conditions.
 ///
 /// # Example
 /// ```rust
