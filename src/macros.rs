@@ -87,7 +87,7 @@ pub(crate) use from_type;
 
 /// Implements the [`*trait*`] trait for [`*type*`] using a FLINT function.
 ///
-/// Input parameters:
+/// Parameters:
 /// - meta: meta data used for documentation (e.g. doc="...")
 /// - trait: the trait that is implemented (e.g. [`Add`], [`Sub`], ...).
 /// - trait_function: the function the trait implements
