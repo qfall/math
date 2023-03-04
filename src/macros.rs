@@ -96,6 +96,7 @@ pub(crate) use from_type;
 /// - function: The function that needs to be called
 /// (e.g. [`flint_sys::fmpz::fmpz_add`]).
 /// - default: the default value that is taken for the output for the function.
+///
 /// Returns the standard and borrowed Implementation code for the [`*trait*`]
 /// Trait with the signatures:
 /// ```impl *trait*<*type*> for *type*```
