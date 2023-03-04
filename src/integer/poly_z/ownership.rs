@@ -56,6 +56,9 @@ impl Drop for PolyZ {
     /// drop(a); // explicitly drops a's value
     /// ```
     fn drop(&mut self) {
+        // According to FLINT's documentation:
+        // "Clears the given polynomial, releasing any memory used. It must be reinitialized in order to be used again."
+
         unsafe { fmpz_poly_clear(&mut self.poly) }
     }
 }
