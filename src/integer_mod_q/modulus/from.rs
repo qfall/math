@@ -21,7 +21,7 @@ impl Modulus {
     /// Parameters:
     /// - `value`: the value of the modulus
     ///
-    /// Returns a [`Modulus`] or an [`MathError`]
+    /// Returns a [`Modulus`] or a [`MathError`]
     ///
     /// # Example
     /// ```rust
