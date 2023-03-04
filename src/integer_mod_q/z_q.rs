@@ -12,6 +12,15 @@ mod from;
 
 /// [`Zq`] is a type for integers of arbitrary length modulo `q`.
 /// This means, integer in `[0..q[` (`0` inclusive, `q` exclusive).
+///
+/// # Example
+/// ```
+/// # use math::error::MathError;
+/// use math::integer_mod_q::Zq;
+///
+/// let value = Zq::try_from((5, 10))?;
+/// # Ok::<(), MathError>(())
+/// ```
 #[allow(dead_code)]
 #[derive(Debug)]
 pub struct Zq {

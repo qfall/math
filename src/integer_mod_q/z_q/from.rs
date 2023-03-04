@@ -9,6 +9,9 @@ impl Zq {
     /// Create [`Zq`] from two [`Z`] values.
     ///
     /// This function creates a copy of the value and creates a new [`Modulus`].
+    /// Therefore, it should be avoided to create multiple values with the
+    /// same [`Modulus`] with this function to improve performance.
+    /// It is better to use [`Zq::try_from_z_modulus()`] instead.
     ///
     /// Parameters:
     /// - `value` defines the value of the new [`Zq`].
@@ -27,8 +30,8 @@ impl Zq {
     /// let value_b = Z::from(1337+42);
     /// let modulus = Z::from(1337);
     ///
-    /// let answer_a = Zq::try_from_z_z(value_a, &modulus)?;
-    /// let answer_b = Zq::try_from_z_z(value_b, &modulus)?;
+    /// let answer_a = Zq::try_from_z_z(&value_a, &modulus)?;
+    /// let answer_b = Zq::try_from_z_z(&value_b, &modulus)?;
     ///
     /// // TODO: assert_eq!(answer_a, answer_b); once equal for Zq is implemented
     /// # Ok::<(), MathError>(())
@@ -38,19 +41,54 @@ impl Zq {
     /// - Returns a [`MathError`] of type
     ///   [`InvalidIntToModulus`](MathError::InvalidIntToModulus) if the
     ///   provided value is not greater than zero.
-    pub fn try_from_z_z(value: Z, modulus: &Z) -> Result<Self, MathError> {
+    pub fn try_from_z_z(value: &Z, modulus: &Z) -> Result<Self, MathError> {
         let modulus = Modulus::try_from_z(modulus)?;
 
+        Ok(Self::try_from_z_modulus(value, modulus))
+    }
+
+    /// Create [`Zq`] from a [`Z`] values and a [`Modulus`].
+    ///
+    /// TODO: Explain how to reuse Modulus, also add it to the Example
+    ///       Not yet clear how we will do it.
+    ///
+    /// Parameters:
+    /// - `value` defines the value of the new [`Zq`].
+    /// - `modulus` is the modulus used by [`Zq`].
+    ///
+    /// Returns the new `value` mod `modulus` as a [`Zq`].
+    ///
+    /// # Example
+    /// ```
+    /// # use math::error::MathError;
+    /// use math::integer::Z;
+    /// use math::integer_mod_q::{Modulus, Zq};
+    ///
+    /// let value = Z::from(42);
+    /// let modulus = Modulus::try_from(&Z::from(100))?;
+    ///
+    /// let answer_a = Zq::try_from_z_modulus(&value, modulus);
+    /// # Ok::<(), MathError>(())
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type
+    ///   [`InvalidIntToModulus`](MathError::InvalidIntToModulus) if the
+    ///   provided value is not greater than zero.
+    pub fn try_from_z_modulus(value: &Z, modulus: Modulus) -> Self {
         let mut value_fmpz = MaybeUninit::uninit();
+
         let value_fmpz = unsafe {
+            // Applies modulus to parameter and saves the new value into `value_fmpz`.
+            // => No problem when the `value` parameter is later dropped.
             fmpz_mod_set_fmpz(value_fmpz.as_mut_ptr(), &value.value, &modulus.modulus);
             value_fmpz.assume_init()
         };
 
-        Ok(Zq {
+        Zq {
             value: value_fmpz,
             modulus,
-        })
+        }
     }
 }
 
@@ -70,7 +108,7 @@ impl<T1: Into<Z>, T2: Into<Z>> TryFrom<(T1, T2)> for Zq {
     ///
     /// Returns the `value` mod `modulus` as a [`Zq`].
     ///
-    /// # Example(s)
+    /// # Example
     /// ```
     /// # use math::error::MathError;
     /// use math::integer::Z;
@@ -93,13 +131,43 @@ impl<T1: Into<Z>, T2: Into<Z>> TryFrom<(T1, T2)> for Zq {
     ///   provided value is not greater than zero.
     fn try_from(value_modulus_tuple: (T1, T2)) -> Result<Self, Self::Error> {
         let modulus: Z = value_modulus_tuple.1.into();
-        Zq::try_from_z_z(value_modulus_tuple.0.into(), &modulus)
+        let value: Z = value_modulus_tuple.0.into();
+        Zq::try_from_z_z(&value, &modulus)
+    }
+}
+
+#[cfg(test)]
+mod test_try_from_z_modulus {
+    // TODO: add more test cases once we have the equal comparison for Zq:
+    // 1. Zq initialized with the same and different Modulus object
+    //    (same modulus value) and the same number should be equal.
+    // 2. assert that the different initialization methods have the same results.
+    // 3. assert that the modulus is applied correctly
+
+    use super::{Modulus, Zq};
+    use crate::integer::Z;
+
+    /// Test with small valid value and modulus.
+    #[test]
+    fn working_small() {
+        let value = Z::from(10);
+        let modulus = Modulus::try_from(&Z::from(15)).unwrap();
+
+        let _ = Zq::try_from_z_modulus(&value, modulus);
+    }
+
+    /// Test with large value and modulus (FLINT uses pointer representation).
+    #[test]
+    fn working_large() {
+        let value = Z::from(u64::MAX - 1);
+        let modulus = Modulus::try_from(&Z::from(u64::MAX)).unwrap();
+
+        let _ = Zq::try_from_z_modulus(&value, modulus);
     }
 }
 
 #[cfg(test)]
 mod test_try_from_z_z {
-    // TODO: add more test cases
     use super::Zq;
     use crate::integer::Z;
 
@@ -109,7 +177,7 @@ mod test_try_from_z_z {
         let value = Z::from(10);
         let modulus = Z::from(15);
 
-        let answer = Zq::try_from_z_z(value, &modulus);
+        let answer = Zq::try_from_z_z(&value, &modulus);
         assert!(answer.is_ok());
     }
 
@@ -119,7 +187,7 @@ mod test_try_from_z_z {
         let value = Z::from(u64::MAX - 1);
         let modulus = Z::from(u64::MAX);
 
-        let answer = Zq::try_from_z_z(value, &modulus);
+        let answer = Zq::try_from_z_z(&value, &modulus);
 
         assert!(answer.is_ok());
     }
@@ -130,7 +198,7 @@ mod test_try_from_z_z {
         let value = Z::from(10);
         let modulus = Z::from(0);
 
-        let new_zq = Zq::try_from_z_z(value, &modulus);
+        let new_zq = Zq::try_from_z_z(&value, &modulus);
 
         assert!(new_zq.is_err());
     }
@@ -141,7 +209,7 @@ mod test_try_from_z_z {
         let value = Z::from(10);
         let modulus = Z::from(-1);
 
-        let new_zq = Zq::try_from_z_z(value, &modulus);
+        let new_zq = Zq::try_from_z_z(&value, &modulus);
 
         assert!(new_zq.is_err());
     }
