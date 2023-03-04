@@ -25,6 +25,7 @@ use thiserror::Error;
 /// construct a polynomial
 /// - `InvalidStringToPolyMissingWhiteSpace` is thrown if an invalid string
 /// is given to construct a polynomial which did not contain two whitespaces
+/// - `OutOfBounds` is thrown if a provided index is not in a desired range
 ///
 /// # Example
 /// ```
@@ -75,4 +76,10 @@ pub enum MathError {
         and the first coefficient"
     )]
     InvalidStringToPolyMissingWhitespace(String),
+    /// if a provided index is out of bounds
+    #[error(
+        "invalid index submitted. The index is out of bounds
+    The index has to {0}, and the provided value is {1}"
+    )]
+    OutOfBounds(String, String),
 }
