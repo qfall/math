@@ -8,7 +8,7 @@
 //! use math::integer::PolyZ;
 //! use std::str::FromStr;
 //!
-//! let a = PolyZ::from_str("3  0 1 2");
+//! let a = PolyZ::from_str("3  0 1 2").unwrap();
 //! let b = a.clone();
 //! drop(a);
 //! ```
@@ -24,7 +24,7 @@ impl Clone for PolyZ {
     /// use math::integer::PolyZ;
     /// use std::str::FromStr;
     ///
-    /// let a = PolyZ::from_str("3  0 1 2");
+    /// let a = PolyZ::from_str("3  0 1 2").unwrap();
     /// let b = a.clone();
     /// ```
     fn clone(&self) -> Self {
@@ -44,7 +44,7 @@ impl Drop for PolyZ {
     /// use math::integer::PolyZ;
     /// use std::str::FromStr;
     /// {
-    ///     let a = PolyZ::from_str("3  0 1 2");
+    ///     let a = PolyZ::from_str("3  0 1 2").unwrap();
     /// } // as a's scope ends here, it get's dropped
     /// ```
     ///
@@ -52,7 +52,7 @@ impl Drop for PolyZ {
     /// use math::integer::PolyZ;
     /// use std::str::FromStr;
     ///
-    /// let a = PolyZ::from_str("3  0 1 2");
+    /// let a = PolyZ::from_str("3  0 1 2").unwrap();
     /// drop(a); // explicitly drops a's value
     /// ```
     fn drop(&mut self) {
