@@ -30,7 +30,7 @@ use thiserror::Error;
 /// construct a [`MatZ`](crate::integer::MatZ)
 /// - `InvalidStringToMatrixInput` is thrown if an invalid string is given to
 /// construct a Matrix
-/// - `InvalidSIntInput` is thrown if an invalid integer is given to address a
+/// - `InvalidIntInput` is thrown if an invalid integer is given to address a
 /// row/column in a matrix
 ///
 /// # Example
