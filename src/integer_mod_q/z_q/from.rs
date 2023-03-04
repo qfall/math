@@ -90,6 +90,49 @@ impl Zq {
             modulus,
         }
     }
+
+    /// Create [`Zq`] from two values that can be converted to [`Z`].
+    /// For example, [`i64`] and [`u32`].
+    ///
+    /// The parameters have to implement the [`Into<Z>`] trait, which is
+    /// automatically the case if [`Z`] implements the [`From`] trait for this type.
+    /// The first and second element of the tuple may have different types.
+    ///
+    /// Parameters:
+    /// - `value` is the value of the new [`Zq`].
+    /// - `modulus` defines the new [`Modulus`], which is part of [`Zq`].
+    ///
+    /// Returns the `value` mod `modulus` as a [`Zq`].
+    ///
+    /// # Example
+    /// ```
+    /// # use math::error::MathError;
+    /// use math::integer::Z;
+    /// use math::integer_mod_q::Zq;
+    ///
+    /// let value_a: Z = Z::from(42);
+    /// let value_b: u64 = 1337+42;
+    /// let modulus: i32 = 1337;
+    ///
+    /// let answer_a = Zq::try_from_int_int(value_a, modulus)?;
+    /// let answer_b = Zq::try_from_int_int(value_b, modulus)?;
+    ///
+    /// // TODO: assert_eq!(answer_a, answer_b);
+    /// # Ok::<(), MathError>(())
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type
+    ///   [`InvalidIntToModulus`](MathError::InvalidIntToModulus) if the
+    ///   provided value is not greater than zero.
+    pub fn try_from_int_int<T1: Into<Z>, T2: Into<Z>>(
+        value: T1,
+        modulus: T2,
+    ) -> Result<Self, MathError> {
+        let modulus: Z = modulus.into();
+        let value: Z = value.into();
+        Zq::try_from_z_z(&value, &modulus)
+    }
 }
 
 impl<T1: Into<Z>, T2: Into<Z>> TryFrom<(T1, T2)> for Zq {
@@ -130,9 +173,9 @@ impl<T1: Into<Z>, T2: Into<Z>> TryFrom<(T1, T2)> for Zq {
     ///   [`InvalidIntToModulus`](MathError::InvalidIntToModulus) if the
     ///   provided value is not greater than zero.
     fn try_from(value_modulus_tuple: (T1, T2)) -> Result<Self, Self::Error> {
-        let modulus: Z = value_modulus_tuple.1.into();
-        let value: Z = value_modulus_tuple.0.into();
-        Zq::try_from_z_z(&value, &modulus)
+        let modulus = value_modulus_tuple.1;
+        let value = value_modulus_tuple.0;
+        Zq::try_from_int_int(value, modulus)
     }
 }
 
