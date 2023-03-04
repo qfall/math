@@ -8,6 +8,8 @@ use std::mem::MaybeUninit;
 impl Zq {
     /// Create [`Zq`] from two [`Z`] values.
     ///
+    /// This function creates a copy of the value and creates a new [`Modulus`].
+    ///
     /// Parameters:
     /// - `value` defines the value of the new [`Zq`].
     /// - `modulus` is used to create a new [`Modulus`] context that will be
@@ -15,7 +17,7 @@ impl Zq {
     ///
     /// Returns the new `value` mod `modulus` as a [`Zq`].
     ///
-    /// # Example(s)
+    /// # Example
     /// ```
     /// # use math::error::MathError;
     /// use math::integer::Z;
@@ -32,7 +34,7 @@ impl Zq {
     /// # Ok::<(), MathError>(())
     /// ```
     ///
-    /// # Errors and Failures [optional]
+    /// # Errors and Failures
     /// - Returns a [`MathError`] of type
     ///   [`InvalidIntToModulus`](MathError::InvalidIntToModulus) if the
     ///   provided value is not greater than zero.
