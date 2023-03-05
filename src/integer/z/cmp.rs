@@ -3,7 +3,8 @@
 
 use super::Z;
 
-use flint_sys::fmpz::fmpz_equal;
+use flint_sys::fmpz::{fmpz_cmp, fmpz_equal};
+use std::cmp::Ordering;
 
 impl PartialEq for Z {
     /// Checks if two integers are equal. Used by the `==` and `!=` operators.
@@ -37,6 +38,31 @@ impl PartialEq for Z {
 // With the [`Eq`] trait, `a == a` is always true.
 // This is not guaranteed by the [`PartialEq`] trait.
 impl Eq for Z {}
+
+impl PartialOrd for Z {
+    /// Compares two [Z] values. Used by the `<`, `<=`, `>`, and `>=` operators.
+    ///
+    /// Parameters:
+    /// - other: the other value that is used to compare the elements
+    ///
+    /// Returns the [Ordering] of the elements.
+    ///
+    /// # Example
+    /// ```rust
+    /// use math::integer::Z;
+    ///
+    /// let a: Z = Z::from_i64(10);
+    /// let b: Z = Z::from_i64(42);
+    ///
+    /// assert!(a < b);
+    /// assert!(a <= b);
+    /// assert!(b > a);
+    /// assert!(b >= a);
+    /// ```
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        unsafe { Some(fmpz_cmp(&self.value, &other.value).cmp(&0)) }
+    }
+}
 
 /// Test that the [`PartialEq`] trait is correctly implemented.
 #[cfg(test)]
