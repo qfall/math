@@ -30,9 +30,8 @@ use thiserror::Error;
 /// construct a [`MatZ`](crate::integer::MatZ)
 /// - `InvalidStringToMatrixInput` is thrown if an invalid string is given to
 /// construct a Matrix
-/// - `InvalidSIntInput` is thrown if an invalid integer is given to address a
-/// row/column in a matrix
-/// - `OutOfBounds` is thrown if an integer is outside of the possible inputs
+/// - `InvalidInitMatZInput` is thrown if an invalid integer is given to create
+/// a [`MatZ`](crate::integer::MatZ)
 ///
 /// # Example
 /// ```
@@ -89,10 +88,10 @@ pub enum MathError {
     The index has to {0}, and the provided value is {1}"
     )]
     OutOfBounds(String, String),
-    /// parse string to MatZ error
+    /// parse string to [`MatZ`](crate::integer::MatZ) error
     #[error("invalid string input to parse to MatZ {0}")]
     InvalidStringToMatZInput(String),
-    /// parse int error
-    #[error("invalid integer input to parse {0}")]
-    InvalidIntInput(String),
+    /// initialization of [`MatZ`](crate::integer::MatZ) error
+    #[error("invalid input for an initialization of a MatZ {0}")]
+    InvalidInitMatZInput(String),
 }

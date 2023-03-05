@@ -1,24 +1,26 @@
-//! Implementations to create a [`Z`] value from other types.
+//! Implementations to create a [`Z`](crate::integer::Z) value from other types.
 //! For each reasonable type, an explicit function with the format
 //! `from_<type_name>` and the [`From`] trait should be implemented.
 //! Furthermore, an instantiation of a zero matrix is implemented.
 //!
 //! The explicit functions contain the documentation.
 
-use crate::error::MathError;
+use crate::{error::MathError, utils::coordinate::evaluate_coordinate};
 
 use super::MatZ;
 
 use flint_sys::fmpz_mat::fmpz_mat_init;
 
-use std::mem::MaybeUninit;
+use std::{fmt::Display, mem::MaybeUninit};
 
 impl MatZ {
     /// Creates a new zero matrix.
     ///
-    /// Input parameters:
-    /// * `num_rows`: number of rows the new matrix should have
-    /// * `num_cols`: number of columns the new matrix should have
+    /// Parameters:
+    /// - `num_rows`: number of rows the new matrix should have
+    /// - `num_cols`: number of columns the new matrix should have
+    ///
+    /// Returns a [`MatZ`] or an error, if the number of rows or columns is 0.
     ///
     /// # Example
     /// ```rust
@@ -28,11 +30,18 @@ impl MatZ {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [MathError::InvalidIntInput]
+    /// - Returns a [`MathError`] of type
+    /// [`InvalidInitMatZInput`](MathError::InvalidInitMatZInput)
     /// if the number of rows or columns is 0.
-    pub fn new(num_rows: u32, num_cols: u32) -> Result<Self, MathError> {
-        if num_rows == 0 || num_cols == 0 {
-            return Err(MathError::InvalidIntInput(format!(
+    pub fn new<S: TryInto<i64> + Display + Copy, T: TryInto<i64> + Display + Copy>(
+        num_rows: S,
+        num_cols: T,
+    ) -> Result<Self, MathError> {
+        let num_rows_i64 = evaluate_coordinate(num_rows)?;
+        let num_cols_i64 = evaluate_coordinate(num_cols)?;
+
+        if num_rows_i64 == 0 || num_cols_i64 == 0 {
+            return Err(MathError::InvalidInitMatZInput(format!(
                 "({},{})",
                 num_rows, num_cols,
             )));
@@ -42,7 +51,7 @@ impl MatZ {
         // correctness of initialization later
         let mut matrix = MaybeUninit::uninit();
         unsafe {
-            fmpz_mat_init(matrix.as_mut_ptr(), num_rows as i64, num_cols as i64);
+            fmpz_mat_init(matrix.as_mut_ptr(), num_rows_i64, num_cols_i64);
 
             // Construct MatZ from previously initialized fmpz_mat
             Ok(MatZ {
@@ -53,7 +62,7 @@ impl MatZ {
 }
 
 #[cfg(test)]
-mod tests_new {
+mod test_new {
     use crate::integer::{MatZ, Z};
 
     // Ensure that entries of a new matrix are 0.
@@ -70,5 +79,17 @@ mod tests_new {
         assert_eq!(entry2, Z::from_i64(0));
         assert_eq!(entry3, Z::from_i64(0));
         assert_eq!(entry4, Z::from_i64(0));
+    }
+
+    // Ensure that a new zero matrix fails with 0 as input.
+    #[test]
+    fn error_zero() {
+        let matrix1 = MatZ::new(1, 0);
+        let matrix2 = MatZ::new(0, 1);
+        let matrix3 = MatZ::new(0, 0);
+
+        assert!(matrix1.is_err());
+        assert!(matrix2.is_err());
+        assert!(matrix3.is_err());
     }
 }
