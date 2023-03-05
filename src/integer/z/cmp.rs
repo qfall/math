@@ -40,12 +40,12 @@ impl PartialEq for Z {
 impl Eq for Z {}
 
 impl PartialOrd for Z {
-    /// Compares two [Z] values. Used by the `<`, `<=`, `>`, and `>=` operators.
+    /// Compares two [`Z`] values. Used by the `<`, `<=`, `>`, and `>=` operators.
     ///
     /// Parameters:
     /// - other: the other value that is used to compare the elements
     ///
-    /// Returns the [Ordering] of the elements.
+    /// Returns the [`Ordering`] of the elements.
     ///
     /// # Example
     /// ```rust
@@ -214,6 +214,7 @@ mod test_partial_ord {
     /// Test less (<) comparison between small positive and negative [`Z`]
     /// (FLINT is not using pointers)
     #[test]
+    #[allow(clippy::neg_cmp_op_on_partial_ord)]
     fn less_small() {
         let small_positive_1 = Z::from(1);
         let small_positive_2 = Z::from(1);
