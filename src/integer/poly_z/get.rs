@@ -14,7 +14,7 @@ impl PolyZ {
     /// Parameters:
     /// - `coordinate`: the coordinate of the coefficient to get (has to be positive)
     ///
-    /// Returns the coefficient as a [`Z`] or a [`MathError`] if the provided coordinate is invalid.
+    /// Returns the coefficient as a [`Z`] or a [`MathError`] if the provided coordinate is negative and therefore invalid.
     ///
     /// # Example
     /// ```rust
@@ -63,9 +63,9 @@ mod test_get_coeff {
     fn negative_coeff() {
         let poly = PolyZ::from_str("4  0 1 2 -3").unwrap();
 
-        let zero_coeff = poly.get_coeff(3).unwrap();
+        let coeff = poly.get_coeff(3).unwrap();
 
-        assert_eq!(Z::from(-3), zero_coeff)
+        assert_eq!(Z::from(-3), coeff)
     }
 
     /// tests if positive coefficients are returned correctly
@@ -73,9 +73,9 @@ mod test_get_coeff {
     fn positive_coeff() {
         let poly = PolyZ::from_str("4  0 1 2 -3").unwrap();
 
-        let zero_coeff = poly.get_coeff(2).unwrap();
+        let coeff = poly.get_coeff(2).unwrap();
 
-        assert_eq!(Z::from(2), zero_coeff)
+        assert_eq!(Z::from(2), coeff)
     }
 
     /// tests if large coefficients are returned correctly
