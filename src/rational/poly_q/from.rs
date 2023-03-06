@@ -14,7 +14,14 @@ impl PolyQ {
     /// This method is used to initialize a [`PolyQ`] internally.
     ///
     /// Returns an initialized [`PolyQ`].
-    fn init() -> Self {
+    ///
+    /// # Example
+    /// ```rust
+    /// use math::rational::PolyQ;
+    ///
+    /// let poly_zero = PolyQ::init(); // initializes a PolyQ as "0"
+    /// ```
+    pub fn init() -> Self {
         let mut poly = MaybeUninit::uninit();
         unsafe {
             fmpq_poly_init(poly.as_mut_ptr());
@@ -114,5 +121,18 @@ mod test_from_str {
     #[test]
     fn too_many_divisors() {
         assert!(PolyQ::from_str("3  1 2/5 -3/2/3").is_err());
+    }
+}
+
+// ensure that init initializes an empty polynomial
+#[cfg(test)]
+mod test_init {
+    use crate::rational::PolyQ;
+
+    #[test]
+    fn init_zero() {
+        let poly_zero = PolyQ::init();
+
+        assert_eq!("0", poly_zero.to_string())
     }
 }

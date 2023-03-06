@@ -11,15 +11,24 @@ use std::{ffi::CString, mem::MaybeUninit, str::FromStr};
 
 impl PolyZ {
     /// Initializes a [`PolyZ`].
-    /// This method is used to initialize [`PolyZ`] internally.
+    /// This method is used to initialize a [`PolyZ`].
     ///
     /// Returns an initialized [`PolyZ`].
-    fn init() -> Self {
+    ///
+    /// # Example
+    /// ```rust
+    /// use math::integer::PolyZ;
+    ///
+    /// let poly_zero = PolyZ::init(); // initializes a PolyZ as "0"
+    /// ```
+    pub fn init() -> Self {
         let mut poly = MaybeUninit::uninit();
         unsafe {
             fmpz_poly_init(poly.as_mut_ptr());
-            let poly = poly.assume_init();
-            Self { poly }
+
+            Self {
+                poly: poly.assume_init(),
+            }
         }
     }
 }
@@ -108,5 +117,18 @@ mod test_from_str {
     #[test]
     fn false_number_of_coefficient() {
         assert!(PolyZ::from_str("4  1 2 -3").is_err());
+    }
+}
+
+// ensure that init initializes an empty polynomial
+#[cfg(test)]
+mod test_init {
+    use crate::integer::PolyZ;
+
+    #[test]
+    fn init_zero() {
+        let poly_zero = PolyZ::init();
+
+        assert_eq!("0", poly_zero.to_string())
     }
 }
