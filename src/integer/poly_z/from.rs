@@ -9,17 +9,26 @@ use crate::error::MathError;
 use flint_sys::fmpz_poly::{fmpz_poly_init, fmpz_poly_set_str};
 use std::{ffi::CString, mem::MaybeUninit, str::FromStr};
 
-impl PolyZ {
+impl Default for PolyZ {
     /// Initializes a [`PolyZ`].
-    /// This method is used to initialize [`PolyZ`] internally.
+    /// This method is used to initialize a [`PolyZ`].
     ///
     /// Returns an initialized [`PolyZ`].
-    fn init() -> Self {
+    ///
+    /// # Example
+    /// ```rust
+    /// use math::integer::PolyZ;
+    ///
+    /// let poly_zero = PolyZ::default(); // initializes a PolyZ as "0"
+    /// ```
+    fn default() -> Self {
         let mut poly = MaybeUninit::uninit();
         unsafe {
             fmpz_poly_init(poly.as_mut_ptr());
-            let poly = poly.assume_init();
-            Self { poly }
+
+            Self {
+                poly: poly.assume_init(),
+            }
         }
     }
 }
@@ -59,7 +68,7 @@ impl FromStr for PolyZ {
     /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
     /// if the provided string contains a Null Byte.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut res = Self::init();
+        let mut res = Self::default();
 
         let c_string = CString::new(s)?;
 
@@ -108,5 +117,18 @@ mod test_from_str {
     #[test]
     fn false_number_of_coefficient() {
         assert!(PolyZ::from_str("4  1 2 -3").is_err());
+    }
+}
+
+// ensure that init initializes an empty polynomial
+#[cfg(test)]
+mod test_init {
+    use crate::integer::PolyZ;
+
+    #[test]
+    fn init_zero() {
+        let poly_zero = PolyZ::default();
+
+        assert_eq!("0", poly_zero.to_string())
     }
 }

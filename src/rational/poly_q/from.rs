@@ -9,12 +9,19 @@ use crate::error::MathError;
 use flint_sys::fmpq_poly::{fmpq_poly_init, fmpq_poly_set_str};
 use std::{ffi::CString, mem::MaybeUninit, str::FromStr};
 
-impl PolyQ {
+impl Default for PolyQ {
     /// Initializes a [`PolyQ`].
     /// This method is used to initialize a [`PolyQ`] internally.
     ///
     /// Returns an initialized [`PolyQ`].
-    fn init() -> Self {
+    ///
+    /// # Example
+    /// ```rust
+    /// use math::rational::PolyQ;
+    ///
+    /// let poly_zero = PolyQ::default(); // initializes a PolyQ as "0"
+    /// ```
+    fn default() -> Self {
         let mut poly = MaybeUninit::uninit();
         unsafe {
             fmpq_poly_init(poly.as_mut_ptr());
@@ -58,7 +65,7 @@ impl FromStr for PolyQ {
     /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
     /// if the provided string contains a Null Byte.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut res = Self::init();
+        let mut res = Self::default();
 
         let c_string = CString::new(s)?;
 
@@ -114,5 +121,18 @@ mod test_from_str {
     #[test]
     fn too_many_divisors() {
         assert!(PolyQ::from_str("3  1 2/5 -3/2/3").is_err());
+    }
+}
+
+// ensure that init initializes an empty polynomial
+#[cfg(test)]
+mod test_init {
+    use crate::rational::PolyQ;
+
+    #[test]
+    fn init_zero() {
+        let poly_zero = PolyQ::default();
+
+        assert_eq!("0", poly_zero.to_string())
     }
 }
