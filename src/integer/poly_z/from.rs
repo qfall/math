@@ -9,7 +9,7 @@ use crate::error::MathError;
 use flint_sys::fmpz_poly::{fmpz_poly_init, fmpz_poly_set_str};
 use std::{ffi::CString, mem::MaybeUninit, str::FromStr};
 
-impl PolyZ {
+impl Default for PolyZ {
     /// Initializes a [`PolyZ`].
     /// This method is used to initialize a [`PolyZ`].
     ///
@@ -19,9 +19,9 @@ impl PolyZ {
     /// ```rust
     /// use math::integer::PolyZ;
     ///
-    /// let poly_zero = PolyZ::init(); // initializes a PolyZ as "0"
+    /// let poly_zero = PolyZ::default(); // initializes a PolyZ as "0"
     /// ```
-    pub fn init() -> Self {
+    fn default() -> Self {
         let mut poly = MaybeUninit::uninit();
         unsafe {
             fmpz_poly_init(poly.as_mut_ptr());
@@ -68,7 +68,7 @@ impl FromStr for PolyZ {
     /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
     /// if the provided string contains a Null Byte.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut res = Self::init();
+        let mut res = Self::default();
 
         let c_string = CString::new(s)?;
 
@@ -127,7 +127,7 @@ mod test_init {
 
     #[test]
     fn init_zero() {
-        let poly_zero = PolyZ::init();
+        let poly_zero = PolyZ::default();
 
         assert_eq!("0", poly_zero.to_string())
     }

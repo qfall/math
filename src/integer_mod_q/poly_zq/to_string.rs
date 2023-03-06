@@ -36,7 +36,7 @@ impl fmt::Display for PolyZq {
         // there is no dedicated method to create a string from a fmpz_mod_poly
         // hence we convert it to a fmpz_poly first to use the dedicated method
 
-        let mut poly_z = PolyZ::init();
+        let mut poly_z = PolyZ::default();
         unsafe { fmpz_mod_poly_get_fmpz_poly(&mut poly_z.poly, &self.poly, &self.modulus.modulus) };
         write!(f, "{} mod {}", poly_z, self.modulus)
     }
