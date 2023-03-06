@@ -24,7 +24,8 @@ use thiserror::Error;
 /// - `InvalidStringToPolyInput` is thrown if an invalid string is given to
 /// construct a polynomial
 /// - `InvalidStringToPolyMissingWhiteSpace` is thrown if an invalid string
-/// is given to construct a polynomial which did not contain two whitespace
+/// is given to construct a polynomial which did not contain two whitespaces
+/// - `OutOfBounds` is thrown if a provided index is not in a desired range
 /// - `InvalidStringToQInput` is thrown if an invalid string is given to
 /// construct a [`Q`](crate::rational::Q)
 /// - `DivisionByZeroError` is thrown if it is tried to perform a division by `0`
@@ -78,6 +79,12 @@ pub enum MathError {
         and the first coefficient"
     )]
     InvalidStringToPolyMissingWhitespace(String),
+    /// if a provided index is out of bounds
+    #[error(
+        "invalid index submitted. The index is out of bounds
+    The index has to {0}, and the provided value is {1}"
+    )]
+    OutOfBounds(String, String),
     /// parse string to [`Q`](crate::rational::Q) error
     #[error("invalid string input to parse to Q {0}")]
     InvalidStringToQInput(String),

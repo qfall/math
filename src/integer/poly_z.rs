@@ -5,6 +5,7 @@
 use flint_sys::fmpz_poly::fmpz_poly_struct;
 
 pub mod from;
+pub mod set;
 pub mod to_string;
 
 #[derive(Debug)]
