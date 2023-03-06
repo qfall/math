@@ -77,12 +77,12 @@ mod test_add {
     // testing addition for big numbers
     #[test]
     fn add_large_numbers() {
-        let a: Z = Z::from(42139101);
+        let a: Z = Z::from(u64::MAX);
         let b: Z = Z::from(-221319874);
-        let c: Z = Z::from(124894812);
-        let d: Z = a + &b;
-        let e: Z = b + c;
-        assert!(d == Z::from(-179180773));
-        assert!(e == Z::from(-96425062));
+        let c: Z = Z::from(i64::MIN);
+        let d: Z = &a + b;
+        let e: Z = a + c;
+        assert!(d == Z::from(u64::MAX - 221319874));
+        assert!(e == Z::from(i64::MAX ));
     }
 }
