@@ -65,4 +65,15 @@ mod test_to_string {
 
         assert!(PolyZ::from_str(&cmp_string2).is_ok())
     }
+
+    // tests whether large entries are correctly converted using to_string
+    #[test]
+    fn large_entries() {
+        let cmp_string = format!("3  1 {} -{}", u64::MAX, u64::MAX);
+        let cmp = PolyZ::from_str(&cmp_string).unwrap();
+
+        let cmp_string2 = cmp.to_string();
+
+        assert!(PolyZ::from_str(&cmp_string2).is_ok())
+    }
 }

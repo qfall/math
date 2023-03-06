@@ -78,4 +78,13 @@ mod test_to_string {
 
         assert_eq!("3  4 3 2 mod 5", cmp.to_string())
     }
+
+    // tests that large entries and large moduli work with to_string()
+    #[test]
+    fn large_entries_modulus() {
+        let cmp_string = format!("3  1 2 {} mod 1{}", u64::MAX, u64::MAX);
+        let cmp = PolyZq::from_str(&cmp_string).unwrap();
+
+        assert_eq!(cmp_string, cmp.to_string())
+    }
 }
