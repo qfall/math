@@ -3,7 +3,7 @@
 
 /// Is implemented by polynomials to evaluate it for a certain input.
 pub trait Evaluate<U, V> {
-    /// Evaluates the object for a given input value
+    /// Evaluates the object for a given input value.
     ///
     /// Parameters:
     /// - `value`: The value with which to evaluate the object.
