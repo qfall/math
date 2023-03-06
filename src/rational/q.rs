@@ -1,8 +1,8 @@
 //! `Q` is a type for rationals of arbritrary length.
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
-mod default;
 mod arithmetic;
+mod default;
 
 use flint_sys::fmpq::fmpq;
 
