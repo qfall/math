@@ -39,7 +39,7 @@ pub fn evaluate_coordinate<S: TryInto<i64> + Display + Copy>(
     // negative coordinates can not be addressed
     if coordinate < 0 {
         return Err(MathError::OutOfBounds(
-            "must be greater than zero".to_owned(),
+            "be at least zero".to_owned(),
             coordinate.to_string(),
         ));
     }
