@@ -5,6 +5,8 @@ mod default;
 
 use flint_sys::fmpq::fmpq;
 
+mod from;
+
 #[allow(dead_code)]
 #[derive(Debug)]
 pub struct Q {

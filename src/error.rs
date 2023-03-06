@@ -28,6 +28,10 @@ use thiserror::Error;
 /// - `InvalidStringToPolyModulusInput` is thrown if an invalid string is given
 /// to construct a [`PolyZq`](crate::integer_mod_q::PolyZq), i.e. it is
 /// not formatted correctly.
+/// - `OutOfBounds` is thrown if a provided index is not in a desired range
+/// - `InvalidStringToQInput` is thrown if an invalid string is given to
+/// construct a [`Q`](crate::rational::Q)
+/// - `DivisionByZeroError` is thrown if it is tried to perform a division by `0`
 ///
 /// # Example
 /// ```
@@ -67,14 +71,14 @@ pub enum MathError {
         "invalid string input to parse to polynomial {0}\nThe format must 
         be '[#number of coefficients]  [0th coefficient] [1st coefficient] ...'. 
         Note that the after the number of coefficients, there are two 
-        whitespaces."
+        whitespace."
     )]
     InvalidStringToPolyInput(String),
-    /// parse string to poly error with missing whitespaces
+    /// parse string to poly error with missing whitespace
     #[error(
         "invalid string input to parse to polynomial {0}\n \
-        The string did not contain two whitespaces at the start. Please note, 
-        that there have to two whitespaces between number of coefficients 
+        The string did not contain two whitespace at the start. Please note, 
+        that there have to two whitespace between number of coefficients 
         and the first coefficient"
     )]
     InvalidStringToPolyMissingWhitespace(String),
@@ -88,4 +92,16 @@ pub enum MathError {
         whitespaces."
     )]
     InvalidStringToPolyModulusInput(String),
+    /// if a provided index is out of bounds
+    #[error(
+        "invalid index submitted. The index is out of bounds
+    The index has to {0}, and the provided value is {1}"
+    )]
+    OutOfBounds(String, String),
+    /// parse string to [`Q`](crate::rational::Q) error
+    #[error("invalid string input to parse to Q {0}")]
+    InvalidStringToQInput(String),
+    /// division by zero error
+    #[error("the division by zero is not possible {0}")]
+    DivisionByZeroError(String),
 }
