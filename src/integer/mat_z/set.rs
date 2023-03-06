@@ -28,7 +28,7 @@ impl MatZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [MathError::OutOfBounds]
-    /// if the number of rows or columns is greater than the matrix.
+    /// if the number of rows or columns is greater than the matrix or negative.
     pub fn set_entry<
         S: TryInto<i64> + Display + Copy,
         T: TryInto<i64> + Display + Copy,
@@ -38,6 +38,35 @@ impl MatZ {
         row: S,
         column: T,
         value: U,
+    ) -> Result<(), MathError> {
+        self.set_entry_ref_z(row, column, &value.into())
+    }
+
+    /// Sets the value of a specific matrix entry according to a given `value` of type [`Z`].
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row in which the entry is located
+    /// - `column`: specifies the column in which the entry is located
+    /// - `value`: specifies the value to which the entry is set
+    ///
+    /// # Example
+    /// ```rust
+    /// use math::integer::MatZ;
+    /// use math::integer::Z;
+    ///
+    /// let mut matrix = MatZ::new(5, 10).unwrap();
+    /// let value = Z::from_i64(5);
+    /// matrix.set_entry_ref_z(1, 1, &value).unwrap();
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [MathError::OutOfBounds]
+    /// if the number of rows or columns is greater than the matrix or negative.
+    pub fn set_entry_ref_z<S: TryInto<i64> + Display + Copy, T: TryInto<i64> + Display + Copy>(
+        &mut self,
+        row: S,
+        column: T,
+        value: &Z,
     ) -> Result<(), MathError> {
         let row_i64 = evaluate_coordinate(row)?;
         let column_i64 = evaluate_coordinate(column)?;
@@ -58,8 +87,7 @@ impl MatZ {
         // value inside the matrix. Therefore no memory leaks can appear.
         unsafe {
             let entry = fmpz_mat_entry(&self.matrix, row_i64, column_i64);
-            let value_z: &Z = &value.into();
-            fmpz_set(entry, &value_z.value)
+            fmpz_set(entry, &value.value)
         };
 
         Ok(())

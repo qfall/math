@@ -14,13 +14,15 @@ use flint_sys::fmpz_mat::fmpz_mat_init;
 use std::{fmt::Display, mem::MaybeUninit};
 
 impl MatZ {
-    /// Creates a new zero matrix.
+    /// Creates a new matrix with `num_rows` rows, `num_cols` columns and
+    /// zeros as entries.
     ///
     /// Parameters:
     /// - `num_rows`: number of rows the new matrix should have
     /// - `num_cols`: number of columns the new matrix should have
     ///
-    /// Returns a [`MatZ`] or an error, if the number of rows or columns is 0.
+    /// Returns a [`MatZ`] or an error, if the number of rows or columns is
+    /// less or equal to 0.
     ///
     /// # Example
     /// ```rust
@@ -33,6 +35,8 @@ impl MatZ {
     /// - Returns a [`MathError`] of type
     /// [`InvalidInitMatZInput`](MathError::InvalidInitMatZInput)
     /// if the number of rows or columns is 0.
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
+    /// if either of the is negative or it does not fit into an [`i64`].
     pub fn new<S: TryInto<i64> + Display + Copy, T: TryInto<i64> + Display + Copy>(
         num_rows: S,
         num_cols: T,

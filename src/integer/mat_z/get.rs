@@ -19,7 +19,8 @@ impl MatZ {
     /// - `column`: specifies the column in which the entry is located
     ///
     /// Returns the [`Z`] value of the matrix at the position of the given
-    /// row and column.
+    /// row and column or an error, if the number of rows or columns is
+    /// greater than the matrix or negative.
     ///
     /// # Example
     /// ```rust
@@ -31,7 +32,7 @@ impl MatZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    /// if the number of rows or columns is greater than the matrix.
+    /// if the number of rows or columns is greater than the matrix or negative.
     pub fn get_entry<S: TryInto<i64> + Display + Copy, T: TryInto<i64> + Display + Copy>(
         &self,
         row: S,
