@@ -35,7 +35,7 @@ Returns the sum of both numbers as a [`Z`].\n\n
 );
 
 #[cfg(test)]
-mod tests {
+mod test_add {
     use super::Z;
 
     // testing addition for two Z
@@ -72,5 +72,17 @@ mod tests {
         let b: Z = Z::from(24);
         let c: Z = a + &b;
         assert!(c == Z::from(66));
+    }
+
+    // testing addition for big numbers
+    #[test]
+    fn add_large_numbers() {
+        let a: Z = Z::from(u64::MAX);
+        let b: Z = Z::from(-221319874);
+        let c: Z = Z::from(i64::MIN);
+        let d: Z = &a + b;
+        let e: Z = a + c;
+        assert!(d == Z::from(u64::MAX - 221319874));
+        assert!(e == Z::from(i64::MAX));
     }
 }
