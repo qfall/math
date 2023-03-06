@@ -207,6 +207,7 @@ mod test_partial_eq {
 }
 
 /// Test the [`PartialOrd`] trait implementation for [`Z`]
+#[allow(clippy::neg_cmp_op_on_partial_ord)]
 #[cfg(test)]
 mod test_partial_ord {
     use super::Z;
@@ -214,7 +215,6 @@ mod test_partial_ord {
     /// Test less (<) comparison between small positive and negative [`Z`]
     /// (FLINT is not using pointers)
     #[test]
-    #[allow(clippy::neg_cmp_op_on_partial_ord)]
     fn less_small() {
         let small_positive_1 = Z::from(1);
         let small_positive_2 = Z::from(1);
