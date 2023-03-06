@@ -2,6 +2,7 @@
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 mod default;
+mod arithmetic;
 
 use flint_sys::fmpq::fmpq;
 
