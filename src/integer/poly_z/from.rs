@@ -32,8 +32,7 @@ impl FromStr for PolyZ {
     /// [`Z`](crate::integer::z::Z).
     ///
     /// Parameters:
-    /// - `s`: the polynomial of form:
-    /// `"[#number of coefficients]  [0th coefficient] [1st coefficient] ..."`.
+    /// - `s`: the polynomial of form: `"[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴..."`.
     ///  Note that the `[#number of coefficients]` and `[0th coefficient]`
     ///  are divided by two spaces.
     ///
