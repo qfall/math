@@ -87,8 +87,8 @@ impl FromStr for Q {
             return Err(MathError::InvalidStringToQInput(s.to_owned()));
         };
 
-        // since only `value.den` is set to `0` and not `value.num`, if an error
-        // occurs, we do need to free the allocated space of the nominator
+        // if `value.den` is set to `0`, `value.num` is not necessarily 0 as well.
+        // hence we do need to free the allocated space of the nominator
         // manually by using `fmpq_clear`
         match unsafe { fmpz_is_zero(&value.den) } {
             0 => Ok(Q { value }),
