@@ -83,6 +83,6 @@ mod test_add {
         let d: Z = &a + b;
         let e: Z = a + c;
         assert!(d == Z::from(u64::MAX - 221319874));
-        assert!(e == Z::from(i64::MAX ));
+        assert!(e == Z::from(i64::MAX));
     }
 }
