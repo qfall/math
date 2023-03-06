@@ -77,12 +77,14 @@ mod test_sub {
     // testing subtraction for large integers
     #[test]
     fn sub_large() {
-        let a: Z = Z::from(42037841);
-        let b: Z = Z::from(24234590);
+        let a: Z = Z::from(u64::MAX - 1);
+        let b: Z = Z::from(i64::MAX);
         let c: Z = Z::from(738201034);
-        let d: Z = &a - b;
-        let e: Z = a - c;
-        assert!(d == Z::from(17803251));
-        assert!(e == Z::from(-696163193));
+        let d: Z = &a - &b;
+        let e: Z = &b - a;
+        let f: Z = b - c;
+        assert!(d == Z::from(i64::MAX));
+        assert!(e == Z::from(i64::MIN + 1));
+        assert!(f == Z::from(i64::MAX - 738201034));
     }
 }
