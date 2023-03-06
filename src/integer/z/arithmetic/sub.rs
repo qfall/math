@@ -35,12 +35,12 @@ Returns the result of the subtraction as a [`Z`].\n\n
 );
 
 #[cfg(test)]
-mod tests {
+mod test_sub {
     use super::Z;
 
     // testing subtraction for two Z
     #[test]
-    fn add() {
+    fn sub() {
         let a: Z = Z::from(42);
         let b: Z = Z::from(24);
         let c: Z = a - b;
@@ -49,7 +49,7 @@ mod tests {
 
     // testing subtraction for two borrowed Z
     #[test]
-    fn add_borrow() {
+    fn sub_borrow() {
         let a: Z = Z::from(42);
         let b: Z = Z::from(24);
         let c: Z = &a - &b;
@@ -58,7 +58,7 @@ mod tests {
 
     // testing subtraction for borrowed Z and Z
     #[test]
-    fn add_first_borrowed() {
+    fn sub_first_borrowed() {
         let a: Z = Z::from(42);
         let b: Z = Z::from(24);
         let c: Z = &a - b;
@@ -67,10 +67,22 @@ mod tests {
 
     // testing subtraction for Z and borrowed Z
     #[test]
-    fn add_second_borrowed() {
+    fn sub_second_borrowed() {
         let a: Z = Z::from(42);
         let b: Z = Z::from(24);
         let c: Z = a - &b;
         assert!(c == Z::from(18));
+    }
+
+    // testing subtraction for large integers
+    #[test]
+    fn sub_large() {
+        let a: Z = Z::from(42037841);
+        let b: Z = Z::from(24234590);
+        let c: Z = Z::from(738201034);
+        let d: Z = &a - b;
+        let e: Z = a - c;
+        assert!(d == Z::from(17803251));
+        assert!(e == Z::from(-696163193));
     }
 }
