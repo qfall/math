@@ -9,7 +9,7 @@ use crate::error::MathError;
 use flint_sys::fmpq_poly::{fmpq_poly_init, fmpq_poly_set_str};
 use std::{ffi::CString, mem::MaybeUninit, str::FromStr};
 
-impl PolyQ {
+impl Default for PolyQ {
     /// Initializes a [`PolyQ`].
     /// This method is used to initialize a [`PolyQ`] internally.
     ///
@@ -19,9 +19,9 @@ impl PolyQ {
     /// ```rust
     /// use math::rational::PolyQ;
     ///
-    /// let poly_zero = PolyQ::init(); // initializes a PolyQ as "0"
+    /// let poly_zero = PolyQ::default(); // initializes a PolyQ as "0"
     /// ```
-    pub fn init() -> Self {
+    fn default() -> Self {
         let mut poly = MaybeUninit::uninit();
         unsafe {
             fmpq_poly_init(poly.as_mut_ptr());
@@ -65,7 +65,7 @@ impl FromStr for PolyQ {
     /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
     /// if the provided string contains a Null Byte.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut res = Self::init();
+        let mut res = Self::default();
 
         let c_string = CString::new(s)?;
 
@@ -131,7 +131,7 @@ mod test_init {
 
     #[test]
     fn init_zero() {
-        let poly_zero = PolyQ::init();
+        let poly_zero = PolyQ::default();
 
         assert_eq!("0", poly_zero.to_string())
     }
