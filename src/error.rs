@@ -32,6 +32,10 @@ use thiserror::Error;
 /// - `InvalidStringToQInput` is thrown if an invalid string is given to
 /// construct a [`Q`](crate::rational::Q)
 /// - `DivisionByZeroError` is thrown if it is tried to perform a division by `0`
+/// - `InvalidStringToMatrixInput` is thrown if an invalid string is given to
+/// construct a Matrix
+/// - `InvalidInitMatZInput` is thrown if an invalid integer is given to create
+/// a [`MatZ`](crate::integer::MatZ)
 ///
 /// # Example
 /// ```
@@ -104,4 +108,10 @@ pub enum MathError {
     /// division by zero error
     #[error("the division by zero is not possible {0}")]
     DivisionByZeroError(String),
+    /// parse string to [`MatZ`](crate::integer::MatZ) error
+    #[error("invalid string input to parse to MatZ {0}")]
+    InvalidStringToMatZInput(String),
+    /// initialization of [`MatZ`](crate::integer::MatZ) error
+    #[error("invalid input for an initialization of a MatZ {0}")]
+    InvalidInitMatZInput(String),
 }
