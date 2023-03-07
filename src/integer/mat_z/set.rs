@@ -102,6 +102,18 @@ mod test_setter {
 
     use super::Z;
 
+    // Ensure that setting entries works with standard numbers.
+    #[test]
+    fn standard_value() {
+        let mut matrix = MatZ::new(5, 10).unwrap();
+        let value = Z::from_i64(869);
+        matrix.set_entry_ref_z(4, 7, &value).unwrap();
+
+        let entry = matrix.get_entry(4, 7).unwrap();
+
+        assert_eq!(entry, Z::from_i64(869));
+    }
+
     // Ensure that setting entries works with large numbers.
     #[test]
     fn max_int_positive() {
@@ -124,6 +136,22 @@ mod test_setter {
         let entry = matrix.get_entry(1, 1).unwrap();
 
         assert_eq!(entry, Z::from_str(&"1".repeat(65)).unwrap());
+    }
+
+    // Ensure that setting entries works with referenced large numbers (larger than i64).
+    #[test]
+    fn big_positive_ref() {
+        let mut matrix = MatZ::new(5, 10).unwrap();
+        let value1 = Z::from_str(&"1".repeat(65)).unwrap();
+        let value2 = Z::from_i64(8);
+        matrix.set_entry_ref_z(1, 1, &value1).unwrap();
+        matrix.set_entry(0, 0, value2).unwrap();
+
+        let entry1 = matrix.get_entry(1, 1).unwrap();
+        let entry2 = matrix.get_entry(0, 0).unwrap();
+
+        assert_eq!(entry1, Z::from_str(&"1".repeat(65)).unwrap());
+        assert_eq!(entry2, Z::from_i64(8));
     }
 
     // Ensure that setting entries works with large negative numbers.

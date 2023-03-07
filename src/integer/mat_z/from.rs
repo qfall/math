@@ -36,7 +36,7 @@ impl MatZ {
     /// [`InvalidInitMatZInput`](MathError::InvalidInitMatZInput)
     /// if the number of rows or columns is 0.
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    /// if either of the is negative or it does not fit into an [`i64`].
+    /// if the number of rows or columns is negative or it does not fit into an [`i64`].
     pub fn new<S: TryInto<i64> + Display + Copy, T: TryInto<i64> + Display + Copy>(
         num_rows: S,
         num_cols: T,
