@@ -3,7 +3,8 @@
 
 use super::Z;
 
-use flint_sys::fmpz::fmpz_equal;
+use flint_sys::fmpz::{fmpz_cmp, fmpz_equal};
+use std::cmp::Ordering;
 
 impl PartialEq for Z {
     /// Checks if two integers are equal. Used by the `==` and `!=` operators.
@@ -37,6 +38,31 @@ impl PartialEq for Z {
 // With the [`Eq`] trait, `a == a` is always true.
 // This is not guaranteed by the [`PartialEq`] trait.
 impl Eq for Z {}
+
+impl PartialOrd for Z {
+    /// Compares two [`Z`] values. Used by the `<`, `<=`, `>`, and `>=` operators.
+    ///
+    /// Parameters:
+    /// - other: the other value that is used to compare the elements
+    ///
+    /// Returns the [`Ordering`] of the elements.
+    ///
+    /// # Example
+    /// ```rust
+    /// use math::integer::Z;
+    ///
+    /// let a: Z = Z::from_i64(10);
+    /// let b: Z = Z::from_i64(42);
+    ///
+    /// assert!(a < b);
+    /// assert!(a <= b);
+    /// assert!(b > a);
+    /// assert!(b >= a);
+    /// ```
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        unsafe { Some(fmpz_cmp(&self.value, &other.value).cmp(&0)) }
+    }
+}
 
 /// Test that the [`PartialEq`] trait is correctly implemented.
 #[cfg(test)]
@@ -177,5 +203,236 @@ mod test_partial_eq {
         assert!(small_negative != min);
         assert!(min != small_positive);
         assert!(small_positive != min);
+    }
+}
+
+/// Test the [`PartialOrd`] trait implementation for [`Z`]
+#[allow(clippy::neg_cmp_op_on_partial_ord)]
+#[cfg(test)]
+mod test_partial_ord {
+    use super::Z;
+
+    /// Test less (<) comparison between small positive and negative [`Z`]
+    /// (FLINT is not using pointers)
+    #[test]
+    fn less_small() {
+        let small_positive_1 = Z::from(1);
+        let small_positive_2 = Z::from(1);
+        let small_negative = Z::from(-1);
+
+        assert!(!(small_positive_1 < small_positive_2));
+        assert!(!(small_positive_2 < small_positive_1));
+        assert!(!(small_positive_1 < small_positive_1));
+
+        assert!(small_negative < small_positive_1);
+        assert!(!(small_positive_1 < small_negative));
+        assert!(!(small_negative < small_negative));
+    }
+
+    /// Test less (<) comparison between large [`Z`] (FLINT uses pointers)
+    /// and small [`Z`] (not using pointers).
+    #[test]
+    fn less_large_small() {
+        let max = Z::from_u64(u64::MAX);
+        let small_positive = Z::from_i64(1);
+        let small_negative = Z::from_i64(-1);
+        let max_negative = Z::from_i64(i64::MIN);
+
+        // Comparisons with max
+        assert!(small_positive < max);
+        assert!(small_negative < max);
+        assert!(!(max < small_positive));
+        assert!(!(max < small_negative));
+
+        // Comparisons with max_negative
+        assert!(max_negative < small_positive);
+        assert!(max_negative < small_negative);
+        assert!(!(small_positive < max_negative));
+        assert!(!(small_negative < max_negative));
+    }
+
+    /// Test less (<) comparison between large positive and negative [`Z`]
+    /// (FLINT uses pointers)
+    #[test]
+    fn less_large() {
+        let max_1 = Z::from_u64(u64::MAX);
+        let max_2 = Z::from_u64(u64::MAX);
+        let max_negative = Z::from_i64(i64::MIN);
+
+        assert!(!(max_1 < max_2));
+        assert!(!(max_2 < max_1));
+        assert!(!(max_1 < max_1));
+
+        assert!(max_negative < max_1);
+        assert!(!(max_1 < max_negative));
+        assert!(!(max_negative < max_negative));
+    }
+
+    /// Test less or equal (<=) comparison between small positive and negative [`Z`]
+    /// (FLINT is not using pointers)
+    #[test]
+    fn less_equal_small() {
+        let small_positive_1 = Z::from(1);
+        let small_positive_2 = Z::from(1);
+        let small_negative = Z::from(-1);
+
+        assert!(small_positive_1 <= small_positive_2);
+        assert!(small_positive_2 <= small_positive_1);
+        assert!(small_positive_1 <= small_positive_1);
+
+        assert!(small_negative <= small_positive_1);
+        assert!(!(small_positive_1 <= small_negative));
+        assert!(small_negative <= small_negative);
+    }
+
+    /// Test less or equal (<=) comparison between large [`Z`] (FLINT uses pointers)
+    /// and small [`Z`] (not using pointers).
+    #[test]
+    fn less_equal_large_small() {
+        let max = Z::from_u64(u64::MAX);
+        let small_positive = Z::from_i64(1);
+        let small_negative = Z::from_i64(-1);
+        let max_negative = Z::from_i64(i64::MIN);
+
+        // Comparisons with max
+        assert!(small_positive <= max);
+        assert!(small_negative <= max);
+        assert!(!(max <= small_positive));
+        assert!(!(max <= small_negative));
+
+        // Comparisons with max_negative
+        assert!(max_negative <= small_positive);
+        assert!(max_negative <= small_negative);
+        assert!(!(small_positive <= max_negative));
+        assert!(!(small_negative <= max_negative));
+    }
+
+    /// Test less or equal (<=) comparison between large positive and negative [`Z`]
+    /// (FLINT uses pointers)
+    #[test]
+    fn less_equal_large() {
+        let max_1 = Z::from_u64(u64::MAX);
+        let max_2 = Z::from_u64(u64::MAX);
+        let max_negative = Z::from_i64(i64::MIN);
+
+        assert!(max_1 <= max_2);
+        assert!(max_2 <= max_1);
+        assert!(max_1 <= max_1);
+
+        assert!(max_negative <= max_1);
+        assert!(!(max_1 <= max_negative));
+        assert!(max_negative <= max_negative);
+    }
+
+    /// Test greater (>) comparison between small positive and negative [`Z`]
+    /// (FLINT is not using pointers)
+    #[test]
+    fn greater_small() {
+        let small_positive_1 = Z::from(1);
+        let small_positive_2 = Z::from(1);
+        let small_negative = Z::from(-1);
+
+        assert!(!(small_positive_1 > small_positive_2));
+        assert!(!(small_positive_2 > small_positive_1));
+        assert!(!(small_positive_1 > small_positive_1));
+
+        assert!(!(small_negative > small_positive_1));
+        assert!(small_positive_1 > small_negative);
+        assert!(!(small_negative > small_negative));
+    }
+
+    /// Test greater (>) comparison between large [`Z`] (FLINT uses pointers)
+    /// and small [`Z`] (not using pointers).
+    #[test]
+    fn greater_large_small() {
+        let max = Z::from_u64(u64::MAX);
+        let small_positive = Z::from_i64(1);
+        let small_negative = Z::from_i64(-1);
+        let max_negative = Z::from_i64(i64::MIN);
+
+        // Comparisons with max
+        assert!(!(small_positive > max));
+        assert!(!(small_negative > max));
+        assert!(max > small_positive);
+        assert!(max > small_negative);
+
+        // Comparisons with max_negative
+        assert!(!(max_negative > small_positive));
+        assert!(!(max_negative > small_negative));
+        assert!(small_positive > max_negative);
+        assert!(small_negative > max_negative);
+    }
+
+    /// Test greater (>) comparison between large positive and negative [`Z`]
+    /// (FLINT uses pointers)
+    #[test]
+    fn greater_large() {
+        let max_1 = Z::from_u64(u64::MAX);
+        let max_2 = Z::from_u64(u64::MAX);
+        let max_negative = Z::from_i64(i64::MIN);
+
+        assert!(!(max_1 > max_2));
+        assert!(!(max_2 > max_1));
+        assert!(!(max_1 > max_1));
+
+        assert!(!(max_negative > max_1));
+        assert!(max_1 > max_negative);
+        assert!(!(max_negative > max_negative));
+    }
+
+    /// Test greater or equal (>=) comparison between small positive and negative [`Z`]
+    /// (FLINT is not using pointers)
+    #[test]
+    fn greater_equal_small() {
+        let small_positive_1 = Z::from(1);
+        let small_positive_2 = Z::from(1);
+        let small_negative = Z::from(-1);
+
+        assert!(small_positive_1 >= small_positive_2);
+        assert!(small_positive_2 >= small_positive_1);
+        assert!(small_positive_1 >= small_positive_1);
+
+        assert!(!(small_negative >= small_positive_1));
+        assert!(small_positive_1 >= small_negative);
+        assert!(small_negative >= small_negative);
+    }
+
+    /// Test greater or equal (>=) comparison between large [`Z`] (FLINT uses pointers)
+    /// and small [`Z`] (not using pointers).
+    #[test]
+    fn greater_equal_large_small() {
+        let max = Z::from_u64(u64::MAX);
+        let small_positive = Z::from_i64(1);
+        let small_negative = Z::from_i64(-1);
+        let max_negative = Z::from_i64(i64::MIN);
+
+        // Comparisons with max
+        assert!(!(small_positive >= max));
+        assert!(!(small_negative >= max));
+        assert!(max >= small_positive);
+        assert!(max >= small_negative);
+
+        // Comparisons with max_negative
+        assert!(!(max_negative >= small_positive));
+        assert!(!(max_negative >= small_negative));
+        assert!(small_positive >= max_negative);
+        assert!(small_negative >= max_negative);
+    }
+
+    /// Test greater or equal (>=) comparison between large positive and negative [`Z`]
+    /// (FLINT uses pointers)
+    #[test]
+    fn greater_equal_large() {
+        let max_1 = Z::from_u64(u64::MAX);
+        let max_2 = Z::from_u64(u64::MAX);
+        let max_negative = Z::from_i64(i64::MIN);
+
+        assert!(max_1 >= max_2);
+        assert!(max_2 >= max_1);
+        assert!(max_1 >= max_1);
+
+        assert!(!(max_negative >= max_1));
+        assert!(max_1 >= max_negative);
+        assert!(max_negative >= max_negative);
     }
 }
