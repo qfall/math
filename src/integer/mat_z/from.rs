@@ -5,12 +5,9 @@
 //!
 //! The explicit functions contain the documentation.
 
-use crate::{error::MathError, utils::coordinate::evaluate_coordinate};
-
 use super::MatZ;
-
+use crate::{error::MathError, utils::coordinate::evaluate_coordinate};
 use flint_sys::fmpz_mat::fmpz_mat_init;
-
 use std::{fmt::Display, mem::MaybeUninit};
 
 impl MatZ {

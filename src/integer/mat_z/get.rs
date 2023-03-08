@@ -1,15 +1,12 @@
 //! Implementations to get entries from a [`MatZ`] matrix.
 
-use std::fmt::Display;
-
+use super::MatZ;
+use crate::{error::MathError, integer::Z, utils::coordinate::evaluate_coordinate};
 use flint_sys::{
     fmpz::{fmpz, fmpz_set},
     fmpz_mat::fmpz_mat_entry,
 };
-
-use crate::{error::MathError, integer::Z, utils::coordinate::evaluate_coordinate};
-
-use super::MatZ;
+use std::fmt::Display;
 
 impl MatZ {
     /// Outputs the [`Z`] value of a specific matrix entry.

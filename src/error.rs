@@ -6,7 +6,6 @@
 //! unwrapped again.
 
 use std::{ffi::NulError, num::ParseIntError};
-
 use thiserror::Error;
 
 /// [`MathError`] defines this crate's error enum, which can hold all sorts of

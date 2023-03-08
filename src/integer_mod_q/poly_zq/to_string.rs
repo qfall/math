@@ -3,13 +3,10 @@
 //!
 //! This includes the [`Display`](std::fmt::Display) trait.
 
-use std::fmt;
-
-use flint_sys::fmpz_mod_poly::fmpz_mod_poly_get_fmpz_poly;
-
-use crate::integer::PolyZ;
-
 use super::PolyZq;
+use crate::integer::PolyZ;
+use flint_sys::fmpz_mod_poly::fmpz_mod_poly_get_fmpz_poly;
+use std::fmt;
 
 impl fmt::Display for PolyZq {
     /// Allows to convert a [`PolyZq`] into a [`String`].
@@ -44,9 +41,9 @@ impl fmt::Display for PolyZq {
 
 #[cfg(test)]
 mod test_to_string {
-    use std::str::FromStr;
 
     use super::PolyZq;
+    use std::str::FromStr;
 
     // tests whether a polynomial that is created using a string, returns the
     // same string, when it is converted back to a string

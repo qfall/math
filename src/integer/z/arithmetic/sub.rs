@@ -1,10 +1,9 @@
 //! Implementation of the [`Sub`] trait for [`Z`] values.
 
-use flint_sys::fmpz::fmpz;
-use std::ops::Sub;
-
 use super::super::Z;
 use crate::macros::arithmetic_trait;
+use flint_sys::fmpz::fmpz;
+use std::ops::Sub;
 
 arithmetic_trait!(
     doc = "Implements the [`Sub`] trait for two [`Z`] values. \n

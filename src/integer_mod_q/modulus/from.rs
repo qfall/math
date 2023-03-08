@@ -4,16 +4,13 @@
 //!
 //! The explicit functions contain the documentation.
 
-use std::{ffi::CString, mem::MaybeUninit, str::FromStr};
-
+use super::Modulus;
+use crate::{error::MathError, integer::Z};
 use flint_sys::{
     fmpz::{fmpz, fmpz_clear, fmpz_cmp, fmpz_set_str},
     fmpz_mod::{fmpz_mod_ctx, fmpz_mod_ctx_init},
 };
-
-use crate::{error::MathError, integer::Z};
-
-use super::Modulus;
+use std::{ffi::CString, mem::MaybeUninit, str::FromStr};
 
 impl Modulus {
     /// Create a [`Modulus`] from [`Z`].

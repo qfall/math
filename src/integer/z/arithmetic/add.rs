@@ -1,10 +1,9 @@
 //! Implementation of the [`Add`] trait for [`Z`] values.
 
-use flint_sys::fmpz::fmpz;
-use std::ops::Add;
-
 use super::super::Z;
 use crate::macros::arithmetic_trait;
+use flint_sys::fmpz::fmpz;
+use std::ops::Add;
 
 arithmetic_trait!(
     doc = "Implements the [`Add`] trait for two [`Z`] values. \n
