@@ -7,7 +7,7 @@
 use super::Q;
 use crate::error::MathError;
 use flint_sys::{
-    fmpq::{fmpq, fmpq_clear, fmpq_set_str},
+    fmpq::{fmpq, fmpq_canonicalise, fmpq_clear, fmpq_set_str},
     fmpz::fmpz_is_zero,
 };
 use std::{ffi::CString, str::FromStr};
@@ -83,6 +83,9 @@ impl FromStr for Q {
         if -1 == unsafe { fmpq_set_str(&mut value, c_string.as_ptr(), 10) } {
             return Err(MathError::InvalidStringToQInput(s.to_owned()));
         };
+
+        // canonical form is expected by other functions
+        unsafe { fmpq_canonicalise(&mut value) };
 
         // if `value.den` is set to `0`, `value.num` is not necessarily 0 as well.
         // hence we do need to free the allocated space of the nominator
@@ -221,5 +224,20 @@ mod tests_from_str {
     #[test]
     fn error_whitespace_minus() {
         assert!(Q::from_str("- 876543").is_err());
+    }
+
+    /// Ensure that values returned by [`Q::from_str()`] are canonical.
+    #[test]
+    fn canonical_result() {
+        let one_1 = Q::from_str("1/1").unwrap();
+        let one_2 = Q::from_str("2/2").unwrap();
+        let one_3 = Q::from_str("-42/-42").unwrap();
+
+        let zero_1 = Q::from_str("0/1").unwrap();
+        let zero_2 = Q::from_str("0/42").unwrap();
+
+        assert_eq!(one_1, one_2);
+        assert_eq!(one_1, one_3);
+        assert_eq!(zero_1, zero_2);
     }
 }
