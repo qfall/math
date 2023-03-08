@@ -10,8 +10,13 @@ use flint_sys::fq::fq_ctx_init_modulus;
 use std::{ffi::CString, mem::MaybeUninit, str::FromStr};
 
 impl From<&PolyOverZq> for ModulusPolynomialRingZq {
+    // TODO: Add check for irreducible and prime?
+    // irreducible: fmpz_mod_poly_is_irreducible can be called
+    // prime: fmpz_is_prime
     /// Create a new Modulus object of type [`ModulusPolynomialRingZq`]
     /// for [`PolynomialRingZq`](crate::finite_fields::PolynomialRingZq)
+    ///
+    /// Note that this function does not check whether the modulus is irreducible over Fq and whether q is prime.
     ///
     /// Parameters:
     /// - `modulus_poly`: the polynomial which is used as the modulus
@@ -48,9 +53,14 @@ impl From<&PolyOverZq> for ModulusPolynomialRingZq {
 impl FromStr for ModulusPolynomialRingZq {
     type Err = MathError;
 
+    // TODO: Add check for irreducible and prime?
+    // irreducible: fmpz_mod_poly_is_irreducible can be called
+    // prime: fmpz_is_prime
     /// Creating a Modulus object of type [`ModulusPolynomialRingZq`]
     /// for [`PolynomialRingZq`](crate::finite_fields::PolynomialRingZq). This first
     /// converts the provided string into a [`PolyOverZq`] and then into the Modulus object.
+    ///
+    /// Note that this function does not check whether the modulus is irreducible over Fq and whether q is prime.
     ///
     /// Parameters:
     /// - `s`: has to be a valid string to create a [`PolyOverZq`] see [`PolyOverZq::from_str`]
