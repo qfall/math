@@ -123,29 +123,29 @@ impl FromStr for Z {
 mod tests_from_int {
     use super::Z;
 
-    // Ensure that initialization with large numbers works.
-    // Numbers larger than 2^62 bits are represented differently in FLINT.
+    /// Ensure that initialization with large numbers works.
+    /// Numbers larger than 2^62 bits are represented differently in FLINT.
     #[test]
     fn from_i64_max_positive() {
         Z::from_i64(i64::MAX);
     }
 
-    // Ensure that initialization with large negative numbers works.
-    // Numbers smaller than -2^62 bits are represented differently in FLINT.
+    /// Ensure that initialization with large negative numbers works.
+    /// Numbers smaller than -2^62 bits are represented differently in FLINT.
     #[test]
     fn from_i64_max_negative() {
         Z::from_i64(i64::MIN);
     }
 
-    // Ensure that the [From] trait is available for i64 values
+    /// Ensure that the [From] trait is available for i64 values
     #[test]
     fn from_i64_trait() {
         let _ = Z::from(-10i64);
     }
 
-    // Ensure that the `from_<type_name>` functions are available for
-    // singed and unsigned integers of 8, 16, 32, and 64 bit length.
-    // Tested with their maximum value.
+    /// Ensure that the `from_<type_name>` functions are available for
+    /// singed and unsigned integers of 8, 16, 32, and 64 bit length.
+    /// Tested with their maximum value.
     #[test]
     fn from_functions_max() {
         // signed
@@ -161,8 +161,8 @@ mod tests_from_int {
         let _ = Z::from_u64(u64::MAX);
     }
 
-    // Ensure that the [From] trait is available for singed and unsigned integers
-    // of 8, 16, 32, and 64 bit length. Tested with their maximum value.
+    /// Ensure that the [From] trait is available for singed and unsigned integers
+    /// of 8, 16, 32, and 64 bit length. Tested with their maximum value.
     #[test]
     fn from_trait_max() {
         // signed
@@ -178,8 +178,8 @@ mod tests_from_int {
         let _ = Z::from(u64::MAX);
     }
 
-    // Ensure that the [From] trait is available for singed and unsigned integers
-    // of 8, 16, 32, and 64 bit length. Tested with their minimum value.
+    /// Ensure that the [From] trait is available for singed and unsigned integers
+    /// of 8, 16, 32, and 64 bit length. Tested with their minimum value.
     #[test]
     fn from_trait_min() {
         // signed
