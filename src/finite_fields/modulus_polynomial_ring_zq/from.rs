@@ -29,7 +29,8 @@ impl From<&PolyOverZq> for ModulusPolynomialRingZq {
     /// use math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
     ///
-    /// let poly_mod = PolyOverZq::from_str("4  0 1 -2 3 mod 42").unwrap();
+    /// // initialize X^2 + 1 mod 17, i.e. an irreducible polynomial with prime modulus
+    /// let poly_mod = PolyOverZq::from_str("3  1 0 1 mod 17").unwrap();
     /// let modulus = ModulusPolynomialRingZq::from(&poly_mod);
     /// ```
     fn from(modulus_poly: &PolyOverZq) -> Self {
@@ -73,7 +74,8 @@ impl FromStr for ModulusPolynomialRingZq {
     /// use math::finite_fields::ModulusPolynomialRingZq;
     /// use std::str::FromStr;
     ///
-    /// let poly = ModulusPolynomialRingZq::from_str("4  0 1 -2 3 mod 101").unwrap();
+    /// // initialize X^2 + 1 mod 17, i.e. an irreducible polynomial with prime modulus
+    /// let poly_mod = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
     /// ```
     /// # Errors and Failures
     /// - Throws a [`MathError`]. For further details see Errors and Failures of [`PolyOverZq::from_str`]
@@ -92,7 +94,7 @@ mod test_from_poly_zq {
     /// ensure that we have a basic working example
     #[test]
     fn working_example() {
-        let poly_mod = PolyOverZq::from_str("4  0 1 -2 3 mod 42").unwrap();
+        let poly_mod = PolyOverZq::from_str("3  4 0 1 mod 17").unwrap();
         let _ = ModulusPolynomialRingZq::from(&poly_mod);
     }
 
@@ -100,15 +102,17 @@ mod test_from_poly_zq {
     #[test]
     fn working_large_entries() {
         let poly_mod =
-            PolyOverZq::from_str(&format!("4  0 1 -2 {} mod 1{}", u64::MAX, u64::MAX)).unwrap();
+            PolyOverZq::from_str(&format!("4  0 1 -2 {} mod {}", u64::MAX, 2_i32.pow(16) + 1))
+                .unwrap();
         let _ = ModulusPolynomialRingZq::from(&poly_mod);
     }
 
     /// ensure that large entries work
     #[test]
     fn poly_zq_unchanged() {
-        let cmp_str = format!("4  0 1 3 {} mod 1{}", u64::MAX, u64::MAX);
-        let poly_zq = PolyOverZq::from_str(&cmp_str).unwrap();
+        let in_str = format!("4  0 1 3 {} mod {}", u64::MAX, 2_i32.pow(16) + 1);
+        let cmp_str = "3  0 1 3 mod 65537";
+        let poly_zq = PolyOverZq::from_str(&in_str).unwrap();
         let _ = ModulusPolynomialRingZq::from(&poly_zq);
         assert_eq!(cmp_str, poly_zq.to_string())
     }
@@ -124,28 +128,27 @@ mod test_from_str {
     /// ensure that we have a basic working example
     #[test]
     fn working_example() {
-        let poly = ModulusPolynomialRingZq::from_str("4  0 1 -2 3 mod 42");
+        let poly = ModulusPolynomialRingZq::from_str("3  4 0 1 mod 17");
         assert!(poly.is_ok())
     }
 
     /// ensure that at input of a wrong format an error is returned
     #[test]
     fn wrong_modulus_fmt() {
-        assert!(ModulusPolynomialRingZq::from_str("4  0 1 -2 3 mod -42").is_err());
-        assert!(ModulusPolynomialRingZq::from_str("4  0 1 -2 3 mod 42 mod 42").is_err());
-        assert!(ModulusPolynomialRingZq::from_str("4  0 1 -2 3 mod 42 mod 42").is_err());
-        assert!(ModulusPolynomialRingZq::from_str("4  0 1 -2 3 mod 0").is_err());
-        assert!(ModulusPolynomialRingZq::from_str("4  0 1 -2 3 mod 4 2").is_err());
-        assert!(ModulusPolynomialRingZq::from_str("4  0 1 -2 3 mod ba").is_err());
+        assert!(ModulusPolynomialRingZq::from_str("3  4 0 1 mod -17").is_err());
+        assert!(ModulusPolynomialRingZq::from_str("3  4 0 1 mod 17 mod 42").is_err());
+        assert!(ModulusPolynomialRingZq::from_str("3  4 0 1 mod 0").is_err());
+        assert!(ModulusPolynomialRingZq::from_str("3  4 0 1 mod 1 7").is_err());
+        assert!(ModulusPolynomialRingZq::from_str("3  4 0 1 mod ba").is_err());
     }
 
     /// ensure that large entries work
     #[test]
     fn working_large_entries() {
         assert!(ModulusPolynomialRingZq::from_str(&format!(
-            "4  0 1 -2 {} mod 1{}",
+            "4  0 1 3 {} mod {}",
             u64::MAX,
-            u64::MAX
+            2_i32.pow(16) + 1
         ))
         .is_ok());
     }

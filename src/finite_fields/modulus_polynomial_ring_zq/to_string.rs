@@ -13,19 +13,19 @@ impl Display for ModulusPolynomialRingZq {
     ///
     /// # Examples
     /// ```rust
-    /// use math::finite_fields::PolynomialRingZq;
+    /// use math::finite_fields::ModulusPolynomialRingZq;
     /// use std::str::FromStr;
     /// use core::fmt;
     ///
-    /// let poly = PolynomialRingZq::from_str("4  1 2 3 4, 4  1 0 0 1 mod 5").unwrap();
+    /// let poly = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
     /// println!("{}", poly);
     /// ```
     ///
     /// ```rust
-    /// use math::finite_fields::PolynomialRingZq;
+    /// use math::finite_fields::ModulusPolynomialRingZq;
     /// use std::str::FromStr;
     ///
-    /// let poly = PolynomialRingZq::from_str("4  1 2 3 4, 4  1 0 0 1 mod 5").unwrap();
+    /// let poly = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
     /// let poly_string = poly.to_string();
     /// ```
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
