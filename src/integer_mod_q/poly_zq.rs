@@ -1,4 +1,4 @@
-//! [`PolyZq`] is a type of polynomial with arbitrarily many coefficients of type
+//! [`PolyOverZq`] is a type of polynomial with arbitrarily many coefficients of type
 //! [`Zq`](crate::integer_mod_q::z_q::Zq).
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
@@ -10,7 +10,7 @@ mod to_string;
 
 #[allow(dead_code)]
 #[derive(Debug)]
-/// [`PolyZq`] is a type of polynomial with arbitrarily many coefficients of type
+/// [`PolyOverZq`] is a type of polynomial with arbitrarily many coefficients of type
 /// [`Zq`](crate::integer_mod_q::z_q::Zq).
 ///
 // Attributes:
@@ -19,12 +19,12 @@ mod to_string;
 //
 /// # Example
 /// ```rust
-/// use math::integer_mod_q::PolyZq;
+/// use math::integer_mod_q::PolyOverZq;
 /// use std::str::FromStr;
 ///
-/// let poly = PolyZq::from_str("4  0 1 -2 3 mod 42").unwrap();
+/// let poly = PolyOverZq::from_str("4  0 1 -2 3 mod 42").unwrap();
 /// ```
-pub struct PolyZq {
+pub struct PolyOverZq {
     pub(crate) poly: fmpz_mod_poly_struct,
     pub(crate) modulus: Modulus,
 }

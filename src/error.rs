@@ -25,7 +25,7 @@ use thiserror::Error;
 /// - `InvalidStringToPolyMissingWhiteSpace` is thrown if an invalid string
 /// is given to construct a polynomial which did not contain two whitespaces
 /// - `InvalidStringToPolyModulusInput` is thrown if an invalid string is given
-/// to construct a [`PolyZq`](crate::integer_mod_q::PolyZq), i.e. it is
+/// to construct a [`PolyOverZq`](crate::integer_mod_q::PolyOverZq), i.e. it is
 /// not formatted correctly.
 /// - `OutOfBounds` is thrown if a provided index is not in a desired range
 /// - `InvalidStringToQInput` is thrown if an invalid string is given to

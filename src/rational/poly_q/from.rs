@@ -19,7 +19,7 @@ impl Default for PolyQ {
     /// ```rust
     /// use math::rational::PolyQ;
     ///
-    /// let poly_zero = PolyQ::default(); // initializes a PolyQ as "0"
+    /// let poly_over_zero = PolyQ::default(); // initializes a PolyQ as "0"
     /// ```
     fn default() -> Self {
         let mut poly = MaybeUninit::uninit();
@@ -132,8 +132,8 @@ mod test_init {
     /// Ensure that [`Default`] initializes the zero polynomial appropriately
     #[test]
     fn init_zero() {
-        let poly_zero = PolyQ::default();
+        let poly_over_zero = PolyQ::default();
 
-        assert_eq!("0", poly_zero.to_string())
+        assert_eq!("0", poly_over_zero.to_string())
     }
 }
