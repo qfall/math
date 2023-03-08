@@ -8,17 +8,22 @@
 /// - type: the type the trait is implemented for (e.g. [`Z`], [`Q`])
 /// - function: The function that needs to be called
 /// (e.g. [`flint_sys::fmpz::fmpz_add`]).
-/// - result_parameter: todo
 /// - default: the default value that is taken for the output for the function.
+/// - result_attribute_name: the name of the attribute that needs to be
+/// initialized for the result.
 ///
 /// Returns the standard and borrowed Implementation code for the [`*trait*`]
 /// Trait with the signatures:
+///
 /// ```impl *trait*<*type*> for *type*```
+///
 /// ```impl *trait*<&*type*> for &*type*```
+///
 /// ```impl *trait*<*type*> for &*type*```
+///
 /// ```impl *trait*<&*type*> for *type*```
 macro_rules! arithmetic_trait {
-    ($meta:meta,$trait:ident, $trait_function:ident, $type:ident, $function:expr, $default:expr) => {
+    ($meta:meta,$trait:ident, $trait_function:ident, $type:ident, $function:expr, $default:expr, $result_attribute_name:ident) => {
         impl $trait for &$type {
             type Output = $type;
             #[$meta]
@@ -27,7 +32,9 @@ macro_rules! arithmetic_trait {
                 unsafe {
                     $function(&mut out, &self.value, &other.value);
                 }
-                $type { value: out }
+                $type {
+                    $result_attribute_name: out,
+                }
             }
         }
 

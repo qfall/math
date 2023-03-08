@@ -30,7 +30,8 @@ Returns the result of the subtraction as a [`Z`].\n\n
     sub,
     Z,
     flint_sys::fmpz::fmpz_sub,
-    fmpz(0)
+    fmpz(0),
+    value
 );
 
 #[cfg(test)]
