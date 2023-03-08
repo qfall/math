@@ -90,10 +90,10 @@ impl FromStr for Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [InvalidStringToCStringInput](MathError::InvalidStringToCStringInput)
+    /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
     /// if the provided string contains a Nul byte.
     /// - Returns a [`MathError`] of type
-    /// [InvalidStringToZInput](MathError::InvalidStringToZInput)
+    /// [`InvalidStringToZInput`](MathError::InvalidStringToZInput)
     /// if the provided string was not formatted correctly.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if s.contains(char::is_whitespace) {
