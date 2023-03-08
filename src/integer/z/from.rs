@@ -1,6 +1,6 @@
-//! Implementations to create a [Z] value from other types.
+//! Implementations to create a [`Z`] value from other types.
 //! For each reasonable type, an explicit function with the format
-//! `from_<type_name>` and the [From] trait should be implemented.
+//! `from_<type_name>` and the [`From`] trait should be implemented.
 //!
 //! The explicit functions contain the documentation.
 
@@ -59,7 +59,7 @@ impl Z {
     from_type!(u8, u64, Z, Z::from_u64);
 }
 
-// Generate [From] trait for the different types.
+// Generate [`From`] trait for the different types.
 from_trait!(i64, Z, Z::from_i64);
 from_trait!(i32, Z, Z::from_i32);
 from_trait!(i16, Z, Z::from_i16);
@@ -137,7 +137,7 @@ mod tests_from_int {
         Z::from_i64(i64::MIN);
     }
 
-    /// Ensure that the [From] trait is available for i64 values
+    /// Ensure that the [`From`] trait is available for i64 values
     #[test]
     fn from_i64_trait() {
         let _ = Z::from(-10i64);
@@ -161,7 +161,7 @@ mod tests_from_int {
         let _ = Z::from_u64(u64::MAX);
     }
 
-    /// Ensure that the [From] trait is available for singed and unsigned integers
+    /// Ensure that the [`From`] trait is available for singed and unsigned integers
     /// of 8, 16, 32, and 64 bit length. Tested with their maximum value.
     #[test]
     fn from_trait_max() {
@@ -178,7 +178,7 @@ mod tests_from_int {
         let _ = Z::from(u64::MAX);
     }
 
-    /// Ensure that the [From] trait is available for singed and unsigned integers
+    /// Ensure that the [`From`] trait is available for singed and unsigned integers
     /// of 8, 16, 32, and 64 bit length. Tested with their minimum value.
     #[test]
     fn from_trait_min() {

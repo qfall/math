@@ -1,5 +1,5 @@
 //! [`PolyZq`] is a type of polynomial with arbitrarily many coefficients of type
-//! ['Zq'](crate::integer_mod_q::z_q::Zq).
+//! [`Zq`](crate::integer_mod_q::z_q::Zq).
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use super::modulus::Modulus;
