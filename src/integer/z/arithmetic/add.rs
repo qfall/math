@@ -30,7 +30,8 @@ Returns the sum of both numbers as a [`Z`].\n\n
     add,
     Z,
     flint_sys::fmpz::fmpz_add,
-    fmpz(0)
+    fmpz(0),
+    value
 );
 
 #[cfg(test)]
