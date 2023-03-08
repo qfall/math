@@ -181,7 +181,7 @@ mod test_ctx_init {
 
     use super::ctx_init;
 
-    // tests whether a small modulus ist instantiated correctly
+    /// tests whether a small modulus ist instantiated correctly
     #[test]
     fn working_example() {
         // fmpz(100) does not have to be manually cleared, since it is smaller
@@ -189,7 +189,7 @@ mod test_ctx_init {
         assert!(ctx_init(&fmpz(100)).is_ok())
     }
 
-    // tests whether a large modulus (> 64 bits) is instantiated correctly
+    /// tests whether a large modulus (> 64 bits) is instantiated correctly
     #[test]
     fn large_modulus() {
         let mut value = fmpz(0);
@@ -209,7 +209,7 @@ mod test_ctx_init {
         }
     }
 
-    // tests whether a negative input value returns an error
+    /// tests whether a negative input value returns an error
     #[test]
     fn negative_modulus() {
         // fmpz(-42) does not have to be manually cleared, since it is smaller
@@ -217,7 +217,7 @@ mod test_ctx_init {
         assert!(ctx_init(&fmpz(-42)).is_err())
     }
 
-    // tests whether a zero as input value returns an error
+    /// tests whether a zero as input value returns an error
     #[test]
     fn zero_modulus() {
         // fmpz(0) does not have to be manually cleared, since it is smaller

@@ -74,8 +74,8 @@ mod test_partial_eq {
 
     use super::Z;
 
-    // Demonstrate the different ways to use equal.
-    // We assume that they behave the same in the other tests.
+    /// Demonstrate the different ways to use equal.
+    /// We assume that they behave the same in the other tests.
     #[test]
     #[allow(clippy::op_ref)]
     fn equal_call_methods() {
@@ -89,8 +89,8 @@ mod test_partial_eq {
         assert_eq!(one_1, one_2);
     }
 
-    // Demonstrate the different ways to use not equal.
-    // We assume that they behave the same in the other tests.
+    /// Demonstrate the different ways to use not equal.
+    /// We assume that they behave the same in the other tests.
     #[test]
     #[allow(clippy::op_ref)]
     fn not_equal_call_methods() {
@@ -104,7 +104,7 @@ mod test_partial_eq {
         assert_ne!(one, two);
     }
 
-    // Test equal with small positive and negative numbers.
+    /// Test equal with small positive and negative numbers.
     #[test]
     fn equal_small() {
         let small_1 = Z::from(10);
@@ -118,7 +118,7 @@ mod test_partial_eq {
         assert!(!(negative == small_1));
     }
 
-    // Test not equal with small positive and negative numbers.
+    /// Test not equal with small positive and negative numbers.
     #[test]
     fn not_equal_small() {
         let small_1 = Z::from(10);
@@ -132,8 +132,8 @@ mod test_partial_eq {
         assert!(negative != small_1);
     }
 
-    // Test equal with a large [`Z`]
-    // (uses FLINT's pointer representation)
+    /// Test equal with a large [`Z`]
+    /// (uses FLINT's pointer representation)
     #[test]
     fn equal_large() {
         let max_1 = Z::from(u64::MAX);
@@ -148,8 +148,8 @@ mod test_partial_eq {
         assert!(!(min == max_1));
     }
 
-    // Test not equal with a large [`Z`]
-    // (uses FLINT's pointer representation)
+    /// Test not equal with a large [`Z`]
+    /// (uses FLINT's pointer representation)
     #[test]
     fn not_equal_large() {
         let max_1 = Z::from(u64::MAX);
@@ -164,8 +164,8 @@ mod test_partial_eq {
         assert!(min != max_1);
     }
 
-    // Test equal with a large [`Z`] (uses FLINT's pointer representation)
-    // and small [`Z`] (no pointer representation).
+    /// Test equal with a large [`Z`] (uses FLINT's pointer representation)
+    /// and small [`Z`] (no pointer representation).
     #[test]
     fn equal_large_small() {
         let max = Z::from(u64::MAX);
@@ -184,8 +184,8 @@ mod test_partial_eq {
         assert!(!(small_positive == min));
     }
 
-    // Test not equal with a large [`Z`] (uses FLINT's pointer representation)
-    // and small [`Z`] (no pointer representation).
+    /// Test not equal with a large [`Z`] (uses FLINT's pointer representation)
+    /// and small [`Z`] (no pointer representation).
     #[test]
     fn not_equal_large_small() {
         let max = Z::from(u64::MAX);

@@ -60,8 +60,8 @@ mod test_clone {
 
     use super::Z;
 
-    // check if large positive and negative values are cloned correctly
-    // additionally check if values are stored at different places in memory
+    /// check if large positive and negative values are cloned correctly
+    /// additionally check if values are stored at different places in memory
     #[test]
     fn large_int() {
         let max_1 = Z::from(u64::MAX);
@@ -76,8 +76,8 @@ mod test_clone {
         assert_eq!(min_1, min_2);
     }
 
-    // check if small positive, negative and zero values are cloned correctly
-    // additionally, check if the values are kept on the stack
+    /// check if small positive, negative and zero values are cloned correctly
+    /// additionally, check if the values are kept on the stack
     #[test]
     fn small_int() {
         let pos_1 = Z::from(16);
@@ -96,7 +96,7 @@ mod test_clone {
         assert_eq!(neg_1, neg_2);
     }
 
-    // check if a cloned value is still alive after the original value ran out of scope
+    /// check if a cloned value is still alive after the original value ran out of scope
     #[test]
     #[allow(clippy::redundant_clone)]
     fn keep_alive() {

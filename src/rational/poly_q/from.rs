@@ -87,36 +87,36 @@ mod test_from_str {
 
     use super::PolyQ;
 
-    // tests whether a correctly formatted string outputs an instantiation of a
-    // polynomial, i.e. does not return an error
+    /// tests whether a correctly formatted string outputs an instantiation of a
+    /// polynomial, i.e. does not return an error
     #[test]
     fn working_example() {
         assert!(PolyQ::from_str("3  1 2/5 -3/2").is_ok());
     }
 
-    // tests whether a falsely formatted string (missing double-space) returns
-    // an error
+    /// tests whether a falsely formatted string (missing double-space) returns
+    /// an error
     #[test]
     fn missing_whitespace() {
         assert!(PolyQ::from_str("3 1 2/5 -3/2").is_err());
     }
 
-    // tests whether a falsely formatted string (too many whitespaces) returns
-    // an error
+    /// tests whether a falsely formatted string (too many whitespaces) returns
+    /// an error
     #[test]
     fn too_many_whitespaces() {
         assert!(PolyQ::from_str("3  1  2/5  -3/2").is_err());
     }
 
-    // tests whether a falsely formatted string (wrong number of total
-    // coefficients) returns an error
+    /// tests whether a falsely formatted string (wrong number of total
+    /// coefficients) returns an error
     #[test]
     fn false_number_of_coefficient() {
         assert!(PolyQ::from_str("4  1 2/5 -3/2").is_err());
     }
 
-    // tests whether a falsely formatted string (too many divisors) returns
-    // an error
+    /// tests whether a falsely formatted string (too many divisors) returns
+    /// an error
     #[test]
     fn too_many_divisors() {
         assert!(PolyQ::from_str("3  1 2/5 -3/2/3").is_err());
