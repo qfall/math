@@ -13,7 +13,7 @@ impl FromStr for PolyOverZq {
     type Err = MathError;
 
     /// Creating a polynomial with arbitrarily many coefficients of type
-    /// [`Zq`](crate::integer_mod_q::z_q::Zq).
+    /// [`Zq`](crate::integer_mod_q::Zq).
     ///
     /// Parameters:
     /// - `s`: the polynomial of form:
