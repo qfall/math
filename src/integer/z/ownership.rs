@@ -98,6 +98,7 @@ mod test_clone {
 
     // check if a cloned value is still alive after the original value ran out of scope
     #[test]
+    #[allow(clippy::redundant_clone)]
     fn keep_alive() {
         let a: Z;
         {

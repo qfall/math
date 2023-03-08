@@ -11,7 +11,7 @@ use std::fmt;
 impl fmt::Display for PolyZq {
     /// Allows to convert a [`PolyZq`] into a [`String`].
     ///
-    /// # Example 1
+    /// # Examples
     /// ```rust
     /// use math::integer_mod_q::PolyZq;
     /// use std::str::FromStr;
@@ -21,7 +21,6 @@ impl fmt::Display for PolyZq {
     /// println!("{}", poly);
     /// ```
     ///
-    /// # Example 2
     /// ```rust
     /// use math::integer_mod_q::PolyZq;
     /// use std::str::FromStr;
