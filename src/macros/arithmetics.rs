@@ -79,7 +79,6 @@ pub(crate) use arithmetic_trait;
 /// trait with the signature:
 ///
 /// ```impl *trait* for *type*```
-
 macro_rules! arithmetic_trait_borrowed_to_owned {
     ($trait:ident, $trait_function:ident, $type:ident) => {
         impl $trait for $type {
@@ -109,7 +108,6 @@ pub(crate) use arithmetic_trait_borrowed_to_owned;
 /// ```impl *trait*<&*type*> for *type*```
 ///
 /// ```impl *trait*<*type*> for &*type*```
-
 macro_rules! arithmetic_trait_mixed_borrowed_owned {
     ($trait:ident, $trait_function:ident, $type:ident) => {
         impl $trait<$type> for &$type {
