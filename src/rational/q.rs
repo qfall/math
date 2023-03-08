@@ -5,6 +5,7 @@ use flint_sys::fmpq::fmpq;
 
 mod arithmetic;
 mod cmp;
+mod arithmetic;
 mod default;
 mod from;
 mod ownership;
