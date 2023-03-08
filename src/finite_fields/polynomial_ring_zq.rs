@@ -1,5 +1,5 @@
-//! [`PolynomialRingZq`] is a type of ring over $Z[X]/f(X)$.
-//! Where f(X) is a [`PolyOverZq`](crate::integer_mod_q::PolyZq).
+//! [`PolynomialRingZq`] is a type of ring over PolyOverZq/f(X).
+//! Where f(X) is a [`PolyOverZq`](crate::integer_mod_q::PolyOverZq).
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use super::ModulusPolynomialRingZq;
@@ -7,7 +7,7 @@ use crate::integer::PolyOverZ;
 
 #[allow(dead_code)]
 /// [`PolynomialRingZq`] represents polynomials over the finite field
-/// Zq[X]/f(X) where q is prime and f(X) is irreducible.
+/// PolyOverZq/f(X) where q is prime and f(X) is irreducible.
 ///
 /// Attributes
 /// - `poly`: holds the value
