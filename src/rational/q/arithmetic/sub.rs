@@ -39,7 +39,7 @@ Returns the result of the subtraction as a [`Q`].\n\n
 );
 
 #[cfg(test)]
-mod tests {
+mod test_sub {
     use std::str::FromStr;
 
     use super::Q;
@@ -78,5 +78,11 @@ mod tests {
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a - &b;
         //assert!(c == Q::from_str("21").unwrap());    todo
+    }
+
+    #[test]
+    // testing subtraction for large numerators and divisors
+    fn add_large(){
+        //todo
     }
 }

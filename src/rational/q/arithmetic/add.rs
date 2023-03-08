@@ -39,7 +39,7 @@ Returns the sum of both numbers as a [`Q`].\n\n
 );
 
 #[cfg(test)]
-mod tests {
+mod test_add {
     use std::str::FromStr;
 
     use super::Q;
@@ -78,5 +78,11 @@ mod tests {
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a + &b;
         //assert!(c == Q::from_str("63").unwrap());    todo
+    }
+
+    #[test]
+    // testing addition for large numerators and divisors
+    fn add_large(){
+        //todo
     }
 }
