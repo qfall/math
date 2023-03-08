@@ -60,7 +60,7 @@ pub(crate) use from_trait;
 macro_rules! from_type {
     ($source_type:ident, $bridge_type:ident, $destination_type:ident, $( $function:ident )::*) => {
         // This macro could be modified to create it's own `impl` block and also
-        // automatically create the corresponding [From] trait. However, this
+        // automatically create the corresponding [`From`] trait. However, this
         // also adds a new `impl` block in the documentation. This is discussed in the
         // rust-lang issues [82408](https://github.com/rust-lang/rust/issues/82408)
         // and [52563](https://github.com/rust-lang/rust/issues/52563).
