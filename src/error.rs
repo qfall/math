@@ -110,7 +110,7 @@ pub enum MathError {
     InvalidStringToZInput(String),
     /// if a provided index is out of bounds
     #[error(
-        "invalid index submitted. The index is out of bounds
+        "invalid index submitted. The index is out of bounds.
         The index has to {0}, and the provided value is {1}"
     )]
     OutOfBounds(String, String),
