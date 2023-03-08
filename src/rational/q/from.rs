@@ -4,16 +4,13 @@
 //!
 //! The explicit functions contain the documentation.
 
-use std::{ffi::CString, str::FromStr};
-
+use super::Q;
+use crate::error::MathError;
 use flint_sys::{
     fmpq::{fmpq, fmpq_clear, fmpq_set_str},
     fmpz::fmpz_is_zero,
 };
-
-use crate::error::MathError;
-
-use super::Q;
+use std::{ffi::CString, str::FromStr};
 
 impl FromStr for Q {
     type Err = MathError;

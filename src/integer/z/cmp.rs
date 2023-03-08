@@ -2,7 +2,6 @@
 //! This uses the traits from [`std::cmp`].
 
 use super::Z;
-
 use flint_sys::fmpz::{fmpz_cmp, fmpz_equal};
 use std::cmp::Ordering;
 

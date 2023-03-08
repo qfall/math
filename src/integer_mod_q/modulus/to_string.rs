@@ -3,10 +3,9 @@
 //!
 //! This includes the [`Display`](std::fmt::Display) trait.
 
-use flint_sys::fmpz::fmpz_get_str;
-
 use super::Modulus;
 use core::fmt;
+use flint_sys::fmpz::fmpz_get_str;
 use std::{ffi::CStr, ptr::null_mut};
 
 impl fmt::Display for Modulus {

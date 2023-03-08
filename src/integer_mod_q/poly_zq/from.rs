@@ -72,9 +72,9 @@ impl FromStr for PolyZq {
 
 #[cfg(test)]
 mod test_from_str {
-    use std::str::FromStr;
 
     use super::PolyZq;
+    use std::str::FromStr;
 
     // tests whether a falsely formatted string (modulus is 0) returns an
     // error

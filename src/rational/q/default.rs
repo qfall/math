@@ -1,8 +1,7 @@
 //! Default value for a [`Q`].
 
-use flint_sys::{fmpq::fmpq, fmpz::fmpz};
-
 use super::Q;
+use flint_sys::{fmpq::fmpq, fmpz::fmpz};
 
 impl Default for Q {
     /// Returns an instantiation of [`Q`] with value '0/1'.
