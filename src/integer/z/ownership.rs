@@ -2,15 +2,6 @@
 //! important for ownership such as the [`Clone`] and [`Drop`] trait.
 //!
 //! The explicit functions contain the documentation.
-//!
-//! # Example
-//! ```
-//! use math::integer::Z;
-//!
-//! let a = Z::from_i64(1);
-//! let b = a.clone();
-//! drop(a);
-//! ```
 
 use super::Z;
 use flint_sys::fmpz::{fmpz, fmpz_clear, fmpz_set};
