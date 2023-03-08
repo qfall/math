@@ -8,6 +8,7 @@
 /// - type: the type the trait is implemented for (e.g. [`Z`], [`Q`])
 /// - function: The function that needs to be called
 /// (e.g. [`flint_sys::fmpz::fmpz_add`]).
+/// - result_parameter: todo
 /// - default: the default value that is taken for the output for the function.
 ///
 /// Returns the standard and borrowed Implementation code for the [`*trait*`]
