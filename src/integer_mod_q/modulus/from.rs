@@ -228,37 +228,37 @@ mod test_ctx_init {
 
 #[cfg(test)]
 mod test_from_str {
-    use std::str::FromStr;
 
     use super::Modulus;
+    use std::str::FromStr;
 
-    // tests whether a correctly formatted string outputs an instantiation of a
-    // Modulus, i.e. does not return an error
+    /// tests whether a correctly formatted string outputs an instantiation of a
+    /// Modulus, i.e. does not return an error
     #[test]
     fn working_example() {
         assert!(Modulus::from_str("42").is_ok());
     }
 
-    // tests whether a large value (> 64 bits) is instantiated correctly
+    /// tests whether a large value (> 64 bits) is instantiated correctly
     #[test]
     fn large_value() {
         assert!(Modulus::from_str(&"1".repeat(65)).is_ok())
     }
 
-    // tests whether a falsely formatted string (wrong whitespaces) returns an
-    // error
+    /// tests whether a falsely formatted string (wrong whitespaces) returns an
+    /// error
     #[test]
     fn false_format_whitespaces() {
         assert!(Modulus::from_str("4 2").is_err());
     }
 
-    // tests whether a falsely formatted string (wrong symbols) returns an error
+    /// tests whether a falsely formatted string (wrong symbols) returns an error
     #[test]
     fn false_format_symbols() {
         assert!(Modulus::from_str("b a").is_err());
     }
 
-    // tests whether a false string (negative) returns an error
+    /// tests whether a false string (negative) returns an error
     #[test]
     fn false_sign() {
         assert!(Modulus::from_str("-42").is_err());

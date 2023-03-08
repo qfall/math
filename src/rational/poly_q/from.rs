@@ -34,7 +34,6 @@ impl Default for PolyQ {
 impl FromStr for PolyQ {
     type Err = MathError;
 
-    // TODO: the second whitespace is not shown in the Rust-documentation
     /// Create a new polynomial with arbitrarily many coefficients of type
     /// [`Q`](crate::rational::q::Q).
     ///
@@ -127,8 +126,10 @@ mod test_from_str {
 // ensure that init initializes an empty polynomial
 #[cfg(test)]
 mod test_init {
+
     use crate::rational::PolyQ;
 
+    /// Ensure that [`Default`] initializes the zero polynomial appropriately
     #[test]
     fn init_zero() {
         let poly_zero = PolyQ::default();

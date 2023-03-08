@@ -51,9 +51,9 @@ impl fmt::Display for Modulus {
 
 #[cfg(test)]
 mod test_to_string {
-    use std::str::FromStr;
 
     use crate::integer_mod_q::Modulus;
+    use std::str::FromStr;
 
     /// tests whether a large modulus works in a roundtrip
     #[test]

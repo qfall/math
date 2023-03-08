@@ -89,13 +89,12 @@ impl MatZ {
 
 #[cfg(test)]
 mod test_get_entry {
-    use std::str::FromStr;
-
-    use crate::integer::MatZ;
 
     use super::Z;
+    use crate::integer::MatZ;
+    use std::str::FromStr;
 
-    // Ensure that getting entries works with large numbers.
+    /// Ensure that getting entries works with large numbers.
     #[test]
     fn max_int_positive() {
         let mut matrix = MatZ::new(5, 10).unwrap();
@@ -107,7 +106,7 @@ mod test_get_entry {
         assert_eq!(Z::from_i64(i64::MAX), entry);
     }
 
-    // Ensure that getting entries works with large numbers (larger than i64).
+    /// Ensure that getting entries works with large numbers (larger than i64).
     #[test]
     fn big_positive() {
         let mut matrix = MatZ::new(5, 10).unwrap();
@@ -119,7 +118,7 @@ mod test_get_entry {
         assert_eq!(Z::from_str(&"1".repeat(65)).unwrap(), entry);
     }
 
-    // Ensure that getting entries works with large negative numbers.
+    /// Ensure that getting entries works with large negative numbers.
     #[test]
     fn max_int_negative() {
         let mut matrix = MatZ::new(5, 10).unwrap();
@@ -131,7 +130,7 @@ mod test_get_entry {
         assert_eq!(Z::from_i64(i64::MIN), entry);
     }
 
-    // Ensure that getting entries works with large negative numbers (larger than i64).
+    /// Ensure that getting entries works with large negative numbers (larger than i64).
     #[test]
     fn big_negative() {
         let mut matrix = MatZ::new(5, 10).unwrap();
@@ -149,7 +148,7 @@ mod test_get_entry {
         assert_eq!(Z::from_str(&test_entry).unwrap(), entry);
     }
 
-    // Ensure that getting entries at (0,0) works.
+    /// Ensure that getting entries at (0,0) works.
     #[test]
     fn getting_at_zero() {
         let mut matrix = MatZ::new(5, 10).unwrap();
@@ -161,7 +160,7 @@ mod test_get_entry {
         assert_eq!(entry, Z::from_i64(i64::MIN));
     }
 
-    // Ensure that a wrong number of rows yields an Error.
+    /// Ensure that a wrong number of rows yields an Error.
     #[test]
     fn error_wrong_row() {
         let matrix = MatZ::new(5, 10).unwrap();
@@ -169,7 +168,7 @@ mod test_get_entry {
         assert!(matrix.get_entry(5, 1).is_err());
     }
 
-    // Ensure that a wrong number of columns yields an Error.
+    /// Ensure that a wrong number of columns yields an Error.
     #[test]
     fn error_wrong_column() {
         let matrix = MatZ::new(5, 10).unwrap();
@@ -177,7 +176,7 @@ mod test_get_entry {
         assert!(matrix.get_entry(1, 100).is_err());
     }
 
-    // Ensure that the entry is a deep copy and not just a clone of the reference.
+    /// Ensure that the entry is a deep copy and not just a clone of the reference.
     #[test]
     fn memory_test() {
         let mut matrix = MatZ::new(5, 10).unwrap();
@@ -192,9 +191,10 @@ mod test_get_entry {
 
 #[cfg(test)]
 mod test_get_num {
+
     use crate::integer::MatZ;
 
-    // Ensure that the getter for rows works correctly.
+    /// Ensure that the getter for rows works correctly.
     #[test]
     fn num_rows() {
         let matrix = MatZ::new(5, 10).unwrap();
@@ -202,7 +202,7 @@ mod test_get_num {
         assert_eq!(matrix.get_num_rows(), 5);
     }
 
-    // Ensure that the getter for columns works correctly.
+    /// Ensure that the getter for columns works correctly.
     #[test]
     fn num_columns() {
         let matrix = MatZ::new(5, 10).unwrap();

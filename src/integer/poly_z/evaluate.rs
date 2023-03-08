@@ -82,10 +82,10 @@ impl PolyZ {
 
 #[cfg(test)]
 mod test_evaluate {
-    use std::str::FromStr;
 
     use crate::integer::{PolyZ, Z};
     use crate::traits::Evaluate;
+    use std::str::FromStr;
 
     /// tests if evaluate works for [`Z`] as input
     #[test]

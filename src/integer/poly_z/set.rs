@@ -98,6 +98,7 @@ impl PolyZ {
 
 #[cfg(test)]
 mod test_set_coeff {
+
     use crate::integer::{PolyZ, Z};
     use std::str::FromStr;
 

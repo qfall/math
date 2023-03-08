@@ -22,7 +22,7 @@ mod tests_init {
 
     use super::Z;
 
-    // Ensure that initialization of default value works.
+    /// Ensure that [`Default`] initializes [`Z`] with `0`.
     #[test]
     fn init() {
         assert_eq!(Z::default(), Z::from(0));

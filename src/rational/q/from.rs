@@ -101,11 +101,11 @@ impl FromStr for Q {
 
 #[cfg(test)]
 mod tests_from_str {
-    use std::str::FromStr;
 
     use crate::rational::Q;
+    use std::str::FromStr;
 
-    // Ensure that initialization with large numerators and denominators works.
+    /// Ensure that initialization with large numerators and denominators works.
     #[test]
     fn max_int_positive() {
         let mut s1 = (i64::MAX).to_string();
@@ -120,8 +120,8 @@ mod tests_from_str {
         assert!(Q::from_str(&s2).is_ok());
     }
 
-    // Ensure that initialization with large numerators and denominators
-    // (larger than i64) works.
+    /// Ensure that initialization with large numerators and denominators
+    /// (larger than i64) works.
     #[test]
     fn big_positive() {
         let mut s1 = "1".repeat(65);
@@ -136,8 +136,8 @@ mod tests_from_str {
         assert!(Q::from_str(&s2).is_ok());
     }
 
-    // Ensure that initialization with large negative numerators and
-    // denominators works.
+    /// Ensure that initialization with large negative numerators and
+    /// denominators works.
     #[test]
     fn max_int_negative() {
         let mut s1 = (i64::MIN).to_string();
@@ -152,8 +152,8 @@ mod tests_from_str {
         assert!(Q::from_str(&s2).is_ok());
     }
 
-    // Ensure that initialization with large negative numerators and
-    // denominators (larger than i64) works.
+    /// Ensure that initialization with large negative numerators and
+    /// denominators (larger than [`i64`]) works.
     #[test]
     fn big_negative() {
         let mut s1 = "-".to_string();
@@ -169,55 +169,55 @@ mod tests_from_str {
         assert!(Q::from_str(&s2).is_ok());
     }
 
-    // Ensure that an initialization with two minus works.
+    /// Ensure that an initialization with two minus works.
     #[test]
     fn no_error_both_minus() {
         assert!(Q::from_str("-3/-2").is_ok());
     }
 
-    // Ensure that wrong initialization yields an Error.
+    /// Ensure that wrong initialization yields an Error.
     #[test]
     fn error_wrong_letters() {
         assert!(Q::from_str("hbrkt35itu3gg").is_err());
     }
 
-    // Ensure that wrong initialization yields an Error.
+    /// Ensure that wrong initialization yields an Error.
     #[test]
     fn error_wrong_order() {
         assert!(Q::from_str("3/2-").is_err());
     }
 
-    // Ensure that wrong initialization yields an Error.
+    /// Ensure that wrong initialization yields an Error.
     #[test]
     fn error_two_divisions() {
         assert!(Q::from_str("3/2/4").is_err());
     }
 
-    // Ensure that wrong initialization yields an Error.
+    /// Ensure that wrong initialization yields an Error.
     #[test]
     fn error_wrong_minus() {
         assert!(Q::from_str("-3-4/2").is_err());
     }
 
-    // Ensure that wrong initialization yields an Error.
+    /// Ensure that wrong initialization yields an Error.
     #[test]
     fn error_whitespace_mid() {
         assert!(Q::from_str("876/ 543").is_err());
     }
 
-    // Ensure that wrong initialization yields an Error.
+    /// Ensure that wrong initialization yields an Error.
     #[test]
     fn error_whitespace_start() {
         assert!(Q::from_str(" 876543").is_err());
     }
 
-    // Ensure that wrong initialization yields an Error.
+    /// Ensure that wrong initialization yields an Error.
     #[test]
     fn error_whitespace_end() {
         assert!(Q::from_str("876543 ").is_err());
     }
 
-    // Ensure that wrong initialization yields an Error.
+    /// Ensure that wrong initialization yields an Error.
     #[test]
     fn error_whitespace_minus() {
         assert!(Q::from_str("- 876543").is_err());

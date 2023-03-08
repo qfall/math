@@ -125,6 +125,7 @@ mod test_from_str {
 mod test_init {
     use crate::integer::PolyZ;
 
+    /// Check if [`Default`] initializes the zero polynomial appropriately
     #[test]
     fn init_zero() {
         let poly_zero = PolyZ::default();
