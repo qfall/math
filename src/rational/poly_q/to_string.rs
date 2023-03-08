@@ -11,7 +11,7 @@ use std::ffi::CStr;
 impl fmt::Display for PolyQ {
     /// Allows to convert a polynomial of type [`PolyQ`] into a [`String`].
     ///
-    /// # Example 1
+    /// # Examples
     /// ```rust
     /// use math::rational::PolyQ;
     /// use std::str::FromStr;
@@ -21,7 +21,6 @@ impl fmt::Display for PolyQ {
     /// println!("{}", poly);
     /// ```
     ///
-    /// # Example 2
     /// ```rust
     /// use math::rational::PolyQ;
     /// use std::str::FromStr;

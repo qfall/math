@@ -11,7 +11,7 @@ use std::ffi::CStr;
 impl fmt::Display for PolyZ {
     /// Allows to convert a polynomial of type [`PolyZ`] into a [`String`].
     ///
-    /// # Example 1
+    /// # Examples
     /// ```rust
     /// use math::integer::PolyZ;
     /// use std::str::FromStr;
@@ -21,7 +21,6 @@ impl fmt::Display for PolyZ {
     /// println!("{}", poly);
     /// ```
     ///
-    /// # Example 2
     /// ```rust
     /// use math::integer::PolyZ;
     /// use std::str::FromStr;
