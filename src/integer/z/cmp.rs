@@ -209,6 +209,7 @@ mod test_partial_eq {
 #[allow(clippy::neg_cmp_op_on_partial_ord)]
 #[cfg(test)]
 mod test_partial_ord {
+
     use super::Z;
 
     /// Test less (<) comparison between small positive and negative [`Z`]

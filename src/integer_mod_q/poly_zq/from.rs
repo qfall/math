@@ -12,8 +12,6 @@ use std::{mem::MaybeUninit, str::FromStr};
 impl FromStr for PolyZq {
     type Err = MathError;
 
-    // TODO: the second whitespace is not shown in the Rust-documentation
-    ///
     /// Creating a polynomial with arbitrarily many coefficients of type
     /// [`Zq`](crate::integer_mod_q::z_q::Zq).
     ///
@@ -76,68 +74,68 @@ mod test_from_str {
     use super::PolyZq;
     use std::str::FromStr;
 
-    // tests whether a falsely formatted string (modulus is 0) returns an
-    // error
+    /// tests whether a falsely formatted string (modulus is 0) returns an
+    /// error
     #[test]
     fn modulus_zero_throws_error() {
         assert!(PolyZq::from_str("4  0 1 -2 3 mod 0").is_err())
     }
 
-    // tests whether a falsely formatted string (several modulus) returns
-    // an error
+    /// tests whether a falsely formatted string (several modulus) returns
+    /// an error
     #[test]
     fn several_mod() {
         assert!(PolyZq::from_str("4  0 1 -2 3 mod 42 mod 13").is_err());
     }
 
-    // tests whether a falsely formatted string (wrong whitespaces) returns an
-    // error
+    /// tests whether a falsely formatted string (wrong whitespaces) returns an
+    /// error
     #[test]
     fn whitespaces_in_modulus() {
         assert!(PolyZq::from_str("4  0 1 -2 3 mod 4 2").is_err());
     }
 
-    // tests whether a falsely formatted string (wrong symbols) returns an error
+    /// tests whether a falsely formatted string (wrong symbols) returns an error
     #[test]
     fn false_format_symbols_modulus() {
         assert!(PolyZq::from_str("1  1 mod ba").is_err());
     }
 
-    // tests whether a falsely formatted string (wrong symbols) returns an error
+    /// tests whether a falsely formatted string (wrong symbols) returns an error
     #[test]
     fn false_format_symbols_polynomial() {
         assert!(PolyZq::from_str("1  ba mod 42").is_err());
     }
 
-    // tests whether a false string (negative modulus) returns an error
+    /// tests whether a false string (negative modulus) returns an error
     #[test]
     fn false_sign() {
         assert!(PolyZq::from_str("4  0 1 -2 3 mod -42").is_err());
     }
 
-    // tests whether a falsely formatted string (missing double-space) returns
-    // an error
+    /// tests whether a falsely formatted string (missing double-space) returns
+    /// an error
     #[test]
     fn false_format() {
         assert!(PolyZq::from_str("4 0 1 -2 3 mod 42").is_err());
     }
 
-    // tests whether a falsely formatted string (wrong number of total
-    // coefficients) returns an error
+    /// tests whether a falsely formatted string (wrong number of total
+    /// coefficients) returns an error
     #[test]
     fn false_number_of_coefficient() {
         assert!(PolyZq::from_str("5  0 1 -2 3 mod 42").is_err());
     }
 
-    // tests whether a falsely formatted string (missing double-space) returns
-    // an error
+    /// tests whether a falsely formatted string (missing double-space) returns
+    /// an error
     #[test]
     fn missing_whitespace() {
         assert!(PolyZq::from_str("4 0 1 -2 3 mod 42").is_err());
     }
 
-    // tests whether a falsely formatted string (too many whitespaces) returns
-    // an error
+    /// tests whether a falsely formatted string (too many whitespaces) returns
+    /// an error
     #[test]
     fn too_many_whitespaces() {
         assert!(PolyZq::from_str("4  0  1  -2  3 mod 42").is_err());

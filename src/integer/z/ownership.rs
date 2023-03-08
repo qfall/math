@@ -114,7 +114,7 @@ mod test_drop {
 
     use super::Z;
 
-    // Check whether freed memory is reused afterwards
+    /// Check whether freed memory is reused afterwards
     #[test]
     fn free_memory() {
         let a = Z::from(u64::MAX);
@@ -130,8 +130,8 @@ mod test_drop {
         assert_ne!(b.value.0, Z::from(u64::MAX).value.0);
     }
 
-    // This test shows why false copies are a problem, which are prevented for users of the library
-    // due to attribute privacy of the `value` attribute in [`Z`]
+    /// This test shows why false copies are a problem, which are prevented for users of the library
+    /// due to attribute privacy of the `value` attribute in [`Z`]
     #[test]
     fn memory_equality() {
         let a = Z::from(u64::MAX);

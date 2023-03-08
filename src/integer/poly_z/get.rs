@@ -44,9 +44,9 @@ impl PolyZ {
 
 #[cfg(test)]
 mod test_get_coeff {
-    use std::str::FromStr;
 
     use crate::integer::{PolyZ, Z};
+    use std::str::FromStr;
 
     /// ensure that 0 is returned if the provided index is not yet set
     #[test]

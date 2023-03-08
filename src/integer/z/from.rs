@@ -198,29 +198,29 @@ mod tests_from_int {
 
 #[cfg(test)]
 mod tests_from_str {
-    use std::str::FromStr;
 
     use crate::integer::Z;
+    use std::str::FromStr;
 
-    // Ensure that initialization with large numbers works.
+    /// Ensure that initialization with large numbers works.
     #[test]
     fn max_int_positive() {
         assert!(Z::from_str(&(i64::MAX).to_string()).is_ok());
     }
 
-    // Ensure that initialization with large numbers (larger than i64) works.
+    /// Ensure that initialization with large numbers (larger than i64) works.
     #[test]
     fn big_positive() {
         assert!(Z::from_str(&"1".repeat(65)).is_ok());
     }
 
-    // Ensure that initialization with large negative numbers works.
+    /// Ensure that initialization with large negative numbers works.
     #[test]
     fn max_int_negative() {
         assert!(Z::from_str(&(i64::MIN).to_string()).is_ok());
     }
 
-    // Ensure that initialization with large negative numbers (larger than i64) works.
+    /// Ensure that initialization with large negative numbers (larger than i64) works.
     #[test]
     fn big_negative() {
         let mut s = "-".to_string();
@@ -229,43 +229,43 @@ mod tests_from_str {
         assert!(Z::from_str(&s).is_ok());
     }
 
-    // Ensure that wrong initialization yields an Error.
+    /// Ensure that wrong initialization yields an Error.
     #[test]
     fn error_wrong_letters() {
         assert!(Z::from_str("hbrkt35itu3gg").is_err());
     }
 
-    // Ensure that wrong initialization yields an Error.
+    /// Ensure that wrong initialization yields an Error.
     #[test]
     fn error_wrong_order() {
         assert!(Z::from_str("3-2").is_err());
     }
 
-    // Ensure that wrong initialization yields an Error.
+    /// Ensure that wrong initialization yields an Error.
     #[test]
     fn error_rational() {
         assert!(Z::from_str("876/543").is_err());
     }
 
-    // Ensure that wrong initialization yields an Error.
+    /// Ensure that wrong initialization yields an Error.
     #[test]
     fn whitespace_mid() {
         assert!(Z::from_str("876 543").is_err());
     }
 
-    // Ensure that wrong initialization yields an Error.
+    /// Ensure that wrong initialization yields an Error.
     #[test]
     fn whitespace_start() {
         assert!(Z::from_str(" 876543").is_err());
     }
 
-    // Ensure that wrong initialization yields an Error.
+    /// Ensure that wrong initialization yields an Error.
     #[test]
     fn whitespace_end() {
         assert!(Z::from_str("876543 ").is_err());
     }
 
-    // Ensure that wrong initialization yields an Error.
+    /// Ensure that wrong initialization yields an Error.
     #[test]
     fn whitespace_minus() {
         assert!(Z::from_str("- 876543").is_err());

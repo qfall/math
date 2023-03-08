@@ -48,6 +48,7 @@ pub fn evaluate_coordinate<S: TryInto<i64> + Display + Copy>(
 
 #[cfg(test)]
 mod test_eval_coordinate {
+
     use super::evaluate_coordinate;
 
     /// tests that negative coordinates are not accepted
