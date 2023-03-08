@@ -9,6 +9,13 @@ mod set;
 
 #[allow(dead_code)]
 #[derive(Debug)]
+/// [`MatZ`] is a matrix with entries of type [`Z`](crate::integer::Z).
+///
+/// Attributes:
+/// - `matrix`: holds [FLINT](https://flintlib.org/)'s [struct](fmpz_mat_struct)
+///     of the [`Z`](crate::integer::Z) matrix
+///
+/// # Examples
 pub struct MatZ {
     pub(crate) matrix: fmpz_mat_struct,
 }

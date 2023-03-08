@@ -11,7 +11,7 @@ use std::ffi::CStr;
 impl fmt::Display for PolyQ {
     /// Allows to convert a polynomial of type [`PolyQ`] into a [`String`].
     ///
-    /// # Example 1
+    /// # Examples
     /// ```rust
     /// use math::rational::PolyQ;
     /// use std::str::FromStr;
@@ -21,7 +21,6 @@ impl fmt::Display for PolyQ {
     /// println!("{}", poly);
     /// ```
     ///
-    /// # Example 2
     /// ```rust
     /// use math::rational::PolyQ;
     /// use std::str::FromStr;
@@ -40,12 +39,12 @@ impl fmt::Display for PolyQ {
 
 #[cfg(test)]
 mod test_to_string {
-    use std::str::FromStr;
 
     use super::PolyQ;
+    use std::str::FromStr;
 
-    // tests whether a polynomial that is created using a string, returns the
-    // same string, when it is converted back to a string
+    /// tests whether a polynomial that is created using a string, returns the
+    /// same string, when it is converted back to a string
     #[test]
     fn working_keeps_same_string() {
         let cmp_string = "5  0 1 2/5 -3/2 1";
@@ -54,8 +53,8 @@ mod test_to_string {
         assert_eq!(cmp_string, cmp.to_string())
     }
 
-    // tests whether a polynomial that is created using a string, returns a
-    // string that can be used to create a polynomial
+    /// tests whether a polynomial that is created using a string, returns a
+    /// string that can be used to create a polynomial
     #[test]
     fn working_use_result_of_to_string_as_input() {
         let cmp_string = "5  0 1 2/5 -3/2 1";

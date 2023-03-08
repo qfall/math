@@ -4,11 +4,11 @@
 
 use flint_sys::fmpz_poly::fmpz_poly_struct;
 
-pub mod evaluate;
-pub mod from;
-pub mod get;
-pub mod set;
-pub mod to_string;
+mod evaluate;
+mod from;
+mod get;
+mod set;
+mod to_string;
 
 #[derive(Debug)]
 /// [`PolyZ`] is a type of polynomial with arbitrarily many coefficients of type

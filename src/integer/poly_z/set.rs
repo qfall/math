@@ -1,12 +1,10 @@
 //! Implementations to set coefficients for a [`PolyZ`] value from other types.
 //! Each reasonable type should be used to set a coefficient.
 
-use std::fmt::Display;
-
-use flint_sys::fmpz_poly::fmpz_poly_set_coeff_fmpz;
-
 use super::PolyZ;
 use crate::{error::MathError, integer::Z, utils::coordinate::evaluate_coordinate};
+use flint_sys::fmpz_poly::fmpz_poly_set_coeff_fmpz;
+use std::fmt::Display;
 
 impl PolyZ {
     // It is limited to i16, because an i32 as a coefficient would simply take far too
@@ -100,6 +98,7 @@ impl PolyZ {
 
 #[cfg(test)]
 mod test_set_coeff {
+
     use crate::integer::{PolyZ, Z};
     use std::str::FromStr;
 

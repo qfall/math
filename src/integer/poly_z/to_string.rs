@@ -11,7 +11,7 @@ use std::ffi::CStr;
 impl fmt::Display for PolyZ {
     /// Allows to convert a polynomial of type [`PolyZ`] into a [`String`].
     ///
-    /// # Example 1
+    /// # Examples
     /// ```rust
     /// use math::integer::PolyZ;
     /// use std::str::FromStr;
@@ -21,7 +21,6 @@ impl fmt::Display for PolyZ {
     /// println!("{}", poly);
     /// ```
     ///
-    /// # Example 2
     /// ```rust
     /// use math::integer::PolyZ;
     /// use std::str::FromStr;
@@ -40,12 +39,12 @@ impl fmt::Display for PolyZ {
 
 #[cfg(test)]
 mod test_to_string {
-    use std::str::FromStr;
 
     use super::PolyZ;
+    use std::str::FromStr;
 
-    // tests whether a polynomial that is created using a string, returns the
-    // same string, when it is converted back to a string
+    /// tests whether a polynomial that is created using a string, returns the
+    /// same string, when it is converted back to a string
     #[test]
     fn working_keeps_same_string() {
         let cmp_string = "3  1 2 -3";
@@ -54,8 +53,8 @@ mod test_to_string {
         assert_eq!(cmp_string, cmp.to_string())
     }
 
-    // tests whether a polynomial that is created using a string, returns a
-    // string that can be used to create a polynomial
+    /// tests whether a polynomial that is created using a string, returns a
+    /// string that can be used to create a polynomial
     #[test]
     fn working_use_result_of_to_string_as_input() {
         let cmp_string = "3  1 2 -3";
@@ -66,7 +65,7 @@ mod test_to_string {
         assert!(PolyZ::from_str(&cmp_string2).is_ok())
     }
 
-    // tests whether large entries are correctly converted using to_string
+    /// tests whether large entries are correctly converted using to_string
     #[test]
     fn large_entries() {
         let cmp_string = format!("3  1 {} -{}", u64::MAX, u64::MAX);

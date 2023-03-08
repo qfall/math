@@ -4,8 +4,8 @@
 
 use flint_sys::fmpq_poly::fmpq_poly_struct;
 
-pub mod from;
-pub mod to_string;
+mod from;
+mod to_string;
 
 #[derive(Debug)]
 /// [`PolyQ`] is a type of polynomial with arbitrarily many coefficients of type

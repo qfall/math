@@ -1,12 +1,9 @@
 //! Implementation to set entries from a [`MatZ`] matrix.
 
-use std::fmt::Display;
-
-use flint_sys::{fmpz::fmpz_set, fmpz_mat::fmpz_mat_entry};
-
-use crate::{error::MathError, integer::Z, utils::coordinate::evaluate_coordinate};
-
 use super::MatZ;
+use crate::{error::MathError, integer::Z, utils::coordinate::evaluate_coordinate};
+use flint_sys::{fmpz::fmpz_set, fmpz_mat::fmpz_mat_entry};
+use std::fmt::Display;
 
 impl MatZ {
     /// Sets the value of a specific matrix entry according to a given `value` of type [`Z`].
@@ -27,7 +24,7 @@ impl MatZ {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [MathError::OutOfBounds]
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
     /// if the number of rows or columns is greater than the matrix or negative.
     pub fn set_entry<
         S: TryInto<i64> + Display + Copy,
@@ -60,7 +57,7 @@ impl MatZ {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [MathError::OutOfBounds]
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
     /// if the number of rows or columns is greater than the matrix or negative.
     pub fn set_entry_ref_z<S: TryInto<i64> + Display + Copy, T: TryInto<i64> + Display + Copy>(
         &mut self,
@@ -96,13 +93,11 @@ impl MatZ {
 
 #[cfg(test)]
 mod test_setter {
+    use super::Z;
+    use crate::integer::MatZ;
     use std::str::FromStr;
 
-    use crate::integer::MatZ;
-
-    use super::Z;
-
-    // Ensure that setting entries works with standard numbers.
+    /// Ensure that setting entries works with standard numbers.
     #[test]
     fn standard_value() {
         let mut matrix = MatZ::new(5, 10).unwrap();
@@ -114,7 +109,7 @@ mod test_setter {
         assert_eq!(entry, Z::from_i64(869));
     }
 
-    // Ensure that setting entries works with large numbers.
+    /// Ensure that setting entries works with large numbers.
     #[test]
     fn max_int_positive() {
         let mut matrix = MatZ::new(5, 10).unwrap();
@@ -126,7 +121,7 @@ mod test_setter {
         assert_eq!(entry, Z::from_i64(i64::MAX));
     }
 
-    // Ensure that setting entries works with large numbers (larger than i64).
+    /// Ensure that setting entries works with large numbers (larger than i64).
     #[test]
     fn big_positive() {
         let mut matrix = MatZ::new(5, 10).unwrap();
@@ -138,7 +133,7 @@ mod test_setter {
         assert_eq!(entry, Z::from_str(&"1".repeat(65)).unwrap());
     }
 
-    // Ensure that setting entries works with referenced large numbers (larger than i64).
+    /// Ensure that setting entries works with referenced large numbers (larger than i64).
     #[test]
     fn big_positive_ref() {
         let mut matrix = MatZ::new(5, 10).unwrap();
@@ -154,7 +149,7 @@ mod test_setter {
         assert_eq!(entry2, Z::from_i64(8));
     }
 
-    // Ensure that setting entries works with large negative numbers.
+    /// Ensure that setting entries works with large negative numbers.
     #[test]
     fn max_int_negative() {
         let mut matrix = MatZ::new(5, 10).unwrap();
@@ -166,7 +161,7 @@ mod test_setter {
         assert_eq!(entry, Z::from_i64(i64::MIN));
     }
 
-    // Ensure that setting entries works with large negative numbers (larger than i64).
+    /// Ensure that setting entries works with large negative numbers (larger than i64).
     #[test]
     fn big_negative() {
         let mut matrix = MatZ::new(5, 10).unwrap();
@@ -184,7 +179,7 @@ mod test_setter {
         assert_eq!(entry, Z::from_str(&test_entry).unwrap());
     }
 
-    // Ensure that setting entries at (0,0) works.
+    /// Ensure that setting entries at (0,0) works.
     #[test]
     fn setting_at_zero() {
         let mut matrix = MatZ::new(5, 10).unwrap();
@@ -196,7 +191,7 @@ mod test_setter {
         assert_eq!(entry, Z::from_i64(i64::MIN));
     }
 
-    // Ensure that a wrong number of rows yields an Error.
+    /// Ensure that a wrong number of rows yields an Error.
     #[test]
     fn error_wrong_row() {
         let mut matrix = MatZ::new(5, 10).unwrap();
@@ -205,7 +200,7 @@ mod test_setter {
         assert!(matrix.set_entry(5, 1, value).is_err());
     }
 
-    // Ensure that a wrong number of columns yields an Error.
+    /// Ensure that a wrong number of columns yields an Error.
     #[test]
     fn error_wrong_column() {
         let mut matrix = MatZ::new(5, 10).unwrap();

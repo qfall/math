@@ -91,29 +91,29 @@ mod test_from_str {
 
     use super::PolyZ;
 
-    // tests whether a correctly formatted string outputs an instantiation of a
-    // polynomial, i.e. does not return an error
+    /// tests whether a correctly formatted string outputs an instantiation of a
+    /// polynomial, i.e. does not return an error
     #[test]
     fn working_example() {
         assert!(PolyZ::from_str("3  1 2 -3").is_ok());
     }
 
-    // tests whether a falsely formatted string (missing double-space) returns
-    // an error
+    /// tests whether a falsely formatted string (missing double-space) returns
+    /// an error
     #[test]
     fn missing_whitespace() {
         assert!(PolyZ::from_str("3 1 2 -3").is_err());
     }
 
-    // tests whether a falsely formatted string (too many whitespaces) returns
-    // an error
+    /// tests whether a falsely formatted string (too many whitespaces) returns
+    /// an error
     #[test]
     fn too_many_whitespaces() {
         assert!(PolyZ::from_str("3  1  2  -3").is_err());
     }
 
-    // tests whether a falsely formatted string (wrong number of total
-    // coefficients) returns an error
+    /// tests whether a falsely formatted string (wrong number of total
+    /// coefficients) returns an error
     #[test]
     fn false_number_of_coefficient() {
         assert!(PolyZ::from_str("4  1 2 -3").is_err());
@@ -125,6 +125,7 @@ mod test_from_str {
 mod test_init {
     use crate::integer::PolyZ;
 
+    /// Check if [`Default`] initializes the zero polynomial appropriately
     #[test]
     fn init_zero() {
         let poly_zero = PolyZ::default();

@@ -5,12 +5,9 @@
 //!
 //! The explicit functions contain the documentation.
 
-use crate::{error::MathError, utils::coordinate::evaluate_coordinate};
-
 use super::MatZ;
-
+use crate::{error::MathError, utils::coordinate::evaluate_coordinate};
 use flint_sys::fmpz_mat::fmpz_mat_init;
-
 use std::{fmt::Display, mem::MaybeUninit};
 
 impl MatZ {
@@ -69,7 +66,7 @@ impl MatZ {
 mod test_new {
     use crate::integer::{MatZ, Z};
 
-    // Ensure that entries of a new matrix are 0.
+    /// Ensure that entries of a new matrix are 0.
     #[test]
     fn entry_zero() {
         let matrix = MatZ::new(2, 2).unwrap();
@@ -85,7 +82,7 @@ mod test_new {
         assert_eq!(entry4, Z::from_i64(0));
     }
 
-    // Ensure that a new zero matrix fails with 0 as input.
+    /// Ensure that a new zero matrix fails with 0 as input.
     #[test]
     fn error_zero() {
         let matrix1 = MatZ::new(1, 0);

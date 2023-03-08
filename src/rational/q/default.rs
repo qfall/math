@@ -1,8 +1,7 @@
 //! Default value for a [`Q`].
 
-use flint_sys::{fmpq::fmpq, fmpz::fmpz};
-
 use super::Q;
+use flint_sys::{fmpq::fmpq, fmpz::fmpz};
 
 impl Default for Q {
     /// Returns an instantiation of [`Q`] with value '0/1'.
@@ -28,15 +27,15 @@ impl Default for Q {
 #[cfg(test)]
 mod tests_init {
 
+    use super::Q;
     use flint_sys::{
         fmpq::{fmpq, fmpq_equal},
         fmpz::fmpz,
     };
 
-    use super::Q;
+    /// TODO add cmp test
 
-    // TODO add cmp test
-    // Ensure that initialization of default value works.
+    /// Ensure that initialization of default value works.
     #[test]
     fn init() {
         assert!(unsafe {
