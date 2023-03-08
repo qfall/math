@@ -1,31 +1,31 @@
 //! This module contains all options to convert a polynomial of type
-//! [`PolyQ`] into a [`String`].
+//! [`PolyOverQ`] into a [`String`].
 //!
 //! This includes the [`Display`](std::fmt::Display) trait.
 
-use super::PolyQ;
+use super::PolyOverQ;
 use core::fmt;
 use flint_sys::fmpq_poly::fmpq_poly_get_str;
 use std::ffi::CStr;
 
-impl fmt::Display for PolyQ {
-    /// Allows to convert a polynomial of type [`PolyQ`] into a [`String`].
+impl fmt::Display for PolyOverQ {
+    /// Allows to convert a polynomial of type [`PolyOverQ`] into a [`String`].
     ///
     /// # Examples
     /// ```rust
-    /// use math::rational::PolyQ;
+    /// use math::rational::PolyOverQ;
     /// use std::str::FromStr;
     /// use core::fmt;
     ///
-    /// let poly = PolyQ::from_str("5  0 1 2/5 -3/2 1").unwrap();
+    /// let poly = PolyOverQ::from_str("5  0 1 2/5 -3/2 1").unwrap();
     /// println!("{}", poly);
     /// ```
     ///
     /// ```rust
-    /// use math::rational::PolyQ;
+    /// use math::rational::PolyOverQ;
     /// use std::str::FromStr;
     ///
-    /// let poly = PolyQ::from_str("5  0 1 2/5 -3/2 1").unwrap();
+    /// let poly = PolyOverQ::from_str("5  0 1 2/5 -3/2 1").unwrap();
     /// let poly_string = poly.to_string();
     /// ```
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -40,7 +40,7 @@ impl fmt::Display for PolyQ {
 #[cfg(test)]
 mod test_to_string {
 
-    use super::PolyQ;
+    use super::PolyOverQ;
     use std::str::FromStr;
 
     /// tests whether a polynomial that is created using a string, returns the
@@ -48,7 +48,7 @@ mod test_to_string {
     #[test]
     fn working_keeps_same_string() {
         let cmp_string = "5  0 1 2/5 -3/2 1";
-        let cmp = PolyQ::from_str(cmp_string).unwrap();
+        let cmp = PolyOverQ::from_str(cmp_string).unwrap();
 
         assert_eq!(cmp_string, cmp.to_string())
     }
@@ -58,10 +58,10 @@ mod test_to_string {
     #[test]
     fn working_use_result_of_to_string_as_input() {
         let cmp_string = "5  0 1 2/5 -3/2 1";
-        let cmp = PolyQ::from_str(cmp_string).unwrap();
+        let cmp = PolyOverQ::from_str(cmp_string).unwrap();
 
         let cmp_string2 = cmp.to_string();
 
-        assert!(PolyQ::from_str(&cmp_string2).is_ok())
+        assert!(PolyOverQ::from_str(&cmp_string2).is_ok())
     }
 }
