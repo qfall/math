@@ -5,7 +5,10 @@
 //! The explicit functions contain the documentation.
 
 use super::Z;
-use crate::{error::MathError, macros};
+use crate::{
+    error::MathError,
+    macros::from::{from_trait, from_type},
+};
 use flint_sys::fmpz::{fmpz, fmpz_init_set_si, fmpz_init_set_ui, fmpz_set_str};
 use std::{ffi::CString, str::FromStr};
 
@@ -47,25 +50,25 @@ impl Z {
     }
 
     // Generate from_<type> functions for singed and unsigned source types.
-    macros::from_type!(i32, i64, Z, Z::from_i64);
-    macros::from_type!(i16, i64, Z, Z::from_i64);
-    macros::from_type!(i8, i64, Z, Z::from_i64);
+    from_type!(i32, i64, Z, Z::from_i64);
+    from_type!(i16, i64, Z, Z::from_i64);
+    from_type!(i8, i64, Z, Z::from_i64);
 
-    macros::from_type!(u32, u64, Z, Z::from_u64);
-    macros::from_type!(u16, u64, Z, Z::from_u64);
-    macros::from_type!(u8, u64, Z, Z::from_u64);
+    from_type!(u32, u64, Z, Z::from_u64);
+    from_type!(u16, u64, Z, Z::from_u64);
+    from_type!(u8, u64, Z, Z::from_u64);
 }
 
 // Generate [From] trait for the different types.
-macros::from_trait!(i64, Z, Z::from_i64);
-macros::from_trait!(i32, Z, Z::from_i32);
-macros::from_trait!(i16, Z, Z::from_i16);
-macros::from_trait!(i8, Z, Z::from_i8);
+from_trait!(i64, Z, Z::from_i64);
+from_trait!(i32, Z, Z::from_i32);
+from_trait!(i16, Z, Z::from_i16);
+from_trait!(i8, Z, Z::from_i8);
 
-macros::from_trait!(u64, Z, Z::from_u64);
-macros::from_trait!(u32, Z, Z::from_u32);
-macros::from_trait!(u16, Z, Z::from_u16);
-macros::from_trait!(u8, Z, Z::from_u8);
+from_trait!(u64, Z, Z::from_u64);
+from_trait!(u32, Z, Z::from_u32);
+from_trait!(u16, Z, Z::from_u16);
+from_trait!(u8, Z, Z::from_u8);
 
 impl FromStr for Z {
     type Err = MathError;
