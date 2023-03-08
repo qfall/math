@@ -1,5 +1,5 @@
 //! [`PolyOverZ`] is a type of polynomial with arbitrarily many coefficients of type
-//! [`Z`](crate::integer::z::Z)
+//! [`Z`](crate::integer::Z)
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use flint_sys::fmpz_poly::fmpz_poly_struct;
@@ -12,7 +12,7 @@ mod to_string;
 
 #[derive(Debug)]
 /// [`PolyOverZ`] is a type of polynomial with arbitrarily many coefficients of type
-/// [`Z`](crate::integer::z::Z).
+/// [`Z`](crate::integer::Z).
 ///
 // Attributes:
 // - `poly`: holds the content of the polynomial

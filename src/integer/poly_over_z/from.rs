@@ -38,7 +38,7 @@ impl FromStr for PolyOverZ {
 
     // TODO: the second whitespace is not shown in the Rust-documentation
     /// Create a new polynomial with arbitrarily many coefficients of type
-    /// [`Z`](crate::integer::z::Z).
+    /// [`Z`](crate::integer::Z).
     ///
     /// Parameters:
     /// - `s`: the polynomial of form: `"[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴..."`.

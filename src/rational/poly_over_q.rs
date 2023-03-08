@@ -1,5 +1,5 @@
 //! [`PolyOverQ`] is a type of polynomial with arbitrarily many coefficients of type
-//! [`Q`](crate::rational::q::Q).
+//! [`Q`](crate::rational::Q).
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use flint_sys::fmpq_poly::fmpq_poly_struct;
@@ -9,7 +9,7 @@ mod to_string;
 
 #[derive(Debug)]
 /// [`PolyOverQ`] is a type of polynomial with arbitrarily many coefficients of type
-/// [`Q`](crate::rational::q::Q).
+/// [`Q`](crate::rational::Q).
 ///
 // Attributes:
 // - `poly`: holds the content of the polynomial

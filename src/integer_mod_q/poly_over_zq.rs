@@ -1,5 +1,5 @@
 //! [`PolyOverZq`] is a type of polynomial with arbitrarily many coefficients of type
-//! [`Zq`](crate::integer_mod_q::z_q::Zq).
+//! [`Zq`](crate::integer_mod_q::Zq).
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use super::modulus::Modulus;
@@ -11,7 +11,7 @@ mod to_string;
 #[allow(dead_code)]
 #[derive(Debug)]
 /// [`PolyOverZq`] is a type of polynomial with arbitrarily many coefficients of type
-/// [`Zq`](crate::integer_mod_q::z_q::Zq).
+/// [`Zq`](crate::integer_mod_q::Zq).
 ///
 // Attributes:
 // - `poly`: holds the content of the polynomial
