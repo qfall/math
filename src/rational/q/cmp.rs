@@ -198,4 +198,13 @@ mod test_partial_eq {
 
         assert_ne!(a, b);
     }
+    
+    /// assert equal for zero when denominator is different
+    #[test]
+    fn zero_equal_different_denominator() {
+        let a = Q::from_str("0/2").unwrap();
+        let b = Q::from_str("0/4").unwrap();
+
+        assert_eq!(a, b);
+    }
 }
