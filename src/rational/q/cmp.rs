@@ -187,9 +187,31 @@ mod test_partial_eq {
     /// Test equal with small [`Q`] that have a large denominator
     /// (uses FLINT's pointer representation)
     #[test]
-    fn equal_denominator() {
+    fn equal_large_denominator() {
         let large_denominator_str = format!("1/{:1<200}", "1");
         let large_denominator_less_str = format!("1/{:1<201}", "1");
+
+        let small_1 = Q::from_str(&large_denominator_str).unwrap();
+        let small_2 = Q::from_str(&large_denominator_str).unwrap();
+        let less = Q::from_str(&large_denominator_less_str).unwrap();
+
+        assert!(small_1 == small_2);
+        assert!(small_2 == small_1);
+        assert!(small_1 == small_1);
+
+        assert!(less == less);
+        assert!(!(small_1 == less));
+        assert!(!(less == small_1));
+    }
+
+    /// Test equal for [`Q`] with large numerator and denominator
+    /// (uses FLINT's pointer representation)
+    #[test]
+    fn equal_large_numerator_denominator() {
+        // The greatest common divisor of numerator and denominator is 1
+        // => also large after canonicalization
+        let large_denominator_str = format!("{:5<200}/{:4<200}", "1", "1");
+        let large_denominator_less_str = format!("{:5<201}/{:4<201}", "1", "1");
 
         let small_1 = Q::from_str(&large_denominator_str).unwrap();
         let small_2 = Q::from_str(&large_denominator_str).unwrap();
