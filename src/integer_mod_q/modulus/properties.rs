@@ -1,6 +1,8 @@
-use flint_sys::fmpz::fmpz_is_prime;
+//! Implementations to check certain properties of [`Modulus`]
+//! This includes checks such as primeness.
 
 use super::Modulus;
+use flint_sys::fmpz::fmpz_is_prime;
 
 impl Modulus {
     pub fn is_prime(&self) -> bool {
