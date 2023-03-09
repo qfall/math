@@ -40,5 +40,5 @@ mod to_string;
 /// ```
 #[allow(dead_code)]
 pub struct Modulus {
-    pub(crate) modulus: fmpz_mod_ctx,
+    modulus: fmpz_mod_ctx,
 }

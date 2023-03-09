@@ -19,7 +19,9 @@ impl PolyOverZq {
     /// assert!(poly_irr.is_irreducible())
     /// ```
     pub fn is_irreducible(&self) -> bool {
-        1 == unsafe { fmpz_mod_poly_is_irreducible(&self.poly, self.modulus.get_fq_ctx_struct()) }
+        1 == unsafe {
+            fmpz_mod_poly_is_irreducible(&self.poly, self.modulus.get_fmpz_mod_ctx_struct())
+        }
     }
 }
 

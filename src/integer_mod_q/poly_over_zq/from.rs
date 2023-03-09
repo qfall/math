@@ -60,9 +60,13 @@ impl FromStr for PolyOverZq {
 
         let mut poly = MaybeUninit::uninit();
         unsafe {
-            fmpz_mod_poly_init(poly.as_mut_ptr(), &modulus.modulus);
+            fmpz_mod_poly_init(poly.as_mut_ptr(), modulus.get_fmpz_mod_ctx_struct());
             let mut poly = poly.assume_init();
-            fmpz_mod_poly_set_fmpz_poly(&mut poly, &poly_over_z.poly, &modulus.modulus);
+            fmpz_mod_poly_set_fmpz_poly(
+                &mut poly,
+                &poly_over_z.poly,
+                modulus.get_fmpz_mod_ctx_struct(),
+            );
             Ok(Self { poly, modulus })
         }
     }
