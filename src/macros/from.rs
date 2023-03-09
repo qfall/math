@@ -10,11 +10,13 @@
 /// Returns the Implementation code for the [`From`] Trait with the signature:
 /// ```impl From<*source_type*> for *destination_type*```
 macro_rules! from_trait {
-    ($source_type:ident, $destination_type:ident, $function:expr) => {
+    ($source_type:ident, $destination_type:ident, $( $function:ident )::*) => {
         impl From<$source_type> for $destination_type {
-            #[doc=stringify!(Convert [$source_type] to [$destination_type] using [$function].)]
-            fn from(value: $source_type) -> $destination_type {
-                $function(value)
+            paste::paste! {
+                #[doc = "Convert [`" $source_type "`] to [`" $destination_type "`] using [`" $($function)"::"* "`]."]
+                fn from(value: $source_type) -> $destination_type {
+                    $($function)::*(value)
+                }
             }
         }
     };
@@ -69,7 +71,7 @@ macro_rules! from_type {
 
         // impl $destination_type {
             paste::paste! {
-                #[doc = "Convert [" $source_type "] to [" $destination_type "] using [" $($function)"::"* "]."]
+                #[doc = "Convert [`" $source_type "`] to [`" $destination_type "`] using [`" $($function)"::"* "`]."]
                 pub fn [<from_ $source_type>](value: $source_type) -> $destination_type {
                     $($function)::*(value as $bridge_type)
                 }
