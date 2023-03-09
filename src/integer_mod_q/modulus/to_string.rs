@@ -3,10 +3,9 @@
 //!
 //! This includes the [`Display`](std::fmt::Display) trait.
 
-use flint_sys::fmpz::fmpz_get_str;
-
 use super::Modulus;
 use core::fmt;
+use flint_sys::fmpz::fmpz_get_str;
 use std::{ffi::CStr, ptr::null_mut};
 
 impl fmt::Display for Modulus {
@@ -52,9 +51,9 @@ impl fmt::Display for Modulus {
 
 #[cfg(test)]
 mod test_to_string {
-    use std::str::FromStr;
 
     use crate::integer_mod_q::Modulus;
+    use std::str::FromStr;
 
     /// tests whether a large modulus works in a roundtrip
     #[test]

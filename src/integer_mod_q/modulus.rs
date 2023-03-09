@@ -6,17 +6,17 @@
 
 use flint_sys::fmpz_mod::fmpz_mod_ctx;
 
-pub mod from;
-pub mod to_string;
+mod from;
+mod to_string;
 
 #[derive(Debug)]
 /// [`Modulus`] is a type of a positive non-zero integer that is used
 /// to do modulus operations.
 ///
-// Attributes:
-// - `modulus`: holds the value of the modulus
-//
-/// # Example
+/// Attributes:
+/// - `modulus`: holds the value of the modulus
+///
+/// # Examples
 /// Create [`Modulus`] from [`str`]:
 /// ```rust
 /// use math::integer_mod_q::Modulus;

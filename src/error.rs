@@ -6,37 +6,37 @@
 //! unwrapped again.
 
 use std::{ffi::NulError, num::ParseIntError};
-
 use thiserror::Error;
 
 /// [`MathError`] defines this crate's error enum, which can hold all sorts of
 /// errors occurring in this crate.
 ///
 /// Possible entries:
-/// - `InvalidStringToIntInput` is thrown if an invalid string is given to
-/// construct an integer.
-/// - `InvalidStringToModulusInput` is thrown if an invalid string is given to
-/// construct a modulus.
-/// - `InvalidStringToZInput` is thrown if an invalid string is given to
-/// construct a [`Z`](crate::integer::Z)
+/// - `DivisionByZeroError` is thrown if it is tried to perform a division by `0`
+/// - `InvalidInitMatZInput` is thrown if an invalid integer is given to create
+/// a [`MatZ`](crate::integer::MatZ)
+/// - `InvalidIntToModulus` is thrown if an integer is provided, which is not greater than zero
+/// - `InvalidMatrix` is thrown if an invalid string input of a matrix is given
 /// - `InvalidStringToCStringInput` is thrown if an invalid string is given to
 /// construct a [`CString`](std::ffi::CString)
+/// - `InvalidStringToIntInput` is thrown if an invalid string is given to
+/// construct an integer.
+/// - `InvalidStringToMatZInput` is thrown if an invalid string is given to
+/// construct a Matrix of [`MatZ`](crate::integer::MatZ)
+/// - `InvalidStringToModulusInput` is thrown if an invalid string is given to
+/// construct a modulus.
 /// - `InvalidStringToPolyInput` is thrown if an invalid string is given to
 /// construct a polynomial
 /// - `InvalidStringToPolyMissingWhiteSpace` is thrown if an invalid string
 /// is given to construct a polynomial which did not contain two whitespaces
 /// - `InvalidStringToPolyModulusInput` is thrown if an invalid string is given
-/// to construct a [`PolyZq`](crate::integer_mod_q::PolyZq), i.e. it is
+/// to construct a [`PolyOverZq`](crate::integer_mod_q::PolyOverZq), i.e. it is
 /// not formatted correctly.
-/// - `OutOfBounds` is thrown if a provided index is not in a desired range
 /// - `InvalidStringToQInput` is thrown if an invalid string is given to
 /// construct a [`Q`](crate::rational::Q)
-/// - `DivisionByZeroError` is thrown if it is tried to perform a division by `0`
-/// - `InvalidStringToMatrixInput` is thrown if an invalid string is given to
-/// construct a Matrix
-/// - `InvalidInitMatZInput` is thrown if an invalid integer is given to create
-/// a [`MatZ`](crate::integer::MatZ)
-/// - `InvalidMatrix` is thrown if an invalid string input of a matrix is given
+/// - `InvalidStringToZInput` is thrown if an invalid string is given to
+/// construct a [`Z`](crate::integer::Z)
+/// - `OutOfBounds` is thrown if a provided index is not in a desired range
 /// - `RegexError` is thrown if an regular expression could not be processed
 ///
 /// # Example
@@ -51,27 +51,36 @@ use thiserror::Error;
 /// ```
 #[derive(Error, Debug)]
 pub enum MathError {
-    /// parse string to int error
-    #[error("invalid string input to parse to int {0}")]
-    InvalidStringToIntInput(#[from] ParseIntError),
-    /// parse string to [`Z`](crate::integer::Z) error
-    #[error("invalid string input to parse to Z {0}")]
-    InvalidStringToZInput(String),
-    /// parse string to [`CString`](std::ffi::CString) error
-    #[error("invalid string input to parse to CString {0}")]
-    InvalidStringToCStringInput(#[from] NulError),
-    /// parse string to modulus error
-    #[error(
-        "invalid string input to parse to a modulus {0}. \
-        The format must be '[0-9]+' and not all zeros."
-    )]
-    /// parse integer to modulus error
-    InvalidStringToModulusInput(String),
+    /// division by zero error
+    #[error("the division by zero is not possible {0}")]
+    DivisionByZeroError(String),
+    /// initialization of [`MatZ`](crate::integer::MatZ) error
+    #[error("invalid input for an initialization of a MatZ {0}")]
+    InvalidInitMatZInput(String),
+    /// parse int to modulus error
     #[error(
         "invalid integer input to parse to a modulus {0}. \
         The value must be larger than 0."
     )]
     InvalidIntToModulus(String),
+    /// invalid Matrix input error
+    #[error("invalid Matrix. {0}")]
+    InvalidMatrix(String),
+    /// parse string to [`CString`](std::ffi::CString) error
+    #[error("invalid string input to parse to CString {0}")]
+    InvalidStringToCStringInput(#[from] NulError),
+    /// parse string to int error
+    #[error("invalid string input to parse to int {0}")]
+    InvalidStringToIntInput(#[from] ParseIntError),
+    /// parse string to [`MatZ`](crate::integer::MatZ) error
+    #[error("invalid string input to parse to MatZ {0}")]
+    InvalidStringToMatZInput(String),
+    /// parse string to modulus error
+    #[error(
+        "invalid string input to parse to a modulus {0}. \
+        The format must be '[0-9]+' and not all zeros."
+    )]
+    InvalidStringToModulusInput(String),
     /// parse string to poly error
     #[error(
         "invalid string input to parse to polynomial {0}\nThe format must 
@@ -82,7 +91,7 @@ pub enum MathError {
     InvalidStringToPolyInput(String),
     /// parse string to poly error with missing whitespace
     #[error(
-        "invalid string input to parse to polynomial {0}\n \
+        "invalid string input to parse to polynomial {0}
         The string did not contain two whitespace at the start. Please note, 
         that there have to two whitespace between number of coefficients 
         and the first coefficient"
@@ -98,27 +107,18 @@ pub enum MathError {
         whitespaces."
     )]
     InvalidStringToPolyModulusInput(String),
-    /// if a provided index is out of bounds
-    #[error(
-        "invalid index submitted. The index is out of bounds
-    The index has to {0}, and the provided value is {1}"
-    )]
-    OutOfBounds(String, String),
     /// parse string to [`Q`](crate::rational::Q) error
     #[error("invalid string input to parse to Q {0}")]
     InvalidStringToQInput(String),
-    /// division by zero error
-    #[error("the division by zero is not possible {0}")]
-    DivisionByZeroError(String),
-    /// parse string to [`MatZ`](crate::integer::MatZ) error
-    #[error("invalid string input to parse to MatZ {0}")]
-    InvalidStringToMatZInput(String),
-    /// initialization of [`MatZ`](crate::integer::MatZ) error
-    #[error("invalid input for an initialization of a MatZ {0}")]
-    InvalidInitMatZInput(String),
-    /// invalid Matrix input error
-    #[error("invalid Matrix. {0}")]
-    InvalidMatrix(String),
+    /// parse string to [`Z`](crate::integer::Z) error
+    #[error("invalid string input to parse to Z {0}")]
+    InvalidStringToZInput(String),
+    /// if a provided index is out of bounds
+    #[error(
+        "invalid index submitted. The index is out of bounds.
+        The index has to {0}, and the provided value is {1}"
+    )]
+    OutOfBounds(String, String),
     /// Regex error
     #[error("The regular expression could not be processed: {0}")]
     RegexError(String),
