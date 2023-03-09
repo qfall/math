@@ -1,5 +1,8 @@
-use flint_sys::fmpq::fmpq_equal;
+//! Implementations to compare [`Q`] with other values.
+//! This uses the traits from [`std::cmp`].
+
 use super::Q;
+use flint_sys::fmpq::fmpq_equal;
 
 impl PartialEq for Q {
     /// Checks if two rationals are equal. Used by the `==` and `!=` operators.
@@ -44,8 +47,8 @@ mod test_partial_eq {
     /// 2. Test different combinations of equal and not equal with different
     ///    parameter length combinations.
     ///    Not equal test are inverted equal tests.
-    use std::str::FromStr;
     use super::Q;
+    use std::str::FromStr;
 
     /// Demonstrate the different ways to use equal.
     /// We assume that they behave the same in the other tests.
@@ -181,6 +184,26 @@ mod test_partial_eq {
         assert!(small_positive != min);
     }
 
+    /// Test equal with small [`Q`] that have a large denominator
+    /// (uses FLINT's pointer representation)
+    #[test]
+    fn equal_denominator() {
+        let large_denominator_str = format!("1/{:1<200}", "1");
+        let large_denominator_less_str = format!("1/{:1<201}", "1");
+
+        let small_1 = Q::from_str(&large_denominator_str).unwrap();
+        let small_2 = Q::from_str(&large_denominator_str).unwrap();
+        let less = Q::from_str(&large_denominator_less_str).unwrap();
+
+        assert!(small_1 == small_2);
+        assert!(small_2 == small_1);
+        assert!(small_1 == small_1);
+
+        assert!(less == less);
+        assert!(!(small_1 == less));
+        assert!(!(less == small_1));
+    }
+
     /// Ensure that two elements are equal
     #[test]
     fn equal_rational() {
@@ -198,7 +221,7 @@ mod test_partial_eq {
 
         assert_ne!(a, b);
     }
-    
+
     /// assert equal for zero when denominator is different
     #[test]
     fn zero_equal_different_denominator() {
