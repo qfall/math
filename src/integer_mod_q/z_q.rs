@@ -23,6 +23,15 @@ mod from;
 /// ```
 #[allow(dead_code)]
 #[derive(Debug)]
+/// [`Zq`] represents an integer value in a modulus ring.
+///
+/// Attributes:
+/// - `value`: holds [FLINT](https://flintlib.org/)'s [struct](fmpz)
+///     for an integer value
+/// - `ctx`: holds [FLINT](https://flintlib.org/)'s [struct](fmpz_mod_ctx)
+///     to specify a modulus
+///
+/// # Examples
 pub struct Zq {
     pub(crate) value: fmpz,
     pub(crate) modulus: super::Modulus,
