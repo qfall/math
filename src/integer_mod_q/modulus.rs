@@ -7,6 +7,8 @@
 use flint_sys::fmpz_mod::fmpz_mod_ctx;
 
 mod from;
+mod get;
+mod properties;
 mod to_string;
 
 #[derive(Debug)]
