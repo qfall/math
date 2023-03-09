@@ -5,6 +5,17 @@ use super::Modulus;
 use flint_sys::fmpz::fmpz_is_prime;
 
 impl Modulus {
+    /// Checks if a [`Modulus`] is prime.
+    ///
+    /// Returns true if the modulus is prime.
+    ///
+    /// ```rust
+    /// use std::str::FromStr;
+    /// use math::integer_mod_q::Modulus;
+    ///
+    /// let modulus = Modulus::from_str("17").unwrap();
+    /// assert!(modulus.is_prime())
+    /// ```
     pub fn is_prime(&self) -> bool {
         1 == unsafe { fmpz_is_prime(&self.get_fq_ctx_struct().n[0]) }
     }
