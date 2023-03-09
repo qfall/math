@@ -36,6 +36,8 @@ use thiserror::Error;
 /// construct a Matrix
 /// - `InvalidInitMatZInput` is thrown if an invalid integer is given to create
 /// a [`MatZ`](crate::integer::MatZ)
+/// - `InvalidMatrix` is thrown if an invalid string input of a matrix is given
+/// - `RegexError` is thrown if an regular expression could not be processed
 ///
 /// # Example
 /// ```
@@ -114,4 +116,10 @@ pub enum MathError {
     /// initialization of [`MatZ`](crate::integer::MatZ) error
     #[error("invalid input for an initialization of a MatZ {0}")]
     InvalidInitMatZInput(String),
+    /// invalid Matrix input error
+    #[error("invalid Matrix. {0}")]
+    InvalidMatrix(String),
+    /// Regex error
+    #[error("The regular expression could not be processed: {0}")]
+    RegexError(String),
 }

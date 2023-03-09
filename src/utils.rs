@@ -4,3 +4,5 @@
 //! and similar tasks.
 
 pub mod coordinate;
+pub mod dimensions;
+pub mod prepare;
