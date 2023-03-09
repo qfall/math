@@ -1,9 +1,8 @@
 use flint_sys::fmpq::fmpq_equal;
-
 use super::Q;
 
 impl PartialEq for Q {
-    /// Checks if two integers are equal. Used by the `==` and `!=` operators.
+    /// Checks if two rationals are equal. Used by the `==` and `!=` operators.
     ///
     /// Parameters:
     /// - other: the other value that is used to compare the elements
@@ -14,8 +13,8 @@ impl PartialEq for Q {
     /// ```rust
     /// use math::rational::Q;
     /// use std::str::FromStr;
-    /// let a: Q = Q::from_str("42").unwrap();
-    /// let b: Q = Q::from_str("24").unwrap();
+    /// let a: Q = Q::from_str("42/24").unwrap();
+    /// let b: Q = Q::from_str("24/42").unwrap();
     ///
     /// // These are all equivalent and return false.
     /// let compared: bool = (a == b);
@@ -46,7 +45,6 @@ mod test_partial_eq {
     ///    parameter length combinations.
     ///    Not equal test are inverted equal tests.
     use std::str::FromStr;
-
     use super::Q;
 
     /// Demonstrate the different ways to use equal.
@@ -107,7 +105,7 @@ mod test_partial_eq {
         assert!(negative != small_1);
     }
 
-    /// Test equal with a large [`Z`]
+    /// Test equal with a large [`Q`]
     /// (uses FLINT's pointer representation)
     #[test]
     fn equal_large() {
@@ -124,7 +122,7 @@ mod test_partial_eq {
         assert!(!(min == max_1));
     }
 
-    /// Test not equal with a large [`Z`]
+    /// Test not equal with a large [`Q`]
     /// (uses FLINT's pointer representation)
     #[test]
     fn not_equal_large() {
@@ -141,8 +139,8 @@ mod test_partial_eq {
         assert!(min != max_1);
     }
 
-    /// Test equal with a large [`Z`] (uses FLINT's pointer representation)
-    /// and small [`Z`] (no pointer representation).
+    /// Test equal with a large [`Q`] (uses FLINT's pointer representation)
+    /// and small [`Q`] (no pointer representation).
     #[test]
     fn equal_large_small() {
         let max = Q::from_str(&"1".repeat(65)).unwrap();
@@ -162,8 +160,8 @@ mod test_partial_eq {
         assert!(!(small_positive == min));
     }
 
-    /// Test not equal with a large [`Z`] (uses FLINT's pointer representation)
-    /// and small [`Z`] (no pointer representation).
+    /// Test not equal with a large [`Q`] (uses FLINT's pointer representation)
+    /// and small [`Q`] (no pointer representation).
     #[test]
     fn not_equal_large_small() {
         let max = Q::from_str(&"1".repeat(65)).unwrap();
