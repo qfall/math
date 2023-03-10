@@ -123,6 +123,8 @@ mod test_from_str {
 // ensure that init initializes an empty polynomial
 #[cfg(test)]
 mod test_init {
+    use std::str::FromStr;
+
     use crate::integer::PolyOverZ;
 
     /// Check if [`Default`] initializes the zero polynomial appropriately
@@ -130,6 +132,6 @@ mod test_init {
     fn init_zero() {
         let poly_over_zero = PolyOverZ::default();
 
-        assert_eq!("0", poly_over_zero.to_string())
+        assert_eq!(PolyOverZ::from_str("0").unwrap(), poly_over_zero)
     }
 }
