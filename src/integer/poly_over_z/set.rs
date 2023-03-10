@@ -3,7 +3,7 @@
 
 use super::PolyOverZ;
 use crate::{error::MathError, integer::Z, utils::coordinate::evaluate_coordinate};
-use flint_sys::fmpz_poly::fmpz_poly_set_coeff_fmpz;
+use flint_sys::{fmpz::fmpz_swap, fmpz_poly::fmpz_poly_set_coeff_fmpz};
 use std::fmt::Display;
 
 impl PolyOverZ {
@@ -48,12 +48,30 @@ impl PolyOverZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
     /// either the coordinate is negative or it does not fit into an [`i64`].
-    pub fn set_coeff<T: Into<Z>, S: TryInto<i64> + Display + Copy>(
+    pub fn set_coeff(
         &mut self,
-        coordinate: S,
-        value: T,
+        coordinate: impl TryInto<i64> + Display + Copy,
+        value: impl Into<Z>,
     ) -> Result<(), MathError> {
-        self.set_coeff_ref_z(coordinate, &value.into())
+        let mut value = value.into();
+        let len = self.get_length();
+        let coordinate = evaluate_coordinate(coordinate)?;
+        // if the coordinate exceeds the length of the polynomial, there are no
+        // associated values which would unnecessarily be dropped
+        // TODO: still one unnecessary drop of a possibly large value (value)
+        if coordinate >= len {
+            unsafe {
+                fmpz_poly_set_coeff_fmpz(&mut self.poly, coordinate, &value.value);
+            };
+            Ok(())
+        } else {
+            // get the pointer to the coefficient we want to set
+            let coeff_coordinate =
+                unsafe { self.poly.coeffs.offset(coordinate.try_into().unwrap()) };
+            // swap the content of the two pointers -> one drop less
+            unsafe { fmpz_swap(coeff_coordinate, &mut value.value) };
+            Ok(())
+        }
     }
 
     /// Sets the coefficient of a polynomial [`PolyOverZ`].
@@ -82,9 +100,9 @@ impl PolyOverZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
     /// either the coordinate is negative or it does not fit into an [`i64`].
-    pub fn set_coeff_ref_z<S: TryInto<i64> + Display + Copy>(
+    pub fn set_coeff_ref_z(
         &mut self,
-        coordinate: S,
+        coordinate: impl TryInto<i64> + Display + Copy,
         value: &Z,
     ) -> Result<(), MathError> {
         let coordinate = evaluate_coordinate(coordinate)?;
@@ -101,6 +119,23 @@ mod test_set_coeff {
 
     use crate::integer::{PolyOverZ, Z};
     use std::str::FromStr;
+
+    /// manually set a handful of coefficients
+    #[test]
+    fn manually_set() {
+        let mut poly = PolyOverZ::default();
+
+        poly.set_coeff(0, 5).unwrap();
+        poly.set_coeff(2, u64::MAX).unwrap();
+        poly.set_coeff(1, i64::MAX).unwrap();
+        poly.set_coeff(1, i64::MIN).unwrap();
+        poly.set_coeff(0, u64::MAX - 10).unwrap();
+
+        assert_eq!(
+            format!("3  {} {} {}", u64::MAX - 10, i64::MIN, u64::MAX),
+            poly.to_string()
+        )
+    }
 
     /// ensure that the negative coordinates return an error
     #[test]

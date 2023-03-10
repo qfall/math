@@ -3,7 +3,7 @@
 
 use super::PolyOverZ;
 use crate::{error::MathError, integer::Z, utils::coordinate::evaluate_coordinate};
-use flint_sys::fmpz_poly::fmpz_poly_get_coeff_fmpz;
+use flint_sys::fmpz_poly::{fmpz_poly_get_coeff_fmpz, fmpz_poly_length};
 use std::fmt::Display;
 
 impl PolyOverZ {
@@ -39,6 +39,23 @@ impl PolyOverZ {
         let coordinate = evaluate_coordinate(coordinate)?;
         unsafe { fmpz_poly_get_coeff_fmpz(&mut out.value, &self.poly, coordinate) }
         Ok(out)
+    }
+
+    /// Returns the length of the polynomial, which is one higher than the degree of the
+    /// polynomial
+    ///
+    /// # Example
+    /// ```rust
+    /// use math::integer::PolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
+    ///
+    /// let length = poly.get_length();
+    /// # assert_eq!(4, length);
+    /// ```
+    pub fn get_length(&self) -> i64 {
+        unsafe { fmpz_poly_length(&self.poly) }
     }
 }
 
@@ -86,5 +103,20 @@ mod test_get_coeff {
 
         assert_eq!(Z::from(u64::MAX), poly.get_coeff(0).unwrap());
         assert_eq!(Z::from(i64::MIN), poly.get_coeff(1).unwrap());
+    }
+}
+
+#[cfg(test)]
+mod test_get_length {
+    use crate::integer::PolyOverZ;
+    use std::str::FromStr;
+
+    /// ensure that the length of the polynomial is returned
+    #[test]
+    fn correct_length() {
+        let large_string = format!("2  {} {}", u64::MAX, i64::MIN);
+        let poly = PolyOverZ::from_str(&large_string).unwrap();
+
+        assert_eq!(2, poly.get_length());
     }
 }
