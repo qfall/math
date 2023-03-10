@@ -39,7 +39,7 @@ pub(crate) fn parse_matrix_string(string: &str) -> Result<Vec<Vec<String>>, Math
     // each row needs to start with a '[' and end with a ']'
     // we differ between the first/several and the last entry in each row (as there is no comma after the last entry)
     // each entry can contain any symbol but `[`, `]` and `,`. It needs to have at least one symbol.
-    if !regex.is_match(&string) {
+    if !regex.is_match(string) {
         return Err(MathError::InvalidMatrix(
             "The matrix is not formatted in a suitable way.".to_owned(),
         ));
@@ -51,7 +51,7 @@ pub(crate) fn parse_matrix_string(string: &str) -> Result<Vec<Vec<String>>, Math
         let row = raw_row.replace('[', "");
         let row = row.replace(']', "");
 
-        let entries = row.split(",");
+        let entries = row.split(',');
         let mut entries_vec: Vec<String> = Vec::new();
         for entry in entries {
             entries_vec.push(entry.to_owned());

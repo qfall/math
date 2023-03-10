@@ -86,10 +86,10 @@ mod test_find_matrix_dimensions {
     fn big_matrix_works() {
         let mut s1 = "[[".to_string();
         s1.push_str(&"1,".repeat(650000));
-        s1.push_str(&"1]]");
+        s1.push_str("1]]");
         let mut s2 = "[".to_string();
         s2.push_str(&"[1,1],".repeat(650000));
-        s2.push_str(&"[1,1]]");
+        s2.push_str("[1,1]]");
 
         let m1 = parse_matrix_string(&s1).unwrap();
         let m2 = parse_matrix_string(&s2).unwrap();
