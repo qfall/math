@@ -4,6 +4,7 @@
 
 use flint_sys::fmpq_poly::fmpq_poly_struct;
 
+mod cmp;
 mod from;
 mod to_string;
 
