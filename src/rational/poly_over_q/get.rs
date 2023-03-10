@@ -14,7 +14,8 @@ impl PolyOverQ {
     /// Parameters:
     /// - `coordinate`: the coordinate of the coefficient to get (has to be positive)
     ///
-    /// Returns the coefficient as a [`Q`] or a [`MathError`] if the provided coordinate is negative and therefore invalid.
+    /// Returns the coefficient as a [`Q`] or a [`MathError`] if the provided coordinate
+    /// is negative and therefore invalid or it does not fit into an [`i64`].
     ///
     /// # Example
     /// ```rust
@@ -31,9 +32,9 @@ impl PolyOverQ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
     /// either the coordinate is negative or it does not fit into an [`i64`].
-    pub fn get_coeff<S: TryInto<i64> + Display + Copy>(
+    pub fn get_coeff(
         &self,
-        coordinate: S,
+        coordinate: impl TryInto<i64> + Display + Copy,
     ) -> Result<Q, MathError> {
         let mut out = Q::default();
         let coordinate = evaluate_coordinate(coordinate)?;
@@ -81,6 +82,20 @@ mod test_get_coeff {
     #[test]
     fn large_coeff() {
         let q_str = format!("{}/{}", u64::MAX, i64::MIN,);
+        let large_string = format!("2  {} {}", q_str, u64::MAX);
+        let poly = PolyOverQ::from_str(&large_string).unwrap();
+
+        assert_eq!(Q::from_str(&q_str).unwrap(), poly.get_coeff(0).unwrap());
+        assert_eq!(
+            Q::from_str(&u64::MAX.to_string()).unwrap(),
+            poly.get_coeff(1).unwrap()
+        );
+    }
+
+    /// tests if large negative coefficients are returned correctly
+    #[test]
+    fn large_coeff_neg() {
+        let q_str = format!("-{}/{}", u64::MAX, i64::MIN,);
         let large_string = format!("2  {} {}", q_str, u64::MAX);
         let poly = PolyOverQ::from_str(&large_string).unwrap();
 
