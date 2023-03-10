@@ -91,6 +91,17 @@ mod test_from_str {
 
     use super::PolyOverZ;
 
+    /// tests whether the same string yields the same polynomial
+    #[test]
+    fn same_string() {
+        let str = format!("3  1 {} {}", u64::MAX, i64::MIN);
+
+        let poly_1 = PolyOverZ::from_str(&str).unwrap();
+        let poly_2 = PolyOverZ::from_str(&str).unwrap();
+
+        assert_eq!(poly_1, poly_2)
+    }
+
     /// tests whether a correctly formatted string outputs an instantiation of a
     /// polynomial, i.e. does not return an error
     #[test]
