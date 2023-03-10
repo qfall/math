@@ -87,6 +87,17 @@ mod test_from_str {
 
     use super::PolyOverQ;
 
+    /// tests whether the same string yields the same polynomial
+    #[test]
+    fn same_string() {
+        let str = format!("3  1 2/3 {}/{}", u64::MAX, i64::MIN);
+
+        let poly_1 = PolyOverQ::from_str(&str).unwrap();
+        let poly_2 = PolyOverQ::from_str(&str).unwrap();
+
+        assert_eq!(poly_1, poly_2)
+    }
+
     /// tests whether a correctly formatted string outputs an instantiation of a
     /// polynomial, i.e. does not return an error
     #[test]
@@ -127,6 +138,8 @@ mod test_from_str {
 #[cfg(test)]
 mod test_init {
 
+    use std::str::FromStr;
+
     use crate::rational::PolyOverQ;
 
     /// Ensure that [`Default`] initializes the zero polynomial appropriately
@@ -134,6 +147,6 @@ mod test_init {
     fn init_zero() {
         let poly_over_zero = PolyOverQ::default();
 
-        assert_eq!("0", poly_over_zero.to_string())
+        assert_eq!(PolyOverQ::from_str("0").unwrap(), poly_over_zero)
     }
 }
