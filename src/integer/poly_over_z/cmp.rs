@@ -17,8 +17,8 @@ impl PartialEq for PolyOverZ {
     /// ```rust
     /// use math::integer::PolyOverZ;
     /// use std::str::FromStr;
-    /// let a: PolyOverZ = PolyOverZ::from_str("2  42 1");
-    /// let b: PolyOverZ = PolyOverZ::from_str("2  24 1");
+    /// let a: PolyOverZ = PolyOverZ::from_str("2  42 1").unwrap();
+    /// let b: PolyOverZ = PolyOverZ::from_str("2  24 1").unwrap();
     ///
     /// // These are all equivalent and return false.
     /// let compared: bool = (a == b);
@@ -27,7 +27,7 @@ impl PartialEq for PolyOverZ {
     /// # assert!(!compared);
     /// let compared: bool = (a.eq(&b));
     /// # assert!(!compared);
-    /// let compared: bool = (Z::eq(&a,&b));
+    /// let compared: bool = (PolyOverZ::eq(&a,&b));
     /// # assert!(!compared);
     /// ```
     fn eq(&self, other: &Self) -> bool {
