@@ -46,7 +46,7 @@ mod test_mul {
 
     use super::Z;
 
-    /// testing multiplication for two Z
+    /// testing multiplication for two [`Z`]
     #[test]
     fn mul() {
         let a: Z = Z::from(42);
