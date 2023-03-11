@@ -5,13 +5,10 @@
 //!
 //! The explicit functions contain the documentation.
 
-use std::{fmt::Display, mem::MaybeUninit};
-
-use flint_sys::fmpq_mat::fmpq_mat_init;
-
-use crate::{error::MathError, utils::coordinate::evaluate_coordinate};
-
 use super::MatQ;
+use crate::{error::MathError, utils::coordinate::evaluate_coordinate};
+use flint_sys::fmpq_mat::fmpq_mat_init;
+use std::{fmt::Display, mem::MaybeUninit};
 
 impl MatQ {
     /// Creates a new matrix with `num_rows` rows, `num_cols` columns and
@@ -37,9 +34,9 @@ impl MatQ {
     /// if the number of rows or columns is 0.
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the number of rows or columns is negative or it does not fit into an [`i64`].
-    pub fn new<S: TryInto<i64> + Display + Copy, T: TryInto<i64> + Display + Copy>(
-        num_rows: S,
-        num_cols: T,
+    pub fn new(
+        num_rows: impl TryInto<i64> + Display + Copy,
+        num_cols: impl TryInto<i64> + Display + Copy,
     ) -> Result<Self, MathError> {
         let num_rows_i64 = evaluate_coordinate(num_rows)?;
         let num_cols_i64 = evaluate_coordinate(num_cols)?;
