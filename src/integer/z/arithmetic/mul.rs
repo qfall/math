@@ -12,7 +12,7 @@ impl Mul for &Z {
     /// Implements the [`Mul`] trait for two [`Z`] values.
     /// [`Mul`] is implemented for any combination of [`Z`] and borrowed [`Z`].
     ///
-    /// Parameters:\n
+    /// Parameters:
     /// - `other`: specifies the value to multiply with `self`
     ///
     /// Returns the product of both numbers as a [`Z`].
