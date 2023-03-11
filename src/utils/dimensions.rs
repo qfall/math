@@ -5,11 +5,11 @@ use crate::error::MathError;
 /// Returns the dimensions of a matrix.
 /// Takes `[[1, 2, 3],[4, 5, 6]]` as input and outputs `(2,3)` accordingly.
 ///
+/// Parameters:
+/// - `string`: the string of the matrix
+///
 /// Returns an error if the number of rows or columns is too big
 /// (must fit into [`i64`]) or if the number of entries in rows is unequal.
-///
-/// Input parameters:
-/// - `string`: the string of the matrix
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix)

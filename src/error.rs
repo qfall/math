@@ -121,5 +121,5 @@ pub enum MathError {
     OutOfBounds(String, String),
     /// Regex error
     #[error("The regular expression could not be processed: {0}")]
-    RegexError(String),
+    RegexError(#[from] regex::Error),
 }
