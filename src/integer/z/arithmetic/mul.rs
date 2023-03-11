@@ -30,11 +30,11 @@ impl Mul for &Z {
     /// let f: Z = c * &e;
     /// ```
     fn mul(self, other: Self) -> Self::Output {
-        let mut out = fmpz(0);
+        let mut out = Z::default();
         unsafe {
-            fmpz_mul(&mut out, &self.value, &other.value);
+            fmpz_mul(&mut out.value, &self.value, &other.value);
         }
-        Z { value: out }
+        out
     }
 }
 
