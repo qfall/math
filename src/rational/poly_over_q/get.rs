@@ -58,6 +58,14 @@ mod test_get_coeff {
         assert_eq!(Q::from_str("0/1").unwrap(), zero_coeff)
     }
 
+    /// test if coordinates smaller than zero return an error
+    #[test]
+    fn index_too_small() {
+        let poly = PolyOverQ::default();
+
+        assert!(poly.get_coeff(-1).is_err());
+    }
+
     /// tests if negative coefficients are returned correctly
     #[test]
     fn negative_coeff() {
@@ -81,7 +89,7 @@ mod test_get_coeff {
     /// tests if large coefficients are returned correctly
     #[test]
     fn large_coeff() {
-        let q_str = format!("{}/{}", u64::MAX, i64::MIN,);
+        let q_str = format!("-{}/{}", u64::MAX, i64::MIN,);
         let large_string = format!("2  {} {}", q_str, u64::MAX);
         let poly = PolyOverQ::from_str(&large_string).unwrap();
 
@@ -95,7 +103,7 @@ mod test_get_coeff {
     /// tests if large negative coefficients are returned correctly
     #[test]
     fn large_coeff_neg() {
-        let q_str = format!("-{}/{}", u64::MAX, i64::MIN,);
+        let q_str = format!("{}/{}", u64::MAX, i64::MIN,);
         let large_string = format!("2  {} {}", q_str, u64::MAX);
         let poly = PolyOverQ::from_str(&large_string).unwrap();
 
