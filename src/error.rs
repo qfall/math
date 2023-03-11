@@ -18,6 +18,7 @@ use thiserror::Error;
 /// - `InvalidInitMatZInput` is thrown if an invalid integer is given to create
 /// a [`MatZ`](crate::integer::MatZ)
 /// - `InvalidIntToModulus` is thrown if an integer is provided, which is not greater than zero
+/// - `InvalidMatrix` is thrown if an invalid string input of a matrix is given
 /// - `InvalidStringToCStringInput` is thrown if an invalid string is given to
 /// construct a [`CString`](std::ffi::CString)
 /// - `InvalidStringToIntInput` is thrown if an invalid string is given to
@@ -38,6 +39,7 @@ use thiserror::Error;
 /// - `InvalidStringToZInput` is thrown if an invalid string is given to
 /// construct a [`Z`](crate::integer::Z)
 /// - `OutOfBounds` is thrown if a provided index is not in a desired range
+/// - `RegexError` is thrown if an regular expression could not be processed
 ///
 /// # Example
 /// ```
@@ -66,6 +68,9 @@ pub enum MathError {
         The value must be larger than 0."
     )]
     InvalidIntToModulus(String),
+    /// invalid Matrix input error
+    #[error("invalid Matrix. {0}")]
+    InvalidMatrix(String),
     /// parse string to [`CString`](std::ffi::CString) error
     #[error("invalid string input to parse to CString {0}")]
     InvalidStringToCStringInput(#[from] NulError),
@@ -119,4 +124,7 @@ pub enum MathError {
         The index has to {0}, and the provided value is {1}"
     )]
     OutOfBounds(String, String),
+    /// Regex error
+    #[error("The regular expression could not be processed: {0}")]
+    RegexError(#[from] regex::Error),
 }
