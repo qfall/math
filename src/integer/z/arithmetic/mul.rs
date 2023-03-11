@@ -55,7 +55,7 @@ mod test_mul {
         assert!(c == Z::from(168));
     }
 
-    /// testing multiplication for two borrowed Z
+    /// testing multiplication for two borrowed [`Z`]
     #[test]
     fn mul_borrow() {
         let a: Z = Z::from(42);
@@ -64,7 +64,7 @@ mod test_mul {
         assert!(c == Z::from(168));
     }
 
-    /// testing multiplication for borrowed Z and Z
+    /// testing multiplication for borrowed [`Z`] and [`Z`]
     #[test]
     fn mul_first_borrowed() {
         let a: Z = Z::from(42);
@@ -73,7 +73,7 @@ mod test_mul {
         assert!(c == Z::from(168));
     }
 
-    /// testing multiplication for Z and borrowed Z
+    /// testing multiplication for [`Z`] and borrowed [`Z`]
     #[test]
     fn mul_second_borrowed() {
         let a: Z = Z::from(42);
@@ -82,7 +82,7 @@ mod test_mul {
         assert!(c == Z::from(168));
     }
 
-    /// testing multiplication for big numbers
+    /// testing multiplication for big [`Z`]
     #[test]
     fn mul_large_numbers() {
         let a: Z = Z::from(i64::MAX);
