@@ -11,7 +11,7 @@ use std::{ffi::CString, mem::MaybeUninit, str::FromStr};
 
 impl Default for PolyOverQ {
     /// Initializes a [`PolyOverQ`].
-    /// This method is used to initialize a [`PolyOverQ`] internally.
+    /// This method is used to initialize a [`PolyOverQ`].
     ///
     /// Returns an initialized [`PolyOverQ`].
     ///
