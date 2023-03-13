@@ -196,7 +196,7 @@ mod test_try_from_z_modulus {
         let value = Z::from(10);
         let modulus = Modulus::try_from(&Z::from(15)).unwrap();
 
-        let _ = Zq::try_from_z_modulus(&value, modulus);
+        let _ = Zq::try_from_z_modulus(&value, modulus)?;
     }
 
     /// Test with large value and modulus (FLINT uses pointer representation).
@@ -205,7 +205,7 @@ mod test_try_from_z_modulus {
         let value = Z::from(u64::MAX - 1);
         let modulus = Modulus::try_from(&Z::from(u64::MAX)).unwrap();
 
-        let _ = Zq::try_from_z_modulus(&value, modulus);
+        let _ = Zq::try_from_z_modulus(&value, modulus)?;
     }
 }
 
@@ -260,9 +260,9 @@ mod test_try_from_z_z {
 
 #[cfg(test)]
 mod test_try_from_trait {
-    use flint_sys::fmpz::fmpz_equal;
 
     use crate::{integer::Z, integer_mod_q::Zq};
+    use flint_sys::fmpz::fmpz_equal;
 
     /// Showcase some of the different types supported by the trait.
     #[test]
