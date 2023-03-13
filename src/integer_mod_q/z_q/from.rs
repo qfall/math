@@ -175,7 +175,7 @@ impl<T1: Into<Z>, T2: Into<Z>> TryFrom<(T1, T2)> for Zq {
 }
 
 #[cfg(test)]
-mod test_try_from_z_modulus {
+mod test_from_z_modulus {
     // TODO: add more test cases once we have the equal comparison for Zq:
     // 1. Zq initialized with the same and different Modulus object
     //    (same modulus value) and the same number should be equal.
