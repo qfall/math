@@ -6,8 +6,8 @@
 use super::Modulus;
 
 impl PartialEq for Modulus {
-    /// Compares the two [`fmpz`](flint_sys::fmpz::fmpz) structs hiding behind the 
-    /// given [`Modulus`] instances to check whether the given [`Modulus`] instances 
+    /// Compares the two [`fmpz`](flint_sys::fmpz::fmpz) structs hiding behind the
+    /// given [`Modulus`] instances to check whether the given [`Modulus`] instances
     /// have the same value.
     ///
     /// Parameters:
