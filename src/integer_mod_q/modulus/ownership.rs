@@ -67,8 +67,9 @@ mod test_clone {
     use super::Modulus;
     use std::{rc::Rc, str::FromStr};
 
+    /// Check if new references/ cloned Moduli's are increase the Rc counter
     #[test]
-    fn add_references() {
+    fn references_increased() {
         let a = Modulus::from_str("3").unwrap();
         assert_eq!(Rc::strong_count(&a.modulus), 1);
 
