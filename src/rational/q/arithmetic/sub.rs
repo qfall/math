@@ -1,38 +1,47 @@
 //! Implementation of the [`Sub`] trait for [`Q`] values.
 
-use flint_sys::{fmpq::fmpq, fmpz::fmpz};
+use flint_sys::fmpq::fmpq_sub;
 use std::ops::Sub;
 
 use super::super::Q;
-use crate::macros::arithmetics::arithmetic_trait;
+use crate::macros::arithmetics::{
+    arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+};
 
-arithmetic_trait!(
-    doc = "Implements the [`Sub`] trait for two [`Q`] values. \n
-[`Sub`] is implemented for any combination of [`Q`] and borrowed [`Q`].\n\n
- Parameters:\n
- - `other`: specifies the value to subtract from `self`\n\n
-Returns the result of the subtraction as a [`Q`].\n\n
- # Example\n
- ```rust
- use math::rational::Q;
- use std::str::FromStr;
- let a: Q = Q::from_str(\"42\").unwrap();
- let b: Q = Q::from_str(\"-42/2\").unwrap();
- let c: Q = &a - &b;
- let d: Q = a - b;
- let e: Q = &c - d;
- let f: Q = c - &e;
- ```",
-    Sub,
-    sub,
-    Q,
-    flint_sys::fmpq::fmpq_sub,
-    fmpq {
-        num: fmpz(0),
-        den: fmpz(1)
-    },
-    value
-);
+impl Sub for &Q {
+    type Output = Q;
+    /// Implements the [`Sub`] trait for two [`Q`] values.
+    /// [`Sub`] is implemented for any combination of [`Q`] and borrowed [`Q`].
+    ///
+    /// Parameters:
+    ///  - `other`: specifies the value to subtract from `self`
+    ///
+    /// Returns the result of the subtraction as a [`Q`].
+    ///
+    /// # Example
+    /// ```rust
+    /// use math::rational::Q;
+    /// use std::str::FromStr;
+    ///
+    /// let a: Q = Q::from_str("42").unwrap();
+    /// let b: Q = Q::from_str("-42/2").unwrap();
+    ///
+    /// let c: Q = &a - &b;
+    /// let d: Q = a - b;
+    /// let e: Q = &c - d;
+    /// let f: Q = c - &e;
+    /// ```
+    fn sub(self, other: Self) -> Self::Output {
+        let mut out = Q::default();
+        unsafe {
+            fmpq_sub(&mut out.value, &self.value, &other.value);
+        }
+        out
+    }
+}
+
+arithmetic_trait_borrowed_to_owned!(Sub, sub, Q);
+arithmetic_trait_mixed_borrowed_owned!(Sub, sub, Q);
 
 #[cfg(test)]
 mod test_sub {
