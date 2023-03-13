@@ -86,7 +86,7 @@ impl MatPolyOverZ {
         Ok(())
     }
 
-    /// Evaluates whether the provided coordinates are referencing a entry in the matrix.
+    /// Evaluates whether the provided coordinates are referencing an entry in the matrix.
     ///
     /// Parameters:
     /// - `row`: specifies the row in which the entry is located
