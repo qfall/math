@@ -5,30 +5,30 @@
 //!
 //! # Example
 //! ```
-//! use math::integer::PolyZ;
+//! use math::integer::PolyOverZ;
 //! use std::str::FromStr;
 //!
-//! let a = PolyZ::from_str("3  0 1 2").unwrap();
+//! let a = PolyOverZ::from_str("3  0 1 2").unwrap();
 //! let b = a.clone();
 //! drop(a);
 //! ```
 
-use super::PolyZ;
+use super::PolyOverZ;
 use flint_sys::fmpz_poly::{fmpz_poly_clear, fmpz_poly_set};
 
-impl Clone for PolyZ {
-    /// Clones the given element and returns a deep clone of the [`PolyZ`] element.
+impl Clone for PolyOverZ {
+    /// Clones the given element and returns a deep clone of the [`PolyOverZ`] element.
     ///
     /// # Example
     /// ```
-    /// use math::integer::PolyZ;
+    /// use math::integer::PolyOverZ;
     /// use std::str::FromStr;
     ///
-    /// let a = PolyZ::from_str("3  0 1 2").unwrap();
+    /// let a = PolyOverZ::from_str("3  0 1 2").unwrap();
     /// let b = a.clone();
     /// ```
     fn clone(&self) -> Self {
-        let mut value = PolyZ::init();
+        let mut value = PolyOverZ::default();
 
         unsafe { fmpz_poly_set(&mut value.poly, &self.poly) }
 
@@ -36,23 +36,23 @@ impl Clone for PolyZ {
     }
 }
 
-impl Drop for PolyZ {
-    /// Drops the given [`PolyZ`] value and frees the allocated memory.
+impl Drop for PolyOverZ {
+    /// Drops the given [`PolyOverZ`] value and frees the allocated memory.
     ///
     /// # Examples
     /// ```
-    /// use math::integer::PolyZ;
+    /// use math::integer::PolyOverZ;
     /// use std::str::FromStr;
     /// {
-    ///     let a = PolyZ::from_str("3  0 1 2").unwrap();
+    ///     let a = PolyOverZ::from_str("3  0 1 2").unwrap();
     /// } // as a's scope ends here, it get's dropped
     /// ```
     ///
     /// ```
-    /// use math::integer::PolyZ;
+    /// use math::integer::PolyOverZ;
     /// use std::str::FromStr;
     ///
-    /// let a = PolyZ::from_str("3  0 1 2").unwrap();
+    /// let a = PolyOverZ::from_str("3  0 1 2").unwrap();
     /// drop(a); // explicitly drops a's value
     /// ```
     fn drop(&mut self) {
@@ -66,17 +66,17 @@ impl Drop for PolyZ {
 /// Test that the [`Clone`] trait is correctly implemented.
 #[cfg(test)]
 mod test_clone {
-    use crate::integer::PolyZ;
+    use crate::integer::PolyOverZ;
     use std::str::FromStr;
 
-    /// check if a clone of a PolyZ with an entry larger than 64 bits
+    /// check if a clone of a [`PolyOverZ`] with an entry larger than 64 bits
     /// works
     #[test]
     fn large_entries() {
         let u64_string = u64::MAX.to_string();
         let input = format!("2  {} -{}", u64_string, u64_string);
 
-        let poly_1 = PolyZ::from_str(&input).unwrap();
+        let poly_1 = PolyOverZ::from_str(&input).unwrap();
         let poly_2 = poly_1.clone();
 
         // tests where the first coefficient is stored. Since both are larger than
@@ -90,9 +90,9 @@ mod test_clone {
     /// check if several instantiations are cloned correctly
     #[test]
     fn small_examples() {
-        let pos_1 = PolyZ::from_str("2  0 11").unwrap();
-        let zero_1 = PolyZ::from_str("2  0 -11").unwrap();
-        let neg_1 = PolyZ::from_str("2  0 1100").unwrap();
+        let pos_1 = PolyOverZ::from_str("2  0 11").unwrap();
+        let zero_1 = PolyOverZ::from_str("2  0 -11").unwrap();
+        let neg_1 = PolyOverZ::from_str("2  0 1100").unwrap();
 
         let pos_2 = pos_1.clone();
         let zero_2 = zero_1.clone();
@@ -107,9 +107,9 @@ mod test_clone {
     #[test]
     #[allow(clippy::redundant_clone)]
     fn keep_alive() {
-        let a: PolyZ;
+        let a: PolyOverZ;
         {
-            let b = PolyZ::from_str("2  0 1").unwrap();
+            let b = PolyOverZ::from_str("2  0 1").unwrap();
             a = b.clone();
         }
         assert_eq!("2  0 1", a.to_string());
