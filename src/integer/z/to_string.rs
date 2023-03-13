@@ -52,7 +52,7 @@ mod test_to_string {
     use crate::integer::Z;
     use std::str::FromStr;
 
-    /// tests whether a large modulus works in a roundtrip
+    /// tests whether a large integer works in a roundtrip
     #[test]
     fn working_large_positive() {
         let cmp = Z::from(u64::MAX);
@@ -60,7 +60,7 @@ mod test_to_string {
         assert_eq!(u64::MAX.to_string(), cmp.to_string())
     }
 
-    /// tests whether a large modulus works in a roundtrip
+    /// tests whether a large integer works in a roundtrip
     #[test]
     fn working_large_negative() {
         let cmp = Z::from_str(&format!("-{}", u64::MAX)).unwrap();
@@ -84,7 +84,7 @@ mod test_to_string {
         assert_eq!("-42", cmp.to_string())
     }
 
-    /// tests whether a modulus that is created using a string, returns a
+    /// tests whether a integer that is created using a string, returns a
     /// string that can be used to create a [`Z`]
     #[test]
     fn working_use_result_of_to_string_as_input() {
