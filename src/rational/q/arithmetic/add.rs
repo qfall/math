@@ -1,38 +1,48 @@
 //! Implementation of the [`Add`] trait for [`Q`] values.
 
-use flint_sys::{fmpq::fmpq, fmpz::fmpz};
+use flint_sys::fmpq::fmpq_add;
 use std::ops::Add;
 
 use super::super::Q;
-use crate::macros::arithmetics::arithmetic_trait;
+use crate::macros::arithmetics::{
+    arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+};
 
-arithmetic_trait!(
-    doc = "Implements the [`Add`] trait for two [`Q`] values. \n
-[`Add`] is implemented for any combination of [`Q`] and borrowed [`Q`].\n\n
- Parameters:\n
- - `other`: specifies the value to add to `self`\n\n
-Returns the sum of both numbers as a [`Q`].\n\n
- # Example\n
- ```rust
- use math::rational::Q;
- use std::str::FromStr;
- let a: Q = Q::from_str(\"42\").unwrap();
- let b: Q = Q::from_str(\"-42/2\").unwrap();
- let c: Q = &a + &b;
- let d: Q = a + b;
- let e: Q = &c + d;
- let f: Q = c + &e;
- ```",
-    Add,
-    add,
-    Q,
-    flint_sys::fmpq::fmpq_add,
-    fmpq {
-        num: fmpz(0),
-        den: fmpz(1)
-    },
-    value
-);
+impl Add for &Q {
+    type Output = Q;
+
+    /// Implements the [`Add`] trait for two [`Q`] values.
+    /// [`Add`] is implemented for any combination of [`Q`] and borrowed [`Q`].
+    ///
+    /// Parameters:
+    ///  - `other`: specifies the value to add to `self`
+    ///
+    /// Returns the sum of both numbers as a [`Q`].
+    ///
+    /// # Example
+    /// ```
+    /// use math::rational::Q;
+    /// use std::str::FromStr;
+    ///
+    /// let a: Q = Q::from_str("42").unwrap();
+    /// let b: Q = Q::from_str("-42/2").unwrap();
+    ///
+    /// let c: Q = &a + &b;
+    /// let d: Q = a + b;
+    /// let e: Q = &c + d;
+    /// let f: Q = c + &e;
+    /// ```
+    fn add(self, other: Self) -> Self::Output {
+        let mut out = Q::default();
+        unsafe {
+            fmpq_add(&mut out.value, &self.value, &other.value);
+        }
+        out
+    }
+}
+
+arithmetic_trait_borrowed_to_owned!(Add, add, Q);
+arithmetic_trait_mixed_borrowed_owned!(Add, add, Q);
 
 #[cfg(test)]
 mod test_add {
