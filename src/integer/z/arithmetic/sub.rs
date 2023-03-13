@@ -18,7 +18,7 @@ impl Sub for &Z {
     /// Returns the result of the subtraction as a [`Z`].
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::Z;
     ///
     /// let a: Z = Z::from(42);
