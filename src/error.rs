@@ -13,6 +13,11 @@ use thiserror::Error;
 ///
 /// Possible entries:
 /// - `DivisionByZeroError` is thrown if it is tried to perform a division by `0`
+/// - `InvalidInitMatInput` is thrown if an invalid format to a matrix is given
+/// - `InvalidInitMatQInput` is thrown if an invalid integer is given to create
+/// a [`MatQ`](crate::rational::MatQ)
+/// - `InvalidInitMatZInput` is thrown if an invalid integer is given to create
+/// a [`MatZ`](crate::integer::MatZ)
 /// - `InvalidIntToModulus` is thrown if an integer is provided, which is not greater than zero
 /// - `InvalidMatrix` is thrown if an invalid string input of a matrix is given
 /// - `InvalidStringToCStringInput` is thrown if an invalid string is given to
@@ -51,6 +56,15 @@ pub enum MathError {
     /// division by zero error
     #[error("the division by zero is not possible {0}")]
     DivisionByZeroError(String),
+    /// initialization of Matrix error due to wrong format
+    #[error("invalid input for an initialization of a matrix {0}")]
+    InvalidInitMatInput(String),
+    /// initialization of [`MatQ`](crate::rational::MatQ) error
+    #[error("invalid input for an initialization of a MatQ {0}")]
+    InvalidInitMatQInput(String),
+    /// initialization of [`MatZ`](crate::integer::MatZ) error
+    #[error("invalid input for an initialization of a MatZ {0}")]
+    InvalidInitMatZInput(String),
     /// parse int to modulus error
     #[error(
         "invalid integer input to parse to a modulus {0}. \
