@@ -30,7 +30,7 @@ impl MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [`InvalidInitMatQInput`](MathError::InvalidInitMatQInput)
+    /// [`InvalidMatrix`](MathError::InvalidMatrix)
     /// if the number of rows or columns is 0.
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the number of rows or columns is negative or it does not fit into an [`i64`].
@@ -42,7 +42,7 @@ impl MatQ {
         let num_cols_i64 = evaluate_coordinate(num_cols)?;
 
         if num_rows_i64 == 0 || num_cols_i64 == 0 {
-            return Err(MathError::InvalidInitMatZInput(format!(
+            return Err(MathError::InvalidMatrix(format!(
                 "({},{})",
                 num_rows, num_cols,
             )));

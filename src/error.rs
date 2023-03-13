@@ -13,10 +13,6 @@ use thiserror::Error;
 ///
 /// Possible entries:
 /// - `DivisionByZeroError` is thrown if it is tried to perform a division by `0`
-/// - `InvalidInitMatQInput` is thrown if an invalid integer is given to create
-/// a [`MatQ`](crate::rational::MatQ)
-/// - `InvalidInitMatZInput` is thrown if an invalid integer is given to create
-/// a [`MatZ`](crate::integer::MatZ)
 /// - `InvalidIntToModulus` is thrown if an integer is provided, which is not greater than zero
 /// - `InvalidMatrix` is thrown if an invalid string input of a matrix is given
 /// - `InvalidStringToCStringInput` is thrown if an invalid string is given to
@@ -39,7 +35,6 @@ use thiserror::Error;
 /// - `InvalidStringToZInput` is thrown if an invalid string is given to
 /// construct a [`Z`](crate::integer::Z)
 /// - `OutOfBounds` is thrown if a provided index is not in a desired range
-/// - `RegexError` is thrown if an regular expression could not be processed
 ///
 /// # Example
 /// ```
@@ -56,12 +51,6 @@ pub enum MathError {
     /// division by zero error
     #[error("the division by zero is not possible {0}")]
     DivisionByZeroError(String),
-    /// initialization of [`MatQ`](crate::rational::MatQ) error
-    #[error("invalid input for an initialization of a MatQ {0}")]
-    InvalidInitMatQInput(String),
-    /// initialization of [`MatZ`](crate::integer::MatZ) error
-    #[error("invalid input for an initialization of a MatZ {0}")]
-    InvalidInitMatZInput(String),
     /// parse int to modulus error
     #[error(
         "invalid integer input to parse to a modulus {0}. \
@@ -124,7 +113,4 @@ pub enum MathError {
         The index has to {0}, and the provided value is {1}"
     )]
     OutOfBounds(String, String),
-    /// Regex error
-    #[error("The regular expression could not be processed: {0}")]
-    RegexError(#[from] regex::Error),
 }
