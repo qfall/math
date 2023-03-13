@@ -185,7 +185,7 @@ mod test_from_str {
         );
     }
 
-    /// Ensure that initialization with negative numbers that are larger than i64 works.
+    /// Ensure that initialization with negative numbers that are larger than [`i64`] works.
     #[test]
     fn init_works_small_numbers() {
         let matrix_string = format!("[[-{}, 2, 3],[3, 4, 5]]", "1".repeat(65));
