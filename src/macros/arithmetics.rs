@@ -84,8 +84,11 @@ macro_rules! arithmetic_trait_borrowed_to_owned {
         impl $trait for $type {
             type Output = $type;
 
-            fn $trait_function(self, other: Self) -> Self::Output {
-                (&self).$trait_function(&other)
+            paste::paste! {
+                #[doc = "Documentation at [`" $type "::" $trait_function "`]."]
+                fn $trait_function(self, other: Self) -> Self::Output {
+                    (&self).$trait_function(&other)
+                }
             }
         }
     };
@@ -112,17 +115,21 @@ macro_rules! arithmetic_trait_mixed_borrowed_owned {
     ($trait:ident, $trait_function:ident, $type:ident) => {
         impl $trait<$type> for &$type {
             type Output = $type;
-
-            fn $trait_function(self, other: $type) -> Self::Output {
-                self.$trait_function(&other)
+            paste::paste! {
+                #[doc = "Documentation at [`" $type "::" $trait_function "`]."]
+                fn $trait_function(self, other: $type) -> Self::Output {
+                    self.$trait_function(&other)
+                }
             }
         }
 
         impl $trait<&$type> for $type {
             type Output = $type;
-
-            fn $trait_function(self, other: &Self) -> Self::Output {
-                (&self).$trait_function(other)
+            paste::paste! {
+                #[doc = "Documentation at [`" $type "::" $trait_function "`]."]
+                fn $trait_function(self, other: &Self) -> Self::Output {
+                    (&self).$trait_function(other)
+                }
             }
         }
     };
