@@ -83,9 +83,17 @@ impl FromStr for PolyOverQ {
 
 #[cfg(test)]
 mod test_from_str {
+    use super::PolyOverQ;
     use std::str::FromStr;
 
-    use super::PolyOverQ;
+    /// Ensure that zero-coefficients are reduced
+    #[test]
+    fn reduce_zero_coeff() {
+        let one_1 = PolyOverQ::from_str("2  24/42 1").unwrap();
+        let one_2 = PolyOverQ::from_str("3  24/42 1 0").unwrap();
+
+        assert_eq!(one_1, one_2)
+    }
 
     /// tests whether the same string yields the same polynomial
     #[test]

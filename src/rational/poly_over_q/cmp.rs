@@ -6,7 +6,7 @@ use flint_sys::fmpq_poly::fmpq_poly_equal;
 use super::PolyOverQ;
 
 impl PartialEq for PolyOverQ {
-    /// Checks if two polynomials are equal. Used by the `==` and `!=` operators.
+    /// Checks if two polynomials over [`Q`](crate::rational::Q) are equal. Used by the `==` and `!=` operators.
     ///
     /// Parameters:
     /// - other: the other value that is used to compare the elements
@@ -50,15 +50,6 @@ mod test_partial_eq {
 
     use super::PolyOverQ;
     use std::str::FromStr;
-
-    /// Ensure that zero-coefficients are reduced
-    #[test]
-    fn reduce_zero_coeff() {
-        let one_1 = PolyOverQ::from_str("2  24/42 1").unwrap();
-        let one_2 = PolyOverQ::from_str("3  24/42 1 0").unwrap();
-
-        assert_eq!(one_1, one_2)
-    }
 
     /// Demonstrate the different ways to use equal.
     /// We assume that they behave the same in the other tests.
