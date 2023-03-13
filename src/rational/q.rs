@@ -7,6 +7,7 @@ mod arithmetic;
 mod cmp;
 mod default;
 mod from;
+mod to_string;
 
 #[allow(dead_code)]
 #[derive(Debug)]
