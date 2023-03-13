@@ -98,7 +98,7 @@ impl MatPolyOverZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
     /// if the number of rows or columns is greater than the matrix or negative.
-    fn evaluate_coordinates(
+    pub(super) fn evaluate_coordinates(
         &self,
         row: impl TryInto<i64> + Display + Copy,
         column: impl TryInto<i64> + Display + Copy,
