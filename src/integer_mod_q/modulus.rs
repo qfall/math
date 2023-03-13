@@ -5,9 +5,12 @@
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use flint_sys::fmpz_mod::fmpz_mod_ctx;
+use std::rc::Rc;
 
+mod cmp;
 mod from;
 mod get;
+mod ownership;
 mod properties;
 mod to_string;
 
@@ -40,5 +43,5 @@ mod to_string;
 /// ```
 #[allow(dead_code)]
 pub struct Modulus {
-    modulus: fmpz_mod_ctx,
+    pub(crate) modulus: Rc<fmpz_mod_ctx>,
 }

@@ -9,6 +9,6 @@ impl Modulus {
     /// TODO: If the reference-counter is implemented, place the corresponding get_method here
     #[allow(dead_code)]
     pub(crate) fn get_fmpz_mod_ctx_struct(&self) -> &fmpz_mod_ctx_struct {
-        &self.modulus
+        self.modulus.as_ref()
     }
 }
