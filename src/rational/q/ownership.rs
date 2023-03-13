@@ -65,6 +65,7 @@ mod test_clone {
     use std::str::FromStr;
 
     /// check if small positive, negative and zero values are cloned correctly
+    /// additionally, check if the values are kept on the stack
     #[test]
     fn clone_equals_small() {
         let values = ["1/2", "-1/2", "0/1"];
@@ -90,12 +91,17 @@ mod test_clone {
                 }
             );
             assert_eq!(val, val_clone);
+
+            // check if cloned values are kept on stack
+            assert_eq!(val.value.num.0, val_clone.value.num.0);
+            assert_eq!(val.value.den.0, val_clone.value.den.0);
         }
     }
 
     /// check if large positive, negative and zero values are cloned correctly
+    /// additionally check if values are stored at different places in memory
     #[test]
-    fn clone_equals_big() {
+    fn clone_equals_large() {
         let big = "1".repeat(65);
         let signs = ["", "-"];
 
@@ -120,6 +126,9 @@ mod test_clone {
                 }
             );
             assert_eq!(val, val_clone);
+
+            // check if point in memory is different from clone
+            assert_ne!(val.value.num.0, val_clone.value.num.0);
         }
     }
 
