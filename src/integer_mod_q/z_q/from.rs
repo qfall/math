@@ -11,7 +11,7 @@ impl Zq {
     /// This function creates a copy of the value and creates a new [`Modulus`].
     /// Therefore, it should be avoided to create multiple values with the
     /// same [`Modulus`] with this function to improve performance.
-    /// It is better to use [`Zq::try_from_z_modulus()`] instead.
+    /// It is better to use [`Zq::from_z_modulus()`] instead.
     ///
     /// Parameters:
     /// - `value` defines the value of the new [`Zq`].
@@ -44,7 +44,7 @@ impl Zq {
     pub fn try_from_z_z(value: &Z, modulus: &Z) -> Result<Self, MathError> {
         let modulus = Modulus::try_from_z(modulus)?;
 
-        Ok(Self::try_from_z_modulus(value, modulus))
+        Ok(Self::from_z_modulus(value, modulus))
     }
 
     /// Create [`Zq`] from a [`Z`] values and a [`Modulus`].
@@ -67,15 +67,10 @@ impl Zq {
     /// let value = Z::from(42);
     /// let modulus = Modulus::try_from(&Z::from(100))?;
     ///
-    /// let answer_a = Zq::try_from_z_modulus(&value, modulus);
+    /// let answer_a = Zq::from_z_modulus(&value, modulus);
     /// # Ok::<(), MathError>(())
     /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type
-    ///   [`InvalidIntToModulus`](MathError::InvalidIntToModulus) if the
-    ///   provided value is not greater than zero.
-    pub fn try_from_z_modulus(value: &Z, modulus: Modulus) -> Self {
+    pub fn from_z_modulus(value: &Z, modulus: Modulus) -> Self {
         let mut value_fmpz = MaybeUninit::uninit();
 
         let value_fmpz = unsafe {
@@ -196,7 +191,7 @@ mod test_try_from_z_modulus {
         let value = Z::from(10);
         let modulus = Modulus::try_from(&Z::from(15)).unwrap();
 
-        let _ = Zq::try_from_z_modulus(&value, modulus)?;
+        let _ = Zq::from_z_modulus(&value, modulus);
     }
 
     /// Test with large value and modulus (FLINT uses pointer representation).
@@ -205,7 +200,7 @@ mod test_try_from_z_modulus {
         let value = Z::from(u64::MAX - 1);
         let modulus = Modulus::try_from(&Z::from(u64::MAX)).unwrap();
 
-        let _ = Zq::try_from_z_modulus(&value, modulus)?;
+        let _ = Zq::from_z_modulus(&value, modulus);
     }
 }
 
