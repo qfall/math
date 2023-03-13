@@ -46,10 +46,6 @@ impl Drop for Modulus {
     /// let a = Modulus::from_str("3").unwrap();
     /// drop(a); // explicitly drops a's value
     /// ```
-    ///
-    /// # WARNING
-    /// A [`nmod_t`](flint_sys::nmod_vec::nmod_t) struct can currently not be cleared and
-    /// produces a memory leak every time a [`Modulus`] object should be cleared entirely.
     fn drop(&mut self) {
         if Rc::strong_count(&self.modulus) <= 1 {
             let mut a = *self.modulus;
