@@ -13,6 +13,7 @@ use thiserror::Error;
 ///
 /// Possible entries:
 /// - `DivisionByZeroError` is thrown if it is tried to perform a division by `0`
+/// - `InvalidInitMatInput` is thrown if an invalid format to a matrix is given
 /// - `InvalidInitMatQInput` is thrown if an invalid integer is given to create
 /// a [`MatQ`](crate::rational::MatQ)
 /// - `InvalidInitMatZInput` is thrown if an invalid integer is given to create
@@ -56,6 +57,9 @@ pub enum MathError {
     /// division by zero error
     #[error("the division by zero is not possible {0}")]
     DivisionByZeroError(String),
+    /// initialization of Matrix error due to wrong format
+    #[error("invalid input for an initialization of a matrix {0}")]
+    InvalidInitMatInput(String),
     /// initialization of [`MatQ`](crate::rational::MatQ) error
     #[error("invalid input for an initialization of a MatQ {0}")]
     InvalidInitMatQInput(String),
