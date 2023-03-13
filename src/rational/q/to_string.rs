@@ -12,7 +12,7 @@ impl fmt::Display for Q {
     /// Allows to convert an integer of type [`Q`] into a [`String`].
     ///
     /// # Examples
-    /// ```rust
+    /// ```
     /// use std::str::FromStr;
     /// use math::rational::Q;
     /// use core::fmt;
@@ -21,7 +21,7 @@ impl fmt::Display for Q {
     /// println!("{}", rational);
     /// ```
     ///
-    /// ```rust
+    /// ```
     /// use std::str::FromStr;
     /// use math::rational::Q;
     /// use core::fmt;
