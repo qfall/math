@@ -7,6 +7,8 @@
 use flint_sys::fmpz_mod::fmpz_mod_ctx;
 
 mod from;
+mod get;
+mod properties;
 mod to_string;
 
 #[derive(Debug)]
@@ -38,5 +40,5 @@ mod to_string;
 /// ```
 #[allow(dead_code)]
 pub struct Modulus {
-    pub(crate) modulus: fmpz_mod_ctx,
+    modulus: fmpz_mod_ctx,
 }
