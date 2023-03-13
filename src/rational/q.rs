@@ -3,6 +3,8 @@
 
 use flint_sys::fmpq::fmpq;
 
+
+mod arithmetic;
 mod cmp;
 mod default;
 mod from;
