@@ -87,9 +87,17 @@ impl FromStr for PolyOverZ {
 
 #[cfg(test)]
 mod test_from_str {
+    use super::PolyOverZ;
     use std::str::FromStr;
 
-    use super::PolyOverZ;
+    /// Ensure that zero-coefficients are reduced
+    #[test]
+    fn reduce_zero_coeff() {
+        let one_1 = PolyOverZ::from_str("2  24 1").unwrap();
+        let one_2 = PolyOverZ::from_str("3  24 1 0").unwrap();
+
+        assert_eq!(one_1, one_2)
+    }
 
     /// tests whether the same string yields the same polynomial
     #[test]

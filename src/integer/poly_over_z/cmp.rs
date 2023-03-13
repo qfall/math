@@ -51,15 +51,6 @@ mod test_partial_eq {
     use super::PolyOverZ;
     use std::str::FromStr;
 
-    /// Ensure that zero-coefficients are reduced
-    #[test]
-    fn reduce_zero_coeff() {
-        let one_1 = PolyOverZ::from_str("2  24 1").unwrap();
-        let one_2 = PolyOverZ::from_str("3  24 1 0").unwrap();
-
-        assert_eq!(one_1, one_2)
-    }
-
     /// Demonstrate the different ways to use equal.
     /// We assume that they behave the same in the other tests.
     #[test]
