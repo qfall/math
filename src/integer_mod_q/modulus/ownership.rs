@@ -103,8 +103,7 @@ mod test_clone {
 mod test_drop {
 
     use super::Modulus;
-    use crate::integer::Z;
-    use std::{rc::Rc, str::FromStr};
+    use std::{collections::HashSet, rc::Rc, str::FromStr};
 
     /// Check whether references are decreased when dropping instances
     #[test]
@@ -134,27 +133,22 @@ mod test_drop {
         assert_eq!(Rc::strong_count(&b.modulus), 2);
     }
 
+    fn create_and_drop_modulus() -> i64 {
+        let a = Modulus::from_str(&"1".repeat(65)).unwrap();
+        a.get_fmpz_mod_ctx_struct().n[0].0
+    }
+
     /// Check whether freed memory is reused afterwards
     #[test]
     fn free_memory() {
-        let string = "1".repeat(65);
-        let a = Modulus::from_str(&string).unwrap();
-        let point_in_memory = a.get_fmpz_mod_ctx_struct().n[0].0;
+        let mut storage_addresses = HashSet::new();
 
-        drop(a);
+        for _i in 0..5 {
+            storage_addresses.insert(create_and_drop_modulus());
+        }
 
-        // instantiate different modulus to check if memory slot is reused for different modulus
-        let c = Modulus::from_str(&string).unwrap();
-        assert_eq!(c.get_fmpz_mod_ctx_struct().n[0].0, point_in_memory + 4);
-
-        // memory slots differ due to previously created large integer
-        assert_ne!(
-            point_in_memory,
-            Modulus::try_from_z(&Z::from(u64::MAX))
-                .unwrap()
-                .get_fmpz_mod_ctx_struct()
-                .n[0]
-                .0
-        );
+        if storage_addresses.capacity() == 5 {
+            panic!("No storage address of dropped modulus was reused.");
+        }
     }
 }
