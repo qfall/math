@@ -30,7 +30,7 @@ impl MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [`InvalidInitMatInput`](MathError::InvalidInitMatInput)
+    /// [`InvalidMatrix`](MathError::InvalidMatrix)
     /// if the number of rows or columns is 0.
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the number of rows or columns is negative or it does not fit into an [`i64`].
@@ -42,8 +42,8 @@ impl MatPolyOverZ {
         let num_cols_i64 = evaluate_coordinate(num_cols)?;
 
         if num_rows_i64 == 0 || num_cols_i64 == 0 {
-            return Err(MathError::InvalidInitMatInput(format!(
-                "({},{})",
+            return Err(MathError::InvalidMatrix(format!(
+                "the provided matrix has dimensions ({},{})",
                 num_rows, num_cols,
             )));
         }

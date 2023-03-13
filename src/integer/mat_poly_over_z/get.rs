@@ -1,7 +1,7 @@
 //! Implementations to get entries from a [`MatPolyOverZ`] matrix.
 
 use super::MatPolyOverZ;
-use crate::{error::MathError, integer::PolyOverZ, utils::coordinate::evaluate_coordinate};
+use crate::{error::MathError, integer::PolyOverZ};
 use flint_sys::{fmpz_poly::fmpz_poly_set, fmpz_poly_mat::fmpz_poly_mat_entry};
 use std::fmt::Display;
 
