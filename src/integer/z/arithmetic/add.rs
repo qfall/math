@@ -18,7 +18,7 @@ impl Add for &Z {
     /// Returns the sum of both numbers as a [`Z`].
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::Z;
     ///
     /// let a: Z = Z::from(42);
