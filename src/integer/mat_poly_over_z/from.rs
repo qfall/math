@@ -23,9 +23,9 @@ impl MatPolyOverZ {
     ///
     /// # Example
     /// ```rust
-    /// use math::integer::MatZ;
+    /// use math::integer::MatPolyOverZ;
     ///
-    /// let matrix = MatZ::new(5, 10).unwrap();
+    /// let matrix = MatPolyOverZ::new(5, 10).unwrap();
     /// ```
     ///
     /// # Errors and Failures
@@ -43,18 +43,18 @@ impl MatPolyOverZ {
 
         if num_rows_i64 == 0 || num_cols_i64 == 0 {
             return Err(MathError::InvalidMatrix(format!(
-                "the provided matrix has dimensions ({},{})",
+                "The provided matrix has dimensions ({},{})",
                 num_rows, num_cols,
             )));
         }
 
-        // initialize variable with MaybeUn-initialized value to check
+        // Initialize variable with MaybeUn-initialized value to check
         // correctness of initialization later
         let mut matrix = MaybeUninit::uninit();
         unsafe {
             fmpz_poly_mat_init(matrix.as_mut_ptr(), num_rows_i64, num_cols_i64);
 
-            // Construct MatZ from previously initialized fmpz_mat
+            // Construct MatPolyOverZ from previously initialized fmpz_poly_mat
             Ok(MatPolyOverZ {
                 matrix: matrix.assume_init(),
             })

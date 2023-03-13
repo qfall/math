@@ -126,6 +126,22 @@ mod test_get_entry {
         assert_eq!(format!("2  -{} 1", u64::MAX), entry.to_string());
     }
 
+    /// Ensure that polynomials with many entries are correctly retrieved
+    #[test]
+    fn large_poly() {
+        let mut matrix = MatPolyOverZ::new(5, 10).unwrap();
+        let value =
+            PolyOverZ::from_str(&format!("10000  -{} 1{}", u64::MAX, " 17".repeat(9998))).unwrap();
+        matrix.set_entry(1, 1, value).unwrap();
+
+        let entry = matrix.get_entry(1, 1).unwrap();
+
+        assert_eq!(
+            format!("10000  -{} 1{}", u64::MAX, " 17".repeat(9998)),
+            entry.to_string()
+        );
+    }
+
     /// Ensure that getting entries at (0,0) works.
     #[test]
     fn getting_at_zero() {

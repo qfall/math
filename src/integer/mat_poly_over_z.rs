@@ -7,7 +7,6 @@ mod from;
 mod get;
 mod set;
 
-#[allow(dead_code)]
 #[derive(Debug)]
 /// [`MatPolyOverZ`] is a matrix with entries of type [`PolyOverZ`](crate::integer::PolyOverZ).
 ///
