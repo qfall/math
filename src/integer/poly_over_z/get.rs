@@ -1,27 +1,28 @@
-//! Implementations to get coefficients of a [`PolyZ`].
+//! Implementations to get coefficients of a [`PolyOverZ`].
 //! Each reasonable type should be allowed as a coordinate.
 
-use super::PolyZ;
+use super::PolyOverZ;
 use crate::{error::MathError, integer::Z, utils::coordinate::evaluate_coordinate};
 use flint_sys::fmpz_poly::fmpz_poly_get_coeff_fmpz;
 use std::fmt::Display;
 
-impl PolyZ {
-    /// Returns the coefficient of a polynomial [`PolyZ`] as a [`Z`].
+impl PolyOverZ {
+    /// Returns the coefficient of a polynomial [`PolyOverZ`] as a [`Z`].
     ///
     /// If a coordinate is provided which exceeds the highest set coefficient, zero is returned.
     ///
     /// Parameters:
     /// - `coordinate`: the coordinate of the coefficient to get (has to be positive)
     ///
-    /// Returns the coefficient as a [`Z`] or a [`MathError`] if the provided coordinate is negative and therefore invalid.
+    /// Returns the coefficient as a [`Z`] or a [`MathError`] if the provided coordinate
+    /// is negative and therefore invalid or it does not fit into an [`i64`].
     ///
     /// # Example
     /// ```rust
-    /// use math::integer::PolyZ;
+    /// use math::integer::PolyOverZ;
     /// use std::str::FromStr;
     ///
-    /// let poly = PolyZ::from_str("4  0 1 2 3").unwrap();
+    /// let poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
     ///
     /// let coeff_0 = poly.get_coeff(0).unwrap();
     /// let coeff_1 = poly.get_coeff(1).unwrap();
@@ -31,9 +32,9 @@ impl PolyZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
     /// either the coordinate is negative or it does not fit into an [`i64`].
-    pub fn get_coeff<S: TryInto<i64> + Display + Copy>(
+    pub fn get_coeff(
         &self,
-        coordinate: S,
+        coordinate: impl TryInto<i64> + Display + Copy,
     ) -> Result<Z, MathError> {
         let mut out = Z::default();
         let coordinate = evaluate_coordinate(coordinate)?;
@@ -45,13 +46,13 @@ impl PolyZ {
 #[cfg(test)]
 mod test_get_coeff {
 
-    use crate::integer::{PolyZ, Z};
+    use crate::integer::{PolyOverZ, Z};
     use std::str::FromStr;
 
     /// ensure that 0 is returned if the provided index is not yet set
     #[test]
     fn index_out_of_range() {
-        let poly = PolyZ::from_str("4  0 1 2 3").unwrap();
+        let poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
 
         let zero_coeff = poly.get_coeff(4).unwrap();
 
@@ -61,7 +62,7 @@ mod test_get_coeff {
     /// tests if negative coefficients are returned correctly
     #[test]
     fn negative_coeff() {
-        let poly = PolyZ::from_str("4  0 1 2 -3").unwrap();
+        let poly = PolyOverZ::from_str("4  0 1 2 -3").unwrap();
 
         let coeff = poly.get_coeff(3).unwrap();
 
@@ -71,7 +72,7 @@ mod test_get_coeff {
     /// tests if positive coefficients are returned correctly
     #[test]
     fn positive_coeff() {
-        let poly = PolyZ::from_str("4  0 1 2 -3").unwrap();
+        let poly = PolyOverZ::from_str("4  0 1 2 -3").unwrap();
 
         let coeff = poly.get_coeff(2).unwrap();
 
@@ -82,9 +83,22 @@ mod test_get_coeff {
     #[test]
     fn large_coeff() {
         let large_string = format!("2  {} {}", u64::MAX, i64::MIN);
-        let poly = PolyZ::from_str(&large_string).unwrap();
+        let poly = PolyOverZ::from_str(&large_string).unwrap();
 
         assert_eq!(Z::from(u64::MAX), poly.get_coeff(0).unwrap());
+        assert_eq!(Z::from(i64::MIN), poly.get_coeff(1).unwrap());
+    }
+
+    /// tests if large negative coefficients are returned correctly
+    #[test]
+    fn large_coeff_neg() {
+        let large_string = format!("2  -{} {}", u64::MAX, i64::MIN);
+        let poly = PolyOverZ::from_str(&large_string).unwrap();
+
+        assert_eq!(
+            Z::from_str(&format!("-{}", u64::MAX)).unwrap(),
+            poly.get_coeff(0).unwrap()
+        );
         assert_eq!(Z::from(i64::MIN), poly.get_coeff(1).unwrap());
     }
 }

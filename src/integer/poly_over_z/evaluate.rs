@@ -1,13 +1,13 @@
-//! Implementations to evaluate a [`PolyZ`].
+//! Implementations to evaluate a [`PolyOverZ`].
 //! For each reasonable type, an implementation
 //! of the [`Evaluate`] trait should be implemented.
 
-use super::PolyZ;
+use super::PolyOverZ;
 use crate::{integer::Z, traits::Evaluate};
 use flint_sys::fmpz_poly::fmpz_poly_evaluate_fmpz;
 
-impl Evaluate<Z, Z> for PolyZ {
-    /// Evaluates a [`PolyZ`] on a given input.
+impl Evaluate<Z, Z> for PolyOverZ {
+    /// Evaluates a [`PolyOverZ`] on a given input.
     ///
     /// Parameters:
     /// - `value`: the value with which to evaluate the polynomial. Currently supported
@@ -19,40 +19,40 @@ impl Evaluate<Z, Z> for PolyZ {
     /// ```rust
     /// use math::traits::Evaluate;
     /// use math::integer::Z;
-    /// use math::integer::PolyZ;
+    /// use math::integer::PolyOverZ;
     /// use std::str::FromStr;
     ///
-    /// let poly = PolyZ::from_str("5  0 1 2 -3 1").unwrap();
+    /// let poly = PolyOverZ::from_str("5  0 1 2 -3 1").unwrap();
     /// let value = Z::from(3);
     /// let res = poly.evaluate(value);
     /// ```
     ///
     /// ```rust
     /// use math::traits::Evaluate;
-    /// use math::integer::PolyZ;
+    /// use math::integer::PolyOverZ;
     /// use std::str::FromStr;
     ///
-    /// let poly = PolyZ::from_str("5  0 1 2 -3 1").unwrap();
+    /// let poly = PolyOverZ::from_str("5  0 1 2 -3 1").unwrap();
     /// let value = 3;
     /// let res = poly.evaluate(value);
     /// ```
     ///
     /// ```rust
     /// use math::traits::Evaluate;
-    /// use math::integer::PolyZ;
+    /// use math::integer::PolyOverZ;
     /// use std::str::FromStr;
     ///
-    /// let poly = PolyZ::from_str("5  0 1 2 -3 1").unwrap();
+    /// let poly = PolyOverZ::from_str("5  0 1 2 -3 1").unwrap();
     /// let value = i64::MAX;
     /// let res = poly.evaluate(value);
     /// ```
-    fn evaluate<T: Into<Z>>(&self, value: T) -> Z {
-        self.evaluate_z_ref(&value.into())
+    fn evaluate(&self, value: impl Into<Z>) -> Z {
+        self.evaluate_ref_z(&value.into())
     }
 }
 
-impl PolyZ {
-    /// Evaluates a [`PolyZ`] on a given input of [`Z`]. Note that the
+impl PolyOverZ {
+    /// Evaluates a [`PolyOverZ`] on a given input of [`Z`]. Note that the
     /// [`Z`] in this case is only a reference.
     ///
     /// Parameters:
@@ -64,15 +64,15 @@ impl PolyZ {
     /// ```rust
     /// use math::traits::Evaluate;
     /// use math::integer::Z;
-    /// use math::integer::PolyZ;
+    /// use math::integer::PolyOverZ;
     /// use std::str::FromStr;
     ///
-    /// let poly = PolyZ::from_str("5  0 1 2 -3 1").unwrap();
+    /// let poly = PolyOverZ::from_str("5  0 1 2 -3 1").unwrap();
     /// let value = Z::from(3);
-    /// let res = poly.evaluate_z_ref(&value);
+    /// let res = poly.evaluate_ref_z(&value);
     /// ```
-    pub fn evaluate_z_ref(&self, value: &Z) -> Z {
-        let mut res = Z::from(0);
+    pub fn evaluate_ref_z(&self, value: &Z) -> Z {
+        let mut res = Z::default();
 
         unsafe { fmpz_poly_evaluate_fmpz(&mut res.value, &self.poly, &value.value) };
 
@@ -83,14 +83,14 @@ impl PolyZ {
 #[cfg(test)]
 mod test_evaluate {
 
-    use crate::integer::{PolyZ, Z};
+    use crate::integer::{PolyOverZ, Z};
     use crate::traits::Evaluate;
     use std::str::FromStr;
 
     /// tests if evaluate works for [`Z`] as input
     #[test]
     fn eval_z() {
-        let poly = PolyZ::from_str("2  1 2").unwrap();
+        let poly = PolyOverZ::from_str("2  1 2").unwrap();
 
         let res = poly.evaluate(Z::from(3));
 
@@ -100,9 +100,9 @@ mod test_evaluate {
     /// tests if evaluate_z_ref with a reference works
     #[test]
     fn eval_z_ref() {
-        let poly = PolyZ::from_str("2  1 2").unwrap();
+        let poly = PolyOverZ::from_str("2  1 2").unwrap();
 
-        let res = poly.evaluate_z_ref(&Z::from(3));
+        let res = poly.evaluate_ref_z(&Z::from(3));
 
         assert_eq!(Z::from(7), res)
     }
@@ -110,9 +110,9 @@ mod test_evaluate {
     /// tests if evaluate works with negative values
     #[test]
     fn eval_z_negative() {
-        let poly = PolyZ::from_str("2  1 2").unwrap();
+        let poly = PolyOverZ::from_str("2  1 2").unwrap();
 
-        let res = poly.evaluate_z_ref(&Z::from(-5));
+        let res = poly.evaluate_ref_z(&Z::from(-5));
 
         assert_eq!(Z::from(-9), res)
     }
@@ -120,9 +120,9 @@ mod test_evaluate {
     /// tests if evaluate works with large integers
     #[test]
     fn eval_z_large() {
-        let poly = PolyZ::from_str("2  1 2").unwrap();
+        let poly = PolyOverZ::from_str("2  1 2").unwrap();
 
-        let res = poly.evaluate_z_ref(&Z::from_str(&"1".repeat(65)).unwrap());
+        let res = poly.evaluate_ref_z(&Z::from_str(&"1".repeat(65)).unwrap());
 
         let mut res_cmp_str = "2".repeat(64);
         res_cmp_str.push('3');
@@ -132,7 +132,7 @@ mod test_evaluate {
     /// test if evaluate works with max of i64, i32, ...
     #[test]
     fn eval_max() {
-        let poly = PolyZ::from_str("2  1 2").unwrap();
+        let poly = PolyOverZ::from_str("2  1 2").unwrap();
 
         // signed
         let _ = poly.evaluate(i64::MAX);
@@ -150,7 +150,7 @@ mod test_evaluate {
     /// test if evaluate works with min of i64, i32, ...
     #[test]
     fn eval_min() {
-        let poly = PolyZ::from_str("2  1 2").unwrap();
+        let poly = PolyOverZ::from_str("2  1 2").unwrap();
 
         // signed
         let _ = poly.evaluate(i64::MIN);
