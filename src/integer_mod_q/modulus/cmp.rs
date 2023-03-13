@@ -6,8 +6,9 @@
 use super::Modulus;
 
 impl PartialEq for Modulus {
-    /// Compares the two given [`fmpz`](flint_sys::fmpz::fmpz) structs
-    /// to check whether the given [`Modulus`] instances have the same value.
+    /// Compares the two [`fmpz`](flint_sys::fmpz::fmpz) structs hiding behind the 
+    /// given [`Modulus`] instances to check whether the given [`Modulus`] instances 
+    /// have the same value.
     ///
     /// Parameters:
     /// - `other`: holds another [`Modulus`] object which `self` is compared to
@@ -36,26 +37,36 @@ impl PartialEq for Modulus {
 
 #[cfg(test)]
 mod test_eq {
+
     use super::Modulus;
     use crate::integer::Z;
     use std::str::FromStr;
 
+    /// Checks whether two equal, large Moduli created with different constructors are equal
     #[test]
     fn equal_large() {
         let a = Modulus::from_str(&"1".repeat(65)).unwrap();
         let b = Modulus::try_from_z(&Z::from_str(&"1".repeat(65)).unwrap()).unwrap();
+        let a_clone = a.clone();
 
         assert_eq!(a, b);
+        assert_eq!(a, a_clone);
+        assert_eq!(b, a_clone);
     }
 
+    /// Checks whether two equal, small Moduli created with different constructors are equal
     #[test]
     fn equal_small() {
         let a = Modulus::from_str(&"1").unwrap();
         let b = Modulus::try_from_z(&Z::from_str("1").unwrap()).unwrap();
+        let b_clone = b.clone();
 
         assert_eq!(a, b);
+        assert_eq!(b, b_clone);
+        assert_eq!(a, b_clone);
     }
 
+    /// Checks whether unequal Moduli are unequal
     #[test]
     fn unequal() {
         let one = Modulus::from_str(&"1").unwrap();
