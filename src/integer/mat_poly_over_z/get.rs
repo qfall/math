@@ -32,19 +32,7 @@ impl MatPolyOverZ {
         row: impl TryInto<i64> + Display + Copy,
         column: impl TryInto<i64> + Display + Copy,
     ) -> Result<PolyOverZ, MathError> {
-        let row_i64 = evaluate_coordinate(row)?;
-        let column_i64 = evaluate_coordinate(column)?;
-
-        if self.get_num_rows() <= row_i64 || self.get_num_columns() <= column_i64 {
-            return Err(MathError::OutOfBounds(
-                format!(
-                    "be smaller than ({},{})",
-                    self.get_num_rows(),
-                    self.get_num_columns()
-                ),
-                format!("({},{})", row_i64, column_i64,),
-            ));
-        }
+        let (row_i64, column_i64) = self.evaluate_coordinates(row, column)?;
 
         // since `self.matrix` is a correct fmpz_poly matrix and both row and column
         // are previously checked to be inside of the matrix, no errors
