@@ -11,7 +11,7 @@ impl Evaluate<Q, Q> for PolyOverQ {
     ///
     /// Parameters:
     /// - `value`: the value with which to evaluate the polynomial. TODO: Currently supported
-    /// are ([`i8`], [`i8`]) for all of [`i16`],[`i32`],[`i64`],[`u8`],[`u16`],[`u32`],[`u64`] and separately [`Q`]
+    /// are all pairs of [`i8`], [`i16`],[`i32`],[`i64`],[`u8`],[`u16`],[`u32`],[`u64`] and separately [`Q`]
     ///
     /// Returns the evaluation of the polynomial as a [`Q`].
     ///
