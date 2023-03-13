@@ -23,9 +23,9 @@ impl Modulus {
 
 #[cfg(test)]
 mod test_is_prime {
-    use std::str::FromStr;
 
     use crate::integer_mod_q::Modulus;
+    use std::str::FromStr;
 
     /// ensure that if a [`Modulus`] is instantiated with a prime, `true` is returned
     #[test]
