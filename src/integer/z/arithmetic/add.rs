@@ -11,19 +11,19 @@ impl Add for &Z {
     type Output = Z;
     /// Implements the [`Add`] trait for two [`Z`] values.
     /// [`Add`] is implemented for any combination of [`Z`] and borrowed [`Z`].
-
+    ///
     /// Parameters:
     /// - `other`: specifies the value to add to `self`
-
+    ///
     /// Returns the sum of both numbers as a [`Z`].
-
+    ///
     /// # Example
     /// ```rust
     /// use math::integer::Z;
-
+    ///
     /// let a: Z = Z::from(42);
     /// let b: Z = Z::from(24);
-
+    ///
     /// let c: Z = &a + &b;
     /// let d: Z = a + b;
     /// let e: Z = &c + d;
