@@ -90,7 +90,7 @@ mod test_get_entry {
         assert_eq!(format!("2  {} 1", i64::MAX), entry.to_string());
     }
 
-    /// Ensure that getting entries works with large numbers (larger than i64).
+    /// Ensure that getting entries works with large polynomials (larger than [`i64`]).
     #[test]
     fn big_positive() {
         let mut matrix = MatPolyOverZ::new(5, 10).unwrap();
@@ -102,7 +102,7 @@ mod test_get_entry {
         assert_eq!(format!("2  {} 1", u64::MAX), entry.to_string());
     }
 
-    /// Ensure that getting entries works with large negative numbers.
+    /// Ensure that getting entries works with large negative polynomials.
     #[test]
     fn max_int_negative() {
         let mut matrix = MatPolyOverZ::new(5, 10).unwrap();
@@ -114,7 +114,7 @@ mod test_get_entry {
         assert_eq!(format!("2  {} 1", i64::MIN), entry.to_string());
     }
 
-    /// Ensure that getting entries works with large negative numbers (larger than i64).
+    /// Ensure that getting entries works with large negative polynomials (larger than [`i64`]).
     #[test]
     fn big_negative() {
         let mut matrix = MatPolyOverZ::new(5, 10).unwrap();
