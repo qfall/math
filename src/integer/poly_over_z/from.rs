@@ -87,9 +87,28 @@ impl FromStr for PolyOverZ {
 
 #[cfg(test)]
 mod test_from_str {
+    use super::PolyOverZ;
     use std::str::FromStr;
 
-    use super::PolyOverZ;
+    /// Ensure that zero-coefficients are reduced
+    #[test]
+    fn reduce_zero_coeff() {
+        let one_1 = PolyOverZ::from_str("2  24 1").unwrap();
+        let one_2 = PolyOverZ::from_str("3  24 1 0").unwrap();
+
+        assert_eq!(one_1, one_2)
+    }
+
+    /// tests whether the same string yields the same polynomial
+    #[test]
+    fn same_string() {
+        let str = format!("3  1 {} {}", u64::MAX, i64::MIN);
+
+        let poly_1 = PolyOverZ::from_str(&str).unwrap();
+        let poly_2 = PolyOverZ::from_str(&str).unwrap();
+
+        assert_eq!(poly_1, poly_2)
+    }
 
     /// tests whether a correctly formatted string outputs an instantiation of a
     /// polynomial, i.e. does not return an error
@@ -123,6 +142,8 @@ mod test_from_str {
 // ensure that init initializes an empty polynomial
 #[cfg(test)]
 mod test_init {
+    use std::str::FromStr;
+
     use crate::integer::PolyOverZ;
 
     /// Check if [`Default`] initializes the zero polynomial appropriately
@@ -130,6 +151,6 @@ mod test_init {
     fn init_zero() {
         let poly_over_zero = PolyOverZ::default();
 
-        assert_eq!("0", poly_over_zero.to_string())
+        assert_eq!(PolyOverZ::from_str("0").unwrap(), poly_over_zero)
     }
 }

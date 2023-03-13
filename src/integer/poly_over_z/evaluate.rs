@@ -46,8 +46,8 @@ impl Evaluate<Z, Z> for PolyOverZ {
     /// let value = i64::MAX;
     /// let res = poly.evaluate(value);
     /// ```
-    fn evaluate<T: Into<Z>>(&self, value: T) -> Z {
-        self.evaluate_z_ref(&value.into())
+    fn evaluate(&self, value: impl Into<Z>) -> Z {
+        self.evaluate_ref_z(&value.into())
     }
 }
 
@@ -69,10 +69,10 @@ impl PolyOverZ {
     ///
     /// let poly = PolyOverZ::from_str("5  0 1 2 -3 1").unwrap();
     /// let value = Z::from(3);
-    /// let res = poly.evaluate_z_ref(&value);
+    /// let res = poly.evaluate_ref_z(&value);
     /// ```
-    pub fn evaluate_z_ref(&self, value: &Z) -> Z {
-        let mut res = Z::from(0);
+    pub fn evaluate_ref_z(&self, value: &Z) -> Z {
+        let mut res = Z::default();
 
         unsafe { fmpz_poly_evaluate_fmpz(&mut res.value, &self.poly, &value.value) };
 
@@ -102,7 +102,7 @@ mod test_evaluate {
     fn eval_z_ref() {
         let poly = PolyOverZ::from_str("2  1 2").unwrap();
 
-        let res = poly.evaluate_z_ref(&Z::from(3));
+        let res = poly.evaluate_ref_z(&Z::from(3));
 
         assert_eq!(Z::from(7), res)
     }
@@ -112,7 +112,7 @@ mod test_evaluate {
     fn eval_z_negative() {
         let poly = PolyOverZ::from_str("2  1 2").unwrap();
 
-        let res = poly.evaluate_z_ref(&Z::from(-5));
+        let res = poly.evaluate_ref_z(&Z::from(-5));
 
         assert_eq!(Z::from(-9), res)
     }
@@ -122,7 +122,7 @@ mod test_evaluate {
     fn eval_z_large() {
         let poly = PolyOverZ::from_str("2  1 2").unwrap();
 
-        let res = poly.evaluate_z_ref(&Z::from_str(&"1".repeat(65)).unwrap());
+        let res = poly.evaluate_ref_z(&Z::from_str(&"1".repeat(65)).unwrap());
 
         let mut res_cmp_str = "2".repeat(64);
         res_cmp_str.push('3');

@@ -1,7 +1,9 @@
-//! `MatQ` is a type of matrix with rational entries of arbritrary length.
+//! `MatQ` is a type of matrix with rational entries of arbitrary length.
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use flint_sys::fmpq_mat::fmpq_mat_struct;
+
+mod from;
 
 #[allow(dead_code)]
 #[derive(Debug)]

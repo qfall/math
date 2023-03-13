@@ -10,5 +10,5 @@ pub trait Evaluate<U, V> {
     /// - `value`: The value with which to evaluate the object.
     ///
     /// Returns the evaluation of the object.
-    fn evaluate<T: Into<U>>(&self, value: T) -> V;
+    fn evaluate(&self, value: impl Into<U>) -> V;
 }

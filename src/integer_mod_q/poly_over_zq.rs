@@ -6,6 +6,7 @@ use super::modulus::Modulus;
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_struct;
 
 mod from;
+mod properties;
 mod to_string;
 
 #[allow(dead_code)]
