@@ -76,7 +76,11 @@ impl Zq {
         let value_fmpz = unsafe {
             // Applies modulus to parameter and saves the new value into `value_fmpz`.
             // => No problem when the `value` parameter is later dropped.
-            fmpz_mod_set_fmpz(value_fmpz.as_mut_ptr(), &value.value, &modulus.modulus);
+            fmpz_mod_set_fmpz(
+                value_fmpz.as_mut_ptr(),
+                &value.value,
+                modulus.get_fmpz_mod_ctx_struct(),
+            );
             value_fmpz.assume_init()
         };
 
