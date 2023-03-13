@@ -24,7 +24,7 @@ impl MatZ {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the number of rows or columns is greater than the matrix or negative.
     pub fn set_entry<
         S: TryInto<i64> + Display + Copy,
@@ -57,7 +57,7 @@ impl MatZ {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the number of rows or columns is greater than the matrix or negative.
     pub fn set_entry_ref_z<S: TryInto<i64> + Display + Copy, T: TryInto<i64> + Display + Copy>(
         &mut self,

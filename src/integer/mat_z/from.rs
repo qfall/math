@@ -37,7 +37,7 @@ impl MatZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [`InvalidInitMatZInput`](MathError::InvalidInitMatZInput)
+    /// [`InvalidMatrix`](MathError::InvalidMatrix)
     /// if the number of rows or columns is 0.
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the number of rows or columns is negative or it does not fit into an [`i64`].
@@ -49,10 +49,9 @@ impl MatZ {
         let num_cols_i64 = evaluate_coordinate(num_cols)?;
 
         if num_rows_i64 == 0 || num_cols_i64 == 0 {
-            return Err(MathError::InvalidInitMatZInput(format!(
-                "({},{})",
-                num_rows, num_cols,
-            )));
+            return Err(MathError::InvalidMatrix(
+                "A matrix can not contain 0 rows or 0 columns".to_string(),
+            ));
         }
 
         // initialize variable with MaybeUn-initialized value to check
@@ -72,12 +71,12 @@ impl MatZ {
 impl FromStr for MatZ {
     type Err = MathError;
 
-    /// Creates a [`MatZ`] matrix from a [`String`].
+    /// Creates a [`MatZ`] matrix with entries in [`Z`] from a [`String`].
     /// The format of that string looks like this `[[1,2,3],[4,5,6]]` for a 2x3 matrix
     /// with entries 1, 2, 3 in the first row and 4, 5, 6 in the second row.
     ///
     /// Parameters:
-    /// - `string`: string format of matrix, that will be initialized
+    /// - `string`: the matrix as a string
     ///
     /// Returns a [`MatZ`] or an error, if the matrix is not formatted in a suitable way,
     /// the number of rows or columns is too big (must fit into [`i64`]),
@@ -98,8 +97,12 @@ impl FromStr for MatZ {
     /// if the matrix is not formatted in a suitable way,
     /// the number of rows or columns is too big (must fit into [`i64`]) or
     /// if the number of entries in rows is unequal.
-    /// - Returns a [`MathError`] of type [`RegexError`](MathError::RegexError)
-    /// if the regular expression inside of the function could not be processed.
+    /// - Returns a [`MathError`] of type
+    /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
+    /// if an entry contains a Nul byte.
+    /// - Returns a [`MathError`] of type
+    /// [`InvalidStringToZInput`](MathError::InvalidStringToZInput)
+    /// if an entry is not formatted correctly.
     fn from_str(string: &str) -> Result<Self, MathError> {
         let string_matrix = parse_matrix_string(string)?;
         let (num_rows, num_cols) = find_matrix_dimensions(&string_matrix)?;
@@ -108,7 +111,7 @@ impl FromStr for MatZ {
         // fill entries of matrix according to entries in string_matrix
         for (row_num, row) in string_matrix.iter().enumerate() {
             for (col_num, entry) in row.iter().enumerate() {
-                let z_entry = Z::from_str(entry).unwrap();
+                let z_entry = Z::from_str(entry)?;
                 matrix.set_entry(row_num, col_num, z_entry)?;
             }
         }
@@ -130,10 +133,10 @@ mod test_new {
         let entry3 = matrix.get_entry(1, 0).unwrap();
         let entry4 = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!(entry1, Z::from_i64(0));
-        assert_eq!(entry2, Z::from_i64(0));
-        assert_eq!(entry3, Z::from_i64(0));
-        assert_eq!(entry4, Z::from_i64(0));
+        assert_eq!(Z::from_i64(0), entry1);
+        assert_eq!(Z::from_i64(0), entry2);
+        assert_eq!(Z::from_i64(0), entry3);
+        assert_eq!(Z::from_i64(0), entry4);
     }
 
     /// Ensure that a new zero matrix fails with 0 as input.
@@ -160,60 +163,55 @@ mod test_from_str {
         let matrix_string1 = String::from("[[1, 2, 3],[3, 4, 5]]");
 
         assert_eq!(
+            Z::from_i64(1),
             MatZ::from_str(&matrix_string1)
                 .unwrap()
                 .get_entry(0, 0)
-                .unwrap(),
-            Z::from_i64(1)
+                .unwrap()
         );
     }
 
     /// Ensure that initialization with positive numbers that are larger than i64 works.
     #[test]
     fn init_works_large_numbers() {
-        let mut matrix_string = "[[".to_string();
-        matrix_string.push_str(&"1".repeat(65));
-        matrix_string.push_str(", 2, 3],[3, 4, 5]]");
+        let matrix_string = format!("[[{}, 2, 3],[3, 4, 5]]", "1".repeat(65));
 
         assert_eq!(
+            Z::from_str(&"1".repeat(65)).unwrap(),
             MatZ::from_str(&matrix_string)
                 .unwrap()
                 .get_entry(0, 0)
-                .unwrap(),
-            Z::from_str(&"1".repeat(65)).unwrap()
+                .unwrap()
         );
     }
 
     /// Ensure that initialization with negative numbers that are larger than i64 works.
     #[test]
     fn init_works_small_numbers() {
-        let mut matrix_string = "[[-".to_string();
-        matrix_string.push_str(&"1".repeat(65));
-        matrix_string.push_str(", 2, 3],[3, 4, 5]]");
+        let matrix_string = format!("[[-{}, 2, 3],[3, 4, 5]]", "1".repeat(65));
 
-        let mut entry = "-".to_string();
-        entry.push_str(&"1".repeat(65));
+        let entry = format!("-{}", "1".repeat(65));
 
         assert_eq!(
+            Z::from_str(&entry).unwrap(),
             MatZ::from_str(&matrix_string)
                 .unwrap()
                 .get_entry(0, 0)
-                .unwrap(),
-            Z::from_str(&entry).unwrap()
+                .unwrap()
         );
     }
 
-    /// Ensure that entries can have whitespaces leading and trailing.
+    /// Ensure that entries can have leading and trailing whitespaces.
     #[test]
     fn whitespaces_in_entries_works() {
         let matrix_string1 = String::from("[[  1, 2 ,  3  ],[3 ,4,5 ]]");
 
         assert_eq!(
+            Z::from_i64(1),
             MatZ::from_str(&matrix_string1)
                 .unwrap()
                 .get_entry(0, 0)
-                .unwrap(),
-            Z::from_i64(1)
+                .unwrap()
         );
     }
 
@@ -226,6 +224,9 @@ mod test_from_str {
         let matrix_string4 = String::from("[1, 2, 3, 4, 5]");
         let matrix_string5 = String::from("[ [1, 2, 3],[3, 4, 5]]");
         let matrix_string6 = String::from("[[1, 2, 3],[3, 4, 5]8]");
+        let matrix_string7 = String::from("");
+        let matrix_string8 = String::from("[]");
+        let matrix_string9 = String::from("[[]]");
 
         assert!(MatZ::from_str(&matrix_string1).is_err());
         assert!(MatZ::from_str(&matrix_string2).is_err());
@@ -233,5 +234,8 @@ mod test_from_str {
         assert!(MatZ::from_str(&matrix_string4).is_err());
         assert!(MatZ::from_str(&matrix_string5).is_err());
         assert!(MatZ::from_str(&matrix_string6).is_err());
+        assert!(MatZ::from_str(&matrix_string7).is_err());
+        assert!(MatZ::from_str(&matrix_string8).is_err());
+        assert!(MatZ::from_str(&matrix_string9).is_err());
     }
 }
