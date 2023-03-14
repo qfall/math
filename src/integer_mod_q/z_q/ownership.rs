@@ -103,3 +103,36 @@ mod test_clone {
         assert_ne!(&a.value.0, &b.value.0);
     }
 }
+
+#[cfg(test)]
+mod test_drop {
+
+    use super::Zq;
+    use crate::integer::Z;
+    use std::collections::HashSet;
+
+    /// Creates and drops a [`Zq`] object, and outputs
+    /// the storage point in memory of its [`fmpz`](flint_sys::fmpz::fmpz)
+    /// and [`Modulus`](crate::integer_mod_q::Modulus)
+    fn create_and_drop_modulus() -> (i64, i64) {
+        let value = Z::from_i64(i64::MAX);
+        let modulus = Z::from_u64(13);
+        let a = Zq::try_from_z_z(&value, &modulus).unwrap();
+
+        (a.value.0, a.modulus.modulus.n[0].0)
+    }
+
+    /// Check whether freed memory is reused afterwards
+    #[test]
+    fn free_memory() {
+        let mut storage_addresses = HashSet::new();
+
+        for _i in 0..5 {
+            storage_addresses.insert(create_and_drop_modulus());
+        }
+
+        if storage_addresses.capacity() == 5 {
+            panic!("No storage address of dropped modulus was reused.");
+        }
+    }
+}
