@@ -20,7 +20,7 @@ impl MatQ {
     /// use std::str::FromStr;
     ///
     /// let mut matrix = MatQ::new(5, 10).unwrap();
-    /// let value = Q::from_str("5/2");
+    /// let value = Q::from_str("5/2").unwrap();
     /// matrix.set_entry(1, 1, value).unwrap();
     /// ```
     ///
@@ -50,8 +50,8 @@ impl MatQ {
     /// use std::str::FromStr;
     ///
     /// let mut matrix = MatQ::new(5, 10).unwrap();
-    /// let value = Q::from_str("5/2");
-    /// matrix.set_entry_ref_z(1, 1, &value).unwrap();
+    /// let value = Q::from_str("5/2").unwrap();
+    /// matrix.set_entry_ref_q(1, 1, &value).unwrap();
     /// ```
     ///
     /// # Errors and Failures
