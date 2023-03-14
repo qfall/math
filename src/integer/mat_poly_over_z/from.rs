@@ -78,7 +78,7 @@ impl FromStr for MatPolyOverZ {
     /// in the second row.
     ///
     /// Parameters:
-    /// - `string`: string format of matrix, that will be initialized
+    /// - `string`: the matrix as a string
     ///
     /// Returns a [`MatPolyOverZ`] or an error, if the matrix is not formatted in a suitable way,
     /// the number of rows or columns is too big (must fit into [`i64`]),
@@ -173,7 +173,8 @@ mod test_from_str {
         );
     }
 
-    /// Ensure that initialization with polynomials with positive coefficients that are /// larger than [`i64`] works.
+    /// Ensure that initialization with polynomials with positive coefficients that are
+    /// larger than [`i64`] works.
     #[test]
     fn init_works_large_numbers() {
         let entry = format!("1  {}", u64::MAX);
@@ -192,7 +193,7 @@ mod test_from_str {
         );
     }
 
-    /// Ensure that initialization with with polynomials with negative coefficients that
+    /// Ensure that initialization with polynomials with negative coefficients that
     /// are larger than [`i64`] works.
     #[test]
     fn init_works_small_numbers() {
