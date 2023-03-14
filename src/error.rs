@@ -34,6 +34,7 @@ use thiserror::Error;
 /// construct a [`Q`](crate::rational::Q)
 /// - `InvalidStringToZInput` is thrown if an invalid string is given to
 /// construct a [`Z`](crate::integer::Z)
+/// - `NotPrime` is thrown if a provided integer is not prime
 /// - `OutOfBounds` is thrown if a provided index is not in a desired range
 ///
 /// # Example
@@ -107,6 +108,9 @@ pub enum MathError {
     /// parse string to [`Z`](crate::integer::Z) error
     #[error("invalid string input to parse to Z {0}")]
     InvalidStringToZInput(String),
+    /// if an integer or modulus is not prime
+    #[error("invalid integer. The integer has to be prime and the provided value is {0}")]
+    NotPrime(String),
     /// if a provided index is out of bounds
     #[error(
         "invalid index submitted. The index is out of bounds.

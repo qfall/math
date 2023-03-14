@@ -7,11 +7,11 @@ use crate::integer::PolyOverZ;
 
 #[allow(dead_code)]
 /// [`PolynomialRingZq`] represents polynomials over the finite field
-/// PolyOverZq/f(X) where q is prime and f(X) is a polynomial over [`Zq`](super::Zq).
+/// [`PolyOverZq`](crate::integer_mod_q::PolyOverZq)/f(X) where `q` is prime and f(X) is a polynomial over [`Zq`](super::Zq).
 ///
 /// Attributes
 /// - `poly`: holds the value
-/// - `modulus`: holds the prime q and f(X)
+/// - `modulus`: holds the prime `q` and f(X)
 ///
 /// # Example
 pub struct PolynomialRingZq {
