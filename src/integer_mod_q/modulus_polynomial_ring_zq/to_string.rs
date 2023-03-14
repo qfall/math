@@ -15,7 +15,6 @@ impl Display for ModulusPolynomialRingZq {
     /// ```
     /// use math::integer_mod_q::ModulusPolynomialRingZq;
     /// use std::str::FromStr;
-    /// use core::fmt;
     ///
     /// let poly = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
     /// println!("{}", poly);

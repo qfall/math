@@ -31,9 +31,13 @@ impl TryFrom<&PolyOverZq> for ModulusPolynomialRingZq {
     /// let poly_mod = PolyOverZq::from_str("3  1 0 1 mod 17").unwrap();
     /// let modulus = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
     /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`NotPrime`](MathError::NotPrime) if the input
+    /// `modulus_poly` is not prime.
     fn try_from(modulus_poly: &PolyOverZq) -> Result<Self, MathError> {
         if !modulus_poly.modulus.is_prime() {
-            return Err(MathError::DivisionByZeroError("".to_owned()));
+            return Err(MathError::NotPrime(modulus_poly.modulus.to_string()));
         }
         let mut modulus = MaybeUninit::uninit();
         let c_string = CString::new("X").unwrap();
@@ -75,9 +79,11 @@ impl FromStr for ModulusPolynomialRingZq {
     /// let poly_mod = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
     /// ```
     /// # Errors and Failures
-    /// - Throws a [`MathError`]. For further details see Errors and Failures of [`PolyOverZq::from_str`]
+    /// - Returns a [`MathError`]. For further details see Errors and Failures of [`PolyOverZq::from_str`]
+    /// - Returns a [`MathError`] of type [`NotPrime`](MathError::NotPrime) if the input
+    /// `modulus_poly` is not prime.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        ModulusPolynomialRingZq::try_from(&PolyOverZq::from_str(s)?)
+        Self::try_from(&PolyOverZq::from_str(s)?)
     }
 }
 
@@ -87,13 +93,6 @@ impl FromStr for ModulusPolynomialRingZq {
 mod test_try_from_poly_zq {
     use crate::{integer_mod_q::ModulusPolynomialRingZq, integer_mod_q::PolyOverZq};
     use std::str::FromStr;
-
-    /// ensure that we have a basic working example
-    #[test]
-    fn working_example() {
-        let poly_mod = PolyOverZq::from_str("3  4 0 1 mod 17").unwrap();
-        let _ = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
-    }
 
     /// ensure that it works with large coefficients
     #[test]
@@ -129,13 +128,6 @@ mod test_try_from_poly_zq {
 mod test_from_str {
     use crate::integer_mod_q::ModulusPolynomialRingZq;
     use std::str::FromStr;
-
-    /// ensure that we have a basic working example
-    #[test]
-    fn working_example() {
-        let poly = ModulusPolynomialRingZq::from_str("3  4 0 1 mod 17");
-        assert!(poly.is_ok())
-    }
 
     /// ensure that at input of a wrong format an error is returned
     #[test]
