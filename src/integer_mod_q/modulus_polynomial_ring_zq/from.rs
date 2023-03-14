@@ -95,7 +95,7 @@ mod test_try_from_poly_zq {
         let _ = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
     }
 
-    /// ensure that it works with large integers
+    /// ensure that it works with large coefficients
     #[test]
     fn working_large_entries() {
         let poly_mod =
@@ -112,6 +112,14 @@ mod test_try_from_poly_zq {
         let poly_zq = PolyOverZq::from_str(&in_str).unwrap();
         let _ = ModulusPolynomialRingZq::try_from(&poly_zq).unwrap();
         assert_eq!(cmp_str, poly_zq.to_string())
+    }
+
+    /// ensure that non-primes yields an error
+    #[test]
+    fn poly_zq_non_prime() {
+        let in_str = format!("4  0 1 3 {} mod {}", u64::MAX, 2_i32.pow(16));
+        let poly_zq = PolyOverZq::from_str(&in_str).unwrap();
+        assert!(ModulusPolynomialRingZq::try_from(&poly_zq).is_err())
     }
 }
 
@@ -139,7 +147,7 @@ mod test_from_str {
         assert!(ModulusPolynomialRingZq::from_str("3  4 0 1 mod ba").is_err());
     }
 
-    /// ensure that large entries work
+    /// ensure that large coefficients work
     #[test]
     fn working_large_entries() {
         assert!(ModulusPolynomialRingZq::from_str(&format!(
@@ -148,5 +156,16 @@ mod test_from_str {
             2_i32.pow(16) + 1
         ))
         .is_ok());
+    }
+
+    /// ensure that non-primes yields an error
+    #[test]
+    fn poly_zq_non_prime() {
+        assert!(ModulusPolynomialRingZq::from_str(&format!(
+            "4  0 1 3 {} mod {}",
+            u64::MAX,
+            2_i32.pow(16)
+        ))
+        .is_err())
     }
 }
