@@ -1,38 +1,45 @@
 //! Implementation of the [`Sub`] trait for [`Z`] values.
 
 use super::super::Z;
-use crate::macros::arithmetics::arithmetic_trait;
-use flint_sys::fmpz::fmpz;
+use crate::macros::arithmetics::{
+    arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+};
+use flint_sys::fmpz::fmpz_sub;
 use std::ops::Sub;
 
-arithmetic_trait!(
-    doc = "Implements the [`Sub`] trait for two [`Z`] values. \n
-[`Sub`] is implemented for any combination of [`Z`] and borrowed [`Z`].\n\n
+impl Sub for &Z {
+    type Output = Z;
+    /// Implements the [`Sub`] trait for two [`Z`] values.
+    /// [`Sub`] is implemented for any combination of [`Z`] and borrowed [`Z`].
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to subtract from `self`
+    ///
+    /// Returns the result of the subtraction as a [`Z`].
+    ///
+    /// # Example
+    /// ```
+    /// use math::integer::Z;
+    ///
+    /// let a: Z = Z::from(42);
+    /// let b: Z = Z::from(24);
+    ///
+    /// let c: Z = &a - &b;
+    /// let d: Z = a - b;
+    /// let e: Z = &c - d;
+    /// let f: Z = c - &e;
+    /// ```
+    fn sub(self, other: Self) -> Self::Output {
+        let mut out = Z::default();
+        unsafe {
+            fmpz_sub(&mut out.value, &self.value, &other.value);
+        }
+        out
+    }
+}
 
- Parameters:\n
- - `other`: specifies the value to subtract from `self`\n\n
-
-Returns the result of the subtraction as a [`Z`].\n\n
-
- # Example\n
- ```rust
- use math::integer::Z;
-
- let a: Z = Z::from(42);
- let b: Z = Z::from(24);
-
- let c: Z = &a - &b;
- let d: Z = a - b;
- let e: Z = &c - d;
- let f: Z = c - &e;
- ```",
-    Sub,
-    sub,
-    Z,
-    flint_sys::fmpz::fmpz_sub,
-    fmpz(0),
-    value
-);
+arithmetic_trait_borrowed_to_owned!(Sub, sub, Z);
+arithmetic_trait_mixed_borrowed_owned!(Sub, sub, Z);
 
 #[cfg(test)]
 mod test_sub {

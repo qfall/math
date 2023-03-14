@@ -18,15 +18,14 @@ use regex::Regex;
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix)
 /// if the matrix is not formatted in a suitable way.
-/// - Returns a [`MathError`] of type [`RegexError`](MathError::RegexError)
-/// if the regular expression inside of the function could not be processed.
 #[allow(dead_code)]
 pub(crate) fn parse_matrix_string(string: &str) -> Result<Vec<Vec<String>>, MathError> {
     // check if the matrix format is correct
     let entry_str = r"([^\[\],]+)";
     let row_str = format!(r"\[({},)*({})\]", entry_str, entry_str);
     let matrix_str = format!(r"^\[({},)*({})\]$", row_str, row_str);
-    let regex = Regex::new(&matrix_str)?;
+    let regex = Regex::new(&matrix_str).expect("The regular expression could not be processed.");
+
     // explanation of this regex:
     // it checks whether the string start with a '[' and ends with a ']'
     // we differ between the first/several and the last row (as there is no comma after the last row)

@@ -1,16 +1,16 @@
-//! Implementations to create a [`MatQ`](crate::rational::MatQ) value from other types.
+//! Implementations to create a [`MatPolyOverZ`] value from other types.
 //! For each reasonable type, an explicit function with the format
 //! `from_<type_name>` and the [`From`] trait should be implemented.
 //! Furthermore, an instantiation of a zero matrix is implemented.
 //!
 //! The explicit functions contain the documentation.
 
-use super::MatQ;
+use super::MatPolyOverZ;
 use crate::{error::MathError, utils::coordinate::evaluate_coordinate};
-use flint_sys::fmpq_mat::fmpq_mat_init;
+use flint_sys::fmpz_poly_mat::fmpz_poly_mat_init;
 use std::{fmt::Display, mem::MaybeUninit};
 
-impl MatQ {
+impl MatPolyOverZ {
     /// Creates a new matrix with `num_rows` rows, `num_cols` columns and
     /// zeros as entries.
     ///
@@ -18,14 +18,14 @@ impl MatQ {
     /// - `num_rows`: number of rows the new matrix should have
     /// - `num_cols`: number of columns the new matrix should have
     ///
-    /// Returns a [`MatQ`] or an error, if the number of rows or columns is
+    /// Returns a [`MatPolyOverZ`] or an error, if the number of rows or columns is
     /// less or equal to 0.
     ///
     /// # Example
     /// ```rust
-    /// use math::rational::MatQ;
+    /// use math::integer::MatPolyOverZ;
     ///
-    /// let matrix = MatQ::new(5, 10).unwrap();
+    /// let matrix = MatPolyOverZ::new(5, 10).unwrap();
     /// ```
     ///
     /// # Errors and Failures
@@ -43,19 +43,19 @@ impl MatQ {
 
         if num_rows_i64 == 0 || num_cols_i64 == 0 {
             return Err(MathError::InvalidMatrix(format!(
-                "({},{})",
+                "The provided matrix has dimensions ({},{})",
                 num_rows, num_cols,
             )));
         }
 
-        // initialize variable with MaybeUn-initialized value to check
+        // Initialize variable with MaybeUn-initialized value to check
         // correctness of initialization later
         let mut matrix = MaybeUninit::uninit();
         unsafe {
-            fmpq_mat_init(matrix.as_mut_ptr(), num_rows_i64, num_cols_i64);
+            fmpz_poly_mat_init(matrix.as_mut_ptr(), num_rows_i64, num_cols_i64);
 
-            // Construct MatQ from previously initialized fmpq_mat
-            Ok(MatQ {
+            // Construct MatPolyOverZ from previously initialized fmpz_poly_mat
+            Ok(MatPolyOverZ {
                 matrix: matrix.assume_init(),
             })
         }
@@ -64,24 +64,33 @@ impl MatQ {
 
 #[cfg(test)]
 mod test_new {
-    use crate::rational::MatQ;
+    use crate::integer::MatPolyOverZ;
 
-    /// Ensure that initialization works.
+    /// Ensure that entries of a new matrix are 0.
     #[test]
-    fn initialization() {
-        assert!(MatQ::new(2, 2).is_ok());
+    fn entry_zero() {
+        let matrix = MatPolyOverZ::new(2, 2).unwrap();
+
+        let entry1 = matrix.get_entry(0, 0).unwrap();
+        let entry2 = matrix.get_entry(0, 1).unwrap();
+        let entry3 = matrix.get_entry(1, 0).unwrap();
+        let entry4 = matrix.get_entry(1, 1).unwrap();
+
+        assert_eq!("0", entry1.to_string());
+        assert_eq!("0", entry2.to_string());
+        assert_eq!("0", entry3.to_string());
+        assert_eq!("0", entry4.to_string());
     }
 
     /// Ensure that a new zero matrix fails with 0 as input.
     #[test]
     fn error_zero() {
-        let matrix1 = MatQ::new(1, 0);
-        let matrix2 = MatQ::new(0, 1);
-        let matrix3 = MatQ::new(0, 0);
+        let matrix1 = MatPolyOverZ::new(1, 0);
+        let matrix2 = MatPolyOverZ::new(0, 1);
+        let matrix3 = MatPolyOverZ::new(0, 0);
 
         assert!(matrix1.is_err());
         assert!(matrix2.is_err());
         assert!(matrix3.is_err());
     }
-    // TODO add test for zero entries
 }

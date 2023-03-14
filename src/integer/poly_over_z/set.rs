@@ -139,7 +139,7 @@ mod test_set_coeff {
 
         poly.set_coeff(0, value).unwrap();
         poly.set_coeff(5, value).unwrap();
-        assert_eq!("6  10000 1 2 3 0 10000", poly.to_string());
+        assert_eq!(PolyOverZ::from_str("6  10000 1 2 3 0 10000").unwrap(), poly);
     }
 
     /// ensure that the correct coefficient is set and all others are set to zero
@@ -148,7 +148,7 @@ mod test_set_coeff {
         let mut poly = PolyOverZ::from_str("0").unwrap();
 
         poly.set_coeff(4, -10).unwrap();
-        assert_eq!("5  0 0 0 0 -10", poly.to_string());
+        assert_eq!(PolyOverZ::from_str("5  0 0 0 0 -10").unwrap(), poly);
     }
 
     /// ensure that setting with a z works
@@ -157,6 +157,6 @@ mod test_set_coeff {
         let mut poly = PolyOverZ::from_str("0").unwrap();
 
         poly.set_coeff(4, Z::from(123)).unwrap();
-        assert_eq!("5  0 0 0 0 123", poly.to_string());
+        assert_eq!(PolyOverZ::from_str("5  0 0 0 0 123").unwrap(), poly);
     }
 }
