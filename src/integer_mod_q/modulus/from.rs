@@ -10,7 +10,7 @@ use flint_sys::{
     fmpz::{fmpz, fmpz_clear, fmpz_cmp, fmpz_set_str},
     fmpz_mod::{fmpz_mod_ctx, fmpz_mod_ctx_init},
 };
-use std::{ffi::CString, mem::MaybeUninit, str::FromStr};
+use std::{ffi::CString, mem::MaybeUninit, rc::Rc, str::FromStr};
 
 impl Modulus {
     /// Create a [`Modulus`] from [`Z`].
@@ -33,7 +33,9 @@ impl Modulus {
     /// if the provided value is not greater than zero.
     pub fn try_from_z(value: &Z) -> Result<Self, MathError> {
         let modulus = ctx_init(&value.value);
-        Ok(Self { modulus: modulus? })
+        Ok(Self {
+            modulus: Rc::new(modulus?),
+        })
     }
 }
 
@@ -90,7 +92,9 @@ impl FromStr for Modulus {
         let modulus = ctx_init(&modulus_fmpz);
         // we have to clear the modulus, since the value is not stored in a [Z]
         unsafe { fmpz_clear(&mut modulus_fmpz) };
-        Ok(Self { modulus: modulus? })
+        Ok(Self {
+            modulus: Rc::new(modulus?),
+        })
     }
 }
 
