@@ -4,10 +4,7 @@
 //! The explicit functions contain the documentation.
 
 use super::Q;
-use flint_sys::{
-    fmpq::{fmpq, fmpq_clear, fmpq_set},
-    fmpz::fmpz,
-};
+use flint_sys::fmpq::{fmpq_clear, fmpq_set};
 
 impl Clone for Q {
     /// Clones the given element and returns another cloned reference
@@ -22,12 +19,9 @@ impl Clone for Q {
     /// let b = a.clone();
     /// ```
     fn clone(&self) -> Self {
-        let mut value = fmpq {
-            num: fmpz(0),
-            den: fmpz(0),
-        };
-        unsafe { fmpq_set(&mut value, &self.value) };
-        Self { value }
+        let mut clone = Self::default();
+        unsafe { fmpq_set(&mut clone.value, &self.value) };
+        clone
     }
 }
 
