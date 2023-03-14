@@ -88,8 +88,8 @@ mod test_clone {
     #[test]
     fn entries_stored_separately() {
         let a: MatZ;
-        let string = String::from("[[36893488147419103232, 36893488147419103232],[36893488147419103232, 36893488147419103232]]");
         // entries are 2^65 = 36893488147419103232, hence fmpz values kept on heap
+        let string = String::from("[[36893488147419103232, 36893488147419103232],[36893488147419103232, 36893488147419103232]]");
         let b = MatZ::from_str(&string).unwrap();
 
         a = b.clone();
@@ -124,8 +124,8 @@ mod test_drop {
     /// Creates a matrix with two entries of size 2^65, drops it and outputs
     /// the points these two entries were stored in
     fn create_and_drop_matz() -> (i64, i64, i64) {
-        let string = String::from("[[36893488147419103232, 36893488147419103232]]");
         // entries are 2^65 = 36893488147419103232, hence fmpz values kept on heap
+        let string = String::from("[[36893488147419103232, 36893488147419103232]]");
         let a = MatZ::from_str(&string).unwrap();
 
         let storage_mat = unsafe { (*a.matrix.entries).0 };
@@ -144,8 +144,6 @@ mod test_drop {
             set.insert(create_and_drop_matz());
         }
 
-        if set.capacity() == 5 {
-            panic!("No memory stack was reused after it was dropped.");
-        }
+        assert_ne!(set.capacity(), 5);
     }
 }
