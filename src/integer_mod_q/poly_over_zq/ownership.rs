@@ -5,12 +5,14 @@
 
 use super::PolyOverZq;
 use crate::integer::PolyOverZ;
-use flint_sys::fmpz_mod_poly::{fmpz_mod_poly_init, fmpz_mod_poly_set_fmpz_poly};
+use flint_sys::fmpz_mod_poly::{
+    fmpz_mod_poly_clear, fmpz_mod_poly_init, fmpz_mod_poly_set_fmpz_poly,
+};
 use std::{mem::MaybeUninit, str::FromStr};
 
 impl Clone for PolyOverZq {
-    /// Clones the given element and returns another cloned reference
-    /// to the [`Modulus`](crate::integer_mod_q::Modulus) element.
+    /// Clones the given [`PolyOverZq`] element and returns cloned instance including
+    /// a reference to the previous [`Modulus`](crate::integer_mod_q::Modulus) element.
     ///
     /// # Example
     /// ```
@@ -42,6 +44,34 @@ impl Clone for PolyOverZq {
                 poly: poly_zq,
                 modulus: self.modulus.clone(),
             }
+        }
+    }
+}
+
+impl Drop for PolyOverZq {
+    /// Drops the given reference to the [`fmpz_mod_poly`](flint_sys::fmpz_mod_poly::fmpz_mod_poly_t)
+    /// element and frees the allocated memory of the corresponding
+    /// [`Modulus`](crate::integer_mod_q::Modulus) if no references are left.
+    ///
+    /// # Examples
+    /// ```
+    /// use math::integer_mod_q::PolyOverZq;
+    /// use std::str::FromStr;
+    /// {
+    ///     let a = PolyOverZq::from_str("4  0 1 -2 3 mod 13").unwrap();
+    /// } // as a's scope ends here, it get's dropped
+    /// ```
+    ///
+    /// ```
+    /// use math::integer_mod_q::PolyOverZq;
+    /// use std::str::FromStr;
+    ///
+    /// let a = PolyOverZq::from_str("4  0 1 -2 3 mod 13").unwrap();
+    /// drop(a); // explicitly drops a's value
+    /// ```
+    fn drop(&mut self) {
+        unsafe {
+            fmpz_mod_poly_clear(&mut self.poly, self.modulus.get_fmpz_mod_ctx_struct());
         }
     }
 }
@@ -83,5 +113,35 @@ mod test_clone {
             unsafe { *a.poly.coeffs.offset(3) }.0,
             unsafe { *b.poly.coeffs.offset(3) }.0
         ); // stack
+    }
+}
+
+#[cfg(test)]
+mod test_drop {
+
+    use super::PolyOverZq;
+    use std::{collections::HashSet, str::FromStr};
+
+    /// Creates and drops a [`PolyOverZq`] object, and outputs
+    /// the storage point in memory of that [`fmpz_mod_poly`](flint_sys::fmpz_mod_poly::fmpz_mod_poly_t) struct
+    fn create_and_drop_modulus() -> (i64, i64) {
+        let a = PolyOverZq::from_str(&format!("2  {} -2 mod {}", i64::MAX, u64::MAX)).unwrap();
+
+        (
+            unsafe { *a.poly.coeffs.offset(0) }.0,
+            unsafe { *a.poly.coeffs.offset(1) }.0,
+        )
+    }
+
+    /// Check whether freed memory is reused afterwards
+    #[test]
+    fn free_memory() {
+        let mut storage_addresses = HashSet::new();
+
+        for _i in 0..5 {
+            storage_addresses.insert(create_and_drop_modulus());
+        }
+
+        assert_ne!(storage_addresses.capacity(), 5);
     }
 }
