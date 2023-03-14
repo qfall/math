@@ -115,3 +115,38 @@ mod test_clone {
         assert_eq!("2  0 1", a.to_string());
     }
 }
+
+/// Test that the [`Drop`] trait is correctly implemented.
+#[cfg(test)]
+mod test_drop {
+
+    use super::PolyOverZ;
+    use std::{collections::HashSet, str::FromStr};
+
+    /// Creates and drops a [`PolyOverZ`], and returns the storage points in memory
+    fn create_and_drop_poly_over_z() -> i64 {
+        let a = PolyOverZ::from_str("2  36893488147419103232 36893488147419103233").unwrap();
+        unsafe { *a.poly.coeffs }.0
+    }
+
+    /// Check whether freed memory is reused afterwards
+    #[test]
+    fn free_memory() {
+        let mut set = HashSet::new();
+
+        for _i in 0..5 {
+            set.insert(create_and_drop_poly_over_z());
+        }
+
+        if set.capacity() == 5 {
+            panic!("The freed memory is not being reused for 5 instances for PolyOverZ");
+        }
+
+        let a = PolyOverZ::from_str("2  36893488147419103232 36893488147419103233").unwrap();
+        let storage_point = unsafe { *a.poly.coeffs }.0;
+
+        // memory slots differ due to previously created large integer
+        let d = PolyOverZ::from_str("2  36893488147419103232 36893488147419103233").unwrap();
+        assert_ne!(storage_point, unsafe { *d.poly.coeffs }.0);
+    }
+}
