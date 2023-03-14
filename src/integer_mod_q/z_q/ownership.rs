@@ -89,7 +89,7 @@ mod test_clone {
         let string = "1".repeat(63);
         let modulus = Modulus::from_str(&string).unwrap();
 
-        let a = Zq::from_z_modulus(&value, modulus);
+        let a = Zq::from_z_modulus(&value, &modulus);
 
         let b = a.clone();
 
