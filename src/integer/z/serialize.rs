@@ -1,3 +1,8 @@
+//! This module contains implementations of functions
+//! important for serialization such as the [`Serialize`] and [`Deserialize`] trait.
+//!
+//! The explicit functions contain the documentation.
+
 use super::Z;
 use core::fmt;
 use serde::{
@@ -10,8 +15,10 @@ use std::str::FromStr;
 impl Serialize for Z {
     /// Implements the serialize option. This allows to create a Json-object from a given [`Z`].
     ///
-    /// Input parameters:
-    /// * `serializer` : the serializer used for serialization
+    /// Parameters:
+    /// - `serializer` : the serializer used for serialization
+    ///
+    /// Returns a serialization of the given [`Z`].
     ///
     /// # Examples
     /// ```
@@ -20,6 +27,10 @@ impl Serialize for Z {
     /// let a = Z::from(42);
     /// let json_string = serde_json::to_string(&a).unwrap();
     /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a Serialization error which depends on the used serializer, iff the
+    /// field `value` can not be found, when self is converted to a [`String`].
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
@@ -33,8 +44,11 @@ impl Serialize for Z {
 impl<'de> Deserialize<'de> for Z {
     /// Implements the deserialize option. This allows to create a [`Z`] from a Json-object.
     ///
-    /// Input parameters:
-    /// * `deserializer` : the serializer used for deserialization
+    /// The string has to to fulfil the JSON-format given in the example, i.e.
+    /// "{"value":"42"}", where 42 is the corresponding value.
+    ///
+    /// Parameters:
+    /// - `deserializer` : the serializer used for deserialization
     ///
     /// # Examples
     /// ```
@@ -43,6 +57,11 @@ impl<'de> Deserialize<'de> for Z {
     /// let input = r#"{"value":"42"}"#;
     /// let deserialized_z: Z = serde_json::from_str(input).unwrap();
     /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a Deserialization error which depends on the used serializer, iff the
+    /// string is not formatted as given above or the given input value could not
+    /// be converted to a [`Z`]. For more details see [`Z::from_str`]
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
