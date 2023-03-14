@@ -5,6 +5,7 @@ use flint_sys::fmpz_mat::fmpz_mat_struct;
 
 mod from;
 mod get;
+mod ownership;
 mod set;
 
 #[allow(dead_code)]
