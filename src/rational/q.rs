@@ -6,6 +6,7 @@ use flint_sys::fmpq::fmpq;
 mod cmp;
 mod default;
 mod from;
+mod ownership;
 mod to_string;
 
 #[allow(dead_code)]
