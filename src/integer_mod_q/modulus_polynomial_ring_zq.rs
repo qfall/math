@@ -24,7 +24,8 @@ mod to_string;
 ///
 /// // initialize X^2 + 1 mod 17, i.e. a polynomial with prime modulus
 /// let poly_mod = PolyOverZq::from_str("3  1 0 1 mod 17").unwrap();
-/// let modulus = ModulusPolynomialRingZq::from(&poly_mod);
+/// let modulus = ModulusPolynomialRingZq::try_from(&poly_mod);
+/// ```
 pub struct ModulusPolynomialRingZq {
     modulus: Rc<fq_ctx_struct>,
 }
