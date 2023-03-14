@@ -15,7 +15,7 @@ impl Serialize for Z {
     ///
     /// # Examples
     /// ```
-    /// use crate::integer::Z;
+    /// use math::integer::Z;
     ///         
     /// let a = Z::from(42);
     /// let json_string = serde_json::to_string(&a).unwrap();
