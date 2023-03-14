@@ -63,7 +63,7 @@ mod test_clone {
     use super::Modulus;
     use std::{rc::Rc, str::FromStr};
 
-    /// Check if new references/ cloned Moduli's are increase the Rc counter
+    /// Check if new references/ cloned Moduli's increase the Rc counter
     #[test]
     fn references_increased() {
         let a = Modulus::from_str("3").unwrap();
@@ -129,6 +129,8 @@ mod test_drop {
         assert_eq!(Rc::strong_count(&b.modulus), 2);
     }
 
+    /// Creates and drops a [`Modulus`] object, and outputs
+    /// the storage point in memory of that [`Modulus`]
     fn create_and_drop_modulus() -> i64 {
         let a = Modulus::from_str(&"1".repeat(65)).unwrap();
         a.get_fmpz_mod_ctx_struct().n[0].0
