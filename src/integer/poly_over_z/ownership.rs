@@ -2,16 +2,6 @@
 //! important for ownership such as the [`Clone`] and [`Drop`] trait.
 //!
 //! The explicit functions contain the documentation.
-//!
-//! # Example
-//! ```
-//! use math::integer::PolyOverZ;
-//! use std::str::FromStr;
-//!
-//! let a = PolyOverZ::from_str("3  0 1 2").unwrap();
-//! let b = a.clone();
-//! drop(a);
-//! ```
 
 use super::PolyOverZ;
 use flint_sys::fmpz_poly::{fmpz_poly_clear, fmpz_poly_set};
