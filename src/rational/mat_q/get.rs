@@ -1,11 +1,8 @@
 //! Implementations to get entries from a [`MatQ`] matrix.
 
 use super::MatQ;
-use crate::{error::MathError, rational::Q, utils::coordinate::evaluate_coordinate};
-use flint_sys::{
-    fmpq::{fmpq, fmpq_set},
-    fmpq_mat::fmpq_mat_entry,
-};
+use crate::{error::MathError, rational::Q};
+use flint_sys::{fmpq::fmpq_set, fmpq_mat::fmpq_mat_entry};
 use std::fmt::Display;
 
 impl MatQ {
@@ -35,29 +32,17 @@ impl MatQ {
         row: impl TryInto<i64> + Display + Copy,
         column: impl TryInto<i64> + Display + Copy,
     ) -> Result<Q, MathError> {
-        let row_i64 = evaluate_coordinate(row)?;
-        let column_i64 = evaluate_coordinate(column)?;
-
-        if self.get_num_rows() <= row_i64 || self.get_num_columns() <= column_i64 {
-            return Err(MathError::OutOfBounds(
-                format!(
-                    "be smaller than ({},{})",
-                    self.get_num_rows(),
-                    self.get_num_columns()
-                ),
-                format!("({},{})", row_i64, column_i64,),
-            ));
-        }
+        let (row_i64, column_i64) = self.evaluate_coordinates(row, column)?;
 
         // since `self.matrix` is a correct fmpq matrix and both row and column
         // are previously checked to be inside of the matrix, no errors
         // appear inside of `unsafe` and `fmpq_set` can successfully clone the
         // entry of the matrix. Therefore no memory leaks can appear.
-        let mut copy = fmpq::default();
+        let mut copy = Q::default();
         let entry = unsafe { fmpq_mat_entry(&self.matrix, row_i64, column_i64) };
-        unsafe { fmpq_set(&mut copy, entry) };
+        unsafe { fmpq_set(&mut copy.value, entry) };
 
-        Ok(Q { value: copy })
+        Ok(copy)
     }
 
     /// Returns the number of rows of the matrix as a [`i64`].
@@ -109,23 +94,20 @@ mod test_get_entry {
         assert_eq!(Q::from_str(&format!("1/{}", i64::MAX)).unwrap(), entry2);
     }
 
-    /// Ensure that getting entries works with large numerators and denominators (larger than i64).
+    /// Ensure that getting entries works with large numerators and denominators (larger than [`i64`]).
     #[test]
     fn big_positive() {
         let mut matrix = MatQ::new(5, 10).unwrap();
-        let value1 = Q::from_str(&"1".repeat(65)).unwrap();
-        let value2 = Q::from_str(&format!("1/{}", "1".repeat(65))).unwrap();
+        let value1 = Q::from_str(&format!("{}", u64::MAX)).unwrap();
+        let value2 = Q::from_str(&format!("1/{}", u64::MAX)).unwrap();
         matrix.set_entry(0, 0, value1).unwrap();
         matrix.set_entry(1, 1, value2).unwrap();
 
         let entry1 = matrix.get_entry(0, 0).unwrap();
         let entry2 = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!(Q::from_str(&"1".repeat(65)).unwrap(), entry1);
-        assert_eq!(
-            Q::from_str(&format!("1/{}", "1".repeat(65))).unwrap(),
-            entry2
-        );
+        assert_eq!(Q::from_str(&format!("{}", u64::MAX)).unwrap(), entry1);
+        assert_eq!(Q::from_str(&format!("1/{}", u64::MAX)).unwrap(), entry2);
     }
 
     /// Ensure that getting entries works with large negative numerators and denominators.
@@ -144,12 +126,12 @@ mod test_get_entry {
         assert_eq!(Q::from_str(&format!("1/{}", i64::MIN)).unwrap(), entry2);
     }
 
-    /// Ensure that getting entries works with large negative numerators and denominators (larger than i64).
+    /// Ensure that getting entries works with large negative numerators and denominators (larger than [`i64`]).
     #[test]
     fn big_negative() {
         let mut matrix = MatQ::new(5, 10).unwrap();
-        let value1 = format!("-{}", "1".repeat(65));
-        let value2 = format!("1/-{}", "1".repeat(65));
+        let value1 = format!("-{}", u64::MAX);
+        let value2 = format!("1/-{}", u64::MAX);
         matrix
             .set_entry(0, 0, Q::from_str(&value1).unwrap())
             .unwrap();
@@ -160,14 +142,8 @@ mod test_get_entry {
         let entry1 = matrix.get_entry(0, 0).unwrap();
         let entry2 = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!(
-            Q::from_str(&format!("-{}", "1".repeat(65))).unwrap(),
-            entry1
-        );
-        assert_eq!(
-            Q::from_str(&format!("1/-{}", "1".repeat(65))).unwrap(),
-            entry2
-        );
+        assert_eq!(Q::from_str(&format!("-{}", u64::MAX)).unwrap(), entry1);
+        assert_eq!(Q::from_str(&format!("1/-{}", u64::MAX)).unwrap(), entry2);
     }
 
     /// Ensure that getting entries at (0,0) works.
@@ -202,12 +178,12 @@ mod test_get_entry {
     #[test]
     fn memory_test() {
         let mut matrix = MatQ::new(5, 10).unwrap();
-        let value = Q::from_str(&"1".repeat(65)).unwrap();
+        let value = Q::from_str(&format!("{}", u64::MAX)).unwrap();
         matrix.set_entry(1, 1, value).unwrap();
         let entry = matrix.get_entry(1, 1).unwrap();
         matrix.set_entry(1, 1, Q::from_str("0/1").unwrap()).unwrap();
 
-        assert_eq!(Q::from_str(&"1".repeat(65)).unwrap(), entry);
+        assert_eq!(Q::from_str(&format!("{}", u64::MAX)).unwrap(), entry);
     }
 }
 

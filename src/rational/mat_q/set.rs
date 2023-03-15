@@ -63,6 +63,37 @@ impl MatQ {
         column: impl TryInto<i64> + Display + Copy,
         value: &Q,
     ) -> Result<(), MathError> {
+        let (row_i64, column_i64) = self.evaluate_coordinates(row, column)?;
+
+        // since `self` is a correct matrix and both row and column
+        // are previously checked to be inside of the matrix, no errors
+        // appear inside of `unsafe` and `fmpq_set` can successfully clone the
+        // value inside the matrix. Therefore no memory leaks can appear.
+        unsafe {
+            let entry = fmpq_mat_entry(&self.matrix, row_i64, column_i64);
+            fmpq_set(entry, &value.value)
+        };
+
+        Ok(())
+    }
+
+    /// Evaluates whether the provided coordinates are referencing an entry in the matrix.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row in which the entry is located
+    /// - `column`: specifies the column in which the entry is located
+    ///
+    /// Returns the coordinates as a pair of [`i64`] if they reference an entry and return
+    /// an error otherwise
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    /// if the number of rows or columns is greater than the matrix or negative.
+    pub(super) fn evaluate_coordinates(
+        &self,
+        row: impl TryInto<i64> + Display + Copy,
+        column: impl TryInto<i64> + Display + Copy,
+    ) -> Result<(i64, i64), MathError> {
         let row_i64 = evaluate_coordinate(row)?;
         let column_i64 = evaluate_coordinate(column)?;
         if self.get_num_rows() <= row_i64 || self.get_num_columns() <= column_i64 {
@@ -75,17 +106,7 @@ impl MatQ {
                 format!("({},{})", row_i64, column_i64),
             ));
         }
-
-        // since `self` is a correct matrix and both row and column
-        // are previously checked to be inside of the matrix, no errors
-        // appear inside of `unsafe` and `fmpq_set` can successfully clone the
-        // value inside the matrix. Therefore no memory leaks can appear.
-        unsafe {
-            let entry = fmpq_mat_entry(&self.matrix, row_i64, column_i64);
-            fmpq_set(entry, &value.value)
-        };
-
-        Ok(())
+        Ok((row_i64, column_i64))
     }
 }
 
@@ -123,23 +144,20 @@ mod test_setter {
         assert_eq!(Q::from_str(&format!("1/{}", i64::MAX)).unwrap(), entry2);
     }
 
-    /// Ensure that setting entries works with large numerators and denominators (larger than i64).
+    /// Ensure that setting entries works with large numerators and denominators (larger than [`i64`]).
     #[test]
     fn big_positive() {
         let mut matrix = MatQ::new(5, 10).unwrap();
-        let value1 = Q::from_str(&"1".repeat(65)).unwrap();
-        let value2 = Q::from_str(&format!("1/{}", "1".repeat(65))).unwrap();
+        let value1 = Q::from_str(&format!("{}", u64::MAX)).unwrap();
+        let value2 = Q::from_str(&format!("1/{}", u64::MAX)).unwrap();
         matrix.set_entry(0, 0, value1).unwrap();
         matrix.set_entry(1, 1, value2).unwrap();
 
         let entry1 = matrix.get_entry(0, 0).unwrap();
         let entry2 = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!(Q::from_str(&"1".repeat(65)).unwrap(), entry1);
-        assert_eq!(
-            Q::from_str(&format!("1/{}", "1".repeat(65))).unwrap(),
-            entry2
-        );
+        assert_eq!(Q::from_str(&format!("{}", u64::MAX)).unwrap(), entry1);
+        assert_eq!(Q::from_str(&format!("1/{}", u64::MAX)).unwrap(), entry2);
     }
 
     /// Ensure that setting entries works with large negative numerators and denominators.
@@ -158,12 +176,12 @@ mod test_setter {
         assert_eq!(Q::from_str(&format!("1/{}", i64::MIN)).unwrap(), entry2);
     }
 
-    /// Ensure that setting entries works with large negative numerators and denominators (larger than i64).
+    /// Ensure that setting entries works with large negative numerators and denominators (larger than [`i64`]).
     #[test]
     fn big_negative() {
         let mut matrix = MatQ::new(5, 10).unwrap();
-        let value1 = format!("-{}", "1".repeat(65));
-        let value2 = format!("1/-{}", "1".repeat(65));
+        let value1 = format!("-{}", u64::MAX);
+        let value2 = format!("1/-{}", u64::MAX);
         matrix
             .set_entry(0, 0, Q::from_str(&value1).unwrap())
             .unwrap();
@@ -174,14 +192,8 @@ mod test_setter {
         let entry1 = matrix.get_entry(0, 0).unwrap();
         let entry2 = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!(
-            Q::from_str(&format!("-{}", "1".repeat(65))).unwrap(),
-            entry1
-        );
-        assert_eq!(
-            Q::from_str(&format!("1/-{}", "1".repeat(65))).unwrap(),
-            entry2
-        );
+        assert_eq!(Q::from_str(&format!("-{}", u64::MAX)).unwrap(), entry1);
+        assert_eq!(Q::from_str(&format!("1/-{}", u64::MAX)).unwrap(), entry2);
     }
 
     /// Ensure that setting entries at (0,0) works.
