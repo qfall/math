@@ -8,12 +8,12 @@ impl PartialEq for MatPolyOverZ {
     /// Checks if two matrices over [`PolyOverZ`](crate::integer::PolyOverZ) are equal. Used by the `==` and `!=` operators.
     ///
     /// Parameters:
-    /// - other: the other value that is used to compare the elements
+    /// - `other`: the other value that is used to compare the elements
     ///
     /// Returns `true` if the elements are equal, otherwise `false`.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     /// let mat_a = "[[0, 1  17, 2  24 42],[2  24 42, 2  24 42, 2  24 42]]";
