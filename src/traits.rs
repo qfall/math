@@ -1,9 +1,8 @@
 //! This module contains basic traits for this library. These include
 //! specific traits for matrices and polynomials.
 
-use std::fmt::Display;
-
 use crate::error::MathError;
+use std::fmt::Display;
 
 /// Is implemented by polynomials to evaluate it for a certain input.
 pub trait Evaluate<U, V> {

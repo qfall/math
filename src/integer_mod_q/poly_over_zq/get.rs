@@ -97,7 +97,7 @@ mod test_get_coeff_zq_modulus {
     };
     use std::str::FromStr;
 
-    /// ensure that 0 is returned if the provided index is not yet set
+    /// ensure that the [`Modulus`] is transferred correctly when accessing an index out of bounds
     #[test]
     fn index_out_of_range_modulus() {
         let modulus_str = format!("17{}", u64::MAX);
@@ -110,7 +110,7 @@ mod test_get_coeff_zq_modulus {
         assert_eq!(modulus, zero_coeff.modulus)
     }
 
-    /// tests if negative coefficients are returned correctly
+    /// ensure that the [`Modulus`] is transferred correctly when accessing an index in bounds
     #[test]
     fn index_in_range_modulus() {
         let modulus_str = format!("17{}", u64::MAX);
@@ -141,18 +141,6 @@ mod test_get_coeff_z {
         assert_eq!(Z::from(0), zero_coeff)
     }
 
-    /// tests if negative coefficients are returned correctly
-    #[test]
-    fn negative_coeff() {
-        let modulus_str = format!("17{}", u64::MAX);
-
-        let poly = PolyOverZq::from_str(&format!("4  0 1 2 3 mod {}", modulus_str)).unwrap();
-
-        let coeff = poly.get_coeff(3).unwrap();
-
-        assert_eq!(Z::from(3), coeff)
-    }
-
     /// tests if positive coefficients are returned correctly
     #[test]
     fn positive_coeff() {
@@ -178,7 +166,7 @@ mod test_get_coeff_z {
 
     /// tests if large negative coefficients are returned correctly
     #[test]
-    fn large_coeff_neg() {
+    fn large_modulus_applied_negative_large_coefficient() {
         let modulus_str = format!("{}", u64::MAX);
         let large_string = format!("2  -{} {} mod {}", u64::MAX, i64::MAX, modulus_str);
         let poly = PolyOverZq::from_str(&large_string).unwrap();
