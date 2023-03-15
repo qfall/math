@@ -8,8 +8,9 @@ use flint_sys::fmpq_poly::{fmpq_poly_clear, fmpq_poly_init, fmpq_poly_set};
 use std::mem::MaybeUninit;
 
 impl Clone for PolyOverQ {
-    /// Clones the given [`PolyOverQ`] element by returning a deep clone of the element
-    /// and two separately stored values for `nominator` and `denominator` in memory.
+    /// Clones the given [`PolyOverQ`] element by returning a deep clone,
+    /// storing two separately stored [fmpz](flint_sys::fmpz::fmpz) values
+    /// for `nominator` and `denominator` in memory.
     ///
     /// # Example
     /// ```
@@ -89,6 +90,9 @@ mod test_clone {
 
         // denominator should be kept on stack (since common denominator is 8)
         assert_eq!(a.poly.den[0].0, b.poly.den[0].0); // stack
+
+        // check that length is equal
+        assert_eq!(a.poly.length, b.poly.length);
     }
 
     /// Check if clone points to same point in memory for large nominators and denominators
@@ -120,6 +124,9 @@ mod test_clone {
         // denominator should be kept on heap (as common denominator is at least i64::MIN)
         // hence stored separately
         assert_ne!(a.poly.den[0].0, b.poly.den[0].0); // heap
+
+        // check that length is equal
+        assert_eq!(a.poly.length, b.poly.length);
     }
 }
 
