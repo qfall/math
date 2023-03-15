@@ -49,45 +49,55 @@ mod test_sub {
 
     use super::Q;
 
-    // testing subtraction for two Q
+    /// testing subtraction for two Q
     #[test]
     fn sub() {
         let a: Q = Q::from_str("42").unwrap();
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a - b;
-        //assert!(c == Q::from_str("21").unwrap());    todo
+        assert!(c == Q::from_str("21").unwrap());
     }
 
-    // testing subtraction for two borrowed Q
+    /// testing subtraction for two borrowed Q
     #[test]
     fn sub_borrow() {
         let a: Q = Q::from_str("42").unwrap();
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = &a - &b;
-        //assert!(c == Q::from_str("21").unwrap());    todo
+        assert!(c == Q::from_str("21").unwrap());
     }
 
-    // testing subtraction for borrowed Q and Q
+    /// testing subtraction for borrowed Q and Q
     #[test]
     fn sub_first_borrowed() {
         let a: Q = Q::from_str("42/5").unwrap();
         let b: Q = Q::from_str("42/10").unwrap();
         let c: Q = &a - b;
-        //assert!(c == Q::from_str("21/5").unwrap());    todo
+        assert!(c == Q::from_str("21/5").unwrap());
     }
 
-    // testing subtraction for Q and borrowed Q
+    /// testing subtraction for Q and borrowed Q
     #[test]
     fn sub_second_borrowed() {
         let a: Q = Q::from_str("42").unwrap();
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a - &b;
-        //assert!(c == Q::from_str("21").unwrap());    todo
+        assert!(c == Q::from_str("21").unwrap());
     }
 
     #[test]
-    // testing subtraction for large numerators and divisors
+    /// testing subtraction for large numerators and divisors
     fn add_large() {
-        //todo
+        let a: Q = Q::from_str(&(i64::MAX).to_string()).unwrap();
+        let b: Q = Q::from_str(&(u64::MAX - 1).to_string()).unwrap();
+        let c: Q = Q::from_str(&format!("1/{}", (i64::MAX))).unwrap();
+        let d: Q = Q::from_str(&format!("1/{}", (u64::MAX))).unwrap();
+        let e: Q = &b - &a;
+        let f: Q = &c - &d;
+        assert!(e == a);
+        assert!(
+            f == Q::from_str(&format!("-1/{}", (u64::MAX))).unwrap()
+                + Q::from_str(&format!("1/{}", (i64::MAX))).unwrap()
+        );
     }
 }

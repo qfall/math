@@ -50,45 +50,59 @@ mod test_add {
 
     use super::Q;
 
-    // testing addition for two Q
+    /// testing addition for two Q
     #[test]
     fn add() {
         let a: Q = Q::from_str("42").unwrap();
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a + b;
-        //assert!(c == Q::from_str("63").unwrap());    todo
+        assert!(c == Q::from_str("63").unwrap());
     }
 
-    // testing addition for two borrowed Q
+    /// testing addition for two borrowed Q
     #[test]
     fn add_borrow() {
         let a: Q = Q::from_str("42").unwrap();
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = &a + &b;
-        //assert!(c == Q::from_str("63").unwrap());    todo
+        assert!(c == Q::from_str("63").unwrap());
     }
 
-    // testing addition for borrowed Q and Q
+    /// testing addition for borrowed Q and Q
     #[test]
     fn add_first_borrowed() {
         let a: Q = Q::from_str("42/5").unwrap();
         let b: Q = Q::from_str("42/10").unwrap();
         let c: Q = &a + b;
-        //assert!(c == Q::from_str("63/5").unwrap());    todo
+        assert!(c == Q::from_str("63/5").unwrap());
     }
 
-    // testing addition for Q and borrowed Q
+    /// testing addition for Q and borrowed Q
     #[test]
     fn add_second_borrowed() {
         let a: Q = Q::from_str("42").unwrap();
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a + &b;
-        //assert!(c == Q::from_str("63").unwrap());    todo
+        assert!(c == Q::from_str("63").unwrap());
     }
 
     #[test]
-    // testing addition for large numerators and divisors
+    /// testing addition for large numerators and divisors
     fn add_large() {
-        //todo
+        let a: Q = Q::from_str(&(i64::MAX).to_string()).unwrap();
+        let b: Q = Q::from_str(&(u64::MAX - 1).to_string()).unwrap();
+        let c: Q = Q::from_str(&format!("1/{}", (i32::MAX))).unwrap();
+        let d: Q = Q::from_str(&format!("1/{}", (u32::MAX))).unwrap();
+        let e: Q = &a + &a;
+        let f: Q = c + d;
+        assert!(e == b);
+        assert!(
+            f == Q::from_str(&format!(
+                "{}/{}",
+                u64::from(u32::MAX) + u64::from((u32::MAX - 1) / 2),
+                u64::from(u32::MAX) * u64::from((u32::MAX - 1) / 2)
+            ))
+            .unwrap()
+        );
     }
 }
