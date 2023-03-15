@@ -11,8 +11,8 @@ use flint_sys::fmpz_mod_poly::{
 use std::{mem::MaybeUninit, str::FromStr};
 
 impl Clone for PolyOverZq {
-    /// Clones the given [`PolyOverZq`] element and returns cloned instance including
-    /// a reference to the previous [`Modulus`](crate::integer_mod_q::Modulus) element.
+    /// Clones the given [`PolyOverZq`] element by returning a deep clone of the value and
+    /// a reference to the [`Modulus`](crate::integer_mod_q::Modulus) element.
     ///
     /// # Example
     /// ```
@@ -49,9 +49,9 @@ impl Clone for PolyOverZq {
 }
 
 impl Drop for PolyOverZq {
-    /// Drops the given reference to the [`fmpz_mod_poly`](flint_sys::fmpz_mod_poly::fmpz_mod_poly_t)
-    /// element and frees the allocated memory of the corresponding
-    /// [`Modulus`](crate::integer_mod_q::Modulus) if no references are left.
+    /// Drops the given memory allocated for the underlying value
+    /// and frees the allocated memory of the corresponding
+    /// [`Modulus`](crate::integer_mod_q::Modulus) if no other references are left.
     ///
     /// # Examples
     /// ```
