@@ -1,9 +1,8 @@
 //! This module contains basic traits for this library. These include
 //! specific traits for matrices and polynomials.
 
-use std::fmt::Display;
-
 use crate::error::MathError;
+use std::fmt::Display;
 
 /// Is implemented by polynomials to evaluate it for a certain input.
 pub trait Evaluate<U, V> {
@@ -19,12 +18,12 @@ pub trait Evaluate<U, V> {
 
 /// Is implemented by polynomials to set individual coefficients.
 pub trait SetCoefficient<T> {
-    /// Sets coefficient of the object object, e.g. polynomial,
+    /// Sets coefficient of the object, e.g. polynomial,
     /// for a given input value and a coordinate.
     ///
     /// Parameters:
     /// - `coordinate` : The coefficient to be set.
-    /// - `value`: The value with which to set the coefficient.
+    /// - `value`: The value the coefficient is set to.
     fn set_coeff(
         &mut self,
         coordinate: impl TryInto<i64> + Display + Copy,

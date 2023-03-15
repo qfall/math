@@ -10,8 +10,7 @@
 //! shall implement the traits for the other types as well.
 
 /// Implements the [`SetCoefficient`](crate::traits::SetCoefficient) for [`*type*`] using the conversions from the
-/// [`*bridge_type*`] for
-/// [`*type*`].
+/// [`*bridge_type*`] for [`*type*`].
 ///
 /// Parameters:
 /// - source_type: the type of the input (e.g. [`i32`], [`i64`])
