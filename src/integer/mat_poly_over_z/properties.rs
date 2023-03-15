@@ -106,13 +106,17 @@ mod test_is_square {
     /// ensure that square matrices return true
     #[test]
     fn square_matrix() {
-        let matrix_negative = MatPolyOverZ::from_str("[[1  -17, 0],[0, 1  1]]").unwrap();
+        let matrix_negative =
+            MatPolyOverZ::from_str("[[1  -17, 0, 0],[0, 1  1, 0],[0, 0, 0]]").unwrap();
         let matrix_higher_degree = MatPolyOverZ::from_str("[[1  1, 0],[0, 2  1 42]]").unwrap();
-        let matrix_matrix_positive = MatPolyOverZ::from_str("[[1  17, 0],[0, 1  1]]").unwrap();
+        let matrix_matrix_positive = MatPolyOverZ::from_str("[[1  17]]").unwrap();
         let matrix_large_negative =
             MatPolyOverZ::from_str(&format!("[[1  -{}, 0],[0, 1  1]]", u64::MAX)).unwrap();
-        let matrix_large_positive =
-            MatPolyOverZ::from_str(&format!("[[1  {}, 0],[0, 1  1]]", u64::MAX)).unwrap();
+        let matrix_large_positive = MatPolyOverZ::from_str(&format!(
+            "[[1  {}, 0, 0, 0],[0, 1  1, 0, 0],[0, 1  1, 0, 0],[0, 1  1, 0, 0]]",
+            u64::MAX
+        ))
+        .unwrap();
 
         assert!(matrix_negative.is_square());
         assert!(matrix_matrix_positive.is_square());
