@@ -6,30 +6,8 @@
 
 use super::PolyOverQ;
 use crate::error::MathError;
-use flint_sys::fmpq_poly::{fmpq_poly_init, fmpq_poly_set_str};
-use std::{ffi::CString, mem::MaybeUninit, str::FromStr};
-
-impl Default for PolyOverQ {
-    /// Initializes a [`PolyOverQ`].
-    /// This method is used to initialize a [`PolyOverQ`].
-    ///
-    /// Returns an initialized [`PolyOverQ`].
-    ///
-    /// # Example
-    /// ```rust
-    /// use math::rational::PolyOverQ;
-    ///
-    /// let poly_over_zero = PolyOverQ::default(); // initializes a PolyOverQ as "0"
-    /// ```
-    fn default() -> Self {
-        let mut poly = MaybeUninit::uninit();
-        unsafe {
-            fmpq_poly_init(poly.as_mut_ptr());
-            let poly = poly.assume_init();
-            Self { poly }
-        }
-    }
-}
+use flint_sys::fmpq_poly::fmpq_poly_set_str;
+use std::{ffi::CString, str::FromStr};
 
 impl FromStr for PolyOverQ {
     type Err = MathError;
@@ -139,22 +117,5 @@ mod test_from_str {
     #[test]
     fn too_many_divisors() {
         assert!(PolyOverQ::from_str("3  1 2/5 -3/2/3").is_err());
-    }
-}
-
-// ensure that init initializes an empty polynomial
-#[cfg(test)]
-mod test_init {
-
-    use std::str::FromStr;
-
-    use crate::rational::PolyOverQ;
-
-    /// Ensure that [`Default`] initializes the zero polynomial appropriately
-    #[test]
-    fn init_zero() {
-        let poly_over_zero = PolyOverQ::default();
-
-        assert_eq!(PolyOverQ::from_str("0").unwrap(), poly_over_zero)
     }
 }

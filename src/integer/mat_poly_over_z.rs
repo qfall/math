@@ -7,6 +7,7 @@ mod cmp;
 mod from;
 mod get;
 mod ownership;
+mod properties;
 mod set;
 
 #[derive(Debug)]

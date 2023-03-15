@@ -5,6 +5,7 @@
 use flint_sys::fmpq_poly::fmpq_poly_struct;
 
 mod cmp;
+mod default;
 mod evaluate;
 mod from;
 mod get;
