@@ -49,7 +49,7 @@ mod test_div {
 
     /// testing division for two [`Q`]
     #[test]
-    fn add() {
+    fn div() {
         let a: Q = Q::from_str("2").unwrap();
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a / b;
@@ -58,7 +58,7 @@ mod test_div {
 
     /// testing division for two borrowed [`Q`]
     #[test]
-    fn add_borrow() {
+    fn div_borrow() {
         let a: Q = Q::from_str("2").unwrap();
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = &a / &b;
@@ -67,7 +67,7 @@ mod test_div {
 
     /// testing division for borrowed [`Q`] and [`Q`]
     #[test]
-    fn add_first_borrowed() {
+    fn div_first_borrowed() {
         let a: Q = Q::from_str("4").unwrap();
         let b: Q = Q::from_str("42/10").unwrap();
         let c: Q = &a / b;
@@ -76,7 +76,7 @@ mod test_div {
 
     /// testing division for [`Q`] and borrowed [`Q`]
     #[test]
-    fn add_second_borrowed() {
+    fn div_second_borrowed() {
         let a: Q = Q::from_str("2").unwrap();
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a / &b;
@@ -85,7 +85,7 @@ mod test_div {
 
     #[test]
     /// testing division for large numerators and divisors
-    fn add_large() {
+    fn div_large() {
         let a: Q = Q::from_str(&(u64::MAX - 1).to_string()).unwrap();
         let b: Q = Q::from_str("2").unwrap();
         let c: Q = Q::from_str(&format!("1/{}", (i32::MAX))).unwrap();
