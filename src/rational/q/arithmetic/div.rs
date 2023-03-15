@@ -71,6 +71,7 @@ impl Q {
         Ok(out)
     }
 }
+
 #[cfg(test)]
 mod test_div {
     use super::Q;
