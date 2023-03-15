@@ -34,6 +34,8 @@ use thiserror::Error;
 /// construct a [`Q`](crate::rational::Q)
 /// - `InvalidStringToZInput` is thrown if an invalid string is given to
 /// construct a [`Z`](crate::integer::Z)
+/// - `InvalidStringToZqInput` is thrown if an invalid string is given to
+/// construct a [`Zq`](crate::integer_mod_q::Zq)
 /// - `OutOfBounds` is thrown if a provided index is not in a desired range
 ///
 /// # Example
@@ -107,6 +109,9 @@ pub enum MathError {
     /// parse string to [`Z`](crate::integer::Z) error
     #[error("invalid string input to parse to Z {0}")]
     InvalidStringToZInput(String),
+    /// parse string to [`Zq`](crate::integer_mod_q::Zq) error
+    #[error("invalid string input to parse to Zq {0}")]
+    InvalidStringToZqInput(String),
     /// if a provided index is out of bounds
     #[error(
         "invalid index submitted. The index is out of bounds.
