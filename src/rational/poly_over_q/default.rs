@@ -11,7 +11,7 @@ impl Default for PolyOverQ {
     /// ```rust
     /// use math::rational::PolyOverQ;
     ///
-    /// let poly_over_zero = PolyOverQ::default();
+    /// let zero = PolyOverQ::default();
     /// ```
     fn default() -> Self {
         let mut poly = MaybeUninit::uninit();
