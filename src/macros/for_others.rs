@@ -1,3 +1,14 @@
+//! This module implements macros which are used to explicitly implement
+//! traits taking input of one of our types. These types can be constructed
+//! from other values. These macros will implement the trait for the other types.
+//!
+//! Example:
+//! [`Z`](crate::integer::Z) implements the [`From`] trait for
+//! [`i8`], [`i16`], ... -> hence it is be beneficial if one
+//! does not have to first create a [`Z`](crate::integer::Z), but if one can directly
+//! pass the value to other functions taking in a [`Z`](crate::integer::Z). These macros
+//! shall implement the traits for the other types as well.
+
 /// Implements the [`SetCoefficient`](crate::traits::SetCoefficient) for [`*type*`] using the conversions from the
 /// [`*bridge_type*`] for
 /// [`*type*`].
