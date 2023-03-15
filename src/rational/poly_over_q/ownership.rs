@@ -154,12 +154,9 @@ mod test_drop {
         let mut storage_addresses = HashSet::new();
 
         for _i in 0..5 {
-            let (a, b, c) = create_and_drop_modulus();
-            storage_addresses.insert(a);
-            storage_addresses.insert(b);
-            storage_addresses.insert(c);
+            storage_addresses.insert(create_and_drop_modulus());
         }
 
-        assert!(storage_addresses.len() < 15);
+        assert!(storage_addresses.len() < 5);
     }
 }
