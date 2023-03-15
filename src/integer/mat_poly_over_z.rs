@@ -6,6 +6,7 @@ use flint_sys::fmpz_poly_mat::fmpz_poly_mat_struct;
 mod cmp;
 mod from;
 mod get;
+mod properties;
 mod set;
 
 #[derive(Debug)]
