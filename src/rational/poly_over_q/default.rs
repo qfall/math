@@ -22,7 +22,8 @@ impl Default for PolyOverQ {
         }
     }
 }
-// ensure that default initializes an empty polynomial
+
+/// ensure that default initializes an empty polynomial
 #[cfg(test)]
 mod test_default {
 
