@@ -23,6 +23,7 @@ impl GetCoefficient<Z> for PolyOverZ {
     /// ```rust
     /// use math::integer::PolyOverZ;
     /// use std::str::FromStr;
+    /// use math::traits::GetCoefficient;
     ///
     /// let poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
     ///
