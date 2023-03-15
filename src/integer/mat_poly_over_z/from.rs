@@ -19,7 +19,7 @@ use std::{fmt::Display, mem::MaybeUninit, str::FromStr};
 
 impl MatPolyOverZ {
     /// Creates a new matrix with `num_rows` rows, `num_cols` columns and
-    /// zeros as entries.
+    /// zeros as entries, where each entry is a [`PolyOverZ`].
     ///
     /// Parameters:
     /// - `num_rows`: number of rows the new matrix should have
