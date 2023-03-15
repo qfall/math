@@ -28,9 +28,8 @@ impl Default for PolyOverZ {
 // ensure that default initializes an empty polynomial
 #[cfg(test)]
 mod test_default {
-    use std::str::FromStr;
-
     use crate::integer::PolyOverZ;
+    use std::str::FromStr;
 
     /// Check if [`Default`] initializes the zero polynomial appropriately
     #[test]
