@@ -11,7 +11,7 @@ impl Default for PolyOverZ {
     /// ```rust
     /// use math::integer::PolyOverZ;
     ///
-    /// let poly_over_zero = PolyOverZ::default();
+    /// let zero = PolyOverZ::default();
     /// ```
     fn default() -> Self {
         let mut poly = MaybeUninit::uninit();
@@ -25,7 +25,7 @@ impl Default for PolyOverZ {
     }
 }
 
-// ensure that default initializes an empty polynomial
+/// ensure that default initializes an empty polynomial
 #[cfg(test)]
 mod test_default {
     use crate::integer::PolyOverZ;
