@@ -49,7 +49,7 @@ mod test_mul {
 
     /// testing multiplication for two [`Q`]
     #[test]
-    fn add() {
+    fn mul() {
         let a: Q = Q::from_str("2").unwrap();
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a * b;
@@ -58,7 +58,7 @@ mod test_mul {
 
     /// testing multiplication for two borrowed [`Q`]
     #[test]
-    fn add_borrow() {
+    fn mul_borrow() {
         let a: Q = Q::from_str("2").unwrap();
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = &a * &b;
@@ -67,7 +67,7 @@ mod test_mul {
 
     /// testing multiplication for borrowed [`Q`] and [`Q`]
     #[test]
-    fn add_first_borrowed() {
+    fn mul_first_borrowed() {
         let a: Q = Q::from_str("4").unwrap();
         let b: Q = Q::from_str("42/10").unwrap();
         let c: Q = &a * b;
@@ -76,7 +76,7 @@ mod test_mul {
 
     /// testing multiplication for [`Q`] and borrowed [`Q`]
     #[test]
-    fn add_second_borrowed() {
+    fn mul_second_borrowed() {
         let a: Q = Q::from_str("2").unwrap();
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a * &b;
@@ -85,7 +85,7 @@ mod test_mul {
 
     #[test]
     /// testing multiplication for large numerators and divisors
-    fn add_large() {
+    fn mul_large() {
         let a: Q = Q::from_str(&(i64::MAX).to_string()).unwrap();
         let b: Q = Q::from_str("2").unwrap();
         let c: Q = Q::from_str(&format!("1/{}", (i32::MAX))).unwrap();
