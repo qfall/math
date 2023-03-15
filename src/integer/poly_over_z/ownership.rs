@@ -128,9 +128,7 @@ mod test_drop {
             set.insert(create_and_drop_poly_over_z());
         }
 
-        if set.capacity() == 5 {
-            panic!("The freed memory is not being reused for 5 instances for PolyOverZ");
-        }
+        assert!(set.len() < 5);
 
         let a = PolyOverZ::from_str("2  36893488147419103232 36893488147419103233").unwrap();
         let storage_point = unsafe { *a.poly.coeffs }.0;

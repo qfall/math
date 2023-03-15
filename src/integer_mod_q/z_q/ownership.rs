@@ -131,6 +131,6 @@ mod test_drop {
             storage_addresses.insert(create_and_drop_modulus());
         }
 
-        assert_ne!(storage_addresses.capacity(), 5);
+        assert!(storage_addresses.len() < 5);
     }
 }
