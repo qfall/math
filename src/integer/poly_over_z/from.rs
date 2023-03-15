@@ -6,32 +6,8 @@
 
 use super::PolyOverZ;
 use crate::error::MathError;
-use flint_sys::fmpz_poly::{fmpz_poly_init, fmpz_poly_set_str};
-use std::{ffi::CString, mem::MaybeUninit, str::FromStr};
-
-impl Default for PolyOverZ {
-    /// Initializes a [`PolyOverZ`].
-    /// This method is used to initialize a [`PolyOverZ`].
-    ///
-    /// Returns an initialized [`PolyOverZ`].
-    ///
-    /// # Example
-    /// ```rust
-    /// use math::integer::PolyOverZ;
-    ///
-    /// let poly_over_zero = PolyOverZ::default(); // initializes a PolyOverZ as "0"
-    /// ```
-    fn default() -> Self {
-        let mut poly = MaybeUninit::uninit();
-        unsafe {
-            fmpz_poly_init(poly.as_mut_ptr());
-
-            Self {
-                poly: poly.assume_init(),
-            }
-        }
-    }
-}
+use flint_sys::fmpz_poly::fmpz_poly_set_str;
+use std::{ffi::CString, str::FromStr};
 
 impl FromStr for PolyOverZ {
     type Err = MathError;
@@ -136,21 +112,5 @@ mod test_from_str {
     #[test]
     fn false_number_of_coefficient() {
         assert!(PolyOverZ::from_str("4  1 2 -3").is_err());
-    }
-}
-
-// ensure that init initializes an empty polynomial
-#[cfg(test)]
-mod test_init {
-    use std::str::FromStr;
-
-    use crate::integer::PolyOverZ;
-
-    /// Check if [`Default`] initializes the zero polynomial appropriately
-    #[test]
-    fn init_zero() {
-        let poly_over_zero = PolyOverZ::default();
-
-        assert_eq!(PolyOverZ::from_str("0").unwrap(), poly_over_zero)
     }
 }
