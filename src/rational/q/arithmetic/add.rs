@@ -17,7 +17,7 @@ impl Add for &Q {
     /// Parameters:
     ///  - `other`: specifies the value to add to `self`
     ///
-    /// Returns the sum of both numbers as a [`Q`].
+    /// Returns the sum of both rationals as a [`Q`].
     ///
     /// # Example
     /// ```
@@ -46,11 +46,10 @@ arithmetic_trait_mixed_borrowed_owned!(Add, add, Q);
 
 #[cfg(test)]
 mod test_add {
+    use super::Q;
     use std::str::FromStr;
 
-    use super::Q;
-
-    /// testing addition for two Q
+    /// testing addition for two [`Q`]
     #[test]
     fn add() {
         let a: Q = Q::from_str("42").unwrap();
@@ -59,7 +58,7 @@ mod test_add {
         assert!(c == Q::from_str("63").unwrap());
     }
 
-    /// testing addition for two borrowed Q
+    /// testing addition for two borrowed [`Q`]
     #[test]
     fn add_borrow() {
         let a: Q = Q::from_str("42").unwrap();
@@ -68,7 +67,7 @@ mod test_add {
         assert!(c == Q::from_str("63").unwrap());
     }
 
-    /// testing addition for borrowed Q and Q
+    /// testing addition for borrowed [`Q`] and [`Q`]
     #[test]
     fn add_first_borrowed() {
         let a: Q = Q::from_str("42/5").unwrap();
@@ -77,7 +76,7 @@ mod test_add {
         assert!(c == Q::from_str("63/5").unwrap());
     }
 
-    /// testing addition for Q and borrowed Q
+    /// testing addition for [`Q`] and borrowed [`Q`]
     #[test]
     fn add_second_borrowed() {
         let a: Q = Q::from_str("42").unwrap();

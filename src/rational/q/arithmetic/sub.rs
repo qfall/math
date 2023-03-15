@@ -45,11 +45,10 @@ arithmetic_trait_mixed_borrowed_owned!(Sub, sub, Q);
 
 #[cfg(test)]
 mod test_sub {
+    use super::Q;
     use std::str::FromStr;
 
-    use super::Q;
-
-    /// testing subtraction for two Q
+    /// testing subtraction for two [`Q`]
     #[test]
     fn sub() {
         let a: Q = Q::from_str("42").unwrap();
@@ -58,7 +57,7 @@ mod test_sub {
         assert!(c == Q::from_str("21").unwrap());
     }
 
-    /// testing subtraction for two borrowed Q
+    /// testing subtraction for two borrowed [`Q`]
     #[test]
     fn sub_borrow() {
         let a: Q = Q::from_str("42").unwrap();
@@ -67,7 +66,7 @@ mod test_sub {
         assert!(c == Q::from_str("21").unwrap());
     }
 
-    /// testing subtraction for borrowed Q and Q
+    /// testing subtraction for borrowed [`Q`] and [`Q`]
     #[test]
     fn sub_first_borrowed() {
         let a: Q = Q::from_str("42/5").unwrap();
@@ -76,7 +75,7 @@ mod test_sub {
         assert!(c == Q::from_str("21/5").unwrap());
     }
 
-    /// testing subtraction for Q and borrowed Q
+    /// testing subtraction for [`Q`] and borrowed [`Q`]
     #[test]
     fn sub_second_borrowed() {
         let a: Q = Q::from_str("42").unwrap();

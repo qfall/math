@@ -44,11 +44,10 @@ arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Q);
 
 #[cfg(test)]
 mod test_mul {
+    use super::Q;
     use std::str::FromStr;
 
-    use super::Q;
-
-    /// testing multiplication for two Q
+    /// testing multiplication for two [`Q`]
     #[test]
     fn add() {
         let a: Q = Q::from_str("2").unwrap();
@@ -57,7 +56,7 @@ mod test_mul {
         assert!(c == Q::from_str("42").unwrap());
     }
 
-    /// testing multiplication for two borrowed Q
+    /// testing multiplication for two borrowed [`Q`]
     #[test]
     fn add_borrow() {
         let a: Q = Q::from_str("2").unwrap();
@@ -66,7 +65,7 @@ mod test_mul {
         assert!(c == Q::from_str("42").unwrap());
     }
 
-    /// testing multiplication for borrowed Q and Q
+    /// testing multiplication for borrowed [`Q`] and [`Q`]
     #[test]
     fn add_first_borrowed() {
         let a: Q = Q::from_str("4").unwrap();
@@ -75,7 +74,7 @@ mod test_mul {
         assert!(c == Q::from_str("168/10").unwrap());
     }
 
-    /// testing multiplication for Q and borrowed Q
+    /// testing multiplication for [`Q`] and borrowed [`Q`]
     #[test]
     fn add_second_borrowed() {
         let a: Q = Q::from_str("2").unwrap();
