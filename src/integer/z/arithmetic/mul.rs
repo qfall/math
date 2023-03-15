@@ -17,8 +17,8 @@ impl Mul for &Z {
     ///
     /// Returns the product of both numbers as a [`Z`].
     ///
-    /// # Example\n
-    /// ```rust
+    /// # Example
+    /// ```
     /// use math::integer::Z;
     ///
     /// let a: Z = Z::from(42);
