@@ -11,7 +11,8 @@ use flint_sys::fmpz_mod_poly::{
 use std::{mem::MaybeUninit, str::FromStr};
 
 impl Clone for PolyOverZq {
-    /// Clones the given [`PolyOverZq`] element by returning a deep clone of the value and
+    /// Clones the given [`PolyOverZq`] element by returning a deep clone,
+    /// storing the actual value separately and including
     /// a reference to the [`Modulus`](crate::integer_mod_q::Modulus) element.
     ///
     /// # Example
@@ -113,6 +114,9 @@ mod test_clone {
             unsafe { *a.poly.coeffs.offset(3) }.0,
             unsafe { *b.poly.coeffs.offset(3) }.0
         ); // stack
+
+        // check if length of polynomials is equal
+        assert_eq!(a.poly.length, b.poly.length);
     }
 }
 
