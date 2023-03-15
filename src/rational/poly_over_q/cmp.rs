@@ -116,9 +116,9 @@ mod test_partial_eq {
         let max_str = format!("1  {}/{}", u64::MAX, 3);
         let min_str = format!("1  {}/{}", i64::MIN, 4);
 
-        let max_1 = PolyOverQ::from_str(&min_str).unwrap();
-        let max_2 = PolyOverQ::from_str(&min_str).unwrap();
-        let min = PolyOverQ::from_str(&max_str).unwrap();
+        let max_1 = PolyOverQ::from_str(&max_str).unwrap();
+        let max_2 = PolyOverQ::from_str(&max_str).unwrap();
+        let min = PolyOverQ::from_str(&min_str).unwrap();
 
         assert!(max_1 == max_2);
         assert!(max_2 == max_1);
@@ -135,9 +135,9 @@ mod test_partial_eq {
         let max_str = format!("1  {}/{}", u64::MAX, 3);
         let min_str = format!("1  {}/{}", i64::MIN, 4);
 
-        let max_1 = PolyOverQ::from_str(&min_str).unwrap();
-        let max_2 = PolyOverQ::from_str(&min_str).unwrap();
-        let min = PolyOverQ::from_str(&max_str).unwrap();
+        let max_1 = PolyOverQ::from_str(&max_str).unwrap();
+        let max_2 = PolyOverQ::from_str(&max_str).unwrap();
+        let min = PolyOverQ::from_str(&min_str).unwrap();
 
         assert!(!(max_1 != max_2));
         assert!(!(max_2 != max_1));
@@ -154,8 +154,8 @@ mod test_partial_eq {
         let max_str = format!("1  {}/{}", u64::MAX, 3);
         let min_str = format!("1  {}/{}", i64::MIN, 4);
 
-        let max = PolyOverQ::from_str(&min_str).unwrap();
-        let min = PolyOverQ::from_str(&max_str).unwrap();
+        let max = PolyOverQ::from_str(&max_str).unwrap();
+        let min = PolyOverQ::from_str(&min_str).unwrap();
 
         let small_positive = PolyOverQ::from_str("1  1/7").unwrap();
         let small_negative = PolyOverQ::from_str("1  -1/7").unwrap();
@@ -178,8 +178,8 @@ mod test_partial_eq {
         let max_str = format!("1  {}/{}", u64::MAX, 3);
         let min_str = format!("1  {}/{}", i64::MIN, 4);
 
-        let max = PolyOverQ::from_str(&min_str).unwrap();
-        let min = PolyOverQ::from_str(&max_str).unwrap();
+        let max = PolyOverQ::from_str(&max_str).unwrap();
+        let min = PolyOverQ::from_str(&min_str).unwrap();
 
         let small_positive = PolyOverQ::from_str("1  1").unwrap();
         let small_negative = PolyOverQ::from_str("1  -1").unwrap();
