@@ -105,7 +105,7 @@ mod test_partial_eq {
     fn equal_small() {
         let small_1 = ModulusPolynomialRingZq::from_str("1  10 mod 17").unwrap();
         let small_2 = ModulusPolynomialRingZq::from_str("1  10 mod 17").unwrap();
-        let negative = ModulusPolynomialRingZq::from_str("1  -1/5 mod 17").unwrap();
+        let negative = ModulusPolynomialRingZq::from_str("1  -1 mod 17").unwrap();
 
         assert!(small_1 == small_2);
         assert!(small_2 == small_1);
