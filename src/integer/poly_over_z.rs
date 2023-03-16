@@ -5,9 +5,11 @@
 use flint_sys::fmpz_poly::fmpz_poly_struct;
 
 mod cmp;
+mod default;
 mod evaluate;
 mod from;
 mod get;
+mod ownership;
 mod set;
 mod to_string;
 

@@ -47,7 +47,7 @@ impl Zq {
     pub fn try_from_z_z(value: &Z, modulus: &Z) -> Result<Self, MathError> {
         let modulus = Modulus::try_from_z(modulus)?;
 
-        Ok(Self::from_z_modulus(value, modulus))
+        Ok(Self::from_z_modulus(value, &modulus))
     }
 
     /// Create [`Zq`] from a [`Z`] values and a [`Modulus`].
@@ -70,10 +70,10 @@ impl Zq {
     /// let value = Z::from(42);
     /// let modulus = Modulus::try_from(&Z::from(100))?;
     ///
-    /// let answer_a = Zq::from_z_modulus(&value, modulus);
+    /// let answer_a = Zq::from_z_modulus(&value, &modulus);
     /// # Ok::<(), MathError>(())
     /// ```
-    pub fn from_z_modulus(value: &Z, modulus: Modulus) -> Self {
+    pub fn from_z_modulus(value: &Z, modulus: &Modulus) -> Self {
         let mut value_fmpz = MaybeUninit::uninit();
 
         let value_fmpz = unsafe {
@@ -89,7 +89,7 @@ impl Zq {
 
         Zq {
             value: value_fmpz,
-            modulus,
+            modulus: modulus.clone(),
         }
     }
 
@@ -275,7 +275,7 @@ mod test_from_z_modulus {
         let value = Z::from(10);
         let modulus = Modulus::try_from(&Z::from(15)).unwrap();
 
-        let _ = Zq::from_z_modulus(&value, modulus);
+        let _ = Zq::from_z_modulus(&value, &modulus);
     }
 
     /// Test with large value and modulus (FLINT uses pointer representation).
@@ -284,7 +284,7 @@ mod test_from_z_modulus {
         let value = Z::from(u64::MAX - 1);
         let modulus = Modulus::try_from(&Z::from(u64::MAX)).unwrap();
 
-        let _ = Zq::from_z_modulus(&value, modulus);
+        let _ = Zq::from_z_modulus(&value, &modulus);
     }
 }
 
