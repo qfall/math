@@ -225,15 +225,14 @@ impl FromStr for Zq {
             return Err(MathError::InvalidStringToZqInput(s.to_owned()));
         }
 
-        let z_string = input_split[0].trim();
         let modulus = Modulus::from_str(input_split[1].trim())?;
 
         // since |value| = |0| < 62 bits, we do not need to free the allocated space manually
         let mut value: fmpz = fmpz::default();
 
-        let c_string = CString::new(z_string)?;
+        let c_string = CString::new(input_split[0].trim())?;
 
-        if z_string.contains(char::is_whitespace) {
+        if input_split[0].trim().contains(char::is_whitespace) {
             return Err(MathError::InvalidStringToZInput(s.to_owned()));
         }
 
@@ -430,7 +429,7 @@ mod tests_from_str {
         assert!(Zq::from_str(&format!("-{} mod {}", u64::MAX, u128::MAX)).is_ok());
     }
 
-    /// Ensure that initialization with normal numbers works.
+    /// Ensure that initialization with standard values works.
     #[test]
     fn normal_value() {
         assert!(Zq::from_str("42 mod 5").is_ok());
