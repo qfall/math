@@ -5,6 +5,7 @@
 use flint_sys::fq::fq_ctx_struct;
 use std::rc::Rc;
 
+mod cmp;
 mod from;
 mod get;
 mod ownership;
@@ -27,6 +28,7 @@ mod to_string;
 /// let poly_mod = PolyOverZq::from_str("3  1 0 1 mod 17").unwrap();
 /// let modulus = ModulusPolynomialRingZq::try_from(&poly_mod);
 /// ```
+#[derive(Debug)]
 pub struct ModulusPolynomialRingZq {
     modulus: Rc<fq_ctx_struct>,
 }
