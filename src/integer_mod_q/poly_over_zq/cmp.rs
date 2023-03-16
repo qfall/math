@@ -6,6 +6,8 @@ use flint_sys::fmpz_mod_poly::fmpz_mod_poly_equal;
 
 impl PartialEq for PolyOverZq {
     /// Checks if two polynomials over [`Zq`](crate::integer_mod_q::Zq) are equal.
+    /// Two [`PolyOverZq`] are considered equal if their modulus is equal and
+    /// all coefficients are equal modulus `q`.
     /// Used by the `==` and `!=` operators.
     ///
     /// Parameters:
@@ -79,7 +81,7 @@ mod test_partial_eq {
     /// We assume that they behave the same in the other tests.
     #[test]
     #[allow(clippy::op_ref)]
-    fn not_equal_call_methods() {
+    fn not_equal_call_methods_different_num_coeffs() {
         let one = PolyOverZq::from_str("2  24 1 mod 17").unwrap();
         let two = PolyOverZq::from_str("3  24 1 1 mod 17").unwrap();
 
