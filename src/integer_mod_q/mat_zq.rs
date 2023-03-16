@@ -3,6 +3,8 @@
 
 use flint_sys::fmpz_mod_mat::fmpz_mod_mat_struct;
 
+mod from;
+
 #[allow(dead_code)]
 #[derive(Debug)]
 /// [`MatZq`] is a matrix with entries of type [`Zq`](crate::integer_mod_q::Zq).
