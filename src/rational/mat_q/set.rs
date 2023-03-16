@@ -84,7 +84,7 @@ impl MatQ {
     /// - `column`: specifies the column in which the entry is located
     ///
     /// Returns the coordinates as a pair of [`i64`] if they reference an entry and return
-    /// an error otherwise
+    /// an error otherwise.
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
