@@ -14,6 +14,7 @@ use crate::integer::PolyOverZ;
 /// - `modulus`: holds the prime `q` and f(X)
 ///
 /// # Example
+#[derive(PartialEq, Eq)]
 pub struct PolynomialRingZq {
     poly: PolyOverZ,
     modulus: ModulusPolynomialRingZq,
