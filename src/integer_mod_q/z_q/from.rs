@@ -2,8 +2,11 @@
 
 use super::Zq;
 use crate::{error::MathError, integer::Z, integer_mod_q::Modulus};
-use flint_sys::fmpz_mod::fmpz_mod_set_fmpz;
-use std::mem::MaybeUninit;
+use flint_sys::{
+    fmpz::{fmpz, fmpz_set_str},
+    fmpz_mod::fmpz_mod_set_fmpz,
+};
+use std::{ffi::CString, mem::MaybeUninit, str::FromStr};
 
 impl Zq {
     /// Create [`Zq`] from two [`Z`] values.
@@ -178,6 +181,83 @@ impl<T1: Into<Z>, T2: Into<Z>> TryFrom<(T1, T2)> for Zq {
     }
 }
 
+impl FromStr for Zq {
+    type Err = MathError;
+
+    /// Create a [`Zq`] integer from a [`String`]
+    /// The format of that string looks like this `12 mod 25` for the number 12
+    /// under the modulus 25
+    ///
+    /// Parameters:
+    /// - `s`: the integer and modulus value
+    ///
+    /// Returns a [`Zq`] or an error, if the provided string was not formatted
+    /// correctly.
+    ///
+    /// # Example:
+    /// ```
+    /// use std::str::FromStr;
+    /// use math::integer_mod_q::Zq;
+    ///  
+    /// let a: Zq = "100 mod 3".parse().unwrap();
+    /// let b: Zq = Zq::from_str("100 mod 3").unwrap();
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type
+    /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
+    /// if the provided string contains a Nul byte.
+    /// - Returns a [`MathError`] of type
+    /// [`InvalidStringToZqInput`](MathError::InvalidStringToZqInput)
+    /// if the provided string was not formatted correctly.
+    /// - Returns a [`MathError`] of type
+    /// [`InvalidStringToModulusInput`](MathError::InvalidStringToModulusInput)
+    /// if the provided modulus was not formatted correctly
+    /// - Returns a [`MathError`] of type
+    /// [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
+    /// if the provided value is not greater than zero.
+    /// - Returns a [`MathError`] of type
+    /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
+    /// if the provided string contains a Nul byte.
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let input_split: Vec<&str> = s.split("mod").collect();
+        if input_split.len() != 2 {
+            return Err(MathError::InvalidStringToZqInput(s.to_owned()));
+        }
+
+        let modulus = Modulus::from_str(input_split[1].trim())?;
+
+        // since |value| = |0| < 62 bits, we do not need to free the allocated space manually
+        let mut value: fmpz = fmpz::default();
+
+        let c_string = CString::new(input_split[0].trim())?;
+
+        if input_split[0].trim().contains(char::is_whitespace) {
+            return Err(MathError::InvalidStringToZInput(s.to_owned()));
+        }
+
+        // -1 is returned if the string is an invalid input.
+        // Given the documentation `c_string.as_ptr()` is freed once c_string is deallocated
+        // 'The pointer will be valid for as long as `self` is'
+        // For reading more look at the documentation of `.as_ptr()`.
+        if unsafe { fmpz_set_str(&mut value, c_string.as_ptr(), 10) } == -1 {
+            return Err(MathError::InvalidStringToZInput(s.to_owned()));
+        };
+
+        let mut out = Zq { value, modulus };
+        unsafe {
+            // Applies modulus to parameter and saves the new value
+            fmpz_mod_set_fmpz(
+                &mut out.value,
+                &value,
+                out.modulus.get_fmpz_mod_ctx_struct(),
+            );
+        };
+
+        Ok(out)
+    }
+}
+
 #[cfg(test)]
 mod test_from_z_modulus {
     // TODO: add more test cases once we have the equal comparison for Zq:
@@ -316,5 +396,69 @@ mod test_try_from_trait {
         let new_zq = Zq::try_from((10, -1));
 
         assert!(new_zq.is_err());
+    }
+}
+
+#[cfg(test)]
+mod tests_from_str {
+
+    use crate::integer_mod_q::Zq;
+    use std::str::FromStr;
+
+    /// Ensure that initialization with large numbers works.
+    #[test]
+    fn max_int_positive() {
+        assert!(Zq::from_str(&format!("{} mod {}", i64::MAX, u64::MAX)).is_ok());
+    }
+
+    /// Ensure that initialization with large numbers (larger than [`i64`]) works.
+    #[test]
+    fn big_positive() {
+        assert!(Zq::from_str(&format!("{} mod {}", u64::MAX, u128::MAX)).is_ok());
+    }
+
+    /// Ensure that initialization with large negative numbers works.
+    #[test]
+    fn max_int_negative() {
+        assert!(Zq::from_str(&format!("-{} mod {}", i64::MAX, u64::MAX)).is_ok());
+    }
+
+    /// Ensure that initialization with large negative numbers (larger than [`i64`]) works.
+    #[test]
+    fn big_negative() {
+        assert!(Zq::from_str(&format!("-{} mod {}", u64::MAX, u128::MAX)).is_ok());
+    }
+
+    /// Ensure that initialization with standard values works.
+    #[test]
+    fn normal_value() {
+        assert!(Zq::from_str("42 mod 5").is_ok());
+    }
+
+    /// Ensure that initialization works with leading and trailing whitespaces.
+    #[test]
+    fn whitespaces_work() {
+        assert!(Zq::from_str("    42 mod 5").is_ok());
+        assert!(Zq::from_str("42 mod 5    ").is_ok());
+        assert!(Zq::from_str("42    mod 5").is_ok());
+        assert!(Zq::from_str("42 mod     5").is_ok());
+    }
+
+    /// Ensure that initialization yields an error with whitespaces in between.
+    #[test]
+    fn whitespaces_error() {
+        assert!(Zq::from_str("4 2 mod 5").is_err());
+        assert!(Zq::from_str("42 mo d 5").is_err());
+        assert!(Zq::from_str("42 mod 5 0").is_err());
+    }
+
+    /// Ensure that wrong initialization yields an Error.
+    #[test]
+    fn error_wrong_letters() {
+        assert!(Zq::from_str("hbrkt35itu3gg").is_err());
+        assert!(Zq::from_str("3-2 mod 3").is_err());
+        assert!(Zq::from_str("3 5").is_err());
+        assert!(Zq::from_str("3%5").is_err());
+        assert!(Zq::from_str("3/5 mod 3").is_err());
     }
 }
