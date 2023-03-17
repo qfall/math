@@ -18,6 +18,7 @@ impl Clone for MatPolyOverZ {
     /// let b = a.clone();
     /// ```
     fn clone(&self) -> Self {
+        // we can unwrap since we know, that the number of rows and columns is positive and fits into an [`i64`]
         let mut clone = MatPolyOverZ::new(self.get_num_rows(), self.get_num_columns()).unwrap();
 
         unsafe { fmpz_poly_mat_set(&mut clone.matrix, &mut self.matrix.to_owned()) }
@@ -59,8 +60,7 @@ mod test_clone {
     /// check if a clone of a [`MatPolyOverZ`] with an entry larger than 64 bits works
     #[test]
     fn large_entries() {
-        let u64_string = u64::MAX.to_string();
-        let input = format!("[[2  {} -{}]]", u64_string, u64_string);
+        let input = format!("[[2  {} -{}]]", u64::MAX, u64::MAX);
 
         let poly_1 = MatPolyOverZ::from_str(&input).unwrap();
         let poly_2 = poly_1.clone();
@@ -93,7 +93,7 @@ mod test_clone {
         let strings = vec!["[[2  0 11]]", "[[2  0 -11]]", "[[2  0 1100]]"];
 
         for string in strings {
-            let poly_1 = MatPolyOverZ::from_str(&string).unwrap();
+            let poly_1 = MatPolyOverZ::from_str(string).unwrap();
 
             let poly_2 = poly_1.clone();
 
@@ -142,7 +142,7 @@ mod test_drop {
 
     /// Creates and drops a [`MatPolyOverZ`], and returns the storage points in memory
     fn create_and_drop_poly_over_z() -> i64 {
-        let a = MatPolyOverZ::from_str("[[1  36893488147419103232]]").unwrap();
+        let a = MatPolyOverZ::from_str(&format!("[[1  {}]]", u64::MAX)).unwrap();
         unsafe { *(*a.matrix.entries).coeffs.offset(0) }.0
     }
 
@@ -157,11 +157,11 @@ mod test_drop {
 
         assert!(set.capacity() < 5);
 
-        let a = MatPolyOverZ::from_str("[[2  36893488147419103232 36893488147419103233]]").unwrap();
+        let a = MatPolyOverZ::from_str(&format!("[[2  {} {}]]", u64::MAX - 1, u64::MAX)).unwrap();
         let storage_point = unsafe { *(*a.matrix.entries).coeffs.offset(0) }.0;
 
         // memory slots differ due to previously created large integer
-        let d = MatPolyOverZ::from_str("[[2  36893488147419103232 36893488147419103233]]").unwrap();
+        let d = MatPolyOverZ::from_str(&format!("[[2  {} {}]]", u64::MAX - 1, u64::MAX)).unwrap();
         assert_ne!(
             storage_point,
             unsafe { *(*d.matrix.entries).coeffs.offset(0) }.0
