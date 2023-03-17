@@ -144,6 +144,6 @@ mod test_drop {
             set.insert(create_and_drop_matz());
         }
 
-        assert_ne!(set.capacity(), 5);
+        assert!(set.len() < 5);
     }
 }

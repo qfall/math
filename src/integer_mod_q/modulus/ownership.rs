@@ -145,8 +145,6 @@ mod test_drop {
             storage_addresses.insert(create_and_drop_modulus());
         }
 
-        if storage_addresses.capacity() == 5 {
-            panic!("No storage address of dropped modulus was reused.");
-        }
+        assert!(storage_addresses.len() < 5);
     }
 }
