@@ -7,6 +7,7 @@ use flint_sys::fmpz_mod_poly::fmpz_mod_poly_struct;
 
 mod cmp;
 mod from;
+mod ownership;
 mod properties;
 mod to_string;
 
