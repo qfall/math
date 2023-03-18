@@ -1,7 +1,8 @@
 //! Implementation to set entries from a [`MatZ`] matrix.
 
 use super::MatQ;
-use crate::{error::MathError, rational::Q, utils::coordinate::evaluate_coordinate};
+use crate::utils::coordinate::evaluate_coordinates;
+use crate::{error::MathError, rational::Q};
 use flint_sys::{fmpq::fmpq_set, fmpq_mat::fmpq_mat_entry};
 use std::fmt::Display;
 
@@ -63,7 +64,7 @@ impl MatQ {
         column: impl TryInto<i64> + Display + Copy,
         value: &Q,
     ) -> Result<(), MathError> {
-        let (row_i64, column_i64) = self.evaluate_coordinates(row, column)?;
+        let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
 
         // since `self` is a correct matrix and both row and column
         // are previously checked to be inside of the matrix, no errors
@@ -75,38 +76,6 @@ impl MatQ {
         };
 
         Ok(())
-    }
-
-    /// Evaluates whether the provided coordinates are referencing an entry in the matrix.
-    ///
-    /// Parameters:
-    /// - `row`: specifies the row in which the entry is located
-    /// - `column`: specifies the column in which the entry is located
-    ///
-    /// Returns the coordinates as a pair of [`i64`] if they reference an entry and return
-    /// an error otherwise.
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    /// if the number of rows or columns is greater than the matrix or negative.
-    pub(super) fn evaluate_coordinates(
-        &self,
-        row: impl TryInto<i64> + Display + Copy,
-        column: impl TryInto<i64> + Display + Copy,
-    ) -> Result<(i64, i64), MathError> {
-        let row_i64 = evaluate_coordinate(row)?;
-        let column_i64 = evaluate_coordinate(column)?;
-        if self.get_num_rows() <= row_i64 || self.get_num_columns() <= column_i64 {
-            return Err(MathError::OutOfBounds(
-                format!(
-                    "be smaller than ({},{})",
-                    self.get_num_rows(),
-                    self.get_num_columns()
-                ),
-                format!("({},{})", row_i64, column_i64),
-            ));
-        }
-        Ok((row_i64, column_i64))
     }
 }
 

@@ -1,7 +1,7 @@
 //! Implementation to set entries from a [`MatZ`] matrix.
 
 use super::MatZ;
-use crate::{error::MathError, integer::Z, utils::coordinate::evaluate_coordinate};
+use crate::{error::MathError, integer::Z, utils::coordinate::evaluate_coordinates};
 use flint_sys::{fmpz::fmpz_set, fmpz_mat::fmpz_mat_entry};
 use std::fmt::Display;
 
@@ -65,18 +65,7 @@ impl MatZ {
         column: T,
         value: &Z,
     ) -> Result<(), MathError> {
-        let row_i64 = evaluate_coordinate(row)?;
-        let column_i64 = evaluate_coordinate(column)?;
-        if self.get_num_rows() <= row_i64 || self.get_num_columns() <= column_i64 {
-            return Err(MathError::OutOfBounds(
-                format!(
-                    "be smaller than ({},{})",
-                    self.get_num_rows(),
-                    self.get_num_columns()
-                ),
-                format!("({},{})", row_i64, column_i64),
-            ));
-        }
+        let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
 
         // since `self` is a correct matrix and both row and column
         // are previously checked to be inside of the matrix, no errors

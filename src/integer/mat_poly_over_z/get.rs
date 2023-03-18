@@ -1,7 +1,12 @@
 //! Implementations to get entries from a [`MatPolyOverZ`] matrix.
 
 use super::MatPolyOverZ;
-use crate::{error::MathError, integer::PolyOverZ};
+use crate::{
+    error::MathError,
+    integer::PolyOverZ,
+    traits::{GetNumColumns, GetNumRows},
+    utils::coordinate::evaluate_coordinates,
+};
 use flint_sys::{fmpz_poly::fmpz_poly_set, fmpz_poly_mat::fmpz_poly_mat_entry};
 use std::fmt::Display;
 
@@ -32,7 +37,7 @@ impl MatPolyOverZ {
         row: impl TryInto<i64> + Display + Copy,
         column: impl TryInto<i64> + Display + Copy,
     ) -> Result<PolyOverZ, MathError> {
-        let (row_i64, column_i64) = self.evaluate_coordinates(row, column)?;
+        let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
 
         // since `self.matrix` is a correct fmpz_poly matrix and both row and column
         // are previously checked to be inside of the matrix, no errors
@@ -44,30 +49,36 @@ impl MatPolyOverZ {
 
         Ok(copy)
     }
+}
 
+impl GetNumRows for MatPolyOverZ {
     /// Returns the number of rows of the matrix as a [`i64`].
     ///
     /// # Example
     /// ```rust
     /// use math::integer::MatPolyOverZ;
+    /// use math::traits::GetNumRows;
     ///
     /// let matrix = MatPolyOverZ::new(5,6).unwrap();
     /// let rows = matrix.get_num_rows();
     /// ```
-    pub fn get_num_rows(&self) -> i64 {
+    fn get_num_rows(&self) -> i64 {
         self.matrix.r
     }
+}
 
+impl GetNumColumns for MatPolyOverZ {
     /// Returns the number of columns of the matrix as a [`i64`].
     ///
     /// # Example
     /// ```rust
     /// use math::integer::MatPolyOverZ;
+    /// use math::traits::GetNumColumns;
     ///
     /// let matrix = MatPolyOverZ::new(5,6).unwrap();
     /// let columns = matrix.get_num_columns();
     /// ```
-    pub fn get_num_columns(&self) -> i64 {
+    fn get_num_columns(&self) -> i64 {
         self.matrix.c
     }
 }
@@ -186,7 +197,10 @@ mod test_get_entry {
 #[cfg(test)]
 mod test_get_num {
 
-    use crate::integer::MatPolyOverZ;
+    use crate::{
+        integer::MatPolyOverZ,
+        traits::{GetNumColumns, GetNumRows},
+    };
 
     /// Ensure that the getter for rows works correctly.
     #[test]
