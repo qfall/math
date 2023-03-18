@@ -1,4 +1,4 @@
-//! Default value for a [`Z`].
+//! Default values for a [`Z`].
 
 use super::Z;
 
@@ -15,6 +15,12 @@ impl Default for Z {
     fn default() -> Self {
         Z::from(0)
     }
+}
+
+impl Z {
+    pub const ONE: Z = Z {
+        value: flint_sys::fmpz::fmpz(1),
+    };
 }
 
 #[cfg(test)]

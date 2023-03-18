@@ -35,11 +35,14 @@ impl MatZq {
     /// if the number of rows or columns is 0.
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the number of rows or columns is negative or it does not fit into an [`i64`].
+    /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
+    /// if the provided value is not greater than zero.
     pub fn new(
         num_rows: impl TryInto<i64> + Display + Copy,
         num_cols: impl TryInto<i64> + Display + Copy,
         modulus: impl Into<Z>,
     ) -> Result<Self, MathError> {
+        // TODO add separate function
         let num_rows_i64 = evaluate_coordinate(num_rows)?;
         let num_cols_i64 = evaluate_coordinate(num_cols)?;
 
@@ -52,7 +55,7 @@ impl MatZq {
 
         let modulus = std::convert::Into::<Z>::into(modulus);
 
-        if modulus < Z::from_i64(1) {
+        if modulus < Z::ONE {
             return Err(MathError::InvalidIntToModulus(format!("{}", modulus)));
         }
 
