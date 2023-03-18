@@ -146,7 +146,10 @@ mod test_new {
 
 #[cfg(test)]
 mod test_from_str {
-    use crate::rational::{MatQ, Q};
+    use crate::{
+        integer::Z,
+        rational::{MatQ, Q},
+    };
     use std::str::FromStr;
 
     /// Ensure that initialization works.
@@ -169,11 +172,27 @@ mod test_from_str {
         let matrix_string1 = String::from("[[1, 2, 3],[3, 4, 5]]");
 
         assert_eq!(
-            Q::from_str("1").unwrap(),
-            MatQ::from_str(&matrix_string1)
-                .unwrap()
-                .get_entry(0, 0)
-                .unwrap()
+            Z::from_i64(1),
+            Z {
+                value: MatQ::from_str(&matrix_string1)
+                    .unwrap()
+                    .get_entry(0, 0)
+                    .unwrap()
+                    .value
+                    .num
+            }
+        );
+
+        assert_eq!(
+            Z::from_i64(1),
+            Z {
+                value: MatQ::from_str(&matrix_string1)
+                    .unwrap()
+                    .get_entry(0, 0)
+                    .unwrap()
+                    .value
+                    .den
+            }
         );
     }
 
@@ -184,19 +203,27 @@ mod test_from_str {
         let matrix_string = format!("[[{}/1, 1/{}, 3],[3, 4, 5]]", u64::MAX, u64::MAX);
 
         assert_eq!(
-            Q::from_str(&format!("{}", u64::MAX)).unwrap(),
-            MatQ::from_str(&matrix_string)
-                .unwrap()
-                .get_entry(0, 0)
-                .unwrap()
+            Z::from_str(&format!("{}", u64::MAX)).unwrap(),
+            Z {
+                value: MatQ::from_str(&matrix_string)
+                    .unwrap()
+                    .get_entry(0, 0)
+                    .unwrap()
+                    .value
+                    .num
+            }
         );
 
         assert_eq!(
-            Q::from_str(&format!("1/{}", u64::MAX)).unwrap(),
-            MatQ::from_str(&matrix_string)
-                .unwrap()
-                .get_entry(0, 1)
-                .unwrap()
+            Z::from_str(&format!("{}", u64::MAX)).unwrap(),
+            Z {
+                value: MatQ::from_str(&matrix_string)
+                    .unwrap()
+                    .get_entry(0, 1)
+                    .unwrap()
+                    .value
+                    .den
+            }
         );
     }
 
