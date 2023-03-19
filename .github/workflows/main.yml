@@ -25,11 +25,19 @@ jobs:
           override: true
           component: clippy
       
-      # load Swatinem rust cache to reduce compilation time
-      - uses: Swatinem/rust-cache@v2
+      # load cargo cache to reduce compilation time
+      - name: Set up cargo cache
+        uses: actions/cache@v3
+        continue-on-error: false
         with:
-          # The prefix cache key, this can be changed to start a new cache manually.
-          prefix-key: "rust-main_cache-v0"
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
+          restore-keys: ${{ runner.os }}-cargo-
       
       - name: Set environment variables
         run: |
