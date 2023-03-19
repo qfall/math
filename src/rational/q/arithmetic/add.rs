@@ -1,12 +1,11 @@
 //! Implementation of the [`Add`] trait for [`Q`] values.
 
-use flint_sys::fmpq::fmpq_add;
-use std::ops::Add;
-
 use super::super::Q;
 use crate::macros::arithmetics::{
-    arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned
+    arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
 };
+use flint_sys::fmpq::fmpq_add;
+use std::ops::Add;
 
 impl Add for &Q {
     type Output = Q;
