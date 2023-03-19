@@ -84,7 +84,7 @@ mod test_add {
         assert!(c == PolyOverZ::from_str("5  2 4 2 1 2").unwrap());
     }
 
-    /// testing addition for big numbers
+    /// testing addition for large numbers
     #[test]
     fn add_large_numbers() {
         let a: PolyOverZ =
