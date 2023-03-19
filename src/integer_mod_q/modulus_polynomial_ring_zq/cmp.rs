@@ -39,7 +39,7 @@ impl PartialEq for ModulusPolynomialRingZq {
             1 == fmpz_equal(
                 &self.get_fq_ctx_struct().ctxp[0].n[0],
                 &other.get_fq_ctx_struct().ctxp[0].n[0],
-            ) && 
+            ) &&
             // compares the polynomial under `q`
             1 == fmpz_mod_poly_equal(
                     &self.get_fq_ctx_struct().modulus[0],
@@ -132,8 +132,8 @@ mod test_partial_eq {
     /// (uses FLINT's pointer representation)
     #[test]
     fn equal_large() {
-        let max_str = format!("1  {} mod {}", u64::MAX, BITPRIME64 );
-        let min_str = format!("1  {} mod {}", i64::MIN, BITPRIME64 );
+        let max_str = format!("1  {} mod {}", u64::MAX, BITPRIME64);
+        let min_str = format!("1  {} mod {}", i64::MIN, BITPRIME64);
 
         let max_1 = ModulusPolynomialRingZq::from_str(&max_str).unwrap();
         let max_2 = ModulusPolynomialRingZq::from_str(&max_str).unwrap();
@@ -151,8 +151,8 @@ mod test_partial_eq {
     /// (uses FLINT's pointer representation)
     #[test]
     fn not_equal_large() {
-        let max_str = format!("1  {} mod {}", u64::MAX, BITPRIME64 );
-        let min_str = format!("1  {} mod {}", i64::MIN, BITPRIME64 );
+        let max_str = format!("1  {} mod {}", u64::MAX, BITPRIME64);
+        let min_str = format!("1  {} mod {}", i64::MIN, BITPRIME64);
 
         let max_1 = ModulusPolynomialRingZq::from_str(&max_str).unwrap();
         let max_2 = ModulusPolynomialRingZq::from_str(&max_str).unwrap();
@@ -170,8 +170,8 @@ mod test_partial_eq {
     /// and small [`ModulusPolynomialRingZq`] (no pointer representation).
     #[test]
     fn equal_large_small() {
-        let max_str = format!("1  {} mod {}", u64::MAX, BITPRIME64 );
-        let min_str = format!("1  {} mod {}", i64::MIN, BITPRIME64 );
+        let max_str = format!("1  {} mod {}", u64::MAX, BITPRIME64);
+        let min_str = format!("1  {} mod {}", i64::MIN, BITPRIME64);
 
         let max = ModulusPolynomialRingZq::from_str(&max_str).unwrap();
         let min = ModulusPolynomialRingZq::from_str(&min_str).unwrap();
@@ -194,8 +194,8 @@ mod test_partial_eq {
     /// and small [`ModulusPolynomialRingZq`] (no pointer representation).
     #[test]
     fn not_equal_large_small() {
-        let max_str = format!("1  {} mod {}", u64::MAX, BITPRIME64 );
-        let min_str = format!("1  {} mod {}", i64::MIN, BITPRIME64 );
+        let max_str = format!("1  {} mod {}", u64::MAX, BITPRIME64);
+        let min_str = format!("1  {} mod {}", i64::MIN, BITPRIME64);
 
         let max = ModulusPolynomialRingZq::from_str(&max_str).unwrap();
         let min = ModulusPolynomialRingZq::from_str(&min_str).unwrap();
@@ -217,8 +217,8 @@ mod test_partial_eq {
     /// Test not equal for the same polynomial but with a different modulus
     #[test]
     fn different_modulus() {
-        let first_str = format!("1  1 mod {}", 17 );
-        let second_str = format!("1  1 mod {}", 19 );
+        let first_str = format!("1  1 mod {}", 17);
+        let second_str = format!("1  1 mod {}", 19);
 
         let first = ModulusPolynomialRingZq::from_str(&first_str).unwrap();
         let second = ModulusPolynomialRingZq::from_str(&second_str).unwrap();
