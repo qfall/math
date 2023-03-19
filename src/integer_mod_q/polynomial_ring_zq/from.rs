@@ -8,7 +8,7 @@ use super::PolynomialRingZq;
 use crate::{integer::PolyOverZ, integer_mod_q::ModulusPolynomialRingZq};
 
 impl From<(&PolyOverZ, &ModulusPolynomialRingZq)> for PolynomialRingZq {
-    /// Create a new Modulus object of type [`PolynomialRingZq`].
+    /// Create a new polynomial ring element of type [`PolynomialRingZq`].
     ///
     /// Parameters:
     /// - `value`: is a tuple of `(poly, modulus)`
@@ -34,7 +34,7 @@ impl From<(&PolyOverZ, &ModulusPolynomialRingZq)> for PolynomialRingZq {
 }
 
 impl PolynomialRingZq {
-    /// Create a new Modulus object of type [`PolynomialRingZq`].
+    /// Create a new polynomial ring object of type [`PolynomialRingZq`].
     ///
     /// Parameters:
     /// - `poly`: the polynomial
