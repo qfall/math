@@ -75,7 +75,7 @@ impl FromStr for ModulusPolynomialRingZq {
     /// use math::integer_mod_q::ModulusPolynomialRingZq;
     /// use std::str::FromStr;
     ///
-    /// // initialize X^2 + 1 mod 17, i.e. an irreducible polynomial with prime modulus
+    /// // initialize X^2 + 1 mod 17, i.e. a polynomial with prime modulus
     /// let poly_mod = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
     /// ```
     /// # Errors and Failures
