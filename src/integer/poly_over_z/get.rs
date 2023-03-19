@@ -2,11 +2,13 @@
 //! Each reasonable type should be allowed as a coordinate.
 
 use super::PolyOverZ;
-use crate::{error::MathError, integer::Z, utils::coordinate::evaluate_coordinate};
+use crate::{
+    error::MathError, integer::Z, traits::GetCoefficient, utils::coordinate::evaluate_coordinate,
+};
 use flint_sys::fmpz_poly::fmpz_poly_get_coeff_fmpz;
 use std::fmt::Display;
 
-impl PolyOverZ {
+impl GetCoefficient<Z> for PolyOverZ {
     /// Returns the coefficient of a polynomial [`PolyOverZ`] as a [`Z`].
     ///
     /// If a coordinate is provided which exceeds the highest set coefficient, zero is returned.
@@ -21,6 +23,7 @@ impl PolyOverZ {
     /// ```rust
     /// use math::integer::PolyOverZ;
     /// use std::str::FromStr;
+    /// use math::traits::GetCoefficient;
     ///
     /// let poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
     ///
@@ -32,10 +35,7 @@ impl PolyOverZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
     /// either the coordinate is negative or it does not fit into an [`i64`].
-    pub fn get_coeff(
-        &self,
-        coordinate: impl TryInto<i64> + Display + Copy,
-    ) -> Result<Z, MathError> {
+    fn get_coeff(&self, coordinate: impl TryInto<i64> + Display + Copy) -> Result<Z, MathError> {
         let mut out = Z::default();
         let coordinate = evaluate_coordinate(coordinate)?;
         unsafe { fmpz_poly_get_coeff_fmpz(&mut out.value, &self.poly, coordinate) }
@@ -46,7 +46,10 @@ impl PolyOverZ {
 #[cfg(test)]
 mod test_get_coeff {
 
-    use crate::integer::{PolyOverZ, Z};
+    use crate::{
+        integer::{PolyOverZ, Z},
+        traits::GetCoefficient,
+    };
     use std::str::FromStr;
 
     /// ensure that 0 is returned if the provided index is not yet set

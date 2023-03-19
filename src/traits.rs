@@ -16,6 +16,18 @@ pub trait Evaluate<U, V> {
     fn evaluate(&self, value: impl Into<U>) -> V;
 }
 
+/// Is implemented by polynomials get a coefficient.
+pub trait GetCoefficient<T> {
+    /// Returns a coefficient of the given object, e.g. a polynomial,
+    /// for a given coordinate.
+    ///
+    /// Parameters:
+    /// - `coordinate`: The coordinate of the coefficient
+    ///
+    /// Returns the coefficient of the polynomial.
+    fn get_coeff(&self, coordinate: impl TryInto<i64> + Display + Copy) -> Result<T, MathError>;
+}
+
 /// Is implemented by polynomials to set individual coefficients.
 pub trait SetCoefficient<T> {
     /// Sets coefficient of the object, e.g. polynomial,

@@ -2,11 +2,13 @@
 //! Each reasonable type should be allowed as a coordinate.
 
 use super::PolyOverQ;
-use crate::{error::MathError, rational::Q, utils::coordinate::evaluate_coordinate};
+use crate::{
+    error::MathError, rational::Q, traits::GetCoefficient, utils::coordinate::evaluate_coordinate,
+};
 use flint_sys::fmpq_poly::fmpq_poly_get_coeff_fmpq;
 use std::fmt::Display;
 
-impl PolyOverQ {
+impl GetCoefficient<Q> for PolyOverQ {
     /// Returns the coefficient of a polynomial [`PolyOverQ`] as a [`Q`].
     ///
     /// If a coordinate is provided which exceeds the highest set coefficient, zero is returned.
@@ -21,6 +23,7 @@ impl PolyOverQ {
     /// ```rust
     /// use math::rational::PolyOverQ;
     /// use std::str::FromStr;
+    /// use math::traits::GetCoefficient;
     ///
     /// let poly = PolyOverQ::from_str("4  0 1 2/3 3/2").unwrap();
     ///
@@ -32,10 +35,7 @@ impl PolyOverQ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
     /// either the coordinate is negative or it does not fit into an [`i64`].
-    pub fn get_coeff(
-        &self,
-        coordinate: impl TryInto<i64> + Display + Copy,
-    ) -> Result<Q, MathError> {
+    fn get_coeff(&self, coordinate: impl TryInto<i64> + Display + Copy) -> Result<Q, MathError> {
         let mut out = Q::default();
         let coordinate = evaluate_coordinate(coordinate)?;
         unsafe { fmpq_poly_get_coeff_fmpq(&mut out.value, &self.poly, coordinate) }
@@ -45,7 +45,10 @@ impl PolyOverQ {
 
 #[cfg(test)]
 mod test_get_coeff {
-    use crate::rational::{PolyOverQ, Q};
+    use crate::{
+        rational::{PolyOverQ, Q},
+        traits::GetCoefficient,
+    };
     use std::str::FromStr;
 
     /// ensure that 0 is returned if the provided index is not yet set
