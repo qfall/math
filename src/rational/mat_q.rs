@@ -5,6 +5,7 @@ use flint_sys::fmpq_mat::fmpq_mat_struct;
 
 mod from;
 mod get;
+mod ownership;
 mod set;
 
 #[derive(Debug)]
