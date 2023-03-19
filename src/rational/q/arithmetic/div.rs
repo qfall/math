@@ -139,7 +139,7 @@ mod test_div {
     fn div_by_zero() {
         let a: Q = Q::from_str("2").unwrap();
         let b: Q = Q::from_str("0").unwrap();
-        let c = a / b;
+        let _c = a / b;
     }
 
     /// testing division by zero throws an error
