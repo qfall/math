@@ -5,7 +5,7 @@ use std::ops::Sub;
 
 use super::super::Q;
 use crate::macros::arithmetics::{
-    arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+    arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned
 };
 
 impl Sub for &Q {
