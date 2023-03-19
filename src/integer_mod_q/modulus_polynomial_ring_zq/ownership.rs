@@ -16,7 +16,7 @@ impl Clone for ModulusPolynomialRingZq {
     /// use math::integer_mod_q::ModulusPolynomialRingZq;
     /// use std::str::FromStr;
     ///
-    /// // initialize X^2 + 1 mod 17, i.e. an irreducible polynomial with prime modulus
+    /// // initialize X^2 + 1 mod 17, i.e. a polynomial with prime modulus
     /// let a = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
     ///
     ///
@@ -87,9 +87,12 @@ mod test_clone {
     /// Check if clone points to same point in memory
     #[test]
     fn same_reference() {
-        let a = ModulusPolynomialRingZq::from_str(
-            "3  184467440739018 0 -184467440739018 mod 184467440739019",
-        )
+        let a = ModulusPolynomialRingZq::from_str(&format!(
+            "3  {} 0 -{} mod {}",
+            u64::MAX,
+            u64::MAX,
+            u64::MAX - 58 // closest prime number smaller than u64, but bigger than 2^62
+        ))
         .unwrap();
 
         let b = a.clone();
@@ -144,8 +147,8 @@ mod test_drop {
         assert_eq!(Rc::strong_count(&b.modulus), 2);
     }
 
-    /// Creates and drops a [`Modulus`] object, and outputs
-    /// the storage point in memory of that [`Modulus`]
+    /// Creates and drops a [`ModulusPolynomialRingZq`] object, and outputs
+    /// the storage point in memory of that [`ModulusPolynomialRingZq`]
     fn create_and_drop_modulus() -> (i64, i64, i64) {
         let a = ModulusPolynomialRingZq::from_str(
             "3  184467440739018 0 -184467440739018 mod 184467440739019",
