@@ -20,7 +20,7 @@ impl MatZq {
     /// - `modulus`: the common modulus of the matrix entries
     ///
     /// Returns a [`MatZq`] or an error, if the number of rows or columns is
-    /// less or equal to 0.
+    /// less than 1.
     ///
     /// # Example
     /// ```rust

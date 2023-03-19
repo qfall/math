@@ -18,6 +18,14 @@ impl Default for Z {
 }
 
 impl Z {
+    /// Returns an instantiation of [`Z`] with value `1`.
+    ///
+    /// # Example:
+    /// ```rust
+    /// use math::integer::Z;
+    ///  
+    /// let a: Z = Z::ONE;
+    /// ```
     pub const ONE: Z = Z {
         value: flint_sys::fmpz::fmpz(1),
     };
@@ -30,7 +38,13 @@ mod tests_init {
 
     /// Ensure that [`Default`] initializes [`Z`] with `0`.
     #[test]
-    fn init() {
-        assert_eq!(Z::default(), Z::from(0));
+    fn init_0() {
+        assert_eq!(Z::from(0), Z::default());
+    }
+
+    /// Ensure that ONE initializes [`Z`] with `1`.
+    #[test]
+    fn init_1() {
+        assert_eq!(Z::from(1), Z::ONE);
     }
 }
