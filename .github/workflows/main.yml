@@ -1,4 +1,4 @@
-name: Check for Consistency, Correctness, and Test Coverage + Archive Executable
+name: Check all in one
 # consistency regarding formatting and idiomatic Rust
 
 on:
@@ -23,7 +23,7 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-          component: clippy
+          component: clippy, rustfmt
       
       # load cargo cache to reduce compilation time
       - name: Set up cargo cache
@@ -36,8 +36,8 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
-          restore-keys: ${{ runner.os }}-cargo-
+          key: main-${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
+          restore-keys: main-${{ runner.os }}-cargo-
       
       - name: Set environment variables
         run: |
@@ -72,6 +72,14 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: -- -D warnings # escalate warnings s.t. pipeline fails
+      - name: Format
+        run:  cargo fmt --all -- --check
+      
+      # Cargo check for security issues
+      - name: Security audit
+        uses: actions-rs/audit-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
         
       - name: Archive code coverage results
         uses: actions/upload-artifact@v1
@@ -83,20 +91,4 @@ jobs:
         with:
           name: ${{ env.PROJECT_NAME }}-release_build-v${{ env.PROJECT_VERSION }}
           path: target/release/${{ env.PROJECT_NAME }}
-      
-  
-  format:
-    name: Formatter
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-      
-      # install actions-rust-lang toolchain without caching
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          components: rustfmt
-          cache: false
-      - name: Run formatter
-        uses: actions-rust-lang/rustfmt@v1
         

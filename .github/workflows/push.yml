@@ -1,4 +1,4 @@
-name: Check for Consistency and Correctness
+name: Check all in one
 # consistency regarding formatting and idiomatic Rust
 
 on:
@@ -24,7 +24,7 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-          components: clippy
+          components: clippy, rustfmt
 
       # load cargo cache to reduce compilation time
       - name: Set up cargo cache
@@ -44,31 +44,28 @@ jobs:
         uses: actions-rs/cargo@v1
         with: 
           command: update
-      - name: Build and run tests
+      - name: Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+      
+      - name: Test
         uses: actions-rs/cargo@v1
         with:
           command: test
           args: --verbose
 
-      - name: Run clippy
+      # Lints
+      - name: Clippy
         uses: actions-rs/clippy-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: -- -D warnings # escalate warnings s.t. pipeline fails
-
-  
-  format:
-    name: Formatter
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-
-      # install actions-rust-lang toolchain without caching
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Format
+        run:  cargo fmt --all -- --check
+      
+      # Cargo check for security issues
+      - name: Security audit
+        uses: actions-rs/audit-check@v1
         with:
-          components: rustfmt
-          cache: false
-      - name: Run formatter
-        uses: actions-rust-lang/rustfmt@v1
-        
+          token: ${{ secrets.GITHUB_TOKEN }}
