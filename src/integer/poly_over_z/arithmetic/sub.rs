@@ -48,7 +48,7 @@ mod test_sub {
     use super::PolyOverZ;
     use std::str::FromStr;
 
-    /// testing subtraction for two PolyOverZ
+    /// testing subtraction for two [`PolyOverZ`]
     #[test]
     fn sub() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
@@ -57,7 +57,7 @@ mod test_sub {
         assert!(c == PolyOverZ::from_str("5  0 0 -8 -1 -2").unwrap());
     }
 
-    /// testing subtraction for two borrowed PolyOverZ
+    /// testing subtraction for two borrowed [`PolyOverZ`]
     #[test]
     fn sub_borrow() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
@@ -66,7 +66,7 @@ mod test_sub {
         assert!(c == PolyOverZ::from_str("5  0 0 -8 -1 -2").unwrap());
     }
 
-    /// testing subtraction for borrowed PolyOverZ and PolyOverZ
+    /// testing subtraction for borrowed [`PolyOverZ`] and [`PolyOverZ`]
     #[test]
     fn sub_first_borrowed() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
@@ -75,7 +75,7 @@ mod test_sub {
         assert!(c == PolyOverZ::from_str("5  0 0 -8 -1 -2").unwrap());
     }
 
-    /// testing subtraction for PolyOverZ and borrowed PolyOverZ
+    /// testing subtraction for [`PolyOverZ`] and borrowed [`PolyOverZ`]
     #[test]
     fn sub_second_borrowed() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
@@ -84,7 +84,7 @@ mod test_sub {
         assert!(c == PolyOverZ::from_str("5  0 0 -8 -1 -2").unwrap());
     }
 
-    /// testing subtraction for large numbers
+    /// testing subtraction for large [`PolyOverZ`]
     #[test]
     fn sub_large_numbers() {
         let a: PolyOverZ =
@@ -101,4 +101,3 @@ mod test_sub {
         );
     }
 }
-

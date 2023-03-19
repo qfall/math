@@ -48,7 +48,7 @@ mod test_add {
     use super::PolyOverZ;
     use std::str::FromStr;
 
-    /// testing addition for two PolyOverZ
+    /// testing addition for two [`PolyOverZ`]
     #[test]
     fn add() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
@@ -57,7 +57,7 @@ mod test_add {
         assert!(c == PolyOverZ::from_str("5  2 4 2 1 2").unwrap());
     }
 
-    /// testing addition for two borrowed PolyOverZ
+    /// testing addition for two borrowed [`PolyOverZ`]
     #[test]
     fn add_borrow() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
@@ -66,7 +66,7 @@ mod test_add {
         assert!(c == PolyOverZ::from_str("5  2 4 2 1 2").unwrap());
     }
 
-    /// testing addition for borrowed PolyOverZ and PolyOverZ
+    /// testing addition for borrowed [`PolyOverZ`] and [`PolyOverZ`]
     #[test]
     fn add_first_borrowed() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
@@ -75,7 +75,7 @@ mod test_add {
         assert!(c == PolyOverZ::from_str("5  2 4 2 1 2").unwrap());
     }
 
-    /// testing addition for PolyOverZ and borrowed PolyOverZ
+    /// testing addition for [`PolyOverZ`] and borrowed P[`PolyOverZ`]
     #[test]
     fn add_second_borrowed() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
@@ -84,7 +84,7 @@ mod test_add {
         assert!(c == PolyOverZ::from_str("5  2 4 2 1 2").unwrap());
     }
 
-    /// testing addition for large numbers
+    /// testing addition for large [`PolyOverZ`]
     #[test]
     fn add_large_numbers() {
         let a: PolyOverZ =
