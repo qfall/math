@@ -10,9 +10,11 @@ use flint_sys::fmpz::fmpz;
 
 mod from;
 mod ownership;
+mod to_string;
 
+#[derive(Debug)]
 /// [`Zq`] is a type for integers of arbitrary length modulo `q`.
-/// This means, integer in `[0..q[` (`0` inclusive, `q` exclusive).
+/// This means, integer in `[0..q]` (`0` inclusive, `q` exclusive).
 ///
 /// # Example
 /// ```
@@ -22,17 +24,13 @@ mod ownership;
 /// let value = Zq::try_from((5, 10))?;
 /// # Ok::<(), MathError>(())
 /// ```
-#[allow(dead_code)]
-#[derive(Debug)]
+///
 /// [`Zq`] represents an integer value in a modulus ring.
 ///
 /// Attributes:
 /// - `value`: holds [FLINT](https://flintlib.org/)'s [struct](fmpz)
 ///     for an integer value
-/// - `ctx`: holds [FLINT](https://flintlib.org/)'s [struct](fmpz_mod_ctx)
-///     to specify a modulus
-///
-/// # Examples
+/// - `modulus`: holds a [`Modulus`](super::Modulus)
 pub struct Zq {
     pub(crate) value: fmpz,
     pub(crate) modulus: super::Modulus,
