@@ -4,8 +4,9 @@
 use flint_sys::fmpq_mat::fmpq_mat_struct;
 
 mod from;
+mod get;
+mod set;
 
-#[allow(dead_code)]
 #[derive(Debug)]
 /// [`MatQ`] is a matrix with entries of type [`Q`](crate::rational::Q).
 ///
