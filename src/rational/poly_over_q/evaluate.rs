@@ -3,11 +3,13 @@
 //! of the [`Evaluate`] trait should be implemented.
 
 use super::PolyOverQ;
-use crate::{integer::Z, rational::Q, traits::Evaluate};
+use crate::{
+    integer::Z, macros::for_others::implement_for_others_evaluate, rational::Q, traits::Evaluate,
+};
 use flint_sys::fmpq_poly::{fmpq_poly_evaluate_fmpq, fmpq_poly_evaluate_fmpz};
 
 impl Evaluate<Q, Q> for PolyOverQ {
-    /// Evaluates a [`PolyOverQ`] on a given input. If the provided input could not be converted into a valid [`Q`], [`Q::default`] is returned.
+    /// Evaluates a [`PolyOverQ`] on a given input.
     ///
     /// Parameters:
     /// - `value`: the value with which to evaluate the polynomial. TODO: Currently supported
@@ -26,16 +28,12 @@ impl Evaluate<Q, Q> for PolyOverQ {
     /// let value = Q::from_str("3/2").unwrap();
     /// let res = poly.evaluate(value);
     /// ```
-    fn evaluate(&self, value: impl TryInto<Q>) -> Q {
-        let value = match value.try_into() {
-            Ok(some) => some,
-            Err(_) => return Q::default(),
-        };
-        self.evaluate_ref_q(&value)
+    fn evaluate(&self, value: Q) -> Q {
+        self.evaluate(&value)
     }
 }
 
-impl PolyOverQ {
+impl Evaluate<&Q, Q> for PolyOverQ {
     /// Evaluates a [`PolyOverQ`] on a given input of [`Q`]. Note that the
     /// [`Q`] in this case is only a reference.
     ///
@@ -53,16 +51,42 @@ impl PolyOverQ {
     ///
     /// let poly = PolyOverQ::from_str("5  0 1 2/3 -3/2 1").unwrap();
     /// let value = Q::from_str("3/2").unwrap();
-    /// let res = poly.evaluate_ref_q(&value);
+    /// let res = poly.evaluate(&value);
     /// ```
-    pub fn evaluate_ref_q(&self, value: &Q) -> Q {
+    fn evaluate(&self, value: &Q) -> Q {
         let mut res = Q::default();
 
         unsafe { fmpq_poly_evaluate_fmpq(&mut res.value, &self.poly, &value.value) };
 
         res
     }
+}
 
+impl Evaluate<Z, Q> for PolyOverQ {
+    /// Evaluates a [`PolyOverQ`] on a given input of [`Z`].
+    ///
+    /// Parameters:
+    /// - `value`: the value with which to evaluate the polynomial.
+    ///
+    /// Returns the evaluation of the polynomial as a [`Q`].
+    ///
+    /// # Example
+    /// ```
+    /// use math::traits::Evaluate;
+    /// use math::rational::Q;
+    /// use math::rational::PolyOverQ;
+    /// use std::str::FromStr;
+    ///
+    /// let poly = PolyOverQ::from_str("5  0 1 2/3 -3/2 1").unwrap();
+    /// let value = Q::from_str("3/2").unwrap();
+    /// let res = poly.evaluate(&value);
+    /// ```
+    fn evaluate(&self, value: Z) -> Q {
+        self.evaluate(&value)
+    }
+}
+
+impl Evaluate<&Z, Q> for PolyOverQ {
     /// Evaluates a [`PolyOverQ`] on a given input of [`Z`]. Note that the
     /// [`Z`] in this case is only a reference.
     ///
@@ -80,9 +104,9 @@ impl PolyOverQ {
     ///
     /// let poly = PolyOverQ::from_str("5  0 1 2/3 -3/2 1").unwrap();
     /// let value = Q::from_str("3/2").unwrap();
-    /// let res = poly.evaluate_ref_q(&value);
+    /// let res = poly.evaluate(&value);
     /// ```
-    pub fn evaluate_ref_z(&self, value: &Z) -> Q {
+    fn evaluate(&self, value: &Z) -> Q {
         let mut res = Q::default();
 
         unsafe { fmpq_poly_evaluate_fmpz(&mut res.value, &self.poly, &value.value) };
@@ -90,6 +114,15 @@ impl PolyOverQ {
         res
     }
 }
+
+implement_for_others_evaluate!(i64, Z, Q, PolyOverQ);
+implement_for_others_evaluate!(i32, Z, Q, PolyOverQ);
+implement_for_others_evaluate!(i16, Z, Q, PolyOverQ);
+implement_for_others_evaluate!(i8, Z, Q, PolyOverQ);
+implement_for_others_evaluate!(u64, Z, Q, PolyOverQ);
+implement_for_others_evaluate!(u32, Z, Q, PolyOverQ);
+implement_for_others_evaluate!(u16, Z, Q, PolyOverQ);
+implement_for_others_evaluate!(u8, Z, Q, PolyOverQ);
 
 // TODO: add traits for TryInto with other values, once the corresponding functions are
 // implemented.
@@ -135,9 +168,10 @@ mod test_evaluate {
 }
 
 #[cfg(test)]
-mod test_evaluate_ref_z {
+mod test_evaluate_z {
     use crate::integer::Z;
     use crate::rational::{PolyOverQ, Q};
+    use crate::traits::Evaluate;
     use std::str::FromStr;
 
     /// tests if evaluate works for [`Z`] as input
@@ -145,7 +179,7 @@ mod test_evaluate_ref_z {
     fn eval_z_working() {
         let poly = PolyOverQ::from_str("2  1 2/7").unwrap();
 
-        let res = poly.evaluate_ref_z(&Z::from(3));
+        let res = poly.evaluate(Z::from(3));
 
         assert_eq!(Q::from_str("13/7").unwrap(), res)
     }
@@ -155,7 +189,7 @@ mod test_evaluate_ref_z {
     fn eval_z_negative() {
         let poly = PolyOverQ::from_str("2  1 2/7").unwrap();
 
-        let res = poly.evaluate_ref_z(&Z::from(-5));
+        let res = poly.evaluate(&Z::from(-5));
 
         assert_eq!(Q::from_str("-3/7").unwrap(), res)
     }
@@ -167,15 +201,54 @@ mod test_evaluate_ref_z {
         let large_string = format!("2  -{} {}", u64::MAX, q_str);
         let poly = PolyOverQ::from_str(&large_string).unwrap();
 
-        let res = poly.evaluate_ref_z(&Z::from(i64::MIN));
+        let res = poly.evaluate(&Z::from(i64::MIN));
 
         assert_eq!(Q::default(), res)
+    }
+
+    /// test if evaluate works with max of [`i64`], [`i32`], ...
+    #[test]
+    fn eval_max() {
+        let poly = PolyOverQ::from_str("2  1/7 2/3").unwrap();
+
+        // signed
+        let _ = poly.evaluate(i64::MAX);
+        let _ = poly.evaluate(i32::MAX);
+        let _ = poly.evaluate(i16::MAX);
+        let _ = poly.evaluate(i8::MAX);
+
+        //unsigned
+        let _ = poly.evaluate(u64::MAX);
+        let _ = poly.evaluate(u32::MAX);
+        let _ = poly.evaluate(u16::MAX);
+        let _ = poly.evaluate(u8::MAX);
+    }
+
+    /// test if evaluate works with min of [`i64`], [`i32`], ...
+    #[test]
+    fn eval_min() {
+        let poly = PolyOverQ::from_str("2  1/7 2/3").unwrap();
+
+        // signed
+        let _ = poly.evaluate(i64::MIN);
+        let _ = poly.evaluate(i32::MIN);
+        let _ = poly.evaluate(i16::MIN);
+        let _ = poly.evaluate(i8::MIN);
+
+        // unsigned
+        let _ = poly.evaluate(u64::MIN);
+        let _ = poly.evaluate(u32::MIN);
+        let _ = poly.evaluate(u16::MIN);
+        let _ = poly.evaluate(u8::MIN);
     }
 }
 
 #[cfg(test)]
-mod test_evaluate_ref_q {
-    use crate::rational::{PolyOverQ, Q};
+mod test_evaluate_q {
+    use crate::{
+        rational::{PolyOverQ, Q},
+        traits::Evaluate,
+    };
     use std::str::FromStr;
 
     /// tests if evaluate works for [`Q`] as input
@@ -183,7 +256,7 @@ mod test_evaluate_ref_q {
     fn eval_q_working() {
         let poly = PolyOverQ::from_str("2  1 2/7").unwrap();
 
-        let res = poly.evaluate_ref_q(&Q::from_str("7/3").unwrap());
+        let res = poly.evaluate(&Q::from_str("7/3").unwrap());
 
         assert_eq!(Q::from_str("5/3").unwrap(), res)
     }
@@ -193,7 +266,7 @@ mod test_evaluate_ref_q {
     fn eval_q_negative() {
         let poly = PolyOverQ::from_str("2  1 2/7").unwrap();
 
-        let res = poly.evaluate_ref_q(&Q::from_str("-7/3").unwrap());
+        let res = poly.evaluate(&Q::from_str("-7/3").unwrap());
 
         assert_eq!(Q::from_str("1/3").unwrap(), res)
     }
@@ -206,7 +279,7 @@ mod test_evaluate_ref_q {
         let large_string = format!("2  0 {}", q_str);
         let poly = PolyOverQ::from_str(&large_string).unwrap();
 
-        let res = poly.evaluate_ref_q(&Q::from_str(&q_str_rev).unwrap());
+        let res = poly.evaluate(&Q::from_str(&q_str_rev).unwrap());
 
         assert_eq!(Q::from_str("1").unwrap(), res)
     }
