@@ -5,7 +5,7 @@ use crate::error::MathError;
 use std::fmt::Display;
 
 /// Is implemented by polynomials to evaluate it for a certain input.
-pub trait Evaluate<U, V> {
+pub trait Evaluate<T, U> {
     /// Evaluates the object, e.g. polynomial or a matrix of polynomials,
     /// for a given input value.
     ///
@@ -13,7 +13,7 @@ pub trait Evaluate<U, V> {
     /// - `value`: The value with which to evaluate the object.
     ///
     /// Returns the evaluation of the object.
-    fn evaluate(&self, value: impl Into<U>) -> V;
+    fn evaluate(&self, value: T) -> U;
 }
 
 /// Is implemented by polynomials get a coefficient.
