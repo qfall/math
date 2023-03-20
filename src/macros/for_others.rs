@@ -39,3 +39,21 @@ macro_rules! implement_for_others_set_coeff {
 }
 
 pub(crate) use implement_for_others_set_coeff;
+
+macro_rules! implement_for_others_evaluate {
+    ($source_type:ident, $bridge_type:ident, $output_type:ident, $type:ident) => {
+        impl Evaluate<$source_type, $output_type> for $type {
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::evaluate`]. Implicitly converts [`" $source_type "`] into [`" $bridge_type "`]."]
+            fn evaluate(
+                &self,
+                value: $source_type,
+            ) -> $output_type {
+                self.evaluate($bridge_type::from(value))
+            }
+            }
+        }
+    };
+}
+
+pub(crate) use implement_for_others_evaluate;
