@@ -7,6 +7,7 @@ mod cmp;
 mod default;
 mod from;
 mod ownership;
+mod serialize;
 mod to_string;
 
 #[allow(dead_code)]

@@ -4,109 +4,17 @@
 //! The explicit functions contain the documentation.
 
 use super::Z;
+use crate::macros::serialize::{deserialize, serialize};
 use core::fmt;
 use serde::{
-    de::{self, MapAccess, Unexpected, Visitor},
+    de::{Error, MapAccess, Unexpected, Visitor},
     ser::SerializeStruct,
     Deserialize, Serialize,
 };
 use std::str::FromStr;
 
-impl Serialize for Z {
-    /// Implements the serialize option. This allows to create a Json-object from a given [`Z`].
-    ///
-    /// Parameters:
-    /// - `serializer` : the serializer used for serialization
-    ///
-    /// Returns a serialization of the given [`Z`].
-    ///
-    /// # Examples
-    /// ```
-    /// use math::integer::Z;
-    ///         
-    /// let a = Z::from(42);
-    /// let json_string = serde_json::to_string(&a).unwrap();
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a Serialization error which depends on the used serializer, iff the
-    /// field `value` can not be found, when self is converted to a [`String`].
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        let mut state = serializer.serialize_struct("Z", 1)?;
-        state.serialize_field("value", &self.to_string())?;
-        state.end()
-    }
-}
-
-impl<'de> Deserialize<'de> for Z {
-    /// Implements the deserialize option. This allows to create a [`Z`] from a Json-object.
-    ///
-    /// The string has to to fulfil the JSON-format given in the example, i.e.
-    /// "{"value":"42"}", where 42 is the corresponding value.
-    ///
-    /// Parameters:
-    /// - `deserializer` : the serializer used for deserialization
-    ///
-    /// # Examples
-    /// ```
-    /// use math::integer::Z;
-    ///         
-    /// let input = r#"{"value":"42"}"#;
-    /// let deserialized_z: Z = serde_json::from_str(input).unwrap();
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a Deserialization error which depends on the used serializer, iff the
-    /// string is not formatted as given above or the given input value could not
-    /// be converted to a [`Z`]. For more details see [`Z::from_str`]
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        const FIELDS: &[&str] = &["value"];
-        #[derive(Deserialize)]
-        #[serde(field_identifier, rename_all = "lowercase")]
-        enum Field {
-            Value,
-        }
-
-        /// This visitor iterates over the strings content and collects all possible fields.
-        /// It sets the corresponding values of the struct based on the values found.
-        struct ZVisitor;
-        impl<'de> Visitor<'de> for ZVisitor {
-            type Value = Z;
-
-            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-                formatter.write_str("struct Z")
-            }
-
-            fn visit_map<V>(self, mut map: V) -> Result<Z, V::Error>
-            where
-                V: MapAccess<'de>,
-            {
-                let mut value = None;
-                while let Some(key) = map.next_key()? {
-                    match key {
-                        Field::Value => {
-                            if value.is_some() {
-                                return Err(de::Error::duplicate_field("value"));
-                            }
-                            value = Some(map.next_value()?);
-                        }
-                    }
-                }
-                let value = value.ok_or_else(|| de::Error::missing_field("value"))?;
-                Z::from_str(value)
-                    .map_err(|_| de::Error::invalid_value(Unexpected::Str(value), &self))
-            }
-        }
-
-        deserializer.deserialize_struct("Z", FIELDS, ZVisitor)
-    }
-}
+serialize!("value", Z);
+deserialize!("value", Z);
 
 #[cfg(test)]
 mod test_serialize {
