@@ -84,16 +84,38 @@ mod test_mul {
         assert!(c == PolyOverZ::from_str("7  1 4 6 5 -11 1 -6").unwrap());
     }
 
+    /// testing multiplication with a constant [`PolyOverZ`]
+    #[test]
+    fn mul_constant() {
+        let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
+        let b: PolyOverZ = PolyOverZ::from_str("1  4").unwrap();
+        let c: PolyOverZ = a * b;
+        assert!(c == PolyOverZ::from_str("3  4 8 -12").unwrap());
+    }
+
+    /// testing multiplication with zero
+    #[test]
+    fn mul_zero() {
+        let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
+        let b: PolyOverZ = PolyOverZ::from_str("0").unwrap();
+        let c: PolyOverZ = a * b;
+        assert!(c == PolyOverZ::from_str("0").unwrap());
+    }
+
     /// testing multiplication for large [`PolyOverZ`]
     #[test]
     fn mul_large_numbers() {
-        let a: PolyOverZ = PolyOverZ::from_str("2  102193948124871021 -31222222222222222").unwrap();
-        let b: PolyOverZ = PolyOverZ::from_str("2  941237471761627464 -1234910294712742").unwrap();
+        let a: PolyOverZ = PolyOverZ::from_str(&format!("2  {} {}", u16::MAX, i32::MIN)).unwrap();
+        let b: PolyOverZ = PolyOverZ::from_str(&format!("2  {} {}", u32::MAX, i32::MAX)).unwrap();
         let c: PolyOverZ = a * b;
         assert!(
-            c == PolyOverZ::from_str(
-                "3  96188773362392509553720962051320744 -29513725865820889307065724381554590 38556643646031166614464378952724"
-            )
+            c == PolyOverZ::from_str(&format!(
+                "3  {} {} {}",
+                i64::from(u16::MAX) * i64::from(u32::MAX),
+                i64::from(u16::MAX) * i64::from(i32::MAX)
+                    + i64::from(u32::MAX) * i64::from(i32::MIN),
+                i64::from(i32::MAX) * i64::from(i32::MIN)
+            ))
             .unwrap()
         );
     }

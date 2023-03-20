@@ -84,20 +84,25 @@ mod test_add {
         assert!(c == PolyOverZ::from_str("5  2 4 2 1 2").unwrap());
     }
 
+    /// testing addition with eliminating coefficients
+    #[test]
+    fn add_eliminating_coefficients() {
+        let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
+        let b: PolyOverZ = PolyOverZ::from_str("3  -1 -2 3").unwrap();
+        let c: PolyOverZ = a + b;
+        assert!(c == PolyOverZ::from_str("0").unwrap());
+    }
+
     /// testing addition for large [`PolyOverZ`]
     #[test]
     fn add_large_numbers() {
         let a: PolyOverZ =
-            PolyOverZ::from_str("3  102193948124871021 2782013516264 -31222222222222222").unwrap();
-        let b: PolyOverZ =
-            PolyOverZ::from_str("5  941237471761627464 -1234910294712742 -3 0 401231240958792")
-                .unwrap();
+            PolyOverZ::from_str(&format!("3  {} {} {}", u32::MAX, i32::MIN, i32::MAX)).unwrap();
+        let b: PolyOverZ = PolyOverZ::from_str(&format!("2  {} {}", u32::MAX, i32::MAX)).unwrap();
         let c: PolyOverZ = a + b;
         assert!(
-            c == PolyOverZ::from_str(
-                "5  1043431419886498485 -1232128281196478 -31222222222222225 0 401231240958792"
-            )
-            .unwrap()
+            c == PolyOverZ::from_str(&format!("3  {} -1 {}", u64::from(u32::MAX) * 2, i32::MAX))
+                .unwrap()
         );
     }
 }

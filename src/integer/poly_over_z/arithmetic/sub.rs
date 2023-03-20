@@ -84,19 +84,28 @@ mod test_sub {
         assert!(c == PolyOverZ::from_str("5  0 0 -8 -1 -2").unwrap());
     }
 
+    /// testing subtraction with eliminating coefficients
+    #[test]
+    fn sub_eliminating_coefficients() {
+        let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
+        let b: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
+        let c: PolyOverZ = a - b;
+        assert!(c == PolyOverZ::from_str("0").unwrap());
+    }
+
     /// testing subtraction for large [`PolyOverZ`]
     #[test]
-    fn sub_large_numbers() {
+    fn add_large_numbers() {
         let a: PolyOverZ =
-            PolyOverZ::from_str("3  102193948124871021 2782013516264 -31222222222222222").unwrap();
-        let b: PolyOverZ =
-            PolyOverZ::from_str("5  941237471761627464 -1234910294712742 -3 0 401231240958792")
-                .unwrap();
+            PolyOverZ::from_str(&format!("3  {} {} {}", u32::MAX, i32::MIN, i32::MAX)).unwrap();
+        let b: PolyOverZ = PolyOverZ::from_str(&format!("2  {} {}", u32::MAX, i32::MAX)).unwrap();
         let c: PolyOverZ = a - b;
         assert!(
-            c == PolyOverZ::from_str(
-                "5  -839043523636756443 1237692308229006 -31222222222222219 0 -401231240958792"
-            )
+            c == PolyOverZ::from_str(&format!(
+                "3  0 {} {}",
+                i64::from(i32::MIN) * 2 + 1,
+                i32::MAX
+            ))
             .unwrap()
         );
     }
