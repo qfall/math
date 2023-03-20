@@ -3,6 +3,8 @@
 //!
 //! The explicit functions contain the documentation.
 
+use crate::traits::{GetNumColumns, GetNumRows};
+
 use super::MatQ;
 use flint_sys::fmpq_mat::{fmpq_mat_clear, fmpq_mat_set};
 
@@ -59,7 +61,10 @@ impl Drop for MatQ {
 mod test_clone {
 
     use super::MatQ;
-    use crate::rational::Q;
+    use crate::{
+        rational::Q,
+        traits::{GetNumColumns, GetNumRows},
+    };
     use std::str::FromStr;
 
     /// check if a cloned value is still alive after the original value ran out of scope
