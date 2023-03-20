@@ -33,6 +33,9 @@ impl Div for &Q {
     /// let e: Q = &c / d;
     /// let f: Q = c / &e;
     /// ```
+    ///
+    /// # Panics
+    /// - Panics if the `other` value is Zero.
     fn div(self, other: Self) -> Self::Output {
         self.safe_div(other).unwrap()
     }
@@ -47,7 +50,7 @@ impl Q {
     /// Parameters:
     /// - `divisor`: specifies the value `self` is divided by.
     ///
-    /// Returns the result ot the division as a [`Q`].
+    /// Returns the result ot the division as a [`Q`] or an error, if division by zero occurs.
     ///
     /// # Example
     /// ```
@@ -59,10 +62,17 @@ impl Q {
     ///
     /// let c: Q = a.safe_div(&b).unwrap();
     /// ```
+    ///
+    ///  # Errors
+    /// - Returns a [`MathError`] of type [`MathError::DivisionByZeroError`] if
+    /// the `divisor` is zero.
+    ///
     pub fn safe_div(&self, divisor: &Q) -> Result<Q, MathError> {
         if 0 != unsafe { fmpq_is_zero(&divisor.value) } {
-            //todo replace: return Err(MathError::DivisionByZeroError(format!("\n tried to divide Q {} by Q {}", self.to_string(), divisor.to_string()).to_string()));
-            return Err(MathError::DivisionByZeroError("".to_string()));
+            return Err(MathError::DivisionByZeroError(format!(
+                "tried to divide Q with value {} by Q with value {}",
+                self, divisor
+            )));
         }
         let mut out = Q::default();
         unsafe {

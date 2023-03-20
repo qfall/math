@@ -85,7 +85,7 @@ mod test_sub {
 
     #[test]
     /// testing subtraction for large numerators and divisors
-    fn add_large() {
+    fn sub_large() {
         let a: Q = Q::from_str(&(i64::MAX).to_string()).unwrap();
         let b: Q = Q::from_str(&(u64::MAX - 1).to_string()).unwrap();
         let c: Q = Q::from_str(&format!("1/{}", (i64::MAX))).unwrap();
