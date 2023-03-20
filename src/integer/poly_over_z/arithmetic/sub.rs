@@ -95,7 +95,7 @@ mod test_sub {
 
     /// testing subtraction for large [`PolyOverZ`]
     #[test]
-    fn add_large_numbers() {
+    fn sub_large_numbers() {
         let a: PolyOverZ =
             PolyOverZ::from_str(&format!("3  {} {} {}", u32::MAX, i32::MIN, i32::MAX)).unwrap();
         let b: PolyOverZ = PolyOverZ::from_str(&format!("2  {} {}", u32::MAX, i32::MAX)).unwrap();
