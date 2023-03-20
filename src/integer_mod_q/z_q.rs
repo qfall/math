@@ -13,6 +13,7 @@ use super::Modulus;
 use crate::integer::Z;
 
 mod from;
+mod reduce;
 mod to_string;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
