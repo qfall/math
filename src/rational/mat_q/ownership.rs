@@ -89,7 +89,6 @@ mod test_clone {
     #[test]
     fn entries_stored_separately() {
         let a: MatQ;
-        // entries are 2^65 = 36893488147419103232, hence fmpz values kept on heap
         let string = format!(
             "[[{}/1,{}/2],[{}/3,{}/{}]]",
             u64::MAX,
