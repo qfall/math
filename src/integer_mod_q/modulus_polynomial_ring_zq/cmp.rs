@@ -169,7 +169,7 @@ mod test_partial_eq {
     /// Test equal with a large polynomial with a large [`ModulusPolynomialRingZq`] (uses FLINT's pointer representation)
     /// and small polynomial with a small [`ModulusPolynomialRingZq`] (no pointer representation).
     #[test]
-    fn equal_large_small_polynomials_small_large_modulus() {
+    fn equal_large_small() {
         let max_str = format!("1  {} mod {}", u64::MAX, BITPRIME64);
         let min_str = format!("1  {} mod {}", i64::MIN, BITPRIME64);
 
