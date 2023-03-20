@@ -3,6 +3,8 @@
 //!
 //! The explicit functions contain the documentation.
 
+use crate::traits::{GetNumColumns, GetNumRows};
+
 use super::MatPolyOverZ;
 use flint_sys::fmpz_poly_mat::{fmpz_poly_mat_clear, fmpz_poly_mat_set};
 
