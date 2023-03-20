@@ -2,11 +2,8 @@
 
 use super::Zq;
 use crate::{error::MathError, integer::Z, integer_mod_q::Modulus};
-use flint_sys::{
-    fmpz::{fmpz, fmpz_set_str},
-    fmpz_mod::fmpz_mod_set_fmpz,
-};
-use std::{ffi::CString, mem::MaybeUninit, str::FromStr};
+use flint_sys::fmpz_mod::fmpz_mod_set_fmpz;
+use std::str::FromStr;
 
 impl Zq {
     /// Create [`Zq`] from two [`Z`] values.
@@ -52,8 +49,9 @@ impl Zq {
 
     /// Create [`Zq`] from a [`Z`] values and a [`Modulus`].
     ///
-    /// TODO: Explain how to reuse Modulus, also add it to the Example
-    ///       Not yet clear how we will do it.
+    /// As the [`Modulus`] object counts its references and
+    /// its value itself is not cloned when a [`Modulus`] struct is cloned,
+    /// we clone the wrapping [`Modulus`] object everytime.
     ///
     /// Parameters:
     /// - `value` defines the value of the new [`Zq`].
@@ -74,21 +72,20 @@ impl Zq {
     /// # Ok::<(), MathError>(())
     /// ```
     pub fn from_z_modulus(value: &Z, modulus: &Modulus) -> Self {
-        let mut value_fmpz = MaybeUninit::uninit();
+        let mut out = Z::default();
 
-        let value_fmpz = unsafe {
+        unsafe {
             // Applies modulus to parameter and saves the new value into `value_fmpz`.
             // => No problem when the `value` parameter is later dropped.
             fmpz_mod_set_fmpz(
-                value_fmpz.as_mut_ptr(),
+                &mut out.value,
                 &value.value,
                 modulus.get_fmpz_mod_ctx_struct(),
             );
-            value_fmpz.assume_init()
         };
 
-        Zq {
-            value: value_fmpz,
+        Self {
+            value: out,
             modulus: modulus.clone(),
         }
     }
@@ -225,34 +222,12 @@ impl FromStr for Zq {
             return Err(MathError::InvalidStringToZqInput(s.to_owned()));
         }
 
+        // instantiate both parts of Zq element
         let modulus = Modulus::from_str(input_split[1].trim())?;
+        let value = Z::from_str(input_split[0].trim())?;
 
-        // since |value| = |0| < 62 bits, we do not need to free the allocated space manually
-        let mut value: fmpz = fmpz::default();
-
-        let c_string = CString::new(input_split[0].trim())?;
-
-        if input_split[0].trim().contains(char::is_whitespace) {
-            return Err(MathError::InvalidStringToZInput(s.to_owned()));
-        }
-
-        // -1 is returned if the string is an invalid input.
-        // Given the documentation `c_string.as_ptr()` is freed once c_string is deallocated
-        // 'The pointer will be valid for as long as `self` is'
-        // For reading more look at the documentation of `.as_ptr()`.
-        if unsafe { fmpz_set_str(&mut value, c_string.as_ptr(), 10) } == -1 {
-            return Err(MathError::InvalidStringToZInput(s.to_owned()));
-        };
-
-        let mut out = Zq { value, modulus };
-        unsafe {
-            // Applies modulus to parameter and saves the new value
-            fmpz_mod_set_fmpz(
-                &mut out.value,
-                &value,
-                out.modulus.get_fmpz_mod_ctx_struct(),
-            );
-        };
+        let mut out = Self { value, modulus };
+        out.reduce();
 
         Ok(out)
     }
@@ -341,7 +316,6 @@ mod test_try_from_z_z {
 mod test_try_from_trait {
 
     use crate::{integer::Z, integer_mod_q::Zq};
-    use flint_sys::fmpz::fmpz_equal;
 
     /// Showcase some of the different types supported by the trait.
     #[test]
@@ -363,7 +337,8 @@ mod test_try_from_trait {
         let b = Zq::try_from((10, 10)).unwrap();
 
         // TODO: use Zq equal once implemented.
-        assert!(unsafe { fmpz_equal(&a.value, &b.value) } == 1)
+        assert_eq!(&a.value, &b.value);
+        assert_eq!(&a.modulus, &b.modulus);
     }
 
     /// Test with small valid value and modulus.

@@ -35,6 +35,10 @@ impl PartialEq for Modulus {
     }
 }
 
+// With the [`Eq`] trait, `a == a` is always true.
+// This is not guaranteed by the [`PartialEq`] trait.
+impl Eq for Modulus {}
+
 #[cfg(test)]
 mod test_eq {
 
