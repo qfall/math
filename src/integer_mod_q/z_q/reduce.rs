@@ -29,7 +29,6 @@ impl Zq {
     /// ```
     pub(crate) fn reduce(&mut self) {
         unsafe {
-            // Applies modulus to parameter and saves the new value
             fmpz_mod_set_fmpz(
                 &mut self.value.value,
                 &self.value.value,
