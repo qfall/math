@@ -115,7 +115,7 @@ impl Evaluate<&Q, Q> for PolyOverZ {
     /// Returns the evaluation of the polynomial as a [`Q`].
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::traits::Evaluate;
     /// use math::rational::Q;
     /// use math::integer::PolyOverZ;
