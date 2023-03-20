@@ -55,7 +55,7 @@ mod test_sub {
         assert!(c == Z::from(18));
     }
 
-    /// testing subtraction for two borrowed Z
+    /// testing subtraction for two borrowed [`Z`]
     #[test]
     fn sub_borrow() {
         let a: Z = Z::from(42);
@@ -64,7 +64,7 @@ mod test_sub {
         assert!(c == Z::from(18));
     }
 
-    /// testing subtraction for borrowed Z and Z
+    /// testing subtraction for borrowed [`Z`] and [`Z`]
     #[test]
     fn sub_first_borrowed() {
         let a: Z = Z::from(42);
@@ -73,7 +73,7 @@ mod test_sub {
         assert!(c == Z::from(18));
     }
 
-    /// testing subtraction for Z and borrowed Z
+    /// testing subtraction for [`Z`] and borrowed [`Z`]
     #[test]
     fn sub_second_borrowed() {
         let a: Z = Z::from(42);

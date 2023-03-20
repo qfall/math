@@ -46,7 +46,7 @@ mod test_add {
 
     use super::Z;
 
-    /// testing addition for two Z
+    /// testing addition for two [`Z`]
     #[test]
     fn add() {
         let a: Z = Z::from(42);
@@ -55,7 +55,7 @@ mod test_add {
         assert!(c == Z::from(66));
     }
 
-    /// testing addition for two borrowed Z
+    /// testing addition for two borrowed [`Z`]
     #[test]
     fn add_borrow() {
         let a: Z = Z::from(42);
@@ -64,7 +64,7 @@ mod test_add {
         assert!(c == Z::from(66));
     }
 
-    /// testing addition for borrowed Z and Z
+    /// testing addition for borrowed [`Z`] and [`Z`]
     #[test]
     fn add_first_borrowed() {
         let a: Z = Z::from(42);
@@ -73,7 +73,7 @@ mod test_add {
         assert!(c == Z::from(66));
     }
 
-    /// testing addition for Z and borrowed Z
+    /// testing addition for [`Z`] and borrowed [`Z`]
     #[test]
     fn add_second_borrowed() {
         let a: Z = Z::from(42);
