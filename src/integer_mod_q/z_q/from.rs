@@ -52,8 +52,9 @@ impl Zq {
 
     /// Create [`Zq`] from a [`Z`] values and a [`Modulus`].
     ///
-    /// TODO: Explain how to reuse Modulus, also add it to the Example
-    ///       Not yet clear how we will do it.
+    /// As the [`Modulus`] object counts its references and
+    /// its value itself is not cloned when a [`Modulus`] struct is cloned,
+    /// we clone the wrapping [`Modulus`] object everytime.
     ///
     /// Parameters:
     /// - `value` defines the value of the new [`Zq`].
@@ -87,8 +88,8 @@ impl Zq {
             value_fmpz.assume_init()
         };
 
-        Zq {
-            value: value_fmpz,
+        Self {
+            value: Z { value: value_fmpz },
             modulus: modulus.clone(),
         }
     }
@@ -244,11 +245,14 @@ impl FromStr for Zq {
             return Err(MathError::InvalidStringToZInput(s.to_owned()));
         };
 
-        let mut out = Zq { value, modulus };
+        let mut out = Zq {
+            value: Z { value },
+            modulus,
+        };
         unsafe {
             // Applies modulus to parameter and saves the new value
             fmpz_mod_set_fmpz(
-                &mut out.value,
+                &mut out.value.value,
                 &value,
                 out.modulus.get_fmpz_mod_ctx_struct(),
             );
@@ -341,7 +345,6 @@ mod test_try_from_z_z {
 mod test_try_from_trait {
 
     use crate::{integer::Z, integer_mod_q::Zq};
-    use flint_sys::fmpz::fmpz_equal;
 
     /// Showcase some of the different types supported by the trait.
     #[test]
@@ -363,7 +366,8 @@ mod test_try_from_trait {
         let b = Zq::try_from((10, 10)).unwrap();
 
         // TODO: use Zq equal once implemented.
-        assert!(unsafe { fmpz_equal(&a.value, &b.value) } == 1)
+        assert_eq!(&a.value, &b.value);
+        assert_eq!(&a.modulus, &b.modulus);
     }
 
     /// Test with small valid value and modulus.

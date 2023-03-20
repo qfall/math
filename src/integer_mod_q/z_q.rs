@@ -5,14 +5,17 @@
 //! FLINT uses a `fmpz_mod_ctx_struct` to store functions and data used for
 //! optimizing modulo operations.
 //! This struct is wrapped in [`Modulus`](super::Modulus) for easy use.
+//!
+//! For **DEVELOPERS**: The [`PartialEq`] trait expects the [`Zq`] instance to be reduced.
+//! Hence, apply `reduce` after every possible `value` change!
 
-use flint_sys::fmpz::fmpz;
+use super::Modulus;
+use crate::integer::Z;
 
 mod from;
-mod ownership;
 mod to_string;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 /// [`Zq`] is a type for integers of arbitrary length modulo `q`.
 /// This means, integer in `[0..q]` (`0` inclusive, `q` exclusive).
 ///
@@ -28,10 +31,9 @@ mod to_string;
 /// [`Zq`] represents an integer value in a modulus ring.
 ///
 /// Attributes:
-/// - `value`: holds [FLINT](https://flintlib.org/)'s [struct](fmpz)
-///     for an integer value
-/// - `modulus`: holds a [`Modulus`](super::Modulus)
+/// - `value`: holds a [`Z`] value for an integer value
+/// - `modulus`: holds a [`Modulus`] above which the value is reduced
 pub struct Zq {
-    pub(crate) value: fmpz,
-    pub(crate) modulus: super::Modulus,
+    pub(crate) value: Z,
+    pub(crate) modulus: Modulus,
 }

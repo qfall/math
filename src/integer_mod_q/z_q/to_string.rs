@@ -12,7 +12,7 @@ impl fmt::Display for Zq {
     /// Allows to convert an integer of type [`Zq`] into a [`String`].
     ///
     /// # Examples
-    /// ```rust
+    /// ```
     /// use math::integer_mod_q::Zq;
     /// use std::str::FromStr;
     /// use core::fmt;
@@ -32,7 +32,7 @@ impl fmt::Display for Zq {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let modulus_string = self.modulus.to_string();
 
-        let c_str_ptr = unsafe { fmpz_get_str(null_mut(), 10, &self.value) };
+        let c_str_ptr = unsafe { fmpz_get_str(null_mut(), 10, &self.value.value) };
 
         // we expect c_str_ptr to be reference a real value, hence get_str returns an
         // actual value, hence a simple unwrap should be sufficient and we do not have
