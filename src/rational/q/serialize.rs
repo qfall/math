@@ -18,7 +18,7 @@ deserialize!("value", Q);
 
 #[cfg(test)]
 mod test_serialize {
-    use crate::{integer::Z, rational::Q};
+    use crate::rational::Q;
     use std::str::FromStr;
 
     /// tests whether the serialization of a positive [`Q`] works.
@@ -34,7 +34,7 @@ mod test_serialize {
     #[test]
     fn serialize_output_negative() {
         let q = Q::from_str("-17/3").unwrap();
-        let cmp_string = "{\"value\":\"17/3\"}";
+        let cmp_string = "{\"value\":\"-17/3\"}";
 
         assert_eq!(cmp_string, serde_json::to_string(&q).unwrap())
     }
