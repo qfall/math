@@ -41,8 +41,8 @@ impl PolyOverZ {
         Ok(out)
     }
 
-    /// Returns the length of the polynomial, which is one higher than the degree of the
-    /// polynomial
+    /// Returns the length of the polynomial, which is one higher than 
+    /// the degree of the polynomial.
     ///
     /// # Example
     /// ```rust
@@ -52,7 +52,7 @@ impl PolyOverZ {
     /// let poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
     ///
     /// let length = poly.get_length();
-    /// # assert_eq!(4, length);
+    /// assert_eq!(4, length);
     /// ```
     pub fn get_length(&self) -> i64 {
         unsafe { fmpz_poly_length(&self.poly) }
