@@ -1,6 +1,8 @@
 //! Implementations to get entries from a [`MatQ`] matrix.
 
 use super::MatQ;
+use crate::traits::{GetNumColumns, GetNumRows};
+use crate::utils::coordinate::evaluate_coordinates;
 use crate::{error::MathError, rational::Q};
 use flint_sys::{fmpq::fmpq_set, fmpq_mat::fmpq_mat_entry};
 use std::fmt::Display;
@@ -32,7 +34,7 @@ impl MatQ {
         row: impl TryInto<i64> + Display + Copy,
         column: impl TryInto<i64> + Display + Copy,
     ) -> Result<Q, MathError> {
-        let (row_i64, column_i64) = self.evaluate_coordinates(row, column)?;
+        let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
 
         // since `self.matrix` is a correct fmpq matrix and both row and column
         // are previously checked to be inside of the matrix, no errors
@@ -44,30 +46,36 @@ impl MatQ {
 
         Ok(copy)
     }
+}
 
+impl GetNumRows for MatQ {
     /// Returns the number of rows of the matrix as a [`i64`].
     ///
     /// # Example
     /// ```rust
     /// use math::rational::MatQ;
+    /// use math::traits::GetNumRows;
     ///
     /// let matrix = MatQ::new(5,6).unwrap();
     /// let rows = matrix.get_num_rows();
     /// ```
-    pub fn get_num_rows(&self) -> i64 {
+    fn get_num_rows(&self) -> i64 {
         self.matrix.r
     }
+}
 
+impl GetNumColumns for MatQ {
     /// Returns the number of columns of the matrix as a [`i64`].
     ///
     /// # Example
     /// ```rust
     /// use math::rational::MatQ;
+    /// use math::traits::GetNumColumns;
     ///
     /// let matrix = MatQ::new(5,6).unwrap();
     /// let columns = matrix.get_num_columns();
     /// ```
-    pub fn get_num_columns(&self) -> i64 {
+    fn get_num_columns(&self) -> i64 {
         self.matrix.c
     }
 }
@@ -190,7 +198,10 @@ mod test_get_entry {
 #[cfg(test)]
 mod test_get_num {
 
-    use crate::rational::MatQ;
+    use crate::{
+        rational::MatQ,
+        traits::{GetNumColumns, GetNumRows},
+    };
 
     /// Ensure that the getter for rows works correctly.
     #[test]

@@ -1,7 +1,7 @@
 //! Implementation to set entries from a [`MatPolyOverZ`] matrix.
 
 use super::MatPolyOverZ;
-use crate::{error::MathError, integer::PolyOverZ, utils::coordinate::evaluate_coordinate};
+use crate::{error::MathError, integer::PolyOverZ, utils::coordinate::evaluate_coordinates};
 use flint_sys::{
     fmpz_poly::{fmpz_poly_set, fmpz_poly_swap},
     fmpz_poly_mat::fmpz_poly_mat_entry,
@@ -35,7 +35,7 @@ impl MatPolyOverZ {
         column: impl TryInto<i64> + Display + Copy,
         mut value: PolyOverZ,
     ) -> Result<(), MathError> {
-        let (row_i64, column_i64) = self.evaluate_coordinates(row, column)?;
+        let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
 
         // swapping the content of the entry with the given value since ownership
         // of the input is provided.
@@ -72,7 +72,7 @@ impl MatPolyOverZ {
         column: impl TryInto<i64> + Display + Copy,
         value: &PolyOverZ,
     ) -> Result<(), MathError> {
-        let (row_i64, column_i64) = self.evaluate_coordinates(row, column)?;
+        let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
 
         // since `self` is a correct matrix and both row and column
         // are previously checked to be inside of the matrix, no errors
@@ -84,38 +84,6 @@ impl MatPolyOverZ {
         };
 
         Ok(())
-    }
-
-    /// Evaluates whether the provided coordinates are referencing an entry in the matrix.
-    ///
-    /// Parameters:
-    /// - `row`: specifies the row in which the entry is located
-    /// - `column`: specifies the column in which the entry is located
-    ///
-    /// Returns the coordinates as a pair of [`i64`] if they reference an entry and return
-    /// an error otherwise
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    /// if the number of rows or columns is greater than the matrix or negative.
-    pub(super) fn evaluate_coordinates(
-        &self,
-        row: impl TryInto<i64> + Display + Copy,
-        column: impl TryInto<i64> + Display + Copy,
-    ) -> Result<(i64, i64), MathError> {
-        let row_i64 = evaluate_coordinate(row)?;
-        let column_i64 = evaluate_coordinate(column)?;
-        if self.get_num_rows() <= row_i64 || self.get_num_columns() <= column_i64 {
-            return Err(MathError::OutOfBounds(
-                format!(
-                    "be smaller than ({},{})",
-                    self.get_num_rows(),
-                    self.get_num_columns()
-                ),
-                format!("({},{})", row_i64, column_i64),
-            ));
-        }
-        Ok((row_i64, column_i64))
     }
 }
 

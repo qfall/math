@@ -2,6 +2,7 @@
 //! This includes checks such as squareness.
 
 use super::MatPolyOverZ;
+use crate::traits::{GetNumColumns, GetNumRows};
 use flint_sys::fmpz_poly_mat::fmpz_poly_mat_is_one;
 
 impl MatPolyOverZ {

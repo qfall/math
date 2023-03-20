@@ -42,3 +42,15 @@ pub trait SetCoefficient<T> {
         value: T,
     ) -> Result<(), MathError>;
 }
+
+/// Is implemented by matrices to get the number of rows of the matrix.
+pub trait GetNumRows {
+    /// Returns the number of rows of a matrix.
+    fn get_num_rows(&self) -> i64;
+}
+
+/// Is implemented by matrices to get the number of columns of the matrix.
+pub trait GetNumColumns {
+    /// Returns the number of columns of a matrix.
+    fn get_num_columns(&self) -> i64;
+}
