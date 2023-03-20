@@ -18,7 +18,7 @@ mod to_string;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 /// [`Zq`] is a type for integers of arbitrary length modulo `q`.
-/// This means, integer in `[0..q]` (`0` inclusive, `q` exclusive).
+/// This means, integer in `[0..q)` (`0` inclusive, `q` exclusive).
 ///
 /// # Example
 /// ```
