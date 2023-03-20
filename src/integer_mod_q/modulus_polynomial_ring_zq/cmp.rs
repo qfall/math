@@ -12,12 +12,12 @@ impl PartialEq for ModulusPolynomialRingZq {
     /// Used by the `==` and `!=` operators.
     ///
     /// Parameters:
-    /// - other: the other value that is used to compare the elements
+    /// - `other`: the other value that is used to compare the elements
     ///
     /// Returns `true` if the elements are equal, otherwise `false`.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer_mod_q::ModulusPolynomialRingZq;
     /// use std::str::FromStr;
     /// let a: ModulusPolynomialRingZq = ModulusPolynomialRingZq::from_str("2  24 1 mod 17").unwrap();
@@ -166,10 +166,10 @@ mod test_partial_eq {
         assert!(min != max_1);
     }
 
-    /// Test equal with a large [`ModulusPolynomialRingZq`] (uses FLINT's pointer representation)
-    /// and small [`ModulusPolynomialRingZq`] (no pointer representation).
+    /// Test equal with a large polynomial with a large [`ModulusPolynomialRingZq`] (uses FLINT's pointer representation)
+    /// and small polynomial with a small [`ModulusPolynomialRingZq`] (no pointer representation).
     #[test]
-    fn equal_large_small() {
+    fn equal_large_small_polynomials_small_large_modulus() {
         let max_str = format!("1  {} mod {}", u64::MAX, BITPRIME64);
         let min_str = format!("1  {} mod {}", i64::MIN, BITPRIME64);
 

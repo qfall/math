@@ -1,7 +1,7 @@
 //! Implementations to reduce a [`PolynomialRingZq`] with the
 //! [`ModulusPolynomialRingZq`](crate::integer_mod_q::ModulusPolynomialRingZq).
 //!
-//! For Developers note: The [`ModulusPolynomialRingZq`](crate::integer_mod_q::ModulusPolynomialRingZq)
+//! **For Developers** note: The [`ModulusPolynomialRingZq`](crate::integer_mod_q::ModulusPolynomialRingZq)
 //! is not applied automatically, and has to be called in the functions individually.
 //! Additionally the comparisons assume that the entries are reduced,
 //! hence no reduction is performed in the check.
@@ -14,6 +14,20 @@ impl PolynomialRingZq {
     /// [`ModulusPolynomialRingZq`](crate::integer_mod_q::ModulusPolynomialRingZq)
     /// to the given polynomial [`PolyOverZ`](crate::integer::PolyOverZ)
     /// in the [`PolynomialRingZq`].
+    ///
+    /// # Example
+    /// ```compile_fail
+    /// use math::integer_mod_q::PolynomialRingZq;
+    /// use math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use math::integer::PolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let poly = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
+    /// let mut poly_ring = PolynomialRingZq::from((&poly, &modulus));
+    ///
+    /// poly_ring.reduce()
+    /// ```
     pub(crate) fn reduce(&mut self) {
         unsafe { fq_reduce(&mut self.poly.poly, self.modulus.get_fq_ctx_struct()) }
     }
@@ -45,9 +59,9 @@ mod test_reduced {
             modulus: cmp_modulus,
         };
 
-        assert_ne!(poly_ring.poly, cmp_poly);
         // we only compare the parts individually, not under the modulus, hence they should not be the same
         // unless they have been reduced
+        assert_ne!(poly_ring.poly, cmp_poly);
         assert_ne!(poly_ring, cmp_poly_ring);
 
         poly_ring.reduce();
