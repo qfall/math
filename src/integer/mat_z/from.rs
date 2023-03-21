@@ -123,7 +123,7 @@ impl FromStr for MatZ {
 mod test_new {
     use crate::integer::{MatZ, Z};
 
-    /// Ensure that entries of a new matrix are ` `.
+    /// Ensure that entries of a new matrix are `0`.
     #[test]
     fn entry_zero() {
         let matrix = MatZ::new(2, 2).unwrap();
