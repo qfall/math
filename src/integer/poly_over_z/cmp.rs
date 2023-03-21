@@ -6,7 +6,7 @@ use flint_sys::fmpz_poly::fmpz_poly_equal;
 use super::PolyOverZ;
 
 impl PartialEq for PolyOverZ {
-    /// Checks if two polynomials over [`Z`] are equal. Used by the `==` and `!=` operators.
+    /// Checks if two polynomials over [`Z`](crate::integer::Z) are equal. Used by the `==` and `!=` operators.
     ///
     /// Parameters:
     /// - other: the other value that is used to compare the elements

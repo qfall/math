@@ -1,5 +1,5 @@
 //! This module implements macros which are used to explicitly implement
-//! the [`Serialize`] and [`Deserialize`] trait for data types.
+//! the [`Serialize`](serde::Serialize) and [`Deserialize`](serde::Deserialize) trait for data types.
 
 /// Implements the [`Serialize`](serde::Serialize) for [`*type*`].
 ///

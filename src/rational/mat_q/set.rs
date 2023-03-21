@@ -1,4 +1,4 @@
-//! Implementation to set entries from a [`MatZ`] matrix.
+//! Implementation to set entries from a [`MatQ`] matrix.
 
 use super::MatQ;
 use crate::utils::coordinate::evaluate_coordinates;
