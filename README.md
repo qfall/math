@@ -23,7 +23,7 @@ which itself uses [gmp](https://gmplib.org/manual/), we are currently restricted
 
 Since our project isn't yet published there is no option to find it on crates.io.
 If you want to include this project in your own Rust project, you can 
-include a link to our version on the `dev` branch in your `cargo.toml`. 
+include a link to our version on the `dev` branch in your `Cargo.toml`. 
 
 ```text
 math = { git = "https://github.com/qfall/math", branch="dev" }
@@ -110,7 +110,7 @@ let res_mul: Z = a * b;
 ```
 
 ## External Libraries
-This project includes the C-library [FLINT](https://flintlib.org/) as a math library. In order to use a C-library in Rust, there has to be an FFI (Foreign Function Interface) which allows to call the methods from FLINT in Rust. We used the crate [flint-sys](https://github.com/alex-ozdemir/flint-rs/tree/master/flint-sys) as bindings for FLINT.
+This project includes the C-library [FLINT](https://flintlib.org/) as a math library. In order to use a C-library in Rust, there has to be an FFI (Foreign Function Interface) which allows to call the methods from [FLINT](https://flintlib.org/) in Rust. We used the crate [flint-sys](https://github.com/alex-ozdemir/flint-rs/tree/master/flint-sys) as bindings for [FLINT](https://flintlib.org/).
 Last, but not least, we utilized [serde](https://crates.io/crates/serde) and [serde_json](https://crates.io/crates/serde_json) to (de-)serialize objects to and from JSON. An extensive list can be found in our `Cargo.toml` file.
 
 ## License
