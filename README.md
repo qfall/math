@@ -57,8 +57,8 @@ once the project is cloned. Following, find a small overview which general types
 
 - [`Z`](https://github.com/qfall/math/blob/dev/src/integer/z.rs): Represents $\mathbb Z$
 - [`MatZ`](https://github.com/qfall/math/blob/dev/src/integer/mat_z.rs): Represents matrices of $\mathbb Z$
-- [`PolyOverZ`]((https://github.com/qfall/math/blob/dev/src/integer/poly_over_z.rs)): Represents polynomials with coefficients over $\mathbb Z$
-- [`MatPolyOverZ`]((https://github.com/qfall/math/blob/dev/src/integer/mat_poly_over_z.rs)): Represents matrices of polynomials with coefficients over $\mathbb Z$
+- [`PolyOverZ`](https://github.com/qfall/math/blob/dev/src/integer/poly_over_z.rs): Represents polynomials with coefficients over $\mathbb Z$
+- [`MatPolyOverZ`](https://github.com/qfall/math/blob/dev/src/integer/mat_poly_over_z.rs): Represents matrices of polynomials with coefficients over $\mathbb Z$
 
 
 ```rust
@@ -74,10 +74,10 @@ let res_mul: Z = a * b;
 
 ### Integers mod q
 
-- [`Zq`]((https://github.com/qfall/math/blob/dev/src/integer_mod_q/zq.rs)): Represents $\mathbb Z_q$
-- [`MatZq`]((https://github.com/qfall/math/blob/dev/src/integer_mod_q/mat_zq.rs)): Represents matrices of $\mathbb Z_q$
-- [`PolyOverZq`]((https://github.com/qfall/math/blob/dev/src/integer_mod_q/poly_over_zq.rs)): Represents polynomials with coefficients over $\mathbb Z_q$
-- [`PolynomialRingZq`]((https://github.com/qfall/math/blob/dev/src/integer_mod_q/polynomial_ring_zq.rs)): Represents quotient rings of $\mathbb Z_q[X]/f(X)$ where $q$ is prime and $f(X)$ is a [`PolyOverZq`]((https://github.com/qfall/math/blob/dev/src/integer_mod_q/poly_over_zq.rs)).
+- [`Zq`](https://github.com/qfall/math/blob/dev/src/integer_mod_q/zq.rs): Represents $\mathbb Z_q$
+- [`MatZq`](https://github.com/qfall/math/blob/dev/src/integer_mod_q/mat_zq.rs): Represents matrices of $\mathbb Z_q$
+- [`PolyOverZq`](https://github.com/qfall/math/blob/dev/src/integer_mod_q/poly_over_zq.rs): Represents polynomials with coefficients over $\mathbb Z_q$
+- [`PolynomialRingZq`](https://github.com/qfall/math/blob/dev/src/integer_mod_q/polynomial_ring_zq.rs): Represents quotient rings of $\mathbb Z_q[X]/f(X)$ where $q$ is prime and $f(X)$ is a [`PolyOverZq`](https://github.com/qfall/math/blob/dev/src/integer_mod_q/poly_over_zq.rs).
 
 ```rust
 use math::integer_mod_q::Zq;
@@ -94,9 +94,9 @@ let res_mul: Zq = a * b;
 
 ### Rational
 
-- [`Q`]((https://github.com/qfall/math/blob/dev/src/rational/q.rs)): Represents $\mathbb Q$
-- [`MatQ`]((https://github.com/qfall/math/blob/dev/src/rational/mat.rs)): Represents matrices of $\mathbb Q$
-- [`PolyOverQ`]((https://github.com/qfall/math/blob/dev/src/rational/poly_over_q.rs)): Represents polynomials with coefficients over $\mathbb Q$
+- [`Q`](https://github.com/qfall/math/blob/dev/src/rational/q.rs): Represents $\mathbb Q$
+- [`MatQ`](https://github.com/qfall/math/blob/dev/src/rational/mat.rs): Represents matrices of $\mathbb Q$
+- [`PolyOverQ`](https://github.com/qfall/math/blob/dev/src/rational/poly_over_q.rs): Represents polynomials with coefficients over $\mathbb Q$
 
 ```rust
 use math::rational::Q;
