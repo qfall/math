@@ -6,7 +6,7 @@ impl Default for Z {
     /// Returns an instantiation of [`Z`] with value `0`.
     ///
     /// # Example:
-    /// ```rust
+    /// ```
     /// use std::default::Default;
     /// use math::integer::Z;
     ///  
@@ -21,7 +21,7 @@ impl Z {
     /// Returns an instantiation of [`Z`] with value `1`.
     ///
     /// # Example:
-    /// ```rust
+    /// ```
     /// use math::integer::Z;
     ///  
     /// let a: Z = Z::ONE;

@@ -29,7 +29,7 @@ impl MatQ {
     /// less or equal to 0.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::rational::MatQ;
     ///
     /// let matrix = MatQ::new(5, 10).unwrap();
@@ -85,7 +85,7 @@ impl FromStr for MatQ {
     /// inside of the function could not be processed.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::rational::MatQ;
     /// use std::str::FromStr;
     ///

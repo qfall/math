@@ -75,7 +75,7 @@ impl SetCoefficient<&Z> for PolyOverZ {
     /// - `value`: the new value the coordinate should have from a borrowed [`Z`].
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::PolyOverZ;
     /// use math::integer::Z;
     /// use math::traits::SetCoefficient;

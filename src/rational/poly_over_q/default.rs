@@ -8,7 +8,7 @@ impl Default for PolyOverQ {
     /// Initializes a [`PolyOverQ`] as the zero polynomial.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::rational::PolyOverQ;
     ///
     /// let zero = PolyOverQ::default();

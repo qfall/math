@@ -20,7 +20,7 @@ mod to_string;
 // - `poly`: holds the content of the polynomial
 //
 /// # Example
-/// ```rust
+/// ```
 /// use math::rational::PolyOverQ;
 /// use std::str::FromStr;
 ///

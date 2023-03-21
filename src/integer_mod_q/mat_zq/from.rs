@@ -23,7 +23,7 @@ impl MatZq {
     /// less than 1.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer_mod_q::MatZq;
     ///
     /// let matrix = MatZq::new(5, 10, 7).unwrap();

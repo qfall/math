@@ -14,7 +14,7 @@ impl PartialEq for Z {
     /// Returns `true` if the elements are equal, otherwise `false`.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::Z;
     /// let a: Z = Z::from(42);
     /// let b: Z = Z::from(24);
@@ -47,7 +47,7 @@ impl PartialOrd for Z {
     /// Returns the [`Ordering`] of the elements.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::Z;
     ///
     /// let a: Z = Z::from_i64(10);

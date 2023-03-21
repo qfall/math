@@ -19,7 +19,7 @@ impl MatQ {
     /// greater than the matrix or negative.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::rational::MatQ;
     ///
     /// let matrix = MatQ::new(5, 10).unwrap();
@@ -52,7 +52,7 @@ impl GetNumRows for MatQ {
     /// Returns the number of rows of the matrix as a [`i64`].
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::rational::MatQ;
     /// use math::traits::GetNumRows;
     ///
@@ -68,7 +68,7 @@ impl GetNumColumns for MatQ {
     /// Returns the number of columns of the matrix as a [`i64`].
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::rational::MatQ;
     /// use math::traits::GetNumColumns;
     ///

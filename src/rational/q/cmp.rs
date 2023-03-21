@@ -13,7 +13,7 @@ impl PartialEq for Q {
     /// Returns `true` if the elements are equal, otherwise `false`.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::rational::Q;
     /// use std::str::FromStr;
     /// let a: Q = Q::from_str("42/24").unwrap();

@@ -25,7 +25,7 @@ impl FromStr for PolyOverZq {
     /// formatted correctly.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
     ///

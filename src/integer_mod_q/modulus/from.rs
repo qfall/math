@@ -21,7 +21,7 @@ impl Modulus {
     /// Returns a [`Modulus`] or a [`MathError`]
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
     ///
@@ -60,7 +60,7 @@ impl FromStr for Modulus {
     /// a valid modulus.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
     ///

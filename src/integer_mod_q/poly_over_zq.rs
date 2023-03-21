@@ -22,7 +22,7 @@ mod to_string;
 // - `modulus`: holds the value of the modulus
 //
 /// # Example
-/// ```rust
+/// ```
 /// use math::integer_mod_q::PolyOverZq;
 /// use std::str::FromStr;
 ///

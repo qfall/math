@@ -24,7 +24,7 @@ impl FromStr for PolyOverQ {
     /// correctly.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::rational::PolyOverQ;
     /// use std::str::FromStr;
     ///

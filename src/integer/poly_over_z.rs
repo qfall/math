@@ -22,7 +22,7 @@ mod to_string;
 // - `poly`: holds the content of the polynomial
 //
 /// # Example
-/// ```rust
+/// ```
 /// use math::integer::PolyOverZ;
 /// use std::str::FromStr;
 ///

@@ -19,7 +19,7 @@ impl fmt::Display for Zq {
     /// println!("{}", integer);
     /// ```
     ///
-    /// ```rust
+    /// ```
     /// use math::integer_mod_q::Zq;
     /// use std::str::FromStr;
     /// use core::fmt;

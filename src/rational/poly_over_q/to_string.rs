@@ -12,7 +12,7 @@ impl fmt::Display for PolyOverQ {
     /// Allows to convert a polynomial of type [`PolyOverQ`] into a [`String`].
     ///
     /// # Examples
-    /// ```rust
+    /// ```
     /// use math::rational::PolyOverQ;
     /// use std::str::FromStr;
     /// use core::fmt;
@@ -21,7 +21,7 @@ impl fmt::Display for PolyOverQ {
     /// println!("{}", poly);
     /// ```
     ///
-    /// ```rust
+    /// ```
     /// use math::rational::PolyOverQ;
     /// use std::str::FromStr;
     ///

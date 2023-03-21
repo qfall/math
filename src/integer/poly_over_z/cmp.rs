@@ -14,7 +14,7 @@ impl PartialEq for PolyOverZ {
     /// Returns `true` if the elements are equal, otherwise `false`.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::PolyOverZ;
     /// use std::str::FromStr;
     /// let a: PolyOverZ = PolyOverZ::from_str("2  42 1").unwrap();

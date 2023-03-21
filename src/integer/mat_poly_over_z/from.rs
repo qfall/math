@@ -29,7 +29,7 @@ impl MatPolyOverZ {
     /// less or equal to 0.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::MatPolyOverZ;
     ///
     /// let matrix = MatPolyOverZ::new(5, 10).unwrap();
@@ -86,7 +86,7 @@ impl FromStr for MatPolyOverZ {
     /// inside of the function could not be processed.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     ///

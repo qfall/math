@@ -31,7 +31,7 @@ impl FromStr for Q {
     /// correctly.
     ///
     /// # Examples
-    /// ```rust
+    /// ```
     /// use std::str::FromStr;
     /// use math::rational::Q;
     ///  
@@ -39,7 +39,7 @@ impl FromStr for Q {
     /// let b: Q = Q::from_str("100/3").unwrap();
     /// ```
     ///
-    /// ```rust
+    /// ```
     /// use std::str::FromStr;
     /// use math::rational::Q;
     ///  
@@ -47,7 +47,7 @@ impl FromStr for Q {
     /// let b: Q = Q::from_str("10/-3").unwrap();
     /// ```
     ///
-    /// ```rust
+    /// ```
     /// use std::str::FromStr;
     /// use math::rational::Q;
     ///  

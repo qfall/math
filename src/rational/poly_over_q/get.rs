@@ -20,7 +20,7 @@ impl GetCoefficient<Q> for PolyOverQ {
     /// is negative and therefore invalid or it does not fit into an [`i64`].
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::rational::PolyOverQ;
     /// use std::str::FromStr;
     /// use math::traits::GetCoefficient;

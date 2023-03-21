@@ -23,7 +23,7 @@ mod to_string;
 ///
 /// # Examples
 /// Create [`Modulus`] from [`str`]:
-/// ```rust
+/// ```
 /// use math::integer_mod_q::Modulus;
 /// use std::str::FromStr;
 ///
@@ -31,7 +31,7 @@ mod to_string;
 /// ```
 ///
 /// Create [`Modulus`] from [`Z`](crate::integer::Z):
-/// ```rust
+/// ```
 /// # use math::integer_mod_q::Modulus;
 /// # use math::integer::Z;
 /// let value = Z::from(10);

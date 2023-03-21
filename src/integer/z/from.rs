@@ -20,7 +20,7 @@ impl Z {
     /// Returns the new integer.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::Z;
     ///
     /// let a: Z = Z::from_i64(42);
@@ -38,7 +38,7 @@ impl Z {
     /// Returns the new integer.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::Z;
     ///
     /// let a: Z = Z::from_u64(42);
@@ -83,7 +83,7 @@ impl FromStr for Z {
     /// correctly.
     ///
     /// # Example:
-    /// ```rust
+    /// ```
     /// use std::str::FromStr;
     /// use math::integer::Z;
     ///  

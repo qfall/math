@@ -29,7 +29,7 @@ impl MatZ {
     /// less or equal to 0.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::MatZ;
     ///
     /// let matrix = MatZ::new(5, 10).unwrap();
@@ -84,7 +84,7 @@ impl FromStr for MatZ {
     /// inside of the function could not be processed.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::MatZ;
     /// use std::str::FromStr;
     ///

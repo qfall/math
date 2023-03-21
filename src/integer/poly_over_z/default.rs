@@ -8,7 +8,7 @@ impl Default for PolyOverZ {
     /// Initializes a [`PolyOverZ`] with the zero polynomial.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::PolyOverZ;
     ///
     /// let zero = PolyOverZ::default();

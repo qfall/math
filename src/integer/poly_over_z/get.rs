@@ -20,7 +20,7 @@ impl GetCoefficient<Z> for PolyOverZ {
     /// is negative and therefore invalid or it does not fit into an [`i64`].
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::PolyOverZ;
     /// use std::str::FromStr;
     /// use math::traits::GetCoefficient;

@@ -17,7 +17,7 @@ impl Evaluate<Z, Z> for PolyOverZ {
     /// Returns the evaluation of the polynomial as a [`Z`].
     ///
     /// # Examples
-    /// ```rust
+    /// ```
     /// use math::traits::Evaluate;
     /// use math::integer::Z;
     /// use math::integer::PolyOverZ;
@@ -28,7 +28,7 @@ impl Evaluate<Z, Z> for PolyOverZ {
     /// let res = poly.evaluate(value);
     /// ```
     ///
-    /// ```rust
+    /// ```
     /// use math::traits::Evaluate;
     /// use math::integer::PolyOverZ;
     /// use std::str::FromStr;
@@ -38,7 +38,7 @@ impl Evaluate<Z, Z> for PolyOverZ {
     /// let res = poly.evaluate(value);
     /// ```
     ///
-    /// ```rust
+    /// ```
     /// use math::traits::Evaluate;
     /// use math::integer::PolyOverZ;
     /// use std::str::FromStr;
@@ -62,7 +62,7 @@ impl Evaluate<&Z, Z> for PolyOverZ {
     /// Returns the evaluation of the polynomial as a [`Z`].
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::traits::Evaluate;
     /// use math::integer::Z;
     /// use math::integer::PolyOverZ;
@@ -90,7 +90,7 @@ impl Evaluate<Q, Q> for PolyOverZ {
     /// Returns the evaluation of the polynomial as a [`Q`].
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::traits::Evaluate;
     /// use math::rational::Q;
     /// use math::integer::PolyOverZ;

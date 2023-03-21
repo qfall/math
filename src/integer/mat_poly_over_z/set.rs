@@ -17,7 +17,7 @@ impl MatPolyOverZ {
     /// - `value`: specifies the value to which the entry is set
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::MatPolyOverZ;
     /// use math::integer::PolyOverZ;
     ///
@@ -54,7 +54,7 @@ impl MatPolyOverZ {
     /// - `value`: specifies the value to which the entry is set
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::MatPolyOverZ;
     /// use math::integer::PolyOverZ;
     ///

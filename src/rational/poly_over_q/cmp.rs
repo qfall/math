@@ -14,7 +14,7 @@ impl PartialEq for PolyOverQ {
     /// Returns `true` if the elements are equal, otherwise `false`.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::rational::PolyOverQ;
     /// use std::str::FromStr;
     /// let a: PolyOverQ = PolyOverQ::from_str("2  42/24 1").unwrap();
