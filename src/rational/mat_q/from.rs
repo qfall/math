@@ -130,7 +130,7 @@ mod test_new {
         assert!(MatQ::new(2, 2).is_ok());
     }
 
-    /// Ensure that a new zero matrix fails with 0 as input.
+    /// Ensure that a new zero matrix fails with `0` as input.
     #[test]
     fn error_zero() {
         let matrix1 = MatQ::new(1, 0);
@@ -141,7 +141,7 @@ mod test_new {
         assert!(matrix2.is_err());
         assert!(matrix3.is_err());
     }
-    // TODO add test for zero entries
+    // TODO add test for `0` entries
 }
 
 #[cfg(test)]

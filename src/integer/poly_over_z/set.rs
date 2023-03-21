@@ -20,7 +20,7 @@ impl SetCoefficient<Z> for PolyOverZ {
     /// of roughly 34 GB. If not careful, be prepared that memory problems can occur, if
     /// the coordinate is very high.
     ///
-    /// All entries which are not directly addressed are automatically treated as zero.
+    /// All entries which are not directly addressed are automatically treated as `0`.
     ///
     /// Parameters:
     /// - `coordinate`: the coordinate of the coefficient to set (has to be positive)
@@ -162,7 +162,7 @@ mod test_set_coeff {
         assert_eq!(PolyOverZ::from_str("6  10000 1 2 3 0 10000").unwrap(), poly);
     }
 
-    /// ensure that the correct coefficient is set and all others are set to zero
+    /// ensure that the correct coefficient is set and all others are set to `0`
     #[test]
     fn set_coeff_rest_zero() {
         let mut poly = PolyOverZ::from_str("0").unwrap();

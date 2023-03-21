@@ -4,7 +4,7 @@ use crate::error::MathError;
 use crate::traits::{GetNumColumns, GetNumRows};
 use std::fmt::Display;
 
-/// Converts coordinate into an [`i64`] that must be greater than zero and must fit into
+/// Converts coordinate into an [`i64`] that must be greater than `0` and must fit into
 /// an [`i64`].
 ///
 /// Parameters:

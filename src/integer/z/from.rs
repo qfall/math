@@ -16,7 +16,8 @@ impl Z {
     /// Create a new Integer that can grow arbitrary large.
     ///
     /// Parameters:
-    /// - value: the initial value the integer should have
+    /// - `value`: the initial value the integer should have
+    /// 
     /// Returns the new integer.
     ///
     /// # Example
@@ -34,7 +35,8 @@ impl Z {
     /// Create a new Integer that can grow arbitrary large.
     ///
     /// Parameters:
-    /// - value: the initial value the integer should have
+    /// - `value`: the initial value the integer should have
+    /// 
     /// Returns the new integer.
     ///
     /// # Example

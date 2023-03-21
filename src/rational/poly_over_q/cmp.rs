@@ -9,7 +9,7 @@ impl PartialEq for PolyOverQ {
     /// Checks if two polynomials over [`Q`](crate::rational::Q) are equal. Used by the `==` and `!=` operators.
     ///
     /// Parameters:
-    /// - other: the other value that is used to compare the elements
+    /// - `other`: the other value that is used to compare the elements
     ///
     /// Returns `true` if the elements are equal, otherwise `false`.
     ///

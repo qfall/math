@@ -11,7 +11,7 @@ use std::fmt::Display;
 impl GetCoefficient<Q> for PolyOverQ {
     /// Returns the coefficient of a polynomial [`PolyOverQ`] as a [`Q`].
     ///
-    /// If a coordinate is provided which exceeds the highest set coefficient, zero is returned.
+    /// If a coordinate is provided which exceeds the highest set coefficient, `0` is returned.
     ///
     /// Parameters:
     /// - `coordinate`: the coordinate of the coefficient to get (has to be positive)
@@ -51,7 +51,7 @@ mod test_get_coeff {
     };
     use std::str::FromStr;
 
-    /// ensure that 0 is returned if the provided index is not yet set
+    /// ensure that `0` is returned if the provided index is not yet set
     #[test]
     fn index_out_of_range() {
         let poly = PolyOverQ::from_str("4  0 1 2/3 3/2").unwrap();
@@ -61,7 +61,7 @@ mod test_get_coeff {
         assert_eq!(Q::from_str("0/1").unwrap(), zero_coeff)
     }
 
-    /// test if coordinates smaller than zero return an error
+    /// test if coordinates smaller than `0` return an error
     #[test]
     fn index_too_small() {
         let poly = PolyOverQ::default();

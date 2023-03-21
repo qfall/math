@@ -35,7 +35,7 @@ impl Div for &Q {
     /// ```
     ///
     /// # Panics
-    /// - Panics if the `other` value is Zero.
+    /// - Panics if the `other` value is `0`.
     fn div(self, other: Self) -> Self::Output {
         self.safe_div(other).unwrap()
     }
@@ -65,7 +65,7 @@ impl Q {
     ///
     ///  # Errors
     /// - Returns a [`MathError`] of type [`MathError::DivisionByZeroError`] if
-    /// the `divisor` is zero.
+    /// the `divisor` is `0`.
     ///
     pub fn safe_div(&self, divisor: &Q) -> Result<Q, MathError> {
         if 0 != unsafe { fmpq_is_zero(&divisor.value) } {
@@ -143,7 +143,7 @@ mod test_div {
         );
     }
 
-    /// testing division by zero throws an error
+    /// testing division by `0` throws an error
     #[test]
     #[should_panic]
     fn div_by_zero() {
@@ -152,7 +152,7 @@ mod test_div {
         let _c = a / b;
     }
 
-    /// testing division by zero throws an error
+    /// testing division by `0` throws an error
     #[test]
     fn div_by_zero_safe() {
         let a: Q = Q::from_str("2").unwrap();

@@ -7,7 +7,7 @@ use flint_sys::fmpz_poly_mat::fmpz_poly_mat_is_one;
 
 impl MatPolyOverZ {
     /// Checks if a [`MatPolyOverZ`] is a identity matrix, i.e.
-    /// all entries on the diagonal are the constant polynomial 1 and zero elsewhere.
+    /// all entries on the diagonal are the constant polynomial `1` and `0` elsewhere.
     ///
     /// Returns `true` if the matrix is the identity and `false` otherwise.
     ///

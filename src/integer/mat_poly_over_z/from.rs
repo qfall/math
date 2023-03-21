@@ -73,7 +73,8 @@ impl FromStr for MatPolyOverZ {
     type Err = MathError;
 
     /// Creates a [`MatPolyOverZ`] matrix from a [`String`].
-    /// The format of that string looks like this `[[poly1,poly2,poly3],[poly4,poly5,poly6]]` for a 2x3 matrix
+    /// The format of that string looks like <br>
+    /// `[[poly1,poly2,poly3],[poly4,poly5,poly6]]` for a 2x3 matrix
     /// where thirst three polynomials are in the first row and the second three are
     /// in the second row.
     ///
@@ -139,7 +140,7 @@ mod test_new {
         assert_eq!("0", entry4.to_string());
     }
 
-    /// Ensure that a new zero matrix fails with 0 as input.
+    /// Ensure that a new zero matrix fails with `0` as input.
     #[test]
     fn error_zero() {
         let matrix1 = MatPolyOverZ::new(1, 0);

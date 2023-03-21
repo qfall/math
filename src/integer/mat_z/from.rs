@@ -139,7 +139,7 @@ mod test_new {
         assert_eq!(Z::from_i64(0), entry4);
     }
 
-    /// Ensure that a new zero matrix fails with 0 as input.
+    /// Ensure that a new zero matrix fails with `0` as input.
     #[test]
     fn error_zero() {
         let matrix1 = MatZ::new(1, 0);

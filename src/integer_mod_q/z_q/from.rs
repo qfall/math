@@ -40,7 +40,7 @@ impl Zq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
     ///   [`InvalidIntToModulus`](MathError::InvalidIntToModulus) if the
-    ///   provided value is not greater than zero.
+    ///   provided value is not greater than `0`.
     pub fn try_from_z_z(value: &Z, modulus: &Z) -> Result<Self, MathError> {
         let modulus = Modulus::try_from_z(modulus)?;
 
@@ -123,7 +123,7 @@ impl Zq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
     ///   [`InvalidIntToModulus`](MathError::InvalidIntToModulus) if the
-    ///   provided value is not greater than zero.
+    ///   provided value is not greater than `0`.
     pub fn try_from_int_int<T1: Into<Z>, T2: Into<Z>>(
         value: T1,
         modulus: T2,
@@ -170,7 +170,7 @@ impl<T1: Into<Z>, T2: Into<Z>> TryFrom<(T1, T2)> for Zq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
     ///   [`InvalidIntToModulus`](MathError::InvalidIntToModulus) if the
-    ///   provided value is not greater than zero.
+    ///   provided value is not greater than `0`.
     fn try_from(value_modulus_tuple: (T1, T2)) -> Result<Self, Self::Error> {
         let modulus = value_modulus_tuple.1;
         let value = value_modulus_tuple.0;
@@ -212,7 +212,7 @@ impl FromStr for Zq {
     /// if the provided modulus was not formatted correctly
     /// - Returns a [`MathError`] of type
     /// [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
-    /// if the provided value is not greater than zero.
+    /// if the provided value is not greater than `0`.
     /// - Returns a [`MathError`] of type
     /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
     /// if the provided string contains a Nul byte.

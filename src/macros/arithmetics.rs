@@ -2,10 +2,10 @@
 /// [`&*type*`].
 ///
 /// Parameters:
-/// - trait: the trait that is implemented (e.g. [`Add`], [`Sub`], ...).
-/// - trait_function: the function the trait implements
+/// - `trait`: the trait that is implemented (e.g. [`Add`], [`Sub`], ...).
+/// - `trait_function`: the function the trait implements
 /// (e.g. add for [`Add`], ...).
-/// - type: the type the trait is implemented for (e.g. [`Z`], [`Q`])
+/// - `type`: the type the trait is implemented for (e.g. [`Z`], [`Q`])
 ///
 /// Returns the owned Implementation code for the [`*trait*`]
 /// trait with the signature:
@@ -32,10 +32,10 @@ pub(crate) use arithmetic_trait_borrowed_to_owned;
 /// reverse using the [`*trait*`] for [`&*type*`].
 ///
 /// Parameters:
-/// - trait: the trait that is implemented (e.g. [`Add`], [`Sub`], ...).
-/// - trait_function: the function the trait implements
+/// - `trait`: the trait that is implemented (e.g. [`Add`], [`Sub`], ...).
+/// - `trait_function`: the function the trait implements
 /// (e.g. add for [`Add`], ...).
-/// - type: the type the trait is implemented for (e.g. [`Z`], [`Q`], ...).
+/// - `type`: the type the trait is implemented for (e.g. [`Z`], [`Q`], ...).
 ///
 /// Returns the mixed owned and borrowed Implementation code for the
 /// [`*trait*`] trait with the signatures:
