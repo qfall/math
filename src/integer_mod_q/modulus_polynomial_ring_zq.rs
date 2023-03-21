@@ -15,7 +15,7 @@ mod to_string;
 /// [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq)
 ///
 /// Attributes
-/// - `modulus`: holds the specific content, i.e. the prime q and f(X); it
+/// - `modulus`: holds the specific content, i.e. the prime `q` and f(X); it
 /// holds [FLINT](https://flintlib.org/)'s [struct](fq_ctx_struct)
 ///
 /// # Example

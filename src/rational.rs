@@ -1,4 +1,4 @@
-pub mod mat_q;
+mod mat_q;
 mod poly_over_q;
 mod q;
 

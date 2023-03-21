@@ -20,7 +20,7 @@ impl MatZq {
     /// - `modulus`: the common modulus of the matrix entries
     ///
     /// Returns a [`MatZq`] or an error, if the number of rows or columns is
-    /// less than 1.
+    /// less than `1`.
     ///
     /// # Example
     /// ```
@@ -32,7 +32,7 @@ impl MatZq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
     /// [`InvalidMatrix`](MathError::InvalidMatrix)
-    /// if the number of rows or columns is 0.
+    /// if the number of rows or columns is `0`.
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the number of rows or columns is negative or it does not fit into an [`i64`].
     /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)

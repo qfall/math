@@ -26,7 +26,7 @@ impl MatZ {
     /// - `num_cols`: number of columns the new matrix should have
     ///
     /// Returns a [`MatZ`] or an error, if the number of rows or columns is
-    /// less or equal to 0.
+    /// less or equal to `0`.
     ///
     /// # Example
     /// ```
@@ -38,7 +38,7 @@ impl MatZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
     /// [`InvalidMatrix`](MathError::InvalidMatrix)
-    /// if the number of rows or columns is 0.
+    /// if the number of rows or columns is `0`.
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the number of rows or columns is negative or it does not fit into an [`i64`].
     pub fn new(
@@ -123,7 +123,7 @@ impl FromStr for MatZ {
 mod test_new {
     use crate::integer::{MatZ, Z};
 
-    /// Ensure that entries of a new matrix are 0.
+    /// Ensure that entries of a new matrix are ` `.
     #[test]
     fn entry_zero() {
         let matrix = MatZ::new(2, 2).unwrap();

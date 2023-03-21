@@ -26,7 +26,7 @@ impl MatQ {
     /// - `num_cols`: number of columns the new matrix should have
     ///
     /// Returns a [`MatQ`] or an error, if the number of rows or columns is
-    /// less or equal to 0.
+    /// less or equal to `0`.
     ///
     /// # Example
     /// ```
@@ -38,7 +38,7 @@ impl MatQ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
     /// [`InvalidMatrix`](MathError::InvalidMatrix)
-    /// if the number of rows or columns is 0.
+    /// if the number of rows or columns is `0`.
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the number of rows or columns is negative or it does not fit into an [`i64`].
     pub fn new(
@@ -73,7 +73,7 @@ impl FromStr for MatQ {
     type Err = MathError;
 
     /// Creates a [`MatQ`] matrix with entries in [`Q`] from a [`String`].
-    /// The format of that string looks like this `[[1/2,2/3,3/4],[4/5,5/6,6/7]]` for a 2x3 matrix
+    /// The format of that string looks like this <br> `[[1/2,2/3,3/4],[4/5,5/6,6/7]]` for a 2x3 matrix
     /// with entries 1/2,2/3,3/4 in the first row and 4/5,5/6,6/7 in the second row.
     ///
     /// Parameters:
