@@ -86,10 +86,10 @@ use math::integer_mod_q::Modulus;
 let modulus = Modulus::try_from(24).unwrap();
 let a = Zq::from((&Z::from(42), &modulus));
 let b = Zq::from((&Z::from(17), &modulus));
-
-let res_add: Z = a + b;
-let res_sub: Z = a - b;
-let res_mul: Z = a * b;
+q
+let res_add: Zq = a + b;
+let res_sub: Zq = a - b;
+let res_mul: Zq = a * b;
 ```
 
 ### Rational
@@ -104,9 +104,9 @@ use math::rational::Q;
 let a = Q::try_from((17, 19)).unwrap();
 let b = Q::try_from((42, 24)).unwrap();
 
-let res_add: Z = a + b;
-let res_sub: Z = a - b;
-let res_mul: Z = a * b;
+let res_add: Q = a + b;
+let res_sub: Q = a - b;
+let res_mul: Q = a * b;
 ```
 
 ## External Libraries
