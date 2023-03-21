@@ -14,7 +14,6 @@ mod ownership;
 mod properties;
 mod to_string;
 
-#[derive(Debug)]
 /// [`Modulus`] is a type of a positive non-zero integer that is used
 /// to do modulus operations.
 ///
@@ -41,7 +40,7 @@ mod to_string;
 /// let modulus = Modulus::try_from_z(&value).unwrap();
 /// let modulus = Modulus::try_from(&value).unwrap();
 /// ```
-#[allow(dead_code)]
+#[derive(Debug)]
 pub struct Modulus {
     pub(crate) modulus: Rc<fmpz_mod_ctx>,
 }

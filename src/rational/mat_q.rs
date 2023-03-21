@@ -8,7 +8,6 @@ mod get;
 mod ownership;
 mod set;
 
-#[derive(Debug)]
 /// [`MatQ`] is a matrix with entries of type [`Q`](crate::rational::Q).
 ///
 /// Attributes:
@@ -16,6 +15,7 @@ mod set;
 ///     of the [`Q`](crate::rational::Q) matrix
 ///
 /// # Examples
+#[derive(Debug)]
 pub struct MatQ {
     pub(crate) matrix: fmpq_mat_struct,
 }

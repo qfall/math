@@ -14,7 +14,6 @@ mod ownership;
 mod set;
 mod to_string;
 
-#[derive(Debug)]
 /// [`PolyOverZ`] is a type of polynomial with arbitrarily many coefficients of type
 /// [`Z`](crate::integer::Z).
 ///
@@ -28,6 +27,7 @@ mod to_string;
 ///
 /// let poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
 /// ```
+#[derive(Debug)]
 pub struct PolyOverZ {
     pub(crate) poly: fmpz_poly_struct,
 }

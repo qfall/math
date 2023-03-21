@@ -1,3 +1,5 @@
+//! This module implements macros which are used to implement arithmetic traits for data types.
+
 /// Implements the [`*trait*`] for [`*type*`] using the [`*trait*`] for
 /// [`&*type*`].
 ///

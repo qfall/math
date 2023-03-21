@@ -1,3 +1,6 @@
+//! This module contains the type [`Zq`] for integers with arbitrary length
+//! modulus `q` and constructions over it.
+
 mod mat_zq;
 mod modulus;
 mod modulus_polynomial_ring_zq;

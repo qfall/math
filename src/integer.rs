@@ -1,3 +1,6 @@
+//! This module contains the type [`Z`] for integers with arbitrary length and
+//! constructions over it.
+
 mod mat_poly_over_z;
 mod mat_z;
 mod poly_over_z;

@@ -12,7 +12,6 @@ mod get;
 mod ownership;
 mod to_string;
 
-#[derive(Debug)]
 /// [`PolyOverQ`] is a type of polynomial with arbitrarily many coefficients of type
 /// [`Q`](crate::rational::Q).
 ///
@@ -26,6 +25,7 @@ mod to_string;
 ///
 /// let poly = PolyOverQ::from_str("5  0 1/3 2/10 -3/2 1").unwrap();
 /// ```
+#[derive(Debug)]
 pub struct PolyOverQ {
     pub(crate) poly: fmpq_poly_struct,
 }

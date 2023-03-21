@@ -1,3 +1,5 @@
+//! This module implements macros which are used to implement the [`From`] trait for data types.
+
 /// Implements the [`From`] trait for a given type. It requires an already written
 /// conversion function (e.g. [`Z::from_i64()`](crate::integer::Z::from_i64())).
 ///
