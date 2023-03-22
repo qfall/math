@@ -17,6 +17,7 @@ mod cmp;
 mod from;
 mod get;
 mod ownership;
+mod serialize;
 mod to_string;
 
 /// [`ModulusPolynomialRingZq`] represents the modulus object for
