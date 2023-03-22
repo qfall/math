@@ -90,10 +90,10 @@ impl FromStr for Modulus {
     }
 }
 
-/// Initializes the FLINT-context object using a [`fmpz`]-value as input
+/// Initializes the FLINT-context object using a [`Z`]-value as input
 ///
 /// Parameters:
-/// - `s`: the value the modulus should have as [`fmpz`]
+/// - `s`: the value the modulus should have as [`Z`]
 ///
 /// Returns an initialized context object [`fmpz_mod_ctx`] or an error, if the
 /// provided value was not greater than `0`.
