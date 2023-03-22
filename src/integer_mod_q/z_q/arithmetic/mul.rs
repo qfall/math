@@ -146,12 +146,20 @@ mod test_mul {
         assert!(c == Zq::try_from((u64::from((u32::MAX - 1) / 2) * 58, u32::MAX - 58)).unwrap());
     }
 
-    /// testing multiplication for [`Zq`] with different modulus does not work
+    /// testing multiplication for [`Zq`] with different moduli does not work
     #[test]
     #[should_panic]
     fn mul_mismatching_modulus() {
         let a: Zq = Zq::try_from((4, 11)).unwrap();
         let b: Zq = Zq::try_from((1, 3)).unwrap();
         let _c: Zq = a * b;
+    }
+
+    /// testing whether mul_safe throws an error for mismatching moduli
+    #[test]
+    fn mul_safe_is_err() {
+        let a: Zq = Zq::try_from((4, 11)).unwrap();
+        let b: Zq = Zq::try_from((1, 3)).unwrap();
+        assert!(&a.mul_safe(&b).is_err());
     }
 }

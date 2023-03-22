@@ -146,12 +146,20 @@ mod test_add {
         assert!(c == Zq::try_from(((u32::MAX - 1) / 2 + 58, u32::MAX - 58)).unwrap());
     }
 
-    /// testing addition for [`Zq`] with different modulus does not work
+    /// testing addition for [`Zq`] with different moduli does not work
     #[test]
     #[should_panic]
     fn add_mismatching_modulus() {
         let a: Zq = Zq::try_from((4, 11)).unwrap();
         let b: Zq = Zq::try_from((1, 3)).unwrap();
         let _c: Zq = a + b;
+    }
+
+    /// testing whether add_safe throws an error for mismatching moduli
+    #[test]
+    fn add_safe_is_err() {
+        let a: Zq = Zq::try_from((4, 11)).unwrap();
+        let b: Zq = Zq::try_from((1, 3)).unwrap();
+        assert!(&a.add_safe(&b).is_err());
     }
 }
