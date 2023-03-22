@@ -19,6 +19,7 @@ mod from;
 mod get;
 mod ownership;
 mod properties;
+mod set;
 mod to_string;
 
 /// [`PolyOverZq`] is a type of polynomial with arbitrarily many coefficients of type
