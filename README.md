@@ -128,9 +128,9 @@ Please use the following bibtex entry to cite [qFALL-math](https://github.com/qf
     howpublished = {Online: \url{https://github.com/qfall/math}},
     month = Mar,
     year = 2023,
-    note = {University Paderborn, C&K Paderborn}
+    note = {University Paderborn,  Codes and Cryptography}
 }
 ```
 
 ## Get in Touch
-One can contact the members of the project group with our mailing list `pg-qfall@lists.upb.de`.
+One can contact the members of the project group with our mailing list `pg-qfall(at)lists.upb.de`.
