@@ -23,12 +23,13 @@ impl SetEntry<&Z> for MatZq {
     /// # Example
     /// ```
     /// use math::integer_mod_q::MatZq;
+    /// use crate::math::traits::SetEntry;
     /// use math::integer::Z;
     /// use std::str::FromStr;
     ///
     /// let mut matrix = MatZq::new(5, 10, 7).unwrap();
     /// let value = Z::from(5);
-    /// matrix.set_entry_ref_z(1, 1, &value).unwrap();
+    /// matrix.set_entry(1, 1, &value).unwrap();
     /// ```
     ///
     /// # Errors and Failures
@@ -55,7 +56,7 @@ impl SetEntry<&Z> for MatZq {
 }
 
 impl SetEntry<&Zq> for MatZq {
-    /// Sets the value of a specific matrix entry according to a given `value` of type [`Z`].
+    /// Sets the value of a specific matrix entry according to a given `value` of type [`Zq`].
     ///
     /// Parameters:
     /// - `row`: specifies the row in which the entry is located
@@ -65,12 +66,14 @@ impl SetEntry<&Zq> for MatZq {
     /// # Example
     /// ```
     /// use math::integer_mod_q::MatZq;
+    /// use crate::math::traits::SetEntry;
+    /// use math::integer_mod_q::Zq;
     /// use math::integer::Z;
     /// use std::str::FromStr;
     ///
     /// let mut matrix = MatZq::new(5, 10, 7).unwrap();
-    /// let value = Z::from(5);
-    /// matrix.set_entry_ref_z(1, 1, &value).unwrap();
+    /// let value = Zq::from_str("5 mod 12").unwrap();
+    /// matrix.set_entry(1, 1, &value).unwrap();
     /// ```
     ///
     /// # Errors and Failures

@@ -13,7 +13,7 @@ impl MatZq {
     /// Returns the modulus of the matrix as a [`Modulus`] value
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer_mod_q::MatZq;
     ///
     /// let matrix = MatZq::new(5, 10, 7).unwrap();
@@ -72,9 +72,11 @@ impl GetEntry<Z> for MatZq {
     /// # Example
     /// ```rust
     /// use math::integer_mod_q::MatZq;
+    /// use crate::math::traits::GetEntry;
+    /// use math::integer::Z;
     ///
     /// let matrix = MatZq::new(5, 10, 7).unwrap();
-    /// let entry = matrix.get_entry(0, 1).unwrap();
+    /// let entry: Z = matrix.get_entry(0, 1).unwrap();
     /// ```
     ///
     /// # Errors and Failures
@@ -107,9 +109,11 @@ impl GetEntry<Zq> for MatZq {
     /// # Example
     /// ```rust
     /// use math::integer_mod_q::MatZq;
+    /// use crate::math::traits::GetEntry;
+    /// use math::integer::Z;
     ///
     /// let matrix = MatZq::new(5, 10, 7).unwrap();
-    /// let entry = matrix.get_entry(0, 1).unwrap();
+    /// let entry: Z = matrix.get_entry(0, 1).unwrap();
     /// ```
     ///
     /// # Errors and Failures
