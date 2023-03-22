@@ -19,12 +19,12 @@
 
 use super::Modulus;
 use crate::integer::Z;
+use serde::{Deserialize, Serialize};
 
 mod from;
 mod reduce;
 mod to_string;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
 /// [`Zq`] is a type for integers of arbitrary length modulo `q`.
 /// This means, integer in `[0..q)` (`0` inclusive, `q` exclusive).
 ///
@@ -42,6 +42,7 @@ mod to_string;
 /// Attributes:
 /// - `value`: holds a [`Z`] value for an integer value
 /// - `modulus`: holds a [`Modulus`] above which the value is reduced
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Zq {
     pub(crate) value: Z,
     pub(crate) modulus: Modulus,

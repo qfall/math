@@ -19,6 +19,7 @@
 
 use super::ModulusPolynomialRingZq;
 use crate::integer::PolyOverZ;
+use serde::{Deserialize, Serialize};
 
 mod from;
 mod reduce;
@@ -31,7 +32,7 @@ mod reduce;
 /// - `modulus`: holds the prime `q` and f(X)
 ///
 /// # Example
-#[derive(PartialEq, Eq, Debug)]
+#[derive(PartialEq, Eq, Debug, Serialize, Deserialize)]
 pub struct PolynomialRingZq {
     poly: PolyOverZ,
     modulus: ModulusPolynomialRingZq,
