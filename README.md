@@ -6,22 +6,22 @@
 <TODO Badge for Code Coverage>
 <TODO Badge for Website>
 
-This repository is being developed by the project group [qFALL - quantum resistant fast lattice library](https://cs.uni-paderborn.de/cuk/lehre/veranstaltungen/ws-2022-23/project-group-qfall) in the winter term 2022 and summer term 2023 in Paderborn.
+This repository is currently being developed by the project group [qFALL - quantum resistant fast lattice library](https://cs.uni-paderborn.de/cuk/lehre/veranstaltungen/ws-2022-23/project-group-qfall) in the winter term 2022 and summer term 2023 by the Codes and Cryptography research group in Paderborn.
 
 The main objective of this project is to develop a memory safe and efficient usage of
-[FLINT](https://flintlib.org/) in [Rust](https://www.rust-lang.org/). The main purpose
+[FLINT](https://flintlib.org/) in [Rust](https://www.rust-lang.org/). Its main purpose
 is to use this library as a building block to build other projects on top of it.
 
 ## Disclaimer
-As of right now we are in the development phase and interfaces might change.
+Currently, we are in the development phase and interfaces might change.
 Feel free to check out the current progress, but be aware, that the content will
 change in the upcoming weeks and months. An official release will be published in the second half of 2023.
 
 ## Installation
-In order to use this project one needs to have an [installation of Rust](https://www.rust-lang.org/tools/install). Since we are using flint-sys
+In order to use this project one needs to have an [installation of Rust](https://www.rust-lang.org/tools/install). Since we are using [flint-sys](https://crates.io/crates/flint-sys)
 which itself uses [gmp](https://gmplib.org/manual/), we are currently restricted to usage on Mac, Linux and Linux subsystems under Windows. For a subsystem under Windows, one additionally is required to have installed m4 and a C-compiler.
 
-Since our project isn't yet published there is no option to find it on crates.io.
+Since our project isn't yet published there is no option to find it on Rust's library collection on [crates.io](https://crates.io/).
 If you want to include this project in your own Rust project, you can 
 include a link to our version on the `dev` branch in your `Cargo.toml`. 
 
@@ -30,7 +30,7 @@ math = { git = "https://github.com/qfall/math", branch="dev" }
 ```
 
 Be aware that the external libraries in our project have to be compiled at the first installation,
-which may take about 30 minutes. After the first installation all should be working fine.
+which may take about 30 minutes. After the first installation it should be working fine.
 
 
 ## What does qFALL-math offer?
@@ -92,7 +92,7 @@ let res_sub: Zq = a - b;
 let res_mul: Zq = a * b;
 ```
 
-### Rational
+### Rationals
 
 - [`Q`](https://github.com/qfall/math/blob/dev/src/rational/q.rs): Represents $\mathbb Q$
 - [`MatQ`](https://github.com/qfall/math/blob/dev/src/rational/mat.rs): Represents matrices of $\mathbb Q$
@@ -110,7 +110,7 @@ let res_mul: Q = a * b;
 ```
 
 ## External Libraries
-This project includes the C-library [FLINT](https://flintlib.org/) as a math library. In order to use a C-library in Rust, there has to be an FFI (Foreign Function Interface) which allows to call the methods from [FLINT](https://flintlib.org/) in Rust. We used the crate [flint-sys](https://github.com/alex-ozdemir/flint-rs/tree/master/flint-sys) as bindings for [FLINT](https://flintlib.org/).
+This project uses the C-based, optimized math library [FLINT](https://flintlib.org/). In order to use a C-library in Rust, there has to be an FFI (Foreign Function Interface) which allows to call the methods from [FLINT](https://flintlib.org/) in Rust. This project uses the crate [flint-sys](https://github.com/alex-ozdemir/flint-rs/tree/master/flint-sys) as a binding for [FLINT](https://flintlib.org/).
 Last, but not least, we utilized [serde](https://crates.io/crates/serde) and [serde_json](https://crates.io/crates/serde_json) to (de-)serialize objects to and from JSON. An extensive list can be found in our `Cargo.toml` file.
 
 ## License
