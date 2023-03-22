@@ -109,14 +109,93 @@ implement_for_others_set_entry!(u8, Z, MatZq);
 
 #[cfg(test)]
 mod test_setter {
-    use crate::{integer::Z, integer_mod_q::MatZq, traits::SetEntry};
+    use crate::{
+        integer::Z,
+        integer_mod_q::{MatZq, Zq},
+        traits::{GetEntry, SetEntry},
+    };
     use std::str::FromStr;
 
-    /// Ensure that setting entries works with standard numbers.
+    /// Ensure that setting entries works with large numbers.
     #[test]
-    fn standard_value() {
+    fn max_int_positive() {
+        let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+        let value = Z::from(i64::MAX);
+        matrix.set_entry(0, 0, value).unwrap();
+
+        let entry = matrix.get_entry(0, 0).unwrap();
+
+        assert_eq!(Z::from(i64::MAX), entry);
+    }
+
+    /// Ensure that setting entries works with large numerators and denominators (larger than [`i64`]).
+    #[test]
+    fn big_positive() {
+        let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+        let value = Z::from(u64::MAX - 1);
+        matrix.set_entry(0, 0, value).unwrap();
+
+        let entry = matrix.get_entry(0, 0).unwrap();
+
+        assert_eq!(Z::from(u64::MAX - 1), entry);
+    }
+
+    /// Ensure that setting entries works with large numbers.
+    #[test]
+    fn max_int_negative() {
+        let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+        let value = Z::from(-i64::MAX);
+        matrix.set_entry(0, 0, value).unwrap();
+
+        let entry = matrix.get_entry(0, 0).unwrap();
+
+        assert_eq!(Z::from((u64::MAX as i128 - i64::MAX as i128) as u64), entry);
+    }
+
+    /// Ensure that setting entries works with large numerators and denominators (larger than [`i64`]).
+    #[test]
+    fn big_negative() {
+        let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+        let value = Z::from(-i64::MAX - 1);
+        matrix.set_entry(0, 0, value).unwrap();
+
+        let entry = matrix.get_entry(0, 0).unwrap();
+
+        assert_eq!(
+            Z::from((u64::MAX as i128 - i64::MAX as i128) as u64 - 1),
+            entry
+        );
+    }
+
+    /// Ensure that a wrong number of rows yields an Error.
+    #[test]
+    fn error_wrong_row() {
         let mut matrix = MatZq::new(5, 10, 7).unwrap();
-        let value = Z::from_str("869").unwrap();
-        matrix.set_entry(4, 7, value).unwrap();
+
+        assert!(matrix.set_entry(5, 1, 3).is_err());
+    }
+
+    /// Ensure that a wrong number of columns yields an Error.
+    #[test]
+    fn error_wrong_column() {
+        let mut matrix = MatZq::new(5, 10, 7).unwrap();
+
+        assert!(matrix.set_entry(1, 100, 3).is_err());
+    }
+
+    /// Ensure that setting entries works with different types.
+    #[test]
+    fn diff_types() {
+        let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+
+        matrix.set_entry(0, 0, Z::default()).unwrap();
+        matrix
+            .set_entry(0, 0, Zq::from_str("12 mod 56").unwrap())
+            .unwrap();
+        matrix.set_entry(0, 0, 3).unwrap();
+        matrix.set_entry(0, 0, &Z::default()).unwrap();
+        matrix
+            .set_entry(0, 0, &Zq::from_str("12 mod 56").unwrap())
+            .unwrap();
     }
 }
