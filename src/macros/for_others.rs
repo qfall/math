@@ -1,3 +1,11 @@
+// Copyright © 2023 Marvin Beckmann
+//
+// This file is part of qFALL-math.
+//
+// qFALL-math is free software: you can redistribute it and/or modify it under
+// the terms of the Mozilla Public License Version 2.0 as published by the
+// Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
+
 //! This module implements macros which are used to explicitly implement
 //! traits taking input of one of our types. These types can be constructed
 //! from other values. These macros will implement the trait for the other types.
