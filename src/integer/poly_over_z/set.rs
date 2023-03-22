@@ -2,12 +2,11 @@
 //! Each reasonable type should be used to set a coefficient.
 
 use super::PolyOverZ;
-use crate::{error::MathError, integer::Z, utils::coordinate::evaluate_coordinate};
-use flint_sys::{fmpz::fmpz_swap, fmpz_poly::fmpz_poly_set_coeff_fmpz};
 use crate::{
     error::MathError, integer::Z, macros::for_others::implement_for_others_set_coeff,
     traits::SetCoefficient, utils::coordinate::evaluate_coordinate,
 };
+use flint_sys::fmpz::fmpz_swap;
 use flint_sys::fmpz_poly::fmpz_poly_set_coeff_fmpz;
 use std::fmt::Display;
 

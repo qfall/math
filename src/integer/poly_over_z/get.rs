@@ -2,12 +2,10 @@
 //! Each reasonable type should be allowed as a coordinate.
 
 use super::PolyOverZ;
-use crate::{error::MathError, integer::Z, utils::coordinate::evaluate_coordinate};
-use flint_sys::fmpz_poly::{fmpz_poly_get_coeff_fmpz, fmpz_poly_length};
 use crate::{
     error::MathError, integer::Z, traits::GetCoefficient, utils::coordinate::evaluate_coordinate,
 };
-use flint_sys::fmpz_poly::fmpz_poly_get_coeff_fmpz;
+use flint_sys::fmpz_poly::{fmpz_poly_get_coeff_fmpz, fmpz_poly_length};
 use std::fmt::Display;
 
 impl GetCoefficient<Z> for PolyOverZ {
@@ -43,8 +41,10 @@ impl GetCoefficient<Z> for PolyOverZ {
         unsafe { fmpz_poly_get_coeff_fmpz(&mut out.value, &self.poly, coordinate) }
         Ok(out)
     }
+}
 
-    /// Returns the length of the polynomial, which is one higher than 
+impl PolyOverZ {
+    /// Returns the length of the polynomial, which is one higher than
     /// the degree of the polynomial.
     ///
     /// # Example
