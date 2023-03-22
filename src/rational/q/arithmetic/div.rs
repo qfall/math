@@ -37,7 +37,7 @@ impl Div for &Q {
     /// # Panics
     /// - Panics if the `other` value is `0`.
     fn div(self, other: Self) -> Self::Output {
-        self.safe_div(other).unwrap()
+        self.div_safe(other).unwrap()
     }
 }
 
@@ -60,14 +60,14 @@ impl Q {
     /// let a: Q = Q::from_str("42").unwrap();
     /// let b: Q = Q::from_str("24").unwrap();
     ///
-    /// let c: Q = a.safe_div(&b).unwrap();
+    /// let c: Q = a.div_safe(&b).unwrap();
     /// ```
     ///
     ///  # Errors
     /// - Returns a [`MathError`] of type [`MathError::DivisionByZeroError`] if
     /// the `divisor` is `0`.
     ///
-    pub fn safe_div(&self, divisor: &Q) -> Result<Q, MathError> {
+    pub fn div_safe(&self, divisor: &Q) -> Result<Q, MathError> {
         if 0 != unsafe { fmpq_is_zero(&divisor.value) } {
             return Err(MathError::DivisionByZeroError(format!(
                 "tried to divide Q with value {} by Q with value {}",
@@ -157,6 +157,6 @@ mod test_div {
     fn div_by_zero_safe() {
         let a: Q = Q::from_str("2").unwrap();
         let b: Q = Q::from_str("0").unwrap();
-        assert!(&a.safe_div(&b).is_err());
+        assert!(&a.div_safe(&b).is_err());
     }
 }
