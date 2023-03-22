@@ -14,11 +14,8 @@
 
 use super::Modulus;
 use crate::{error::MathError, integer::Z};
-use flint_sys::{
-    fmpz::{fmpz, fmpz_clear, fmpz_cmp, fmpz_set_str},
-    fmpz_mod::{fmpz_mod_ctx, fmpz_mod_ctx_init},
-};
-use std::{ffi::CString, mem::MaybeUninit, rc::Rc, str::FromStr};
+use flint_sys::fmpz_mod::{fmpz_mod_ctx, fmpz_mod_ctx_init};
+use std::{mem::MaybeUninit, rc::Rc, str::FromStr};
 
 impl Modulus {
     /// Create a [`Modulus`] from [`Z`].
@@ -40,7 +37,7 @@ impl Modulus {
     /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
     /// if the provided value is not greater than `0`.
     pub fn try_from_z(value: &Z) -> Result<Self, MathError> {
-        let modulus = ctx_init(&value.value);
+        let modulus = ctx_init(value);
         Ok(Self {
             modulus: Rc::new(modulus?),
         })
@@ -77,31 +74,18 @@ impl FromStr for Modulus {
     /// # Errors and Failures
     ///
     /// - Returns a [`MathError`] of type
-    /// [`InvalidStringToModulusInput`](MathError::InvalidStringToModulusInput) if the provided string was not
-    /// formatted correctly, e.g., not a number or not greater `0`.
-    /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
+    /// [`InvalidStringToZ`](MathError::InvalidStringToZInput) if the
+    /// provided string was not formatted correctly, e.g. not a correctly
+    /// formatted [`Z`].
+    /// - Returns a [`MathError`] of type
+    /// [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
     /// if the provided value is not greater than `0`.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        // TODO: first create a Z, and then use the fmpz value from Z
-        if s.contains(char::is_whitespace) {
-            return Err(MathError::InvalidStringToModulusInput(s.to_owned()));
-        }
-        let mut modulus_fmpz = fmpz(0);
-        let c_string = match CString::new(s) {
-            Ok(c_string) => c_string,
-            Err(_) => return Err(MathError::InvalidStringToModulusInput(s.to_owned())),
-        };
-        if -1 == unsafe { fmpz_set_str(&mut modulus_fmpz, c_string.as_ptr(), 10) } {
-            // `modulus_fmpz` stays 0, if the set string did not work. Therefore, FLINT
-            // is not using pointers here and  explicitly freeing it is not necessary.
-            return Err(MathError::InvalidStringToModulusInput(s.to_owned()));
-        }
+        let z = Z::from_str(s)?;
 
-        let modulus = ctx_init(&modulus_fmpz);
-        // we have to clear the modulus, since the value is not stored in a [Z]
-        unsafe { fmpz_clear(&mut modulus_fmpz) };
+        let modulus = ctx_init(&z)?;
         Ok(Self {
-            modulus: Rc::new(modulus?),
+            modulus: Rc::new(modulus),
         })
     }
 }
@@ -117,16 +101,13 @@ impl FromStr for Modulus {
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
 /// if the provided value is not greater than `0`.
-fn ctx_init(n: &fmpz) -> Result<fmpz_mod_ctx, MathError> {
-    if unsafe { fmpz_cmp(n, &fmpz(0)) <= 0 } {
-        // TODO: include the string representation of the input value in the error
-        return Err(MathError::InvalidIntToModulus(
-            ".The provided value was not greater than zero".to_owned(),
-        ));
+fn ctx_init(n: &Z) -> Result<fmpz_mod_ctx, MathError> {
+    if n <= &Z::from(0) {
+        return Err(MathError::InvalidIntToModulus(n.to_string()));
     }
     let mut ctx = MaybeUninit::uninit();
     unsafe {
-        fmpz_mod_ctx_init(ctx.as_mut_ptr(), n);
+        fmpz_mod_ctx_init(ctx.as_mut_ptr(), &n.value);
         Ok(ctx.assume_init())
     }
 }
@@ -184,57 +165,31 @@ mod test_try_from_z {
 
 #[cfg(test)]
 mod test_ctx_init {
-    use std::ffi::CString;
-
-    use flint_sys::{
-        fmpz::{fmpz, fmpz_clear, fmpz_set_str},
-        fmpz_mod::fmpz_mod_ctx_clear,
-    };
-
     use super::ctx_init;
+    use crate::integer::Z;
 
     /// tests whether a small modulus ist instantiated correctly
     #[test]
     fn working_example() {
-        // fmpz(100) does not have to be manually cleared, since it is smaller
-        // than 62 bits
-        assert!(ctx_init(&fmpz(100)).is_ok())
+        assert!(ctx_init(&Z::from(100)).is_ok())
     }
 
     /// tests whether a large modulus (> 64 bits) is instantiated correctly
     #[test]
     fn large_modulus() {
-        let mut value = fmpz(0);
-        let c_string = CString::new("1".repeat(65)).unwrap();
-        unsafe {
-            fmpz_set_str(&mut value, c_string.as_ptr(), 10);
-        }
-
-        let ctx = ctx_init(&value);
-
-        assert!(ctx.is_ok());
-
-        // now we have to clear ctx and value
-        unsafe {
-            fmpz_clear(&mut value);
-            fmpz_mod_ctx_clear(&mut ctx.unwrap());
-        }
+        assert!(ctx_init(&Z::from(u64::MAX)).is_ok());
     }
 
     /// tests whether a negative input value returns an error
     #[test]
     fn negative_modulus() {
-        // fmpz(-42) does not have to be manually cleared, since it is smaller
-        // than 62 bits
-        assert!(ctx_init(&fmpz(-42)).is_err())
+        assert!(ctx_init(&Z::from(-42)).is_err())
     }
 
     /// tests whether a zero as input value returns an error
     #[test]
     fn zero_modulus() {
-        // fmpz(0) does not have to be manually cleared, since it is smaller
-        // than 62 bits
-        assert!(ctx_init(&fmpz(0)).is_err())
+        assert!(ctx_init(&Z::from(0)).is_err())
     }
 }
 
