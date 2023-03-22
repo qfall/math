@@ -5,10 +5,9 @@ use flint_sys::fmpz_mat::fmpz_mat_struct;
 
 mod from;
 mod get;
+mod ownership;
 mod set;
 
-#[allow(dead_code)]
-#[derive(Debug)]
 /// [`MatZ`] is a matrix with entries of type [`Z`](crate::integer::Z).
 ///
 /// Attributes:
@@ -16,6 +15,7 @@ mod set;
 ///     of the [`Z`](crate::integer::Z) matrix
 ///
 /// # Examples
+#[derive(Debug)]
 pub struct MatZ {
     pub(crate) matrix: fmpz_mat_struct,
 }

@@ -16,11 +16,12 @@ impl Z {
     /// Create a new Integer that can grow arbitrary large.
     ///
     /// Parameters:
-    /// - value: the initial value the integer should have
+    /// - `value`: the initial value the integer should have
+    ///
     /// Returns the new integer.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::Z;
     ///
     /// let a: Z = Z::from_i64(42);
@@ -34,11 +35,12 @@ impl Z {
     /// Create a new Integer that can grow arbitrary large.
     ///
     /// Parameters:
-    /// - value: the initial value the integer should have
+    /// - `value`: the initial value the integer should have
+    ///
     /// Returns the new integer.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::Z;
     ///
     /// let a: Z = Z::from_u64(42);
@@ -83,7 +85,7 @@ impl FromStr for Z {
     /// correctly.
     ///
     /// # Example:
-    /// ```rust
+    /// ```
     /// use std::str::FromStr;
     /// use math::integer::Z;
     ///  

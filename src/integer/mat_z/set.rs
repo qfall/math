@@ -1,7 +1,7 @@
 //! Implementation to set entries from a [`MatZ`] matrix.
 
 use super::MatZ;
-use crate::{error::MathError, integer::Z, utils::coordinate::evaluate_coordinate};
+use crate::{error::MathError, integer::Z, utils::coordinate::evaluate_coordinates};
 use flint_sys::{fmpz::fmpz_set, fmpz_mat::fmpz_mat_entry};
 use std::fmt::Display;
 
@@ -14,7 +14,7 @@ impl MatZ {
     /// - `value`: specifies the value to which the entry is set
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::MatZ;
     /// use math::integer::Z;
     ///
@@ -24,7 +24,7 @@ impl MatZ {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the number of rows or columns is greater than the matrix or negative.
     pub fn set_entry<
         S: TryInto<i64> + Display + Copy,
@@ -47,7 +47,7 @@ impl MatZ {
     /// - `value`: specifies the value to which the entry is set
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::MatZ;
     /// use math::integer::Z;
     ///
@@ -57,7 +57,7 @@ impl MatZ {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the number of rows or columns is greater than the matrix or negative.
     pub fn set_entry_ref_z<S: TryInto<i64> + Display + Copy, T: TryInto<i64> + Display + Copy>(
         &mut self,
@@ -65,18 +65,7 @@ impl MatZ {
         column: T,
         value: &Z,
     ) -> Result<(), MathError> {
-        let row_i64 = evaluate_coordinate(row)?;
-        let column_i64 = evaluate_coordinate(column)?;
-        if self.get_num_rows() <= row_i64 || self.get_num_columns() <= column_i64 {
-            return Err(MathError::OutOfBounds(
-                format!(
-                    "be smaller than ({},{})",
-                    self.get_num_rows(),
-                    self.get_num_columns()
-                ),
-                format!("({},{})", row_i64, column_i64),
-            ));
-        }
+        let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
 
         // since `self` is a correct matrix and both row and column
         // are previously checked to be inside of the matrix, no errors

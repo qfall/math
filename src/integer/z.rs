@@ -1,4 +1,4 @@
-//! `Z` is a type for integers with arbritrary length.
+//! `Z` is a type for integers with arbitrary length.
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use flint_sys::fmpz::fmpz;
@@ -8,9 +8,9 @@ mod cmp;
 mod default;
 mod from;
 mod ownership;
+mod serialize;
+mod to_string;
 
-#[allow(dead_code)]
-#[derive(Debug)]
 /// [`Z`] represents any integer value.
 ///
 /// Attributes:
@@ -33,6 +33,7 @@ mod ownership;
 /// assert_ne!(result, zero);
 /// # Ok::<(), math::error::MathError>(())
 /// ```
+#[derive(Debug)]
 pub struct Z {
     pub(crate) value: fmpz,
 }

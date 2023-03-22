@@ -13,9 +13,8 @@ use thiserror::Error;
 ///
 /// Possible entries:
 /// - `DivisionByZeroError` is thrown if it is tried to perform a division by `0`
-/// - `InvalidInitMatZInput` is thrown if an invalid integer is given to create
-/// a [`MatZ`](crate::integer::MatZ)
-/// - `InvalidIntToModulus` is thrown if an integer is provided, which is not greater than zero
+/// - `InvalidIntToModulus` is thrown if an integer is provided, which is not greater than `0`
+/// - `InvalidMatrix` is thrown if an invalid string input of a matrix is given
 /// - `InvalidStringToCStringInput` is thrown if an invalid string is given to
 /// construct a [`CString`](std::ffi::CString)
 /// - `InvalidStringToIntInput` is thrown if an invalid string is given to
@@ -35,6 +34,9 @@ use thiserror::Error;
 /// construct a [`Q`](crate::rational::Q)
 /// - `InvalidStringToZInput` is thrown if an invalid string is given to
 /// construct a [`Z`](crate::integer::Z)
+/// - `InvalidStringToZqInput` is thrown if an invalid string is given to
+/// construct a [`Zq`](crate::integer_mod_q::Zq)
+/// - `NotPrime` is thrown if a provided integer is not prime
 /// - `OutOfBounds` is thrown if a provided index is not in a desired range
 ///
 /// # Example
@@ -52,15 +54,15 @@ pub enum MathError {
     /// division by zero error
     #[error("the division by zero is not possible {0}")]
     DivisionByZeroError(String),
-    /// initialization of [`MatZ`](crate::integer::MatZ) error
-    #[error("invalid input for an initialization of a MatZ {0}")]
-    InvalidInitMatZInput(String),
     /// parse int to modulus error
     #[error(
         "invalid integer input to parse to a modulus {0}. \
         The value must be larger than 0."
     )]
     InvalidIntToModulus(String),
+    /// invalid Matrix input error
+    #[error("invalid Matrix. {0}")]
+    InvalidMatrix(String),
     /// parse string to [`CString`](std::ffi::CString) error
     #[error("invalid string input to parse to CString {0}")]
     InvalidStringToCStringInput(#[from] NulError),
@@ -108,6 +110,12 @@ pub enum MathError {
     /// parse string to [`Z`](crate::integer::Z) error
     #[error("invalid string input to parse to Z {0}")]
     InvalidStringToZInput(String),
+    /// parse string to [`Zq`](crate::integer_mod_q::Zq) error
+    #[error("invalid string input to parse to Zq {0}")]
+    InvalidStringToZqInput(String),
+    /// if an integer or modulus is not prime
+    #[error("invalid integer. The integer has to be prime and the provided value is {0}")]
+    NotPrime(String),
     /// if a provided index is out of bounds
     #[error(
         "invalid index submitted. The index is out of bounds.

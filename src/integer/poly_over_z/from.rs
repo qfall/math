@@ -6,32 +6,8 @@
 
 use super::PolyOverZ;
 use crate::error::MathError;
-use flint_sys::fmpz_poly::{fmpz_poly_init, fmpz_poly_set_str};
-use std::{ffi::CString, mem::MaybeUninit, str::FromStr};
-
-impl Default for PolyOverZ {
-    /// Initializes a [`PolyOverZ`].
-    /// This method is used to initialize a [`PolyOverZ`].
-    ///
-    /// Returns an initialized [`PolyOverZ`].
-    ///
-    /// # Example
-    /// ```rust
-    /// use math::integer::PolyOverZ;
-    ///
-    /// let poly_over_zero = PolyOverZ::default(); // initializes a PolyOverZ as "0"
-    /// ```
-    fn default() -> Self {
-        let mut poly = MaybeUninit::uninit();
-        unsafe {
-            fmpz_poly_init(poly.as_mut_ptr());
-
-            Self {
-                poly: poly.assume_init(),
-            }
-        }
-    }
-}
+use flint_sys::fmpz_poly::fmpz_poly_set_str;
+use std::{ffi::CString, str::FromStr};
 
 impl FromStr for PolyOverZ {
     type Err = MathError;
@@ -49,7 +25,7 @@ impl FromStr for PolyOverZ {
     /// correctly.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::PolyOverZ;
     /// use std::str::FromStr;
     ///
@@ -87,9 +63,28 @@ impl FromStr for PolyOverZ {
 
 #[cfg(test)]
 mod test_from_str {
+    use super::PolyOverZ;
     use std::str::FromStr;
 
-    use super::PolyOverZ;
+    /// Ensure that zero-coefficients are reduced
+    #[test]
+    fn reduce_zero_coeff() {
+        let one_1 = PolyOverZ::from_str("2  24 1").unwrap();
+        let one_2 = PolyOverZ::from_str("3  24 1 0").unwrap();
+
+        assert_eq!(one_1, one_2)
+    }
+
+    /// tests whether the same string yields the same polynomial
+    #[test]
+    fn same_string() {
+        let str = format!("3  1 {} {}", u64::MAX, i64::MIN);
+
+        let poly_1 = PolyOverZ::from_str(&str).unwrap();
+        let poly_2 = PolyOverZ::from_str(&str).unwrap();
+
+        assert_eq!(poly_1, poly_2)
+    }
 
     /// tests whether a correctly formatted string outputs an instantiation of a
     /// polynomial, i.e. does not return an error
@@ -117,19 +112,5 @@ mod test_from_str {
     #[test]
     fn false_number_of_coefficient() {
         assert!(PolyOverZ::from_str("4  1 2 -3").is_err());
-    }
-}
-
-// ensure that init initializes an empty polynomial
-#[cfg(test)]
-mod test_init {
-    use crate::integer::PolyOverZ;
-
-    /// Check if [`Default`] initializes the zero polynomial appropriately
-    #[test]
-    fn init_zero() {
-        let poly_over_zero = PolyOverZ::default();
-
-        assert_eq!("0", poly_over_zero.to_string())
     }
 }

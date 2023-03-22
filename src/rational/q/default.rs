@@ -7,7 +7,7 @@ impl Default for Q {
     /// Returns an instantiation of [`Q`] with value '0/1'.
     ///
     /// # Example:
-    /// ```rust
+    /// ```
     /// use std::default::Default;
     /// use math::rational::Q;
     ///  

@@ -12,7 +12,7 @@ impl fmt::Display for PolyOverZq {
     /// Allows to convert a [`PolyOverZq`] into a [`String`].
     ///
     /// # Examples
-    /// ```rust
+    /// ```
     /// use math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
     /// use core::fmt;
@@ -21,7 +21,7 @@ impl fmt::Display for PolyOverZq {
     /// println!("{}", poly);
     /// ```
     ///
-    /// ```rust
+    /// ```
     /// use math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
     ///
@@ -34,7 +34,11 @@ impl fmt::Display for PolyOverZq {
 
         let mut poly_over_z = PolyOverZ::default();
         unsafe {
-            fmpz_mod_poly_get_fmpz_poly(&mut poly_over_z.poly, &self.poly, &self.modulus.modulus)
+            fmpz_mod_poly_get_fmpz_poly(
+                &mut poly_over_z.poly,
+                &self.poly,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
         };
         write!(f, "{} mod {}", poly_over_z, self.modulus)
     }

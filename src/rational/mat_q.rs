@@ -1,10 +1,13 @@
-//! `MatQ` is a type of matrix with rational entries of arbritrary length.
+//! `MatQ` is a type of matrix with rational entries of arbitrary length.
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use flint_sys::fmpq_mat::fmpq_mat_struct;
 
-#[allow(dead_code)]
-#[derive(Debug)]
+mod from;
+mod get;
+mod ownership;
+mod set;
+
 /// [`MatQ`] is a matrix with entries of type [`Q`](crate::rational::Q).
 ///
 /// Attributes:
@@ -12,6 +15,7 @@ use flint_sys::fmpq_mat::fmpq_mat_struct;
 ///     of the [`Q`](crate::rational::Q) matrix
 ///
 /// # Examples
+#[derive(Debug)]
 pub struct MatQ {
     pub(crate) matrix: fmpq_mat_struct,
 }

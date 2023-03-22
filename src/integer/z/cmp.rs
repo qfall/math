@@ -9,12 +9,12 @@ impl PartialEq for Z {
     /// Checks if two integers are equal. Used by the `==` and `!=` operators.
     ///
     /// Parameters:
-    /// - other: the other value that is used to compare the elements
+    /// - `other`: the other value that is used to compare the elements
     ///
     /// Returns `true` if the elements are equal, otherwise `false`.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::Z;
     /// let a: Z = Z::from(42);
     /// let b: Z = Z::from(24);
@@ -42,12 +42,12 @@ impl PartialOrd for Z {
     /// Compares two [`Z`] values. Used by the `<`, `<=`, `>`, and `>=` operators.
     ///
     /// Parameters:
-    /// - other: the other value that is used to compare the elements
+    /// - `other`: the other value that is used to compare the elements
     ///
     /// Returns the [`Ordering`] of the elements.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::Z;
     ///
     /// let a: Z = Z::from_i64(10);

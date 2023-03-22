@@ -4,13 +4,16 @@
 
 use flint_sys::fmpz_poly::fmpz_poly_struct;
 
+mod arithmetic;
+mod cmp;
+mod default;
 mod evaluate;
 mod from;
 mod get;
+mod ownership;
 mod set;
 mod to_string;
 
-#[derive(Debug)]
 /// [`PolyOverZ`] is a type of polynomial with arbitrarily many coefficients of type
 /// [`Z`](crate::integer::Z).
 ///
@@ -18,12 +21,13 @@ mod to_string;
 // - `poly`: holds the content of the polynomial
 //
 /// # Example
-/// ```rust
+/// ```
 /// use math::integer::PolyOverZ;
 /// use std::str::FromStr;
 ///
 /// let poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
 /// ```
+#[derive(Debug)]
 pub struct PolyOverZ {
     pub(crate) poly: fmpz_poly_struct,
 }

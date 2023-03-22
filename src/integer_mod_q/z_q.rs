@@ -1,21 +1,40 @@
-//! `Zq` is a type for integers of arbitrary length modulo `q` with `q` fitting in a single machine word (usually 64 bit).
-//! This implementation uses the [FLINT](https://flintlib.org/) library.
+//! This module implements [`Zq`].
+//!
+//! This implementation uses [`fmpz_mod`](https://www.flintlib.org/doc/fmpz_mod.html)
+//! from the [FLINT](https://flintlib.org/) library.
+//! FLINT uses a `fmpz_mod_ctx_struct` to store functions and data used for
+//! optimizing modulo operations.
+//! This struct is wrapped in [`Modulus`](super::Modulus) for easy use.
+//!
+//! For **DEVELOPERS**: The [`PartialEq`] trait expects the [`Zq`] instance to be reduced.
+//! Hence, apply `reduce` after every possible `value` change!
 
-use flint_sys::fmpz::fmpz;
-use flint_sys::fmpz_mod::fmpz_mod_ctx;
+use super::Modulus;
+use crate::integer::Z;
 
-#[allow(dead_code)]
-#[derive(Debug)]
+mod from;
+mod reduce;
+mod to_string;
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+/// [`Zq`] is a type for integers of arbitrary length modulo `q`.
+/// This means, integer in `[0..q)` (`0` inclusive, `q` exclusive).
+///
+/// # Example
+/// ```
+/// # use math::error::MathError;
+/// use math::integer_mod_q::Zq;
+///
+/// let value = Zq::try_from((5, 10))?;
+/// # Ok::<(), MathError>(())
+/// ```
+///
 /// [`Zq`] represents an integer value in a modulus ring.
 ///
 /// Attributes:
-/// - `value`: holds [FLINT](https://flintlib.org/)'s [struct](fmpz)
-///     for an integer value
-/// - `ctx`: holds [FLINT](https://flintlib.org/)'s [struct](fmpz_mod_ctx)
-///     to specify a modulus
-///
-/// # Examples
+/// - `value`: holds a [`Z`] value for an integer value
+/// - `modulus`: holds a [`Modulus`] above which the value is reduced
 pub struct Zq {
-    pub(crate) value: fmpz,
-    pub(crate) ctx: fmpz_mod_ctx,
+    pub(crate) value: Z,
+    pub(crate) modulus: Modulus,
 }

@@ -6,30 +6,8 @@
 
 use super::PolyOverQ;
 use crate::error::MathError;
-use flint_sys::fmpq_poly::{fmpq_poly_init, fmpq_poly_set_str};
-use std::{ffi::CString, mem::MaybeUninit, str::FromStr};
-
-impl Default for PolyOverQ {
-    /// Initializes a [`PolyOverQ`].
-    /// This method is used to initialize a [`PolyOverQ`] internally.
-    ///
-    /// Returns an initialized [`PolyOverQ`].
-    ///
-    /// # Example
-    /// ```rust
-    /// use math::rational::PolyOverQ;
-    ///
-    /// let poly_over_zero = PolyOverQ::default(); // initializes a PolyOverQ as "0"
-    /// ```
-    fn default() -> Self {
-        let mut poly = MaybeUninit::uninit();
-        unsafe {
-            fmpq_poly_init(poly.as_mut_ptr());
-            let poly = poly.assume_init();
-            Self { poly }
-        }
-    }
-}
+use flint_sys::fmpq_poly::fmpq_poly_set_str;
+use std::{ffi::CString, str::FromStr};
 
 impl FromStr for PolyOverQ {
     type Err = MathError;
@@ -46,7 +24,7 @@ impl FromStr for PolyOverQ {
     /// correctly.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::rational::PolyOverQ;
     /// use std::str::FromStr;
     ///
@@ -68,7 +46,7 @@ impl FromStr for PolyOverQ {
 
         let c_string = CString::new(s)?;
 
-        // 0 is returned if the string is a valid input
+        // `0` is returned if the string is a valid input
         // additionally if it was not successfully, test if the provided value 's' actually
         // contains two whitespaces, since this might be a common error
         match unsafe { fmpq_poly_set_str(&mut res.poly, c_string.as_ptr()) } {
@@ -83,9 +61,28 @@ impl FromStr for PolyOverQ {
 
 #[cfg(test)]
 mod test_from_str {
+    use super::PolyOverQ;
     use std::str::FromStr;
 
-    use super::PolyOverQ;
+    /// Ensure that zero-coefficients are reduced
+    #[test]
+    fn reduce_zero_coeff() {
+        let one_1 = PolyOverQ::from_str("2  24/42 1").unwrap();
+        let one_2 = PolyOverQ::from_str("3  24/42 1 0").unwrap();
+
+        assert_eq!(one_1, one_2)
+    }
+
+    /// tests whether the same string yields the same polynomial
+    #[test]
+    fn same_string() {
+        let str = format!("3  1 2/3 {}/{}", u64::MAX, i64::MIN);
+
+        let poly_1 = PolyOverQ::from_str(&str).unwrap();
+        let poly_2 = PolyOverQ::from_str(&str).unwrap();
+
+        assert_eq!(poly_1, poly_2)
+    }
 
     /// tests whether a correctly formatted string outputs an instantiation of a
     /// polynomial, i.e. does not return an error
@@ -120,20 +117,5 @@ mod test_from_str {
     #[test]
     fn too_many_divisors() {
         assert!(PolyOverQ::from_str("3  1 2/5 -3/2/3").is_err());
-    }
-}
-
-// ensure that init initializes an empty polynomial
-#[cfg(test)]
-mod test_init {
-
-    use crate::rational::PolyOverQ;
-
-    /// Ensure that [`Default`] initializes the zero polynomial appropriately
-    #[test]
-    fn init_zero() {
-        let poly_over_zero = PolyOverQ::default();
-
-        assert_eq!("0", poly_over_zero.to_string())
     }
 }

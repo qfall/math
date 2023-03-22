@@ -12,7 +12,7 @@ impl fmt::Display for Modulus {
     /// Allows to convert a modulus of type [`Modulus`] into a [`String`].
     ///
     /// # Examples
-    /// ```rust
+    /// ```
     /// use math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
     /// use core::fmt;
@@ -21,7 +21,7 @@ impl fmt::Display for Modulus {
     /// println!("{}", modulus);
     /// ```
     ///
-    /// ```rust
+    /// ```
     /// use math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
     ///
@@ -40,7 +40,7 @@ impl fmt::Display for Modulus {
         // c_string should not be null either, since we call this method on an
         // instantiated object
         let msg = "We expect the pointer to point to a real value and the c_string 
-        not to be null. Hence we expect that this error does not occur";
+        not to be null.  This error occurs if the provided string does not have UTF-8 format.";
         let return_str = unsafe { CStr::from_ptr(c_str_ptr).to_str().expect(msg).to_owned() };
 
         unsafe { libc::free(c_str_ptr as *mut libc::c_void) };

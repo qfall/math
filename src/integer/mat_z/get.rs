@@ -1,7 +1,12 @@
 //! Implementations to get entries from a [`MatZ`] matrix.
 
 use super::MatZ;
-use crate::{error::MathError, integer::Z, utils::coordinate::evaluate_coordinate};
+use crate::{
+    error::MathError,
+    integer::Z,
+    traits::{GetNumColumns, GetNumRows},
+    utils::coordinate::evaluate_coordinates,
+};
 use flint_sys::{
     fmpz::{fmpz, fmpz_set},
     fmpz_mat::fmpz_mat_entry,
@@ -20,7 +25,7 @@ impl MatZ {
     /// greater than the matrix or negative.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::MatZ;
     ///
     /// let matrix = MatZ::new(5, 10).unwrap();
@@ -35,19 +40,7 @@ impl MatZ {
         row: S,
         column: T,
     ) -> Result<Z, MathError> {
-        let row_i64 = evaluate_coordinate(row)?;
-        let column_i64 = evaluate_coordinate(column)?;
-
-        if self.get_num_rows() <= row_i64 || self.get_num_columns() <= column_i64 {
-            return Err(MathError::OutOfBounds(
-                format!(
-                    "be smaller than ({},{})",
-                    self.get_num_rows(),
-                    self.get_num_columns()
-                ),
-                format!("({},{})", row_i64, column_i64,),
-            ));
-        }
+        let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
 
         // since `self.matrix` is a correct fmpz matrix and both row and column
         // are previously checked to be inside of the matrix, no errors
@@ -59,30 +52,36 @@ impl MatZ {
 
         Ok(Z { value: copy })
     }
+}
 
+impl GetNumRows for MatZ {
     /// Returns the number of rows of the matrix as a [`i64`].
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::MatZ;
+    /// use math::traits::GetNumRows;
     ///
     /// let matrix = MatZ::new(5,6).unwrap();
     /// let rows = matrix.get_num_rows();
     /// ```
-    pub fn get_num_rows(&self) -> i64 {
+    fn get_num_rows(&self) -> i64 {
         self.matrix.r
     }
+}
 
+impl GetNumColumns for MatZ {
     /// Returns the number of columns of the matrix as a [`i64`].
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::MatZ;
+    /// use math::traits::GetNumColumns;
     ///
     /// let matrix = MatZ::new(5,6).unwrap();
     /// let columns = matrix.get_num_columns();
     /// ```
-    pub fn get_num_columns(&self) -> i64 {
+    fn get_num_columns(&self) -> i64 {
         self.matrix.c
     }
 }
@@ -192,7 +191,10 @@ mod test_get_entry {
 #[cfg(test)]
 mod test_get_num {
 
-    use crate::integer::MatZ;
+    use crate::{
+        integer::MatZ,
+        traits::{GetNumColumns, GetNumRows},
+    };
 
     /// Ensure that the getter for rows works correctly.
     #[test]
