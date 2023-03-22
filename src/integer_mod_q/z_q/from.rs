@@ -301,7 +301,7 @@ mod test_try_from_z_z {
     #[test]
     fn modulus_zero() {
         let value = Z::from(10);
-        let modulus = Z::from(0);
+        let modulus = Z::ZERO;
 
         let new_zq = Zq::try_from_z_z(&value, &modulus);
 

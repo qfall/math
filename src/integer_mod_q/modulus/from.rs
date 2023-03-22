@@ -102,7 +102,7 @@ impl FromStr for Modulus {
 /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
 /// if the provided value is not greater than `0`.
 fn ctx_init(n: &Z) -> Result<fmpz_mod_ctx, MathError> {
-    if n <= &Z::from(0) {
+    if n <= &Z::ZERO {
         return Err(MathError::InvalidIntToModulus(n.to_string()));
     }
     let mut ctx = MaybeUninit::uninit();
@@ -189,7 +189,7 @@ mod test_ctx_init {
     /// tests whether a zero as input value returns an error
     #[test]
     fn zero_modulus() {
-        assert!(ctx_init(&Z::from(0)).is_err())
+        assert!(ctx_init(&Z::ZERO).is_err())
     }
 }
 
