@@ -44,7 +44,7 @@ macro_rules! serialize {
 ///
 /// ```impl Deserialize for *type*```
 macro_rules! deserialize {
-    ($field_identifier:tt, $type:ident) => {
+    ($field_identifier:tt, $field_identifier_enum:ident, $type:ident) => {
         impl<'de> Deserialize<'de> for $type {
         paste::paste! {
             #[doc = "Implements the deserialize option. This allows to create a [`" $type "`] from a given Json-object."]
@@ -52,11 +52,13 @@ macro_rules! deserialize {
             where
                 D: serde::Deserializer<'de>,
             {
-                const FIELDS: &[&str] = &[$field_identifier];
+
+                /// This enum defines the content of the struct to be generated using [`Deserialize`]
+                const FIELDS: &[&str] = &["value"];
                 #[derive(Deserialize)]
                 #[serde(field_identifier, rename_all = "lowercase")]
                 enum Field {
-                    Value,
+                    $field_identifier_enum,
                 }
 
                 /// This visitor iterates over the strings content and collects all possible fields.
@@ -76,7 +78,7 @@ macro_rules! deserialize {
                         let mut value = None;
                         while let Some(key) = map.next_key()? {
                             match key {
-                                Field::Value => {
+                                Field::$field_identifier_enum => {
                                     if value.is_some() {
                                         return Err(Error::duplicate_field($field_identifier));
                                     }

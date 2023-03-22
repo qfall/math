@@ -22,7 +22,7 @@ use serde::{
 use std::str::FromStr;
 
 serialize!("value", Z);
-deserialize!("value", Z);
+deserialize!("value", Value, Z);
 
 #[cfg(test)]
 mod test_serialize {
