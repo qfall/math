@@ -18,6 +18,7 @@ mod evaluate;
 mod from;
 mod get;
 mod ownership;
+mod serialize;
 mod set;
 mod to_string;
 
