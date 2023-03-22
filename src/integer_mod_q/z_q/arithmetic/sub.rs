@@ -43,7 +43,7 @@ impl Sub for &Zq {
     /// ```
     ///
     /// # Panics
-    /// - Panics if the modulus of both [`Zq`] mismatches.
+    /// - Panics if the moduli of both [`Zq`] mismatch.
     fn sub(self, other: Self) -> Self::Output {
         self.sub_safe(other).unwrap()
     }
@@ -56,8 +56,8 @@ impl Zq {
     /// Parameters:
     /// - `other`: specifies the value to sub to `self`
     ///
-    /// Returns the sum of both numbers as a [`Zq`] or an error if the modulus
-    /// does mismatch.
+    /// Returns the sum of both numbers as a [`Zq`] or an error if the moduli
+    /// mismatch.
     ///
     /// # Example
     /// ```
@@ -70,13 +70,13 @@ impl Zq {
 
     /// ```
     /// # Errors
-    /// Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the modulus of
-    /// both [`Zq`] mismatches.
+    /// Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
+    /// both [`Zq`] mismatch.
     pub fn sub_safe(&self, other: &Self) -> Result<Zq, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
                 " Tried to subtract '{}' from '{}'.
-            If the modulus should be ignored please convert into a Z beforehand",
+            If the modulus should be ignored please convert into a Z beforehand.",
                 self, other
             )));
         }

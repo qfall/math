@@ -43,7 +43,7 @@ impl Mul for &Zq {
     /// ```
     ///
     /// # Panics
-    /// - Panics if the modulus of both [`Zq`] mismatches.
+    /// - Panics if the moduli of both [`Zq`] mismatch.
     fn mul(self, other: Self) -> Self::Output {
         self.mul_safe(other).unwrap()
     }
@@ -56,8 +56,8 @@ impl Zq {
     /// Parameters:
     /// - `other`: specifies the value to mul to `self`
     ///
-    /// Returns the product of both numbers as a [`Zq`] or an error if the modulus
-    /// does mismatch.
+    /// Returns the product of both numbers as a [`Zq`] or an error if the moduli
+    /// mismatch.
     ///
     /// # Example
     /// ```
@@ -70,13 +70,13 @@ impl Zq {
 
     /// ```
     /// # Errors
-    /// Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the modulus of
-    /// both [`Zq`] mismatches.
+    /// Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
+    /// both [`Zq`] mismatch.
     pub fn mul_safe(&self, other: &Self) -> Result<Zq, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
                 " Tried to multiply '{}' and '{}'.
-            If the modulus should be ignored please convert into a Z beforehand",
+            If the modulus should be ignored please convert into a Z beforehand.",
                 self, other
             )));
         }
