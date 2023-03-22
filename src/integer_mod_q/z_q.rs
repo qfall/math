@@ -20,6 +20,7 @@
 use super::Modulus;
 use crate::integer::Z;
 
+mod arithmetic;
 mod from;
 mod reduce;
 mod to_string;
