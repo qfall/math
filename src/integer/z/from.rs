@@ -17,7 +17,7 @@ impl Z {
     ///
     /// Parameters:
     /// - `value`: the initial value the integer should have
-    /// 
+    ///
     /// Returns the new integer.
     ///
     /// # Example
@@ -36,7 +36,7 @@ impl Z {
     ///
     /// Parameters:
     /// - `value`: the initial value the integer should have
-    /// 
+    ///
     /// Returns the new integer.
     ///
     /// # Example
