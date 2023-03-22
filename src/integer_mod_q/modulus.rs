@@ -20,6 +20,7 @@ mod from;
 mod get;
 mod ownership;
 mod properties;
+mod serialize;
 mod to_string;
 
 /// [`Modulus`] is a type of a positive non-zero integer that is used
