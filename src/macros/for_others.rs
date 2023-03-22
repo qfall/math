@@ -1,4 +1,4 @@
-// Copyright © 2023 Marvin Beckmann
+// Copyright © 2023 Marvin Beckmann, Marcel Luca Schmidt
 //
 // This file is part of qFALL-math.
 //
@@ -64,6 +64,70 @@ macro_rules! implement_for_others {
 }
 
 pub(crate) use implement_for_others;
+
+/// Implements the [`SetEntry`](crate::traits::SetEntry) for [`*type*`] using the conversions from the
+/// [`*bridge_type*`] for [`*type*`].
+///
+/// Parameters:
+/// - `source_type`: the type of the input (e.g. [`i32`], [`i64`])
+/// - `bridge_type`: the type in which the input is converted
+/// - `type`: the type for which the [`SetEntry`](crate::traits::SetEntry) is implemented (e.g. [`MatZ`](crate::integer::MatZ), [`MatQ`](crate::rational::PMatQ))
+///
+/// Returns the owned Implementation code for the specified
+/// trait with the signature:
+///
+/// ```impl *specified trait*<*&source_type*> for *type*```
+macro_rules! implement_for_others_set_entry {
+    ($source_type:ident, $bridge_type:ident, $type:ident) => {
+        impl SetEntry<$source_type> for $type {
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::set_entry`]. Implicitly converts [`" $source_type "`] into [`" $bridge_type "`]."]
+            fn set_entry(
+                &mut self,
+                row: impl TryInto<i64> + Display + Copy,
+                column: impl TryInto<i64> + Display + Copy,
+                value: $source_type,
+            ) -> Result<(), MathError> {
+                self.set_entry(row, column, $bridge_type::from(value))
+            }
+            }
+        }
+    };
+}
+
+pub(crate) use implement_for_others_set_entry;
+
+/// Implements the [`*trait*`] for [`*type*`] using the [`*trait*`] for
+/// [`&*type*`].
+///
+/// Parameters:
+/// - `trait`: the trait that is implemented.
+/// - `trait_function`: the function the trait implements.
+/// - `type`: the type the trait is implemented for.
+///
+/// Returns the owned Implementation code for the [`*trait*`]
+/// trait with the signature:
+///
+/// ```impl *trait* for *type*```
+macro_rules! implement_set_entry_borrowed_to_owned {
+    ($source_type:ident, $type:ident) => {
+        impl SetEntry<$source_type> for $type {
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::set_entry`]. Implicitly converts [`" $source_type "`]."]
+            fn set_entry(
+                &mut self,
+                row: impl TryInto<i64> + Display + Copy,
+                column: impl TryInto<i64> + Display + Copy,
+                value: $source_type,
+            ) -> Result<(), MathError> {
+                self.set_entry(row, column, &value)
+            }
+            }
+        }
+    };
+}
+
+pub(crate) use implement_set_entry_borrowed_to_owned;
 
 /// Implements a specified trait for a owned input using the traits
 /// implementation for a borrowed input.
