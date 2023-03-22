@@ -14,7 +14,7 @@ impl MatZ {
     /// - `value`: specifies the value to which the entry is set
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::MatZ;
     /// use math::integer::Z;
     ///
@@ -47,7 +47,7 @@ impl MatZ {
     /// - `value`: specifies the value to which the entry is set
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::MatZ;
     /// use math::integer::Z;
     ///

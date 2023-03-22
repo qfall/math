@@ -31,7 +31,7 @@ impl FromStr for Q {
     /// correctly.
     ///
     /// # Examples
-    /// ```rust
+    /// ```
     /// use std::str::FromStr;
     /// use math::rational::Q;
     ///  
@@ -39,7 +39,7 @@ impl FromStr for Q {
     /// let b: Q = Q::from_str("100/3").unwrap();
     /// ```
     ///
-    /// ```rust
+    /// ```
     /// use std::str::FromStr;
     /// use math::rational::Q;
     ///  
@@ -47,7 +47,7 @@ impl FromStr for Q {
     /// let b: Q = Q::from_str("10/-3").unwrap();
     /// ```
     ///
-    /// ```rust
+    /// ```
     /// use std::str::FromStr;
     /// use math::rational::Q;
     ///  
@@ -87,7 +87,7 @@ impl FromStr for Q {
         // canonical form is expected by other functions
         unsafe { fmpq_canonicalise(&mut value) };
 
-        // if `value.den` is set to `0`, `value.num` is not necessarily 0 as well.
+        // if `value.den` is set to `0`, `value.num` is not necessarily `0` as well.
         // hence we do need to free the allocated space of the nominator
         // manually by using `fmpq_clear`
         match unsafe { fmpz_is_zero(&value.den) } {

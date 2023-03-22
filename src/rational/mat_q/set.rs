@@ -1,4 +1,4 @@
-//! Implementation to set entries from a [`MatZ`] matrix.
+//! Implementation to set entries from a [`MatQ`] matrix.
 
 use super::MatQ;
 use crate::utils::coordinate::evaluate_coordinates;
@@ -15,7 +15,7 @@ impl MatQ {
     /// - `value`: specifies the value to which the entry is set
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::rational::MatQ;
     /// use math::rational::Q;
     /// use std::str::FromStr;
@@ -45,7 +45,7 @@ impl MatQ {
     /// - `value`: specifies the value to which the entry is set
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::rational::MatQ;
     /// use math::rational::Q;
     /// use std::str::FromStr;

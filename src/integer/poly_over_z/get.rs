@@ -11,7 +11,7 @@ use std::fmt::Display;
 impl GetCoefficient<Z> for PolyOverZ {
     /// Returns the coefficient of a polynomial [`PolyOverZ`] as a [`Z`].
     ///
-    /// If a coordinate is provided which exceeds the highest set coefficient, zero is returned.
+    /// If a coordinate is provided which exceeds the highest set coefficient, `0` is returned.
     ///
     /// Parameters:
     /// - `coordinate`: the coordinate of the coefficient to get (has to be positive)
@@ -20,7 +20,7 @@ impl GetCoefficient<Z> for PolyOverZ {
     /// is negative and therefore invalid or it does not fit into an [`i64`].
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::PolyOverZ;
     /// use std::str::FromStr;
     /// use math::traits::GetCoefficient;

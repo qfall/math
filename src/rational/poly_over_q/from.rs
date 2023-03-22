@@ -24,7 +24,7 @@ impl FromStr for PolyOverQ {
     /// correctly.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::rational::PolyOverQ;
     /// use std::str::FromStr;
     ///
@@ -46,7 +46,7 @@ impl FromStr for PolyOverQ {
 
         let c_string = CString::new(s)?;
 
-        // 0 is returned if the string is a valid input
+        // `0` is returned if the string is a valid input
         // additionally if it was not successfully, test if the provided value 's' actually
         // contains two whitespaces, since this might be a common error
         match unsafe { fmpq_poly_set_str(&mut res.poly, c_string.as_ptr()) } {

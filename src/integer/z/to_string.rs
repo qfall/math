@@ -12,7 +12,7 @@ impl fmt::Display for Z {
     /// Allows to convert an integer of type [`Z`] into a [`String`].
     ///
     /// # Examples
-    /// ```rust
+    /// ```
     /// use math::integer::Z;
     /// use core::fmt;
     ///
@@ -20,7 +20,7 @@ impl fmt::Display for Z {
     /// println!("{}", integer);
     /// ```
     ///
-    /// ```rust
+    /// ```
     /// use math::integer::Z;
     /// use core::fmt;
     ///

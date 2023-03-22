@@ -13,7 +13,7 @@ use thiserror::Error;
 ///
 /// Possible entries:
 /// - `DivisionByZeroError` is thrown if it is tried to perform a division by `0`
-/// - `InvalidIntToModulus` is thrown if an integer is provided, which is not greater than zero
+/// - `InvalidIntToModulus` is thrown if an integer is provided, which is not greater than `0`
 /// - `InvalidMatrix` is thrown if an invalid string input of a matrix is given
 /// - `InvalidStringToCStringInput` is thrown if an invalid string is given to
 /// construct a [`CString`](std::ffi::CString)

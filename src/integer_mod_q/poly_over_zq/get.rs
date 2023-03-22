@@ -12,7 +12,7 @@ use std::fmt::Display;
 impl GetCoefficient<Zq> for PolyOverZq {
     /// Returns the coefficient of a polynomial [`PolyOverZq`] as a [`Zq`].
     ///
-    /// If a coordinate is provided which exceeds the highest set coefficient, zero is returned.
+    /// If a coordinate is provided which exceeds the highest set coefficient, `0` is returned.
     ///
     /// Parameters:
     /// - `coordinate`: the coordinate of the coefficient to get (has to be positive)
@@ -46,7 +46,7 @@ impl GetCoefficient<Zq> for PolyOverZq {
 impl GetCoefficient<Z> for PolyOverZq {
     /// Returns the coefficient of a polynomial [`PolyOverZq`] as a [`Z`].
     ///
-    /// If a coordinate is provided which exceeds the highest set coefficient, zero is returned.
+    /// If a coordinate is provided which exceeds the highest set coefficient, `0` is returned.
     ///
     /// Parameters:
     /// - `coordinate`: the coordinate of the coefficient to get (has to be positive)
@@ -129,7 +129,7 @@ mod test_get_coeff_z {
     use crate::{integer::Z, integer_mod_q::PolyOverZq, traits::GetCoefficient};
     use std::str::FromStr;
 
-    /// ensure that 0 is returned if the provided index is not yet set
+    /// ensure that `0` is returned if the provided index is not yet set
     #[test]
     fn index_out_of_range() {
         let modulus_str = format!("17{}", u64::MAX);

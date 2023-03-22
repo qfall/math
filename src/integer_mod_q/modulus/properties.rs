@@ -9,7 +9,7 @@ impl Modulus {
     ///
     /// Returns true if the modulus is prime.
     ///
-    /// ```rust
+    /// ```
     /// use std::str::FromStr;
     /// use math::integer_mod_q::Modulus;
     ///

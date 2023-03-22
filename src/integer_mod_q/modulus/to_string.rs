@@ -12,7 +12,7 @@ impl fmt::Display for Modulus {
     /// Allows to convert a modulus of type [`Modulus`] into a [`String`].
     ///
     /// # Examples
-    /// ```rust
+    /// ```
     /// use math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
     /// use core::fmt;
@@ -21,7 +21,7 @@ impl fmt::Display for Modulus {
     /// println!("{}", modulus);
     /// ```
     ///
-    /// ```rust
+    /// ```
     /// use math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
     ///

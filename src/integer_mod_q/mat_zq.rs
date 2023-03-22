@@ -5,8 +5,6 @@ use flint_sys::fmpz_mod_mat::fmpz_mod_mat_struct;
 
 mod from;
 
-#[allow(dead_code)]
-#[derive(Debug)]
 /// [`MatZq`] is a matrix with entries of type [`Zq`](crate::integer_mod_q::Zq).
 ///
 /// Attributes:
@@ -14,6 +12,8 @@ mod from;
 ///     of the [`Zq`](crate::integer_mod_q::Zq) matrix
 ///
 /// # Examples
+#[allow(dead_code)]
+#[derive(Debug)]
 pub struct MatZq {
     pub(crate) matrix: fmpz_mod_mat_struct,
 }

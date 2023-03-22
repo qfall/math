@@ -10,7 +10,6 @@ mod ownership;
 mod properties;
 mod set;
 
-#[derive(Debug)]
 /// [`MatPolyOverZ`] is a matrix with entries of type [`PolyOverZ`](crate::integer::PolyOverZ).
 ///
 /// Attributes:
@@ -18,6 +17,7 @@ mod set;
 ///     of the [`PolyOverZ`](crate::integer::PolyOverZ) matrix
 ///
 /// # Examples
+#[derive(Debug)]
 pub struct MatPolyOverZ {
     pub(crate) matrix: fmpz_poly_mat_struct,
 }

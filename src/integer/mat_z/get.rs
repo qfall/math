@@ -25,7 +25,7 @@ impl MatZ {
     /// greater than the matrix or negative.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::MatZ;
     ///
     /// let matrix = MatZ::new(5, 10).unwrap();
@@ -58,7 +58,7 @@ impl GetNumRows for MatZ {
     /// Returns the number of rows of the matrix as a [`i64`].
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::MatZ;
     /// use math::traits::GetNumRows;
     ///
@@ -74,7 +74,7 @@ impl GetNumColumns for MatZ {
     /// Returns the number of columns of the matrix as a [`i64`].
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::MatZ;
     /// use math::traits::GetNumColumns;
     ///

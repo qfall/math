@@ -71,7 +71,7 @@ impl FromStr for ModulusPolynomialRingZq {
     /// formatted correctly.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer_mod_q::ModulusPolynomialRingZq;
     /// use std::str::FromStr;
     ///

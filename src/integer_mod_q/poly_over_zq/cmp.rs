@@ -11,7 +11,7 @@ impl PartialEq for PolyOverZq {
     /// Used by the `==` and `!=` operators.
     ///
     /// Parameters:
-    /// - other: the other value that is used to compare the elements
+    /// - `other`: the other value that is used to compare the elements
     ///
     /// Returns `true` if the elements are equal, otherwise `false`.
     ///

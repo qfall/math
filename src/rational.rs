@@ -1,4 +1,7 @@
-pub mod mat_q;
+//! This module contains the type [`Q`] for rationals with arbitrary length and
+//! constructions over it.
+
+mod mat_q;
 mod poly_over_q;
 mod q;
 

@@ -21,7 +21,7 @@ impl Modulus {
     /// Returns a [`Modulus`] or a [`MathError`]
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
     ///
@@ -30,7 +30,7 @@ impl Modulus {
     /// # Errors and Failures
     ///
     /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
-    /// if the provided value is not greater than zero.
+    /// if the provided value is not greater than `0`.
     pub fn try_from_z(value: &Z) -> Result<Self, MathError> {
         let modulus = ctx_init(&value.value);
         Ok(Self {
@@ -60,7 +60,7 @@ impl FromStr for Modulus {
     /// a valid modulus.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
     ///
@@ -70,9 +70,9 @@ impl FromStr for Modulus {
     ///
     /// - Returns a [`MathError`] of type
     /// [`InvalidStringToModulusInput`](MathError::InvalidStringToModulusInput) if the provided string was not
-    /// formatted correctly, e.g., not a number or not greater zero.
+    /// formatted correctly, e.g., not a number or not greater `0`.
     /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
-    /// if the provided value is not greater than zero.
+    /// if the provided value is not greater than `0`.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // TODO: first create a Z, and then use the fmpz value from Z
         if s.contains(char::is_whitespace) {
@@ -104,11 +104,11 @@ impl FromStr for Modulus {
 /// - `s`: the value the modulus should have as [`fmpz`]
 ///
 /// Returns an initialized context object [`fmpz_mod_ctx`] or an error, if the
-/// provided value was not greater than zero.
+/// provided value was not greater than `0`.
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
-/// if the provided value is not greater than zero.
+/// if the provided value is not greater than `0`.
 fn ctx_init(n: &fmpz) -> Result<fmpz_mod_ctx, MathError> {
     if unsafe { fmpz_cmp(n, &fmpz(0)) <= 0 } {
         // TODO: include the string representation of the input value in the error

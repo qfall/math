@@ -65,7 +65,7 @@ mod test_clone {
         let values = ["1/2", "-1/2", "0/1"];
 
         for str_value in values {
-            let val = Q::from_str(&str_value).unwrap();
+            let val = Q::from_str(str_value).unwrap();
             let val_clone = val.clone();
 
             assert_eq!(

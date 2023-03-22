@@ -18,7 +18,7 @@ impl Evaluate<Q, Q> for PolyOverQ {
     /// Returns the evaluation of the polynomial as a [`Q`].
     ///
     /// # Examples
-    /// ```rust
+    /// ```
     /// use math::traits::Evaluate;
     /// use math::rational::Q;
     /// use math::rational::PolyOverQ;
@@ -43,7 +43,7 @@ impl Evaluate<&Q, Q> for PolyOverQ {
     /// Returns the evaluation of the polynomial as a [`Q`].
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::traits::Evaluate;
     /// use math::rational::Q;
     /// use math::rational::PolyOverQ;
@@ -96,7 +96,7 @@ impl Evaluate<&Z, Q> for PolyOverQ {
     /// Returns the evaluation of the polynomial as a [`Q`].
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::traits::Evaluate;
     /// use math::rational::Q;
     /// use math::rational::PolyOverQ;

@@ -15,7 +15,6 @@ use crate::integer::PolyOverZ;
 mod from;
 mod reduce;
 
-#[allow(dead_code)]
 /// [`PolynomialRingZq`] represents polynomials over the finite field
 /// [`PolyOverZq`](crate::integer_mod_q::PolyOverZq)/f(X) where `q` is prime and f(X) is a polynomial over [`Zq`](super::Zq).
 ///

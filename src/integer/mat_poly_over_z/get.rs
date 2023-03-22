@@ -22,7 +22,7 @@ impl MatPolyOverZ {
     /// greater than the matrix or negative.
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::MatPolyOverZ;
     ///
     /// let matrix = MatPolyOverZ::new(5, 10).unwrap();
@@ -55,7 +55,7 @@ impl GetNumRows for MatPolyOverZ {
     /// Returns the number of rows of the matrix as a [`i64`].
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::MatPolyOverZ;
     /// use math::traits::GetNumRows;
     ///
@@ -71,7 +71,7 @@ impl GetNumColumns for MatPolyOverZ {
     /// Returns the number of columns of the matrix as a [`i64`].
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer::MatPolyOverZ;
     /// use math::traits::GetNumColumns;
     ///

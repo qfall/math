@@ -10,7 +10,7 @@ impl PolyOverZq {
     /// Returns true if the polynomial is irreducible and true otherwise
     ///
     /// # Example
-    /// ```rust
+    /// ```
     /// use math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
     ///

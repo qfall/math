@@ -13,9 +13,9 @@
 /// [`*bridge_type*`] for [`*type*`].
 ///
 /// Parameters:
-/// - source_type: the type of the input (e.g. [`i32`], [`i64`])
-/// - bridge_type: the type in which the input is converted
-/// - type: the type for which the [`SetCoefficient`](crate::traits::SetCoefficient) is implemented (e.g. [`PolyOverZ`](crate::integer::PolyOverZ), [`PolyOverQ`](crate::rational::PolyOverQ))
+/// - `source_type`: the type of the input (e.g. [`i32`], [`i64`])
+/// - `bridge_type`: the type in which the input is converted
+/// - `type`: the type for which the [`SetCoefficient`](crate::traits::SetCoefficient) is implemented (e.g. [`PolyOverZ`](crate::integer::PolyOverZ), [`PolyOverQ`](crate::rational::PolyOverQ))
 ///
 /// Returns the owned Implementation code for the specified
 /// trait with the signature:

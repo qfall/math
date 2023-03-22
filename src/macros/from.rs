@@ -1,11 +1,13 @@
+//! This module implements macros which are used to implement the [`From`] trait for data types.
+
 /// Implements the [`From`] trait for a given type. It requires an already written
 /// conversion function (e.g. [`Z::from_i64()`](crate::integer::Z::from_i64())).
 ///
 /// Input parameters:
-/// - source_type: the source identifier (e.g. [`i64`], [`u32`], ...).
-/// - destination_type: the destination identifier
+/// - `source_type`: the source identifier (e.g. [`i64`], [`u32`], ...).
+/// - `destination_type`: the destination identifier
 ///   (e.g. [`Z`](crate::integer::Z), [`MatZ`](crate::integer::MatZ)).
-/// - function: The function that needs to be called for the conversion
+/// - `function`: The function that needs to be called for the conversion
 ///   (e.g. [`Z::from_i64()`])
 /// Returns the Implementation code for the [`From`] Trait with the signature:
 /// ```impl From<*source_type*> for *destination_type*```
@@ -39,11 +41,11 @@ pub(crate) use from_trait;
 /// The macro is supposed to be used inside of an `impl` block for the destination type.
 ///
 /// Input parameters:
-/// - source_type: The source identifier (e.g. [`i64`], [`u32`], ...).
-/// - bridge_type: Type used for casting before calling the function.
-/// - destination_type: Return type of the generated function
+/// - `source_type`: The source identifier (e.g. [`i64`], [`u32`], ...).
+/// - `bridge_type`: Type used for casting before calling the function.
+/// - `destination_type`: Return type of the generated function
 ///   (e.g. [`Z`](crate::integer::Z), [`MatZ`](crate::integer::MatZ)).
-/// - function: The function that needs to be called for the conversion
+/// - `function`: The function that needs to be called for the conversion
 ///   (e.g. [`Z::from_i64()`]).
 /// Returns the Implementation code for the function `from_<source_type>`.
 ///

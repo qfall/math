@@ -64,7 +64,7 @@ mod test_clone {
     /// Check if nominators and denominators are equal for small integers
     #[test]
     fn same_reference_small() {
-        let a = PolyOverQ::from_str(&format!("4  1/1 -1/-2 -2/2 3/-4")).unwrap();
+        let a = PolyOverQ::from_str("4  1/1 -1/-2 -2/2 3/-4").unwrap();
 
         let b = a.clone();
 

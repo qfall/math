@@ -12,7 +12,7 @@ impl fmt::Display for PolyOverZq {
     /// Allows to convert a [`PolyOverZq`] into a [`String`].
     ///
     /// # Examples
-    /// ```rust
+    /// ```
     /// use math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
     /// use core::fmt;
@@ -21,7 +21,7 @@ impl fmt::Display for PolyOverZq {
     /// println!("{}", poly);
     /// ```
     ///
-    /// ```rust
+    /// ```
     /// use math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
     ///
