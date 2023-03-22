@@ -40,7 +40,7 @@ An extensive documentation can be generated using
 ```bash
 cargo doc               # suffix with --open to directly open the documentation
 ```
-once the project is cloned. Following, find a small overview which general types [qFALL-math](https://github.com/qfall/math).
+once the project is cloned. Following, find a small overview containing the general types of our library [qFALL-math](https://github.com/qfall/math).
 
 ```bash
 .math
@@ -86,7 +86,6 @@ use math::integer_mod_q::Modulus;
 let modulus = Modulus::try_from(24).unwrap();
 let a = Zq::from((&Z::from(42), &modulus));
 let b = Zq::from((&Z::from(17), &modulus));
-q
 let res_add: Zq = a + b;
 let res_sub: Zq = a - b;
 let res_mul: Zq = a * b;
