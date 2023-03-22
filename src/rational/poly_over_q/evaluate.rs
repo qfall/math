@@ -12,34 +12,12 @@
 
 use super::PolyOverQ;
 use crate::{
-    integer::Z, macros::for_others::implement_for_others_evaluate, rational::Q, traits::Evaluate,
+    integer::Z,
+    macros::for_others::{implement_for_others, implement_for_owned},
+    rational::Q,
+    traits::Evaluate,
 };
 use flint_sys::fmpq_poly::{fmpq_poly_evaluate_fmpq, fmpq_poly_evaluate_fmpz};
-
-impl Evaluate<Q, Q> for PolyOverQ {
-    /// Evaluates a [`PolyOverQ`] on a given input.
-    ///
-    /// Parameters:
-    /// - `value`: the value with which to evaluate the polynomial. TODO: Currently supported
-    /// are all pairs of [`i8`], [`i16`],[`i32`],[`i64`],[`u8`],[`u16`],[`u32`],[`u64`] and separately [`Q`]
-    ///
-    /// Returns the evaluation of the polynomial as a [`Q`].
-    ///
-    /// # Examples
-    /// ```
-    /// use math::traits::Evaluate;
-    /// use math::rational::Q;
-    /// use math::rational::PolyOverQ;
-    /// use std::str::FromStr;
-    ///
-    /// let poly = PolyOverQ::from_str("5  0 1 2/3 -3/2 1").unwrap();
-    /// let value = Q::from_str("3/2").unwrap();
-    /// let res = poly.evaluate(value);
-    /// ```
-    fn evaluate(&self, value: Q) -> Q {
-        self.evaluate(&value)
-    }
-}
 
 impl Evaluate<&Q, Q> for PolyOverQ {
     /// Evaluates a [`PolyOverQ`] on a given input of [`Q`]. Note that the
@@ -67,30 +45,6 @@ impl Evaluate<&Q, Q> for PolyOverQ {
         unsafe { fmpq_poly_evaluate_fmpq(&mut res.value, &self.poly, &value.value) };
 
         res
-    }
-}
-
-impl Evaluate<Z, Q> for PolyOverQ {
-    /// Evaluates a [`PolyOverQ`] on a given input of [`Z`].
-    ///
-    /// Parameters:
-    /// - `value`: the value with which to evaluate the polynomial.
-    ///
-    /// Returns the evaluation of the polynomial as a [`Q`].
-    ///
-    /// # Example
-    /// ```
-    /// use math::traits::Evaluate;
-    /// use math::rational::Q;
-    /// use math::rational::PolyOverQ;
-    /// use std::str::FromStr;
-    ///
-    /// let poly = PolyOverQ::from_str("5  0 1 2/3 -3/2 1").unwrap();
-    /// let value = Q::from_str("3/2").unwrap();
-    /// let res = poly.evaluate(&value);
-    /// ```
-    fn evaluate(&self, value: Z) -> Q {
-        self.evaluate(&value)
     }
 }
 
@@ -123,14 +77,9 @@ impl Evaluate<&Z, Q> for PolyOverQ {
     }
 }
 
-implement_for_others_evaluate!(i64, Z, Q, PolyOverQ);
-implement_for_others_evaluate!(i32, Z, Q, PolyOverQ);
-implement_for_others_evaluate!(i16, Z, Q, PolyOverQ);
-implement_for_others_evaluate!(i8, Z, Q, PolyOverQ);
-implement_for_others_evaluate!(u64, Z, Q, PolyOverQ);
-implement_for_others_evaluate!(u32, Z, Q, PolyOverQ);
-implement_for_others_evaluate!(u16, Z, Q, PolyOverQ);
-implement_for_others_evaluate!(u8, Z, Q, PolyOverQ);
+implement_for_others!(Z, Q, PolyOverQ, Evaluate for u8 u16 u32 u64 i8 i16 i32 i64);
+implement_for_owned!(Z, Q, PolyOverQ, Evaluate);
+implement_for_owned!(Q, Q, PolyOverQ, Evaluate);
 
 // TODO: add traits for TryInto with other values, once the corresponding functions are
 // implemented.
