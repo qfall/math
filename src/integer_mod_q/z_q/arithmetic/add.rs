@@ -57,7 +57,7 @@ impl Zq {
     /// - `other`: specifies the value to add to `self`
     ///
     /// Returns the sum of both numbers as a [`Zq`] or an error if the modulus
-    /// do mismatch.
+    /// does mismatch.
     ///
     /// # Example
     /// ```
@@ -70,7 +70,7 @@ impl Zq {
 
     /// ```
     /// # Errors
-    /// Returns a [`MathError`] of type [`MathError::Error`] if the modulus of
+    /// Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the modulus of
     /// both [`Zq`] mismatches.
     pub fn add_safe(&self, other: &Self) -> Result<Zq, MathError> {
         if self.modulus != other.modulus {
