@@ -59,7 +59,7 @@ mod test_serialize {
         assert_eq!(cmp_string, serde_json::to_string(&poly_z).unwrap())
     }
 
-    /// tests whether the serialization of a positive [`PolyOverZq`] works.
+    /// tests whether the serialization of a negative large [`PolyOverZq`] works.
     #[test]
     fn serialize_output_negative_large() {
         let poly_str = format!("3  1 -{} 1 mod {}", u64::MAX, u64::MAX - 58);
@@ -89,7 +89,7 @@ mod test_deserialize {
         assert_eq!(poly_z, serde_json::from_str(&cmp_string).unwrap())
     }
 
-    /// tests whether the deserialization of a positive [`PolyOverZq`] works.
+    /// tests whether the deserialization of a negative [`PolyOverZq`] works.
     #[test]
     fn deserialize_negative() {
         let poly_str = "3  -17 -42 1 mod 81";
@@ -99,7 +99,7 @@ mod test_deserialize {
         assert_eq!(poly_z, serde_json::from_str(&cmp_string).unwrap())
     }
 
-    /// tests whether the deserialization of a positive [`PolyOverZq`] works.
+    /// tests whether the deserialization of a positive large [`PolyOverZq`] works.
     #[test]
     fn deserialize_positive_large() {
         let poly_str = format!("3  -17 {} 1 mod {}", u64::MAX, u64::MAX - 58);
@@ -109,7 +109,7 @@ mod test_deserialize {
         assert_eq!(poly_z, serde_json::from_str(&cmp_string).unwrap())
     }
 
-    /// tests whether the deserialization of a positive [`PolyOverZq`] works.
+    /// tests whether the deserialization of a negative large [`PolyOverZq`] works.
     #[test]
     fn deserialize_negative_large() {
         let poly_str = format!("3  -17 -{} 1 mod {}", u64::MAX, u64::MAX - 58);
