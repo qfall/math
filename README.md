@@ -86,6 +86,7 @@ use math::integer_mod_q::Modulus;
 let modulus = Modulus::try_from(24).unwrap();
 let a = Zq::from((&Z::from(42), &modulus));
 let b = Zq::from((&Z::from(17), &modulus));
+
 let res_add: Zq = a + b;
 let res_sub: Zq = a - b;
 let res_mul: Zq = a * b;
@@ -113,7 +114,7 @@ This project includes the C-library [FLINT](https://flintlib.org/) as a math lib
 Last, but not least, we utilized [serde](https://crates.io/crates/serde) and [serde_json](https://crates.io/crates/serde_json) to (de-)serialize objects to and from JSON. An extensive list can be found in our `Cargo.toml` file.
 
 ## License
-This library is distributed under the **Mozilla Public License Version 2.0**.
+This library is distributed under the **Mozilla Public License Version 2.0** which can be found here [License](https://github.com/qfall/math/blob/dev/LICENSE).
 Permissions of this weak copyleft license are conditioned on making available source code of licensed files and modifications of those files under the same license (or in certain cases, one of the GNU licenses). Copyright and license notices must be preserved. Contributors provide an express grant of patent rights. However, a larger work using the licensed work may be distributed under different terms and without source code for files added in the larger work.
 
 ## Citing
