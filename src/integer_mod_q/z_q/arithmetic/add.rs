@@ -1,3 +1,11 @@
+// Copyright © 2023 Phil Milewski
+//
+// This file is part of qFALL-math.
+//
+// qFALL-math is free software: you can redistribute it and/or modify it under
+// the terms of the Mozilla Public License Version 2.0 as published by the
+// Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
+
 //! Implementation of the [`Add`] trait for [`Zq`] values.
 
 use super::super::Zq;
@@ -66,7 +74,11 @@ impl Zq {
     /// both [`Zq`] mismatches.
     pub fn add_safe(&self, other: &Self) -> Result<Zq, MathError> {
         if self.modulus != other.modulus {
-            return Err(MathError::DivisionByZeroError("".to_string())); //TODO
+            return Err(MathError::MismatchingModulus(format!(
+                " Tried to add '{}' and '{}'.
+            If the modulus should be ignored please convert into a Z beforehand",
+                self, other
+            )));
         }
         let mut out = Zq::from_z_modulus(&Z::from(1), &self.modulus);
         unsafe {

@@ -44,6 +44,8 @@ use thiserror::Error;
 /// construct a [`Z`](crate::integer::Z)
 /// - `InvalidStringToZqInput` is thrown if an invalid string is given to
 /// construct a [`Zq`](crate::integer_mod_q::Zq)
+/// - `MismatchingModulus` is thrown if any function is called on two
+/// objects with different modulus where equal modulus is required
 /// - `NotPrime` is thrown if a provided integer is not prime
 /// - `OutOfBounds` is thrown if a provided index is not in a desired range
 ///
@@ -121,6 +123,9 @@ pub enum MathError {
     /// parse string to [`Zq`](crate::integer_mod_q::Zq) error
     #[error("invalid string input to parse to Zq {0}")]
     InvalidStringToZqInput(String),
+    /// mismatching modulus error
+    #[error("mismatching modulus.{0}")]
+    MismatchingModulus(String),
     /// if an integer or modulus is not prime
     #[error("invalid integer. The integer has to be prime and the provided value is {0}")]
     NotPrime(String),
