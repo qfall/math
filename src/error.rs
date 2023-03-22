@@ -1,3 +1,11 @@
+// Copyright © 2023 Niklas Siemer
+//
+// This file is part of qFALL-math.
+//
+// qFALL-math is free software: you can redistribute it and/or modify it under
+// the terms of the Mozilla Public License Version 2.0 as published by the
+// Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
+
 //! This module contains this crate's error enum. This enum can hold all sorts
 //! of errors occurring in this crate s.t. error propagation is simple for
 //! developers of this crate and all sorts of thrown errors and error types can
