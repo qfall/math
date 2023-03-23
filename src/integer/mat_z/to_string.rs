@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! This module contains all options to convert an matrix of type
+//! This module contains all options to convert a matrix of type
 //! [`MatZ`] into a [`String`].
 //!
 //! This includes the [`Display`](std::fmt::Display) trait.
@@ -18,7 +18,7 @@ use core::fmt;
 use flint_sys::fmpz_mat::fmpz_mat_print_pretty;
 
 impl fmt::Display for MatZ {
-    /// Allows to convert an matrix of type [`MatZ`] into a [`String`].
+    /// Allows to convert a matrix of type [`MatZ`] into a [`String`].
     ///
     /// # Examples
     /// ```
@@ -120,6 +120,19 @@ mod test_to_string {
         let cmp = MatZ::from_str("[[-2, 1, 3],[5, -6, 7]]").unwrap();
 
         assert_eq!("[[-2, 1, 3],[5, -6, 7]]", cmp.to_string())
+    }
+
+    /// tests whether a matrix with positive entries works in a roundtrip
+    #[test]
+    fn working_big_dimensions() {
+        let cmp1 = MatZ::from_str(&format!("[{}[5, 6, 7]]", "[1, 2, 3],".repeat(99))).unwrap();
+        let cmp2 = MatZ::from_str(&format!("[[{}1]]", "1, ".repeat(99))).unwrap();
+
+        assert_eq!(
+            format!("[{}[5, 6, 7]]", "[1, 2, 3],".repeat(99)),
+            cmp1.to_string()
+        );
+        assert_eq!(format!("[[{}1]]", "1, ".repeat(99)), cmp2.to_string());
     }
 
     /// tests whether a matrix that is created using a string, returns a
