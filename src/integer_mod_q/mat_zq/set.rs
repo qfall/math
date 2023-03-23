@@ -73,7 +73,7 @@ impl SetEntry<&Zq> for MatZq {
     /// use std::str::FromStr;
     ///
     /// let mut matrix = MatZq::new(5, 10, 7).unwrap();
-    /// let value = Zq::from_str("5 mod 12").unwrap();
+    /// let value = Zq::from_str("5 mod 7").unwrap();
     /// matrix.set_entry(1, 1, &value).unwrap();
     /// ```
     ///
@@ -88,7 +88,14 @@ impl SetEntry<&Zq> for MatZq {
     ) -> Result<(), MathError> {
         let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
 
-        // TODO error when modulus not equal
+        if self.get_mod() != value.modulus {
+            return Err(MathError::MismatchingModulus(format!(
+                " Modulus of matrix: '{}'. Modulus of value: '{}'.
+            If the modulus should be ignored please convert into a Z beforehand.",
+                self.get_mod(),
+                value.modulus
+            )));
+        }
 
         unsafe {
             // get entry and replace the pointed at value with the specified value
@@ -190,7 +197,7 @@ mod test_setter {
     /// Ensure that setting entries works with different types.
     #[test]
     fn diff_types() {
-        let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+        let mut matrix = MatZq::new(5, 10, 56).unwrap();
 
         matrix.set_entry(0, 0, Z::default()).unwrap();
         matrix
@@ -212,5 +219,14 @@ mod test_setter {
         let entry: Z = matrix.get_entry(1, 1).unwrap();
 
         assert_eq!(entry, Z::from(0));
+    }
+
+    /// Ensure that differing moduli result in an error.
+    #[test]
+    fn modulus_error() {
+        let mut matrix = MatZq::new(5, 10, 3).unwrap();
+        assert!(matrix
+            .set_entry(1, 1, Zq::from_str("2 mod 5").unwrap())
+            .is_err());
     }
 }
