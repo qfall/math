@@ -12,9 +12,7 @@ use super::MatZq;
 use crate::error::MathError;
 use crate::integer::Z;
 use crate::integer_mod_q::Zq;
-use crate::macros::for_others::{
-    implement_for_others_set_entry, implement_set_entry_borrowed_to_owned,
-};
+use crate::macros::for_others::{implement_for_others, implement_for_owned};
 use crate::traits::SetEntry;
 use crate::utils::coordinate::evaluate_coordinates;
 use flint_sys::fmpz_mod_mat::fmpz_mod_mat_set_entry;
@@ -106,17 +104,10 @@ impl SetEntry<&Zq> for MatZq {
     }
 }
 
-implement_set_entry_borrowed_to_owned!(Z, MatZq);
-implement_set_entry_borrowed_to_owned!(Zq, MatZq);
+implement_for_owned!(Z, MatZq, SetEntry);
+implement_for_owned!(Zq, MatZq, SetEntry);
 
-implement_for_others_set_entry!(i64, Z, MatZq);
-implement_for_others_set_entry!(i32, Z, MatZq);
-implement_for_others_set_entry!(i16, Z, MatZq);
-implement_for_others_set_entry!(i8, Z, MatZq);
-implement_for_others_set_entry!(u64, Z, MatZq);
-implement_for_others_set_entry!(u32, Z, MatZq);
-implement_for_others_set_entry!(u16, Z, MatZq);
-implement_for_others_set_entry!(u8, Z, MatZq);
+implement_for_others!(Z, MatZq, SetEntry for i8 i16 i32 i64 u8 u16 u32 u64);
 
 #[cfg(test)]
 mod test_setter {

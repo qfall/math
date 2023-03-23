@@ -24,11 +24,14 @@
 /// `($bridge_type, $output_type, $type, Evaluate for $source_type:ident)`
 /// - [`SetCoefficient`](crate::traits::SetCoefficient) with the signature
 /// `($bridge_type, $type, SetCoefficient for $source_type:ident)`
+/// - [`SetEntry`](crate::traits::SetEntry) with the signature
+/// `($bridge_type, $type, SetEntry for $source_type:ident)`
 ///
 /// # Examples
 /// ```compile_fail
 /// implement_for_others!(Z, Z, PolyOverZ, Evaluate for u8 u16 u32 u64 i8 i16 i32 i64);
 /// implement_for_others!(Z, PolyOverZ, SetCoefficient for i8 i16 i32 i64 u8 u16 u32 u64);
+/// implement_for_others!(Z, MatZq, SetEntry for i8 i16 i32 i64 u8 u16 u32 u64);
 /// ```
 macro_rules! implement_for_others {
     // [`Evaluate`] trait
@@ -61,25 +64,10 @@ macro_rules! implement_for_others {
             }
         })*
     };
-}
 
-pub(crate) use implement_for_others;
-
-/// Implements [`SetEntry`](crate::traits::SetEntry) for [`*type*`] using the conversions from the
-/// [`*bridge_type*`] for [`*type*`].
-///
-/// Parameters:
-/// - `source_type`: the type of the input (e.g. [`i32`], [`i64`])
-/// - `bridge_type`: the type in which the input is converted
-/// - `type`: the type for which the [`SetEntry`](crate::traits::SetEntry) is implemented (e.g. [`MatZ`](crate::integer::MatZ), [`MatQ`](crate::rational::MatQ))
-///
-/// Returns the owned Implementation code for the [`SetEntry`](crate::traits::SetEntry)
-/// trait with the signature:
-///
-/// ```impl SetEntry<*&source_type*> for *type*```
-macro_rules! implement_for_others_set_entry {
-    ($source_type:ident, $bridge_type:ident, $type:ident) => {
-        impl SetEntry<$source_type> for $type {
+    // [`SetEntry`] trait
+    ($bridge_type:ident, $type:ident, SetEntry for $($source_type:ident)*) => {
+        $(impl SetEntry<$source_type> for $type {
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::set_entry`]. Implicitly converts [`" $source_type "`] into [`" $bridge_type "`]."]
             fn set_entry(
@@ -91,41 +79,11 @@ macro_rules! implement_for_others_set_entry {
                 self.set_entry(row, column, $bridge_type::from(value))
             }
             }
-        }
+        })*
     };
 }
 
-pub(crate) use implement_for_others_set_entry;
-
-/// Implements [`SetEntry`](crate::traits::SetEntry) with [`*source_type*`] for [`*type*`].
-///
-/// Parameters:
-/// - `source_type`: the type of the input.
-/// - `type`: the type the trait is implemented for.
-///
-/// Returns the owned Implementation code for the [`SetEntry`](crate::traits::SetEntry)
-/// trait with the signature:
-///
-/// ```impl SetEntry<*&source_type*> for *type*```
-macro_rules! implement_set_entry_borrowed_to_owned {
-    ($source_type:ident, $type:ident) => {
-        impl SetEntry<$source_type> for $type {
-            paste::paste! {
-                #[doc = "Documentation can be found at [`" $type "::set_entry`]."]
-            fn set_entry(
-                &mut self,
-                row: impl TryInto<i64> + Display + Copy,
-                column: impl TryInto<i64> + Display + Copy,
-                value: $source_type,
-            ) -> Result<(), MathError> {
-                self.set_entry(row, column, &value)
-            }
-            }
-        }
-    };
-}
-
-pub(crate) use implement_set_entry_borrowed_to_owned;
+pub(crate) use implement_for_others;
 
 /// Implements a specified trait for a owned input using the traits
 /// implementation for a borrowed input.
@@ -135,11 +93,14 @@ pub(crate) use implement_set_entry_borrowed_to_owned;
 /// `($bridge_type, $output_type, $type, Evaluate for $source_type:ident)`
 /// - [`SetCoefficient`](crate::traits::SetCoefficient) with the signature
 /// `($bridge_type, $type, SetCoefficient for $source_type:ident)`
+/// - [`SetEntry`](crate::traits::SetEntry) with the signature
+/// `($bridge_type, $type, SetCoefficient for $source_type:ident)`
 ///
 /// # Examples
 /// ```compile_fail
 /// implement_for_owned!(Q, Q, PolyOverQ, Evaluate);
 /// implement_for_owned!(Z, PolyOverZ, SetCoefficient);
+/// implement_for_owned!(Z, MatZq, SetEntry);
 /// ```
 macro_rules! implement_for_owned {
     // [`Evaluate`] trait
@@ -168,6 +129,23 @@ macro_rules! implement_for_owned {
                 value: $source_type,
             ) -> Result<(), MathError> {
                 self.set_coeff(coordinate, &value)
+            }
+            }
+        }
+    };
+
+    // [`SetEntry`] trait
+    ($source_type:ident, $type:ident, SetEntry) => {
+        impl SetEntry<$source_type> for $type {
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::set_entry`]."]
+            fn set_entry(
+                &mut self,
+                row: impl TryInto<i64> + Display + Copy,
+                column: impl TryInto<i64> + Display + Copy,
+                value: $source_type,
+            ) -> Result<(), MathError> {
+                self.set_entry(row, column, &value)
             }
             }
         }
