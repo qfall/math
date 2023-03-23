@@ -12,53 +12,12 @@
 
 use super::PolyOverZ;
 use crate::{
-    integer::Z, macros::for_others::implement_for_others_evaluate, rational::Q, traits::Evaluate,
+    integer::Z,
+    macros::for_others::{implement_for_others, implement_for_owned},
+    rational::Q,
+    traits::Evaluate,
 };
 use flint_sys::fmpz_poly::{fmpz_poly_evaluate_fmpq, fmpz_poly_evaluate_fmpz};
-
-impl Evaluate<Z, Z> for PolyOverZ {
-    /// Evaluates a [`PolyOverZ`] on a given input.
-    ///
-    /// Parameters:
-    /// - `value`: the value with which to evaluate the polynomial.
-    ///
-    /// Returns the evaluation of the polynomial as a [`Z`].
-    ///
-    /// # Examples
-    /// ```
-    /// use math::traits::Evaluate;
-    /// use math::integer::Z;
-    /// use math::integer::PolyOverZ;
-    /// use std::str::FromStr;
-    ///
-    /// let poly = PolyOverZ::from_str("5  0 1 2 -3 1").unwrap();
-    /// let value = Z::from(3);
-    /// let res = poly.evaluate(value);
-    /// ```
-    ///
-    /// ```
-    /// use math::traits::Evaluate;
-    /// use math::integer::PolyOverZ;
-    /// use std::str::FromStr;
-    ///
-    /// let poly = PolyOverZ::from_str("5  0 1 2 -3 1").unwrap();
-    /// let value = 3;
-    /// let res = poly.evaluate(value);
-    /// ```
-    ///
-    /// ```
-    /// use math::traits::Evaluate;
-    /// use math::integer::PolyOverZ;
-    /// use std::str::FromStr;
-    ///
-    /// let poly = PolyOverZ::from_str("5  0 1 2 -3 1").unwrap();
-    /// let value = i64::MAX;
-    /// let res = poly.evaluate(value);
-    /// ```
-    fn evaluate(&self, value: Z) -> Z {
-        self.evaluate(&value)
-    }
-}
 
 impl Evaluate<&Z, Z> for PolyOverZ {
     /// Evaluates a [`PolyOverZ`] on a given input of [`Z`]. Note that the
@@ -86,30 +45,6 @@ impl Evaluate<&Z, Z> for PolyOverZ {
         unsafe { fmpz_poly_evaluate_fmpz(&mut res.value, &self.poly, &value.value) };
 
         res
-    }
-}
-
-impl Evaluate<Q, Q> for PolyOverZ {
-    /// Evaluates a [`PolyOverZ`] on a given input of [`Q`].
-    ///
-    /// Parameters:
-    /// - `value`: the value with which to evaluate the polynomial.
-    ///
-    /// Returns the evaluation of the polynomial as a [`Q`].
-    ///
-    /// # Example
-    /// ```
-    /// use math::traits::Evaluate;
-    /// use math::rational::Q;
-    /// use math::integer::PolyOverZ;
-    /// use std::str::FromStr;
-    ///
-    /// let poly = PolyOverZ::from_str("5  0 1 2 -3 1").unwrap();
-    /// let value = Q::from_str("3/2").unwrap();
-    /// let res = poly.evaluate(value);
-    /// ```
-    fn evaluate(&self, value: Q) -> Q {
-        self.evaluate(&value)
     }
 }
 
@@ -142,14 +77,9 @@ impl Evaluate<&Q, Q> for PolyOverZ {
     }
 }
 
-implement_for_others_evaluate!(i64, Z, Z, PolyOverZ);
-implement_for_others_evaluate!(i32, Z, Z, PolyOverZ);
-implement_for_others_evaluate!(i16, Z, Z, PolyOverZ);
-implement_for_others_evaluate!(i8, Z, Z, PolyOverZ);
-implement_for_others_evaluate!(u64, Z, Z, PolyOverZ);
-implement_for_others_evaluate!(u32, Z, Z, PolyOverZ);
-implement_for_others_evaluate!(u16, Z, Z, PolyOverZ);
-implement_for_others_evaluate!(u8, Z, Z, PolyOverZ);
+implement_for_others!(Z, Z, PolyOverZ, Evaluate for u8 u16 u32 u64 i8 i16 i32 i64);
+implement_for_owned!(Z, Z, PolyOverZ, Evaluate);
+implement_for_owned!(Q, Q, PolyOverZ, Evaluate);
 
 #[cfg(test)]
 mod test_evaluate_z {
