@@ -1,3 +1,11 @@
+// Copyright © 2023 Marcel Luca Schmidt
+//
+// This file is part of qFALL-math.
+//
+// qFALL-math is free software: you can redistribute it and/or modify it under
+// the terms of the Mozilla Public License Version 2.0 as published by the
+// Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
+
 //! Implementations to get entries from a [`MatZq`] matrix.
 
 use super::MatZq;
@@ -6,23 +14,25 @@ use crate::integer_mod_q::Modulus;
 use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
 use crate::utils::coordinate::evaluate_coordinates;
 use crate::{error::MathError, integer_mod_q::Zq};
+use flint_sys::fmpz::{fmpz, fmpz_set};
 use flint_sys::fmpz_mod_mat::fmpz_mod_mat_entry;
 use std::fmt::Display;
 
 impl MatZq {
-    /// Returns the modulus of the matrix as a [`Modulus`] value
+    /// Returns the modulus of the matrix as a [`Modulus`].
     ///
     /// # Example
     /// ```
     /// use math::integer_mod_q::MatZq;
     ///
     /// let matrix = MatZq::new(5, 10, 7).unwrap();
-    /// let entry = matrix.get_mod().unwrap();
+    /// let entry = matrix.get_mod();
     /// ```
-    pub fn get_mod(&self) -> Result<Modulus, MathError> {
-        Modulus::try_from_z(&Z {
-            value: self.matrix.mod_[0],
-        })
+    pub fn get_mod(&self) -> Modulus {
+        let mut out = Z::default();
+        unsafe { fmpz_set(&mut out.value, &self.matrix.mod_[0]) };
+
+        Modulus::try_from_z(&out).expect("The matrix modulus is not a valid modulus.")
     }
 }
 
@@ -89,9 +99,11 @@ impl GetEntry<Z> for MatZq {
     ) -> Result<Z, MathError> {
         let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
 
-        Ok(Z {
-            value: unsafe { *fmpz_mod_mat_entry(&self.matrix, row_i64, column_i64) },
-        })
+        let mut copy = fmpz::default();
+        let entry = unsafe { fmpz_mod_mat_entry(&self.matrix, row_i64, column_i64) };
+        unsafe { fmpz_set(&mut copy, entry) };
+
+        Ok(Z { value: copy })
     }
 }
 
@@ -126,10 +138,13 @@ impl GetEntry<Zq> for MatZq {
     ) -> Result<Zq, MathError> {
         let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
 
-        let value = unsafe { *fmpz_mod_mat_entry(&self.matrix, row_i64, column_i64) };
-        let modulus = self.get_mod()?;
+        let modulus = self.get_mod();
 
-        Ok(Zq::from_z_modulus(&Z { value }, &modulus))
+        let mut copy = fmpz::default();
+        let entry = unsafe { fmpz_mod_mat_entry(&self.matrix, row_i64, column_i64) };
+        unsafe { fmpz_set(&mut copy, entry) };
+
+        Ok(Zq::from_z_modulus(&Z { value: copy }, &modulus))
     }
 }
 
@@ -144,6 +159,18 @@ mod test_get_entry {
     };
     use std::str::FromStr;
 
+    /// Ensure that getting entries works on the edge.
+    #[test]
+    fn get_edges() {
+        let matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+
+        let entry1 = matrix.get_entry(0, 0).unwrap();
+        let entry2 = matrix.get_entry(4, 9).unwrap();
+
+        assert_eq!(Z::default(), entry1);
+        assert_eq!(Z::default(), entry2);
+    }
+
     /// Ensure that getting entries works with large numbers.
     #[test]
     fn max_int_positive() {
@@ -156,7 +183,7 @@ mod test_get_entry {
         assert_eq!(Z::from(i64::MAX), entry);
     }
 
-    /// Ensure that getting entries works with large numerators and denominators (larger than [`i64`]).
+    /// Ensure that getting entries works with large numbers (larger than [`i64`]).
     #[test]
     fn big_positive() {
         let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
@@ -180,7 +207,7 @@ mod test_get_entry {
         assert_eq!(Z::from((u64::MAX as i128 - i64::MAX as i128) as u64), entry);
     }
 
-    /// Ensure that getting entries works with large numerators and denominators (larger than [`i64`]).
+    /// Ensure that getting entries works with large numbers (larger than [`i64`]).
     #[test]
     fn big_negative() {
         let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
@@ -199,9 +226,11 @@ mod test_get_entry {
     #[test]
     fn error_wrong_row() {
         let matrix = MatZq::new(5, 10, 7).unwrap();
-        let entry: Result<Zq, MathError> = matrix.get_entry(5, 1);
+        let entry1: Result<Zq, MathError> = matrix.get_entry(5, 1);
+        let entry2: Result<Zq, MathError> = matrix.get_entry(5, 10);
 
-        assert!(entry.is_err());
+        assert!(entry1.is_err());
+        assert!(entry2.is_err());
     }
 
     /// Ensure that a wrong number of columns yields an Error.
@@ -220,9 +249,52 @@ mod test_get_entry {
         let value = Zq::from_str(&format!("{} mod {}", u64::MAX - 1, u64::MAX)).unwrap();
         matrix.set_entry(1, 1, value).unwrap();
         let entry = matrix.get_entry(1, 1).unwrap();
-        matrix.set_entry(1, 1, Z::from_str("1").unwrap()).unwrap();
+        matrix.set_entry(1, 1, Z::ONE).unwrap();
 
         assert_eq!(Z::from_str(&format!("{}", u64::MAX - 1)).unwrap(), entry);
+    }
+
+    /// Ensure that no memory leak occurs in get_entry with ['Z'](crate::integer::Z).
+    #[test]
+    fn get_entry_z_memory() {
+        let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+        matrix.set_entry(1, 1, Z::from(u64::MAX - 3)).unwrap();
+        let _: Z = matrix.get_entry(1, 1).unwrap();
+        matrix.set_entry(2, 2, Z::from(u64::MAX - 10)).unwrap();
+
+        let entry: Z = matrix.get_entry(1, 1).unwrap();
+        let _z = Z::from(u64::MAX);
+
+        assert_eq!(entry, Z::from(u64::MAX - 3));
+    }
+
+    /// Ensure that no memory leak occurs in get_entry with ['Z'](crate::integer::Z).
+    #[test]
+    fn qwertzuiop() {
+        let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+        let mut value = Zq::from_str(&format!("{} mod {}", u64::MAX - 1, u64::MAX)).unwrap();
+        matrix.set_entry(1, 1, value).unwrap();
+        value = Zq::from_str(&format!("{} mod {}", u64::MAX - 10, u64::MAX)).unwrap();
+        matrix.set_entry(2, 2, value).unwrap();
+
+        let entry: Z = matrix.get_entry(1, 1).unwrap();
+        //let _z = Z::from(u64::MAX);
+
+        assert_eq!(entry, Z::from(u64::MAX - 1));
+    }
+
+    /// Ensure that no memory leak occurs in get_entry with ['Zq'](crate::integer_mod_q::Zq).
+    #[test]
+    fn get_entry_zq_memory() {
+        let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+        matrix.set_entry(1, 1, Z::from(u64::MAX - 3)).unwrap();
+        let _: Zq = matrix.get_entry(1, 1).unwrap();
+        matrix.set_entry(2, 2, Z::from(u64::MAX - 10)).unwrap();
+
+        let entry: Z = matrix.get_entry(1, 1).unwrap();
+        let _z = Z::from(u64::MAX);
+
+        assert_eq!(entry, Z::from(u64::MAX - 3));
     }
 
     /// Ensure that getting entries works with different types.
@@ -261,15 +333,40 @@ mod test_get_num {
 
 #[cfg(test)]
 mod test_mod {
+    use crate::{
+        integer::Z,
+        integer_mod_q::{MatZq, Modulus},
+    };
     use std::str::FromStr;
 
-    use crate::integer_mod_q::{MatZq, Modulus};
-
-    /// Ensure that the getter for columns works correctly.
+    /// Ensure that the getter for modulus works correctly.
     #[test]
     fn get_mod() {
         let matrix = MatZq::new(5, 10, 7).unwrap();
 
-        assert_eq!(matrix.get_mod().unwrap(), Modulus::from_str("7").unwrap());
+        assert_eq!(matrix.get_mod(), Modulus::from_str("7").unwrap());
+    }
+
+    /// Ensure that the getter for modulus works with large numbers.
+    #[test]
+    fn get_mod_large() {
+        let matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+
+        assert_eq!(
+            matrix.get_mod(),
+            Modulus::try_from_z(&Z::from(u64::MAX)).unwrap()
+        );
+    }
+
+    /// Ensure that no memory leak occurs in get_mod.
+    #[test]
+    fn get_mod_memory() {
+        let matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+        let _ = matrix.get_mod();
+        let _ = Modulus::try_from_z(&Z::from(u64::MAX - 1));
+
+        let modulus = matrix.matrix.mod_[0];
+
+        assert_eq!(Z { value: modulus }, Z::from(u64::MAX));
     }
 }

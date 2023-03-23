@@ -1,3 +1,11 @@
+// Copyright © 2023 Marcel Luca Schmidt
+//
+// This file is part of qFALL-math.
+//
+// qFALL-math is free software: you can redistribute it and/or modify it under
+// the terms of the Mozilla Public License Version 2.0 as published by the
+// Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
+
 //! Implementation to set entries from a [`MatZq`] matrix.
 
 use super::MatZq;
@@ -41,17 +49,10 @@ impl SetEntry<&Z> for MatZq {
         column: impl TryInto<i64> + Display + Copy,
         value: &Z,
     ) -> Result<(), MathError> {
-        let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
-
         // Calculate mod q before adding the entry to the matrix.
-        let value: Zq = Zq::from_z_modulus(value, &self.get_mod()?);
+        let value: Zq = Zq::from_z_modulus(value, &self.get_mod());
 
-        unsafe {
-            // get entry and replace the pointed at value with the specified value
-            fmpz_mod_mat_set_entry(&mut self.matrix, row_i64, column_i64, &value.value.value)
-        }
-
-        Ok(())
+        self.set_entry(row, column, value)
     }
 }
 
@@ -131,7 +132,7 @@ mod test_setter {
         assert_eq!(Z::from(i64::MAX), entry);
     }
 
-    /// Ensure that setting entries works with large numerators and denominators (larger than [`i64`]).
+    /// Ensure that setting entries works with large numbers (larger than [`i64`]).
     #[test]
     fn big_positive() {
         let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
@@ -155,7 +156,7 @@ mod test_setter {
         assert_eq!(Z::from((u64::MAX as i128 - i64::MAX as i128) as u64), entry);
     }
 
-    /// Ensure that setting entries works with large numerators and denominators (larger than [`i64`]).
+    /// Ensure that setting entries works with large numbers (larger than [`i64`]).
     #[test]
     fn big_negative() {
         let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
@@ -200,5 +201,16 @@ mod test_setter {
         matrix
             .set_entry(0, 0, &Zq::from_str("12 mod 56").unwrap())
             .unwrap();
+    }
+
+    /// Ensure that value is correctly reduced.
+    #[test]
+    fn set_entry_reduce() {
+        let mut matrix = MatZq::new(5, 10, 3).unwrap();
+        matrix.set_entry(1, 1, Z::from(u64::MAX)).unwrap();
+
+        let entry: Z = matrix.get_entry(1, 1).unwrap();
+
+        assert_eq!(entry, Z::from(0));
     }
 }
