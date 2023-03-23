@@ -146,7 +146,7 @@ mod test_get_coeff_z {
 
         let zero_coeff = poly.get_coeff(4).unwrap();
 
-        assert_eq!(Z::from(0), zero_coeff)
+        assert_eq!(Z::ZERO, zero_coeff)
     }
 
     /// tests if positive coefficients are returned correctly
@@ -179,7 +179,7 @@ mod test_get_coeff_z {
         let large_string = format!("2  -{} {} mod {}", u64::MAX, i64::MAX, modulus_str);
         let poly = PolyOverZq::from_str(&large_string).unwrap();
 
-        assert_eq!(Z::from(0), poly.get_coeff(0).unwrap());
+        assert_eq!(Z::ZERO, poly.get_coeff(0).unwrap());
         assert_eq!(Z::from(i64::MAX), poly.get_coeff(1).unwrap());
     }
 }

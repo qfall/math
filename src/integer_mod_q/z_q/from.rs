@@ -216,8 +216,8 @@ impl FromStr for Zq {
     /// [`InvalidStringToZqInput`](MathError::InvalidStringToZqInput)
     /// if the provided string was not formatted correctly.
     /// - Returns a [`MathError`] of type
-    /// [`InvalidStringToModulusInput`](MathError::InvalidStringToModulusInput)
-    /// if the provided modulus was not formatted correctly
+    /// [`InvalidStringToZInput`](MathError::InvalidStringToZInput)
+    /// if the provided modulus was not formatted correctly to create a [`Z`]
     /// - Returns a [`MathError`] of type
     /// [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
     /// if the provided value is not greater than `0`.
@@ -301,7 +301,7 @@ mod test_try_from_z_z {
     #[test]
     fn modulus_zero() {
         let value = Z::from(10);
-        let modulus = Z::from(0);
+        let modulus = Z::ZERO;
 
         let new_zq = Zq::try_from_z_z(&value, &modulus);
 

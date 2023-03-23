@@ -51,9 +51,9 @@ impl FromStr for PolyOverZq {
     /// if the provided half of the string was not formatted correctly to
     /// create a polynomial.
     /// - Returns a [`MathError`] of type
-    /// [`InvalidStringToModulusInput`](MathError::InvalidStringToModulusInput)
+    /// [`InvalidStringToZInput`](MathError::InvalidStringToZInput)
     /// if the provided half of the
-    /// string was not formatted correctly to create a [`Modulus`].
+    /// string was not formatted correctly to create a [`Z`].
     /// - Returns a [`MathError`] of type
     /// [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
     /// if the provided modulus is not greater than `0`.
