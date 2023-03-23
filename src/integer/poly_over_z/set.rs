@@ -11,64 +11,14 @@
 
 use super::PolyOverZ;
 use crate::{
-    error::MathError, integer::Z, macros::for_others::implement_for_others_set_coeff,
-    traits::SetCoefficient, utils::coordinate::evaluate_coordinate,
+    error::MathError,
+    integer::Z,
+    macros::for_others::{implement_for_others, implement_for_owned},
+    traits::SetCoefficient,
+    utils::coordinate::evaluate_coordinate,
 };
 use flint_sys::fmpz_poly::fmpz_poly_set_coeff_fmpz;
 use std::fmt::Display;
-
-impl SetCoefficient<Z> for PolyOverZ {
-    // It is limited to i16, because an i32 as a coefficient would simply take far too
-    // much memory to be allocated:
-    // #number of coefficients * # minimum size of an entry =
-    // 2^32*64 = 274.877.906.944 Bits ≈ 34 GB since every entry
-    // is saved on their own
-    /// Sets the coefficient of a polynomial [`PolyOverZ`].
-    /// We advise to use small coefficients, since already 2^32 coefficients take space
-    /// of roughly 34 GB. If not careful, be prepared that memory problems can occur, if
-    /// the coordinate is very high.
-    ///
-    /// All entries which are not directly addressed are automatically treated as `0`.
-    ///
-    /// Parameters:
-    /// - `coordinate`: the coordinate of the coefficient to set (has to be positive)
-    /// - `value`: the new value the coordinate should have
-    ///
-    /// # Examples
-    /// ```
-    /// use math::integer::PolyOverZ;
-    /// use math::traits::SetCoefficient;
-    /// use std::str::FromStr;
-    ///
-    /// let mut poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
-    /// let value = 1000;
-    ///
-    /// assert!(poly.set_coeff(4, value).is_ok());
-    /// ```
-    ///
-    /// ```
-    /// use math::integer::PolyOverZ;
-    /// use math::integer::Z;
-    /// use math::traits::SetCoefficient;
-    /// use std::str::FromStr;
-    ///
-    /// let mut poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
-    /// let value = Z::from(100);
-    ///
-    /// assert!(poly.set_coeff(4, value).is_ok());
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    /// either the coordinate is negative or it does not fit into an [`i64`].
-    fn set_coeff(
-        &mut self,
-        coordinate: impl TryInto<i64> + Display + Copy,
-        value: Z,
-    ) -> Result<(), MathError> {
-        self.set_coeff(coordinate, &value)
-    }
-}
 
 impl SetCoefficient<&Z> for PolyOverZ {
     /// Sets the coefficient of a polynomial [`PolyOverZ`].
@@ -112,14 +62,8 @@ impl SetCoefficient<&Z> for PolyOverZ {
     }
 }
 
-implement_for_others_set_coeff!(i64, Z, PolyOverZ);
-implement_for_others_set_coeff!(i32, Z, PolyOverZ);
-implement_for_others_set_coeff!(i16, Z, PolyOverZ);
-implement_for_others_set_coeff!(i8, Z, PolyOverZ);
-implement_for_others_set_coeff!(u64, Z, PolyOverZ);
-implement_for_others_set_coeff!(u32, Z, PolyOverZ);
-implement_for_others_set_coeff!(u16, Z, PolyOverZ);
-implement_for_others_set_coeff!(u8, Z, PolyOverZ);
+implement_for_others!(Z, PolyOverZ, SetCoefficient for i8 i16 i32 i64 u8 u16 u32 u64);
+implement_for_owned!(Z, PolyOverZ, SetCoefficient);
 
 #[cfg(test)]
 mod test_set_coeff {
