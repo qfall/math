@@ -106,7 +106,7 @@ pub(crate) use implement_for_others_set_entry;
 /// Returns the owned Implementation code for the [`SetEntry`](crate::traits::SetEntry)
 /// trait with the signature:
 ///
-/// ```impl SetEntry<*source_type*> for *type*```
+/// ```impl SetEntry<*&source_type*> for *type*```
 macro_rules! implement_set_entry_borrowed_to_owned {
     ($source_type:ident, $type:ident) => {
         impl SetEntry<$source_type> for $type {

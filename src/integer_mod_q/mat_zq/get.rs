@@ -14,7 +14,7 @@ use crate::integer_mod_q::Modulus;
 use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
 use crate::utils::coordinate::evaluate_coordinates;
 use crate::{error::MathError, integer_mod_q::Zq};
-use flint_sys::fmpz::{fmpz, fmpz_set};
+use flint_sys::fmpz::fmpz_set;
 use flint_sys::fmpz_mod_mat::fmpz_mod_mat_entry;
 use std::fmt::Display;
 
@@ -99,11 +99,10 @@ impl GetEntry<Z> for MatZq {
     ) -> Result<Z, MathError> {
         let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
 
-        let mut copy = fmpz::default();
+        let mut out = Z::default();
         let entry = unsafe { fmpz_mod_mat_entry(&self.matrix, row_i64, column_i64) };
-        unsafe { fmpz_set(&mut copy, entry) };
-
-        Ok(Z { value: copy })
+        unsafe { fmpz_set(&mut out.value, entry) };
+        Ok(out)
     }
 }
 
@@ -140,11 +139,11 @@ impl GetEntry<Zq> for MatZq {
 
         let modulus = self.get_mod();
 
-        let mut copy = fmpz::default();
+        let mut copy = Z::default();
         let entry = unsafe { fmpz_mod_mat_entry(&self.matrix, row_i64, column_i64) };
-        unsafe { fmpz_set(&mut copy, entry) };
+        unsafe { fmpz_set(&mut copy.value, entry) };
 
-        Ok(Zq::from_z_modulus(&Z { value: copy }, &modulus))
+        Ok(Zq::from_z_modulus(&copy, &modulus))
     }
 }
 
@@ -268,21 +267,6 @@ mod test_get_entry {
         assert_eq!(entry, Z::from(u64::MAX - 3));
     }
 
-    /// Ensure that no memory leak occurs in get_entry with ['Z'](crate::integer::Z).
-    #[test]
-    fn qwertzuiop() {
-        let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
-        let mut value = Zq::from_str(&format!("{} mod {}", u64::MAX - 1, u64::MAX)).unwrap();
-        matrix.set_entry(1, 1, value).unwrap();
-        value = Zq::from_str(&format!("{} mod {}", u64::MAX - 10, u64::MAX)).unwrap();
-        matrix.set_entry(2, 2, value).unwrap();
-
-        let entry: Z = matrix.get_entry(1, 1).unwrap();
-        //let _z = Z::from(u64::MAX);
-
-        assert_eq!(entry, Z::from(u64::MAX - 1));
-    }
-
     /// Ensure that no memory leak occurs in get_entry with ['Zq'](crate::integer_mod_q::Zq).
     #[test]
     fn get_entry_zq_memory() {
@@ -365,8 +349,8 @@ mod test_mod {
         let _ = matrix.get_mod();
         let _ = Modulus::try_from_z(&Z::from(u64::MAX - 1));
 
-        let modulus = matrix.matrix.mod_[0];
+        let modulus = matrix.get_mod();
 
-        assert_eq!(Z { value: modulus }, Z::from(u64::MAX));
+        assert_eq!(modulus, Modulus::try_from_z(&Z::from(u64::MAX)).unwrap());
     }
 }
