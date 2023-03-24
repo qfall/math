@@ -11,14 +11,16 @@
 //!
 //! This includes the [`Display`](std::fmt::Display) trait.
 
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::utils::parse::matrix_to_string;
 
 use super::MatZ;
 use core::fmt;
-use flint_sys::fmpz_mat::fmpz_mat_print_pretty;
 
 impl fmt::Display for MatZ {
     /// Allows to convert a matrix of type [`MatZ`] into a [`String`].
+    ///
+    /// Returns the Matrix in form of a [`String`]. For matrix `[[1, 2, 3],[4, 5, 6]]`
+    /// the String looks like this `[[1, 2, 3],[4, 5, 6]]`.
     ///
     /// # Examples
     /// ```
@@ -39,46 +41,7 @@ impl fmt::Display for MatZ {
     /// let matrix_string = matrix.to_string();
     /// ```
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mut out = String::new();
-        out.push('[');
-        for row in 0..self.get_num_rows() {
-            out.push('[');
-            for col in 0..self.get_num_columns() {
-                out.push_str(&format!(
-                    "{}, ",
-                    self.get_entry(row, col)
-                        .expect("Rows or columns are not matching the dimensions of the matrix")
-                ));
-            }
-            // pop last ' ' and ','
-            out.pop(); //
-            out.pop();
-            out.push_str("],");
-        }
-        // pop last ','
-        out.pop();
-        out.push(']');
-
-        write!(f, "{}", out)
-    }
-}
-
-impl MatZ {
-    /// Prints the matrix in a pretty way.
-    /// The format is just like the format of a matrix string, but with each row
-    /// being in a separate line and without ',' as separations.
-    ///
-    /// # Example
-    /// ```
-    /// use math::integer::MatZ;
-    ///
-    /// let matrix = MatZ::new(2, 3).unwrap();
-    /// matrix.print()
-    /// ```
-    pub fn print(&self) {
-        unsafe {
-            fmpz_mat_print_pretty(&self.matrix);
-        }
+        write!(f, "{}", matrix_to_string(self))
     }
 }
 

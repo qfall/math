@@ -91,7 +91,7 @@ impl MatZ {
 #[cfg(test)]
 mod test_setter {
     use super::Z;
-    use crate::integer::MatZ;
+    use crate::{integer::MatZ, traits::GetEntry};
     use std::str::FromStr;
 
     /// Ensure that setting entries works with standard numbers.
