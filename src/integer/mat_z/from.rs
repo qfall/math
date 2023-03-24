@@ -129,7 +129,10 @@ impl FromStr for MatZ {
 
 #[cfg(test)]
 mod test_new {
-    use crate::integer::{MatZ, Z};
+    use crate::{
+        integer::{MatZ, Z},
+        traits::GetEntry,
+    };
 
     /// Ensure that entries of a new matrix are `0`.
     #[test]
@@ -162,7 +165,10 @@ mod test_new {
 
 #[cfg(test)]
 mod test_from_str {
-    use crate::integer::{MatZ, Z};
+    use crate::{
+        integer::{MatZ, Z},
+        traits::GetEntry,
+    };
     use std::str::FromStr;
 
     /// Ensure that initialization works.
