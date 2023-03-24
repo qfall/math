@@ -62,3 +62,40 @@ pub trait GetNumColumns {
     /// Returns the number of columns of a matrix.
     fn get_num_columns(&self) -> i64;
 }
+
+/// Is implemented by matrices to get entries.
+pub trait GetEntry<T> {
+    /// Returns the value of a specific matrix entry.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row in which the entry is located.
+    /// - `column`: specifies the column in which the entry is located.
+    ///
+    /// Returns the value of the matrix at the position of the given
+    /// row and column or an error, if the number of rows or columns is
+    /// greater than the matrix or negative.
+    fn get_entry(
+        &self,
+        row: impl TryInto<i64> + Display + Copy,
+        column: impl TryInto<i64> + Display + Copy,
+    ) -> Result<T, MathError>;
+}
+
+/// Is implemented by matrices to set entries.
+pub trait SetEntry<T> {
+    /// Sets the value of a specific matrix entry according to a given value.
+    ///
+    /// Returns an error, if the number of rows or columns is
+    /// greater than the matrix or negative.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row in which the entry is located.
+    /// - `column`: specifies the column in which the entry is located.
+    /// - `value`: specifies the value to which the entry is set.
+    fn set_entry(
+        &mut self,
+        row: impl TryInto<i64> + Display + Copy,
+        column: impl TryInto<i64> + Display + Copy,
+        value: T,
+    ) -> Result<(), MathError>;
+}
