@@ -1,6 +1,6 @@
 # qFALL-math
 [![made-with-rust](https://img.shields.io/badge/Made%20with-Rust-1f425f.svg)](https://www.rust-lang.org/)
-[![CI](https://github.com/qfall/math/actions/workflows/pull_request.yml/badge.svg?branch=dev)](https://github.com/qfall/math/actions/workflows/pull_request.yml)
+[![CI](https://github.com/qfall/math/actions/workflows/push.yml/badge.svg?branch=dev)](https://github.com/qfall/math/actions/workflows/pull_request.yml)
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
 <TODO Badge for Documentation>
 <TODO Badge for Code Coverage>
