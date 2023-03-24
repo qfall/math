@@ -135,15 +135,10 @@ impl GetEntry<Zq> for MatZq {
         row: impl TryInto<i64> + Display + Copy,
         column: impl TryInto<i64> + Display + Copy,
     ) -> Result<Zq, MathError> {
-        let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
-
+        let value = self.get_entry(row, column)?;
         let modulus = self.get_mod();
 
-        let mut copy = Z::default();
-        let entry = unsafe { fmpz_mod_mat_entry(&self.matrix, row_i64, column_i64) };
-        unsafe { fmpz_set(&mut copy.value, entry) };
-
-        Ok(Zq::from_z_modulus(&copy, &modulus))
+        Ok(Zq::from_z_modulus(&value, &modulus))
     }
 }
 
