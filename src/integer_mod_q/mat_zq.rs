@@ -22,7 +22,6 @@ mod set;
 ///     of the [`Zq`](crate::integer_mod_q::Zq) matrix
 ///
 /// # Examples
-#[allow(dead_code)]
 #[derive(Debug)]
 pub struct MatZq {
     pub(crate) matrix: fmpz_mod_mat_struct,
