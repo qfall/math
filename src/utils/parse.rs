@@ -8,9 +8,10 @@
 
 //! Implements methods to parse a [`String`] e.g. matrix strings.
 
+use std::fmt::Display;
+
 use crate::{
     error::MathError,
-    integer::Z,
     traits::{GetEntry, GetNumColumns, GetNumRows},
 };
 use regex::Regex;
@@ -78,8 +79,10 @@ pub(crate) fn parse_matrix_string(string: &str) -> Result<Vec<Vec<String>>, Math
 ///
 /// Returns the Matrix in form of a [`String`]. For matrix `[[1, 2, 3],[4, 5, 6]]`
 /// the String looks like this `[[1, 2, 3],[4, 5, 6]]`.
-pub(crate) fn matrix_to_string<T: GetEntry<Z> + GetNumRows + GetNumColumns>(matrix: &T) -> String {
-    let mut builder = Builder::new(0);
+pub(crate) fn matrix_to_string<T: GetEntry<impl Display> + GetNumRows + GetNumColumns>(
+    matrix: &T,
+) -> String {
+    let mut builder = Builder::default();
 
     builder.append('[');
 
