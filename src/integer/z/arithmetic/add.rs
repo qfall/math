@@ -57,7 +57,7 @@ mod test_add_between_types {
     use crate::integer::Z;
     use std::str::FromStr;
 
-    /// testing addition different types
+    /// testing addition between different types
     #[test]
     fn add() {
         let a: Z = Z::from_str("42").unwrap();
