@@ -14,6 +14,7 @@ use flint_sys::fmpz_mod_mat::fmpz_mod_mat_struct;
 mod from;
 mod get;
 mod set;
+mod to_string;
 
 /// [`MatZq`] is a matrix with entries of type [`Zq`](crate::integer_mod_q::Zq).
 ///
