@@ -17,6 +17,9 @@ use core::fmt;
 impl fmt::Display for Zq {
     /// Allows to convert an integer of type [`Zq`] into a [`String`].
     ///
+    /// Returns the integer in form of a [`String`]. For integer `2 mod 4`
+    /// the String looks like this `2 mod 4`.
+    ///
     /// # Examples
     /// ```
     /// use math::integer_mod_q::Zq;
