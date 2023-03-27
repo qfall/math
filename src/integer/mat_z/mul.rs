@@ -45,6 +45,7 @@ impl Mul for &MatZ {
     /// let f = c * &e;
     /// ```
     fn mul(self, other: Self) -> Self::Output {
+        // TODO: mul_safe
         if self.get_num_columns() != other.get_num_rows() {
             panic!("Matrix dimensions do not match for matrix multiplication!");
         }

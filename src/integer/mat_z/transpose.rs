@@ -14,7 +14,8 @@ use super::MatZ;
 use flint_sys::fmpz_mat::fmpz_mat_transpose;
 
 impl MatZ {
-    /// Returns the transposed form of the given matrix, i.e. rows get transformed to columns.
+    /// Returns the transposed form of the given matrix, i.e. rows get transformed to columns
+    /// and vice versa.
     ///
     /// # Example
     /// ```
@@ -39,7 +40,7 @@ mod test_transpose {
     use super::MatZ;
     use std::str::FromStr;
 
-    // Checks if a row is correctly converted to a column
+    /// Checks if a row is correctly converted to a column
     #[test]
     fn row_to_column() {
         let mat = MatZ::from_str("[[1],[2],[3]]").unwrap();
@@ -53,6 +54,15 @@ mod test_transpose {
     fn column_to_row() {
         let mat = MatZ::from_str("[[1,2,3]]").unwrap();
         let cmp = MatZ::from_str("[[1],[2],[3]]").unwrap();
+
+        assert_eq!(cmp, mat.transpose());
+    }
+
+    /// Checks if large, negative, and zero values are transposed correctly
+    #[test]
+    fn different_entry_values() {
+        let mat = MatZ::from_str(&format!("[[{},{},0]]", i64::MAX, i64::MIN)).unwrap();
+        let cmp = MatZ::from_str(&format!("[[{}],[{}],[0]]", i64::MAX, i64::MIN)).unwrap();
 
         assert_eq!(cmp, mat.transpose());
     }

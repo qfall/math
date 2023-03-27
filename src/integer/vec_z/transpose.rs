@@ -30,11 +30,13 @@ impl VecZ {
 
 #[cfg(test)]
 mod test_transpose {
-
+    /// Further tests regarding large or small entries are omitted
+    /// as they are part of the tests of the here called function
+    /// [`MatZ::transpose`](crate::integer::MatZ::transpose)
     use super::{MatZ, VecZ};
     use std::str::FromStr;
 
-    // Checks if a vector is correctly converted to a one column matrix
+    /// Checks if a vector is correctly converted to a one column matrix
     #[test]
     fn row_to_column() {
         let mat = VecZ::from_str("[1,2,3]").unwrap();
