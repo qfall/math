@@ -9,7 +9,7 @@
 //! Implementations to get entries from a [`VecZ`] matrix.
 
 use super::VecZ;
-use crate::{error::MathError, integer::Z};
+use crate::{error::MathError, integer::Z, traits::GetEntry};
 use std::fmt::Display;
 
 impl VecZ {
@@ -32,7 +32,7 @@ impl VecZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the given row is greater than the matrix or negative.
-    pub fn get_entry<S: TryInto<i64> + Display + Copy>(&self, row: S) -> Result<Z, MathError> {
+    pub fn get_entry(&self, row: impl TryInto<i64> + Display + Copy) -> Result<Z, MathError> {
         self.matrix.get_entry(row, 0)
     }
 }
