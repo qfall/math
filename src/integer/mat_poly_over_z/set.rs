@@ -97,7 +97,10 @@ impl MatPolyOverZ {
 
 #[cfg(test)]
 mod test_setter {
-    use crate::integer::{MatPolyOverZ, PolyOverZ};
+    use crate::{
+        integer::{MatPolyOverZ, PolyOverZ},
+        traits::GetEntry,
+    };
     use std::str::FromStr;
 
     /// Ensure that setting entries works with standard numbers.
