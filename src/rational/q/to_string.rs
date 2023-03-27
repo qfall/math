@@ -17,7 +17,10 @@ use flint_sys::fmpq::fmpq_get_str;
 use std::{ffi::CStr, ptr::null_mut};
 
 impl fmt::Display for Q {
-    /// Allows to convert an integer of type [`Q`] into a [`String`].
+    /// Allows to convert an rational of type [`Q`] into a [`String`].
+    ///
+    /// Returns the rational in form of a [`String`]. For rational `1/2`
+    /// the String looks like this `1/2`.
     ///
     /// # Examples
     /// ```

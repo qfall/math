@@ -71,7 +71,7 @@ mod test_clone {
     use super::MatQ;
     use crate::{
         rational::Q,
-        traits::{GetNumColumns, GetNumRows},
+        traits::{GetEntry, GetNumColumns, GetNumRows},
     };
     use std::str::FromStr;
 
@@ -145,6 +145,8 @@ mod test_clone {
 /// Test that the [`Drop`] trait is correctly implemented.
 #[cfg(test)]
 mod test_drop {
+
+    use crate::traits::GetEntry;
 
     use super::MatQ;
     use std::collections::HashSet;

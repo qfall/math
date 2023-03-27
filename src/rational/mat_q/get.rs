@@ -9,13 +9,13 @@
 //! Implementations to get entries from a [`MatQ`] matrix.
 
 use super::MatQ;
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
 use crate::utils::coordinate::evaluate_coordinates;
 use crate::{error::MathError, rational::Q};
 use flint_sys::{fmpq::fmpq_set, fmpq_mat::fmpq_mat_entry};
 use std::fmt::Display;
 
-impl MatQ {
+impl GetEntry<Q> for MatQ {
     /// Outputs the [`Q`] value of a specific matrix entry.
     ///
     /// Parameters:
@@ -29,6 +29,7 @@ impl MatQ {
     /// # Example
     /// ```
     /// use math::rational::MatQ;
+    /// use crate::math::traits::GetEntry;
     ///
     /// let matrix = MatQ::new(5, 10).unwrap();
     /// let entry = matrix.get_entry(0, 1).unwrap();
@@ -37,7 +38,7 @@ impl MatQ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the number of rows or columns is greater than the matrix or negative.
-    pub fn get_entry(
+    fn get_entry(
         &self,
         row: impl TryInto<i64> + Display + Copy,
         column: impl TryInto<i64> + Display + Copy,
@@ -91,7 +92,7 @@ impl GetNumColumns for MatQ {
 #[cfg(test)]
 mod test_get_entry {
     use super::Q;
-    use crate::rational::MatQ;
+    use crate::{rational::MatQ, traits::GetEntry};
     use std::str::FromStr;
 
     /// Ensure that getting entries works with large large numerators and denominators.
