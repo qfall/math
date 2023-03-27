@@ -19,6 +19,9 @@ use std::{ffi::CStr, ptr::null_mut};
 impl fmt::Display for Z {
     /// Allows to convert an integer of type [`Z`] into a [`String`].
     ///
+    /// Returns the integer in form of a [`String`]. For integer `1`
+    /// the String looks like this `1`.
+    ///
     /// # Examples
     /// ```
     /// use math::integer::Z;
@@ -60,7 +63,7 @@ mod test_to_string {
     use crate::integer::Z;
     use std::str::FromStr;
 
-    /// tests whether a large integer works in a roundtrip
+    /// tests whether a large positive integer works in a roundtrip
     #[test]
     fn working_large_positive() {
         let cmp = Z::from(u64::MAX);
@@ -68,7 +71,7 @@ mod test_to_string {
         assert_eq!(u64::MAX.to_string(), cmp.to_string())
     }
 
-    /// tests whether a large integer works in a roundtrip
+    /// tests whether a large negative integer works in a roundtrip
     #[test]
     fn working_large_negative() {
         let cmp = Z::from_str(&format!("-{}", u64::MAX)).unwrap();
@@ -84,7 +87,7 @@ mod test_to_string {
         assert_eq!("42", cmp.to_string())
     }
 
-    /// tests whether a positive integer works in a roundtrip
+    /// tests whether a negative integer works in a roundtrip
     #[test]
     fn working_negative() {
         let cmp = Z::from(-42);
@@ -92,7 +95,7 @@ mod test_to_string {
         assert_eq!("-42", cmp.to_string())
     }
 
-    /// tests whether a integer that is created using a string, returns a
+    /// tests whether an integer that is created using a string, returns a
     /// string that can be used to create a [`Z`]
     #[test]
     fn working_use_result_of_to_string_as_input() {
