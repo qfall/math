@@ -1,4 +1,4 @@
-// Copyright © 2023 Marcel Luca Schmidt
+// Copyright © 2023 Marcel Luca Schmidt, Sven Moog
 //
 // This file is part of qFALL-math.
 //
@@ -13,10 +13,10 @@
 //! The explicit functions contain the documentation.
 
 use super::Q;
-use crate::error::MathError;
+use crate::{error::MathError, integer::Z};
 use flint_sys::{
     fmpq::{fmpq, fmpq_canonicalise, fmpq_clear, fmpq_set_str},
-    fmpz::fmpz_is_zero,
+    fmpz::{fmpz_is_zero, fmpz_swap},
 };
 use std::{ffi::CString, str::FromStr};
 
@@ -96,7 +96,7 @@ impl FromStr for Q {
         unsafe { fmpq_canonicalise(&mut value) };
 
         // if `value.den` is set to `0`, `value.num` is not necessarily `0` as well.
-        // hence we do need to free the allocated space of the nominator
+        // hence we do need to free the allocated space of the numerator
         // manually by using `fmpq_clear`
         match unsafe { fmpz_is_zero(&value.den) } {
             0 => Ok(Q { value }),
@@ -109,6 +109,53 @@ impl FromStr for Q {
         }
     }
 }
+
+impl Q {
+    /// Create a [`Q`] from two values that can be converted to [`Z`].
+    /// For example, [`i64`] and [`Z`].
+    ///
+    /// Parameters:
+    /// - `numerator` of the new [`Q`].
+    /// - `denominator` of the new [`Q`].
+    ///
+    /// Returns a [`Q`] or a [`MathError`]
+    ///
+    /// # Example
+    /// ```rust
+    /// use math::rational::Q;
+    ///
+    /// let a = Q::try_from_int_int_owned(42, i64::MAX).unwrap();
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`DivisionByZeroError`](MathError::DivisionByZeroError)
+    /// if the denominator is zero.
+    pub fn try_from_int_int_owned(
+        numerator: impl Into<Z>,
+        denominator: impl Into<Z>,
+    ) -> Result<Self, MathError> {
+        let mut numerator: Z = numerator.into();
+        let mut denominator: Z = denominator.into();
+
+        // TODO: add [`num::Zero`] trait and use is_zero
+        if denominator == Z::from(0) {
+            return Err(MathError::DivisionByZeroError(format!(
+                "{}/{}",
+                numerator, denominator
+            )));
+        }
+
+        let mut res = Q::default();
+
+        unsafe {
+            fmpz_swap(&mut res.value.num, &mut numerator.value);
+            fmpz_swap(&mut res.value.den, &mut denominator.value);
+            fmpq_canonicalise(&mut res.value);
+        }
+        Ok(res)
+    }
+}
+
 
 #[cfg(test)]
 mod tests_from_str {
@@ -247,5 +294,81 @@ mod tests_from_str {
         assert_eq!(one_1, one_2);
         assert_eq!(one_1, one_3);
         assert_eq!(zero_1, zero_2);
+    }
+}
+
+#[cfg(test)]
+mod test_from_int_int {
+
+    use crate::rational::Q;
+
+    /// Test with small valid value and modulus. Also ensures that the result is canonical.
+    #[test]
+    fn working_small() {
+        let numerator = 10;
+        let denominator = 15;
+
+        let q_1 = Q::try_from_int_int_owned(numerator, denominator).unwrap();
+        let q_2 = Q::try_from_int_int_owned(numerator * 2, denominator * 2).unwrap();
+
+        assert_eq!(q_1, q_2);
+    }
+
+    /// Test with large value and denominator (FLINT uses pointer representation).
+    #[test]
+    fn working_large() {
+        let numerator = u64::MAX - 1;
+        let denominator = u64::MAX;
+
+        let new_q = Q::try_from_int_int_owned(numerator, denominator);
+
+        assert!(new_q.is_ok());
+    }
+
+    /// Test with zero denominator (not valid)
+    #[test]
+    fn divide_by_zero() {
+        let numerator = 10;
+        let denominator = 0;
+
+        let new_q = Q::try_from_int_int_owned(numerator, denominator);
+
+        assert!(new_q.is_err());
+    }
+
+    /// Test with either negative denominator or numerator
+    #[test]
+    fn negative_small() {
+        let numerator = 10;
+        let denominator = -1;
+
+        let q_1 = Q::try_from_int_int_owned(numerator, denominator).unwrap();
+        let q_2 = Q::try_from_int_int_owned(-numerator, -denominator).unwrap();
+
+        assert_eq!(q_1, q_2);
+    }
+
+    /// Test with negative numerator and denominator. Should be the same as both positive
+    #[test]
+    fn numerator_and_denominator_negative_small() {
+        let numerator = 10;
+        let denominator = -1;
+
+        let q_1 = Q::try_from_int_int_owned(numerator, denominator).unwrap();
+        let q_2 = Q::try_from_int_int_owned(-numerator, -denominator).unwrap();
+
+        assert_eq!(q_1, q_2);
+    }
+
+    /// Test with negative numerator and denominator. Should be the same as both positive
+    #[test]
+    fn numerator_and_denominator_negative_large() {
+        let numerator = i64::MAX;
+        let denominator = i64::MAX - 1;
+
+        let q_1 = Q::try_from_int_int_owned(numerator, denominator).unwrap();
+        let q_2 = Q::try_from_int_int_owned(-numerator, -denominator).unwrap();
+
+        assert_eq!(q_1, q_2);
     }
 }
