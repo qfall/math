@@ -69,7 +69,7 @@ impl Drop for MatZ {
 mod test_clone {
 
     use super::MatZ;
-    use crate::traits::{GetNumColumns, GetNumRows};
+    use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
     use std::str::FromStr;
 
     /// check if a cloned value is still alive after the original value ran out of scope
@@ -127,6 +127,8 @@ mod test_clone {
 /// Test that the [`Drop`] trait is correctly implemented.
 #[cfg(test)]
 mod test_drop {
+
+    use crate::traits::GetEntry;
 
     use super::MatZ;
     use std::collections::HashSet;

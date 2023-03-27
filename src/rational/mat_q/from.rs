@@ -157,6 +157,7 @@ mod test_from_str {
     use crate::{
         integer::Z,
         rational::{MatQ, Q},
+        traits::GetEntry,
     };
     use std::str::FromStr;
 

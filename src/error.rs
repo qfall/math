@@ -27,10 +27,8 @@ use thiserror::Error;
 /// construct a [`CString`](std::ffi::CString)
 /// - `InvalidStringToIntInput` is thrown if an invalid string is given to
 /// construct an integer.
-/// - `InvalidStringToMatZInput` is thrown if an invalid string is given to
-/// construct a Matrix of [`MatZ`](crate::integer::MatZ)
-/// - `InvalidStringToModulusInput` is thrown if an invalid string is given to
-/// construct a modulus.
+/// - `InvalidStringToMatZqInput` is thrown if an invalid string is given to
+/// construct a Matrix of [`MatZq`](crate::integer_mod_q::MatZq)
 /// - `InvalidStringToPolyInput` is thrown if an invalid string is given to
 /// construct a polynomial
 /// - `InvalidStringToPolyMissingWhiteSpace` is thrown if an invalid string
@@ -79,15 +77,9 @@ pub enum MathError {
     /// parse string to int error
     #[error("invalid string input to parse to int {0}")]
     InvalidStringToIntInput(#[from] ParseIntError),
-    /// parse string to [`MatZ`](crate::integer::MatZ) error
-    #[error("invalid string input to parse to MatZ {0}")]
-    InvalidStringToMatZInput(String),
-    /// parse string to modulus error
-    #[error(
-        "invalid string input to parse to a modulus {0}. \
-        The format must be '[0-9]+' and not all zeros."
-    )]
-    InvalidStringToModulusInput(String),
+    /// parse string to [`MatZq`](crate::integer_mod_q::MatZq) error
+    #[error("invalid string input to parse to MatZq {0}")]
+    InvalidStringToMatZqInput(String),
     /// parse string to poly error
     #[error(
         "invalid string input to parse to polynomial {0}\nThe format must 

@@ -18,6 +18,7 @@ mod mul;
 mod ownership;
 mod set;
 mod transpose;
+mod to_string;
 
 /// [`MatZ`] is a matrix with entries of type [`Z`](crate::integer::Z).
 ///
