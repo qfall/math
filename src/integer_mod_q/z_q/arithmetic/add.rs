@@ -93,8 +93,8 @@ impl Zq {
     }
 }
 
-arithmetic_trait_borrowed_to_owned!(Add, add, Zq);
-arithmetic_trait_mixed_borrowed_owned!(Add, add, Zq);
+arithmetic_trait_borrowed_to_owned!(Add, add, Zq, Zq, Zq);
+arithmetic_trait_mixed_borrowed_owned!(Add, add, Zq, Zq, Zq);
 
 #[cfg(test)]
 mod test_add {

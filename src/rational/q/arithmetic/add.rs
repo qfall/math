@@ -48,8 +48,8 @@ impl Add for &Q {
     }
 }
 
-arithmetic_trait_borrowed_to_owned!(Add, add, Q);
-arithmetic_trait_mixed_borrowed_owned!(Add, add, Q);
+arithmetic_trait_borrowed_to_owned!(Add, add, Q, Q, Q);
+arithmetic_trait_mixed_borrowed_owned!(Add, add, Q, Q, Q);
 
 #[cfg(test)]
 mod test_add {
