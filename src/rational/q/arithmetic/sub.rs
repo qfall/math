@@ -47,8 +47,8 @@ impl Sub for &Q {
     }
 }
 
-arithmetic_trait_borrowed_to_owned!(Sub, sub, Q);
-arithmetic_trait_mixed_borrowed_owned!(Sub, sub, Q);
+arithmetic_trait_borrowed_to_owned!(Sub, sub, Q, Q, Q);
+arithmetic_trait_mixed_borrowed_owned!(Sub, sub, Q, Q, Q);
 
 #[cfg(test)]
 mod test_sub {
