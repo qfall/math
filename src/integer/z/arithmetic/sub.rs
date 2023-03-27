@@ -10,7 +10,8 @@
 
 use super::super::Z;
 use crate::macros::arithmetics::{
-    arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+    arithmetic_between_types, arithmetic_trait_borrowed_to_owned,
+    arithmetic_trait_mixed_borrowed_owned,
 };
 use flint_sys::fmpz::fmpz_sub;
 use std::ops::Sub;
@@ -48,6 +49,99 @@ impl Sub for &Z {
 
 arithmetic_trait_borrowed_to_owned!(Sub, sub, Z, Z, Z);
 arithmetic_trait_mixed_borrowed_owned!(Sub, sub, Z, Z, Z);
+arithmetic_between_types!(Sub, sub, Z, i64 i32 i16 i8 u64 u32 u16 u8);
+
+#[cfg(test)]
+mod test_sub_between_types {
+
+    use crate::integer::Z;
+    use std::str::FromStr;
+
+    /// testing subtraction between different types
+    #[test]
+    fn sub() {
+        let a: Z = Z::from_str("42").unwrap();
+        let b: u64 = 1;
+        let c: u32 = 1;
+        let d: u16 = 1;
+        let e: u8 = 1;
+        let f: i64 = 1;
+        let g: i32 = 1;
+        let h: i16 = 1;
+        let i: i8 = 1;
+        let _: Z = &a - &b;
+        let _: Z = &a - &c;
+        let _: Z = &a - &d;
+        let _: Z = &a - &e;
+        let _: Z = &a - &f;
+        let _: Z = &a - &g;
+        let _: Z = &a - &h;
+        let _: Z = &a - &i;
+
+        let _: Z = &b - &a;
+        let _: Z = &c - &a;
+        let _: Z = &d - &a;
+        let _: Z = &e - &a;
+        let _: Z = &f - &a;
+        let _: Z = &g - &a;
+        let _: Z = &h - &a;
+        let _: Z = &i - &a;
+
+        let _: Z = &a - b;
+        let _: Z = &a - c;
+        let _: Z = &a - d;
+        let _: Z = &a - e;
+        let _: Z = &a - f;
+        let _: Z = &a - g;
+        let _: Z = &a - h;
+        let _: Z = &a - i;
+
+        let _: Z = &b - Z::from_str("42").unwrap();
+        let _: Z = &c - Z::from_str("42").unwrap();
+        let _: Z = &d - Z::from_str("42").unwrap();
+        let _: Z = &e - Z::from_str("42").unwrap();
+        let _: Z = &f - Z::from_str("42").unwrap();
+        let _: Z = &g - Z::from_str("42").unwrap();
+        let _: Z = &h - Z::from_str("42").unwrap();
+        let _: Z = &i - Z::from_str("42").unwrap();
+
+        let _: Z = Z::from_str("42").unwrap() - &b;
+        let _: Z = Z::from_str("42").unwrap() - &c;
+        let _: Z = Z::from_str("42").unwrap() - &d;
+        let _: Z = Z::from_str("42").unwrap() - &e;
+        let _: Z = Z::from_str("42").unwrap() - &f;
+        let _: Z = Z::from_str("42").unwrap() - &g;
+        let _: Z = Z::from_str("42").unwrap() - &h;
+        let _: Z = Z::from_str("42").unwrap() - &i;
+
+        let _: Z = b - &a;
+        let _: Z = c - &a;
+        let _: Z = d - &a;
+        let _: Z = e - &a;
+        let _: Z = f - &a;
+        let _: Z = g - &a;
+        let _: Z = h - &a;
+        let _: Z = i - &a;
+
+        let _: Z = Z::from_str("42").unwrap() - b;
+        let _: Z = Z::from_str("42").unwrap() - c;
+        let _: Z = Z::from_str("42").unwrap() - d;
+        let _: Z = Z::from_str("42").unwrap() - e;
+        let _: Z = Z::from_str("42").unwrap() - f;
+        let _: Z = Z::from_str("42").unwrap() - g;
+        let _: Z = Z::from_str("42").unwrap() - h;
+        let _: Z = Z::from_str("42").unwrap() - i;
+
+        let _: Z = b - Z::from_str("42").unwrap();
+        let _: Z = c - Z::from_str("42").unwrap();
+        let _: Z = d - Z::from_str("42").unwrap();
+        let _: Z = e - Z::from_str("42").unwrap();
+        let _: Z = f - Z::from_str("42").unwrap();
+        let _: Z = g - Z::from_str("42").unwrap();
+        let _: Z = h - Z::from_str("42").unwrap();
+        let _: Z = i - Z::from_str("42").unwrap();
+    }
+}
 
 #[cfg(test)]
 mod test_sub {
