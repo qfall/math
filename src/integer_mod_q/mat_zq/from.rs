@@ -131,16 +131,20 @@ impl FromStr for MatZq {
     /// - Returns a [`MathError`] of type
     /// [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
     /// if the modulus is not greater than '0'.
-    /// - Returns a [`MathError`] of type
     fn from_str(string: &str) -> Result<Self, MathError> {
-        let input_split: Vec<&str> = string.split("mod").collect();
-        if input_split.len() != 2 {
-            return Err(MathError::InvalidMatrix(string.to_owned()));
-        }
+        let (matrix, modulus) = match string.split_once("mod") {
+            Some((matrix, modulus)) => (matrix, modulus),
+            None => {
+                return Err(MathError::InvalidStringToMatZqInput(format!(
+                    "The word 'mod' could not be found: {}",
+                    string.to_owned()
+                )))
+            }
+        };
 
-        let modulus = Z::from_str(input_split[1].trim())?;
+        let modulus = Z::from_str(modulus.trim())?;
 
-        let string_matrix = parse_matrix_string(input_split[0].trim())?;
+        let string_matrix = parse_matrix_string(matrix.trim())?;
         let (num_rows, num_cols) = find_matrix_dimensions(&string_matrix)?;
         let mut matrix = MatZq::new(num_rows, num_cols, modulus)?;
 
@@ -181,7 +185,7 @@ mod test_new {
         assert_eq!(Z::from_i64(0), entry4);
     }
 
-    /// Ensure that a new zero matrix fails with 0 as input.
+    /// Ensure that a new zero matrix fails with `0` as input.
     #[test]
     fn error_zero() {
         let matrix1 = MatZq::new(1, 0, 3);
@@ -212,7 +216,7 @@ mod test_from_str {
         let matrix_string1 = String::from("[[1, 2, 3],[3, 4, 5]] mod 6");
 
         assert_eq!(
-            Z::from_i64(1),
+            Z::ONE,
             MatZq::from_str(&matrix_string1)
                 .unwrap()
                 .get_entry(0, 0)
@@ -226,7 +230,7 @@ mod test_from_str {
         let matrix_string1 = String::from("[[1, 2, 3],[3, 4, 5]] mod 3");
 
         assert_eq!(
-            Z::from_i64(1),
+            Z::ONE,
             MatZq::from_str(&matrix_string1)
                 .unwrap()
                 .get_entry(1, 1)
@@ -254,7 +258,7 @@ mod test_from_str {
         let matrix_string = format!("[[-{}, 2, 3],[3, 4, 5]] mod {}", u64::MAX - 1, u64::MAX);
 
         assert_eq!(
-            Z::from(1),
+            Z::ONE,
             MatZq::from_str(&matrix_string)
                 .unwrap()
                 .get_entry(0, 0)
@@ -268,7 +272,7 @@ mod test_from_str {
         let matrix_string = format!("[[1, 2, 3],[3, 4, 5]] mod {}", u64::MAX);
 
         assert_eq!(
-            Z::from(1),
+            Z::ONE,
             MatZq::from_str(&matrix_string)
                 .unwrap()
                 .get_entry(0, 0)
@@ -282,7 +286,7 @@ mod test_from_str {
         let matrix_string1 = String::from("[[  1, 2 ,  3  ],[3 ,4,5 ]]  mod  6 ");
 
         assert_eq!(
-            Z::from_i64(1),
+            Z::ONE,
             MatZq::from_str(&matrix_string1)
                 .unwrap()
                 .get_entry(0, 0)
