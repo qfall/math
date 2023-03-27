@@ -9,11 +9,8 @@
 //! Implementation of the [`Mul`] trait for [`PolyOverZ`] values.
 
 use super::super::PolyOverZ;
-use crate::{
-    integer::poly_over_z,
-    macros::arithmetics::{
-        arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
-    },
+use crate::macros::arithmetics::{
+    arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
 };
 use flint_sys::fmpz_poly::fmpz_poly_mul;
 use std::ops::Mul;
