@@ -8,8 +8,14 @@
 
 //! Implements methods to parse a [`String`] e.g. matrix strings.
 
-use crate::error::MathError;
+use std::fmt::Display;
+
+use crate::{
+    error::MathError,
+    traits::{GetEntry, GetNumColumns, GetNumRows},
+};
 use regex::Regex;
+use string_builder::Builder;
 
 /// Takes the string of a matrix as input and parses it for easy use.
 ///
@@ -26,7 +32,6 @@ use regex::Regex;
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix)
 /// if the matrix is not formatted in a suitable way.
-#[allow(dead_code)]
 pub(crate) fn parse_matrix_string(string: &str) -> Result<Vec<Vec<String>>, MathError> {
     // check if the matrix format is correct
     let entry_str = r"([^\[\],]+)";
@@ -65,6 +70,48 @@ pub(crate) fn parse_matrix_string(string: &str) -> Result<Vec<Vec<String>>, Math
     }
 
     Ok(matrix)
+}
+
+/// Takes a matrix as input and converts it to a [`String`].
+///
+/// Parameters:
+/// - `matrix`: a matrix e.g. [`MatZ`](crate::integer::MatZ), [`MatQ`](crate::rational::MatQ).
+///
+/// Returns the Matrix in form of a [`String`]. For matrix `[[1, 2, 3],[4, 5, 6]]`
+/// the String looks like this `[[1, 2, 3],[4, 5, 6]]`.
+pub(crate) fn matrix_to_string<T: GetEntry<impl Display> + GetNumRows + GetNumColumns>(
+    matrix: &T,
+) -> String {
+    let mut builder = Builder::default();
+
+    builder.append('[');
+
+    for row in 0..matrix.get_num_rows() {
+        builder.append('[');
+
+        for col in 0..matrix.get_num_columns() {
+            builder.append(format!(
+                "{}",
+                matrix
+                    .get_entry(row, col)
+                    .expect("Rows or columns are not matching the dimensions of the matrix.")
+            ));
+            if col < matrix.get_num_columns() - 1 {
+                builder.append(", ");
+            }
+        }
+
+        if row < matrix.get_num_rows() - 1 {
+            builder.append("],");
+        } else {
+            builder.append(']');
+        }
+    }
+    builder.append(']');
+
+    builder
+        .string()
+        .expect("Matrix string contains invalid bytes.")
 }
 
 #[cfg(test)]
@@ -123,5 +170,76 @@ mod test_parse_matrix_string {
             parse_matrix_string(&matrix_string4).unwrap()[1][2],
             "8fh2n".to_owned()
         );
+    }
+}
+
+#[cfg(test)]
+mod test_matrix_to_string {
+    use crate::{integer::MatZ, utils::parse::matrix_to_string};
+    use std::str::FromStr;
+
+    /// tests whether a matrix with a large entry works in a roundtrip
+    #[test]
+    fn working_large_positive() {
+        let cmp = MatZ::from_str(&format!("[[{}, 1, 3],[5, 6, 7]]", u64::MAX)).unwrap();
+
+        assert_eq!(
+            format!("[[{}, 1, 3],[5, 6, 7]]", u64::MAX),
+            matrix_to_string(&cmp)
+        )
+    }
+
+    /// tests whether a matrix with a large negative entry works in a roundtrip
+    #[test]
+    fn working_large_negative() {
+        let cmp = MatZ::from_str(&format!("[[-{}, 1, 3],[5, 6, 7]]", u64::MAX)).unwrap();
+
+        assert_eq!(
+            format!("[[-{}, 1, 3],[5, 6, 7]]", u64::MAX),
+            matrix_to_string(&cmp)
+        )
+    }
+
+    /// tests whether a matrix with positive entries works in a roundtrip
+    #[test]
+    fn working_positive() {
+        let cmp = MatZ::from_str("[[2, 1, 3],[5, 6, 7]]").unwrap();
+
+        assert_eq!("[[2, 1, 3],[5, 6, 7]]", matrix_to_string(&cmp))
+    }
+
+    /// tests whether a matrix with negative entries works in a roundtrip
+    #[test]
+    fn working_negative() {
+        let cmp = MatZ::from_str("[[-2, 1, 3],[5, -6, 7]]").unwrap();
+
+        assert_eq!("[[-2, 1, 3],[5, -6, 7]]", matrix_to_string(&cmp));
+    }
+
+    /// tests whether a matrix with positive entries works in a roundtrip
+    #[test]
+    fn working_big_dimensions() {
+        let cmp1 = MatZ::from_str(&format!("[{}[5, 6, 7]]", "[1, 2, 3],".repeat(99))).unwrap();
+        let cmp2 = MatZ::from_str(&format!("[[{}1]]", "1, ".repeat(99))).unwrap();
+
+        assert_eq!(
+            format!("[{}[5, 6, 7]]", "[1, 2, 3],".repeat(99)),
+            matrix_to_string(&cmp1)
+        );
+        assert_eq!(
+            format!("[[{}1]]", "1, ".repeat(99)),
+            matrix_to_string(&cmp2)
+        );
+    }
+
+    /// tests whether a matrix that is created using a string, returns a
+    /// string that can be used to create a [`MatZ`]
+    #[test]
+    fn working_use_result_of_to_string_as_input() {
+        let cmp = MatZ::from_str("[[-2, 1, 3],[5, -6, 7]]").unwrap();
+
+        let cmp_string2 = matrix_to_string(&cmp);
+
+        assert!(MatZ::from_str(&cmp_string2).is_ok())
     }
 }
