@@ -15,6 +15,7 @@
 use super::Z;
 use crate::{
     error::MathError,
+    integer_mod_q::Modulus,
     macros::from::{from_trait, from_type},
 };
 use flint_sys::fmpz::{fmpz, fmpz_init_set_si, fmpz_init_set_ui, fmpz_set_str};
@@ -67,6 +68,12 @@ impl Z {
     from_type!(u32, u64, Z, Z::from_u64);
     from_type!(u16, u64, Z, Z::from_u64);
     from_type!(u8, u64, Z, Z::from_u64);
+
+    pub fn from_modulus(value: Modulus) -> Self {
+        Z {
+            value: value.get_fmpz_mod_ctx_struct().n[0],
+        }
+    }
 }
 
 // Generate [`From`] trait for the different types.
@@ -79,6 +86,8 @@ from_trait!(u64, Z, Z::from_u64);
 from_trait!(u32, Z, Z::from_u32);
 from_trait!(u16, Z, Z::from_u16);
 from_trait!(u8, Z, Z::from_u8);
+
+from_trait!(Modulus, Z, Z::from_modulus);
 
 impl FromStr for Z {
     type Err = MathError;
