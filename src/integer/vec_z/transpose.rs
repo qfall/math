@@ -8,23 +8,25 @@
 
 //! This module containts the implementation of the `transpose` function.
 
-use super::{MatZ, VecZ};
+use super::VecZ;
 
 impl VecZ {
     /// Returns the transposed form of the given matrix, i.e. rows get transformed to columns.
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
+    /// use math::integer::VecZ;
     /// use std::str::FromStr;
     ///
-    /// let mat = MatZ::from_str("[[2,1],[2,1],[2,1]]").unwrap();
-    /// let cmp = MatZ::from_str("[[2,2,2],[1,1,1]]").unwrap();
+    /// let mat = VecZ::from_str("[[1,2,3]]").unwrap();
+    /// let cmp = VecZ::from_str("[[1],[2],[3]]").unwrap();
     ///
     /// assert_eq!(mat.transpose(), cmp);
     /// ```
-    pub fn transpose(&self) -> MatZ {
-        self.matrix.transpose()
+    pub fn transpose(&self) -> VecZ {
+        Self {
+            matrix: self.matrix.transpose(),
+        }
     }
 }
 
@@ -33,15 +35,24 @@ mod test_transpose {
     /// Further tests regarding large or small entries are omitted
     /// as they are part of the tests of the here called function
     /// [`MatZ::transpose`](crate::integer::MatZ::transpose)
-    use super::{MatZ, VecZ};
+    use super::VecZ;
     use std::str::FromStr;
 
-    /// Checks if a vector is correctly converted to a one column matrix
+    /// Checks if a vector is correctly converted to a one-row matrix
+    #[test]
+    fn column_to_row() {
+        let vec = VecZ::from_str("[[1],[2],[3]]").unwrap();
+        let cmp = VecZ::from_str("[[1,2,3]]").unwrap();
+
+        assert_eq!(cmp, vec.transpose());
+    }
+
+    /// Checks if a vector is correctly converted to a one-column matrix
     #[test]
     fn row_to_column() {
-        let mat = VecZ::from_str("[1,2,3]").unwrap();
-        let cmp = MatZ::from_str("[[1,2,3]]").unwrap();
+        let vec = VecZ::from_str("[[1,2,3]]").unwrap();
+        let cmp = VecZ::from_str("[[1],[2],[3]]").unwrap();
 
-        assert_eq!(cmp, mat.transpose());
+        assert_eq!(cmp, vec.transpose());
     }
 }

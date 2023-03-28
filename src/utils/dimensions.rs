@@ -6,7 +6,13 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implements methods for finding matrix dimensions.
+//! Implements methods for finding matrix dimensions and enums for detecting vector directions.
+
+#[derive(Debug, PartialEq)]
+pub enum VectorDirection {
+    RowVector,
+    ColumnVector,
+}
 
 use crate::error::MathError;
 

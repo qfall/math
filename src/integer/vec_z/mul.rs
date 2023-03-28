@@ -31,13 +31,13 @@ impl Mul for &VecZ {
     /// use math::integer::VecZ;
     /// use std::str::FromStr;
     ///
-    /// let a = VecZ::from_str("[2,1,1,2]").unwrap();
-    /// let b = VecZ::from_str("[1,0,0,1]").unwrap();
+    /// let a = VecZ::from_str("[[2],[1],[1],[2]]").unwrap();
+    /// let b = VecZ::from_str("[[1,0,0,1]]").unwrap();
     ///
-    /// let _ = &a.transpose() * &b;
-    /// let _ = a.transpose() * b.clone();
-    /// let _ = &a.transpose() * b.clone();
-    /// let _ = a.transpose() * &b;
+    /// let _ = &a * &b;
+    /// let _ = a.clone() * b.clone();
+    /// let _ = &a * b.clone();
+    /// let _ = a.clone() * &b;
     /// ```
     fn mul(self, other: Self) -> Self::Output {
         (&self.matrix).mul(other)
@@ -63,7 +63,7 @@ impl Mul<&MatZ> for &VecZ {
     /// use math::integer::{MatZ, VecZ};
     /// use std::str::FromStr;
     ///
-    /// let a = VecZ::from_str("[1,0]").unwrap();
+    /// let a = VecZ::from_str("[[1],[0]]").unwrap();
     /// let b = MatZ::from_str("[[2,1]]").unwrap();
     ///
     /// let c = &a * &b;
@@ -88,11 +88,11 @@ mod test_mul {
     /// Checks if vector multiplication works fine for vectors of same length
     #[test]
     fn vector_mul_vector_correctness() {
-        let vec_1 = VecZ::from_str("[2,1,1,2]").unwrap();
-        let vec_2 = VecZ::from_str("[1,2,2,1]").unwrap();
+        let vec_1 = VecZ::from_str("[[2,1,1,2]]").unwrap();
+        let vec_2 = VecZ::from_str("[[1],[2],[2],[1]]").unwrap();
         let cmp = MatZ::from_str("[[8]]").unwrap();
 
-        assert_eq!(cmp, vec_1.transpose() * vec_2);
+        assert_eq!(cmp, vec_1 * vec_2);
     }
 
     /// Checks if vector multiplication with incompatible vector length
@@ -100,17 +100,17 @@ mod test_mul {
     #[test]
     #[should_panic]
     fn vector_mul_vector_incompatible_length() {
-        let mat_1 = MatZ::from_str("[2,1,1,2]").unwrap();
-        let mat_2 = MatZ::from_str("[1,0,0,1,0]").unwrap();
+        let vec_1 = VecZ::from_str("[[2,1,1,2]]").unwrap();
+        let vec_2 = VecZ::from_str("[[1],[0],[0],[1],[0]]").unwrap();
 
-        let _ = mat_1 * mat_2;
+        let _ = vec_1 * vec_2;
     }
 
     /// Checks if cross-type multiplications works fine for [`VecZ`] * [`MatZ`]
     #[test]
     fn vector_mul_matrix_correctness() {
         let mat = MatZ::from_str("[[2,1]]").unwrap();
-        let vec = VecZ::from_str("[1,0]").unwrap();
+        let vec = VecZ::from_str("[[1],[0]]").unwrap();
         let cmp = MatZ::from_str("[[2,1],[0,0]]").unwrap();
 
         assert_eq!(cmp, &vec * &mat);
@@ -122,7 +122,7 @@ mod test_mul {
     #[should_panic]
     fn vector_mul_matrix_incompatible_dimensions() {
         let mat = MatZ::from_str("[[2,1],[1,2]]").unwrap();
-        let vec = VecZ::from_str("[1,0,1]").unwrap();
+        let vec = VecZ::from_str("[[1],[0],[1]]").unwrap();
 
         let _ = vec * mat;
     }

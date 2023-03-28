@@ -76,7 +76,7 @@ impl Mul<&VecZ> for &MatZ {
     /// use std::str::FromStr;
     ///
     /// let a = MatZ::from_str("[[2,1],[1,2]]").unwrap();
-    /// let b = VecZ::from_str("[1,0]").unwrap();
+    /// let b = VecZ::from_str("[[1],[0]]").unwrap();
     ///
     /// let _ = &a * &b;
     /// let _ = a.clone() * b.clone();
@@ -147,7 +147,7 @@ mod test_mul {
     #[test]
     fn matrix_mul_vector_correctness() {
         let mat = MatZ::from_str("[[2,1],[1,2]]").unwrap();
-        let vec = VecZ::from_str("[1,0]").unwrap();
+        let vec = VecZ::from_str("[[1],[0]]").unwrap();
         let cmp = MatZ::from_str("[[2],[1]]").unwrap();
 
         assert_eq!(cmp, &mat * &vec);
@@ -158,9 +158,9 @@ mod test_mul {
     #[test]
     #[should_panic]
     fn matrix_mul_vector_incompatible_dimensions() {
-        let mat_1 = MatZ::from_str("[[2,1],[1,2]]").unwrap();
-        let mat_2 = VecZ::from_str("[1,0,1]").unwrap();
+        let mat = MatZ::from_str("[[2,1],[1,2]]").unwrap();
+        let vec = VecZ::from_str("[[1],[0],[1]]").unwrap();
 
-        let _ = mat_1 * mat_2;
+        let _ = mat * vec;
     }
 }

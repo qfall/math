@@ -16,55 +16,60 @@ impl VecZ {
     /// Sets the value of a specific vector entry according to a given `value` of type [`Z`](crate::integer::Z).
     ///
     /// Parameters:
-    /// - `row`: specifies the row in which the entry is located
+    /// - `entry`: specifies the entry in which the entry is located
     /// - `value`: specifies the value to which the entry is set
     ///
     /// # Example
     /// ```
-    /// use math::integer::VecZ;
-    /// use math::integer::Z;
+    /// use math::integer::{VecZ, Z};
+    /// use math::utils::VectorDirection;
     ///
-    /// let mut vector = VecZ::new(5).unwrap();
+    /// let mut vector = VecZ::new(5, VectorDirection::ColumnVector).unwrap();
     /// let value = Z::from_i64(5);
     /// vector.set_entry(1, value).unwrap();
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    /// if the given row is greater than the matrix or negative.
+    /// if the given entry outside the vector or negative.
     pub fn set_entry<S: TryInto<i64> + Display + Copy, T: Into<Z>>(
         &mut self,
-        row: S,
+        entry: S,
         value: T,
     ) -> Result<(), MathError> {
-        self.set_entry_ref_z(row, &value.into())
+        self.set_entry_ref_z(entry, &value.into())
     }
 
     /// Sets the value of a specific matrix entry according to a given `value` of type [`Z`].
     ///
     /// Parameters:
-    /// - `row`: specifies the row in which the entry is located
+    /// - `entry`: specifies the entry in which the entry is located
     /// - `value`: specifies the value to which the entry is set
     ///
     /// # Example
     /// ```
-    /// use math::integer::VecZ;
-    /// use math::integer::Z;
+    /// use math::integer::{VecZ, Z};
+    /// use math::utils::VectorDirection;
     ///
-    /// let mut vector = VecZ::new(5).unwrap();
+    /// let mut vector = VecZ::new(5, VectorDirection::ColumnVector).unwrap();
     /// let value = Z::from_i64(5);
     /// vector.set_entry_ref_z(1, &value).unwrap();
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    /// if the given row is greater than the matrix or negative.
+    /// if the given entry outside the vector or negative.
     pub fn set_entry_ref_z<S: TryInto<i64> + Display + Copy>(
         &mut self,
-        row: S,
+        entry: S,
         value: &Z,
     ) -> Result<(), MathError> {
-        self.matrix.set_entry_ref_z(row, 0, value)?;
+        if self.is_column_vector() {
+            self.matrix.set_entry_ref_z(entry, 0, value)?;
+        } else {
+            self.matrix.set_entry_ref_z(0, entry, value)?;
+        }
+
         Ok(())
     }
 }
@@ -73,25 +78,31 @@ impl VecZ {
 mod test_setter {
     use super::Z;
     use crate::integer::VecZ;
+    use crate::utils::VectorDirection;
 
     /// Ensure that setting the correct entries works fine
     #[test]
     fn correct_entry_set() {
-        let mut vector = VecZ::new(5).unwrap();
-        vector.set_entry(4, 869).unwrap();
+        let mut col = VecZ::new(5, VectorDirection::ColumnVector).unwrap();
+        let mut row = VecZ::new(5, VectorDirection::RowVector).unwrap();
 
-        let entry = vector.get_entry(4).unwrap();
+        col.set_entry(4, 869).unwrap();
+        row.set_entry(3, 869).unwrap();
 
-        assert_eq!(entry, Z::from_i64(869));
+        assert_eq!(col.get_entry(4).unwrap(), Z::from_i64(869));
+        assert_eq!(row.get_entry(3).unwrap(), Z::from_i64(869));
     }
 
     /// Ensure that a wrong given row returns a [`MathError`](crate::error::MathError)
     #[test]
     fn error_wrong_row() {
-        let mut vector = VecZ::new(5).unwrap();
+        let mut col = VecZ::new(5, VectorDirection::ColumnVector).unwrap();
+        let mut row = VecZ::new(5, VectorDirection::RowVector).unwrap();
         let value = Z::from_i64(i64::MAX);
 
-        assert!(vector.set_entry_ref_z(5, &value).is_err());
-        assert!(vector.set_entry_ref_z(-1, &value).is_err());
+        assert!(col.set_entry_ref_z(5, &value).is_err());
+        assert!(col.set_entry_ref_z(-1, &value).is_err());
+        assert!(row.set_entry_ref_z(5, &value).is_err());
+        assert!(row.set_entry_ref_z(-1, &value).is_err());
     }
 }

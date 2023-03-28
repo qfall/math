@@ -14,9 +14,9 @@
 //! The explicit functions contain the documentation.
 
 use super::{MatZ, VecZ};
-use crate::error::MathError;
 use crate::integer::Z;
-use crate::utils::parse::parse_vector_string;
+use crate::utils::{parse::parse_matrix_string, VectorDirection};
+use crate::{error::MathError, utils::dimensions::find_matrix_dimensions};
 use std::{fmt::Display, str::FromStr};
 
 impl VecZ {
@@ -32,8 +32,9 @@ impl VecZ {
     /// # Example
     /// ```
     /// use math::integer::VecZ;
+    /// use math::utils::VectorDirection;
     ///
-    /// let vector = VecZ::new(5).unwrap();
+    /// let vector = VecZ::new(5, VectorDirection::ColumnVector).unwrap();
     /// ```
     ///
     /// # Errors and Failures
@@ -42,10 +43,18 @@ impl VecZ {
     /// if the number of rows is `0`.
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the number of rows is negative or it does not fit into an [`i64`].
-    pub fn new(num_rows: impl TryInto<i64> + Display + Copy) -> Result<Self, MathError> {
-        Ok(VecZ {
-            matrix: MatZ::new(num_rows, 1)?,
-        })
+    pub fn new(
+        num_entries: impl TryInto<i64> + Display + Copy,
+        orientation: VectorDirection,
+    ) -> Result<Self, MathError> {
+        match orientation {
+            VectorDirection::RowVector => Ok(VecZ {
+                matrix: MatZ::new(1, num_entries)?,
+            }),
+            VectorDirection::ColumnVector => Ok(VecZ {
+                matrix: MatZ::new(num_entries, 1)?,
+            }),
+        }
     }
 }
 
@@ -68,7 +77,7 @@ impl FromStr for VecZ {
     /// use math::integer::VecZ;
     /// use std::str::FromStr;
     ///
-    /// let string = String::from("[1, 2, 3]");
+    /// let string = String::from("[[1, 2, 3]]");
     /// let matrix = VecZ::from_str(&string).unwrap();
     /// ```
     ///
@@ -83,14 +92,23 @@ impl FromStr for VecZ {
     /// [`InvalidStringToZInput`](MathError::InvalidStringToZInput)
     /// if an entry is not formatted correctly.
     fn from_str(string: &str) -> Result<Self, MathError> {
-        let entries = parse_vector_string(string)?;
-        let num_rows = entries.len();
-        let mut vector = VecZ::new(num_rows)?;
+        let entries_string = parse_matrix_string(string)?;
+        let (num_rows, num_cols) = find_matrix_dimensions(&entries_string)?;
+        let mut vector: VecZ;
+        match (num_rows, num_cols) {
+            (1, _) => vector = VecZ::new(num_cols, VectorDirection::RowVector)?,
+            (_, 1) => vector = VecZ::new(num_rows, VectorDirection::ColumnVector)?,
+            (_, _) => return Err(MathError::InvalidStringToVectorInput(String::from(
+                "The string either contained more than one column or row, or did have zero entries",
+            ))),
+        }
 
         // fill entries of matrix according to entries in string_matrix
-        for (row_num, entry) in entries.iter().enumerate() {
-            let z_entry = Z::from_str(entry)?;
-            vector.set_entry(row_num, z_entry)?;
+        for (row_num, row) in entries_string.iter().enumerate() {
+            for (col_num, entry) in row.iter().enumerate() {
+                let z_entry = Z::from_str(entry)?;
+                vector.matrix.set_entry(row_num, col_num, z_entry)?;
+            }
         }
         Ok(vector)
     }
@@ -98,12 +116,14 @@ impl FromStr for VecZ {
 
 #[cfg(test)]
 mod test_new {
+
     use crate::integer::{VecZ, Z};
+    use crate::utils::VectorDirection;
 
     /// Ensure that entries of a new vector are `0`.
     #[test]
     fn entry_zero() {
-        let matrix = VecZ::new(2).unwrap();
+        let matrix = VecZ::new(2, VectorDirection::ColumnVector).unwrap();
 
         let entry1 = matrix.get_entry(0).unwrap();
         let entry2 = matrix.get_entry(0).unwrap();
@@ -115,8 +135,8 @@ mod test_new {
     /// Ensure that a new zero vector fails with `0` or a negative value as input.
     #[test]
     fn error_zero_negative() {
-        let matrix1 = VecZ::new(0);
-        let matrix2 = VecZ::new(-1);
+        let matrix1 = VecZ::new(0, VectorDirection::ColumnVector);
+        let matrix2 = VecZ::new(-1, VectorDirection::ColumnVector);
 
         assert!(matrix1.is_err());
         assert!(matrix2.is_err());
@@ -125,27 +145,30 @@ mod test_new {
 
 #[cfg(test)]
 mod test_from_str {
+
     use crate::integer::{VecZ, Z};
+    use crate::utils::VectorDirection;
     use std::str::FromStr;
 
-    /// Ensure that initialization works
+    /// Ensure that initialization works in both directions
     #[test]
-    fn init_works() {
-        let vector_string = String::from("[1, 2, 3]");
+    fn directions() {
+        let row = VecZ::from_str("[[1, 2, 3]]").unwrap();
+        let col = VecZ::from_str("[[1],[2],[3]]").unwrap();
 
-        assert_eq!(
-            Z::from_i64(1),
-            VecZ::from_str(&vector_string)
-                .unwrap()
-                .get_entry(0)
-                .unwrap()
-        );
+        assert_eq!(Z::from_i64(1), row.get_entry(0).unwrap());
+        assert!(row.is_row_vector());
+        assert_eq!(VectorDirection::RowVector, row.get_direction());
+
+        assert_eq!(Z::from_i64(1), col.get_entry(0).unwrap());
+        assert!(col.is_column_vector());
+        assert_eq!(VectorDirection::ColumnVector, col.get_direction());
     }
 
     /// Ensure that initialization with positive numbers that are larger than [`i64`] works.
     #[test]
-    fn init_works_large_numbers() {
-        let vector_string = format!("[{}, 2, 3]", "1".repeat(65));
+    fn large_numbers() {
+        let vector_string = format!("[[{}, 2, 3]]", "1".repeat(65));
 
         assert_eq!(
             Z::from_str(&"1".repeat(65)).unwrap(),
@@ -158,8 +181,8 @@ mod test_from_str {
 
     /// Ensure that initialization with negative numbers that are larger than [`i64`] works.
     #[test]
-    fn init_works_small_numbers() {
-        let vector_string = format!("[-{}, 2, 3]", "1".repeat(65));
+    fn small_numbers() {
+        let vector_string = format!("[[-{}, 2, 3]]", "1".repeat(65));
 
         let entry = format!("-{}", "1".repeat(65));
 
@@ -175,7 +198,7 @@ mod test_from_str {
     /// Ensure that entries can have leading and trailing whitespaces.
     #[test]
     fn whitespaces_in_entries_works() {
-        let vector_string = String::from("[  1, 2 ,  3  ]");
+        let vector_string = String::from("[[  1],[2 ],[  3  ]]");
 
         assert_eq!(
             Z::from_i64(1),
@@ -186,10 +209,24 @@ mod test_from_str {
         );
     }
 
-    /// Ensure that entries are set correctly.
+    /// Ensure that entries are set correctly for a row vector
     #[test]
-    fn entries_set_correctly() {
-        let vector_string = format!("[0,{},{}, -10, 10]", i64::MIN, i64::MAX);
+    fn entries_set_correctly_row() {
+        let vector_string = format!("[[0,{},{}, -10, 10]]", i64::MIN, i64::MAX);
+
+        let vector = VecZ::from_str(&vector_string).unwrap();
+
+        assert_eq!(vector.get_entry(0).unwrap(), 0.into());
+        assert_eq!(vector.get_entry(1).unwrap(), i64::MIN.into());
+        assert_eq!(vector.get_entry(2).unwrap(), i64::MAX.into());
+        assert_eq!(vector.get_entry(3).unwrap(), (-10).into());
+        assert_eq!(vector.get_entry(4).unwrap(), 10.into());
+    }
+
+    /// Ensure that entries are set correctly for a column vector
+    #[test]
+    fn entries_set_correctly_col() {
+        let vector_string = format!("[[0],[{}],[{}],[-10],[10]]", i64::MIN, i64::MAX);
 
         let vector = VecZ::from_str(&vector_string).unwrap();
 
@@ -204,7 +241,7 @@ mod test_from_str {
     #[test]
     fn wrong_format_error() {
         let vector_string1 = String::from("[1, 2, 3],");
-        let vector_string2 = String::from("[[1, 2, 3]]");
+        let vector_string2 = String::from("[1, 2, 3]]");
         let vector_string3 = String::from("[[1, 2, 3],3, 4, 5]");
         let vector_string4 = String::from("[1, 2, 3, 4,, 5]");
         let vector_string5 = String::from("[[1, 2, 3],[3, 4, 5]]");

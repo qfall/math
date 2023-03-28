@@ -38,6 +38,8 @@ use thiserror::Error;
 /// not formatted correctly.
 /// - `InvalidStringToQInput` is thrown if an invalid string is given to
 /// construct a [`Q`](crate::rational::Q)
+/// - `InvalidStringToVectorInput` is thrown if a valid input string for a matrix was given,
+/// but it was not valid as a string input for a vector, i.e. no matrix dimension was 1
 /// - `InvalidStringToZInput` is thrown if an invalid string is given to
 /// construct a [`Z`](crate::integer::Z)
 /// - `InvalidStringToZqInput` is thrown if an invalid string is given to
@@ -109,6 +111,9 @@ pub enum MathError {
     /// parse string to [`Q`](crate::rational::Q) error
     #[error("invalid string input to parse to Q {0}")]
     InvalidStringToQInput(String),
+    /// parse string to [`VecZ`](crate::integer::VecZ) or other vectors error
+    #[error("invalid string input to parse to a vector (no dimension is 1) {0}")]
+    InvalidStringToVectorInput(String),
     /// parse string to [`Z`](crate::integer::Z) error
     #[error("invalid string input to parse to Z {0}")]
     InvalidStringToZInput(String),
