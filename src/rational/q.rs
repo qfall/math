@@ -14,6 +14,7 @@ use flint_sys::fmpq::fmpq;
 mod arithmetic;
 mod cmp;
 mod default;
+mod exp;
 mod from;
 mod ownership;
 mod serialize;
