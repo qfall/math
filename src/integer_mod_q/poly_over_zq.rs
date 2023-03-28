@@ -14,11 +14,13 @@ use super::modulus::Modulus;
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_struct;
 
 mod cmp;
+mod evaluate;
 mod from;
 mod get;
 mod ownership;
 mod properties;
 mod serialize;
+mod set;
 mod to_string;
 
 /// [`PolyOverZq`] is a type of polynomial with arbitrarily many coefficients of type

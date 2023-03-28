@@ -89,7 +89,7 @@ mod test_clone {
     #[test]
     fn small_int() {
         let pos_1 = Z::from(16);
-        let zero_1 = Z::from(0);
+        let zero_1 = Z::ZERO;
         let neg_1 = Z::from(-16);
 
         let pos_2 = pos_1.clone();

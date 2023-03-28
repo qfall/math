@@ -37,6 +37,18 @@ impl Z {
     pub const ONE: Z = Z {
         value: flint_sys::fmpz::fmpz(1),
     };
+
+    /// Returns an instantiation of [`Z`] with value `0`.
+    ///
+    /// # Example:
+    /// ```
+    /// use math::integer::Z;
+    ///  
+    /// let a: Z = Z::ZERO;
+    /// ```
+    pub const ZERO: Z = Z {
+        value: flint_sys::fmpz::fmpz(0),
+    };
 }
 
 #[cfg(test)]
@@ -46,8 +58,14 @@ mod tests_init {
 
     /// Ensure that [`Default`] initializes [`Z`] with `0`.
     #[test]
+    fn init_default() {
+        assert_eq!(Z::ZERO, Z::default());
+    }
+
+    /// Ensure that ZERO initializes [`Z`] with `0`.
+    #[test]
     fn init_0() {
-        assert_eq!(Z::from(0), Z::default());
+        assert_eq!(Z::from(0), Z::ZERO);
     }
 
     /// Ensure that ONE initializes [`Z`] with `1`.

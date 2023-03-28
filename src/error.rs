@@ -27,10 +27,8 @@ use thiserror::Error;
 /// construct a [`CString`](std::ffi::CString)
 /// - `InvalidStringToIntInput` is thrown if an invalid string is given to
 /// construct an integer.
-/// - `InvalidStringToMatZInput` is thrown if an invalid string is given to
-/// construct a Matrix of [`MatZ`](crate::integer::MatZ)
-/// - `InvalidStringToModulusInput` is thrown if an invalid string is given to
-/// construct a modulus.
+/// - `InvalidStringToMatZqInput` is thrown if an invalid string is given to
+/// construct a Matrix of [`MatZq`](crate::integer_mod_q::MatZq)
 /// - `InvalidStringToPolyInput` is thrown if an invalid string is given to
 /// construct a polynomial
 /// - `InvalidStringToPolyMissingWhiteSpace` is thrown if an invalid string
@@ -44,6 +42,8 @@ use thiserror::Error;
 /// construct a [`Z`](crate::integer::Z)
 /// - `InvalidStringToZqInput` is thrown if an invalid string is given to
 /// construct a [`Zq`](crate::integer_mod_q::Zq)
+/// - `MismatchingModulus` is thrown if any function is called on two
+/// objects with different modulus where equal modulus is required
 /// - `NotPrime` is thrown if a provided integer is not prime
 /// - `OutOfBounds` is thrown if a provided index is not in a desired range
 ///
@@ -77,15 +77,9 @@ pub enum MathError {
     /// parse string to int error
     #[error("invalid string input to parse to int {0}")]
     InvalidStringToIntInput(#[from] ParseIntError),
-    /// parse string to [`MatZ`](crate::integer::MatZ) error
-    #[error("invalid string input to parse to MatZ {0}")]
-    InvalidStringToMatZInput(String),
-    /// parse string to modulus error
-    #[error(
-        "invalid string input to parse to a modulus {0}. \
-        The format must be '[0-9]+' and not all zeros."
-    )]
-    InvalidStringToModulusInput(String),
+    /// parse string to [`MatZq`](crate::integer_mod_q::MatZq) error
+    #[error("invalid string input to parse to MatZq {0}")]
+    InvalidStringToMatZqInput(String),
     /// parse string to poly error
     #[error(
         "invalid string input to parse to polynomial {0}\nThe format must 
@@ -121,6 +115,9 @@ pub enum MathError {
     /// parse string to [`Zq`](crate::integer_mod_q::Zq) error
     #[error("invalid string input to parse to Zq {0}")]
     InvalidStringToZqInput(String),
+    /// mismatching modulus error
+    #[error("mismatching modulus.{0}")]
+    MismatchingModulus(String),
     /// if an integer or modulus is not prime
     #[error("invalid integer. The integer has to be prime and the provided value is {0}")]
     NotPrime(String),

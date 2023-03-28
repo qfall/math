@@ -67,7 +67,7 @@ mod test_get_coeff {
 
         let zero_coeff = poly.get_coeff(4).unwrap();
 
-        assert_eq!(Z::from(0), zero_coeff)
+        assert_eq!(Z::ZERO, zero_coeff)
     }
 
     /// tests if negative coefficients are returned correctly

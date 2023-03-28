@@ -90,7 +90,7 @@ impl MatQ {
 #[cfg(test)]
 mod test_setter {
     use super::Q;
-    use crate::rational::MatQ;
+    use crate::{rational::MatQ, traits::GetEntry};
     use std::str::FromStr;
 
     /// Ensure that setting entries works with standard numbers.

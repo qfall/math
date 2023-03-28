@@ -21,6 +21,7 @@ use super::Modulus;
 use crate::integer::Z;
 use serde::{Deserialize, Serialize};
 
+mod arithmetic;
 mod from;
 mod reduce;
 mod to_string;
