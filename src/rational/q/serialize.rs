@@ -22,7 +22,7 @@ use serde::{
 use std::str::FromStr;
 
 serialize!("value", Q);
-deserialize!("value", Q);
+deserialize!("value", Value, Q);
 
 #[cfg(test)]
 mod test_serialize {
@@ -57,7 +57,7 @@ mod test_serialize {
         assert_eq!(cmp_string, serde_json::to_string(&q).unwrap())
     }
 
-    /// tests whether the serialization of a positive [`Q`] works.
+    /// tests whether the serialization of a negative large [`Q`] works.
     #[test]
     fn serialize_output_negative_large() {
         let val_str = format!("-{}/2", u64::MAX);
@@ -83,7 +83,7 @@ mod test_deserialize {
         )
     }
 
-    /// tests whether the deserialization of a positive [`Q`] works.
+    /// tests whether the deserialization of a negative [`Q`] works.
     #[test]
     fn deserialize_negative() {
         let q_string = "{\"value\":\"-17/3\"}";
@@ -93,7 +93,7 @@ mod test_deserialize {
         )
     }
 
-    /// tests whether the deserialization of a positive [`Q`] works.
+    /// tests whether the deserialization of a positive large [`Q`] works.
     #[test]
     fn deserialize_positive_large() {
         let val_str = format!("{}/2", u64::MAX);
@@ -105,7 +105,7 @@ mod test_deserialize {
         )
     }
 
-    /// tests whether the deserialization of a positive [`Q`] works.
+    /// tests whether the deserialization of a negative large [`Q`] works.
     #[test]
     fn deserialize_negative_large() {
         let val_str = format!("-{}/2", u64::MAX);

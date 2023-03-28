@@ -22,7 +22,7 @@ use serde::{
 use std::str::FromStr;
 
 serialize!("value", Z);
-deserialize!("value", Z);
+deserialize!("value", Value, Z);
 
 #[cfg(test)]
 mod test_serialize {
@@ -57,7 +57,7 @@ mod test_serialize {
         assert_eq!(cmp_string, serde_json::to_string(&z).unwrap())
     }
 
-    /// tests whether the serialization of a positive [`Z`] works.
+    /// tests whether the serialization of a negative large [`Z`] works.
     #[test]
     fn serialize_output_negative_large() {
         let val_str = format!("-{}", u64::MAX);
@@ -80,14 +80,14 @@ mod test_deserialize {
         assert_eq!(Z::from(17), serde_json::from_str(z_string).unwrap())
     }
 
-    /// tests whether the deserialization of a positive [`Z`] works.
+    /// tests whether the deserialization of a negative [`Z`] works.
     #[test]
     fn deserialize_negative() {
         let z_string = "{\"value\":\"-17\"}";
         assert_eq!(Z::from(-17), serde_json::from_str(z_string).unwrap())
     }
 
-    /// tests whether the deserialization of a positive [`Z`] works.
+    /// tests whether the deserialization of a positive large [`Z`] works.
     #[test]
     fn deserialize_positive_large() {
         let val_str = u64::MAX.to_string();
@@ -99,7 +99,7 @@ mod test_deserialize {
         )
     }
 
-    /// tests whether the deserialization of a positive [`Z`] works.
+    /// tests whether the deserialization of a negative large [`Z`] works.
     #[test]
     fn deserialize_negative_large() {
         let val_str = format!("-{}", u64::MAX);
