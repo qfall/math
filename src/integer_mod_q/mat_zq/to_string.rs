@@ -42,8 +42,7 @@ impl fmt::Display for MatZq {
     /// ```
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let matrix = matrix_to_string::<Z, MatZq>(self);
-        let modulus = self.get_mod().to_string();
-        write!(f, "{} mod {}", matrix, modulus)
+        write!(f, "{} mod {}", matrix, self.get_mod())
     }
 }
 
