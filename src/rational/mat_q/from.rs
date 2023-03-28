@@ -120,8 +120,8 @@ impl FromStr for MatQ {
         // fill entries of matrix according to entries in string_matrix
         for (row_num, row) in string_matrix.iter().enumerate() {
             for (col_num, entry) in row.iter().enumerate() {
-                let z_entry = Q::from_str(entry)?;
-                matrix.set_entry(row_num, col_num, z_entry)?;
+                let q_entry = Q::from_str(entry)?;
+                matrix.set_entry(row_num, col_num, q_entry)?;
             }
         }
         Ok(matrix)
