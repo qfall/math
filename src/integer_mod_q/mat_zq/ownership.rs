@@ -32,7 +32,7 @@ impl Clone for MatZq {
         let mut out = MatZq::new(
             self.get_num_rows(),
             self.get_num_columns(),
-            std::convert::Into::<Z>::into(self.get_mod()),
+            Z::from(self.get_mod()),
         )
         .unwrap();
         unsafe {
@@ -130,6 +130,7 @@ mod test_clone {
 
     /// Check if modulus is applied after cloning
     #[test]
+    #[allow(clippy::redundant_clone)]
     fn modulus_applied() {
         let string = String::from("[[1, 2],[4, 5]] mod 4");
         let b = MatZq::from_str(&string).unwrap();
@@ -156,10 +157,9 @@ mod test_clone {
 #[cfg(test)]
 mod test_drop {
 
-    use crate::traits::GetEntry;
-
     use super::MatZq;
     use crate::integer::Z;
+    use crate::traits::GetEntry;
     use std::collections::HashSet;
     use std::str::FromStr;
 

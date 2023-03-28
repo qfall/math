@@ -69,6 +69,23 @@ impl Z {
     from_type!(u16, u64, Z, Z::from_u64);
     from_type!(u8, u64, Z, Z::from_u64);
 
+    /// Create a new Integer that can grow arbitrary large.
+    ///
+    /// Parameters:
+    /// - `value`: the initial value the integer should have
+    ///
+    /// Returns the new integer.
+    ///
+    /// # Example
+    /// ```
+    /// use math::integer::Z;
+    /// use math::integer_mod_q::Modulus;
+    /// use std::str::FromStr;
+    ///
+    /// let m = Modulus::from_str("42").unwrap();
+    ///
+    /// let a: Z = Z::from_modulus(m);
+    /// ```
     pub fn from_modulus(value: Modulus) -> Self {
         Z {
             value: value.get_fmpz_mod_ctx_struct().n[0],
@@ -288,5 +305,34 @@ mod tests_from_str {
     #[test]
     fn whitespace_minus() {
         assert!(Z::from_str("- 876543").is_err());
+    }
+}
+
+#[cfg(test)]
+mod tests_from_modulus {
+    use super::Z;
+    use crate::integer_mod_q::Modulus;
+    use std::str::FromStr;
+
+    /// Ensure that the `from_<type_name>` functions are available for
+    /// singed and unsigned integers of 8, 16, 32, and 64 bit length.
+    /// Tested with their maximum value.
+    #[test]
+    fn large_small_numbers() {
+        let mod_1 = Modulus::from_str(&"1".repeat(65)).unwrap();
+        let mod_2 = Modulus::from_str("10").unwrap();
+
+        let _ = Z::from_modulus(mod_1);
+        let _ = Z::from_modulus(mod_2);
+    }
+
+    /// Ensure that the [`From`] trait is available for large
+    #[test]
+    fn from_trait() {
+        let mod_1 = Modulus::from_str(&"1".repeat(65)).unwrap();
+        let mod_2 = Modulus::from_str("10").unwrap();
+
+        let _ = Z::from(mod_1);
+        let _ = Z::from(mod_2);
     }
 }
