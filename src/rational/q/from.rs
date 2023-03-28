@@ -111,8 +111,11 @@ impl FromStr for Q {
 }
 
 impl Q {
-    /// Create a [`Q`] from two values that can be converted to [`Z`].
-    /// For example, [`i64`] and [`Z`].
+    /// Create a [`Q`] from two references that can be converted to [`Z`].
+    /// For example, [`&Z`].
+    ///
+    /// Warning: The interface of this function will likely change in the future
+    /// or it will entirely be removed. Therefore use [`Q::try_from`] instead.
     ///
     /// Parameters:
     /// - `numerator` of the new [`Q`].
@@ -121,21 +124,32 @@ impl Q {
     /// Returns a [`Q`] or a [`MathError`]
     ///
     /// # Example
-    /// ```rust
+    /// ```ignore (private function)
     /// use math::rational::Q;
+    /// use math::integer::Z;
     ///
-    /// let a = Q::try_from_int_int_owned(42, i64::MAX).unwrap();
+    /// let num = Z::from(100);
+    ///
+    /// let a = Q::try_from_int_int_borrow(&num, &i64::MAX).unwrap();
+    /// let b = Q::try_from_int_int_borrow(&num, &i64::MAX).unwrap();
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`DivisionByZeroError`](MathError::DivisionByZeroError)
     /// if the denominator is zero.
-    pub fn try_from_int_int_owned(
-        numerator: impl Into<Z>,
-        denominator: impl Into<Z>,
+    fn try_from_int_int_borrow(
+        numerator: &(impl Into<Z> + Clone),
+        denominator: &(impl Into<Z> + Clone),
     ) -> Result<Self, MathError> {
-        let mut numerator: Z = numerator.into();
-        let mut denominator: Z = denominator.into();
+        let mut numerator: Z = numerator.to_owned().into();
+        let mut denominator: Z = denominator.to_owned().into();
+
+        // TODO: this is not as efficient as possible when passing values that
+        // internally include a [`fmpz`], e.g. [`Z`] or [`Zq`].
+        // In those cases it would be faster to use `fmpq_set_fmpz_frac`.
+        // The best way would probably be to use `Into<fmpz>` and do the
+        // performance improvements there. However, this takes longer to implement and this
+        // functionality is now required for others to make progress.
 
         // TODO: add [`num::Zero`] trait and use is_zero
         if denominator == Z::from(0) {
@@ -156,6 +170,39 @@ impl Q {
     }
 }
 
+impl<T1: Into<Z> + Clone, T2: Into<Z> + Clone> TryFrom<(&T1, &T2)> for Q {
+    type Error = MathError;
+
+    /// Create a [`Q`] from two values that can be converted to [`Z`].
+    /// For example, [`Z`] and [`u32`].
+    ///
+    /// Parameters:
+    /// - `num_den_tuple`
+    ///     - first value: numerator of the new [`Q`].
+    ///     - second value: denominator of the new [`Q`].
+    ///
+    /// Returns a [`Q`] or a [`MathError`]
+    ///
+    /// # Example
+    /// ```rust
+    /// use math::rational::Q;
+    /// use math::integer::Z;
+    ///
+    /// let a = Q::try_from((&42, &2)).unwrap();
+    /// let b = Q::try_from((&Z::from(21), &Z::from(1))).unwrap();
+    /// assert_eq!(a,b);
+    ///
+    /// let c = Q::try_from((&10,&0));
+    /// assert!(c.is_err());
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`DivisionByZeroError`](MathError::DivisionByZeroError)
+    /// if the denominator is zero.
+    fn try_from(num_den_tuple: (&T1, &T2)) -> Result<Self, Self::Error> {
+        Q::try_from_int_int_borrow(num_den_tuple.0, num_den_tuple.1)
+    }
+}
 
 #[cfg(test)]
 mod tests_from_str {
@@ -300,38 +347,64 @@ mod tests_from_str {
 #[cfg(test)]
 mod test_from_int_int {
 
+    use crate::integer::Z;
     use crate::rational::Q;
 
-    /// Test with small valid value and modulus. Also ensures that the result is canonical.
+    /// Test the different borrowed parameter types
+    #[test]
+    fn test_types_borrowed() {
+        let numerator = 10;
+        let denominator = 15;
+
+        let q_1 = Q::try_from((&(numerator as u8), &(denominator as i8))).unwrap();
+        let q_2 = Q::try_from((&(numerator as u16), &(denominator as i16))).unwrap();
+        let q_3 = Q::try_from((&(numerator as u32), &(denominator as i32))).unwrap();
+        let q_4 = Q::try_from((&(numerator as u64), &(denominator as i64))).unwrap();
+        let q_5 = Q::try_from((&Z::from(numerator), &Z::from(denominator))).unwrap();
+
+        assert_eq!(q_1, q_2);
+        assert_eq!(q_1, q_3);
+        assert_eq!(q_1, q_4);
+        assert_eq!(q_1, q_5);
+    }
+
+    /// Ensure that creating [`Q`] works with small integer parameters.
     #[test]
     fn working_small() {
         let numerator = 10;
         let denominator = 15;
+        let numerator_z = Z::from(numerator);
+        let denominator_z = Z::from(denominator);
 
-        let q_1 = Q::try_from_int_int_owned(numerator, denominator).unwrap();
-        let q_2 = Q::try_from_int_int_owned(numerator * 2, denominator * 2).unwrap();
+        let q_1 = Q::try_from((&numerator, &denominator)).unwrap();
+        let q_2 = Q::try_from((&(numerator * 2), &(denominator * 2))).unwrap();
+        let q_3 = Q::try_from((&numerator_z, &denominator_z)).unwrap();
+
+        assert_eq!(q_1, q_2);
+        assert_eq!(q_1, q_3);
+    }
+
+    /// Ensure that large parameters work (FLINT uses pointer representation).
+    #[test]
+    fn working_large() {
+        let numerator = u64::MAX;
+        let denominator = u64::MAX - 1;
+        let numerator_z = Z::from(numerator);
+        let denominator_z = Z::from(denominator);
+
+        let q_1 = Q::try_from((&numerator, &denominator)).unwrap();
+        let q_2 = Q::try_from((&numerator_z, &denominator_z)).unwrap();
 
         assert_eq!(q_1, q_2);
     }
 
-    /// Test with large value and denominator (FLINT uses pointer representation).
-    #[test]
-    fn working_large() {
-        let numerator = u64::MAX - 1;
-        let denominator = u64::MAX;
-
-        let new_q = Q::try_from_int_int_owned(numerator, denominator);
-
-        assert!(new_q.is_ok());
-    }
-
-    /// Test with zero denominator (not valid)
+    /// Test with zero denominator (not valid -> should lead to an error)
     #[test]
     fn divide_by_zero() {
         let numerator = 10;
         let denominator = 0;
 
-        let new_q = Q::try_from_int_int_owned(numerator, denominator);
+        let new_q = Q::try_from((&numerator, &denominator));
 
         assert!(new_q.is_err());
     }
@@ -342,8 +415,8 @@ mod test_from_int_int {
         let numerator = 10;
         let denominator = -1;
 
-        let q_1 = Q::try_from_int_int_owned(numerator, denominator).unwrap();
-        let q_2 = Q::try_from_int_int_owned(-numerator, -denominator).unwrap();
+        let q_1 = Q::try_from((&numerator, &denominator)).unwrap();
+        let q_2 = Q::try_from((&-numerator, &-denominator)).unwrap();
 
         assert_eq!(q_1, q_2);
     }
@@ -354,8 +427,8 @@ mod test_from_int_int {
         let numerator = 10;
         let denominator = -1;
 
-        let q_1 = Q::try_from_int_int_owned(numerator, denominator).unwrap();
-        let q_2 = Q::try_from_int_int_owned(-numerator, -denominator).unwrap();
+        let q_1 = Q::try_from((&numerator, &denominator)).unwrap();
+        let q_2 = Q::try_from((&-numerator, &-denominator)).unwrap();
 
         assert_eq!(q_1, q_2);
     }
@@ -366,8 +439,8 @@ mod test_from_int_int {
         let numerator = i64::MAX;
         let denominator = i64::MAX - 1;
 
-        let q_1 = Q::try_from_int_int_owned(numerator, denominator).unwrap();
-        let q_2 = Q::try_from_int_int_owned(-numerator, -denominator).unwrap();
+        let q_1 = Q::try_from((&numerator, &denominator)).unwrap();
+        let q_2 = Q::try_from((&-numerator, &-denominator)).unwrap();
 
         assert_eq!(q_1, q_2);
     }
