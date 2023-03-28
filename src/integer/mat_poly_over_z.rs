@@ -17,6 +17,7 @@ mod get;
 mod ownership;
 mod properties;
 mod set;
+mod to_string;
 
 /// [`MatPolyOverZ`] is a matrix with entries of type [`PolyOverZ`](crate::integer::PolyOverZ).
 ///
