@@ -15,6 +15,7 @@ use flint_sys::fmpq_poly::fmpq_poly_struct;
 mod cmp;
 mod default;
 mod evaluate;
+mod exp;
 mod from;
 mod get;
 mod ownership;
