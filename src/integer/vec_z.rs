@@ -25,5 +25,5 @@ use super::MatZ;
 /// # Examples
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct VecZ {
-    pub(crate) matrix: MatZ,
+    pub(crate) vector: MatZ,
 }

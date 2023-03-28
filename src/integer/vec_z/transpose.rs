@@ -11,7 +11,8 @@
 use super::VecZ;
 
 impl VecZ {
-    /// Returns the transposed form of the given matrix, i.e. rows get transformed to columns.
+    /// Returns the transposed form of the given matrix,
+    /// i.e. rows get transformed to columns and vice versa.
     ///
     /// # Example
     /// ```
@@ -25,7 +26,7 @@ impl VecZ {
     /// ```
     pub fn transpose(&self) -> VecZ {
         Self {
-            matrix: self.matrix.transpose(),
+            vector: self.vector.transpose(),
         }
     }
 }
@@ -41,8 +42,8 @@ mod test_transpose {
     /// Checks if a vector is correctly converted to a one-row matrix
     #[test]
     fn column_to_row() {
-        let vec = VecZ::from_str("[[1],[2],[3]]").unwrap();
-        let cmp = VecZ::from_str("[[1,2,3]]").unwrap();
+        let vec = VecZ::from_str("[[1],[2],[3],[4]]").unwrap();
+        let cmp = VecZ::from_str("[[1,2,3,4]]").unwrap();
 
         assert_eq!(cmp, vec.transpose());
     }
@@ -50,8 +51,8 @@ mod test_transpose {
     /// Checks if a vector is correctly converted to a one-column matrix
     #[test]
     fn row_to_column() {
-        let vec = VecZ::from_str("[[1,2,3]]").unwrap();
-        let cmp = VecZ::from_str("[[1],[2],[3]]").unwrap();
+        let vec = VecZ::from_str("[[1,2,3,4,5]]").unwrap();
+        let cmp = VecZ::from_str("[[1],[2],[3],[4],[5]]").unwrap();
 
         assert_eq!(cmp, vec.transpose());
     }

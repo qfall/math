@@ -44,6 +44,9 @@ impl Mul for &MatZ {
     /// let e = &c * d;
     /// let f = c * &e;
     /// ```
+    ///
+    /// # Errors and Failures
+    /// - Panics if the dimensions of `self` and `other` do not match for multiplication.
     fn mul(self, other: Self) -> Self::Output {
         // TODO: mul_safe
         if self.get_num_columns() != other.get_num_rows() {
@@ -83,8 +86,11 @@ impl Mul<&VecZ> for &MatZ {
     /// let _ = &a * b.clone();
     /// let _ = a.clone() * &b;
     /// ```
+    ///
+    /// # Errors and Failures
+    /// - Panics if the dimensions of `self` and `other` do not match for multiplication.
     fn mul(self, other: &VecZ) -> Self::Output {
-        self.mul(&other.matrix)
+        self.mul(&other.vector)
     }
 }
 

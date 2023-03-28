@@ -66,8 +66,18 @@ mod test_partial_eq {
     /// Checks that large and small entries (and different points in storage) do not break equality
     #[test]
     fn equality_for_large_and_small_entries() {
-        let a = MatZ::from_str(&format!("[[{},{}],[-10, 10]]", i64::MIN, i64::MAX)).unwrap();
-        let b = MatZ::from_str(&format!("[[{},{}],[-10, 10]]", i64::MIN, i64::MAX)).unwrap();
+        let a = MatZ::from_str(&format!(
+            "[[{},{}, 1],[-10, 10, 0],[0, 1, -10]]",
+            i64::MIN,
+            i64::MAX
+        ))
+        .unwrap();
+        let b = MatZ::from_str(&format!(
+            "[[{},{}, 1],[-10, 10, 0],[0, 1, -10]]",
+            i64::MIN,
+            i64::MAX
+        ))
+        .unwrap();
 
         assert_eq!(&a, &b);
     }

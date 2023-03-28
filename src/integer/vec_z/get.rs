@@ -40,13 +40,13 @@ impl VecZ {
     /// if the given entry is outside the vector or negative.
     pub fn get_entry(&self, entry: impl TryInto<i64> + Display + Copy) -> Result<Z, MathError> {
         if self.is_column_vector() {
-            self.matrix.get_entry(entry, 0)
+            self.vector.get_entry(entry, 0)
         } else {
-            self.matrix.get_entry(0, entry)
+            self.vector.get_entry(0, entry)
         }
     }
 
-    /// Returns `true` if the vector is a row vector with more than one column.
+    /// Returns `true` if the vector has only one row.
     ///
     /// # Example
     /// ```
@@ -58,10 +58,10 @@ impl VecZ {
     /// assert!(row.is_row_vector());
     /// ```
     pub fn is_row_vector(&self) -> bool {
-        self.matrix.get_num_columns() > 1
+        self.vector.get_num_rows() == 1
     }
 
-    /// Returns `true` if the vector is a column vector with more than one row.
+    /// Returns `true` if the vector has only one column.
     ///
     /// # Example
     /// ```
@@ -73,11 +73,11 @@ impl VecZ {
     /// assert!(col.is_column_vector());
     /// ```
     pub fn is_column_vector(&self) -> bool {
-        self.matrix.get_num_rows() > 1
+        self.vector.get_num_columns() == 1
     }
 
-    /// Returns [`VectorDirection::ColumnVector`] if the vector is a column vector with more than one row.
-    /// Otherwise, returns [`VectorDirection::RowVector`].
+    /// Returns [`VectorDirection::RowVector`] if the vector has only one row.
+    /// Otherwise, returns [`VectorDirection::ColumnVector`].
     ///
     /// # Example
     /// ```
@@ -92,10 +92,10 @@ impl VecZ {
     /// assert_eq!(VectorDirection::ColumnVector, col.get_direction());
     /// ```
     pub fn get_direction(&self) -> VectorDirection {
-        if self.is_column_vector() {
-            VectorDirection::ColumnVector
-        } else {
+        if self.is_row_vector() {
             VectorDirection::RowVector
+        } else {
+            VectorDirection::ColumnVector
         }
     }
 }
@@ -185,8 +185,8 @@ mod test_directions {
     fn one_by_one_detection() {
         let vec = VecZ::new(1, VectorDirection::ColumnVector).unwrap();
 
-        assert!(!vec.is_row_vector());
-        assert!(!vec.is_column_vector());
+        assert!(vec.is_row_vector());
+        assert!(vec.is_column_vector());
         assert_eq!(vec.get_direction(), VectorDirection::RowVector);
         // returns RowVector as standard as this answer is not wrong for a one times one matrix
     }

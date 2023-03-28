@@ -65,9 +65,9 @@ impl VecZ {
         value: &Z,
     ) -> Result<(), MathError> {
         if self.is_column_vector() {
-            self.matrix.set_entry_ref_z(entry, 0, value)?;
+            self.vector.set_entry_ref_z(entry, 0, value)?;
         } else {
-            self.matrix.set_entry_ref_z(0, entry, value)?;
+            self.vector.set_entry_ref_z(0, entry, value)?;
         }
 
         Ok(())

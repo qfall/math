@@ -1,4 +1,4 @@
-// Copyright © 2023 Marcel Luca Schmidt, Niklas Siemer
+// Copyright © 2023 Marcel Luca Schmidt
 //
 // This file is part of qFALL-math.
 //

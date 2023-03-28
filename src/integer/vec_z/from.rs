@@ -14,19 +14,22 @@
 //! The explicit functions contain the documentation.
 
 use super::{MatZ, VecZ};
-use crate::integer::Z;
-use crate::utils::{parse::parse_matrix_string, VectorDirection};
-use crate::{error::MathError, utils::dimensions::find_matrix_dimensions};
+use crate::error::MathError;
+use crate::traits::{GetNumColumns, GetNumRows};
+use crate::utils::VectorDirection;
 use std::{fmt::Display, str::FromStr};
 
 impl VecZ {
-    /// Creates a new row-vector with `num_rows` rows and
+    /// Creates a new vector with `num_entries` entries and
     /// zeros as entries.
     ///
     /// Parameters:
-    /// - `num_rows`: number of columns the new vector should have
+    /// - `num_entries`: number of rows or columns the new vector should have.
+    /// - `orientation`: defines the orientation the vector should have.
+    /// [`VectorDirection::ColumnVector`] and [`VectorDirection::RowVector`]
+    /// are valid inputs.
     ///
-    /// Returns a [`VecZ`] or an error, if the number of rows is
+    /// Returns a [`VecZ`] or an error, if the number of entries is
     /// less or equal to `0`.
     ///
     /// # Example
@@ -40,19 +43,19 @@ impl VecZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
     /// [`InvalidMatrix`](MathError::InvalidMatrix)
-    /// if the number of rows is `0`.
+    /// if the number of rows/columns is `0`.
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    /// if the number of rows is negative or it does not fit into an [`i64`].
+    /// if the number of rows/columns is negative or it does not fit into an [`i64`].
     pub fn new(
         num_entries: impl TryInto<i64> + Display + Copy,
         orientation: VectorDirection,
     ) -> Result<Self, MathError> {
         match orientation {
             VectorDirection::RowVector => Ok(VecZ {
-                matrix: MatZ::new(1, num_entries)?,
+                vector: MatZ::new(1, num_entries)?,
             }),
             VectorDirection::ColumnVector => Ok(VecZ {
-                matrix: MatZ::new(num_entries, 1)?,
+                vector: MatZ::new(num_entries, 1)?,
             }),
         }
     }
@@ -61,56 +64,58 @@ impl VecZ {
 impl FromStr for VecZ {
     type Err = MathError;
 
-    /// Creates a [`VecZ`] row-vector with entries in [`Z`] from a [`String`].
-    /// The format of that string looks like this `[1,2,3]` for a row vector
-    /// with three entries (`1` in the first row, `2` in the second one, ...)
+    /// Creates a [`VecZ`] vector with entries in [`Z`] from a [`String`].
+    /// The format of that string looks like this `[[1],[2],[3]]` for a column vector
+    /// with three entries (`1` in the first row, `2` in the second one, ...).
+    /// `[[1,2,3]]` is the correct format for a row vector.
     ///
     /// Parameters:
     /// - `string`: the vector representation as a string
     ///
     /// Returns a [`VecZ`] or an error, if the vector is not formatted in a suitable way,
-    /// the number of rows is too big (must fit into [`i64`]), or if the regular expression
+    /// the number of entries is too big (must fit into [`i64`]), or if the regular expression
     /// inside of the function could not be processed.
     ///
-    /// # Example
+    /// # Examples
+    /// Column Vector
     /// ```
     /// use math::integer::VecZ;
     /// use std::str::FromStr;
     ///
-    /// let string = String::from("[[1, 2, 3]]");
-    /// let matrix = VecZ::from_str(&string).unwrap();
+    /// let string = String::from("[[1],[2],[3]]");
+    /// let vector = VecZ::from_str(&string).unwrap();
+    /// ```
+    /// Row Vector
+    /// ```
+    /// use math::integer::VecZ;
+    /// use std::str::FromStr;
+    ///
+    /// let string = String::from("[[1,2,3]]");
+    /// let vector = VecZ::from_str(&string).unwrap();
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix)
     /// if the vector is not formatted in a suitable way,
-    /// the number of rows is too big (must fit into [`i64`]).
+    /// the number of rows/columns is too big (must fit into [`i64`]).
     /// - Returns a [`MathError`] of type
     /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
     /// if an entry contains a Nul byte.
     /// - Returns a [`MathError`] of type
+    /// [`InvalidStringToVectorInput`](MathError::InvalidStringToVectorInput)
+    /// if no dimension or the matrix is `1`.
     /// [`InvalidStringToZInput`](MathError::InvalidStringToZInput)
     /// if an entry is not formatted correctly.
     fn from_str(string: &str) -> Result<Self, MathError> {
-        let entries_string = parse_matrix_string(string)?;
-        let (num_rows, num_cols) = find_matrix_dimensions(&entries_string)?;
-        let mut vector: VecZ;
-        match (num_rows, num_cols) {
-            (1, _) => vector = VecZ::new(num_cols, VectorDirection::RowVector)?,
-            (_, 1) => vector = VecZ::new(num_rows, VectorDirection::ColumnVector)?,
-            (_, _) => return Err(MathError::InvalidStringToVectorInput(String::from(
-                "The string either contained more than one column or row, or did have zero entries",
-            ))),
-        }
+        let matrix = MatZ::from_str(string)?;
 
-        // fill entries of matrix according to entries in string_matrix
-        for (row_num, row) in entries_string.iter().enumerate() {
-            for (col_num, entry) in row.iter().enumerate() {
-                let z_entry = Z::from_str(entry)?;
-                vector.matrix.set_entry(row_num, col_num, z_entry)?;
-            }
+        if matrix.get_num_rows() == 1 || matrix.get_num_columns() == 1 {
+            Ok(VecZ { vector: matrix })
+        } else {
+            Err(MathError::InvalidStringToVectorInput(String::from(
+                "The string either contained more than one column and row, or included zero entries",
+            )))
         }
-        Ok(vector)
     }
 }
 
@@ -128,8 +133,8 @@ mod test_new {
         let entry1 = matrix.get_entry(0).unwrap();
         let entry2 = matrix.get_entry(0).unwrap();
 
-        assert_eq!(Z::from_i64(0), entry1);
-        assert_eq!(Z::from_i64(0), entry2);
+        assert_eq!(Z::ZERO, entry1);
+        assert_eq!(Z::ZERO, entry2);
     }
 
     /// Ensure that a new zero vector fails with `0` or a negative value as input.
@@ -156,11 +161,11 @@ mod test_from_str {
         let row = VecZ::from_str("[[1, 2, 3]]").unwrap();
         let col = VecZ::from_str("[[1],[2],[3]]").unwrap();
 
-        assert_eq!(Z::from_i64(1), row.get_entry(0).unwrap());
+        assert_eq!(Z::ONE, row.get_entry(0).unwrap());
         assert!(row.is_row_vector());
         assert_eq!(VectorDirection::RowVector, row.get_direction());
 
-        assert_eq!(Z::from_i64(1), col.get_entry(0).unwrap());
+        assert_eq!(Z::ONE, col.get_entry(0).unwrap());
         assert!(col.is_column_vector());
         assert_eq!(VectorDirection::ColumnVector, col.get_direction());
     }
@@ -168,10 +173,10 @@ mod test_from_str {
     /// Ensure that initialization with positive numbers that are larger than [`i64`] works.
     #[test]
     fn large_numbers() {
-        let vector_string = format!("[[{}, 2, 3]]", "1".repeat(65));
+        let vector_string = format!("[[{}, 2, 3]]", u64::MAX);
 
         assert_eq!(
-            Z::from_str(&"1".repeat(65)).unwrap(),
+            Z::from(u64::MAX),
             VecZ::from_str(&vector_string)
                 .unwrap()
                 .get_entry(0)
@@ -182,12 +187,10 @@ mod test_from_str {
     /// Ensure that initialization with negative numbers that are larger than [`i64`] works.
     #[test]
     fn small_numbers() {
-        let vector_string = format!("[[-{}, 2, 3]]", "1".repeat(65));
-
-        let entry = format!("-{}", "1".repeat(65));
+        let vector_string = format!("[[{}, 2, 3]]", i64::MIN);
 
         assert_eq!(
-            Z::from_str(&entry).unwrap(),
+            Z::from(i64::MIN),
             VecZ::from_str(&vector_string)
                 .unwrap()
                 .get_entry(0)
@@ -201,7 +204,7 @@ mod test_from_str {
         let vector_string = String::from("[[  1],[2 ],[  3  ]]");
 
         assert_eq!(
-            Z::from_i64(1),
+            Z::ONE,
             VecZ::from_str(&vector_string)
                 .unwrap()
                 .get_entry(0)
