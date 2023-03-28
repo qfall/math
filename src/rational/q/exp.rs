@@ -26,7 +26,7 @@ impl Q {
     /// use std::str::FromStr;
     ///
     /// // sum_{k=0}^999 (17/3)^k/k!
-    /// let evaluation = Q::from_str("17/3").unwrap().exp(1000);
+    /// let evaluation = Q::from_str("17/3").unwrap().exp_taylor(1000);
     /// ```
     pub fn exp_taylor(&self, length_taylor_polynomial: u32) -> Self {
         let exp_taylor_series = PolyOverQ::exp_function_taylor(length_taylor_polynomial);

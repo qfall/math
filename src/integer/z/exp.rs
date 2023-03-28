@@ -28,7 +28,7 @@ impl Z {
     /// use math::integer::Z;
     ///
     /// // sum_{k=0}^999 17^k/k!
-    /// let evaluation = Z::from(17).exp(1000);
+    /// let evaluation = Z::from(17).exp_taylor(1000);
     /// ```
     pub fn exp_taylor(&self, length_taylor_polynomial: u32) -> Q {
         let exp_taylor_series = PolyOverQ::exp_function_taylor(length_taylor_polynomial);
