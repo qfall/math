@@ -18,7 +18,7 @@ use crate::{
     integer_mod_q::Modulus,
     macros::from::{from_trait, from_type},
 };
-use flint_sys::fmpz::{fmpz, fmpz_init_set_si, fmpz_init_set_ui, fmpz_set_str};
+use flint_sys::fmpz::{fmpz, fmpz_init_set_si, fmpz_init_set_ui, fmpz_set, fmpz_set_str};
 use std::{ffi::CString, str::FromStr};
 
 impl Z {
@@ -87,9 +87,9 @@ impl Z {
     /// let a: Z = Z::from_modulus(m);
     /// ```
     pub fn from_modulus(value: Modulus) -> Self {
-        Z {
-            value: value.get_fmpz_mod_ctx_struct().n[0],
-        }
+        let mut out = Z::default();
+        unsafe { fmpz_set(&mut out.value, &value.get_fmpz_mod_ctx_struct().n[0]) };
+        out
     }
 }
 
