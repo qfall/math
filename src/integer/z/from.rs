@@ -327,6 +327,7 @@ mod tests_from_modulus {
     }
 
     /// Ensure that the [`From`] trait is available for large
+    /// [`Modulus`] instances
     #[test]
     fn from_trait() {
         let mod_1 = Modulus::from_str(&"1".repeat(65)).unwrap();
