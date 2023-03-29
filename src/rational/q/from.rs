@@ -419,8 +419,13 @@ mod test_from_int_int {
         let q_2 = Q::try_from((&-numerator, &-denominator)).unwrap();
         let q_3 = Q::try_from((&(numerator * 2), &(denominator * 2))).unwrap();
 
+        let q_4_negative = Q::try_from((&-numerator, &denominator)).unwrap();
+        let q_5_negative = Q::try_from((&numerator, &-denominator)).unwrap();
+
         assert_eq!(q_1, q_2);
         assert_eq!(q_1, q_3);
+
+        assert_eq!(q_4_negative, q_5_negative);
     }
 
     /// Ensure that the result is canonical for large parameters.
@@ -436,10 +441,13 @@ mod test_from_int_int {
         let q_2 = Q::try_from((&-numerator, &-denominator)).unwrap();
         let q_3 = Q::try_from((&numerator_z, &denominator_z)).unwrap();
         let q_4 =
-            Q::try_from((&(numerator_z * Z::from(2)), &(denominator_z * Z::from(2)))).unwrap();
+            Q::try_from((&(&numerator_z * Z::from(2)), &(&denominator_z * Z::from(2)))).unwrap();
+        let q_5_negative = Q::try_from((&(&numerator_z * Z::from(-1)), &denominator_z)).unwrap();
+        let q_6_negative = Q::try_from((&numerator_z, &(&denominator_z * Z::from(-1)))).unwrap();
 
         assert_eq!(q_1, q_2);
         assert_eq!(q_1, q_3);
         assert_eq!(q_1, q_4);
+        assert_eq!(q_5_negative, q_6_negative);
     }
 }
