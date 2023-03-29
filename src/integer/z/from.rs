@@ -15,9 +15,10 @@
 use super::Z;
 use crate::{
     error::MathError,
+    integer_mod_q::Modulus,
     macros::from::{from_trait, from_type},
 };
-use flint_sys::fmpz::{fmpz, fmpz_init_set_si, fmpz_init_set_ui, fmpz_set_str};
+use flint_sys::fmpz::{fmpz, fmpz_init_set_si, fmpz_init_set_ui, fmpz_set, fmpz_set_str};
 use std::{ffi::CString, str::FromStr};
 
 impl Z {
@@ -67,6 +68,29 @@ impl Z {
     from_type!(u32, u64, Z, Z::from_u64);
     from_type!(u16, u64, Z, Z::from_u64);
     from_type!(u8, u64, Z, Z::from_u64);
+
+    /// Create a new Integer that can grow arbitrary large.
+    ///
+    /// Parameters:
+    /// - `value`: the initial value the integer should have
+    ///
+    /// Returns the new integer.
+    ///
+    /// # Example
+    /// ```
+    /// use math::integer::Z;
+    /// use math::integer_mod_q::Modulus;
+    /// use std::str::FromStr;
+    ///
+    /// let m = Modulus::from_str("42").unwrap();
+    ///
+    /// let a: Z = Z::from_modulus(m);
+    /// ```
+    pub fn from_modulus(value: Modulus) -> Self {
+        let mut out = Z::default();
+        unsafe { fmpz_set(&mut out.value, &value.get_fmpz_mod_ctx_struct().n[0]) };
+        out
+    }
 }
 
 // Generate [`From`] trait for the different types.
@@ -79,6 +103,8 @@ from_trait!(u64, Z, Z::from_u64);
 from_trait!(u32, Z, Z::from_u32);
 from_trait!(u16, Z, Z::from_u16);
 from_trait!(u8, Z, Z::from_u8);
+
+from_trait!(Modulus, Z, Z::from_modulus);
 
 impl FromStr for Z {
     type Err = MathError;
@@ -279,5 +305,35 @@ mod tests_from_str {
     #[test]
     fn whitespace_minus() {
         assert!(Z::from_str("- 876543").is_err());
+    }
+}
+
+#[cfg(test)]
+mod tests_from_modulus {
+    use super::Z;
+    use crate::integer_mod_q::Modulus;
+    use std::str::FromStr;
+
+    /// Ensure that the `from_<type_name>` functions are available for
+    /// singed and unsigned integers of 8, 16, 32, and 64 bit length.
+    /// Tested with their maximum value.
+    #[test]
+    fn large_small_numbers() {
+        let mod_1 = Modulus::from_str(&"1".repeat(65)).unwrap();
+        let mod_2 = Modulus::from_str("10").unwrap();
+
+        let _ = Z::from_modulus(mod_1);
+        let _ = Z::from_modulus(mod_2);
+    }
+
+    /// Ensure that the [`From`] trait is available for large
+    /// [`Modulus`] instances
+    #[test]
+    fn from_trait() {
+        let mod_1 = Modulus::from_str(&"1".repeat(65)).unwrap();
+        let mod_2 = Modulus::from_str("10").unwrap();
+
+        let _ = Z::from(mod_1);
+        let _ = Z::from(mod_2);
     }
 }
