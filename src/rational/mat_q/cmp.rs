@@ -1,4 +1,4 @@
-// Copyright © 2023 Sven Moog, Niklas Siemer
+// Copyright © 2023 Sven Moog
 //
 // This file is part of qFALL-math.
 //
@@ -60,9 +60,9 @@ mod test_partial_eq {
     /// Ensures that different instantiations do not break the equality between matrices
     #[test]
     fn equality_between_instantiations() {
-        let a = MatQ::from_str("[[0,1],[0,0]]").unwrap();
+        let a = MatQ::from_str("[[0,1/2],[0/2,0]]").unwrap();
         let mut b = MatQ::new(2, 2).unwrap();
-        b.set_entry(0, 1, Q::from_str("1/1").unwrap()).unwrap();
+        b.set_entry(0, 1, Q::from_str("2/4").unwrap()).unwrap();
 
         assert_eq!(a, b);
     }
@@ -70,20 +70,29 @@ mod test_partial_eq {
     /// Checks that large and small entries (and different points in storage) do not break equality
     #[test]
     fn equality_for_large_and_small_entries() {
-        let a = MatQ::from_str(&format!(
-            "[[{},{}, 1],[-10, 10, 0],[0, 1, -10]]",
+        let mat_str_1 = &format!(
+            "[[{}/{},{}/{}, 1],[-10, 10, 0],[0, 1, -10]]",
             i64::MIN,
-            i64::MAX
-        ))
-        .unwrap();
-        let b = MatQ::from_str(&format!(
-            "[[{},{}, 1],[-10, 10, 0],[0, 1, -10]]",
+            i64::MIN + 1,
+            i64::MAX,
+            i64::MAX - 1
+        );
+
+        // like mat_str_1 but also 2nd row is expanded by 2
+        let mat_str_2 = &format!(
+            "[[{}/{},{}/{}, 1],[-20/2, 20/2, 0/2],[0, 1, -10]]",
             i64::MIN,
-            i64::MAX
-        ))
-        .unwrap();
+            i64::MIN + 1,
+            i64::MAX,
+            i64::MAX - 1
+        );
+
+        let a = MatQ::from_str(&mat_str_1).unwrap();
+        let b = MatQ::from_str(&mat_str_1).unwrap();
+        let c = MatQ::from_str(&mat_str_2).unwrap();
 
         assert_eq!(&a, &b);
+        assert_eq!(&a, &c);
     }
 
     /// Checks that different unequal matrices are unequal
