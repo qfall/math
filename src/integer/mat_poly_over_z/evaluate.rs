@@ -1,0 +1,135 @@
+//! Implementations to evaluate a [`MatPolyOverZ`].
+//! For each reasonable type, an implementation
+//! of the [`Evaluate`] trait should be implemented.
+
+use super::MatPolyOverZ;
+use crate::{
+    integer::{MatZ, Z},
+    macros::for_others::{implement_for_others, implement_for_owned},
+    traits::{Evaluate, GetNumColumns, GetNumRows},
+};
+use flint_sys::fmpz_poly_mat::fmpz_poly_mat_evaluate_fmpz;
+
+impl Evaluate<&Z, MatZ> for MatPolyOverZ {
+    /// Evaluates a [`MatPolyOverZ`] on a given input of [`Z`] entrywise. Note that the
+    /// [`Z`] in this case is only a reference.
+    ///
+    /// Parameters:
+    /// - `value`: the value with which to evaluate the matrix of polynomials.
+    ///
+    /// Returns the evaluation of the polynomial as a [`MatZ`].
+    ///
+    /// # Example
+    /// ```rust
+    /// use math::traits::Evaluate;
+    /// use math::integer::Z;
+    /// use math::integer::MatPolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let poly = MatPolyOverZ::from_str("[[0, 1  17, 2  24 42],[2  24 42, 2  24 42, 2  24 42]]").unwrap();
+    /// let value = Z::from(3);
+    /// let res = poly.evaluate(&value);
+    /// ```
+    fn evaluate(&self, value: &Z) -> MatZ {
+        // we can unwrap since we know, that the dimensions of our current matrix are positive
+        let mut res = MatZ::new(self.get_num_rows(), self.get_num_columns()).unwrap();
+
+        unsafe { fmpz_poly_mat_evaluate_fmpz(&mut res.matrix, &self.matrix, &value.value) };
+
+        res
+    }
+}
+
+implement_for_others!(Z, MatZ, MatPolyOverZ, Evaluate for u8 u16 u32 u64 i8 i16 i32 i64);
+implement_for_owned!(Z, MatZ, MatPolyOverZ, Evaluate);
+
+#[cfg(test)]
+mod test_evaluate {
+
+    use crate::integer::{MatPolyOverZ, MatZ, Z};
+    use crate::traits::Evaluate;
+    use std::str::FromStr;
+
+    /// tests if evaluate works for [`Z`] as input
+    #[test]
+    fn eval_z() {
+        let poly_str = "[[1  17],[2  24 42]]";
+        let poly = MatPolyOverZ::from_str(poly_str).unwrap();
+
+        let res = poly.evaluate(Z::from(3));
+
+        assert_eq!(MatZ::from_str("[[17],[150]]").unwrap(), res)
+    }
+
+    /// tests if evaluate_z_ref with a reference works
+    #[test]
+    fn eval_z_ref() {
+        let poly_str = "[[1  17],[2  24 42]]";
+        let poly = MatPolyOverZ::from_str(poly_str).unwrap();
+
+        let res = poly.evaluate(&Z::from(3));
+
+        assert_eq!(MatZ::from_str("[[17],[150]]").unwrap(), res)
+    }
+
+    /// tests if evaluate works with negative values
+    #[test]
+    fn eval_z_negative() {
+        let poly_str = "[[1  17],[2  24 42]]";
+        let poly = MatPolyOverZ::from_str(poly_str).unwrap();
+
+        let res = poly.evaluate(&Z::from(-5));
+
+        assert_eq!(MatZ::from_str("[[17],[-186]]").unwrap(), res)
+    }
+
+    /// tests if evaluate works with large integers
+    #[test]
+    fn eval_z_large() {
+        let poly_str = "[[1  17],[2  6 2]]";
+        let poly = MatPolyOverZ::from_str(poly_str).unwrap();
+
+        let res = poly.evaluate(&Z::from_str(&"1".repeat(65)).unwrap());
+
+        let res_cmp_str = format!("[[17],[{}8]]", "2".repeat(64));
+        assert_eq!(MatZ::from_str(&res_cmp_str).unwrap(), res)
+    }
+
+    /// test if evaluate works with max of i64, i32, ...
+    #[test]
+    fn eval_max() {
+        let poly_str = "[[1  17],[2  24 42]]";
+        let poly = MatPolyOverZ::from_str(poly_str).unwrap();
+
+        // signed
+        let _ = poly.evaluate(i64::MAX);
+        let _ = poly.evaluate(i32::MAX);
+        let _ = poly.evaluate(i16::MAX);
+        let _ = poly.evaluate(i8::MAX);
+
+        //unsigned
+        let _ = poly.evaluate(u64::MAX);
+        let _ = poly.evaluate(u32::MAX);
+        let _ = poly.evaluate(u16::MAX);
+        let _ = poly.evaluate(u8::MAX);
+    }
+
+    /// test if evaluate works with min of i64, i32, ...
+    #[test]
+    fn eval_min() {
+        let poly_str = "[[1  17],[2  24 42]]";
+        let poly = MatPolyOverZ::from_str(poly_str).unwrap();
+
+        // signed
+        let _ = poly.evaluate(i64::MIN);
+        let _ = poly.evaluate(i32::MIN);
+        let _ = poly.evaluate(i16::MIN);
+        let _ = poly.evaluate(i8::MIN);
+
+        // unsigned
+        let _ = poly.evaluate(u64::MIN);
+        let _ = poly.evaluate(u32::MIN);
+        let _ = poly.evaluate(u16::MIN);
+        let _ = poly.evaluate(u8::MIN);
+    }
+}
