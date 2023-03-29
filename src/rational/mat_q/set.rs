@@ -9,12 +9,14 @@
 //! Implementation to set entries from a [`MatQ`] matrix.
 
 use super::MatQ;
+use crate::macros::for_others::implement_for_owned;
+use crate::traits::SetEntry;
 use crate::utils::coordinate::evaluate_coordinates;
 use crate::{error::MathError, rational::Q};
 use flint_sys::{fmpq::fmpq_set, fmpq_mat::fmpq_mat_entry};
 use std::fmt::Display;
 
-impl MatQ {
+impl SetEntry<&Q> for MatQ {
     /// Sets the value of a specific matrix entry according to a given `value` of type [`Q`].
     ///
     /// Parameters:
@@ -27,46 +29,17 @@ impl MatQ {
     /// use math::rational::MatQ;
     /// use math::rational::Q;
     /// use std::str::FromStr;
+    /// use math::traits::SetEntry;
     ///
     /// let mut matrix = MatQ::new(5, 10).unwrap();
     /// let value = Q::from_str("5/2").unwrap();
-    /// matrix.set_entry(1, 1, value).unwrap();
+    /// matrix.set_entry(1, 1, &value).unwrap();
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
     /// if the number of rows or columns is greater than the matrix or negative.
-    pub fn set_entry(
-        &mut self,
-        row: impl TryInto<i64> + Display + Copy,
-        column: impl TryInto<i64> + Display + Copy,
-        value: impl Into<Q>,
-    ) -> Result<(), MathError> {
-        self.set_entry_ref_q(row, column, &value.into())
-    }
-
-    /// Sets the value of a specific matrix entry according to a given `value` of type [`Q`].
-    ///
-    /// Parameters:
-    /// - `row`: specifies the row in which the entry is located
-    /// - `column`: specifies the column in which the entry is located
-    /// - `value`: specifies the value to which the entry is set
-    ///
-    /// # Example
-    /// ```
-    /// use math::rational::MatQ;
-    /// use math::rational::Q;
-    /// use std::str::FromStr;
-    ///
-    /// let mut matrix = MatQ::new(5, 10).unwrap();
-    /// let value = Q::from_str("5/2").unwrap();
-    /// matrix.set_entry_ref_q(1, 1, &value).unwrap();
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    /// if the number of rows or columns is greater than the matrix or negative.
-    pub fn set_entry_ref_q(
+    fn set_entry(
         &mut self,
         row: impl TryInto<i64> + Display + Copy,
         column: impl TryInto<i64> + Display + Copy,
@@ -87,10 +60,17 @@ impl MatQ {
     }
 }
 
+implement_for_owned!(Q, MatQ, SetEntry);
+
+// TODO add implementation for other types as well
+
 #[cfg(test)]
 mod test_setter {
     use super::Q;
-    use crate::{rational::MatQ, traits::GetEntry};
+    use crate::{
+        rational::MatQ,
+        traits::{GetEntry, SetEntry},
+    };
     use std::str::FromStr;
 
     /// Ensure that setting entries works with standard numbers.
@@ -98,7 +78,7 @@ mod test_setter {
     fn standard_value() {
         let mut matrix = MatQ::new(5, 10).unwrap();
         let value = Q::from_str("869").unwrap();
-        matrix.set_entry_ref_q(4, 7, &value).unwrap();
+        matrix.set_entry(4, 7, &value).unwrap();
 
         let entry = matrix.get_entry(4, 7).unwrap();
 

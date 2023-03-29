@@ -279,7 +279,7 @@ mod test_get_entry {
         let entry = matrix.get_entry(1, 1).unwrap();
         matrix.set_entry(1, 1, Z::ONE).unwrap();
 
-        assert_eq!(Z::from_str(&format!("{}", u64::MAX - 1)).unwrap(), entry);
+        assert_eq!(Z::from(u64::MAX - 1), entry);
     }
 
     /// Ensure that no memory leak occurs in get_entry with ['Z'](crate::integer::Z).

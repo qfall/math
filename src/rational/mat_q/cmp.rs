@@ -54,7 +54,7 @@ impl Eq for MatQ {}
 mod test_partial_eq {
 
     use super::MatQ;
-    use crate::rational::Q;
+    use crate::{rational::Q, traits::SetEntry};
     use std::str::FromStr;
 
     /// Ensures that different instantiations do not break the equality between matrices
@@ -87,9 +87,9 @@ mod test_partial_eq {
             i64::MAX - 1
         );
 
-        let a = MatQ::from_str(&mat_str_1).unwrap();
-        let b = MatQ::from_str(&mat_str_1).unwrap();
-        let c = MatQ::from_str(&mat_str_2).unwrap();
+        let a = MatQ::from_str(mat_str_1).unwrap();
+        let b = MatQ::from_str(mat_str_1).unwrap();
+        let c = MatQ::from_str(mat_str_2).unwrap();
 
         assert_eq!(&a, &b);
         assert_eq!(&a, &c);
