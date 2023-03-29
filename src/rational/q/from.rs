@@ -130,14 +130,14 @@ impl Q {
     ///
     /// let num = Z::from(100);
     ///
-    /// let a = Q::try_from_int_int_borrow(&num, &i64::MAX).unwrap();
-    /// let b = Q::try_from_int_int_borrow(&num, &i64::MAX).unwrap();
+    /// let a = Q::try_from_int_int(&num, &i64::MAX).unwrap();
+    /// let b = Q::try_from_int_int(&num, &i64::MAX).unwrap();
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`DivisionByZeroError`](MathError::DivisionByZeroError)
     /// if the denominator is zero.
-    fn try_from_int_int_borrow(
+    fn try_from_int_int(
         numerator: &(impl Into<Z> + Clone),
         denominator: &(impl Into<Z> + Clone),
     ) -> Result<Self, MathError> {
@@ -151,8 +151,7 @@ impl Q {
         // performance improvements there. However, this takes longer to implement and this
         // functionality is now required for others to make progress.
 
-        // TODO: add [`num::Zero`] trait and use is_zero
-        if denominator == Z::from(0) {
+        if denominator == Z::ZERO {
             return Err(MathError::DivisionByZeroError(format!(
                 "{}/{}",
                 numerator, denominator
@@ -192,7 +191,7 @@ impl<T1: Into<Z> + Clone, T2: Into<Z> + Clone> TryFrom<(&T1, &T2)> for Q {
     /// let b = Q::try_from((&Z::from(21), &Z::from(1))).unwrap();
     /// assert_eq!(a,b);
     ///
-    /// let c = Q::try_from((&10,&0));
+    /// let c = Q::try_from((&10,&0)); // Division by zero
     /// assert!(c.is_err());
     /// ```
     ///
@@ -200,7 +199,7 @@ impl<T1: Into<Z> + Clone, T2: Into<Z> + Clone> TryFrom<(&T1, &T2)> for Q {
     /// - Returns a [`MathError`] of type [`DivisionByZeroError`](MathError::DivisionByZeroError)
     /// if the denominator is zero.
     fn try_from(num_den_tuple: (&T1, &T2)) -> Result<Self, Self::Error> {
-        Q::try_from_int_int_borrow(num_den_tuple.0, num_den_tuple.1)
+        Q::try_from_int_int(num_den_tuple.0, num_den_tuple.1)
     }
 }
 
@@ -350,9 +349,9 @@ mod test_from_int_int {
     use crate::integer::Z;
     use crate::rational::Q;
 
-    /// Test the different borrowed parameter types
+    /// Test the different borrowed parameter types with small numerator and denominator.
     #[test]
-    fn test_types_borrowed() {
+    fn test_types_borrowed_small() {
         let numerator = 10;
         let denominator = 15;
 
@@ -362,26 +361,15 @@ mod test_from_int_int {
         let q_4 = Q::try_from((&(numerator as u64), &(denominator as i64))).unwrap();
         let q_5 = Q::try_from((&Z::from(numerator), &Z::from(denominator))).unwrap();
 
+        let q_6 = Q::try_from((&(numerator as i16), &(denominator as u16))).unwrap();
+        let q_7 = Q::try_from((&(numerator as i16), &(denominator as i16))).unwrap();
+
         assert_eq!(q_1, q_2);
         assert_eq!(q_1, q_3);
         assert_eq!(q_1, q_4);
         assert_eq!(q_1, q_5);
-    }
-
-    /// Ensure that creating [`Q`] works with small integer parameters.
-    #[test]
-    fn working_small() {
-        let numerator = 10;
-        let denominator = 15;
-        let numerator_z = Z::from(numerator);
-        let denominator_z = Z::from(denominator);
-
-        let q_1 = Q::try_from((&numerator, &denominator)).unwrap();
-        let q_2 = Q::try_from((&(numerator * 2), &(denominator * 2))).unwrap();
-        let q_3 = Q::try_from((&numerator_z, &denominator_z)).unwrap();
-
-        assert_eq!(q_1, q_2);
-        assert_eq!(q_1, q_3);
+        assert_eq!(q_1, q_6);
+        assert_eq!(q_1, q_7);
     }
 
     /// Ensure that large parameters work (FLINT uses pointer representation).
@@ -421,27 +409,37 @@ mod test_from_int_int {
         assert_eq!(q_1, q_2);
     }
 
-    /// Test with negative numerator and denominator. Should be the same as both positive
+    /// Ensure that the result is canonical for small parameters.
     #[test]
-    fn numerator_and_denominator_negative_small() {
+    fn canonical_small() {
         let numerator = 10;
-        let denominator = -1;
+        let denominator = 1;
 
         let q_1 = Q::try_from((&numerator, &denominator)).unwrap();
         let q_2 = Q::try_from((&-numerator, &-denominator)).unwrap();
+        let q_3 = Q::try_from((&(numerator * 2), &(denominator * 2))).unwrap();
 
         assert_eq!(q_1, q_2);
+        assert_eq!(q_1, q_3);
     }
 
-    /// Test with negative numerator and denominator. Should be the same as both positive
+    /// Ensure that the result is canonical for large parameters.
     #[test]
-    fn numerator_and_denominator_negative_large() {
+    fn canonical_large() {
         let numerator = i64::MAX;
         let denominator = i64::MAX - 1;
 
+        let numerator_z = Z::from(numerator);
+        let denominator_z = Z::from(denominator);
+
         let q_1 = Q::try_from((&numerator, &denominator)).unwrap();
         let q_2 = Q::try_from((&-numerator, &-denominator)).unwrap();
+        let q_3 = Q::try_from((&numerator_z, &denominator_z)).unwrap();
+        let q_4 =
+            Q::try_from((&(numerator_z * Z::from(2)), &(denominator_z * Z::from(2)))).unwrap();
 
         assert_eq!(q_1, q_2);
+        assert_eq!(q_1, q_3);
+        assert_eq!(q_1, q_4);
     }
 }
