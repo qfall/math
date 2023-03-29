@@ -29,9 +29,9 @@ impl SetEntry<&Z> for MatZq {
     /// # Example
     /// ```
     /// use math::integer_mod_q::MatZq;
-    /// use crate::math::traits::SetEntry;
     /// use math::integer::Z;
     /// use std::str::FromStr;
+    /// use math::traits::SetEntry;
     ///
     /// let mut matrix = MatZq::new(5, 10, 7).unwrap();
     /// let value = Z::from(5);

@@ -130,7 +130,10 @@ impl MatZ {
 mod test_get_entry {
 
     use super::Z;
-    use crate::{integer::MatZ, traits::GetEntry};
+    use crate::{
+        integer::MatZ,
+        traits::{GetEntry, SetEntry},
+    };
     use std::str::FromStr;
 
     /// Ensure that getting entries works with large numbers.
@@ -149,12 +152,12 @@ mod test_get_entry {
     #[test]
     fn big_positive() {
         let mut matrix = MatZ::new(5, 10).unwrap();
-        let value = Z::from_str(&"1".repeat(65)).unwrap();
+        let value = Z::from(u64::MAX);
         matrix.set_entry(1, 1, value).unwrap();
 
         let entry = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!(Z::from_str(&"1".repeat(65)).unwrap(), entry);
+        assert_eq!(Z::from(u64::MAX), entry);
     }
 
     /// Ensure that getting entries works with large negative numbers.
@@ -173,18 +176,13 @@ mod test_get_entry {
     #[test]
     fn big_negative() {
         let mut matrix = MatZ::new(5, 10).unwrap();
-        let mut value = "-".to_string();
-        value.push_str(&"1".repeat(65));
         matrix
-            .set_entry(1, 1, Z::from_str(&value).unwrap())
+            .set_entry(1, 1, Z::from_str(&format!("-{}", u64::MAX)).unwrap())
             .unwrap();
 
         let entry = matrix.get_entry(1, 1).unwrap();
 
-        let mut test_entry = "-".to_string();
-        test_entry.push_str(&"1".repeat(65));
-
-        assert_eq!(Z::from_str(&test_entry).unwrap(), entry);
+        assert_eq!(Z::from_str(&format!("-{}", u64::MAX)).unwrap(), entry);
     }
 
     /// Ensure that getting entries at (0,0) works.
@@ -219,12 +217,12 @@ mod test_get_entry {
     #[test]
     fn memory_test() {
         let mut matrix = MatZ::new(5, 10).unwrap();
-        let value = Z::from_str(&"1".repeat(65)).unwrap();
+        let value = Z::from(u64::MAX);
         matrix.set_entry(1, 1, value).unwrap();
         let entry = matrix.get_entry(1, 1).unwrap();
         matrix.set_entry(1, 1, Z::from_i64(0)).unwrap();
 
-        assert_eq!(Z::from_str(&"1".repeat(65)).unwrap(), entry);
+        assert_eq!(Z::from(u64::MAX), entry);
     }
 }
 

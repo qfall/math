@@ -17,6 +17,7 @@ use super::MatZ;
 use crate::{
     error::MathError,
     integer::Z,
+    traits::SetEntry,
     utils::{
         coordinate::evaluate_coordinate, dimensions::find_matrix_dimensions,
         parse::parse_matrix_string,
@@ -144,10 +145,10 @@ mod test_new {
         let entry3 = matrix.get_entry(1, 0).unwrap();
         let entry4 = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!(Z::from_i64(0), entry1);
-        assert_eq!(Z::from_i64(0), entry2);
-        assert_eq!(Z::from_i64(0), entry3);
-        assert_eq!(Z::from_i64(0), entry4);
+        assert_eq!(Z::ZERO, entry1);
+        assert_eq!(Z::ZERO, entry2);
+        assert_eq!(Z::ZERO, entry3);
+        assert_eq!(Z::ZERO, entry4);
     }
 
     /// Ensure that a new zero matrix fails with `0` as input.
@@ -177,7 +178,7 @@ mod test_from_str {
         let matrix_string1 = String::from("[[1, 2, 3],[3, 4, 5]]");
 
         assert_eq!(
-            Z::from_i64(1),
+            Z::ONE,
             MatZ::from_str(&matrix_string1)
                 .unwrap()
                 .get_entry(0, 0)
@@ -188,10 +189,10 @@ mod test_from_str {
     /// Ensure that initialization with positive numbers that are larger than [`i64`] works.
     #[test]
     fn init_works_large_numbers() {
-        let matrix_string = format!("[[{}, 2, 3],[3, 4, 5]]", "1".repeat(65));
+        let matrix_string = format!("[[{}, 2, 3],[3, 4, 5]]", u64::MAX);
 
         assert_eq!(
-            Z::from_str(&"1".repeat(65)).unwrap(),
+            Z::from(u64::MAX),
             MatZ::from_str(&matrix_string)
                 .unwrap()
                 .get_entry(0, 0)
@@ -202,9 +203,9 @@ mod test_from_str {
     /// Ensure that initialization with negative numbers that are larger than [`i64`] works.
     #[test]
     fn init_works_small_numbers() {
-        let matrix_string = format!("[[-{}, 2, 3],[3, 4, 5]]", "1".repeat(65));
+        let matrix_string = format!("[[-{}, 2, 3],[3, 4, 5]]", u64::MAX);
 
-        let entry = format!("-{}", "1".repeat(65));
+        let entry = format!("-{}", u64::MAX);
 
         assert_eq!(
             Z::from_str(&entry).unwrap(),
@@ -221,7 +222,7 @@ mod test_from_str {
         let matrix_string1 = String::from("[[  1, 2 ,  3  ],[3 ,4,5 ]]");
 
         assert_eq!(
-            Z::from_i64(1),
+            Z::ONE,
             MatZ::from_str(&matrix_string1)
                 .unwrap()
                 .get_entry(0, 0)

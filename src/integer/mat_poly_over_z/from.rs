@@ -17,6 +17,7 @@ use super::MatPolyOverZ;
 use crate::{
     error::MathError,
     integer::PolyOverZ,
+    traits::SetEntry,
     utils::{
         coordinate::evaluate_coordinate, dimensions::find_matrix_dimensions,
         parse::parse_matrix_string,

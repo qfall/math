@@ -18,6 +18,38 @@ use flint_sys::{
 };
 use std::fmt::Display;
 
+impl GetNumRows for MatQ {
+    /// Returns the number of rows of the matrix as a [`i64`].
+    ///
+    /// # Example
+    /// ```
+    /// use math::rational::MatQ;
+    /// use math::traits::GetNumRows;
+    ///
+    /// let matrix = MatQ::new(5,6).unwrap();
+    /// let rows = matrix.get_num_rows();
+    /// ```
+    fn get_num_rows(&self) -> i64 {
+        self.matrix.r
+    }
+}
+
+impl GetNumColumns for MatQ {
+    /// Returns the number of columns of the matrix as a [`i64`].
+    ///
+    /// # Example
+    /// ```
+    /// use math::rational::MatQ;
+    /// use math::traits::GetNumColumns;
+    ///
+    /// let matrix = MatQ::new(5,6).unwrap();
+    /// let columns = matrix.get_num_columns();
+    /// ```
+    fn get_num_columns(&self) -> i64 {
+        self.matrix.c
+    }
+}
+
 impl GetEntry<Q> for MatQ {
     /// Outputs the [`Q`] value of a specific matrix entry.
     ///
@@ -60,38 +92,6 @@ impl GetEntry<Q> for MatQ {
     }
 }
 
-impl GetNumRows for MatQ {
-    /// Returns the number of rows of the matrix as a [`i64`].
-    ///
-    /// # Example
-    /// ```
-    /// use math::rational::MatQ;
-    /// use math::traits::GetNumRows;
-    ///
-    /// let matrix = MatQ::new(5,6).unwrap();
-    /// let rows = matrix.get_num_rows();
-    /// ```
-    fn get_num_rows(&self) -> i64 {
-        self.matrix.r
-    }
-}
-
-impl GetNumColumns for MatQ {
-    /// Returns the number of columns of the matrix as a [`i64`].
-    ///
-    /// # Example
-    /// ```
-    /// use math::rational::MatQ;
-    /// use math::traits::GetNumColumns;
-    ///
-    /// let matrix = MatQ::new(5,6).unwrap();
-    /// let columns = matrix.get_num_columns();
-    /// ```
-    fn get_num_columns(&self) -> i64 {
-        self.matrix.c
-    }
-}
-
 impl MatQ {
     #[allow(dead_code)]
     /// Efficiently collects all [`fmpq`]s in a [`MatQ`] without cloning them.
@@ -127,7 +127,10 @@ impl MatQ {
 #[cfg(test)]
 mod test_get_entry {
     use super::Q;
-    use crate::{rational::MatQ, traits::GetEntry};
+    use crate::{
+        rational::MatQ,
+        traits::{GetEntry, SetEntry},
+    };
     use std::str::FromStr;
 
     /// Ensure that getting entries works with large large numerators and denominators.
