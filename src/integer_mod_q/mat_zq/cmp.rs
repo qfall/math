@@ -22,7 +22,7 @@ impl PartialEq for MatZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZq;
+    /// use math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
     /// let a = MatZq::from_str("[[1,2],[3,4]] mod 4").unwrap();
