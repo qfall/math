@@ -14,5 +14,3 @@
 pub mod coordinate;
 pub mod dimensions;
 pub mod parse;
-
-pub use dimensions::VectorDirection;

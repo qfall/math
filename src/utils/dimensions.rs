@@ -8,12 +8,6 @@
 
 //! Implements methods for finding matrix dimensions and enums for detecting vector directions.
 
-#[derive(Debug, PartialEq)]
-pub enum VectorDirection {
-    RowVector,
-    ColumnVector,
-}
-
 use crate::error::MathError;
 
 /// Returns the dimensions of a matrix.
