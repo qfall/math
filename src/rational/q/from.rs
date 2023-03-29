@@ -1,4 +1,4 @@
-// Copyright © 2023 Marcel Luca Schmidt
+// Copyright © 2023 Marcel Luca Schmidt, Sven Moog
 //
 // This file is part of qFALL-math.
 //
@@ -13,10 +13,10 @@
 //! The explicit functions contain the documentation.
 
 use super::Q;
-use crate::error::MathError;
+use crate::{error::MathError, integer::Z};
 use flint_sys::{
     fmpq::{fmpq, fmpq_canonicalise, fmpq_clear, fmpq_set_str},
-    fmpz::fmpz_is_zero,
+    fmpz::{fmpz_is_zero, fmpz_swap},
 };
 use std::{ffi::CString, str::FromStr};
 
@@ -96,7 +96,7 @@ impl FromStr for Q {
         unsafe { fmpq_canonicalise(&mut value) };
 
         // if `value.den` is set to `0`, `value.num` is not necessarily `0` as well.
-        // hence we do need to free the allocated space of the nominator
+        // hence we do need to free the allocated space of the numerator
         // manually by using `fmpq_clear`
         match unsafe { fmpz_is_zero(&value.den) } {
             0 => Ok(Q { value }),
@@ -107,6 +107,99 @@ impl FromStr for Q {
                 Err(MathError::DivisionByZeroError(s.to_owned()))
             }
         }
+    }
+}
+
+impl Q {
+    /// Create a [`Q`] from two references that can be converted to [`Z`].
+    /// For example, [`&Z`].
+    ///
+    /// Warning: The interface of this function will likely change in the future
+    /// or it will entirely be removed. Therefore use [`Q::try_from`] instead.
+    ///
+    /// Parameters:
+    /// - `numerator` of the new [`Q`].
+    /// - `denominator` of the new [`Q`].
+    ///
+    /// Returns a [`Q`] or a [`MathError`]
+    ///
+    /// # Example
+    /// ```ignore (private function)
+    /// use math::rational::Q;
+    /// use math::integer::Z;
+    ///
+    /// let num = Z::from(100);
+    ///
+    /// let a = Q::try_from_int_int(&num, &i64::MAX).unwrap();
+    /// let b = Q::try_from_int_int(&num, &i64::MAX).unwrap();
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`DivisionByZeroError`](MathError::DivisionByZeroError)
+    /// if the denominator is zero.
+    fn try_from_int_int(
+        numerator: &(impl Into<Z> + Clone),
+        denominator: &(impl Into<Z> + Clone),
+    ) -> Result<Self, MathError> {
+        let mut numerator: Z = numerator.to_owned().into();
+        let mut denominator: Z = denominator.to_owned().into();
+
+        // TODO: this is not as efficient as possible when passing values that
+        // internally include a [`fmpz`], e.g. [`Z`] or [`Zq`].
+        // In those cases it would be faster to use `fmpq_set_fmpz_frac`.
+        // The best way would probably be to use `Into<fmpz>` and do the
+        // performance improvements there. However, this takes longer to implement and this
+        // functionality is now required for others to make progress.
+
+        if denominator == Z::ZERO {
+            return Err(MathError::DivisionByZeroError(format!(
+                "{}/{}",
+                numerator, denominator
+            )));
+        }
+
+        let mut res = Q::default();
+
+        unsafe {
+            fmpz_swap(&mut res.value.num, &mut numerator.value);
+            fmpz_swap(&mut res.value.den, &mut denominator.value);
+            fmpq_canonicalise(&mut res.value);
+        }
+        Ok(res)
+    }
+}
+
+impl<T1: Into<Z> + Clone, T2: Into<Z> + Clone> TryFrom<(&T1, &T2)> for Q {
+    type Error = MathError;
+
+    /// Create a [`Q`] from two values that can be converted to [`Z`].
+    /// For example, [`Z`] and [`u32`].
+    ///
+    /// Parameters:
+    /// - `num_den_tuple`
+    ///     - first value: numerator of the new [`Q`].
+    ///     - second value: denominator of the new [`Q`].
+    ///
+    /// Returns a [`Q`] or a [`MathError`]
+    ///
+    /// # Example
+    /// ```rust
+    /// use math::rational::Q;
+    /// use math::integer::Z;
+    ///
+    /// let a = Q::try_from((&42, &2)).unwrap();
+    /// let b = Q::try_from((&Z::from(21), &Z::from(1))).unwrap();
+    /// assert_eq!(a,b);
+    ///
+    /// let c = Q::try_from((&10,&0)); // Division by zero
+    /// assert!(c.is_err());
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`DivisionByZeroError`](MathError::DivisionByZeroError)
+    /// if the denominator is zero.
+    fn try_from(num_den_tuple: (&T1, &T2)) -> Result<Self, Self::Error> {
+        Q::try_from_int_int(num_den_tuple.0, num_den_tuple.1)
     }
 }
 
@@ -247,5 +340,114 @@ mod tests_from_str {
         assert_eq!(one_1, one_2);
         assert_eq!(one_1, one_3);
         assert_eq!(zero_1, zero_2);
+    }
+}
+
+#[cfg(test)]
+mod test_from_int_int {
+
+    use crate::integer::Z;
+    use crate::rational::Q;
+
+    /// Test the different borrowed parameter types with small numerator and denominator.
+    #[test]
+    fn test_types_borrowed_small() {
+        let numerator = 10;
+        let denominator = 15;
+
+        let q_1 = Q::try_from((&(numerator as u8), &(denominator as i8))).unwrap();
+        let q_2 = Q::try_from((&(numerator as u16), &(denominator as i16))).unwrap();
+        let q_3 = Q::try_from((&(numerator as u32), &(denominator as i32))).unwrap();
+        let q_4 = Q::try_from((&(numerator as u64), &(denominator as i64))).unwrap();
+        let q_5 = Q::try_from((&Z::from(numerator), &Z::from(denominator))).unwrap();
+
+        let q_6 = Q::try_from((&(numerator as i16), &(denominator as u16))).unwrap();
+        let q_7 = Q::try_from((&(numerator as i16), &(denominator as i16))).unwrap();
+
+        assert_eq!(q_1, q_2);
+        assert_eq!(q_1, q_3);
+        assert_eq!(q_1, q_4);
+        assert_eq!(q_1, q_5);
+        assert_eq!(q_1, q_6);
+        assert_eq!(q_1, q_7);
+    }
+
+    /// Ensure that large parameters work (FLINT uses pointer representation).
+    #[test]
+    fn working_large() {
+        let numerator = u64::MAX;
+        let denominator = u64::MAX - 1;
+        let numerator_z = Z::from(numerator);
+        let denominator_z = Z::from(denominator);
+
+        let q_1 = Q::try_from((&numerator, &denominator)).unwrap();
+        let q_2 = Q::try_from((&numerator_z, &denominator_z)).unwrap();
+
+        assert_eq!(q_1, q_2);
+    }
+
+    /// Test with zero denominator (not valid -> should lead to an error)
+    #[test]
+    fn divide_by_zero() {
+        let numerator = 10;
+        let denominator = 0;
+
+        let new_q = Q::try_from((&numerator, &denominator));
+
+        assert!(new_q.is_err());
+    }
+
+    /// Test with either negative denominator or numerator
+    #[test]
+    fn negative_small() {
+        let numerator = 10;
+        let denominator = -1;
+
+        let q_1 = Q::try_from((&numerator, &denominator)).unwrap();
+        let q_2 = Q::try_from((&-numerator, &-denominator)).unwrap();
+
+        assert_eq!(q_1, q_2);
+    }
+
+    /// Ensure that the result is canonical for small parameters.
+    #[test]
+    fn canonical_small() {
+        let numerator = 10;
+        let denominator = 1;
+
+        let q_1 = Q::try_from((&numerator, &denominator)).unwrap();
+        let q_2 = Q::try_from((&-numerator, &-denominator)).unwrap();
+        let q_3 = Q::try_from((&(numerator * 2), &(denominator * 2))).unwrap();
+
+        let q_4_negative = Q::try_from((&-numerator, &denominator)).unwrap();
+        let q_5_negative = Q::try_from((&numerator, &-denominator)).unwrap();
+
+        assert_eq!(q_1, q_2);
+        assert_eq!(q_1, q_3);
+
+        assert_eq!(q_4_negative, q_5_negative);
+    }
+
+    /// Ensure that the result is canonical for large parameters.
+    #[test]
+    fn canonical_large() {
+        let numerator = i64::MAX;
+        let denominator = i64::MAX - 1;
+
+        let numerator_z = Z::from(numerator);
+        let denominator_z = Z::from(denominator);
+
+        let q_1 = Q::try_from((&numerator, &denominator)).unwrap();
+        let q_2 = Q::try_from((&-numerator, &-denominator)).unwrap();
+        let q_3 = Q::try_from((&numerator_z, &denominator_z)).unwrap();
+        let q_4 =
+            Q::try_from((&(&numerator_z * Z::from(2)), &(&denominator_z * Z::from(2)))).unwrap();
+        let q_5_negative = Q::try_from((&(&numerator_z * Z::from(-1)), &denominator_z)).unwrap();
+        let q_6_negative = Q::try_from((&numerator_z, &(&denominator_z * Z::from(-1)))).unwrap();
+
+        assert_eq!(q_1, q_2);
+        assert_eq!(q_1, q_3);
+        assert_eq!(q_1, q_4);
+        assert_eq!(q_5_negative, q_6_negative);
     }
 }
