@@ -11,11 +11,14 @@
 
 use flint_sys::fmpz_mat::fmpz_mat_struct;
 
+mod cmp;
 mod from;
 mod get;
+mod mul;
 mod ownership;
 mod set;
 mod to_string;
+mod transpose;
 
 /// [`MatZ`] is a matrix with entries of type [`Z`](crate::integer::Z).
 ///

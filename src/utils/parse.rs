@@ -8,13 +8,12 @@
 
 //! Implements methods to parse a [`String`] e.g. matrix strings.
 
-use std::fmt::Display;
-
 use crate::{
     error::MathError,
     traits::{GetEntry, GetNumColumns, GetNumRows},
 };
 use regex::Regex;
+use std::fmt::Display;
 use string_builder::Builder;
 
 /// Takes the string of a matrix as input and parses it for easy use.
@@ -116,6 +115,7 @@ pub(crate) fn matrix_to_string<S: Display, T: GetEntry<S> + GetNumRows + GetNumC
 
 #[cfg(test)]
 mod test_parse_matrix_string {
+
     use crate::utils::parse::parse_matrix_string;
 
     // Ensure that correct strings of a matrix are accepted.
@@ -125,11 +125,13 @@ mod test_parse_matrix_string {
         let matrix_string2 = String::from("[[1/3, -2/7, 3],[3, 4, -5/-2]]");
         let matrix_string3 = String::from("[[4  0 1 2 3, 2  0 1],[1  5, 2  7 8]]");
         let matrix_string4 = String::from("[[sdclin, =§&%, +57n4],[+dk<, 37 ffew, 8fh2n]]");
+        let matrix_string5 = String::from("[[0],[1]]");
 
         assert!(parse_matrix_string(&matrix_string1).is_ok());
         assert!(parse_matrix_string(&matrix_string2).is_ok());
         assert!(parse_matrix_string(&matrix_string3).is_ok());
         assert!(parse_matrix_string(&matrix_string4).is_ok());
+        assert!(parse_matrix_string(&matrix_string5).is_ok());
     }
 
     // Ensure that incorrect strings of a matrix are rejected.
