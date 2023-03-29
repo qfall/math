@@ -13,6 +13,7 @@ use flint_sys::{fmpz::fmpz_equal, fmpz_mat::fmpz_mat_equal};
 
 impl PartialEq for MatZq {
     /// Checks if two [`MatZq`] instances are equal. Used by the `==` and `!=` operators.
+    /// The values in the matrix as well as the modulus have to be equal.
     ///
     /// Parameters:
     /// - `other`: the other value that is compare against `self`
