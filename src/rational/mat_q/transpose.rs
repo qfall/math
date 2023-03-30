@@ -61,8 +61,22 @@ mod test_transpose {
     /// Checks if large, negative, and zero values are transposed correctly
     #[test]
     fn different_entry_values() {
-        let mat = MatQ::from_str(&format!("[[{},{},1/{},1/{},0]]", i64::MAX, i64::MIN, i64::MAX, i64::MIN)).unwrap();
-        let cmp = MatQ::from_str(&format!("[[{}],[{}],[1/{}],[1/{}],[0]]", i64::MAX, i64::MIN, i64::MAX, i64::MIN)).unwrap();
+        let mat = MatQ::from_str(&format!(
+            "[[{},{},1/{},1/{},0]]",
+            i64::MAX,
+            i64::MIN,
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
+        let cmp = MatQ::from_str(&format!(
+            "[[{}],[{}],[1/{}],[1/{}],[0]]",
+            i64::MAX,
+            i64::MIN,
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
 
         assert_eq!(cmp, mat.transpose());
     }
