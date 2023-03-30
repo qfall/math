@@ -18,6 +18,7 @@ mod ownership;
 mod serialize;
 mod set;
 mod to_string;
+mod transpose;
 mod vector;
 
 /// [`MatZq`] is a matrix with entries of type [`Zq`](crate::integer_mod_q::Zq).
