@@ -12,9 +12,8 @@
 //! These methods should be used to ensure that vector functions
 //! can only be called on suitably formed vector/matrices.
 
-use crate::traits::{GetNumColumns, GetNumRows};
-
 use super::super::MatZ;
+use crate::traits::{GetNumColumns, GetNumRows};
 
 impl MatZ {
     /// Returns `true` if the provided [`MatZ`] has only one row,
