@@ -17,6 +17,7 @@ mod get;
 mod ownership;
 mod set;
 mod to_string;
+mod transpose;
 
 /// [`MatZq`] is a matrix with entries of type [`Zq`](crate::integer_mod_q::Zq).
 ///
