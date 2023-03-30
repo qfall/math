@@ -17,6 +17,7 @@ mod get;
 mod ownership;
 mod set;
 mod to_string;
+mod transpose;
 
 /// [`MatQ`] is a matrix with entries of type [`Q`](crate::rational::Q).
 ///
