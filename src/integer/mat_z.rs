@@ -16,6 +16,7 @@ mod from;
 mod get;
 mod mul;
 mod ownership;
+mod serialize;
 mod set;
 mod to_string;
 mod transpose;
