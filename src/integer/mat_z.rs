@@ -20,6 +20,7 @@ mod serialize;
 mod set;
 mod to_string;
 mod transpose;
+mod vector;
 
 /// [`MatZ`] is a matrix with entries of type [`Z`](crate::integer::Z).
 ///
