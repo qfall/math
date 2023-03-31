@@ -17,6 +17,7 @@ use super::MatQ;
 use crate::{
     error::MathError,
     rational::Q,
+    traits::SetEntry,
     utils::{
         coordinate::evaluate_coordinate, dimensions::find_matrix_dimensions,
         parse::parse_matrix_string,
@@ -181,7 +182,7 @@ mod test_from_str {
         let matrix_string1 = String::from("[[1, 2, 3],[3, 4, 5]]");
 
         assert_eq!(
-            Z::from_i64(1),
+            Z::ONE,
             Z {
                 value: MatQ::from_str(&matrix_string1)
                     .unwrap()
@@ -193,7 +194,7 @@ mod test_from_str {
         );
 
         assert_eq!(
-            Z::from_i64(1),
+            Z::ONE,
             Z {
                 value: MatQ::from_str(&matrix_string1)
                     .unwrap()

@@ -357,7 +357,7 @@ mod test_from_int_int {
 
         let q_1 = Q::try_from((&(numerator as u8), &(denominator as i8))).unwrap();
         let q_2 = Q::try_from((&(numerator as u16), &(denominator as i16))).unwrap();
-        let q_3 = Q::try_from((&(numerator as u32), &(denominator as i32))).unwrap();
+        let q_3 = Q::try_from((&(numerator as u32), &(denominator))).unwrap();
         let q_4 = Q::try_from((&(numerator as u64), &(denominator as i64))).unwrap();
         let q_5 = Q::try_from((&Z::from(numerator), &Z::from(denominator))).unwrap();
 
