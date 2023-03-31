@@ -26,7 +26,7 @@ mod vector;
 ///     of the [`Q`](crate::rational::Q) matrix
 ///
 /// # Examples
-/// Matrix usage
+/// ## Matrix usage
 /// ```
 /// use math::{
 ///     rational::{Q, MatQ},
@@ -35,7 +35,7 @@ mod vector;
 /// use std::str::FromStr;
 ///
 /// // instantiate new matrix
-/// let id_mat = MatQ::from_str("[[1/1,0],[0,1]]").unwrap();
+/// let id_mat = MatQ::from_str("[[1/2,0/1],[0,1]]").unwrap();
 ///
 /// // clone object, set and get entry
 /// let mut clone = id_mat.clone();
@@ -46,18 +46,18 @@ mod vector;
 /// );
 ///
 /// // to_string
-/// assert_eq!("[[1, 0],[0, 1]]", &id_mat.to_string());
+/// assert_eq!("[[1/2, 0],[0, 1]]", &id_mat.to_string());
 /// ```
 ///
-/// Vector usage
+/// ## Vector usage
 /// ```
 /// use math::{
 ///     rational::{Q, MatQ},
 /// };
 /// use std::str::FromStr;
 ///
-/// let row_vec = MatQ::from_str("[[1,1,1]]").unwrap();
-/// let col_vec = MatQ::from_str("[[1],[-1],[0]]").unwrap();
+/// let row_vec = MatQ::from_str("[[1/3, 1/4, 1/5]]").unwrap();
+/// let col_vec = MatQ::from_str("[[-1/-5],[-1],[0]]").unwrap();
 ///
 /// // check if matrix instance is vector
 /// assert!(row_vec.is_row_vector());

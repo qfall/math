@@ -96,6 +96,10 @@ impl MatQ {
     #[allow(dead_code)]
     /// Efficiently collects all [`fmpz`]s in a [`MatQ`] without cloning them.
     ///
+    /// Hence, the values on the returned [`Vec`] are intended for short-term use
+    /// as the access to [`fmpq`] values could lead to memory leaks or modified values
+    /// once the [`MatQ`] instance was modified or dropped.
+    ///
     /// # Example
     /// ```compile_fail
     /// use math::intger::MatQ;
