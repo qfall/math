@@ -117,7 +117,7 @@ mod test_deserialize {
 
     /// tests whether no fields 'poly' provided yield an error
     #[test]
-    fn no_field_value() {
+    fn no_field_poly() {
         let a: Result<PolyOverZ, serde_json::Error> =
             serde_json::from_str("{{\"tree\":\"{2  17 42}\"}}");
         assert!(a.is_err());
