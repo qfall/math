@@ -94,7 +94,7 @@ impl GetNumColumns for MatQ {
 
 impl MatQ {
     #[allow(dead_code)]
-    /// Efficiently collects all [`fmpz`]s in a [`MatQ`] without cloning them.
+    /// Efficiently collects all [`fmpq`]s in a [`MatQ`] without cloning them.
     ///
     /// Hence, the values on the returned [`Vec`] are intended for short-term use
     /// as the access to [`fmpq`] values could lead to memory leaks or modified values
@@ -102,7 +102,7 @@ impl MatQ {
     ///
     /// # Example
     /// ```compile_fail
-    /// use math::intger::MatQ;
+    /// use math::rational::MatQ;
     /// use std::str::FromStr;
     ///
     /// let mat = MatQ::from_str("[[1/1,2],[3/1,4],[5/1,6]]").unwrap();
