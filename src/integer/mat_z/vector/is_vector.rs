@@ -113,6 +113,8 @@ mod test_is_vector {
         let mat_1 = MatZ::from_str(&format!("[[1,{}],[2,3]]", i64::MIN)).unwrap();
         let mat_2 = MatZ::from_str(&format!("[[1,{},3],[4,5,6]]", i64::MAX)).unwrap();
         let mat_3 = MatZ::from_str(&format!("[[1,{}],[2,3],[4,5]]", i64::MIN)).unwrap();
+        let mat_4 = MatZ::from_str("[[1,0],[2,0],[4,0]]").unwrap();
+        let mat_5 = MatZ::from_str("[[1,2,4],[0,0,0]]").unwrap();
 
         assert!(!mat_1.is_column_vector());
         assert!(!mat_1.is_row_vector());
@@ -125,6 +127,14 @@ mod test_is_vector {
         assert!(!mat_3.is_column_vector());
         assert!(!mat_3.is_row_vector());
         assert!(!mat_3.is_vector());
+
+        assert!(!mat_4.is_column_vector());
+        assert!(!mat_4.is_row_vector());
+        assert!(!mat_4.is_vector());
+
+        assert!(!mat_5.is_column_vector());
+        assert!(!mat_5.is_row_vector());
+        assert!(!mat_5.is_vector());
     }
 
     /// Check whether matrices with only one entry get recognized as single entry matrices
