@@ -58,6 +58,24 @@ mod test_serialize {
 
         assert_eq!(cmp_string, serde_json::to_string(&mat_poly_z).unwrap())
     }
+
+    /// tests whether the serialization of a negative large [`MatZq`] works.
+    #[test]
+    fn serialize_output_negative_large() {
+        let mat_poly_str = format!(
+            "[[3, -{}, -{}, 1, 2, 13, 5]] mod {}",
+            u64::MAX - 58,
+            u64::MAX - 1,
+            u64::MAX
+        );
+        let mat_poly_z = MatZq::from_str(&mat_poly_str).unwrap();
+        let cmp_string = format!(
+            "{{\"matrix\":\"[[3, 58, 1, 1, 2, 13, 5]] mod {}\"}}",
+            u64::MAX
+        );
+
+        assert_eq!(cmp_string, serde_json::to_string(&mat_poly_z).unwrap())
+    }
 }
 
 #[cfg(test)]
