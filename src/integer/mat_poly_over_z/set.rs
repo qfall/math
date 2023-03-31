@@ -75,7 +75,7 @@ impl SetEntry<PolyOverZ> for MatPolyOverZ {
     ///
     /// let mut matrix = MatPolyOverZ::new(5, 10).unwrap();
     /// let value = PolyOverZ::default();
-    /// matrix.set_entry(1, 1, &value).unwrap();
+    /// matrix.set_entry(1, 1, value).unwrap();
     /// ```
     ///
     /// # Errors and Failures
