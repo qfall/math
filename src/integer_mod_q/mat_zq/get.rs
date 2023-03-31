@@ -14,8 +14,10 @@ use crate::integer_mod_q::Modulus;
 use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
 use crate::utils::coordinate::evaluate_coordinates;
 use crate::{error::MathError, integer_mod_q::Zq};
-use flint_sys::fmpz::fmpz_set;
-use flint_sys::fmpz_mod_mat::fmpz_mod_mat_entry;
+use flint_sys::{
+    fmpz::{fmpz, fmpz_set},
+    fmpz_mod_mat::fmpz_mod_mat_entry,
+};
 use std::fmt::Display;
 
 impl MatZq {
@@ -139,6 +141,38 @@ impl GetEntry<Zq> for MatZq {
         let modulus = self.get_mod();
 
         Ok(Zq::from_z_modulus(&value, &modulus))
+    }
+}
+
+impl MatZq {
+    #[allow(dead_code)]
+    /// Efficiently collects all [`fmpz`]s in a [`MatZq`] without cloning them.
+    ///
+    /// Hence, the values on the returned [`Vec`] are intended for short-term use
+    /// as the access to [`fmpz`] values could lead to memory leaks or modified values
+    /// once the [`MatZq`] instance was modified or dropped.
+    ///
+    /// # Example
+    /// ```compile_fail
+    /// use math::intger_mod_q::MatZq;
+    /// use std::str::FromStr;
+    ///
+    /// let mat = MatZq::from_str("[[1,2],[3,4],[5,6]] mod 3").unwrap();
+    ///
+    /// let fmpz_entries = mat.collect_entries();
+    /// ```
+    pub(crate) fn collect_entries(&self) -> Vec<fmpz> {
+        let mut entries: Vec<fmpz> = vec![];
+
+        for row in 0..self.get_num_rows() {
+            for col in 0..self.get_num_columns() {
+                // efficiently get entry without cloning the entry itself
+                let entry = unsafe { *fmpz_mod_mat_entry(&self.matrix, row, col) };
+                entries.push(entry);
+            }
+        }
+
+        entries
     }
 }
 
@@ -347,5 +381,39 @@ mod test_mod {
         let modulus = matrix.get_mod();
 
         assert_eq!(modulus, Modulus::try_from_z(&Z::from(u64::MAX)).unwrap());
+    }
+}
+
+#[cfg(test)]
+mod test_collect_entries {
+    use super::MatZq;
+    use std::str::FromStr;
+
+    #[test]
+    fn all_entries_collected() {
+        let mat_1 = MatZq::from_str(&format!(
+            "[[1,2],[{},{}],[3,4]] mod {}",
+            i64::MAX,
+            i64::MIN,
+            u64::MAX
+        ))
+        .unwrap();
+        let mat_2 = MatZq::from_str("[[-1,2]] mod 2").unwrap();
+
+        let entries_1 = mat_1.collect_entries();
+        let entries_2 = mat_2.collect_entries();
+
+        assert_eq!(entries_1.len(), 6);
+        assert_eq!(entries_1[0].0, 1);
+        assert_eq!(entries_1[1].0, 2);
+        // 4611686018427387904 = 2^62, i.e. value is stored on stack
+        assert!(entries_1[2].0 >= 4611686018427387904);
+        assert!(entries_1[3].0 >= 4611686018427387904);
+        assert_eq!(entries_1[4].0, 3);
+        assert_eq!(entries_1[5].0, 4);
+
+        assert_eq!(entries_2.len(), 2);
+        assert_eq!(entries_2[0].0, 1);
+        assert_eq!(entries_2[1].0, 0);
     }
 }
