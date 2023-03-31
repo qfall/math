@@ -18,6 +18,7 @@ mod ownership;
 mod properties;
 mod set;
 mod to_string;
+mod vector;
 
 /// [`MatPolyOverZ`] is a matrix with entries of type [`PolyOverZ`](crate::integer::PolyOverZ).
 ///
@@ -26,6 +27,43 @@ mod to_string;
 ///     of the [`PolyOverZ`](crate::integer::PolyOverZ) matrix
 ///
 /// # Examples
+/// ## Matrix usage
+/// ```
+/// use math::{
+///     integer::{PolyOverZ, MatPolyOverZ},
+///     traits::{GetEntry, SetEntry},
+/// };
+/// use std::str::FromStr;
+///
+/// // instantiate new matrix
+/// let id_mat = MatPolyOverZ::from_str("[[1  1, 0],[0, 1  1]]").unwrap();
+///
+/// // clone object, set and get entry
+/// let mut clone = id_mat.clone();
+/// clone.set_entry(0, 0, PolyOverZ::from_str("1  2").unwrap());
+/// assert_eq!(
+///     clone.get_entry(1, 1).unwrap(),
+///     PolyOverZ::from_str("1  1").unwrap(),
+/// );
+///
+/// // to_string
+/// assert_eq!("[[1  1, 0],[0, 1  1]]", &id_mat.to_string());
+/// ```
+///
+/// ## Vector usage
+/// ```
+/// use math::{
+///     integer::{PolyOverZ, MatPolyOverZ},
+/// };
+/// use std::str::FromStr;
+///
+/// let row_vec = MatPolyOverZ::from_str("[[1  1, 0, 1  1]]").unwrap();
+/// let col_vec = MatPolyOverZ::from_str("[[1  -5],[1  -1],[0]]").unwrap();
+///
+/// // check if matrix instance is vector
+/// assert!(row_vec.is_row_vector());
+/// assert!(col_vec.is_column_vector());
+/// ```
 #[derive(Debug)]
 pub struct MatPolyOverZ {
     pub(crate) matrix: fmpz_poly_mat_struct,
