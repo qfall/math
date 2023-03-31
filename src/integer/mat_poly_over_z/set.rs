@@ -9,10 +9,10 @@
 //! Implementation to set entries from a [`MatPolyOverZ`] matrix.
 
 use super::MatPolyOverZ;
-use crate::macros::for_others::implement_for_owned;
 use crate::{
     error::MathError, integer::PolyOverZ, traits::SetEntry, utils::coordinate::evaluate_coordinates,
 };
+use flint_sys::fmpz_poly::fmpz_poly_swap;
 use flint_sys::{fmpz_poly::fmpz_poly_set, fmpz_poly_mat::fmpz_poly_mat_entry};
 use std::fmt::Display;
 
@@ -59,7 +59,45 @@ impl SetEntry<&PolyOverZ> for MatPolyOverZ {
     }
 }
 
-implement_for_owned!(PolyOverZ, MatPolyOverZ, SetEntry);
+impl SetEntry<PolyOverZ> for MatPolyOverZ {
+    /// Sets the value of a specific matrix entry according to a given `value` of type [`PolyOverZ`].
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row in which the entry is located
+    /// - `column`: specifies the column in which the entry is located
+    /// - `value`: specifies the value to which the entry is set
+    ///
+    /// # Example
+    /// ```
+    /// use math::integer::MatPolyOverZ;
+    /// use math::integer::PolyOverZ;
+    /// use math::traits::SetEntry;
+    ///
+    /// let mut matrix = MatPolyOverZ::new(5, 10).unwrap();
+    /// let value = PolyOverZ::default();
+    /// matrix.set_entry(1, 1, &value).unwrap();
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    /// if the number of rows or columns is greater than the matrix or negative.
+    fn set_entry(
+        &mut self,
+        row: impl TryInto<i64> + Display + Copy,
+        column: impl TryInto<i64> + Display + Copy,
+        mut value: PolyOverZ,
+    ) -> Result<(), MathError> {
+        let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
+
+        // swapping the content of the entry with the given value since ownership
+        // of the input is provided.
+        unsafe {
+            let entry = fmpz_poly_mat_entry(&self.matrix, row_i64, column_i64);
+            fmpz_poly_swap(entry, &mut value.poly)
+        }
+        Ok(())
+    }
+}
 
 #[cfg(test)]
 mod test_setter {
@@ -137,12 +175,13 @@ mod test_setter {
     #[test]
     fn big_negative() {
         let mut matrix = MatPolyOverZ::new(5, 10).unwrap();
-        let value = PolyOverZ::from_str(&format!("2  -{} 1", u64::MAX)).unwrap();
+        let value_str = &format!("2  -{} 1", u64::MAX);
+        let value = PolyOverZ::from_str(value_str).unwrap();
         matrix.set_entry(4, 7, &value).unwrap();
 
         let entry = matrix.get_entry(4, 7).unwrap();
 
-        assert_eq!(format!("2  -{} 1", u64::MAX), entry.to_string());
+        assert_eq!(PolyOverZ::from_str(value_str).unwrap(), entry);
     }
 
     /// Ensure that setting entries at (0,0) works.

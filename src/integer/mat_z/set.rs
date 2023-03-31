@@ -137,13 +137,14 @@ mod test_setter {
     #[test]
     fn big_negative() {
         let mut matrix = MatZ::new(5, 10).unwrap();
+        let value_str = &format!("-{}", u64::MAX);
         matrix
-            .set_entry(1, 1, Z::from_str(&format!("-{}", u64::MAX)).unwrap())
+            .set_entry(1, 1, Z::from_str(value_str).unwrap())
             .unwrap();
 
         let entry = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!(entry, Z::from_str(&format!("-{}", u64::MAX)).unwrap());
+        assert_eq!(entry, Z::from_str(value_str).unwrap());
     }
 
     /// Ensure that setting entries at (0,0) works.
