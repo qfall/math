@@ -59,7 +59,7 @@ mod test_serialize {
         assert_eq!(cmp_string, serde_json::to_string(&mat_poly_z).unwrap())
     }
 
-    /// tests whether the serialization of a negative [`MatPolyOverZ`] works.
+    /// tests whether the serialization of a negative large [`MatPolyOverZ`] works.
     #[test]
     fn serialize_output_negative_large() {
         let mat_poly_str = format!("[[3  -17 42 1, 2  -13 5],[1  4, 1  -{}]]", u64::MAX);
