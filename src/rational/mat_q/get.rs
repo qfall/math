@@ -12,7 +12,10 @@ use super::MatQ;
 use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
 use crate::utils::coordinate::evaluate_coordinates;
 use crate::{error::MathError, rational::Q};
-use flint_sys::{fmpq::fmpq_set, fmpq_mat::fmpq_mat_entry};
+use flint_sys::{
+    fmpq::{fmpq, fmpq_set},
+    fmpq_mat::fmpq_mat_entry,
+};
 use std::fmt::Display;
 
 impl GetEntry<Q> for MatQ {
@@ -86,6 +89,38 @@ impl GetNumColumns for MatQ {
     /// ```
     fn get_num_columns(&self) -> i64 {
         self.matrix.c
+    }
+}
+
+impl MatQ {
+    #[allow(dead_code)]
+    /// Efficiently collects all [`fmpq`]s in a [`MatQ`] without cloning them.
+    ///
+    /// Hence, the values on the returned [`Vec`] are intended for short-term use
+    /// as the access to [`fmpq`] values could lead to memory leaks or modified values
+    /// once the [`MatQ`] instance was modified or dropped.
+    ///
+    /// # Example
+    /// ```compile_fail
+    /// use math::rational::MatQ;
+    /// use std::str::FromStr;
+    ///
+    /// let mat = MatQ::from_str("[[1/1,2],[3/1,4],[5/1,6]]").unwrap();
+    ///
+    /// let fmpz_entries = mat.collect_entries();
+    /// ```
+    pub(crate) fn collect_entries(&self) -> Vec<fmpq> {
+        let mut entries: Vec<fmpq> = vec![];
+
+        for row in 0..self.get_num_rows() {
+            for col in 0..self.get_num_columns() {
+                // efficiently get entry without cloning the entry itself
+                let entry = unsafe { *fmpq_mat_entry(&self.matrix, row, col) };
+                entries.push(entry);
+            }
+        }
+
+        entries
     }
 }
 
@@ -226,5 +261,47 @@ mod test_get_num {
         let matrix = MatQ::new(5, 10).unwrap();
 
         assert_eq!(matrix.get_num_columns(), 10);
+    }
+}
+
+#[cfg(test)]
+mod test_collect_entries {
+    use super::MatQ;
+    use std::str::FromStr;
+
+    #[test]
+    fn all_entries_collected() {
+        let mat_1 = MatQ::from_str(&format!(
+            "[[1/{},2],[{},{}],[-3/-4,4]]",
+            i64::MAX,
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
+        let mat_2 = MatQ::from_str("[[-1/1,2/-4]]").unwrap();
+
+        let entries_1 = mat_1.collect_entries();
+        let entries_2 = mat_2.collect_entries();
+
+        assert_eq!(entries_1.len(), 6);
+        // 4611686018427387904 = 2^62, i.e. value is stored on stack
+        assert_eq!(entries_1[0].num.0, 1);
+        assert!(entries_1[0].den.0 > 4611686018427387904);
+        assert_eq!(entries_1[1].num.0, 2);
+        assert_eq!(entries_1[1].den.0, 1);
+        assert!(entries_1[2].num.0 >= 4611686018427387904);
+        assert_eq!(entries_1[2].den.0, 1);
+        assert!(entries_1[3].num.0 >= 4611686018427387904);
+        assert_eq!(entries_1[3].den.0, 1);
+        assert_eq!(entries_1[4].num.0, 3);
+        assert_eq!(entries_1[4].den.0, 4);
+        assert_eq!(entries_1[5].num.0, 4);
+        assert_eq!(entries_1[5].den.0, 1);
+
+        assert_eq!(entries_2.len(), 2);
+        assert_eq!(entries_2[0].num.0, -1);
+        assert_eq!(entries_2[0].den.0, 1);
+        assert_eq!(entries_2[1].num.0, -1);
+        assert_eq!(entries_2[1].den.0, 2);
     }
 }
