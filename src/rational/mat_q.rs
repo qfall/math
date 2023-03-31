@@ -17,6 +17,7 @@ mod get;
 mod ownership;
 mod set;
 mod to_string;
+mod vector;
 
 /// [`MatQ`] is a matrix with entries of type [`Q`](crate::rational::Q).
 ///
@@ -25,6 +26,43 @@ mod to_string;
 ///     of the [`Q`](crate::rational::Q) matrix
 ///
 /// # Examples
+/// Matrix usage
+/// ```
+/// use math::{
+///     rational::{Q, MatQ},
+///     traits::{GetEntry, SetEntry},
+/// };
+/// use std::str::FromStr;
+///
+/// // instantiate new matrix
+/// let id_mat = MatQ::from_str("[[1/1,0],[0,1]]").unwrap();
+///
+/// // clone object, set and get entry
+/// let mut clone = id_mat.clone();
+/// clone.set_entry(0, 0, Q::try_from((&2, &1)).unwrap());
+/// assert_eq!(
+///     clone.get_entry(1, 1).unwrap(),
+///     Q::try_from((&1, &1)).unwrap()
+/// );
+///
+/// // to_string
+/// assert_eq!("[[1, 0],[0, 1]]", &id_mat.to_string());
+/// ```
+///
+/// Vector usage
+/// ```
+/// use math::{
+///     rational::{Q, MatQ},
+/// };
+/// use std::str::FromStr;
+///
+/// let row_vec = MatQ::from_str("[[1,1,1]]").unwrap();
+/// let col_vec = MatQ::from_str("[[1],[-1],[0]]").unwrap();
+///
+/// // check if matrix instance is vector
+/// assert!(row_vec.is_row_vector());
+/// assert!(col_vec.is_column_vector());
+/// ```
 #[derive(Debug)]
 pub struct MatQ {
     pub(crate) matrix: fmpq_mat_struct,
