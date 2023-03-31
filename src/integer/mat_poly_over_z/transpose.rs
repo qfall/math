@@ -8,9 +8,8 @@
 
 //! This module contains the implementation of the `transpose` function.
 
-use crate::traits::*;
-
 use super::MatPolyOverZ;
+use crate::traits::{GetNumColumns, GetNumRows};
 use flint_sys::fmpz_poly_mat::fmpz_poly_mat_transpose;
 
 impl MatPolyOverZ {
@@ -61,8 +60,10 @@ mod test_transpose {
     /// Checks if large, negative, and zero values are transposed correctly
     #[test]
     fn different_entry_values() {
-        let mat = MatPolyOverZ::from_str(&format!("[[1  {},1  {},1  0]]", i64::MAX, i64::MIN)).unwrap();
-        let cmp = MatPolyOverZ::from_str(&format!("[[1  {}],[1  {}],[1  0]]", i64::MAX, i64::MIN)).unwrap();
+        let mat =
+            MatPolyOverZ::from_str(&format!("[[1  {},1  {},1  0]]", i64::MAX, i64::MIN)).unwrap();
+        let cmp = MatPolyOverZ::from_str(&format!("[[1  {}],[1  {}],[1  0]]", i64::MAX, i64::MIN))
+            .unwrap();
 
         assert_eq!(cmp, mat.transpose());
     }
