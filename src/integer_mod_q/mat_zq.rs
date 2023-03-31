@@ -26,7 +26,7 @@ mod vector;
 ///     of the [`Zq`](crate::integer_mod_q::Zq) matrix
 ///
 /// # Examples
-/// Matrix usage
+/// ## Matrix usage
 /// ```
 /// use math::{
 ///     integer::Z,
@@ -47,7 +47,7 @@ mod vector;
 /// assert_eq!("[[1, 0],[0, 1]] mod 2", &id_mat.to_string());
 /// ```
 ///
-/// Vector usage
+/// ## Vector usage
 /// ```
 /// use math::{
 ///     integer::Z,
