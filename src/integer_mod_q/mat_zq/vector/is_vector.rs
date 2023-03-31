@@ -119,6 +119,8 @@ mod test_is_vector {
             MatZq::from_str(&format!("[[1,{},3],[4,5,6]] mod {}", i64::MAX, u64::MAX)).unwrap();
         let mat_3 =
             MatZq::from_str(&format!("[[1,{}],[2,3],[4,5]] mod {}", i64::MIN, u64::MAX)).unwrap();
+        let mat_4 = MatZq::from_str("[[1,0],[2,0],[4,0]] mod 6").unwrap();
+        let mat_5 = MatZq::from_str("[[1,2,4],[0,0,0]] mod 6").unwrap();
 
         assert!(!mat_1.is_column_vector());
         assert!(!mat_1.is_row_vector());
@@ -131,6 +133,14 @@ mod test_is_vector {
         assert!(!mat_3.is_column_vector());
         assert!(!mat_3.is_row_vector());
         assert!(!mat_3.is_vector());
+
+        assert!(!mat_4.is_column_vector());
+        assert!(!mat_4.is_row_vector());
+        assert!(!mat_4.is_vector());
+
+        assert!(!mat_5.is_column_vector());
+        assert!(!mat_5.is_row_vector());
+        assert!(!mat_5.is_vector());
     }
 
     /// Check whether matrices with only one entry get recognized as single entry matrices
