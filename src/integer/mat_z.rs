@@ -29,7 +29,7 @@ mod vector;
 ///     of the [`Z`](crate::integer::Z) matrix
 ///
 /// # Examples
-/// Matrix usage
+/// ## Matrix usage
 /// ```
 /// use math::{
 ///     integer::{MatZ, Z},
@@ -56,7 +56,7 @@ mod vector;
 /// );
 /// ```
 ///
-/// Vector usage
+/// ## Vector usage
 /// ```
 /// use math::{
 ///     integer::{MatZ, Z},

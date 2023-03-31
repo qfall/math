@@ -15,7 +15,7 @@ use crate::{
     integer::Z,
     traits::{GetNumColumns, GetNumRows},
 };
-use flint_sys::fmpz::{fmpz, fmpz_abs, fmpz_addmul, fmpz_cmpabs, fmpz_set};
+use flint_sys::fmpz::{fmpz, fmpz_abs, fmpz_addmul, fmpz_cmpabs};
 
 impl MatZ {
     /// Returns the squared Euclidean norm or 2-norm of the given (row or column) vector.
@@ -52,14 +52,14 @@ impl MatZ {
         let entries = self.collect_entries();
 
         // sum squared entries in result
-        let mut result = fmpz(0);
+        let mut result = Z::ZERO;
         for entry in entries {
             // sets result = result + entry * entry without cloned Z element
-            unsafe { fmpz_addmul(&mut result, &entry, &entry) }
+            unsafe { fmpz_addmul(&mut result.value, &entry, &entry) }
         }
 
         // TODO: Add sqrt function here
-        Ok(Z { value: result })
+        Ok(result)
     }
 
     /// Returns the infinity norm or ∞-norm of the given (row or column) vector.
@@ -101,11 +101,10 @@ impl MatZ {
         }
 
         // clone value and ensure that absolute maximum value is absolute
-        let mut clone_max = fmpz(0);
-        unsafe { fmpz_set(&mut clone_max, &max) };
-        unsafe { fmpz_abs(&mut clone_max, &clone_max) }
+        let mut result = Z::ZERO;
+        unsafe { fmpz_abs(&mut result.value, &max) }
 
-        Ok(Z { value: clone_max })
+        Ok(result)
     }
 }
 

@@ -11,10 +11,17 @@
 use crate::error::MathError;
 use crate::integer::{MatZ, Z};
 use crate::traits::{GetNumColumns, GetNumRows};
-use flint_sys::fmpz::{fmpz, fmpz_addmul};
+use flint_sys::fmpz::fmpz_addmul;
 
 impl MatZ {
     /// Returns the dot product of two vectors of type [`MatZ`].
+    ///
+    /// Paramters:
+    /// - `other`: specifies the other vector the dot product is calculated over
+    ///
+    /// Returns the resulting `dot_product` as a [`Z`] or an error,
+    /// if the given [`MatZ`] instances aren't vectors or have different
+    /// numbers of entries.
     ///
     /// # Example
     /// ```
@@ -62,13 +69,13 @@ impl MatZ {
         }
 
         // calculate dot product of vectors
-        let mut result = fmpz(0);
+        let mut result = Z::ZERO;
         for i in 0..self_entries.len() {
             // sets result = result + self.entry[i] * other.entry[i] without cloned Z element
-            unsafe { fmpz_addmul(&mut result, &self_entries[i], &other_entries[i]) }
+            unsafe { fmpz_addmul(&mut result.value, &self_entries[i], &other_entries[i]) }
         }
 
-        Ok(Z { value: result })
+        Ok(result)
     }
 }
 
