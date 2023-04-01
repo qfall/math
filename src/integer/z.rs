@@ -15,6 +15,7 @@ mod arithmetic;
 mod cmp;
 mod default;
 mod exp;
+pub(crate) mod fmpz_helpers;
 mod from;
 mod ownership;
 mod serialize;
