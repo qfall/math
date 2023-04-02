@@ -59,6 +59,7 @@ mod test_mul_between_types {
 
     /// testing multiplication between different types
     #[test]
+    #[allow(clippy::op_ref)]
     fn mul() {
         let a: Z = Z::from_str("42").unwrap();
         let b: u64 = 5;
