@@ -99,7 +99,6 @@ arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatPolyOverZ);
 mod test_mul {
 
     use super::MatPolyOverZ;
-    use crate::integer::Z;
     use std::str::FromStr;
 
     /// Checks if matrix multiplication works fine for squared matrices
@@ -126,14 +125,14 @@ mod test_mul {
     fn large_entries() {
         let mat = MatPolyOverZ::from_str(&format!("[[2  3 {},1  15],[1  1,0]]", u32::MAX)).unwrap();
         let vec = MatPolyOverZ::from_str(&format!("[[2  1 {}],[0]]", u32::MAX)).unwrap();
-        let mut cmp = MatPolyOverZ::from_str(&format!(
+        let cmp = MatPolyOverZ::from_str(&format!(
             "[[3  3 {} {}],[2  1 {}]]",
             u64::from(u32::MAX) * 4,
             u64::from(u32::MAX) * u64::from(u32::MAX),
             u32::MAX
         ))
         .unwrap();
-        let max: Z = i64::MAX.into();
+
         assert_eq!(cmp, mat * vec);
     }
 
