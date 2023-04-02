@@ -101,7 +101,7 @@ mod test_mul {
     use crate::{integer::Z, traits::SetEntry};
     use std::str::FromStr;
 
-    /// Checks if matrix multiplication works fine for sqaured matrices
+    /// Checks if matrix multiplication works fine for squared matrices
     #[test]
     fn square_correctness() {
         let mat_1 = MatZ::from_str("[[2,1],[1,2]]").unwrap();
