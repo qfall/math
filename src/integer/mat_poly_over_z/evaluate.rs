@@ -95,6 +95,17 @@ mod test_evaluate {
         assert_eq!(MatZ::from_str(&res_cmp_str).unwrap(), res)
     }
 
+    /// tests whether evaluation of a large entry in the matrix with a large value works
+    #[test]
+    fn eval_large_with_large() {
+        let poly_str = format!("[[2  {} -1, 1  1],[1  {}, 2  0 1]]", u64::MAX, u64::MAX);
+        let poly = MatPolyOverZ::from_str(&poly_str).unwrap();
+        let res = poly.evaluate(Z::from(u64::MAX));
+
+        let res_cmp_str = format!("[[0, 1],[{}, {}]]", u64::MAX, u64::MAX);
+        assert_eq!(MatZ::from_str(&res_cmp_str).unwrap(), res)
+    }
+
     /// test if evaluate works with max of i64, i32, ...
     #[test]
     fn eval_max() {
