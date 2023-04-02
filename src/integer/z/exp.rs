@@ -28,9 +28,9 @@ impl Z {
     /// use math::integer::Z;
     ///
     /// // sum_{k=0}^999 17^k/k!
-    /// let evaluation = Z::from(17).exp_taylor(1000);
+    /// let evaluation = Z::from(17).exp_taylor(1000_u32);
     /// ```
-    pub fn exp_taylor(&self, length_taylor_polynomial: u32) -> Q {
+    pub fn exp_taylor(&self, length_taylor_polynomial: impl Into<u32>) -> Q {
         let exp_taylor_series = PolyOverQ::exp_function_taylor(length_taylor_polynomial);
         exp_taylor_series.evaluate(self)
     }
@@ -46,17 +46,23 @@ mod test_exp {
     fn zero_length() {
         let z = Z::from(17);
 
-        assert_eq!(Q::default(), z.exp_taylor(0));
+        assert_eq!(Q::default(), z.exp_taylor(0_u32));
     }
 
     /// test correct evaluation for some explicit values
     #[test]
     fn ten_length_value() {
-        assert_eq!(Q::from_str("98641/36288").unwrap(), Z::ONE.exp_taylor(10));
+        assert_eq!(
+            Q::from_str("98641/36288").unwrap(),
+            Z::ONE.exp_taylor(10_u32)
+        );
         assert_eq!(
             Q::from_str("22471/1120").unwrap(),
-            Z::from(3).exp_taylor(10)
+            Z::from(3).exp_taylor(10_u32)
         );
-        assert_eq!(Q::from_str("83/2240").unwrap(), Z::from(-3).exp_taylor(10));
+        assert_eq!(
+            Q::from_str("83/2240").unwrap(),
+            Z::from(-3).exp_taylor(10_u32)
+        );
     }
 }
