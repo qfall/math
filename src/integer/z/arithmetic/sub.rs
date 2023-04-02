@@ -59,6 +59,7 @@ mod test_sub_between_types {
 
     /// testing subtraction between different types
     #[test]
+    #[allow(clippy::op_ref)]
     fn sub() {
         let a: Z = Z::from_str("42").unwrap();
         let b: u64 = 1;
