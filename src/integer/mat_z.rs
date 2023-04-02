@@ -15,7 +15,6 @@ mod arithmetic;
 mod cmp;
 mod from;
 mod get;
-mod mul;
 mod ownership;
 mod serialize;
 mod set;
