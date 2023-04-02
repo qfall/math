@@ -25,13 +25,13 @@ impl PolyOverQ {
     /// use math::rational::PolyOverQ;
     ///
     /// // sum_{k=0}^{length-1} x^k/k!
-    /// let taylor_approximation_exponential_function = PolyOverQ::exp_function_taylor(1000);
+    /// let taylor_approximation_exponential_function = PolyOverQ::exp_function_taylor(1000_u32);
     /// ```
-    pub(crate) fn exp_function_taylor(length: u32) -> Self {
+    pub(crate) fn exp_function_taylor(length: impl Into<u32>) -> Self {
         let mut out = Self::default();
         let x_poly = PolyOverQ::from_str("2  0 1").unwrap();
 
-        unsafe { fmpq_poly_exp_series(&mut out.poly, &x_poly.poly, length.into()) };
+        unsafe { fmpq_poly_exp_series(&mut out.poly, &x_poly.poly, length.into().into()) };
         out
     }
 }
@@ -47,7 +47,7 @@ mod test_exp_series {
 
     #[test]
     fn coefficient_set_correctly() {
-        let length = 1000;
+        let length: u32 = 1000;
         let poly = PolyOverQ::exp_function_taylor(length);
         let mut fac_value = Q::from_str("1").unwrap();
         assert_eq!(fac_value, poly.get_coeff(0).unwrap());
@@ -59,14 +59,18 @@ mod test_exp_series {
 
     #[test]
     fn correct_len() {
-        let length = 170;
+        let length: u32 = 170;
         let poly = PolyOverQ::exp_function_taylor(length);
         assert_eq!(length as i64, poly.poly.length);
 
-        println!("{}", PolyOverQ::exp_function_taylor(1000).evaluate(1));
+        println!("{}", PolyOverQ::exp_function_taylor(1000_u32).evaluate(1));
 
         println!("{}", unsafe {
-            fmpq_get_d(&PolyOverQ::exp_function_taylor(1000).evaluate(1_i32).value)
+            fmpq_get_d(
+                &PolyOverQ::exp_function_taylor(1000_u32)
+                    .evaluate(1_i32)
+                    .value,
+            )
         })
     }
 }

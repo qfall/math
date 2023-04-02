@@ -26,9 +26,9 @@ impl Q {
     /// use std::str::FromStr;
     ///
     /// // sum_{k=0}^999 (17/3)^k/k!
-    /// let evaluation = Q::from_str("17/3").unwrap().exp_taylor(1000);
+    /// let evaluation = Q::from_str("17/3").unwrap().exp_taylor(1000_u32);
     /// ```
-    pub fn exp_taylor(&self, length_taylor_polynomial: u32) -> Self {
+    pub fn exp_taylor(&self, length_taylor_polynomial: impl Into<u32>) -> Self {
         let exp_taylor_series = PolyOverQ::exp_function_taylor(length_taylor_polynomial);
         exp_taylor_series.evaluate(self)
     }
@@ -44,7 +44,7 @@ mod test_exp {
     fn zero_length() {
         let q = Q::from_str("17/3").unwrap();
 
-        assert_eq!(Q::default(), q.exp_taylor(0));
+        assert_eq!(Q::default(), q.exp_taylor(0_u32));
     }
 
     /// test correct evaluation for some explicit values
@@ -52,15 +52,15 @@ mod test_exp {
     fn ten_length_value() {
         assert_eq!(
             Q::from_str("98641/36288").unwrap(),
-            Q::from_str("1").unwrap().exp_taylor(10)
+            Q::from_str("1").unwrap().exp_taylor(10_u32)
         );
         assert_eq!(
             Q::from_str("2492063827/1785641760").unwrap(),
-            Q::from_str("1/3").unwrap().exp_taylor(10)
+            Q::from_str("1/3").unwrap().exp_taylor(10_u32)
         );
         assert_eq!(
             Q::from_str("5729869/11160261").unwrap(),
-            Q::from_str("-2/3").unwrap().exp_taylor(10)
+            Q::from_str("-2/3").unwrap().exp_taylor(10_u32)
         );
     }
 }
