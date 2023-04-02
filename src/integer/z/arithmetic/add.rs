@@ -60,7 +60,7 @@ mod test_add_between_types {
     /// testing addition between different types
     #[test]
     fn add() {
-        let a: Z = Z::from_str("42").unwrap();
+        let a: Z = Z::from("42");
         let b: u64 = 1;
         let c: u32 = 1;
         let d: u16 = 1;
