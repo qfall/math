@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementations to approximate the exponential function using a [`PolyOverQ`].
+//! Implementations to approximate the exponential function using a [`PolyOverQ`] polynomial.
 
 use super::PolyOverQ;
 use flint_sys::fmpq_poly::fmpq_poly_exp_series;
@@ -25,7 +25,7 @@ impl PolyOverQ {
     /// use math::rational::PolyOverQ;
     ///
     /// // sum_{k=0}^{length-1} x^k/k!
-    /// let taylor_approximation_exponential_function = PolyOverQ::exp_function(1000);
+    /// let taylor_approximation_exponential_function = PolyOverQ::exp_function_taylor(1000);
     /// ```
     pub(crate) fn exp_function_taylor(length: u32) -> Self {
         let mut out = Self::default();

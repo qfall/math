@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementations to call the exponential function on a [`Z`].
+//! Implementations to call the exponential function on a [`Z`] integer.
 
 use super::Z;
 use crate::{
