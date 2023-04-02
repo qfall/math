@@ -58,8 +58,8 @@ impl Mul for &MatZ {
     }
 }
 
-arithmetic_trait_borrowed_to_owned!(Mul, mul, MatZ);
-arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatZ);
+arithmetic_trait_borrowed_to_owned!(Mul, mul, MatZ, MatZ, MatZ);
+arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatZ, MatZ, MatZ);
 
 #[cfg(test)]
 mod test_mul {
