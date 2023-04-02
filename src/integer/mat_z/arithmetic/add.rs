@@ -30,6 +30,7 @@ impl Add for &MatZ {
     /// # Example
     /// ```
     /// use math::integer::MatZ;
+    /// use std::str::FromStr;
     ///
     /// let a: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, 4, 5]]")).unwrap();
     /// let b: MatZ = MatZ::from_str(&String::from("[[1, 9, 3],[1, 0, 5]]")).unwrap();
@@ -39,6 +40,9 @@ impl Add for &MatZ {
     /// let e: MatZ = &c + d;
     /// let f: MatZ = c + &e;
     /// ```
+    ///
+    /// # Panics
+    /// - Panics if the dimensions of both matrices mismatch
     fn add(self, other: Self) -> Self::Output {
         self.add_safe(other).unwrap()
     }
@@ -56,13 +60,13 @@ impl MatZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::MatZ;
+    /// use math::integer::MatZ;
+    /// use std::str::FromStr;
     ///
     /// let a: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, 4, 5]]")).unwrap();
     /// let b: MatZ = MatZ::from_str(&String::from("[[1, 9, 3],[1, 0, 5]]")).unwrap();
     ///
     /// let c: MatZ = a.add_safe(&b).unwrap();
-
     /// ```
     /// # Errors
     /// Returns a [`MathError`] of type
@@ -136,9 +140,45 @@ mod test_add {
     /// testing addition for big numbers
     #[test]
     fn add_large_numbers() {
-        let a: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, 4, 5]]")).unwrap();
-        let b: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, -4, 5]]")).unwrap();
+        let a: MatZ = MatZ::from_str(&String::from(format!(
+            "[[1, 2, {}],[3, -4, {}]]",
+            i32::MIN,
+            i32::MAX
+        )))
+        .unwrap();
+        let b: MatZ = MatZ::from_str(&String::from(format!(
+            "[[1, 2, {}],[3, 9, {}]]",
+            i32::MIN + 1,
+            i32::MAX
+        )))
+        .unwrap();
+        let c: MatZ = a + &b;
+        assert!(
+            c == MatZ::from_str(&String::from(format!(
+                "[[2, 4, -{}],[6, 5, {}]]",
+                u32::MAX,
+                u32::MAX - 1
+            )))
+            .unwrap()
+        );
     }
 
-    //todo error and add_safe
+    /// testing add_safe
+    #[test]
+    fn add_safe() {
+        let a: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, 4, 5]]")).unwrap();
+        let b: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, -4, 5]]")).unwrap();
+        let c = a.add_safe(&b);
+        assert!(c.unwrap() == MatZ::from_str(&String::from("[[2, 4, 6],[6, 0, 10]]")).unwrap());
+    }
+
+    /// testing add_safe throws error
+    #[test]
+    fn add_safe_is_err() {
+        let a: MatZ = MatZ::from_str(&String::from("[[1, 2],[3, 4]]")).unwrap();
+        let b: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, -4, 5]]")).unwrap();
+        let c: MatZ = MatZ::from_str(&String::from("[[1, 2, 3]]")).unwrap();
+        assert!(a.add_safe(&b).is_err());
+        assert!(c.add_safe(&b).is_err());
+    }
 }
