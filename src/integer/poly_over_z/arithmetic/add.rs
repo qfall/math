@@ -47,8 +47,8 @@ impl Add for &PolyOverZ {
     }
 }
 
-arithmetic_trait_borrowed_to_owned!(Add, add, PolyOverZ);
-arithmetic_trait_mixed_borrowed_owned!(Add, add, PolyOverZ);
+arithmetic_trait_borrowed_to_owned!(Add, add, PolyOverZ, PolyOverZ, PolyOverZ);
+arithmetic_trait_mixed_borrowed_owned!(Add, add, PolyOverZ, PolyOverZ, PolyOverZ);
 
 #[cfg(test)]
 mod test_add {

@@ -10,7 +10,8 @@
 
 use super::super::Z;
 use crate::macros::arithmetics::{
-    arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+    arithmetic_between_types, arithmetic_trait_borrowed_to_owned,
+    arithmetic_trait_mixed_borrowed_owned,
 };
 use flint_sys::fmpz::fmpz_mul;
 use std::ops::Mul;
@@ -46,8 +47,102 @@ impl Mul for &Z {
     }
 }
 
-arithmetic_trait_borrowed_to_owned!(Mul, mul, Z);
-arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Z);
+arithmetic_trait_borrowed_to_owned!(Mul, mul, Z, Z, Z);
+arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Z, Z, Z);
+arithmetic_between_types!(Mul, mul, Z, i64 i32 i16 i8 u64 u32 u16 u8);
+
+#[cfg(test)]
+mod test_mul_between_types {
+
+    use crate::integer::Z;
+    use std::str::FromStr;
+
+    /// testing multiplication between different types
+    #[test]
+    #[allow(clippy::op_ref)]
+    fn mul() {
+        let a: Z = Z::from_str("42").unwrap();
+        let b: u64 = 5;
+        let c: u32 = 5;
+        let d: u16 = 5;
+        let e: u8 = 5;
+        let f: i64 = 5;
+        let g: i32 = 5;
+        let h: i16 = 5;
+        let i: i8 = 5;
+        let _: Z = &a * &b;
+        let _: Z = &a * &c;
+        let _: Z = &a * &d;
+        let _: Z = &a * &e;
+        let _: Z = &a * &f;
+        let _: Z = &a * &g;
+        let _: Z = &a * &h;
+        let _: Z = &a * &i;
+
+        let _: Z = &b * &a;
+        let _: Z = &c * &a;
+        let _: Z = &d * &a;
+        let _: Z = &e * &a;
+        let _: Z = &f * &a;
+        let _: Z = &g * &a;
+        let _: Z = &h * &a;
+        let _: Z = &i * &a;
+
+        let _: Z = &a * b;
+        let _: Z = &a * c;
+        let _: Z = &a * d;
+        let _: Z = &a * e;
+        let _: Z = &a * f;
+        let _: Z = &a * g;
+        let _: Z = &a * h;
+        let _: Z = &a * i;
+
+        let _: Z = &b * Z::from_str("42").unwrap();
+        let _: Z = &c * Z::from_str("42").unwrap();
+        let _: Z = &d * Z::from_str("42").unwrap();
+        let _: Z = &e * Z::from_str("42").unwrap();
+        let _: Z = &f * Z::from_str("42").unwrap();
+        let _: Z = &g * Z::from_str("42").unwrap();
+        let _: Z = &h * Z::from_str("42").unwrap();
+        let _: Z = &i * Z::from_str("42").unwrap();
+
+        let _: Z = Z::from_str("42").unwrap() * &b;
+        let _: Z = Z::from_str("42").unwrap() * &c;
+        let _: Z = Z::from_str("42").unwrap() * &d;
+        let _: Z = Z::from_str("42").unwrap() * &e;
+        let _: Z = Z::from_str("42").unwrap() * &f;
+        let _: Z = Z::from_str("42").unwrap() * &g;
+        let _: Z = Z::from_str("42").unwrap() * &h;
+        let _: Z = Z::from_str("42").unwrap() * &i;
+
+        let _: Z = b * &a;
+        let _: Z = c * &a;
+        let _: Z = d * &a;
+        let _: Z = e * &a;
+        let _: Z = f * &a;
+        let _: Z = g * &a;
+        let _: Z = h * &a;
+        let _: Z = i * &a;
+
+        let _: Z = Z::from_str("42").unwrap() * b;
+        let _: Z = Z::from_str("42").unwrap() * c;
+        let _: Z = Z::from_str("42").unwrap() * d;
+        let _: Z = Z::from_str("42").unwrap() * e;
+        let _: Z = Z::from_str("42").unwrap() * f;
+        let _: Z = Z::from_str("42").unwrap() * g;
+        let _: Z = Z::from_str("42").unwrap() * h;
+        let _: Z = Z::from_str("42").unwrap() * i;
+
+        let _: Z = b * Z::from_str("42").unwrap();
+        let _: Z = c * Z::from_str("42").unwrap();
+        let _: Z = d * Z::from_str("42").unwrap();
+        let _: Z = e * Z::from_str("42").unwrap();
+        let _: Z = f * Z::from_str("42").unwrap();
+        let _: Z = g * Z::from_str("42").unwrap();
+        let _: Z = h * Z::from_str("42").unwrap();
+        let _: Z = i * Z::from_str("42").unwrap();
+    }
+}
 
 #[cfg(test)]
 mod test_mul {
