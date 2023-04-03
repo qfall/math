@@ -92,8 +92,8 @@ impl MatPolyOverZ {
     }
 }
 
-arithmetic_trait_borrowed_to_owned!(Mul, mul, MatPolyOverZ);
-arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatPolyOverZ);
+arithmetic_trait_borrowed_to_owned!(Mul, mul, MatPolyOverZ, MatPolyOverZ, MatPolyOverZ);
+arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatPolyOverZ, MatPolyOverZ, MatPolyOverZ);
 
 #[cfg(test)]
 mod test_mul {
