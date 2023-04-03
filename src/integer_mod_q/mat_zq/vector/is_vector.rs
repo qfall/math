@@ -21,7 +21,7 @@ impl MatZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::MatZq;
+    /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
     /// let col_vec = MatZq::from_str("[[1],[2],[3]] mod 4").unwrap();
@@ -39,7 +39,7 @@ impl MatZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::MatZq;
+    /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
     /// let col_vec = MatZq::from_str("[[1],[2],[3]] mod 4").unwrap();
@@ -57,7 +57,7 @@ impl MatZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::MatZq;
+    /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
     /// let col_vec = MatZq::from_str("[[1],[2],[3]] mod 4").unwrap();
@@ -75,7 +75,7 @@ impl MatZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::MatZq;
+    /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
     /// let vec = MatZq::from_str("[[1]] mod 2").unwrap();

@@ -25,9 +25,9 @@ impl SetEntry<&Z> for MatZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
-    /// use math::integer::Z;
-    /// use math::traits::*;
+    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::traits::*;
     ///
     /// let mut matrix = MatZ::new(5, 10).unwrap();
     /// let value = Z::from_i64(5);

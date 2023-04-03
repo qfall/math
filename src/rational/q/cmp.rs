@@ -22,7 +22,7 @@ impl PartialEq for Q {
     ///
     /// # Example
     /// ```
-    /// use math::rational::Q;
+    /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
     /// let a: Q = Q::from_str("42/24").unwrap();
     /// let b: Q = Q::from_str("24/42").unwrap();

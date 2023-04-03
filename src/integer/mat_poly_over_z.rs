@@ -32,7 +32,7 @@ mod vector;
 /// # Examples
 /// ## Matrix usage
 /// ```
-/// use math::{
+/// use qfall_math::{
 ///     integer::{PolyOverZ, MatPolyOverZ},
 ///     traits::{GetEntry, SetEntry},
 /// };
@@ -55,7 +55,7 @@ mod vector;
 ///
 /// ## Vector usage
 /// ```
-/// use math::{
+/// use qfall_math::{
 ///     integer::{PolyOverZ, MatPolyOverZ},
 /// };
 /// use std::str::FromStr;

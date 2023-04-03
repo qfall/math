@@ -21,7 +21,7 @@ impl Clone for MatZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
+    /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
     /// let string = String::from("[[1, 2, 3],[3, 4, 5]]");
@@ -42,7 +42,7 @@ impl Drop for MatZ {
     ///
     /// # Examples
     /// ```
-    /// use math::integer::MatZ;
+    /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
     /// let string = String::from("[[1, 2, 3],[3, 4, 5]]");
@@ -52,7 +52,7 @@ impl Drop for MatZ {
     /// ```
     ///
     /// ```
-    /// use math::integer::MatZ;
+    /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
     /// let string = String::from("[[1, 2, 3],[3, 4, 5]]");

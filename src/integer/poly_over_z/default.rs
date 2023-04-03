@@ -17,7 +17,7 @@ impl Default for PolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::PolyOverZ;
+    /// use qfall_math::integer::PolyOverZ;
     ///
     /// let zero = PolyOverZ::default();
     /// ```

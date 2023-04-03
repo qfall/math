@@ -19,7 +19,7 @@ impl PolyOverZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::PolyOverZq;
+    /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
     ///
     /// let poly_irr = PolyOverZq::from_str("2  1 1 mod 17").unwrap();

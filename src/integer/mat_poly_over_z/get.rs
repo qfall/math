@@ -26,8 +26,8 @@ impl GetNumRows for MatPolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatPolyOverZ;
-    /// use math::traits::*;
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::traits::*;
     ///
     /// let matrix = MatPolyOverZ::new(5,6).unwrap();
     /// let rows = matrix.get_num_rows();
@@ -42,8 +42,8 @@ impl GetNumColumns for MatPolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatPolyOverZ;
-    /// use math::traits::*;
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::traits::*;
     ///
     /// let matrix = MatPolyOverZ::new(5,6).unwrap();
     /// let columns = matrix.get_num_columns();
@@ -66,8 +66,8 @@ impl GetEntry<PolyOverZ> for MatPolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatPolyOverZ;
-    /// use math::traits::*;
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::traits::*;
     ///
     /// let matrix = MatPolyOverZ::new(5, 10).unwrap();
     /// let entry = matrix.get_entry(0, 1).unwrap();
@@ -105,7 +105,7 @@ impl MatPolyOverZ {
     ///
     /// # Example
     /// ```compile_fail
-    /// use math::intger::MatPolyOverZ;
+    /// use qfall_math::intger::MatPolyOverZ;
     /// use std::str::FromStr;
     ///
     /// let mat = MatPolyOverZ::from_str("[[1  1, 0],[1  3, 1  4],[0,1  6]]").unwrap();

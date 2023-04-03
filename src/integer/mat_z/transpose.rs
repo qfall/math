@@ -19,7 +19,7 @@ impl MatZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
+    /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
     /// let mat = MatZ::from_str("[[2,1],[2,1],[2,1]]").unwrap();

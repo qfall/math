@@ -40,7 +40,7 @@ impl MatZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::MatZq;
+    /// use qfall_math::integer_mod_q::MatZq;
     ///
     /// let matrix = MatZq::new(5, 10, 7).unwrap();
     /// ```
@@ -110,7 +110,7 @@ impl FromStr for MatZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::MatZq;
+    /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
     /// let string = String::from("[[1,2,3],[4,5,6]] mod 4");

@@ -24,7 +24,7 @@ impl fmt::Display for MatQ {
     ///
     /// # Examples
     /// ```
-    /// use math::rational::MatQ;
+    /// use qfall_math::rational::MatQ;
     /// use core::fmt;
     /// use std::str::FromStr;
     ///
@@ -33,7 +33,7 @@ impl fmt::Display for MatQ {
     /// ```
     ///
     /// ```
-    /// use math::rational::MatQ;
+    /// use qfall_math::rational::MatQ;
     /// use core::fmt;
     /// use std::str::FromStr;
     ///

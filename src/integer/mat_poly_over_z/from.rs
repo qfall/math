@@ -39,7 +39,7 @@ impl MatPolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatPolyOverZ;
+    /// use qfall_math::integer::MatPolyOverZ;
     ///
     /// let matrix = MatPolyOverZ::new(5, 10).unwrap();
     /// ```
@@ -97,7 +97,7 @@ impl FromStr for MatPolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatPolyOverZ;
+    /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     ///
     /// let string = String::from("[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]");

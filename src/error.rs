@@ -55,7 +55,7 @@ use thiserror::Error;
 ///
 /// # Example
 /// ```
-/// use math::error::MathError;
+/// use qfall_math::error::MathError;
 ///
 /// fn parse_string_to_int() -> Result<(), MathError> {
 ///     let text = "abc".to_owned();

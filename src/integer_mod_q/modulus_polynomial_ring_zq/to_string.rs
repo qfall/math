@@ -21,7 +21,7 @@ impl Display for ModulusPolynomialRingZq {
     ///
     /// # Examples
     /// ```
-    /// use math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
     /// use std::str::FromStr;
     ///
     /// let poly = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
@@ -29,7 +29,7 @@ impl Display for ModulusPolynomialRingZq {
     /// ```
     ///
     /// ```
-    /// use math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
     /// use std::str::FromStr;
     ///
     /// let poly = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();

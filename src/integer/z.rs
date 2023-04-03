@@ -28,7 +28,7 @@ mod to_string;
 ///
 /// # Examples
 /// ```
-/// use math::integer::Z;
+/// use qfall_math::integer::Z;
 /// use std::str::FromStr;
 ///
 /// let a = Z::from_str("-876543")?;
@@ -40,7 +40,7 @@ mod to_string;
 /// drop(b);
 ///
 /// assert_ne!(result, zero);
-/// # Ok::<(), math::error::MathError>(())
+/// # Ok::<(), qfall_math::error::MathError>(())
 /// ```
 #[derive(Debug)]
 pub struct Z {

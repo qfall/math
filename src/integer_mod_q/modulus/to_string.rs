@@ -21,7 +21,7 @@ impl fmt::Display for Modulus {
     ///
     /// # Examples
     /// ```
-    /// use math::integer_mod_q::Modulus;
+    /// use qfall_math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
     /// use core::fmt;
     ///
@@ -30,7 +30,7 @@ impl fmt::Display for Modulus {
     /// ```
     ///
     /// ```
-    /// use math::integer_mod_q::Modulus;
+    /// use qfall_math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
     ///
     /// let modulus = Modulus::from_str("42").unwrap();

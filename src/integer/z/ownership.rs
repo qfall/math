@@ -19,7 +19,7 @@ impl Clone for Z {
     ///
     /// # Example
     /// ```
-    /// use math::integer::Z;
+    /// use qfall_math::integer::Z;
     ///
     /// let a = Z::from_i64(1);
     /// let b = a.clone();
@@ -38,14 +38,14 @@ impl Drop for Z {
     ///
     /// # Examples
     /// ```
-    /// use math::integer::Z;
+    /// use qfall_math::integer::Z;
     /// {
     ///     let a = Z::from_i64(3);
     /// } // as a's scope ends here, it get's dropped
     /// ```
     ///
     /// ```
-    /// use math::integer::Z;
+    /// use qfall_math::integer::Z;
     ///
     /// let a = Z::from_i64(3);
     /// drop(a); // explicitly drops a's value

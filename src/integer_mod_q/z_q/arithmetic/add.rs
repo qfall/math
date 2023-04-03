@@ -31,7 +31,7 @@ impl Add for &Zq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::Zq;
+    /// use qfall_math::integer_mod_q::Zq;
     ///
     /// let a: Zq = Zq::try_from((23, 42)).unwrap();
     /// let b: Zq = Zq::try_from((1, 42)).unwrap();
@@ -61,7 +61,7 @@ impl Zq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::Zq;
+    /// use qfall_math::integer_mod_q::Zq;
     ///
     /// let a: Zq = Zq::try_from((23, 42)).unwrap();
     /// let b: Zq = Zq::try_from((1, 42)).unwrap();

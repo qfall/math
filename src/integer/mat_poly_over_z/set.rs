@@ -26,9 +26,9 @@ impl SetEntry<&PolyOverZ> for MatPolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatPolyOverZ;
-    /// use math::integer::PolyOverZ;
-    /// use math::traits::*;
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::integer::PolyOverZ;
+    /// use qfall_math::traits::*;
     ///
     /// let mut matrix = MatPolyOverZ::new(5, 10).unwrap();
     /// let value = PolyOverZ::default();
@@ -69,9 +69,9 @@ impl SetEntry<PolyOverZ> for MatPolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatPolyOverZ;
-    /// use math::integer::PolyOverZ;
-    /// use math::traits::*;
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::integer::PolyOverZ;
+    /// use qfall_math::traits::*;
     ///
     /// let mut matrix = MatPolyOverZ::new(5, 10).unwrap();
     /// let value = PolyOverZ::default();

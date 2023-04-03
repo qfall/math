@@ -19,7 +19,7 @@ impl MatZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::MatZq;
+    /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
     /// let mat = MatZq::from_str("[[2,1],[2,1],[2,1]] mod 4").unwrap();

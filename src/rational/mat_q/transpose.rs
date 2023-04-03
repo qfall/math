@@ -19,7 +19,7 @@ impl MatQ {
     ///
     /// # Example
     /// ```
-    /// use math::rational::MatQ;
+    /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
     /// let mat = MatQ::from_str("[[1/2,1],[2,1/7],[2,1]]").unwrap();

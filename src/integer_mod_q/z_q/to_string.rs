@@ -22,7 +22,7 @@ impl fmt::Display for Zq {
     ///
     /// # Examples
     /// ```
-    /// use math::integer_mod_q::Zq;
+    /// use qfall_math::integer_mod_q::Zq;
     /// use std::str::FromStr;
     /// use core::fmt;
     ///
@@ -31,7 +31,7 @@ impl fmt::Display for Zq {
     /// ```
     ///
     /// ```
-    /// use math::integer_mod_q::Zq;
+    /// use qfall_math::integer_mod_q::Zq;
     /// use std::str::FromStr;
     /// use core::fmt;
     ///

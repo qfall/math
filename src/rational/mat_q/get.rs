@@ -23,8 +23,8 @@ impl GetNumRows for MatQ {
     ///
     /// # Example
     /// ```
-    /// use math::rational::MatQ;
-    /// use math::traits::*;
+    /// use qfall_math::rational::MatQ;
+    /// use qfall_math::traits::*;
     ///
     /// let matrix = MatQ::new(5,6).unwrap();
     /// let rows = matrix.get_num_rows();
@@ -39,8 +39,8 @@ impl GetNumColumns for MatQ {
     ///
     /// # Example
     /// ```
-    /// use math::rational::MatQ;
-    /// use math::traits::*;
+    /// use qfall_math::rational::MatQ;
+    /// use qfall_math::traits::*;
     ///
     /// let matrix = MatQ::new(5,6).unwrap();
     /// let columns = matrix.get_num_columns();
@@ -63,8 +63,8 @@ impl GetEntry<Q> for MatQ {
     ///
     /// # Example
     /// ```
-    /// use math::rational::MatQ;
-    /// use crate::math::traits::GetEntry;
+    /// use qfall_math::rational::MatQ;
+    /// use qfall_math::traits::GetEntry;
     ///
     /// let matrix = MatQ::new(5, 10).unwrap();
     /// let entry = matrix.get_entry(0, 1).unwrap();
@@ -102,7 +102,7 @@ impl MatQ {
     ///
     /// # Example
     /// ```compile_fail
-    /// use math::rational::MatQ;
+    /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
     /// let mat = MatQ::from_str("[[1/1,2],[3/1,4],[5/1,6]]").unwrap();

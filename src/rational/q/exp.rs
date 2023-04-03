@@ -22,7 +22,7 @@ impl Q {
     ///
     /// # Example
     /// ```
-    /// use math::rational::Q;
+    /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
     ///
     /// // sum_{k=0}^999 (17/3)^k/k!

@@ -28,10 +28,10 @@ impl SetEntry<&Z> for MatZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::MatZq;
-    /// use math::integer::Z;
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
-    /// use math::traits::*;
+    /// use qfall_math::traits::*;
     ///
     /// let mut matrix = MatZq::new(5, 10, 7).unwrap();
     /// let value = Z::from(5);
@@ -64,10 +64,10 @@ impl SetEntry<&Zq> for MatZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::MatZq;
-    /// use crate::math::traits::SetEntry;
-    /// use math::integer_mod_q::Zq;
-    /// use math::integer::Z;
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::traits::SetEntry;
+    /// use qfall_math::integer_mod_q::Zq;
+    /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
     ///
     /// let mut matrix = MatZq::new(5, 10, 7).unwrap();

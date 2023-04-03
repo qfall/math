@@ -23,7 +23,7 @@ impl PartialEq for PolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::PolyOverZ;
+    /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;
     /// let a: PolyOverZ = PolyOverZ::from_str("2  42 1").unwrap();
     /// let b: PolyOverZ = PolyOverZ::from_str("2  24 1").unwrap();

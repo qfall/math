@@ -30,7 +30,7 @@ mod vector;
 /// # Examples
 /// ## Matrix usage
 /// ```
-/// use math::{
+/// use qfall_math::{
 ///     integer::Z,
 ///     integer_mod_q::MatZq,
 ///     traits::{GetEntry, SetEntry},
@@ -51,7 +51,7 @@ mod vector;
 ///
 /// ## Vector usage
 /// ```
-/// use math::{
+/// use qfall_math::{
 ///     integer::Z,
 ///     integer_mod_q::MatZq,
 /// };

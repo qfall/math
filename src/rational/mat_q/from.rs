@@ -39,7 +39,7 @@ impl MatQ {
     ///
     /// # Example
     /// ```
-    /// use math::rational::MatQ;
+    /// use qfall_math::rational::MatQ;
     ///
     /// let matrix = MatQ::new(5, 10).unwrap();
     /// ```
@@ -95,7 +95,7 @@ impl FromStr for MatQ {
     ///
     /// # Example
     /// ```
-    /// use math::rational::MatQ;
+    /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
     /// let string = String::from("[[1/2,2/3,3/4],[4/5,5/6,6/7]]");

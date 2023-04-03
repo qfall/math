@@ -62,7 +62,7 @@ once the project is cloned. Following, find a small overview containing the gene
 
 
 ```rust
-use math::integer::Z;
+use qfall_math::integer::Z;
 
 let a = Z::from(24);
 let b = Z::from(42);
@@ -80,8 +80,8 @@ let res_mul: Z = a * b;
 - [`PolynomialRingZq`](https://github.com/qfall/math/blob/dev/src/integer_mod_q/polynomial_ring_zq.rs): Represents quotient rings of $\mathbb Z_q[X]/f(X)$ where $q$ is prime and $f(X)$ is a [`PolyOverZq`](https://github.com/qfall/math/blob/dev/src/integer_mod_q/poly_over_zq.rs).
 
 ```rust
-use math::integer_mod_q::Zq;
-use math::integer_mod_q::Modulus;
+use qfall_math::integer_mod_q::Zq;
+use qfall_math::integer_mod_q::Modulus;
 
 let modulus = Modulus::try_from(24).unwrap();
 let a = Zq::from((&Z::from(42), &modulus));
@@ -99,7 +99,7 @@ let res_mul: Zq = a * b;
 - [`PolyOverQ`](https://github.com/qfall/math/blob/dev/src/rational/poly_over_q.rs): Represents polynomials with coefficients over $\mathbb Q$
 
 ```rust
-use math::rational::Q;
+use qfall_math::rational::Q;
 
 let a = Q::try_from((17, 19)).unwrap();
 let b = Q::try_from((42, 24)).unwrap();

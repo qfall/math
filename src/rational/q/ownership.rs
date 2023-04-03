@@ -20,7 +20,7 @@ impl Clone for Q {
     ///
     /// # Example
     /// ```
-    /// use math::rational::Q;
+    /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
     ///
     /// let a = Q::from_str("3/4").unwrap();
@@ -39,7 +39,7 @@ impl Drop for Q {
     ///
     /// # Examples
     /// ```
-    /// use math::rational::Q;
+    /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
     /// {
     ///     let a = Q::from_str("3/4").unwrap();
@@ -47,7 +47,7 @@ impl Drop for Q {
     /// ```
     ///
     /// ```
-    /// use math::rational::Q;
+    /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
     ///
     /// let a = Q::from_str("3/4").unwrap();

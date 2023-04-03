@@ -22,7 +22,7 @@ impl PartialEq for MatPolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatPolyOverZ;
+    /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     /// let mat_a = "[[0, 1  17, 2  24 42],[2  24 42, 2  24 42, 2  24 42]]";
     /// let a: MatPolyOverZ = MatPolyOverZ::from_str(mat_a).unwrap();

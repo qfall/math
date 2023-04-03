@@ -26,10 +26,10 @@ impl SetEntry<&Q> for MatQ {
     ///
     /// # Example
     /// ```
-    /// use math::rational::MatQ;
-    /// use math::rational::Q;
+    /// use qfall_math::rational::MatQ;
+    /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
-    /// use math::traits::*;
+    /// use qfall_math::traits::*;
     ///
     /// let mut matrix = MatQ::new(5, 10).unwrap();
     /// let value = Q::from_str("5/2").unwrap();

@@ -21,9 +21,9 @@ impl Evaluate<&Z, MatZ> for MatPolyOverZ {
     ///
     /// # Example
     /// ```rust
-    /// use math::traits::*;
-    /// use math::integer::Z;
-    /// use math::integer::MatPolyOverZ;
+    /// use qfall_math::traits::*;
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     ///
     /// let poly = MatPolyOverZ::from_str("[[0, 1  17, 2  24 42],[2  24 42, 2  24 42, 2  24 42]]").unwrap();

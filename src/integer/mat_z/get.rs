@@ -26,8 +26,8 @@ impl GetNumRows for MatZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
-    /// use math::traits::*;
+    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::traits::*;
     ///
     /// let matrix = MatZ::new(5,6).unwrap();
     /// let rows = matrix.get_num_rows();
@@ -42,8 +42,8 @@ impl GetNumColumns for MatZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
-    /// use math::traits::*;
+    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::traits::*;
     ///
     /// let matrix = MatZ::new(5,6).unwrap();
     /// let columns = matrix.get_num_columns();
@@ -66,8 +66,8 @@ impl GetEntry<Z> for MatZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
-    /// use crate::math::traits::GetEntry;
+    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::traits::GetEntry;
     ///
     /// let matrix = MatZ::new(5, 10).unwrap();
     /// let entry = matrix.get_entry(0, 1).unwrap();
@@ -104,7 +104,7 @@ impl MatZ {
     ///
     /// # Example
     /// ```compile_fail
-    /// use math::intger::MatZ;
+    /// use qfall_math::intger::MatZ;
     /// use std::str::FromStr;
     ///
     /// let mat = MatZ::from_str("[[1,2],[3,4],[5,6]]").unwrap();

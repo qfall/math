@@ -29,9 +29,9 @@ impl GetCoefficient<Q> for PolyOverQ {
     ///
     /// # Example
     /// ```
-    /// use math::rational::PolyOverQ;
+    /// use qfall_math::rational::PolyOverQ;
     /// use std::str::FromStr;
-    /// use math::traits::*;
+    /// use qfall_math::traits::*;
     ///
     /// let poly = PolyOverQ::from_str("4  0 1 2/3 3/2").unwrap();
     ///

@@ -34,9 +34,9 @@ impl SetCoefficient<&Z> for PolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::PolyOverZ;
-    /// use math::integer::Z;
-    /// use math::traits::*;
+    /// use qfall_math::integer::PolyOverZ;
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::traits::*;
     /// use std::str::FromStr;
     ///
     /// let mut poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
