@@ -34,20 +34,28 @@ mod to_string;
 /// ```
 /// use qfall_math::integer_mod_q::Modulus;
 /// use std::str::FromStr;
-///
-/// let modulus = Modulus::from_str("42").unwrap();
-/// ```
-///
-/// Create [`Modulus`] from [`Z`](crate::integer::Z):
-/// ```
-/// # use qfall_math::integer_mod_q::Modulus;
-/// # use qfall_math::integer::Z;
+/// use qfall_math::integer::Z;
 /// let value = Z::from(10);
 ///
-/// let modulus: Modulus = (&value).try_into().unwrap();
-/// let modulus: Modulus = <&Z>::try_into(&value).unwrap();
-/// let modulus = Modulus::try_from_z(&value).unwrap();
-/// let modulus = Modulus::try_from(&value).unwrap();
+/// // instantiations
+/// let a = Modulus::from_str("42").unwrap();
+/// let b: Modulus = (&value).try_into().unwrap();
+///
+/// // clone
+/// let clone = a.clone();
+///
+/// // properties
+/// let is_prime: bool = a.is_prime();
+///
+/// // to_string incl. (de-)serialization
+/// assert_eq!("42", &a.to_string());
+/// assert_eq!(
+///     "{\"modulus\":\"42\"}",
+///     serde_json::to_string(&a).unwrap()
+/// );
+///
+/// // comparison
+/// assert_eq!(a, clone);
 /// ```
 #[derive(Debug)]
 pub struct Modulus {

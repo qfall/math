@@ -31,10 +31,24 @@ mod to_string;
 //
 /// # Example
 /// ```
-/// use qfall_math::integer::PolyOverZ;
+/// use qfall_math::integer::{PolyOverZ, Z};
+/// use qfall_math::traits::*;
 /// use std::str::FromStr;
 ///
-/// let poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
+/// // instantiations
+/// let poly_1 = PolyOverZ::from_str("4  0 1 2 3").unwrap();
+/// let poly_2 = PolyOverZ::default();
+///
+/// // arithmetic operations
+/// let _ = &poly_1 + &poly_2;
+/// let _ = &poly_1 * &poly_2;
+///
+/// // evaluate function
+/// let value = Z::from(3);
+/// let res = poly_1.evaluate(&value);
+///
+/// // comparison
+/// assert_ne!(poly_1, poly_2);
 /// ```
 #[derive(Debug)]
 pub struct PolyOverZ {

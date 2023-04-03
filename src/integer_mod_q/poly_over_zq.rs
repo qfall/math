@@ -32,10 +32,24 @@ mod to_string;
 //
 /// # Example
 /// ```
+/// use qfall_math::integer::Z;
 /// use qfall_math::integer_mod_q::PolyOverZq;
+/// use qfall_math::traits::*;
 /// use std::str::FromStr;
 ///
-/// let poly = PolyOverZq::from_str("4  0 1 -2 3 mod 42").unwrap();
+/// // instantiations
+/// let poly_1 = PolyOverZq::from_str("4  0 1 2 3 mod 42").unwrap();
+/// let poly_2 = poly_1.clone();
+///
+/// // evaluate function
+/// let value = Z::from(3);
+/// let res = poly_1.evaluate(&value);
+///
+/// // properties
+/// let reducibility: bool = poly_1.is_irreducible();
+///
+/// // comparison
+/// assert_eq!(poly_1, poly_2);
 /// ```
 #[derive(Debug)]
 pub struct PolyOverZq {
