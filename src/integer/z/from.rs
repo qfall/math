@@ -91,6 +91,31 @@ impl Z {
         unsafe { fmpz_set(&mut out.value, &value.get_fmpz_mod_ctx_struct().n[0]) };
         out
     }
+
+    #[allow(dead_code)]
+    /// Create a new Integer that can grow arbitrary large.
+    ///
+    /// Parameters:
+    /// - `value`: the initial value the integer should have
+    ///
+    /// Returns the new integer.
+    ///
+    /// # Example
+    /// ```compile_fail
+    /// use math::integer::Z;
+    /// use flint_sys::fmpz::fmpz;
+    ///
+    /// let value = fmpz(0);
+    ///
+    /// let a: Z = Z::from_fmpz(&value);
+    /// ```
+    pub(crate) fn from_fmpz(value: &fmpz) -> Self {
+        let mut ret_value = fmpz(0);
+        unsafe {
+            fmpz_set(&mut ret_value, value);
+        }
+        Z { value: ret_value }
+    }
 }
 
 // Generate [`From`] trait for the different types.
@@ -314,11 +339,9 @@ mod tests_from_modulus {
     use crate::integer_mod_q::Modulus;
     use std::str::FromStr;
 
-    /// Ensure that the `from_<type_name>` functions are available for
-    /// singed and unsigned integers of 8, 16, 32, and 64 bit length.
-    /// Tested with their maximum value.
+    /// Ensure that `from_modulus` works correctly for small and large numbers
     #[test]
-    fn large_small_numbers() {
+    fn large_and_small_numbers() {
         let mod_1 = Modulus::from_str(&"1".repeat(65)).unwrap();
         let mod_2 = Modulus::from_str("10").unwrap();
 
@@ -335,5 +358,23 @@ mod tests_from_modulus {
 
         let _ = Z::from(mod_1);
         let _ = Z::from(mod_2);
+    }
+}
+
+#[cfg(test)]
+mod tests_from_fmpz {
+    use super::fmpz;
+    use super::Z;
+    use flint_sys::fmpz::fmpz_init_set_ui;
+
+    /// Ensure that `from_fmpz` works correctly for small and large numbers
+    #[test]
+    fn large_small_numbers() {
+        let mut mod_1 = fmpz(0);
+        unsafe { fmpz_init_set_ui(&mut mod_1, u64::MAX) };
+        let mod_2 = fmpz(0);
+
+        let _ = Z::from_fmpz(&mod_1);
+        let _ = Z::from_fmpz(&mod_2);
     }
 }
