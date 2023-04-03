@@ -7,12 +7,12 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! Implementations to get coefficients of a [`PolyOverZq`].
-//! Each reasonable type should be allowed as a coordinate.
+//! Each reasonable type should be allowed as a index.
 
 use super::PolyOverZq;
 use crate::{
     error::MathError, integer::Z, integer_mod_q::Zq, traits::GetCoefficient,
-    utils::coordinate::evaluate_coordinate,
+    utils::index::evaluate_index,
 };
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_get_coeff_fmpz;
 use std::fmt::Display;
@@ -20,12 +20,12 @@ use std::fmt::Display;
 impl GetCoefficient<Zq> for PolyOverZq {
     /// Returns the coefficient of a polynomial [`PolyOverZq`] as a [`Zq`].
     ///
-    /// If a coordinate is provided which exceeds the highest set coefficient, `0` is returned.
+    /// If a index is provided which exceeds the highest set coefficient, `0` is returned.
     ///
     /// Parameters:
-    /// - `coordinate`: the coordinate of the coefficient to get (has to be positive)
+    /// - `index`: the index of the coefficient to get (has to be positive)
     ///
-    /// Returns the coefficient as a [`Zq`] or a [`MathError`] if the provided coordinate
+    /// Returns the coefficient as a [`Zq`] or a [`MathError`] if the provided index
     /// is negative and therefore invalid or it does not fit into an [`i64`].
     ///
     /// # Example
@@ -44,9 +44,9 @@ impl GetCoefficient<Zq> for PolyOverZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    /// either the coordinate is negative or it does not fit into an [`i64`].
-    fn get_coeff(&self, coordinate: impl TryInto<i64> + Display + Copy) -> Result<Zq, MathError> {
-        let out_z = self.get_coeff(coordinate)?;
+    /// either the index is negative or it does not fit into an [`i64`].
+    fn get_coeff(&self, index: impl TryInto<i64> + Display + Copy) -> Result<Zq, MathError> {
+        let out_z = self.get_coeff(index)?;
         Ok(Zq::from_z_modulus(&out_z, &self.modulus))
     }
 }
@@ -54,12 +54,12 @@ impl GetCoefficient<Zq> for PolyOverZq {
 impl GetCoefficient<Z> for PolyOverZq {
     /// Returns the coefficient of a polynomial [`PolyOverZq`] as a [`Z`].
     ///
-    /// If a coordinate is provided which exceeds the highest set coefficient, `0` is returned.
+    /// If a index is provided which exceeds the highest set coefficient, `0` is returned.
     ///
     /// Parameters:
-    /// - `coordinate`: the coordinate of the coefficient to get (has to be positive)
+    /// - `index`: the index of the coefficient to get (has to be positive)
     ///
-    /// Returns the coefficient as a [`Z`] or a [`MathError`] if the provided coordinate
+    /// Returns the coefficient as a [`Z`] or a [`MathError`] if the provided index
     /// is negative and therefore invalid or it does not fit into an [`i64`].
     ///
     /// # Example
@@ -78,15 +78,15 @@ impl GetCoefficient<Z> for PolyOverZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    /// either the coordinate is negative or it does not fit into an [`i64`].
-    fn get_coeff(&self, coordinate: impl TryInto<i64> + Display + Copy) -> Result<Z, MathError> {
-        let coordinate = evaluate_coordinate(coordinate)?;
+    /// either the index is negative or it does not fit into an [`i64`].
+    fn get_coeff(&self, index: impl TryInto<i64> + Display + Copy) -> Result<Z, MathError> {
+        let index = evaluate_index(index)?;
         let mut out = Z::default();
         unsafe {
             fmpz_mod_poly_get_coeff_fmpz(
                 &mut out.value,
                 &self.poly,
-                coordinate,
+                index,
                 self.modulus.get_fmpz_mod_ctx_struct(),
             )
         }

@@ -11,7 +11,7 @@
 use super::MatQ;
 use crate::macros::for_others::implement_for_owned;
 use crate::traits::SetEntry;
-use crate::utils::coordinate::evaluate_coordinates;
+use crate::utils::index::evaluate_indices;
 use crate::{error::MathError, rational::Q};
 use flint_sys::{fmpq::fmpq_set, fmpq_mat::fmpq_mat_entry};
 use std::fmt::Display;
@@ -45,7 +45,7 @@ impl SetEntry<&Q> for MatQ {
         column: impl TryInto<i64> + Display + Copy,
         value: &Q,
     ) -> Result<(), MathError> {
-        let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
+        let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
 
         // since `self` is a correct matrix and both row and column
         // are previously checked to be inside of the matrix, no errors

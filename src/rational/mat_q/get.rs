@@ -10,7 +10,7 @@
 
 use super::MatQ;
 use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
-use crate::utils::coordinate::evaluate_coordinates;
+use crate::utils::index::evaluate_indices;
 use crate::{error::MathError, rational::Q};
 use flint_sys::{
     fmpq::{fmpq, fmpq_set},
@@ -78,7 +78,7 @@ impl GetEntry<Q> for MatQ {
         row: impl TryInto<i64> + Display + Copy,
         column: impl TryInto<i64> + Display + Copy,
     ) -> Result<Q, MathError> {
-        let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
+        let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
 
         // since `self.matrix` is a correct fmpq matrix and both row and column
         // are previously checked to be inside of the matrix, no errors

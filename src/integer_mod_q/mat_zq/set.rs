@@ -14,7 +14,7 @@ use crate::integer::Z;
 use crate::integer_mod_q::Zq;
 use crate::macros::for_others::{implement_for_others, implement_for_owned};
 use crate::traits::SetEntry;
-use crate::utils::coordinate::evaluate_coordinates;
+use crate::utils::index::evaluate_indices;
 use flint_sys::fmpz_mod_mat::fmpz_mod_mat_set_entry;
 use std::fmt::Display;
 
@@ -84,7 +84,7 @@ impl SetEntry<&Zq> for MatZq {
         column: impl TryInto<i64> + Display + Copy,
         value: &Zq,
     ) -> Result<(), MathError> {
-        let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
+        let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
 
         if self.get_mod() != value.modulus {
             return Err(MathError::MismatchingModulus(format!(

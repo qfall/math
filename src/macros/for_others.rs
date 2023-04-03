@@ -56,10 +56,10 @@ macro_rules! implement_for_others {
                 #[doc = "Documentation can be found at [`" $type "::set_coeff`]. Implicitly converts [`" $source_type "`] into [`" $bridge_type "`]."]
             fn set_coeff(
                 &mut self,
-                coordinate: impl TryInto<i64> + Display + Copy,
+                index: impl TryInto<i64> + Display + Copy,
                 value: $source_type,
             ) -> Result<(), MathError> {
-                self.set_coeff(coordinate, $bridge_type::from(value))
+                self.set_coeff(index, $bridge_type::from(value))
             }
             }
         })*
@@ -125,10 +125,10 @@ macro_rules! implement_for_owned {
                 #[doc = "Documentation can be found at [`" $type "::set_coeff`]."]
             fn set_coeff(
                 &mut self,
-                coordinate: impl TryInto<i64> + Display + Copy,
+                index: impl TryInto<i64> + Display + Copy,
                 value: $source_type,
             ) -> Result<(), MathError> {
-                self.set_coeff(coordinate, &value)
+                self.set_coeff(index, &value)
             }
             }
         }

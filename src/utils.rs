@@ -11,6 +11,6 @@
 //! This can include functions to pre-process inputs, find size of matrices
 //! and similar tasks.
 
-pub mod coordinate;
 pub mod dimensions;
+pub mod index;
 pub mod parse;

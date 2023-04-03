@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::PolyOverZ,
     traits::{GetEntry, GetNumColumns, GetNumRows},
-    utils::coordinate::evaluate_coordinates,
+    utils::index::evaluate_indices,
 };
 use flint_sys::{
     fmpz_poly::{fmpz_poly_set, fmpz_poly_struct},
@@ -81,7 +81,7 @@ impl GetEntry<PolyOverZ> for MatPolyOverZ {
         row: impl TryInto<i64> + Display + Copy,
         column: impl TryInto<i64> + Display + Copy,
     ) -> Result<PolyOverZ, MathError> {
-        let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
+        let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
 
         // since `self.matrix` is a correct fmpz_poly matrix and both row and column
         // are previously checked to be inside of the matrix, no errors
