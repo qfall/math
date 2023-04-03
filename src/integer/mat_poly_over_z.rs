@@ -11,7 +11,6 @@
 
 use flint_sys::fmpz_poly_mat::fmpz_poly_mat_struct;
 
-mod arithmetic;
 mod cmp;
 mod evaluate;
 mod from;
