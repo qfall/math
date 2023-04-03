@@ -285,10 +285,9 @@ mod test_collect_entries {
         let entries_2 = mat_2.collect_entries();
 
         assert_eq!(entries_1.len(), 6);
-        // 4611686018427387904 = 2^62, i.e. value is stored on stack
         assert_eq!(unsafe { *entries_1[0].coeffs }.0, 1);
-        assert!(unsafe { *entries_1[2].coeffs }.0 >= 4611686018427387904);
-        assert!(unsafe { *entries_1[3].coeffs }.0 >= 4611686018427387904);
+        assert!(unsafe { *entries_1[2].coeffs }.0 >= 2_i64.pow(62));
+        assert!(unsafe { *entries_1[3].coeffs }.0 >= 2_i64.pow(62));
         assert_eq!(unsafe { *entries_1[4].coeffs }.0, -3);
 
         assert_eq!(entries_2.len(), 2);
