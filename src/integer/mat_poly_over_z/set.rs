@@ -28,7 +28,7 @@ impl SetEntry<&PolyOverZ> for MatPolyOverZ {
     /// ```
     /// use math::integer::MatPolyOverZ;
     /// use math::integer::PolyOverZ;
-    /// use math::traits::SetEntry;
+    /// use math::traits::*;
     ///
     /// let mut matrix = MatPolyOverZ::new(5, 10).unwrap();
     /// let value = PolyOverZ::default();
@@ -71,7 +71,7 @@ impl SetEntry<PolyOverZ> for MatPolyOverZ {
     /// ```
     /// use math::integer::MatPolyOverZ;
     /// use math::integer::PolyOverZ;
-    /// use math::traits::SetEntry;
+    /// use math::traits::*;
     ///
     /// let mut matrix = MatPolyOverZ::new(5, 10).unwrap();
     /// let value = PolyOverZ::default();

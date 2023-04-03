@@ -24,7 +24,7 @@ impl GetNumRows for MatQ {
     /// # Example
     /// ```
     /// use math::rational::MatQ;
-    /// use math::traits::GetNumRows;
+    /// use math::traits::*;
     ///
     /// let matrix = MatQ::new(5,6).unwrap();
     /// let rows = matrix.get_num_rows();
@@ -40,7 +40,7 @@ impl GetNumColumns for MatQ {
     /// # Example
     /// ```
     /// use math::rational::MatQ;
-    /// use math::traits::GetNumColumns;
+    /// use math::traits::*;
     ///
     /// let matrix = MatQ::new(5,6).unwrap();
     /// let columns = matrix.get_num_columns();

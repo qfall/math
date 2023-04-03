@@ -31,7 +31,7 @@ impl GetCoefficient<Q> for PolyOverQ {
     /// ```
     /// use math::rational::PolyOverQ;
     /// use std::str::FromStr;
-    /// use math::traits::GetCoefficient;
+    /// use math::traits::*;
     ///
     /// let poly = PolyOverQ::from_str("4  0 1 2/3 3/2").unwrap();
     ///

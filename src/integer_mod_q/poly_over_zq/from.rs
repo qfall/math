@@ -53,7 +53,7 @@ impl FromStr for PolyOverZq {
     /// - Returns a [`MathError`] of type
     /// [`InvalidStringToZInput`](MathError::InvalidStringToZInput)
     /// if the provided half of the
-    /// string was not formatted correctly to create a [`Z`].
+    /// string was not formatted correctly to create a [`Z`](crate::integer::Z).
     /// - Returns a [`MathError`] of type
     /// [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
     /// if the provided modulus is not greater than `0`.

@@ -27,7 +27,7 @@ impl GetNumRows for MatZ {
     /// # Example
     /// ```
     /// use math::integer::MatZ;
-    /// use math::traits::GetNumRows;
+    /// use math::traits::*;
     ///
     /// let matrix = MatZ::new(5,6).unwrap();
     /// let rows = matrix.get_num_rows();
@@ -43,7 +43,7 @@ impl GetNumColumns for MatZ {
     /// # Example
     /// ```
     /// use math::integer::MatZ;
-    /// use math::traits::GetNumColumns;
+    /// use math::traits::*;
     ///
     /// let matrix = MatZ::new(5,6).unwrap();
     /// let columns = matrix.get_num_columns();

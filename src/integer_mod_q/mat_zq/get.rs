@@ -44,7 +44,7 @@ impl GetNumRows for MatZq {
     /// # Example
     /// ```
     /// use math::integer_mod_q::MatZq;
-    /// use math::traits::GetNumRows;
+    /// use math::traits::*;
     ///
     /// let matrix = MatZq::new(5, 6, 7).unwrap();
     /// let rows = matrix.get_num_rows();
@@ -60,7 +60,7 @@ impl GetNumColumns for MatZq {
     /// # Example
     /// ```
     /// use math::integer_mod_q::MatZq;
-    /// use math::traits::GetNumColumns;
+    /// use math::traits::*;
     ///
     /// let matrix = MatZq::new(5, 6, 7).unwrap();
     /// let rows = matrix.get_num_columns();
@@ -71,13 +71,13 @@ impl GetNumColumns for MatZq {
 }
 
 impl GetEntry<Z> for MatZq {
-    /// Outputs the [`Zq`] value of a specific matrix entry.
+    /// Outputs the [`Z`] value of a specific matrix entry.
     ///
     /// Parameters:
     /// - `row`: specifies the row in which the entry is located
     /// - `column`: specifies the column in which the entry is located
     ///
-    /// Returns the [`Zq`] value of the matrix at the position of the given
+    /// Returns the [`Z`] value of the matrix at the position of the given
     /// row and column or an error, if the number of rows or columns is
     /// greater than the matrix or negative.
     ///

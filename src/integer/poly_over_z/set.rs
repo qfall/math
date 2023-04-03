@@ -36,7 +36,7 @@ impl SetCoefficient<&Z> for PolyOverZ {
     /// ```
     /// use math::integer::PolyOverZ;
     /// use math::integer::Z;
-    /// use math::traits::SetCoefficient;
+    /// use math::traits::*;
     /// use std::str::FromStr;
     ///
     /// let mut poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();

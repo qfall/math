@@ -37,7 +37,7 @@ impl SetCoefficient<&Z> for PolyOverZq {
     /// ```
     /// use math::integer_mod_q::PolyOverZq;
     /// use math::integer::Z;
-    /// use math::traits::SetCoefficient;
+    /// use math::traits::*;
     /// use std::str::FromStr;
     ///
     /// let mut poly = PolyOverZq::from_str("4  0 1 2 3 mod 17").unwrap();
@@ -84,7 +84,7 @@ impl SetCoefficient<&Zq> for PolyOverZq {
     /// ```
     /// use math::integer_mod_q::PolyOverZq;
     /// use math::integer_mod_q::Zq;
-    /// use math::traits::SetCoefficient;
+    /// use math::traits::*;
     /// use std::str::FromStr;
     ///
     /// let mut poly = PolyOverZq::from_str("4  0 1 2 3 mod 17").unwrap();
