@@ -21,7 +21,7 @@ impl Evaluate<&Z, MatZ> for MatPolyOverZ {
     ///
     /// # Example
     /// ```rust
-    /// use math::traits::Evaluate;
+    /// use math::traits::*;
     /// use math::integer::Z;
     /// use math::integer::MatPolyOverZ;
     /// use std::str::FromStr;

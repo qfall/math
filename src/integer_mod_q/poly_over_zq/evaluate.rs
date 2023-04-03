@@ -31,7 +31,7 @@ impl Evaluate<&Z, Zq> for PolyOverZq {
     ///
     /// # Example
     /// ```
-    /// use math::traits::Evaluate;
+    /// use math::traits::*;
     /// use math::integer::Z;
     /// use math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
@@ -69,7 +69,7 @@ impl Evaluate<&Zq, Zq> for PolyOverZq {
     ///
     /// # Example
     /// ```
-    /// use math::traits::Evaluate;
+    /// use math::traits::*;
     /// use math::integer_mod_q::Zq;
     /// use math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
@@ -99,7 +99,7 @@ impl PolyOverZq {
     ///
     /// # Example
     /// ```
-    /// use math::traits::Evaluate;
+    /// use math::traits::*;
     /// use math::integer_mod_q::Zq;
     /// use math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;

@@ -31,7 +31,7 @@ impl SetEntry<&Z> for MatZq {
     /// use math::integer_mod_q::MatZq;
     /// use math::integer::Z;
     /// use std::str::FromStr;
-    /// use math::traits::SetEntry;
+    /// use math::traits::*;
     ///
     /// let mut matrix = MatZq::new(5, 10, 7).unwrap();
     /// let value = Z::from(5);

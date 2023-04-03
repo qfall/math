@@ -67,7 +67,6 @@ impl Zq {
     /// let b: Zq = Zq::try_from((1, 42)).unwrap();
     ///
     /// let c: Zq = a.mul_safe(&b).unwrap();
-
     /// ```
     /// # Errors
     /// Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of

@@ -27,7 +27,7 @@ impl GetNumRows for MatPolyOverZ {
     /// # Example
     /// ```
     /// use math::integer::MatPolyOverZ;
-    /// use math::traits::GetNumRows;
+    /// use math::traits::*;
     ///
     /// let matrix = MatPolyOverZ::new(5,6).unwrap();
     /// let rows = matrix.get_num_rows();
@@ -43,7 +43,7 @@ impl GetNumColumns for MatPolyOverZ {
     /// # Example
     /// ```
     /// use math::integer::MatPolyOverZ;
-    /// use math::traits::GetNumColumns;
+    /// use math::traits::*;
     ///
     /// let matrix = MatPolyOverZ::new(5,6).unwrap();
     /// let columns = matrix.get_num_columns();
@@ -67,7 +67,7 @@ impl GetEntry<PolyOverZ> for MatPolyOverZ {
     /// # Example
     /// ```
     /// use math::integer::MatPolyOverZ;
-    /// use math::traits::GetEntry;
+    /// use math::traits::*;
     ///
     /// let matrix = MatPolyOverZ::new(5, 10).unwrap();
     /// let entry = matrix.get_entry(0, 1).unwrap();

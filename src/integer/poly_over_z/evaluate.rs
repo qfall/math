@@ -30,7 +30,7 @@ impl Evaluate<&Z, Z> for PolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::traits::Evaluate;
+    /// use math::traits::*;
     /// use math::integer::Z;
     /// use math::integer::PolyOverZ;
     /// use std::str::FromStr;
@@ -59,7 +59,7 @@ impl Evaluate<&Q, Q> for PolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::traits::Evaluate;
+    /// use math::traits::*;
     /// use math::rational::Q;
     /// use math::integer::PolyOverZ;
     /// use std::str::FromStr;

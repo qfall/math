@@ -30,7 +30,7 @@ impl GetCoefficient<Zq> for PolyOverZq {
     ///
     /// # Example
     /// ```
-    /// use math::traits::GetCoefficient;
+    /// use math::traits::*;
     /// use math::integer_mod_q::PolyOverZq;
     /// use math::integer_mod_q::Zq;
     /// use std::str::FromStr;
@@ -64,7 +64,7 @@ impl GetCoefficient<Z> for PolyOverZq {
     ///
     /// # Example
     /// ```
-    /// use math::traits::GetCoefficient;
+    /// use math::traits::*;
     /// use math::integer_mod_q::PolyOverZq;
     /// use math::integer::Z;
     /// use std::str::FromStr;

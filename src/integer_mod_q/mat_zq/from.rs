@@ -96,7 +96,7 @@ impl MatZq {
 impl FromStr for MatZq {
     type Err = MathError;
 
-    /// Creates a [`MatZq`] matrix with entries in [`Zq`] from a [`String`].
+    /// Creates a [`MatZq`] matrix with entries in [`Zq`](crate::integer_mod_q::Zq) from a [`String`].
     /// The format of that string looks like this <br> `[[1,2,3],[4,5,6]] mod 4` for a 2x3 matrix
     /// with entries 1,2,3 in the first row, 4,5,6 in the second row and 4 as modulus.
     ///
