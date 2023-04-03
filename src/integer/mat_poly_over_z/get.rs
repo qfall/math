@@ -15,7 +15,10 @@ use crate::{
     traits::{GetEntry, GetNumColumns, GetNumRows},
     utils::coordinate::evaluate_coordinates,
 };
-use flint_sys::{fmpz_poly::fmpz_poly_set, fmpz_poly_mat::fmpz_poly_mat_entry};
+use flint_sys::{
+    fmpz_poly::{fmpz_poly_set, fmpz_poly_struct},
+    fmpz_poly_mat::fmpz_poly_mat_entry,
+};
 use std::fmt::Display;
 
 impl GetNumRows for MatPolyOverZ {
@@ -89,6 +92,38 @@ impl GetEntry<PolyOverZ> for MatPolyOverZ {
         unsafe { fmpz_poly_set(&mut copy.poly, entry) };
 
         Ok(copy)
+    }
+}
+
+impl MatPolyOverZ {
+    #[allow(dead_code)]
+    /// Efficiently collects all [`fmpz_poly_struct`]s in a [`MatPolyOverZ`] without cloning them.
+    ///
+    /// Hence, the values on the returned [`Vec`] are intended for short-term use
+    /// as the access to [`fmpz_poly_struct`] values could lead to memory leaks or
+    /// modified values once the [`MatPolyOverZ`] instance was modified or dropped.
+    ///
+    /// # Example
+    /// ```compile_fail
+    /// use math::intger::MatPolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let mat = MatPolyOverZ::from_str("[[1  1, 0],[1  3, 1  4],[0,1  6]]").unwrap();
+    ///
+    /// let fmpz_entries = mat.collect_entries();
+    /// ```
+    pub(crate) fn collect_entries(&self) -> Vec<fmpz_poly_struct> {
+        let mut entries: Vec<fmpz_poly_struct> = vec![];
+
+        for row in 0..self.get_num_rows() {
+            for col in 0..self.get_num_columns() {
+                // efficiently get entry without cloning the entry itself
+                let entry = unsafe { *fmpz_poly_mat_entry(&self.matrix, row, col) };
+                entries.push(entry);
+            }
+        }
+
+        entries
     }
 }
 
@@ -228,5 +263,38 @@ mod test_get_num {
         let matrix = MatPolyOverZ::new(5, 10).unwrap();
 
         assert_eq!(matrix.get_num_columns(), 10);
+    }
+}
+
+#[cfg(test)]
+mod test_collect_entries {
+    use super::MatPolyOverZ;
+    use std::str::FromStr;
+
+    #[test]
+    fn all_entries_collected() {
+        let mat_1 = MatPolyOverZ::from_str(&format!(
+            "[[1  1,0],[1  {},1  {}],[1  -3, 0]]",
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
+        let mat_2 = MatPolyOverZ::from_str("[[1  -1, 2  1 2]]").unwrap();
+
+        let entries_1 = mat_1.collect_entries();
+        let entries_2 = mat_2.collect_entries();
+
+        assert_eq!(entries_1.len(), 6);
+        assert_eq!(unsafe { *entries_1[0].coeffs }.0, 1);
+        assert!(unsafe { *entries_1[2].coeffs }.0 >= 2_i64.pow(62));
+        assert!(unsafe { *entries_1[3].coeffs }.0 >= 2_i64.pow(62));
+        assert_eq!(unsafe { *entries_1[4].coeffs }.0, -3);
+
+        assert_eq!(entries_2.len(), 2);
+        assert_eq!(unsafe { *entries_2[0].coeffs.offset(0) }.0, -1);
+        assert_eq!(entries_2[0].length, 1);
+        assert_eq!(unsafe { *entries_2[1].coeffs.offset(0) }.0, 1);
+        assert_eq!(unsafe { *entries_2[1].coeffs.offset(1) }.0, 2);
+        assert_eq!(entries_2[1].length, 2);
     }
 }
