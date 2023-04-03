@@ -1,4 +1,4 @@
-// Copyright © 2023 Niklas Siemer
+// Copyright © 2023 Niklas Siemer, Phil Milewski
 //
 // This file is part of qFALL-math.
 //
@@ -8,13 +8,12 @@
 
 //! Implementation of the [`Mul`] trait for [`MatZ`] values.
 
-use super::MatZ;
-use crate::{
-    macros::arithmetics::{
-        arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
-    },
-    traits::{GetNumColumns, GetNumRows},
+use super::super::MatZ;
+use crate::error::MathError;
+use crate::macros::arithmetics::{
+    arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
 };
+use crate::traits::{GetNumColumns, GetNumRows};
 use flint_sys::fmpz_mat::fmpz_mat_mul;
 use std::ops::Mul;
 
@@ -47,14 +46,47 @@ impl Mul for &MatZ {
     /// # Errors and Failures
     /// - Panics if the dimensions of `self` and `other` do not match for multiplication.
     fn mul(self, other: Self) -> Self::Output {
-        // TODO: mul_safe
+        self.mul_safe(other).unwrap()
+    }
+}
+
+impl MatZ {
+    /// Implements multiplication for two [`MatZ`] values.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to multiply with `self`
+    ///
+    /// Returns the product of `self` and `other` as a [`MatZ`].
+    ///
+    /// # Example
+    /// ```
+    /// use math::integer::MatZ;
+    /// use std::str::FromStr;
+    ///
+    /// let a = MatZ::from_str("[[2,1],[1,2]]").unwrap();
+    /// let b = MatZ::from_str("[[1,0],[0,1]]").unwrap();
+    ///
+    /// let c: MatZ = a.mul_safe(&b).unwrap();
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type
+    /// [`MathError::MismatchingMatrixDimension`] if the dimensions of `self`
+    ///  and `other` do not match for multiplication.
+    pub fn mul_safe(&self, other: &Self) -> Result<Self, MathError> {
         if self.get_num_columns() != other.get_num_rows() {
-            panic!("Matrix dimensions do not match for matrix multiplication!");
+            return Err(MathError::MismatchingMatrixDimension(format!(
+                "Tried to multiply a '{}x{}' matrix and a '{}x{}' matrix.",
+                self.get_num_rows(),
+                self.get_num_columns(),
+                other.get_num_rows(),
+                other.get_num_columns()
+            )));
         }
 
         let mut new = MatZ::new(self.get_num_rows(), other.get_num_columns()).unwrap();
         unsafe { fmpz_mat_mul(&mut new.matrix, &self.matrix, &other.matrix) };
-        new
+        Ok(new)
     }
 }
 
@@ -68,7 +100,7 @@ mod test_mul {
     use crate::{integer::Z, traits::SetEntry};
     use std::str::FromStr;
 
-    /// Checks if matrix multiplication works fine for sqaured matrices
+    /// Checks if matrix multiplication works fine for squared matrices
     #[test]
     fn square_correctness() {
         let mat_1 = MatZ::from_str("[[2,1],[1,2]]").unwrap();
@@ -103,13 +135,12 @@ mod test_mul {
     }
 
     /// Checks if matrix multiplication with incompatible matrix dimensions
-    /// results in panic
+    /// throws an error as expected
     #[test]
-    #[should_panic]
     fn incompatible_dimensions() {
         let mat_1 = MatZ::from_str("[[2,1],[1,2]]").unwrap();
         let mat_2 = MatZ::from_str("[[1,0],[0,1],[0,0]]").unwrap();
 
-        let _ = mat_1 * mat_2;
+        assert!((mat_1.mul_safe(&mat_2)).is_err());
     }
 }
