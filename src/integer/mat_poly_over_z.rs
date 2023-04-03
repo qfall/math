@@ -12,13 +12,16 @@
 use flint_sys::fmpz_poly_mat::fmpz_poly_mat_struct;
 
 mod cmp;
+mod evaluate;
 mod from;
 mod get;
 mod ownership;
 mod properties;
+mod serialize;
 mod set;
 mod to_string;
 mod vector;
+mod transpose;
 
 /// [`MatPolyOverZ`] is a matrix with entries of type [`PolyOverZ`](crate::integer::PolyOverZ).
 ///

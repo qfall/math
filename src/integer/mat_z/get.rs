@@ -95,11 +95,45 @@ impl GetEntry<Z> for MatZ {
     }
 }
 
+impl MatZ {
+    /// Efficiently collects all [`fmpz`]s in a [`MatZ`] without cloning them.
+    ///
+    /// Hence, the values on the returned [`Vec`] are intended for short-term use
+    /// as the access to [`fmpz`] values could lead to memory leaks or modified values
+    /// once the [`MatZ`] instance was modified or dropped.
+    ///
+    /// # Example
+    /// ```compile_fail
+    /// use math::intger::MatZ;
+    /// use std::str::FromStr;
+    ///
+    /// let mat = MatZ::from_str("[[1,2],[3,4],[5,6]]").unwrap();
+    ///
+    /// let fmpz_entries = mat.collect_entries();
+    /// ```
+    pub(crate) fn collect_entries(&self) -> Vec<fmpz> {
+        let mut entries: Vec<fmpz> = vec![];
+
+        for row in 0..self.get_num_rows() {
+            for col in 0..self.get_num_columns() {
+                // efficiently get entry without cloning the entry itself
+                let entry = unsafe { *fmpz_mat_entry(&self.matrix, row, col) };
+                entries.push(entry);
+            }
+        }
+
+        entries
+    }
+}
+
 #[cfg(test)]
 mod test_get_entry {
 
     use super::Z;
-    use crate::{integer::MatZ, traits::GetEntry};
+    use crate::{
+        integer::MatZ,
+        traits::{GetEntry, SetEntry},
+    };
     use std::str::FromStr;
 
     /// Ensure that getting entries works with large numbers.
@@ -118,12 +152,12 @@ mod test_get_entry {
     #[test]
     fn big_positive() {
         let mut matrix = MatZ::new(5, 10).unwrap();
-        let value = Z::from_str(&"1".repeat(65)).unwrap();
+        let value = Z::from(u64::MAX);
         matrix.set_entry(1, 1, value).unwrap();
 
         let entry = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!(Z::from_str(&"1".repeat(65)).unwrap(), entry);
+        assert_eq!(Z::from(u64::MAX), entry);
     }
 
     /// Ensure that getting entries works with large negative numbers.
@@ -142,18 +176,14 @@ mod test_get_entry {
     #[test]
     fn big_negative() {
         let mut matrix = MatZ::new(5, 10).unwrap();
-        let mut value = "-".to_string();
-        value.push_str(&"1".repeat(65));
+        let value_str = &format!("-{}", u64::MAX);
         matrix
-            .set_entry(1, 1, Z::from_str(&value).unwrap())
+            .set_entry(1, 1, Z::from_str(value_str).unwrap())
             .unwrap();
 
         let entry = matrix.get_entry(1, 1).unwrap();
 
-        let mut test_entry = "-".to_string();
-        test_entry.push_str(&"1".repeat(65));
-
-        assert_eq!(Z::from_str(&test_entry).unwrap(), entry);
+        assert_eq!(Z::from_str(value_str).unwrap(), entry);
     }
 
     /// Ensure that getting entries at (0,0) works.
@@ -188,12 +218,12 @@ mod test_get_entry {
     #[test]
     fn memory_test() {
         let mut matrix = MatZ::new(5, 10).unwrap();
-        let value = Z::from_str(&"1".repeat(65)).unwrap();
+        let value = Z::from(u64::MAX);
         matrix.set_entry(1, 1, value).unwrap();
         let entry = matrix.get_entry(1, 1).unwrap();
         matrix.set_entry(1, 1, Z::from_i64(0)).unwrap();
 
-        assert_eq!(Z::from_str(&"1".repeat(65)).unwrap(), entry);
+        assert_eq!(Z::from(u64::MAX), entry);
     }
 }
 
@@ -219,5 +249,33 @@ mod test_get_num {
         let matrix = MatZ::new(5, 10).unwrap();
 
         assert_eq!(matrix.get_num_columns(), 10);
+    }
+}
+
+#[cfg(test)]
+mod test_collect_entries {
+    use super::MatZ;
+    use std::str::FromStr;
+
+    #[test]
+    fn all_entries_collected() {
+        let mat_1 = MatZ::from_str(&format!("[[1,2],[{},{}],[3,4]]", i64::MAX, i64::MIN)).unwrap();
+        let mat_2 = MatZ::from_str("[[-1,2]]").unwrap();
+
+        let entries_1 = mat_1.collect_entries();
+        let entries_2 = mat_2.collect_entries();
+
+        assert_eq!(entries_1.len(), 6);
+        assert_eq!(entries_1[0].0, 1);
+        assert_eq!(entries_1[1].0, 2);
+        // 4611686018427387904 = 2^62, i.e. value is stored on stack
+        assert!(entries_1[2].0 >= 4611686018427387904);
+        assert!(entries_1[3].0 >= 4611686018427387904);
+        assert_eq!(entries_1[4].0, 3);
+        assert_eq!(entries_1[5].0, 4);
+
+        assert_eq!(entries_2.len(), 2);
+        assert_eq!(entries_2[0].0, -1);
+        assert_eq!(entries_2[1].0, 2);
     }
 }

@@ -49,8 +49,8 @@ impl Div for &Q {
     }
 }
 
-arithmetic_trait_borrowed_to_owned!(Div, div, Q);
-arithmetic_trait_mixed_borrowed_owned!(Div, div, Q);
+arithmetic_trait_borrowed_to_owned!(Div, div, Q, Q, Q);
+arithmetic_trait_mixed_borrowed_owned!(Div, div, Q, Q, Q);
 
 impl Q {
     /// Implements division for two borrowed [`Q`] values.

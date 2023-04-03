@@ -12,70 +12,73 @@
 //! These methods should be used to ensure that vector functions
 //! can only be called on suitably formed vector/matrices.
 
-use super::super::MatZ;
+use super::super::MatQ;
 use crate::traits::{GetNumColumns, GetNumRows};
 
-impl MatZ {
-    /// Returns `true` if the provided [`MatZ`] has only one row,
+impl MatQ {
+    /// Returns `true` if the provided [`MatQ`] has only one row,
     /// i.e. is a row vector. Otherwise, returns `false`.
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
+    /// use math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let vec = MatZ::from_str("[[1,2,3]]").unwrap();
+    /// let row_vec = MatQ::from_str("[[1,2,3/2]]").unwrap();
+    /// let col_vec = MatQ::from_str("[[1/4],[2],[3]]").unwrap();
     ///
-    /// assert!(vec.is_row_vector());
-    /// assert!(!vec.transpose().is_row_vector());
+    /// assert!(row_vec.is_row_vector());
+    /// assert!(!col_vec.is_row_vector());
     /// ```
     pub fn is_row_vector(&self) -> bool {
         self.get_num_rows() == 1
     }
 
-    /// Returns `true` if the provided [`MatZ`] has only one column,
+    /// Returns `true` if the provided [`MatQ`] has only one column,
     /// i.e. is a column vector. Otherwise, returns `false`.
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
+    /// use math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let vec = MatZ::from_str("[[1],[2],[3]]").unwrap();
+    /// let row_vec = MatQ::from_str("[[1/1,2,3]]").unwrap();
+    /// let col_vec = MatQ::from_str("[[1],[2/3],[3]]").unwrap();
     ///
-    /// assert!(vec.is_column_vector());
-    /// assert!(!vec.transpose().is_column_vector());
+    /// assert!(col_vec.is_column_vector());
+    /// assert!(!row_vec.is_column_vector());
     /// ```
     pub fn is_column_vector(&self) -> bool {
         self.get_num_columns() == 1
     }
 
-    /// Returns `true` if the provided [`MatZ`] has only one column or one row,
+    /// Returns `true` if the provided [`MatQ`] has only one column or one row,
     /// i.e. is a vector. Otherwise, returns `false`.
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
+    /// use math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let vec = MatZ::from_str("[[1],[2],[3]]").unwrap();
+    /// let row_vec = MatQ::from_str("[[1,2/2,3/1]]").unwrap();
+    /// let col_vec = MatQ::from_str("[[1],[2],[3/2]]").unwrap();
     ///
-    /// assert!(vec.is_vector());
-    /// assert!(vec.transpose().is_vector());
+    /// assert!(row_vec.is_vector());
+    /// assert!(col_vec.is_vector());
     /// ```
     pub fn is_vector(&self) -> bool {
         self.is_column_vector() || self.is_row_vector()
     }
 
-    /// Returns `true` if the provided [`MatZ`] has only one entry,
+    /// Returns `true` if the provided [`MatQ`] has only one entry,
     /// i.e. is a 1x1 matrix. Otherwise, returns `false`.
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
+    /// use math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let vec = MatZ::from_str("[[1]]").unwrap();
+    /// let vec = MatQ::from_str("[[1/2]]").unwrap();
     ///
     /// assert!(vec.has_single_entry());
     /// ```
@@ -94,8 +97,8 @@ mod test_is_vector {
     /// get recognized as (row or column) vectors
     #[test]
     fn vectors_detected() {
-        let row = MatZ::from_str(&format!("[[1,{}]]", i64::MIN)).unwrap();
-        let col = MatZ::from_str(&format!("[[1],[2],[{}],[4]]", i64::MAX)).unwrap();
+        let row = MatQ::from_str(&format!("[[1/1,{}]]", i64::MIN)).unwrap();
+        let col = MatQ::from_str(&format!("[[1/1],[2/1],[{}/1],[4/1]]", i64::MAX)).unwrap();
 
         assert!(row.is_row_vector());
         assert!(!row.is_column_vector());
@@ -110,11 +113,11 @@ mod test_is_vector {
     /// don't get recognized as (row or column) vector
     #[test]
     fn non_vectors_detected() {
-        let mat_1 = MatZ::from_str(&format!("[[1,{}],[2,3]]", i64::MIN)).unwrap();
-        let mat_2 = MatZ::from_str(&format!("[[1,{},3],[4,5,6]]", i64::MAX)).unwrap();
-        let mat_3 = MatZ::from_str(&format!("[[1,{}],[2,3],[4,5]]", i64::MIN)).unwrap();
-        let mat_4 = MatZ::from_str("[[1,0],[2,0],[4,0]]").unwrap();
-        let mat_5 = MatZ::from_str("[[1,2,4],[0,0,0]]").unwrap();
+        let mat_1 = MatQ::from_str(&format!("[[1,{}/1],[2,3]]", i64::MIN)).unwrap();
+        let mat_2 = MatQ::from_str(&format!("[[1,{},3/3],[4/1,5/1,6/1]]", i64::MAX)).unwrap();
+        let mat_3 = MatQ::from_str(&format!("[[1/1,{}/1],[2/1,3/1],[4/1,5/1]]", i64::MIN)).unwrap();
+        let mat_4 = MatQ::from_str("[[1/1,0],[2,0],[4,0]]").unwrap();
+        let mat_5 = MatQ::from_str("[[1,2/1,4],[0,0,0]]").unwrap();
 
         assert!(!mat_1.is_column_vector());
         assert!(!mat_1.is_row_vector());
@@ -140,8 +143,8 @@ mod test_is_vector {
     /// Check whether matrices with only one entry get recognized as single entry matrices
     #[test]
     fn single_entry_detected() {
-        let small = MatZ::from_str("[[1]]").unwrap();
-        let large = MatZ::from_str(&format!("[[{}]]", i64::MIN)).unwrap();
+        let small = MatQ::from_str("[[1]]").unwrap();
+        let large = MatQ::from_str(&format!("[[{}/1]]", i64::MIN)).unwrap();
 
         // check whether single entry is correctly detected
         assert!(small.has_single_entry());
@@ -161,9 +164,9 @@ mod test_is_vector {
     /// don't get recognized as single entry matrices
     #[test]
     fn non_single_entry_detected() {
-        let row = MatZ::from_str(&format!("[[1,{}]]", i64::MIN)).unwrap();
-        let col = MatZ::from_str(&format!("[[1],[{}],[3]]", i64::MIN)).unwrap();
-        let mat = MatZ::from_str("[[1,2],[3,4],[5,6]]").unwrap();
+        let row = MatQ::from_str(&format!("[[1,{}]]", i64::MIN)).unwrap();
+        let col = MatQ::from_str(&format!("[[1],[{}],[3/1]]", i64::MIN)).unwrap();
+        let mat = MatQ::from_str("[[1/1,2],[3,4],[5,6]]").unwrap();
 
         assert!(!row.has_single_entry());
         assert!(!col.has_single_entry());

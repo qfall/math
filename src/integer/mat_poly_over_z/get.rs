@@ -132,7 +132,7 @@ mod test_get_entry {
 
     use crate::{
         integer::{MatPolyOverZ, PolyOverZ},
-        traits::GetEntry,
+        traits::{GetEntry, SetEntry},
     };
     use std::str::FromStr;
 

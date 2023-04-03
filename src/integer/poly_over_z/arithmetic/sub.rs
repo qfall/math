@@ -47,8 +47,8 @@ impl Sub for &PolyOverZ {
     }
 }
 
-arithmetic_trait_borrowed_to_owned!(Sub, sub, PolyOverZ);
-arithmetic_trait_mixed_borrowed_owned!(Sub, sub, PolyOverZ);
+arithmetic_trait_borrowed_to_owned!(Sub, sub, PolyOverZ, PolyOverZ, PolyOverZ);
+arithmetic_trait_mixed_borrowed_owned!(Sub, sub, PolyOverZ, PolyOverZ, PolyOverZ);
 
 #[cfg(test)]
 mod test_sub {

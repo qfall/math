@@ -9,6 +9,4 @@
 //! The `vector` module contains functions that are implemented for matrices
 //! that have one column or one row and hence represent a vector.
 
-mod dot_product;
 mod is_vector;
-mod norm;

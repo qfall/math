@@ -58,14 +58,14 @@ impl Mul for &MatZ {
     }
 }
 
-arithmetic_trait_borrowed_to_owned!(Mul, mul, MatZ);
-arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatZ);
+arithmetic_trait_borrowed_to_owned!(Mul, mul, MatZ, MatZ, MatZ);
+arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatZ, MatZ, MatZ);
 
 #[cfg(test)]
 mod test_mul {
 
     use super::MatZ;
-    use crate::integer::Z;
+    use crate::{integer::Z, traits::SetEntry};
     use std::str::FromStr;
 
     /// Checks if matrix multiplication works fine for sqaured matrices
@@ -97,7 +97,7 @@ mod test_mul {
         let vec = MatZ::from_str(&format!("[[{}],[0]]", i64::MAX)).unwrap();
         let mut cmp = MatZ::new(2, 1).unwrap();
         let max: Z = i64::MAX.into();
-        cmp.set_entry_ref_z(0, 0, &(&max * &max)).unwrap();
+        cmp.set_entry(0, 0, &(&max * &max)).unwrap();
 
         assert_eq!(cmp, mat * vec);
     }

@@ -1,4 +1,4 @@
-// Copyright © 2023 Niklas Siemer
+// Copyright © 2023 Marcel Luca Schmidt
 //
 // This file is part of qFALL-math.
 //
@@ -8,28 +8,29 @@
 
 //! This module contains the implementation of the `transpose` function.
 
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::*;
 
-use super::MatZ;
+use super::MatZq;
 use flint_sys::fmpz_mat::fmpz_mat_transpose;
 
-impl MatZ {
+impl MatZq {
     /// Returns the transposed form of the given matrix, i.e. rows get transformed to columns
     /// and vice versa.
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
+    /// use math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let mat = MatZ::from_str("[[2,1],[2,1],[2,1]]").unwrap();
-    /// let cmp = MatZ::from_str("[[2,2,2],[1,1,1]]").unwrap();
+    /// let mat = MatZq::from_str("[[2,1],[2,1],[2,1]] mod 4").unwrap();
+    /// let cmp = MatZq::from_str("[[2,2,2],[1,1,1]] mod 4").unwrap();
     ///
     /// assert_eq!(mat.transpose(), cmp);
     /// ```
     pub fn transpose(&self) -> Self {
-        let mut out = Self::new(self.get_num_columns(), self.get_num_rows()).unwrap();
-        unsafe { fmpz_mat_transpose(&mut out.matrix, &self.matrix) };
+        let mut out =
+            Self::new(self.get_num_columns(), self.get_num_rows(), self.get_mod()).unwrap();
+        unsafe { fmpz_mat_transpose(&mut out.matrix.mat[0], &self.matrix.mat[0]) };
         out
     }
 }
@@ -37,14 +38,14 @@ impl MatZ {
 #[cfg(test)]
 mod test_transpose {
 
-    use super::MatZ;
+    use super::MatZq;
     use std::str::FromStr;
 
     /// Checks if a row is correctly converted to a column
     #[test]
     fn row_to_column() {
-        let mat = MatZ::from_str("[[1],[2],[3]]").unwrap();
-        let cmp = MatZ::from_str("[[1,2,3]]").unwrap();
+        let mat = MatZq::from_str("[[1],[2],[3]] mod 4").unwrap();
+        let cmp = MatZq::from_str("[[1,2,3]] mod 4").unwrap();
 
         assert_eq!(cmp, mat.transpose());
     }
@@ -52,8 +53,8 @@ mod test_transpose {
     /// Checks if a column is correctly converted to a row
     #[test]
     fn column_to_row() {
-        let mat = MatZ::from_str("[[1,2,3]]").unwrap();
-        let cmp = MatZ::from_str("[[1],[2],[3]]").unwrap();
+        let mat = MatZq::from_str("[[1,2,3]] mod 4").unwrap();
+        let cmp = MatZq::from_str("[[1],[2],[3]] mod 4").unwrap();
 
         assert_eq!(cmp, mat.transpose());
     }
@@ -61,8 +62,8 @@ mod test_transpose {
     /// Checks if large, negative, and zero values are transposed correctly
     #[test]
     fn different_entry_values() {
-        let mat = MatZ::from_str(&format!("[[{},{},0]]", i64::MAX, i64::MIN)).unwrap();
-        let cmp = MatZ::from_str(&format!("[[{}],[{}],[0]]", i64::MAX, i64::MIN)).unwrap();
+        let mat = MatZq::from_str(&format!("[[{},{},0]] mod 4", i64::MAX, i64::MIN)).unwrap();
+        let cmp = MatZq::from_str(&format!("[[{}],[{}],[0]] mod 4", i64::MAX, i64::MIN)).unwrap();
 
         assert_eq!(cmp, mat.transpose());
     }

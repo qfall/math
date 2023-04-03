@@ -44,8 +44,12 @@ use thiserror::Error;
 /// construct a [`Zq`](crate::integer_mod_q::Zq)
 /// - `MismatchingModulus` is thrown if any function is called on two
 /// objects with different modulus where equal modulus is required
+/// - `MismatchingVectorDimensions` is thrown if an operation of two vectors is
+/// called for which their dimensions do not match
 /// - `NotPrime` is thrown if a provided integer is not prime
 /// - `OutOfBounds` is thrown if a provided index is not in a desired range
+/// - `VectorFunctionCalledOnNonVector` is thrown if a function defined
+/// on vectors was called on a matrix instance that is not a vector
 ///
 /// # Example
 /// ```
@@ -62,24 +66,30 @@ pub enum MathError {
     /// division by zero error
     #[error("the division by zero is not possible {0}")]
     DivisionByZeroError(String),
+
     /// parse int to modulus error
     #[error(
         "invalid integer input to parse to a modulus {0}. \
         The value must be larger than 0."
     )]
     InvalidIntToModulus(String),
+
     /// invalid Matrix input error
     #[error("invalid Matrix. {0}")]
     InvalidMatrix(String),
+
     /// parse string to [`CString`](std::ffi::CString) error
     #[error("invalid string input to parse to CString {0}")]
     InvalidStringToCStringInput(#[from] NulError),
+
     /// parse string to int error
     #[error("invalid string input to parse to int {0}")]
     InvalidStringToIntInput(#[from] ParseIntError),
+
     /// parse string to [`MatZq`](crate::integer_mod_q::MatZq) error
     #[error("invalid string input to parse to MatZq {0}")]
     InvalidStringToMatZqInput(String),
+
     /// parse string to poly error
     #[error(
         "invalid string input to parse to polynomial {0}\nThe format must 
@@ -88,6 +98,7 @@ pub enum MathError {
         whitespace."
     )]
     InvalidStringToPolyInput(String),
+
     /// parse string to poly error with missing whitespace
     #[error(
         "invalid string input to parse to polynomial {0}
@@ -96,6 +107,7 @@ pub enum MathError {
         and the first coefficient"
     )]
     InvalidStringToPolyMissingWhitespace(String),
+
     /// parse string to poly with modulus error
     #[error(
         "invalid string input to parse to polynomial mod q {0}.
@@ -106,25 +118,42 @@ pub enum MathError {
         whitespaces."
     )]
     InvalidStringToPolyModulusInput(String),
+
     /// parse string to [`Q`](crate::rational::Q) error
     #[error("invalid string input to parse to Q {0}")]
     InvalidStringToQInput(String),
+
     /// parse string to [`Z`](crate::integer::Z) error
     #[error("invalid string input to parse to Z {0}")]
     InvalidStringToZInput(String),
+
     /// parse string to [`Zq`](crate::integer_mod_q::Zq) error
     #[error("invalid string input to parse to Zq {0}")]
     InvalidStringToZqInput(String),
+
     /// mismatching modulus error
     #[error("mismatching modulus.{0}")]
     MismatchingModulus(String),
+
+    /// mismatching dimensions of vectors
+    #[error("mismatching vector dimensions. {0}")]
+    MismatchingVectorDimensions(String),
+
     /// if an integer or modulus is not prime
     #[error("invalid integer. The integer has to be prime and the provided value is {0}")]
     NotPrime(String),
+
     /// if a provided index is out of bounds
     #[error(
         "invalid index submitted. The index is out of bounds.
         The index has to {0}, and the provided value is {1}"
     )]
     OutOfBounds(String, String),
+
+    /// if a function defined on vectors is called on a matrix that is not a vector
+    #[error(
+        "Function named {0} is only defined for vectors and 
+        was called on a matrix of dimension {1}x{2}"
+    )]
+    VectorFunctionCalledOnNonVector(String, i64, i64),
 }

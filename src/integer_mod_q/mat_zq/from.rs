@@ -179,10 +179,10 @@ mod test_new {
         let entry3 = matrix.get_entry(1, 0).unwrap();
         let entry4 = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!(Z::from_i64(0), entry1);
-        assert_eq!(Z::from_i64(0), entry2);
-        assert_eq!(Z::from_i64(0), entry3);
-        assert_eq!(Z::from_i64(0), entry4);
+        assert_eq!(Z::ZERO, entry1);
+        assert_eq!(Z::ZERO, entry2);
+        assert_eq!(Z::ZERO, entry3);
+        assert_eq!(Z::ZERO, entry4);
     }
 
     /// Ensure that a new zero matrix fails with `0` as input.

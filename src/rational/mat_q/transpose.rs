@@ -1,4 +1,4 @@
-// Copyright © 2023 Niklas Siemer
+// Copyright © 2023 Marcel Luca Schmidt
 //
 // This file is part of qFALL-math.
 //
@@ -8,28 +8,28 @@
 
 //! This module contains the implementation of the `transpose` function.
 
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::*;
 
-use super::MatZ;
-use flint_sys::fmpz_mat::fmpz_mat_transpose;
+use super::MatQ;
+use flint_sys::fmpq_mat::fmpq_mat_transpose;
 
-impl MatZ {
+impl MatQ {
     /// Returns the transposed form of the given matrix, i.e. rows get transformed to columns
     /// and vice versa.
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
+    /// use math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let mat = MatZ::from_str("[[2,1],[2,1],[2,1]]").unwrap();
-    /// let cmp = MatZ::from_str("[[2,2,2],[1,1,1]]").unwrap();
+    /// let mat = MatQ::from_str("[[1/2,1],[2,1/7],[2,1]]").unwrap();
+    /// let cmp = MatQ::from_str("[[1/2,2,2],[1,1/7,1]]").unwrap();
     ///
     /// assert_eq!(mat.transpose(), cmp);
     /// ```
     pub fn transpose(&self) -> Self {
         let mut out = Self::new(self.get_num_columns(), self.get_num_rows()).unwrap();
-        unsafe { fmpz_mat_transpose(&mut out.matrix, &self.matrix) };
+        unsafe { fmpq_mat_transpose(&mut out.matrix, &self.matrix) };
         out
     }
 }
@@ -37,14 +37,14 @@ impl MatZ {
 #[cfg(test)]
 mod test_transpose {
 
-    use super::MatZ;
+    use super::MatQ;
     use std::str::FromStr;
 
     /// Checks if a row is correctly converted to a column
     #[test]
     fn row_to_column() {
-        let mat = MatZ::from_str("[[1],[2],[3]]").unwrap();
-        let cmp = MatZ::from_str("[[1,2,3]]").unwrap();
+        let mat = MatQ::from_str("[[1/2],[2],[8/4]]").unwrap();
+        let cmp = MatQ::from_str("[[1/2,2,2]]").unwrap();
 
         assert_eq!(cmp, mat.transpose());
     }
@@ -52,8 +52,8 @@ mod test_transpose {
     /// Checks if a column is correctly converted to a row
     #[test]
     fn column_to_row() {
-        let mat = MatZ::from_str("[[1,2,3]]").unwrap();
-        let cmp = MatZ::from_str("[[1],[2],[3]]").unwrap();
+        let mat = MatQ::from_str("[[1/2,2,2]]").unwrap();
+        let cmp = MatQ::from_str("[[1/2],[2],[8/4]]").unwrap();
 
         assert_eq!(cmp, mat.transpose());
     }
@@ -61,8 +61,22 @@ mod test_transpose {
     /// Checks if large, negative, and zero values are transposed correctly
     #[test]
     fn different_entry_values() {
-        let mat = MatZ::from_str(&format!("[[{},{},0]]", i64::MAX, i64::MIN)).unwrap();
-        let cmp = MatZ::from_str(&format!("[[{}],[{}],[0]]", i64::MAX, i64::MIN)).unwrap();
+        let mat = MatQ::from_str(&format!(
+            "[[{},{},1/{},1/{},0]]",
+            i64::MAX,
+            i64::MIN,
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
+        let cmp = MatQ::from_str(&format!(
+            "[[{}],[{}],[1/{}],[1/{}],[0]]",
+            i64::MAX,
+            i64::MIN,
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
 
         assert_eq!(cmp, mat.transpose());
     }

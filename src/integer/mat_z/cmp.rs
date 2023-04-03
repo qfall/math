@@ -50,6 +50,8 @@ impl Eq for MatZ {}
 #[cfg(test)]
 mod test_partial_eq {
 
+    use crate::traits::SetEntry;
+
     use super::MatZ;
     use std::str::FromStr;
 
