@@ -10,3 +10,4 @@
 //! that have one column or one row and hence represent a vector.
 
 mod is_vector;
+mod norm;

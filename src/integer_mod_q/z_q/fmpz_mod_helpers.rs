@@ -70,7 +70,12 @@ mod test_length {
         let pos_1 = Z::from(i64::MAX);
         let pos_2 = Z::from(u64::MAX - 58);
 
-        assert_eq!(0, unsafe { fmpz_cmp(&Z::from(9223372036854775807_u64).value, &length(&pos_1.value, &modulus.value)) });
+        assert_eq!(0, unsafe {
+            fmpz_cmp(
+                &Z::from(9223372036854775807_u64).value,
+                &length(&pos_1.value, &modulus.value),
+            )
+        });
         assert_eq!(58, length(&pos_2.value, &modulus.value).0);
     }
 }
