@@ -93,8 +93,8 @@ impl MatQ {
     }
 }
 
-arithmetic_trait_borrowed_to_owned!(Sub, sub, MatQ);
-arithmetic_trait_mixed_borrowed_owned!(Sub, sub, MatQ);
+arithmetic_trait_borrowed_to_owned!(Sub, sub, MatQ, MatQ, MatQ);
+arithmetic_trait_mixed_borrowed_owned!(Sub, sub, MatQ, MatQ, MatQ);
 
 #[cfg(test)]
 mod test_sub {
@@ -159,7 +159,7 @@ mod test_sub {
             c == MatQ::from_str(&String::from(format!(
                 "[[0, 1, -{}],[0, -13, {}]]",
                 u32::MAX,
-                Q::from_str(format!("{}", i32::MAX).as_str()).unwrap()
+                Q::from_str(format!("{}", u32::MAX).as_str()).unwrap()
                     - Q::from_str(format!("1/{}", i32::MAX).as_str()).unwrap()
             )))
             .unwrap()

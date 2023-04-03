@@ -92,8 +92,8 @@ impl MatZ {
     }
 }
 
-arithmetic_trait_borrowed_to_owned!(Add, add, MatZ);
-arithmetic_trait_mixed_borrowed_owned!(Add, add, MatZ);
+arithmetic_trait_borrowed_to_owned!(Add, add, MatZ, MatZ, MatZ);
+arithmetic_trait_mixed_borrowed_owned!(Add, add, MatZ, MatZ, MatZ);
 
 #[cfg(test)]
 mod test_add {
