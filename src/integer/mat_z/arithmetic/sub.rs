@@ -67,7 +67,6 @@ impl MatZ {
     /// let b: MatZ = MatZ::from_str(&String::from("[[1, 9, 3],[1, 0, 5]]")).unwrap();
     ///
     /// let c: MatZ = a.sub_safe(&b).unwrap();
-
     /// ```
     /// # Errors
     /// Returns a [`MathError`] of type
