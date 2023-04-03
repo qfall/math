@@ -15,7 +15,7 @@ use crate::{
     integer::Z,
     macros::for_others::{implement_for_others, implement_for_owned},
     traits::SetCoefficient,
-    utils::coordinate::evaluate_coordinate,
+    utils::index::evaluate_index,
 };
 use flint_sys::fmpz_poly::fmpz_poly_set_coeff_fmpz;
 use std::fmt::Display;
@@ -24,13 +24,13 @@ impl SetCoefficient<&Z> for PolyOverZ {
     /// Sets the coefficient of a polynomial [`PolyOverZ`].
     /// We advise to use small coefficients, since already 2^32 coefficients take space
     /// of roughly 34 GB. If not careful, be prepared that memory problems can occur, if
-    /// the coordinate is very high.
+    /// the index is very high.
     ///
     /// All entries which are not directly addressed are automatically treated as zero.
     ///
     /// Parameters:
-    /// - `coordinate`: the coordinate of the coefficient to set (has to be positive)
-    /// - `value`: the new value the coordinate should have from a borrowed [`Z`].
+    /// - `index`: the index of the coefficient to set (has to be positive)
+    /// - `value`: the new value the index should have from a borrowed [`Z`].
     ///
     /// # Example
     /// ```
@@ -47,16 +47,16 @@ impl SetCoefficient<&Z> for PolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    /// either the coordinate is negative or it does not fit into an [`i64`].
+    /// either the index is negative or it does not fit into an [`i64`].
     fn set_coeff(
         &mut self,
-        coordinate: impl TryInto<i64> + Display + Copy,
+        index: impl TryInto<i64> + Display + Copy,
         value: &Z,
     ) -> Result<(), MathError> {
-        let coordinate = evaluate_coordinate(coordinate)?;
+        let index = evaluate_index(index)?;
 
         unsafe {
-            fmpz_poly_set_coeff_fmpz(&mut self.poly, coordinate, &value.value);
+            fmpz_poly_set_coeff_fmpz(&mut self.poly, index, &value.value);
         };
         Ok(())
     }
@@ -74,7 +74,7 @@ mod test_set_coeff {
     };
     use std::str::FromStr;
 
-    /// ensure that the negative coordinates return an error
+    /// ensure that the negative indices return an error
     #[test]
     fn set_min_negative_coeff() {
         let mut poly = PolyOverZ::from_str("2  1 1").unwrap();

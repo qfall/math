@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::Z,
     traits::{GetEntry, GetNumColumns, GetNumRows},
-    utils::coordinate::evaluate_coordinates,
+    utils::index::evaluate_indices,
 };
 use flint_sys::{
     fmpz::{fmpz, fmpz_set},
@@ -81,7 +81,7 @@ impl GetEntry<Z> for MatZ {
         row: impl TryInto<i64> + Display + Copy,
         column: impl TryInto<i64> + Display + Copy,
     ) -> Result<Z, MathError> {
-        let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
+        let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
 
         // since `self.matrix` is a correct fmpz matrix and both row and column
         // are previously checked to be inside of the matrix, no errors

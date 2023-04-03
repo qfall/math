@@ -7,24 +7,22 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! Implementations to get coefficients of a [`PolyOverQ`].
-//! Each reasonable type should be allowed as a coordinate.
+//! Each reasonable type should be allowed as a index.
 
 use super::PolyOverQ;
-use crate::{
-    error::MathError, rational::Q, traits::GetCoefficient, utils::coordinate::evaluate_coordinate,
-};
+use crate::{error::MathError, rational::Q, traits::GetCoefficient, utils::index::evaluate_index};
 use flint_sys::fmpq_poly::fmpq_poly_get_coeff_fmpq;
 use std::fmt::Display;
 
 impl GetCoefficient<Q> for PolyOverQ {
     /// Returns the coefficient of a polynomial [`PolyOverQ`] as a [`Q`].
     ///
-    /// If a coordinate is provided which exceeds the highest set coefficient, `0` is returned.
+    /// If a index is provided which exceeds the highest set coefficient, `0` is returned.
     ///
     /// Parameters:
-    /// - `coordinate`: the coordinate of the coefficient to get (has to be positive)
+    /// - `index`: the index of the coefficient to get (has to be positive)
     ///
-    /// Returns the coefficient as a [`Q`] or a [`MathError`] if the provided coordinate
+    /// Returns the coefficient as a [`Q`] or a [`MathError`] if the provided index
     /// is negative and therefore invalid or it does not fit into an [`i64`].
     ///
     /// # Example
@@ -42,11 +40,11 @@ impl GetCoefficient<Q> for PolyOverQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    /// either the coordinate is negative or it does not fit into an [`i64`].
-    fn get_coeff(&self, coordinate: impl TryInto<i64> + Display + Copy) -> Result<Q, MathError> {
+    /// either the index is negative or it does not fit into an [`i64`].
+    fn get_coeff(&self, index: impl TryInto<i64> + Display + Copy) -> Result<Q, MathError> {
         let mut out = Q::default();
-        let coordinate = evaluate_coordinate(coordinate)?;
-        unsafe { fmpq_poly_get_coeff_fmpq(&mut out.value, &self.poly, coordinate) }
+        let index = evaluate_index(index)?;
+        unsafe { fmpq_poly_get_coeff_fmpq(&mut out.value, &self.poly, index) }
         Ok(out)
     }
 }
@@ -69,7 +67,7 @@ mod test_get_coeff {
         assert_eq!(Q::from_str("0/1").unwrap(), zero_coeff)
     }
 
-    /// test if coordinates smaller than `0` return an error
+    /// test if indices smaller than `0` return an error
     #[test]
     fn index_too_small() {
         let poly = PolyOverQ::default();

@@ -27,26 +27,26 @@ pub trait Evaluate<T, U> {
 /// Is implemented by polynomials get a coefficient.
 pub trait GetCoefficient<T> {
     /// Returns a coefficient of the given object, e.g. a polynomial,
-    /// for a given coordinate.
+    /// for a given index.
     ///
     /// Parameters:
-    /// - `coordinate`: The coordinate of the coefficient
+    /// - `index`: The index of the coefficient
     ///
     /// Returns the coefficient of the polynomial.
-    fn get_coeff(&self, coordinate: impl TryInto<i64> + Display + Copy) -> Result<T, MathError>;
+    fn get_coeff(&self, index: impl TryInto<i64> + Display + Copy) -> Result<T, MathError>;
 }
 
 /// Is implemented by polynomials to set individual coefficients.
 pub trait SetCoefficient<T> {
     /// Sets coefficient of the object, e.g. polynomial,
-    /// for a given input value and a coordinate.
+    /// for a given input value and a index.
     ///
     /// Parameters:
-    /// - `coordinate` : The coefficient to be set.
+    /// - `index` : The coefficient to be set.
     /// - `value`: The value the coefficient is set to.
     fn set_coeff(
         &mut self,
-        coordinate: impl TryInto<i64> + Display + Copy,
+        index: impl TryInto<i64> + Display + Copy,
         value: T,
     ) -> Result<(), MathError>;
 }

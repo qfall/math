@@ -12,7 +12,7 @@ use super::MatZq;
 use crate::integer::Z;
 use crate::integer_mod_q::Modulus;
 use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
-use crate::utils::coordinate::evaluate_coordinates;
+use crate::utils::index::evaluate_indices;
 use crate::{error::MathError, integer_mod_q::Zq};
 use flint_sys::{
     fmpz::{fmpz, fmpz_set},
@@ -99,7 +99,7 @@ impl GetEntry<Z> for MatZq {
         row: impl TryInto<i64> + Display + Copy,
         column: impl TryInto<i64> + Display + Copy,
     ) -> Result<Z, MathError> {
-        let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
+        let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
 
         let mut out = Z::default();
         let entry = unsafe { fmpz_mod_mat_entry(&self.matrix, row_i64, column_i64) };
