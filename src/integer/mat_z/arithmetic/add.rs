@@ -140,6 +140,32 @@ mod test_add {
     /// testing addition for big numbers
     #[test]
     fn add_large_numbers() {
+        let a: MatZ = MatZ::from_str(&String::from(format!(
+            "[[1, 2, {}],[3, -4, {}]]",
+            i64::MIN,
+            i128::MAX
+        )))
+        .unwrap();
+        let b: MatZ = MatZ::from_str(&String::from(format!(
+            "[[1, 2, {}],[3, 9, {}]]",
+            i64::MIN + 1,
+            i128::MAX
+        )))
+        .unwrap();
+        let c: MatZ = a + &b;
+        assert!(
+            c == MatZ::from_str(&String::from(format!(
+                "[[2, 4, -{}],[6, 5, {}]]",
+                u64::MAX,
+                u128::MAX - 1
+            )))
+            .unwrap()
+        );
+    }
+
+    /// testing add_safe
+    #[test]
+    fn add_safe() {
         let a: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, 4, 5]]")).unwrap();
         let b: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, -4, 5]]")).unwrap();
         let c = a.add_safe(&b);
