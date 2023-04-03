@@ -24,7 +24,7 @@ impl fmt::Display for Z {
     ///
     /// # Examples
     /// ```
-    /// use math::integer::Z;
+    /// use qfall_math::integer::Z;
     /// use core::fmt;
     ///
     /// let integer = Z::from(42);
@@ -32,7 +32,7 @@ impl fmt::Display for Z {
     /// ```
     ///
     /// ```
-    /// use math::integer::Z;
+    /// use qfall_math::integer::Z;
     /// use core::fmt;
     ///
     /// let integer = Z::from(42);

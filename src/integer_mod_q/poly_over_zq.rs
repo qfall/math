@@ -32,7 +32,7 @@ mod to_string;
 //
 /// # Example
 /// ```
-/// use math::integer_mod_q::PolyOverZq;
+/// use qfall_math::integer_mod_q::PolyOverZq;
 /// use std::str::FromStr;
 ///
 /// let poly = PolyOverZq::from_str("4  0 1 -2 3 mod 42").unwrap();

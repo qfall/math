@@ -31,7 +31,7 @@ mod to_string;
 //
 /// # Example
 /// ```
-/// use math::rational::PolyOverQ;
+/// use qfall_math::rational::PolyOverQ;
 /// use std::str::FromStr;
 ///
 /// let poly = PolyOverQ::from_str("5  0 1/3 2/10 -3/2 1").unwrap();

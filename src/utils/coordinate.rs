@@ -23,7 +23,7 @@ use std::fmt::Display;
 ///
 /// # Example
 /// ```
-/// use math::utils::coordinate::evaluate_coordinate;
+/// use qfall_math::utils::coordinate::evaluate_coordinate;
 ///
 /// let coordinate = evaluate_coordinate(u32::MAX).unwrap();
 /// ```

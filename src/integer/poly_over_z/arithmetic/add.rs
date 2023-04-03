@@ -27,7 +27,7 @@ impl Add for &PolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::PolyOverZ;
+    /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;
     ///
     /// let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();

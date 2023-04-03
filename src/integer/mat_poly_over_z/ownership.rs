@@ -21,7 +21,7 @@ impl Clone for MatPolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatPolyOverZ;
+    /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     ///
     /// let a = MatPolyOverZ::from_str("[[2  0 1],[1  15]]").unwrap();
@@ -42,7 +42,7 @@ impl Drop for MatPolyOverZ {
     ///
     /// # Examples
     /// ```
-    /// use math::integer::MatPolyOverZ;
+    /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     /// {
     ///     let a = MatPolyOverZ::from_str("[[2  0 1],[1  15]]").unwrap();
@@ -50,7 +50,7 @@ impl Drop for MatPolyOverZ {
     /// ```
     ///
     /// ```
-    /// use math::integer::MatPolyOverZ;
+    /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     ///
     /// let a = MatPolyOverZ::from_str("[[2  0 1],[1  15]]").unwrap();

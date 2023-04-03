@@ -23,7 +23,7 @@ impl PartialEq for Modulus {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::Modulus;
+    /// use qfall_math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
     ///
     /// let a = Modulus::from_str("3").unwrap();

@@ -27,9 +27,9 @@ impl From<(&PolyOverZ, &ModulusPolynomialRingZq)> for PolynomialRingZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::PolynomialRingZq;
-    /// use math::integer_mod_q::ModulusPolynomialRingZq;
-    /// use math::integer::PolyOverZ;
+    /// use qfall_math::integer_mod_q::PolynomialRingZq;
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -52,9 +52,9 @@ impl PolynomialRingZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::PolynomialRingZq;
-    /// use math::integer_mod_q::ModulusPolynomialRingZq;
-    /// use math::integer::PolyOverZ;
+    /// use qfall_math::integer_mod_q::PolynomialRingZq;
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();

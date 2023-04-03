@@ -25,7 +25,7 @@ impl PartialEq for PolyOverZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::PolyOverZq;
+    /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
     /// let a: PolyOverZq = PolyOverZq::from_str("2  42 1 mod 17").unwrap();
     /// let b: PolyOverZq = PolyOverZq::from_str("2  24 1 mod 19").unwrap();

@@ -32,7 +32,7 @@ mod to_string;
 /// # Examples
 /// Create [`Modulus`] from [`str`]:
 /// ```
-/// use math::integer_mod_q::Modulus;
+/// use qfall_math::integer_mod_q::Modulus;
 /// use std::str::FromStr;
 ///
 /// let modulus = Modulus::from_str("42").unwrap();
@@ -40,8 +40,8 @@ mod to_string;
 ///
 /// Create [`Modulus`] from [`Z`](crate::integer::Z):
 /// ```
-/// # use math::integer_mod_q::Modulus;
-/// # use math::integer::Z;
+/// # use qfall_math::integer_mod_q::Modulus;
+/// # use qfall_math::integer::Z;
 /// let value = Z::from(10);
 ///
 /// let modulus: Modulus = (&value).try_into().unwrap();

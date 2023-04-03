@@ -41,7 +41,7 @@ impl FromStr for Q {
     /// # Examples
     /// ```
     /// use std::str::FromStr;
-    /// use math::rational::Q;
+    /// use qfall_math::rational::Q;
     ///  
     /// let a: Q = "100/3".parse().unwrap();
     /// let b: Q = Q::from_str("100/3").unwrap();
@@ -49,7 +49,7 @@ impl FromStr for Q {
     ///
     /// ```
     /// use std::str::FromStr;
-    /// use math::rational::Q;
+    /// use qfall_math::rational::Q;
     ///  
     /// let q: Q = Q::from_str("-10/3").unwrap();
     /// let b: Q = Q::from_str("10/-3").unwrap();
@@ -57,7 +57,7 @@ impl FromStr for Q {
     ///
     /// ```
     /// use std::str::FromStr;
-    /// use math::rational::Q;
+    /// use qfall_math::rational::Q;
     ///  
     /// let q: Q = Q::from_str("-10").unwrap();
     /// let b: Q = Q::from_str("10").unwrap();
@@ -125,8 +125,8 @@ impl Q {
     ///
     /// # Example
     /// ```ignore (private function)
-    /// use math::rational::Q;
-    /// use math::integer::Z;
+    /// use qfall_math::rational::Q;
+    /// use qfall_math::integer::Z;
     ///
     /// let num = Z::from(100);
     ///
@@ -184,8 +184,8 @@ impl<T1: Into<Z> + Clone, T2: Into<Z> + Clone> TryFrom<(&T1, &T2)> for Q {
     ///
     /// # Example
     /// ```rust
-    /// use math::rational::Q;
-    /// use math::integer::Z;
+    /// use qfall_math::rational::Q;
+    /// use qfall_math::integer::Z;
     ///
     /// let a = Q::try_from((&42, &2)).unwrap();
     /// let b = Q::try_from((&Z::from(21), &Z::from(1))).unwrap();

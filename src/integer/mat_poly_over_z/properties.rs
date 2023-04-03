@@ -21,7 +21,7 @@ impl MatPolyOverZ {
     ///
     /// ```
     /// use std::str::FromStr;
-    /// use math::integer::MatPolyOverZ;
+    /// use qfall_math::integer::MatPolyOverZ;
     ///
     /// let matrix = MatPolyOverZ::from_str("[[1  1, 0],[0, 1  1]]").unwrap();
     /// let check = matrix.is_identity();
@@ -40,7 +40,7 @@ impl MatPolyOverZ {
     ///
     /// ```
     /// use std::str::FromStr;
-    /// use math::integer::MatPolyOverZ;
+    /// use qfall_math::integer::MatPolyOverZ;
     ///
     /// let matrix = MatPolyOverZ::from_str("[[1  1, 0],[0, 1  1]]").unwrap();
     /// let check = matrix.is_square();

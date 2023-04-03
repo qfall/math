@@ -25,7 +25,7 @@ impl MatZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::MatZq;
+    /// use qfall_math::integer_mod_q::MatZq;
     ///
     /// let matrix = MatZq::new(5, 10, 7).unwrap();
     /// let entry = matrix.get_mod();
@@ -43,8 +43,8 @@ impl GetNumRows for MatZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::MatZq;
-    /// use math::traits::*;
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::traits::*;
     ///
     /// let matrix = MatZq::new(5, 6, 7).unwrap();
     /// let rows = matrix.get_num_rows();
@@ -59,8 +59,8 @@ impl GetNumColumns for MatZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::MatZq;
-    /// use math::traits::*;
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::traits::*;
     ///
     /// let matrix = MatZq::new(5, 6, 7).unwrap();
     /// let rows = matrix.get_num_columns();
@@ -83,9 +83,9 @@ impl GetEntry<Z> for MatZq {
     ///
     /// # Example
     /// ```rust
-    /// use math::integer_mod_q::MatZq;
-    /// use crate::math::traits::GetEntry;
-    /// use math::integer::Z;
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::traits::GetEntry;
+    /// use qfall_math::integer::Z;
     ///
     /// let matrix = MatZq::new(5, 10, 7).unwrap();
     /// let entry: Z = matrix.get_entry(0, 1).unwrap();
@@ -121,9 +121,9 @@ impl GetEntry<Zq> for MatZq {
     ///
     /// # Example
     /// ```rust
-    /// use math::integer_mod_q::MatZq;
-    /// use crate::math::traits::GetEntry;
-    /// use math::integer::Z;
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::traits::GetEntry;
+    /// use qfall_math::integer::Z;
     ///
     /// let matrix = MatZq::new(5, 10, 7).unwrap();
     /// let entry: Z = matrix.get_entry(0, 1).unwrap();
@@ -154,7 +154,7 @@ impl MatZq {
     ///
     /// # Example
     /// ```compile_fail
-    /// use math::intger_mod_q::MatZq;
+    /// use qfall_math::intger_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
     /// let mat = MatZq::from_str("[[1,2],[3,4],[5,6]] mod 3").unwrap();

@@ -27,7 +27,7 @@ impl Sub for &Q {
     ///
     /// # Example
     /// ```
-    /// use math::rational::Q;
+    /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
     ///
     /// let a: Q = Q::from_str("42").unwrap();

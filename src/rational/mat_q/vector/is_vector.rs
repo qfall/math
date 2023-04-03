@@ -21,7 +21,7 @@ impl MatQ {
     ///
     /// # Example
     /// ```
-    /// use math::rational::MatQ;
+    /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
     /// let row_vec = MatQ::from_str("[[1,2,3/2]]").unwrap();
@@ -39,7 +39,7 @@ impl MatQ {
     ///
     /// # Example
     /// ```
-    /// use math::rational::MatQ;
+    /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
     /// let row_vec = MatQ::from_str("[[1/1,2,3]]").unwrap();
@@ -57,7 +57,7 @@ impl MatQ {
     ///
     /// # Example
     /// ```
-    /// use math::rational::MatQ;
+    /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
     /// let row_vec = MatQ::from_str("[[1,2/2,3/1]]").unwrap();
@@ -75,7 +75,7 @@ impl MatQ {
     ///
     /// # Example
     /// ```
-    /// use math::rational::MatQ;
+    /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
     /// let vec = MatQ::from_str("[[1/2]]").unwrap();

@@ -21,7 +21,7 @@ impl MatZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
+    /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
     /// let vec = MatZ::from_str("[[1,2,3]]").unwrap();
@@ -38,7 +38,7 @@ impl MatZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
+    /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
     /// let vec = MatZ::from_str("[[1],[2],[3]]").unwrap();
@@ -55,7 +55,7 @@ impl MatZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
+    /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
     /// let vec = MatZ::from_str("[[1],[2],[3]]").unwrap();
@@ -72,7 +72,7 @@ impl MatZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
+    /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
     /// let vec = MatZ::from_str("[[1]]").unwrap();

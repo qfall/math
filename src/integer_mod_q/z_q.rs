@@ -31,8 +31,8 @@ mod to_string;
 ///
 /// # Example
 /// ```
-/// # use math::error::MathError;
-/// use math::integer_mod_q::Zq;
+/// # use qfall_math::error::MathError;
+/// use qfall_math::integer_mod_q::Zq;
 ///
 /// let value = Zq::try_from((5, 10))?;
 /// # Ok::<(), MathError>(())

@@ -25,7 +25,7 @@ impl fmt::Display for Q {
     /// # Examples
     /// ```
     /// use std::str::FromStr;
-    /// use math::rational::Q;
+    /// use qfall_math::rational::Q;
     /// use core::fmt;
     ///
     /// let rational = Q::from_str("-1/235").unwrap();
@@ -34,7 +34,7 @@ impl fmt::Display for Q {
     ///
     /// ```
     /// use std::str::FromStr;
-    /// use math::rational::Q;
+    /// use qfall_math::rational::Q;
     /// use core::fmt;
     ///
     /// let rational = Q::from_str("-1/235").unwrap();

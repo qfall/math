@@ -25,7 +25,7 @@ impl Clone for PolyOverZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::PolyOverZq;
+    /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
     ///
     /// let a = PolyOverZq::from_str("4  0 1 -2 3 mod 13").unwrap();
@@ -64,7 +64,7 @@ impl Drop for PolyOverZq {
     ///
     /// # Examples
     /// ```
-    /// use math::integer_mod_q::PolyOverZq;
+    /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
     /// {
     ///     let a = PolyOverZq::from_str("4  0 1 -2 3 mod 13").unwrap();
@@ -72,7 +72,7 @@ impl Drop for PolyOverZq {
     /// ```
     ///
     /// ```
-    /// use math::integer_mod_q::PolyOverZq;
+    /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
     ///
     /// let a = PolyOverZq::from_str("4  0 1 -2 3 mod 13").unwrap();

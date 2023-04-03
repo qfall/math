@@ -24,9 +24,9 @@ impl Zq {
     ///
     /// # Example
     /// ```compile_fail
-    /// use math::integer_mod_q::Zq;
-    /// use math::integer_mod_q::Modulus;
-    /// use math::integer::Z;
+    /// use qfall_math::integer_mod_q::Zq;
+    /// use qfall_math::integer_mod_q::Modulus;
+    /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
     ///
     /// let modulus = Modulus::from_str("17").unwrap();

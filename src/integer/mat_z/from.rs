@@ -39,7 +39,7 @@ impl MatZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
+    /// use qfall_math::integer::MatZ;
     ///
     /// let matrix = MatZ::new(5, 10).unwrap();
     /// ```
@@ -94,7 +94,7 @@ impl FromStr for MatZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
+    /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
     /// let string = String::from("[[1, 2, 3],[3, 4, 5]]");

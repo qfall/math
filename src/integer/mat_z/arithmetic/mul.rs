@@ -31,7 +31,7 @@ impl Mul for &MatZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
+    /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
     /// let a = MatZ::from_str("[[2,1],[1,2]]").unwrap();
@@ -60,7 +60,7 @@ impl MatZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
+    /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
     /// let a = MatZ::from_str("[[2,1],[1,2]]").unwrap();

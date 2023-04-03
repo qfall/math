@@ -22,7 +22,7 @@ impl PolyOverQ {
     ///
     /// # Example
     /// ```compile_fail
-    /// use math::rational::PolyOverQ;
+    /// use qfall_math::rational::PolyOverQ;
     ///
     /// // sum_{k=0}^{length-1} x^k/k!
     /// let taylor_approximation_exponential_function = PolyOverQ::exp_function_taylor(1000_u32);

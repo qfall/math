@@ -24,7 +24,7 @@ impl fmt::Display for MatZq {
     ///
     /// # Examples
     /// ```
-    /// use math::integer_mod_q::MatZq;
+    /// use qfall_math::integer_mod_q::MatZq;
     /// use core::fmt;
     /// use std::str::FromStr;
     ///
@@ -33,7 +33,7 @@ impl fmt::Display for MatZq {
     /// ```
     ///
     /// ```
-    /// use math::integer_mod_q::MatZq;
+    /// use qfall_math::integer_mod_q::MatZq;
     /// use core::fmt;
     /// use std::str::FromStr;
     ///

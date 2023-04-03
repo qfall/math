@@ -17,7 +17,7 @@ impl Default for Q {
     /// # Example:
     /// ```
     /// use std::default::Default;
-    /// use math::rational::Q;
+    /// use qfall_math::rational::Q;
     ///  
     /// let a: Q = Q::default();
     /// ```

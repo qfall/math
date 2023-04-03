@@ -28,12 +28,12 @@ mod to_string;
 ///
 /// # Examples
 /// ```
-/// use math::rational::Q;
+/// use qfall_math::rational::Q;
 /// use std::str::FromStr;
 ///
 /// let a = Q::from_str("-876543/235")?;
 /// let zero = Q::default();
-/// # Ok::<(), math::error::MathError>(())
+/// # Ok::<(), qfall_math::error::MathError>(())
 /// ```
 #[derive(Debug)]
 pub struct Q {

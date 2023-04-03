@@ -17,7 +17,7 @@ impl Default for PolyOverQ {
     ///
     /// # Example
     /// ```
-    /// use math::rational::PolyOverQ;
+    /// use qfall_math::rational::PolyOverQ;
     ///
     /// let zero = PolyOverQ::default();
     /// ```

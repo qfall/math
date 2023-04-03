@@ -23,7 +23,7 @@ impl PartialEq for Z {
     ///
     /// # Example
     /// ```
-    /// use math::integer::Z;
+    /// use qfall_math::integer::Z;
     /// let a: Z = Z::from(42);
     /// let b: Z = Z::from(24);
     ///
@@ -56,7 +56,7 @@ impl PartialOrd for Z {
     ///
     /// # Example
     /// ```
-    /// use math::integer::Z;
+    /// use qfall_math::integer::Z;
     ///
     /// let a: Z = Z::from_i64(10);
     /// let b: Z = Z::from_i64(42);

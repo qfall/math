@@ -25,7 +25,7 @@ impl fmt::Display for MatPolyOverZ {
     ///
     /// # Examples
     /// ```
-    /// use math::integer::MatPolyOverZ;
+    /// use qfall_math::integer::MatPolyOverZ;
     /// use core::fmt;
     /// use std::str::FromStr;
     ///
@@ -34,7 +34,7 @@ impl fmt::Display for MatPolyOverZ {
     /// ```
     ///
     /// ```
-    /// use math::integer::MatPolyOverZ;
+    /// use qfall_math::integer::MatPolyOverZ;
     /// use core::fmt;
     /// use std::str::FromStr;
     ///

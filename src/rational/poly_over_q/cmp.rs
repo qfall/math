@@ -23,7 +23,7 @@ impl PartialEq for PolyOverQ {
     ///
     /// # Example
     /// ```
-    /// use math::rational::PolyOverQ;
+    /// use qfall_math::rational::PolyOverQ;
     /// use std::str::FromStr;
     /// let a: PolyOverQ = PolyOverQ::from_str("2  42/24 1").unwrap();
     /// let b: PolyOverQ = PolyOverQ::from_str("2  24/42 1").unwrap();

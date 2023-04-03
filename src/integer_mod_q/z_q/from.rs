@@ -30,9 +30,9 @@ impl Zq {
     ///
     /// # Example
     /// ```
-    /// # use math::error::MathError;
-    /// use math::integer::Z;
-    /// use math::integer_mod_q::Zq;
+    /// # use qfall_math::error::MathError;
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::integer_mod_q::Zq;
     ///
     /// let value_a = Z::from(42);
     /// let value_b = Z::from(1337+42);
@@ -69,9 +69,9 @@ impl Zq {
     ///
     /// # Example
     /// ```
-    /// # use math::error::MathError;
-    /// use math::integer::Z;
-    /// use math::integer_mod_q::{Modulus, Zq};
+    /// # use qfall_math::error::MathError;
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::integer_mod_q::{Modulus, Zq};
     ///
     /// let value = Z::from(42);
     /// let modulus = Modulus::try_from(&Z::from(100))?;
@@ -113,9 +113,9 @@ impl Zq {
     ///
     /// # Example
     /// ```
-    /// # use math::error::MathError;
-    /// use math::integer::Z;
-    /// use math::integer_mod_q::Zq;
+    /// # use qfall_math::error::MathError;
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::integer_mod_q::Zq;
     ///
     /// let value_a: Z = Z::from(42);
     /// let value_b: u64 = 1337+42;
@@ -160,9 +160,9 @@ impl<T1: Into<Z>, T2: Into<Z>> TryFrom<(T1, T2)> for Zq {
     ///
     /// # Example
     /// ```
-    /// # use math::error::MathError;
-    /// use math::integer::Z;
-    /// use math::integer_mod_q::Zq;
+    /// # use qfall_math::error::MathError;
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::integer_mod_q::Zq;
     ///
     /// let value_a: Z = Z::from(42);
     /// let value_b: u64 = 1337+42;
@@ -202,7 +202,7 @@ impl FromStr for Zq {
     /// # Example:
     /// ```
     /// use std::str::FromStr;
-    /// use math::integer_mod_q::Zq;
+    /// use qfall_math::integer_mod_q::Zq;
     ///  
     /// let a: Zq = "100 mod 3".parse().unwrap();
     /// let b: Zq = Zq::from_str("100 mod 3").unwrap();

@@ -31,7 +31,7 @@ mod vector;
 /// # Examples
 /// ## Matrix usage
 /// ```
-/// use math::{
+/// use qfall_math::{
 ///     integer::{MatZ, Z},
 ///     traits::{GetEntry, SetEntry},
 /// };
@@ -58,7 +58,7 @@ mod vector;
 ///
 /// ## Vector usage
 /// ```
-/// use math::{
+/// use qfall_math::{
 ///     integer::{MatZ, Z},
 /// };
 /// use std::str::FromStr;
