@@ -20,8 +20,8 @@ mod properties;
 mod serialize;
 mod set;
 mod to_string;
-mod vector;
 mod transpose;
+mod vector;
 
 /// [`MatPolyOverZ`] is a matrix with entries of type [`PolyOverZ`](crate::integer::PolyOverZ).
 ///
