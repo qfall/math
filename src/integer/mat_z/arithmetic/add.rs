@@ -71,13 +71,13 @@ impl MatZ {
     /// # Errors
     /// Returns a [`MathError`] of type
     /// [`MathError::MismatchingMatrixDimension`] if the matrix dimensions
-    /// do mismatch.
+    /// mismatch.
     pub fn add_safe(&self, other: &Self) -> Result<MatZ, MathError> {
         if self.get_num_rows() != other.get_num_rows()
             || self.get_num_columns() != other.get_num_columns()
         {
             return Err(MathError::MismatchingMatrixDimension(format!(
-                "Tried to add a '{}x{}' matrix and a '{}x{}' matrix.", //todo display?
+                "Tried to add a '{}x{}' matrix and a '{}x{}' matrix.",
                 self.get_num_rows(),
                 self.get_num_columns(),
                 other.get_num_rows(),
@@ -142,22 +142,22 @@ mod test_add {
     fn add_large_numbers() {
         let a: MatZ = MatZ::from_str(&String::from(format!(
             "[[1, 2, {}],[3, -4, {}]]",
-            i32::MIN,
-            i32::MAX
+            i64::MIN,
+            i128::MAX
         )))
         .unwrap();
         let b: MatZ = MatZ::from_str(&String::from(format!(
             "[[1, 2, {}],[3, 9, {}]]",
-            i32::MIN + 1,
-            i32::MAX
+            i64::MIN + 1,
+            i128::MAX
         )))
         .unwrap();
         let c: MatZ = a + &b;
         assert!(
             c == MatZ::from_str(&String::from(format!(
                 "[[2, 4, -{}],[6, 5, {}]]",
-                u32::MAX,
-                u32::MAX - 1
+                u64::MAX,
+                u128::MAX - 1
             )))
             .unwrap()
         );

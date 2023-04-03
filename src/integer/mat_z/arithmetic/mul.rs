@@ -74,10 +74,9 @@ impl MatZ {
     /// [`MathError::MismatchingMatrixDimension`] if the dimensions of `self`
     ///  and `other` do not match for multiplication.
     pub fn mul_safe(&self, other: &Self) -> Result<Self, MathError> {
-        // TODO: mul_safe
         if self.get_num_columns() != other.get_num_rows() {
             return Err(MathError::MismatchingMatrixDimension(format!(
-                "Tried to multiply a '{}x{}' matrix and a '{}x{}' matrix.", //todo display?
+                "Tried to multiply a '{}x{}' matrix and a '{}x{}' matrix.",
                 self.get_num_rows(),
                 self.get_num_columns(),
                 other.get_num_rows(),

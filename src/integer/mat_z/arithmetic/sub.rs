@@ -72,13 +72,13 @@ impl MatZ {
     /// # Errors
     /// Returns a [`MathError`] of type
     /// [`MathError::MismatchingMatrixDimension`] if the matrix dimensions
-    /// do mismatch.
+    /// mismatch.
     pub fn sub_safe(&self, other: &Self) -> Result<MatZ, MathError> {
         if self.get_num_rows() != other.get_num_rows()
             || self.get_num_columns() != other.get_num_columns()
         {
             return Err(MathError::MismatchingMatrixDimension(format!(
-                "Tried to subtract a '{}x{}' matrix and a '{}x{}' matrix.", //todo display?
+                "Tried to subtract a '{}x{}' matrix and a '{}x{}' matrix.",
                 self.get_num_rows(),
                 self.get_num_columns(),
                 other.get_num_rows(),
@@ -143,22 +143,22 @@ mod test_sub {
     fn sub_large_numbers() {
         let a: MatZ = MatZ::from_str(&String::from(format!(
             "[[1, 2, {}],[3, -4, {}]]",
-            i32::MIN,
-            u32::MAX
+            i64::MIN,
+            u64::MAX
         )))
         .unwrap();
         let b: MatZ = MatZ::from_str(&String::from(format!(
             "[[1, 1, {}],[3, 9, {}]]",
-            i32::MAX,
-            i32::MAX
+            i64::MAX,
+            i64::MAX
         )))
         .unwrap();
         let c: MatZ = a - &b;
         assert!(
             c == MatZ::from_str(&String::from(format!(
                 "[[0, 1, -{}],[0, -13, {}]]",
-                u32::MAX,
-                (u32::MAX - 1) / 2 + 1
+                u64::MAX,
+                (u64::MAX - 1) / 2 + 1
             )))
             .unwrap()
         );
