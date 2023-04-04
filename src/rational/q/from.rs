@@ -16,7 +16,7 @@ use super::Q;
 use crate::{error::MathError, integer::Z};
 use flint_sys::{
     fmpq::{fmpq, fmpq_canonicalise, fmpq_clear, fmpq_set_str},
-    fmpz::{fmpz_is_zero, fmpz_swap},
+    fmpz::{fmpz_is_zero, fmpz_set, fmpz_swap},
 };
 use std::{ffi::CString, str::FromStr};
 
@@ -167,6 +167,30 @@ impl Q {
         }
         Ok(res)
     }
+
+    /// Create a new Integer that can grow arbitrary large.
+    ///
+    /// Parameters:
+    /// - `value`: the initial value the integer should have
+    ///
+    /// Returns the new integer.
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::rational::Q;
+    ///
+    /// let m = Z::from(17);
+    ///
+    /// let a: Q = Q::from_int(&m);
+    /// let b: Q = Q::from_int(&17);
+    /// ```
+    pub fn from_int(value: &(impl Into<Z> + Clone)) -> Self {
+        let value = value.to_owned().into();
+        let mut out = Q::default();
+        unsafe { fmpz_set(&mut out.value.num, &value.value) }
+        out
+    }
 }
 
 impl<T1: Into<Z> + Clone, T2: Into<Z> + Clone> TryFrom<(&T1, &T2)> for Q {
@@ -200,6 +224,27 @@ impl<T1: Into<Z> + Clone, T2: Into<Z> + Clone> TryFrom<(&T1, &T2)> for Q {
     /// if the denominator is zero.
     fn try_from(num_den_tuple: (&T1, &T2)) -> Result<Self, Self::Error> {
         Q::try_from_int_int(num_den_tuple.0, num_den_tuple.1)
+    }
+}
+
+impl<T: Into<Z> + Clone> From<&T> for Q {
+    /// Create a new Integer that can grow arbitrary large.
+    ///
+    /// Parameters:
+    /// - `value`: the initial value the integer should have
+    ///
+    /// Returns the new integer.
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::rational::Q;
+    /// use qfall_math::integer::Z;
+    ///
+    /// let a: Q = Q::from(&17);
+    /// let b: Q = Q::from(&Z::from(17));
+    /// ```
+    fn from(value: &T) -> Self {
+        Q::from_int(value)
     }
 }
 
@@ -449,5 +494,53 @@ mod test_from_int_int {
         assert_eq!(q_1, q_3);
         assert_eq!(q_1, q_4);
         assert_eq!(q_5_negative, q_6_negative);
+    }
+}
+
+#[cfg(test)]
+mod test_from_z {
+    use super::Q;
+    use crate::integer::Z;
+    use std::str::FromStr;
+
+    /// Ensure that the `from_<type_name>` functions are available for
+    /// singed and unsigned integers of 8, 16, 32, and 64 bit length.
+    /// Tested with their maximum value.
+    #[test]
+    fn large_small_numbers() {
+        let z_1 = Z::from(u64::MAX);
+        let z_2 = Z::from(17);
+
+        assert_eq!(
+            Q::from_str(&u64::MAX.to_string()).unwrap(),
+            Q::from_int(&z_1)
+        );
+        assert_eq!(Q::from_str("17").unwrap(), Q::from_int(&z_2));
+    }
+
+    /// Ensure that the [`From`] trait is available for large
+    /// [`Z`] instances
+    #[test]
+    fn from_trait() {
+        let z_1 = Z::from(u64::MAX);
+        let z_2 = Z::from(17);
+
+        assert_eq!(Q::from_str(&u64::MAX.to_string()).unwrap(), Q::from(&z_1));
+        assert_eq!(Q::from_str("17").unwrap(), Q::from(&z_2));
+    }
+
+    /// Ensure that all types that can be turned into an [`Z`]
+    /// can be used to instantiate a [`Q`]
+    #[test]
+    fn from_into_z() {
+        let _ = Q::from(&u8::MAX);
+        let _ = Q::from(&u16::MAX);
+        let _ = Q::from(&u32::MAX);
+        let _ = Q::from(&u64::MAX);
+
+        let _ = Q::from(&i8::MIN);
+        let _ = Q::from(&i16::MIN);
+        let _ = Q::from(&i32::MIN);
+        let _ = Q::from(&i64::MIN);
     }
 }

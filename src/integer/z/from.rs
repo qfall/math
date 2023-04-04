@@ -378,7 +378,7 @@ mod test_from_zq {
     }
 
     /// Ensure that the [`From`] trait is available for large
-    /// [`Modulus`] instances
+    /// [`Zq`] instances
     #[test]
     fn from_trait() {
         let zq_1 = Zq::try_from((i64::MAX, u64::MAX)).unwrap();
