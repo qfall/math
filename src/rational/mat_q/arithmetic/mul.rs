@@ -34,8 +34,8 @@ impl Mul for &MatQ {
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let a: MatQ = MatQ::from_str(&String::from("[[1/2, 2/3],[3/4, 5/7]]")).unwrap();
-    /// let b: MatQ = MatQ::from_str(&String::from("[[1/4, 9/7],[1, 5]]")).unwrap();
+    /// let a: MatQ = MatQ::from_str("[[1/2, 2/3],[3/4, 5/7]]").unwrap();
+    /// let b: MatQ = MatQ::from_str("[[1/4, 9/7],[1, 5]]").unwrap();
     ///
     /// let c = &a * &b;
     /// let d = a * b;
@@ -63,8 +63,8 @@ impl MatQ {
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let a: MatQ = MatQ::from_str(&String::from("[[1/2, 2/3],[3/4, 4/5]]")).unwrap();
-    /// let b: MatQ = MatQ::from_str(&String::from("[[1/4, 3/7],[1, 0]]")).unwrap();
+    /// let a: MatQ = MatQ::from_str("[[1/2, 2/3],[3/4, 4/5]]").unwrap();
+    /// let b: MatQ = MatQ::from_str("[[1/4, 3/7],[1, 0]]").unwrap();
     ///
     /// let c: MatQ = a.mul_safe(&b).unwrap();
     /// ```

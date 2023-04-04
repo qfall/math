@@ -32,8 +32,8 @@ impl Add for &MatQ {
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let a: MatQ = MatQ::from_str(&String::from("[[1/2, 2/3, 3/4],[3/4, 4/5, 5/7]]")).unwrap();
-    /// let b: MatQ = MatQ::from_str(&String::from("[[1/4, 9/7, 3/7],[1, 0, 5]]")).unwrap();
+    /// let a: MatQ = MatQ::from_str("[[1/2, 2/3, 3/4],[3/4, 4/5, 5/7]]").unwrap();
+    /// let b: MatQ = MatQ::from_str("[[1/4, 9/7, 3/7],[1, 0, 5]]").unwrap();
     ///
     /// let c: MatQ = &a + &b;
     /// let d: MatQ = a + b;
@@ -63,8 +63,8 @@ impl MatQ {
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let a: MatQ = MatQ::from_str(&String::from("[[1/2, 2/3, 3/4],[3/4, 4/5, 5/7]]")).unwrap();
-    /// let b: MatQ = MatQ::from_str(&String::from("[[1/4, 9/7, 3/7],[1, 0, 5]]")).unwrap();
+    /// let a: MatQ = MatQ::from_str("[[1/2, 2/3, 3/4],[3/4, 4/5, 5/7]]").unwrap();
+    /// let b: MatQ = MatQ::from_str("[[1/4, 9/7, 3/7],[1, 0, 5]]").unwrap();
     ///
     /// let c: MatQ = a.add_safe(&b).unwrap();
     /// ```
@@ -105,62 +105,59 @@ mod test_add {
     /// testing addition for two [`MatQ`]
     #[test]
     fn add() {
-        let a: MatQ = MatQ::from_str(&String::from("[[1/2, 2, 3/2],[3/7, 4/7, 5/7]]")).unwrap();
-        let b: MatQ = MatQ::from_str(&String::from("[[1/2, 2, 3/2],[3/7, -4/7, 5/7]]")).unwrap();
+        let a: MatQ = MatQ::from_str("[[1/2, 2, 3/2],[3/7, 4/7, 5/7]]").unwrap();
+        let b: MatQ = MatQ::from_str("[[1/2, 2, 3/2],[3/7, -4/7, 5/7]]").unwrap();
         let c: MatQ = a + b;
-        assert!(c == MatQ::from_str(&String::from("[[1, 4, 3],[6/7, 0, 10/7]]")).unwrap());
+        assert_eq!(c, MatQ::from_str("[[1, 4, 3],[6/7, 0, 10/7]]").unwrap());
     }
 
     /// testing addition for two borrowed [`MatQ`]
     #[test]
     fn add_borrow() {
-        let a: MatQ = MatQ::from_str(&String::from("[[1/2, 2, 3/2],[3/7, 4/7, 5/7]]")).unwrap();
-        let b: MatQ = MatQ::from_str(&String::from("[[1/2, 2, 3/2],[3/7, -4/7, 5/7]]")).unwrap();
+        let a: MatQ = MatQ::from_str("[[1/2, 2, 3/2],[3/7, 4/7, 5/7]]").unwrap();
+        let b: MatQ = MatQ::from_str("[[1/2, 2, 3/2],[3/7, -4/7, 5/7]]").unwrap();
         let c: MatQ = &a + &b;
-        assert!(c == MatQ::from_str(&String::from("[[1, 4, 3],[6/7, 0, 10/7]]")).unwrap());
+        assert_eq!(c, MatQ::from_str("[[1, 4, 3],[6/7, 0, 10/7]]").unwrap());
     }
 
     /// testing addition for borrowed [`MatQ`] and [`MatQ`]
     #[test]
     fn add_first_borrowed() {
-        let a: MatQ = MatQ::from_str(&String::from("[[1/2, 2, 3/2],[3/7, 4/7, 5/7]]")).unwrap();
-        let b: MatQ = MatQ::from_str(&String::from("[[1/2, 2, 3/2],[3/7, -4/7, 5/7]]")).unwrap();
+        let a: MatQ = MatQ::from_str("[[1/2, 2, 3/2],[3/7, 4/7, 5/7]]").unwrap();
+        let b: MatQ = MatQ::from_str("[[1/2, 2, 3/2],[3/7, -4/7, 5/7]]").unwrap();
         let c: MatQ = &a + b;
-        assert!(c == MatQ::from_str(&String::from("[[1, 4, 3],[6/7, 0, 10/7]]")).unwrap());
+        assert_eq!(c, MatQ::from_str("[[1, 4, 3],[6/7, 0, 10/7]]").unwrap());
     }
 
     /// testing addition for [`MatQ`] and borrowed [`MatQ`]
     #[test]
     fn add_second_borrowed() {
-        let a: MatQ = MatQ::from_str(&String::from("[[1/2, 2, 3/2],[3/7, 4/7, 5/7]]")).unwrap();
-        let b: MatQ = MatQ::from_str(&String::from("[[1/2, 2, 3/2],[3/7, -4/7, 5/7]]")).unwrap();
+        let a: MatQ = MatQ::from_str("[[1/2, 2, 3/2],[3/7, 4/7, 5/7]]").unwrap();
+        let b: MatQ = MatQ::from_str("[[1/2, 2, 3/2],[3/7, -4/7, 5/7]]").unwrap();
         let c: MatQ = a + &b;
-        assert!(c == MatQ::from_str(&String::from("[[1, 4, 3],[6/7, 0, 10/7]]")).unwrap());
+        assert_eq!(c, MatQ::from_str("[[1, 4, 3],[6/7, 0, 10/7]]").unwrap());
     }
 
     /// testing addition for big numbers
     #[test]
     fn add_large_numbers() {
-        let a: MatQ = MatQ::from_str(&String::from(format!(
-            "[[1, 2, {}],[3, -4, {}]]",
-            i64::MIN,
-            i64::MAX
-        )))
-        .unwrap();
-        let b: MatQ = MatQ::from_str(&String::from(format!(
+        let a: MatQ =
+            MatQ::from_str(&format!("[[1, 2, {}],[3, -4, {}]]", i64::MIN, i64::MAX)).unwrap();
+        let b: MatQ = MatQ::from_str(&format!(
             "[[1, 2, {}],[3, 9, 1/{}]]",
             i64::MIN + 1,
             i64::MAX
-        )))
+        ))
         .unwrap();
         let c: MatQ = a + &b;
-        assert!(
-            c == MatQ::from_str(&String::from(format!(
+        assert_eq!(
+            c,
+            MatQ::from_str(&format!(
                 "[[2, 4, -{}],[6, 5, {}]]",
                 u64::MAX,
                 Q::from_str(format!("{}", i64::MAX).as_str()).unwrap()
                     + Q::from_str(format!("1/{}", i64::MAX).as_str()).unwrap()
-            )))
+            ))
             .unwrap()
         );
     }
@@ -168,20 +165,21 @@ mod test_add {
     /// testing add_safe
     #[test]
     fn add_safe() {
-        let a: MatQ = MatQ::from_str(&String::from("[[1/9, 2/8, 3/4],[3, 4, 5]]")).unwrap();
-        let b: MatQ = MatQ::from_str(&String::from("[[1/9, 2/8, 3/4],[3, -4, 5]]")).unwrap();
+        let a: MatQ = MatQ::from_str("[[1/9, 2/8, 3/4],[3, 4, 5]]").unwrap();
+        let b: MatQ = MatQ::from_str("[[1/9, 2/8, 3/4],[3, -4, 5]]").unwrap();
         let c = a.add_safe(&b);
-        assert!(
-            c.unwrap() == MatQ::from_str(&String::from("[[2/9, 4/8, 6/4],[6, 0, 10]]")).unwrap()
+        assert_eq!(
+            c.unwrap(),
+            MatQ::from_str("[[2/9, 4/8, 6/4],[6, 0, 10]]").unwrap()
         );
     }
 
     /// testing add_safe throws error
     #[test]
     fn add_safe_is_err() {
-        let a: MatQ = MatQ::from_str(&String::from("[[1, 2/7],[3/1912, 4]]")).unwrap();
-        let b: MatQ = MatQ::from_str(&String::from("[[1, 5/2, 0],[3, -4/6, 7/5]]")).unwrap();
-        let c: MatQ = MatQ::from_str(&String::from("[[1, -2/9, 3/7]]")).unwrap();
+        let a: MatQ = MatQ::from_str("[[1, 2/7],[3/1912, 4]]").unwrap();
+        let b: MatQ = MatQ::from_str("[[1, 5/2, 0],[3, -4/6, 7/5]]").unwrap();
+        let c: MatQ = MatQ::from_str("[[1, -2/9, 3/7]]").unwrap();
         assert!(a.add_safe(&b).is_err());
         assert!(c.add_safe(&b).is_err());
     }

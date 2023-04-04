@@ -108,7 +108,10 @@ mod test_sub {
         let a: MatQ = MatQ::from_str(&String::from("[[1/2, 1, 2],[3/7, 4/7, -5]]")).unwrap();
         let b: MatQ = MatQ::from_str(&String::from("[[1/2, 2, 3/4],[3/7, -4/9, 5]]")).unwrap();
         let c: MatQ = a - b;
-        assert!(c == MatQ::from_str(&String::from("[[0, -1, 5/4],[0, 64/63, -10]]")).unwrap());
+        assert_eq!(
+            c,
+            MatQ::from_str(&String::from("[[0, -1, 5/4],[0, 64/63, -10]]")).unwrap()
+        );
     }
 
     /// testing subtraction for two borrowed [`MatQ`]
@@ -117,7 +120,10 @@ mod test_sub {
         let a: MatQ = MatQ::from_str(&String::from("[[1/2, 1, 2],[3/7, 4/7, -5]]")).unwrap();
         let b: MatQ = MatQ::from_str(&String::from("[[1/2, 2, 3/4],[3/7, -4/9, 5]]")).unwrap();
         let c: MatQ = &a - &b;
-        assert!(c == MatQ::from_str(&String::from("[[0, -1, 5/4],[0, 64/63, -10]]")).unwrap());
+        assert_eq!(
+            c,
+            MatQ::from_str(&String::from("[[0, -1, 5/4],[0, 64/63, -10]]")).unwrap()
+        );
     }
 
     /// testing subtraction for borrowed [`MatQ`] and [`MatQ`]
@@ -126,7 +132,10 @@ mod test_sub {
         let a: MatQ = MatQ::from_str(&String::from("[[1/2, 1, 2],[3/7, 4/7, -5]]")).unwrap();
         let b: MatQ = MatQ::from_str(&String::from("[[1/2, 2, 3/4],[3/7, -4/9, 5]]")).unwrap();
         let c: MatQ = &a - b;
-        assert!(c == MatQ::from_str(&String::from("[[0, -1, 5/4],[0, 64/63, -10]]")).unwrap());
+        assert_eq!(
+            c,
+            MatQ::from_str(&String::from("[[0, -1, 5/4],[0, 64/63, -10]]")).unwrap()
+        );
     }
 
     /// testing subtraction for [`MatQ`] and borrowed [`MatQ`]
@@ -135,7 +144,10 @@ mod test_sub {
         let a: MatQ = MatQ::from_str(&String::from("[[1/2, 1, 2],[3/7, 4/7, -5]]")).unwrap();
         let b: MatQ = MatQ::from_str(&String::from("[[1/2, 2, 3/4],[3/7, -4/9, 5]]")).unwrap();
         let c: MatQ = a - &b;
-        assert!(c == MatQ::from_str(&String::from("[[0, -1, 5/4],[0, 64/63, -10]]")).unwrap());
+        assert_eq!(
+            c,
+            MatQ::from_str(&String::from("[[0, -1, 5/4],[0, 64/63, -10]]")).unwrap()
+        );
     }
 
     /// testing subtraction for big numbers
@@ -154,8 +166,9 @@ mod test_sub {
         )))
         .unwrap();
         let c: MatQ = a - &b;
-        assert!(
-            c == MatQ::from_str(&String::from(format!(
+        assert_eq!(
+            c,
+            MatQ::from_str(&String::from(format!(
                 "[[0, 1, -{}],[0, -13, {}]]",
                 u64::MAX,
                 Q::from_str(format!("{}", u64::MAX).as_str()).unwrap()
@@ -171,7 +184,10 @@ mod test_sub {
         let a: MatQ = MatQ::from_str(&String::from("[[1/2, 1, 2],[3/7, 4/7, -5]]")).unwrap();
         let b: MatQ = MatQ::from_str(&String::from("[[1/2, 2, 3/4],[3/7, -4/9, 5]]")).unwrap();
         let c: MatQ = a.sub_safe(&b).unwrap();
-        assert!(c == MatQ::from_str(&String::from("[[0, -1, 5/4],[0, 64/63, -10]]")).unwrap());
+        assert_eq!(
+            c,
+            MatQ::from_str(&String::from("[[0, -1, 5/4],[0, 64/63, -10]]")).unwrap()
+        );
     }
 
     /// testing sub_safe throws error
