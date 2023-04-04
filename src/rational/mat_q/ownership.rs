@@ -21,7 +21,7 @@ impl Clone for MatQ {
     ///
     /// # Example
     /// ```
-    /// use math::rational::MatQ;
+    /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
     /// let string = String::from("[[1/2, 2/3, 3/4],[3/1, 4/2, 5/4]]");
@@ -42,7 +42,7 @@ impl Drop for MatQ {
     ///
     /// # Examples
     /// ```
-    /// use math::rational::MatQ;
+    /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
     /// let string = String::from("[[1/2, 2/3, 3/4],[3/1, 4/2, 5/4]]");
@@ -52,7 +52,7 @@ impl Drop for MatQ {
     /// ```
     ///
     /// ```
-    /// use math::rational::MatQ;
+    /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
     /// let string = String::from("[[1/2, 2/3, 3/4],[3/1, 4/2, 5/4]]");

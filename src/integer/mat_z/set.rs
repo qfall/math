@@ -11,7 +11,7 @@
 use super::MatZ;
 use crate::macros::for_others::{implement_for_others, implement_for_owned};
 use crate::traits::SetEntry;
-use crate::{error::MathError, integer::Z, utils::coordinate::evaluate_coordinates};
+use crate::{error::MathError, integer::Z, utils::index::evaluate_indices};
 use flint_sys::{fmpz::fmpz_set, fmpz_mat::fmpz_mat_entry};
 use std::fmt::Display;
 
@@ -25,9 +25,9 @@ impl SetEntry<&Z> for MatZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
-    /// use math::integer::Z;
-    /// use math::traits::SetEntry;
+    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::traits::*;
     ///
     /// let mut matrix = MatZ::new(5, 10).unwrap();
     /// let value = Z::from_i64(5);
@@ -43,7 +43,7 @@ impl SetEntry<&Z> for MatZ {
         column: impl TryInto<i64> + Display + Copy,
         value: &Z,
     ) -> Result<(), MathError> {
-        let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
+        let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
 
         // since `self` is a correct matrix and both row and column
         // are previously checked to be inside of the matrix, no errors

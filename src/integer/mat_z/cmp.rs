@@ -21,7 +21,7 @@ impl PartialEq for MatZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
+    /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
     /// let a = MatZ::from_str("[[1,2],[3,4]]").unwrap();

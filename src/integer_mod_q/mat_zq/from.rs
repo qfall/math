@@ -19,8 +19,7 @@ use crate::{
     integer::Z,
     traits::SetEntry,
     utils::{
-        coordinate::evaluate_coordinate, dimensions::find_matrix_dimensions,
-        parse::parse_matrix_string,
+        dimensions::find_matrix_dimensions, index::evaluate_index, parse::parse_matrix_string,
     },
 };
 use flint_sys::fmpz_mod_mat::fmpz_mod_mat_init;
@@ -40,7 +39,7 @@ impl MatZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::MatZq;
+    /// use qfall_math::integer_mod_q::MatZq;
     ///
     /// let matrix = MatZq::new(5, 10, 7).unwrap();
     /// ```
@@ -59,8 +58,8 @@ impl MatZq {
         modulus: impl Into<Z>,
     ) -> Result<Self, MathError> {
         // TODO add separate function
-        let num_rows_i64 = evaluate_coordinate(num_rows)?;
-        let num_cols_i64 = evaluate_coordinate(num_cols)?;
+        let num_rows_i64 = evaluate_index(num_rows)?;
+        let num_cols_i64 = evaluate_index(num_cols)?;
 
         if num_rows_i64 == 0 || num_cols_i64 == 0 {
             return Err(MathError::InvalidMatrix(format!(
@@ -96,7 +95,7 @@ impl MatZq {
 impl FromStr for MatZq {
     type Err = MathError;
 
-    /// Creates a [`MatZq`] matrix with entries in [`Zq`] from a [`String`].
+    /// Creates a [`MatZq`] matrix with entries in [`Zq`](crate::integer_mod_q::Zq) from a [`String`].
     /// The format of that string looks like this <br> `[[1,2,3],[4,5,6]] mod 4` for a 2x3 matrix
     /// with entries 1,2,3 in the first row, 4,5,6 in the second row and 4 as modulus.
     ///
@@ -110,7 +109,7 @@ impl FromStr for MatZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::MatZq;
+    /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
     /// let string = String::from("[[1,2,3],[4,5,6]] mod 4");

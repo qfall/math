@@ -19,7 +19,7 @@ impl Modulus {
     ///
     /// ```
     /// use std::str::FromStr;
-    /// use math::integer_mod_q::Modulus;
+    /// use qfall_math::integer_mod_q::Modulus;
     ///
     /// let modulus = Modulus::from_str("17").unwrap();
     /// assert!(modulus.is_prime())

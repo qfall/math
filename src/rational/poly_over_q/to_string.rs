@@ -21,7 +21,7 @@ impl fmt::Display for PolyOverQ {
     ///
     /// # Examples
     /// ```
-    /// use math::rational::PolyOverQ;
+    /// use qfall_math::rational::PolyOverQ;
     /// use std::str::FromStr;
     /// use core::fmt;
     ///
@@ -30,7 +30,7 @@ impl fmt::Display for PolyOverQ {
     /// ```
     ///
     /// ```
-    /// use math::rational::PolyOverQ;
+    /// use qfall_math::rational::PolyOverQ;
     /// use std::str::FromStr;
     ///
     /// let poly = PolyOverQ::from_str("5  0 1 2/5 -3/2 1").unwrap();

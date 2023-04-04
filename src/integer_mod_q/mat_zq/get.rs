@@ -12,7 +12,7 @@ use super::MatZq;
 use crate::integer::Z;
 use crate::integer_mod_q::Modulus;
 use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
-use crate::utils::coordinate::evaluate_coordinates;
+use crate::utils::index::evaluate_indices;
 use crate::{error::MathError, integer_mod_q::Zq};
 use flint_sys::{
     fmpz::{fmpz, fmpz_set},
@@ -25,7 +25,7 @@ impl MatZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::MatZq;
+    /// use qfall_math::integer_mod_q::MatZq;
     ///
     /// let matrix = MatZq::new(5, 10, 7).unwrap();
     /// let entry = matrix.get_mod();
@@ -43,8 +43,8 @@ impl GetNumRows for MatZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::MatZq;
-    /// use math::traits::GetNumRows;
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::traits::*;
     ///
     /// let matrix = MatZq::new(5, 6, 7).unwrap();
     /// let rows = matrix.get_num_rows();
@@ -59,8 +59,8 @@ impl GetNumColumns for MatZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::MatZq;
-    /// use math::traits::GetNumColumns;
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::traits::*;
     ///
     /// let matrix = MatZq::new(5, 6, 7).unwrap();
     /// let rows = matrix.get_num_columns();
@@ -71,21 +71,21 @@ impl GetNumColumns for MatZq {
 }
 
 impl GetEntry<Z> for MatZq {
-    /// Outputs the [`Zq`] value of a specific matrix entry.
+    /// Outputs the [`Z`] value of a specific matrix entry.
     ///
     /// Parameters:
     /// - `row`: specifies the row in which the entry is located
     /// - `column`: specifies the column in which the entry is located
     ///
-    /// Returns the [`Zq`] value of the matrix at the position of the given
+    /// Returns the [`Z`] value of the matrix at the position of the given
     /// row and column or an error, if the number of rows or columns is
     /// greater than the matrix or negative.
     ///
     /// # Example
     /// ```rust
-    /// use math::integer_mod_q::MatZq;
-    /// use crate::math::traits::GetEntry;
-    /// use math::integer::Z;
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::traits::GetEntry;
+    /// use qfall_math::integer::Z;
     ///
     /// let matrix = MatZq::new(5, 10, 7).unwrap();
     /// let entry: Z = matrix.get_entry(0, 1).unwrap();
@@ -99,7 +99,7 @@ impl GetEntry<Z> for MatZq {
         row: impl TryInto<i64> + Display + Copy,
         column: impl TryInto<i64> + Display + Copy,
     ) -> Result<Z, MathError> {
-        let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
+        let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
 
         let mut out = Z::default();
         let entry = unsafe { fmpz_mod_mat_entry(&self.matrix, row_i64, column_i64) };
@@ -121,9 +121,9 @@ impl GetEntry<Zq> for MatZq {
     ///
     /// # Example
     /// ```rust
-    /// use math::integer_mod_q::MatZq;
-    /// use crate::math::traits::GetEntry;
-    /// use math::integer::Z;
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::traits::GetEntry;
+    /// use qfall_math::integer::Z;
     ///
     /// let matrix = MatZq::new(5, 10, 7).unwrap();
     /// let entry: Z = matrix.get_entry(0, 1).unwrap();
@@ -154,7 +154,7 @@ impl MatZq {
     ///
     /// # Example
     /// ```compile_fail
-    /// use math::intger_mod_q::MatZq;
+    /// use qfall_math::intger_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
     /// let mat = MatZq::from_str("[[1,2],[3,4],[5,6]] mod 3").unwrap();

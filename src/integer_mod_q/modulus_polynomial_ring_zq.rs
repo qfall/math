@@ -29,8 +29,8 @@ mod to_string;
 ///
 /// # Example
 /// ```
-/// use math::integer_mod_q::ModulusPolynomialRingZq;
-/// use math::integer_mod_q::PolyOverZq;
+/// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+/// use qfall_math::integer_mod_q::PolyOverZq;
 /// use std::str::FromStr;
 ///
 /// // initialize X^2 + 1 mod 17, i.e. a polynomial with prime modulus

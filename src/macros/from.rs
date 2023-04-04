@@ -59,8 +59,8 @@ pub(crate) use from_trait;
 ///
 /// # Example
 /// ```compile_fail
-/// use math::macros;
-/// use math::integer::Z;
+/// use qfall_math::macros;
+/// use qfall_math::integer::Z;
 ///
 /// impl Z {
 ///     pub fn from_i64(value: i64) -> Self { ... }

@@ -28,12 +28,29 @@ mod to_string;
 ///
 /// # Examples
 /// ```
-/// use math::rational::Q;
+/// use qfall_math::rational::Q;
 /// use std::str::FromStr;
 ///
+/// // instantiations
 /// let a = Q::from_str("-876543/235")?;
+/// let b = Q::try_from((&21, &1))?;
 /// let zero = Q::default();
-/// # Ok::<(), math::error::MathError>(())
+/// let _ = a.clone();
+///
+/// // arithmetics
+/// let _ = &a + &zero;
+/// let _ = &a * &b;
+///
+/// // to_string incl. (de-)serialization
+/// assert_eq!("-876543/235", &a.to_string());
+/// assert_eq!(
+///     "{\"value\":\"-876543/235\"}",
+///     serde_json::to_string(&a).unwrap()
+/// );
+///
+/// // comparison
+/// assert_ne!(a, b);
+/// # Ok::<(), qfall_math::error::MathError>(())
 /// ```
 #[derive(Debug)]
 pub struct Q {

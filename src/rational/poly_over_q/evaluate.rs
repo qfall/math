@@ -30,9 +30,9 @@ impl Evaluate<&Q, Q> for PolyOverQ {
     ///
     /// # Example
     /// ```
-    /// use math::traits::Evaluate;
-    /// use math::rational::Q;
-    /// use math::rational::PolyOverQ;
+    /// use qfall_math::traits::*;
+    /// use qfall_math::rational::Q;
+    /// use qfall_math::rational::PolyOverQ;
     /// use std::str::FromStr;
     ///
     /// let poly = PolyOverQ::from_str("5  0 1 2/3 -3/2 1").unwrap();
@@ -59,9 +59,9 @@ impl Evaluate<&Z, Q> for PolyOverQ {
     ///
     /// # Example
     /// ```
-    /// use math::traits::Evaluate;
-    /// use math::rational::Q;
-    /// use math::rational::PolyOverQ;
+    /// use qfall_math::traits::*;
+    /// use qfall_math::rational::Q;
+    /// use qfall_math::rational::PolyOverQ;
     /// use std::str::FromStr;
     ///
     /// let poly = PolyOverQ::from_str("5  0 1 2/3 -3/2 1").unwrap();

@@ -21,7 +21,7 @@ impl PartialEq for MatQ {
     ///
     /// # Example
     /// ```
-    /// use math::rational::MatQ;
+    /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
     /// let a1 = MatQ::from_str("[[1/2,2],[3/2,4]]").unwrap();

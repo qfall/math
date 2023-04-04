@@ -25,7 +25,7 @@ impl Z {
     ///
     /// # Example
     /// ```
-    /// use math::integer::Z;
+    /// use qfall_math::integer::Z;
     ///
     /// // sum_{k=0}^999 17^k/k!
     /// let evaluation = Z::from(17).exp_taylor(1000_u32);

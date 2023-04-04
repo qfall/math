@@ -10,7 +10,7 @@
 
 use super::MatQ;
 use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
-use crate::utils::coordinate::evaluate_coordinates;
+use crate::utils::index::evaluate_indices;
 use crate::{error::MathError, rational::Q};
 use flint_sys::{
     fmpq::{fmpq, fmpq_set},
@@ -23,8 +23,8 @@ impl GetNumRows for MatQ {
     ///
     /// # Example
     /// ```
-    /// use math::rational::MatQ;
-    /// use math::traits::GetNumRows;
+    /// use qfall_math::rational::MatQ;
+    /// use qfall_math::traits::*;
     ///
     /// let matrix = MatQ::new(5,6).unwrap();
     /// let rows = matrix.get_num_rows();
@@ -39,8 +39,8 @@ impl GetNumColumns for MatQ {
     ///
     /// # Example
     /// ```
-    /// use math::rational::MatQ;
-    /// use math::traits::GetNumColumns;
+    /// use qfall_math::rational::MatQ;
+    /// use qfall_math::traits::*;
     ///
     /// let matrix = MatQ::new(5,6).unwrap();
     /// let columns = matrix.get_num_columns();
@@ -63,8 +63,8 @@ impl GetEntry<Q> for MatQ {
     ///
     /// # Example
     /// ```
-    /// use math::rational::MatQ;
-    /// use crate::math::traits::GetEntry;
+    /// use qfall_math::rational::MatQ;
+    /// use qfall_math::traits::GetEntry;
     ///
     /// let matrix = MatQ::new(5, 10).unwrap();
     /// let entry = matrix.get_entry(0, 1).unwrap();
@@ -78,7 +78,7 @@ impl GetEntry<Q> for MatQ {
         row: impl TryInto<i64> + Display + Copy,
         column: impl TryInto<i64> + Display + Copy,
     ) -> Result<Q, MathError> {
-        let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
+        let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
 
         // since `self.matrix` is a correct fmpq matrix and both row and column
         // are previously checked to be inside of the matrix, no errors
@@ -102,7 +102,7 @@ impl MatQ {
     ///
     /// # Example
     /// ```compile_fail
-    /// use math::rational::MatQ;
+    /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
     /// let mat = MatQ::from_str("[[1/1,2],[3/1,4],[5/1,6]]").unwrap();

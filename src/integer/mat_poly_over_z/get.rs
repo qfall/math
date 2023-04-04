@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::PolyOverZ,
     traits::{GetEntry, GetNumColumns, GetNumRows},
-    utils::coordinate::evaluate_coordinates,
+    utils::index::evaluate_indices,
 };
 use flint_sys::{
     fmpz_poly::{fmpz_poly_set, fmpz_poly_struct},
@@ -26,8 +26,8 @@ impl GetNumRows for MatPolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatPolyOverZ;
-    /// use math::traits::GetNumRows;
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::traits::*;
     ///
     /// let matrix = MatPolyOverZ::new(5,6).unwrap();
     /// let rows = matrix.get_num_rows();
@@ -42,8 +42,8 @@ impl GetNumColumns for MatPolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatPolyOverZ;
-    /// use math::traits::GetNumColumns;
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::traits::*;
     ///
     /// let matrix = MatPolyOverZ::new(5,6).unwrap();
     /// let columns = matrix.get_num_columns();
@@ -66,8 +66,8 @@ impl GetEntry<PolyOverZ> for MatPolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatPolyOverZ;
-    /// use math::traits::GetEntry;
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::traits::*;
     ///
     /// let matrix = MatPolyOverZ::new(5, 10).unwrap();
     /// let entry = matrix.get_entry(0, 1).unwrap();
@@ -81,7 +81,7 @@ impl GetEntry<PolyOverZ> for MatPolyOverZ {
         row: impl TryInto<i64> + Display + Copy,
         column: impl TryInto<i64> + Display + Copy,
     ) -> Result<PolyOverZ, MathError> {
-        let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
+        let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
 
         // since `self.matrix` is a correct fmpz_poly matrix and both row and column
         // are previously checked to be inside of the matrix, no errors
@@ -105,7 +105,7 @@ impl MatPolyOverZ {
     ///
     /// # Example
     /// ```compile_fail
-    /// use math::intger::MatPolyOverZ;
+    /// use qfall_math::intger::MatPolyOverZ;
     /// use std::str::FromStr;
     ///
     /// let mat = MatPolyOverZ::from_str("[[1  1, 0],[1  3, 1  4],[0,1  6]]").unwrap();

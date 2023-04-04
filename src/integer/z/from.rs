@@ -31,7 +31,7 @@ impl Z {
     ///
     /// # Example
     /// ```
-    /// use math::integer::Z;
+    /// use qfall_math::integer::Z;
     ///
     /// let a: Z = Z::from_i64(42);
     /// ```
@@ -50,7 +50,7 @@ impl Z {
     ///
     /// # Example
     /// ```
-    /// use math::integer::Z;
+    /// use qfall_math::integer::Z;
     ///
     /// let a: Z = Z::from_u64(42);
     /// ```
@@ -78,8 +78,8 @@ impl Z {
     ///
     /// # Example
     /// ```
-    /// use math::integer::Z;
-    /// use math::integer_mod_q::Modulus;
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
     ///
     /// let m = Modulus::from_str("42").unwrap();
@@ -121,7 +121,7 @@ impl FromStr for Z {
     /// # Example:
     /// ```
     /// use std::str::FromStr;
-    /// use math::integer::Z;
+    /// use qfall_math::integer::Z;
     ///  
     /// let a: Z = "100".parse().unwrap();
     /// let b: Z = Z::from_str("100").unwrap();

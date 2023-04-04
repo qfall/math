@@ -26,7 +26,7 @@ impl PartialEq for ModulusPolynomialRingZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
     /// use std::str::FromStr;
     /// let a: ModulusPolynomialRingZq = ModulusPolynomialRingZq::from_str("2  24 1 mod 17").unwrap();
     /// let b: ModulusPolynomialRingZq = ModulusPolynomialRingZq::from_str("2  42 1 mod 17").unwrap();

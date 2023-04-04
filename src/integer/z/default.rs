@@ -16,7 +16,7 @@ impl Default for Z {
     /// # Example:
     /// ```
     /// use std::default::Default;
-    /// use math::integer::Z;
+    /// use qfall_math::integer::Z;
     ///  
     /// let a: Z = Z::default();
     /// ```
@@ -30,7 +30,7 @@ impl Z {
     ///
     /// # Example:
     /// ```
-    /// use math::integer::Z;
+    /// use qfall_math::integer::Z;
     ///  
     /// let a: Z = Z::ONE;
     /// ```
@@ -42,7 +42,7 @@ impl Z {
     ///
     /// # Example:
     /// ```
-    /// use math::integer::Z;
+    /// use qfall_math::integer::Z;
     ///  
     /// let a: Z = Z::ZERO;
     /// ```

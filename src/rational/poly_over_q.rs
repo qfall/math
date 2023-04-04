@@ -31,10 +31,20 @@ mod to_string;
 //
 /// # Example
 /// ```
-/// use math::rational::PolyOverQ;
+/// use qfall_math::rational::{PolyOverQ, Q};
+/// use qfall_math::traits::*;
 /// use std::str::FromStr;
 ///
-/// let poly = PolyOverQ::from_str("5  0 1/3 2/10 -3/2 1").unwrap();
+/// // instantiations
+/// let poly_1 = PolyOverQ::from_str("4  0 1/2 2 3/4").unwrap();
+/// let poly_2 = PolyOverQ::default();
+///
+/// // evaluate function
+/// let value = Q::default();
+/// let res = poly_1.evaluate(&value);
+///
+/// // comparison
+/// assert_ne!(poly_1, poly_2);
 /// ```
 #[derive(Debug)]
 pub struct PolyOverQ {

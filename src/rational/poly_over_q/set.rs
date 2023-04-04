@@ -16,7 +16,7 @@ use crate::{
     macros::for_others::{implement_for_others, implement_for_owned},
     rational::Q,
     traits::SetCoefficient,
-    utils::coordinate::evaluate_coordinate,
+    utils::index::evaluate_index,
 };
 use flint_sys::fmpq_poly::{fmpq_poly_set_coeff_fmpq, fmpq_poly_set_coeff_fmpz};
 use std::fmt::Display;
@@ -25,19 +25,19 @@ impl SetCoefficient<&Z> for PolyOverQ {
     /// Sets the coefficient of a polynomial [`PolyOverQ`].
     /// We advise to use small coefficients, since already 2^32 coefficients take space
     /// of roughly 34 GB. If not careful, be prepared that memory problems can occur, if
-    /// the coordinate is very high.
+    /// the index is very high.
     ///
     /// All entries which are not directly addressed are automatically treated as zero.
     ///
     /// Parameters:
-    /// - `coordinate`: the coordinate of the coefficient to set (has to be positive)
-    /// - `value`: the new value the coordinate should have from a borrowed [`Z`].
+    /// - `index`: the index of the coefficient to set (has to be positive)
+    /// - `value`: the new value the index should have from a borrowed [`Z`].
     ///
     /// # Example
     /// ```
-    /// use math::rational::PolyOverQ;
-    /// use math::integer::Z;
-    /// use math::traits::SetCoefficient;
+    /// use qfall_math::rational::PolyOverQ;
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::traits::*;
     /// use std::str::FromStr;
     ///
     /// let mut poly = PolyOverQ::from_str("4  0 1 2/3 3/17").unwrap();
@@ -48,16 +48,16 @@ impl SetCoefficient<&Z> for PolyOverQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    /// either the coordinate is negative or it does not fit into an [`i64`].
+    /// either the index is negative or it does not fit into an [`i64`].
     fn set_coeff(
         &mut self,
-        coordinate: impl TryInto<i64> + Display + Copy,
+        index: impl TryInto<i64> + Display + Copy,
         value: &Z,
     ) -> Result<(), MathError> {
-        let coordinate = evaluate_coordinate(coordinate)?;
+        let index = evaluate_index(index)?;
 
         unsafe {
-            fmpq_poly_set_coeff_fmpz(&mut self.poly, coordinate, &value.value);
+            fmpq_poly_set_coeff_fmpz(&mut self.poly, index, &value.value);
         };
         Ok(())
     }
@@ -67,19 +67,19 @@ impl SetCoefficient<&Q> for PolyOverQ {
     /// Sets the coefficient of a polynomial [`PolyOverQ`].
     /// We advise to use small coefficients, since already 2^32 coefficients take space
     /// of roughly 34 GB. If not careful, be prepared that memory problems can occur, if
-    /// the coordinate is very high.
+    /// the index is very high.
     ///
     /// All entries which are not directly addressed are automatically treated as zero.
     ///
     /// Parameters:
-    /// - `coordinate`: the coordinate of the coefficient to set (has to be positive)
-    /// - `value`: the new value the coordinate should have from a borrowed [`Q`].
+    /// - `index`: the index of the coefficient to set (has to be positive)
+    /// - `value`: the new value the index should have from a borrowed [`Q`].
     ///
     /// # Example
     /// ```
-    /// use math::rational::PolyOverQ;
-    /// use math::rational::Q;
-    /// use math::traits::SetCoefficient;
+    /// use qfall_math::rational::PolyOverQ;
+    /// use qfall_math::rational::Q;
+    /// use qfall_math::traits::*;
     /// use std::str::FromStr;
     ///
     /// let mut poly = PolyOverQ::from_str("4  0 1 2/3 3/17").unwrap();
@@ -90,16 +90,16 @@ impl SetCoefficient<&Q> for PolyOverQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    /// either the coordinate is negative or it does not fit into an [`i64`].
+    /// either the index is negative or it does not fit into an [`i64`].
     fn set_coeff(
         &mut self,
-        coordinate: impl TryInto<i64> + Display + Copy,
+        index: impl TryInto<i64> + Display + Copy,
         value: &Q,
     ) -> Result<(), MathError> {
-        let coordinate = evaluate_coordinate(coordinate)?;
+        let index = evaluate_index(index)?;
 
         unsafe {
-            fmpq_poly_set_coeff_fmpq(&mut self.poly, coordinate, &value.value);
+            fmpq_poly_set_coeff_fmpq(&mut self.poly, index, &value.value);
         };
         Ok(())
     }
@@ -115,7 +115,7 @@ mod test_set_coeff_z {
     use crate::{integer::Z, rational::PolyOverQ, traits::SetCoefficient};
     use std::str::FromStr;
 
-    /// ensure that the negative coordinates return an error
+    /// ensure that the negative indices return an error
     #[test]
     fn set_min_negative_coeff() {
         let mut poly = PolyOverQ::from_str("2  -1 3/17").unwrap();

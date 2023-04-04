@@ -21,7 +21,7 @@ impl Clone for ModulusPolynomialRingZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
     /// use std::str::FromStr;
     ///
     /// // initialize X^2 + 1 mod 17, i.e. a polynomial with prime modulus
@@ -43,7 +43,7 @@ impl Drop for ModulusPolynomialRingZq {
     ///
     /// # Examples
     /// ```
-    /// use math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
     /// use std::str::FromStr;
     /// {
     ///     let a = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
@@ -51,7 +51,7 @@ impl Drop for ModulusPolynomialRingZq {
     /// ```
     ///
     /// ```
-    /// use math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
     /// use std::str::FromStr;
     ///
     /// let a = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();

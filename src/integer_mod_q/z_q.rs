@@ -26,23 +26,33 @@ mod from;
 mod reduce;
 mod to_string;
 
-/// [`Zq`] is a type for integers of arbitrary length modulo `q`.
-/// This means, integer in `[0..q)` (`0` inclusive, `q` exclusive).
-///
-/// # Example
-/// ```
-/// # use math::error::MathError;
-/// use math::integer_mod_q::Zq;
-///
-/// let value = Zq::try_from((5, 10))?;
-/// # Ok::<(), MathError>(())
-/// ```
-///
 /// [`Zq`] represents an integer value in a modulus ring.
 ///
 /// Attributes:
 /// - `value`: holds a [`Z`] value for an integer value
 /// - `modulus`: holds a [`Modulus`] above which the value is reduced
+///
+/// # Example
+/// ```
+/// # use qfall_math::error::MathError;
+/// use qfall_math::integer_mod_q::Zq;
+/// use std::str::FromStr;
+///
+/// // instantiation
+/// let a = Zq::try_from((5, 10))?;
+/// let b = Zq::from_str("93 mod 10")?;
+/// let _ = a.clone();
+///
+/// // arithmetics
+/// let _ = &a + &b;
+/// let _ = &a * &b;
+///
+/// // to_string incl. (de-)serialization
+/// assert_eq!("5 mod 10", &a.to_string());
+/// let _ = serde_json::to_string(&a).unwrap();
+///
+/// # Ok::<(), MathError>(())
+/// ```
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Zq {
     pub(crate) value: Z,

@@ -16,7 +16,7 @@ use crate::{
     integer_mod_q::Zq,
     macros::for_others::{implement_for_others, implement_for_owned},
     traits::SetCoefficient,
-    utils::coordinate::evaluate_coordinate,
+    utils::index::evaluate_index,
 };
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_set_coeff_fmpz;
 use std::fmt::Display;
@@ -25,19 +25,19 @@ impl SetCoefficient<&Z> for PolyOverZq {
     /// Sets the coefficient of a polynomial [`PolyOverZq`].
     /// We advise to use small coefficients, since already 2^32 coefficients take space
     /// of roughly 34 GB. If not careful, be prepared that memory problems can occur, if
-    /// the coordinate is very high.
+    /// the index is very high.
     ///
     /// All entries which are not directly addressed are automatically treated as zero.
     ///
     /// Parameters:
-    /// - `coordinate`: the coordinate of the coefficient to set (has to be positive)
-    /// - `value`: the new value the coordinate should have from a borrowed [`Z`].
+    /// - `index`: the index of the coefficient to set (has to be positive)
+    /// - `value`: the new value the index should have from a borrowed [`Z`].
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::PolyOverZq;
-    /// use math::integer::Z;
-    /// use math::traits::SetCoefficient;
+    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::traits::*;
     /// use std::str::FromStr;
     ///
     /// let mut poly = PolyOverZq::from_str("4  0 1 2 3 mod 17").unwrap();
@@ -48,18 +48,18 @@ impl SetCoefficient<&Z> for PolyOverZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    /// either the coordinate is negative or it does not fit into an [`i64`].
+    /// either the index is negative or it does not fit into an [`i64`].
     fn set_coeff(
         &mut self,
-        coordinate: impl TryInto<i64> + Display + Copy,
+        index: impl TryInto<i64> + Display + Copy,
         value: &Z,
     ) -> Result<(), MathError> {
-        let coordinate = evaluate_coordinate(coordinate)?;
+        let index = evaluate_index(index)?;
 
         unsafe {
             fmpz_mod_poly_set_coeff_fmpz(
                 &mut self.poly,
-                coordinate,
+                index,
                 &value.value,
                 self.modulus.get_fmpz_mod_ctx_struct(),
             );
@@ -72,19 +72,19 @@ impl SetCoefficient<&Zq> for PolyOverZq {
     /// Sets the coefficient of a polynomial [`PolyOverZq`].
     /// We advise to use small coefficients, since already 2^32 coefficients take space
     /// of roughly 34 GB. If not careful, be prepared that memory problems can occur, if
-    /// the coordinate is very high.
+    /// the index is very high.
     ///
     /// All entries which are not directly addressed are automatically treated as zero.
     ///
     /// Parameters:
-    /// - `coordinate`: the coordinate of the coefficient to set (has to be positive)
-    /// - `value`: the new value the coordinate should have from a borrowed [`Zq`].
+    /// - `index`: the index of the coefficient to set (has to be positive)
+    /// - `value`: the new value the index should have from a borrowed [`Zq`].
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::PolyOverZq;
-    /// use math::integer_mod_q::Zq;
-    /// use math::traits::SetCoefficient;
+    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use qfall_math::integer_mod_q::Zq;
+    /// use qfall_math::traits::*;
     /// use std::str::FromStr;
     ///
     /// let mut poly = PolyOverZq::from_str("4  0 1 2 3 mod 17").unwrap();
@@ -95,19 +95,19 @@ impl SetCoefficient<&Zq> for PolyOverZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    /// either the coordinate is negative or it does not fit into an [`i64`].
+    /// either the index is negative or it does not fit into an [`i64`].
     /// - Returns a [`MathError`] of type
     ///  [`MismatchingModulus`](MathError::MismatchingModulus) the moduli of
     /// the polynomial and the input mismatch
     fn set_coeff(
         &mut self,
-        coordinate: impl TryInto<i64> + Display + Copy,
+        index: impl TryInto<i64> + Display + Copy,
         value: &Zq,
     ) -> Result<(), MathError> {
         if self.modulus != value.modulus {
             return Err(MathError::MismatchingModulus(value.to_string()));
         }
-        self.set_coeff(coordinate, &value.value)
+        self.set_coeff(index, &value.value)
     }
 }
 
@@ -121,7 +121,7 @@ mod test_set_coeff_z {
     use crate::{integer::Z, integer_mod_q::PolyOverZq, traits::SetCoefficient};
     use std::str::FromStr;
 
-    /// ensure that the negative coordinates return an error
+    /// ensure that the negative indices return an error
     #[test]
     fn set_min_negative_coeff() {
         let mut poly = PolyOverZq::from_str("2  1 1 mod 11").unwrap();

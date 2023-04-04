@@ -1,4 +1,4 @@
-name: Check all in one
+name: Pipeline
 # consistency regarding formatting and idiomatic Rust
 
 on: [ pull_request ]

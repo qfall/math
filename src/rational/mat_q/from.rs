@@ -19,8 +19,7 @@ use crate::{
     rational::Q,
     traits::SetEntry,
     utils::{
-        coordinate::evaluate_coordinate, dimensions::find_matrix_dimensions,
-        parse::parse_matrix_string,
+        dimensions::find_matrix_dimensions, index::evaluate_index, parse::parse_matrix_string,
     },
 };
 use flint_sys::fmpq_mat::fmpq_mat_init;
@@ -39,7 +38,7 @@ impl MatQ {
     ///
     /// # Example
     /// ```
-    /// use math::rational::MatQ;
+    /// use qfall_math::rational::MatQ;
     ///
     /// let matrix = MatQ::new(5, 10).unwrap();
     /// ```
@@ -54,8 +53,8 @@ impl MatQ {
         num_rows: impl TryInto<i64> + Display + Copy,
         num_cols: impl TryInto<i64> + Display + Copy,
     ) -> Result<Self, MathError> {
-        let num_rows_i64 = evaluate_coordinate(num_rows)?;
-        let num_cols_i64 = evaluate_coordinate(num_cols)?;
+        let num_rows_i64 = evaluate_index(num_rows)?;
+        let num_cols_i64 = evaluate_index(num_cols)?;
 
         if num_rows_i64 == 0 || num_cols_i64 == 0 {
             return Err(MathError::InvalidMatrix(format!(
@@ -95,7 +94,7 @@ impl FromStr for MatQ {
     ///
     /// # Example
     /// ```
-    /// use math::rational::MatQ;
+    /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
     /// let string = String::from("[[1/2,2/3,3/4],[4/5,5/6,6/7]]");

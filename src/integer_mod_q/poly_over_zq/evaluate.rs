@@ -31,9 +31,9 @@ impl Evaluate<&Z, Zq> for PolyOverZq {
     ///
     /// # Example
     /// ```
-    /// use math::traits::Evaluate;
-    /// use math::integer::Z;
-    /// use math::integer_mod_q::PolyOverZq;
+    /// use qfall_math::traits::*;
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
     ///
     /// let poly = PolyOverZq::from_str("5  0 1 2 -3 1 mod 17").unwrap();
@@ -69,9 +69,9 @@ impl Evaluate<&Zq, Zq> for PolyOverZq {
     ///
     /// # Example
     /// ```
-    /// use math::traits::Evaluate;
-    /// use math::integer_mod_q::Zq;
-    /// use math::integer_mod_q::PolyOverZq;
+    /// use qfall_math::traits::*;
+    /// use qfall_math::integer_mod_q::Zq;
+    /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
     ///
     /// let poly = PolyOverZq::from_str("5  0 1 2 -3 1 mod 17").unwrap();
@@ -99,9 +99,9 @@ impl PolyOverZq {
     ///
     /// # Example
     /// ```
-    /// use math::traits::Evaluate;
-    /// use math::integer_mod_q::Zq;
-    /// use math::integer_mod_q::PolyOverZq;
+    /// use qfall_math::traits::*;
+    /// use qfall_math::integer_mod_q::Zq;
+    /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
     ///
     /// let poly = PolyOverZq::from_str("5  0 1 2 -3 1 mod 17").unwrap();

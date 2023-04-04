@@ -28,19 +28,28 @@ mod to_string;
 ///
 /// # Examples
 /// ```
-/// use math::integer::Z;
+/// use qfall_math::integer::Z;
 /// use std::str::FromStr;
 ///
+/// // instantiations
 /// let a = Z::from_str("-876543")?;
-/// let b = Z::from_i64(i64::MIN);
+/// let b = Z::from(i64::MIN);
 /// let zero = Z::default();
 ///
-/// let result = &a - b.clone() + &zero;
+/// // arithmetics
+/// let _ = &a * b.clone();
+/// let _ = &b - zero;
 ///
-/// drop(b);
+/// // comparison
+/// assert_ne!(b, a);
 ///
-/// assert_ne!(result, zero);
-/// # Ok::<(), math::error::MathError>(())
+/// // to_string incl. (de-)serialization
+/// assert_eq!("-876543", &a.to_string());
+/// assert_eq!(
+///     "{\"value\":\"-876543\"}",
+///     serde_json::to_string(&a).unwrap()
+/// );
+/// # Ok::<(), qfall_math::error::MathError>(())
 /// ```
 #[derive(Debug)]
 pub struct Z {

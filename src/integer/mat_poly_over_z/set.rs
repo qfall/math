@@ -10,7 +10,7 @@
 
 use super::MatPolyOverZ;
 use crate::{
-    error::MathError, integer::PolyOverZ, traits::SetEntry, utils::coordinate::evaluate_coordinates,
+    error::MathError, integer::PolyOverZ, traits::SetEntry, utils::index::evaluate_indices,
 };
 use flint_sys::fmpz_poly::fmpz_poly_swap;
 use flint_sys::{fmpz_poly::fmpz_poly_set, fmpz_poly_mat::fmpz_poly_mat_entry};
@@ -26,9 +26,9 @@ impl SetEntry<&PolyOverZ> for MatPolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatPolyOverZ;
-    /// use math::integer::PolyOverZ;
-    /// use math::traits::SetEntry;
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::integer::PolyOverZ;
+    /// use qfall_math::traits::*;
     ///
     /// let mut matrix = MatPolyOverZ::new(5, 10).unwrap();
     /// let value = PolyOverZ::default();
@@ -44,7 +44,7 @@ impl SetEntry<&PolyOverZ> for MatPolyOverZ {
         column: impl TryInto<i64> + Display + Copy,
         value: &PolyOverZ,
     ) -> Result<(), MathError> {
-        let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
+        let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
 
         // since `self` is a correct matrix and both row and column
         // are previously checked to be inside of the matrix, no errors
@@ -69,9 +69,9 @@ impl SetEntry<PolyOverZ> for MatPolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatPolyOverZ;
-    /// use math::integer::PolyOverZ;
-    /// use math::traits::SetEntry;
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::integer::PolyOverZ;
+    /// use qfall_math::traits::*;
     ///
     /// let mut matrix = MatPolyOverZ::new(5, 10).unwrap();
     /// let value = PolyOverZ::default();
@@ -87,7 +87,7 @@ impl SetEntry<PolyOverZ> for MatPolyOverZ {
         column: impl TryInto<i64> + Display + Copy,
         mut value: PolyOverZ,
     ) -> Result<(), MathError> {
-        let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
+        let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
 
         // swapping the content of the entry with the given value since ownership
         // of the input is provided.

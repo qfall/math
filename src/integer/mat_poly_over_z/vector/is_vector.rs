@@ -21,7 +21,7 @@ impl MatPolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatPolyOverZ;
+    /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     ///
     /// let row_vec = MatPolyOverZ::from_str("[[1  1, 1  2, 1  3]]").unwrap();
@@ -39,7 +39,7 @@ impl MatPolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatPolyOverZ;
+    /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     ///
     /// let row_vec = MatPolyOverZ::from_str("[[1  1, 1  2, 1  3]]").unwrap();
@@ -57,7 +57,7 @@ impl MatPolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatPolyOverZ;
+    /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     ///
     /// let row_vec = MatPolyOverZ::from_str("[[1  1, 1  2, 1  3]]").unwrap();
@@ -75,7 +75,7 @@ impl MatPolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatPolyOverZ;
+    /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     ///
     /// let vec = MatPolyOverZ::from_str("[[1  1]]").unwrap();

@@ -21,7 +21,7 @@ impl Clone for MatZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::MatZq;
+    /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
     /// let string = String::from("[[1,2,3],[4,5,6]] mod 4");
@@ -47,7 +47,7 @@ impl Drop for MatZq {
     ///
     /// # Examples
     /// ```
-    /// use math::integer_mod_q::MatZq;
+    /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
     /// let string = String::from("[[1,2,3],[4,5,6]] mod 4");
@@ -57,7 +57,7 @@ impl Drop for MatZq {
     /// ```
     ///
     /// ```
-    /// use math::integer_mod_q::MatZq;
+    /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
     /// let string = String::from("[[1,2,3],[4,5,6]] mod 4");

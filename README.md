@@ -26,7 +26,7 @@ If you want to include this project in your own Rust project, you can
 include a link to our version on the `dev` branch in your `Cargo.toml`. 
 
 ```text
-math = { git = "https://github.com/qfall/math", branch="dev" }
+qfall-math = { git = "https://github.com/qfall/math", branch="dev" }
 ```
 
 Be aware that the external libraries in our project have to be compiled at the first installation,
@@ -43,7 +43,7 @@ cargo doc               # suffix with --open to directly open the documentation
 once the project is cloned. Following, find a small overview containing the general types of our library [qFALL-math](https://github.com/qfall/math).
 
 ```bash
-.math
+math
 ├── ...
 ├── src                 
 │   ├── integer         # src folder containing implementations of integers
@@ -62,7 +62,7 @@ once the project is cloned. Following, find a small overview containing the gene
 
 
 ```rust
-use math::integer::Z;
+use qfall_math::integer::Z;
 
 let a = Z::from(24);
 let b = Z::from(42);
@@ -80,8 +80,8 @@ let res_mul: Z = a * b;
 - [`PolynomialRingZq`](https://github.com/qfall/math/blob/dev/src/integer_mod_q/polynomial_ring_zq.rs): Represents quotient rings of $\mathbb Z_q[X]/f(X)$ where $q$ is prime and $f(X)$ is a [`PolyOverZq`](https://github.com/qfall/math/blob/dev/src/integer_mod_q/poly_over_zq.rs).
 
 ```rust
-use math::integer_mod_q::Zq;
-use math::integer_mod_q::Modulus;
+use qfall_math::integer_mod_q::Zq;
+use qfall_math::integer_mod_q::Modulus;
 
 let modulus = Modulus::try_from(24).unwrap();
 let a = Zq::from((&Z::from(42), &modulus));
@@ -99,7 +99,7 @@ let res_mul: Zq = a * b;
 - [`PolyOverQ`](https://github.com/qfall/math/blob/dev/src/rational/poly_over_q.rs): Represents polynomials with coefficients over $\mathbb Q$
 
 ```rust
-use math::rational::Q;
+use qfall_math::rational::Q;
 
 let a = Q::try_from((17, 19)).unwrap();
 let b = Q::try_from((42, 24)).unwrap();

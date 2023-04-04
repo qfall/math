@@ -22,7 +22,7 @@ impl Clone for PolyOverQ {
     ///
     /// # Example
     /// ```
-    /// use math::rational::PolyOverQ;
+    /// use qfall_math::rational::PolyOverQ;
     ///
     /// let a = PolyOverQ::default();
     /// let b = a.clone();
@@ -43,14 +43,14 @@ impl Drop for PolyOverQ {
     ///
     /// # Examples
     /// ```
-    /// use math::rational::PolyOverQ;
+    /// use qfall_math::rational::PolyOverQ;
     /// {
     ///     let a = PolyOverQ::default();
     /// } // as a's scope ends here, it get's dropped
     /// ```
     ///
     /// ```
-    /// use math::rational::PolyOverQ;
+    /// use qfall_math::rational::PolyOverQ;
     ///
     /// let a = PolyOverQ::default();
     /// drop(a); // explicitly drops a's value

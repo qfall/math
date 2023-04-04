@@ -34,7 +34,7 @@ impl FromStr for PolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::PolyOverZ;
+    /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;
     ///
     /// let poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();

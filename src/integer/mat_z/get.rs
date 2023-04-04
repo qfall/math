@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::Z,
     traits::{GetEntry, GetNumColumns, GetNumRows},
-    utils::coordinate::evaluate_coordinates,
+    utils::index::evaluate_indices,
 };
 use flint_sys::{
     fmpz::{fmpz, fmpz_set},
@@ -26,8 +26,8 @@ impl GetNumRows for MatZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
-    /// use math::traits::GetNumRows;
+    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::traits::*;
     ///
     /// let matrix = MatZ::new(5,6).unwrap();
     /// let rows = matrix.get_num_rows();
@@ -42,8 +42,8 @@ impl GetNumColumns for MatZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
-    /// use math::traits::GetNumColumns;
+    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::traits::*;
     ///
     /// let matrix = MatZ::new(5,6).unwrap();
     /// let columns = matrix.get_num_columns();
@@ -66,8 +66,8 @@ impl GetEntry<Z> for MatZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatZ;
-    /// use crate::math::traits::GetEntry;
+    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::traits::GetEntry;
     ///
     /// let matrix = MatZ::new(5, 10).unwrap();
     /// let entry = matrix.get_entry(0, 1).unwrap();
@@ -81,7 +81,7 @@ impl GetEntry<Z> for MatZ {
         row: impl TryInto<i64> + Display + Copy,
         column: impl TryInto<i64> + Display + Copy,
     ) -> Result<Z, MathError> {
-        let (row_i64, column_i64) = evaluate_coordinates(self, row, column)?;
+        let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
 
         // since `self.matrix` is a correct fmpz matrix and both row and column
         // are previously checked to be inside of the matrix, no errors
@@ -104,7 +104,7 @@ impl MatZ {
     ///
     /// # Example
     /// ```compile_fail
-    /// use math::intger::MatZ;
+    /// use qfall_math::intger::MatZ;
     /// use std::str::FromStr;
     ///
     /// let mat = MatZ::from_str("[[1,2],[3,4],[5,6]]").unwrap();

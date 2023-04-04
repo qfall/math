@@ -19,8 +19,7 @@ use crate::{
     integer::PolyOverZ,
     traits::SetEntry,
     utils::{
-        coordinate::evaluate_coordinate, dimensions::find_matrix_dimensions,
-        parse::parse_matrix_string,
+        dimensions::find_matrix_dimensions, index::evaluate_index, parse::parse_matrix_string,
     },
 };
 use flint_sys::fmpz_poly_mat::fmpz_poly_mat_init;
@@ -39,7 +38,7 @@ impl MatPolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatPolyOverZ;
+    /// use qfall_math::integer::MatPolyOverZ;
     ///
     /// let matrix = MatPolyOverZ::new(5, 10).unwrap();
     /// ```
@@ -54,8 +53,8 @@ impl MatPolyOverZ {
         num_rows: impl TryInto<i64> + Display + Copy,
         num_cols: impl TryInto<i64> + Display + Copy,
     ) -> Result<Self, MathError> {
-        let num_rows_i64 = evaluate_coordinate(num_rows)?;
-        let num_cols_i64 = evaluate_coordinate(num_cols)?;
+        let num_rows_i64 = evaluate_index(num_rows)?;
+        let num_cols_i64 = evaluate_index(num_cols)?;
 
         if num_rows_i64 == 0 || num_cols_i64 == 0 {
             return Err(MathError::InvalidMatrix(format!(
@@ -97,7 +96,7 @@ impl FromStr for MatPolyOverZ {
     ///
     /// # Example
     /// ```
-    /// use math::integer::MatPolyOverZ;
+    /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     ///
     /// let string = String::from("[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]");

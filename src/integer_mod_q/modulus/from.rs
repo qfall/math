@@ -27,7 +27,7 @@ impl Modulus {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::Modulus;
+    /// use qfall_math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
     ///
     /// let modulus = Modulus::from_str("42").unwrap();
@@ -66,7 +66,7 @@ impl FromStr for Modulus {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::Modulus;
+    /// use qfall_math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
     ///
     /// let modulus = Modulus::from_str("42").unwrap();

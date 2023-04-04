@@ -31,8 +31,8 @@ impl TryFrom<&PolyOverZq> for ModulusPolynomialRingZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::ModulusPolynomialRingZq;
-    /// use math::integer_mod_q::PolyOverZq;
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
     ///
     /// // initialize X^2 + 1 mod 17, i.e. a polynomial with prime modulus
@@ -80,7 +80,7 @@ impl FromStr for ModulusPolynomialRingZq {
     ///
     /// # Example
     /// ```
-    /// use math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
     /// use std::str::FromStr;
     ///
     /// // initialize X^2 + 1 mod 17, i.e. a polynomial with prime modulus
