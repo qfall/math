@@ -32,8 +32,8 @@ impl Add for &MatPolyOverZ {
     /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     ///
-    /// let a: MatPolyOverZ = MatPolyOverZ::from_str(&String::from("[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]")).unwrap();
-    /// let b: MatPolyOverZ = MatPolyOverZ::from_str(&String::from("[[1  -42, 0, 2  24 42],[3  1 12 4, 1  -1, 1  17]]")).unwrap();
+    /// let a: MatPolyOverZ = MatPolyOverZ::from_str("[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]").unwrap();
+    /// let b: MatPolyOverZ = MatPolyOverZ::from_str("[[1  -42, 0, 2  24 42],[3  1 12 4, 1  -1, 1  17]]").unwrap();
     ///
     /// let c: MatPolyOverZ = &a + &b;
     /// let d: MatPolyOverZ = a + b;
@@ -63,8 +63,8 @@ impl MatPolyOverZ {
     /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     ///
-    /// let a: MatPolyOverZ = MatPolyOverZ::from_str(&String::from("[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]")).unwrap();
-    /// let b: MatPolyOverZ = MatPolyOverZ::from_str(&String::from("[[1  -42, 0, 2  24 42],[3  1 12 4, 1  -1, 1  17]]")).unwrap();
+    /// let a: MatPolyOverZ = MatPolyOverZ::from_str("[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]").unwrap();
+    /// let b: MatPolyOverZ = MatPolyOverZ::from_str("[[1  -42, 0, 2  24 42],[3  1 12 4, 1  -1, 1  17]]").unwrap();
     ///
     /// let c: MatPolyOverZ = a.add_safe(&b).unwrap();
     /// ```
@@ -77,7 +77,7 @@ impl MatPolyOverZ {
             || self.get_num_columns() != other.get_num_columns()
         {
             return Err(MathError::MismatchingMatrixDimension(format!(
-                "Tried to add a '{}x{}' matrix and a '{}x{}' matrix.", //todo display?
+                "Tried to add a '{}x{}' matrix and a '{}x{}' matrix.",
                 self.get_num_rows(),
                 self.get_num_columns(),
                 other.get_num_rows(),
@@ -104,112 +104,88 @@ mod test_add {
     /// testing addition for two [`MatPolyOverZ`]
     #[test]
     fn add() {
-        let a: MatPolyOverZ = MatPolyOverZ::from_str(&String::from(
-            "[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]",
-        ))
-        .unwrap();
-        let b: MatPolyOverZ = MatPolyOverZ::from_str(&String::from(
-            "[[1  -42, 0, 2  24 42],[3  1 12 4, 1  -1, 1  17]]",
-        ))
-        .unwrap();
+        let a: MatPolyOverZ =
+            MatPolyOverZ::from_str("[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]").unwrap();
+        let b: MatPolyOverZ =
+            MatPolyOverZ::from_str("[[1  -42, 0, 2  24 42],[3  1 12 4, 1  -1, 1  17]]").unwrap();
 
         let c: MatPolyOverZ = a + b;
         assert!(
-            c == MatPolyOverZ::from_str(&String::from(
-                "[[1  -42, 1  42, 2  66 66],[3  18 36 46, 1  16, 1  59]]"
-            ))
-            .unwrap()
+            c == MatPolyOverZ::from_str("[[1  -42, 1  42, 2  66 66],[3  18 36 46, 1  16, 1  59]]")
+                .unwrap()
         );
     }
 
     /// testing addition for two borrowed [`MatPolyOverZ`]
     #[test]
     fn add_borrow() {
-        let a: MatPolyOverZ = MatPolyOverZ::from_str(&String::from(
-            "[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]",
-        ))
-        .unwrap();
-        let b: MatPolyOverZ = MatPolyOverZ::from_str(&String::from(
-            "[[1  -42, 0, 2  24 42],[3  1 12 4, 1  -1, 1  17]]",
-        ))
-        .unwrap();
+        let a: MatPolyOverZ =
+            MatPolyOverZ::from_str("[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]").unwrap();
+        let b: MatPolyOverZ =
+            MatPolyOverZ::from_str("[[1  -42, 0, 2  24 42],[3  1 12 4, 1  -1, 1  17]]").unwrap();
 
         let c: MatPolyOverZ = &a + &b;
         assert!(
-            c == MatPolyOverZ::from_str(&String::from(
-                "[[1  -42, 1  42, 2  66 66],[3  18 36 46, 1  16, 1  59]]"
-            ))
-            .unwrap()
+            c == MatPolyOverZ::from_str("[[1  -42, 1  42, 2  66 66],[3  18 36 46, 1  16, 1  59]]")
+                .unwrap()
         );
     }
 
     /// testing addition for borrowed [`MatPolyOverZ`] and [`MatPolyOverZ`]
     #[test]
     fn add_first_borrowed() {
-        let a: MatPolyOverZ = MatPolyOverZ::from_str(&String::from(
-            "[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]",
-        ))
-        .unwrap();
-        let b: MatPolyOverZ = MatPolyOverZ::from_str(&String::from(
-            "[[1  -42, 0, 2  24 42],[3  1 12 4, 1  -1, 1  17]]",
-        ))
-        .unwrap();
+        let a: MatPolyOverZ =
+            MatPolyOverZ::from_str("[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]").unwrap();
+        let b: MatPolyOverZ =
+            MatPolyOverZ::from_str("[[1  -42, 0, 2  24 42],[3  1 12 4, 1  -1, 1  17]]").unwrap();
 
         let c: MatPolyOverZ = &a + b;
         assert!(
-            c == MatPolyOverZ::from_str(&String::from(
-                "[[1  -42, 1  42, 2  66 66],[3  18 36 46, 1  16, 1  59]]"
-            ))
-            .unwrap()
+            c == MatPolyOverZ::from_str("[[1  -42, 1  42, 2  66 66],[3  18 36 46, 1  16, 1  59]]")
+                .unwrap()
         );
     }
 
     /// testing addition for [`MatPolyOverZ`] and borrowed [`MatPolyOverZ`]
     #[test]
     fn add_second_borrowed() {
-        let a: MatPolyOverZ = MatPolyOverZ::from_str(&String::from(
-            "[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]",
-        ))
-        .unwrap();
-        let b: MatPolyOverZ = MatPolyOverZ::from_str(&String::from(
-            "[[1  -42, 0, 2  24 42],[3  1 12 4, 1  -1, 1  17]]",
-        ))
-        .unwrap();
+        let a: MatPolyOverZ =
+            MatPolyOverZ::from_str("[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]").unwrap();
+        let b: MatPolyOverZ =
+            MatPolyOverZ::from_str("[[1  -42, 0, 2  24 42],[3  1 12 4, 1  -1, 1  17]]").unwrap();
 
         let c: MatPolyOverZ = a + &b;
         assert!(
-            c == MatPolyOverZ::from_str(&String::from(
-                "[[1  -42, 1  42, 2  66 66],[3  18 36 46, 1  16, 1  59]]"
-            ))
-            .unwrap()
+            c == MatPolyOverZ::from_str("[[1  -42, 1  42, 2  66 66],[3  18 36 46, 1  16, 1  59]]")
+                .unwrap()
         );
     }
 
     /// testing addition for big numbers
     #[test]
     fn add_large_numbers() {
-        let a: MatPolyOverZ = MatPolyOverZ::from_str(&String::from(format!(
+        let a: MatPolyOverZ = MatPolyOverZ::from_str(&format!(
             "[[1  {},2  1 {}],[2  -{} 7, 0]]",
             i64::MAX,
             i64::MIN,
             u64::MAX
-        )))
+        ))
         .unwrap();
-        let b: MatPolyOverZ = MatPolyOverZ::from_str(&String::from(format!(
+        let b: MatPolyOverZ = MatPolyOverZ::from_str(&format!(
             "[[1  {},2  1 {}],[2  {} 7, 0]]",
             i64::MAX,
             i64::MIN + 1,
             i64::MAX
-        )))
+        ))
         .unwrap();
         let c: MatPolyOverZ = a + &b;
         assert!(
-            c == MatPolyOverZ::from_str(&String::from(format!(
+            c == MatPolyOverZ::from_str(&format!(
                 "[[1  {},2  2 -{}],[2  -{} 14, 0]]",
                 u64::MAX - 1,
                 u64::MAX,
                 (u64::MAX - 1) / 2 + 1
-            )))
+            ))
             .unwrap()
         );
     }
@@ -217,35 +193,25 @@ mod test_add {
     /// testing add_safe
     #[test]
     fn add_safe() {
-        let a: MatPolyOverZ = MatPolyOverZ::from_str(&String::from(
-            "[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]",
-        ))
-        .unwrap();
-        let b: MatPolyOverZ = MatPolyOverZ::from_str(&String::from(
-            "[[1  -42, 0, 2  24 42],[3  1 12 4, 1  -1, 1  17]]",
-        ))
-        .unwrap();
+        let a: MatPolyOverZ =
+            MatPolyOverZ::from_str("[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]").unwrap();
+        let b: MatPolyOverZ =
+            MatPolyOverZ::from_str("[[1  -42, 0, 2  24 42],[3  1 12 4, 1  -1, 1  17]]").unwrap();
 
         let c: MatPolyOverZ = a.add_safe(&b).unwrap();
         assert!(
-            c == MatPolyOverZ::from_str(&String::from(
-                "[[1  -42, 1  42, 2  66 66],[3  18 36 46, 1  16, 1  59]]"
-            ))
-            .unwrap()
+            c == MatPolyOverZ::from_str("[[1  -42, 1  42, 2  66 66],[3  18 36 46, 1  16, 1  59]]")
+                .unwrap()
         );
     }
 
     /// testing add_safe throws error
     #[test]
     fn add_safe_is_err() {
-        let a: MatPolyOverZ = MatPolyOverZ::from_str(&String::from(
-            "[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]",
-        ))
-        .unwrap();
-        let b: MatPolyOverZ =
-            MatPolyOverZ::from_str(&String::from("[[1  -42, 0],[3  1 12 4, 1  17]]")).unwrap();
-        let c: MatPolyOverZ =
-            MatPolyOverZ::from_str(&String::from("[[0, 1  42, 2  42 24]]")).unwrap();
+        let a: MatPolyOverZ =
+            MatPolyOverZ::from_str("[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]").unwrap();
+        let b: MatPolyOverZ = MatPolyOverZ::from_str("[[1  -42, 0],[3  1 12 4, 1  17]]").unwrap();
+        let c: MatPolyOverZ = MatPolyOverZ::from_str("[[0, 1  42, 2  42 24]]").unwrap();
         assert!(a.add_safe(&b).is_err());
         assert!(c.add_safe(&b).is_err());
     }

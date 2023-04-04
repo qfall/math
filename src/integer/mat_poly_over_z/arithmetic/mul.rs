@@ -34,8 +34,8 @@ impl Mul for &MatPolyOverZ {
     /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     ///
-    /// let a: MatPolyOverZ = MatPolyOverZ::from_str(&String::from("[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]")).unwrap();
-    /// let b: MatPolyOverZ = MatPolyOverZ::from_str(&String::from("[[1  -42, 2  24 42],[1  -1, 1  17],[0, 2  1 42]]")).unwrap();
+    /// let a: MatPolyOverZ = MatPolyOverZ::from_str("[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]").unwrap();
+    /// let b: MatPolyOverZ = MatPolyOverZ::from_str("[[1  -42, 2  24 42],[1  -1, 1  17],[0, 2  1 42]]").unwrap();
 
     ///
     /// let c = &a * &b;
@@ -64,8 +64,8 @@ impl MatPolyOverZ {
     /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     ///
-    /// let a: MatPolyOverZ = MatPolyOverZ::from_str(&String::from("[[0, 2  42 24],[3  17 24 42, 1  17]]")).unwrap();
-    /// let b: MatPolyOverZ = MatPolyOverZ::from_str(&String::from("[[1  -42, 2  24 42],[3  1 12 4, 1  17]]")).unwrap();
+    /// let a: MatPolyOverZ = MatPolyOverZ::from_str("[[0, 2  42 24],[3  17 24 42, 1  17]]").unwrap();
+    /// let b: MatPolyOverZ = MatPolyOverZ::from_str("[[1  -42, 2  24 42],[3  1 12 4, 1  17]]").unwrap();
     ///
     /// let c: MatPolyOverZ = a.mul_safe(&b).unwrap();
     /// ```
@@ -75,10 +75,9 @@ impl MatPolyOverZ {
     /// [`MathError::MismatchingMatrixDimension`] if the dimensions of `self`
     ///  and `other` do not match for multiplication.
     pub fn mul_safe(&self, other: &Self) -> Result<Self, MathError> {
-        // TODO: mul_safe
         if self.get_num_columns() != other.get_num_rows() {
             return Err(MathError::MismatchingMatrixDimension(format!(
-                "Tried to multiply a '{}x{}' matrix and a '{}x{}' matrix.", //todo display?
+                "Tried to multiply a '{}x{}' matrix and a '{}x{}' matrix.",
                 self.get_num_rows(),
                 self.get_num_columns(),
                 other.get_num_rows(),
@@ -139,12 +138,10 @@ mod test_mul {
     /// throws an error as expected
     #[test]
     fn incompatible_dimensions() {
-        let a: MatPolyOverZ =
-            MatPolyOverZ::from_str(&String::from("[[2  0 1, 1  4],[0, 3  1 2 3]]")).unwrap();
-        let b: MatPolyOverZ = MatPolyOverZ::from_str(&String::from("[[2  0 1, 1  4]]")).unwrap();
+        let a: MatPolyOverZ = MatPolyOverZ::from_str("[[2  0 1, 1  4],[0, 3  1 2 3]]").unwrap();
+        let b: MatPolyOverZ = MatPolyOverZ::from_str("[[2  0 1, 1  4]]").unwrap();
         let c: MatPolyOverZ =
-            MatPolyOverZ::from_str(&String::from("[[2  0 1, 1  4, 0],[0, 3  1 2 3, 1  3]]"))
-                .unwrap();
+            MatPolyOverZ::from_str("[[2  0 1, 1  4, 0],[0, 3  1 2 3, 1  3]]").unwrap();
         assert!(a.mul_safe(&b).is_err());
         assert!(c.mul_safe(&b).is_err());
     }
