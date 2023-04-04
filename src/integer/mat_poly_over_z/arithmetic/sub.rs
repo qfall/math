@@ -110,8 +110,9 @@ mod test_sub {
         let b: MatPolyOverZ =
             MatPolyOverZ::from_str("[[1  -42, 0, 2  24 42],[3  1 12 4, 1  -1, 1  17]]").unwrap();
         let c: MatPolyOverZ = a - b;
-        assert!(
-            c == MatPolyOverZ::from_str("[[1  42, 1  42, 2  18 -18],[3  16 12 38, 1  18, 1  25]]")
+        assert_eq!(
+            c,
+            MatPolyOverZ::from_str("[[1  42, 1  42, 2  18 -18],[3  16 12 38, 1  18, 1  25]]")
                 .unwrap()
         );
     }
@@ -124,8 +125,9 @@ mod test_sub {
         let b: MatPolyOverZ =
             MatPolyOverZ::from_str("[[1  -42, 0, 2  24 42],[3  1 12 4, 1  -1, 1  17]]").unwrap();
         let c: MatPolyOverZ = &a - &b;
-        assert!(
-            c == MatPolyOverZ::from_str("[[1  42, 1  42, 2  18 -18],[3  16 12 38, 1  18, 1  25]]")
+        assert_eq!(
+            c,
+            MatPolyOverZ::from_str("[[1  42, 1  42, 2  18 -18],[3  16 12 38, 1  18, 1  25]]")
                 .unwrap()
         );
     }
@@ -138,8 +140,9 @@ mod test_sub {
         let b: MatPolyOverZ =
             MatPolyOverZ::from_str("[[1  -42, 0, 2  24 42],[3  1 12 4, 1  -1, 1  17]]").unwrap();
         let c: MatPolyOverZ = &a - b;
-        assert!(
-            c == MatPolyOverZ::from_str("[[1  42, 1  42, 2  18 -18],[3  16 12 38, 1  18, 1  25]]")
+        assert_eq!(
+            c,
+            MatPolyOverZ::from_str("[[1  42, 1  42, 2  18 -18],[3  16 12 38, 1  18, 1  25]]")
                 .unwrap()
         );
     }
@@ -152,8 +155,9 @@ mod test_sub {
         let b: MatPolyOverZ =
             MatPolyOverZ::from_str("[[1  -42, 0, 2  24 42],[3  1 12 4, 1  -1, 1  17]]").unwrap();
         let c: MatPolyOverZ = a - &b;
-        assert!(
-            c == MatPolyOverZ::from_str("[[1  42, 1  42, 2  18 -18],[3  16 12 38, 1  18, 1  25]]")
+        assert_eq!(
+            c,
+            MatPolyOverZ::from_str("[[1  42, 1  42, 2  18 -18],[3  16 12 38, 1  18, 1  25]]")
                 .unwrap()
         );
     }
@@ -176,8 +180,9 @@ mod test_sub {
         ))
         .unwrap();
         let c: MatPolyOverZ = a - &b;
-        assert!(
-            c == MatPolyOverZ::from_str(&format!("[[0,2  0 -{}],[1  -{}, 0]]", u64::MAX, i64::MAX))
+        assert_eq!(
+            c,
+            MatPolyOverZ::from_str(&format!("[[0,2  0 -{}],[1  -{}, 0]]", u64::MAX, i64::MAX))
                 .unwrap()
         );
     }
@@ -190,8 +195,9 @@ mod test_sub {
         let b: MatPolyOverZ =
             MatPolyOverZ::from_str("[[1  -42, 0, 2  24 42],[3  1 12 4, 1  -1, 1  17]]").unwrap();
         let c: MatPolyOverZ = a.sub_safe(&b).unwrap();
-        assert!(
-            c == MatPolyOverZ::from_str("[[1  42, 1  42, 2  18 -18],[3  16 12 38, 1  18, 1  25]]")
+        assert_eq!(
+            c,
+            MatPolyOverZ::from_str("[[1  42, 1  42, 2  18 -18],[3  16 12 38, 1  18, 1  25]]")
                 .unwrap()
         );
     }
