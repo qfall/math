@@ -157,9 +157,9 @@ mod test_sub {
         assert!(
             c == MatQ::from_str(&String::from(format!(
                 "[[0, 1, -{}],[0, -13, {}]]",
-                u32::MAX,
-                Q::from_str(format!("{}", i32::MAX).as_str()).unwrap()
-                    - Q::from_str(format!("1/{}", i32::MAX).as_str()).unwrap()
+                u64::MAX,
+                Q::from_str(format!("{}", u64::MAX).as_str()).unwrap()
+                    - Q::from_str(format!("1/{}", i64::MAX).as_str()).unwrap()
             )))
             .unwrap()
         );
