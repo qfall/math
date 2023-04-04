@@ -12,6 +12,7 @@
 
 use flint_sys::fmpq_poly::fmpq_poly_struct;
 
+mod arithmetic;
 mod cmp;
 mod default;
 mod evaluate;

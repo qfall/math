@@ -220,4 +220,19 @@ mod test_partial_eq {
         assert!(PolyOverQ::ne(&one, &two));
         assert_ne!(one, two);
     }
+
+    /// Testing for issue with different writings #issue:todo
+    #[test]
+    #[ignore]
+    fn eq_not_shortened() {
+        println!(
+            "{}\n{}\n",
+            PolyOverQ::from_str("3  4/77 4/14 -28/21").unwrap(),
+            PolyOverQ::from_str("3  4/77 2/7 -28/21").unwrap()
+        );
+        assert!(
+            PolyOverQ::from_str("3  4/77 4/14 -28/21").unwrap()
+                == PolyOverQ::from_str("3  4/77 2/7 -28/21").unwrap()
+        );
+    }
 }
