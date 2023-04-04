@@ -26,7 +26,7 @@ If you want to include this project in your own Rust project, you can
 include a link to our version on the `dev` branch in your `Cargo.toml`. 
 
 ```text
-math = { git = "https://github.com/qfall/math", branch="dev" }
+qfall-math = { git = "https://github.com/qfall/math", branch="dev" }
 ```
 
 Be aware that the external libraries in our project have to be compiled at the first installation,
@@ -43,7 +43,7 @@ cargo doc               # suffix with --open to directly open the documentation
 once the project is cloned. Following, find a small overview containing the general types of our library [qFALL-math](https://github.com/qfall/math).
 
 ```bash
-.math
+math
 ├── ...
 ├── src                 
 │   ├── integer         # src folder containing implementations of integers
