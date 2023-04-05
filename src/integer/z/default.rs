@@ -49,6 +49,18 @@ impl Z {
     pub const ZERO: Z = Z {
         value: flint_sys::fmpz::fmpz(0),
     };
+
+    /// Returns an instantiation of [`Z`] with value `-1`.
+    ///
+    /// # Example:
+    /// ```
+    /// use qfall_math::integer::Z;
+    ///  
+    /// let a: Z = Z::MINUS_ONE;
+    /// ```
+    pub const MINUS_ONE: Z = Z {
+        value: flint_sys::fmpz::fmpz(-1),
+    };
 }
 
 #[cfg(test)]
@@ -62,15 +74,21 @@ mod tests_init {
         assert_eq!(Z::ZERO, Z::default());
     }
 
-    /// Ensure that ZERO initializes [`Z`] with `0`.
+    /// Ensure that `ZERO` initializes [`Z`] with `0`.
     #[test]
-    fn init_0() {
+    fn init_zero() {
         assert_eq!(Z::from(0), Z::ZERO);
     }
 
-    /// Ensure that ONE initializes [`Z`] with `1`.
+    /// Ensure that `ONE` initializes [`Z`] with `1`.
     #[test]
-    fn init_1() {
+    fn init_one() {
         assert_eq!(Z::from(1), Z::ONE);
+    }
+
+    /// Ensure that `MINUS_ONE` initializes [`Z`] with `-1`.
+    #[test]
+    fn init_minus_one() {
+        assert_eq!(Z::from(-1), Z::MINUS_ONE);
     }
 }
