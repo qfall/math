@@ -14,7 +14,7 @@ use crate::macros::arithmetics::{
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
 };
 use crate::macros::for_others::implement_for_others;
-use crate::traits::*;
+use crate::traits::{GetNumRows, GetNumColumns};
 use flint_sys::fmpz_mat::fmpz_mat_scalar_mul_fmpz;
 use std::ops::Mul;
 
