@@ -56,7 +56,7 @@ impl PolyOverZq {
     /// Parameters:
     /// - `other`: specifies the polynomial to subtract from `self`
     ///
-    /// Returns the sum of both polynomials as a [`PolyOverZq`] or an error if the moduli
+    /// Returns the result of the subtraction of both polynomials as a [`PolyOverZq`] or an error if the moduli
     /// mismatch.
     ///
     /// # Example
