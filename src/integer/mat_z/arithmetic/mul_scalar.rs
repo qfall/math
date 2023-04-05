@@ -13,6 +13,7 @@ use crate::integer::Z;
 use crate::macros::arithmetics::{
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
 };
+use crate::macros::for_others::implement_for_others;
 use crate::traits::*;
 use flint_sys::fmpz_mat::fmpz_mat_scalar_mul_fmpz;
 use std::ops::Mul;
@@ -22,7 +23,7 @@ impl Mul<&Z> for &MatZ {
     /// Implements multiplication for a [`MatZ`] matrix with a [`Z`] integer.
     ///
     /// Parameters:
-    /// - `scalar`: specifies the integer value by which the matrix is multiplied
+    /// - `scalar`: specifies the scalar by which the matrix is multiplied
     ///
     /// Returns the product of `self` and `other` as a [`MatZ`].
     ///
@@ -37,10 +38,10 @@ impl Mul<&Z> for &MatZ {
     ///
     /// let mat2 = &mat1 * &integer;
     /// ```
-    fn mul(self, other: &Z) -> Self::Output {
+    fn mul(self, scalar: &Z) -> Self::Output {
         let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns()).unwrap();
         unsafe {
-            fmpz_mat_scalar_mul_fmpz(&mut out.matrix, &self.matrix, &other.value);
+            fmpz_mat_scalar_mul_fmpz(&mut out.matrix, &self.matrix, &scalar.value);
         }
         out
     }
@@ -51,7 +52,7 @@ impl Mul<&MatZ> for &Z {
     /// Implements multiplication for a [`Z`] integer with a [`MatZ`] matrix.
     ///
     /// Parameters:
-    /// - `scalar`: specifies the integer value by which the matrix is multiplied
+    /// - `matrix`: specifies the matrix which is multiplied by the given scalar
     ///
     /// Returns the product of `self` and `other` as a [`MatZ`].
     ///
@@ -66,12 +67,8 @@ impl Mul<&MatZ> for &Z {
     ///
     /// let mat2 = &integer * &mat1 ;
     /// ```
-    fn mul(self, other: &MatZ) -> Self::Output {
-        let mut out = MatZ::new(other.get_num_rows(), other.get_num_columns()).unwrap();
-        unsafe {
-            fmpz_mat_scalar_mul_fmpz(&mut out.matrix, &other.matrix, &self.value);
-        }
-        out
+    fn mul(self, matrix: &MatZ) -> Self::Output {
+        matrix.mul(self)
     }
 }
 
@@ -79,6 +76,9 @@ arithmetic_trait_borrowed_to_owned!(Mul, mul, MatZ, Z, MatZ);
 arithmetic_trait_borrowed_to_owned!(Mul, mul, Z, MatZ, MatZ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatZ, Z, MatZ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Z, MatZ, MatZ);
+
+implement_for_others!(Z, MatZ, Mul Matrix for i8 i16 i32 i64 u8 u16 u32 u64);
+implement_for_others!(Z, i8 i16 i32 i64 u8 u16 u32 u64, Mul Scalar for MatZ);
 
 #[cfg(test)]
 mod test_mul {
@@ -138,6 +138,18 @@ mod test_mul {
         assert_eq!(mat5, mat2);
         assert_eq!(mat5, mat3);
         assert_eq!(mat5, mat4);
+    }
+
+    /// Checks if scalar multiplication works fine for different scalar types
+    #[test]
+    fn different_types() {
+        let mat1 = MatZ::from_str("[[1],[0],[4]]").unwrap();
+        let mat2 = MatZ::from_str("[[2,5,6],[1,3,1]]").unwrap();
+        let mat3 = MatZ::from_str("[[3],[0],[12]]").unwrap();
+        let mat4 = MatZ::from_str("[[6,15,18],[3,9,3]]").unwrap();
+
+        assert_eq!(mat3, 3 * mat1);
+        assert_eq!(mat4, mat2 * 3);
     }
 
     /// Checks if scalar multiplication works fine for matrices of different dimensions
