@@ -15,7 +15,7 @@
 use super::Z;
 use crate::{
     error::MathError,
-    integer_mod_q::Modulus,
+    integer_mod_q::{Modulus, Zq},
     macros::from::{from_trait, from_type},
 };
 use flint_sys::fmpz::{fmpz, fmpz_init_set_si, fmpz_init_set_ui, fmpz_set, fmpz_set_str};
@@ -92,7 +92,6 @@ impl Z {
         out
     }
 
-    #[allow(dead_code)]
     /// Create a new Integer that can grow arbitrary large.
     ///
     /// Parameters:
@@ -116,6 +115,26 @@ impl Z {
         }
         out
     }
+    
+    /// Create a new Integer that can grow arbitrary large.
+    ///
+    /// Parameters:
+    /// - `value`: the initial value the integer should have
+    ///
+    /// Returns the new integer.
+    ///
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::integer_mod_q::Zq;
+    /// use std::str::FromStr;
+    ///
+    /// let m = Zq::from_str("13 mod 17").unwrap();
+    ///
+    /// let a: Z = Z::from_zq(m);
+    /// ```
+    pub fn from_zq(value: Zq) -> Self {
+        value.value
+    }
 }
 
 // Generate [`From`] trait for the different types.
@@ -130,6 +149,7 @@ from_trait!(u16, Z, Z::from_u16);
 from_trait!(u8, Z, Z::from_u8);
 
 from_trait!(Modulus, Z, Z::from_modulus);
+from_trait!(Zq, Z, Z::from_zq);
 
 impl FromStr for Z {
     type Err = MathError;
@@ -373,5 +393,32 @@ mod tests_from_fmpz {
 
         let _ = Z::from_fmpz(&mod_1.value);
         let _ = Z::from_fmpz(&mod_2.value);
+    }
+}
+
+mod test_from_zq {
+    use super::Z;
+    use crate::integer_mod_q::Zq;
+
+    /// Ensure that the `from_zq` function is available and works correctly for
+    /// small and large [`Zq`] entries.
+    #[test]
+    fn large_small_numbers() {
+        let zq_1 = Zq::try_from((i64::MAX, u64::MAX)).unwrap();
+        let zq_2 = Zq::try_from((17, u64::MAX)).unwrap();
+
+        assert_eq!(Z::from(i64::MAX), Z::from_zq(zq_1));
+        assert_eq!(Z::from(17), Z::from_zq(zq_2));
+    }
+
+    /// Ensure that the [`From`] trait is available for small and large
+    /// [`Zq`] instances.
+    #[test]
+    fn from_trait() {
+        let zq_1 = Zq::try_from((i64::MAX, u64::MAX)).unwrap();
+        let zq_2 = Zq::try_from((17, u64::MAX)).unwrap();
+
+        assert_eq!(Z::from(i64::MAX), Z::from(zq_1));
+        assert_eq!(Z::from(17), Z::from(zq_2));
     }
 }

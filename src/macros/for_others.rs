@@ -26,12 +26,17 @@
 /// `($bridge_type, $type, SetCoefficient for $source_type:ident)`
 /// - [`SetEntry`](crate::traits::SetEntry) with the signature
 /// `($bridge_type, $type, SetEntry for $source_type:ident)`
+/// - ['Mul'](std::ops::Mul) with signatures
+/// `($bridge_type:ident, $type:ident, Mul Matrix for $source_type:ident)` and
+/// `($bridge_type:ident, $type:ident, Mul Scalar for $source_type:ident)`
 ///
 /// # Examples
 /// ```compile_fail
 /// implement_for_others!(Z, Z, PolyOverZ, Evaluate for u8 u16 u32 u64 i8 i16 i32 i64);
 /// implement_for_others!(Z, PolyOverZ, SetCoefficient for i8 i16 i32 i64 u8 u16 u32 u64);
 /// implement_for_others!(Z, MatZq, SetEntry for i8 i16 i32 i64 u8 u16 u32 u64);
+/// implement_for_others!(Z, MatZ, Mul Matrix for i8 i16 i32 i64 u8 u16 u32 u64);
+/// implement_for_others!(Z, i8 i16 i32 i64 u8 u16 u32 u64, Mul Scalar for MatZ);
 /// ```
 macro_rules! implement_for_others {
     // [`Evaluate`] trait
@@ -78,6 +83,29 @@ macro_rules! implement_for_others {
             ) -> Result<(), MathError> {
                 self.set_entry(row, column, $bridge_type::from(value))
             }
+            }
+        })*
+    };
+
+    // [`Mul`] trait scalar
+    ($bridge_type:ident, $type:ident, Mul Scalar for $($source_type:ident)*) => {
+        $(impl Mul<$source_type> for $type {
+            type Output = $type;
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::set_entry`]."]
+                fn mul(self, scalar: $source_type) -> Self::Output {
+                    self.mul($bridge_type::from(scalar))
+                }
+            }
+        })*
+
+        $(impl Mul<$type> for $source_type {
+            type Output = $type;
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::set_entry`]."]
+                fn mul(self, matrix: $type) -> Self::Output {
+                    matrix.mul($bridge_type::from(self))
+                }
             }
         })*
     };
