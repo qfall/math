@@ -99,3 +99,30 @@ pub trait SetEntry<T> {
         value: T,
     ) -> Result<(), MathError>;
 }
+
+/// Is implemented by matrices to concatenate two matrices.
+pub trait Concatenate {
+    type Output;
+
+    /// Concatenates `self` with `other` vertically.
+    ///
+    /// Parameters:
+    /// - `other`: the other matrix to concatenate with `self`
+    ///
+    /// # Errors and Failures
+    /// Returns a `MathError` of type
+    /// [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
+    /// if the matrices can not be concatenated due to mismatching dimensions
+    fn concat_vertical(self, other: Self) -> Result<Self::Output, MathError>;
+
+    /// Concatenates `self` with `other` horizontally.
+    ///
+    /// Parameters:
+    /// - `other`: the other matrix to concatenate with `self`
+    ///
+    /// # Errors and Failures
+    /// Returns a `MathError` of type
+    /// [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
+    /// if the matrices can not be concatenated due to mismatching dimensions
+    fn concat_horizontal(self, other: Self) -> Result<Self::Output, MathError>;
+}
