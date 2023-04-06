@@ -87,8 +87,8 @@ macro_rules! implement_for_others {
         })*
     };
 
-    // [`Mul`] trait for matrix
-    ($bridge_type:ident, $type:ident, Mul Matrix for $($source_type:ident)*) => {
+    // [`Mul`] trait scalar
+    ($bridge_type:ident, $type:ident, Mul Scalar for $($source_type:ident)*) => {
         $(impl Mul<$source_type> for $type {
             type Output = $type;
             paste::paste! {
@@ -98,15 +98,12 @@ macro_rules! implement_for_others {
                 }
             }
         })*
-    };
 
-    // [`Mul`] trait for scalar
-    ($bridge_type:ident, $($type:ident)*, Mul Scalar for $source_type:ident) => {
-        $(impl Mul<$source_type> for $type {
-            type Output = $source_type;
+        $(impl Mul<$type> for $source_type {
+            type Output = $type;
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::set_entry`]."]
-                fn mul(self, matrix: $source_type) -> Self::Output {
+                fn mul(self, matrix: $type) -> Self::Output {
                     matrix.mul($bridge_type::from(self))
                 }
             }

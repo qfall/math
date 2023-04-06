@@ -77,8 +77,7 @@ arithmetic_trait_borrowed_to_owned!(Mul, mul, Z, MatZ, MatZ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatZ, Z, MatZ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Z, MatZ, MatZ);
 
-implement_for_others!(Z, MatZ, Mul Matrix for i8 i16 i32 i64 u8 u16 u32 u64);
-implement_for_others!(Z, i8 i16 i32 i64 u8 u16 u32 u64, Mul Scalar for MatZ);
+implement_for_others!(Z, MatZ, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
 
 #[cfg(test)]
 mod test_mul {
