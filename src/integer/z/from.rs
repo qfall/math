@@ -110,11 +110,11 @@ impl Z {
     /// let a: Z = Z::from_fmpz(&value);
     /// ```
     pub(crate) fn from_fmpz(value: &fmpz) -> Self {
-        let mut ret_value = fmpz(0);
+        let mut out = Z::default();
         unsafe {
-            fmpz_set(&mut ret_value, value);
+            fmpz_set(&mut out.value, value);
         }
-        Z { value: ret_value }
+        out
     }
 }
 
@@ -339,7 +339,7 @@ mod tests_from_modulus {
     use crate::integer_mod_q::Modulus;
     use std::str::FromStr;
 
-    /// Ensure that `from_modulus` works correctly for small and large numbers
+    /// Ensure that `from_modulus` is available for small and large numbers
     #[test]
     fn large_and_small_numbers() {
         let mod_1 = Modulus::from_str(&"1".repeat(65)).unwrap();
@@ -363,18 +363,15 @@ mod tests_from_modulus {
 
 #[cfg(test)]
 mod tests_from_fmpz {
-    use super::fmpz;
     use super::Z;
-    use flint_sys::fmpz::fmpz_init_set_ui;
 
-    /// Ensure that `from_fmpz` works correctly for small and large numbers
+    /// Ensure that `from_fmpz` is available for small and large numbers
     #[test]
     fn large_small_numbers() {
-        let mut mod_1 = fmpz(0);
-        unsafe { fmpz_init_set_ui(&mut mod_1, u64::MAX) };
-        let mod_2 = fmpz(0);
+        let mod_1 = Z::from(u64::MAX);
+        let mod_2 = Z::ZERO;
 
-        let _ = Z::from_fmpz(&mod_1);
-        let _ = Z::from_fmpz(&mod_2);
+        let _ = Z::from_fmpz(&mod_1.value);
+        let _ = Z::from_fmpz(&mod_2.value);
     }
 }
