@@ -23,7 +23,7 @@ impl Z {
     ///
     /// # Example
     /// ```
-    /// use math::integer::Z;
+    /// use qfall_math::integer::Z;
     ///
     /// let a = Z::from(-1);
     /// let b = Z::from(5);
@@ -39,7 +39,7 @@ impl Z {
     ///
     /// # Example
     /// ```
-    /// use math::integer::Z;
+    /// use qfall_math::integer::Z;
     ///
     /// let value = Z::from(-1);
     ///

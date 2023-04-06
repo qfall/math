@@ -102,7 +102,7 @@ impl Z {
     ///
     /// # Example
     /// ```compile_fail
-    /// use math::integer::Z;
+    /// use qfall_math::integer::Z;
     /// use flint_sys::fmpz::fmpz;
     ///
     /// let value = fmpz(0);
