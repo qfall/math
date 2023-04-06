@@ -365,9 +365,8 @@ mod test_from_zq {
     use super::Z;
     use crate::integer_mod_q::Zq;
 
-    /// Ensure that the `from_<type_name>` functions are available for
-    /// singed and unsigned integers of 8, 16, 32, and 64 bit length.
-    /// Tested with their maximum value.
+    /// Ensure that the `from_zq` function is available and works correctly for
+    /// large and small [`Zq`] entries.
     #[test]
     fn large_small_numbers() {
         let zq_1 = Zq::try_from((i64::MAX, u64::MAX)).unwrap();

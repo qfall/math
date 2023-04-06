@@ -187,6 +187,7 @@ impl Q {
     /// ```
     pub fn from_int(value: &(impl Into<Z> + Clone)) -> Self {
         let value = value.to_owned().into();
+        // this efficient implementation depends on Q::default instantiating 1 as denominator
         let mut out = Q::default();
         unsafe { fmpz_set(&mut out.value.num, &value.value) }
         out
@@ -503,9 +504,8 @@ mod test_from_z {
     use crate::integer::Z;
     use std::str::FromStr;
 
-    /// Ensure that the `from_<type_name>` functions are available for
-    /// singed and unsigned integers of 8, 16, 32, and 64 bit length.
-    /// Tested with their maximum value.
+    /// Ensure that the `from_int` function is available and works correctly for
+    /// small and large instances of [`Z`] and structs implementing [`Into<Z>`].
     #[test]
     fn large_small_numbers() {
         let z_1 = Z::from(u64::MAX);
@@ -518,8 +518,8 @@ mod test_from_z {
         assert_eq!(Q::from_str("17").unwrap(), Q::from_int(&z_2));
     }
 
-    /// Ensure that the [`From`] trait is available for large
-    /// [`Z`] instances
+    /// Ensure that the [`From`] trait is available and works correctly for
+    /// small and large instances of [`Z`].
     #[test]
     fn from_trait() {
         let z_1 = Z::from(u64::MAX);
