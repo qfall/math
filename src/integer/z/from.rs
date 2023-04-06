@@ -92,6 +92,7 @@ impl Z {
         out
     }
 
+    #[allow(dead_code)]
     /// Create a new Integer that can grow arbitrary large.
     ///
     /// Parameters:
@@ -100,6 +101,29 @@ impl Z {
     /// Returns the new integer.
     ///
     /// # Example
+    /// ```compile_fail
+    /// use qfall_math::integer::Z;
+    /// use flint_sys::fmpz::fmpz;
+    ///
+    /// let value = fmpz(0);
+    ///
+    /// let a: Z = Z::from_fmpz(&value);
+    /// ```
+    pub(crate) fn from_fmpz(value: &fmpz) -> Self {
+        let mut out = Z::default();
+        unsafe {
+            fmpz_set(&mut out.value, value);
+        }
+        out
+    }
+
+    /// Create a new Integer that can grow arbitrary large.
+    ///
+    /// Parameters:
+    /// - `value`: the initial value the integer should have
+    ///
+    /// Returns the new integer.
+    ///
     /// ```
     /// use qfall_math::integer::Z;
     /// use qfall_math::integer_mod_q::Zq;
@@ -336,11 +360,9 @@ mod tests_from_modulus {
     use crate::integer_mod_q::Modulus;
     use std::str::FromStr;
 
-    /// Ensure that the `from_<type_name>` functions are available for
-    /// singed and unsigned integers of 8, 16, 32, and 64 bit length.
-    /// Tested with their maximum value.
+    /// Ensure that `from_modulus` is available for small and large numbers
     #[test]
-    fn large_small_numbers() {
+    fn large_and_small_numbers() {
         let mod_1 = Modulus::from_str(&"1".repeat(65)).unwrap();
         let mod_2 = Modulus::from_str("10").unwrap();
 
@@ -361,12 +383,27 @@ mod tests_from_modulus {
 }
 
 #[cfg(test)]
+mod test_from_fmpz {
+    use super::Z;
+
+    /// Ensure that `from_fmpz` is available for small and large numbers
+    #[test]
+    fn large_small_numbers() {
+        let mod_1 = Z::from(u64::MAX);
+        let mod_2 = Z::ZERO;
+
+        let _ = Z::from_fmpz(&mod_1.value);
+        let _ = Z::from_fmpz(&mod_2.value);
+    }
+}
+
+#[cfg(test)]
 mod test_from_zq {
     use super::Z;
     use crate::integer_mod_q::Zq;
 
     /// Ensure that the `from_zq` function is available and works correctly for
-    /// large and small [`Zq`] entries.
+    /// small and large [`Zq`] entries.
     #[test]
     fn large_small_numbers() {
         let zq_1 = Zq::try_from((i64::MAX, u64::MAX)).unwrap();
@@ -376,8 +413,8 @@ mod test_from_zq {
         assert_eq!(Z::from(17), Z::from_zq(zq_2));
     }
 
-    /// Ensure that the [`From`] trait is available for large
-    /// [`Zq`] instances
+    /// Ensure that the [`From`] trait is available for small and large
+    /// [`Zq`] instances.
     #[test]
     fn from_trait() {
         let zq_1 = Zq::try_from((i64::MAX, u64::MAX)).unwrap();
