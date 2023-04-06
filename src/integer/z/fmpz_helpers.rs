@@ -23,7 +23,7 @@ use flint_sys::fmpz::{fmpz, fmpz_abs, fmpz_cmpabs, fmpz_sub};
 /// # Example
 /// ```compile_fail
 /// use flint_sys::fmpz::fmpz;
-/// use math::integer::{fmpz_helpers::find_max_abs, Z};
+/// use qfall_math::integer::{fmpz_helpers::find_max_abs, Z};
 ///
 /// let fmpz_vec = vec![fmpz(0), fmpz(-13), fmpz(10)];
 ///
@@ -57,7 +57,7 @@ pub(crate) fn find_max_abs(fmpz_vector: &Vec<fmpz>) -> Z {
 /// # Example
 /// ```compile_fail
 /// use flint_sys::fmpz::fmpz;
-/// use math::integer::fmpz_helpers::distance;
+/// use qfall_math::integer::fmpz_helpers::distance;
 ///
 /// let a = fmpz(1);
 /// let b = fmpz(-15);

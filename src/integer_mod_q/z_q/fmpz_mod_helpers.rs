@@ -22,7 +22,7 @@ const ZERO_FMPZ: fmpz = fmpz(0);
 /// # Example
 /// ```compile_fail
 /// use flint_sys::fmpz::fmpz;
-/// use math::integer_mod_q::fmpz_mod_helpers::length;
+/// use qfall_math::integer_mod_q::fmpz_mod_helpers::length;
 ///
 /// let modulus = fmpz(15);
 /// let value = fmpz(10);
