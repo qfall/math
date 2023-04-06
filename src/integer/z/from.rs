@@ -92,6 +92,7 @@ impl Z {
         out
     }
 
+    #[allow(dead_code)]
     /// Create a new Integer that can grow arbitrary large.
     ///
     /// Parameters:
@@ -115,7 +116,7 @@ impl Z {
         }
         out
     }
-    
+
     /// Create a new Integer that can grow arbitrary large.
     ///
     /// Parameters:
@@ -382,7 +383,7 @@ mod tests_from_modulus {
 }
 
 #[cfg(test)]
-mod tests_from_fmpz {
+mod test_from_fmpz {
     use super::Z;
 
     /// Ensure that `from_fmpz` is available for small and large numbers
@@ -396,6 +397,7 @@ mod tests_from_fmpz {
     }
 }
 
+#[cfg(test)]
 mod test_from_zq {
     use super::Z;
     use crate::integer_mod_q::Zq;
