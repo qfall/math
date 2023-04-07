@@ -26,13 +26,15 @@ impl MatZq {
     ///
     /// # Example
     /// ```
-    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::{
+    ///     integer::Z,
+    ///     integer_mod_q::MatZq,
+    /// };
     /// use std::str::FromStr;
-    /// # use qfall_math::integer::Z;
     ///
     /// let vec = MatZq::from_str("[[1],[2],[3]] mod 4").unwrap();
     ///
-    /// let sqrd_2_norm = vec.norm_sqrd_eucl().unwrap();
+    /// let sqrd_2_norm = vec.norm_eucl_sqrd().unwrap();
     ///
     /// // 1*1 + 2*2 + 1*1 = 6
     /// assert_eq!(Z::from(6), sqrd_2_norm);
@@ -41,10 +43,10 @@ impl MatZq {
     /// Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
     /// the given [`MatZq`] instance is not a (row or column) vector.
-    pub fn norm_sqrd_eucl(&self) -> Result<Z, MathError> {
+    pub fn norm_eucl_sqrd(&self) -> Result<Z, MathError> {
         if !self.is_vector() {
             return Err(MathError::VectorFunctionCalledOnNonVector(
-                String::from("norm_sqrd_eucl"),
+                String::from("norm_eucl_sqrd"),
                 self.get_num_rows(),
                 self.get_num_columns(),
             ));
@@ -60,7 +62,6 @@ impl MatZq {
             unsafe { fmpz_addmul(&mut result.value, &entry.value, &entry.value) }
         }
 
-        // TODO: Add sqrt function here
         Ok(result)
     }
 
@@ -71,9 +72,11 @@ impl MatZq {
     ///
     /// # Example
     /// ```
-    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::{
+    ///     integer::Z,
+    ///     integer_mod_q::MatZq,
+    /// };
     /// use std::str::FromStr;
-    /// # use qfall_math::integer::Z;
     ///
     /// let vec = MatZq::from_str("[[1],[2],[3]] mod 3").unwrap();
     ///
@@ -95,12 +98,12 @@ impl MatZq {
             ));
         }
 
+        let fmpz_entries = self.collect_entries();
+
         // compute lengths of all entries in matrix with regards to modulus
         // and find maximum length
-        let fmpz_entries = self.collect_entries();
         let modulus = self.matrix.mod_[0];
         let mut max = Z::ZERO;
-
         for fmpz_entry in fmpz_entries {
             let length = length(&fmpz_entry, &modulus);
             if length > max {
@@ -113,7 +116,7 @@ impl MatZq {
 }
 
 #[cfg(test)]
-mod test_norm_sqrd_eucl {
+mod test_norm_eucl_sqrd {
     use super::{MatZq, Z};
     use std::str::FromStr;
 
@@ -125,9 +128,9 @@ mod test_norm_sqrd_eucl {
         let vec_2 = MatZq::from_str("[[1,10,100]] mod 10").unwrap();
         let vec_3 = MatZq::from_str("[[1,10,100, 1000]] mod 10000").unwrap();
 
-        assert_eq!(vec_1.norm_sqrd_eucl().unwrap(), Z::ONE);
-        assert_eq!(vec_2.norm_sqrd_eucl().unwrap(), Z::from_i64(1));
-        assert_eq!(vec_3.norm_sqrd_eucl().unwrap(), Z::from_i64(1010101));
+        assert_eq!(vec_1.norm_eucl_sqrd().unwrap(), Z::ONE);
+        assert_eq!(vec_2.norm_eucl_sqrd().unwrap(), Z::from_i64(1));
+        assert_eq!(vec_3.norm_eucl_sqrd().unwrap(), Z::from_i64(1010101));
     }
 
     /// Check whether the squared euclidean norm for row vectors
@@ -144,7 +147,7 @@ mod test_norm_sqrd_eucl {
         let max = Z::from(i64::MAX);
         let cmp = Z::from(2) * &max * &max + Z::from(4);
 
-        assert_eq!(vec.norm_sqrd_eucl().unwrap(), cmp);
+        assert_eq!(vec.norm_eucl_sqrd().unwrap(), cmp);
     }
 
     /// Check whether the squared euclidean norm for column vectors
@@ -154,8 +157,8 @@ mod test_norm_sqrd_eucl {
         let vec_1 = MatZq::from_str("[[1],[10],[100]] mod 10").unwrap();
         let vec_2 = MatZq::from_str("[[1],[10],[100],[1000]] mod 10000").unwrap();
 
-        assert_eq!(vec_1.norm_sqrd_eucl().unwrap(), Z::from_i64(1));
-        assert_eq!(vec_2.norm_sqrd_eucl().unwrap(), Z::from_i64(1010101));
+        assert_eq!(vec_1.norm_eucl_sqrd().unwrap(), Z::from_i64(1));
+        assert_eq!(vec_2.norm_eucl_sqrd().unwrap(), Z::from_i64(1010101));
     }
 
     /// Check whether the squared euclidean norm for column vectors
@@ -172,7 +175,7 @@ mod test_norm_sqrd_eucl {
         let max = Z::from(i64::MAX);
         let cmp = Z::from(2) * &max * &max + Z::from(4);
 
-        assert_eq!(vec.norm_sqrd_eucl().unwrap(), cmp);
+        assert_eq!(vec.norm_eucl_sqrd().unwrap(), cmp);
     }
 
     /// Check whether euclidean norm calculations of non vectors yield an error
@@ -180,7 +183,7 @@ mod test_norm_sqrd_eucl {
     fn non_vector_yield_error() {
         let mat = MatZq::from_str("[[1,1],[10,2]] mod 3").unwrap();
 
-        assert!(mat.norm_sqrd_eucl().is_err());
+        assert!(mat.norm_eucl_sqrd().is_err());
     }
 }
 

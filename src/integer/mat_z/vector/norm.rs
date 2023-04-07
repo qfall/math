@@ -20,18 +20,14 @@ use flint_sys::fmpz::fmpz_addmul;
 impl MatZ {
     /// Returns the squared Euclidean norm or 2-norm of the given (row or column) vector.
     ///
-    /// WARNING: This function may be renamed and changed in the future,
-    /// once we integrate a sqrt function for [`Z`] values.
-    ///
     /// # Example
     /// ```
-    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::integer::{MatZ, Z};
     /// use std::str::FromStr;
-    /// # use qfall_math::integer::Z;
     ///
     /// let vec = MatZ::from_str("[[1],[2],[3]]").unwrap();
     ///
-    /// let sqrd_2_norm = vec.norm_sqrd_eucl().unwrap();
+    /// let sqrd_2_norm = vec.norm_eucl_sqrd().unwrap();
     ///
     /// // 1*1 + 2*2 + 3*3 = 14
     /// assert_eq!(Z::from(14), sqrd_2_norm);
@@ -40,16 +36,15 @@ impl MatZ {
     /// Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
     /// the given [`MatZ`] instance is not a (row or column) vector.
-    pub fn norm_sqrd_eucl(&self) -> Result<Z, MathError> {
+    pub fn norm_eucl_sqrd(&self) -> Result<Z, MathError> {
         if !self.is_vector() {
             return Err(MathError::VectorFunctionCalledOnNonVector(
-                String::from("norm_sqrd_eucl"),
+                String::from("norm_eucl_sqrd"),
                 self.get_num_rows(),
                 self.get_num_columns(),
             ));
         }
 
-        // collect all entries in vector
         let entries = self.collect_entries();
 
         // sum squared entries in result
@@ -59,7 +54,6 @@ impl MatZ {
             unsafe { fmpz_addmul(&mut result.value, &entry, &entry) }
         }
 
-        // TODO: Add sqrt function here
         Ok(result)
     }
 
@@ -67,9 +61,8 @@ impl MatZ {
     ///
     /// # Example
     /// ```
-    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::integer::{MatZ, Z};
     /// use std::str::FromStr;
-    /// # use qfall_math::integer::Z;
     ///
     /// let vec = MatZ::from_str("[[1],[2],[3]]").unwrap();
     ///
@@ -101,7 +94,7 @@ impl MatZ {
 }
 
 #[cfg(test)]
-mod test_norm_sqrd_eucl {
+mod test_norm_eucl_sqrd {
     use super::{MatZ, Z};
     use std::str::FromStr;
 
@@ -113,9 +106,9 @@ mod test_norm_sqrd_eucl {
         let vec_2 = MatZ::from_str("[[1,10,100]]").unwrap();
         let vec_3 = MatZ::from_str("[[1,10,100, 1000]]").unwrap();
 
-        assert_eq!(vec_1.norm_sqrd_eucl().unwrap(), Z::ONE);
-        assert_eq!(vec_2.norm_sqrd_eucl().unwrap(), Z::from_i64(10101));
-        assert_eq!(vec_3.norm_sqrd_eucl().unwrap(), Z::from_i64(1010101));
+        assert_eq!(vec_1.norm_eucl_sqrd().unwrap(), Z::ONE);
+        assert_eq!(vec_2.norm_eucl_sqrd().unwrap(), Z::from_i64(10101));
+        assert_eq!(vec_3.norm_eucl_sqrd().unwrap(), Z::from_i64(1010101));
     }
 
     /// Check whether the squared euclidean norm for row vectors
@@ -127,7 +120,7 @@ mod test_norm_sqrd_eucl {
         let min = Z::from(i64::MIN);
         let cmp = &min * &min + &max * &max + Z::from(4);
 
-        assert_eq!(vec.norm_sqrd_eucl().unwrap(), cmp);
+        assert_eq!(vec.norm_eucl_sqrd().unwrap(), cmp);
     }
 
     /// Check whether the squared euclidean norm for column vectors
@@ -137,8 +130,8 @@ mod test_norm_sqrd_eucl {
         let vec_1 = MatZ::from_str("[[1],[10],[100]]").unwrap();
         let vec_2 = MatZ::from_str("[[1],[10],[100],[1000]]").unwrap();
 
-        assert_eq!(vec_1.norm_sqrd_eucl().unwrap(), Z::from_i64(10101));
-        assert_eq!(vec_2.norm_sqrd_eucl().unwrap(), Z::from_i64(1010101));
+        assert_eq!(vec_1.norm_eucl_sqrd().unwrap(), Z::from_i64(10101));
+        assert_eq!(vec_2.norm_eucl_sqrd().unwrap(), Z::from_i64(1010101));
     }
 
     /// Check whether the squared euclidean norm for column vectors
@@ -150,7 +143,7 @@ mod test_norm_sqrd_eucl {
         let min = Z::from(i64::MIN);
         let cmp = &min * &min + &max * &max + Z::from(4);
 
-        assert_eq!(vec.norm_sqrd_eucl().unwrap(), cmp);
+        assert_eq!(vec.norm_eucl_sqrd().unwrap(), cmp);
     }
 
     /// Check whether euclidean norm calculations of non vectors yield an error
@@ -158,7 +151,7 @@ mod test_norm_sqrd_eucl {
     fn non_vector_yield_error() {
         let mat = MatZ::from_str("[[1,1],[10,2]]").unwrap();
 
-        assert!(mat.norm_sqrd_eucl().is_err());
+        assert!(mat.norm_eucl_sqrd().is_err());
     }
 }
 
