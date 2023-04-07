@@ -39,7 +39,9 @@ impl Tensor for MatZ {
         let rows_other = other.get_num_rows();
 
         // we can unwrap since we know that the dimensions are positive
-        let mut out = MatZ::new(
+        // does not have to be mutable, since the pointers themselves
+        // do not change, only the content behind the pointers.
+        let out = MatZ::new(
             self.get_num_rows() * rows_other,
             self.get_num_columns() * columns_other,
         )
