@@ -1,4 +1,4 @@
-// Copyright © 2023 Marcel Luca Schmidt
+// Copyright © 2023 Marvin Beckmann
 //
 // This file is part of qFALL-math.
 //
@@ -18,13 +18,13 @@ use flint_sys::fmpz_mat::{fmpz_mat_concat_horizontal, fmpz_mat_concat_vertical};
 impl Concatenate for &MatZ {
     type Output = MatZ;
 
-    /// Concatenates `self` with `other` vertically.
+    /// Concatenates `self` with `other` vertically, i.e. `other` is added below.
     ///
     /// Parameters:
     /// - `other`: the other matrix to concatenate with `self`
     ///
     /// Returns a horizontal concatenation of the two matrices or a
-    /// an error, if the matrices can not be concatenated horizontally.
+    /// an error, if the matrices can not be concatenated vertically.
     ///
     /// # Example
     /// ```
@@ -43,7 +43,13 @@ impl Concatenate for &MatZ {
     /// if the matrices can not be concatenated due to mismatching dimensions
     fn concat_vertical(self, other: Self) -> Result<Self::Output, crate::error::MathError> {
         if self.get_num_columns() != other.get_num_columns() {
-            return Err(MathError::MismatchingMatrixDimension("".to_owned()));
+            return Err(MathError::MismatchingMatrixDimension(format!(
+                "Tried to concatenate vertically a '{}x{}' matrix and a '{}x{}' matrix.",
+                self.get_num_rows(),
+                self.get_num_columns(),
+                other.get_num_rows(),
+                other.get_num_columns()
+            )));
         }
         let mut out = MatZ::new(
             self.get_num_rows() + other.get_num_rows(),
@@ -56,7 +62,7 @@ impl Concatenate for &MatZ {
         Ok(out)
     }
 
-    /// Concatenates `self` with `other` horizontally.
+    /// Concatenates `self` with `other` horizontally, i.e. `other` is added on the right.
     ///
     /// Parameters:
     /// - `other`: the other matrix to concatenate with `self`
@@ -81,7 +87,13 @@ impl Concatenate for &MatZ {
     /// if the matrices can not be concatenated due to mismatching dimensions
     fn concat_horizontal(self, other: Self) -> Result<Self::Output, crate::error::MathError> {
         if self.get_num_rows() != other.get_num_rows() {
-            return Err(MathError::MismatchingMatrixDimension("".to_owned()));
+            return Err(MathError::MismatchingMatrixDimension(format!(
+                "Tried to concatenate horizontally a '{}x{}' matrix and a '{}x{}' matrix.",
+                self.get_num_rows(),
+                self.get_num_columns(),
+                other.get_num_rows(),
+                other.get_num_columns()
+            )));
         }
         let mut out = MatZ::new(
             self.get_num_rows(),
