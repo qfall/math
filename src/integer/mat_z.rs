@@ -18,6 +18,7 @@ mod get;
 mod ownership;
 mod serialize;
 mod set;
+mod tensor;
 mod to_string;
 mod transpose;
 mod vector;

@@ -99,3 +99,14 @@ pub trait SetEntry<T> {
         value: T,
     ) -> Result<(), MathError>;
 }
+
+/// Is implemented by matrices to compute the tensor product.
+pub trait Tensor {
+    /// Computes the tensor product of `self` with `other`
+    ///
+    /// Parameters:
+    /// - `other`: the value with which the tensor product is computed.
+    ///
+    /// Returns the tensor product
+    fn tensor(&self, other: &Self) -> Self;
+}
