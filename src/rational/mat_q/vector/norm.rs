@@ -15,40 +15,36 @@ use crate::{
     rational::Q,
     traits::{GetNumColumns, GetNumRows},
 };
-use flint_sys::{
-    fmpq::{fmpq, fmpq_abs, fmpq_addmul, fmpq_cmp},
-    fmpz::fmpz,
-};
+use flint_sys::fmpq::{fmpq_abs, fmpq_addmul, fmpq_cmp};
 
 impl MatQ {
     /// Returns the squared Euclidean norm or 2-norm of the given (row or column) vector.
     ///
     /// # Example
     /// ```
-    /// use qfall_math::rational::MatQ;
+    /// use qfall_math::rational::{MatQ, Q};
     /// use std::str::FromStr;
-    /// # use qfall_math::rational::Q;
     ///
     /// let vec = MatQ::from_str("[[1],[2/1],[6/2]]").unwrap();
     ///
-    /// let sqrd_2_norm = vec.norm_sqrd_eucl().unwrap();
+    /// let sqrd_2_norm = vec.norm_eucl_sqrd().unwrap();
     ///
+    /// // 1*1 + 2*2 + 3*3 = 14
     /// assert_eq!(Q::try_from((&14, &1)).unwrap(), sqrd_2_norm);
     /// ```
     ///
     /// Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
     /// the given [`MatQ`] instance is not a (row or column) vector.
-    pub fn norm_sqrd_eucl(&self) -> Result<Q, MathError> {
+    pub fn norm_eucl_sqrd(&self) -> Result<Q, MathError> {
         if !self.is_vector() {
             return Err(MathError::VectorFunctionCalledOnNonVector(
-                String::from("norm_sqrd_eucl"),
+                String::from("norm_eucl_sqrd"),
                 self.get_num_rows(),
                 self.get_num_columns(),
             ));
         }
 
-        // collect all entries in vector
         let entries = self.collect_entries();
 
         // sum squared entries in result
@@ -58,7 +54,6 @@ impl MatQ {
             unsafe { fmpq_addmul(&mut result.value, &entry, &entry) }
         }
 
-        // TODO: Add sqrt function here
         Ok(result)
     }
 
@@ -66,14 +61,14 @@ impl MatQ {
     ///
     /// # Example
     /// ```
-    /// use qfall_math::rational::MatQ;
+    /// use qfall_math::rational::{MatQ, Q};
     /// use std::str::FromStr;
-    /// # use qfall_math::rational::Q;
     ///
     /// let vec = MatQ::from_str("[[1/1],[2],[6/2]]").unwrap();
     ///
     /// let infty_norm = vec.norm_infty().unwrap();
     ///
+    /// // max { 1, 2, 3 } = 3
     /// assert_eq!(Q::try_from((&3, &1)).unwrap(), infty_norm);
     /// ```
     ///
@@ -89,37 +84,26 @@ impl MatQ {
             ));
         }
 
-        // collect all entries in vector
         let entries = self.collect_entries();
 
         // find maximum of absolute fmpq entries
-        let mut max = fmpq {
-            num: fmpz(0),
-            den: fmpz(1),
-        };
+        let mut max = Q::ZERO;
         for entry in entries {
             // compute absolute value of fmpq entry
-            let mut abs_entry = fmpq {
-                num: fmpz(0),
-                den: fmpz(1),
-            };
-            unsafe { fmpq_abs(&mut abs_entry, &entry) };
+            let mut abs_entry = Q::default();
+            unsafe { fmpq_abs(&mut abs_entry.value, &entry) };
             // compare maximum to absolute value of entry and keep bigger one
-            if unsafe { fmpq_cmp(&max, &abs_entry) } < 0 {
+            if unsafe { fmpq_cmp(&max.value, &abs_entry.value) } < 0 {
                 max = abs_entry;
             }
         }
 
-        // clone value and ensure that absolute maximum value is absolute
-        let mut result = Q::default();
-        unsafe { fmpq_abs(&mut result.value, &max) }
-
-        Ok(result)
+        Ok(max)
     }
 }
 
 #[cfg(test)]
-mod test_norm_sqrd_eucl {
+mod test_norm_eucl_sqrd {
     use super::{MatQ, Q};
     use std::str::FromStr;
 
@@ -131,16 +115,13 @@ mod test_norm_sqrd_eucl {
         let vec_2 = MatQ::from_str("[[1,10/1,-1000/10]]").unwrap();
         let vec_3 = MatQ::from_str("[[1,10,100, 1000]]").unwrap();
 
+        assert_eq!(vec_1.norm_eucl_sqrd().unwrap(), Q::ONE);
         assert_eq!(
-            vec_1.norm_sqrd_eucl().unwrap(),
-            Q::try_from((&1, &1)).unwrap()
-        );
-        assert_eq!(
-            vec_2.norm_sqrd_eucl().unwrap(),
+            vec_2.norm_eucl_sqrd().unwrap(),
             Q::try_from((&10101, &1)).unwrap()
         );
         assert_eq!(
-            vec_3.norm_sqrd_eucl().unwrap(),
+            vec_3.norm_eucl_sqrd().unwrap(),
             Q::try_from((&1010101, &1)).unwrap()
         );
     }
@@ -154,7 +135,7 @@ mod test_norm_sqrd_eucl {
         let min = Q::try_from((&i64::MIN, &1)).unwrap();
         let cmp = &min * &min + &max * &max + Q::try_from((&4, &1)).unwrap();
 
-        assert_eq!(vec.norm_sqrd_eucl().unwrap(), cmp);
+        assert_eq!(vec.norm_eucl_sqrd().unwrap(), cmp);
     }
 
     /// Check whether the squared euclidean norm for column vectors
@@ -165,11 +146,11 @@ mod test_norm_sqrd_eucl {
         let vec_2 = MatQ::from_str("[[1],[-10/-1],[100],[1000]]").unwrap();
 
         assert_eq!(
-            vec_1.norm_sqrd_eucl().unwrap(),
+            vec_1.norm_eucl_sqrd().unwrap(),
             Q::try_from((&10101, &1)).unwrap()
         );
         assert_eq!(
-            vec_2.norm_sqrd_eucl().unwrap(),
+            vec_2.norm_eucl_sqrd().unwrap(),
             Q::try_from((&1010101, &1)).unwrap()
         );
     }
@@ -183,7 +164,7 @@ mod test_norm_sqrd_eucl {
         let min = Q::try_from((&1, &i64::MIN)).unwrap();
         let cmp = &min * &min + &max * &max + Q::try_from((&4, &1)).unwrap();
 
-        assert_eq!(vec.norm_sqrd_eucl().unwrap(), cmp);
+        assert_eq!(vec.norm_eucl_sqrd().unwrap(), cmp);
     }
 
     /// Check whether euclidean norm calculations of non vectors yield an error
@@ -191,7 +172,7 @@ mod test_norm_sqrd_eucl {
     fn non_vector_yield_error() {
         let mat = MatQ::from_str("[[1,1/1],[10/-1,2]]").unwrap();
 
-        assert!(mat.norm_sqrd_eucl().is_err());
+        assert!(mat.norm_eucl_sqrd().is_err());
     }
 }
 
@@ -208,7 +189,7 @@ mod test_norm_infty {
         let vec_2 = MatQ::from_str("[[1,100/10,1000/-10]]").unwrap();
         let vec_3 = MatQ::from_str("[[1,-10/-1,-100/1, 1000]]").unwrap();
 
-        assert_eq!(vec_1.norm_infty().unwrap(), Q::try_from((&1, &1)).unwrap());
+        assert_eq!(vec_1.norm_infty().unwrap(), Q::ONE);
         assert_eq!(
             vec_2.norm_infty().unwrap(),
             Q::try_from((&100, &1)).unwrap()
