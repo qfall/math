@@ -11,7 +11,7 @@
 use super::MatZ;
 use crate::traits::{GetNumColumns, GetNumRows, Tensor};
 use flint_sys::{
-    fmpz::{fmpz_is_zero, fmpz_mul},
+    fmpz::{fmpz, fmpz_is_zero, fmpz_mul},
     fmpz_mat::fmpz_mat_entry,
 };
 
@@ -35,15 +35,12 @@ impl Tensor for MatZ {
     /// let mat_3 = mat_1.tensor(&mat_2);
     /// ```
     fn tensor(&self, other: &Self) -> Self {
-        let columns_other = other.get_num_columns();
-        let rows_other = other.get_num_rows();
-
         // we can unwrap since we know that the dimensions are positive
         // does not have to be mutable, since the pointers themselves
         // do not change, only the content behind the pointers.
         let out = MatZ::new(
-            self.get_num_rows() * rows_other,
-            self.get_num_columns() * columns_other,
+            self.get_num_rows() * other.get_num_rows(),
+            self.get_num_columns() * other.get_num_columns(),
         )
         .unwrap();
 
@@ -52,26 +49,53 @@ impl Tensor for MatZ {
                 let entry = unsafe { fmpz_mat_entry(&self.matrix, i, j) };
 
                 if unsafe { 1 != fmpz_is_zero(entry) } {
-                    for i_other in 0..rows_other {
-                        for j_other in 0..columns_other {
-                            unsafe {
-                                fmpz_mul(
-                                    fmpz_mat_entry(
-                                        &out.matrix,
-                                        i * rows_other + i_other,
-                                        j * columns_other + j_other,
-                                    ),
-                                    entry,
-                                    fmpz_mat_entry(&other.matrix, i_other, j_other),
-                                )
-                            }
-                        }
-                    }
+                    set_partial_tensor_fmpz(&out, i, j, entry, other)
                 }
             }
         }
 
         out
+    }
+}
+
+/// This function sets the entries of the provided matrix according to the tensor product.
+/// It assumes that the matrix is correctly instantiated with zeros.
+///
+/// Sets the entries
+/// `[i*rows_other, j*columns_other]` up till `[i*(row_other +1), j*(columns_other + 1)]`
+/// according to the definition of the tensor product
+///
+/// Parameters:
+/// - `out`: the matrix in which the result is entered
+/// (**Warning**: even though `out` is not mutable, the subpart of the matrix is still
+/// set since the content behind the pointers changed and not the pointers themselves)
+/// - `i`: defines the row from which `entry` is taken
+/// - `j`: defines the column from which `entry` is taken
+/// - `entry`: defines the value with which the part of the tensor product
+/// is calculated
+/// - `other`: the matrix with which the entry is multiplied
+/// before setting the entries in `out`
+///
+/// Implicitly sets the entries of the matrix according to the definition
+/// of the tensor product.
+fn set_partial_tensor_fmpz(out: &MatZ, i: i64, j: i64, entry: *mut fmpz, other: &MatZ) {
+    let columns_other = other.get_num_columns();
+    let rows_other = other.get_num_rows();
+
+    for i_other in 0..rows_other {
+        for j_other in 0..columns_other {
+            unsafe {
+                fmpz_mul(
+                    fmpz_mat_entry(
+                        &out.matrix,
+                        i * rows_other + i_other,
+                        j * columns_other + j_other,
+                    ),
+                    entry,
+                    fmpz_mat_entry(&other.matrix, i_other, j_other),
+                )
+            }
+        }
     }
 }
 
