@@ -33,7 +33,8 @@ impl MatZ {
     ///
     /// let sqrd_2_norm = vec.norm_sqrd_eucl().unwrap();
     ///
-    /// assert_eq!(Z::from_i64(14), sqrd_2_norm);
+    /// // 1*1 + 2*2 + 3*3 = 14
+    /// assert_eq!(Z::from(14), sqrd_2_norm);
     /// ```
     ///
     /// Errors and Failures
@@ -74,6 +75,7 @@ impl MatZ {
     ///
     /// let infty_norm = vec.norm_infty().unwrap();
     ///
+    /// // max{1, 2, 3} = 3
     /// assert_eq!(Z::from_i64(3), infty_norm);
     /// ```
     ///

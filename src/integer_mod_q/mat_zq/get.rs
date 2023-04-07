@@ -177,14 +177,7 @@ impl MatZq {
         entries
     }
 
-    /// Computes the lengths of a given vector of [`fmpz`] structs
-    /// considering the [`Modulus`](crate::integer_mod_q::Modulus) of `self`.
-    ///
-    /// Parameters:
-    /// - `entries_fmpz`: holds a vector of [`fmpz`] structs
-    /// of which the length is calculated
-    ///
-    /// Returns a [`Vec<fmpz>`] of lengths of [`Zq`] entries
+    /// Computes the lengths of a given vector of [`Z`] values
     /// considering the [`Modulus`](crate::integer_mod_q::Modulus) of `self`.
     ///
     /// # Example
@@ -193,20 +186,15 @@ impl MatZq {
     /// use std::str::FromStr;
     ///
     /// let mat = MatZq::from_str("[[1,2],[3,4]] mod 3").unwrap();
-    /// let fmpz_entries = mat.collect_entries();
     ///
-    /// let entry_lengths = mat.collect_lengths(&fmpz_entries);
+    /// let lengths = mat.collect_lengths();
     /// ```
-    pub(crate) fn collect_lengths(&self) -> Vec<fmpz> {
+    pub(crate) fn collect_lengths(&self) -> Vec<Z> {
         let entries_fmpz = self.collect_entries();
 
         let modulus_fmpz = self.matrix.mod_[0];
         let mut entry_lengths = vec![];
         for value in entries_fmpz {
-            // this instantiation removes the need to allocate new space
-            // on heap for large fmpz values, the cloned modulus object just increments
-            // the counter of references on this struct
-
             entry_lengths.push(length(&value, &modulus_fmpz));
         }
 
@@ -444,9 +432,8 @@ mod test_collect_entries {
         assert_eq!(entries_1.len(), 6);
         assert_eq!(entries_1[0].0, 1);
         assert_eq!(entries_1[1].0, 2);
-        // 4611686018427387904 = 2^62, i.e. value is stored on stack
-        assert!(entries_1[2].0 >= 4611686018427387904);
-        assert!(entries_1[3].0 >= 4611686018427387904);
+        assert!(entries_1[2].0 >= 2_i64.pow(62));
+        assert!(entries_1[3].0 >= 2_i64.pow(62));
         assert_eq!(entries_1[4].0, 3);
         assert_eq!(entries_1[5].0, 4);
 
@@ -458,7 +445,7 @@ mod test_collect_entries {
 
 #[cfg(test)]
 mod test_collect_lengths {
-    use super::MatZq;
+    use super::{MatZq, Z};
     use std::str::FromStr;
 
     #[test]
@@ -476,15 +463,15 @@ mod test_collect_lengths {
         let lengths_2 = mat_2.collect_lengths();
 
         assert_eq!(lengths_1.len(), 6);
-        assert_eq!(lengths_1[0].0, 1);
-        assert_eq!(lengths_1[1].0, 2);
-        assert_eq!(lengths_1[2].0, 1);
-        assert_eq!(lengths_1[3].0, 2);
-        assert_eq!(lengths_1[4].0, 3);
-        assert_eq!(lengths_1[5].0, 4);
+        assert_eq!(lengths_1[0], Z::ONE);
+        assert_eq!(lengths_1[1], Z::from(2));
+        assert_eq!(lengths_1[2], Z::ONE);
+        assert_eq!(lengths_1[3], Z::from(2));
+        assert_eq!(lengths_1[4], Z::from(3));
+        assert_eq!(lengths_1[5], Z::from(4));
 
         assert_eq!(lengths_2.len(), 2);
-        assert_eq!(lengths_2[0].0, 1);
-        assert_eq!(lengths_2[1].0, 0);
+        assert_eq!(lengths_2[0], Z::ONE);
+        assert_eq!(lengths_2[1], Z::ZERO);
     }
 }

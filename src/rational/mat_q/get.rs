@@ -287,14 +287,13 @@ mod test_collect_entries {
         let entries_2 = mat_2.collect_entries();
 
         assert_eq!(entries_1.len(), 6);
-        // 4611686018427387904 = 2^62, i.e. value is stored on stack
         assert_eq!(entries_1[0].num.0, 1);
-        assert!(entries_1[0].den.0 > 4611686018427387904);
+        assert!(entries_1[0].den.0 >= 2_i64.pow(62));
         assert_eq!(entries_1[1].num.0, 2);
         assert_eq!(entries_1[1].den.0, 1);
-        assert!(entries_1[2].num.0 >= 4611686018427387904);
+        assert!(entries_1[2].num.0 >= 2_i64.pow(62));
         assert_eq!(entries_1[2].den.0, 1);
-        assert!(entries_1[3].num.0 >= 4611686018427387904);
+        assert!(entries_1[3].num.0 >= 2_i64.pow(62));
         assert_eq!(entries_1[3].den.0, 1);
         assert_eq!(entries_1[4].num.0, 3);
         assert_eq!(entries_1[4].den.0, 4);

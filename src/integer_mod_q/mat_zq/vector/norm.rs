@@ -12,8 +12,8 @@
 use super::super::MatZq;
 use crate::{
     error::MathError,
-    integer::fmpz_helpers::find_max_abs,
     integer::Z,
+    integer_mod_q::fmpz_mod_helpers::length,
     traits::{GetNumColumns, GetNumRows},
 };
 use flint_sys::fmpz::fmpz_addmul;
@@ -34,7 +34,8 @@ impl MatZq {
     ///
     /// let sqrd_2_norm = vec.norm_sqrd_eucl().unwrap();
     ///
-    /// assert_eq!(Z::from_i64(6), sqrd_2_norm);
+    /// // 1*1 + 2*2 + 1*1 = 6
+    /// assert_eq!(Z::from(6), sqrd_2_norm);
     /// ```
     ///
     /// Errors and Failures
@@ -56,7 +57,7 @@ impl MatZq {
         let mut result = Z::ZERO;
         for entry in entry_lengths {
             // sets result = result + entry * entry without cloned Z element
-            unsafe { fmpz_addmul(&mut result.value, &entry, &entry) }
+            unsafe { fmpz_addmul(&mut result.value, &entry.value, &entry.value) }
         }
 
         // TODO: Add sqrt function here
@@ -78,6 +79,7 @@ impl MatZq {
     ///
     /// let infty_norm = vec.norm_infty().unwrap();
     ///
+    /// // max{1, 1, 0} = 1
     /// assert_eq!(Z::from_i64(1), infty_norm);
     /// ```
     ///
@@ -94,11 +96,19 @@ impl MatZq {
         }
 
         // compute lengths of all entries in matrix with regards to modulus
-        let entry_lengths = self.collect_lengths();
+        // and find maximum length
+        let fmpz_entries = self.collect_entries();
+        let modulus = self.matrix.mod_[0];
+        let mut max = Z::ZERO;
 
-        // find maximum of absolute fmpz entries and
-        // return cloned absolute maximum [`Z`] value
-        Ok(find_max_abs(&entry_lengths))
+        for fmpz_entry in fmpz_entries {
+            let length = length(&fmpz_entry, &modulus);
+            if length > max {
+                max = length;
+            }
+        }
+
+        Ok(max)
     }
 }
 

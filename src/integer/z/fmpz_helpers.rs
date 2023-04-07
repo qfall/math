@@ -48,7 +48,7 @@ pub(crate) fn find_max_abs(fmpz_vector: &Vec<fmpz>) -> Z {
 /// Computes the absolute distance between two [`fmpz`] instances.
 ///
 /// Parameters:
-/// - `other`: specifies one of the [`fmpz`] values whose distance
+/// - `other`: specifies the [`fmpz`] value whose distance
 /// is calculated to `self`
 ///
 /// Returns the absolute difference, i.e. distance between the two given [`fmpz`]
@@ -66,10 +66,10 @@ pub(crate) fn find_max_abs(fmpz_vector: &Vec<fmpz>) -> Z {
 ///
 /// assert_eq!(16, distance.0);
 /// ```
-pub(crate) fn distance(value_1: &fmpz, value_2: &fmpz) -> fmpz {
-    let mut out = fmpz(0);
-    unsafe { fmpz_sub(&mut out, value_1, value_2) };
-    unsafe { fmpz_abs(&mut out, &out) };
+pub(crate) fn distance(value_1: &fmpz, value_2: &fmpz) -> Z {
+    let mut out = Z::ZERO;
+    unsafe { fmpz_sub(&mut out.value, value_1, value_2) };
+    unsafe { fmpz_abs(&mut out.value, &out.value) };
     out
 }
 
@@ -132,7 +132,7 @@ mod test_find_max_abs {
 mod test_distance {
     use super::distance;
     use super::Z;
-    use flint_sys::fmpz::{fmpz, fmpz_cmp};
+    use flint_sys::fmpz::fmpz;
 
     /// Checks if distance is correctly output for small [`Z`] values
     /// and whether distance(a,b) == distance(b,a), distance(a,a) == 0
@@ -142,15 +142,15 @@ mod test_distance {
         let b = fmpz(-15);
         let zero = fmpz(0);
 
-        assert_eq!(1, distance(&a, &zero).0);
-        assert_eq!(1, distance(&zero, &a).0);
-        assert_eq!(16, distance(&a, &b).0);
-        assert_eq!(16, distance(&b, &a).0);
-        assert_eq!(15, distance(&b, &zero).0);
-        assert_eq!(15, distance(&zero, &b).0);
-        assert_eq!(0, distance(&b, &b).0);
-        assert_eq!(0, distance(&a, &a).0);
-        assert_eq!(0, distance(&zero, &zero).0);
+        assert_eq!(Z::ONE, distance(&a, &zero));
+        assert_eq!(Z::ONE, distance(&zero, &a));
+        assert_eq!(Z::from(16), distance(&a, &b));
+        assert_eq!(Z::from(16), distance(&b, &a));
+        assert_eq!(Z::from(15), distance(&b, &zero));
+        assert_eq!(Z::from(15), distance(&zero, &b));
+        assert_eq!(Z::ZERO, distance(&b, &b));
+        assert_eq!(Z::ZERO, distance(&a, &a));
+        assert_eq!(Z::ZERO, distance(&zero, &zero));
     }
 
     /// Checks if distance is correctly output for large [`Z`] values
@@ -160,27 +160,15 @@ mod test_distance {
         let a = Z::from(i64::MAX);
         let b = Z::from(i64::MIN);
         let zero = Z::ZERO;
-        let cmp_b_pos = Z::from(i64::MAX as u64 + 1);
+        let b_abs = Z::ZERO - &b;
 
-        assert_eq!(0, unsafe {
-            fmpz_cmp(&(&a - &b).value, &distance(&a.value, &b.value))
-        });
-        assert_eq!(0, unsafe {
-            fmpz_cmp(&(&a - &b).value, &distance(&b.value, &a.value))
-        });
-        assert_eq!(0, unsafe {
-            fmpz_cmp(&a.value, &distance(&a.value, &zero.value))
-        });
-        assert_eq!(0, unsafe {
-            fmpz_cmp(&(&a).value, &distance(&zero.value, &a.value))
-        });
-        assert_eq!(0, unsafe {
-            fmpz_cmp(&cmp_b_pos.value, &distance(&b.value, &zero.value))
-        });
-        assert_eq!(0, unsafe {
-            fmpz_cmp(&cmp_b_pos.value, &distance(&zero.value, &b.value))
-        });
-        assert_eq!(0, distance(&a.value, &a.value).0);
-        assert_eq!(0, distance(&b.value, &b.value).0);
+        assert_eq!(&a - &b, distance(&a.value, &b.value));
+        assert_eq!(&a - &b, distance(&b.value, &a.value));
+        assert_eq!(a, distance(&a.value, &zero.value));
+        assert_eq!(a, distance(&zero.value, &a.value));
+        assert_eq!(b_abs, distance(&b.value, &zero.value));
+        assert_eq!(b_abs, distance(&zero.value, &b.value));
+        assert_eq!(zero, distance(&a.value, &a.value));
+        assert_eq!(zero, distance(&b.value, &b.value));
     }
 }

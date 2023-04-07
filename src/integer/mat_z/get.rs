@@ -268,9 +268,8 @@ mod test_collect_entries {
         assert_eq!(entries_1.len(), 6);
         assert_eq!(entries_1[0].0, 1);
         assert_eq!(entries_1[1].0, 2);
-        // 4611686018427387904 = 2^62, i.e. value is stored on stack
-        assert!(entries_1[2].0 >= 4611686018427387904);
-        assert!(entries_1[3].0 >= 4611686018427387904);
+        assert!(entries_1[2].0 >= 2_i64.pow(62));
+        assert!(entries_1[3].0 >= 2_i64.pow(62));
         assert_eq!(entries_1[4].0, 3);
         assert_eq!(entries_1[5].0, 4);
 
