@@ -12,7 +12,7 @@ use super::MatZ;
 use crate::{
     error::MathError,
     integer::Z,
-    traits::{GetEntry, GetNumColumns, GetNumRows},
+    traits::{GetEntry, GetNumColumns, GetNumRows, SetEntry},
     utils::index::evaluate_indices,
 };
 use flint_sys::{
@@ -96,6 +96,66 @@ impl GetEntry<Z> for MatZ {
 }
 
 impl MatZ {
+    /// Outputs the row vector of the specified row.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row of the matrix
+    ///
+    /// # Example
+    /// ```rust
+    /// use qfall_math::integer::MatZ;
+    /// use std::str::FromStr;
+    ///
+    /// let matrix = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();
+    ///
+    /// let row0 = matrix.get_vec_row(0).unwrap(); // first row
+    /// let row1 = matrix.get_vec_row(1).unwrap(); // second row
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
+    /// if the number of the row is greater than the matrix or negative.
+    pub fn get_vec_row(&self, row: impl TryInto<i64> + Display + Copy) -> Result<Self, MathError> {
+        let mut out = MatZ::new(1, self.get_num_columns()).unwrap();
+        for column in 0..self.get_num_columns() {
+            out.set_entry(0, column, &self.get_entry(row, column)?)
+                .unwrap();
+        }
+        Ok(out)
+    }
+
+    /// Outputs a column vector of the specified column.
+    ///
+    /// Input parameters:
+    /// * `column`: specifies the column of the matrix
+    ///
+    /// # Example
+    /// ```rust
+    /// use qfall_math::integer::MatZ;
+    /// use std::str::FromStr;
+    ///
+    /// let matrix = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();
+    ///
+    /// let col0 = matrix.get_vec_column(0).unwrap(); // first column
+    /// let col1 = matrix.get_vec_column(1).unwrap(); // second column
+    /// let col2 = matrix.get_vec_column(2).unwrap(); // third column
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
+    /// if the number of the column is greater than the matrix or negative.
+    pub fn get_vec_column(
+        &self,
+        column: impl TryInto<i64> + Display + Copy,
+    ) -> Result<Self, MathError> {
+        let mut out = MatZ::new(self.get_num_rows(), 1).unwrap();
+        for row in 0..self.get_num_rows() {
+            out.set_entry(row, 0, &self.get_entry(row, column)?)
+                .unwrap();
+        }
+        Ok(out)
+    }
+
     /// Efficiently collects all [`fmpz`]s in a [`MatZ`] without cloning them.
     ///
     /// Hence, the values on the returned [`Vec`] are intended for short-term use
@@ -249,6 +309,49 @@ mod test_get_num {
         let matrix = MatZ::new(5, 10).unwrap();
 
         assert_eq!(matrix.get_num_columns(), 10);
+    }
+}
+
+#[cfg(test)]
+mod test_get_vec {
+
+    use crate::integer::MatZ;
+    use std::str::FromStr;
+
+    #[test]
+    fn get_vec_row_works() {
+        let matrix = MatZ::from_str(&format!("[[1,2,3],[4,{},{}]]", i64::MAX, i64::MIN)).unwrap();
+        let row = matrix.get_vec_row(1).unwrap();
+
+        let cmp = MatZ::from_str(&format!("[[4,{},{}]]", i64::MAX, i64::MIN)).unwrap();
+
+        assert_eq!(cmp, row);
+    }
+
+    #[test]
+    fn get_vec_column_works() {
+        let matrix =
+            MatZ::from_str(&format!("[[1,2,3],[{},4,5],[{},6,7]]", i64::MAX, i64::MIN)).unwrap();
+        let column = matrix.get_vec_column(0).unwrap();
+
+        let cmp = MatZ::from_str(&format!("[[1],[{}],[{}]]", i64::MAX, i64::MIN)).unwrap();
+
+        assert_eq!(cmp, column);
+    }
+
+    #[test]
+    fn wrong_dim_error() {
+        let matrix =
+            MatZ::from_str(&format!("[[1,2,3],[{},4,5],[{},6,7]]", i64::MAX, i64::MIN)).unwrap();
+        let row1 = matrix.get_vec_row(-1);
+        let row2 = matrix.get_vec_row(4);
+        let column1 = matrix.get_vec_column(-1);
+        let column2 = matrix.get_vec_column(4);
+
+        assert!(row1.is_err());
+        assert!(row2.is_err());
+        assert!(column1.is_err());
+        assert!(column2.is_err());
     }
 }
 
