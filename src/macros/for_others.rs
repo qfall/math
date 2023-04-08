@@ -37,6 +37,7 @@
 /// implement_for_others!(Z, MatZq, SetEntry for i8 i16 i32 i64 u8 u16 u32 u64);
 /// implement_for_others!(Z, MatZ, Mul Matrix for i8 i16 i32 i64 u8 u16 u32 u64);
 /// implement_for_others!(Z, i8 i16 i32 i64 u8 u16 u32 u64, Mul Scalar for MatZ);
+/// implement_for_others!(Z, Gcd for u8 u16 u32 u64 i8 i16 i32 i64);
 /// ```
 macro_rules! implement_for_others {
     // [`Evaluate`] trait
@@ -109,6 +110,22 @@ macro_rules! implement_for_others {
             }
         })*
     };
+
+    // [`GCD`] trait
+    ($type:ident, Gcd for $($source_type:ident)*) => {
+        $(impl Gcd<$source_type> for &$type {
+            type Output = $type;
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::gcd`]. Implicitly converts [`" $source_type "`] into [`" $type "`]."]
+            fn gcd(
+                self,
+                other: $source_type,
+            ) -> Self::Output {
+                self.gcd($type::from(other))
+            }
+            }
+        })*
+    };
 }
 
 pub(crate) use implement_for_others;
@@ -129,6 +146,7 @@ pub(crate) use implement_for_others;
 /// implement_for_owned!(Q, Q, PolyOverQ, Evaluate);
 /// implement_for_owned!(Z, PolyOverZ, SetCoefficient);
 /// implement_for_owned!(Z, MatZq, SetEntry);
+/// implement_for_owned!(Z, Gcd);
 /// ```
 macro_rules! implement_for_owned {
     // [`Evaluate`] trait
@@ -174,6 +192,22 @@ macro_rules! implement_for_owned {
                 value: $source_type,
             ) -> Result<(), MathError> {
                 self.set_entry(row, column, &value)
+            }
+            }
+        }
+    };
+
+    // [`GCD`] trait
+    ($type:ident, Gcd) => {
+        impl Gcd<$type> for &$type {
+            type Output = $type;
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::gcd`]."]
+            fn gcd(
+                self,
+                other: $type,
+            ) -> Self::Output {
+                self.gcd(&other)
             }
             }
         }
