@@ -12,6 +12,7 @@
 use flint_sys::fmpz_mod_mat::fmpz_mod_mat_struct;
 
 mod cmp;
+mod concat;
 mod from;
 mod get;
 mod ownership;
