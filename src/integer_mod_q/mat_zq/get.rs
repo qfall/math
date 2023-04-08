@@ -31,10 +31,7 @@ impl MatZq {
     /// let entry = matrix.get_mod();
     /// ```
     pub fn get_mod(&self) -> Modulus {
-        let mut out = Z::default();
-        unsafe { fmpz_set(&mut out.value, &self.matrix.mod_[0]) };
-
-        Modulus::try_from_z(&out).expect("The matrix modulus is not a valid modulus.")
+        self.modulus.clone()
     }
 }
 

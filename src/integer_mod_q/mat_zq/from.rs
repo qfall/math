@@ -17,6 +17,7 @@ use super::MatZq;
 use crate::{
     error::MathError,
     integer::Z,
+    integer_mod_q::Modulus,
     traits::SetEntry,
     utils::{
         dimensions::find_matrix_dimensions, index::evaluate_index, parse::parse_matrix_string,
@@ -87,6 +88,8 @@ impl MatZq {
 
             Ok(MatZq {
                 matrix: matrix.assume_init(),
+                // we can unwrap here since modulus > 0 was checked before
+                modulus: Modulus::try_from(&modulus).unwrap(),
             })
         }
     }
