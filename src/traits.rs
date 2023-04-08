@@ -126,3 +126,14 @@ pub trait Concatenate {
     /// if the matrices can not be concatenated due to mismatching dimensions
     fn concat_horizontal(self, other: Self) -> Result<Self::Output, MathError>;
 }
+
+pub trait Distance<T> {
+    /// Computes the absolute distance between two values.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value whose distance is calculated to `self`
+    ///
+    /// Returns the absolute difference, i.e. distance between the two given values
+    /// as a new instance.
+    fn distance(&self, other: T) -> Self;
+}

@@ -109,6 +109,21 @@ macro_rules! implement_for_others {
             }
         })*
     };
+
+    // [`Distance`] trait
+    ($bridge_type:ident, $type:ident, Distance for $($source_type:ident)*) => {
+        $(impl Distance<$source_type> for $type {
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::distance`]. Implicitly converts [`" $source_type "`] into [`" $bridge_type "`]."]
+            fn distance(
+                &self,
+                other: $source_type,
+            ) -> Self {
+                self.distance($bridge_type::from(other))
+            }
+            }
+        })*
+    };
 }
 
 pub(crate) use implement_for_others;
@@ -174,6 +189,21 @@ macro_rules! implement_for_owned {
                 value: $source_type,
             ) -> Result<(), MathError> {
                 self.set_entry(row, column, &value)
+            }
+            }
+        }
+    };
+
+    // [`Distance`] trait
+    ($source_type:ident, $type:ident, Distance) => {
+        impl Distance<$source_type> for $type {
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::distance`]."]
+            fn distance(
+                &self,
+                other: $source_type,
+            ) -> Self {
+                self.distance(&other)
             }
             }
         }

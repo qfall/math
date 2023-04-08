@@ -14,6 +14,7 @@ use flint_sys::fmpz::fmpz;
 mod arithmetic;
 mod cmp;
 mod default;
+mod distance;
 mod exp;
 mod from;
 mod ownership;
