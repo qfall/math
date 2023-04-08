@@ -35,7 +35,6 @@ impl Tensor for MatZ {
     /// let mat_3 = mat_1.tensor(&mat_2);
     /// ```
     fn tensor(&self, other: &Self) -> Self {
-        // we can unwrap since we know that the dimensions are positive
         // does not have to be mutable, since the pointers themselves
         // do not change, only the content behind the pointers.
         let out = MatZ::new(
@@ -49,7 +48,7 @@ impl Tensor for MatZ {
                 let entry = unsafe { fmpz_mat_entry(&self.matrix, i, j) };
 
                 if unsafe { 1 != fmpz_is_zero(entry) } {
-                    set_partial_tensor_fmpz(&out, i, j, entry, other)
+                    unsafe { set_matrix_window_mul(&out, i, j, entry, other) }
                 }
             }
         }
@@ -58,29 +57,34 @@ impl Tensor for MatZ {
     }
 }
 
-/// This function sets the entries of the provided matrix according to the tensor product.
-/// It assumes that the matrix is correctly instantiated with zeros.
+/// This function sets a specific window of the provided matrix `out`
+/// according to the `scalar` multiple of `matrix`.
 ///
 /// Sets the entries
-/// `[i*rows_other, j*columns_other]` up till `[i*(row_other +1), j*(columns_other + 1)]`
-/// according to the definition of the tensor product
+/// `[i*rows_other, j*columns_other]` up till `[row_left*(row_other +1), column_upper*(columns_other + 1)]`
 ///
 /// Parameters:
-/// - `out`: the matrix in which the result is entered
+/// - `out`: the matrix in which the result is saved
 /// (**Warning**: even though `out` is not mutable, the subpart of the matrix is still
-/// set since the content behind the pointers changed and not the pointers themselves)
-/// - `i`: defines the row from which `entry` is taken
-/// - `j`: defines the column from which `entry` is taken
-/// - `entry`: defines the value with which the part of the tensor product
+/// set since the content behind the pointers changes but not the pointers themselves.)
+/// - `row_left`: defines the leftmost row of the set window
+/// - `column_upper`: defines the highest column of the set window
+/// - `scalar`: defines the value with which the part of the tensor product
 /// is calculated
-/// - `other`: the matrix with which the entry is multiplied
+/// - `matrix`: the matrix with which the scalar is multiplied
 /// before setting the entries in `out`
 ///
 /// Implicitly sets the entries of the matrix according to the definition
 /// of the tensor product.
-fn set_partial_tensor_fmpz(out: &MatZ, i: i64, j: i64, entry: *mut fmpz, other: &MatZ) {
-    let columns_other = other.get_num_columns();
-    let rows_other = other.get_num_rows();
+unsafe fn set_matrix_window_mul(
+    out: &MatZ,
+    row_left: i64,
+    column_upper: i64,
+    scalar: *mut fmpz,
+    matrix: &MatZ,
+) {
+    let columns_other = matrix.get_num_columns();
+    let rows_other = matrix.get_num_rows();
 
     for i_other in 0..rows_other {
         for j_other in 0..columns_other {
@@ -88,11 +92,11 @@ fn set_partial_tensor_fmpz(out: &MatZ, i: i64, j: i64, entry: *mut fmpz, other: 
                 fmpz_mul(
                     fmpz_mat_entry(
                         &out.matrix,
-                        i * rows_other + i_other,
-                        j * columns_other + j_other,
+                        row_left * rows_other + i_other,
+                        column_upper * columns_other + j_other,
                     ),
-                    entry,
-                    fmpz_mat_entry(&other.matrix, i_other, j_other),
+                    scalar,
+                    fmpz_mat_entry(&matrix.matrix, i_other, j_other),
                 )
             }
         }
