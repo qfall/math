@@ -32,6 +32,7 @@ use flint_sys::fmpz::{fmpz, fmpz_abs, fmpz_cmpabs, fmpz_sub};
 /// ```
 pub(crate) fn find_max_abs(fmpz_vector: &Vec<fmpz>) -> Z {
     // find maximum of absolute fmpz entries
+    // It's not necessary to clear `fmpz(0)` since it's small
     let mut max = &fmpz(0);
     for entry in fmpz_vector {
         if unsafe { fmpz_cmpabs(max, entry) } < 0 {

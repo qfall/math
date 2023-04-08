@@ -83,7 +83,7 @@ impl MatZq {
     /// let infty_norm = vec.norm_infty().unwrap();
     ///
     /// // max{1, 1, 0} = 1
-    /// assert_eq!(Z::from_i64(1), infty_norm);
+    /// assert_eq!(Z::ONE, infty_norm);
     /// ```
     ///
     /// Errors and Failures
@@ -129,8 +129,8 @@ mod test_norm_eucl_sqrd {
         let vec_3 = MatZq::from_str("[[1,10,100, 1000]] mod 10000").unwrap();
 
         assert_eq!(vec_1.norm_eucl_sqrd().unwrap(), Z::ONE);
-        assert_eq!(vec_2.norm_eucl_sqrd().unwrap(), Z::from_i64(1));
-        assert_eq!(vec_3.norm_eucl_sqrd().unwrap(), Z::from_i64(1010101));
+        assert_eq!(vec_2.norm_eucl_sqrd().unwrap(), Z::ONE);
+        assert_eq!(vec_3.norm_eucl_sqrd().unwrap(), Z::from(1010101));
     }
 
     /// Check whether the squared euclidean norm for row vectors
@@ -157,8 +157,8 @@ mod test_norm_eucl_sqrd {
         let vec_1 = MatZq::from_str("[[1],[10],[100]] mod 10").unwrap();
         let vec_2 = MatZq::from_str("[[1],[10],[100],[1000]] mod 10000").unwrap();
 
-        assert_eq!(vec_1.norm_eucl_sqrd().unwrap(), Z::from_i64(1));
-        assert_eq!(vec_2.norm_eucl_sqrd().unwrap(), Z::from_i64(1010101));
+        assert_eq!(vec_1.norm_eucl_sqrd().unwrap(), Z::ONE);
+        assert_eq!(vec_2.norm_eucl_sqrd().unwrap(), Z::from(1010101));
     }
 
     /// Check whether the squared euclidean norm for column vectors
@@ -201,8 +201,8 @@ mod test_norm_infty {
         let vec_3 = MatZq::from_str("[[1,10,100, 1000]] mod 1000").unwrap();
 
         assert_eq!(vec_1.norm_infty().unwrap(), Z::from(4));
-        assert_eq!(vec_2.norm_infty().unwrap(), Z::from_i64(100));
-        assert_eq!(vec_3.norm_infty().unwrap(), Z::from_i64(100));
+        assert_eq!(vec_2.norm_infty().unwrap(), Z::from(100));
+        assert_eq!(vec_3.norm_infty().unwrap(), Z::from(100));
     }
 
     /// Check whether the infinity norm for row vectors
@@ -228,8 +228,8 @@ mod test_norm_infty {
         let vec_1 = MatZq::from_str("[[1],[10],[100]] mod 50").unwrap();
         let vec_2 = MatZq::from_str("[[1],[10],[100],[1000]] mod 1999").unwrap();
 
-        assert_eq!(vec_1.norm_infty().unwrap(), Z::from_i64(10));
-        assert_eq!(vec_2.norm_infty().unwrap(), Z::from_i64(999));
+        assert_eq!(vec_1.norm_infty().unwrap(), Z::from(10));
+        assert_eq!(vec_2.norm_infty().unwrap(), Z::from(999));
     }
 
     /// Check whether the infinity norm for column vectors
