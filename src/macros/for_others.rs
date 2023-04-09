@@ -29,6 +29,8 @@
 /// - ['Mul'](std::ops::Mul) with signatures
 /// `($bridge_type:ident, $type:ident, Mul Matrix for $source_type:ident)` and
 /// `($bridge_type:ident, $type:ident, Mul Scalar for $source_type:ident)`
+/// - [`Pow`](crate::traits::Pow) with the signature
+/// `($bridge_type, $type, Pow for $source_type:ident)`
 ///
 /// # Examples
 /// ```compile_fail
@@ -109,6 +111,19 @@ macro_rules! implement_for_others {
             }
         })*
     };
+
+    // [`Pow`] trait
+    ($bridge_type:ident, $type:ident, Pow for $($source_type:ident)*) => {
+        $(impl Pow<$source_type> for &$type {
+            type Output = $type;
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::pow`]. Implicitly converts [`" $source_type "`] into [`" $bridge_type "`]."]
+                fn pow(self, exp: $source_type) -> Result<Self::Output, MathError> {
+                    self.pow(&$bridge_type::from(exp))
+                }
+            }
+        })*
+    };
 }
 
 pub(crate) use implement_for_others;
@@ -123,6 +138,8 @@ pub(crate) use implement_for_others;
 /// `($bridge_type, $type, SetCoefficient for $source_type:ident)`
 /// - [`SetEntry`](crate::traits::SetEntry) with the signature
 /// `($bridge_type, $type, SetCoefficient for $source_type:ident)`
+/// - [`Pow`](crate::traits::Pow) with the signature
+/// `($bridge_type, $type, Pow for $source_type:ident)`
 ///
 /// # Examples
 /// ```compile_fail
@@ -174,6 +191,22 @@ macro_rules! implement_for_owned {
                 value: $source_type,
             ) -> Result<(), MathError> {
                 self.set_entry(row, column, &value)
+            }
+            }
+        }
+    };
+
+    // [`Pow`] trait
+    ($source_type:ident, $type:ident, Pow) => {
+        impl Pow<$source_type> for &$type {
+            type Output = $type;
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::pow`]."]
+            fn pow(
+                self,
+                exp: $source_type,
+            ) -> Result<Self::Output, MathError> {
+                self.pow(&exp)
             }
             }
         }

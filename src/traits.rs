@@ -137,3 +137,15 @@ pub trait Concatenate {
     /// if the matrices can not be concatenated due to mismatching dimensions
     fn concat_horizontal(self, other: Self) -> Result<Self::Output, MathError>;
 }
+
+pub trait Pow<T> {
+    type Output;
+
+    /// Raises the value of `self` to the power of an `exp`.
+    ///
+    /// Parameters:
+    /// - `exp`: specifies the exponent to which the value is raised
+    ///
+    /// Returns the value of `self` powered by `exp` as a new `Output` instance.
+    fn pow(self, exp: T) -> Result<Self::Output, MathError>;
+}
