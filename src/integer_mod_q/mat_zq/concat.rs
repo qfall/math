@@ -23,7 +23,7 @@ impl Concatenate for &MatZq {
     /// Parameters:
     /// - `other`: the other matrix to concatenate with `self`
     ///
-    /// Returns a horizontal concatenation of the two matrices or a
+    /// Returns a vertical concatenation of the two matrices or a
     /// an error, if the matrices can not be concatenated vertically.
     ///
     /// # Example
@@ -55,20 +55,18 @@ impl Concatenate for &MatZq {
             )));
         }
 
-        // check whether moduli match
-        let mod_self = self.get_mod();
-        let mod_other = other.get_mod();
-        if mod_self != mod_other {
+        if self.get_mod() != other.get_mod() {
             return Err(MathError::MismatchingModulus(format!(
                 "Tried to concatenate matrices with different moduli {} and {}.",
-                mod_self, mod_other,
+                self.get_mod(),
+                other.get_mod(),
             )));
         }
 
         let mut out = MatZq::new(
             self.get_num_rows() + other.get_num_rows(),
             self.get_num_columns(),
-            mod_self,
+            self.get_mod(),
         )
         .unwrap();
         unsafe {
@@ -114,20 +112,18 @@ impl Concatenate for &MatZq {
             )));
         }
 
-        // check whether moduli match
-        let mod_self = self.get_mod();
-        let mod_other = other.get_mod();
-        if mod_self != mod_other {
+        if self.get_mod() != other.get_mod() {
             return Err(MathError::MismatchingModulus(format!(
                 "Tried to concatenate matrices with different moduli {} and {}.",
-                mod_self, mod_other,
+                self.get_mod(),
+                other.get_mod(),
             )));
         }
 
         let mut out = MatZq::new(
             self.get_num_rows(),
             self.get_num_columns() + other.get_num_columns(),
-            mod_self,
+            self.get_mod(),
         )
         .unwrap();
         unsafe {
