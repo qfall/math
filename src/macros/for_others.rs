@@ -29,6 +29,8 @@
 /// - ['Mul'](std::ops::Mul) with signatures
 /// `($bridge_type:ident, $type:ident, Mul Matrix for $source_type:ident)` and
 /// `($bridge_type:ident, $type:ident, Mul Scalar for $source_type:ident)`
+/// - [`Lcm`](crate::traits::Lcm) with the signature
+/// `($type, Lcm for $source_type:ident)`
 ///
 /// # Examples
 /// ```compile_fail
@@ -109,6 +111,22 @@ macro_rules! implement_for_others {
             }
         })*
     };
+
+    // [`Lcm`] trait
+    ($type:ident, Lcm for $($source_type:ident)*) => {
+        $(impl Lcm<$source_type> for &$type {
+            type Output = $type;
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::lcm`]. Implicitly converts [`" $source_type "`] into [`" $type "`]."]
+            fn lcm(
+                self,
+                other: $source_type,
+            ) -> Self::Output {
+                self.lcm(&$type::from(other))
+            }
+            }
+        })*
+    };
 }
 
 pub(crate) use implement_for_others;
@@ -123,6 +141,8 @@ pub(crate) use implement_for_others;
 /// `($bridge_type, $type, SetCoefficient for $source_type:ident)`
 /// - [`SetEntry`](crate::traits::SetEntry) with the signature
 /// `($bridge_type, $type, SetCoefficient for $source_type:ident)`
+/// - [`Lcm`](crate::traits::Lcm) with the signature
+/// `($type, Lcm for $source_type:ident)`
 ///
 /// # Examples
 /// ```compile_fail
@@ -174,6 +194,22 @@ macro_rules! implement_for_owned {
                 value: $source_type,
             ) -> Result<(), MathError> {
                 self.set_entry(row, column, &value)
+            }
+            }
+        }
+    };
+
+    // [`Lcm`] trait
+    ($type:ident, Lcm) => {
+        impl Lcm<$type> for &$type {
+            type Output = $type;
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::lcm`]."]
+            fn lcm(
+                self,
+                other: $type,
+            ) -> Self::Output {
+                self.lcm(&other)
             }
             }
         }
