@@ -23,7 +23,7 @@ impl Concatenate for &MatPolyOverZ {
     /// Parameters:
     /// - `other`: the other matrix to concatenate with `self`
     ///
-    /// Returns a horizontal concatenation of the two matrices or a
+    /// Returns a vertical concatenation of the two matrices or a
     /// an error, if the matrices can not be concatenated vertically.
     ///
     /// # Example
