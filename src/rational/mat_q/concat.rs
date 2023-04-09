@@ -6,17 +6,17 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementations to concatenate two [`MatZ`](crate::integer::MatZ).
+//! Implementations to concatenate two [`MatQ`].
 
-use super::MatZ;
+use super::MatQ;
 use crate::{
     error::MathError,
     traits::{Concatenate, GetNumColumns, GetNumRows},
 };
-use flint_sys::fmpz_mat::{fmpz_mat_concat_horizontal, fmpz_mat_concat_vertical};
+use flint_sys::fmpq_mat::{fmpq_mat_concat_horizontal, fmpq_mat_concat_vertical};
 
-impl Concatenate for &MatZ {
-    type Output = MatZ;
+impl Concatenate for &MatQ {
+    type Output = MatQ;
 
     /// Concatenates `self` with `other` vertically, i.e. `other` is added below.
     ///
@@ -29,18 +29,18 @@ impl Concatenate for &MatZ {
     /// # Example
     /// ```
     /// use qfall_math::traits::*;
-    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::rational::MatQ;
     ///
-    /// let mat_1 = MatZ::new(13, 5).unwrap();
-    /// let mat_2 = MatZ::new(17, 5).unwrap();
+    /// let mat_1 = MatQ::new(13, 5).unwrap();
+    /// let mat_2 = MatQ::new(17, 5).unwrap();
     ///
     /// let mat_vert = mat_1.concat_vertical(&mat_2).unwrap();
     /// ```
     ///
     /// # Errors and Failures
-    /// Returns a `MathError` of type
+    /// - Returns a `MathError` of type
     /// [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    /// if the matrices can not be concatenated due to mismatching dimensions
+    /// if the matrices can not be concatenated due to mismatching dimensions.
     fn concat_vertical(self, other: Self) -> Result<Self::Output, crate::error::MathError> {
         if self.get_num_columns() != other.get_num_columns() {
             return Err(MathError::MismatchingMatrixDimension(format!(
@@ -51,13 +51,13 @@ impl Concatenate for &MatZ {
                 other.get_num_columns()
             )));
         }
-        let mut out = MatZ::new(
+        let mut out = MatQ::new(
             self.get_num_rows() + other.get_num_rows(),
             self.get_num_columns(),
         )
         .unwrap();
         unsafe {
-            fmpz_mat_concat_vertical(&mut out.matrix, &self.matrix, &other.matrix);
+            fmpq_mat_concat_vertical(&mut out.matrix, &self.matrix, &other.matrix);
         }
         Ok(out)
     }
@@ -73,18 +73,18 @@ impl Concatenate for &MatZ {
     /// # Example
     /// ```
     /// use qfall_math::traits::*;
-    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::rational::MatQ;
     ///
-    /// let mat_1 = MatZ::new(17, 5).unwrap();
-    /// let mat_2 = MatZ::new(17, 6).unwrap();
+    /// let mat_1 = MatQ::new(17, 5).unwrap();
+    /// let mat_2 = MatQ::new(17, 6).unwrap();
     ///
     /// let mat_vert = mat_1.concat_horizontal(&mat_2).unwrap();
     /// ```
     ///
     /// # Errors and Failures
-    /// Returns a `MathError` of type
+    /// - Returns a `MathError` of type
     /// [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    /// if the matrices can not be concatenated due to mismatching dimensions
+    /// if the matrices can not be concatenated due to mismatching dimensions.
     fn concat_horizontal(self, other: Self) -> Result<Self::Output, crate::error::MathError> {
         if self.get_num_rows() != other.get_num_rows() {
             return Err(MathError::MismatchingMatrixDimension(format!(
@@ -95,13 +95,13 @@ impl Concatenate for &MatZ {
                 other.get_num_columns()
             )));
         }
-        let mut out = MatZ::new(
+        let mut out = MatQ::new(
             self.get_num_rows(),
             self.get_num_columns() + other.get_num_columns(),
         )
         .unwrap();
         unsafe {
-            fmpz_mat_concat_horizontal(&mut out.matrix, &self.matrix, &other.matrix);
+            fmpq_mat_concat_horizontal(&mut out.matrix, &self.matrix, &other.matrix);
         }
         Ok(out)
     }
@@ -110,7 +110,7 @@ impl Concatenate for &MatZ {
 #[cfg(test)]
 mod test_concatenate {
     use crate::{
-        integer::MatZ,
+        rational::MatQ,
         traits::{Concatenate, GetNumColumns, GetNumRows},
     };
     use std::str::FromStr;
@@ -119,9 +119,9 @@ mod test_concatenate {
     /// if the dimensions mismatch
     #[test]
     fn dimensions_vertical() {
-        let mat_1 = MatZ::new(13, 5).unwrap();
-        let mat_2 = MatZ::new(17, 5).unwrap();
-        let mat_3 = MatZ::new(17, 6).unwrap();
+        let mat_1 = MatQ::new(13, 5).unwrap();
+        let mat_2 = MatQ::new(17, 5).unwrap();
+        let mat_3 = MatQ::new(17, 6).unwrap();
 
         let mat_vert = mat_1.concat_vertical(&mat_2).unwrap();
 
@@ -134,27 +134,31 @@ mod test_concatenate {
     /// if the dimensions mismatch
     #[test]
     fn dimensions_horizontal() {
-        let mat_1 = MatZ::new(13, 5).unwrap();
-        let mat_2 = MatZ::new(17, 5).unwrap();
-        let mat_3 = MatZ::new(17, 6).unwrap();
+        let mat_1 = MatQ::new(13, 5).unwrap();
+        let mat_2 = MatQ::new(17, 5).unwrap();
+        let mat_3 = MatQ::new(17, 6).unwrap();
 
-        let mat_vert = mat_2.concat_horizontal(&mat_3).unwrap();
+        let mat_hor = mat_2.concat_horizontal(&mat_3).unwrap();
 
-        assert_eq!(11, mat_vert.get_num_columns());
-        assert_eq!(17, mat_vert.get_num_rows());
+        assert_eq!(11, mat_hor.get_num_columns());
+        assert_eq!(17, mat_hor.get_num_rows());
         assert!(mat_1.concat_horizontal(&mat_2).is_err());
     }
 
     /// ensure that vertical concatenation works correctly
     #[test]
     fn vertically_correct() {
-        let mat_1 =
-            MatZ::from_str(&format!("[[1, 2, {}],[4, 5, {}]]", i64::MIN, u64::MAX)).unwrap();
-        let mat_2 = MatZ::from_str("[[-1, 2, -17]]").unwrap();
+        let mat_1 = MatQ::from_str(&format!(
+            "[[1, 4/2, {}/1],[4, 5/1, {}]]",
+            i64::MIN,
+            u64::MAX
+        ))
+        .unwrap();
+        let mat_2 = MatQ::from_str("[[-1/1, -8/-4, 17/-1]]").unwrap();
 
         let mat_vertical = mat_1.concat_vertical(&mat_2).unwrap();
 
-        let cmp_mat = MatZ::from_str(&format!(
+        let cmp_mat = MatQ::from_str(&format!(
             "[[1, 2, {}],[4, 5, {}],[-1, 2, -17]]",
             i64::MIN,
             u64::MAX
@@ -166,13 +170,17 @@ mod test_concatenate {
     /// ensure that horizontal concatenation works correctly
     #[test]
     fn horizontally_correct() {
-        let mat_1 =
-            MatZ::from_str(&format!("[[1, 2, {}],[4, 5, {}]]", i64::MIN, u64::MAX)).unwrap();
-        let mat_2 = MatZ::from_str("[[-1, 2],[4, 5]]").unwrap();
+        let mat_1 = MatQ::from_str(&format!(
+            "[[1, 4/2, {}/1],[4, 5/1, {}]]",
+            i64::MIN,
+            u64::MAX
+        ))
+        .unwrap();
+        let mat_2 = MatQ::from_str("[[-1, 2],[-8/-2, 5]]").unwrap();
 
         let mat_horizontal = mat_1.concat_horizontal(&mat_2).unwrap();
 
-        let cmp_mat = MatZ::from_str(&format!(
+        let cmp_mat = MatQ::from_str(&format!(
             "[[1, 2, {}, -1, 2],[4, 5, {}, 4, 5]]",
             i64::MIN,
             u64::MAX
