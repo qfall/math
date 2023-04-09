@@ -9,9 +9,23 @@
 //! This module includes functionality about properties of [`Z`] instances.
 
 use super::Z;
-use flint_sys::fmpz::fmpz_abs;
+use flint_sys::fmpz::{fmpz_abs, fmpz_is_prime};
 
 impl Z {
+    /// Checks if a [`Z`] is prime.
+    ///
+    /// Returns true if the value is prime.
+    ///
+    /// ```
+    /// use qfall_math::integer::Z;
+    ///
+    /// let value = Z::from(17);
+    /// assert!(value.is_prime())
+    /// ```
+    pub fn is_prime(&self) -> bool {
+        1 == unsafe { fmpz_is_prime(&self.value) }
+    }
+
     /// Computes the absolute distance between two [`Z`] instances.
     ///
     /// Parameters:
@@ -116,5 +130,28 @@ mod test_distance {
         assert_eq!(&a + Z::ONE, b.distance(&zero));
         assert_eq!(&a + Z::ONE, zero.distance(&b));
         assert_eq!(Z::ZERO, a.distance(&a));
+    }
+}
+
+#[cfg(test)]
+mod test_is_prime {
+    use super::Z;
+
+    /// ensure that primes are correctly detected
+    #[test]
+    fn prime_detection() {
+        let small = Z::from(2_i32.pow(16) + 1);
+        let large = Z::from(u64::MAX - 58);
+        assert!(small.is_prime());
+        assert!(large.is_prime());
+    }
+
+    /// ensure that non-primes are correctly detected
+    #[test]
+    fn non_prime_detection() {
+        let small = Z::from(2_i32.pow(16));
+        let large = Z::from(i64::MAX);
+        assert!(!small.is_prime());
+        assert!(!large.is_prime());
     }
 }
