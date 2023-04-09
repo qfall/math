@@ -22,7 +22,7 @@ use crate::{
         dimensions::find_matrix_dimensions, index::evaluate_index, parse::parse_matrix_string,
     },
 };
-use flint_sys::fmpz_mat::fmpz_mat_init;
+use flint_sys::fmpz_mat::{fmpz_mat_init, fmpz_mat_one};
 use std::{fmt::Display, mem::MaybeUninit, str::FromStr};
 
 impl MatZ {
@@ -73,6 +73,22 @@ impl MatZ {
                 matrix: matrix.assume_init(),
             })
         }
+    }
+
+    /// Sets all entries along the diagonal to `1` and all other entries to `0`.
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::integer::MatZ;
+    ///
+    /// let mut matrix = MatZ::new(2,3).unwrap();
+    /// matrix.set_one();
+    ///
+    /// let mut identity = MatZ::new(10,10).unwrap();
+    /// identity.set_one();
+    /// ```
+    pub fn set_one(&mut self) {
+        unsafe { fmpz_mat_one(&mut self.matrix) };
     }
 }
 
@@ -160,6 +176,86 @@ mod test_new {
         assert!(matrix1.is_err());
         assert!(matrix2.is_err());
         assert!(matrix3.is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_set_one {
+    use crate::{
+        integer::{MatZ, Z},
+        traits::{GetEntry, SetEntry},
+    };
+
+    /// Tests if an identity matrix is set from a zero matrix.
+    #[test]
+    fn identity() {
+        let mut matrix = MatZ::new(10, 10).unwrap();
+
+        matrix.set_one();
+
+        for i in 0..10 {
+            for j in 0..10 {
+                if i != j {
+                    assert_eq!(Z::ZERO, matrix.get_entry(i, j).unwrap());
+                } else {
+                    assert_eq!(Z::ONE, matrix.get_entry(i, j).unwrap())
+                }
+            }
+        }
+    }
+
+    /// Tests if existing entries are set to `0`.
+    #[test]
+    fn existing_entries_overwritten() {
+        let mut matrix = MatZ::new(10, 7).unwrap();
+
+        matrix.set_entry(1, 2, 3).unwrap();
+        matrix.set_entry(1, 1, u64::MAX).unwrap();
+        matrix.set_entry(3, 2, i64::MIN).unwrap();
+
+        matrix.set_one();
+
+        for i in 0..10 {
+            for j in 0..7 {
+                if i != j {
+                    assert_eq!(Z::ZERO, matrix.get_entry(i, j).unwrap());
+                } else {
+                    assert_eq!(Z::ONE, matrix.get_entry(i, j).unwrap())
+                }
+            }
+        }
+    }
+
+    /// Tests if function works for a non-square matrix
+    #[test]
+    fn non_square_works() {
+        let mut matrix = MatZ::new(10, 7).unwrap();
+
+        matrix.set_one();
+
+        for i in 0..10 {
+            for j in 0..7 {
+                if i != j {
+                    assert_eq!(Z::ZERO, matrix.get_entry(i, j).unwrap());
+                } else {
+                    assert_eq!(Z::ONE, matrix.get_entry(i, j).unwrap())
+                }
+            }
+        }
+
+        let mut matrix = MatZ::new(7, 10).unwrap();
+
+        matrix.set_one();
+
+        for i in 0..7 {
+            for j in 0..10 {
+                if i != j {
+                    assert_eq!(Z::ZERO, matrix.get_entry(i, j).unwrap());
+                } else {
+                    assert_eq!(Z::ONE, matrix.get_entry(i, j).unwrap())
+                }
+            }
+        }
     }
 }
 
