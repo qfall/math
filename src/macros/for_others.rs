@@ -29,6 +29,10 @@
 /// - ['Mul'](std::ops::Mul) with signatures
 /// `($bridge_type:ident, $type:ident, Mul Matrix for $source_type:ident)` and
 /// `($bridge_type:ident, $type:ident, Mul Scalar for $source_type:ident)`
+/// - [`Gcd`](crate::traits::Gcd) with signature
+/// `($type:ident, Gcd for $source_type:ident)`
+/// - [`Xgcd`](crate::traits::Xgcd) with signature
+/// `($type:ident, Xgcd for $source_type:ident)`
 ///
 /// # Examples
 /// ```compile_fail
@@ -111,7 +115,7 @@ macro_rules! implement_for_others {
         })*
     };
 
-    // [`GCD`] trait
+    // [`Gcd`] trait
     ($type:ident, Gcd for $($source_type:ident)*) => {
         $(impl Gcd<$source_type> for &$type {
             type Output = $type;
@@ -121,13 +125,13 @@ macro_rules! implement_for_others {
                 self,
                 other: $source_type,
             ) -> Self::Output {
-                self.gcd($type::from(other))
+                self.gcd(&$type::from(other))
             }
             }
         })*
     };
 
-    // [`XGCD`] trait
+    // [`Xgcd`] trait
     ($type:ident, Xgcd for $($source_type:ident)*) => {
         $(impl Xgcd<$source_type> for &$type {
             type Output = ($type, $type, $type);
@@ -137,7 +141,7 @@ macro_rules! implement_for_others {
                 self,
                 other: $source_type,
             ) -> Self::Output {
-                self.xgcd($type::from(other))
+                self.xgcd(&$type::from(other))
             }
             }
         })*
@@ -156,6 +160,10 @@ pub(crate) use implement_for_others;
 /// `($bridge_type, $type, SetCoefficient for $source_type:ident)`
 /// - [`SetEntry`](crate::traits::SetEntry) with the signature
 /// `($bridge_type, $type, SetCoefficient for $source_type:ident)`
+/// - [`Gcd`](crate::traits::Gcd) with signature
+/// `($type:ident, Gcd)`
+/// - [`Xgcd`](crate::traits::Xgcd) with signature
+/// `($type:ident, Xgcd)`
 ///
 /// # Examples
 /// ```compile_fail
@@ -213,7 +221,7 @@ macro_rules! implement_for_owned {
         }
     };
 
-    // [`GCD`] trait
+    // [`Gcd`] trait
     ($type:ident, Gcd) => {
         impl Gcd<$type> for &$type {
             type Output = $type;
@@ -229,7 +237,7 @@ macro_rules! implement_for_owned {
         }
     };
 
-    // [`XGCD`] trait
+    // [`Xgcd`] trait
     ($type:ident, Xgcd) => {
         impl Xgcd<$type> for &$type {
             type Output = ($type, $type, $type);
