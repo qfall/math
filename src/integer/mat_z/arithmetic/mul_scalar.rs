@@ -12,6 +12,7 @@ use super::super::MatZ;
 use crate::integer::Z;
 use crate::macros::arithmetics::{
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+    arithmetic_trait_reverse,
 };
 use crate::macros::for_others::implement_for_others;
 use crate::traits::{GetNumColumns, GetNumRows};
@@ -47,30 +48,7 @@ impl Mul<&Z> for &MatZ {
     }
 }
 
-impl Mul<&MatZ> for &Z {
-    type Output = MatZ;
-    /// Implements multiplication for a [`Z`] integer with a [`MatZ`] matrix.
-    ///
-    /// Parameters:
-    /// - `matrix`: specifies the matrix which is multiplied by the given scalar
-    ///
-    /// Returns the product of `self` and `other` as a [`MatZ`].
-    ///
-    /// # Example
-    /// ```
-    /// use qfall_math::integer::MatZ;
-    /// use qfall_math::integer::Z;
-    /// use std::str::FromStr;
-    ///
-    /// let mat1 = MatZ::from_str("[[2,1],[1,2]]").unwrap();
-    /// let integer = Z::from(3);
-    ///
-    /// let mat2 = &integer * &mat1 ;
-    /// ```
-    fn mul(self, matrix: &MatZ) -> Self::Output {
-        matrix.mul(self)
-    }
-}
+arithmetic_trait_reverse!(Mul, mul, Z, MatZ, MatZ);
 
 arithmetic_trait_borrowed_to_owned!(Mul, mul, MatZ, Z, MatZ);
 arithmetic_trait_borrowed_to_owned!(Mul, mul, Z, MatZ, MatZ);
