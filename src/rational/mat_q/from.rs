@@ -16,13 +16,14 @@
 use super::MatQ;
 use crate::{
     error::MathError,
+    integer::MatZ,
     rational::Q,
-    traits::SetEntry,
+    traits::{GetNumColumns, GetNumRows, SetEntry},
     utils::{
         dimensions::find_matrix_dimensions, index::evaluate_index, parse::parse_matrix_string,
     },
 };
-use flint_sys::fmpq_mat::fmpq_mat_init;
+use flint_sys::fmpq_mat::{fmpq_mat_init, fmpq_mat_set_fmpz_mat};
 use std::{fmt::Display, mem::MaybeUninit, str::FromStr};
 
 impl MatQ {
@@ -74,6 +75,29 @@ impl MatQ {
                 matrix: matrix.assume_init(),
             })
         }
+    }
+
+    /// Create a [`MatQ`] from a [`MatZ`].
+    ///
+    /// Parameters:
+    /// - `matrix`: the matrix from which the entries are taken
+    ///
+    /// Returns the new matrix.
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::rational::MatQ;
+    /// use std::str::FromStr;
+    ///
+    /// let m = MatZ::from_str("[[1, 2],[3, -1]]").unwrap();
+    ///
+    /// let a = MatQ::from_mat_z(&m);
+    /// ```
+    pub fn from_mat_z(matrix: &MatZ) -> Self {
+        let mut out = MatQ::new(matrix.get_num_rows(), matrix.get_num_columns()).unwrap();
+        unsafe { fmpq_mat_set_fmpz_mat(&mut out.matrix, &matrix.matrix) };
+        out
     }
 }
 
@@ -128,6 +152,13 @@ impl FromStr for MatQ {
     }
 }
 
+impl From<&MatZ> for MatQ {
+    /// Convert [`MatZ`] to [`MatQ`] using [`MatQ::from_mat_z`].
+    fn from(matrix: &MatZ) -> Self {
+        Self::from_mat_z(matrix)
+    }
+}
+
 #[cfg(test)]
 mod test_new {
     use crate::rational::MatQ;
@@ -150,6 +181,51 @@ mod test_new {
         assert!(matrix3.is_err());
     }
     // TODO add test for `0` entries
+}
+
+#[cfg(test)]
+mod test_from_mat_zq {
+    use crate::{
+        integer::{MatZ, Z},
+        rational::{MatQ, Q},
+        traits::{GetEntry, GetNumColumns, GetNumRows, SetEntry},
+    };
+
+    /// test if the dimensions are taken over correctly
+    #[test]
+    fn dimensions() {
+        let matz = MatZ::new(15, 17).unwrap();
+
+        let matq_1 = MatQ::from(&matz);
+        let matq_2 = MatQ::from_mat_z(&matz);
+
+        assert_eq!(15, matq_1.get_num_rows());
+        assert_eq!(17, matq_1.get_num_columns());
+        assert_eq!(15, matq_2.get_num_rows());
+        assert_eq!(17, matq_2.get_num_columns());
+    }
+
+    /// test if entries are taken over correctly
+    #[test]
+    fn entries_taken_over_correctly() {
+        let mut matz = MatZ::new(2, 2).unwrap();
+        matz.set_entry(0, 0, u64::MAX - 58).unwrap();
+        matz.set_entry(0, 1, i64::MIN).unwrap();
+
+        let matq_1 = MatQ::from(&matz);
+        let matq_2 = MatQ::from_mat_z(&matz);
+
+        assert_eq!(Q::from(&Z::from(i64::MIN)), matq_1.get_entry(0, 1).unwrap());
+        assert_eq!(
+            Q::from(&Z::from(u64::MAX - 58)),
+            matq_1.get_entry(0, 0).unwrap()
+        );
+        assert_eq!(Q::from(&Z::from(i64::MIN)), matq_2.get_entry(0, 1).unwrap());
+        assert_eq!(
+            Q::from(&Z::from(u64::MAX - 58)),
+            matq_2.get_entry(0, 0).unwrap()
+        );
+    }
 }
 
 #[cfg(test)]
