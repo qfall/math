@@ -8,10 +8,9 @@
 
 //! Implementations to call the logarithm on a [`Z`] integer.
 
-use flint_sys::fmpz::{fmpz_clog, fmpz_dlog, fmpz_flog};
-
 use super::Z;
 use crate::error::MathError;
+use flint_sys::fmpz::{fmpz_clog, fmpz_dlog, fmpz_flog};
 
 impl Z {
     /// Computes the logarithm on a natural number (i.e. an integer greater than `0`)
@@ -211,9 +210,8 @@ mod test_logarithm_floor {
 
 #[cfg(test)]
 mod test_natural_logarithm_double {
-    use std::f64::consts::{LN_10, LN_2};
-
     use crate::integer::Z;
+    use std::f64::consts::{LN_10, LN_2};
 
     /// ensure that an error is returned if `self` is too small
     #[test]
