@@ -149,7 +149,7 @@ pub trait Gcd<T = Self> {
     /// - `other`: specifies one of the values of which the gcd is computed
     ///
     /// Returns the greatest common divisor of `self` and `other`.
-    fn gcd(self, other: T) -> Self::Output;
+    fn gcd(&self, other: T) -> Self::Output;
 }
 
 /// Is implemented by [`Z`](crate::integer::Z) instances to calculate the
@@ -165,5 +165,5 @@ pub trait Xgcd<T = Self> {
     ///
     /// Returns a triple `(gcd(a,b), x, y)` containing the greatest common divisor,
     /// `x`, and `y` s.t. `gcd(a,b) = a*x + b*y`.
-    fn xgcd(self, other: T) -> Self::Output;
+    fn xgcd(&self, other: T) -> Self::Output;
 }

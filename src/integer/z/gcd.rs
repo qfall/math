@@ -16,7 +16,7 @@ use crate::{
 };
 use flint_sys::fmpz::{fmpz_gcd, fmpz_xgcd};
 
-impl Gcd for &Z {
+impl Gcd<&Z> for Z {
     type Output = Z;
 
     /// Outputs the greatest common divisor (gcd) of the two given values
@@ -40,17 +40,17 @@ impl Gcd for &Z {
     ///
     /// assert_eq!(Z::from(5), gcd);
     /// ```
-    fn gcd(self, other: Self) -> Self::Output {
+    fn gcd(&self, other: &Self) -> Self::Output {
         let mut out = Z::default();
         unsafe { fmpz_gcd(&mut out.value, &self.value, &other.value) };
         out
     }
 }
 
-implement_for_owned!(Z, Gcd);
-implement_for_others!(Z, Gcd for u8 u16 u32 u64 i8 i16 i32 i64);
+implement_for_owned!(Z, Z, Gcd);
+implement_for_others!(Z, Z, Gcd for u8 u16 u32 u64 i8 i16 i32 i64);
 
-impl Xgcd for &Z {
+impl Xgcd<&Z> for Z {
     type Output = (Z, Z, Z);
 
     /// Outputs the extended greatest common divisor (xgcd) of the two given values,
@@ -76,7 +76,7 @@ impl Xgcd for &Z {
     /// assert_eq!(Z::from(5), gcd);
     /// assert_eq!(gcd, cmp_gcd);
     /// ```
-    fn xgcd(self, other: Self) -> Self::Output {
+    fn xgcd(&self, other: &Self) -> Self::Output {
         let mut gcd = Z::ZERO;
         let mut x = Z::ZERO;
         let mut y = Z::ZERO;
@@ -93,8 +93,8 @@ impl Xgcd for &Z {
     }
 }
 
-implement_for_owned!(Z, Xgcd);
-implement_for_others!(Z, Xgcd for u8 u16 u32 u64 i8 i16 i32 i64);
+implement_for_owned!(Z, Z, Xgcd);
+implement_for_others!(Z, Z, Xgcd for u8 u16 u32 u64 i8 i16 i32 i64);
 
 #[cfg(test)]
 mod test_gcd {
