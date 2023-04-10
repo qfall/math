@@ -68,7 +68,7 @@ impl MatZq {
     ///
     /// let c: MatZq = a.add_safe(&b).unwrap();
     /// ```
-    /// # Errors
+    /// # Errors and Failures
     /// Returns a [`MathError`] of type
     /// [`MathError::MismatchingMatrixDimension`] if the matrix dimensions
     /// mismatch.
