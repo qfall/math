@@ -151,7 +151,7 @@ pub enum MathError {
     MismatchingVectorDimensions(String),
 
     /// if an integer is not a natural number (excluding the `´0`)
-    #[error("invalid integer. The integer is not a natural number and the provided value is {0}")]
+    #[error("invalid integer. The provided value needs to be a natural number and is {0}")]
     NotNaturalNumber(String),
 
     /// if an integer or modulus is not prime

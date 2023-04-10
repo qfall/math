@@ -19,35 +19,35 @@ impl Z {
     /// **Warning**: It assumes that the return value fits in an [`i64`].
     ///
     /// Parameters:
-    /// - `b`: the base of the logarithm
+    /// - `base`: the base of the logarithm
     ///
-    /// Returns $\lceil log_b(self) \rceil$.
+    /// Returns $\lceil log_base(self) \rceil$.
     ///
     /// # Example
     /// ```
     /// use qfall_math::integer::Z;
     ///
     /// let value = Z::from(15);
-    /// let log = value.logarithm_ceil(&Z::from(4)).unwrap();
+    /// let log = value.log_ceil(&Z::from(4)).unwrap();
     ///
     /// assert_eq!(Z::from(2), log);
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`InvalidBase`](MathError::InvalidBase) if the base `b` is not greater than `1`.
+    /// - Returns a [`MathError`] of type [`InvalidBase`](MathError::InvalidBase) if the `base` is not greater than `1`.
     /// - Returns a [`MathError`] of type
     /// [`NatNaturalNumber`](MathError::NotNaturalNumber) if the `self` is not
     ///  greater than `0`.
-    pub fn logarithm_ceil(&self, b: &Z) -> Result<Z, MathError> {
-        if b <= &Z::ONE {
+    pub fn log_ceil(&self, base: &Z) -> Result<Z, MathError> {
+        if base <= &Z::ONE {
             Err(MathError::InvalidBase(format!(
                 "The base must be greater than 1, but the provided is {}",
-                b
+                base
             )))
         } else if self <= &Z::ZERO {
             Err(MathError::NotNaturalNumber(self.to_string()))
         } else {
-            Ok(Z::from(unsafe { fmpz_clog(&self.value, &b.value) }))
+            Ok(Z::from(unsafe { fmpz_clog(&self.value, &base.value) }))
         }
     }
 
@@ -57,41 +57,43 @@ impl Z {
     /// **Warning**: It assumes that the return value fits in an [`i64`].
     ///
     /// Parameters:
-    /// - `b`: the base of the logarithm
+    /// - `base`: the base of the logarithm
     ///
-    /// Returns $\lfloor log_b(self) \rfloor$.
+    /// Returns $\lfloor log_base(self) \rfloor$.
     ///
     /// # Example
     /// ```
     /// use qfall_math::integer::Z;
     ///
     /// let value = Z::from(15);
-    /// let log = value.logarithm_floor(&Z::from(4)).unwrap();
+    /// let log = value.log_floor(&Z::from(4)).unwrap();
     ///
     /// assert_eq!(Z::from(1), log);
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`InvalidBase`](MathError::InvalidBase) if the base `b` is not greater than `1`.
+    /// - Returns a [`MathError`] of type [`InvalidBase`](MathError::InvalidBase) if the `base` is not greater than `1`.
     /// - Returns a [`MathError`] of type
     /// [`NatNaturalNumber`](MathError::NotNaturalNumber) if the `self` is not
     ///  greater than `0`.
-    pub fn logarithm_floor(&self, b: &Z) -> Result<Z, MathError> {
-        if b <= &Z::ONE {
+    pub fn log_floor(&self, base: &Z) -> Result<Z, MathError> {
+        if base <= &Z::ONE {
             Err(MathError::InvalidBase(format!(
                 "The base must be greater than 1, but the provided is {}",
-                b
+                base
             )))
         } else if self <= &Z::ZERO {
             Err(MathError::NotNaturalNumber(self.to_string()))
         } else {
-            Ok(Z::from(unsafe { fmpz_flog(&self.value, &b.value) }))
+            Ok(Z::from(unsafe { fmpz_flog(&self.value, &base.value) }))
         }
     }
 
     /// Computes the natural logarithm on a natural number
     /// (i.e. an integer greater than `0`)
     /// approximated as an [`f64`].
+    ///
+    /// **Warning**: It assumes that the return value does not overflow an [`f64`].
     ///
     /// Returns the double precision approximation of the natural logarithm of `self`.
     ///
@@ -100,7 +102,7 @@ impl Z {
     /// use qfall_math::integer::Z;
     ///
     /// let value = Z::from(1);
-    /// let log = value.logarithm_double().unwrap();
+    /// let log = value.ln().unwrap();
     ///
     /// assert_eq!(0_f64, log);
     /// ```
@@ -109,7 +111,7 @@ impl Z {
     /// - Returns a [`MathError`] of type
     /// [`NatNaturalNumber`](MathError::NotNaturalNumber) if the `self` is not
     ///  greater than `0`.
-    pub fn logarithm_double(&self) -> Result<f64, MathError> {
+    pub fn ln(&self) -> Result<f64, MathError> {
         if self <= &Z::ZERO {
             Err(MathError::NotNaturalNumber(self.to_string()))
         } else {
@@ -119,7 +121,7 @@ impl Z {
 }
 
 #[cfg(test)]
-mod test_logarithm_ceil {
+mod test_log_ceil {
     use crate::integer::Z;
 
     /// ensure that an error is returned if the base is too small
@@ -127,10 +129,10 @@ mod test_logarithm_ceil {
     fn base_too_small() {
         let value = Z::from(17);
 
-        assert!(value.logarithm_ceil(&Z::ZERO).is_err());
-        assert!(value.logarithm_ceil(&Z::ONE).is_err());
-        assert!(value.logarithm_ceil(&Z::MINUS_ONE).is_err());
-        assert!(value.logarithm_ceil(&Z::from(i64::MIN)).is_err());
+        assert!(value.log_ceil(&Z::ZERO).is_err());
+        assert!(value.log_ceil(&Z::ONE).is_err());
+        assert!(value.log_ceil(&Z::MINUS_ONE).is_err());
+        assert!(value.log_ceil(&Z::from(i64::MIN)).is_err());
     }
 
     /// ensure that an error is returned if `self` is too small
@@ -138,9 +140,9 @@ mod test_logarithm_ceil {
     fn value_too_small() {
         let base = Z::from(2);
 
-        assert!(Z::ZERO.logarithm_ceil(&base).is_err());
-        assert!(Z::MINUS_ONE.logarithm_ceil(&base).is_err());
-        assert!(Z::from(i64::MIN).logarithm_ceil(&base).is_err());
+        assert!(Z::ZERO.log_ceil(&base).is_err());
+        assert!(Z::MINUS_ONE.log_ceil(&base).is_err());
+        assert!(Z::from(i64::MIN).log_ceil(&base).is_err());
     }
 
     /// ensure that the value is rounded up
@@ -148,23 +150,20 @@ mod test_logarithm_ceil {
     fn rounded_up() {
         let base = Z::from(2);
 
-        assert_eq!(Z::ZERO, Z::from(1).logarithm_ceil(&base).unwrap());
-        assert_eq!(Z::ONE, Z::from(2).logarithm_ceil(&base).unwrap());
-        assert_eq!(Z::from(2), Z::from(3).logarithm_ceil(&base).unwrap());
-        assert_eq!(Z::from(2), Z::from(4).logarithm_ceil(&base).unwrap());
-        assert_eq!(
-            Z::from(64),
-            Z::from(u64::MAX).logarithm_ceil(&base).unwrap()
-        );
+        assert_eq!(Z::ZERO, Z::from(1).log_ceil(&base).unwrap());
+        assert_eq!(Z::ONE, Z::from(2).log_ceil(&base).unwrap());
+        assert_eq!(Z::from(2), Z::from(3).log_ceil(&base).unwrap());
+        assert_eq!(Z::from(2), Z::from(4).log_ceil(&base).unwrap());
+        assert_eq!(Z::from(64), Z::from(u64::MAX).log_ceil(&base).unwrap());
         assert_eq!(
             Z::from(32),
-            Z::from(u64::MAX).logarithm_ceil(&Z::from(4)).unwrap()
+            Z::from(u64::MAX).log_ceil(&Z::from(4)).unwrap()
         );
     }
 }
 
 #[cfg(test)]
-mod test_logarithm_floor {
+mod test_log_floor {
     use crate::integer::Z;
 
     /// ensure that an error is returned if the base is too small
@@ -172,10 +171,10 @@ mod test_logarithm_floor {
     fn base_too_small() {
         let value = Z::from(17);
 
-        assert!(value.logarithm_floor(&Z::ZERO).is_err());
-        assert!(value.logarithm_floor(&Z::ONE).is_err());
-        assert!(value.logarithm_floor(&Z::MINUS_ONE).is_err());
-        assert!(value.logarithm_floor(&Z::from(i64::MIN)).is_err());
+        assert!(value.log_floor(&Z::ZERO).is_err());
+        assert!(value.log_floor(&Z::ONE).is_err());
+        assert!(value.log_floor(&Z::MINUS_ONE).is_err());
+        assert!(value.log_floor(&Z::from(i64::MIN)).is_err());
     }
 
     /// ensure that an error is returned if `self` is too small
@@ -183,50 +182,47 @@ mod test_logarithm_floor {
     fn value_too_small() {
         let base = Z::from(2);
 
-        assert!(Z::ZERO.logarithm_floor(&base).is_err());
-        assert!(Z::MINUS_ONE.logarithm_floor(&base).is_err());
-        assert!(Z::from(i64::MIN).logarithm_floor(&base).is_err());
+        assert!(Z::ZERO.log_floor(&base).is_err());
+        assert!(Z::MINUS_ONE.log_floor(&base).is_err());
+        assert!(Z::from(i64::MIN).log_floor(&base).is_err());
     }
 
-    /// ensure that the value is rounded up
+    /// ensure that the value is rounded down
     #[test]
-    fn rounded_up() {
+    fn rounded_down() {
         let base = Z::from(2);
 
-        assert_eq!(Z::ZERO, Z::from(1).logarithm_floor(&base).unwrap());
-        assert_eq!(Z::ONE, Z::from(2).logarithm_floor(&base).unwrap());
-        assert_eq!(Z::ONE, Z::from(3).logarithm_floor(&base).unwrap());
-        assert_eq!(Z::from(2), Z::from(4).logarithm_floor(&base).unwrap());
-        assert_eq!(
-            Z::from(63),
-            Z::from(u64::MAX).logarithm_floor(&base).unwrap()
-        );
+        assert_eq!(Z::ZERO, Z::from(1).log_floor(&base).unwrap());
+        assert_eq!(Z::ONE, Z::from(2).log_floor(&base).unwrap());
+        assert_eq!(Z::ONE, Z::from(3).log_floor(&base).unwrap());
+        assert_eq!(Z::from(2), Z::from(4).log_floor(&base).unwrap());
+        assert_eq!(Z::from(63), Z::from(u64::MAX).log_floor(&base).unwrap());
         assert_eq!(
             Z::from(31),
-            Z::from(u64::MAX).logarithm_floor(&Z::from(4)).unwrap()
+            Z::from(u64::MAX).log_floor(&Z::from(4)).unwrap()
         );
     }
 }
 
 #[cfg(test)]
-mod test_natural_logarithm_double {
+mod test_natural_ln {
     use crate::integer::Z;
     use std::f64::consts::{LN_10, LN_2};
 
     /// ensure that an error is returned if `self` is too small
     #[test]
     fn value_too_small() {
-        assert!(Z::ZERO.logarithm_double().is_err());
-        assert!(Z::MINUS_ONE.logarithm_double().is_err());
-        assert!(Z::from(i64::MIN).logarithm_double().is_err());
+        assert!(Z::ZERO.ln().is_err());
+        assert!(Z::MINUS_ONE.ln().is_err());
+        assert!(Z::from(i64::MIN).ln().is_err());
     }
 
     /// ensure that the output of the function corresponds to the known
     /// approximated value in [`f64`]
     #[test]
     fn static_known_values() {
-        assert_eq!(0_f64, Z::ONE.logarithm_double().unwrap());
-        assert_eq!(LN_2, Z::from(2).logarithm_double().unwrap());
-        assert_eq!(LN_10, Z::from(10).logarithm_double().unwrap());
+        assert_eq!(0_f64, Z::ONE.ln().unwrap());
+        assert_eq!(LN_2, Z::from(2).ln().unwrap());
+        assert_eq!(LN_10, Z::from(10).ln().unwrap());
     }
 }
