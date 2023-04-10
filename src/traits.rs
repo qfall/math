@@ -127,7 +127,9 @@ pub trait Concatenate {
     fn concat_horizontal(self, other: Self) -> Result<Self::Output, MathError>;
 }
 
-pub trait Distance<T> {
+pub trait Distance<T = Self> {
+    type Output;
+
     /// Computes the absolute distance between two values.
     ///
     /// Parameters:
@@ -135,5 +137,5 @@ pub trait Distance<T> {
     ///
     /// Returns the absolute difference, i.e. distance between the two given values
     /// as a new instance.
-    fn distance(&self, other: T) -> Self;
+    fn distance(&self, other: T) -> Self::Output;
 }

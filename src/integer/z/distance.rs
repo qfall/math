@@ -16,6 +16,8 @@ use crate::{
 };
 
 impl Distance<&Z> for Z {
+    type Output = Z;
+
     /// Computes the absolute distance between two [`Z`] instances.
     ///
     /// Parameters:
@@ -39,7 +41,7 @@ impl Distance<&Z> for Z {
     /// # assert_eq!(Z::from(6), distance_0);
     /// # assert_eq!(Z::from(11), distance_1);
     /// ```
-    fn distance(&self, other: &Z) -> Self {
+    fn distance(&self, other: &Z) -> Self::Output {
         let difference = other - self;
         difference.abs()
     }
@@ -52,7 +54,7 @@ implement_for_others!(Z, Z, Distance for u8 u16 u32 u64 i8 i16 i32 i64 Modulus Z
 mod test_distance {
     use super::{Distance, Modulus, Zq, Z};
 
-    /// Checks if distance is correctly output for small [`Z`] values
+    /// Checks if distance is correctly computed for small [`Z`] values
     /// and whether distance(a,b) == distance(b,a), distance(a,a) == 0
     #[test]
     fn small_values() {
@@ -69,7 +71,7 @@ mod test_distance {
         assert_eq!(Z::ZERO, b.distance(&b))
     }
 
-    /// Checks if distance is correctly output for large [`Z`] values
+    /// Checks if distance is correctly computed for large [`Z`] values
     /// and whether distance(a,b) == distance(b,a), distance(a,a) == 0
     #[test]
     fn large_values() {
@@ -88,7 +90,7 @@ mod test_distance {
 
     /// Check whether distance is available for owned [`Z`] and other types
     #[test]
-    fn other_types() {
+    fn availability() {
         let a = Z::ZERO;
         let modulus = Modulus::try_from_z(&Z::ONE).unwrap();
         let zq = Zq::try_from_int_int(15, 19).unwrap();
@@ -101,7 +103,7 @@ mod test_distance {
         let i_1 = a.distance(-15_i16);
         let i_2 = a.distance(35_i32);
         let i_3 = a.distance(i64::MIN);
-        let dist_mod = Z::distance(&a, modulus);
+        let dist_mod = a.distance(modulus);
         let dist_zq = a.distance(zq);
 
         assert_eq!(Z::ZERO, u_0);
