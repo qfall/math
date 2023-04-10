@@ -41,7 +41,7 @@ impl Add for &MatZq {
     /// let f: MatZq = c + &e;
     /// ```
     ///
-    /// # Panics
+    /// # Errors and Failures
     /// - Panics if the dimensions of both matrices mismatch
     /// - Panics if the moduli mismatch
     fn add(self, other: Self) -> Self::Output {
