@@ -10,7 +10,7 @@
 
 use super::Z;
 use crate::{
-    integer_mod_q::{Modulus, Zq},
+    integer_mod_q::Modulus,
     macros::for_others::{implement_for_others, implement_for_owned},
     traits::Distance,
 };
@@ -48,11 +48,11 @@ impl Distance<&Z> for Z {
 }
 
 implement_for_owned!(Z, Z, Distance);
-implement_for_others!(Z, Z, Distance for u8 u16 u32 u64 i8 i16 i32 i64 Modulus Zq);
+implement_for_others!(Z, Z, Distance for u8 u16 u32 u64 i8 i16 i32 i64 Modulus);
 
 #[cfg(test)]
 mod test_distance {
-    use super::{Distance, Modulus, Zq, Z};
+    use super::{Distance, Modulus, Z};
 
     /// Checks if distance is correctly computed for small [`Z`] values
     /// and whether distance(a,b) == distance(b,a), distance(a,a) == 0
@@ -93,7 +93,6 @@ mod test_distance {
     fn availability() {
         let a = Z::ZERO;
         let modulus = Modulus::try_from_z(&Z::ONE).unwrap();
-        let zq = Zq::try_from_int_int(15, 19).unwrap();
 
         let u_0 = a.distance(0_u8);
         let u_1 = a.distance(15_u16);
@@ -104,7 +103,6 @@ mod test_distance {
         let i_2 = a.distance(35_i32);
         let i_3 = a.distance(i64::MIN);
         let dist_mod = a.distance(modulus);
-        let dist_zq = a.distance(zq);
 
         assert_eq!(Z::ZERO, u_0);
         assert_eq!(Z::from(15), u_1);
@@ -115,6 +113,5 @@ mod test_distance {
         assert_eq!(Z::from(35), i_2);
         assert_eq!(Z::from(i64::MIN).abs(), i_3);
         assert_eq!(Z::ONE, dist_mod);
-        assert_eq!(Z::from(15), dist_zq);
     }
 }
