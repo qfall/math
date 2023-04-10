@@ -138,6 +138,7 @@ pub trait Concatenate {
     fn concat_horizontal(self, other: Self) -> Result<Self::Output, MathError>;
 }
 
+/// Is implemented by [`Zq`](crate::integer_mod_q::Zq) powered by [`Z`](crate::integer::Z).
 pub trait Pow<T> {
     type Output;
 
@@ -148,4 +149,34 @@ pub trait Pow<T> {
     ///
     /// Returns the value of `self` powered by `exp` as a new `Output` instance.
     fn pow(&self, exp: T) -> Result<Self::Output, MathError>;
+}
+
+/// Is implemented by [`Z`](crate::integer::Z) instances to calculate the `gcd`
+pub trait Gcd<T = Self> {
+    type Output;
+
+    /// Outputs the greatest common divisor (gcd) of the two given values
+    /// with `gcd(a,0) = |a|`.
+    ///
+    /// Paramters:
+    /// - `other`: specifies one of the values of which the gcd is computed
+    ///
+    /// Returns the greatest common divisor of `self` and `other`.
+    fn gcd(&self, other: T) -> Self::Output;
+}
+
+/// Is implemented by [`Z`](crate::integer::Z) instances to calculate the
+/// extended `gcd`
+pub trait Xgcd<T = Self> {
+    type Output;
+
+    /// Outputs the extended greatest common divisor (xgcd) of the two given values,
+    /// i.e. a triple `(gcd(a,b), x, y)`, where `a*x + b*y = gcd(a,b)*`.
+    ///
+    /// Paramters:
+    /// - `other`: specifies one of the values of which the gcd is computed
+    ///
+    /// Returns a triple `(gcd(a,b), x, y)` containing the greatest common divisor,
+    /// `x`, and `y` s.t. `gcd(a,b) = a*x + b*y`.
+    fn xgcd(&self, other: T) -> Self::Output;
 }
