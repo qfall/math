@@ -21,6 +21,7 @@ use super::ModulusPolynomialRingZq;
 use crate::integer::PolyOverZ;
 use serde::{Deserialize, Serialize};
 
+mod arithmetic;
 mod from;
 mod reduce;
 
