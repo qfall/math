@@ -13,7 +13,7 @@ use crate::{error::MathError, rational::Q};
 use flint_sys::fmpz::{fmpz_clog, fmpz_dlog, fmpz_flog};
 
 impl Z {
-    /// Computes the logarithm on a natural number (i.e. an integer greater than `0`)
+    /// Computes the logarithm of a natural number (i.e. an integer greater than `0`)
     /// with a base greater than `1` rounded up.
     ///
     /// **Warning**: It assumes that the return value fits in an [`i64`].
@@ -21,7 +21,9 @@ impl Z {
     /// Parameters:
     /// - `base`: the base of the logarithm
     ///
-    /// Returns $\lceil log_base(self) \rceil$.
+    /// Returns $\lceil log_base(self) \rceil$ as a [`Z`] instance or a [`MathError`],
+    /// if at least one of the conditions
+    /// `base > 1` and `self > 0` isn't met.
     ///
     /// # Example
     /// ```
@@ -51,7 +53,7 @@ impl Z {
         }
     }
 
-    /// Computes the logarithm on a natural number (i.e. an integer greater than `0`)
+    /// Computes the logarithm of a natural number (i.e. an integer greater than `0`)
     /// with a base greater than `1` rounded down.
     ///
     /// **Warning**: It assumes that the return value fits in an [`i64`].
@@ -59,7 +61,9 @@ impl Z {
     /// Parameters:
     /// - `base`: the base of the logarithm
     ///
-    /// Returns $\lfloor log_base(self) \rfloor$.
+    /// Returns $\lfloor log_base(self) \rfloor$ as a [`Z`] instance or a [`MathError`],
+    /// if at least one of the conditions
+    /// `base > 1` and `self > 0` isn't met.
     ///
     /// # Example
     /// ```
@@ -89,7 +93,7 @@ impl Z {
         }
     }
 
-    /// Computes the natural logarithm on a natural number
+    /// Computes the natural logarithm of a natural number
     /// (i.e. an integer greater than `0`)
     /// approximated as an [`f64`] and returned as a [`Q`].
     ///
