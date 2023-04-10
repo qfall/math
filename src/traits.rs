@@ -148,5 +148,5 @@ pub trait Lcm<T = Self> {
     /// - `other`: specifies one of the values of which the `lcm` is computed
     ///
     /// Returns the least common multiple of `self` and `other` as a new value.
-    fn lcm(self, other: T) -> Self::Output;
+    fn lcm(&self, other: T) -> Self::Output;
 }

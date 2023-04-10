@@ -15,7 +15,7 @@ use crate::{
 };
 use flint_sys::fmpz::fmpz_lcm;
 
-impl Lcm for &Z {
+impl Lcm<&Z> for Z {
     type Output = Z;
 
     /// Outputs the least common multiple (lcm) of the two given values
@@ -39,15 +39,15 @@ impl Lcm for &Z {
     ///
     /// assert_eq!(Z::from(30), lcm);
     /// ```
-    fn lcm(self, other: Self) -> Self::Output {
+    fn lcm(&self, other: &Self) -> Self::Output {
         let mut out = Z::ZERO;
         unsafe { fmpz_lcm(&mut out.value, &self.value, &other.value) };
         out
     }
 }
 
-implement_for_owned!(Z, Lcm);
-implement_for_others!(Z, Lcm for u8 u16 u32 u64 i8 i16 i32 i64);
+implement_for_owned!(Z, Z, Lcm);
+implement_for_others!(Z, Z, Lcm for u8 u16 u32 u64 i8 i16 i32 i64);
 
 #[cfg(test)]
 mod test_lcm {
