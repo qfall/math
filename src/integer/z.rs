@@ -16,6 +16,7 @@ mod cmp;
 mod default;
 mod exp;
 mod from;
+mod logarithm;
 mod ownership;
 mod properties;
 mod serialize;

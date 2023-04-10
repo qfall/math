@@ -21,6 +21,7 @@ use thiserror::Error;
 ///
 /// Possible entries:
 /// - `DivisionByZeroError` is thrown if it is tried to perform a division by `0`
+/// - `InvalidBase` is thrown if the provided base to call a function is not valid
 /// - `InvalidIntToModulus` is thrown if an integer is provided, which is not greater than `0`
 /// - `InvalidMatrix` is thrown if an invalid string input of a matrix is given
 /// - `InvalidStringToCStringInput` is thrown if an invalid string is given to
@@ -48,6 +49,8 @@ use thiserror::Error;
 /// objects with different modulus where equal modulus is required
 /// - `MismatchingVectorDimensions` is thrown if an operation of two vectors is
 /// called for which their dimensions do not match
+/// - `NotNaturalNumber` is thrown if the function expects a natural number,
+/// but a number smaller than `1` is provided
 /// - `NotPrime` is thrown if a provided integer is not prime
 /// - `OutOfBounds` is thrown if a provided index is not in a desired range
 /// - `VectorFunctionCalledOnNonVector` is thrown if a function defined
@@ -68,6 +71,10 @@ pub enum MathError {
     /// division by zero error
     #[error("the division by zero is not possible {0}")]
     DivisionByZeroError(String),
+
+    /// invalid base to call function
+    #[error("the base is not valid: {0}")]
+    InvalidBase(String),
 
     /// parse int to modulus error
     #[error(
@@ -142,6 +149,10 @@ pub enum MathError {
     /// mismatching dimensions of vectors
     #[error("mismatching vector dimensions. {0}")]
     MismatchingVectorDimensions(String),
+
+    /// if an integer is not a natural number (excluding the `´0`)
+    #[error("invalid integer. The integer is not a natural number and the provided value is {0}")]
+    NotNaturalNumber(String),
 
     /// if an integer or modulus is not prime
     #[error("invalid integer. The integer has to be prime and the provided value is {0}")]
