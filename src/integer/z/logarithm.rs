@@ -9,7 +9,7 @@
 //! Implementations to call the logarithm on a [`Z`] integer.
 
 use super::Z;
-use crate::error::MathError;
+use crate::{error::MathError, rational::Q};
 use flint_sys::fmpz::{fmpz_clog, fmpz_dlog, fmpz_flog};
 
 impl Z {
@@ -91,7 +91,7 @@ impl Z {
 
     /// Computes the natural logarithm on a natural number
     /// (i.e. an integer greater than `0`)
-    /// approximated as an [`f64`].
+    /// approximated as an [`f64`] and returned as a [`Q`].
     ///
     /// **Warning**: It assumes that the return value does not overflow an [`f64`].
     ///
@@ -111,11 +111,11 @@ impl Z {
     /// - Returns a [`MathError`] of type
     /// [`NatNaturalNumber`](MathError::NotNaturalNumber) if the `self` is not
     ///  greater than `0`.
-    pub fn ln(&self) -> Result<f64, MathError> {
+    pub fn ln(&self) -> Result<Q, MathError> {
         if self <= &Z::ZERO {
             Err(MathError::NotNaturalNumber(self.to_string()))
         } else {
-            Ok(unsafe { fmpz_dlog(&self.value) })
+            Ok(Q::from(unsafe { fmpz_dlog(&self.value) }))
         }
     }
 }
@@ -206,7 +206,7 @@ mod test_log_floor {
 
 #[cfg(test)]
 mod test_natural_ln {
-    use crate::integer::Z;
+    use crate::{integer::Z, rational::Q};
     use std::f64::consts::{LN_10, LN_2};
 
     /// ensure that an error is returned if `self` is too small
@@ -221,8 +221,8 @@ mod test_natural_ln {
     /// approximated value in [`f64`]
     #[test]
     fn static_known_values() {
-        assert_eq!(0_f64, Z::ONE.ln().unwrap());
-        assert_eq!(LN_2, Z::from(2).ln().unwrap());
-        assert_eq!(LN_10, Z::from(10).ln().unwrap());
+        assert_eq!(Q::ZERO, Z::ONE.ln().unwrap());
+        assert_eq!(Q::from(LN_2), Z::from(2).ln().unwrap());
+        assert_eq!(Q::from(LN_10), Z::from(10).ln().unwrap());
     }
 }
