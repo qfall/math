@@ -17,7 +17,7 @@ use crate::{
 };
 use flint_sys::fmpz_mod::fmpz_mod_pow_fmpz;
 
-impl Pow<&Z> for &Zq {
+impl Pow<&Z> for Zq {
     type Output = Zq;
 
     /// Raises the value of `self` to the power of an integer `exp`.
@@ -43,9 +43,9 @@ impl Pow<&Z> for &Zq {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError::InvalidExponent`] if the provided exponent is
-    /// negative and the base value of `self` is not invertible.
-    fn pow(self, exp: &Z) -> Result<Self::Output, MathError> {
+    /// - Returns a [`MathError`] of type [`InvalidExponent`](MathError::InvalidExponent)
+    /// if the provided exponent is negative and the base value of `self` is not invertible.
+    fn pow(&self, exp: &Z) -> Result<Self::Output, MathError> {
         let mut out = self.clone();
         if 0 == unsafe {
             fmpz_mod_pow_fmpz(
@@ -123,5 +123,14 @@ mod test_pow {
         let _ = base.pow(2_u16);
         let _ = base.pow(2_u32);
         let _ = base.pow(2_u64);
+    }
+
+    /// Ensures that `pow` returns an error if a non-invertible basis is
+    /// powered by a negative exponent
+    #[test]
+    fn non_invertible_detection() {
+        let base = Zq::try_from((2, 4)).unwrap();
+
+        assert!(base.pow(-1).is_err());
     }
 }

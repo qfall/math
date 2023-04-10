@@ -147,5 +147,5 @@ pub trait Pow<T> {
     /// - `exp`: specifies the exponent to which the value is raised
     ///
     /// Returns the value of `self` powered by `exp` as a new `Output` instance.
-    fn pow(self, exp: T) -> Result<Self::Output, MathError>;
+    fn pow(&self, exp: T) -> Result<Self::Output, MathError>;
 }

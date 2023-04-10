@@ -22,6 +22,8 @@
 ///
 /// - [`Evaluate`](crate::traits::Evaluate) with the signature
 /// `($bridge_type, $output_type, $type, Evaluate for $source_type:ident)`
+/// - [`Pow`](crate::traits::Pow) with the signature
+/// `($bridge_type, $type, Pow for $source_type)`
 /// - [`SetCoefficient`](crate::traits::SetCoefficient) with the signature
 /// `($bridge_type, $type, SetCoefficient for $source_type:ident)`
 /// - [`SetEntry`](crate::traits::SetEntry) with the signature
@@ -29,8 +31,6 @@
 /// - ['Mul'](std::ops::Mul) with signatures
 /// `($bridge_type:ident, $type:ident, Mul Matrix for $source_type:ident)` and
 /// `($bridge_type:ident, $type:ident, Mul Scalar for $source_type:ident)`
-/// - [`Pow`](crate::traits::Pow) with the signature
-/// `($bridge_type, $type, Pow for $source_type:ident)`
 ///
 /// # Examples
 /// ```compile_fail
@@ -39,6 +39,7 @@
 /// implement_for_others!(Z, MatZq, SetEntry for i8 i16 i32 i64 u8 u16 u32 u64);
 /// implement_for_others!(Z, MatZ, Mul Matrix for i8 i16 i32 i64 u8 u16 u32 u64);
 /// implement_for_others!(Z, i8 i16 i32 i64 u8 u16 u32 u64, Mul Scalar for MatZ);
+/// implement_for_others!(Z, Zq, Pow for u8 u16 u32 u64 i8 i16 i32 i64);
 /// ```
 macro_rules! implement_for_others {
     // [`Evaluate`] trait
@@ -114,11 +115,11 @@ macro_rules! implement_for_others {
 
     // [`Pow`] trait
     ($bridge_type:ident, $type:ident, Pow for $($source_type:ident)*) => {
-        $(impl Pow<$source_type> for &$type {
+        $(impl Pow<$source_type> for $type {
             type Output = $type;
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::pow`]. Implicitly converts [`" $source_type "`] into [`" $bridge_type "`]."]
-                fn pow(self, exp: $source_type) -> Result<Self::Output, MathError> {
+                fn pow(&self, exp: $source_type) -> Result<Self::Output, MathError> {
                     self.pow(&$bridge_type::from(exp))
                 }
             }
@@ -134,18 +135,19 @@ pub(crate) use implement_for_others;
 ///
 /// - [`Evaluate`](crate::traits::Evaluate) with the signature
 /// `($bridge_type, $output_type, $type, Evaluate for $source_type:ident)`
+/// - [`Pow`](crate::traits::Pow) with the signature
+/// `($bridge_type, $type, Pow)`
 /// - [`SetCoefficient`](crate::traits::SetCoefficient) with the signature
 /// `($bridge_type, $type, SetCoefficient for $source_type:ident)`
 /// - [`SetEntry`](crate::traits::SetEntry) with the signature
 /// `($bridge_type, $type, SetCoefficient for $source_type:ident)`
-/// - [`Pow`](crate::traits::Pow) with the signature
-/// `($bridge_type, $type, Pow for $source_type:ident)`
 ///
 /// # Examples
 /// ```compile_fail
 /// implement_for_owned!(Q, Q, PolyOverQ, Evaluate);
 /// implement_for_owned!(Z, PolyOverZ, SetCoefficient);
 /// implement_for_owned!(Z, MatZq, SetEntry);
+/// implement_for_owned!(Z, Zq, Pow);
 /// ```
 macro_rules! implement_for_owned {
     // [`Evaluate`] trait
@@ -198,12 +200,12 @@ macro_rules! implement_for_owned {
 
     // [`Pow`] trait
     ($source_type:ident, $type:ident, Pow) => {
-        impl Pow<$source_type> for &$type {
+        impl Pow<$source_type> for $type {
             type Output = $type;
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::pow`]."]
             fn pow(
-                self,
+                &self,
                 exp: $source_type,
             ) -> Result<Self::Output, MathError> {
                 self.pow(&exp)
