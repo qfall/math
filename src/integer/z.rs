@@ -16,6 +16,7 @@ mod cmp;
 mod default;
 mod exp;
 mod from;
+mod gcd;
 mod lcm;
 mod ownership;
 mod properties;
