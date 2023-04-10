@@ -32,7 +32,7 @@ impl Clone for MatZq {
         let mut out = MatZq::new(
             self.get_num_rows(),
             self.get_num_columns(),
-            Z::from(self.get_mod()),
+            Z::from(&self.get_mod()),
         )
         .unwrap();
         unsafe {
