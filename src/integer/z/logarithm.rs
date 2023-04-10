@@ -104,11 +104,12 @@ impl Z {
     /// # Example
     /// ```
     /// use qfall_math::integer::Z;
+    /// use qfall_math::rational::Q;
     ///
     /// let value = Z::from(1);
     /// let log = value.ln().unwrap();
     ///
-    /// assert_eq!(0_f64, log);
+    /// assert_eq!(Q::ZERO, log);
     /// ```
     ///
     /// # Errors and Failures
