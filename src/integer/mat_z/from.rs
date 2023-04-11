@@ -75,20 +75,35 @@ impl MatZ {
         }
     }
 
-    /// Sets all entries along the diagonal to `1` and all other entries to `0`.
+    /// Generate a `num_rows` times `num_columns` matrix with `1` on the
+    /// diagonal and `0` anywhere else.
+    ///
+    /// Parameters:
+    /// - `rum_rows`: the number of rows of the identity matrix
+    /// - `num_columns`: the number of columns of the identity matrix
+    ///
+    /// Returns a matrix with `1` across the diagonal and `0` anywhere else.
     ///
     /// # Example
     /// ```
     /// use qfall_math::integer::MatZ;
     ///
-    /// let mut matrix = MatZ::new(2,3).unwrap();
-    /// matrix.set_one();
+    /// let mut matrix = MatZ::identity(2, 3).unwrap();
     ///
-    /// let mut identity = MatZ::new(10,10).unwrap();
-    /// identity.set_one();
+    /// let mut identity = MatZ::identity(10, 10).unwrap();
     /// ```
-    pub fn set_one(&mut self) {
-        unsafe { fmpz_mat_one(&mut self.matrix) };
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix) or
+    /// [`OutOfBounds`](MathError::OutOfBounds) if the provided number of rows and columns
+    /// are not suited to create a matrix. For further information see [`MatZ::new`].
+    pub fn identity(
+        num_rows: impl TryInto<i64> + Display + Copy,
+        num_cols: impl TryInto<i64> + Display + Copy,
+    ) -> Result<Self, MathError> {
+        let mut out = MatZ::new(num_rows, num_cols)?;
+        unsafe { fmpz_mat_one(&mut out.matrix) };
+        Ok(out)
     }
 }
 
@@ -183,15 +198,13 @@ mod test_new {
 mod test_set_one {
     use crate::{
         integer::{MatZ, Z},
-        traits::{GetEntry, SetEntry},
+        traits::GetEntry,
     };
 
     /// Tests if an identity matrix is set from a zero matrix.
     #[test]
     fn identity() {
-        let mut matrix = MatZ::new(10, 10).unwrap();
-
-        matrix.set_one();
+        let matrix = MatZ::identity(10, 10).unwrap();
 
         for i in 0..10 {
             for j in 0..10 {
@@ -204,34 +217,10 @@ mod test_set_one {
         }
     }
 
-    /// Tests if existing entries are set to `0`.
-    #[test]
-    fn existing_entries_overwritten() {
-        let mut matrix = MatZ::new(10, 7).unwrap();
-
-        matrix.set_entry(1, 2, 3).unwrap();
-        matrix.set_entry(1, 1, u64::MAX).unwrap();
-        matrix.set_entry(3, 2, i64::MIN).unwrap();
-
-        matrix.set_one();
-
-        for i in 0..10 {
-            for j in 0..7 {
-                if i != j {
-                    assert_eq!(Z::ZERO, matrix.get_entry(i, j).unwrap());
-                } else {
-                    assert_eq!(Z::ONE, matrix.get_entry(i, j).unwrap())
-                }
-            }
-        }
-    }
-
     /// Tests if function works for a non-square matrix
     #[test]
     fn non_square_works() {
-        let mut matrix = MatZ::new(10, 7).unwrap();
-
-        matrix.set_one();
+        let matrix = MatZ::identity(10, 7).unwrap();
 
         for i in 0..10 {
             for j in 0..7 {
@@ -243,9 +232,7 @@ mod test_set_one {
             }
         }
 
-        let mut matrix = MatZ::new(7, 10).unwrap();
-
-        matrix.set_one();
+        let matrix = MatZ::identity(7, 10).unwrap();
 
         for i in 0..7 {
             for j in 0..10 {
