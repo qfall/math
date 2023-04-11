@@ -9,10 +9,10 @@
 //! This module includes functionality about properties of [`Z`] instances.
 
 use super::Z;
-use crate::{error::MathError, rational::Q};
+use crate::rational::Q;
 use flint_sys::{
-    fmpq::fmpq_inv,
-    fmpz::{fmpz_abs, fmpz_is_prime},
+    fmpq::{fmpq, fmpq_inv},
+    fmpz::{fmpz, fmpz_abs, fmpz_is_prime},
 };
 
 impl Z {
@@ -59,15 +59,21 @@ impl Z {
     ///
     /// assert_eq!(Q::try_from((&1, &4)).unwrap(), inverse);
     /// ```
-    pub fn inv(&self) -> Result<Q, MathError> {
+    pub fn inv(&self) -> Option<Q> {
         if self == &Z::ZERO {
-            return Err(MathError::DivisionByZeroError(String::from("Z::inv")));
+            return None;
         }
 
         let mut out = Q::ZERO;
-        let self_q = Q::from(self);
-        unsafe { fmpq_inv(&mut out.value, &self_q.value) };
-        Ok(out)
+        // the new fmpz value does not need to be cleared manually as it's small
+        // the fmpq instance does neither as the fmpq value is dropped automatically,
+        // but the numerator/ important part is kept alive
+        let self_fmpq = fmpq {
+            num: self.value,
+            den: fmpz(1),
+        };
+        unsafe { fmpq_inv(&mut out.value, &self_fmpq) };
+        Some(out)
     }
 }
 
@@ -151,13 +157,13 @@ mod test_inv {
         assert_eq!(Q::try_from((&1, &i64::MIN)).unwrap(), inv_1);
     }
 
-    /// Checks whether the inverse of `0` returns an error
+    /// Checks whether the inverse of `0` returns `None`
     #[test]
-    fn inv_zero_error() {
+    fn inv_zero_none() {
         let zero = Z::ZERO;
 
         let inv_zero = zero.inv();
 
-        assert!(inv_zero.is_err());
+        assert!(inv_zero.is_none());
     }
 }
