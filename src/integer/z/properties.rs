@@ -9,7 +9,11 @@
 //! This module includes functionality about properties of [`Z`] instances.
 
 use super::Z;
-use flint_sys::fmpz::{fmpz_abs, fmpz_is_prime};
+use crate::{error::MathError, rational::Q};
+use flint_sys::{
+    fmpq::fmpq_inv,
+    fmpz::{fmpz_abs, fmpz_is_prime},
+};
 
 impl Z {
     /// Checks if a [`Z`] is prime.
@@ -31,16 +35,39 @@ impl Z {
     /// # Example
     /// ```
     /// use qfall_math::integer::Z;
+    /// let mut value = Z::from(-1);
     ///
-    /// let value = Z::from(-1);
+    /// let value = value.abs();
     ///
-    /// assert_eq!(Z::ONE, value.abs());
+    /// assert_eq!(Z::ONE, value);
     /// ```
     pub fn abs(mut self) -> Self {
         unsafe {
             fmpz_abs(&mut self.value, &self.value);
         }
         self
+    }
+
+    /// Returns the inverse of `self` as a fresh [`Q`] instance.
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::{integer::Z, rational::Q};
+    /// let value = Z::from(4);
+    ///
+    /// let inverse = value.inv().unwrap();
+    ///
+    /// assert_eq!(Q::try_from((&1, &4)).unwrap(), inverse);
+    /// ```
+    pub fn inv(&self) -> Result<Q, MathError> {
+        if self == &Z::ZERO {
+            return Err(MathError::DivisionByZeroError(String::from("Z::inv")));
+        }
+
+        let mut out = Q::ZERO;
+        let self_q = Q::from(self);
+        unsafe { fmpq_inv(&mut out.value, &self_q.value) };
+        Ok(out)
     }
 }
 
@@ -91,5 +118,46 @@ mod test_is_prime {
         let large = Z::from(i64::MAX);
         assert!(!small.is_prime());
         assert!(!large.is_prime());
+    }
+}
+
+#[cfg(test)]
+mod test_inv {
+    use super::{Q, Z};
+
+    /// Checks whether the inverse is correctly computed for small values
+    #[test]
+    fn small_values() {
+        let val_0 = Z::from(4);
+        let val_1 = Z::from(-7);
+
+        let inv_0 = val_0.inv().unwrap();
+        let inv_1 = val_1.inv().unwrap();
+
+        assert_eq!(Q::try_from((&1, &4)).unwrap(), inv_0);
+        assert_eq!(Q::try_from((&-1, &7)).unwrap(), inv_1);
+    }
+
+    /// Checks whether the inverse is correctly computed for large values
+    #[test]
+    fn large_values() {
+        let val_0 = Z::from(i64::MAX);
+        let val_1 = Z::from(i64::MIN);
+
+        let inv_0 = val_0.inv().unwrap();
+        let inv_1 = val_1.inv().unwrap();
+
+        assert_eq!(Q::try_from((&1, &i64::MAX)).unwrap(), inv_0);
+        assert_eq!(Q::try_from((&1, &i64::MIN)).unwrap(), inv_1);
+    }
+
+    /// Checks whether the inverse of `0` returns an error
+    #[test]
+    fn inv_zero_error() {
+        let zero = Z::ZERO;
+
+        let inv_zero = zero.inv();
+
+        assert!(inv_zero.is_err());
     }
 }
