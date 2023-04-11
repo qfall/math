@@ -16,6 +16,7 @@ mod cmp;
 mod default;
 mod distance;
 mod exp;
+pub(crate) mod fmpz_helpers;
 mod from;
 mod gcd;
 mod lcm;
