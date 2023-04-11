@@ -136,6 +136,59 @@ impl Z {
     pub fn from_zq(value: Zq) -> Self {
         value.value
     }
+
+    /// Create a [`Z`] integer from a [`String`]. This function takes a base in which the number is represented between `2` and `62`
+    ///
+    /// Parameters:
+    /// - `s`: the integer value as a string
+    /// - `base`: the base in which the integer is represented
+    ///
+    /// Returns a [`Z`] or an error, if the provided string was not formatted
+    /// correctly or the base is out bounds.
+    ///
+    /// # Example:
+    /// ```
+    /// use qfall_math::integer::Z;
+    ///  
+    /// let a: Z = Z::from_str_b("100", 2).unwrap();
+    /// assert_eq!(Z::from(4), a);
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if the
+    /// base is not between `2` and `62`.
+    /// - Returns a [`MathError`] of type
+    /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
+    /// if the provided string contains a Nul byte.
+    /// - Returns a [`MathError`] of type
+    /// [`InvalidStringToZInput`](MathError::InvalidStringToZInput)
+    /// if the provided string was not formatted correctly.
+    pub fn from_str_b(s: &str, base: i32) -> Result<Self, MathError> {
+        if !(2..=62).contains(&base) {
+            return Err(MathError::OutOfBounds(
+                "between 2 and 62".to_owned(),
+                base.to_string(),
+            ));
+        }
+
+        if s.contains(char::is_whitespace) {
+            return Err(MathError::InvalidStringToZInput(s.to_owned()));
+        }
+
+        // since |value| = |0| < 62 bits, we do not need to free the allocated space manually
+        let mut value: fmpz = fmpz(0);
+
+        let c_string = CString::new(s)?;
+
+        // -1 is returned if the string is an invalid input.
+        // Given the documentation `c_string.as_ptr()` is freed once c_string is deallocated
+        // 'The pointer will be valid for as long as `self` is'
+        // For reading more look at the documentation of `.as_ptr()`.
+        match unsafe { fmpz_set_str(&mut value, c_string.as_ptr(), base) } {
+            0 => Ok(Z { value }),
+            _ => Err(MathError::InvalidStringToZInput(s.to_owned())),
+        }
+    }
 }
 
 // Generate [`From`] trait for the different types.
@@ -181,23 +234,7 @@ impl FromStr for Z {
     /// [`InvalidStringToZInput`](MathError::InvalidStringToZInput)
     /// if the provided string was not formatted correctly.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s.contains(char::is_whitespace) {
-            return Err(MathError::InvalidStringToZInput(s.to_owned()));
-        }
-
-        // since |value| = |0| < 62 bits, we do not need to free the allocated space manually
-        let mut value: fmpz = fmpz(0);
-
-        let c_string = CString::new(s)?;
-
-        // -1 is returned if the string is an invalid input.
-        // Given the documentation `c_string.as_ptr()` is freed once c_string is deallocated
-        // 'The pointer will be valid for as long as `self` is'
-        // For reading more look at the documentation of `.as_ptr()`.
-        match unsafe { fmpz_set_str(&mut value, c_string.as_ptr(), 10) } {
-            0 => Ok(Z { value }),
-            _ => Err(MathError::InvalidStringToZInput(s.to_owned())),
-        }
+        Z::from_str_b(s, 10)
     }
 }
 
@@ -351,6 +388,36 @@ mod tests_from_str {
     #[test]
     fn whitespace_minus() {
         assert!(Z::from_str("- 876543").is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_from_str_b {
+    use crate::integer::Z;
+
+    /// ensure that an error is returned, if an invalid base is provided
+    #[test]
+    fn out_of_bounds() {
+        let value = "100010";
+
+        assert!(Z::from_str_b(value, -1).is_err());
+        assert!(Z::from_str_b(value, 0).is_err());
+        assert!(Z::from_str_b(value, 1).is_err());
+        assert!(Z::from_str_b(value, 63).is_err());
+    }
+
+    /// ensure that from_str works with a binary-string
+    #[test]
+    fn from_str_binary() {
+        assert_eq!(Z::from(20), Z::from_str_b("10100", 2).unwrap());
+        assert_eq!(Z::from(-20), Z::from_str_b("-10100", 2).unwrap());
+    }
+
+    /// ensure that from_str works with a hex-string
+    #[test]
+    fn from_str_hex() {
+        assert_eq!(Z::from(160), Z::from_str_b("a0", 16).unwrap());
+        assert_eq!(Z::from(-176), Z::from_str_b("-aa", 16).unwrap());
     }
 }
 
