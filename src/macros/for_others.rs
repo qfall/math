@@ -219,7 +219,7 @@ pub(crate) use implement_for_others;
 /// - [`Lcm`](crate::traits::Lcm) with the signature
 /// `($out_type, $type, Lcm)`
 /// - [`Pow`](crate::traits::Pow) with the signature
-/// `($bridge_type, $type, Pow)`
+/// `($exp_type, $type, Pow)`
 /// - [`SetCoefficient`](crate::traits::SetCoefficient) with the signature
 /// `($bridge_type, $type, SetCoefficient)`
 /// - [`SetEntry`](crate::traits::SetEntry) with the signature
@@ -320,14 +320,14 @@ macro_rules! implement_for_owned {
     };
 
     // [`Pow`] trait
-    ($source_type:ident, $type:ident, Pow) => {
-        impl Pow<$source_type> for $type {
+    ($exp_type:ident, $type:ident, Pow) => {
+        impl Pow<$exp_type> for $type {
             type Output = $type;
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::pow`]."]
             fn pow(
                 &self,
-                exp: $source_type,
+                exp: $exp_type,
             ) -> Result<Self::Output, MathError> {
                 self.pow(&exp)
             }
