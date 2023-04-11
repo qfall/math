@@ -100,6 +100,17 @@ pub trait SetEntry<T> {
     ) -> Result<(), MathError>;
 }
 
+/// Is implemented by matrices to compute the tensor product.
+pub trait Tensor {
+    /// Computes the tensor product of `self` with `other`
+    ///
+    /// Parameters:
+    /// - `other`: the value with which the tensor product is computed.
+    ///
+    /// Returns the tensor product
+    fn tensor(&self, other: &Self) -> Self;
+}
+
 /// Is implemented by matrices to concatenate two matrices.
 pub trait Concatenate {
     type Output;
@@ -127,6 +138,7 @@ pub trait Concatenate {
     fn concat_horizontal(self, other: Self) -> Result<Self::Output, MathError>;
 }
 
+/// Is implemented for [`Z`](crate::integer::Z).
 pub trait Distance<T = Self> {
     type Output;
 
@@ -138,4 +150,61 @@ pub trait Distance<T = Self> {
     /// Returns the absolute difference, i.e. distance between the two given values
     /// as a new instance.
     fn distance(&self, other: T) -> Self::Output;
+}
+
+/// Is implemented for [`Z`](crate::integer::Z).
+pub trait Lcm<T = Self> {
+    type Output;
+
+    /// Outputs the least common multiple (lcm) of the two given values
+    /// with `lcm(a, 0) = 0`.
+    ///
+    /// Paramters:
+    /// - `other`: specifies one of the values of which the `lcm` is computed
+    ///
+    /// Returns the least common multiple of `self` and `other` as a new value.
+    fn lcm(&self, other: T) -> Self::Output;
+}
+
+/// Is implemented by [`Zq`](crate::integer_mod_q::Zq) powered by [`Z`](crate::integer::Z).
+pub trait Pow<T> {
+    type Output;
+
+    /// Raises the value of `self` to the power of an `exp`.
+    ///
+    /// Parameters:
+    /// - `exp`: specifies the exponent to which the value is raised
+    ///
+    /// Returns the value of `self` powered by `exp` as a new `Output` instance.
+    fn pow(&self, exp: T) -> Result<Self::Output, MathError>;
+}
+
+/// Is implemented by [`Z`](crate::integer::Z) instances to calculate the `gcd`
+pub trait Gcd<T = Self> {
+    type Output;
+
+    /// Outputs the greatest common divisor (gcd) of the two given values
+    /// with `gcd(a,0) = |a|`.
+    ///
+    /// Paramters:
+    /// - `other`: specifies one of the values of which the gcd is computed
+    ///
+    /// Returns the greatest common divisor of `self` and `other`.
+    fn gcd(&self, other: T) -> Self::Output;
+}
+
+/// Is implemented by [`Z`](crate::integer::Z) instances to calculate the
+/// extended `gcd`
+pub trait Xgcd<T = Self> {
+    type Output;
+
+    /// Outputs the extended greatest common divisor (xgcd) of the two given values,
+    /// i.e. a triple `(gcd(a,b), x, y)`, where `a*x + b*y = gcd(a,b)*`.
+    ///
+    /// Paramters:
+    /// - `other`: specifies one of the values of which the gcd is computed
+    ///
+    /// Returns a triple `(gcd(a,b), x, y)` containing the greatest common divisor,
+    /// `x`, and `y` s.t. `gcd(a,b) = a*x + b*y`.
+    fn xgcd(&self, other: T) -> Self::Output;
 }

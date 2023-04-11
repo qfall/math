@@ -21,6 +21,7 @@ use thiserror::Error;
 ///
 /// Possible entries:
 /// - `DivisionByZeroError` is thrown if it is tried to perform a division by `0`
+/// - `InvalidExponent` is thrown if an invalid exponent is used for a `pow` function
 /// - `InvalidIntToModulus` is thrown if an integer is provided, which is not greater than `0`
 /// - `InvalidMatrix` is thrown if an invalid string input of a matrix is given
 /// - `InvalidStringToCStringInput` is thrown if an invalid string is given to
@@ -68,6 +69,10 @@ pub enum MathError {
     /// division by zero error
     #[error("the division by zero is not possible {0}")]
     DivisionByZeroError(String),
+
+    /// invalid exponent
+    #[error("Invalid exponent given: {0}")]
+    InvalidExponent(String),
 
     /// parse int to modulus error
     #[error(

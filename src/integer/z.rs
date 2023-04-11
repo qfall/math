@@ -17,6 +17,8 @@ mod default;
 mod distance;
 mod exp;
 mod from;
+mod gcd;
+mod lcm;
 mod ownership;
 mod properties;
 mod serialize;
