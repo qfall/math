@@ -69,11 +69,11 @@ mod vector;
 pub struct MatZq {
     pub(crate) matrix: fmpz_mod_mat_struct,
 
-    // Since `get_mod` is needed for almost any action with `MatZq` instances
+    // Since `get_mod` is needed for many actions with `MatZq` instances
     // a separate storage of the modulus object guarantees memory safety and
     // is due to a reference counter in the `Modulus` object memory efficient.
     // The modulus of a `MatZq` is not able to be modified afterwards. Hence, we
     // do not need to care about conformity of the modulus stored in the `matrix`
-    // attribute and `modulus` attribute, if they are both set from the same value.
-    pub(crate) modulus: Modulus,
+    // attribute and `modulus` attribute, if they are both initalized from the same value.
+    modulus: Modulus,
 }
