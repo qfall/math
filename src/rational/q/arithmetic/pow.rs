@@ -32,12 +32,12 @@ impl Pow<&Z> for Q {
     /// use qfall_math::{rational::Q, integer::Z};
     /// use qfall_math::traits::*;
     ///
-    /// let base = Q::try_from((&9, &1)).unwrap();
-    /// let exp = Z::from(3);
+    /// let base = Q::try_from((&3, &1)).unwrap();
+    /// let exp = Z::from(-2);
     ///
     /// let powered_value = base.pow(&exp).unwrap();
     ///
-    /// assert_eq!(Q::try_from((&729, &1)).unwrap(), powered_value);
+    /// assert_eq!(Q::try_from((&1, &9)).unwrap(), powered_value);
     /// ```
     ///
     /// # Errors and Failures
@@ -74,7 +74,7 @@ mod test_pow {
         assert!(zero.pow(-1).is_err());
     }
 
-    /// Ensure that `pow` works correctly for the one values
+    /// Ensure that `pow` works correctly for base values `1` and `-1`
     #[test]
     fn one() {
         let base_pos = Q::try_from((&1, &1)).unwrap();
