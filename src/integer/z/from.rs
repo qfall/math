@@ -417,7 +417,7 @@ mod test_from_str_b {
     #[test]
     fn from_str_hex() {
         assert_eq!(Z::from(160), Z::from_str_b("a0", 16).unwrap());
-        assert_eq!(Z::from(-176), Z::from_str_b("-aa", 16).unwrap());
+        assert_eq!(Z::from(-170), Z::from_str_b("-aa", 16).unwrap());
     }
 }
 
