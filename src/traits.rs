@@ -139,6 +139,20 @@ pub trait Concatenate {
 }
 
 /// Is implemented for [`Z`](crate::integer::Z).
+pub trait Distance<T = Self> {
+    type Output;
+
+    /// Computes the absolute distance between two values.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value whose distance is calculated to `self`
+    ///
+    /// Returns the absolute difference, i.e. distance between the two given values
+    /// as a new instance.
+    fn distance(&self, other: T) -> Self::Output;
+}
+
+/// Is implemented for [`Z`](crate::integer::Z).
 pub trait Lcm<T = Self> {
     type Output;
 
