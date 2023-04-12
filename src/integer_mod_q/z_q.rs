@@ -22,6 +22,7 @@ use crate::integer::Z;
 use serde::{Deserialize, Serialize};
 
 mod arithmetic;
+mod distance;
 pub(crate) mod fmpz_mod_helpers;
 mod from;
 mod reduce;
