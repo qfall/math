@@ -169,8 +169,7 @@ mod test_to_string_b {
         let cmp_str_1 = "1".repeat(64);
 
         let value_2 = Z::from(i64::MIN);
-        let mut cmp_str_2 = "-1".to_owned();
-        cmp_str_2.push_str(&"0".repeat(63));
+        let mut cmp_str_2 = format!("-1{}", "0".repeat(63));
 
         assert_eq!(cmp_str_1, value_1.to_string_b(2).unwrap());
         assert_eq!(cmp_str_2, value_2.to_string_b(2).unwrap());
