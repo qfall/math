@@ -76,7 +76,7 @@ pub enum MathError {
     /// invalid base to call function
     #[error("the base is not valid: {0}")]
     InvalidBase(String),
-    
+
     /// invalid exponent
     #[error("Invalid exponent given: {0}")]
     InvalidExponent(String),
