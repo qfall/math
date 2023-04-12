@@ -13,7 +13,11 @@
 //! The explicit functions contain the documentation.
 
 use super::Q;
-use crate::{error::MathError, integer::Z};
+use crate::{
+    error::MathError,
+    integer::Z,
+    macros::from::{from_trait, from_type},
+};
 use flint_sys::{
     fmpq::{fmpq, fmpq_canonicalise, fmpq_clear, fmpq_set_str},
     fmpz::{fmpz_is_zero, fmpz_set, fmpz_swap},
@@ -219,6 +223,8 @@ impl Q {
             false => Q::try_from((f.numer().unwrap(), f.denom().unwrap())).unwrap() * Q::MINUS_ONE,
         }
     }
+
+    from_type!(f32, f64, Q, Q::from_f64);
 }
 
 impl<T1: Into<Z> + Clone, T2: Into<Z> + Clone> TryFrom<(&T1, &T2)> for Q {
@@ -295,6 +301,8 @@ impl From<f64> for Q {
         Q::from_f64(value)
     }
 }
+
+from_trait!(f32, Q, Q::from_f32);
 
 #[cfg(test)]
 mod tests_from_str {
@@ -593,7 +601,7 @@ mod test_from_z {
 }
 
 #[cfg(test)]
-mod test_from_f64 {
+mod test_from_float {
     use super::Q;
     use std::f64::consts::{E, LN_10, LN_2};
 
@@ -627,5 +635,14 @@ mod test_from_f64 {
         let _ = Q::from(E);
         let _ = Q::from(LN_10);
         let _ = Q::from(LN_2);
+    }
+
+    /// test availability for [`f32`]
+    #[test]
+    fn from_f32_available() {
+        let f: f32 = 42.17;
+
+        let _ = Q::from(f);
+        let _ = Q::from_f32(f);
     }
 }
