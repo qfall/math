@@ -1,4 +1,4 @@
-// Copyright © 2023 Niklas Siemer
+// Copyright © 2023 Phil Milewski
 //
 // This file is part of qFALL-math.
 //
@@ -6,8 +6,9 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! The `vector` module contains functions that are implemented for matrices
-//! that have one column or one row and hence represent a vector.
+//! The arithmetic module contains implementations of simple arithmetics
+//! such as addition or subtraction.
 
-mod is_vector;
-mod norm;
+mod add;
+mod mul;
+mod sub;

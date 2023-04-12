@@ -22,6 +22,7 @@ use thiserror::Error;
 /// Possible entries:
 /// - `DivisionByZeroError` is thrown if it is tried to perform a division by `0`
 /// - `InvalidBase` is thrown if the provided base to call a function is not valid
+/// - `InvalidExponent` is thrown if an invalid exponent is used for a `pow` function
 /// - `InvalidIntToModulus` is thrown if an integer is provided, which is not greater than `0`
 /// - `InvalidMatrix` is thrown if an invalid string input of a matrix is given
 /// - `InvalidStringToCStringInput` is thrown if an invalid string is given to
@@ -75,6 +76,10 @@ pub enum MathError {
     /// invalid base to call function
     #[error("the base is not valid: {0}")]
     InvalidBase(String),
+    
+    /// invalid exponent
+    #[error("Invalid exponent given: {0}")]
+    InvalidExponent(String),
 
     /// parse int to modulus error
     #[error(
@@ -139,9 +144,11 @@ pub enum MathError {
     /// parse string to [`Zq`](crate::integer_mod_q::Zq) error
     #[error("invalid string input to parse to Zq {0}")]
     InvalidStringToZqInput(String),
+
     /// mismatching matrix dimension error
     #[error("mismatching matrix dimensions {0}")]
     MismatchingMatrixDimension(String),
+
     /// mismatching modulus error
     #[error("mismatching modulus.{0}")]
     MismatchingModulus(String),
