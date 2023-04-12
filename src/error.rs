@@ -137,9 +137,11 @@ pub enum MathError {
     /// parse string to [`Zq`](crate::integer_mod_q::Zq) error
     #[error("invalid string input to parse to Zq {0}")]
     InvalidStringToZqInput(String),
+
     /// mismatching matrix dimension error
     #[error("mismatching matrix dimensions {0}")]
     MismatchingMatrixDimension(String),
+
     /// mismatching modulus error
     #[error("mismatching modulus.{0}")]
     MismatchingModulus(String),
