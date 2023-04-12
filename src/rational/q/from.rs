@@ -13,11 +13,16 @@
 //! The explicit functions contain the documentation.
 
 use super::Q;
-use crate::{error::MathError, integer::Z};
+use crate::{
+    error::MathError,
+    integer::Z,
+    macros::from::{from_trait, from_type},
+};
 use flint_sys::{
     fmpq::{fmpq, fmpq_canonicalise, fmpq_clear, fmpq_set_str},
     fmpz::{fmpz_is_zero, fmpz_set, fmpz_swap},
 };
+use fraction::Fraction;
 use std::{ffi::CString, str::FromStr};
 
 impl FromStr for Q {
@@ -192,6 +197,34 @@ impl Q {
         unsafe { fmpz_set(&mut out.value.num, &value.value) }
         out
     }
+
+    /// Create a new rational number of type [`Q`] from a [`f64`].
+    ///
+    /// Input parameters:
+    /// - `value` : The value the rational number will have, provided as a [`f64`]
+    ///
+    /// Returns a [`Q`].
+    ///
+    /// # Example
+    /// ```rust
+    /// use qfall_math::rational::Q;
+    ///
+    /// let a: Q = Q::from_f64(0.3);
+    /// let a: Q = Q::from_f64(-123.4567);
+    /// ```
+    pub fn from_f64(value: f64) -> Self {
+        let f = Fraction::from(value);
+        let sign = f
+            .sign()
+            .expect("Got None element instead of a fraction, may be overflow error (NaN)")
+            .is_positive();
+        match sign {
+            true => Q::try_from((f.numer().unwrap(), f.denom().unwrap())).unwrap(),
+            false => Q::try_from((f.numer().unwrap(), f.denom().unwrap())).unwrap() * Q::MINUS_ONE,
+        }
+    }
+
+    from_type!(f32, f64, Q, Q::from_f64);
 }
 
 impl<T1: Into<Z> + Clone, T2: Into<Z> + Clone> TryFrom<(&T1, &T2)> for Q {
@@ -248,6 +281,28 @@ impl<T: Into<Z> + Clone> From<&T> for Q {
         Q::from_int(value)
     }
 }
+
+impl From<f64> for Q {
+    /// Create a new rational number of type [`Q`] from a [`f64`].
+    ///
+    /// Input parameters:
+    /// - `value` : The value the rational number will have, provided as a [`f64`]
+    ///
+    /// Returns a [`Q`].
+    ///
+    /// # Example
+    /// ```rust
+    /// use qfall_math::rational::Q;
+    ///
+    /// let a: Q = Q::from(0.3);
+    /// let a: Q = Q::from(-123.4567);
+    /// ```
+    fn from(value: f64) -> Self {
+        Q::from_f64(value)
+    }
+}
+
+from_trait!(f32, Q, Q::from_f32);
 
 #[cfg(test)]
 mod tests_from_str {
@@ -542,5 +597,52 @@ mod test_from_z {
         let _ = Q::from(&i16::MIN);
         let _ = Q::from(&i32::MIN);
         let _ = Q::from(&i64::MIN);
+    }
+}
+
+#[cfg(test)]
+mod test_from_float {
+    use super::Q;
+    use std::f64::consts::{E, LN_10, LN_2};
+
+    /// Enure that the from works correctly for positive values
+    #[test]
+    fn positive() {
+        let numerator = 150001;
+        let denominator = 16;
+
+        let value = Q::from(numerator as f64 / denominator as f64);
+
+        let cmp = Q::try_from((&numerator, &denominator)).unwrap();
+        assert_eq!(cmp, value)
+    }
+
+    /// Enure that the from works correctly for positive values
+    #[test]
+    fn negative() {
+        let numerator = 150001;
+        let denominator = -8;
+
+        let value = Q::from(numerator as f64 / denominator as f64);
+
+        let cmp = Q::try_from((&numerator, &denominator)).unwrap();
+        assert_eq!(cmp, value)
+    }
+
+    /// Ensure that the [`From`] trait is available for [`f64`] constants
+    #[test]
+    fn from_trait() {
+        let _ = Q::from(E);
+        let _ = Q::from(LN_10);
+        let _ = Q::from(LN_2);
+    }
+
+    /// test availability for [`f32`]
+    #[test]
+    fn from_f32_available() {
+        let f: f32 = 42.17;
+
+        let _ = Q::from(f);
+        let _ = Q::from_f32(f);
     }
 }
