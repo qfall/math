@@ -43,7 +43,6 @@ use thiserror::Error;
 /// construct a [`Z`](crate::integer::Z)
 /// - `InvalidStringToZqInput` is thrown if an invalid string is given to
 /// construct a [`Zq`](crate::integer_mod_q::Zq)
-/// - `InverseZero` is thrown if one tried to compute the inverse of a `0`value
 /// - `MismatchingMatrixDimension` is thrown if arithmetic is done with
 /// matrixes of mismatching dimensions
 /// - `MismatchingModulus` is thrown if any function is called on two
@@ -138,10 +137,6 @@ pub enum MathError {
     /// parse string to [`Zq`](crate::integer_mod_q::Zq) error
     #[error("invalid string input to parse to Zq {0}")]
     InvalidStringToZqInput(String),
-
-    /// tried to compute the inverse of 0
-    #[error("tried to compute the inverse of 0 in {0}")]
-    InverseZero(String),
 
     /// mismatching matrix dimension error
     #[error("mismatching matrix dimensions {0}")]

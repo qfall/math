@@ -65,9 +65,10 @@ impl Z {
         }
 
         let mut out = Q::ZERO;
-        // the new fmpz value does not need to be cleared manually as it's small
-        // the fmpq instance does neither as the fmpq value is dropped automatically,
-        // but the numerator/ important part is kept alive
+        // the manual construction of fmpq removes the need to clone self's value/
+        // the numerator. the new fmpz value does not need to be cleared manually
+        // as it's small the fmpq instance does neither as the fmpq value is
+        // dropped automatically, but the numerator/ self's value is kept alive
         let self_fmpq = fmpq {
             num: self.value,
             den: fmpz(1),
