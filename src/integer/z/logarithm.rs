@@ -38,7 +38,7 @@ impl Z {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidBase`](MathError::InvalidBase) if the `base` is not greater than `1`.
     /// - Returns a [`MathError`] of type
-    /// [`NatNaturalNumber`](MathError::NotNaturalNumber) if the `self` is not
+    /// [`NotNaturalNumber`](MathError::NotNaturalNumber) if the `self` is not
     ///  greater than `0`.
     pub fn log_ceil(&self, base: &Z) -> Result<Z, MathError> {
         if base <= &Z::ONE {
@@ -78,7 +78,7 @@ impl Z {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidBase`](MathError::InvalidBase) if the `base` is not greater than `1`.
     /// - Returns a [`MathError`] of type
-    /// [`NatNaturalNumber`](MathError::NotNaturalNumber) if the `self` is not
+    /// [`NotNaturalNumber`](MathError::NotNaturalNumber) if the `self` is not
     ///  greater than `0`.
     pub fn log_floor(&self, base: &Z) -> Result<Z, MathError> {
         if base <= &Z::ONE {
@@ -114,7 +114,7 @@ impl Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [`NatNaturalNumber`](MathError::NotNaturalNumber) if the `self` is not
+    /// [`NotNaturalNumber`](MathError::NotNaturalNumber) if the `self` is not
     ///  greater than `0`.
     pub fn ln(&self) -> Result<Q, MathError> {
         if self <= &Z::ZERO {

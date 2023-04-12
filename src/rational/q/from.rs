@@ -212,7 +212,7 @@ impl Q {
         let f = Fraction::from(value);
         let sign = f
             .sign()
-            .expect("Got None element instead a fraction, may be overflow error (NaN)")
+            .expect("Got None element instead of a fraction, may be overflow error (NaN)")
             .is_positive();
         match sign {
             true => Q::try_from((f.numer().unwrap(), f.denom().unwrap())).unwrap(),
