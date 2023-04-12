@@ -18,7 +18,9 @@ use crate::{
     integer_mod_q::{Modulus, Zq},
     macros::from::{from_trait, from_type},
 };
-use flint_sys::fmpz::{fmpz, fmpz_init_set_si, fmpz_init_set_ui, fmpz_set, fmpz_set_str};
+use flint_sys::fmpz::{
+    fmpz, fmpz_get_si, fmpz_init_set_si, fmpz_init_set_ui, fmpz_set, fmpz_set_str,
+};
 use std::{ffi::CString, str::FromStr};
 
 impl Z {
@@ -235,6 +237,49 @@ impl FromStr for Z {
     /// if the provided string was not formatted correctly.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Z::from_str_b(s, 10)
+    }
+}
+
+impl TryFrom<&Z> for i64 {
+    type Error = MathError;
+
+    /// Converts a [`Z`] into an [`i64`]. If the value is either too large
+    /// or too small an error is returned.
+    ///
+    /// Parameters:
+    /// - `value`: the value that will be converted into an [`i64`]
+    ///
+    /// Returns the value as an [`i64`] or an error, if it does not fit
+    /// into an [`i64`]
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::integer::Z;
+    ///
+    /// let max = Z::from(i64::MAX);
+    /// assert_eq!(i64::MAX, i64::try_from(&max).unwrap());
+    ///
+    /// let max = Z::from(u64::MAX);
+    /// assert!(i64::try_from(&max).is_err());
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
+    /// if the value does not fit into an [`i64`]
+    fn try_from(value: &Z) -> Result<Self, Self::Error> {
+        // fmpz_get_si returns the i64::MAX or respectively i64::MIN
+        // if the value is too large/small to fit into an [`i64`].
+        // Hence we are required to manually check if the value is actually correct
+        let value_i64 = unsafe { fmpz_get_si(&value.value) };
+        if &Z::from(value_i64) == value {
+            Ok(value_i64)
+        } else {
+            Err(MathError::ConversionError(format!(
+                "The provided value has to fit into an i64 and it doesn't as the 
+                provided value is {}.",
+                value
+            )))
+        }
     }
 }
 
@@ -489,5 +534,31 @@ mod test_from_zq {
 
         assert_eq!(Z::from(i64::MAX), Z::from(zq_1));
         assert_eq!(Z::from(17), Z::from(zq_2));
+    }
+}
+
+#[cfg(test)]
+mod test_try_from_into_i64 {
+    use crate::integer::Z;
+
+    //// ensure that an error is returned, if the value of the [`Z`]
+    /// does not fit into an [`i64`]
+    #[test]
+    fn overflow() {
+        assert!(i64::try_from(&Z::from(u64::MAX)).is_err());
+        assert!(i64::try_from(&(-1 * Z::from(u64::MAX))).is_err());
+    }
+
+    /// ensure that a correct value is returned for values in bounds.
+    #[test]
+    fn correct() {
+        let min = Z::from(i64::MIN);
+        let max = Z::from(i64::MAX);
+        let z_42 = Z::from(42);
+
+        assert_eq!(i64::MIN, i64::try_from(&min).unwrap());
+        assert_eq!(i64::MAX, i64::try_from(&max).unwrap());
+        assert_eq!(0, i64::try_from(&Z::ZERO).unwrap());
+        assert_eq!(42, i64::try_from(&z_42).unwrap());
     }
 }

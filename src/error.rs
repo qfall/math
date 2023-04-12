@@ -20,6 +20,7 @@ use thiserror::Error;
 /// errors occurring in this crate.
 ///
 /// Possible entries:
+/// -  `ConversionError` is thrown if a conversion between types is not possible
 /// - `DivisionByZeroError` is thrown if it is tried to perform a division by `0`
 /// - `InvalidBase` is thrown if the provided base to call a function is not valid
 /// - `InvalidExponent` is thrown if an invalid exponent is used for a `pow` function
@@ -69,6 +70,10 @@ use thiserror::Error;
 /// ```
 #[derive(Error, Debug)]
 pub enum MathError {
+    /// conversion error
+    #[error("while performing the conversion an error occurred: {0}")]
+    ConversionError(String),
+
     /// division by zero error
     #[error("the division by zero is not possible {0}")]
     DivisionByZeroError(String),
