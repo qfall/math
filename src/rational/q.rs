@@ -17,6 +17,7 @@ mod default;
 mod exp;
 mod from;
 mod ownership;
+mod properties;
 mod serialize;
 mod to_string;
 
