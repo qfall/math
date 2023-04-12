@@ -227,14 +227,19 @@ impl TryFrom<&Z> for i64 {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type
+    /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
+    /// if the value does not fit into an [`i64`]
     fn try_from(value: &Z) -> Result<Self, Self::Error> {
+        // fmpz_get_si returns the i64::MAX or respectively i64::MIN
+        // if the value is too large/small to fit into an [`i64`].
+        // Hence we are required to manually check if the value is actually correct
         let value_i64 = unsafe { fmpz_get_si(&value.value) };
         if &Z::from(value_i64) == value {
             Ok(value_i64)
         } else {
             Err(MathError::ConversionError(format!(
-                "The provided value has to fit into an i64 and the provided value is {}.",
+                "The provided value has to fit into an i64 and it doesn't as the 
+                provided value is {}.",
                 value
             )))
         }
