@@ -11,6 +11,8 @@
 //!
 //! This includes the [`Display`](std::fmt::Display) trait.
 
+use crate::error::MathError;
+
 use super::Z;
 use core::fmt;
 use flint_sys::fmpz::fmpz_get_str;
@@ -39,7 +41,46 @@ impl fmt::Display for Z {
     /// let integer_string = integer.to_string();
     /// ```
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let c_str_ptr = unsafe { fmpz_get_str(null_mut(), 10, &self.value) };
+        write!(f, "{}", self.to_string_b(10).unwrap())
+    }
+}
+
+impl Z {
+    /// Allows to convert an integer of type [`Z`] into a [`String`]
+    /// with a configurable base between 2 and 62.
+    ///
+    /// Returns the integer in form of a [`String`] and an error
+    /// if the base is out of bounds.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// use core::fmt;
+    ///
+    /// let integer = Z::from(42);
+    /// println!("{}", integer);
+    /// ```
+    ///
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// use core::fmt;
+    ///
+    /// let integer = Z::from(42);
+    /// let integer_string = integer.to_string();
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if the
+    /// base is not between `2` and `62`.
+    pub fn to_string_b(&self, base: i32) -> Result<String, MathError> {
+        if !(2..=62).contains(&base) {
+            return Err(MathError::OutOfBounds(
+                "between 2 and 62".to_owned(),
+                base.to_string(),
+            ));
+        }
+
+        let c_str_ptr = unsafe { fmpz_get_str(null_mut(), base, &self.value) };
 
         // we expect c_str_ptr to be reference a real value, hence get_str returns an
         // actual value, hence a simple unwrap should be sufficient and we do not have
@@ -53,7 +94,7 @@ impl fmt::Display for Z {
 
         unsafe { libc::free(c_str_ptr as *mut libc::c_void) };
 
-        write!(f, "{}", return_str)
+        Ok(return_str)
     }
 }
 
@@ -104,5 +145,33 @@ mod test_to_string {
         let cmp_string2 = cmp.to_string();
 
         assert!(Z::from_str(&cmp_string2).is_ok())
+    }
+}
+
+#[cfg(test)]
+mod test_to_string_b {
+    use crate::integer::Z;
+
+    /// ensure that an error is returned, if an invalid base is provided
+    #[test]
+    fn out_of_bounds() {
+        let value = Z::from(42);
+
+        assert!(value.to_string_b(-1).is_err());
+        assert!(value.to_string_b(1).is_err());
+        assert!(value.to_string_b(63).is_err());
+    }
+
+    /// ensure that binary representation works correctly
+    #[test]
+    fn binary() {
+        let value_1 = Z::from(u64::MAX);
+        let cmp_str_1 = "1".repeat(64);
+
+        let value_2 = Z::from(i64::MIN);
+        let mut cmp_str_2 = format!("-1{}", "0".repeat(63));
+
+        assert_eq!(cmp_str_1, value_1.to_string_b(2).unwrap());
+        assert_eq!(cmp_str_2, value_2.to_string_b(2).unwrap());
     }
 }
