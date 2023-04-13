@@ -13,6 +13,7 @@ use crate::traits::Pow;
 
 impl Zq {
     /// Returns the inverse of `self` as a fresh [`Zq`] instance.
+    /// It returns `None` if no inverse for `self mod q` exists.
     ///
     /// # Example
     /// ```
@@ -24,11 +25,7 @@ impl Zq {
     /// assert_eq!(Zq::try_from((2, 7)).unwrap(), inverse);
     /// ```
     pub fn inv(&self) -> Option<Zq> {
-        let out = self.pow(-1);
-        if out.is_err() {
-            return None;
-        }
-        Some(out.unwrap())
+        self.pow(-1).ok()
     }
 }
 
