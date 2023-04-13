@@ -69,7 +69,7 @@ impl PolyOverZq {
     /// let c: PolyOverZq = a.sub_safe(&b).unwrap();
     /// ```
     /// # Errors and Failures
-    /// Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
+    /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
     /// both [`PolyOverZq`] mismatch.
     pub fn sub_safe(&self, other: &Self) -> Result<PolyOverZq, MathError> {
         if self.modulus != other.modulus {

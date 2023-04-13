@@ -55,8 +55,8 @@ impl PolyOverZq {
     /// Parameters:
     /// - `other`: specifies the polynomial to add to `self`
     ///
-    /// Returns the sum of both polynomials as a [`PolyOverZq`] or an error if the modulus
-    /// do mismatch.
+    /// Returns the sum of both polynomials as a [`PolyOverZq`] or an error if the moduli
+    /// mismatch.
     ///
     /// # Example
     /// ```
@@ -69,7 +69,7 @@ impl PolyOverZq {
     /// let c: PolyOverZq = a.add_safe(&b).unwrap();
     /// ```
     /// # Errors and Failures
-    /// Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
+    /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
     /// both [`PolyOverZq`] mismatch.
     pub fn add_safe(&self, other: &Self) -> Result<PolyOverZq, MathError> {
         if self.modulus != other.modulus {
