@@ -96,10 +96,10 @@ mod test_add {
     /// testing addition with eliminating coefficients
     #[test]
     fn add_eliminating_coefficients() {
-        let a: PolyOverQ = PolyOverQ::from_str("3  1/7 2 -3").unwrap();
-        let b: PolyOverQ = PolyOverQ::from_str("5  1/9 2/9 5/2 1 2/7").unwrap();
+        let a: PolyOverQ = PolyOverQ::from_str("3  1/7 2/7 -3").unwrap();
+        let b: PolyOverQ = PolyOverQ::from_str("3  1 -2/7 3").unwrap();
         let c: PolyOverQ = a + &b;
-        assert_eq!(c, PolyOverQ::from_str("5  16/63 20/9 -1/2 1 2/7").unwrap());
+        assert_eq!(c, PolyOverQ::from_str("1  8/7").unwrap());
     }
 
     /// testing addition for large [`PolyOverQ`]

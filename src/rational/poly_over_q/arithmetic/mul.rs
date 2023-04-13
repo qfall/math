@@ -110,7 +110,7 @@ mod test_mul {
         let a: PolyOverQ = PolyOverQ::from_str("3  1/11 1/2 -7/3").unwrap();
         let b: PolyOverQ = PolyOverQ::from_str("1  4/7").unwrap();
         let c: PolyOverQ = a * b;
-        assert_eq!(c, PolyOverQ::from_str("3  4/77 2/7 -28/21").unwrap());
+        assert_eq!(c, PolyOverQ::from_str("3  4/77 2/7 -4/3").unwrap());
     }
 
     /// testing multiplication with zero
