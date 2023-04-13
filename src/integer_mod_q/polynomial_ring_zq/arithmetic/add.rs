@@ -197,10 +197,50 @@ mod test_add {
         );
     }
 
+    /// testing addition for [`PolynomialRingZq`] reduces '0' coefficients
+    #[test]
+    fn add_reduce() {
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        let poly_a = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
+        let a = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_a, &modulus);
+        let poly_b = PolyOverZ::from_str("4  2 0 3 -1").unwrap();
+        let b = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_b, &modulus);
+        let c = a + &b;
+        assert_eq!(
+            c,
+            PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(
+                &PolyOverZ::from_str("3  1 0 4").unwrap(),
+                &modulus
+            )
+        );
+    }
+
     /// testing addition for big [`PolynomialRingZq`]
     #[test]
     fn add_large_numbers() {
-        //todo
+        let modulus = ModulusPolynomialRingZq::from_str(&format!(
+            "4  {} 0 0 {} mod {}",
+            u64::MAX,
+            i64::MIN,
+            u64::MAX - 58
+        ))
+        .unwrap();
+
+        let poly_a = PolyOverZ::from_str(&format!("4  {} 0 1 {}", u64::MAX, i64::MIN)).unwrap();
+        let a = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_a, &modulus);
+
+        let poly_b = PolyOverZ::from_str(&format!("4  {} 0 -1 {}", i64::MAX, i64::MAX)).unwrap();
+        let b = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_b, &modulus);
+
+        let c = a + b;
+        assert_eq!(
+            c,
+            PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(
+                &PolyOverZ::from_str(&format!("4  {} 0 0 {}", (u64::MAX - 1) / 2 + 58, -1))
+                    .unwrap(),
+                &modulus
+            )
+        );
     }
 
     /// testing addition for [`PolynomialRingZq`] with different moduli does not work
