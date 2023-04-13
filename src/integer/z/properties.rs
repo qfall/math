@@ -50,6 +50,8 @@ impl Z {
 
     /// Returns the inverse of `self` as a fresh [`Q`] instance.
     ///
+    /// As the inverse of `0` is undefined, it returns `None` in case `self == 0`.
+    ///
     /// # Example
     /// ```
     /// use qfall_math::{integer::Z, rational::Q};

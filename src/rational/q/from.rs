@@ -187,11 +187,11 @@ impl Q {
     ///
     /// let m = Z::from(17);
     ///
-    /// let a: Q = Q::from_int(&m);
-    /// let b: Q = Q::from_int(&17);
+    /// let a: Q = Q::from_int(m);
+    /// let b: Q = Q::from_int(17);
     /// ```
-    pub fn from_int(value: &(impl Into<Z> + Clone)) -> Self {
-        let value = value.to_owned().into();
+    pub fn from_int(value: impl Into<Z>) -> Self {
+        let value = value.into();
         // this efficient implementation depends on Q::default instantiating 1 as denominator
         let mut out = Q::default();
         unsafe { fmpz_set(&mut out.value.num, &value.value) }
@@ -261,7 +261,7 @@ impl<T1: Into<Z> + Clone, T2: Into<Z> + Clone> TryFrom<(&T1, &T2)> for Q {
     }
 }
 
-impl<T: Into<Z> + Clone> From<&T> for Q {
+impl<T: Into<Z>> From<T> for Q {
     /// Create a new Integer that can grow arbitrary large.
     ///
     /// Parameters:
@@ -274,10 +274,10 @@ impl<T: Into<Z> + Clone> From<&T> for Q {
     /// use qfall_math::rational::Q;
     /// use qfall_math::integer::Z;
     ///
-    /// let a: Q = Q::from(&17);
-    /// let b: Q = Q::from(&Z::from(17));
+    /// let a: Q = Q::from(17);
+    /// let b: Q = Q::from(Z::from(17));
     /// ```
-    fn from(value: &T) -> Self {
+    fn from(value: T) -> Self {
         Q::from_int(value)
     }
 }
@@ -568,9 +568,9 @@ mod test_from_z {
 
         assert_eq!(
             Q::from_str(&u64::MAX.to_string()).unwrap(),
-            Q::from_int(&z_1)
+            Q::from_int(z_1)
         );
-        assert_eq!(Q::from_str("17").unwrap(), Q::from_int(&z_2));
+        assert_eq!(Q::from_str("17").unwrap(), Q::from_int(z_2));
     }
 
     /// Ensure that the [`From`] trait is available and works correctly for
@@ -580,23 +580,23 @@ mod test_from_z {
         let z_1 = Z::from(u64::MAX);
         let z_2 = Z::from(17);
 
-        assert_eq!(Q::from_str(&u64::MAX.to_string()).unwrap(), Q::from(&z_1));
-        assert_eq!(Q::from_str("17").unwrap(), Q::from(&z_2));
+        assert_eq!(Q::from_str(&u64::MAX.to_string()).unwrap(), Q::from(z_1));
+        assert_eq!(Q::from_str("17").unwrap(), Q::from(z_2));
     }
 
     /// Ensure that all types that can be turned into an [`Z`]
     /// can be used to instantiate a [`Q`]
     #[test]
     fn from_into_z() {
-        let _ = Q::from(&u8::MAX);
-        let _ = Q::from(&u16::MAX);
-        let _ = Q::from(&u32::MAX);
-        let _ = Q::from(&u64::MAX);
+        let _ = Q::from(u8::MAX);
+        let _ = Q::from(u16::MAX);
+        let _ = Q::from(u32::MAX);
+        let _ = Q::from(u64::MAX);
 
-        let _ = Q::from(&i8::MIN);
-        let _ = Q::from(&i16::MIN);
-        let _ = Q::from(&i32::MIN);
-        let _ = Q::from(&i64::MIN);
+        let _ = Q::from(i8::MIN);
+        let _ = Q::from(i16::MIN);
+        let _ = Q::from(i32::MIN);
+        let _ = Q::from(i64::MIN);
     }
 }
 
