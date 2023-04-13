@@ -17,20 +17,24 @@ We use criterion for statistical analysis. A plotting library has to be installe
 
 ### Commands
 a) ```cargo criterion <benchmark name regex>```  
-Has to be installed with `cargo install criterion`.  
+Has to be installed with `cargo install cargo-criterion`.  
 Pros:
 - You can remove `features = ["html_reports"]` from the `Cargo.toml` leading to a (slightly) faster compile times.
 - Criterion aims to move to just using cargo criterion
 - The large Probability Density Function graph shows the samples and marks the outlier categorization boarders.
+- can use either [gnuplot](http://www.gnuplot.info/) or [plotters](https://crates.io/crates/plotters)
 
 b) ```cargo bench <benchmark name regex>```  
 Pros:
 - Can visualize the change in performance compared to previous run or other baseline
+Cons:
+- can only use [gnuplot](http://www.gnuplot.info/)
 
 ## Flamegraph
 You can also run the benchmarks using the profiler flamegraph. Details can be found here:
 - [Flamegraph GitHub](https://github.com/flamegraph-rs/flamegraph).
 This provides insights on the where execution time is spent.
+TODO: Check how to run it in WSL2
 
 ### Command
 ```cargo flamegraph --freq 63300 --bench benchmarks -- --bench --profile-time 5 <benchmark name regex>```  
@@ -65,6 +69,7 @@ You have to enter a part of the rust function name or regex (not the benchmark n
    2. Add a function to handle the interaction with criterion.
       e.g.:
       ``` rust
+      /// Add Comment describing the benchmark here
       pub fn bench_do_stuff(c: &mut Criterion) {
           c.bench_function("<benchmark name here>", |b| b.iter(|| do_stuff()));
       }

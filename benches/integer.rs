@@ -72,10 +72,12 @@ pub fn mat_z_100_100() -> Result<(), MathError> {
     Ok(())
 }
 
+/// benchmark [mat_z_4_4]
 pub fn bench_mat_z_4_4(c: &mut Criterion) {
     c.bench_function("MatZ 4x4", |b| b.iter(|| mat_z_4_4()));
 }
 
+/// benchmark [mat_z_100_100]
 pub fn bench_mat_z_100_100(c: &mut Criterion) {
     c.bench_function("MatZ 100x100", |b| b.iter(|| mat_z_100_100()));
 }
