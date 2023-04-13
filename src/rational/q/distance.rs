@@ -46,8 +46,7 @@ impl Distance<&Q> for Q {
 }
 
 implement_for_owned!(Q, Q, Distance);
-implement_for_others!(Q, Q, Distance for u8 u16 u32 u64 i8 i16 i32 i64);
-// TODO: should also be implemented for f64 once From<f64> was implemented
+implement_for_others!(Q, Q, Distance for u8 u16 u32 u64 i8 i16 i32 i64 f64 f32);
 
 #[cfg(test)]
 mod test_distance {
@@ -100,6 +99,8 @@ mod test_distance {
         let i_1 = a.distance(-15_i16);
         let i_2 = a.distance(35_i32);
         let i_3 = a.distance(i64::MIN);
+        let f_0 = a.distance(4.25_f32);
+        let f_1 = a.distance(15.7_f64);
 
         assert_eq!(Q::ZERO, u_0);
         assert_eq!(Q::from(15), u_1);
@@ -109,5 +110,7 @@ mod test_distance {
         assert_eq!(Q::from(15), i_1);
         assert_eq!(Q::from(35), i_2);
         assert_eq!(Q::from(i64::MIN).abs(), i_3);
+        assert_eq!(Q::try_from((&425, &100)).unwrap(), f_0);
+        assert_eq!(Q::try_from((&157, &10)).unwrap(), f_1);
     }
 }
