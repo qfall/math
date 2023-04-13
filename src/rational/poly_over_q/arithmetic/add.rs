@@ -84,7 +84,7 @@ mod test_add {
         assert_eq!(c, PolyOverQ::from_str("5  16/63 20/9 -1/2 1 2/7").unwrap());
     }
 
-    /// testing addition for [`PolyOverQ`] and borrowed P[`PolyOverQ`]
+    /// testing addition for [`PolyOverQ`] and borrowed [`PolyOverQ`]
     #[test]
     fn add_second_borrowed() {
         let a: PolyOverQ = PolyOverQ::from_str("3  1/7 2 -3").unwrap();
