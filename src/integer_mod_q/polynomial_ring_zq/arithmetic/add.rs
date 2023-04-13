@@ -68,10 +68,15 @@ impl PolynomialRingZq {
     /// # Example
     /// ```
     /// use qfall_math::integer_mod_q::PolynomialRingZq;
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;
     ///
-    /// let a: PolynomialRingZq = PolynomialRingZq::from_str("3  2 4 1 mod 7").unwrap();
-    /// let b: PolynomialRingZq = PolynomialRingZq::from_str("3  5 1 1 mod 7").unwrap();
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let poly_a = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
+    /// let a = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_a, &modulus);
+    /// let poly_b = PolyOverZ::from_str("4  2 0 3 1").unwrap();
+    /// let b = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_b, &modulus);
     ///
     /// let c: PolynomialRingZq = a.add_safe(&b).unwrap();
     /// ```
@@ -81,8 +86,7 @@ impl PolynomialRingZq {
     pub fn add_safe(&self, other: &Self) -> Result<PolynomialRingZq, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
-                " Tried to add polynomial with modulus '{}' and polynomial with modulus '{}'.
-            If the modulus should be ignored please convert into a PolyOverZ beforehand.",
+                " Tried to add polynomial with modulus '{}' and polynomial with modulus '{}'.",
                 self.modulus, other.modulus
             )));
         }
