@@ -56,7 +56,7 @@ impl MatQ {
     /// - `other`: specifies the value to subtract to `self`
     ///
     /// Returns the result of the subtraction as a [`MatQ`] or an
-    /// error if the matrix dimensions do mismatch.
+    /// error if the matrix dimensions mismatch.
     ///
     /// # Example
     /// ```

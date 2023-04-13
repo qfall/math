@@ -56,7 +56,7 @@ impl MatQ {
     /// - `other`: specifies the value to add to `self`
     ///
     /// Returns the sum of both matrixes as a [`MatQ`] or an
-    /// error if the matrix dimensions do mismatch.
+    /// error if the matrix dimensions mismatch.
     ///
     /// # Example
     /// ```

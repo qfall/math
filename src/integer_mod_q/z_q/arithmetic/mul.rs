@@ -54,7 +54,7 @@ impl Zq {
     ///
     ///
     /// Parameters:
-    /// - `other`: specifies the value to mul to `self`
+    /// - `other`: specifies the value to multiply with `self`
     ///
     /// Returns the product of both numbers as a [`Zq`] or an error if the moduli
     /// mismatch.

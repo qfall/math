@@ -25,7 +25,7 @@ impl Sub for &Zq {
     /// [`Sub`] is implemented for any combination of [`Zq`] and borrowed [`Zq`].
     ///
     /// Parameters:
-    /// - `other`: specifies the value to subtract form `self`
+    /// - `other`: specifies the value to subtract from `self`
     ///
     /// Returns the result of the subtraction of both numbers as a [`Zq`].
     ///
@@ -54,10 +54,10 @@ impl Zq {
     ///
     ///
     /// Parameters:
-    /// - `other`: specifies the value to sub to `self`
+    /// - `other`: specifies the value to subtract from `self`
     ///
-    /// Returns the sum of both numbers as a [`Zq`] or an error if the moduli
-    /// mismatch.
+    /// Returns the result of the subtraction of both numbers as a [`Zq`]
+    /// or an error if the moduli mismatch.
     ///
     /// # Example
     /// ```
