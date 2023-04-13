@@ -1,18 +1,9 @@
-// Copyright © 2023 Sven Moog
-//
-// This file is part of qFALL-math.
-//
-// qFALL-math is free software: you can redistribute it and/or modify it under
-// the terms of the Mozilla Public License Version 2.0 as published by the
-// Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
-
-
 # How to run benchmarks:
 ## Criterion
 We use criterion for statistical analysis. A plotting library has to be installed to generate graphs. You can find more information and help here: 
 - [Criterion-rs GitHub](https://github.com/bheisler/criterion.rs)
 - [Cargo-criterion GitHub](https://github.com/bheisler/cargo-criterion)
-- [Criterion Book](https://bheisler.github.io/criterion.rs/book/criterion_rs.html)(!Watchout for the criterion version, as of writing this the book is not on the latest version!)
+- [Criterion Book](https://bheisler.github.io/criterion.rs/book/criterion_rs.html) (!Watchout for the criterion version, as of writing this the book is not on the latest version!)
 
 
 ### Commands
@@ -34,6 +25,7 @@ Cons:
 You can also run the benchmarks using the profiler flamegraph. Details can be found here:
 - [Flamegraph GitHub](https://github.com/flamegraph-rs/flamegraph).
 This provides insights on the where execution time is spent.
+
 TODO: Check how to run it in WSL2
 
 ### Command
@@ -78,3 +70,11 @@ You have to enter a part of the rust function name or regex (not the benchmark n
       This function can also look differently, for example, because it uses [criterion groups](https://docs.rs/criterion/latest/criterion/struct.BenchmarkGroup.html).
    3. Add function created in step 2 in the `criterion_group!` macro (bottom of file).
 
+# Copyright
+Copyright © 2023 Sven Moog
+
+This file is part of qFALL-math.
+
+qFALL-math is free software: you can redistribute it and/or modify it under
+the terms of the Mozilla Public License Version 2.0 as published by the
+Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
