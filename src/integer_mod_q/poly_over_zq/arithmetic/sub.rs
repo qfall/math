@@ -42,7 +42,7 @@ impl Sub for &PolyOverZq {
     /// let f: PolyOverZq = c - &e;
     /// ```
     ///
-    /// # Panics
+    /// # Errors and Failures
     /// - Panics if the moduli of both [`PolyOverZq`] mismatch.
     fn sub(self, other: Self) -> Self::Output {
         self.sub_safe(other).unwrap()
@@ -51,7 +51,6 @@ impl Sub for &PolyOverZq {
 
 impl PolyOverZq {
     /// Implements subtraction for two [`PolyOverZq`] values.
-    ///
     ///
     /// Parameters:
     /// - `other`: specifies the polynomial to subtract from `self`
@@ -69,7 +68,7 @@ impl PolyOverZq {
     ///
     /// let c: PolyOverZq = a.sub_safe(&b).unwrap();
     /// ```
-    /// # Errors
+    /// # Errors and Failures
     /// Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
     /// both [`PolyOverZq`] mismatch.
     pub fn sub_safe(&self, other: &Self) -> Result<PolyOverZq, MathError> {
@@ -99,9 +98,8 @@ arithmetic_trait_mixed_borrowed_owned!(Sub, sub, PolyOverZq, PolyOverZq, PolyOve
 #[cfg(test)]
 mod test_sub {
 
-    use std::str::FromStr;
-
     use super::PolyOverZq;
+    use std::str::FromStr;
 
     /// testing subtraction for two [`PolyOverZq`]
     #[test]
@@ -137,6 +135,15 @@ mod test_sub {
         let b: PolyOverZq = PolyOverZq::from_str("3  -5 5 1 mod 7").unwrap();
         let c: PolyOverZq = a - b;
         assert_eq!(c, PolyOverZq::from_str("3  0 6 5 mod 7").unwrap());
+    }
+
+    /// testing subtraction of [`PolyOverZq`] is reducing the polynomial
+    #[test]
+    fn sub_reduce() {
+        let a: PolyOverZq = PolyOverZq::from_str("3  2 4 1 mod 7").unwrap();
+        let b: PolyOverZq = PolyOverZq::from_str("3  -5 4 -6 mod 7").unwrap();
+        let c: PolyOverZq = a - b;
+        assert_eq!(c, PolyOverZq::from_str("0 mod 7").unwrap());
     }
 
     /// testing subtraction for big [`PolyOverZq`]

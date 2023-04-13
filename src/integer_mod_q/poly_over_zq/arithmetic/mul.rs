@@ -42,7 +42,7 @@ impl Mul for &PolyOverZq {
     /// let f: PolyOverZq = c * &e;
     /// ```
     ///
-    /// # Panics
+    /// # Errors and Failures
     /// - Panics if the moduli of both [`PolyOverZq`] mismatch.
     fn mul(self, other: Self) -> Self::Output {
         self.mul_safe(other).unwrap()
@@ -51,7 +51,6 @@ impl Mul for &PolyOverZq {
 
 impl PolyOverZq {
     /// Implements multiplication for two [`PolyOverZq`] values.
-    ///
     ///
     /// Parameters:
     /// - `other`: specifies the polynomial to multiply to `self`
@@ -69,7 +68,7 @@ impl PolyOverZq {
     ///
     /// let c: PolyOverZq = a.mul_safe(&b).unwrap();
     /// ```
-    /// # Errors
+    /// # Errors and Failures
     /// Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
     /// both [`PolyOverZq`] mismatch.
     pub fn mul_safe(&self, other: &Self) -> Result<PolyOverZq, MathError> {
@@ -136,6 +135,19 @@ mod test_mul {
         let b: PolyOverZq = PolyOverZq::from_str("2  2 4 mod 7").unwrap();
         let c: PolyOverZq = a * &b;
         assert_eq!(c, PolyOverZq::from_str("4  4 2 4 4 mod 7").unwrap());
+    }
+
+    /// testing multiplication for [`PolyOverZq`] and a constant [`PolyOverZq`]
+    #[test]
+    fn mul_constant() {
+        let a: PolyOverZq = PolyOverZq::from_str("3  2 4 1 mod 7").unwrap();
+        let b: PolyOverZq = PolyOverZq::from_str("1  2 mod 7").unwrap();
+        let c: PolyOverZq = &a * b;
+        assert_eq!(c, PolyOverZq::from_str("3  4 1 2 mod 7").unwrap());
+        assert_eq!(
+            a * PolyOverZq::from_str("0 mod 7").unwrap(),
+            PolyOverZq::from_str("0 mod 7").unwrap()
+        );
     }
 
     /// testing multiplication for big [`PolyOverZq`]

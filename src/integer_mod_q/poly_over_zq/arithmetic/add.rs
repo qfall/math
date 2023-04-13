@@ -42,7 +42,7 @@ impl Add for &PolyOverZq {
     /// let f: PolyOverZq = c + &e;
     /// ```
     ///
-    /// # Panics
+    /// # Errors and Failures
     /// - Panics if the moduli of both [`PolyOverZq`] mismatch.
     fn add(self, other: Self) -> Self::Output {
         self.add_safe(other).unwrap()
@@ -51,7 +51,6 @@ impl Add for &PolyOverZq {
 
 impl PolyOverZq {
     /// Implements addition for two [`PolyOverZq`] values.
-    ///
     ///
     /// Parameters:
     /// - `other`: specifies the polynomial to add to `self`
@@ -69,7 +68,7 @@ impl PolyOverZq {
     ///
     /// let c: PolyOverZq = a.add_safe(&b).unwrap();
     /// ```
-    /// # Errors
+    /// # Errors and Failures
     /// Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
     /// both [`PolyOverZq`] mismatch.
     pub fn add_safe(&self, other: &Self) -> Result<PolyOverZq, MathError> {
@@ -99,9 +98,8 @@ arithmetic_trait_mixed_borrowed_owned!(Add, add, PolyOverZq, PolyOverZq, PolyOve
 #[cfg(test)]
 mod test_add {
 
-    use std::str::FromStr;
-
     use super::PolyOverZq;
+    use std::str::FromStr;
 
     /// testing addition for two [`PolyOverZq`]
     #[test]
@@ -137,6 +135,15 @@ mod test_add {
         let b: PolyOverZq = PolyOverZq::from_str("3  -5 4 1 mod 7").unwrap();
         let c: PolyOverZq = a + &b;
         assert_eq!(c, PolyOverZq::from_str("3  4 1 2 mod 7").unwrap());
+    }
+
+    /// testing addition of [`PolyOverZq`] is reducing the polynomial
+    #[test]
+    fn add_reduce() {
+        let a: PolyOverZq = PolyOverZq::from_str("3  2 4 1 mod 7").unwrap();
+        let b: PolyOverZq = PolyOverZq::from_str("3  -5 4 6 mod 7").unwrap();
+        let c: PolyOverZq = a + b;
+        assert_eq!(c, PolyOverZq::from_str("2  4 1 mod 7").unwrap());
     }
 
     /// testing addition for big [`PolyOverZq`]
