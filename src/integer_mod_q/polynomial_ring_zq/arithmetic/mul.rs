@@ -239,18 +239,26 @@ mod test_mul {
         ))
         .unwrap();
 
-        let poly_a = PolyOverZ::from_str(&format!("4  {} 0 1 {}", u64::MAX, i64::MIN)).unwrap();
+        let poly_a = PolyOverZ::from_str(&format!("3  {} 0 {}", u64::MAX, i64::MIN)).unwrap();
         let a = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_a, &modulus);
 
-        let poly_b = PolyOverZ::from_str(&format!("4  {} 0 -1 {}", i64::MAX, i64::MAX)).unwrap();
+        let poly_b = PolyOverZ::from_str(&format!("3  {} 0 {}", i64::MAX, i64::MAX)).unwrap();
         let b = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_b, &modulus);
 
         let c = a * b;
         assert_eq!(
             c,
             PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(
-                &PolyOverZ::from_str(&format!("4  {} 0 0 {}", (u64::MAX - 1) / 2 + 58, -1))
-                    .unwrap(),
+                &PolyOverZ::from_str(&format!(
+                    "5  {} {} {} {} {}",
+                    u128::from(u64::MAX) * u128::from((u64::MAX - 1) / 2),
+                    0,
+                    i128::from(i64::MIN) * i128::from(i64::MAX)
+                        + (i128::from(i64::MAX) - i128::from(i64::MIN)) * i128::from(i64::MAX),
+                    0,
+                    i128::from(i64::MAX) * i128::from(i64::MIN)
+                ))
+                .unwrap(),
                 &modulus
             )
         );
