@@ -117,7 +117,7 @@ mod test_set_coeff {
     /// ensure that the correct coefficient is set and all others are set to `0`
     #[test]
     fn set_coeff_rest_zero() {
-        let mut poly = PolyOverZ::from_str("0").unwrap();
+        let mut poly = PolyOverZ::default();
 
         poly.set_coeff(4, -10).unwrap();
         assert_eq!(PolyOverZ::from_str("5  0 0 0 0 -10").unwrap(), poly);
@@ -126,7 +126,7 @@ mod test_set_coeff {
     /// ensure that setting with a z works
     #[test]
     fn set_coeff_z() {
-        let mut poly = PolyOverZ::from_str("0").unwrap();
+        let mut poly = PolyOverZ::default();
 
         poly.set_coeff(4, Z::from(123)).unwrap();
         assert_eq!(PolyOverZ::from_str("5  0 0 0 0 123").unwrap(), poly);
