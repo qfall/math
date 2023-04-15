@@ -200,6 +200,13 @@ impl From<&Modulus> for Z {
     }
 }
 
+impl From<Modulus> for Z {
+    /// Convert [`Modulus`] to [`Z`] using [`Z::from_modulus`].
+    fn from(value: Modulus) -> Self {
+        Z::from_modulus(&value)
+    }
+}
+
 // Generate [`From`] trait for the different types.
 from_trait!(i64, Z, Z::from_i64);
 from_trait!(i32, Z, Z::from_i32);
@@ -497,6 +504,8 @@ mod tests_from_modulus {
 
         let _ = Z::from(&mod_1);
         let _ = Z::from(&mod_2);
+        let _ = Z::from(mod_1);
+        let _ = Z::from(mod_2);
     }
 }
 
