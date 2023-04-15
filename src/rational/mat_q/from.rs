@@ -215,14 +215,14 @@ mod test_from_mat_zq {
         let matq_1 = MatQ::from(&matz);
         let matq_2 = MatQ::from_mat_z(&matz);
 
-        assert_eq!(Q::from(&Z::from(i64::MIN)), matq_1.get_entry(0, 1).unwrap());
+        assert_eq!(Q::from(Z::from(i64::MIN)), matq_1.get_entry(0, 1).unwrap());
         assert_eq!(
-            Q::from(&Z::from(u64::MAX - 58)),
+            Q::from(Z::from(u64::MAX - 58)),
             matq_1.get_entry(0, 0).unwrap()
         );
-        assert_eq!(Q::from(&Z::from(i64::MIN)), matq_2.get_entry(0, 1).unwrap());
+        assert_eq!(Q::from(Z::from(i64::MIN)), matq_2.get_entry(0, 1).unwrap());
         assert_eq!(
-            Q::from(&Z::from(u64::MAX - 58)),
+            Q::from(Z::from(u64::MAX - 58)),
             matq_2.get_entry(0, 0).unwrap()
         );
     }
