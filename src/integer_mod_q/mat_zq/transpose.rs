@@ -29,7 +29,7 @@ impl MatZq {
     /// ```
     pub fn transpose(&self) -> Self {
         let mut out =
-            Self::new(self.get_num_columns(), self.get_num_rows(), &self.get_mod()).unwrap();
+            Self::new(self.get_num_columns(), self.get_num_rows(), self.get_mod()).unwrap();
         unsafe { fmpz_mat_transpose(&mut out.matrix.mat[0], &self.matrix.mat[0]) };
         out
     }

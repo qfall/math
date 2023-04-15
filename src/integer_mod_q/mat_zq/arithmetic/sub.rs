@@ -94,7 +94,7 @@ impl MatZq {
             )));
         }
         let mut out =
-            MatZq::new(self.get_num_rows(), self.get_num_columns(), &self.get_mod()).unwrap();
+            MatZq::new(self.get_num_rows(), self.get_num_columns(), self.get_mod()).unwrap();
         unsafe {
             fmpz_mod_mat_sub(&mut out.matrix, &self.matrix, &other.matrix);
         }

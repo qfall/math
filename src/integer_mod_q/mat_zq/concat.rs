@@ -66,7 +66,7 @@ impl Concatenate for &MatZq {
         let mut out = MatZq::new(
             self.get_num_rows() + other.get_num_rows(),
             self.get_num_columns(),
-            &self.get_mod(),
+            self.get_mod(),
         )
         .unwrap();
         unsafe {
@@ -123,7 +123,7 @@ impl Concatenate for &MatZq {
         let mut out = MatZq::new(
             self.get_num_rows(),
             self.get_num_columns() + other.get_num_columns(),
-            &self.get_mod(),
+            self.get_mod(),
         )
         .unwrap();
         unsafe {
