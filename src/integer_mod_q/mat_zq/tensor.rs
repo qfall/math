@@ -13,11 +13,7 @@ use crate::{
     error::MathError,
     traits::{GetNumColumns, GetNumRows, Tensor},
 };
-use flint_sys::{
-    fmpz::{fmpz, fmpz_is_zero},
-    fmpz_mat::fmpz_mat_entry,
-    fmpz_mod::fmpz_mod_mul,
-};
+use flint_sys::{fmpz_mat::fmpz_mat_kronecker_product, fmpz_mod_mat::_fmpz_mod_mat_reduce};
 
 impl Tensor for MatZq {
     /// Computes the tensor product of `self` with `other`
@@ -37,13 +33,13 @@ impl Tensor for MatZq {
     /// let mat_1 = MatZq::from_str("[[1, 0, 0],[0, 1, 0],[0, 0, 1]] mod 7").unwrap();
     /// let mat_2 = MatZq::from_str("[[1, 2, 1],[3, 4, 1]] mod 7").unwrap();
     ///
-    /// let mat_3 = mat_1.tensor(&mat_2);
+    /// let mat_3 = mat_1.tensor_product(&mat_2);
     /// ```
     ///
     /// # Panics ...
     /// - ... if the moduli of both matrices mismatch.
-    fn tensor(&self, other: &Self) -> Self {
-        self.tensor_safe(other).unwrap()
+    fn tensor_product(&self, other: &Self) -> Self {
+        self.tensor_product_safe(other).unwrap()
     }
 }
 
@@ -64,14 +60,14 @@ impl MatZq {
     /// let mat_1 = MatZq::from_str("[[1, 0, 0],[0, 1, 0],[0, 0, 1]] mod 7").unwrap();
     /// let mat_2 = MatZq::from_str("[[1, 2, 1],[3, 4, 1]] mod 7").unwrap();
     ///
-    /// let mat_3 = mat_1.tensor_safe(&mat_2).unwrap();
+    /// let mat_3 = mat_1.tensor_product_safe(&mat_2).unwrap();
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
     /// [`MismatchingModulus`](MathError::MismatchingModulus) if the
     /// moduli of the provided matrices mismatch.
-    pub fn tensor_safe(&self, other: &Self) -> Result<Self, MathError> {
+    pub fn tensor_product_safe(&self, other: &Self) -> Result<Self, MathError> {
         if self.get_mod() != other.get_mod() {
             return Err(MathError::MismatchingModulus(format!(
                 " Tried to compute tensor product of matrixes with moduli '{}' and '{}'.",
@@ -80,73 +76,24 @@ impl MatZq {
             )));
         }
 
-        // does not have to be mutable, since the pointers themselves
-        // do not change, only the content behind the pointers.
-        let out = MatZq::new(
+        let mut out = MatZq::new(
             self.get_num_rows() * other.get_num_rows(),
             self.get_num_columns() * other.get_num_columns(),
             self.get_mod(),
         )
         .unwrap();
 
-        for i in 0..self.get_num_rows() {
-            for j in 0..self.get_num_columns() {
-                let entry = unsafe { fmpz_mat_entry(&self.matrix.mat[0], i, j) };
+        unsafe {
+            fmpz_mat_kronecker_product(
+                &mut out.matrix.mat[0],
+                &self.matrix.mat[0],
+                &other.matrix.mat[0],
+            )
+        };
 
-                if unsafe { 1 != fmpz_is_zero(entry) } {
-                    unsafe { set_matrix_window_mul(&out, i, j, entry, other) }
-                }
-            }
-        }
+        unsafe { _fmpz_mod_mat_reduce(&mut out.matrix) }
 
         Ok(out)
-    }
-}
-
-/// This function sets a specific window of the provided matrix `out`
-/// according to the `scalar` multiple of `matrix` reduced by the modulus.
-///
-/// Sets the entries
-/// `[i*rows_other, j*columns_other]` up till `[row_left*(row_other +1), column_upper*(columns_other + 1)]`
-///
-/// Parameters:
-/// - `out`: the matrix in which the result is saved, which also holds the modulus
-/// (**Warning**: even though `out` is not mutable, the subpart of the matrix is still
-/// set since the content behind the pointers changes but not the pointers themselves.)
-/// - `row_left`: defines the leftmost row of the set window
-/// - `column_upper`: defines the highest column of the set window
-/// - `scalar`: defines the value with which the part of the tensor product
-/// is calculated
-/// - `matrix`: the matrix with which the scalar is multiplied
-/// before setting the entries in `out`
-///
-/// Implicitly sets the entries of the matrix according to the definition
-/// of the tensor product.
-unsafe fn set_matrix_window_mul(
-    out: &MatZq,
-    row_left: i64,
-    column_upper: i64,
-    scalar: *mut fmpz,
-    matrix: &MatZq,
-) {
-    let columns_other = matrix.get_num_columns();
-    let rows_other = matrix.get_num_rows();
-
-    for i_other in 0..rows_other {
-        for j_other in 0..columns_other {
-            unsafe {
-                fmpz_mod_mul(
-                    fmpz_mat_entry(
-                        &out.matrix.mat[0],
-                        row_left * rows_other + i_other,
-                        column_upper * columns_other + j_other,
-                    ),
-                    scalar,
-                    fmpz_mat_entry(&matrix.matrix.mat[0], i_other, j_other),
-                    out.get_mod().get_fmpz_mod_ctx_struct(),
-                )
-            }
-        }
     }
 }
 
@@ -164,8 +111,8 @@ mod test_tensor {
         let mat_1 = MatZq::new(17, 13, 13).unwrap();
         let mat_2 = MatZq::new(3, 4, 13).unwrap();
 
-        let mat_3 = mat_1.tensor(&mat_2);
-        let mat_3_safe = mat_1.tensor_safe(&mat_2).unwrap();
+        let mat_3 = mat_1.tensor_product(&mat_2);
+        let mat_3_safe = mat_1.tensor_product_safe(&mat_2).unwrap();
 
         assert_eq!(51, mat_3.get_num_rows());
         assert_eq!(52, mat_3.get_num_columns());
@@ -185,10 +132,10 @@ mod test_tensor {
         ))
         .unwrap();
 
-        let mat_2 = identity.tensor(&mat_1);
-        let mat_3 = mat_1.tensor(&identity);
-        let mat_2_safe = identity.tensor_safe(&mat_1).unwrap();
-        let mat_3_safe = mat_1.tensor_safe(&identity).unwrap();
+        let mat_2 = identity.tensor_product(&mat_1);
+        let mat_3 = mat_1.tensor_product(&identity);
+        let mat_2_safe = identity.tensor_product_safe(&mat_1).unwrap();
+        let mat_3_safe = mat_1.tensor_product_safe(&identity).unwrap();
 
         let cmp_mat_2 = MatZq::from_str(&format!(
             "[[1, {}, 1, 0, 0, 0],[0, {}, -1, 0, 0, 0],[0, 0, 0, 1, {}, 1],[0, 0, 0, 0, {}, -1]] mod {}",
@@ -227,10 +174,10 @@ mod test_tensor {
         ))
         .unwrap();
 
-        let mat_2 = vector.tensor(&mat_1);
-        let mat_3 = mat_1.tensor(&vector);
-        let mat_2_safe = vector.tensor_safe(&mat_1).unwrap();
-        let mat_3_safe = mat_1.tensor_safe(&vector).unwrap();
+        let mat_2 = vector.tensor_product(&mat_1);
+        let mat_3 = mat_1.tensor_product(&vector);
+        let mat_2_safe = vector.tensor_product_safe(&mat_1).unwrap();
+        let mat_3_safe = mat_1.tensor_product_safe(&vector).unwrap();
 
         let cmp_mat_2 = MatZq::from_str(&format!(
             "[[1, {}, 1],[0, {}, -1],[-1, -{}, -1],[0, -{}, 1]] mod {}",
@@ -269,10 +216,10 @@ mod test_tensor {
         ))
         .unwrap();
 
-        let vec_3 = vec_1.tensor(&vec_2);
-        let vec_4 = vec_2.tensor(&vec_1);
-        let vec_3_safe = vec_1.tensor_safe(&vec_2).unwrap();
-        let vec_4_safe = vec_2.tensor_safe(&vec_1).unwrap();
+        let vec_3 = vec_1.tensor_product(&vec_2);
+        let vec_4 = vec_2.tensor_product(&vec_1);
+        let vec_3_safe = vec_1.tensor_product_safe(&vec_2).unwrap();
+        let vec_4_safe = vec_2.tensor_product_safe(&vec_1).unwrap();
 
         let cmp_vec_3 = MatZq::from_str(&format!(
             "[[{}],[{}],[{}],[{}]] mod {}",
@@ -311,8 +258,8 @@ mod test_tensor {
         ))
         .unwrap();
 
-        let mat_3 = mat_1.tensor(&mat_2);
-        let mat_3_safe = mat_1.tensor_safe(&mat_2).unwrap();
+        let mat_3 = mat_1.tensor_product(&mat_2);
+        let mat_3_safe = mat_1.tensor_product_safe(&mat_2).unwrap();
 
         let mat_3_cmp = MatZq::from_str(&format!(
             "[[1, 58, 2, 116],[0, {}, 0, {}],[3, 174, 4, 232],[0, {}, 0, {}]] mod {}",
@@ -330,20 +277,20 @@ mod test_tensor {
     /// ensure that tensor panics if the moduli mismatch
     #[test]
     #[should_panic]
-    fn mismatching_moduli_tensor() {
+    fn mismatching_moduli_tensor_product() {
         let mat_1 = MatZq::new(1, 2, u64::MAX).unwrap();
         let mat_2 = MatZq::new(1, 2, u64::MAX - 58).unwrap();
 
-        let _ = mat_1.tensor(&mat_2);
+        let _ = mat_1.tensor_product(&mat_2);
     }
 
-    /// ensure that tensor_safe returns an error if the moduli mismatch
+    /// ensure that tensor_product_safe returns an error if the moduli mismatch
     #[test]
-    fn mismatching_moduli_tensor_safe() {
+    fn mismatching_moduli_tensor_product_safe() {
         let mat_1 = MatZq::new(1, 2, u64::MAX).unwrap();
         let mat_2 = MatZq::new(1, 2, u64::MAX - 58).unwrap();
 
-        assert!(mat_1.tensor_safe(&mat_2).is_err());
-        assert!(mat_2.tensor_safe(&mat_1).is_err());
+        assert!(mat_1.tensor_product_safe(&mat_2).is_err());
+        assert!(mat_2.tensor_product_safe(&mat_1).is_err());
     }
 }

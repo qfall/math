@@ -108,7 +108,7 @@ pub trait Tensor {
     /// - `other`: the value with which the tensor product is computed.
     ///
     /// Returns the tensor product
-    fn tensor(&self, other: &Self) -> Self;
+    fn tensor_product(&self, other: &Self) -> Self;
 }
 
 /// Is implemented by matrices to concatenate two matrices.
