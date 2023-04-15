@@ -118,6 +118,12 @@ mod test_from_str {
     #[test]
     fn missing_whitespace() {
         assert!(PolyOverQ::from_str("3 1 2/5 -3/2").is_err());
+        assert!(PolyOverQ::from_str("3 12/5 2 -3").is_err());
+        assert!(PolyOverQ::from_str("2 17 42/4").is_err());
+        assert!(PolyOverQ::from_str("2 17 42").is_err());
+        assert!(PolyOverQ::from_str("2 17/1 42").is_err());
+        assert!(PolyOverQ::from_str("2 17/13 42  ").is_err());
+        assert!(PolyOverQ::from_str("  2 17/5 42").is_err());
     }
 
     /// tests whether a falsely formatted string (too many whitespaces) returns

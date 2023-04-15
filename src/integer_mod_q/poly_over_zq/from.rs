@@ -58,8 +58,8 @@ impl FromStr for PolyOverZq {
     /// [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
     /// if the provided modulus is not greater than `0`.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let (poly_s, modulus) = match s.split_once(" mod ") {
-            Some((poly_s, modulus)) => (poly_s, modulus),
+        let (poly_s, modulus) = match s.split_once("mod") {
+            Some((poly_s, modulus)) => (poly_s, modulus.trim()),
             None => return Err(MathError::InvalidStringToPolyModulusInput(s.to_owned())),
         };
 
@@ -143,7 +143,12 @@ mod test_from_str {
     /// an error
     #[test]
     fn missing_whitespace() {
-        assert!(PolyOverZq::from_str("4 0 1 -2 3 mod 42").is_err());
+        assert!(PolyOverZq::from_str("3 12 2 -3 mod 42").is_err());
+        assert!(PolyOverZq::from_str("2 17 42 mod 42").is_err());
+        assert!(PolyOverZq::from_str("2 17  42 mod 42").is_err());
+        assert!(PolyOverZq::from_str("2 17 42   mod 42").is_err());
+        assert!(PolyOverZq::from_str("  2 17 42 mod 42").is_err());
+        assert!(PolyOverZq::from_str("2 17 42 mod 42  ").is_err());
     }
 
     /// tests whether a falsely formatted string (too many whitespaces) returns

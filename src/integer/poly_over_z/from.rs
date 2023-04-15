@@ -52,18 +52,25 @@ impl FromStr for PolyOverZ {
     /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
     /// if the provided string contains a Null Byte.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
+        // remove whitespaces at the start and at the end
+        let s_trimmed = s.trim();
+        // fmpz_poly_set_str just skips the two symbols after the number of
+        // coefficients (even if they are not whitespaces), hence we have to check if
+        // they are whitespaces manually.
+        // and we only have to check it once, because for every other position it checks
+        // whether there is only one whitespace
+        if !s_trimmed.contains("  ") {
+            return Err(MathError::InvalidStringToPolyMissingWhitespace(
+                s.to_owned(),
+            ));
+        };
+
         let mut res = Self::default();
 
-        let c_string = CString::new(s)?;
+        let c_string = CString::new(s_trimmed)?;
 
-        // 0 is returned if the string is a valid input
-        // additionally if it was not successfully, test if the provided value 's' actually
-        // contains two whitespaces, since this might be a common error
         match unsafe { fmpz_poly_set_str(&mut res.poly, c_string.as_ptr()) } {
             0 => Ok(res),
-            _ if !s.contains("  ") => Err(MathError::InvalidStringToPolyMissingWhitespace(
-                s.to_owned(),
-            )),
             _ => Err(MathError::InvalidStringToPolyInput(s.to_owned())),
         }
     }
@@ -105,7 +112,11 @@ mod test_from_str {
     /// an error
     #[test]
     fn missing_whitespace() {
-        assert!(PolyOverZ::from_str("3 1 2 -3").is_err());
+        assert!(PolyOverZ::from_str("3 12 2 -3").is_err());
+        assert!(PolyOverZ::from_str("2 17 42").is_err());
+        assert!(PolyOverZ::from_str("2 17  42").is_err());
+        assert!(PolyOverZ::from_str("2 17 42  ").is_err());
+        assert!(PolyOverZ::from_str("  2 17 42").is_err());
     }
 
     /// tests whether a falsely formatted string (too many whitespaces) returns
