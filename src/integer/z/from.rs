@@ -86,9 +86,9 @@ impl Z {
     ///
     /// let m = Modulus::from_str("42").unwrap();
     ///
-    /// let a: Z = Z::from_modulus(m);
+    /// let a: Z = Z::from_modulus(&m);
     /// ```
-    pub fn from_modulus(value: Modulus) -> Self {
+    pub fn from_modulus(value: &Modulus) -> Self {
         let mut out = Z::default();
         unsafe { fmpz_set(&mut out.value, &value.get_fmpz_mod_ctx_struct().n[0]) };
         out
@@ -193,6 +193,20 @@ impl Z {
     }
 }
 
+impl From<&Modulus> for Z {
+    /// Convert [`Modulus`] to [`Z`] using [`Z::from_modulus`].
+    fn from(value: &Modulus) -> Self {
+        Z::from_modulus(value)
+    }
+}
+
+impl From<Modulus> for Z {
+    /// Convert [`Modulus`] to [`Z`] using [`Z::from_modulus`].
+    fn from(value: Modulus) -> Self {
+        Z::from_modulus(&value)
+    }
+}
+
 // Generate [`From`] trait for the different types.
 from_trait!(i64, Z, Z::from_i64);
 from_trait!(i32, Z, Z::from_i32);
@@ -204,7 +218,6 @@ from_trait!(u32, Z, Z::from_u32);
 from_trait!(u16, Z, Z::from_u16);
 from_trait!(u8, Z, Z::from_u8);
 
-from_trait!(Modulus, Z, Z::from_modulus);
 from_trait!(Zq, Z, Z::from_zq);
 
 impl FromStr for Z {
@@ -478,8 +491,8 @@ mod tests_from_modulus {
         let mod_1 = Modulus::from_str(&"1".repeat(65)).unwrap();
         let mod_2 = Modulus::from_str("10").unwrap();
 
-        let _ = Z::from_modulus(mod_1);
-        let _ = Z::from_modulus(mod_2);
+        let _ = Z::from_modulus(&mod_1);
+        let _ = Z::from_modulus(&mod_2);
     }
 
     /// Ensure that the [`From`] trait is available for large
@@ -489,6 +502,8 @@ mod tests_from_modulus {
         let mod_1 = Modulus::from_str(&"1".repeat(65)).unwrap();
         let mod_2 = Modulus::from_str("10").unwrap();
 
+        let _ = Z::from(&mod_1);
+        let _ = Z::from(&mod_2);
         let _ = Z::from(mod_1);
         let _ = Z::from(mod_2);
     }
