@@ -14,9 +14,11 @@ use flint_sys::fmpq::fmpq;
 mod arithmetic;
 mod cmp;
 mod default;
+mod distance;
 mod exp;
 mod from;
 mod ownership;
+mod properties;
 mod serialize;
 mod to_string;
 

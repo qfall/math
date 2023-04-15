@@ -56,7 +56,7 @@ impl MatPolyOverZ {
     /// - `other`: specifies the value to add to `self`
     ///
     /// Returns the sum of both matrixes as a [`MatPolyOverZ`] or an
-    /// error if the matrix dimensions do mismatch.
+    /// error if the matrix dimensions mismatch.
     ///
     /// # Example
     /// ```
@@ -71,7 +71,7 @@ impl MatPolyOverZ {
     /// # Errors
     /// Returns a [`MathError`] of type
     /// [`MathError::MismatchingMatrixDimension`] if the matrix dimensions
-    /// do mismatch.
+    /// mismatch.
     pub fn add_safe(&self, other: &Self) -> Result<MatPolyOverZ, MathError> {
         if self.get_num_rows() != other.get_num_rows()
             || self.get_num_columns() != other.get_num_columns()

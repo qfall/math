@@ -91,6 +91,8 @@ impl MatZq {
 
             Ok(MatZq {
                 matrix: matrix.assume_init(),
+                // we can unwrap here since modulus > 0 was checked before
+                modulus: Modulus::try_from(&modulus).unwrap(),
             })
         }
     }
