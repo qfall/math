@@ -1,3 +1,13 @@
+<!---
+Copyright © 2023 Sven Moog
+
+This file is part of qFALL-math.
+
+qFALL-math is free software: you can redistribute it and/or modify it under
+the terms of the Mozilla Public License Version 2.0 as published by the
+Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
+-->
+
 # How to run benchmarks:
 ## Criterion
 We use criterion for statistical analysis. A plotting library has to be installed to generate graphs. You can find more information and help here: 
@@ -69,12 +79,4 @@ You have to enter a part of the rust function name or regex (not the benchmark n
       The benchmark name specified here is later used to select which benchmark to run and also displayed in the output.
       This function can also look differently, for example, because it uses [criterion groups](https://docs.rs/criterion/latest/criterion/struct.BenchmarkGroup.html).
    3. Add function created in step 2 in the `criterion_group!` macro (bottom of file).
-
-# Copyright
-Copyright © 2023 Sven Moog
-
-This file is part of qFALL-math.
-
-qFALL-math is free software: you can redistribute it and/or modify it under
-the terms of the Mozilla Public License Version 2.0 as published by the
-Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
+   
