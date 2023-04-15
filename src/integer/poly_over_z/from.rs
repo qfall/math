@@ -54,6 +54,11 @@ impl FromStr for PolyOverZ {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // remove whitespaces at the start and at the end
         let s_trimmed = s.trim();
+
+        if s_trimmed == "0" {
+            return Ok(Self::default());
+        }
+
         // fmpz_poly_set_str just skips the two symbols after the number of
         // coefficients (even if they are not whitespaces), hence we have to check if
         // they are whitespaces manually.
