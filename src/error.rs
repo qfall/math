@@ -25,6 +25,7 @@ use thiserror::Error;
 /// - `InvalidBase` is thrown if the provided base to call a function is not valid
 /// - `InvalidExponent` is thrown if an invalid exponent is used for a `pow` function
 /// - `InvalidIntToModulus` is thrown if an integer is provided, which is not greater than `0`
+/// - `InvalidInversion` is thrown if a matrix in given for an inversion, that can not be inverted
 /// - `InvalidMatrix` is thrown if an invalid string input of a matrix is given
 /// - `InvalidStringToCStringInput` is thrown if an invalid string is given to
 /// construct a [`CString`](std::ffi::CString)
@@ -92,6 +93,10 @@ pub enum MathError {
         The value must be larger than 0."
     )]
     InvalidIntToModulus(String),
+
+    /// invert matrix error
+    #[error("the matrix could not be inverted. {0}")]
+    InvalidInversion(String),
 
     /// invalid Matrix input error
     #[error("invalid Matrix. {0}")]
