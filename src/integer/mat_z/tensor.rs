@@ -26,10 +26,16 @@ impl Tensor for MatZ {
     /// use qfall_math::traits::Tensor;
     /// use std::str::FromStr;
     ///
-    /// let mat_1 = MatZ::from_str("[[1, 0, 0],[0, 1, 0],[0, 0, 1]]").unwrap();
-    /// let mat_2 = MatZ::from_str("[[1, 2, 1],[3, 4, 1]]").unwrap();
+    /// let mat_a = MatZ::from_str("[[1, 1],[2, 2]]").unwrap();
+    /// let mat_b = MatZ::from_str("[[1, 2],[3, 4]]").unwrap();
     ///
-    /// let mat_3 = mat_1.tensor_product(&mat_2);
+    /// let mat_ab = mat_a.tensor_product(&mat_b);
+    /// let res_ab = "[[1, 2, 1, 2],[3, 4, 3, 4],[2, 4, 2, 4],[6, 8, 6, 8]]";
+    /// assert_eq!(mat_ab, MatZ::from_str(res_ab).unwrap());
+    ///
+    /// let mat_ba = mat_b.tensor_product(&mat_a);
+    /// let res_ba = "[[1, 1, 2, 2],[2, 2, 4, 4],[3, 3, 4, 4],[6, 6, 8, 8]]";
+    /// assert_eq!(mat_ba, MatZ::from_str(res_ba).unwrap());
     /// ```
     fn tensor_product(&self, other: &Self) -> Self {
         let mut out = MatZ::new(

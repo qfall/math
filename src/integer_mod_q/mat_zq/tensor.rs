@@ -30,14 +30,21 @@ impl Tensor for MatZq {
     /// use qfall_math::traits::Tensor;
     /// use std::str::FromStr;
     ///
-    /// let mat_1 = MatZq::from_str("[[1, 0, 0],[0, 1, 0],[0, 0, 1]] mod 7").unwrap();
-    /// let mat_2 = MatZq::from_str("[[1, 2, 1],[3, 4, 1]] mod 7").unwrap();
+    /// let mat_a = MatZq::from_str("[[1, 1],[2, 2]] mod 7").unwrap();
+    /// let mat_b = MatZq::from_str("[[1, 2],[3, 4]] mod 7").unwrap();
     ///
-    /// let mat_3 = mat_1.tensor_product(&mat_2);
+    /// let mat_ab = mat_a.tensor_product(&mat_b);
+    /// let res_ab = "[[1, 2, 1, 2],[3, 4, 3, 4],[2, 4, 2, 4],[6, 1, 6, 1]] mod 7";
+    /// assert_eq!(mat_ab, MatZq::from_str(res_ab).unwrap());
+    ///
+    /// let mat_ba = mat_b.tensor_product(&mat_a);
+    /// let res_ba = "[[1, 1, 2, 2],[2, 2, 4, 4],[3, 3, 4, 4],[6, 6, 1, 1]] mod 7";
+    /// assert_eq!(mat_ba, MatZq::from_str(res_ba).unwrap());
     /// ```
     ///
     /// # Panics ...
     /// - ... if the moduli of both matrices mismatch.
+    ///  Use [`tensor_product_safe`] to get an error instead.
     fn tensor_product(&self, other: &Self) -> Self {
         self.tensor_product_safe(other).unwrap()
     }
@@ -57,10 +64,16 @@ impl MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let mat_1 = MatZq::from_str("[[1, 0, 0],[0, 1, 0],[0, 0, 1]] mod 7").unwrap();
-    /// let mat_2 = MatZq::from_str("[[1, 2, 1],[3, 4, 1]] mod 7").unwrap();
+    /// let mat_a = MatZq::from_str("[[1, 1],[2, 2]] mod 7").unwrap();
+    /// let mat_b = MatZq::from_str("[[1, 2],[3, 4]] mod 7").unwrap();
     ///
-    /// let mat_3 = mat_1.tensor_product_safe(&mat_2).unwrap();
+    /// let mat_ab = mat_a.tensor_product_safe(&mat_b).unwrap();
+    /// let res_ab = "[[1, 2, 1, 2],[3, 4, 3, 4],[2, 4, 2, 4],[6, 1, 6, 1]] mod 7";
+    /// assert_eq!(mat_ab, MatZq::from_str(res_ab).unwrap());
+    ///
+    /// let mat_ba = mat_b.tensor_product_safe(&mat_a).unwrap();
+    /// let res_ba = "[[1, 1, 2, 2],[2, 2, 4, 4],[3, 3, 4, 4],[6, 6, 1, 1]] mod 7";
+    /// assert_eq!(mat_ba, MatZq::from_str(res_ba).unwrap());
     /// ```
     ///
     /// # Errors and Failures
@@ -255,23 +268,13 @@ mod test_tensor {
     #[test]
     fn entries_reduced() {
         let mat_1 = MatZq::from_str(&format!("[[1, 2],[3, 4]] mod {}", u64::MAX - 58)).unwrap();
-        let mat_2 = MatZq::from_str(&format!(
-            "[[1, {}],[0, {}]] mod {}",
-            u64::MAX,
-            u64::MAX - 59,
-            u64::MAX - 58
-        ))
-        .unwrap();
+        let mat_2 = MatZq::from_str(&format!("[[1, 58],[0, -1]] mod {}", u64::MAX - 58)).unwrap();
 
         let mat_3 = mat_1.tensor_product(&mat_2);
         let mat_3_safe = mat_1.tensor_product_safe(&mat_2).unwrap();
 
         let mat_3_cmp = MatZq::from_str(&format!(
-            "[[1, 58, 2, 116],[0, {}, 0, {}],[3, 174, 4, 232],[0, {}, 0, {}]] mod {}",
-            u64::MAX - 59,
-            u64::MAX - 60,
-            u64::MAX - 61,
-            u64::MAX - 62,
+            "[[1, 58, 2, 116],[0, -1, 0, -2],[3, 174, 4, 232],[0, -3, 0, -4]] mod {}",
             u64::MAX - 58
         ))
         .unwrap();
