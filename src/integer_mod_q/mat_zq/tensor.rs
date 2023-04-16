@@ -49,7 +49,7 @@ impl MatZq {
     /// Parameters:
     /// - `other`: the value with which the tensor product is computed.
     ///
-    /// Returns the tensor product of `self` with `other` and or an error if the
+    /// Returns the tensor product of `self` with `other` or an error if the
     /// moduli of the provided matrices mismatch.
     ///
     /// # Example
@@ -105,7 +105,7 @@ mod test_tensor {
     };
     use std::str::FromStr;
 
-    /// ensure that the dimensions of the tensor product are taken over correctly.
+    /// Ensure that the dimensions of the tensor product are taken over correctly.
     #[test]
     fn dimensions_fit() {
         let mat_1 = MatZq::new(17, 13, 13).unwrap();
@@ -116,8 +116,7 @@ mod test_tensor {
 
         assert_eq!(51, mat_3.get_num_rows());
         assert_eq!(52, mat_3.get_num_columns());
-        assert_eq!(51, mat_3_safe.get_num_rows());
-        assert_eq!(52, mat_3_safe.get_num_columns());
+        assert_eq!(&mat_3, &mat_3_safe);
     }
 
     /// ensure that the tensor works correctly with identity
@@ -138,7 +137,10 @@ mod test_tensor {
         let mat_3_safe = mat_1.tensor_product_safe(&identity).unwrap();
 
         let cmp_mat_2 = MatZq::from_str(&format!(
-            "[[1, {}, 1, 0, 0, 0],[0, {}, -1, 0, 0, 0],[0, 0, 0, 1, {}, 1],[0, 0, 0, 0, {}, -1]] mod {}",
+            "[[1, {}, 1, 0, 0, 0],\
+              [0, {}, -1, 0, 0, 0],\
+              [0, 0, 0, 1, {}, 1],\
+              [0, 0, 0, 0, {}, -1]] mod {}",
             u64::MAX,
             i64::MIN,
             u64::MAX,
@@ -147,7 +149,10 @@ mod test_tensor {
         ))
         .unwrap();
         let cmp_mat_3 = MatZq::from_str(&format!(
-            "[[1, 0, {}, 0, 1, 0],[0, 1, 0, {}, 0, 1],[0, 0, {}, 0, -1, 0],[0, 0, 0, {}, 0, -1]] mod {}",
+            "[[1, 0, {}, 0, 1, 0],\
+              [0, 1, 0, {}, 0, 1],\
+              [0, 0, {}, 0, -1, 0],\
+              [0, 0, 0, {}, 0, -1]] mod {}",
             u64::MAX,
             u64::MAX,
             i64::MIN,
