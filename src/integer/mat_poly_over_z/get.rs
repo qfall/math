@@ -369,13 +369,18 @@ mod test_get_vec {
     /// Ensure that getting a row works
     #[test]
     fn get_row_works() {
-        let matrix =
-            MatPolyOverZ::from_str(&format!("[[0,0,0],[1  42,1  {},1  {}]]", i64::MAX, i64::MIN)).unwrap();
+        let matrix = MatPolyOverZ::from_str(&format!(
+            "[[0,0,0],[1  42,1  {},1  {}]]",
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
         let row1 = matrix.get_row(0).unwrap();
         let row2 = matrix.get_row(1).unwrap();
 
         let cmp1 = MatPolyOverZ::from_str("[[0,0,0]]").unwrap();
-        let cmp2 = MatPolyOverZ::from_str(&format!("[[1  42,1  {},1  {}]]", i64::MAX, i64::MIN)).unwrap();
+        let cmp2 =
+            MatPolyOverZ::from_str(&format!("[[1  42,1  {},1  {}]]", i64::MAX, i64::MIN)).unwrap();
 
         assert_eq!(cmp1, row1);
         assert_eq!(cmp2, row2);
@@ -384,14 +389,19 @@ mod test_get_vec {
     /// Ensure that getting a column works
     #[test]
     fn get_column_works() {
-        let matrix =
-            MatPolyOverZ::from_str(&format!("[[1  42,0,2  17 42],[1  {},0,2  17 42],[1  {},0,2  17 42]]", i64::MAX, i64::MIN))
-                .unwrap();
+        let matrix = MatPolyOverZ::from_str(&format!(
+            "[[1  42,0,2  17 42],[1  {},0,2  17 42],[1  {},0,2  17 42]]",
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
         let column1 = matrix.get_column(0).unwrap();
         let column2 = matrix.get_column(1).unwrap();
         let column3 = matrix.get_column(2).unwrap();
 
-        let cmp1 = MatPolyOverZ::from_str(&format!("[[1  42],[1  {}],[1  {}]]", i64::MAX, i64::MIN)).unwrap();
+        let cmp1 =
+            MatPolyOverZ::from_str(&format!("[[1  42],[1  {}],[1  {}]]", i64::MAX, i64::MIN))
+                .unwrap();
         let cmp2 = MatPolyOverZ::from_str("[[0],[0],[0]]").unwrap();
         let cmp3 = MatPolyOverZ::from_str("[[2  17 42],[2  17 42],[2  17 42]]").unwrap();
 
@@ -403,9 +413,12 @@ mod test_get_vec {
     /// Ensure that wrong row and column dimensions yields an error
     #[test]
     fn wrong_dim_error() {
-        let matrix =
-            MatPolyOverZ::from_str(&format!("[[1  17,2  17 42,3  1 1 1],[1  {},1  1,2  2 3],[1  {},1  142,1  1]]", i64::MAX, i64::MIN))
-                .unwrap();
+        let matrix = MatPolyOverZ::from_str(&format!(
+            "[[1  17,2  17 42,3  1 1 1],[1  {},1  1,2  2 3],[1  {},1  142,1  1]]",
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
         let row1 = matrix.get_row(-1);
         let row2 = matrix.get_row(4);
         let column1 = matrix.get_column(-1);
