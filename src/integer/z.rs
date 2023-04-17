@@ -20,6 +20,7 @@ pub(crate) mod fmpz_helpers;
 mod from;
 mod gcd;
 mod lcm;
+mod logarithm;
 mod ownership;
 mod properties;
 mod serialize;

@@ -13,6 +13,7 @@
 use super::modulus::Modulus;
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_struct;
 
+mod arithmetic;
 mod cmp;
 mod evaluate;
 mod from;

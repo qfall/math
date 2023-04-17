@@ -24,6 +24,7 @@ use serde::{Deserialize, Serialize};
 mod arithmetic;
 pub(crate) mod fmpz_mod_helpers;
 mod from;
+mod properties;
 mod reduce;
 mod to_string;
 
