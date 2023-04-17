@@ -155,14 +155,19 @@ mod test_mul_z {
 
     /// Checks if scalar multiplication works fine for different scalar types
     #[test]
+    #[allow(clippy::erasing_op)]
     fn different_types() {
         let mat1 = MatPolyOverZ::from_str("[[1  42],[0],[2  1 2]]").unwrap();
         let mat2 = MatPolyOverZ::from_str("[[1  2,1  6,1  5],[1  4,2  17 42,1  3]]").unwrap();
         let mat3 = MatPolyOverZ::from_str("[[1  84],[0],[2  2 4]]").unwrap();
-        let mat4 = MatPolyOverZ::from_str("[[1  4,1  12,1  10],[1  8,2  34 84,1  6]]").unwrap();
+        let mat4 = MatPolyOverZ::from_str("[[0],[0],[0]]").unwrap();
+        let mat5 = MatPolyOverZ::from_str("[[1  -42],[0],[2  -1 -2]]").unwrap();
+        let mat6 = MatPolyOverZ::from_str("[[1  4,1  12,1  10],[1  8,2  34 84,1  6]]").unwrap();
 
-        assert_eq!(mat3, 2 * mat1);
-        assert_eq!(mat4, mat2 * 2);
+        assert_eq!(mat3, 2 * &mat1);
+        assert_eq!(mat4, 0 * &mat1);
+        assert_eq!(mat5, -1 * mat1);
+        assert_eq!(mat6, mat2 * 2);
     }
 
     /// Checks if scalar multiplication works fine for matrices of different dimensions

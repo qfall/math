@@ -26,7 +26,7 @@
 /// `($bridge_type, $type, SetCoefficient for $source_type:ident)`
 /// - [`SetEntry`](crate::traits::SetEntry) with the signature
 /// `($bridge_type, $type, SetEntry for $source_type:ident)`
-/// - ['Mul'](std::ops::Mul) with signatures
+/// - [`Mul`](std::ops::Mul) with signatures
 /// `($bridge_type:ident, $type:ident, Mul Matrix for $source_type:ident)` and
 /// `($bridge_type:ident, $type:ident, Mul Scalar for $source_type:ident)`
 ///
@@ -89,20 +89,40 @@ macro_rules! implement_for_others {
 
     // [`Mul`] trait scalar
     ($bridge_type:ident, $type:ident, Mul Scalar for $($source_type:ident)*) => {
-        $(impl Mul<$source_type> for $type {
+        $(impl Mul<$source_type> for &$type {
             type Output = $type;
             paste::paste! {
-                #[doc = "Documentation can be found at [`" $type "::set_entry`]."]
+                #[doc = "Documentation can be found at [`" $type "::mul`]."]
                 fn mul(self, scalar: $source_type) -> Self::Output {
                     self.mul($bridge_type::from(scalar))
                 }
             }
-        })*
+        }
 
-        $(impl Mul<$type> for $source_type {
+        impl Mul<$source_type> for $type {
             type Output = $type;
             paste::paste! {
-                #[doc = "Documentation can be found at [`" $type "::set_entry`]."]
+                #[doc = "Documentation can be found at [`" $type "::mul`]."]
+                fn mul(self, scalar: $source_type) -> Self::Output {
+                    self.mul($bridge_type::from(scalar))
+                }
+            }
+        }
+
+        impl Mul<&$type> for $source_type {
+            type Output = $type;
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::mul`]."]
+                fn mul(self, matrix: &$type) -> Self::Output {
+                    matrix.mul($bridge_type::from(self))
+                }
+            }
+        }
+
+        impl Mul<$type> for $source_type {
+            type Output = $type;
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::mul`]."]
                 fn mul(self, matrix: $type) -> Self::Output {
                     matrix.mul($bridge_type::from(self))
                 }
