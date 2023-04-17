@@ -123,7 +123,7 @@ Please use the following bibtex entry to cite [qFALL-math](https://github.com/qf
 
 ```text
 @software{Porzenheim_qFALL-math,
-    author = {Porzenheim, Laurens and Beckmann, Marvin and Kramer, Paul and Milewski, Phil and Schmidt, Marcel and Siemer, Niklas},
+    author = {Porzenheim, Laurens and Beckmann, Marvin and Kramer, Paul and Milewski, Phil and Moog, Sven and Schmidt, Marcel and Siemer, Niklas},
     license = {MPL-2.0},
     title = {{qFALL-math}},
     url = {https://github.com/qfall/math}
