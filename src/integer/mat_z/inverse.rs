@@ -71,11 +71,11 @@ mod test_inverse {
     #[test]
     fn invert_works() {
         let mat1 = MatZ::from_str("[[5,2],[2,1]]").unwrap();
-        let mat2 = MatZ::from_str(&format!("[[{},0],[0,1]]",i64::MAX)).unwrap();
+        let mat2 = MatZ::from_str(&format!("[[{},0],[0,1]]", i64::MAX)).unwrap();
         let mat3 = MatZ::from_str("[[-1,0],[0,1]]").unwrap();
 
         let cmp1 = MatQ::from_str("[[1,-2],[-2,5]]").unwrap();
-        let cmp2 = MatQ::from_str(&format!("[[1/{},0],[0,1]]",i64::MAX)).unwrap();
+        let cmp2 = MatQ::from_str(&format!("[[1/{},0],[0,1]]", i64::MAX)).unwrap();
         let cmp3 = MatQ::from_str("[[-1,0],[0,1]]").unwrap();
 
         let inv1 = mat1.invert().unwrap();
