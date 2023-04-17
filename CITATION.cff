@@ -3,9 +3,7 @@
 
 cff-version: 1.2.0
 title: qFALL-math
-message: >-
-  If you use this software, please cite it using the
-  metadata from this file.
+message: 'University Paderborn,  Codes and Cryptography'
 type: software
 authors:
   - given-names: Laurens
