@@ -68,6 +68,8 @@ impl PartialOrd for Q {
     /// assert!(a <= b);
     /// assert!(b > a);
     /// assert!(b >= a);
+    ///
+    /// assert!(&a < &b);
     /// # Ok::<(), MathError>(())
     /// ```
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
@@ -297,6 +299,23 @@ mod test_partial_ord {
 
     use super::Q;
 
+    /// Different ways to compare [`Q`] elements with each other
+    #[test]
+    fn call_methods() {
+        let one = Q::ONE;
+        let zero = Q::ZERO;
+
+        assert!(one > zero);
+        assert!(one >= zero);
+        assert!(!(one < zero));
+        assert!(!(one <= zero));
+
+        assert!(&one > &zero);
+        assert!(&one >= &zero);
+        assert!(!(&one < &zero));
+        assert!(!(&one <= &zero));
+    }
+
     /// Test less (<) comparison between small positive and negative [`Q`]
     /// (FLINT is not using pointers)
     #[test]
@@ -525,5 +544,17 @@ mod test_partial_ord {
         assert!(!(max_negative >= max_1));
         assert!(max_1 >= max_negative);
         assert!(max_negative >= max_negative);
+    }
+
+    /// Compare a number close to zero with zero
+    #[test]
+    fn close_to_zero() {
+        let small = Q::try_from((&1, &u64::MAX)).unwrap();
+        let zero = Q::ZERO;
+
+        assert!(small > zero);
+        assert!(small >= zero);
+        assert!(!(small < zero));
+        assert!(!(small <= zero));
     }
 }
