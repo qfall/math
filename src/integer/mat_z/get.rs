@@ -352,6 +352,7 @@ mod test_get_vec {
     use crate::integer::MatZ;
     use std::str::FromStr;
 
+    /// Ensure that getting a row works
     #[test]
     fn get_row_works() {
         let matrix = MatZ::from_str(&format!("[[0,0,0],[4,{},{}]]", i64::MAX, i64::MIN)).unwrap();
@@ -365,6 +366,7 @@ mod test_get_vec {
         assert_eq!(cmp2, row2);
     }
 
+    /// Ensure that getting a column works
     #[test]
     fn get_column_works() {
         let matrix =
@@ -382,6 +384,7 @@ mod test_get_vec {
         assert_eq!(cmp3, column3);
     }
 
+    /// Ensure that wrong row and column dimensions yields an error
     #[test]
     fn wrong_dim_error() {
         let matrix =
