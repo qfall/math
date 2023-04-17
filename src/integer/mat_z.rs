@@ -14,6 +14,7 @@ use flint_sys::fmpz_mat::fmpz_mat_struct;
 mod arithmetic;
 mod cmp;
 mod concat;
+mod determinant;
 mod from;
 mod get;
 mod inverse;
