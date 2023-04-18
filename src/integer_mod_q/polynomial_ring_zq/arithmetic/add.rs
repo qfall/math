@@ -17,7 +17,7 @@ use crate::{
     },
 };
 use flint_sys::fq::fq_add;
-use std::{ops::Add, str::FromStr};
+use std::ops::Add;
 
 impl Add for &PolynomialRingZq {
     type Output = PolynomialRingZq;
@@ -38,9 +38,9 @@ impl Add for &PolynomialRingZq {
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
     /// let poly_a = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
-    /// let a = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_a, &modulus);
+    /// let a = PolynomialRingZq::from((&poly_a, &modulus));
     /// let poly_b = PolyOverZ::from_str("4  2 0 3 1").unwrap();
-    /// let b = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_b, &modulus);
+    /// let b = PolynomialRingZq::from((&poly_b, &modulus));
     ///
     /// let c: PolynomialRingZq = &a + &b;
     /// let d: PolynomialRingZq = a + b;
@@ -73,9 +73,9 @@ impl PolynomialRingZq {
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
     /// let poly_a = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
-    /// let a = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_a, &modulus);
+    /// let a = PolynomialRingZq::from((&poly_a, &modulus));
     /// let poly_b = PolyOverZ::from_str("4  2 0 3 1").unwrap();
-    /// let b = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_b, &modulus);
+    /// let b = PolynomialRingZq::from((&poly_b, &modulus));
     ///
     /// let c: PolynomialRingZq = a.add_safe(&b).unwrap();
     /// ```
@@ -89,10 +89,7 @@ impl PolynomialRingZq {
                 self.modulus, other.modulus
             )));
         }
-        let mut out = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(
-            &PolyOverZ::from_str("0").unwrap(),
-            &self.modulus,
-        );
+        let mut out = PolynomialRingZq::from((&PolyOverZ::default(), &self.modulus));
         unsafe {
             fq_add(
                 &mut out.poly.poly,
@@ -133,16 +130,13 @@ mod test_add {
     fn add() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly_a = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
-        let a = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_a, &modulus);
+        let a = PolynomialRingZq::from((&poly_a, &modulus));
         let poly_b = PolyOverZ::from_str("4  2 0 3 1").unwrap();
-        let b = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_b, &modulus);
+        let b = PolynomialRingZq::from((&poly_b, &modulus));
         let c = a + b;
         assert_eq!(
             c,
-            PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(
-                &PolyOverZ::from_str("4  1 0 4 2").unwrap(),
-                &modulus
-            )
+            PolynomialRingZq::from((&PolyOverZ::from_str("4  1 0 4 2").unwrap(), &modulus))
         );
     }
 
@@ -151,16 +145,13 @@ mod test_add {
     fn add_borrow() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly_a = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
-        let a = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_a, &modulus);
+        let a = PolynomialRingZq::from((&poly_a, &modulus));
         let poly_b = PolyOverZ::from_str("4  2 0 3 1").unwrap();
-        let b = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_b, &modulus);
+        let b = PolynomialRingZq::from((&poly_b, &modulus));
         let c = &a + &b;
         assert_eq!(
             c,
-            PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(
-                &PolyOverZ::from_str("4  1 0 4 2").unwrap(),
-                &modulus
-            )
+            PolynomialRingZq::from((&PolyOverZ::from_str("4  1 0 4 2").unwrap(), &modulus))
         );
     }
 
@@ -169,16 +160,13 @@ mod test_add {
     fn add_first_borrowed() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly_a = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
-        let a = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_a, &modulus);
+        let a = PolynomialRingZq::from((&poly_a, &modulus));
         let poly_b = PolyOverZ::from_str("4  2 0 3 1").unwrap();
-        let b = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_b, &modulus);
+        let b = PolynomialRingZq::from((&poly_b, &modulus));
         let c = &a + b;
         assert_eq!(
             c,
-            PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(
-                &PolyOverZ::from_str("4  1 0 4 2").unwrap(),
-                &modulus
-            )
+            PolynomialRingZq::from((&PolyOverZ::from_str("4  1 0 4 2").unwrap(), &modulus))
         );
     }
 
@@ -187,16 +175,13 @@ mod test_add {
     fn add_second_borrowed() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly_a = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
-        let a = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_a, &modulus);
+        let a = PolynomialRingZq::from((&poly_a, &modulus));
         let poly_b = PolyOverZ::from_str("4  2 0 3 1").unwrap();
-        let b = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_b, &modulus);
+        let b = PolynomialRingZq::from((&poly_b, &modulus));
         let c = a + &b;
         assert_eq!(
             c,
-            PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(
-                &PolyOverZ::from_str("4  1 0 4 2").unwrap(),
-                &modulus
-            )
+            PolynomialRingZq::from((&PolyOverZ::from_str("4  1 0 4 2").unwrap(), &modulus))
         );
     }
 
@@ -205,16 +190,13 @@ mod test_add {
     fn add_reduce() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly_a = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
-        let a = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_a, &modulus);
+        let a = PolynomialRingZq::from((&poly_a, &modulus));
         let poly_b = PolyOverZ::from_str("4  2 0 3 -1").unwrap();
-        let b = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_b, &modulus);
+        let b = PolynomialRingZq::from((&poly_b, &modulus));
         let c = a + &b;
         assert_eq!(
             c,
-            PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(
-                &PolyOverZ::from_str("3  1 0 4").unwrap(),
-                &modulus
-            )
+            PolynomialRingZq::from((&PolyOverZ::from_str("3  1 0 4").unwrap(), &modulus))
         );
     }
 
@@ -230,19 +212,19 @@ mod test_add {
         .unwrap();
 
         let poly_a = PolyOverZ::from_str(&format!("4  {} 0 1 {}", u64::MAX, i64::MIN)).unwrap();
-        let a = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_a, &modulus);
+        let a = PolynomialRingZq::from((&poly_a, &modulus));
 
         let poly_b = PolyOverZ::from_str(&format!("4  {} 0 -1 {}", i64::MAX, i64::MAX)).unwrap();
-        let b = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_b, &modulus);
+        let b = PolynomialRingZq::from((&poly_b, &modulus));
 
         let c = a + b;
         assert_eq!(
             c,
-            PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(
+            PolynomialRingZq::from((
                 &PolyOverZ::from_str(&format!("4  {} 0 0 {}", (u64::MAX - 1) / 2 + 58, -1))
                     .unwrap(),
                 &modulus
-            )
+            ))
         );
     }
 
@@ -252,10 +234,10 @@ mod test_add {
     fn add_mismatching_modulus() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly_a = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
-        let a = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_a, &modulus);
+        let a = PolynomialRingZq::from((&poly_a, &modulus));
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
         let poly_b = PolyOverZ::from_str("4  2 0 3 1").unwrap();
-        let b = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_b, &modulus);
+        let b = PolynomialRingZq::from((&poly_b, &modulus));
         let _c = a + b;
     }
 
@@ -264,10 +246,10 @@ mod test_add {
     fn add_safe_is_err() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly_a = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
-        let a = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_a, &modulus);
+        let a = PolynomialRingZq::from((&poly_a, &modulus));
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
         let poly_b = PolyOverZ::from_str("4  2 0 3 1").unwrap();
-        let b = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_b, &modulus);
+        let b = PolynomialRingZq::from((&poly_b, &modulus));
 
         assert!(&a.add_safe(&b).is_err());
     }
