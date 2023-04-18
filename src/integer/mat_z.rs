@@ -19,6 +19,7 @@ mod get;
 mod ownership;
 mod serialize;
 mod set;
+mod tensor;
 mod to_string;
 mod transpose;
 mod vector;
@@ -75,7 +76,7 @@ mod vector;
 /// assert_eq!(row_vec.dot_product(&col_vec).unwrap(), Z::ZERO);
 ///
 /// // norm calculation
-/// assert_eq!(col_vec.norm_sqrd_eucl().unwrap(), Z::from(2));
+/// assert_eq!(col_vec.norm_eucl_sqrd().unwrap(), Z::from(2));
 /// assert_eq!(row_vec.norm_infty().unwrap(), Z::ONE);
 /// ```
 #[derive(Debug)]

@@ -16,13 +16,17 @@
 use super::MatZq;
 use crate::{
     error::MathError,
-    integer::Z,
-    traits::SetEntry,
+    integer::{MatZ, Z},
+    integer_mod_q::Modulus,
+    traits::{GetNumColumns, GetNumRows, SetEntry},
     utils::{
         dimensions::find_matrix_dimensions, index::evaluate_index, parse::parse_matrix_string,
     },
 };
-use flint_sys::fmpz_mod_mat::fmpz_mod_mat_init;
+use flint_sys::{
+    fmpz_mat::fmpz_mat_set,
+    fmpz_mod_mat::{_fmpz_mod_mat_reduce, fmpz_mod_mat_init},
+};
 use std::{fmt::Display, mem::MaybeUninit, str::FromStr};
 
 impl MatZq {
@@ -87,8 +91,39 @@ impl MatZq {
 
             Ok(MatZq {
                 matrix: matrix.assume_init(),
+                // we can unwrap here since modulus > 0 was checked before
+                modulus: Modulus::try_from(&modulus).unwrap(),
             })
         }
+    }
+
+    /// Create a [`MatZq`] from a [`MatZ`] and a [`Modulus`].
+    ///
+    /// Parameters:
+    /// - `matrix`: the matrix from which the entries are taken
+    /// - `modulus`: the modulus of the matrix
+    ///
+    /// Returns the new matrix.
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::integer_mod_q::Modulus;
+    /// use std::str::FromStr;
+    ///
+    /// let m = MatZ::from_str("[[1, 2],[3, -1]]").unwrap();
+    /// let modulus = Modulus::try_from(&17.into()).unwrap();
+    ///
+    /// let a = MatZq::from_mat_z_modulus(&m, &modulus);
+    /// ```
+    pub fn from_mat_z_modulus(matrix: &MatZ, modulus: &Modulus) -> Self {
+        let mut out = MatZq::new(matrix.get_num_rows(), matrix.get_num_columns(), modulus).unwrap();
+        unsafe {
+            fmpz_mat_set(&mut out.matrix.mat[0], &matrix.matrix);
+            _fmpz_mod_mat_reduce(&mut out.matrix);
+        }
+        out
     }
 }
 
@@ -158,6 +193,13 @@ impl FromStr for MatZq {
     }
 }
 
+impl From<(&MatZ, &Modulus)> for MatZq {
+    /// Convert [`MatZ`] and [`Modulus`] to [`MatZq`] using [`MatZq::from_mat_z_modulus`].
+    fn from((matrix, modulus): (&MatZ, &Modulus)) -> Self {
+        MatZq::from_mat_z_modulus(matrix, modulus)
+    }
+}
+
 #[cfg(test)]
 mod test_new {
     use crate::{integer::Z, integer_mod_q::MatZq, traits::GetEntry};
@@ -201,6 +243,48 @@ mod test_new {
     fn invalid_modulus_error() {
         assert!(MatZq::new(2, 2, -3).is_err());
         assert!(MatZq::new(2, 2, 0).is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_from_mat_z_modulus {
+    use crate::{
+        integer::{MatZ, Z},
+        integer_mod_q::{MatZq, Modulus},
+        traits::{GetEntry, GetNumColumns, GetNumRows, SetEntry},
+    };
+
+    /// test if the dimensions are taken over correctly
+    #[test]
+    fn dimensions() {
+        let matz = MatZ::new(15, 17).unwrap();
+        let modulus = Modulus::try_from(&17.into()).unwrap();
+
+        let matzq_1 = MatZq::from((&matz, &modulus));
+        let matzq_2 = MatZq::from_mat_z_modulus(&matz, &modulus);
+
+        assert_eq!(15, matzq_1.get_num_rows());
+        assert_eq!(17, matzq_1.get_num_columns());
+        assert_eq!(15, matzq_2.get_num_rows());
+        assert_eq!(17, matzq_2.get_num_columns());
+    }
+
+    /// test if entries are taken over correctly
+    #[test]
+    fn entries_taken_over_correctly() {
+        let mut matz = MatZ::new(2, 2).unwrap();
+        let modulus = Modulus::try_from(&u64::MAX.into()).unwrap();
+
+        matz.set_entry(0, 0, u64::MAX - 58).unwrap();
+        matz.set_entry(0, 1, -1).unwrap();
+
+        let matzq_1 = MatZq::from((&matz, &modulus));
+        let matzq_2 = MatZq::from_mat_z_modulus(&matz, &modulus);
+
+        assert_eq!(Z::from(u64::MAX - 1), matzq_1.get_entry(0, 1).unwrap());
+        assert_eq!(Z::from(u64::MAX - 58), matzq_1.get_entry(0, 0).unwrap());
+        assert_eq!(Z::from(u64::MAX - 1), matzq_2.get_entry(0, 1).unwrap());
+        assert_eq!(Z::from(u64::MAX - 58), matzq_2.get_entry(0, 0).unwrap());
     }
 }
 

@@ -10,7 +10,8 @@
 //! This uses the traits from [`std::cmp`].
 
 use super::Q;
-use flint_sys::fmpq::fmpq_equal;
+use flint_sys::fmpq::{fmpq_cmp, fmpq_equal};
+use std::cmp::Ordering;
 
 impl PartialEq for Q {
     /// Checks if two rationals are equal. Used by the `==` and `!=` operators.
@@ -46,6 +47,35 @@ impl PartialEq for Q {
 // This is not guaranteed by the [`PartialEq`] trait.
 // We do not allow division by zero, therefore, this is the case.
 impl Eq for Q {}
+
+impl PartialOrd for Q {
+    /// Compares two [`Q`] values. Used by the `<`, `<=`, `>`, and `>=` operators.
+    ///
+    /// Parameters:
+    /// - `other`: the other value that is used to compare the elements
+    ///
+    /// Returns the [`Ordering`] of the elements.
+    ///
+    /// # Example
+    /// ```
+    /// # use qfall_math::error::MathError;
+    /// use qfall_math::rational::Q;
+    ///
+    /// let a: Q = Q::try_from((&1,&10))?;
+    /// let b: Q = Q::try_from((&2,&10))?;
+    ///
+    /// assert!(a < b);
+    /// assert!(a <= b);
+    /// assert!(b > a);
+    /// assert!(b >= a);
+    ///
+    /// assert!(&a < &b);
+    /// # Ok::<(), MathError>(())
+    /// ```
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        unsafe { Some(fmpq_cmp(&self.value, &other.value).cmp(&0)) }
+    }
+}
 
 /// Test that the [`PartialEq`] trait is correctly implemented.
 #[cfg(test)]
@@ -259,5 +289,272 @@ mod test_partial_eq {
         let b = Q::from_str("0/4").unwrap();
 
         assert_eq!(a, b);
+    }
+}
+
+/// Test the [`PartialOrd`] trait implementation for [`Q`]
+#[allow(clippy::neg_cmp_op_on_partial_ord)]
+#[cfg(test)]
+mod test_partial_ord {
+
+    use super::Q;
+
+    /// Different ways to compare [`Q`] elements with each other
+    #[test]
+    fn call_methods() {
+        let one = Q::ONE;
+        let zero = Q::ZERO;
+
+        assert!(one > zero);
+        assert!(one >= zero);
+        assert!(!(one < zero));
+        assert!(!(one <= zero));
+
+        assert!(&one > &zero);
+        assert!(&one >= &zero);
+        assert!(!(&one < &zero));
+        assert!(!(&one <= &zero));
+    }
+
+    /// Test less (<) comparison between small positive and negative [`Q`]
+    /// (FLINT is not using pointers)
+    #[test]
+    fn less_small() {
+        let one_1 = Q::ONE;
+        let one_2 = Q::ONE;
+        let small_negative = Q::from(-1);
+        let one_half = Q::try_from((&1, &2)).unwrap();
+
+        assert!(!(one_1 < one_2));
+        assert!(!(one_2 < one_1));
+        assert!(!(one_1 < one_1));
+
+        assert!(small_negative < one_1);
+        assert!(!(one_1 < small_negative));
+        assert!(!(small_negative < small_negative));
+
+        assert!(!(one_1 < one_half));
+        assert!(one_half < one_1);
+        assert!(small_negative < one_half);
+        assert!(!(one_half < small_negative));
+    }
+
+    /// Test less (<) comparison between large [`Q`] (FLINT uses pointers)
+    /// and small [`Q`] (not using pointers).
+    #[test]
+    fn less_large_small() {
+        let large = Q::try_from((&u64::MAX, &2)).unwrap();
+        let small_positive = Q::ONE;
+        let small_negative = Q::try_from((&(i64::MIN + 1), &i64::MAX)).unwrap();
+        let large_negative = Q::from(i64::MIN);
+
+        // Comparisons with max
+        assert!(small_positive < large);
+        assert!(small_negative < large);
+        assert!(!(large < small_positive));
+        assert!(!(large < small_negative));
+
+        // Comparisons with max_negative
+        assert!(large_negative < small_positive);
+        assert!(large_negative < small_negative);
+        assert!(!(small_positive < large_negative));
+        assert!(!(small_negative < large_negative));
+    }
+
+    /// Test less (<) comparison between large positive and negative [`Q`]
+    /// (FLINT uses pointers)
+    #[test]
+    fn less_large() {
+        let max_1 = Q::from(u64::MAX);
+        let max_2 = Q::from(u64::MAX);
+        let max_negative = Q::from(i64::MIN);
+
+        assert!(!(max_1 < max_2));
+        assert!(!(max_2 < max_1));
+        assert!(!(max_1 < max_1));
+
+        assert!(max_negative < max_1);
+        assert!(!(max_1 < max_negative));
+        assert!(!(max_negative < max_negative));
+    }
+
+    /// Test less or equal (<=) comparison between small positive and negative [`Q`]
+    /// (FLINT is not using pointers)
+    #[test]
+    fn less_equal_small() {
+        let small_positive_1 = Q::ONE;
+        let small_positive_2 = Q::ONE;
+        let small_negative = Q::from(-1);
+
+        assert!(small_positive_1 <= small_positive_2);
+        assert!(small_positive_2 <= small_positive_1);
+        assert!(small_positive_1 <= small_positive_1);
+
+        assert!(small_negative <= small_positive_1);
+        assert!(!(small_positive_1 <= small_negative));
+        assert!(small_negative <= small_negative);
+    }
+
+    /// Test less or equal (<=) comparison between large [`Q`] (FLINT uses pointers)
+    /// and small [`Q`] (not using pointers).
+    #[test]
+    fn less_equal_large_small() {
+        let max = Q::from(u64::MAX);
+        let small_positive = Q::ONE;
+        let small_negative = Q::from(-1);
+        let max_negative = Q::from(i64::MIN);
+
+        // Comparisons with max
+        assert!(small_positive <= max);
+        assert!(small_negative <= max);
+        assert!(!(max <= small_positive));
+        assert!(!(max <= small_negative));
+
+        // Comparisons with max_negative
+        assert!(max_negative <= small_positive);
+        assert!(max_negative <= small_negative);
+        assert!(!(small_positive <= max_negative));
+        assert!(!(small_negative <= max_negative));
+    }
+
+    /// Test less or equal (<=) comparison between large positive and negative [`Q`]
+    /// (FLINT uses pointers)
+    #[test]
+    fn less_equal_large() {
+        let max_1 = Q::from(u64::MAX);
+        let max_2 = Q::from(u64::MAX);
+        let max_negative = Q::from(i64::MIN);
+
+        assert!(max_1 <= max_2);
+        assert!(max_2 <= max_1);
+        assert!(max_1 <= max_1);
+
+        assert!(max_negative <= max_1);
+        assert!(!(max_1 <= max_negative));
+        assert!(max_negative <= max_negative);
+    }
+
+    /// Test greater (>) comparison between small positive and negative [`Q`]
+    /// (FLINT is not using pointers)
+    #[test]
+    fn greater_small() {
+        let small_positive_1 = Q::ONE;
+        let small_positive_2 = Q::ONE;
+        let small_negative = Q::from(-1);
+
+        assert!(!(small_positive_1 > small_positive_2));
+        assert!(!(small_positive_2 > small_positive_1));
+        assert!(!(small_positive_1 > small_positive_1));
+
+        assert!(!(small_negative > small_positive_1));
+        assert!(small_positive_1 > small_negative);
+        assert!(!(small_negative > small_negative));
+    }
+
+    /// Test greater (>) comparison between large [`Q`] (FLINT uses pointers)
+    /// and small [`Q`] (not using pointers).
+    #[test]
+    fn greater_large_small() {
+        let max = Q::from(u64::MAX);
+        let small_positive = Q::ONE;
+        let small_negative = Q::from(-1);
+        let max_negative = Q::from(i64::MIN);
+
+        // Comparisons with max
+        assert!(!(small_positive > max));
+        assert!(!(small_negative > max));
+        assert!(max > small_positive);
+        assert!(max > small_negative);
+
+        // Comparisons with max_negative
+        assert!(!(max_negative > small_positive));
+        assert!(!(max_negative > small_negative));
+        assert!(small_positive > max_negative);
+        assert!(small_negative > max_negative);
+    }
+
+    /// Test greater (>) comparison between large positive and negative [`Q`]
+    /// (FLINT uses pointers)
+    #[test]
+    fn greater_large() {
+        let max_1 = Q::from(u64::MAX);
+        let max_2 = Q::from(u64::MAX);
+        let max_negative = Q::from(i64::MIN);
+
+        assert!(!(max_1 > max_2));
+        assert!(!(max_2 > max_1));
+        assert!(!(max_1 > max_1));
+
+        assert!(!(max_negative > max_1));
+        assert!(max_1 > max_negative);
+        assert!(!(max_negative > max_negative));
+    }
+
+    /// Test greater or equal (>=) comparison between small positive and negative [`Q`]
+    /// (FLINT is not using pointers)
+    #[test]
+    fn greater_equal_small() {
+        let small_positive_1 = Q::ONE;
+        let small_positive_2 = Q::ONE;
+        let small_negative = Q::from(-1);
+
+        assert!(small_positive_1 >= small_positive_2);
+        assert!(small_positive_2 >= small_positive_1);
+        assert!(small_positive_1 >= small_positive_1);
+
+        assert!(!(small_negative >= small_positive_1));
+        assert!(small_positive_1 >= small_negative);
+        assert!(small_negative >= small_negative);
+    }
+
+    /// Test greater or equal (>=) comparison between large [`Q`] (FLINT uses pointers)
+    /// and small [`Q`] (not using pointers).
+    #[test]
+    fn greater_equal_large_small() {
+        let max = Q::from(u64::MAX);
+        let small_positive = Q::ONE;
+        let small_negative = Q::from(-1);
+        let max_negative = Q::from(i64::MIN);
+
+        // Comparisons with max
+        assert!(!(small_positive >= max));
+        assert!(!(small_negative >= max));
+        assert!(max >= small_positive);
+        assert!(max >= small_negative);
+
+        // Comparisons with max_negative
+        assert!(!(max_negative >= small_positive));
+        assert!(!(max_negative >= small_negative));
+        assert!(small_positive >= max_negative);
+        assert!(small_negative >= max_negative);
+    }
+
+    /// Test greater or equal (>=) comparison between large positive and negative [`Q`]
+    /// (FLINT uses pointers)
+    #[test]
+    fn greater_equal_large() {
+        let max_1 = Q::from(u64::MAX);
+        let max_2 = Q::from(u64::MAX);
+        let max_negative = Q::from(i64::MIN);
+
+        assert!(max_1 >= max_2);
+        assert!(max_2 >= max_1);
+        assert!(max_1 >= max_1);
+
+        assert!(!(max_negative >= max_1));
+        assert!(max_1 >= max_negative);
+        assert!(max_negative >= max_negative);
+    }
+
+    /// Compare a number close to zero with zero
+    #[test]
+    fn close_to_zero() {
+        let small = Q::try_from((&1, &u64::MAX)).unwrap();
+        let zero = Q::ZERO;
+
+        assert!(small > zero);
+        assert!(small >= zero);
+        assert!(!(small < zero));
+        assert!(!(small <= zero));
     }
 }

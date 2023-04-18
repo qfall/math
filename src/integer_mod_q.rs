@@ -21,4 +21,5 @@ pub use modulus::Modulus;
 pub use modulus_polynomial_ring_zq::ModulusPolynomialRingZq;
 pub use poly_over_zq::PolyOverZq;
 pub use polynomial_ring_zq::PolynomialRingZq;
+pub(crate) use z_q::fmpz_mod_helpers;
 pub use z_q::Zq;

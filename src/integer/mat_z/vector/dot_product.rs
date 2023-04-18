@@ -34,6 +34,7 @@ impl MatZ {
     ///
     /// let dot_prod = vec_1.dot_product(&vec_2).unwrap();
     ///
+    /// // 1*1 + 2*3 + 3*2 = 13
     /// assert_eq!(Z::from_i64(13), dot_prod);
     /// ```
     ///

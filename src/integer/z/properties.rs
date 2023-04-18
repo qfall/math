@@ -9,30 +9,25 @@
 //! This module includes functionality about properties of [`Z`] instances.
 
 use super::Z;
-use flint_sys::fmpz::fmpz_abs;
+use crate::rational::Q;
+use flint_sys::{
+    fmpq::{fmpq, fmpq_inv},
+    fmpz::{fmpz, fmpz_abs, fmpz_is_prime},
+};
 
 impl Z {
-    /// Computes the absolute distance between two [`Z`] instances.
+    /// Checks if a [`Z`] is prime.
     ///
-    /// Parameters:
-    /// - `other`: specifies one of the [`Z`] values whose distance
-    /// is calculated to `self`
+    /// Returns true if the value is prime.
     ///
-    /// Returns the absolute difference, i.e. distance between the two given [`Z`]
-    /// instances as a new [`Z`] instance.
-    ///
-    /// # Example
     /// ```
     /// use qfall_math::integer::Z;
     ///
-    /// let a = Z::from(-1);
-    /// let b = Z::from(5);
-    ///
-    /// assert_eq!(Z::from(6), a.distance(&b));
+    /// let value = Z::from(17);
+    /// assert!(value.is_prime())
     /// ```
-    pub fn distance(&self, other: &Self) -> Z {
-        let difference = self - other;
-        difference.abs()
+    pub fn is_prime(&self) -> bool {
+        1 == unsafe { fmpz_is_prime(&self.value) }
     }
 
     /// Returns the given [`Z`] instance with its absolute value.
@@ -40,16 +35,48 @@ impl Z {
     /// # Example
     /// ```
     /// use qfall_math::integer::Z;
+    /// let mut value = Z::from(-1);
     ///
-    /// let value = Z::from(-1);
+    /// let value = value.abs();
     ///
-    /// assert_eq!(Z::ONE, value.abs());
+    /// assert_eq!(Z::ONE, value);
     /// ```
-    pub fn abs(mut self) -> Z {
+    pub fn abs(mut self) -> Self {
         unsafe {
             fmpz_abs(&mut self.value, &self.value);
         }
         self
+    }
+
+    /// Returns the inverse of `self` as a fresh [`Q`] instance.
+    ///
+    /// As the inverse of `0` is undefined, it returns `None` in case `self == 0`.
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::{integer::Z, rational::Q};
+    /// let value = Z::from(4);
+    ///
+    /// let inverse = value.inv().unwrap();
+    ///
+    /// assert_eq!(Q::try_from((&1, &4)).unwrap(), inverse);
+    /// ```
+    pub fn inv(&self) -> Option<Q> {
+        if self == &Z::ZERO {
+            return None;
+        }
+
+        let mut out = Q::ZERO;
+        // the manual construction of fmpq removes the need to clone self's value/
+        // the numerator. the new fmpz value does not need to be cleared manually
+        // as it's small the fmpq instance does neither as the fmpq value is
+        // dropped automatically, but the numerator/ self's value is kept alive
+        let self_fmpq = fmpq {
+            num: self.value,
+            den: fmpz(1),
+        };
+        unsafe { fmpq_inv(&mut out.value, &self_fmpq) };
+        Some(out)
     }
 }
 
@@ -81,40 +108,65 @@ mod test_abs {
 }
 
 #[cfg(test)]
-mod test_distance {
+mod test_is_prime {
     use super::Z;
 
-    /// Checks if distance is correctly output for small [`Z`] values
-    /// and whether distance(a,b) == distance(b,a), distance(a,a) == 0
+    /// ensure that primes are correctly detected
     #[test]
-    fn small_values() {
-        let a = Z::ONE;
-        let b = Z::from(-15);
-        let zero = Z::ZERO;
-
-        assert_eq!(Z::ONE, a.distance(&zero));
-        assert_eq!(Z::ONE, zero.distance(&a));
-        assert_eq!(Z::from(16), a.distance(&b));
-        assert_eq!(Z::from(16), b.distance(&a));
-        assert_eq!(Z::from(15), b.distance(&zero));
-        assert_eq!(Z::from(15), zero.distance(&b));
-        assert_eq!(Z::ZERO, b.distance(&b))
+    fn prime_detection() {
+        let small = Z::from(2_i32.pow(16) + 1);
+        let large = Z::from(u64::MAX - 58);
+        assert!(small.is_prime());
+        assert!(large.is_prime());
     }
 
-    /// Checks if distance is correctly output for large [`Z`] values
-    /// and whether distance(a,b) == distance(b,a), distance(a,a) == 0
+    /// ensure that non-primes are correctly detected
+    #[test]
+    fn non_prime_detection() {
+        let small = Z::from(2_i32.pow(16));
+        let large = Z::from(i64::MAX);
+        assert!(!small.is_prime());
+        assert!(!large.is_prime());
+    }
+}
+
+#[cfg(test)]
+mod test_inv {
+    use super::{Q, Z};
+
+    /// Checks whether the inverse is correctly computed for small values
+    #[test]
+    fn small_values() {
+        let val_0 = Z::from(4);
+        let val_1 = Z::from(-7);
+
+        let inv_0 = val_0.inv().unwrap();
+        let inv_1 = val_1.inv().unwrap();
+
+        assert_eq!(Q::try_from((&1, &4)).unwrap(), inv_0);
+        assert_eq!(Q::try_from((&-1, &7)).unwrap(), inv_1);
+    }
+
+    /// Checks whether the inverse is correctly computed for large values
     #[test]
     fn large_values() {
-        let a = Z::from(i64::MAX);
-        let b = Z::from(i64::MIN);
+        let val_0 = Z::from(i64::MAX);
+        let val_1 = Z::from(i64::MIN);
+
+        let inv_0 = val_0.inv().unwrap();
+        let inv_1 = val_1.inv().unwrap();
+
+        assert_eq!(Q::try_from((&1, &i64::MAX)).unwrap(), inv_0);
+        assert_eq!(Q::try_from((&1, &i64::MIN)).unwrap(), inv_1);
+    }
+
+    /// Checks whether the inverse of `0` returns `None`
+    #[test]
+    fn inv_zero_none() {
         let zero = Z::ZERO;
 
-        assert_eq!(&a - &b, a.distance(&b));
-        assert_eq!(&a - &b, b.distance(&a));
-        assert_eq!(a, a.distance(&zero));
-        assert_eq!(a, zero.distance(&a));
-        assert_eq!(&a + Z::ONE, b.distance(&zero));
-        assert_eq!(&a + Z::ONE, zero.distance(&b));
-        assert_eq!(Z::ZERO, a.distance(&a));
+        let inv_zero = zero.inv();
+
+        assert!(inv_zero.is_none());
     }
 }

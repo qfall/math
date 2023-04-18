@@ -17,12 +17,15 @@ use super::MatZ;
 use crate::{
     error::MathError,
     integer::Z,
-    traits::SetEntry,
+    integer_mod_q::MatZq,
+    traits::{GetNumColumns, GetNumRows, SetEntry},
     utils::{
         dimensions::find_matrix_dimensions, index::evaluate_index, parse::parse_matrix_string,
     },
 };
-use flint_sys::fmpz_mat::fmpz_mat_init;
+use flint_sys::fmpz_mat::{
+    fmpz_mat_one, {fmpz_mat_init, fmpz_mat_set},
+};
 use std::{fmt::Display, mem::MaybeUninit, str::FromStr};
 
 impl MatZ {
@@ -73,6 +76,60 @@ impl MatZ {
                 matrix: matrix.assume_init(),
             })
         }
+    }
+
+    /// Create a [`MatZ`] from a [`MatZq`].
+    ///
+    /// Parameters:
+    /// - `matrix`: the matrix from which the entries are taken
+    ///
+    /// Returns the new matrix.
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use std::str::FromStr;
+    ///
+    /// let m = MatZq::from_str("[[1, 2],[3, -1]] mod 5").unwrap();
+    ///
+    /// let a = MatZ::from_mat_zq(&m);
+    /// ```
+    pub fn from_mat_zq(matrix: &MatZq) -> Self {
+        let mut out = MatZ::new(matrix.get_num_rows(), matrix.get_num_columns()).unwrap();
+        unsafe { fmpz_mat_set(&mut out.matrix, &matrix.matrix.mat[0]) };
+        out
+    }
+
+    /// Generate a `num_rows` times `num_columns` matrix with `1` on the
+    /// diagonal and `0` anywhere else.
+    ///
+    /// Parameters:
+    /// - `rum_rows`: the number of rows of the identity matrix
+    /// - `num_columns`: the number of columns of the identity matrix
+    ///
+    /// Returns a matrix with `1` across the diagonal and `0` anywhere else.
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::integer::MatZ;
+    ///
+    /// let mut matrix = MatZ::identity(2, 3).unwrap();
+    ///
+    /// let mut identity = MatZ::identity(10, 10).unwrap();
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix) or
+    /// [`OutOfBounds`](MathError::OutOfBounds) if the provided number of rows and columns
+    /// are not suited to create a matrix. For further information see [`MatZ::new`].
+    pub fn identity(
+        num_rows: impl TryInto<i64> + Display + Copy,
+        num_cols: impl TryInto<i64> + Display + Copy,
+    ) -> Result<Self, MathError> {
+        let mut out = MatZ::new(num_rows, num_cols)?;
+        unsafe { fmpz_mat_one(&mut out.matrix) };
+        Ok(out)
     }
 }
 
@@ -127,6 +184,13 @@ impl FromStr for MatZ {
     }
 }
 
+impl From<&MatZq> for MatZ {
+    /// Convert [`MatZq`] to [`MatZ`] using [`MatZ::from_mat_zq`].
+    fn from(matrix: &MatZq) -> Self {
+        Self::from_mat_zq(matrix)
+    }
+}
+
 #[cfg(test)]
 mod test_new {
     use crate::{
@@ -160,6 +224,97 @@ mod test_new {
         assert!(matrix1.is_err());
         assert!(matrix2.is_err());
         assert!(matrix3.is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_from_mat_zq {
+    use crate::{
+        integer::{MatZ, Z},
+        integer_mod_q::MatZq,
+        traits::{GetEntry, GetNumColumns, GetNumRows, SetEntry},
+    };
+
+    /// test if the dimensions are taken over correctly
+    #[test]
+    fn dimensions() {
+        let matzq = MatZq::new(15, 17, 13).unwrap();
+
+        let matz_1 = MatZ::from(&matzq);
+        let matz_2 = MatZ::from_mat_zq(&matzq);
+
+        assert_eq!(15, matz_1.get_num_rows());
+        assert_eq!(17, matz_1.get_num_columns());
+        assert_eq!(15, matz_2.get_num_rows());
+        assert_eq!(17, matz_2.get_num_columns());
+    }
+
+    /// test if entries are taken over correctly
+    #[test]
+    fn entries_taken_over_correctly() {
+        let mut matzq = MatZq::new(2, 2, u64::MAX).unwrap();
+        matzq.set_entry(0, 0, u64::MAX - 58).unwrap();
+        matzq.set_entry(0, 1, -1).unwrap();
+
+        let matz_1 = MatZ::from(&matzq);
+        let matz_2 = MatZ::from_mat_zq(&matzq);
+
+        assert_eq!(Z::from(u64::MAX - 1), matz_1.get_entry(0, 1).unwrap());
+        assert_eq!(Z::from(u64::MAX - 58), matz_1.get_entry(0, 0).unwrap());
+        assert_eq!(Z::from(u64::MAX - 1), matz_2.get_entry(0, 1).unwrap());
+        assert_eq!(Z::from(u64::MAX - 58), matz_2.get_entry(0, 0).unwrap());
+    }
+}
+
+#[cfg(test)]
+mod test_set_one {
+    use crate::{
+        integer::{MatZ, Z},
+        traits::GetEntry,
+    };
+
+    /// Tests if an identity matrix is set from a zero matrix.
+    #[test]
+    fn identity() {
+        let matrix = MatZ::identity(10, 10).unwrap();
+
+        for i in 0..10 {
+            for j in 0..10 {
+                if i != j {
+                    assert_eq!(Z::ZERO, matrix.get_entry(i, j).unwrap());
+                } else {
+                    assert_eq!(Z::ONE, matrix.get_entry(i, j).unwrap())
+                }
+            }
+        }
+    }
+
+    /// Tests if function works for a non-square matrix
+    #[test]
+    fn non_square_works() {
+        let matrix = MatZ::identity(10, 7).unwrap();
+
+        for i in 0..10 {
+            for j in 0..7 {
+                if i != j {
+                    assert_eq!(Z::ZERO, matrix.get_entry(i, j).unwrap());
+                } else {
+                    assert_eq!(Z::ONE, matrix.get_entry(i, j).unwrap())
+                }
+            }
+        }
+
+        let matrix = MatZ::identity(7, 10).unwrap();
+
+        for i in 0..7 {
+            for j in 0..10 {
+                if i != j {
+                    assert_eq!(Z::ZERO, matrix.get_entry(i, j).unwrap());
+                } else {
+                    assert_eq!(Z::ONE, matrix.get_entry(i, j).unwrap())
+                }
+            }
+        }
     }
 }
 

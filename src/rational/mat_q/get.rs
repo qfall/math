@@ -10,7 +10,7 @@
 
 use super::MatQ;
 use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
-use crate::utils::index::evaluate_indices;
+use crate::utils::index::{evaluate_index, evaluate_indices};
 use crate::{error::MathError, rational::Q};
 use flint_sys::{
     fmpq::{fmpq, fmpq_set},
@@ -93,7 +93,100 @@ impl GetEntry<Q> for MatQ {
 }
 
 impl MatQ {
-    #[allow(dead_code)]
+    /// Outputs the row vector of the specified row.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row of the matrix
+    ///
+    /// Returns a row vector of the matrix at the position of the given
+    /// row or an error, if the number of rows is
+    /// greater than the matrix or negative.
+    ///
+    /// # Example
+    /// ```rust
+    /// use qfall_math::rational::MatQ;
+    /// use std::str::FromStr;
+    ///
+    /// let matrix = MatQ::from_str("[[1, 2/3, 3],[3, 4, 5/2]]").unwrap();
+    ///
+    /// let row0 = matrix.get_row(0).unwrap(); // first row
+    /// let row1 = matrix.get_row(1).unwrap(); // second row
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
+    /// if the number of the row is greater than the matrix or negative.
+    pub fn get_row(&self, row: impl TryInto<i64> + Display + Copy) -> Result<Self, MathError> {
+        let row_i64 = evaluate_index(row)?;
+
+        if self.get_num_rows() <= row_i64 {
+            return Err(MathError::OutOfBounds(
+                format!("be smaller than {}", self.get_num_rows()),
+                format!("{}", row_i64),
+            ));
+        }
+
+        let out = MatQ::new(1, self.get_num_columns()).unwrap();
+        for column in 0..self.get_num_columns() {
+            unsafe {
+                fmpq_set(
+                    fmpq_mat_entry(&out.matrix, 0, column),
+                    fmpq_mat_entry(&self.matrix, row_i64, column),
+                )
+            };
+        }
+        Ok(out)
+    }
+
+    /// Outputs a column vector of the specified column.
+    ///
+    /// Input parameters:
+    /// * `column`: specifies the column of the matrix
+    ///
+    /// Returns a column vector of the matrix at the position of the given
+    /// column or an error, if the number of columns is
+    /// greater than the matrix or negative.
+    ///
+    /// # Example
+    /// ```rust
+    /// use qfall_math::rational::MatQ;
+    /// use std::str::FromStr;
+    ///
+    /// let matrix = MatQ::from_str("[[1, 2/3, 3],[3, 4, 5/2]]").unwrap();
+    ///
+    /// let col0 = matrix.get_column(0).unwrap(); // first column
+    /// let col1 = matrix.get_column(1).unwrap(); // second column
+    /// let col2 = matrix.get_column(2).unwrap(); // third column
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
+    /// if the number of the column is greater than the matrix or negative.
+    pub fn get_column(
+        &self,
+        column: impl TryInto<i64> + Display + Copy,
+    ) -> Result<Self, MathError> {
+        let column_i64 = evaluate_index(column)?;
+
+        if self.get_num_columns() <= column_i64 {
+            return Err(MathError::OutOfBounds(
+                format!("be smaller than {}", self.get_num_columns()),
+                format!("{}", column_i64),
+            ));
+        }
+
+        let out = MatQ::new(self.get_num_rows(), 1).unwrap();
+        for row in 0..self.get_num_rows() {
+            unsafe {
+                fmpq_set(
+                    fmpq_mat_entry(&out.matrix, row, 0),
+                    fmpq_mat_entry(&self.matrix, row, column_i64),
+                )
+            };
+        }
+        Ok(out)
+    }
+
     /// Efficiently collects all [`fmpq`]s in a [`MatQ`] without cloning them.
     ///
     /// Hence, the values on the returned [`Vec`] are intended for short-term use
@@ -268,6 +361,88 @@ mod test_get_num {
 }
 
 #[cfg(test)]
+mod test_get_vec {
+
+    use crate::rational::MatQ;
+    use std::str::FromStr;
+
+    /// Ensure that getting a row works
+    #[test]
+    fn get_row_works() {
+        let matrix = MatQ::from_str(&format!(
+            "[[0,0,0,0,0],[4/3,{},{},1/{},1/{}]]",
+            i64::MAX,
+            i64::MIN,
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
+        let row1 = matrix.get_row(0).unwrap();
+        let row2 = matrix.get_row(1).unwrap();
+
+        let cmp1 = MatQ::from_str("[[0,0,0,0,0]]").unwrap();
+        let cmp2 = MatQ::from_str(&format!(
+            "[[4/3,{},{},1/{},1/{}]]",
+            i64::MAX,
+            i64::MIN,
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
+
+        assert_eq!(cmp1, row1);
+        assert_eq!(cmp2, row2);
+    }
+
+    /// Ensure that getting a column works
+    #[test]
+    fn get_column_works() {
+        let matrix = MatQ::from_str(&format!(
+            "[[1,0,3],[{},0,5],[{},0,7],[1/{},0,9],[1/{},0,11]]",
+            i64::MAX,
+            i64::MIN,
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
+        let column1 = matrix.get_column(0).unwrap();
+        let column2 = matrix.get_column(1).unwrap();
+        let column3 = matrix.get_column(2).unwrap();
+
+        let cmp1 = MatQ::from_str(&format!(
+            "[[1],[{}],[{}],[1/{}],[1/{}]]",
+            i64::MAX,
+            i64::MIN,
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
+        let cmp2 = MatQ::from_str("[[0],[0],[0],[0],[0]]").unwrap();
+        let cmp3 = MatQ::from_str("[[3],[5],[7],[9],[11]]").unwrap();
+
+        assert_eq!(cmp1, column1);
+        assert_eq!(cmp2, column2);
+        assert_eq!(cmp3, column3);
+    }
+
+    /// Ensure that wrong row and column dimensions yields an error
+    #[test]
+    fn wrong_dim_error() {
+        let matrix =
+            MatQ::from_str(&format!("[[1,2,3],[{},4,5],[{},6,7]]", i64::MAX, i64::MIN)).unwrap();
+        let row1 = matrix.get_row(-1);
+        let row2 = matrix.get_row(4);
+        let column1 = matrix.get_column(-1);
+        let column2 = matrix.get_column(4);
+
+        assert!(row1.is_err());
+        assert!(row2.is_err());
+        assert!(column1.is_err());
+        assert!(column2.is_err());
+    }
+}
+
+#[cfg(test)]
 mod test_collect_entries {
     use super::MatQ;
     use std::str::FromStr;
@@ -287,14 +462,13 @@ mod test_collect_entries {
         let entries_2 = mat_2.collect_entries();
 
         assert_eq!(entries_1.len(), 6);
-        // 4611686018427387904 = 2^62, i.e. value is stored on stack
         assert_eq!(entries_1[0].num.0, 1);
-        assert!(entries_1[0].den.0 > 4611686018427387904);
+        assert!(entries_1[0].den.0 >= 2_i64.pow(62));
         assert_eq!(entries_1[1].num.0, 2);
         assert_eq!(entries_1[1].den.0, 1);
-        assert!(entries_1[2].num.0 >= 4611686018427387904);
+        assert!(entries_1[2].num.0 >= 2_i64.pow(62));
         assert_eq!(entries_1[2].den.0, 1);
-        assert!(entries_1[3].num.0 >= 4611686018427387904);
+        assert!(entries_1[3].num.0 >= 2_i64.pow(62));
         assert_eq!(entries_1[3].den.0, 1);
         assert_eq!(entries_1[4].num.0, 3);
         assert_eq!(entries_1[4].den.0, 4);

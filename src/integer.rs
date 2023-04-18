@@ -17,4 +17,5 @@ mod z;
 pub use mat_poly_over_z::MatPolyOverZ;
 pub use mat_z::MatZ;
 pub use poly_over_z::PolyOverZ;
+pub(crate) use z::fmpz_helpers;
 pub use z::Z;
