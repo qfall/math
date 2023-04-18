@@ -42,8 +42,8 @@ impl Div for &Q {
     /// let f: Q = c / &e;
     /// ```
     ///
-    /// # Panics
-    /// - Panics if the `other` value is `0`.
+    /// # Panics ...
+    /// - ... if the `other` value is `0`.
     fn div(self, other: Self) -> Self::Output {
         self.div_safe(other).unwrap()
     }

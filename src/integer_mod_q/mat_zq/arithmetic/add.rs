@@ -41,9 +41,9 @@ impl Add for &MatZq {
     /// let f: MatZq = c + &e;
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Panics if the dimensions of both matrices mismatch
-    /// - Panics if the moduli mismatch
+    /// # Panics ...
+    /// - ... if the dimensions of both matrices mismatch
+    /// - ... if the moduli mismatch
     fn add(self, other: Self) -> Self::Output {
         self.add_safe(other).unwrap()
     }
@@ -56,7 +56,7 @@ impl MatZq {
     /// - `other`: specifies the value to add to `self`
     ///
     /// Returns the sum of both matrixes as a [`MatZq`] or an
-    /// error if the matrix dimensions do mismatch.
+    /// error if the matrix dimensions mismatch.
     ///
     /// # Example
     /// ```

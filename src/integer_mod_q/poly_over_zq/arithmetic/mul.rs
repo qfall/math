@@ -42,8 +42,8 @@ impl Mul for &PolyOverZq {
     /// let f: PolyOverZq = c * &e;
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Panics if the moduli of both [`PolyOverZq`] mismatch.
+    /// # Panics ...
+    /// - ... if the moduli of both [`PolyOverZq`] mismatch.
     fn mul(self, other: Self) -> Self::Output {
         self.mul_safe(other).unwrap()
     }

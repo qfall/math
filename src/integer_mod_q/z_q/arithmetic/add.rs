@@ -42,8 +42,8 @@ impl Add for &Zq {
     /// let f: Zq = c + &e;
     /// ```
     ///
-    /// # Panics
-    /// - Panics if the moduli of both [`Zq`] mismatch.
+    /// # Panics ...
+    /// - ... if the moduli of both [`Zq`] mismatch.
     fn add(self, other: Self) -> Self::Output {
         self.add_safe(other).unwrap()
     }

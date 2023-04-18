@@ -43,8 +43,8 @@ impl Mul for &MatZ {
     /// let f = c * &e;
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Panics if the dimensions of `self` and `other` do not match for multiplication.
+    /// # Panics ...
+    /// - ... if the dimensions of `self` and `other` do not match for multiplication.
     fn mul(self, other: Self) -> Self::Output {
         self.mul_safe(other).unwrap()
     }

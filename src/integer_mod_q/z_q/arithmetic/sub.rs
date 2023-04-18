@@ -42,8 +42,8 @@ impl Sub for &Zq {
     /// let f: Zq = c - &e;
     /// ```
     ///
-    /// # Panics
-    /// - Panics if the moduli of both [`Zq`] mismatch.
+    /// # Panics ...
+    /// - ... if the moduli of both [`Zq`] mismatch.
     fn sub(self, other: Self) -> Self::Output {
         self.sub_safe(other).unwrap()
     }

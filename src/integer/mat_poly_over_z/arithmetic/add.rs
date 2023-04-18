@@ -41,8 +41,8 @@ impl Add for &MatPolyOverZ {
     /// let f: MatPolyOverZ = c + &e;
     /// ```
     ///
-    /// # Panics
-    /// - Panics if the dimensions of both matrices mismatch
+    /// # Panics ...
+    /// - ... if the dimensions of both matrices mismatch
     fn add(self, other: Self) -> Self::Output {
         self.add_safe(other).unwrap()
     }
