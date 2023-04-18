@@ -51,7 +51,7 @@ use thiserror::Error;
 /// objects with different modulus where equal modulus is required
 /// - `MismatchingVectorDimensions` is thrown if an operation of two vectors is
 /// called for which their dimensions do not match
-/// - `NotInvertible` is thrown if a matrix in given for an inversion, that can not be inverted
+/// - `NotInvertible` is thrown if a matrix is not invertible
 /// - `NotNaturalNumber` is thrown if the function expects a natural number,
 /// but a number smaller than `1` is provided
 /// - `NotPrime` is thrown if a provided integer is not prime
