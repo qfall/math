@@ -24,8 +24,8 @@ Closes # (issue)
 
 <!-- Please shortly describe how you tested your code and mark all you have done after -->
 
+<!-- exclude any of the following if they do not apply -->
 - [ ] I added basic working examples (possibly in doc-comment)
-<!-- exclude the following if it does not apply -->
 - [ ] I added tests for large (pointer representation) values
 - [ ] I triggered all possible errors in my test in every possible way
 - [ ] I included assertions in which I compare expected values with computed values
