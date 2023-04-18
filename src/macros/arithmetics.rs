@@ -151,3 +151,36 @@ macro_rules! arithmetic_between_types {
 }
 
 pub(crate) use arithmetic_between_types;
+
+/// Implements the [`*trait*`] for [`*type*`] using the [`*trait*`] for
+/// [`&*type*`].
+///
+/// Parameters:
+/// - `trait`: the trait that is implemented (e.g. [`Add`], [`Sub`], ...).
+/// - `trait_function`: the function the trait implements
+/// (e.g. add for [`Add`], ...).
+/// - `type`: the type the trait is implemented for (e.g. [`Z`], [`Q`])
+/// - `other_type`: the type the second part of the computation.
+/// - `output_type`: the type of the result.
+///
+/// Returns the owned Implementation code for the [`*trait*`]
+/// trait with the signature:
+///
+/// ```impl *trait<*other_type*>* for *type*```
+macro_rules! arithmetic_trait_reverse {
+    ($trait:ident, $trait_function:ident, $type:ident, $other_type:ident, $output_type:ident) => {
+        #[doc(hidden)]
+        impl $trait<&$other_type> for &$type {
+            type Output = $output_type;
+
+            paste::paste! {
+                #[doc = "Documentation at [`" $output_type "::" $trait_function "`]."]
+                fn $trait_function(self, other: &$other_type) -> Self::Output {
+                    other.$trait_function(self)
+                }
+            }
+        }
+    };
+}
+
+pub(crate) use arithmetic_trait_reverse;
