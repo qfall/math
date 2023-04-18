@@ -243,7 +243,7 @@ mod test_sub {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
         let poly_b = PolyOverZ::from_str("4  2 0 3 1").unwrap();
         let b = PolynomialRingZq::from((&poly_b, &modulus));
-        let _c = a - b;
+        let _ = a - b;
     }
 
     /// testing whether sub_safe throws an error for mismatching moduli
