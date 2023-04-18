@@ -45,7 +45,7 @@ impl MatZ {
         }
 
         // calculate determinant to check whether matrix is invertible or not
-        let det = self.det();
+        let det = self.det().unwrap();
         if det == Z::ZERO {
             return Err(MathError::NotInvertible(
                 "The matrix is not invertible as its determinant is 0".to_string(),
@@ -70,12 +70,12 @@ mod test_inverse {
     /// Test whether invert correctly calculates an inverse matrix
     #[test]
     fn invert_works() {
-        let mat1 = MatZ::from_str("[[5,2],[2,1]]").unwrap();
-        let mat2 = MatZ::from_str(&format!("[[{},0],[0,1]]", i64::MAX)).unwrap();
+        let mat1 = MatZ::from_str("[[5,2,0],[2,1,0],[0,0,1]]").unwrap();
+        let mat2 = MatZ::from_str(&format!("[[{}]]", i64::MAX)).unwrap();
         let mat3 = MatZ::from_str("[[-1,0],[0,1]]").unwrap();
 
-        let cmp1 = MatQ::from_str("[[1,-2],[-2,5]]").unwrap();
-        let cmp2 = MatQ::from_str(&format!("[[1/{},0],[0,1]]", i64::MAX)).unwrap();
+        let cmp1 = MatQ::from_str("[[1,-2,0],[-2,5,0],[0,0,1]]").unwrap();
+        let cmp2 = MatQ::from_str(&format!("[[1/{}]]", i64::MAX)).unwrap();
         let cmp3 = MatQ::from_str("[[-1,0],[0,1]]").unwrap();
 
         let inv1 = mat1.invert().unwrap();
