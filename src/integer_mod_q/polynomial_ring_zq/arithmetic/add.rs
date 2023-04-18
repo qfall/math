@@ -42,14 +42,14 @@ impl Add for &PolynomialRingZq {
     /// let poly_b = PolyOverZ::from_str("4  2 0 3 1").unwrap();
     /// let b = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_b, &modulus);
     ///
-    ///  let c: PolynomialRingZq = &a + &b;
+    /// let c: PolynomialRingZq = &a + &b;
     /// let d: PolynomialRingZq = a + b;
     /// let e: PolynomialRingZq = &c + d;
     /// let f: PolynomialRingZq = c + &e;
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Panics if the moduli of both [`PolynomialRingZq`] mismatch.
+    /// # Panics ...
+    /// - ... if the moduli of both [`PolynomialRingZq`] mismatch.
     fn add(self, other: Self) -> Self::Output {
         self.add_safe(other).unwrap()
     }
