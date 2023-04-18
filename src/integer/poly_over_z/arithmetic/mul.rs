@@ -105,9 +105,9 @@ mod test_mul {
     #[test]
     fn mul_zero() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
-        let b: PolyOverZ = PolyOverZ::from_str("0").unwrap();
+        let b: PolyOverZ = PolyOverZ::default();
         let c: PolyOverZ = a * b;
-        assert!(c == PolyOverZ::from_str("0").unwrap());
+        assert!(c == PolyOverZ::default());
     }
 
     /// testing multiplication for large [`PolyOverZ`]

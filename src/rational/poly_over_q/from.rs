@@ -25,8 +25,10 @@ impl FromStr for PolyOverQ {
     ///
     /// Parameters:
     /// - `s`: the polynomial of form: "`[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴...`"
+    ///
     /// Note that the `[#number of coefficients]` and `[0th coefficient]`
-    /// are divided by two spaces.
+    /// are divided by two spaces and the input string is trimmed, i.e. all whitespaces
+    /// before and after are removed.
     ///
     /// Returns a [`PolyOverQ`] or an error, if the provided string was not formatted
     /// correctly.
@@ -52,7 +54,7 @@ impl FromStr for PolyOverQ {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut res = Self::default();
 
-        let c_string = CString::new(s)?;
+        let c_string = CString::new(s.trim())?;
 
         // `0` is returned if the string is a valid input
         // additionally if it was not successfully, test if the provided value 's' actually
@@ -118,6 +120,12 @@ mod test_from_str {
     #[test]
     fn missing_whitespace() {
         assert!(PolyOverQ::from_str("3 1 2/5 -3/2").is_err());
+        assert!(PolyOverQ::from_str("3 12/5 2 -3").is_err());
+        assert!(PolyOverQ::from_str("2 17 42/4").is_err());
+        assert!(PolyOverQ::from_str("2 17 42").is_err());
+        assert!(PolyOverQ::from_str("2 17/1 42").is_err());
+        assert!(PolyOverQ::from_str("2 17/13 42  ").is_err());
+        assert!(PolyOverQ::from_str("  2 17/5 42").is_err());
     }
 
     /// tests whether a falsely formatted string (too many whitespaces) returns
@@ -139,5 +147,16 @@ mod test_from_str {
     #[test]
     fn too_many_divisors() {
         assert!(PolyOverQ::from_str("3  1 2/5 -3/2/3").is_err());
+    }
+
+    /// ensure that the input works with strings that have to be trimmed
+    #[test]
+    fn trim_input() {
+        let poly = PolyOverQ::from_str("                   4  1/2 2/3 3/4 -4                  ");
+        assert!(poly.is_ok());
+        assert_eq!(
+            PolyOverQ::from_str("4  1/2 2/3 3/4 -4").unwrap(),
+            poly.unwrap()
+        );
     }
 }

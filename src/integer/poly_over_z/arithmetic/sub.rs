@@ -98,7 +98,7 @@ mod test_sub {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
         let b: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
         let c: PolyOverZ = a - b;
-        assert!(c == PolyOverZ::from_str("0").unwrap());
+        assert!(c == PolyOverZ::default());
     }
 
     /// testing subtraction for large [`PolyOverZ`]

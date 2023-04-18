@@ -26,8 +26,10 @@ impl FromStr for PolyOverZ {
     ///
     /// Parameters:
     /// - `s`: the polynomial of form: `"[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴..."`.
-    ///  Note that the `[#number of coefficients]` and `[0th coefficient]`
-    ///  are divided by two spaces.
+    ///
+    /// Note that the `[#number of coefficients]` and `[0th coefficient]`
+    /// are divided by two spaces and the input string is trimmed, i.e. all whitespaces
+    /// before and after are removed.
     ///
     /// Returns a [`PolyOverZ`] or an error, if the provided string was not formatted
     /// correctly.
@@ -52,18 +54,30 @@ impl FromStr for PolyOverZ {
     /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
     /// if the provided string contains a Null Byte.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
+        // remove whitespaces at the start and at the end
+        let s_trimmed = s.trim();
+
+        if s_trimmed == "0" {
+            return Ok(Self::default());
+        }
+
+        // fmpz_poly_set_str just skips the two symbols after the first space
+        // behind the number of coefficients (even if not a space), hence
+        // it has to be checked here to ensure that no number is lost.
+        // We only have to check it once, because for every other position it checks
+        // whether there is only one space.
+        if !s_trimmed.contains("  ") {
+            return Err(MathError::InvalidStringToPolyMissingWhitespace(
+                s.to_owned(),
+            ));
+        };
+
         let mut res = Self::default();
 
-        let c_string = CString::new(s)?;
+        let c_string = CString::new(s_trimmed)?;
 
-        // 0 is returned if the string is a valid input
-        // additionally if it was not successfully, test if the provided value 's' actually
-        // contains two whitespaces, since this might be a common error
         match unsafe { fmpz_poly_set_str(&mut res.poly, c_string.as_ptr()) } {
             0 => Ok(res),
-            _ if !s.contains("  ") => Err(MathError::InvalidStringToPolyMissingWhitespace(
-                s.to_owned(),
-            )),
             _ => Err(MathError::InvalidStringToPolyInput(s.to_owned())),
         }
     }
@@ -105,7 +119,11 @@ mod test_from_str {
     /// an error
     #[test]
     fn missing_whitespace() {
-        assert!(PolyOverZ::from_str("3 1 2 -3").is_err());
+        assert!(PolyOverZ::from_str("3 12 2 -3").is_err());
+        assert!(PolyOverZ::from_str("2 17 42").is_err());
+        assert!(PolyOverZ::from_str("2 17  42").is_err());
+        assert!(PolyOverZ::from_str("2 17 42  ").is_err());
+        assert!(PolyOverZ::from_str("  2 17 42").is_err());
     }
 
     /// tests whether a falsely formatted string (too many whitespaces) returns
@@ -120,5 +138,13 @@ mod test_from_str {
     #[test]
     fn false_number_of_coefficient() {
         assert!(PolyOverZ::from_str("4  1 2 -3").is_err());
+    }
+
+    /// ensure that the input works with strings that have to be trimmed
+    #[test]
+    fn trim_input() {
+        let poly = PolyOverZ::from_str("                   4  1 2 3 -4                  ");
+        assert!(poly.is_ok());
+        assert_eq!(PolyOverZ::from_str("4  1 2 3 -4").unwrap(), poly.unwrap());
     }
 }
