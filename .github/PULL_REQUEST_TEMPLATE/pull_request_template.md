@@ -12,13 +12,12 @@ Closes # (issue)
 
 **Type of change**
 
-<!-- Choose those that fit the type of your change
+<!-- Choose those that fit the type of your change and remove the others -->
 
 - Bug fix (change which fixes an issue)
 - New feature (change which adds functionality)
 - Update to functionality
-- Other: <add other type here> 
--->
+- Other: <!-- add other type here, e.g. Improve Workflow--> 
 
 **Testing**
 
