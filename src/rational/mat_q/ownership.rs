@@ -80,9 +80,9 @@ mod test_clone {
     #[allow(clippy::redundant_clone)]
     fn keep_alive() {
         let a: MatQ;
-        let string = String::from("[[1/2, 2/3, 3/4],[3/1, 4/2, 5/4]]");
+        let str1 = "[[1/2, 2/3, 3/4],[3/1, 4/2, 5/4]]";
         {
-            let b = MatQ::from_str(&string).unwrap();
+            let b = MatQ::from_str(str1).unwrap();
 
             a = b.clone();
         }

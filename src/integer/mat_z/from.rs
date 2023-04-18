@@ -329,14 +329,11 @@ mod test_from_str {
     /// Ensure that initialization works.
     #[test]
     fn init_works() {
-        let matrix_string1 = String::from("[[1, 2, 3],[3, 4, 5]]");
+        let matrix_str = "[[1, 2, 3],[3, 4, 5]]";
 
         assert_eq!(
             Z::ONE,
-            MatZ::from_str(&matrix_string1)
-                .unwrap()
-                .get_entry(0, 0)
-                .unwrap()
+            MatZ::from_str(matrix_str).unwrap().get_entry(0, 0).unwrap()
         );
     }
 
@@ -373,11 +370,11 @@ mod test_from_str {
     /// Ensure that entries can have leading and trailing whitespaces.
     #[test]
     fn whitespaces_in_entries_works() {
-        let matrix_string1 = String::from("[[  1, 2 ,  3  ],[3 ,4,5 ]]");
+        let matrix_str = "[[  1, 2 ,  3  ],[3 ,4,5 ]]";
 
         assert_eq!(
             Z::ONE,
-            MatZ::from_str(&matrix_string1)
+            MatZ::from_str(&matrix_str)
                 .unwrap()
                 .get_entry(0, 0)
                 .unwrap()
@@ -387,24 +384,24 @@ mod test_from_str {
     /// Ensure that a wrong format causes an error.
     #[test]
     fn wrong_format_error() {
-        let matrix_string1 = String::from("[1, 2, 3],[3, 4, 5]]");
-        let matrix_string2 = String::from("[[1, 2, 3][3, 4, 5]]");
-        let matrix_string3 = String::from("[[1, 2, 3],3, 4, 5]");
-        let matrix_string4 = String::from("[1, 2, 3, 4, 5]");
-        let matrix_string5 = String::from("[ [1, 2, 3],[3, 4, 5]]");
-        let matrix_string6 = String::from("[[1, 2, 3],[3, 4, 5]8]");
-        let matrix_string7 = String::from("");
-        let matrix_string8 = String::from("[]");
-        let matrix_string9 = String::from("[[]]");
+        let matrix_string1 = "[1, 2, 3],[3, 4, 5]]";
+        let matrix_string2 = "[[1, 2, 3][3, 4, 5]]";
+        let matrix_string3 = "[[1, 2, 3],3, 4, 5]";
+        let matrix_string4 = "[1, 2, 3, 4, 5]";
+        let matrix_string5 = "[ [1, 2, 3],[3, 4, 5]]";
+        let matrix_string6 = "[[1, 2, 3],[3, 4, 5]8]";
+        let matrix_string7 = "";
+        let matrix_string8 = "[]";
+        let matrix_string9 = "[[]]";
 
-        assert!(MatZ::from_str(&matrix_string1).is_err());
-        assert!(MatZ::from_str(&matrix_string2).is_err());
-        assert!(MatZ::from_str(&matrix_string3).is_err());
-        assert!(MatZ::from_str(&matrix_string4).is_err());
-        assert!(MatZ::from_str(&matrix_string5).is_err());
-        assert!(MatZ::from_str(&matrix_string6).is_err());
-        assert!(MatZ::from_str(&matrix_string7).is_err());
-        assert!(MatZ::from_str(&matrix_string8).is_err());
-        assert!(MatZ::from_str(&matrix_string9).is_err());
+        assert!(MatZ::from_str(matrix_string1).is_err());
+        assert!(MatZ::from_str(matrix_string2).is_err());
+        assert!(MatZ::from_str(matrix_string3).is_err());
+        assert!(MatZ::from_str(matrix_string4).is_err());
+        assert!(MatZ::from_str(matrix_string5).is_err());
+        assert!(MatZ::from_str(matrix_string6).is_err());
+        assert!(MatZ::from_str(matrix_string7).is_err());
+        assert!(MatZ::from_str(matrix_string8).is_err());
+        assert!(MatZ::from_str(matrix_string9).is_err());
     }
 }

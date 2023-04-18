@@ -24,8 +24,8 @@ impl Clone for MatZ {
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
-    /// let string = String::from("[[1, 2, 3],[3, 4, 5]]");
-    /// let a = MatZ::from_str(&string).unwrap();
+    /// let str1 = "[[1, 2, 3],[3, 4, 5]]";
+    /// let a = MatZ::from_str(str1).unwrap();
     /// let b = a.clone();
     /// ```
     fn clone(&self) -> Self {
@@ -45,9 +45,9 @@ impl Drop for MatZ {
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
-    /// let string = String::from("[[1, 2, 3],[3, 4, 5]]");
+    /// let str1 = "[[1, 2, 3],[3, 4, 5]]";
     /// {
-    ///     let a = MatZ::from_str(&string).unwrap();
+    ///     let a = MatZ::from_str(str1).unwrap();
     /// } // as a's scope ends here, it get's dropped
     /// ```
     ///
@@ -55,8 +55,8 @@ impl Drop for MatZ {
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
-    /// let string = String::from("[[1, 2, 3],[3, 4, 5]]");
-    /// let a = MatZ::from_str(&string).unwrap();
+    /// let str1 = "[[1, 2, 3],[3, 4, 5]]";
+    /// let a = MatZ::from_str(str1).unwrap();
     /// drop(a); // explicitly drops a's value
     /// ```
     fn drop(&mut self) {
@@ -77,9 +77,9 @@ mod test_clone {
     #[allow(clippy::redundant_clone)]
     fn keep_alive() {
         let a: MatZ;
-        let string = String::from("[[1, 2, 3],[3, 4, 5]]");
+        let str1 = "[[1, 2, 3],[3, 4, 5]]";
         {
-            let b = MatZ::from_str(&string).unwrap();
+            let b = MatZ::from_str(str1).unwrap();
 
             a = b.clone();
         }
@@ -100,8 +100,8 @@ mod test_clone {
     fn entries_stored_separately() {
         let a: MatZ;
         // entries are 2^65 = 36893488147419103232, hence fmpz values kept on heap
-        let string = String::from("[[36893488147419103232, 36893488147419103232],[36893488147419103232, 36893488147419103232]]");
-        let b = MatZ::from_str(&string).unwrap();
+        let str1 = "[[36893488147419103232, 36893488147419103232],[36893488147419103232, 36893488147419103232]]";
+        let b = MatZ::from_str(str1).unwrap();
 
         a = b.clone();
 
@@ -138,8 +138,8 @@ mod test_drop {
     /// the points these two entries were stored in
     fn create_and_drop_matz() -> (i64, i64, i64) {
         // entries are 2^65 = 36893488147419103232, hence fmpz values kept on heap
-        let string = String::from("[[36893488147419103232, 36893488147419103232]]");
-        let a = MatZ::from_str(&string).unwrap();
+        let str1 = "[[36893488147419103232, 36893488147419103232]]";
+        let a = MatZ::from_str(str1).unwrap();
 
         let storage_mat = unsafe { (*a.matrix.entries).0 };
         let storage_0 = a.get_entry(0, 0).unwrap().value.0;
