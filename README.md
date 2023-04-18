@@ -122,13 +122,11 @@ Permissions of this weak copyleft license are conditioned on making available so
 Please use the following bibtex entry to cite [qFALL-math](https://github.com/qfall/math):
 
 ```text
-@misc{qFALL-math,
-    author = {Porzenheim, Laurens and Beckmann, Marvin and Kramer, Paul and Milewski, Phil and Moog, Sven and Schmidt, Marcel and Siemer, Niklas}
-    title = {qFALL-math v0.0},
-    howpublished = {Online: \url{https://github.com/qfall/math}},
-    month = Mar,
-    year = 2023,
-    note = {University Paderborn,  Codes and Cryptography}
+@software{Porzenheim_qFALL-math,
+    author = {Porzenheim, Laurens and Beckmann, Marvin and Kramer, Paul and Milewski, Phil and Moog, Sven and Schmidt, Marcel and Siemer, Niklas},
+    license = {MPL-2.0},
+    title = {{qFALL-math}},
+    url = {https://github.com/qfall/math}
 }
 ```
 
