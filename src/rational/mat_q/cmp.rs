@@ -26,7 +26,7 @@ impl PartialEq for MatQ {
     ///
     /// let a1 = MatQ::from_str("[[1/2,2],[3/2,4]]").unwrap();
     /// let a2 = MatQ::from_str("[[2/4,2],[3/2,4]]").unwrap();
-    /// assert!(a1==a2);
+    /// assert!(a1 == a2);
     ///
     /// let b = MatQ::from_str("[[1,2],[2,4]]").unwrap();
     ///

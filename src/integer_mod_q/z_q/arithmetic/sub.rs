@@ -106,7 +106,7 @@ mod test_sub {
         let a: Zq = Zq::try_from((11, 17)).unwrap();
         let b: Zq = Zq::try_from((12, 17)).unwrap();
         let c: Zq = a - b;
-        assert!(c == Zq::try_from((16, 17)).unwrap());
+        assert_eq!(c, Zq::try_from((16, 17)).unwrap());
     }
 
     /// testing subtraction for two borrowed [`Zq`]
@@ -115,7 +115,7 @@ mod test_sub {
         let a: Zq = Zq::try_from((10, 11)).unwrap();
         let b: Zq = Zq::try_from((1, 11)).unwrap();
         let c: Zq = &a - &b;
-        assert!(c == Zq::try_from((9, 11)).unwrap());
+        assert_eq!(c, Zq::try_from((9, 11)).unwrap());
     }
 
     /// testing subtraction for borrowed [`Zq`] and [`Zq`]
@@ -124,7 +124,7 @@ mod test_sub {
         let a: Zq = Zq::try_from((2, 11)).unwrap();
         let b: Zq = Zq::try_from((5, 11)).unwrap();
         let c: Zq = &a - b;
-        assert!(c == Zq::try_from((-3, 11)).unwrap());
+        assert_eq!(c, Zq::try_from((-3, 11)).unwrap());
     }
 
     /// testing subtraction for [`Zq`] and borrowed [`Zq`]
@@ -133,7 +133,7 @@ mod test_sub {
         let a: Zq = Zq::try_from((12, 11)).unwrap();
         let b: Zq = Zq::try_from((10, 11)).unwrap();
         let c: Zq = a - &b;
-        assert!(c == Zq::try_from((2, 11)).unwrap());
+        assert_eq!(c, Zq::try_from((2, 11)).unwrap());
     }
 
     /// testing subtraction for big [`Zq`]
@@ -142,7 +142,10 @@ mod test_sub {
         let a: Zq = Zq::try_from((u32::MAX, u32::MAX - 58)).unwrap();
         let b: Zq = Zq::try_from((i32::MAX, u32::MAX - 58)).unwrap();
         let c: Zq = a - b;
-        assert!(c == Zq::try_from((u32::MAX - (u32::MAX - 1) / 2, u32::MAX - 58)).unwrap());
+        assert_eq!(
+            c,
+            Zq::try_from((u32::MAX - (u32::MAX - 1) / 2, u32::MAX - 58)).unwrap()
+        );
     }
 
     /// testing subtraction for [`Zq`] with different moduli does not work

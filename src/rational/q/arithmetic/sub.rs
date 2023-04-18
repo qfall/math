@@ -61,7 +61,7 @@ mod test_sub {
         let a: Q = Q::from_str("42").unwrap();
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a - b;
-        assert!(c == Q::from_str("21").unwrap());
+        assert_eq!(c, Q::from_str("21").unwrap());
     }
 
     /// testing subtraction for two borrowed [`Q`]
@@ -70,7 +70,7 @@ mod test_sub {
         let a: Q = Q::from_str("42").unwrap();
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = &a - &b;
-        assert!(c == Q::from_str("21").unwrap());
+        assert_eq!(c, Q::from_str("21").unwrap());
     }
 
     /// testing subtraction for borrowed [`Q`] and [`Q`]
@@ -79,7 +79,7 @@ mod test_sub {
         let a: Q = Q::from_str("42/5").unwrap();
         let b: Q = Q::from_str("42/10").unwrap();
         let c: Q = &a - b;
-        assert!(c == Q::from_str("21/5").unwrap());
+        assert_eq!(c, Q::from_str("21/5").unwrap());
     }
 
     /// testing subtraction for [`Q`] and borrowed [`Q`]
@@ -88,7 +88,7 @@ mod test_sub {
         let a: Q = Q::from_str("42").unwrap();
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a - &b;
-        assert!(c == Q::from_str("21").unwrap());
+        assert_eq!(c, Q::from_str("21").unwrap());
     }
 
     #[test]
@@ -100,9 +100,10 @@ mod test_sub {
         let d: Q = Q::from_str(&format!("1/{}", (u64::MAX))).unwrap();
         let e: Q = &b - &a;
         let f: Q = &c - &d;
-        assert!(e == a);
-        assert!(
-            f == Q::from_str(&format!("-1/{}", (u64::MAX))).unwrap()
+        assert_eq!(e, a);
+        assert_eq!(
+            f,
+            Q::from_str(&format!("-1/{}", (u64::MAX))).unwrap()
                 + Q::from_str(&format!("1/{}", (i64::MAX))).unwrap()
         );
     }

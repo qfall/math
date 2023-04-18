@@ -155,7 +155,7 @@ mod test_add {
         let a: Z = Z::from(42);
         let b: Z = Z::from(24);
         let c: Z = a + b;
-        assert!(c == Z::from(66));
+        assert_eq!(c, Z::from(66));
     }
 
     /// testing addition for two borrowed [`Z`]
@@ -164,7 +164,7 @@ mod test_add {
         let a: Z = Z::from(42);
         let b: Z = Z::from(24);
         let c: Z = &a + &b;
-        assert!(c == Z::from(66));
+        assert_eq!(c, Z::from(66));
     }
 
     /// testing addition for borrowed [`Z`] and [`Z`]
@@ -173,7 +173,7 @@ mod test_add {
         let a: Z = Z::from(42);
         let b: Z = Z::from(24);
         let c: Z = &a + b;
-        assert!(c == Z::from(66));
+        assert_eq!(c, Z::from(66));
     }
 
     /// testing addition for [`Z`] and borrowed [`Z`]
@@ -182,7 +182,7 @@ mod test_add {
         let a: Z = Z::from(42);
         let b: Z = Z::from(24);
         let c: Z = a + &b;
-        assert!(c == Z::from(66));
+        assert_eq!(c, Z::from(66));
     }
 
     /// testing addition for big numbers
@@ -193,7 +193,7 @@ mod test_add {
         let c: Z = Z::from(i64::MIN);
         let d: Z = &a + b;
         let e: Z = a + c;
-        assert!(d == Z::from(u64::MAX - 221319874));
-        assert!(e == Z::from(i64::MAX));
+        assert_eq!(d, Z::from(u64::MAX - 221319874));
+        assert_eq!(e, Z::from(i64::MAX));
     }
 }

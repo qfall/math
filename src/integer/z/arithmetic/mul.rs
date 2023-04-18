@@ -155,7 +155,7 @@ mod test_mul {
         let a: Z = Z::from(42);
         let b: Z = Z::from(4);
         let c: Z = a * b;
-        assert!(c == Z::from(168));
+        assert_eq!(c, Z::from(168));
     }
 
     /// testing multiplication for two borrowed [`Z`]
@@ -164,7 +164,7 @@ mod test_mul {
         let a: Z = Z::from(42);
         let b: Z = Z::from(4);
         let c: Z = &a * &b;
-        assert!(c == Z::from(168));
+        assert_eq!(c, Z::from(168));
     }
 
     /// testing multiplication for borrowed [`Z`] and [`Z`]
@@ -173,7 +173,7 @@ mod test_mul {
         let a: Z = Z::from(42);
         let b: Z = Z::from(4);
         let c: Z = &a * b;
-        assert!(c == Z::from(168));
+        assert_eq!(c, Z::from(168));
     }
 
     /// testing multiplication for [`Z`] and borrowed [`Z`]
@@ -182,7 +182,7 @@ mod test_mul {
         let a: Z = Z::from(42);
         let b: Z = Z::from(4);
         let c: Z = a * &b;
-        assert!(c == Z::from(168));
+        assert_eq!(c, Z::from(168));
     }
 
     /// testing multiplication for big [`Z`]
@@ -194,7 +194,7 @@ mod test_mul {
         let d: Z = Z::from(i32::MAX);
         let e: Z = a * b;
         let f: Z = c * d;
-        assert!(e == Z::from(u64::MAX - 1));
-        assert!(f == Z::from(i64::from(i32::MAX) * i64::from(i32::MIN)));
+        assert_eq!(e, Z::from(u64::MAX - 1));
+        assert_eq!(f, Z::from(i64::from(i32::MAX) * i64::from(i32::MIN)));
     }
 }
