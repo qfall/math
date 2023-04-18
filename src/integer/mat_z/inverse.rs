@@ -74,17 +74,17 @@ mod test_inverse {
         let mat2 = MatZ::from_str(&format!("[[{},0],[0,1]]", i64::MAX)).unwrap();
         let mat3 = MatZ::from_str("[[-1,0],[0,1]]").unwrap();
 
-        let cmp1 = MatQ::from_str("[[1,-2],[-2,5]]").unwrap();
-        let cmp2 = MatQ::from_str(&format!("[[1/{},0],[0,1]]", i64::MAX)).unwrap();
-        let cmp3 = MatQ::from_str("[[-1,0],[0,1]]").unwrap();
+        let cmp_inv1 = MatQ::from_str("[[1,-2],[-2,5]]").unwrap();
+        let cmp_inv2 = MatQ::from_str(&format!("[[1/{},0],[0,1]]", i64::MAX)).unwrap();
+        let cmp_inv3 = MatQ::from_str("[[-1,0],[0,1]]").unwrap();
 
         let inv1 = mat1.invert().unwrap();
         let inv2 = mat2.invert().unwrap();
         let inv3 = mat3.invert().unwrap();
 
-        assert_eq!(cmp1, inv1);
-        assert_eq!(cmp2, inv2);
-        assert_eq!(cmp3, inv3);
+        assert_eq!(cmp_inv1, inv1);
+        assert_eq!(cmp_inv2, inv2);
+        assert_eq!(cmp_inv3, inv3);
     }
 
     /// Check if the multiplication of inverse and matrix result in an identity matrix
