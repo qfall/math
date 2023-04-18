@@ -61,11 +61,11 @@ impl FromStr for PolyOverZ {
             return Ok(Self::default());
         }
 
-        // fmpz_poly_set_str just skips the two symbols after the number of
-        // coefficients (even if they are not whitespaces), hence we have to check if
-        // they are whitespaces manually.
-        // and we only have to check it once, because for every other position it checks
-        // whether there is only one whitespace
+        // fmpz_poly_set_str just skips the two symbols after the first space
+        // behind the number of coefficients (even if not a space), hence
+        // it has to be checked here to ensure that no number is lost.
+        // We only have to check it once, because for every other position it checks
+        // whether there is only one space.
         if !s_trimmed.contains("  ") {
             return Err(MathError::InvalidStringToPolyMissingWhitespace(
                 s.to_owned(),
