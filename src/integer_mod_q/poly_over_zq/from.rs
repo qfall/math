@@ -27,7 +27,8 @@ impl FromStr for PolyOverZq {
     /// - `s`: the polynomial of form:
     /// "`[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴...⌴mod⌴[modulus]`".
     /// Note that the `[#number of coefficients]` and `[0th coefficient]`
-    /// are divided by two spaces.
+    /// are divided by two spaces and the string for the polynomial is trimmed,
+    /// i.e. all whitespaces before around the polynomial and the modulus are removed.
     ///
     /// Returns a [`PolyOverZq`] or an error, if the provided string was not
     /// formatted correctly.
@@ -156,5 +157,16 @@ mod test_from_str {
     #[test]
     fn too_many_whitespaces() {
         assert!(PolyOverZq::from_str("4  0  1  -2  3 mod 42").is_err());
+    }
+
+    /// ensure that the input works with strings that have to be trimmed
+    #[test]
+    fn trim_input() {
+        let poly = PolyOverZq::from_str("                   4  1 2 3 -4                  mod              17                     ");
+        assert!(poly.is_ok());
+        assert_eq!(
+            PolyOverZq::from_str("4  1 2 3 -4 mod 17").unwrap(),
+            poly.unwrap()
+        );
     }
 }

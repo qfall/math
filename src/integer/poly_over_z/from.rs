@@ -26,8 +26,10 @@ impl FromStr for PolyOverZ {
     ///
     /// Parameters:
     /// - `s`: the polynomial of form: `"[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴..."`.
-    ///  Note that the `[#number of coefficients]` and `[0th coefficient]`
-    ///  are divided by two spaces.
+    ///
+    /// Note that the `[#number of coefficients]` and `[0th coefficient]`
+    /// are divided by two spaces and the input string is trimmed, i.e. all whitespaces
+    /// before and after are removed.
     ///
     /// Returns a [`PolyOverZ`] or an error, if the provided string was not formatted
     /// correctly.
@@ -136,5 +138,13 @@ mod test_from_str {
     #[test]
     fn false_number_of_coefficient() {
         assert!(PolyOverZ::from_str("4  1 2 -3").is_err());
+    }
+
+    /// ensure that the input works with strings that have to be trimmed
+    #[test]
+    fn trim_input() {
+        let poly = PolyOverZ::from_str("                   4  1 2 3 -4                  ");
+        assert!(poly.is_ok());
+        assert_eq!(PolyOverZ::from_str("4  1 2 3 -4").unwrap(), poly.unwrap());
     }
 }
