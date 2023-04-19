@@ -62,7 +62,7 @@ mod test_mul {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
         let b: PolyOverZ = PolyOverZ::from_str("5  1 2 5 1 2").unwrap();
         let c: PolyOverZ = a * b;
-        assert!(c == PolyOverZ::from_str("7  1 4 6 5 -11 1 -6").unwrap());
+        assert_eq!(c, PolyOverZ::from_str("7  1 4 6 5 -11 1 -6").unwrap());
     }
 
     /// testing multiplication for two borrowed [`PolyOverZ`]
@@ -71,7 +71,7 @@ mod test_mul {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
         let b: PolyOverZ = PolyOverZ::from_str("5  1 2 5 1 2").unwrap();
         let c: PolyOverZ = &a * &b;
-        assert!(c == PolyOverZ::from_str("7  1 4 6 5 -11 1 -6").unwrap());
+        assert_eq!(c, PolyOverZ::from_str("7  1 4 6 5 -11 1 -6").unwrap());
     }
 
     /// testing multiplication for borrowed [`PolyOverZ`] and [`PolyOverZ`]
@@ -80,7 +80,7 @@ mod test_mul {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
         let b: PolyOverZ = PolyOverZ::from_str("5  1 2 5 1 2").unwrap();
         let c: PolyOverZ = &a * b;
-        assert!(c == PolyOverZ::from_str("7  1 4 6 5 -11 1 -6").unwrap());
+        assert_eq!(c, PolyOverZ::from_str("7  1 4 6 5 -11 1 -6").unwrap());
     }
 
     /// testing multiplication for [`PolyOverZ`] and borrowed [`PolyOverZ`]
@@ -89,7 +89,7 @@ mod test_mul {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
         let b: PolyOverZ = PolyOverZ::from_str("5  1 2 5 1 2").unwrap();
         let c: PolyOverZ = a * &b;
-        assert!(c == PolyOverZ::from_str("7  1 4 6 5 -11 1 -6").unwrap());
+        assert_eq!(c, PolyOverZ::from_str("7  1 4 6 5 -11 1 -6").unwrap());
     }
 
     /// testing multiplication with a constant [`PolyOverZ`]
@@ -98,7 +98,7 @@ mod test_mul {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
         let b: PolyOverZ = PolyOverZ::from_str("1  4").unwrap();
         let c: PolyOverZ = a * b;
-        assert!(c == PolyOverZ::from_str("3  4 8 -12").unwrap());
+        assert_eq!(c, PolyOverZ::from_str("3  4 8 -12").unwrap());
     }
 
     /// testing multiplication with zero
@@ -107,7 +107,7 @@ mod test_mul {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
         let b: PolyOverZ = PolyOverZ::default();
         let c: PolyOverZ = a * b;
-        assert!(c == PolyOverZ::default());
+        assert_eq!(c, PolyOverZ::default());
     }
 
     /// testing multiplication for large [`PolyOverZ`]
@@ -116,8 +116,9 @@ mod test_mul {
         let a: PolyOverZ = PolyOverZ::from_str(&format!("2  {} {}", u16::MAX, i32::MIN)).unwrap();
         let b: PolyOverZ = PolyOverZ::from_str(&format!("2  {} {}", u32::MAX, i32::MAX)).unwrap();
         let c: PolyOverZ = a * b;
-        assert!(
-            c == PolyOverZ::from_str(&format!(
+        assert_eq!(
+            c,
+            PolyOverZ::from_str(&format!(
                 "3  {} {} {}",
                 i64::from(u16::MAX) * i64::from(u32::MAX),
                 i64::from(u16::MAX) * i64::from(i32::MAX)

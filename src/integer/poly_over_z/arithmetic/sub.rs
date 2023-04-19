@@ -62,7 +62,7 @@ mod test_sub {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
         let b: PolyOverZ = PolyOverZ::from_str("5  1 2 5 1 2").unwrap();
         let c: PolyOverZ = a - b;
-        assert!(c == PolyOverZ::from_str("5  0 0 -8 -1 -2").unwrap());
+        assert_eq!(c, PolyOverZ::from_str("5  0 0 -8 -1 -2").unwrap());
     }
 
     /// testing subtraction for two borrowed [`PolyOverZ`]
@@ -71,7 +71,7 @@ mod test_sub {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
         let b: PolyOverZ = PolyOverZ::from_str("5  1 2 5 1 2").unwrap();
         let c: PolyOverZ = &a - &b;
-        assert!(c == PolyOverZ::from_str("5  0 0 -8 -1 -2").unwrap());
+        assert_eq!(c, PolyOverZ::from_str("5  0 0 -8 -1 -2").unwrap());
     }
 
     /// testing subtraction for borrowed [`PolyOverZ`] and [`PolyOverZ`]
@@ -80,7 +80,7 @@ mod test_sub {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
         let b: PolyOverZ = PolyOverZ::from_str("5  1 2 5 1 2").unwrap();
         let c: PolyOverZ = &a - b;
-        assert!(c == PolyOverZ::from_str("5  0 0 -8 -1 -2").unwrap());
+        assert_eq!(c, PolyOverZ::from_str("5  0 0 -8 -1 -2").unwrap());
     }
 
     /// testing subtraction for [`PolyOverZ`] and borrowed [`PolyOverZ`]
@@ -89,7 +89,7 @@ mod test_sub {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
         let b: PolyOverZ = PolyOverZ::from_str("5  1 2 5 1 2").unwrap();
         let c: PolyOverZ = a - &b;
-        assert!(c == PolyOverZ::from_str("5  0 0 -8 -1 -2").unwrap());
+        assert_eq!(c, PolyOverZ::from_str("5  0 0 -8 -1 -2").unwrap());
     }
 
     /// testing subtraction with eliminating coefficients
@@ -98,7 +98,7 @@ mod test_sub {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
         let b: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
         let c: PolyOverZ = a - b;
-        assert!(c == PolyOverZ::default());
+        assert_eq!(c, PolyOverZ::default());
     }
 
     /// testing subtraction for large [`PolyOverZ`]
@@ -108,8 +108,9 @@ mod test_sub {
             PolyOverZ::from_str(&format!("3  {} {} {}", u32::MAX, i32::MIN, i32::MAX)).unwrap();
         let b: PolyOverZ = PolyOverZ::from_str(&format!("2  {} {}", u32::MAX, i32::MAX)).unwrap();
         let c: PolyOverZ = a - b;
-        assert!(
-            c == PolyOverZ::from_str(&format!(
+        assert_eq!(
+            c,
+            PolyOverZ::from_str(&format!(
                 "3  0 {} {}",
                 i64::from(i32::MIN) * 2 + 1,
                 i32::MAX
