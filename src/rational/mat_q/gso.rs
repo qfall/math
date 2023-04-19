@@ -53,12 +53,26 @@ mod test_gso {
 
         let cmp = Q::ZERO;
         for i in 0..5 {
+            let vec_i = mat_gso.get_column(i).unwrap();
+            assert_ne!(cmp, vec_i.dot_product(&vec_i).unwrap());
             for j in i + 1..5 {
-                let vec_i = mat_gso.get_column(i).unwrap();
                 let vec_j = mat_gso.get_column(j).unwrap();
                 assert_eq!(cmp, vec_i.dot_product(&vec_j).unwrap());
             }
         }
+    }
+
+    /// Ensure that the generated vectors have the expected values
+    #[test]
+    fn gso_correct_values() {
+        let mat = MatQ::from_str("[[1,-1,1],[1,0,1],[1,1,2]]").unwrap();
+
+        let mat_gso = mat.gso();
+
+        assert_eq!(
+            MatQ::from_str("[[1, -1, 1/6],[1, 0, -1/3],[1, 1, 1/6]]").unwrap(),
+            mat_gso
+        );
     }
 
     /// Ensure that gso works with independent vectors (more columns than rows)
@@ -70,12 +84,14 @@ mod test_gso {
 
         let cmp = Q::ZERO;
         for i in 0..5 {
+            let vec_i = mat_gso.get_column(i).unwrap();
             for j in i + 1..5 {
-                let vec_i = mat_gso.get_column(i).unwrap();
                 let vec_j = mat_gso.get_column(j).unwrap();
                 assert_eq!(cmp, vec_i.dot_product(&vec_j).unwrap());
             }
         }
+        let vec1 = mat_gso.get_column(0).unwrap();
+        assert_ne!(cmp, vec1.dot_product(&vec1).unwrap());
     }
 
     /// Ensure that gso works with more rows than columns
@@ -87,8 +103,9 @@ mod test_gso {
 
         let cmp = Q::ZERO;
         for i in 0..2 {
+            let vec_i = mat_gso.get_column(i).unwrap();
+            assert_ne!(cmp, vec_i.dot_product(&vec_i).unwrap());
             for j in i + 1..2 {
-                let vec_i = mat_gso.get_column(i).unwrap();
                 let vec_j = mat_gso.get_column(j).unwrap();
                 assert_eq!(cmp, vec_i.dot_product(&vec_j).unwrap());
             }
@@ -109,8 +126,9 @@ mod test_gso {
 
         let cmp = Q::ZERO;
         for i in 0..3 {
+            let vec_i = mat_gso.get_column(i).unwrap();
+            assert_ne!(cmp, vec_i.dot_product(&vec_i).unwrap());
             for j in i + 1..3 {
-                let vec_i = mat_gso.get_column(i).unwrap();
                 let vec_j = mat_gso.get_column(j).unwrap();
                 assert_eq!(cmp, vec_i.dot_product(&vec_j).unwrap());
             }
@@ -138,10 +156,9 @@ mod test_gso {
                 assert_eq!(cmp, vec_i.dot_product(&vec_j).unwrap());
             }
         }
+        let vec1 = mat2_gso.get_column(0).unwrap();
+        assert_ne!(cmp, vec1.dot_product(&vec1).unwrap());
 
-        assert_eq!(
-            MatQ::from_str("[[1],[1],[3/7]]").unwrap(),
-            mat3_gso.get_column(0).unwrap()
-        );
+        assert_eq!(mat3, mat3_gso);
     }
 }
