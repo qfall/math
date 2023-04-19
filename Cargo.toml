@@ -21,7 +21,7 @@ thiserror = "1.0"
 [profile.bench]
 debug = true
 
-[[package.metadata.bench]]
+[[bench]]
 name = "benchmarks"
 harness = false
 autodiscovery = false
