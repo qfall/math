@@ -20,7 +20,7 @@ impl PartialEq for MatPolyOverZ {
     ///
     /// Returns `true` if the elements are equal, otherwise `false`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;

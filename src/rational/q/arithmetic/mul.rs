@@ -25,7 +25,7 @@ impl Mul for &Q {
     ///
     /// Returns the product of both numbers as a [`Q`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     /// use std::str::FromStr;

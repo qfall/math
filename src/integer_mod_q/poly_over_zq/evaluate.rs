@@ -29,7 +29,7 @@ impl Evaluate<&Z, Zq> for PolyOverZq {
     ///
     /// Returns the evaluation of the polynomial as a [`Zq`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::traits::*;
     /// use qfall_math::integer::Z;
@@ -67,7 +67,7 @@ impl Evaluate<&Zq, Zq> for PolyOverZq {
     ///
     /// Returns the evaluation of the polynomial as a [`Zq`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::traits::*;
     /// use qfall_math::integer_mod_q::Zq;
@@ -97,7 +97,7 @@ impl PolyOverZq {
     /// Returns the evaluation of the polynomial as a [`Zq`] or an error,
     /// if the moduli mismatch.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::traits::*;
     /// use qfall_math::integer_mod_q::Zq;

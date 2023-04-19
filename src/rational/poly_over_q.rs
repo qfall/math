@@ -30,7 +30,7 @@ mod to_string;
 // Attributes:
 // - `poly`: holds the content of the polynomial
 //
-/// # Example
+/// # Examples
 /// ```
 /// use qfall_math::rational::{PolyOverQ, Q};
 /// use qfall_math::traits::*;

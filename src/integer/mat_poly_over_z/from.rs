@@ -36,7 +36,7 @@ impl MatPolyOverZ {
     /// Returns a [`MatPolyOverZ`] or an error, if the number of rows or columns is
     /// less or equal to `0`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatPolyOverZ;
     ///

@@ -26,7 +26,7 @@ impl Mul for &Z {
     ///
     /// Returns the product of both numbers as a [`Z`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     ///

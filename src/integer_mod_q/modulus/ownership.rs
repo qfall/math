@@ -19,7 +19,7 @@ impl Clone for Modulus {
     /// Clones the given element and returns another cloned reference
     /// to the [`fmpz_mod_ctx`](flint_sys::fmpz_mod::fmpz_mod_ctx) element.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::Modulus;
     /// use std::str::FromStr;

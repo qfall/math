@@ -27,7 +27,7 @@ impl Sub for &MatZ {
     ///
     /// Returns the result of the subtraction as a [`MatZ`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
@@ -58,7 +58,7 @@ impl MatZ {
     /// Returns the result of the subtraction as a [`MatZ`] or an
     /// error if the matrix dimensions mismatch.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;

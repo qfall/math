@@ -41,7 +41,7 @@ impl MatZq {
     /// Returns a [`MatZq`] or an error, if the number of rows or columns is
     /// less than `1`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     ///
@@ -105,7 +105,7 @@ impl MatZq {
     ///
     /// Returns the new matrix.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use qfall_math::integer_mod_q::MatZq;
@@ -142,7 +142,7 @@ impl FromStr for MatZq {
     /// the number of entries in rows is unequal or if the regular expression
     /// inside of the function could not be processed.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;

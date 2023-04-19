@@ -34,7 +34,7 @@ impl FromStr for PolyOverZ {
     /// Returns a [`PolyOverZ`] or an error, if the provided string was not formatted
     /// correctly.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;

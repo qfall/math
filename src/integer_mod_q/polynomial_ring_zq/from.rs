@@ -25,7 +25,7 @@ impl From<(&PolyOverZ, &ModulusPolynomialRingZq)> for PolynomialRingZq {
     ///
     /// Returns a new element inside the polynomial ring.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::PolynomialRingZq;
     /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
@@ -50,7 +50,7 @@ impl PolynomialRingZq {
     ///
     /// Returns a new element inside the polynomial ring.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::PolynomialRingZq;
     /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;

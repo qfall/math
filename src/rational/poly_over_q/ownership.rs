@@ -20,7 +20,7 @@ impl Clone for PolyOverQ {
     /// storing two separately stored [fmpz](flint_sys::fmpz::fmpz) values
     /// for `nominator` and `denominator` in memory.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::PolyOverQ;
     ///

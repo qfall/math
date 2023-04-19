@@ -37,7 +37,7 @@ impl MatQ {
     /// Returns a [`MatQ`] or an error, if the number of rows or columns is
     /// less or equal to `0`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
     ///
@@ -84,7 +84,7 @@ impl MatQ {
     ///
     /// Returns the new matrix.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use qfall_math::rational::MatQ;
@@ -116,7 +116,7 @@ impl FromStr for MatQ {
     /// the number of entries in rows is unequal or if the regular expression
     /// inside of the function could not be processed.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;

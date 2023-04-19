@@ -33,7 +33,7 @@ impl FromStr for PolyOverQ {
     /// Returns a [`PolyOverQ`] or an error, if the provided string was not formatted
     /// correctly.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::PolyOverQ;
     /// use std::str::FromStr;

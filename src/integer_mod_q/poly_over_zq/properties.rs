@@ -17,7 +17,7 @@ impl PolyOverZq {
     ///
     /// Returns true if the polynomial is irreducible and true otherwise
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;

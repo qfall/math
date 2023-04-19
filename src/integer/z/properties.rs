@@ -32,7 +32,7 @@ impl Z {
 
     /// Returns the given [`Z`] instance with its absolute value.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     /// let mut value = Z::from(-1);
@@ -52,7 +52,7 @@ impl Z {
     ///
     /// As the inverse of `0` is undefined, it returns `None` in case `self == 0`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::{integer::Z, rational::Q};
     /// let value = Z::from(4);

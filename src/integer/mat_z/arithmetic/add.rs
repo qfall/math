@@ -27,7 +27,7 @@ impl Add for &MatZ {
     ///
     /// Returns the sum of both numbers as a [`MatZ`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
@@ -58,7 +58,7 @@ impl MatZ {
     /// Returns the sum of both matrixes as a [`MatZ`] or an
     /// error if the matrix dimensions mismatch.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;

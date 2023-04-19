@@ -21,7 +21,7 @@ impl PartialEq for Z {
     ///
     /// Returns `true` if the elements are equal, otherwise `false`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     /// let a: Z = Z::from(42);
@@ -54,7 +54,7 @@ impl PartialOrd for Z {
     ///
     /// Returns the [`Ordering`] of the elements.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     ///

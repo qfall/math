@@ -14,7 +14,7 @@ use flint_sys::{fmpq::fmpq, fmpz::fmpz};
 impl Default for Q {
     /// Returns an instantiation of [`Q`] with value '0/1'.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use std::default::Default;
     /// use qfall_math::rational::Q;
@@ -35,7 +35,7 @@ impl Default for Q {
 impl Q {
     /// Returns an instantiation of [`Q`] with value `1`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     ///  
@@ -50,7 +50,7 @@ impl Q {
 
     /// Returns an instantiation of [`Q`] with value `0`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     ///  
@@ -65,7 +65,7 @@ impl Q {
 
     /// Returns an instantiation of [`Q`] with value `-1`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     ///  

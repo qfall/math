@@ -23,7 +23,7 @@ impl Clone for PolyOverZq {
     /// storing the actual value separately and including
     /// a reference to the [`Modulus`](crate::integer_mod_q::Modulus) element.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;

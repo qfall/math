@@ -28,7 +28,7 @@ impl Gcd<&Z> for Z {
     /// Returns the greatest common divisor of `self` and `other` as
     /// a [`Z`] instance.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     /// use qfall_math::traits::*;
@@ -62,7 +62,7 @@ impl Xgcd<&Z> for Z {
     /// Returns a triple `(gcd(a,b), x, y)` containing the greatest common divisor,
     /// `x`, and `y` s.t. `gcd(a,b) = a*x + b*y`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     /// use qfall_math::traits::*;

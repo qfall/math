@@ -15,7 +15,7 @@ impl Zq {
     /// Returns the inverse of `self` as a fresh [`Zq`] instance.
     /// It returns `None` if no inverse for `self mod q` exists.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
     /// let value = Zq::try_from((4, 7)).unwrap();

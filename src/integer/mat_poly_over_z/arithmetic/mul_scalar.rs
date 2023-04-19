@@ -28,7 +28,7 @@ impl Mul<&Z> for &MatPolyOverZ {
     ///
     /// Returns the product of `self` and `other` as a [`MatPolyOverZ`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatPolyOverZ;
     /// use qfall_math::integer::Z;
@@ -66,7 +66,7 @@ impl Mul<&PolyOverZ> for &MatPolyOverZ {
     ///
     /// Returns the product of `self` and `other` as a [`MatPolyOverZ`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatPolyOverZ;
     /// use qfall_math::integer::Z;

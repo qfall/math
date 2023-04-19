@@ -23,7 +23,7 @@ impl Z {
     ///
     /// Returns e^self.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     ///

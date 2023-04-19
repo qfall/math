@@ -19,7 +19,7 @@ impl Evaluate<&Z, MatZ> for MatPolyOverZ {
     ///
     /// Returns the evaluation of the polynomial as a [`MatZ`].
     ///
-    /// # Example
+    /// # Examples
     /// ```rust
     /// use qfall_math::traits::*;
     /// use qfall_math::integer::Z;

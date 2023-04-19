@@ -27,7 +27,7 @@ impl Sub for &MatQ {
     ///
     /// Returns the result of the subtraction as a [`MatQ`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
@@ -58,7 +58,7 @@ impl MatQ {
     /// Returns the result of the subtraction as a [`MatQ`] or an
     /// error if the matrix dimensions mismatch.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;

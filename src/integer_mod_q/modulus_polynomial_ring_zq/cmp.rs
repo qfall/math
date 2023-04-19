@@ -24,7 +24,7 @@ impl PartialEq for ModulusPolynomialRingZq {
     ///
     /// Returns `true` if the elements are equal, otherwise `false`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
     /// use std::str::FromStr;

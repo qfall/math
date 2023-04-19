@@ -25,7 +25,7 @@ impl Mul for &PolyOverQ {
     ///
     /// Returns the product of both polynomials as a [`PolyOverQ`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::PolyOverQ;
     /// use std::str::FromStr;

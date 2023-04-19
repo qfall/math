@@ -25,7 +25,7 @@ impl Sub for &Q {
     ///
     /// Returns the result of the subtraction as a [`Q`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     /// use std::str::FromStr;

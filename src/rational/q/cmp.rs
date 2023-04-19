@@ -21,7 +21,7 @@ impl PartialEq for Q {
     ///
     /// Returns `true` if the elements are equal, otherwise `false`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
@@ -56,7 +56,7 @@ impl PartialOrd for Q {
     ///
     /// Returns the [`Ordering`] of the elements.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// # use qfall_math::error::MathError;
     /// use qfall_math::rational::Q;

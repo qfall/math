@@ -23,7 +23,7 @@ impl PartialEq for PolyOverZq {
     ///
     /// Returns `true` if the elements are equal, otherwise `false`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;

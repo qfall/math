@@ -25,7 +25,7 @@ impl Z {
     /// if at least one of the conditions
     /// `base > 1` and `self > 0` isn't met.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     ///
@@ -65,7 +65,7 @@ impl Z {
     /// if at least one of the conditions
     /// `base > 1` and `self > 0` isn't met.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     ///
@@ -101,7 +101,7 @@ impl Z {
     ///
     /// Returns the double precision approximation of the natural logarithm of `self`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     /// use qfall_math::rational::Q;

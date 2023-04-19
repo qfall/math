@@ -19,7 +19,7 @@ impl PartialEq for MatQ {
     ///
     /// Returns `true` if the elements are equal, otherwise `false`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;

@@ -31,7 +31,7 @@ mod to_string;
 // - `poly`: holds the content of the polynomial
 // - `modulus`: holds the value of the modulus
 //
-/// # Example
+/// # Examples
 /// ```
 /// use qfall_math::integer::Z;
 /// use qfall_math::integer_mod_q::PolyOverZq;

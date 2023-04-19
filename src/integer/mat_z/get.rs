@@ -24,7 +24,7 @@ use std::fmt::Display;
 impl GetNumRows for MatZ {
     /// Returns the number of rows of the matrix as a [`i64`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use qfall_math::traits::*;
@@ -40,7 +40,7 @@ impl GetNumRows for MatZ {
 impl GetNumColumns for MatZ {
     /// Returns the number of columns of the matrix as a [`i64`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use qfall_math::traits::*;
@@ -64,7 +64,7 @@ impl GetEntry<Z> for MatZ {
     /// row and column or an error, if the number of rows or columns is
     /// greater than the matrix or negative.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use qfall_math::traits::GetEntry;
@@ -105,7 +105,7 @@ impl MatZ {
     /// row or an error, if the number of rows is
     /// greater than the matrix or negative.
     ///
-    /// # Example
+    /// # Examples
     /// ```rust
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
@@ -150,7 +150,7 @@ impl MatZ {
     /// column or an error, if the number of columns is
     /// greater than the matrix or negative.
     ///
-    /// # Example
+    /// # Examples
     /// ```rust
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
@@ -196,7 +196,7 @@ impl MatZ {
     /// as the access to [`fmpz`] values could lead to memory leaks or modified values
     /// once the [`MatZ`] instance was modified or dropped.
     ///
-    /// # Example
+    /// # Examples
     /// ```compile_fail
     /// use qfall_math::intger::MatZ;
     /// use std::str::FromStr;

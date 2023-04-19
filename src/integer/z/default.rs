@@ -13,7 +13,7 @@ use super::Z;
 impl Default for Z {
     /// Returns an instantiation of [`Z`] with value `0`.
     ///
-    /// # Example:
+    /// # Examples:
     /// ```
     /// use std::default::Default;
     /// use qfall_math::integer::Z;
@@ -28,7 +28,7 @@ impl Default for Z {
 impl Z {
     /// Returns an instantiation of [`Z`] with value `1`.
     ///
-    /// # Example:
+    /// # Examples:
     /// ```
     /// use qfall_math::integer::Z;
     ///  
@@ -40,7 +40,7 @@ impl Z {
 
     /// Returns an instantiation of [`Z`] with value `0`.
     ///
-    /// # Example:
+    /// # Examples:
     /// ```
     /// use qfall_math::integer::Z;
     ///  
@@ -52,7 +52,7 @@ impl Z {
 
     /// Returns an instantiation of [`Z`] with value `-1`.
     ///
-    /// # Example:
+    /// # Examples:
     /// ```
     /// use qfall_math::integer::Z;
     ///  

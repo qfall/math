@@ -14,7 +14,7 @@ use flint_sys::fmpq::{fmpq_abs, fmpq_inv};
 impl Q {
     /// Returns the given [`Q`] instance with its absolute value.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     /// let mut value = Q::from(-1);
@@ -34,7 +34,7 @@ impl Q {
     ///
     /// As the inverse of `0` is undefined, it returns `None` in case `self == 0`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     /// let value = Q::from(4);

@@ -15,7 +15,7 @@ use std::mem::MaybeUninit;
 impl Default for PolyOverQ {
     /// Initializes a [`PolyOverQ`] as the zero polynomial.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::PolyOverQ;
     ///

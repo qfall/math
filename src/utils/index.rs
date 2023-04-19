@@ -21,7 +21,7 @@ use std::fmt::Display;
 /// Returns an [`i64`] representation of the index or an error, if the
 /// index does not fulfill all conditions.
 ///
-/// # Example
+/// # Examples
 /// ```
 /// use qfall_math::utils::index::evaluate_index;
 ///

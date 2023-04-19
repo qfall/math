@@ -28,7 +28,7 @@ impl Div for &Q {
     ///
     /// Returns the result ot the division as a [`Q`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
@@ -60,7 +60,7 @@ impl Q {
     ///
     /// Returns the result ot the division as a [`Q`] or an error, if division by zero occurs.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     /// use std::str::FromStr;

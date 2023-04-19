@@ -26,7 +26,7 @@ impl Concatenate for &MatQ {
     /// Returns a vertical concatenation of the two matrices or a
     /// an error, if the matrices can not be concatenated vertically.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::traits::*;
     /// use qfall_math::rational::MatQ;
@@ -70,7 +70,7 @@ impl Concatenate for &MatQ {
     /// Returns a horizontal concatenation of the two matrices or a
     /// an error, if the matrices can not be concatenated horizontally.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::traits::*;
     /// use qfall_math::rational::MatQ;

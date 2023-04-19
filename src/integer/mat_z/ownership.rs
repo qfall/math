@@ -19,7 +19,7 @@ use flint_sys::fmpz_mat::{fmpz_mat_clear, fmpz_mat_set};
 impl Clone for MatZ {
     /// Clones the given element and returns a deep clone of the [`MatZ`] element.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;

@@ -22,7 +22,7 @@ impl Zq {
     /// Returns the absolute minimum distance between the two given values as a new
     /// [`Z`] instance or a [`MathError`] if the moduli mismatch.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::{
     ///     integer::Z,
@@ -75,7 +75,7 @@ impl Distance<&Zq> for Zq {
     /// Returns the absolute minimum distance between the two given values as a new
     /// [`Z`] instance or a [`MathError`] if the moduli mismatch.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::{
     ///     integer::Z,
@@ -110,7 +110,7 @@ impl<T: Into<Z>> Distance<T> for Zq {
     /// Returns the absolute minimum distance between the two given values as a new
     /// [`Z`] instance or a [`MathError`] if the moduli mismatch.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::{
     ///     integer::Z,

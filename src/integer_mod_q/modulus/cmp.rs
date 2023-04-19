@@ -21,7 +21,7 @@ impl PartialEq for Modulus {
     /// Parameters:
     /// - `other`: holds another [`Modulus`] object which `self` is compared to
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::Modulus;
     /// use std::str::FromStr;

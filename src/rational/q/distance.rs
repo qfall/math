@@ -26,7 +26,7 @@ impl Distance<&Q> for Q {
     /// Returns the absolute difference, i.e. distance between the two given [`Q`]
     /// instances as a new [`Q`] instance.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     /// use qfall_math::traits::*;

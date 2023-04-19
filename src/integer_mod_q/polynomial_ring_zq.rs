@@ -32,7 +32,7 @@ mod reduce;
 /// - `poly`: holds the value
 /// - `modulus`: holds the prime `q` and f(X)
 ///
-/// # Example
+/// # Examples
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize)]
 pub struct PolynomialRingZq {
     poly: PolyOverZ,

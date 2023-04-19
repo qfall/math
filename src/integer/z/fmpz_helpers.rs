@@ -20,7 +20,7 @@ use flint_sys::fmpz::{fmpz, fmpz_abs, fmpz_cmpabs, fmpz_sub};
 /// Returns the maximum absolute value out of the given [`fmpz`] vector
 /// as a cloned [`Z`] instance.
 ///
-/// # Example
+/// # Examples
 /// ```compile_fail
 /// use flint_sys::fmpz::fmpz;
 /// use qfall_math::integer::{fmpz_helpers::find_max_abs, Z};
@@ -55,7 +55,7 @@ pub(crate) fn find_max_abs(fmpz_vector: &Vec<fmpz>) -> Z {
 /// Returns the absolute difference, i.e. distance between the two given [`fmpz`]
 /// instances as a new [`fmpz`] instance.
 ///
-/// # Example
+/// # Examples
 /// ```compile_fail
 /// use flint_sys::fmpz::fmpz;
 /// use qfall_math::integer::fmpz_helpers::distance;

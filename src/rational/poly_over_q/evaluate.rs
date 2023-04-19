@@ -28,7 +28,7 @@ impl Evaluate<&Q, Q> for PolyOverQ {
     ///
     /// Returns the evaluation of the polynomial as a [`Q`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::traits::*;
     /// use qfall_math::rational::Q;
@@ -57,7 +57,7 @@ impl Evaluate<&Z, Q> for PolyOverQ {
     ///
     /// Returns the evaluation of the polynomial as a [`Q`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::traits::*;
     /// use qfall_math::rational::Q;

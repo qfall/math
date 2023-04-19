@@ -39,7 +39,7 @@ impl MatZ {
     /// Returns a [`MatZ`] or an error, if the number of rows or columns is
     /// less or equal to `0`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     ///
@@ -85,7 +85,7 @@ impl MatZ {
     ///
     /// Returns the new matrix.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use qfall_math::integer_mod_q::MatZq;
@@ -110,7 +110,7 @@ impl MatZ {
     ///
     /// Returns a matrix with `1` across the diagonal and `0` anywhere else.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     ///
@@ -148,7 +148,7 @@ impl FromStr for MatZ {
     /// the number of entries in rows is unequal or if the regular expression
     /// inside of the function could not be processed.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;

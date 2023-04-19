@@ -29,7 +29,7 @@ impl TryFrom<&PolyOverZq> for ModulusPolynomialRingZq {
     ///
     /// Returns the new modulus object.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
     /// use qfall_math::integer_mod_q::PolyOverZq;
@@ -78,7 +78,7 @@ impl FromStr for ModulusPolynomialRingZq {
     /// Returns a [`ModulusPolynomialRingZq`] or an error, if the provided string was not
     /// formatted correctly.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
     /// use std::str::FromStr;

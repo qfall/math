@@ -21,7 +21,7 @@ impl PartialEq for PolyOverZ {
     ///
     /// Returns `true` if the elements are equal, otherwise `false`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;

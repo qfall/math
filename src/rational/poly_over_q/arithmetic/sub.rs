@@ -25,7 +25,7 @@ impl Sub for &PolyOverQ {
     ///
     /// Returns the result of the subtraction of both polynomials as a [`PolyOverQ`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::PolyOverQ;
     /// use std::str::FromStr;

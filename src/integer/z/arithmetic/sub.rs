@@ -26,7 +26,7 @@ impl Sub for &Z {
     ///
     /// Returns the result of the subtraction as a [`Z`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     ///

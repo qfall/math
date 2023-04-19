@@ -31,7 +31,7 @@ impl Z {
     ///
     /// Returns the new integer.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     ///
@@ -50,7 +50,7 @@ impl Z {
     ///
     /// Returns the new integer.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     ///
@@ -78,7 +78,7 @@ impl Z {
     ///
     /// Returns the new integer.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     /// use qfall_math::integer_mod_q::Modulus;
@@ -102,7 +102,7 @@ impl Z {
     ///
     /// Returns the new integer.
     ///
-    /// # Example
+    /// # Examples
     /// ```compile_fail
     /// use qfall_math::integer::Z;
     /// use flint_sys::fmpz::fmpz;
@@ -148,7 +148,7 @@ impl Z {
     /// Returns a [`Z`] or an error, if the provided string was not formatted
     /// correctly or the base is out bounds.
     ///
-    /// # Example:
+    /// # Examples:
     /// ```
     /// use qfall_math::integer::Z;
     ///  
@@ -232,7 +232,7 @@ impl FromStr for Z {
     /// Returns a [`Z`] or an error, if the provided string was not formatted
     /// correctly.
     ///
-    /// # Example:
+    /// # Examples:
     /// ```
     /// use std::str::FromStr;
     /// use qfall_math::integer::Z;
@@ -265,7 +265,7 @@ impl TryFrom<&Z> for i64 {
     /// Returns the value as an [`i64`] or an error, if it does not fit
     /// into an [`i64`]
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     ///

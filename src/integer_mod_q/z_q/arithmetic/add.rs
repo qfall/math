@@ -29,7 +29,7 @@ impl Add for &Zq {
     ///
     /// Returns the sum of both numbers as a [`Zq`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
     ///
@@ -59,7 +59,7 @@ impl Zq {
     /// Returns the sum of both numbers as a [`Zq`] or an error if the modulus
     /// does mismatch.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
     ///

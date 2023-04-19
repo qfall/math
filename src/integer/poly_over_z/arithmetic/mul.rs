@@ -25,7 +25,7 @@ impl Mul for &PolyOverZ {
     ///
     /// Returns the product of both polynomials as a [`PolyOverZ`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;

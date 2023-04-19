@@ -17,7 +17,7 @@ use flint_sys::fmpz::{fmpz, fmpz_clear, fmpz_set};
 impl Clone for Z {
     /// Clones the given element and returns a deep clone of the [`Z`] element.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     ///

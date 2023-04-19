@@ -33,7 +33,7 @@ impl SetCoefficient<&Z> for PolyOverZq {
     /// - `index`: the index of the coefficient to set (has to be positive)
     /// - `value`: the new value the index should have from a borrowed [`Z`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use qfall_math::integer::Z;
@@ -80,7 +80,7 @@ impl SetCoefficient<&Zq> for PolyOverZq {
     /// - `index`: the index of the coefficient to set (has to be positive)
     /// - `value`: the new value the index should have from a borrowed [`Zq`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use qfall_math::integer_mod_q::Zq;

@@ -25,7 +25,7 @@ use std::fmt::Display;
 impl MatZq {
     /// Returns the modulus of the matrix as a [`Modulus`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     ///
@@ -40,7 +40,7 @@ impl MatZq {
 impl GetNumRows for MatZq {
     /// Returns the number of rows of the matrix as a [`i64`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     /// use qfall_math::traits::*;
@@ -56,7 +56,7 @@ impl GetNumRows for MatZq {
 impl GetNumColumns for MatZq {
     /// Returns the number of columns of the matrix as a [`i64`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     /// use qfall_math::traits::*;
@@ -80,7 +80,7 @@ impl GetEntry<Z> for MatZq {
     /// row and column or an error, if the number of rows or columns is
     /// greater than the matrix or negative.
     ///
-    /// # Example
+    /// # Examples
     /// ```rust
     /// use qfall_math::integer_mod_q::MatZq;
     /// use qfall_math::traits::GetEntry;
@@ -118,7 +118,7 @@ impl GetEntry<Zq> for MatZq {
     /// row and column or an error, if the number of rows or columns is
     /// greater than the matrix or negative.
     ///
-    /// # Example
+    /// # Examples
     /// ```rust
     /// use qfall_math::integer_mod_q::MatZq;
     /// use qfall_math::traits::GetEntry;
@@ -151,7 +151,7 @@ impl MatZq {
     /// as the access to [`fmpz`] values could lead to memory leaks or modified values
     /// once the [`MatZq`] instance was modified or dropped.
     ///
-    /// # Example
+    /// # Examples
     /// ```compile_fail
     /// use qfall_math::intger_mod_q::MatZq;
     /// use std::str::FromStr;
@@ -177,7 +177,7 @@ impl MatZq {
     /// Computes the lengths of a given vector of [`Z`] values
     /// considering the [`Modulus`](crate::integer_mod_q::Modulus) of `self`.
     ///
-    /// # Example
+    /// # Examples
     /// ```compile_fail
     /// use qfall_math::intger_mod_q::MatZq;
     /// use std::str::FromStr;

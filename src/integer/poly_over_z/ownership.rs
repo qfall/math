@@ -17,7 +17,7 @@ use flint_sys::fmpz_poly::{fmpz_poly_clear, fmpz_poly_set};
 impl Clone for PolyOverZ {
     /// Clones the given element and returns a deep clone of the [`PolyOverZ`] element.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;

@@ -28,7 +28,7 @@ impl Sub for &PolyOverZq {
     ///
     /// Returns the result of the subtraction of both polynomials as a [`PolyOverZq`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
@@ -58,7 +58,7 @@ impl PolyOverZq {
     /// Returns the result of the subtraction of both polynomials as a [`PolyOverZq`] or an error if the moduli
     /// mismatch.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;

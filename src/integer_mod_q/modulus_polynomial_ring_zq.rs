@@ -27,7 +27,7 @@ mod to_string;
 /// - `modulus`: holds the specific content, i.e. the prime `q` and f(X); it
 /// holds [FLINT](https://flintlib.org/)'s [struct](fq_ctx_struct)
 ///
-/// # Example
+/// # Examples
 /// ```
 /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
 /// use qfall_math::integer_mod_q::PolyOverZq;

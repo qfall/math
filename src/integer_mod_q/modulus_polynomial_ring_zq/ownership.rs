@@ -19,7 +19,7 @@ impl Clone for ModulusPolynomialRingZq {
     /// Clones the given element and returns another cloned reference
     /// to the [`fq_ctx_struct`](flint_sys::fq::fq_ctx_struct) element.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
     /// use std::str::FromStr;

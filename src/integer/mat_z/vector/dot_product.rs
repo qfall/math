@@ -23,7 +23,7 @@ impl MatZ {
     /// if the given [`MatZ`] instances aren't vectors or have different
     /// numbers of entries.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;

@@ -26,7 +26,7 @@ impl Add for &Z {
     ///
     /// Returns the sum of both numbers as a [`Z`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     ///

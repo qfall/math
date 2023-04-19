@@ -26,7 +26,7 @@ impl Add for &Q {
     ///
     /// Returns the sum of both rationals as a [`Q`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     /// use std::str::FromStr;

@@ -29,7 +29,7 @@ impl Mul for &MatQ {
     ///
     /// Returns the product of `self` and `other` as a [`MatQ`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
@@ -58,7 +58,7 @@ impl MatQ {
     ///
     /// Returns the product of `self` and `other` as a [`MatQ`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;

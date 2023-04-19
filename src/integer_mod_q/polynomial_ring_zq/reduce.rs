@@ -23,7 +23,7 @@ impl PolynomialRingZq {
     /// to the given polynomial [`PolyOverZ`](crate::integer::PolyOverZ)
     /// in the [`PolynomialRingZq`].
     ///
-    /// # Example
+    /// # Examples
     /// ```compile_fail
     /// use qfall_math::integer_mod_q::PolynomialRingZq;
     /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;

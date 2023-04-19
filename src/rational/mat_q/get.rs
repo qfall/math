@@ -21,7 +21,7 @@ use std::fmt::Display;
 impl GetNumRows for MatQ {
     /// Returns the number of rows of the matrix as a [`i64`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
     /// use qfall_math::traits::*;
@@ -37,7 +37,7 @@ impl GetNumRows for MatQ {
 impl GetNumColumns for MatQ {
     /// Returns the number of columns of the matrix as a [`i64`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
     /// use qfall_math::traits::*;
@@ -61,7 +61,7 @@ impl GetEntry<Q> for MatQ {
     /// row and column or an error, if the number of rows or columns is
     /// greater than the matrix or negative.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
     /// use qfall_math::traits::GetEntry;
@@ -102,7 +102,7 @@ impl MatQ {
     /// row or an error, if the number of rows is
     /// greater than the matrix or negative.
     ///
-    /// # Example
+    /// # Examples
     /// ```rust
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
@@ -147,7 +147,7 @@ impl MatQ {
     /// column or an error, if the number of columns is
     /// greater than the matrix or negative.
     ///
-    /// # Example
+    /// # Examples
     /// ```rust
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
@@ -193,7 +193,7 @@ impl MatQ {
     /// as the access to [`fmpq`] values could lead to memory leaks or modified values
     /// once the [`MatQ`] instance was modified or dropped.
     ///
-    /// # Example
+    /// # Examples
     /// ```compile_fail
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;

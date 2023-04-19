@@ -19,7 +19,7 @@ const ZERO_FMPZ: fmpz = fmpz(0);
 /// WARNING: This function assumes `value` to be reduced,
 /// i.e. `0 <= value < modulus`.
 ///
-/// # Example
+/// # Examples
 /// ```compile_fail
 /// use flint_sys::fmpz::fmpz;
 /// use qfall_math::integer_mod_q::fmpz_mod_helpers::length;

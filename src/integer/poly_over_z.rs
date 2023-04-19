@@ -29,7 +29,7 @@ mod to_string;
 // Attributes:
 // - `poly`: holds the content of the polynomial
 //
-/// # Example
+/// # Examples
 /// ```
 /// use qfall_math::integer::{PolyOverZ, Z};
 /// use qfall_math::traits::*;

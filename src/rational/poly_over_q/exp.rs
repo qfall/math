@@ -20,7 +20,7 @@ impl PolyOverQ {
     ///
     /// Returns the Taylor approximation of the exponential function.
     ///
-    /// # Example
+    /// # Examples
     /// ```compile_fail
     /// use qfall_math::rational::PolyOverQ;
     ///

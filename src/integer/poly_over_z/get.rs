@@ -25,7 +25,7 @@ impl GetCoefficient<Z> for PolyOverZ {
     /// Returns the coefficient as a [`Z`] or a [`MathError`] if the provided index
     /// is negative and therefore invalid or it does not fit into an [`i64`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;

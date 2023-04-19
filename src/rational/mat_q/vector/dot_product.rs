@@ -23,7 +23,7 @@ impl MatQ {
     /// if the given [`MatQ`] instances aren't vectors or have different
     /// numbers of entries.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;

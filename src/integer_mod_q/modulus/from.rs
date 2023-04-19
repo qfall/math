@@ -25,7 +25,7 @@ impl Modulus {
     ///
     /// Returns a [`Modulus`] or a [`MathError`]
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
@@ -64,7 +64,7 @@ impl FromStr for Modulus {
     /// Returns a [`Modulus`] or an [`MathError`], if the provided string is not
     /// a valid modulus.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
