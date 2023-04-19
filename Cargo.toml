@@ -24,4 +24,3 @@ debug = true
 [[bench]]
 name = "benchmarks"
 harness = false
-autodiscovery = false
