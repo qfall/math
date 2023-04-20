@@ -30,7 +30,7 @@ Closes #(issue number)
 <!-- This is a short summary of the things the programmer should always consider before merging-->
 
 - [ ] I have performed a self-review of my own code
-  - [ ] The code provides good readability and maintainability s.t. it fulfils best practices like talking code, modularity, ...
+  - [ ] The code provides good readability and maintainability s.t. it fulfills best practices like talking code, modularity, ...
     - [ ] The chosen implementation is not more complex than it has to be
   - [ ] My code should work as intended and no side effects occur (e.g. memory leaks)
   - [ ] The doc comments fit our style guide
