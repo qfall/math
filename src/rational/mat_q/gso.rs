@@ -15,7 +15,7 @@ use flint_sys::fmpq_mat::fmpq_mat_gso;
 impl MatQ {
     /// Computes the Gram-Schmidt Orthogonalization of the matrix and returns a [`MatQ`] with the corresponding matrix.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
@@ -77,7 +77,7 @@ mod test_gso {
 
     /// Ensure that gso works with independent vectors (more columns than rows)
     #[test]
-    fn gso_dependent_rows() {
+    fn gso_dependent_columns() {
         let mat = MatQ::from_str("[[1,2,3,4,4],[1,2,3,4,4]]").unwrap();
 
         let mat_gso = mat.gso();
@@ -96,7 +96,7 @@ mod test_gso {
 
     /// Ensure that gso works with more rows than columns
     #[test]
-    fn gso_dependent_columns() {
+    fn gso_dependent_rows() {
         let mat = MatQ::from_str("[[1,2/7],[1,2/7],[10,-2],[0,4],[0,0]]").unwrap();
 
         let mat_gso = mat.gso();
