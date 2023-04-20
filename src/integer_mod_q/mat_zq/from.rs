@@ -132,10 +132,11 @@ impl MatZq {
     /// Parameters:
     /// - `rum_rows`: the number of rows of the identity matrix
     /// - `num_columns`: the number of columns of the identity matrix
+    /// - `modulus`: the modulus of the matrix
     ///
     /// Returns a matrix with `1` across the diagonal and `0` anywhere else.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     ///
