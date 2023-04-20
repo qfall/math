@@ -27,6 +27,7 @@ Think about how you want to use the new feature in your code, i.e. the API. Prob
 -->
 ```rust
 // write your API call to the new feature here
+```
 
 **Additional context**
 <!-- Add any other context or screenshots about the feature request here. -->
