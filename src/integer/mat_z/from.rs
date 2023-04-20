@@ -114,9 +114,9 @@ impl MatZ {
     /// ```
     /// use qfall_math::integer::MatZ;
     ///
-    /// let mut matrix = MatZ::identity(2, 3).unwrap();
+    /// let matrix = MatZ::identity(2, 3).unwrap();
     ///
-    /// let mut identity = MatZ::identity(10, 10).unwrap();
+    /// let identity = MatZ::identity(10, 10).unwrap();
     /// ```
     ///
     /// # Errors and Failures
