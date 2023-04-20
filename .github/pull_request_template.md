@@ -5,6 +5,10 @@ Please include a summary of the changes and which issue is fixed or which featur
 Please also include relevant motivation and context. List any dependencies that are required for this change.
 -->
 
+This PR implements...
+- [ ] feature/ revision/ hotfix/ optimisation/ ...
+for/ of `Component`.
+
 <!--
 If Connected to an issue, include:
 Closes #(issue number)
