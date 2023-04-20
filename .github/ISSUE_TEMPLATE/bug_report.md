@@ -24,6 +24,7 @@ feel free to adapt this form.
 <!-- These steps are even more helpful if you provide some code for each step along the way using: -->
 ```rust
 // write your code here
+```
 
 **Expected behavior**
 <!-- A clear and concise description of what you expect to happen and 
