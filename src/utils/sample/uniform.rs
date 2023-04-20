@@ -12,6 +12,7 @@
 use crate::{error::MathError, integer::Z};
 use rand::{rngs::ThreadRng, RngCore};
 
+#[allow(dead_code)]
 static mut RNG: Option<ThreadRng> = None;
 
 /// Returns a pointer to a static [`ThreadRng`] to sample uniform at random.
@@ -27,6 +28,7 @@ static mut RNG: Option<ThreadRng> = None;
 ///
 /// let rng = get_rng();
 /// ```
+#[allow(dead_code)]
 fn get_rng() -> &'static mut ThreadRng {
     if unsafe { RNG.is_none() } {
         unsafe { RNG = Some(ThreadRng::default()) };
@@ -54,6 +56,11 @@ fn get_rng() -> &'static mut ThreadRng {
 /// assert!(0 <= sample);
 /// assert!(sample < interval_size);
 /// ```
+///
+/// # Errors and Failures
+/// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
+/// if the interval is chosen smaller than or equal to `1`.
+#[allow(dead_code)]
 pub(crate) fn sample_uniform_rejection(interval_size: &Z) -> Result<Z, MathError> {
     if interval_size <= &Z::ONE {
         return Err(MathError::InvalidInterval(format!(
@@ -92,6 +99,7 @@ pub(crate) fn sample_uniform_rejection(interval_size: &Z) -> Result<Z, MathError
 /// assert_eq!(0, byte_vector[7]);
 /// assert_eq!(2, byte_vector.len());
 /// ```
+#[allow(dead_code)]
 fn sample_bits_uniform(nr_bits: usize) -> Vec<u8> {
     let rng = get_rng();
 
