@@ -19,7 +19,7 @@ use crate::{
     macros::from::{from_trait, from_type},
 };
 use flint_sys::fmpz::{
-    fmpz, fmpz_get_si, fmpz_init_set_si, fmpz_init_set_ui, fmpz_set, fmpz_set_str,
+    fmpz, fmpz_combit, fmpz_get_si, fmpz_init_set_si, fmpz_init_set_ui, fmpz_set, fmpz_set_str,
 };
 use std::{ffi::CString, str::FromStr};
 
@@ -191,6 +191,38 @@ impl Z {
             _ => Err(MathError::InvalidStringToZInput(s.to_owned())),
         }
     }
+
+    /// Create a [`Z`] integer from an iterable of [`u8`]s, e.g. a vector of bytes.
+    ///
+    /// Parameters:
+    /// - `bytes`: specifies an iterable of bytes that should be set in the new [`Z`] instance.
+    /// The first byte should be the least significant byte, i.e. its first bit the
+    /// least significant bit.
+    ///
+    /// Returns a [`Z`] with the value provided by the byte iterable.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// // instantiate a byte-vector correspinding to "100000001"
+    /// // vec![0x01, 0x01] would also be sufficient
+    /// let bytes: Vec<u8> = vec![1, 1];
+    ///  
+    /// let a: Z = Z::from_bytes(&bytes);
+    /// assert_eq!(Z::from(257), a);
+    /// ```
+    pub fn from_bytes(bytes: &[u8]) -> Self {
+        let mut res = Z::ZERO;
+        for (i, byte) in bytes.iter().enumerate() {
+            for j in 0..u8::BITS {
+                // if j-th bit of `byte` is `1`, then set `i*8 + j`-th bit in fmpz to `1`
+                if (byte >> j & 1) % 2 == 1 {
+                    unsafe { fmpz_combit(&mut res.value, (i as u32 * u8::BITS + j) as u64) };
+                }
+            }
+        }
+        res
+    }
 }
 
 impl From<&Modulus> for Z {
@@ -293,6 +325,72 @@ impl TryFrom<&Z> for i64 {
                 value
             )))
         }
+    }
+}
+
+impl From<&Vec<u8>> for Z {
+    /// Converts a byte vector of type [`u8`] to [`Z`] using [`Z::from_bytes`].
+    fn from(value: &Vec<u8>) -> Self {
+        Z::from_bytes(value)
+    }
+}
+
+impl From<Vec<u8>> for Z {
+    /// Converts a byte vector of type [`u8`] to [`Z`] using [`Z::from_bytes`].
+    fn from(value: Vec<u8>) -> Self {
+        Z::from_bytes(&value)
+    }
+}
+
+#[cfg(test)]
+mod test_from_bytes {
+    use super::*;
+
+    /// Checks whether small values are correctly instantiated by `from_bytes`
+    /// and different byte representations are valid
+    #[test]
+    fn small_values() {
+        let vec_0: Vec<u8> = vec![0];
+        let vec_1: Vec<u8> = vec![0x00, 0x01];
+        let vec_2: Vec<u8> = vec![1, 0];
+
+        let res_0 = Z::from_bytes(&vec_0);
+        let res_1 = Z::from_bytes(&vec_1);
+        let res_2 = Z::from_bytes(&vec_2);
+
+        assert_eq!(Z::ZERO, res_0);
+        assert_eq!(Z::from(256), res_1);
+        assert_eq!(Z::ONE, res_2);
+    }
+
+    /// Checks whether large values are correctly instantiated by `from_bytes`
+    /// and different byte representations are valid
+    #[test]
+    fn large_values() {
+        let vec_0: Vec<u8> = vec![255, 255, 255, 255, 255, 255, 255, 255];
+        let vec_1: Vec<u8> = vec![0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff];
+
+        let res_0 = Z::from_bytes(&vec_0);
+        let res_1 = Z::from_bytes(&vec_1);
+
+        assert_eq!(Z::from(u64::MAX), res_0);
+        assert_eq!(Z::from(u64::MAX), res_1);
+    }
+
+    /// Checks for availability of `from_bytes` for array-inputs and the `from` trait
+    /// for vectors of borrowed and owned types
+    #[test]
+    fn availability() {
+        let arr: [u8; 2] = [0x01, 0x01];
+        let vec: Vec<u8> = vec![0x01, 0x01];
+
+        let res_0 = Z::from_bytes(&arr);
+        let res_1 = Z::from(&vec);
+        let res_2 = Z::from(vec);
+
+        assert_eq!(Z::from(257), res_0);
+        assert_eq!(Z::from(257), res_1);
+        assert_eq!(Z::from(257), res_2);
     }
 }
 

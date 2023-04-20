@@ -12,7 +12,7 @@ use super::Z;
 use crate::rational::Q;
 use flint_sys::{
     fmpq::{fmpq, fmpq_inv},
-    fmpz::{fmpz, fmpz_abs, fmpz_is_prime},
+    fmpz::{fmpz, fmpz_abs, fmpz_bits, fmpz_is_prime},
 };
 
 impl Z {
@@ -77,6 +77,55 @@ impl Z {
         };
         unsafe { fmpq_inv(&mut out.value, &self_fmpq) };
         Some(out)
+    }
+
+    /// Computes the number of bits needed to store the absolute value of `self`.
+    ///
+    /// The number of bits needs to fit into an [`u64`],
+    /// i.e. the size should not exceed `2^(2^64)`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// let value = Z::from(4);
+    ///
+    /// let nr_bits = value.bits();
+    ///
+    /// assert_eq!(3, nr_bits);
+    /// ```
+    pub fn bits(&self) -> u64 {
+        unsafe { fmpz_bits(&self.value) }
+    }
+}
+
+#[cfg(test)]
+mod test_bits {
+    use super::Z;
+
+    /// Checks whether the number of bits needed to store the absolute value
+    /// is output correctly for small values
+    #[test]
+    fn small_values() {
+        assert_eq!(0, Z::ZERO.bits());
+        assert_eq!(1, Z::ONE.bits());
+        assert_eq!(1, Z::MINUS_ONE.bits());
+        assert_eq!(3, Z::from(4).bits());
+        assert_eq!(31, Z::from(i32::MAX).bits());
+        assert_eq!(32, Z::from(i32::MIN).bits());
+        assert_eq!(32, Z::from(u32::MAX).bits());
+    }
+
+    /// Checks whether the number of bits needed to store the absolute value
+    /// is output correctly for large values
+    #[test]
+    fn large_values() {
+        let vector = vec![255; 16];
+        let large = Z::from_bytes(&vector);
+
+        assert_eq!(128, large.bits());
+        assert_eq!(63, Z::from(i64::MAX).bits());
+        assert_eq!(64, Z::from(i64::MIN).bits());
+        assert_eq!(64, Z::from(u64::MAX).bits());
     }
 }
 
