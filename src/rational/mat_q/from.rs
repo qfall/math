@@ -109,7 +109,7 @@ impl MatQ {
     ///
     /// Returns a matrix with `1` across the diagonal and `0` anywhere else.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
     ///
