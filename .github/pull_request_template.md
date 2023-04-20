@@ -10,15 +10,6 @@ If Connected to an issue, include:
 Closes # (issue)
 -->
 
-**Type of change**
-
-<!-- Choose those that fit the type of your change and remove the others -->
-
-- Bug fix (change which fixes an issue)
-- New feature (change which adds functionality)
-- Update to functionality
-- Other: <!-- add other type here, e.g. Improve Workflow--> 
-
 **Testing**
 
 <!-- Please shortly describe how you tested your code and mark all you have done after -->
