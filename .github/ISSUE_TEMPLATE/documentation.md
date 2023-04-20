@@ -8,9 +8,9 @@ assignees: ''
 ---
 
 <!--
-Thank you for filing out a documentation issue!
+Thank you for filing a documentation issue!
 As documentation issues can be quite versatile,
-feel free to describe them in a way that you find best for it.
+feel free to adapt this form in a way that you find best for it.
 -->
 
 **Documentation**

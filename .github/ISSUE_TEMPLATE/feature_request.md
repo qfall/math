@@ -11,17 +11,22 @@ assignees: ''
 Thank you for filing a feature request! Please provide a short summary of the new
 you need along with any information that might be required to understand the request.
 
-If you feel like any of the provided sections are not needed, 
-feel free to delete the corresponding section and leave it unfilled.
+If you feel like any of the provided sections are not needed or should be extended, 
+feel free to adapt this form.
 -->
+**Description**
+<!-- Briefly describe the (new) feature, you would like to see implemented in this crate/ library. -->
 
-**What is your motivation. Please describe!**
+**Motivation**
+<!-- Why should this feature be implemented? Which new opportunities does it yield? Which (research) areas/ fields would be benefit from this feature? -->
 
-**Describe the solution you'd like**
-<!-- A clear and concise description of what functionality we are missing to provide and how you want it to be provided. -->
-
-**Describe alternatives you've considered**
-<!-- A clear and concise description of any alternative solutions or features you've considered (and possibly why they do not suffice) -->
+**Best available solution**
+<!-- 
+A clear and concise description of how you expect this feature to be provided in the best possible case. 
+Think about how you want to use the new feature in your code, i.e. the API. Probably provide an example:
+-->
+```rust
+// write your API call to the new feature here
 
 **Additional context**
 <!-- Add any other context or screenshots about the feature request here. -->
