@@ -14,3 +14,4 @@
 pub mod dimensions;
 pub mod index;
 pub mod parse;
+pub(crate) mod sample;
