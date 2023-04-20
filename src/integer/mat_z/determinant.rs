@@ -19,7 +19,7 @@ use flint_sys::fmpz_mat::fmpz_mat_det;
 impl MatZ {
     /// Returns the determinant of the matrix.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;

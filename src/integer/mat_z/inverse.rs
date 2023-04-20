@@ -10,7 +10,6 @@
 
 use super::MatZ;
 use crate::{
-    error::MathError,
     integer::Z,
     rational::MatQ,
     traits::{GetNumColumns, GetNumRows},
@@ -21,14 +20,14 @@ impl MatZ {
     /// Returns the inverse of the matrix if it exists (is square and
     /// has a determinant unequal to zero).
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use qfall_math::traits::*;
     /// use std::str::FromStr;
     ///
     /// let mut matrix = MatZ::from_str("[[1,2],[3,4]]").unwrap();
-    /// let matrix_invert = matrix.invert().unwrap();
+    /// let matrix_invert = matrix.inverse().unwrap();
     /// ```
     ///
     /// # Errors and Failures
@@ -36,14 +35,14 @@ impl MatZ {
     /// if the number of rows and columns is not equal.
     /// - Returns a [`MathError`] of type [`NotInvertible`](MathError::NotInvertible)
     /// if the determinant of the matrix is `0`.
-    pub fn invert(&self) -> Result<MatQ, MathError> {
+    pub fn inverse(&self) -> Option<MatQ> {
         // check if matrix is square and compute determinant to check whether
         // the matrix is invertible or not
-        let det = self.det()?;
-        if det == Z::ZERO {
-            return Err(MathError::NotInvertible(
-                "The matrix is not invertible as its determinant is 0".to_string(),
-            ));
+
+        let det = self.det();
+
+        if det.is_err() || det.unwrap() == Z::ZERO {
+            return None;
         }
 
         // create new matrix to store inverted result in
@@ -52,7 +51,7 @@ impl MatZ {
         unsafe {
             fmpq_mat_inv(&mut out.matrix, &MatQ::from(self).matrix);
         }
-        Ok(out)
+        Some(out)
     }
 }
 
@@ -62,9 +61,9 @@ mod test_inverse {
     use crate::{integer::MatZ, rational::MatQ};
     use std::str::FromStr;
 
-    /// Test whether invert correctly calculates an inverse matrix
+    /// Test whether `inverse` correctly calculates an inverse matrix
     #[test]
-    fn invert_works() {
+    fn inverse_works() {
         let mat1 = MatZ::from_str("[[5,2,0],[2,1,0],[0,0,1]]").unwrap();
         let mat2 = MatZ::from_str(&format!("[[{}]]", i64::MAX)).unwrap();
         let mat3 = MatZ::from_str("[[-1,0],[0,1]]").unwrap();
@@ -73,9 +72,9 @@ mod test_inverse {
         let cmp_inv2 = MatQ::from_str(&format!("[[1/{}]]", i64::MAX)).unwrap();
         let cmp_inv3 = MatQ::from_str("[[-1,0],[0,1]]").unwrap();
 
-        let inv1 = mat1.invert().unwrap();
-        let inv2 = mat2.invert().unwrap();
-        let inv3 = mat3.invert().unwrap();
+        let inv1 = mat1.inverse().unwrap();
+        let inv2 = mat2.inverse().unwrap();
+        let inv3 = mat3.inverse().unwrap();
 
         assert_eq!(cmp_inv1, inv1);
         assert_eq!(cmp_inv2, inv2);
@@ -84,32 +83,32 @@ mod test_inverse {
 
     /// Check if the multiplication of inverse and matrix result in an identity matrix
     #[test]
-    fn invert_correct() {
+    fn inverse_correct() {
         let mat = MatZ::from_str("[[5,2],[2,1]]").unwrap();
         let mat_q = MatQ::from(&mat);
         let cmp = MatQ::from_str("[[1,0],[0,1]]").unwrap();
 
-        let inv = mat.invert().unwrap();
+        let inv = mat.inverse().unwrap();
         let diag = &mat_q * &inv;
 
         assert_eq!(cmp, diag);
     }
 
-    /// Ensure that a matrix that is not square yields an Error on inversion.
+    /// Ensure that a matrix that is not square yields `None` on inversion.
     #[test]
-    fn inv_error_not_squared() {
+    fn inv_none_not_squared() {
         let mat1 = MatZ::from_str("[[1,0,1],[0,1,1]]").unwrap();
         let mat2 = MatZ::from_str("[[1,0],[0,1],[1,0]]").unwrap();
 
-        assert!(mat1.invert().is_err());
-        assert!(mat2.invert().is_err());
+        assert!(mat1.inverse().is_none());
+        assert!(mat2.inverse().is_none());
     }
 
-    /// Ensure that a matrix that has a determinant of '0' yields an Error on inversion.
+    /// Ensure that a matrix that has a determinant of '0' yields `None` on inversion.
     #[test]
-    fn inv_error_det_zero() {
+    fn inv_none_det_zero() {
         let mat = MatZ::from_str("[[2,0],[0,0]]").unwrap();
 
-        assert!(mat.invert().is_err());
+        assert!(mat.inverse().is_none());
     }
 }
