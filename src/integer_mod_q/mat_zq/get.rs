@@ -14,10 +14,11 @@ use crate::{
     integer::Z,
     integer_mod_q::{fmpz_mod_helpers::length, Modulus, Zq},
     traits::{GetEntry, GetNumColumns, GetNumRows},
-    utils::index::evaluate_indices,
+    utils::index::{evaluate_index, evaluate_indices},
 };
 use flint_sys::{
     fmpz::{fmpz, fmpz_set},
+    fmpz_mat::fmpz_mat_entry,
     fmpz_mod_mat::fmpz_mod_mat_entry,
 };
 use std::fmt::Display;
@@ -144,7 +145,100 @@ impl GetEntry<Zq> for MatZq {
 }
 
 impl MatZq {
-    #[allow(dead_code)]
+    /// Outputs the row vector of the specified row.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row of the matrix
+    ///
+    /// Returns a row vector of the matrix at the position of the given
+    /// row or an error, if the number of rows is
+    /// greater than the matrix or negative.
+    ///
+    /// # Example
+    /// ```rust
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use std::str::FromStr;
+    ///
+    /// let matrix = MatZq::from_str("[[1, 2, 3],[3, 4, 5]] mod 4").unwrap();
+    ///
+    /// let row0 = matrix.get_row(0).unwrap(); // first row
+    /// let row1 = matrix.get_row(1).unwrap(); // second row
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
+    /// if the number of the row is greater than the matrix or negative.
+    pub fn get_row(&self, row: impl TryInto<i64> + Display + Copy) -> Result<Self, MathError> {
+        let row_i64 = evaluate_index(row)?;
+
+        if self.get_num_rows() <= row_i64 {
+            return Err(MathError::OutOfBounds(
+                format!("be smaller than {}", self.get_num_rows()),
+                format!("{}", row_i64),
+            ));
+        }
+
+        let out = MatZq::new(1, self.get_num_columns(), self.get_mod()).unwrap();
+        for column in 0..self.get_num_columns() {
+            unsafe {
+                fmpz_set(
+                    fmpz_mat_entry(&out.matrix.mat[0], 0, column),
+                    fmpz_mod_mat_entry(&self.matrix, row_i64, column),
+                )
+            };
+        }
+        Ok(out)
+    }
+
+    /// Outputs a column vector of the specified column.
+    ///
+    /// Input parameters:
+    /// * `column`: specifies the column of the matrix
+    ///
+    /// Returns a column vector of the matrix at the position of the given
+    /// column or an error, if the number of columns is
+    /// greater than the matrix or negative.
+    ///
+    /// # Example
+    /// ```rust
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use std::str::FromStr;
+    ///
+    /// let matrix = MatZq::from_str("[[1, 2, 3],[3, 4, 5]] mod 4").unwrap();
+    ///
+    /// let col0 = matrix.get_column(0).unwrap(); // first column
+    /// let col1 = matrix.get_column(1).unwrap(); // second column
+    /// let col2 = matrix.get_column(2).unwrap(); // third column
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
+    /// if the number of the column is greater than the matrix or negative.
+    pub fn get_column(
+        &self,
+        column: impl TryInto<i64> + Display + Copy,
+    ) -> Result<Self, MathError> {
+        let column_i64 = evaluate_index(column)?;
+
+        if self.get_num_columns() <= column_i64 {
+            return Err(MathError::OutOfBounds(
+                format!("be smaller than {}", self.get_num_columns()),
+                format!("{}", column_i64),
+            ));
+        }
+
+        let out = MatZq::new(self.get_num_rows(), 1, self.get_mod()).unwrap();
+        for row in 0..self.get_num_rows() {
+            unsafe {
+                fmpz_set(
+                    fmpz_mat_entry(&out.matrix.mat[0], row, 0),
+                    fmpz_mod_mat_entry(&self.matrix, row, column_i64),
+                )
+            };
+        }
+        Ok(out)
+    }
+
     /// Efficiently collects all [`fmpz`]s in a [`MatZq`] without cloning them.
     ///
     /// Hence, the values on the returned [`Vec`] are intended for short-term use
@@ -404,6 +498,84 @@ mod test_mod {
         let modulus = matrix.get_mod();
 
         assert_eq!(modulus, Modulus::try_from_z(&Z::from(u64::MAX)).unwrap());
+    }
+}
+
+#[cfg(test)]
+mod test_get_vec {
+
+    use crate::integer_mod_q::MatZq;
+    use std::str::FromStr;
+
+    /// Ensure that getting a row works
+    #[test]
+    fn get_row_works() {
+        let matrix = MatZq::from_str(&format!(
+            "[[0,0,0],[4,{},{}]] mod {}",
+            i64::MAX,
+            i64::MIN,
+            u64::MAX
+        ))
+        .unwrap();
+        let row1 = matrix.get_row(0).unwrap();
+        let row2 = matrix.get_row(1).unwrap();
+
+        let cmp1 = MatZq::from_str(&format!("[[0,0,0]] mod {}", u64::MAX)).unwrap();
+        let cmp2 =
+            MatZq::from_str(&format!("[[4,{},{}]] mod {}", i64::MAX, i64::MIN, u64::MAX)).unwrap();
+
+        assert_eq!(cmp1, row1);
+        assert_eq!(cmp2, row2);
+    }
+
+    /// Ensure that getting a column works
+    #[test]
+    fn get_column_works() {
+        let matrix = MatZq::from_str(&format!(
+            "[[1,0,3],[{},0,5],[{},0,7]] mod {}",
+            i64::MAX,
+            i64::MIN,
+            u64::MAX
+        ))
+        .unwrap();
+        let column1 = matrix.get_column(0).unwrap();
+        let column2 = matrix.get_column(1).unwrap();
+        let column3 = matrix.get_column(2).unwrap();
+
+        let cmp1 = MatZq::from_str(&format!(
+            "[[1],[{}],[{}]] mod {}",
+            i64::MAX,
+            i64::MIN,
+            u64::MAX
+        ))
+        .unwrap();
+        let cmp2 = MatZq::from_str(&format!("[[0],[0],[0]] mod {}", u64::MAX)).unwrap();
+        let cmp3 = MatZq::from_str(&format!("[[3],[5],[7]] mod {}", u64::MAX)).unwrap();
+
+        assert_eq!(cmp1, column1);
+        assert_eq!(cmp2, column2);
+        assert_eq!(cmp3, column3);
+    }
+
+    /// Ensure that wrong row and column dimensions yields an error
+    #[test]
+    fn wrong_dim_error() {
+        let matrix = MatZq::from_str(&format!(
+            "[[1,2,3],[{},4,5],[{},6,7]] mod {}",
+            i64::MAX,
+            i64::MIN,
+            u64::MAX
+        ))
+        .unwrap();
+        let row1 = matrix.get_row(-1);
+        let row2 = matrix.get_row(4);
+        let column1 = matrix.get_column(-1);
+        let column2 = matrix.get_column(4);
+
+        assert!(row1.is_err());
+        assert!(row2.is_err());
+        assert!(column1.is_err());
+        assert!(column2.is_err());
     }
 }
 
