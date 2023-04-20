@@ -7,7 +7,7 @@ Please also include relevant motivation and context. List any dependencies that 
 
 <!--
 If Connected to an issue, include:
-Closes # (issue)
+Closes #(issue number)
 -->
 
 **Testing**
@@ -18,7 +18,7 @@ Closes # (issue)
 - [ ] I added basic working examples (possibly in doc-comment)
 - [ ] I added tests for large (pointer representation) values
 - [ ] I triggered all possible errors in my test in every possible way
-- [ ] I included assertions in which I compare expected values with computed values
+- [ ] I included tests for all reasonable edge cases
 <!-- Please add other tests if any other have been performed -->
 
 **Checklist:**
@@ -26,13 +26,9 @@ Closes # (issue)
 <!-- This is a short summary of the things the programmer should always consider before merging-->
 
 - [ ] I have performed a self-review of my own code
-  - [ ] Design choice fits code base + good time to do the PR
-  - [ ] The added lines provide good readability (naming, comments, documentation, spelling)
-  - [ ] The code fits our style guide
-  - [ ] I included tests for all reasonable edge cases
-  - [ ] My code works as intended and no side effects occur (e.g. memory leaks)
-  - [ ] The chosen implementation is not more complex than it has to be
-  - [ ] My code is not missing any crucial feature (or if it is listed as another task)
-  - [ ] My code uses encapsulation and modularization
-  - [ ] `cargo doc` does not generate any errors
+  - [ ] The code provides good readability and maintainability s.t. it fulfils best practices like talking code, modularity, ...
+    - [ ] The chosen implementation is not more complex than it has to be
+  - [ ] My code should work as intended and no side effects occur (e.g. memory leaks)
+  - [ ] The doc comments fit our style guide
+    - [ ] `cargo doc` does not generate any errors
   - [ ] I have credited related sources if needed
