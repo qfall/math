@@ -68,12 +68,12 @@ mod test_mul {
     #[test]
     fn borrowed_correctness() {
         let mat1 = MatZ::from_str("[[2,1],[1,2]]").unwrap();
-        let mat2 = MatZ::from_str("[[2,1],[1,2]]").unwrap();
+        let mat2 = mat1.clone();
         let mat3 = MatZ::from_str("[[6,3],[3,6]]").unwrap();
         let integer = Z::from(3);
 
         let mat1 = &mat1 * &integer;
-        let mat2 = &mat2 * &integer;
+        let mat2 = &integer * &mat2;
 
         assert_eq!(mat3, mat1);
         assert_eq!(mat3, mat2);
@@ -83,7 +83,7 @@ mod test_mul {
     #[test]
     fn owned_correctness() {
         let mat1 = MatZ::from_str("[[2,1],[1,2]]").unwrap();
-        let mat2 = MatZ::from_str("[[2,1],[1,2]]").unwrap();
+        let mat2 = mat1.clone();
         let mat3 = MatZ::from_str("[[6,3],[3,6]]").unwrap();
         let integer1 = Z::from(3);
         let integer2 = Z::from(3);
@@ -99,9 +99,9 @@ mod test_mul {
     #[test]
     fn half_correctness() {
         let mat1 = MatZ::from_str("[[2,1],[1,2]]").unwrap();
-        let mat2 = MatZ::from_str("[[2,1],[1,2]]").unwrap();
-        let mat3 = MatZ::from_str("[[2,1],[1,2]]").unwrap();
-        let mat4 = MatZ::from_str("[[2,1],[1,2]]").unwrap();
+        let mat2 = mat1.clone();
+        let mat3 = mat1.clone();
+        let mat4 = mat1.clone();
         let mat5 = MatZ::from_str("[[6,3],[3,6]]").unwrap();
         let integer1 = Z::from(3);
         let integer2 = Z::from(3);
@@ -119,14 +119,19 @@ mod test_mul {
 
     /// Checks if scalar multiplication works fine for different scalar types
     #[test]
+    #[allow(clippy::erasing_op)]
     fn different_types() {
         let mat1 = MatZ::from_str("[[1],[0],[4]]").unwrap();
         let mat2 = MatZ::from_str("[[2,5,6],[1,3,1]]").unwrap();
-        let mat3 = MatZ::from_str("[[3],[0],[12]]").unwrap();
-        let mat4 = MatZ::from_str("[[6,15,18],[3,9,3]]").unwrap();
+        let mat3 = MatZ::from_str("[[2],[0],[8]]").unwrap();
+        let mat4 = MatZ::from_str("[[0],[0],[0]]").unwrap();
+        let mat5 = MatZ::from_str("[[-1],[0],[-4]]").unwrap();
+        let mat6 = MatZ::from_str("[[6,15,18],[3,9,3]]").unwrap();
 
-        assert_eq!(mat3, 3 * mat1);
-        assert_eq!(mat4, mat2 * 3);
+        assert_eq!(mat3, 2 * &mat1);
+        assert_eq!(mat4, 0 * &mat1);
+        assert_eq!(mat5, -1 * mat1);
+        assert_eq!(mat6, mat2 * 3);
     }
 
     /// Checks if scalar multiplication works fine for matrices of different dimensions
