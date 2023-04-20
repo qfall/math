@@ -27,7 +27,7 @@ impl Add for &MatPolyOverZ {
     ///
     /// Returns the sum of both numbers as a [`MatPolyOverZ`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
@@ -41,8 +41,8 @@ impl Add for &MatPolyOverZ {
     /// let f: MatPolyOverZ = c + &e;
     /// ```
     ///
-    /// # Panics
-    /// - Panics if the dimensions of both matrices mismatch
+    /// # Panics ...
+    /// - ... if the dimensions of both matrices mismatch
     fn add(self, other: Self) -> Self::Output {
         self.add_safe(other).unwrap()
     }
@@ -58,7 +58,7 @@ impl MatPolyOverZ {
     /// Returns the sum of both matrixes as a [`MatPolyOverZ`] or an
     /// error if the matrix dimensions mismatch.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;

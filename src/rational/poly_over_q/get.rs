@@ -25,7 +25,7 @@ impl GetCoefficient<Q> for PolyOverQ {
     /// Returns the coefficient as a [`Q`] or a [`MathError`] if the provided index
     /// is negative and therefore invalid or it does not fit into an [`i64`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::PolyOverQ;
     /// use std::str::FromStr;

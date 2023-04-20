@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementation of scalar multiplication for [`MatZ`] matrices.
+//! Implementation of scalar multiplication for [`MatPolyOverZ`] matrices.
 
 use super::super::MatPolyOverZ;
 use crate::integer::{PolyOverZ, Z};
@@ -28,7 +28,7 @@ impl Mul<&Z> for &MatPolyOverZ {
     ///
     /// Returns the product of `self` and `other` as a [`MatPolyOverZ`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatPolyOverZ;
     /// use qfall_math::integer::Z;
@@ -66,7 +66,7 @@ impl Mul<&PolyOverZ> for &MatPolyOverZ {
     ///
     /// Returns the product of `self` and `other` as a [`MatPolyOverZ`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatPolyOverZ;
     /// use qfall_math::integer::Z;

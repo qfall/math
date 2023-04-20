@@ -27,13 +27,13 @@ impl Add for &MatZ {
     ///
     /// Returns the sum of both numbers as a [`MatZ`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
-    /// let a: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, 4, 5]]")).unwrap();
-    /// let b: MatZ = MatZ::from_str(&String::from("[[1, 9, 3],[1, 0, 5]]")).unwrap();
+    /// let a: MatZ = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();
+    /// let b: MatZ = MatZ::from_str("[[1, 9, 3],[1, 0, 5]]").unwrap();
     ///
     /// let c: MatZ = &a + &b;
     /// let d: MatZ = a + b;
@@ -58,13 +58,13 @@ impl MatZ {
     /// Returns the sum of both matrixes as a [`MatZ`] or an
     /// error if the matrix dimensions mismatch.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
-    /// let a: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, 4, 5]]")).unwrap();
-    /// let b: MatZ = MatZ::from_str(&String::from("[[1, 9, 3],[1, 0, 5]]")).unwrap();
+    /// let a: MatZ = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();
+    /// let b: MatZ = MatZ::from_str("[[1, 9, 3],[1, 0, 5]]").unwrap();
     ///
     /// let c: MatZ = a.add_safe(&b).unwrap();
     /// ```
@@ -104,61 +104,54 @@ mod test_add {
     /// testing addition for two [`MatZ`]
     #[test]
     fn add() {
-        let a: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, 4, 5]]")).unwrap();
-        let b: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, -4, 5]]")).unwrap();
+        let a: MatZ = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();
+        let b: MatZ = MatZ::from_str("[[1, 2, 3],[3, -4, 5]]").unwrap();
         let c: MatZ = a + b;
-        assert!(c == MatZ::from_str(&String::from("[[2, 4, 6],[6, 0, 10]]")).unwrap());
+        assert_eq!(c, MatZ::from_str("[[2, 4, 6],[6, 0, 10]]").unwrap());
     }
 
     /// testing addition for two borrowed [`MatZ`]
     #[test]
     fn add_borrow() {
-        let a: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, 4, 5]]")).unwrap();
-        let b: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, -4, 5]]")).unwrap();
+        let a: MatZ = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();
+        let b: MatZ = MatZ::from_str("[[1, 2, 3],[3, -4, 5]]").unwrap();
         let c: MatZ = &a + &b;
-        assert!(c == MatZ::from_str(&String::from("[[2, 4, 6],[6, 0, 10]]")).unwrap());
+        assert_eq!(c, MatZ::from_str("[[2, 4, 6],[6, 0, 10]]").unwrap());
     }
 
     /// testing addition for borrowed [`MatZ`] and [`MatZ`]
     #[test]
     fn add_first_borrowed() {
-        let a: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, 4, 5]]")).unwrap();
-        let b: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, -4, 5]]")).unwrap();
+        let a: MatZ = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();
+        let b: MatZ = MatZ::from_str("[[1, 2, 3],[3, -4, 5]]").unwrap();
         let c: MatZ = &a + b;
-        assert!(c == MatZ::from_str(&String::from("[[2, 4, 6],[6, 0, 10]]")).unwrap());
+        assert_eq!(c, MatZ::from_str("[[2, 4, 6],[6, 0, 10]]").unwrap());
     }
 
     /// testing addition for [`MatZ`] and borrowed [`MatZ`]
     #[test]
     fn add_second_borrowed() {
-        let a: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, 4, 5]]")).unwrap();
-        let b: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, -4, 5]]")).unwrap();
+        let a: MatZ = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();
+        let b: MatZ = MatZ::from_str("[[1, 2, 3],[3, -4, 5]]").unwrap();
         let c: MatZ = a + &b;
-        assert!(c == MatZ::from_str(&String::from("[[2, 4, 6],[6, 0, 10]]")).unwrap());
+        assert_eq!(c, MatZ::from_str("[[2, 4, 6],[6, 0, 10]]").unwrap());
     }
 
     /// testing addition for big numbers
     #[test]
     fn add_large_numbers() {
-        let a: MatZ = MatZ::from_str(&String::from(format!(
-            "[[1, 2, {}],[3, -4, {}]]",
-            i64::MIN,
-            i128::MAX
-        )))
-        .unwrap();
-        let b: MatZ = MatZ::from_str(&String::from(format!(
-            "[[1, 2, {}],[3, 9, {}]]",
-            i64::MIN + 1,
-            i128::MAX
-        )))
-        .unwrap();
+        let a: MatZ =
+            MatZ::from_str(&format!("[[1, 2, {}],[3, -4, {}]]", i64::MIN, i128::MAX)).unwrap();
+        let b: MatZ =
+            MatZ::from_str(&format!("[[1, 2, {}],[3, 9, {}]]", i64::MIN + 1, i128::MAX)).unwrap();
         let c: MatZ = a + &b;
-        assert!(
-            c == MatZ::from_str(&String::from(format!(
+        assert_eq!(
+            c,
+            MatZ::from_str(&format!(
                 "[[2, 4, -{}],[6, 5, {}]]",
                 u64::MAX,
                 u128::MAX - 1
-            )))
+            ))
             .unwrap()
         );
     }
@@ -166,18 +159,21 @@ mod test_add {
     /// testing add_safe
     #[test]
     fn add_safe() {
-        let a: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, 4, 5]]")).unwrap();
-        let b: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, -4, 5]]")).unwrap();
+        let a: MatZ = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();
+        let b: MatZ = MatZ::from_str("[[1, 2, 3],[3, -4, 5]]").unwrap();
         let c = a.add_safe(&b);
-        assert!(c.unwrap() == MatZ::from_str(&String::from("[[2, 4, 6],[6, 0, 10]]")).unwrap());
+        assert_eq!(
+            c.unwrap(),
+            MatZ::from_str("[[2, 4, 6],[6, 0, 10]]").unwrap()
+        );
     }
 
     /// testing add_safe throws error
     #[test]
     fn add_safe_is_err() {
-        let a: MatZ = MatZ::from_str(&String::from("[[1, 2],[3, 4]]")).unwrap();
-        let b: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, -4, 5]]")).unwrap();
-        let c: MatZ = MatZ::from_str(&String::from("[[1, 2, 3]]")).unwrap();
+        let a: MatZ = MatZ::from_str("[[1, 2],[3, 4]]").unwrap();
+        let b: MatZ = MatZ::from_str("[[1, 2, 3],[3, -4, 5]]").unwrap();
+        let c: MatZ = MatZ::from_str("[[1, 2, 3]]").unwrap();
         assert!(a.add_safe(&b).is_err());
         assert!(c.add_safe(&b).is_err());
     }

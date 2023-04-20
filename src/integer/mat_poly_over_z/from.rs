@@ -36,7 +36,7 @@ impl MatPolyOverZ {
     /// Returns a [`MatPolyOverZ`] or an error, if the number of rows or columns is
     /// less or equal to `0`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatPolyOverZ;
     ///
@@ -94,7 +94,22 @@ impl FromStr for MatPolyOverZ {
     /// the number of entries in rows is unequal or if the regular expression
     /// inside of the function could not be processed.
     ///
-    /// # Example
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let matrix = MatPolyOverZ::from_str("[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]").unwrap();
+    /// ```
+    ///
+    /// ```
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let str1 = "[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]";
+    /// let matrix = MatPolyOverZ::from_str(str1).unwrap();
+    /// ```
+    ///
     /// ```
     /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
@@ -169,12 +184,11 @@ mod test_from_str {
     /// Ensure that initialization works.
     #[test]
     fn init_works() {
-        let matrix_string1 =
-            String::from("[[1  42, 2  24 42, 2  24 42],[2  24 42, 2  24 42, 2  24 42]]");
+        let matrix_str = "[[1  42, 2  24 42, 2  24 42],[2  24 42, 2  24 42, 2  24 42]]";
 
         assert_eq!(
             "1  42",
-            MatPolyOverZ::from_str(&matrix_string1)
+            MatPolyOverZ::from_str(matrix_str)
                 .unwrap()
                 .get_entry(0, 0)
                 .unwrap()
@@ -244,25 +258,24 @@ mod test_from_str {
     /// Ensure that a wrong format causes an error.
     #[test]
     fn wrong_format_error() {
-        let matrix_string1 = String::from("[[1  42,224 42,2  24 42][2  24 42,2  24 42,2  24 42]]");
-        let matrix_string2 = String::from("[[1  42,224 42,2  24 42],2  24 42,2  24 42,2  24 42]]");
-        let matrix_string3 = String::from("[1  42,224 42,2  24 42,2  24 42,2  24 42,2  24 42]");
-        let matrix_string4 = String::from("[[1  42,224 42,2  24 42,2  24 42,2  24 42,2  24 42]");
-        let matrix_string5 =
-            String::from("[ [1  42,224 42,2  24 42],[2  24 42,2  24 42,2  24 42]]");
-        let matrix_string6 = String::from("[[1  42,224 42,2  24 42],[2  24 42,2  24 42,2  24 4]2]");
-        let matrix_string7 = String::from("");
-        let matrix_string8 = String::from("[]");
-        let matrix_string9 = String::from("[[]]");
+        let matrix_str1 = "[[1  42,224 42,2  24 42][2  24 42,2  24 42,2  24 42]]";
+        let matrix_str2 = "[[1  42,224 42,2  24 42],2  24 42,2  24 42,2  24 42]]";
+        let matrix_str3 = "[1  42,224 42,2  24 42,2  24 42,2  24 42,2  24 42]";
+        let matrix_str4 = "[[1  42,224 42,2  24 42,2  24 42,2  24 42,2  24 42]";
+        let matrix_str5 = "[ [1  42,224 42,2  242,2  24 42,2  24 42]]";
+        let matrix_str6 = "[[1  42,224 42,2  24 42],[2  24 42,2  24 42,2  24 4]2]";
+        let matrix_str7 = "";
+        let matrix_str8 = "[]";
+        let matrix_str9 = "[[]]";
 
-        assert!(MatPolyOverZ::from_str(&matrix_string1).is_err());
-        assert!(MatPolyOverZ::from_str(&matrix_string2).is_err());
-        assert!(MatPolyOverZ::from_str(&matrix_string3).is_err());
-        assert!(MatPolyOverZ::from_str(&matrix_string4).is_err());
-        assert!(MatPolyOverZ::from_str(&matrix_string5).is_err());
-        assert!(MatPolyOverZ::from_str(&matrix_string6).is_err());
-        assert!(MatPolyOverZ::from_str(&matrix_string7).is_err());
-        assert!(MatPolyOverZ::from_str(&matrix_string8).is_err());
-        assert!(MatPolyOverZ::from_str(&matrix_string9).is_err());
+        assert!(MatPolyOverZ::from_str(matrix_str1).is_err());
+        assert!(MatPolyOverZ::from_str(matrix_str2).is_err());
+        assert!(MatPolyOverZ::from_str(matrix_str3).is_err());
+        assert!(MatPolyOverZ::from_str(matrix_str4).is_err());
+        assert!(MatPolyOverZ::from_str(matrix_str5).is_err());
+        assert!(MatPolyOverZ::from_str(matrix_str6).is_err());
+        assert!(MatPolyOverZ::from_str(matrix_str7).is_err());
+        assert!(MatPolyOverZ::from_str(matrix_str8).is_err());
+        assert!(MatPolyOverZ::from_str(matrix_str9).is_err());
     }
 }

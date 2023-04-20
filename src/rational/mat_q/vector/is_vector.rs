@@ -19,7 +19,7 @@ impl MatQ {
     /// Returns `true` if the provided [`MatQ`] has only one row,
     /// i.e. is a row vector. Otherwise, returns `false`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
@@ -37,7 +37,7 @@ impl MatQ {
     /// Returns `true` if the provided [`MatQ`] has only one column,
     /// i.e. is a column vector. Otherwise, returns `false`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
@@ -55,7 +55,7 @@ impl MatQ {
     /// Returns `true` if the provided [`MatQ`] has only one column or one row,
     /// i.e. is a vector. Otherwise, returns `false`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
@@ -73,7 +73,7 @@ impl MatQ {
     /// Returns `true` if the provided [`MatQ`] has only one entry,
     /// i.e. is a 1x1 matrix. Otherwise, returns `false`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;

@@ -28,7 +28,7 @@ impl Mul for &PolyOverZq {
     ///
     /// Returns the product of both polynomials as a [`PolyOverZq`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
@@ -42,8 +42,8 @@ impl Mul for &PolyOverZq {
     /// let f: PolyOverZq = c * &e;
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Panics if the moduli of both [`PolyOverZq`] mismatch.
+    /// # Panics ...
+    /// - ... if the moduli of both [`PolyOverZq`] mismatch.
     fn mul(self, other: Self) -> Self::Output {
         self.mul_safe(other).unwrap()
     }
@@ -58,7 +58,7 @@ impl PolyOverZq {
     /// Returns the product of both polynomials as a [`PolyOverZq`] or an error if the moduli
     /// mismatch.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;

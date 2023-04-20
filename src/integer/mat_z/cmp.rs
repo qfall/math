@@ -19,7 +19,7 @@ impl PartialEq for MatZ {
     ///
     /// Returns `true` if the elements are equal, otherwise `false`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;

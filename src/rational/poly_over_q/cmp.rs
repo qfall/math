@@ -21,7 +21,7 @@ impl PartialEq for PolyOverQ {
     ///
     /// Returns `true` if the elements are equal, otherwise `false`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::PolyOverQ;
     /// use std::str::FromStr;

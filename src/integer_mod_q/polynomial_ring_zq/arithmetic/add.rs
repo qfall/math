@@ -29,7 +29,7 @@ impl Add for &PolynomialRingZq {
     ///
     /// Returns the sum of both polynomials as a [`PolynomialRingZq`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::PolynomialRingZq;
     /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
@@ -64,7 +64,7 @@ impl PolynomialRingZq {
     /// Returns the sum of both polynomials as a [`PolynomialRingZq`] or an error if the moduli
     /// mismatch.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::PolynomialRingZq;
     /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;

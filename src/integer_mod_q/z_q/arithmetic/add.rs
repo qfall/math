@@ -29,7 +29,7 @@ impl Add for &Zq {
     ///
     /// Returns the sum of both numbers as a [`Zq`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
     ///
@@ -42,8 +42,8 @@ impl Add for &Zq {
     /// let f: Zq = c + &e;
     /// ```
     ///
-    /// # Panics
-    /// - Panics if the moduli of both [`Zq`] mismatch.
+    /// # Panics ...
+    /// - ... if the moduli of both [`Zq`] mismatch.
     fn add(self, other: Self) -> Self::Output {
         self.add_safe(other).unwrap()
     }
@@ -59,7 +59,7 @@ impl Zq {
     /// Returns the sum of both numbers as a [`Zq`] or an error if the modulus
     /// does mismatch.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
     ///
@@ -106,7 +106,7 @@ mod test_add {
         let a: Zq = Zq::try_from((11, 17)).unwrap();
         let b: Zq = Zq::try_from((12, 17)).unwrap();
         let c: Zq = a + b;
-        assert!(c == Zq::try_from((6, 17)).unwrap());
+        assert_eq!(c, Zq::try_from((6, 17)).unwrap());
     }
 
     /// testing addition for two borrowed [`Zq`]
@@ -115,7 +115,7 @@ mod test_add {
         let a: Zq = Zq::try_from((10, 11)).unwrap();
         let b: Zq = Zq::try_from((1, 11)).unwrap();
         let c: Zq = &a + &b;
-        assert!(c == Zq::try_from((0, 11)).unwrap());
+        assert_eq!(c, Zq::try_from((0, 11)).unwrap());
     }
 
     /// testing addition for borrowed [`Zq`] and [`Zq`]
@@ -124,7 +124,7 @@ mod test_add {
         let a: Zq = Zq::try_from((2, 11)).unwrap();
         let b: Zq = Zq::try_from((5, 11)).unwrap();
         let c: Zq = &a + b;
-        assert!(c == Zq::try_from((7, 11)).unwrap());
+        assert_eq!(c, Zq::try_from((7, 11)).unwrap());
     }
 
     /// testing addition for [`Zq`] and borrowed [`Zq`]
@@ -133,7 +133,7 @@ mod test_add {
         let a: Zq = Zq::try_from((12, 11)).unwrap();
         let b: Zq = Zq::try_from((10, 11)).unwrap();
         let c: Zq = a + &b;
-        assert!(c == Zq::try_from((0, 11)).unwrap());
+        assert_eq!(c, Zq::try_from((0, 11)).unwrap());
     }
 
     /// testing addition for big [`Zq`]
@@ -142,7 +142,10 @@ mod test_add {
         let a: Zq = Zq::try_from((u32::MAX, u32::MAX - 58)).unwrap();
         let b: Zq = Zq::try_from((i32::MAX, u32::MAX - 58)).unwrap();
         let c: Zq = a + b;
-        assert!(c == Zq::try_from(((u32::MAX - 1) / 2 + 58, u32::MAX - 58)).unwrap());
+        assert_eq!(
+            c,
+            Zq::try_from(((u32::MAX - 1) / 2 + 58, u32::MAX - 58)).unwrap()
+        );
     }
 
     /// testing addition for [`Zq`] with different moduli does not work

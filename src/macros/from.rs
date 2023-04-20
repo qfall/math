@@ -57,7 +57,7 @@ pub(crate) use from_trait;
 ///   (e.g. [`Z::from_i64()`]).
 /// Returns the Implementation code for the function `from_<source_type>`.
 ///
-/// # Example
+/// # Examples
 /// ```compile_fail
 /// use qfall_math::macros;
 /// use qfall_math::integer::Z;

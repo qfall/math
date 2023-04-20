@@ -17,7 +17,7 @@ impl MatZ {
     /// Returns the transposed form of the given matrix, i.e. rows get transformed to columns
     /// and vice versa.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;

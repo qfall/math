@@ -16,7 +16,7 @@ impl MatPolyOverZ {
     /// Returns the transposed form of the given matrix, i.e. rows get transformed to columns
     /// and vice versa.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;

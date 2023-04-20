@@ -27,7 +27,7 @@ impl Pow<&Z> for Zq {
     ///
     /// Returns the value of `self` powered by `exp` as a new `Output` instance.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     /// use qfall_math::integer_mod_q::Zq;

@@ -33,7 +33,7 @@ impl FromStr for PolyOverQ {
     /// Returns a [`PolyOverQ`] or an error, if the provided string was not formatted
     /// correctly.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::PolyOverQ;
     /// use std::str::FromStr;
@@ -100,10 +100,10 @@ mod test_from_str {
     /// tests whether the same string yields the same polynomial
     #[test]
     fn same_string() {
-        let str = format!("3  1 2/3 {}/{}", u64::MAX, i64::MIN);
+        let string1 = format!("3  1 2/3 {}/{}", u64::MAX, i64::MIN);
 
-        let poly_1 = PolyOverQ::from_str(&str).unwrap();
-        let poly_2 = PolyOverQ::from_str(&str).unwrap();
+        let poly_1 = PolyOverQ::from_str(&string1).unwrap();
+        let poly_2 = PolyOverQ::from_str(&string1).unwrap();
 
         assert_eq!(poly_1, poly_2)
     }

@@ -28,7 +28,7 @@ impl Mul<&Z> for &MatZ {
     ///
     /// Returns the product of `self` and `other` as a [`MatZ`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use qfall_math::integer::Z;

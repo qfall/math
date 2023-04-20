@@ -26,7 +26,7 @@ impl Sub for &Z {
     ///
     /// Returns the result of the subtraction as a [`Z`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     ///
@@ -155,7 +155,7 @@ mod test_sub {
         let a: Z = Z::from(42);
         let b: Z = Z::from(24);
         let c: Z = a - b;
-        assert!(c == Z::from(18));
+        assert_eq!(c, Z::from(18));
     }
 
     /// testing subtraction for two borrowed [`Z`]
@@ -164,7 +164,7 @@ mod test_sub {
         let a: Z = Z::from(42);
         let b: Z = Z::from(24);
         let c: Z = &a - &b;
-        assert!(c == Z::from(18));
+        assert_eq!(c, Z::from(18));
     }
 
     /// testing subtraction for borrowed [`Z`] and [`Z`]
@@ -173,7 +173,7 @@ mod test_sub {
         let a: Z = Z::from(42);
         let b: Z = Z::from(24);
         let c: Z = &a - b;
-        assert!(c == Z::from(18));
+        assert_eq!(c, Z::from(18));
     }
 
     /// testing subtraction for [`Z`] and borrowed [`Z`]
@@ -182,7 +182,7 @@ mod test_sub {
         let a: Z = Z::from(42);
         let b: Z = Z::from(24);
         let c: Z = a - &b;
-        assert!(c == Z::from(18));
+        assert_eq!(c, Z::from(18));
     }
 
     /// testing subtraction for large integers
@@ -194,8 +194,8 @@ mod test_sub {
         let d: Z = &a - &b;
         let e: Z = &b - a;
         let f: Z = b - c;
-        assert!(d == Z::from(i64::MAX));
-        assert!(e == Z::from(i64::MIN + 1));
-        assert!(f == Z::from(i64::MAX - 738201034));
+        assert_eq!(d, Z::from(i64::MAX));
+        assert_eq!(e, Z::from(i64::MIN + 1));
+        assert_eq!(f, Z::from(i64::MAX - 738201034));
     }
 }

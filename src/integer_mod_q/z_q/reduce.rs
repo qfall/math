@@ -22,7 +22,7 @@ impl Zq {
     /// to the given [`Z`](crate::integer::Z)
     /// in the [`Zq`].
     ///
-    /// # Example
+    /// # Examples
     /// ```compile_fail
     /// use qfall_math::integer_mod_q::Zq;
     /// use qfall_math::integer_mod_q::Modulus;

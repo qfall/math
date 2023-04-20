@@ -61,15 +61,15 @@ mod test_find_matrix_dimensions {
     // Ensure that correct prepared strings of a matrix are accepted.
     #[test]
     fn correct_matrix_works() {
-        let matrix_string1 = String::from("[[1, 2, 3],[3, 4, 5]]");
-        let matrix_string2 = String::from("[[1/3, -2/7, 3],[3, 4, -5/-2]]");
-        let matrix_string3 = String::from("[[4  0 1 2 3, 2  0 1],[1  5, 2  7 8]]");
-        let matrix_string4 = String::from("[[sdclin, =§&%, +57n4],[+dk<, 37 ffew, 8fh2n]]");
+        let matrix_str1 = "[[1, 2, 3],[3, 4, 5]]";
+        let matrix_str2 = "[[1/3, -2/7, 3],[3, 4, -5/-2]]";
+        let matrix_str3 = "[[4  0 1 2 3, 2  0 1],[1  5, 2  7 8]]";
+        let matrix_str4 = "[[sdclin, =§&%, +57n4],[+dk<, 37 ffew, 8fh2n]]";
 
-        let matrix1 = parse_matrix_string(&matrix_string1).unwrap();
-        let matrix2 = parse_matrix_string(&matrix_string2).unwrap();
-        let matrix3 = parse_matrix_string(&matrix_string3).unwrap();
-        let matrix4 = parse_matrix_string(&matrix_string4).unwrap();
+        let matrix1 = parse_matrix_string(matrix_str1).unwrap();
+        let matrix2 = parse_matrix_string(matrix_str2).unwrap();
+        let matrix3 = parse_matrix_string(matrix_str3).unwrap();
+        let matrix4 = parse_matrix_string(matrix_str4).unwrap();
 
         assert_eq!(find_matrix_dimensions(&matrix1).unwrap().0, 2);
         assert_eq!(find_matrix_dimensions(&matrix1).unwrap().1, 3);

@@ -25,7 +25,7 @@ impl Mul for &Q {
     ///
     /// Returns the product of both numbers as a [`Q`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
@@ -61,7 +61,7 @@ mod test_mul {
         let a: Q = Q::from_str("2").unwrap();
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a * b;
-        assert!(c == Q::from_str("42").unwrap());
+        assert_eq!(c, Q::from_str("42").unwrap());
     }
 
     /// testing multiplication for two borrowed [`Q`]
@@ -70,7 +70,7 @@ mod test_mul {
         let a: Q = Q::from_str("2").unwrap();
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = &a * &b;
-        assert!(c == Q::from_str("42").unwrap());
+        assert_eq!(c, Q::from_str("42").unwrap());
     }
 
     /// testing multiplication for borrowed [`Q`] and [`Q`]
@@ -79,7 +79,7 @@ mod test_mul {
         let a: Q = Q::from_str("4").unwrap();
         let b: Q = Q::from_str("42/10").unwrap();
         let c: Q = &a * b;
-        assert!(c == Q::from_str("168/10").unwrap());
+        assert_eq!(c, Q::from_str("168/10").unwrap());
     }
 
     /// testing multiplication for [`Q`] and borrowed [`Q`]
@@ -88,7 +88,7 @@ mod test_mul {
         let a: Q = Q::from_str("2").unwrap();
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a * &b;
-        assert!(c == Q::from_str("42").unwrap());
+        assert_eq!(c, Q::from_str("42").unwrap());
     }
 
     #[test]
@@ -100,9 +100,10 @@ mod test_mul {
         let d: Q = Q::from_str(&format!("1/{}", (u32::MAX))).unwrap();
         let e: Q = &a * &b;
         let f: Q = c * d;
-        assert!(e == Q::from_str(&(u64::MAX - 1).to_string()).unwrap());
-        assert!(
-            f == Q::from_str(&format!(
+        assert_eq!(e, Q::from_str(&(u64::MAX - 1).to_string()).unwrap());
+        assert_eq!(
+            f,
+            Q::from_str(&format!(
                 "1/{}",
                 u64::from(u32::MAX) * u64::from((u32::MAX - 1) / 2)
             ))

@@ -128,7 +128,7 @@ impl Q {
     ///
     /// Returns a [`Q`] or a [`MathError`]
     ///
-    /// # Example
+    /// # Examples
     /// ```ignore (private function)
     /// use qfall_math::rational::Q;
     /// use qfall_math::integer::Z;
@@ -180,7 +180,7 @@ impl Q {
     ///
     /// Returns the new integer.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     /// use qfall_math::rational::Q;
@@ -205,7 +205,7 @@ impl Q {
     ///
     /// Returns a [`Q`].
     ///
-    /// # Example
+    /// # Examples
     /// ```rust
     /// use qfall_math::rational::Q;
     ///
@@ -240,7 +240,7 @@ impl<T1: Into<Z> + Clone, T2: Into<Z> + Clone> TryFrom<(&T1, &T2)> for Q {
     ///
     /// Returns a [`Q`] or a [`MathError`]
     ///
-    /// # Example
+    /// # Examples
     /// ```rust
     /// use qfall_math::rational::Q;
     /// use qfall_math::integer::Z;
@@ -269,7 +269,7 @@ impl<T: Into<Z>> From<T> for Q {
     ///
     /// Returns the new integer.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     /// use qfall_math::integer::Z;
@@ -290,7 +290,7 @@ impl From<f64> for Q {
     ///
     /// Returns a [`Q`].
     ///
-    /// # Example
+    /// # Examples
     /// ```rust
     /// use qfall_math::rational::Q;
     ///

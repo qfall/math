@@ -75,8 +75,8 @@ mod test_to_string {
     fn working_use_result_of_to_string() {
         let cmp_string = "3  1 2 2 mod 5";
         let cmp = ModulusPolynomialRingZq::from_str(cmp_string).unwrap();
-        let str = cmp.to_string();
+        let string1 = cmp.to_string();
 
-        assert!(ModulusPolynomialRingZq::from_str(&str).is_ok())
+        assert!(ModulusPolynomialRingZq::from_str(&string1).is_ok())
     }
 }

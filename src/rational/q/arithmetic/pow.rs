@@ -27,7 +27,7 @@ impl Pow<&Z> for Q {
     ///
     /// Returns the value of `self` powered by `exp` as a new [`Q`] instance.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::{rational::Q, integer::Z};
     /// use qfall_math::traits::*;

@@ -20,7 +20,7 @@ impl Tensor for MatZ {
     ///
     /// Returns the tensor product of `self` with `other`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use qfall_math::traits::Tensor;

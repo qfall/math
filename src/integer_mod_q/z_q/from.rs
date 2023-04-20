@@ -28,7 +28,7 @@ impl Zq {
     ///
     /// Returns the new `value` mod `modulus` as a [`Zq`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// # use qfall_math::error::MathError;
     /// use qfall_math::integer::Z;
@@ -67,7 +67,7 @@ impl Zq {
     ///
     /// Returns the new `value` mod `modulus` as a [`Zq`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// # use qfall_math::error::MathError;
     /// use qfall_math::integer::Z;
@@ -111,7 +111,7 @@ impl Zq {
     ///
     /// Returns the `value` mod `modulus` as a [`Zq`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// # use qfall_math::error::MathError;
     /// use qfall_math::integer::Z;
@@ -158,7 +158,7 @@ impl<T1: Into<Z>, T2: Into<Z>> TryFrom<(T1, T2)> for Zq {
     ///
     /// Returns the `value` mod `modulus` as a [`Zq`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// # use qfall_math::error::MathError;
     /// use qfall_math::integer::Z;
@@ -199,7 +199,7 @@ impl FromStr for Zq {
     /// Returns a [`Zq`] or an error, if the provided string was not formatted
     /// correctly.
     ///
-    /// # Example:
+    /// # Examples:
     /// ```
     /// use std::str::FromStr;
     /// use qfall_math::integer_mod_q::Zq;

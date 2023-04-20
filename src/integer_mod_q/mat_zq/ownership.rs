@@ -19,13 +19,13 @@ use flint_sys::fmpz_mod_mat::{fmpz_mod_mat_clear, fmpz_mod_mat_init_set};
 impl Clone for MatZq {
     /// Clones the given element and returns a deep clone of the [`MatZq`] element.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let string = String::from("[[1,2,3],[4,5,6]] mod 4");
-    /// let a = MatZq::from_str(&string).unwrap();
+    /// let str1 = "[[1,2,3],[4,5,6]] mod 4";
+    /// let a = MatZq::from_str(str1).unwrap();
     /// let b = a.clone();
     /// ```
     fn clone(&self) -> Self {
@@ -50,9 +50,9 @@ impl Drop for MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let string = String::from("[[1,2,3],[4,5,6]] mod 4");
+    /// let str1 = "[[1,2,3],[4,5,6]] mod 4";
     /// {
-    ///     let a = MatZq::from_str(&string).unwrap();
+    ///     let a = MatZq::from_str(str1).unwrap();
     /// } // as a's scope ends here, it get's dropped
     /// ```
     ///
@@ -60,8 +60,8 @@ impl Drop for MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let string = String::from("[[1,2,3],[4,5,6]] mod 4");
-    /// let a = MatZq::from_str(&string).unwrap();
+    /// let str1 = "[[1,2,3],[4,5,6]] mod 4";
+    /// let a = MatZq::from_str(str1).unwrap();
     /// drop(a); // explicitly drops a's value
     /// ```
     fn drop(&mut self) {
@@ -83,9 +83,9 @@ mod test_clone {
     #[allow(clippy::redundant_clone)]
     fn keep_alive() {
         let a: MatZq;
-        let string = String::from("[[1, 2, 3],[3, 4, 5]] mod 6");
+        let str1 = "[[1, 2, 3],[3, 4, 5]] mod 6";
         {
-            let b = MatZq::from_str(&string).unwrap();
+            let b = MatZq::from_str(str1).unwrap();
 
             a = b.clone();
         }

@@ -27,13 +27,13 @@ impl Sub for &MatZ {
     ///
     /// Returns the result of the subtraction as a [`MatZ`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
-    /// let a: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, 4, 5]]")).unwrap();
-    /// let b: MatZ = MatZ::from_str(&String::from("[[1, 9, 3],[1, 0, 5]]")).unwrap();
+    /// let a: MatZ = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();
+    /// let b: MatZ = MatZ::from_str("[[1, 9, 3],[1, 0, 5]]").unwrap();
     ///
     /// let c: MatZ = &a - &b;
     /// let d: MatZ = a - b;
@@ -58,13 +58,13 @@ impl MatZ {
     /// Returns the result of the subtraction as a [`MatZ`] or an
     /// error if the matrix dimensions mismatch.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
-    /// let a: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, 4, 5]]")).unwrap();
-    /// let b: MatZ = MatZ::from_str(&String::from("[[1, 9, 3],[1, 0, 5]]")).unwrap();
+    /// let a: MatZ = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();
+    /// let b: MatZ = MatZ::from_str("[[1, 9, 3],[1, 0, 5]]").unwrap();
     ///
     /// let c: MatZ = a.sub_safe(&b).unwrap();
     /// ```
@@ -104,61 +104,54 @@ mod test_sub {
     /// testing subtraction for two [`MatZ`]
     #[test]
     fn sub() {
-        let a: MatZ = MatZ::from_str(&String::from("[[1, 1, 2],[3, 4, -5]]")).unwrap();
-        let b: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, -4, 5]]")).unwrap();
+        let a: MatZ = MatZ::from_str("[[1, 1, 2],[3, 4, -5]]").unwrap();
+        let b: MatZ = MatZ::from_str("[[1, 2, 3],[3, -4, 5]]").unwrap();
         let c: MatZ = a - b;
-        assert!(c == MatZ::from_str(&String::from("[[0, -1, -1],[0, 8, -10]]")).unwrap());
+        assert_eq!(c, MatZ::from_str("[[0, -1, -1],[0, 8, -10]]").unwrap());
     }
 
     /// testing subtraction for two borrowed [`MatZ`]
     #[test]
     fn sub_borrow() {
-        let a: MatZ = MatZ::from_str(&String::from("[[1, 1, 2],[3, 4, -5]]")).unwrap();
-        let b: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, -4, 5]]")).unwrap();
+        let a: MatZ = MatZ::from_str("[[1, 1, 2],[3, 4, -5]]").unwrap();
+        let b: MatZ = MatZ::from_str("[[1, 2, 3],[3, -4, 5]]").unwrap();
         let c: MatZ = &a - &b;
-        assert!(c == MatZ::from_str(&String::from("[[0, -1, -1],[0, 8, -10]]")).unwrap());
+        assert_eq!(c, MatZ::from_str("[[0, -1, -1],[0, 8, -10]]").unwrap());
     }
 
     /// testing subtraction for borrowed [`MatZ`] and [`MatZ`]
     #[test]
     fn sub_first_borrowed() {
-        let a: MatZ = MatZ::from_str(&String::from("[[1, 1, 2],[3, 4, -5]]")).unwrap();
-        let b: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, -4, 5]]")).unwrap();
+        let a: MatZ = MatZ::from_str("[[1, 1, 2],[3, 4, -5]]").unwrap();
+        let b: MatZ = MatZ::from_str("[[1, 2, 3],[3, -4, 5]]").unwrap();
         let c: MatZ = &a - b;
-        assert!(c == MatZ::from_str(&String::from("[[0, -1, -1],[0, 8, -10]]")).unwrap());
+        assert_eq!(c, MatZ::from_str("[[0, -1, -1],[0, 8, -10]]").unwrap());
     }
 
     /// testing subtraction for [`MatZ`] and borrowed [`MatZ`]
     #[test]
     fn sub_second_borrowed() {
-        let a: MatZ = MatZ::from_str(&String::from("[[1, 1, 2],[3, 4, -5]]")).unwrap();
-        let b: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, -4, 5]]")).unwrap();
+        let a: MatZ = MatZ::from_str("[[1, 1, 2],[3, 4, -5]]").unwrap();
+        let b: MatZ = MatZ::from_str("[[1, 2, 3],[3, -4, 5]]").unwrap();
         let c: MatZ = a - &b;
-        assert!(c == MatZ::from_str(&String::from("[[0, -1, -1],[0, 8, -10]]")).unwrap());
+        assert_eq!(c, MatZ::from_str("[[0, -1, -1],[0, 8, -10]]").unwrap());
     }
 
     /// testing subtraction for big numbers
     #[test]
     fn sub_large_numbers() {
-        let a: MatZ = MatZ::from_str(&String::from(format!(
-            "[[1, 2, {}],[3, -4, {}]]",
-            i64::MIN,
-            u64::MAX
-        )))
-        .unwrap();
-        let b: MatZ = MatZ::from_str(&String::from(format!(
-            "[[1, 1, {}],[3, 9, {}]]",
-            i64::MAX,
-            i64::MAX
-        )))
-        .unwrap();
+        let a: MatZ =
+            MatZ::from_str(&format!("[[1, 2, {}],[3, -4, {}]]", i64::MIN, u64::MAX)).unwrap();
+        let b: MatZ =
+            MatZ::from_str(&format!("[[1, 1, {}],[3, 9, {}]]", i64::MAX, i64::MAX)).unwrap();
         let c: MatZ = a - &b;
-        assert!(
-            c == MatZ::from_str(&String::from(format!(
+        assert_eq!(
+            c,
+            MatZ::from_str(&format!(
                 "[[0, 1, -{}],[0, -13, {}]]",
                 u64::MAX,
                 (u64::MAX - 1) / 2 + 1
-            )))
+            ))
             .unwrap()
         );
     }
@@ -166,18 +159,18 @@ mod test_sub {
     /// testing sub_safe
     #[test]
     fn sub_safe() {
-        let a: MatZ = MatZ::from_str(&String::from("[[1, 1, 2],[3, 4, -5]]")).unwrap();
-        let b: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, -4, 5]]")).unwrap();
+        let a: MatZ = MatZ::from_str("[[1, 1, 2],[3, 4, -5]]").unwrap();
+        let b: MatZ = MatZ::from_str("[[1, 2, 3],[3, -4, 5]]").unwrap();
         let c: MatZ = a.sub_safe(&b).unwrap();
-        assert!(c == MatZ::from_str(&String::from("[[0, -1, -1],[0, 8, -10]]")).unwrap());
+        assert_eq!(c, MatZ::from_str("[[0, -1, -1],[0, 8, -10]]").unwrap());
     }
 
     /// testing sub_safe throws error
     #[test]
     fn sub_safe_is_err() {
-        let a: MatZ = MatZ::from_str(&String::from("[[1, 2],[3, 4]]")).unwrap();
-        let b: MatZ = MatZ::from_str(&String::from("[[1, 2, 3],[3, -4, 5]]")).unwrap();
-        let c: MatZ = MatZ::from_str(&String::from("[[1, 2, 3]]")).unwrap();
+        let a: MatZ = MatZ::from_str("[[1, 2],[3, 4]]").unwrap();
+        let b: MatZ = MatZ::from_str("[[1, 2, 3],[3, -4, 5]]").unwrap();
+        let c: MatZ = MatZ::from_str("[[1, 2, 3]]").unwrap();
         assert!(a.sub_safe(&b).is_err());
         assert!(c.sub_safe(&b).is_err());
     }

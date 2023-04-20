@@ -24,7 +24,7 @@ impl Tensor for MatZq {
     /// Returns the tensor product of `self` with `other` and panics if the
     /// moduli of the provided matrices mismatch.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     /// use qfall_math::traits::Tensor;
@@ -44,7 +44,7 @@ impl Tensor for MatZq {
     ///
     /// # Panics ...
     /// - ... if the moduli of both matrices mismatch.
-    ///  Use [`tensor_product_safe`] to get an error instead.
+    ///  Use [`tensor_product_safe`](crate::integer_mod_q::MatZq::tensor_product_safe) to get an error instead.
     fn tensor_product(&self, other: &Self) -> Self {
         self.tensor_product_safe(other).unwrap()
     }
@@ -59,7 +59,7 @@ impl MatZq {
     /// Returns the tensor product of `self` with `other` or an error if the
     /// moduli of the provided matrices mismatch.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;

@@ -29,7 +29,7 @@ impl Mul for &PolynomialRingZq {
     ///
     /// Returns the product of both polynomials as a [`PolynomialRingZq`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::PolynomialRingZq;
     /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
@@ -64,7 +64,7 @@ impl PolynomialRingZq {
     /// Returns the product of both polynomials as a [`PolynomialRingZq`] or an error if the moduli
     /// mismatch.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::PolynomialRingZq;
     /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;

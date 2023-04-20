@@ -28,7 +28,7 @@ impl Div for &Q {
     ///
     /// Returns the result ot the division as a [`Q`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
@@ -42,8 +42,8 @@ impl Div for &Q {
     /// let f: Q = c / &e;
     /// ```
     ///
-    /// # Panics
-    /// - Panics if the `other` value is `0`.
+    /// # Panics ...
+    /// - ... if the `other` value is `0`.
     fn div(self, other: Self) -> Self::Output {
         self.div_safe(other).unwrap()
     }
@@ -60,7 +60,7 @@ impl Q {
     ///
     /// Returns the result ot the division as a [`Q`] or an error, if division by zero occurs.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
@@ -101,7 +101,7 @@ mod test_div {
         let a: Q = Q::from_str("2").unwrap();
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a / b;
-        assert!(c == Q::from_str("4/42").unwrap());
+        assert_eq!(c, Q::from_str("4/42").unwrap());
     }
 
     /// testing division for two borrowed [`Q`]
@@ -110,7 +110,7 @@ mod test_div {
         let a: Q = Q::from_str("2").unwrap();
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = &a / &b;
-        assert!(c == Q::from_str("4/42").unwrap());
+        assert_eq!(c, Q::from_str("4/42").unwrap());
     }
 
     /// testing division for borrowed [`Q`] and [`Q`]
@@ -119,7 +119,7 @@ mod test_div {
         let a: Q = Q::from_str("4").unwrap();
         let b: Q = Q::from_str("42/10").unwrap();
         let c: Q = &a / b;
-        assert!(c == Q::from_str("40/42").unwrap());
+        assert_eq!(c, Q::from_str("40/42").unwrap());
     }
 
     /// testing division for [`Q`] and borrowed [`Q`]
@@ -128,7 +128,7 @@ mod test_div {
         let a: Q = Q::from_str("2").unwrap();
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a / &b;
-        assert!(c == Q::from_str("4/42").unwrap());
+        assert_eq!(c, Q::from_str("4/42").unwrap());
     }
 
     #[test]
@@ -140,9 +140,10 @@ mod test_div {
         let d: Q = Q::from_str(&format!("1/{}", (u32::MAX))).unwrap();
         let e: Q = &a / &b;
         let f: Q = c / d;
-        assert!(e == Q::from_str(&(i64::MAX).to_string()).unwrap());
-        assert!(
-            f == Q::from_str(&format!(
+        assert_eq!(e, Q::from_str(&(i64::MAX).to_string()).unwrap());
+        assert_eq!(
+            f,
+            Q::from_str(&format!(
                 "{}/{}",
                 u64::from(u32::MAX),
                 u64::from((u32::MAX - 1) / 2)

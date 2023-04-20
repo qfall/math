@@ -41,7 +41,7 @@ impl MatZq {
     /// Returns a [`MatZq`] or an error, if the number of rows or columns is
     /// less than `1`.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     ///
@@ -105,7 +105,7 @@ impl MatZq {
     ///
     /// Returns the new matrix.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use qfall_math::integer_mod_q::MatZq;
@@ -142,7 +142,22 @@ impl FromStr for MatZq {
     /// the number of entries in rows is unequal or if the regular expression
     /// inside of the function could not be processed.
     ///
-    /// # Example
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use std::str::FromStr;
+    ///
+    /// let matrix = MatZq::from_str("[[1,2,3],[4,5,6]] mod 4").unwrap();
+    /// ```
+    ///
+    /// ```
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use std::str::FromStr;
+    ///
+    /// let str1 = "[[1,2,3],[4,5,6]] mod 4";
+    /// let matrix = MatZq::from_str(str1).unwrap();
+    /// ```
+    ///
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
@@ -296,11 +311,11 @@ mod test_from_str {
     /// Ensure that initialization works.
     #[test]
     fn init_works() {
-        let matrix_string1 = String::from("[[1, 2, 3],[3, 4, 5]] mod 6");
+        let matrix_str1 = "[[1, 2, 3],[3, 4, 5]] mod 6";
 
         assert_eq!(
             Z::ONE,
-            MatZq::from_str(&matrix_string1)
+            MatZq::from_str(matrix_str1)
                 .unwrap()
                 .get_entry(0, 0)
                 .unwrap()
@@ -310,11 +325,11 @@ mod test_from_str {
     /// Ensure that entries are correctly reduced.
     #[test]
     fn reduce_works() {
-        let matrix_string1 = String::from("[[1, 2, 3],[3, 4, 5]] mod 3");
+        let matrix_str1 = "[[1, 2, 3],[3, 4, 5]] mod 3";
 
         assert_eq!(
             Z::ONE,
-            MatZq::from_str(&matrix_string1)
+            MatZq::from_str(matrix_str1)
                 .unwrap()
                 .get_entry(1, 1)
                 .unwrap()
@@ -366,11 +381,11 @@ mod test_from_str {
     /// Ensure that entries can have leading and trailing whitespaces.
     #[test]
     fn whitespaces_in_entries_works() {
-        let matrix_string1 = String::from("[[  1, 2 ,  3  ],[3 ,4,5 ]]  mod  6 ");
+        let matrix_str1 = "[[  1, 2 ,  3  ],[3 ,4,5 ]]  mod  6 ";
 
         assert_eq!(
             Z::ONE,
-            MatZq::from_str(&matrix_string1)
+            MatZq::from_str(matrix_str1)
                 .unwrap()
                 .get_entry(0, 0)
                 .unwrap()
@@ -380,28 +395,28 @@ mod test_from_str {
     /// Ensure that a wrong format causes an error.
     #[test]
     fn wrong_format_error() {
-        let matrix_string1 = String::from("[1, 2, 3],[3, 4, 5]] mod 6");
-        let matrix_string2 = String::from("[[1, 2, 3][3, 4, 5]] mod 6");
-        let matrix_string3 = String::from("[[1, 2, 3],3, 4, 5] mod 6");
-        let matrix_string4 = String::from("[1, 2, 3, 4, 5] mod 6");
-        let matrix_string5 = String::from("[ [1, 2, 3],[3, 4, 5]] mod 6");
-        let matrix_string6 = String::from("[[1, 2, 3],[3, 4, 5]8] mod 6");
-        let matrix_string7 = String::from("[[1, 2, 3],[3, 4, 5]] md 6");
-        let matrix_string8 = String::from(" mod 6");
-        let matrix_string9 = String::from("");
-        let matrix_string10 = String::from("[] mod 6");
-        let matrix_string11 = String::from("[[]] mod 6");
+        let matrix_str1 = "[1, 2, 3],[3, 4, 5]] mod 6";
+        let matrix_str2 = "[[1, 2, 3][3, 4, 5]] mod 6";
+        let matrix_str3 = "[[1, 2, 3],3, 4, 5] mod 6";
+        let matrix_str4 = "[1, 2, 3, 4, 5] mod 6";
+        let matrix_str5 = "[ [1, 2, 3],[3, 4, 5]] mod 6";
+        let matrix_str6 = "[[1, 2, 3],[3, 4, 5]8] mod 6";
+        let matrix_str7 = "[[1, 2, 3],[3, 4, 5]] md 6";
+        let matrix_str8 = " mod 6";
+        let matrix_str9 = "";
+        let matrix_str10 = "[] mod 6";
+        let matrix_str11 = "[[]] mod 6";
 
-        assert!(MatZq::from_str(&matrix_string1).is_err());
-        assert!(MatZq::from_str(&matrix_string2).is_err());
-        assert!(MatZq::from_str(&matrix_string3).is_err());
-        assert!(MatZq::from_str(&matrix_string4).is_err());
-        assert!(MatZq::from_str(&matrix_string5).is_err());
-        assert!(MatZq::from_str(&matrix_string6).is_err());
-        assert!(MatZq::from_str(&matrix_string7).is_err());
-        assert!(MatZq::from_str(&matrix_string8).is_err());
-        assert!(MatZq::from_str(&matrix_string9).is_err());
-        assert!(MatZq::from_str(&matrix_string10).is_err());
-        assert!(MatZq::from_str(&matrix_string11).is_err());
+        assert!(MatZq::from_str(matrix_str1).is_err());
+        assert!(MatZq::from_str(matrix_str2).is_err());
+        assert!(MatZq::from_str(matrix_str3).is_err());
+        assert!(MatZq::from_str(matrix_str4).is_err());
+        assert!(MatZq::from_str(matrix_str5).is_err());
+        assert!(MatZq::from_str(matrix_str6).is_err());
+        assert!(MatZq::from_str(matrix_str7).is_err());
+        assert!(MatZq::from_str(matrix_str8).is_err());
+        assert!(MatZq::from_str(matrix_str9).is_err());
+        assert!(MatZq::from_str(matrix_str10).is_err());
+        assert!(MatZq::from_str(matrix_str11).is_err());
     }
 }

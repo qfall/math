@@ -23,7 +23,7 @@ impl SetEntry<&Z> for MatZ {
     /// - `column`: specifies the column in which the entry is located
     /// - `value`: specifies the value to which the entry is set
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use qfall_math::integer::Z;

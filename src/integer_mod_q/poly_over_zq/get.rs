@@ -28,7 +28,7 @@ impl GetCoefficient<Zq> for PolyOverZq {
     /// Returns the coefficient as a [`Zq`] or a [`MathError`] if the provided index
     /// is negative and therefore invalid or it does not fit into an [`i64`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::traits::*;
     /// use qfall_math::integer_mod_q::PolyOverZq;
@@ -62,7 +62,7 @@ impl GetCoefficient<Z> for PolyOverZq {
     /// Returns the coefficient as a [`Z`] or a [`MathError`] if the provided index
     /// is negative and therefore invalid or it does not fit into an [`i64`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::traits::*;
     /// use qfall_math::integer_mod_q::PolyOverZq;

@@ -35,7 +35,7 @@ mod to_string;
 /// - `value`: holds a [`Z`] value for an integer value
 /// - `modulus`: holds a [`Modulus`] above which the value is reduced
 ///
-/// # Example
+/// # Examples
 /// ```
 /// # use qfall_math::error::MathError;
 /// use qfall_math::integer_mod_q::Zq;

@@ -20,7 +20,7 @@ use flint_sys::fmpq::{fmpq_abs, fmpq_addmul, fmpq_cmp};
 impl MatQ {
     /// Returns the squared Euclidean norm or 2-norm of the given (row or column) vector.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::{MatQ, Q};
     /// use std::str::FromStr;
@@ -59,7 +59,7 @@ impl MatQ {
 
     /// Returns the infinity norm or ∞-norm of the given (row or column) vector.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::{MatQ, Q};
     /// use std::str::FromStr;

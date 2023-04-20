@@ -18,7 +18,7 @@ impl Clone for Q {
     /// Clones the given element and returns another cloned reference
     /// to the [`fmpq`](flint_sys::fmpq::fmpq) element.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     /// use std::str::FromStr;

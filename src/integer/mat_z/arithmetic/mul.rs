@@ -29,7 +29,7 @@ impl Mul for &MatZ {
     ///
     /// Returns the product of `self` and `other` as a [`MatZ`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
@@ -43,8 +43,8 @@ impl Mul for &MatZ {
     /// let f = c * &e;
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Panics if the dimensions of `self` and `other` do not match for multiplication.
+    /// # Panics ...
+    /// - ... if the dimensions of `self` and `other` do not match for multiplication.
     fn mul(self, other: Self) -> Self::Output {
         self.mul_safe(other).unwrap()
     }
@@ -58,7 +58,7 @@ impl MatZ {
     ///
     /// Returns the product of `self` and `other` as a [`MatZ`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;

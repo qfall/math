@@ -20,7 +20,7 @@ impl Q {
     ///
     /// Returns e^self.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     /// use std::str::FromStr;

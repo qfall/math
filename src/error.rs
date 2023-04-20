@@ -58,7 +58,7 @@ use thiserror::Error;
 /// - `VectorFunctionCalledOnNonVector` is thrown if a function defined
 /// on vectors was called on a matrix instance that is not a vector
 ///
-/// # Example
+/// # Examples
 /// ```
 /// use qfall_math::error::MathError;
 ///

@@ -29,7 +29,7 @@ impl Mul for &MatZq {
     ///
     /// Returns the product of `self` and `other` as a [`MatZq`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
@@ -59,7 +59,7 @@ impl MatZq {
     ///
     /// Returns the product of `self` and `other` as a [`MatZq`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;

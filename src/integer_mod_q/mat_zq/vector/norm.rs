@@ -24,7 +24,7 @@ impl MatZq {
     /// Each length of an entry is defined as the shortest distance
     /// to the next zero instance in the ring.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::{
     ///     integer::Z,
@@ -70,7 +70,7 @@ impl MatZq {
     /// Each length of an entry is defined as the shortest distance
     /// to the next zero instance in the ring.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::{
     ///     integer::Z,

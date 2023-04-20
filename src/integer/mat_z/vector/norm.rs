@@ -20,7 +20,7 @@ use flint_sys::fmpz::fmpz_addmul;
 impl MatZ {
     /// Returns the squared Euclidean norm or 2-norm of the given (row or column) vector.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::{MatZ, Z};
     /// use std::str::FromStr;
@@ -59,7 +59,7 @@ impl MatZ {
 
     /// Returns the infinity norm or ∞-norm of the given (row or column) vector.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::{MatZ, Z};
     /// use std::str::FromStr;

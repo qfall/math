@@ -26,7 +26,7 @@ impl SetEntry<&Z> for MatZq {
     /// - `column`: specifies the column in which the entry is located
     /// - `value`: specifies the value to which the entry is set
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     /// use qfall_math::integer::Z;
@@ -62,7 +62,7 @@ impl SetEntry<&Zq> for MatZq {
     /// - `column`: specifies the column in which the entry is located
     /// - `value`: specifies the value to which the entry is set
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     /// use qfall_math::traits::SetEntry;
