@@ -30,7 +30,7 @@ impl Z {
     /// use qfall_math::integer::Z;
     ///
     /// let value = Z::from(15);
-    /// let log = value.log_ceil(&Z::from(4)).unwrap();
+    /// let log = value.log_ceil(&4).unwrap();
     ///
     /// assert_eq!(Z::from(2), log);
     /// ```
@@ -40,8 +40,12 @@ impl Z {
     /// - Returns a [`MathError`] of type
     /// [`NotNaturalNumber`](MathError::NotNaturalNumber) if the `self` is not
     ///  greater than `0`.
-    pub fn log_ceil(&self, base: &Z) -> Result<Z, MathError> {
-        if base <= &Z::ONE {
+    pub fn log_ceil<T>(&self, base: &T) -> Result<Z, MathError>
+    where
+        T: Into<Z> + Clone,
+    {
+        let base = base.clone().into();
+        if base <= Z::ONE {
             Err(MathError::InvalidBase(format!(
                 "The base must be greater than 1, but the provided is {}",
                 base
@@ -70,7 +74,7 @@ impl Z {
     /// use qfall_math::integer::Z;
     ///
     /// let value = Z::from(15);
-    /// let log = value.log_floor(&Z::from(4)).unwrap();
+    /// let log = value.log_floor(&4).unwrap();
     ///
     /// assert_eq!(Z::from(1), log);
     /// ```
@@ -80,8 +84,12 @@ impl Z {
     /// - Returns a [`MathError`] of type
     /// [`NotNaturalNumber`](MathError::NotNaturalNumber) if the `self` is not
     ///  greater than `0`.
-    pub fn log_floor(&self, base: &Z) -> Result<Z, MathError> {
-        if base <= &Z::ONE {
+    pub fn log_floor<T>(&self, base: &T) -> Result<Z, MathError>
+    where
+        T: Into<Z> + Clone,
+    {
+        let base = base.clone().into();
+        if base <= Z::ONE {
             Err(MathError::InvalidBase(format!(
                 "The base must be greater than 1, but the provided is {}",
                 base
@@ -216,6 +224,23 @@ mod test_log_ceil {
             Z::from(u64::MAX).log_ceil(&Z::from(4)).unwrap()
         );
     }
+
+    /// ensures that `log_ceil` is available for all important types
+    /// that can be casted to a [`Z`] instance like u8, u16, i32, i64, ...
+    #[test]
+    fn availability() {
+        let value = Z::from(5);
+
+        let _ = value.log_ceil(&2_u8).unwrap();
+        let _ = value.log_ceil(&2_u16).unwrap();
+        let _ = value.log_ceil(&2_u32).unwrap();
+        let _ = value.log_ceil(&2_u64).unwrap();
+        let _ = value.log_ceil(&2_i8).unwrap();
+        let _ = value.log_ceil(&2_i16).unwrap();
+        let _ = value.log_ceil(&2_i32).unwrap();
+        let _ = value.log_ceil(&2_i64).unwrap();
+        let _ = value.log_ceil(&value).unwrap();
+    }
 }
 
 #[cfg(test)]
@@ -257,6 +282,23 @@ mod test_log_floor {
             Z::from(31),
             Z::from(u64::MAX).log_floor(&Z::from(4)).unwrap()
         );
+    }
+
+    /// ensures that `log_floor` is available for all important types
+    /// that can be casted to a [`Z`] instance like u8, u16, i32, i64, ...
+    #[test]
+    fn availability() {
+        let value = Z::from(5);
+
+        let _ = value.log_floor(&2_u8).unwrap();
+        let _ = value.log_floor(&2_u16).unwrap();
+        let _ = value.log_floor(&2_u32).unwrap();
+        let _ = value.log_floor(&2_u64).unwrap();
+        let _ = value.log_floor(&2_i8).unwrap();
+        let _ = value.log_floor(&2_i16).unwrap();
+        let _ = value.log_floor(&2_i32).unwrap();
+        let _ = value.log_floor(&2_i64).unwrap();
+        let _ = value.log_floor(&value).unwrap();
     }
 }
 
