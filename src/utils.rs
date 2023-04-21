@@ -11,7 +11,7 @@
 //! This can include functions to pre-process inputs, find size of matrices
 //! and similar tasks.
 
-pub mod dimensions;
+pub(crate) mod dimensions;
 pub mod index;
-pub mod parse;
+pub(crate) mod parse;
 pub(crate) mod sample;

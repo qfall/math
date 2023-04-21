@@ -29,8 +29,11 @@ static mut RNG: Option<ThreadRng> = None;
 /// let rng = get_rng();
 /// ```
 #[allow(dead_code)]
-fn get_rng() -> &'static mut ThreadRng {
+pub(crate) fn get_rng() -> &'static mut ThreadRng {
     if unsafe { RNG.is_none() } {
+        // Instantiates a fresh thread-local RNG initialized with
+        // a random seed chosen from an OS-dependent RNG.
+        // ThreadRng uses ChaCha12, which is considered cryptographically secure.
         unsafe { RNG = Some(ThreadRng::default()) };
     }
 
@@ -51,9 +54,9 @@ fn get_rng() -> &'static mut ThreadRng {
 /// use qfall_math::integer::Z;
 /// let interval_size = Z::from(20);
 ///
-/// let sample = sample_uniform_rejection(&interval_size);
+/// let sample = sample_uniform_rejection(&interval_size).unwrap();
 ///
-/// assert!(0 <= sample);
+/// assert!(Z::ZERO <= sample);
 /// assert!(sample < interval_size);
 /// ```
 ///
@@ -91,12 +94,11 @@ pub(crate) fn sample_uniform_rejection(interval_size: &Z) -> Result<Z, MathError
 /// # Examples
 /// ```compile_fail
 /// use qfall_math::utils::sample::sample_bits_uniform;
-/// let nr_bits = 6;
+/// let nr_bits = 14;
 ///
 /// let byte_vector = sample_bits_uniform(nr_bits);
 ///
-/// assert_eq!(0, byte_vector[6]);
-/// assert_eq!(0, byte_vector[7]);
+/// assert_eq!(byte_vector[1] < 64);
 /// assert_eq!(2, byte_vector.len());
 /// ```
 #[allow(dead_code)]
@@ -106,9 +108,9 @@ fn sample_bits_uniform(nr_bits: usize) -> Vec<u8> {
     // sample ⌈ nr_bits / 8 ⌉ bytes
     let mut byte_vector;
     if nr_bits % 8 == 0 {
-        byte_vector = vec![0_u8; nr_bits / 8];
+        byte_vector = vec![0u8; nr_bits / 8];
     } else {
-        byte_vector = vec![0_u8; nr_bits / 8 + 1];
+        byte_vector = vec![0u8; nr_bits / 8 + 1];
     }
     rng.fill_bytes(&mut byte_vector);
 
@@ -143,6 +145,17 @@ mod test_get_rng {
 #[cfg(test)]
 mod test_sample_uniform_rejection {
     use super::{sample_uniform_rejection, Z};
+
+    /// Ensures that the doc tests works correctly.
+    #[test]
+    fn doc_test() {
+        let interval_size = Z::from(20);
+
+        let sample = sample_uniform_rejection(&interval_size).unwrap();
+
+        assert!(Z::ZERO <= sample);
+        assert!(sample < interval_size);
+    }
 
     /// Checks whether sampling works fine for small interval sizes
     #[test]
@@ -196,6 +209,17 @@ mod test_sample_uniform_rejection {
 #[cfg(test)]
 mod test_sample_bits_uniform {
     use super::sample_bits_uniform;
+
+    /// Ensures that the doc tests works correctly.
+    #[test]
+    fn doc_test() {
+        let nr_bits = 14;
+
+        let byte_vector = sample_bits_uniform(nr_bits);
+
+        assert!(byte_vector[1] < 64);
+        assert_eq!(2, byte_vector.len());
+    }
 
     /// Checks whether random bit sampling works appropriate for full byte orders
     #[test]
