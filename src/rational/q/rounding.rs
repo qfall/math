@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! This module includes functionality about round instances of [`Q`].
+//! This module includes functionality for rounding instances of [`Q`].
 
 use super::Q;
 use crate::{integer::Z, traits::Distance};
@@ -22,13 +22,8 @@ impl Q {
     ///
     /// let value = Q::try_from((&5,&2)).unwrap();
     /// assert_eq!(Z::from(2), value.floor());
-    /// ```
     ///
-    /// ```
-    /// use qfall_math::rational::Q;
-    /// use qfall_math::integer::Z;
-    ///
-    /// let value = Q::try_from((&4,&2)).unwrap();
+    /// let value = Q::try_from((&2,&1)).unwrap();
     /// assert_eq!(Z::from(2), value.floor());
     /// ```
     pub fn floor(&self) -> Z {
@@ -46,13 +41,8 @@ impl Q {
     ///
     /// let value = Q::try_from((&5,&2)).unwrap();
     /// assert_eq!(Z::from(3), value.ceil());
-    /// ```
     ///
-    /// ```
-    /// use qfall_math::rational::Q;
-    /// use qfall_math::integer::Z;
-    ///
-    /// let value = Q::try_from((&4,&2)).unwrap();
+    /// let value = Q::try_from((&2,&1)).unwrap();
     /// assert_eq!(Z::from(2), value.ceil());
     /// ```
     pub fn ceil(&self) -> Z {
@@ -71,13 +61,8 @@ impl Q {
     ///
     /// let value = Q::try_from((&5,&2)).unwrap();
     /// assert_eq!(Z::from(3), value.round());
-    /// ```
     ///
-    /// ```
-    /// use qfall_math::rational::Q;
-    /// use qfall_math::integer::Z;
-    ///
-    /// let value = Q::try_from((&9,&4)).unwrap();
+    /// let value = Q::try_from((&2,&1)).unwrap();
     /// assert_eq!(Z::from(2), value.round());
     /// ```
     pub fn round(&self) -> Z {
@@ -97,7 +82,7 @@ mod test_floor {
     #[test]
     fn positive() {
         let val_1 = Q::try_from((&i64::MAX, &2)).unwrap();
-        let val_2 = Q::try_from((&17, &u64::MAX)).unwrap();
+        let val_2 = Q::try_from((&1, &u64::MAX)).unwrap();
 
         assert_eq!(Z::from((i64::MAX - 1) / 2), val_1.floor());
         assert_eq!(Z::ZERO, val_2.floor());
@@ -107,7 +92,7 @@ mod test_floor {
     #[test]
     fn negative() {
         let val_1 = Q::try_from((&-i64::MAX, &2)).unwrap();
-        let val_2 = Q::try_from((&-17, &u64::MAX)).unwrap();
+        let val_2 = Q::try_from((&-1, &u64::MAX)).unwrap();
 
         assert_eq!(Z::from((-i64::MAX - 1) / 2), val_1.floor());
         assert_eq!(Z::MINUS_ONE, val_2.floor());
@@ -122,7 +107,7 @@ mod test_ceil {
     #[test]
     fn positive() {
         let val_1 = Q::try_from((&i64::MAX, &2)).unwrap();
-        let val_2 = Q::try_from((&17, &u64::MAX)).unwrap();
+        let val_2 = Q::try_from((&1, &u64::MAX)).unwrap();
 
         assert_eq!(Z::from((i64::MAX - 1) / 2 + 1), val_1.ceil());
         assert_eq!(Z::ONE, val_2.ceil());
@@ -132,7 +117,7 @@ mod test_ceil {
     #[test]
     fn negative() {
         let val_1 = Q::try_from((&-i64::MAX, &2)).unwrap();
-        let val_2 = Q::try_from((&-17, &u64::MAX)).unwrap();
+        let val_2 = Q::try_from((&-1, &u64::MAX)).unwrap();
 
         assert_eq!(Z::from((-i64::MAX - 1) / 2 + 1), val_1.ceil());
         assert_eq!(Z::ZERO, val_2.ceil());
@@ -147,7 +132,7 @@ mod test_round {
     #[test]
     fn positive() {
         let val_1 = Q::try_from((&i64::MAX, &2)).unwrap();
-        let val_2 = Q::try_from((&17, &u64::MAX)).unwrap();
+        let val_2 = Q::try_from((&1, &u64::MAX)).unwrap();
 
         assert_eq!(Z::from((i64::MAX - 1) / 2 + 1), val_1.round());
         assert_eq!(Z::ZERO, val_2.round());
@@ -157,7 +142,7 @@ mod test_round {
     #[test]
     fn negative() {
         let val_1 = Q::try_from((&-i64::MAX, &2)).unwrap();
-        let val_2 = Q::try_from((&-17, &u64::MAX)).unwrap();
+        let val_2 = Q::try_from((&-1, &u64::MAX)).unwrap();
 
         assert_eq!(Z::from((-i64::MAX - 1) / 2 + 1), val_1.round());
         assert_eq!(Z::ZERO, val_2.round());
