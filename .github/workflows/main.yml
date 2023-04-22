@@ -1,5 +1,4 @@
 name: Pipeline
-# consistency regarding formatting and idiomatic Rust
 
 on:
   push:
@@ -9,24 +8,21 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  update_build_test:
-    name: Update, Build, Test, and compute Test Coverage
+  full_pipeline:
+    name: Full Pipeline
     runs-on: ubuntu-latest
     
     steps:
       - uses: actions/checkout@v3
-      
-      # install action-rs toolchain 
-      # deprecated, but best tool for usage with clippy in PR context and only way to calculate test coverage
-      - uses: actions-rs/toolchain@v1
+
+      - name: Setup dtolnay/rust-toolchain 
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
           toolchain: stable
-          override: true
-          component: clippy, rustfmt
-      
-      # load cargo cache to reduce compilation time
-      - name: Set up cargo cache
+          components: clippy, rustfmt
+
+      # load project cache to reduce compilation time
+      - name: Setup project cache
         uses: actions/cache@v3
         continue-on-error: false
         with:
@@ -36,56 +32,45 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: main-${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
-          restore-keys: main-${{ runner.os }}-cargo-
-      
+          key: release-${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
+          restore-keys: release-${{ runner.os }}-cargo-
+
       - name: Set environment variables
         run: |
           echo "PROJECT_NAME=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0] | [ .name ] | join("")')" >> $GITHUB_ENV
           echo "PROJECT_VERSION=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0] | [ .version ] | join("")')" >> $GITHUB_ENV
-      
-      - name: Update dependencies
-        uses: actions-rs/cargo@v1
-        with:
-          command: update
-      - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release
 
-      # run tests, once normally, once to calculate code coverage
-      - name: Test
-        uses: actions-rs/cargo@v1
+      - name: Update dependencies
+        run: cargo update
+      - name: Build
+        run: cargo build --release
+
+      - name: Install cargo-tarpaulin
+        uses: baptiste0928/cargo-install@v2
         with:
-          command: test
-          args: --verbose
-      - name: Run tarpaulin to calculate code coverage
-        uses: actions-rs/tarpaulin@v0.1
-        with:
-          version: '0.15.0'
-          args: '-- --test-threads 1'
-          out-type: Html
-      
-      - name: Run clippy
-        uses: actions-rs/clippy-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: -- -D warnings # escalate warnings s.t. pipeline fails
-      - name: Format
-        run:  cargo fmt --all -- --check
-      
-      # Cargo check for security issues
-      - name: Security audit
-        uses: actions-rs/audit-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-        
+          crate: cargo-tarpaulin
+      - name: Calculate test coverage
+        run: cargo tarpaulin --out Html
       - name: Archive code coverage results
         uses: actions/upload-artifact@v1
         with:
           name: ${{ env.PROJECT_NAME }}-code_coverage_report-v${{ env.PROJECT_VERSION }}
           path: tarpaulin-report.html
+
+      # Lints
+      - name: Clippy
+        run: cargo clippy -- -D warnings
+      - name: Format
+        run:  cargo fmt --all -- --check
+      
+      # Cargo check for security issues
+      - name: Install cargo-audit
+        uses: baptiste0928/cargo-install@v2
+        with:
+          crate: cargo-audit
+      - name: Security audit
+        run: cargo audit
+
       - name: Archive release build
         uses: actions/upload-artifact@v1
         with:
