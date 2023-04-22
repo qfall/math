@@ -11,7 +11,7 @@
 use crate::{error::MathError, integer::Z, utils::sample::uniform::sample_uniform_rejection};
 
 impl Z {
-    /// Generates a fresh uniform at random chosen [`Z`] instance
+    /// Chooses a [`Z`] instance uniformly at random
     /// in `[lower_bound, upper_bound)`.
     ///
     /// The internally used uniform at random chosen bytes are generated
@@ -24,7 +24,7 @@ impl Z {
     /// - `upper_bound`: specifies the excluded upper bound of the
     /// interval over which is sampled
     ///
-    /// Returns a fresh [`Z`] instance with
+    /// Returns a fresh [`Z`] instance with a
     /// uniform random value in `[lower_bound, upper_bound)` or a [`MathError`]
     /// if the provided interval was chosen too small.
     ///
@@ -66,7 +66,7 @@ mod test_sample_uniform {
     fn boundaries_kept_small() {
         let lower_bound = Z::from(17);
         let upper_bound = Z::from(32);
-        for _i in 0..32 {
+        for _ in 0..32 {
             let sample = Z::sample_uniform(&lower_bound, &upper_bound).unwrap();
             assert!(lower_bound <= sample);
             assert!(sample < upper_bound);
@@ -78,7 +78,7 @@ mod test_sample_uniform {
     fn boundaries_kept_large() {
         let lower_bound = Z::from(i64::MIN) - Z::from(u64::MAX);
         let upper_bound = Z::from(i64::MIN);
-        for _i in 0..256 {
+        for _ in 0..256 {
             let sample = Z::sample_uniform(&lower_bound, &upper_bound).unwrap();
             assert!(lower_bound <= sample);
             assert!(sample < upper_bound);
@@ -132,7 +132,7 @@ mod test_sample_uniform {
         let upper_bound = Z::from(5);
         let mut counts = [0; 5];
         // count sampled instances
-        for _i in 0..1000 {
+        for _ in 0..1000 {
             let sample_z = Z::sample_uniform(&lower_bound, &upper_bound).unwrap();
             let sample_int = i64::try_from(&sample_z).unwrap() as usize;
             counts[sample_int] += 1;
@@ -140,8 +140,10 @@ mod test_sample_uniform {
 
         // Check that every sampled integer was sampled roughly the same time
         // this could possibly fail for true uniform randomness with probability
-        for i in 0..5 {
-            assert!(counts[i] > 150);
+        for count in counts {
+            assert!(count > 150, "This test can fail with probability close to 0. 
+            It fails if the sampled occurences do not look like a typical uniform random distribution. 
+            If this happens, rerun the tests several times and check whether this issue comes up again.");
         }
     }
 }
