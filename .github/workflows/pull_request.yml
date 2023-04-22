@@ -69,3 +69,9 @@ jobs:
           crate: cargo-audit
       - name: Security audit
         run: cargo audit
+
+      # Check for outdated dependencies
+      - name: Install cargo-outdated
+        uses: dtolnay/install@cargo-outdated
+      - name: Outdated dependencies
+        run: cargo outdated --exit-code 1
