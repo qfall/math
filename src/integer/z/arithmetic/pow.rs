@@ -47,7 +47,7 @@ impl Pow<&Z> for Z {
         if exp < &Z::ZERO {
             return Err(MathError::InvalidExponent(format!(
                 "A negative exponent {} was used for the integer value {}. 
-                If you want to get the inverse as a rational object in return use `.inv().pow({})`",
+                If you want to get the inverse as a rational object in return use `.inverse().pow({})`",
                 exp,
                 self,
                 -1 * exp
