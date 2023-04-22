@@ -78,7 +78,7 @@ mod test_gso {
     /// Ensure that gso works with independent vectors (more columns than rows)
     #[test]
     fn gso_dependent_columns() {
-        let mat = MatQ::from_str("[[1,2,3,4,4],[1,2,3,4,4]]").unwrap();
+        let mat = MatQ::from_str("[[1,2,3,4,4],[1,2,3,4,5]]").unwrap();
 
         let mat_gso = mat.gso();
 
