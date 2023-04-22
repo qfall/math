@@ -94,6 +94,8 @@ arithmetic_trait_borrowed_to_owned!(Mul, mul, Z, MatQ, MatQ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatQ, Z, MatQ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Z, MatQ, MatQ);
 
+implement_for_others!(Q, MatQ, Mul Scalar for f32 f64);
+
 #[cfg(test)]
 mod test_mul_z {
 
@@ -165,7 +167,14 @@ mod test_mul_z {
         let mat5 = MatQ::from_str("[[-1/2],[0],[-4]]").unwrap();
         let mat6 = MatQ::from_str("[[6,15,18],[3,9,3]]").unwrap();
 
-        assert_eq!(mat3, 2 * &mat1);
+        assert_eq!(mat3, 2u8 * &mat1);
+        assert_eq!(mat3, 2i8 * &mat1);
+        assert_eq!(mat3, 2u16 * &mat1);
+        assert_eq!(mat3, 2i16 * &mat1);
+        assert_eq!(mat3, 2u32 * &mat1);
+        assert_eq!(mat3, 2i32 * &mat1);
+        assert_eq!(mat3, 2u64 * &mat1);
+        assert_eq!(mat3, 2i64 * &mat1);
         assert_eq!(mat4, 0 * &mat1);
         assert_eq!(mat5, -1 * mat1);
         assert_eq!(mat6, mat2 * 3);
@@ -262,6 +271,21 @@ mod test_mul_q {
         assert_eq!(mat5, mat2);
         assert_eq!(mat5, mat3);
         assert_eq!(mat5, mat4);
+    }
+
+    /// Checks if scalar multiplication works fine for different scalar types
+    #[test]
+    #[allow(clippy::erasing_op)]
+    fn different_types() {
+        let mat1 = MatQ::from_str("[[1/2],[0],[4]]").unwrap();
+        let mat2 = MatQ::from_str("[[2,5,6],[1,3,1]]").unwrap();
+        let mat3 = MatQ::from_str("[[5/4],[0],[10]]").unwrap();
+        let mat4 = MatQ::from_str("[[-1999/20],[0],[-3998/5]]").unwrap();
+        let mat5 = MatQ::from_str("[[357/5, 357/2, 1071/5],[357/10, 1071/10, 357/10]]").unwrap();
+
+        assert_eq!(mat3, 2.5f32 * &mat1);
+        assert_eq!(mat4, -199.9f64 * mat1);
+        assert_eq!(mat5, mat2 * 35.7);
     }
 
     /// Checks if scalar multiplication works fine for matrices of different dimensions
