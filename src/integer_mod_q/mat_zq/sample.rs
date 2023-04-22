@@ -18,7 +18,7 @@ use crate::{
 use std::fmt::Display;
 
 impl MatZq {
-    /// Generates a [`MatZq`] instance with entries chosen uniform at random
+    /// Outputs a [`MatZq`] instance with entries chosen uniform at random
     /// in `[0, modulus)`.
     ///
     /// The internally used uniform at random chosen bytes are generated
@@ -32,7 +32,7 @@ impl MatZq {
     /// over which is sampled
     ///
     /// Returns a new [`MatZq`] instance with entries chosen
-    /// uniformly at random values in `[0, modulus)` or a [`MathError`]
+    /// uniformly at random in `[0, modulus)` or a [`MathError`]
     /// if the dimensions of the matrix or the modulus were chosen too small.
     ///
     /// # Examples
@@ -86,7 +86,7 @@ mod test_sample_uniform {
     /// Checks whether the boundaries of the interval are kept for small moduli.
     #[test]
     fn boundaries_kept_small() {
-        for _i in 0..32 {
+        for _ in 0..32 {
             let matrix = MatZq::sample_uniform(1, 1, &17).unwrap();
             let sample = matrix.get_entry(0, 0).unwrap();
             assert!(Z::ZERO <= sample);
@@ -98,7 +98,7 @@ mod test_sample_uniform {
     #[test]
     fn boundaries_kept_large() {
         let modulus = Z::from(u64::MAX);
-        for _i in 0..256 {
+        for _ in 0..256 {
             let matrix = MatZq::sample_uniform(1, 1, &modulus).unwrap();
             let sample = matrix.get_entry(0, 0).unwrap();
             assert!(Z::ZERO <= sample);
