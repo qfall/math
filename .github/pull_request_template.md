@@ -7,6 +7,7 @@ Please also include relevant motivation and context. List any dependencies that 
 
 This PR implements...
 - [ ] feature/ revision/ hotfix/ optimisation/ ...
+
 for/ of `Component`.
 
 <!--
@@ -34,5 +35,4 @@ Closes #(issue number)
     - [ ] The chosen implementation is not more complex than it has to be
   - [ ] My code should work as intended and no side effects occur (e.g. memory leaks)
   - [ ] The doc comments fit our style guide
-    - [ ] `cargo doc` does not generate any errors
   - [ ] I have credited related sources if needed

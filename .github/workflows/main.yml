@@ -44,6 +44,8 @@ jobs:
         run: cargo update
       - name: Build
         run: cargo build --release
+      - name: Generate docs
+        run: cargo doc
 
       - name: Install cargo-tarpaulin
         uses: baptiste0928/cargo-install@v2

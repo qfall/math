@@ -1,4 +1,4 @@
-name: Pipeline - test and lints
+name: Pipeline
 # consistency regarding formatting and idiomatic Rust
 
 on:
@@ -10,7 +10,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  test_and_lint_pipeline:
+  pipeline:
     name: Pipeline - test and lints
     runs-on: ubuntu-latest
     
@@ -41,6 +41,8 @@ jobs:
         run: cargo update
       - name: Build
         run: cargo build
+      - name: Generate docs
+        run: cargo doc
       
       - name: Test
         run: test --verbose
