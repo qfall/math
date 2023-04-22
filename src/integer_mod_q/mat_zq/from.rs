@@ -127,7 +127,8 @@ impl MatZq {
     }
 
     /// Generate a `num_rows` times `num_columns` matrix with `1` on the
-    /// diagonal and `0` anywhere else.
+    /// diagonal and `0` anywhere else with a given modulus (if the modulus is `1`
+    /// every entry is `0`).
     ///
     /// Parameters:
     /// - `rum_rows`: the number of rows of the identity matrix
@@ -157,7 +158,9 @@ impl MatZq {
         modulus: impl Into<Z>,
     ) -> Result<Self, MathError> {
         let mut out = MatZq::new(num_rows, num_cols, modulus)?;
-        unsafe { fmpz_mod_mat_one(&mut out.matrix) };
+        if out.get_mod() != Modulus::try_from_z(&Z::ONE).unwrap() {
+            unsafe { fmpz_mod_mat_one(&mut out.matrix) };
+        }
         Ok(out)
     }
 }
@@ -383,6 +386,18 @@ mod test_set_one {
                 } else {
                     assert_eq!(Z::ONE, matrix.get_entry(i, j).unwrap())
                 }
+            }
+        }
+    }
+
+    /// Tests if an identity matrix can be created using a modulus of `1`.
+    #[test]
+    fn modulus_one() {
+        let matrix = MatZq::identity(10, 10, 1).unwrap();
+
+        for i in 0..10 {
+            for j in 0..10 {
+                assert_eq!(Z::ZERO, matrix.get_entry(i, j).unwrap())
             }
         }
     }
