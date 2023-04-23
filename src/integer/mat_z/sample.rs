@@ -11,13 +11,13 @@
 use crate::{
     error::MathError,
     integer::{MatZ, Z},
-    traits::SetEntry,
-    utils::{index::evaluate_index, sample::uniform::sample_uniform_rejection},
+    traits::{GetNumColumns, GetNumRows, SetEntry},
+    utils::sample::uniform::sample_uniform_rejection,
 };
 use std::fmt::Display;
 
 impl MatZ {
-    /// Generates a [`MatZ`] instance with entries chosen uniform at random
+    /// Outputs a [`MatZ`] instance with entries chosen uniform at random
     /// in `[lower_bound, upper_bound)`.
     ///
     /// The internally used uniform at random chosen bytes are generated
@@ -33,7 +33,7 @@ impl MatZ {
     /// interval over which is sampled
     ///
     /// Returns a new [`MatZ`] instance with entries chosen
-    /// uniformly at random values in `[lower_bound, upper_bound)` or a [`MathError`]
+    /// uniformly at random in `[lower_bound, upper_bound)` or a [`MathError`]
     /// if the dimensions of the matrix or the interval were chosen too small.
     ///
     /// # Examples
@@ -64,13 +64,11 @@ impl MatZ {
     {
         let lower_bound: Z = lower_bound.clone().into();
         let upper_bound: Z = upper_bound.clone().into();
-        let num_rows = evaluate_index(num_rows)?;
-        let num_cols = evaluate_index(num_cols)?;
         let mut matrix = MatZ::new(num_rows, num_cols)?;
 
         let interval_size = &upper_bound - &lower_bound;
-        for row in 0..num_rows {
-            for col in 0..num_cols {
+        for row in 0..matrix.get_num_rows() {
+            for col in 0..matrix.get_num_columns() {
                 let sample = sample_uniform_rejection(&interval_size)?;
                 matrix.set_entry(row, col, &lower_bound + sample).unwrap();
             }
@@ -94,7 +92,7 @@ mod test_sample_uniform {
     fn boundaries_kept_small() {
         let lower_bound = Z::from(17);
         let upper_bound = Z::from(32);
-        for _i in 0..32 {
+        for _ in 0..32 {
             let matrix = MatZ::sample_uniform(1, 1, &lower_bound, &upper_bound).unwrap();
             let sample = matrix.get_entry(0, 0).unwrap();
             assert!(lower_bound <= sample);
@@ -107,7 +105,7 @@ mod test_sample_uniform {
     fn boundaries_kept_large() {
         let lower_bound = Z::from(i64::MIN) - Z::from(u64::MAX);
         let upper_bound = Z::from(i64::MIN);
-        for _i in 0..256 {
+        for _ in 0..256 {
             let matrix = MatZ::sample_uniform(1, 1, &lower_bound, &upper_bound).unwrap();
             let sample = matrix.get_entry(0, 0).unwrap();
             assert!(lower_bound <= sample);
