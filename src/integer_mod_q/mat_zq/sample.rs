@@ -12,8 +12,8 @@ use crate::{
     error::MathError,
     integer::Z,
     integer_mod_q::MatZq,
-    traits::SetEntry,
-    utils::{index::evaluate_index, sample::uniform::sample_uniform_rejection},
+    traits::{GetNumColumns, GetNumRows, SetEntry},
+    utils::sample::uniform::sample_uniform_rejection,
 };
 use std::fmt::Display;
 
@@ -50,6 +50,8 @@ impl MatZq {
     /// if the number of rows or columns is negative or it does not fit into an [`i64`].
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
     /// if the given `modulus` is smaller than or equal to `1`.
+    /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
+    /// if the provided modulus is not greater than `0`.
     pub fn sample_uniform<T>(
         num_rows: impl TryInto<i64> + Display + Copy,
         num_cols: impl TryInto<i64> + Display + Copy,
@@ -59,12 +61,10 @@ impl MatZq {
         T: Into<Z> + Clone,
     {
         let modulus: Z = modulus.clone().into();
-        let num_rows = evaluate_index(num_rows)?;
-        let num_cols = evaluate_index(num_cols)?;
         let mut matrix = MatZq::new(num_rows, num_cols, modulus.clone())?;
 
-        for row in 0..num_rows {
-            for col in 0..num_cols {
+        for row in 0..matrix.get_num_rows() {
+            for col in 0..matrix.get_num_columns() {
                 let sample = sample_uniform_rejection(&modulus)?;
                 matrix.set_entry(row, col, sample).unwrap();
             }
@@ -108,14 +108,18 @@ mod test_sample_uniform {
 
     /// Checks whether providing an invalid interval/ modulus results in an error.
     #[test]
-    fn invalid_interval() {
+    fn invalid_modulus() {
         let mat_0 = MatZq::sample_uniform(3, 3, &-1);
         let mat_1 = MatZq::sample_uniform(4, 1, &1);
         let mat_2 = MatZq::sample_uniform(1, 5, &0);
+        let mat_3 = MatZq::sample_uniform(1, 5, &i32::MIN);
+        let mat_4 = MatZq::sample_uniform(1, 5, &Z::from(i64::MIN));
 
         assert!(mat_0.is_err());
         assert!(mat_1.is_err());
         assert!(mat_2.is_err());
+        assert!(mat_3.is_err());
+        assert!(mat_4.is_err());
     }
 
     /// Checks whether `sample_uniform` is available for all types
