@@ -27,6 +27,7 @@ pub(crate) mod fmpz_mod_helpers;
 mod from;
 mod properties;
 mod reduce;
+mod sample;
 mod to_string;
 
 /// [`Zq`] represents an integer value in a modulus ring.
