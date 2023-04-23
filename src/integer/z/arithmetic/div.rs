@@ -46,6 +46,79 @@ impl Z {
         out
     }
 
+    /// Divides `self` by `other` and the result is rounded up.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to divide `self` by
+    ///
+    /// Returns the quotient of both numbers as a [`Z`] ceiled.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    ///
+    /// let a: Z = Z::from(42);
+    /// let b: Z = Z::from(20);
+    ///
+    /// let c = a.div_ceil(&b);
+    ///
+    /// assert_eq!(Z::from(3), c);
+    /// ```
+    pub fn div_ceil(&self, other: &Self) -> Self {
+        if other == &Z::ZERO {
+            panic!("Tried to divide {} by 0", self);
+        }
+        let mut out = Z::default();
+        unsafe {
+            fmpz_cdiv_q(&mut out.value, &self.value, &other.value);
+        }
+        out
+    }
+
+    /// Divides `self` by `other` and returns a result if it is integer.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to divide `self` by
+    ///
+    /// Returns the quotient of both numbers as a [`Z`] or [`None`]
+    /// if the quotient is not integer.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    ///
+    /// let a0: Z = Z::from(40);
+    /// let a1: Z = Z::from(42);
+    /// let b: Z = Z::from(20);
+    ///
+    /// let c0 = a0.div_exact(&b).unwrap();
+    /// let c1 = a1.div_exact(&b);
+    ///
+    /// assert_eq!(Z::from(2), c0);
+    /// assert!(c1.is_none());
+    /// ```
+    pub fn div_exact(&self, other: &Self) -> Option<Self> {
+        if other == &Z::ZERO {
+            panic!("Tried to divide {} by 0", self);
+        }
+
+        let mut quotient = Z::default();
+        let mut reminder = Z::default();
+        unsafe {
+            fmpz_tdiv_qr(
+                &mut quotient.value,
+                &mut reminder.value,
+                &self.value,
+                &other.value,
+            );
+        }
+
+        if reminder != Z::ZERO {
+            None
+        } else {
+            Some(quotient)
+        }
+    }
 }
 
 impl Div for &Z {
@@ -81,6 +154,90 @@ impl Div for &Z {
 arithmetic_trait_borrowed_to_owned!(Div, div, Z, Z, Z);
 arithmetic_trait_mixed_borrowed_owned!(Div, div, Z, Z, Z);
 arithmetic_between_types!(Div, div, Z, i64 i32 i16 i8 u64 u32 u16 u8);
+
+#[cfg(test)]
+mod test_div_floor {
+    use super::Z;
+
+    /// Checks whether `div_floor` correctly rounds non-exact quotients down
+    #[test]
+    fn floored() {
+        let small = Z::from(-11);
+        let large = Z::from(i32::MAX);
+        let divisor = Z::from(2);
+
+        let res_0 = small.div_floor(&divisor);
+        let res_1 = large.div_floor(&divisor);
+
+        assert_eq!(Z::from(-6), res_0);
+        assert_eq!(Z::from(i32::MAX >> 1), res_1);
+    }
+
+    /// Checks whether `div_floor` correctly computes exact quotients
+    #[test]
+    fn exact() {
+        let small = Z::from(10);
+        let large = Z::from(i32::MIN);
+        let divisor = Z::from(2);
+
+        let res_0 = small.div_floor(&divisor);
+        let res_1 = large.div_floor(&divisor);
+
+        assert_eq!(Z::from(5), res_0);
+        assert_eq!(Z::from(i32::MIN >> 1), res_1);
+    }
+
+    /// Checks whether `div_floor` panics if the divisor is `0`
+    #[test]
+    #[should_panic]
+    fn division_by_zero() {
+        let a = Z::from(100);
+
+        let _ = a.div_floor(&Z::ZERO);
+    }
+}
+
+#[cfg(test)]
+mod test_div_ceil {
+    use super::Z;
+
+    /// Checks whether `div_ceil` correctly rounds non-exact quotients down
+    #[test]
+    fn ceiled() {
+        let small = Z::from(-11);
+        let large = Z::from(i32::MAX);
+        let divisor = Z::from(2);
+
+        let res_0 = small.div_ceil(&divisor);
+        let res_1 = large.div_ceil(&divisor);
+
+        assert_eq!(Z::from(-5), res_0);
+        assert_eq!(Z::from((i32::MAX >> 1) + 1), res_1);
+    }
+
+    /// Checks whether `div_ceil` correctly computes exact quotients
+    #[test]
+    fn exact() {
+        let small = Z::from(10);
+        let large = Z::from(i32::MIN);
+        let divisor = Z::from(2);
+
+        let res_0 = small.div_ceil(&divisor);
+        let res_1 = large.div_ceil(&divisor);
+
+        assert_eq!(Z::from(5), res_0);
+        assert_eq!(Z::from(i32::MIN >> 1), res_1);
+    }
+
+    /// Checks whether `div_ceil` panics if the divisor is `0`
+    #[test]
+    #[should_panic]
+    fn division_by_zero() {
+        let a = Z::from(100);
+
+        let _ = a.div_ceil(&Z::ZERO);
+    }
+}
 
 #[cfg(test)]
 mod test_div_exact {
