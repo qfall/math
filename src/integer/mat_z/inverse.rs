@@ -1,0 +1,114 @@
+// Copyright © 2023 Marcel Luca Schmidt
+//
+// This file is part of qFALL-math.
+//
+// qFALL-math is free software: you can redistribute it and/or modify it under
+// the terms of the Mozilla Public License Version 2.0 as published by the
+// Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
+
+//! This module contains the implementation of the `inverse` function.
+
+use super::MatZ;
+use crate::{
+    integer::Z,
+    rational::MatQ,
+    traits::{GetNumColumns, GetNumRows},
+};
+use flint_sys::fmpq_mat::fmpq_mat_inv;
+
+impl MatZ {
+    /// Returns the inverse of the matrix if it exists (is square and
+    /// has a determinant unequal to zero).
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::traits::*;
+    /// use std::str::FromStr;
+    ///
+    /// let mut matrix = MatZ::from_str("[[1,2],[3,4]]").unwrap();
+    /// let matrix_invert = matrix.inverse().unwrap();
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
+    /// if the number of rows and columns is not equal.
+    /// - Returns a [`MathError`] of type [`NotInvertible`](MathError::NotInvertible)
+    /// if the determinant of the matrix is `0`.
+    pub fn inverse(&self) -> Option<MatQ> {
+        // check if matrix is square and compute determinant to check whether
+        // the matrix is invertible or not
+
+        let det = self.det();
+
+        if det.is_err() || det.unwrap() == Z::ZERO {
+            return None;
+        }
+
+        // create new matrix to store inverted result in
+        // TODO improve runtime
+        let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns()).unwrap();
+        unsafe {
+            fmpq_mat_inv(&mut out.matrix, &MatQ::from(self).matrix);
+        }
+        Some(out)
+    }
+}
+
+#[cfg(test)]
+mod test_inverse {
+
+    use crate::{integer::MatZ, rational::MatQ};
+    use std::str::FromStr;
+
+    /// Test whether `inverse` correctly calculates an inverse matrix
+    #[test]
+    fn inverse_works() {
+        let mat1 = MatZ::from_str("[[5,2,0],[2,1,0],[0,0,1]]").unwrap();
+        let mat2 = MatZ::from_str(&format!("[[{}]]", i64::MAX)).unwrap();
+        let mat3 = MatZ::from_str("[[-1,0],[0,1]]").unwrap();
+
+        let cmp_inv1 = MatQ::from_str("[[1, -2, 0],[-2, 5, 0],[0, 0, 1]]").unwrap();
+        let cmp_inv2 = MatQ::from_str(&format!("[[1/{}]]", i64::MAX)).unwrap();
+        let cmp_inv3 = MatQ::from_str("[[-1,0],[0,1]]").unwrap();
+
+        let inv1 = mat1.inverse().unwrap();
+        let inv2 = mat2.inverse().unwrap();
+        let inv3 = mat3.inverse().unwrap();
+
+        assert_eq!(cmp_inv1, inv1);
+        assert_eq!(cmp_inv2, inv2);
+        assert_eq!(cmp_inv3, inv3);
+    }
+
+    /// Check if the multiplication of inverse and matrix result in an identity matrix
+    #[test]
+    fn inverse_correct() {
+        let mat = MatZ::from_str("[[5,2],[2,1]]").unwrap();
+        let mat_q = MatQ::from(&mat);
+        let cmp = MatQ::from_str("[[1,0],[0,1]]").unwrap();
+
+        let inv = mat.inverse().unwrap();
+        let diag = &mat_q * &inv;
+
+        assert_eq!(cmp, diag);
+    }
+
+    /// Ensure that a matrix that is not square yields `None` on inversion.
+    #[test]
+    fn inv_none_not_squared() {
+        let mat1 = MatZ::from_str("[[1,0,1],[0,1,1]]").unwrap();
+        let mat2 = MatZ::from_str("[[1,0],[0,1],[1,0]]").unwrap();
+
+        assert!(mat1.inverse().is_none());
+        assert!(mat2.inverse().is_none());
+    }
+
+    /// Ensure that a matrix that has a determinant of '0' yields `None` on inversion.
+    #[test]
+    fn inv_none_det_zero() {
+        let mat = MatZ::from_str("[[2,0],[0,0]]").unwrap();
+
+        assert!(mat.inverse().is_none());
+    }
+}

@@ -57,11 +57,11 @@ impl Z {
     /// use qfall_math::{integer::Z, rational::Q};
     /// let value = Z::from(4);
     ///
-    /// let inverse = value.inv().unwrap();
+    /// let inverse = value.inverse().unwrap();
     ///
     /// assert_eq!(Q::try_from((&1, &4)).unwrap(), inverse);
     /// ```
-    pub fn inv(&self) -> Option<Q> {
+    pub fn inverse(&self) -> Option<Q> {
         if self == &Z::ZERO {
             return None;
         }
@@ -189,8 +189,8 @@ mod test_inv {
         let val_0 = Z::from(4);
         let val_1 = Z::from(-7);
 
-        let inv_0 = val_0.inv().unwrap();
-        let inv_1 = val_1.inv().unwrap();
+        let inv_0 = val_0.inverse().unwrap();
+        let inv_1 = val_1.inverse().unwrap();
 
         assert_eq!(Q::try_from((&1, &4)).unwrap(), inv_0);
         assert_eq!(Q::try_from((&-1, &7)).unwrap(), inv_1);
@@ -202,8 +202,8 @@ mod test_inv {
         let val_0 = Z::from(i64::MAX);
         let val_1 = Z::from(i64::MIN);
 
-        let inv_0 = val_0.inv().unwrap();
-        let inv_1 = val_1.inv().unwrap();
+        let inv_0 = val_0.inverse().unwrap();
+        let inv_1 = val_1.inverse().unwrap();
 
         assert_eq!(Q::try_from((&1, &i64::MAX)).unwrap(), inv_0);
         assert_eq!(Q::try_from((&1, &i64::MIN)).unwrap(), inv_1);
@@ -214,7 +214,7 @@ mod test_inv {
     fn inv_zero_none() {
         let zero = Z::ZERO;
 
-        let inv_zero = zero.inv();
+        let inv_zero = zero.inverse();
 
         assert!(inv_zero.is_none());
     }

@@ -52,6 +52,7 @@ use thiserror::Error;
 /// objects with different modulus where equal modulus is required
 /// - `MismatchingVectorDimensions` is thrown if an operation of two vectors is
 /// called for which their dimensions do not match
+/// - `NotInvertible` is thrown if a matrix is not invertible
 /// - `NotNaturalNumber` is thrown if the function expects a natural number,
 /// but a number smaller than `1` is provided
 /// - `NotPrime` is thrown if a provided integer is not prime
@@ -166,6 +167,10 @@ pub enum MathError {
     /// mismatching dimensions of vectors
     #[error("mismatching vector dimensions. {0}")]
     MismatchingVectorDimensions(String),
+
+    /// invert matrix error
+    #[error("the matrix could not be inverted. {0}")]
+    NotInvertible(String),
 
     /// if an integer is not a natural number (excluding the `´0`)
     #[error("invalid integer. The provided value needs to be a natural number and is {0}")]
