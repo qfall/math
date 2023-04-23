@@ -23,6 +23,9 @@ impl Q {
     /// let value = Q::try_from((&5,&2)).unwrap();
     /// assert_eq!(Z::from(2), value.floor());
     ///
+    /// let value = Q::try_from((&-5,&2)).unwrap();
+    /// assert_eq!(Z::from(-3), value.floor());
+    ///
     /// let value = Q::try_from((&2,&1)).unwrap();
     /// assert_eq!(Z::from(2), value.floor());
     /// ```
@@ -41,6 +44,9 @@ impl Q {
     ///
     /// let value = Q::try_from((&5,&2)).unwrap();
     /// assert_eq!(Z::from(3), value.ceil());
+    ///
+    /// let value = Q::try_from((&-5,&2)).unwrap();
+    /// assert_eq!(Z::from(-2), value.ceil());
     ///
     /// let value = Q::try_from((&2,&1)).unwrap();
     /// assert_eq!(Z::from(2), value.ceil());
@@ -61,6 +67,9 @@ impl Q {
     ///
     /// let value = Q::try_from((&5,&2)).unwrap();
     /// assert_eq!(Z::from(3), value.round());
+    ///
+    /// let value = Q::try_from((&-5,&2)).unwrap();
+    /// assert_eq!(Z::from(-2), value.round());
     ///
     /// let value = Q::try_from((&2,&1)).unwrap();
     /// assert_eq!(Z::from(2), value.round());
