@@ -14,7 +14,7 @@ use crate::{
 };
 
 impl Zq {
-    /// Generates a fresh uniform at random chosen [`Zq`] instance in `[0, modulus)`.
+    /// Chooses a [`Zq`] instance uniformly at random in `[0, modulus)`.
     ///
     /// The internally used uniform at random chosen bytes are generated
     /// by [`ThreadRng`](rand::rngs::ThreadRng), which uses ChaCha12 and
@@ -24,9 +24,9 @@ impl Zq {
     /// - `modulus`: specifies the [`Modulus`](crate::integer_mod_q::Modulus)
     /// of the new [`Zq`] instance and thus the size of the interval over which is sampled
     ///
-    /// Returns a new [`Zq`] instance with value chosen
+    /// Returns a new [`Zq`] instance with a value chosen
     /// uniformly at random in `[0, modulus)` or a [`MathError`]
-    /// if the modulus was chosen too small.
+    /// if the provided modulus was too small.
     ///
     /// # Examples
     /// ```
@@ -45,7 +45,7 @@ impl Zq {
         let modulus: Z = modulus.clone().into();
 
         let random = sample_uniform_rejection(&modulus)?;
-        Zq::try_from_z_z(&random, &modulus)
+        Zq::try_from((random, modulus))
     }
 }
 
@@ -62,7 +62,7 @@ mod test_sample_uniform {
     #[test]
     fn boundaries_kept_small() {
         let modulus = Z::from(17);
-        for _i in 0..32 {
+        for _ in 0..32 {
             let sample = Zq::sample_uniform(&modulus).unwrap();
             assert!(Z::ZERO <= sample.value);
             assert!(sample.value < modulus);
@@ -74,7 +74,7 @@ mod test_sample_uniform {
     #[test]
     fn boundaries_kept_large() {
         let modulus = Z::from(u64::MAX);
-        for _i in 0..256 {
+        for _ in 0..256 {
             let sample = Zq::sample_uniform(&modulus).unwrap();
             assert!(Z::ZERO <= sample.value);
             assert!(sample.value < modulus);
@@ -126,7 +126,7 @@ mod test_sample_uniform {
         let modulus = Z::from(5);
         let mut counts = [0; 5];
         // count sampled instances
-        for _i in 0..1000 {
+        for _ in 0..1000 {
             let sample_z = Zq::sample_uniform(&modulus).unwrap();
             let sample_int = i64::try_from(&sample_z.value).unwrap() as usize;
             counts[sample_int] += 1;
@@ -134,8 +134,10 @@ mod test_sample_uniform {
 
         // Check that every sampled integer was sampled roughly the same time
         // this could possibly fail for true uniform randomness with probability
-        for i in 0..5 {
-            assert!(counts[i] > 150);
+        for count in counts {
+            assert!(count > 150, "This test can fail with probability close to 0. 
+            It fails if the sampled occurences do not look like a typical uniform random distribution. 
+            If this happens, rerun the tests several times and check whether this issue comes up again.");
         }
     }
 }
