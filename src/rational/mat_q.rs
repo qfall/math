@@ -16,6 +16,7 @@ mod cmp;
 mod concat;
 mod from;
 mod get;
+mod gso;
 mod ownership;
 mod serialize;
 mod set;
