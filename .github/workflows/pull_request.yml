@@ -5,6 +5,7 @@ on: [ pull_request ]
 
 env:
   CARGO_TERM_COLOR: always
+  RUSTDOCFLAGS: "-Dwarnings"
 
 jobs:
   pipeline:
@@ -45,6 +46,8 @@ jobs:
         run: cargo build
       - name: Generate docs
         run: cargo doc
+      - name: Run doc tests
+        run: cargo test --doc --verbose
       
       - name: Install cargo-tarpaulin
         uses: baptiste0928/cargo-install@v2
@@ -58,7 +61,7 @@ jobs:
           name: ${{ env.PROJECT_NAME }}-code_coverage_report-v${{ env.PROJECT_VERSION }}
           path: tarpaulin-report.html
 
-      # Lints
+      # Lints: Clippy and Fmt
       - name: Clippy
         run: cargo clippy -- -D warnings
       - name: Format

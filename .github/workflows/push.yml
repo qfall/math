@@ -8,6 +8,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  RUSTDOCFLAGS: "-Dwarnings"
 
 jobs:
   pipeline:
@@ -45,9 +46,9 @@ jobs:
         run: cargo doc
       
       - name: Test
-        run: test --verbose
+        run: cargo test --verbose
 
-      # Lints
+      # Lints: Clippy and Fmt
       - name: Clippy
         run: cargo clippy -- -D warnings
       - name: Format
