@@ -46,7 +46,7 @@ jobs:
         run: cargo build
       - name: Generate docs
         run: cargo doc
-      - name: Run doc tests
+      - name: Run doc tests # Unit tests are run by tarpaulin
         run: cargo test --doc --verbose
       
       - name: Install cargo-tarpaulin
