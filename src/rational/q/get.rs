@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Get elements of Q like the numerator and denominator.
+//! Get elements of [`Q`] like the numerator and denominator.
 
 use super::Q;
 use crate::integer::Z;
@@ -25,7 +25,6 @@ impl Q {
     /// let den = value.get_denominator();
     ///
     /// assert_eq!(den, Z::from(10));
-    ///
     /// ```
     pub fn get_denominator(&self) -> Z {
         let mut result = Z::default();
@@ -45,7 +44,6 @@ impl Q {
     /// let num = value.get_numerator();
     ///
     /// assert_eq!(num, Z::from(1));
-    ///
     /// ```
     pub fn get_numerator(&self) -> Z {
         let mut result = Z::default();
