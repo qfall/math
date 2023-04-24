@@ -117,34 +117,34 @@ pub(crate) use arithmetic_trait_mixed_borrowed_owned;
 ///
 /// ```impl *trait*<*output_type*> for &*other_type*```
 macro_rules! arithmetic_between_types {
-    ($trait:ident, $trait_function:ident, $output_type:ident, $($other_type:ident)*) => {
+    ($trait:ident, $trait_function:ident, $type:ident, $output_type:ident, $($other_type:ident)*) => {
         $(
             // #[doc(hidden)] //maybe also hide. current state: one doc per type
-            impl $trait<&$other_type> for &$output_type {
+            impl $trait<&$other_type> for &$type {
                 type Output = $output_type;
                 paste::paste! {
-                    #[doc = "Documentation at [`" $output_type "::" $trait_function "`]."]
+                    #[doc = "Documentation at [`" $type "::" $trait_function "`]."]
                     fn $trait_function(self, other: &$other_type) -> Self::Output {
-                    self.$trait_function($output_type::from(*other))
+                    self.$trait_function($type::from(*other))
                     }
                 }
             }
 
-            arithmetic_trait_borrowed_to_owned!($trait,$trait_function,$output_type,$other_type,$output_type);
-            arithmetic_trait_mixed_borrowed_owned!($trait,$trait_function,$output_type,$other_type,$output_type);
+            arithmetic_trait_borrowed_to_owned!($trait,$trait_function,$type,$other_type,$output_type);
+            arithmetic_trait_mixed_borrowed_owned!($trait,$trait_function,$type,$other_type,$output_type);
 
             #[doc(hidden)]
-            impl $trait<&$output_type> for &$other_type {
+            impl $trait<&$type> for &$other_type {
                 type Output = $output_type;
                 paste::paste! {
-                    #[doc = "Documentation at [`" $output_type "::" $trait_function "`]."]
-                    fn $trait_function(self, other: &$output_type) -> Self::Output {
-                    other.$trait_function($output_type::from(*self))
+                    #[doc = "Documentation at [`" $type "::" $trait_function "`]."]
+                    fn $trait_function(self, other: &$type) -> Self::Output {
+                    other.$trait_function($type::from(*self))
                     }
                 }
             }
-            arithmetic_trait_borrowed_to_owned!($trait,$trait_function,$other_type,$output_type,$output_type);
-            arithmetic_trait_mixed_borrowed_owned!($trait,$trait_function,$other_type,$output_type,$output_type);
+            arithmetic_trait_borrowed_to_owned!($trait,$trait_function,$other_type,$type,$output_type);
+            arithmetic_trait_mixed_borrowed_owned!($trait,$trait_function,$other_type,$type,$output_type);
 
         )*
     };

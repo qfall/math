@@ -13,6 +13,7 @@ use crate::macros::arithmetics::{
     arithmetic_between_types, arithmetic_trait_borrowed_to_owned,
     arithmetic_trait_mixed_borrowed_owned,
 };
+use crate::rational::Q;
 use flint_sys::fmpz::{fmpz_cdiv_q, fmpz_fdiv_q, fmpz_tdiv_qr};
 use std::ops::Div;
 
@@ -35,6 +36,9 @@ impl Z {
     ///
     /// assert_eq!(Z::from(2), c);
     /// ```
+    ///
+    /// # Panics ...
+    /// - if the divisor is `0`.
     pub fn div_floor(&self, other: &Self) -> Self {
         if other == &Z::ZERO {
             panic!("Tried to divide {} by 0", self);
@@ -64,6 +68,9 @@ impl Z {
     ///
     /// assert_eq!(Z::from(3), c);
     /// ```
+    ///
+    /// # Panics ...
+    /// - if the divisor is `0`.
     pub fn div_ceil(&self, other: &Self) -> Self {
         if other == &Z::ZERO {
             panic!("Tried to divide {} by 0", self);
@@ -97,6 +104,9 @@ impl Z {
     /// assert_eq!(Z::from(2), c0);
     /// assert!(c1.is_none());
     /// ```
+    ///
+    /// # Panics ...
+    /// - if the divisor is `0`.
     pub fn div_exact(&self, other: &Self) -> Option<Self> {
         if other == &Z::ZERO {
             panic!("Tried to divide {} by 0", self);
@@ -122,7 +132,7 @@ impl Z {
 }
 
 impl Div for &Z {
-    type Output = Z;
+    type Output = Q;
     /// Implements the [`Div`] trait for two [`Z`] values s.t. its value is rounded down.
     /// [`Div`] is implemented for any combination of [`Z`] and borrowed [`Z`].
     ///
@@ -134,6 +144,7 @@ impl Div for &Z {
     /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
+    /// use qfall_math::rational::Q;
     ///
     /// let a = Z::from(42);
     /// let b = Z::from(20);
@@ -143,17 +154,20 @@ impl Div for &Z {
     /// let e: Z = &c / d;
     /// let f: Z = c / &e;
     ///
-    /// assert_eq!(Z::ONE, e);
-    /// assert_eq!(Z::from(2), f);
+    /// assert_eq!(Q::ONE, e);
+    /// assert_eq!(Q::try_from((2, 1)).unwrap(), f);
     /// ```
+    ///
+    /// # Panics ...
+    /// - if the divisor is `0`.
     fn div(self, other: Self) -> Self::Output {
-        self.div_floor(other)
+        Q::try_from((self, other)).unwrap()
     }
 }
 
-arithmetic_trait_borrowed_to_owned!(Div, div, Z, Z, Z);
-arithmetic_trait_mixed_borrowed_owned!(Div, div, Z, Z, Z);
-arithmetic_between_types!(Div, div, Z, i64 i32 i16 i8 u64 u32 u16 u8);
+arithmetic_trait_borrowed_to_owned!(Div, div, Z, Z, Q);
+arithmetic_trait_mixed_borrowed_owned!(Div, div, Z, Z, Q);
+arithmetic_between_types!(Div, div, Z, Q, i64 i32 i16 i8 u64 u32 u16 u8);
 
 #[cfg(test)]
 mod test_div_floor {
