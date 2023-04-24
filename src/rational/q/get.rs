@@ -15,7 +15,7 @@ use flint_sys::fmpz::fmpz_set;
 impl Q {
     /// Returns the denominator
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     /// use qfall_math::integer::Z;
@@ -35,7 +35,7 @@ impl Q {
 
     /// Returns the numerator
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     /// use qfall_math::integer::Z;
