@@ -17,11 +17,41 @@ use crate::{error::MathError, integer::PolyOverZ, integer_mod_q::modulus::Modulu
 use flint_sys::fmpz_mod_poly::{fmpz_mod_poly_init, fmpz_mod_poly_set_fmpz_poly};
 use std::{mem::MaybeUninit, str::FromStr};
 
+impl From<&Modulus> for PolyOverZq {
+    /// Create a zero polynomial with a given [`Modulus`].
+    ///
+    /// Parameters:
+    /// - `modulus` of the new [`PolyOverZq`]
+    ///
+    /// # Examples:
+    /// ```
+    /// use qfall_math::integer_mod_q::{PolyOverZq, Modulus};
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = Modulus::from_str("100").unwrap();
+    /// let poly = PolyOverZq::from(&modulus);
+    ///
+    /// let poly_cmp = PolyOverZq::from_str("0 mod 100").unwrap();
+    /// assert_eq!(poly, poly_cmp);
+    /// ```
+    fn from(modulus: &Modulus) -> Self {
+        let modulus = modulus.clone();
+        let mut poly = MaybeUninit::uninit();
+        unsafe {
+            fmpz_mod_poly_init(poly.as_mut_ptr(), modulus.get_fmpz_mod_ctx_struct());
+            let poly = poly.assume_init();
+            PolyOverZq { poly, modulus }
+        }
+    }
+}
+
 impl From<(&PolyOverZ, &Modulus)> for PolyOverZq {
     /// Create a [`PolyOverZq`] from a [`PolyOverZ`] and [`Modulus`].
     ///
     /// Parameters:
-    /// - `poly_modulus_tuple`: A tuple of the polynomial and the modulus.
+    /// - `poly_modulus_tuple` is a tuple of the polynomial and the modulus.
+    ///     - The first value is the polynomial.
+    ///     - The second value is the modulus.
     ///
     /// # Examples:
     /// ```
@@ -38,20 +68,15 @@ impl From<(&PolyOverZ, &Modulus)> for PolyOverZq {
     /// # assert_eq!(cmp_poly, mod_poly);
     /// ```
     fn from(poly_modulus_tuple: (&PolyOverZ, &Modulus)) -> Self {
-        let modulus = poly_modulus_tuple.1.clone();
-        let mut poly = MaybeUninit::uninit();
+        let mut res = PolyOverZq::from(poly_modulus_tuple.1);
         unsafe {
-            fmpz_mod_poly_init(poly.as_mut_ptr(), modulus.get_fmpz_mod_ctx_struct());
-            let mut poly = poly.assume_init();
-
             fmpz_mod_poly_set_fmpz_poly(
-                &mut poly,
+                &mut res.poly,
                 &poly_modulus_tuple.0.poly,
-                modulus.get_fmpz_mod_ctx_struct(),
+                res.modulus.get_fmpz_mod_ctx_struct(),
             );
-
-            PolyOverZq { poly, modulus }
         }
+        res
     }
 }
 
