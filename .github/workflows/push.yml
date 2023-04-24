@@ -50,7 +50,7 @@ jobs:
       - name: Test
         run: test --verbose
 
-      # Lints
+      # Lints: Clippy and Fmt
       - name: Clippy
         run: cargo clippy -- -D warnings
       - name: Format

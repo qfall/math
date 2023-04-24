@@ -49,6 +49,8 @@ jobs:
         run: cargo build --release
       - name: Generate docs
         run: cargo doc
+      - name: Run doc tests
+        run: cargo test --doc
 
       - name: Install cargo-tarpaulin
         uses: baptiste0928/cargo-install@v2
@@ -62,7 +64,7 @@ jobs:
           name: ${{ env.PROJECT_NAME }}-code_coverage_report-v${{ env.PROJECT_VERSION }}
           path: tarpaulin-report.html
 
-      # Lints
+      # Lints: Clippy and Fmt
       - name: Clippy
         run: cargo clippy -- -D warnings
       - name: Format

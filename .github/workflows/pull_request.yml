@@ -61,7 +61,7 @@ jobs:
           name: ${{ env.PROJECT_NAME }}-code_coverage_report-v${{ env.PROJECT_VERSION }}
           path: tarpaulin-report.html
 
-      # Lints
+      # Lints: Clippy and Fmt
       - name: Clippy
         run: cargo clippy -- -D warnings
       - name: Format
