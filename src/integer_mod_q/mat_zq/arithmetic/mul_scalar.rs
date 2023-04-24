@@ -74,7 +74,7 @@ impl Mul<&Zq> for &MatZq {
     ///  use std::str::FromStr;
     ///
     /// let mat1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
-    /// let integer = Zq::from(3);
+    /// let integer = Zq::try_from((2, 61)).unwrap();
     ///
     /// let mat2 = &mat1 * &integer;
     /// ```
@@ -107,9 +107,9 @@ impl MatZq {
     ///  use std::str::FromStr;
     ///
     /// let mat1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
-    /// let integer = Zq::from(3);
+    /// let integer = Zq::try_from((2, 61)).unwrap();
     ///
-    /// let mat2 = &mat1 * &integer;
+    /// let mat2 = &mat1.mul_scalar_safe(&integer);
     /// ```
     ///
     /// # Errors and Failures
