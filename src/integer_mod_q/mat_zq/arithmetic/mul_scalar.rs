@@ -32,8 +32,9 @@ impl Mul<&Z> for &MatZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::{MatZq, Zq};
-    ///  use std::str::FromStr;
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::integer::Z;
+    /// use std::str::FromStr;
     ///
     /// let mat1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
     /// let integer = Z::from(3);
@@ -71,7 +72,7 @@ impl Mul<&Zq> for &MatZq {
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::{MatZq, Zq};
-    ///  use std::str::FromStr;
+    /// use std::str::FromStr;
     ///
     /// let mat1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
     /// let integer = Zq::try_from((2, 61)).unwrap();
