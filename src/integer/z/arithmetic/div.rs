@@ -149,13 +149,11 @@ impl Div for &Z {
     /// let a = Z::from(42);
     /// let b = Z::from(20);
     ///
-    /// let c: Z = &a / &b;
-    /// let d: Z = a / b;
-    /// let e: Z = &c / d;
-    /// let f: Z = c / &e;
+    /// let c: Q = &a / &b;
+    /// let d: Q = a / b;
     ///
-    /// assert_eq!(Q::ONE, e);
-    /// assert_eq!(Q::try_from((2, 1)).unwrap(), f);
+    /// assert_eq!(Q::try_from((&21, &10)).unwrap(), c);
+    /// assert_eq!(Q::try_from((&21, &10)).unwrap(), d);
     /// ```
     ///
     /// # Panics ...
@@ -177,28 +175,30 @@ mod test_div_floor {
     #[test]
     fn floored() {
         let small = Z::from(-11);
-        let large = Z::from(i32::MAX);
+        let large = Z::from(i64::MAX);
         let divisor = Z::from(2);
 
         let res_0 = small.div_floor(&divisor);
         let res_1 = large.div_floor(&divisor);
 
         assert_eq!(Z::from(-6), res_0);
-        assert_eq!(Z::from(i32::MAX >> 1), res_1);
+        assert_eq!(Z::from(i64::MAX >> 1), res_1);
     }
 
     /// Checks whether `div_floor` correctly computes exact quotients
     #[test]
     fn exact() {
         let small = Z::from(10);
-        let large = Z::from(i32::MIN);
+        let large = Z::from(i64::MIN);
         let divisor = Z::from(2);
 
-        let res_0 = small.div_floor(&divisor);
-        let res_1 = large.div_floor(&divisor);
+        let res_0 = Z::ZERO.div_floor(&divisor);
+        let res_1 = small.div_floor(&divisor);
+        let res_2 = large.div_floor(&divisor);
 
-        assert_eq!(Z::from(5), res_0);
-        assert_eq!(Z::from(i32::MIN >> 1), res_1);
+        assert_eq!(Z::ZERO, res_0);
+        assert_eq!(Z::from(5), res_1);
+        assert_eq!(Z::from(i64::MIN >> 1), res_2);
     }
 
     /// Checks whether `div_floor` panics if the divisor is `0`
@@ -219,28 +219,30 @@ mod test_div_ceil {
     #[test]
     fn ceiled() {
         let small = Z::from(-11);
-        let large = Z::from(i32::MAX);
+        let large = Z::from(i64::MAX);
         let divisor = Z::from(2);
 
         let res_0 = small.div_ceil(&divisor);
         let res_1 = large.div_ceil(&divisor);
 
         assert_eq!(Z::from(-5), res_0);
-        assert_eq!(Z::from((i32::MAX >> 1) + 1), res_1);
+        assert_eq!(Z::from((i64::MAX >> 1) + 1), res_1);
     }
 
     /// Checks whether `div_ceil` correctly computes exact quotients
     #[test]
     fn exact() {
         let small = Z::from(10);
-        let large = Z::from(i32::MIN);
+        let large = Z::from(i64::MIN);
         let divisor = Z::from(2);
 
-        let res_0 = small.div_ceil(&divisor);
-        let res_1 = large.div_ceil(&divisor);
+        let res_0 = Z::ZERO.div_ceil(&divisor);
+        let res_1 = small.div_ceil(&divisor);
+        let res_2 = large.div_ceil(&divisor);
 
-        assert_eq!(Z::from(5), res_0);
-        assert_eq!(Z::from(i32::MIN >> 1), res_1);
+        assert_eq!(Z::ZERO, res_0);
+        assert_eq!(Z::from(5), res_1);
+        assert_eq!(Z::from(i64::MIN >> 1), res_2);
     }
 
     /// Checks whether `div_ceil` panics if the divisor is `0`
@@ -261,7 +263,7 @@ mod test_div_exact {
     #[test]
     fn non_exact() {
         let small = Z::from(-11);
-        let large = Z::from(i32::MAX);
+        let large = Z::from(i64::MAX);
         let divisor = Z::from(2);
 
         let res_0 = small.div_exact(&divisor);
@@ -275,14 +277,16 @@ mod test_div_exact {
     #[test]
     fn exact() {
         let small = Z::from(10);
-        let large = Z::from(i32::MIN);
+        let large = Z::from(i64::MIN);
         let divisor = Z::from(2);
 
-        let res_0 = small.div_exact(&divisor).unwrap();
-        let res_1 = large.div_exact(&divisor).unwrap();
+        let res_0 = Z::ZERO.div_exact(&divisor).unwrap();
+        let res_1 = small.div_exact(&divisor).unwrap();
+        let res_2 = large.div_exact(&divisor).unwrap();
 
-        assert_eq!(Z::from(5), res_0);
-        assert_eq!(Z::from(i32::MIN >> 1), res_1);
+        assert_eq!(Z::ZERO, res_0);
+        assert_eq!(Z::from(5), res_1);
+        assert_eq!(Z::from(i64::MIN >> 1), res_2);
     }
 
     /// Checks whether `div_exact` panics if the divisor is `0`
@@ -299,6 +303,7 @@ mod test_div_exact {
 mod test_div_between_types {
 
     use crate::integer::Z;
+    use crate::rational::Q;
 
     /// testing division between different types
     #[test]
@@ -313,77 +318,77 @@ mod test_div_between_types {
         let g: i32 = 5;
         let h: i16 = 5;
         let i: i8 = 5;
-        let _: Z = &a / &b;
-        let _: Z = &a / &c;
-        let _: Z = &a / &d;
-        let _: Z = &a / &e;
-        let _: Z = &a / &f;
-        let _: Z = &a / &g;
-        let _: Z = &a / &h;
-        let _: Z = &a / &i;
+        let _: Q = &a / &b;
+        let _: Q = &a / &c;
+        let _: Q = &a / &d;
+        let _: Q = &a / &e;
+        let _: Q = &a / &f;
+        let _: Q = &a / &g;
+        let _: Q = &a / &h;
+        let _: Q = &a / &i;
 
-        let _: Z = &b / &a;
-        let _: Z = &c / &a;
-        let _: Z = &d / &a;
-        let _: Z = &e / &a;
-        let _: Z = &f / &a;
-        let _: Z = &g / &a;
-        let _: Z = &h / &a;
-        let _: Z = &i / &a;
+        let _: Q = &b / &a;
+        let _: Q = &c / &a;
+        let _: Q = &d / &a;
+        let _: Q = &e / &a;
+        let _: Q = &f / &a;
+        let _: Q = &g / &a;
+        let _: Q = &h / &a;
+        let _: Q = &i / &a;
 
-        let _: Z = &a / b;
-        let _: Z = &a / c;
-        let _: Z = &a / d;
-        let _: Z = &a / e;
-        let _: Z = &a / f;
-        let _: Z = &a / g;
-        let _: Z = &a / h;
-        let _: Z = &a / i;
+        let _: Q = &a / b;
+        let _: Q = &a / c;
+        let _: Q = &a / d;
+        let _: Q = &a / e;
+        let _: Q = &a / f;
+        let _: Q = &a / g;
+        let _: Q = &a / h;
+        let _: Q = &a / i;
 
-        let _: Z = &b / Z::from(42);
-        let _: Z = &c / Z::from(42);
-        let _: Z = &d / Z::from(42);
-        let _: Z = &e / Z::from(42);
-        let _: Z = &f / Z::from(42);
-        let _: Z = &g / Z::from(42);
-        let _: Z = &h / Z::from(42);
-        let _: Z = &i / Z::from(42);
+        let _: Q = &b / Z::from(42);
+        let _: Q = &c / Z::from(42);
+        let _: Q = &d / Z::from(42);
+        let _: Q = &e / Z::from(42);
+        let _: Q = &f / Z::from(42);
+        let _: Q = &g / Z::from(42);
+        let _: Q = &h / Z::from(42);
+        let _: Q = &i / Z::from(42);
 
-        let _: Z = Z::from(42) / &b;
-        let _: Z = Z::from(42) / &c;
-        let _: Z = Z::from(42) / &d;
-        let _: Z = Z::from(42) / &e;
-        let _: Z = Z::from(42) / &f;
-        let _: Z = Z::from(42) / &g;
-        let _: Z = Z::from(42) / &h;
-        let _: Z = Z::from(42) / &i;
+        let _: Q = Z::from(42) / &b;
+        let _: Q = Z::from(42) / &c;
+        let _: Q = Z::from(42) / &d;
+        let _: Q = Z::from(42) / &e;
+        let _: Q = Z::from(42) / &f;
+        let _: Q = Z::from(42) / &g;
+        let _: Q = Z::from(42) / &h;
+        let _: Q = Z::from(42) / &i;
 
-        let _: Z = b / &a;
-        let _: Z = c / &a;
-        let _: Z = d / &a;
-        let _: Z = e / &a;
-        let _: Z = f / &a;
-        let _: Z = g / &a;
-        let _: Z = h / &a;
-        let _: Z = i / &a;
+        let _: Q = b / &a;
+        let _: Q = c / &a;
+        let _: Q = d / &a;
+        let _: Q = e / &a;
+        let _: Q = f / &a;
+        let _: Q = g / &a;
+        let _: Q = h / &a;
+        let _: Q = i / &a;
 
-        let _: Z = Z::from(42) / b;
-        let _: Z = Z::from(42) / c;
-        let _: Z = Z::from(42) / d;
-        let _: Z = Z::from(42) / e;
-        let _: Z = Z::from(42) / f;
-        let _: Z = Z::from(42) / g;
-        let _: Z = Z::from(42) / h;
-        let _: Z = Z::from(42) / i;
+        let _: Q = Z::from(42) / b;
+        let _: Q = Z::from(42) / c;
+        let _: Q = Z::from(42) / d;
+        let _: Q = Z::from(42) / e;
+        let _: Q = Z::from(42) / f;
+        let _: Q = Z::from(42) / g;
+        let _: Q = Z::from(42) / h;
+        let _: Q = Z::from(42) / i;
 
-        let _: Z = b / Z::from(42);
-        let _: Z = c / Z::from(42);
-        let _: Z = d / Z::from(42);
-        let _: Z = e / Z::from(42);
-        let _: Z = f / Z::from(42);
-        let _: Z = g / Z::from(42);
-        let _: Z = h / Z::from(42);
-        let _: Z = i / Z::from(42);
+        let _: Q = b / Z::from(42);
+        let _: Q = c / Z::from(42);
+        let _: Q = d / Z::from(42);
+        let _: Q = e / Z::from(42);
+        let _: Q = f / Z::from(42);
+        let _: Q = g / Z::from(42);
+        let _: Q = h / Z::from(42);
+        let _: Q = i / Z::from(42);
     }
 }
 
@@ -391,6 +396,7 @@ mod test_div_between_types {
 mod test_div {
 
     use super::Z;
+    use crate::rational::Q;
     use crate::traits::Pow;
 
     /// testing division for two [`Z`]
@@ -398,8 +404,8 @@ mod test_div {
     fn div() {
         let a: Z = Z::from(42);
         let b: Z = Z::from(4);
-        let c: Z = a / b;
-        assert_eq!(c, Z::from(10));
+        let c: Q = a / b;
+        assert_eq!(c, Q::try_from((&21, &2)).unwrap());
     }
 
     /// testing division for two borrowed [`Z`]
@@ -407,8 +413,8 @@ mod test_div {
     fn div_borrow() {
         let a: Z = Z::from(42);
         let b: Z = Z::from(4);
-        let c: Z = &a / &b;
-        assert_eq!(c, Z::from(10));
+        let c: Q = &a / &b;
+        assert_eq!(c, Q::try_from((&21, &2)).unwrap());
     }
 
     /// testing division for borrowed [`Z`] and [`Z`]
@@ -416,8 +422,8 @@ mod test_div {
     fn div_first_borrowed() {
         let a: Z = Z::from(42);
         let b: Z = Z::from(4);
-        let c: Z = &a / b;
-        assert_eq!(c, Z::from(10));
+        let c: Q = &a / b;
+        assert_eq!(c, Q::try_from((&21, &2)).unwrap());
     }
 
     /// testing division for [`Z`] and borrowed [`Z`]
@@ -425,8 +431,8 @@ mod test_div {
     fn div_second_borrowed() {
         let a: Z = Z::from(42);
         let b: Z = Z::from(4);
-        let c: Z = a / &b;
-        assert_eq!(c, Z::from(10));
+        let c: Q = a / &b;
+        assert_eq!(c, Q::try_from((&21, &2)).unwrap());
     }
 
     /// testing division for big [`Z`]
@@ -434,11 +440,11 @@ mod test_div {
     fn div_large_numbers() {
         let a: Z = Z::from(i64::MAX as u64 + 1);
         let b: Z = Z::from(2);
-        let c: Z = Z::from(i32::MIN);
-        let d: Z = Z::from(i32::MAX as u32 + 1);
-        let e: Z = a / b;
-        let f: Z = c / d;
-        assert_eq!(e, Z::from(2).pow(62).unwrap());
-        assert_eq!(f, Z::MINUS_ONE);
+        let c: Z = Z::from(i64::MIN);
+        let d: Z = Z::from(i64::MAX as u64 + 1);
+        let e: Q = a / b;
+        let f: Q = c / d;
+        assert_eq!(e, Q::from_int(Z::from(2).pow(62).unwrap()));
+        assert_eq!(f, Q::MINUS_ONE);
     }
 }
