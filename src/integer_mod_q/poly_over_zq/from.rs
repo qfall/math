@@ -23,8 +23,8 @@ impl From<(&PolyOverZ, &Modulus)> for PolyOverZq {
     /// Parameters:
     /// - `poly_modulus_tuple`: A tuple of the polynomial and the modulus.
     ///
-    /// Examples:
-    /// ``` rust
+    /// # Examples:
+    /// ```
     /// use qfall_math::integer_mod_q::{PolyOverZq, Modulus};
     /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;
