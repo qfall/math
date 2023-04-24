@@ -19,6 +19,7 @@ mod exp;
 mod from;
 mod ownership;
 mod properties;
+mod rounding;
 mod serialize;
 mod to_string;
 
