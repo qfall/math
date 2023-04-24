@@ -158,7 +158,7 @@ impl MatZq {
         modulus: impl Into<Z>,
     ) -> Result<Self, MathError> {
         let mut out = MatZq::new(num_rows, num_cols, modulus)?;
-        if out.get_mod() != Modulus::try_from_z(&Z::ONE).unwrap() {
+        if Z::ONE != Z::from(&out.modulus) {
             unsafe { fmpz_mod_mat_one(&mut out.matrix) };
         }
         Ok(out)
