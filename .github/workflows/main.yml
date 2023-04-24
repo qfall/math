@@ -1,3 +1,6 @@
+env:
+  RUSTDOCFLAGS: "-Dwarnings"
+
 name: Pipeline
 
 on:
