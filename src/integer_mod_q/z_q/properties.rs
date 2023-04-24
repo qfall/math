@@ -9,7 +9,7 @@
 //! This module includes functionality about properties of [`Zq`] instances.
 
 use super::Zq;
-use crate::{integer::Z, integer_mod_q::Modulus, traits::Pow};
+use crate::traits::Pow;
 
 impl Zq {
     /// Returns the inverse of `self` as a fresh [`Zq`] instance.
@@ -26,39 +26,6 @@ impl Zq {
     /// ```
     pub fn inverse(&self) -> Option<Zq> {
         self.pow(-1).ok()
-    }
-
-    /// Returns the [`Z`] value of the [`Zq`] element.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer_mod_q::Zq;
-    /// use qfall_math::integer::Z;
-    /// let zq_value = Zq::try_from((4, 7)).unwrap();
-    ///
-    /// let z_value = zq_value.get_value();
-    ///
-    /// assert_eq!(Z::from(4), z_value);
-    /// ```
-    pub fn get_value(&self) -> Z {
-        self.value.clone()
-    }
-
-    /// Returns the [`Modulus`] of the [`Zq`] element.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer_mod_q::{Zq, Modulus};
-    /// use std::str::FromStr;
-    /// let value = Zq::try_from((4, 7)).unwrap();
-    /// let cmp = Modulus::from_str("7").unwrap();
-    ///
-    /// let modulus = value.get_mod();
-    ///
-    /// assert_eq!(cmp, modulus);
-    /// ```
-    pub fn get_mod(&self) -> Modulus {
-        self.modulus.clone()
     }
 }
 
