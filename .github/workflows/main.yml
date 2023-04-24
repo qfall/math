@@ -84,3 +84,4 @@ jobs:
         with:
           name: ${{ env.PROJECT_NAME }}-release_build-v${{ env.PROJECT_VERSION }}
           path: target/release/${{ env.PROJECT_NAME }}
+

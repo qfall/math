@@ -77,3 +77,4 @@ jobs:
         uses: dtolnay/install@cargo-outdated
       - name: Outdated dependencies
         run: cargo outdated --exit-code 1
+
