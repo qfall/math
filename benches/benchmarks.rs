@@ -10,6 +10,7 @@
 
 use criterion::criterion_main;
 
+pub mod classic_crypto;
 pub mod integer;
 
-criterion_main! {integer::benches}
+criterion_main! {integer::benches, classic_crypto::benches}
