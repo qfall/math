@@ -9,10 +9,7 @@
 //! This module contains the implementation of the `inverse` function.
 
 use super::MatQ;
-use crate::{
-    rational::Q,
-    traits::{GetNumColumns, GetNumRows},
-};
+use crate::traits::{GetNumColumns, GetNumRows};
 use flint_sys::fmpq_mat::fmpq_mat_inv;
 
 impl MatQ {
@@ -29,21 +26,17 @@ impl MatQ {
     /// let matrix_invert = matrix.inverse().unwrap();
     /// ```
     pub fn inverse(&self) -> Option<MatQ> {
-        // check if matrix is square and compute determinant to check whether
-        // the matrix is invertible or not
-
-        let det = self.det();
-
-        if det.is_err() || det.unwrap() == Q::ZERO {
+        // check if matrix is square
+        if self.get_num_rows() != self.get_num_columns() {
             return None;
         }
 
-        // create new matrix to store inverted result in
+        // check if determinant is not `0`, create new matrix to store inverted result in
         let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns()).unwrap();
-        unsafe {
-            fmpq_mat_inv(&mut out.matrix, &self.matrix);
+        match unsafe { fmpq_mat_inv(&mut out.matrix, &self.matrix) } {
+            0 => None,
+            _ => Some(out),
         }
-        Some(out)
     }
 }
 
