@@ -19,6 +19,7 @@ use flint_sys::fmpq_mat::fmpq_mat_inv;
 impl MatZ {
     /// Returns the inverse of the matrix if it exists (is square and
     /// has a determinant unequal to zero).
+    /// Otherwise, return [`None`].
     ///
     /// # Examples
     /// ```
@@ -29,12 +30,6 @@ impl MatZ {
     /// let mut matrix = MatZ::from_str("[[1,2],[3,4]]").unwrap();
     /// let matrix_invert = matrix.inverse().unwrap();
     /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    /// if the number of rows and columns is not equal.
-    /// - Returns a [`MathError`] of type [`NotInvertible`](MathError::NotInvertible)
-    /// if the determinant of the matrix is `0`.
     pub fn inverse(&self) -> Option<MatQ> {
         // check if matrix is square and compute determinant to check whether
         // the matrix is invertible or not

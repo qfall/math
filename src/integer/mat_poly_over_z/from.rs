@@ -97,7 +97,7 @@ impl MatPolyOverZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix) or
     /// [`OutOfBounds`](MathError::OutOfBounds) if the provided number of rows and columns
-    /// are not suited to create a matrix. For further information see [`MatZ::new`].
+    /// are not suited to create a matrix. For further information see [`MatZ::new`](crate::integer::MatZ::new).
     pub fn identity(
         num_rows: impl TryInto<i64> + Display + Copy,
         num_cols: impl TryInto<i64> + Display + Copy,
