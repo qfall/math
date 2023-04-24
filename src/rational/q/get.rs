@@ -56,6 +56,7 @@ impl Q {
 mod test_get_denominator {
     use crate::{integer::Z, rational::Q};
 
+    /// get a small denominator
     #[test]
     fn get_small() {
         let value = Q::try_from((&2, &20)).unwrap();
@@ -63,6 +64,7 @@ mod test_get_denominator {
         assert_eq!(den, Z::from(10));
     }
 
+    /// get a large denominator (uses FLINT's pointer representation)
     #[test]
     fn get_large() {
         let value = Q::try_from((&1, &i64::MAX)).unwrap();
@@ -75,6 +77,7 @@ mod test_get_denominator {
 mod test_get_numerator {
     use crate::{integer::Z, rational::Q};
 
+    /// get a small numerator
     #[test]
     fn get_small() {
         let value = Q::try_from((&2, &20)).unwrap();
@@ -82,6 +85,7 @@ mod test_get_numerator {
         assert_eq!(num, Z::from(1));
     }
 
+    /// get a large numerator (uses FLINT's pointer representation)
     #[test]
     fn get_large() {
         let value = Q::try_from((&i64::MAX, &1)).unwrap();
