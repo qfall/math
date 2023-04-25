@@ -165,9 +165,6 @@ impl Z {
     where
         T: Into<Z> + Clone,
     {
-        if self <= &Z::ZERO {
-            return Err(MathError::NotNaturalNumber(self.to_string()));
-        }
         let base: Z = base.clone().into();
         if base <= Z::ONE {
             return Err(MathError::InvalidBase(format!(
@@ -176,11 +173,11 @@ impl Z {
             )));
         }
 
-        let ln_value = unsafe { fmpz_dlog(&self.value) };
-        let ln_base = unsafe { fmpz_dlog(&base.value) };
+        let ln_value = self.ln()?;
+        let ln_base = base.ln()?;
         let log_b = ln_value / ln_base;
 
-        Ok(Q::from(log_b))
+        Ok(log_b)
     }
 }
 
@@ -357,6 +354,9 @@ mod test_log {
         let z_1 = Z::from(2);
         let z_2 = Z::from(6);
         let z_3 = Z::from(9);
+        let cmp_0 = Q::from(6_f64.log2());
+        let cmp_1 = Q::try_from((&2, &1)).unwrap();
+        let max_distance = Q::try_from((&1, &1_000_000_000)).unwrap();
 
         let res_0 = z_0.log(&2).unwrap();
         let res_1 = z_1.log(&2).unwrap();
@@ -365,8 +365,8 @@ mod test_log {
 
         assert_eq!(Q::ZERO, res_0);
         assert_eq!(Q::ONE, res_1);
-        assert_eq!(Q::from(6_f64.log2()), res_2);
-        assert_eq!(Q::try_from((&2, &1)).unwrap(), res_3);
+        assert!(cmp_0.distance(res_2) < max_distance);
+        assert!(cmp_1.distance(res_3) < max_distance);
     }
 
     /// checks whether the logarithm computation works correctly for large values
@@ -375,14 +375,16 @@ mod test_log {
         let z_0 = Z::from(i64::MAX as u64 + 1);
         let z_1 = Z::from(i64::MAX);
         let z_2 = Z::from(i32::MAX);
-        let cmp = Q::from((i64::MAX as f64).log2());
+        let cmp_0 = Q::try_from((&63, &1)).unwrap();
+        let cmp_1 = Q::from((i64::MAX as f64).log2());
+        let max_distance = Q::try_from((&1, &1_000_000_000)).unwrap();
 
         let res_0 = z_0.log(&2).unwrap();
         let res_1 = z_1.log(&2).unwrap();
         let res_2 = z_2.log(&i32::MAX).unwrap();
 
-        assert_eq!(Q::try_from((&63, &1)).unwrap(), res_0);
-        assert!(cmp.distance(res_1) < Q::try_from((&1, &1000000)).unwrap());
+        assert!(cmp_0.distance(res_0) < max_distance);
+        assert!(cmp_1.distance(res_1) < max_distance);
         assert_eq!(Q::ONE, res_2);
     }
 
