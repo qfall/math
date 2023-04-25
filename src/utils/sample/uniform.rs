@@ -112,7 +112,11 @@ fn sample_bits_uniform(nr_bits: usize) -> Vec<u8> {
     } else {
         byte_vector = vec![0u8; nr_bits / 8 + 1];
     }
-    rng.fill_bytes(&mut byte_vector);
+    let mut res = rng.try_fill_bytes(&mut byte_vector);
+    while res.is_err() {
+        let first_unfilled_byte = find_first_unfilled_byte(&byte_vector);
+        res = rng.try_fill_bytes(&mut byte_vector[first_unfilled_byte..]);
+    }
 
     // set superfluous bits at the end to `0`
     if nr_bits % 8 != 0 {
@@ -121,6 +125,43 @@ fn sample_bits_uniform(nr_bits: usize) -> Vec<u8> {
     }
 
     byte_vector
+}
+
+/// Binary search to find the first zero byte.
+///
+/// As we do not mark the filled bytes, the first zero byte is our
+/// best guess to identify a not yet randomly/ unfiilled byte.
+///
+/// Parameters:
+/// - `byte_arr`: specifies the slice whose first zero byte is looked for
+///
+/// Returns the position of the first zero byte acc. to binary search.
+/// If no zero byte exists, the length of the slice is returned.
+///
+/// # Examples
+/// ```compile_fail
+/// use qfall_math::utils::sample::{find_first_unfilled_byte, sample_bits_uniform};
+/// let nr_bits = 256;
+/// let byte_vector = sample_bits_uniform(nr_bits);
+///
+/// let first_zero_byte = find_first_unfilled_byte(&byte_vector);
+/// ```
+fn find_first_unfilled_byte(byte_arr: &[u8]) -> usize {
+    let mut lower_bound = 0;
+    let mut upper_bound = byte_arr.len();
+    while upper_bound - lower_bound > 1 {
+        let index = lower_bound + (upper_bound - lower_bound) / 2;
+        if byte_arr[index] == 0x0 {
+            upper_bound = index;
+        } else {
+            lower_bound = index;
+        }
+    }
+    if byte_arr[lower_bound] == 0x0 {
+        lower_bound
+    } else {
+        upper_bound
+    }
 }
 
 #[cfg(test)]
@@ -276,5 +317,45 @@ mod test_sample_bits_uniform {
                 );
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod test_find_first_unfilled_byte {
+    use super::{find_first_unfilled_byte, sample_bits_uniform};
+
+    /// Ensures that the doc test works properly and that
+    /// the boundaries of the slice length are respected
+    #[test]
+    fn doc_test() {
+        let nr_bits = 256;
+        let byte_vector = sample_bits_uniform(nr_bits);
+
+        let first_zero_byte = find_first_unfilled_byte(&byte_vector);
+
+        assert!(first_zero_byte <= 256);
+    }
+
+    /// Ensures correct computation of the first
+    /// detectable zero bytes via binary search for static examples
+    #[test]
+    fn static_cases() {
+        let mut vec_0 = vec![0x1; 5];
+        let mut vec_1 = vec![0x0; 4];
+        let arr_0: [u8; 8] = [0, 1, 2, 3, 4, 5, 6, 0];
+        let arr_1: [u8; 7] = [1, 2, 0, 0, 0, 0, 0];
+
+        let res_0 = find_first_unfilled_byte(&vec_0);
+        let res_1 = find_first_unfilled_byte(&vec_1);
+        vec_0.append(&mut vec_1);
+        let res_2 = find_first_unfilled_byte(&vec_0);
+        let res_3 = find_first_unfilled_byte(&arr_0);
+        let res_4 = find_first_unfilled_byte(&arr_1);
+
+        assert_eq!(5, res_0);
+        assert_eq!(0, res_1);
+        assert_eq!(5, res_2);
+        assert_eq!(7, res_3);
+        assert_eq!(2, res_4);
     }
 }
