@@ -25,6 +25,7 @@ mod arithmetic;
 mod distance;
 pub(crate) mod fmpz_mod_helpers;
 mod from;
+mod get;
 mod properties;
 mod reduce;
 mod sample;
