@@ -64,13 +64,13 @@ impl Z {
             return Err(MathError::NegativeRootParameter(format!("{}", self)));
         }
         let mut integer_result = Q::default();
-        let mut remainder = Q::default();
+        let remainder = Q::default();
 
         unsafe {
             // self = integer_result^2 + remainder
             fmpz_sqrtrem(
                 &mut integer_result.value.num,
-                &mut remainder.value.num,
+                &remainder.value.num,
                 &self.value,
             );
         }
