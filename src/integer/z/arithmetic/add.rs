@@ -49,7 +49,7 @@ impl Add for &Z {
 
 arithmetic_trait_borrowed_to_owned!(Add, add, Z, Z, Z);
 arithmetic_trait_mixed_borrowed_owned!(Add, add, Z, Z, Z);
-arithmetic_between_types!(Add, add, Z, i64 i32 i16 i8 u64 u32 u16 u8);
+arithmetic_between_types!(Add, add, Z, Z, i64 i32 i16 i8 u64 u32 u16 u8);
 
 #[cfg(test)]
 mod test_add_between_types {
