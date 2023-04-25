@@ -168,6 +168,10 @@ pub enum MathError {
     #[error("mismatching vector dimensions. {0}")]
     MismatchingVectorDimensions(String),
 
+    /// calculate the root of a negative number
+    #[error("can not calculate the root of {0} since it is a negative number")]
+    NegativeRootParameter(String),
+
     /// invert matrix error
     #[error("the matrix could not be inverted. {0}")]
     NotInvertible(String),
