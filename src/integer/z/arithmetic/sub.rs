@@ -43,8 +43,8 @@ impl Sub for &Z {
     ///
     /// let c: Z = &a - &b;
     /// let d: Z = a - b;
-    /// let e: Z = &c - d;
-    /// let f: Z = c - &e;
+    /// let e: Z = &Z::from(42) - d;
+    /// let f: Z = Z::from(42) - &e;
     /// ```
     fn sub(self, other: Self) -> Self::Output {
         let mut out = Z::default();
@@ -81,8 +81,8 @@ impl Sub<&Q> for &Z {
     ///
     /// let c: Q = &a - &b;
     /// let d: Q = a - b;
-    /// let e: Q = &c - d;
-    /// let f: Q = c - &e;
+    /// let e: Q = &Z::from(42) - d;
+    /// let f: Q = Z::from(42) - &e;
     /// ```
     fn sub(self, other: &Q) -> Self::Output {
         let mut out = Q::default();
