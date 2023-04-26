@@ -16,7 +16,10 @@ use crate::{
         arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
     },
 };
-use flint_sys::fmpz_mod::fmpz_mod_add;
+use flint_sys::{
+    fmpz::fmpz,
+    fmpz_mod::{fmpz_mod_add, fmpz_mod_add_fmpz},
+};
 use std::ops::Add;
 
 impl Add for &Zq {
@@ -95,6 +98,48 @@ impl Zq {
 arithmetic_trait_borrowed_to_owned!(Add, add, Zq, Zq, Zq);
 arithmetic_trait_mixed_borrowed_owned!(Add, add, Zq, Zq, Zq);
 
+impl Add<&Z> for &Zq {
+    type Output = Zq;
+
+    /// Implements the [`Add`] trait for [`Zq`] and [`Z`] values.
+    /// [`Add`] is implemented for any combination of owned and borrowed values.
+    ///
+    /// Parameters:
+    ///  - `other`: specifies the value to add to `self`
+    ///
+    /// Returns the sum of both numbers as a [`Zq`].
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::integer_mod_q::Zq;
+    /// use qfall_math::integer::Z;
+    /// use std::str::FromStr;
+    ///
+    /// let a: Zq = Zq::from_str("42 mod 19").unwrap();
+    /// let b: Z = Z::from_str("42").unwrap();
+    ///
+    /// let c: Zq = &a + &b;
+    /// let d: Zq = a + b;
+    /// let e: Zq = &c + d;
+    /// let f: Zq = c + &e;
+    /// ```
+    fn add(self, other: &Z) -> Self::Output {
+        let mut out = fmpz(0);
+        unsafe {
+            fmpz_mod_add_fmpz(
+                &mut out,
+                &self.value.value,
+                &other.value,
+                &*self.modulus.modulus,
+            );
+        }
+        Zq::from_z_modulus(&Z::from_fmpz(&out), &self.modulus)
+    }
+}
+
+arithmetic_trait_borrowed_to_owned!(Add, add, Zq, Z, Zq);
+arithmetic_trait_mixed_borrowed_owned!(Add, add, Zq, Z, Zq);
+
 #[cfg(test)]
 mod test_add {
 
@@ -163,5 +208,70 @@ mod test_add {
         let a: Zq = Zq::try_from((4, 11)).unwrap();
         let b: Zq = Zq::try_from((1, 3)).unwrap();
         assert!(&a.add_safe(&b).is_err());
+    }
+}
+
+
+#[cfg(test)]
+mod test_add_between_z_and_zq {
+
+    use super::Z;
+    use crate::integer_mod_q::Zq;
+    use std::str::FromStr;
+
+    /// testing addition for [`Q`] and [`Z`]
+    #[test]
+    fn add() {
+        let a: Zq = Zq::try_from((4, 11)).unwrap();
+        let b: Z = Z::from(9);
+        let c: Zq = a + b;
+        assert_eq!(c, Zq::try_from((2, 11)).unwrap());
+    }
+
+    /// testing addition for both borrowed [`Q`] and [`Z`]
+    #[test]
+    fn add_borrow() {
+        let a: Q = Q::from_str("5/7").unwrap();
+        let b: Z = Z::from(4);
+        let c: Q = &a + &b;
+        assert_eq!(c, Q::from_str("33/7").unwrap());
+    }
+
+    /// testing addition for borrowed [`Q`] and [`Z`]
+    #[test]
+    fn add_first_borrowed() {
+        let a: Q = Q::from_str("5/7").unwrap();
+        let b: Z = Z::from(4);
+        let c: Q = &a + b;
+        assert_eq!(c, Q::from_str("33/7").unwrap());
+    }
+
+    /// testing addition for [`Q`] and borrowed [`Z`]
+    #[test]
+    fn add_second_borrowed() {
+        let a: Q = Q::from_str("5/7").unwrap();
+        let b: Z = Z::from(4);
+        let c: Q = a + &b;
+        assert_eq!(c, Q::from_str("33/7").unwrap());
+    }
+
+    /// testing addition for big numbers
+    #[test]
+    fn add_large_numbers() {
+        let a: Q = Q::from_str(&format!("{}/2", u64::MAX)).unwrap();
+        let b: Q = Q::from_str(&format!("1/{}", u64::MAX)).unwrap();
+        let c: Z = Z::from(u64::MAX);
+        let d: Q = a + &c;
+        let e: Q = b + c;
+        assert_eq!(
+            d,
+            Q::from_str(&format!("{}/1", u64::MAX)).unwrap()
+                + Q::from_str(&format!("{}/2", u64::MAX)).unwrap()
+        );
+        assert_eq!(
+            e,
+            Q::from_str(&format!("1/{}", u64::MAX)).unwrap()
+                + Q::from_str(&format!("{}/1", u64::MAX)).unwrap()
+        );
     }
 }
