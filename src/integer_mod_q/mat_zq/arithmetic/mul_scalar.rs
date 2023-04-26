@@ -80,8 +80,8 @@ impl Mul<&Zq> for &MatZq {
     /// let mat2 = &mat1 * &integer;
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Panics if the moduli mismatch.
+    /// # Panics ...
+    /// - if the moduli mismatch.
     fn mul(self, scalar: &Zq) -> Self::Output {
         self.mul_scalar_safe(scalar).unwrap()
     }
@@ -110,12 +110,12 @@ impl MatZq {
     /// let mat1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
     /// let integer = Zq::try_from((2, 61)).unwrap();
     ///
-    /// let mat2 = &mat1.mul_scalar_safe(&integer);
+    /// let mat2 = &mat1.mul_scalar_safe(&integer).unwrap();
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [`MathError::MismatchingModulus`] if the moduli mismatch.
+    /// [`MismatchingModulus`](MathError::MismatchingModulus) if the moduli mismatch.
     pub fn mul_scalar_safe(&self, scalar: &Zq) -> Result<Self, MathError> {
         if self.get_mod() != scalar.modulus {
             return Err(MathError::MismatchingModulus(format!(
@@ -151,8 +151,6 @@ mod test_mul_z {
 
         let mat1 = &mat1 * &integer;
         let mat2 = &integer * &mat2;
-
-        println!("{}", mat1);
 
         assert_eq!(mat3, mat1);
         assert_eq!(mat3, mat2);
