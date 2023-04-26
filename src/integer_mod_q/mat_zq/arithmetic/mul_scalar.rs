@@ -236,14 +236,9 @@ mod test_mul_z {
     fn large_entries() {
         let mat1 = MatZq::from_str(&format!("[[1],[{}],[4]] mod {}", i64::MAX, u64::MAX)).unwrap();
         let mat2 = MatZq::from_str(&format!("[[3]] mod {}", u64::MAX)).unwrap();
-        let mat3 = MatZq::from_str(&format!(
-            "[[3],[{}],[12]] mod {}",
-            3 * i64::MAX as i128,
-            u64::MAX
-        ))
-        .unwrap();
-        let mat4 =
-            MatZq::from_str(&format!("[[{}]] mod {}", 3 * i64::MAX as i128, u64::MAX)).unwrap();
+        let mat3 =
+            MatZq::from_str(&format!("[[3],[{}],[12]] mod {}", i64::MAX - 1, u64::MAX)).unwrap();
+        let mat4 = MatZq::from_str(&format!("[[{}]] mod {}", i64::MAX - 1, u64::MAX)).unwrap();
         let integer1 = Z::from(3);
         let integer2 = Z::from(i64::MAX);
 
