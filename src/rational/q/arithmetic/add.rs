@@ -55,7 +55,7 @@ impl Add for &Q {
 
 arithmetic_trait_borrowed_to_owned!(Add, add, Q, Q, Q);
 arithmetic_trait_mixed_borrowed_owned!(Add, add, Q, Q, Q);
-arithmetic_between_types!(Add, add, Q, Q, i64 i32 i16 i8 u64 u32 u16 u8);
+arithmetic_between_types!(Add, add, Q, Q, i64 i32 i16 i8 u64 u32 u16 u8 f32 f64);
 
 impl Add<&Z> for &Q {
     type Output = Q;
@@ -336,6 +336,8 @@ mod test_add_between_types {
         let g: i32 = 1;
         let h: i16 = 1;
         let i: i8 = 1;
+        let j: f32 = 0.3;
+        let k: f64 = 0.3;
         let _: Q = &a + &b;
         let _: Q = &a + &c;
         let _: Q = &a + &d;
@@ -344,6 +346,8 @@ mod test_add_between_types {
         let _: Q = &a + &g;
         let _: Q = &a + &h;
         let _: Q = &a + &i;
+        let _: Q = &a + &j;
+        let _: Q = &a + &k;
 
         let _: Q = &b + &a;
         let _: Q = &c + &a;
@@ -353,6 +357,8 @@ mod test_add_between_types {
         let _: Q = &g + &a;
         let _: Q = &h + &a;
         let _: Q = &i + &a;
+        let _: Q = &j + &a;
+        let _: Q = &k + &a;
 
         let _: Q = &a + b;
         let _: Q = &a + c;
@@ -362,6 +368,8 @@ mod test_add_between_types {
         let _: Q = &a + g;
         let _: Q = &a + h;
         let _: Q = &a + i;
+        let _: Q = &a + j;
+        let _: Q = &a + k;
 
         let _: Q = &b + Q::from(42);
         let _: Q = &c + Q::from(42);
@@ -371,6 +379,8 @@ mod test_add_between_types {
         let _: Q = &g + Q::from(42);
         let _: Q = &h + Q::from(42);
         let _: Q = &i + Q::from(42);
+        let _: Q = &j + Q::from(42);
+        let _: Q = &k + Q::from(42);
 
         let _: Q = Q::from(42) + &b;
         let _: Q = Q::from(42) + &c;
@@ -380,6 +390,8 @@ mod test_add_between_types {
         let _: Q = Q::from(42) + &g;
         let _: Q = Q::from(42) + &h;
         let _: Q = Q::from(42) + &i;
+        let _: Q = Q::from(42) + &j;
+        let _: Q = Q::from(42) + &k;
 
         let _: Q = b + &a;
         let _: Q = c + &a;
@@ -389,6 +401,8 @@ mod test_add_between_types {
         let _: Q = g + &a;
         let _: Q = h + &a;
         let _: Q = i + &a;
+        let _: Q = j + &a;
+        let _: Q = k + &a;
 
         let _: Q = Q::from(42) + b;
         let _: Q = Q::from(42) + c;
@@ -398,6 +412,8 @@ mod test_add_between_types {
         let _: Q = Q::from(42) + g;
         let _: Q = Q::from(42) + h;
         let _: Q = Q::from(42) + i;
+        let _: Q = Q::from(42) + j;
+        let _: Q = Q::from(42) + k;
 
         let _: Q = b + Q::from(42);
         let _: Q = c + Q::from(42);
@@ -407,5 +423,7 @@ mod test_add_between_types {
         let _: Q = g + Q::from(42);
         let _: Q = h + Q::from(42);
         let _: Q = i + Q::from(42);
+        let _: Q = j + Q::from(42);
+        let _: Q = k + Q::from(42);
     }
 }
