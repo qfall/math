@@ -9,10 +9,15 @@
 //! Implementation of the [`Sub`] trait for [`Q`] values.
 
 use super::super::Q;
-use crate::macros::arithmetics::{
-    arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+use crate::{
+    integer::Z,
+    integer_mod_q::Zq,
+    macros::arithmetics::{
+        arithmetic_between_types, arithmetic_trait_borrowed_to_owned,
+        arithmetic_trait_mixed_borrowed_owned,
+    },
 };
-use flint_sys::fmpq::fmpq_sub;
+use flint_sys::fmpq::{fmpq_sub, fmpq_sub_fmpz};
 use std::ops::Sub;
 
 impl Sub for &Q {
@@ -49,6 +54,77 @@ impl Sub for &Q {
 
 arithmetic_trait_borrowed_to_owned!(Sub, sub, Q, Q, Q);
 arithmetic_trait_mixed_borrowed_owned!(Sub, sub, Q, Q, Q);
+arithmetic_between_types!(Sub, sub, Q, Q, i64 i32 i16 i8 u64 u32 u16 u8 f32 f64);
+
+impl Sub<&Z> for &Q {
+    type Output = Q;
+
+    /// Implements the [`Sub`] trait for [`Q`] and [`Z`] values.
+    /// [`Sub`] is implemented for any combination of owned and borrowed values.
+    ///
+    /// Parameters:
+    ///  - `other`: specifies the value to subtract from `self`
+    ///
+    /// Returns the result of the subtraction of both numbers as a [`Q`].
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::rational::Q;
+    /// use qfall_math::integer::Z;
+    /// use std::str::FromStr;
+    ///
+    /// let a: Q = Q::from_str("42/19").unwrap();
+    /// let b: Z = Z::from(42);
+    ///
+    /// let c: Q = &a - &b;
+    /// let d: Q = a - b;
+    /// let e: Q = &c - Z::from(42);
+    /// let f: Q = c - &Z::from(42);
+    /// ```
+    fn sub(self, other: &Z) -> Self::Output {
+        let mut out = Q::default();
+        unsafe {
+            fmpq_sub_fmpz(&mut out.value, &self.value, &other.value);
+        }
+        out
+    }
+}
+
+arithmetic_trait_borrowed_to_owned!(Sub, sub, Q, Z, Q);
+arithmetic_trait_mixed_borrowed_owned!(Sub, sub, Q, Z, Q);
+
+impl Sub<&Zq> for &Q {
+    type Output = Q;
+
+    /// Implements the [`Sub`] trait for [`Q`] and [`Zq`] values.
+    /// [`Sub`] is implemented for any combination of owned and borrowed values.
+    ///
+    /// Parameters:
+    ///  - `other`: specifies the value to subtract from `self`
+    ///
+    /// Returns the result of subtraction of both numbers as a [`Q`].
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::rational::Q;
+    /// use qfall_math::integer_mod_q::Zq;
+    /// use std::str::FromStr;
+    ///
+    /// let a: Q = Q::from_str("42/19").unwrap();
+    /// let b: Zq = Zq::from_str("42 mod 11").unwrap();
+    ///
+    /// let c: Q = &a + &b;
+    /// let d: Q = a + b;
+    /// let e: Q = &c + Zq::from_str("42 mod 11").unwrap();
+    /// let f: Q = c + &Zq::from_str("42 mod 11").unwrap();
+    /// ```
+    fn sub(self, other: &Zq) -> Self::Output {
+        self - Z::from(other.clone()) // todo do it more efficient -> later
+    }
+}
+
+arithmetic_trait_borrowed_to_owned!(Sub, sub, Q, Zq, Q);
+arithmetic_trait_mixed_borrowed_owned!(Sub, sub, Q, Zq, Q);
 
 #[cfg(test)]
 mod test_sub {
@@ -106,5 +182,244 @@ mod test_sub {
             Q::from_str(&format!("-1/{}", (u64::MAX))).unwrap()
                 + Q::from_str(&format!("1/{}", (i64::MAX))).unwrap()
         );
+    }
+}
+
+#[cfg(test)]
+mod test_sub_between_z_and_q {
+
+    use super::Z;
+    use crate::rational::Q;
+    use std::str::FromStr;
+
+    /// testing subtraction for [`Q`] and [`Z`]
+    #[test]
+    fn sub() {
+        let a: Q = Q::from_str("5/7").unwrap();
+        let b: Z = Z::from(4);
+        let c: Q = a - b;
+        assert_eq!(c, Q::from_str("-23/7").unwrap());
+    }
+
+    /// testing subtraction for both borrowed [`Q`] and [`Z`]
+    #[test]
+    fn sub_borrow() {
+        let a: Q = Q::from_str("5/7").unwrap();
+        let b: Z = Z::from(4);
+        let c: Q = &a - &b;
+        assert_eq!(c, Q::from_str("-23/7").unwrap());
+    }
+
+    /// testing subtraction for borrowed [`Q`] and [`Z`]
+    #[test]
+    fn sub_first_borrowed() {
+        let a: Q = Q::from_str("5/7").unwrap();
+        let b: Z = Z::from(4);
+        let c: Q = &a - b;
+        assert_eq!(c, Q::from_str("-23/7").unwrap());
+    }
+
+    /// testing subtraction for [`Q`] and borrowed [`Z`]
+    #[test]
+    fn sub_second_borrowed() {
+        let a: Q = Q::from_str("5/7").unwrap();
+        let b: Z = Z::from(4);
+        let c: Q = a - &b;
+        assert_eq!(c, Q::from_str("-23/7").unwrap());
+    }
+
+    /// testing subtraction for big numbers
+    #[test]
+    fn sub_large_numbers() {
+        let a: Q = Q::from_str(&format!("{}/2", u64::MAX)).unwrap();
+        let b: Q = Q::from_str(&format!("1/{}", u64::MAX)).unwrap();
+        let c: Z = Z::from(u64::MAX);
+        let d: Q = a - &c;
+        let e: Q = b - c;
+        assert_eq!(
+            d,
+            Q::from_str(&format!("{}/2", u64::MAX)).unwrap()
+                - Q::from_str(&format!("{}/1", u64::MAX)).unwrap()
+        );
+        assert_eq!(
+            e,
+            Q::from_str(&format!("1/{}", u64::MAX)).unwrap()
+                - Q::from_str(&format!("{}/1", u64::MAX)).unwrap()
+        );
+    }
+}
+
+#[cfg(test)]
+mod test_add_between_q_and_zq {
+
+    use crate::integer_mod_q::Zq;
+    use crate::rational::Q;
+    use std::str::FromStr;
+
+    /// testing subtraction for [`Q`] and [`Zq`]
+    #[test]
+    fn add() {
+        let a: Q = Q::from_str("5/7").unwrap();
+        let b: Zq = Zq::try_from_int_int(4, 17).unwrap();
+        let c: Q = a - b;
+        assert_eq!(c, Q::from_str("-23/7").unwrap());
+    }
+
+    /// testing subtraction for both borrowed [`Q`] and [`Zq`]
+    #[test]
+    fn add_borrow() {
+        let a: Q = Q::from_str("5/7").unwrap();
+        let b: Zq = Zq::try_from_int_int(4, 17).unwrap();
+        let c: Q = &a - &b;
+        assert_eq!(c, Q::from_str("-23/7").unwrap());
+    }
+
+    /// testing subtraction for borrowed [`Q`] and [`Zq`]
+    #[test]
+    fn add_first_borrowed() {
+        let a: Q = Q::from_str("5/7").unwrap();
+        let b: Zq = Zq::try_from_int_int(4, 17).unwrap();
+        let c: Q = &a - b;
+        assert_eq!(c, Q::from_str("-23/7").unwrap());
+    }
+
+    /// testing subtraction for [`Q`] and borrowed [`Zq`]
+    #[test]
+    fn add_second_borrowed() {
+        let a: Q = Q::from_str("5/7").unwrap();
+        let b: Zq = Zq::try_from_int_int(4, 17).unwrap();
+        let c: Q = a - &b;
+        assert_eq!(c, Q::from_str("-23/7").unwrap());
+    }
+
+    /// testing subtraction for big numbers
+    #[test]
+    fn add_large_numbers() {
+        let a: Q = Q::from_str(&format!("{}/2", u64::MAX)).unwrap();
+        let b: Q = Q::from_str(&format!("1/{}", u64::MAX)).unwrap();
+        let c: Zq = Zq::try_from_int_int(i64::MAX, u64::MAX - 58).unwrap();
+        let d: Q = a - &c;
+        let e: Q = b - c;
+        assert_eq!(
+            d,
+            Q::from_str(&format!("{}/2", u64::MAX)).unwrap()
+                - Q::from_str(&format!("{}/1", i64::MAX)).unwrap()
+        );
+        assert_eq!(
+            e,
+            Q::from_str(&format!("1/{}", u64::MAX)).unwrap()
+                - Q::from_str(&format!("{}/1", i64::MAX)).unwrap()
+        );
+    }
+}
+
+#[cfg(test)]
+mod test_sub_between_types {
+
+    use crate::rational::Q;
+
+    /// testing subtraction between different types
+    #[test]
+    #[allow(clippy::op_ref)]
+    fn sub() {
+        let a: Q = Q::from(42);
+        let b: u64 = 1;
+        let c: u32 = 1;
+        let d: u16 = 1;
+        let e: u8 = 1;
+        let f: i64 = 1;
+        let g: i32 = 1;
+        let h: i16 = 1;
+        let i: i8 = 1;
+        let j: f32 = 1.3;
+        let k: f64 = 1.3;
+
+        let _: Q = &a - &b;
+        let _: Q = &a - &c;
+        let _: Q = &a - &d;
+        let _: Q = &a - &e;
+        let _: Q = &a - &f;
+        let _: Q = &a - &g;
+        let _: Q = &a - &h;
+        let _: Q = &a - &i;
+        let _: Q = &a - &j;
+        let _: Q = &a - &k;
+
+        let _: Q = &b - &a;
+        let _: Q = &c - &a;
+        let _: Q = &d - &a;
+        let _: Q = &e - &a;
+        let _: Q = &f - &a;
+        let _: Q = &g - &a;
+        let _: Q = &h - &a;
+        let _: Q = &i - &a;
+        let _: Q = &j - &a;
+        let _: Q = &k - &a;
+
+        let _: Q = &a - b;
+        let _: Q = &a - c;
+        let _: Q = &a - d;
+        let _: Q = &a - e;
+        let _: Q = &a - f;
+        let _: Q = &a - g;
+        let _: Q = &a - h;
+        let _: Q = &a - i;
+        let _: Q = &a - j;
+        let _: Q = &a - k;
+
+        let _: Q = &b - Q::from(42);
+        let _: Q = &c - Q::from(42);
+        let _: Q = &d - Q::from(42);
+        let _: Q = &e - Q::from(42);
+        let _: Q = &f - Q::from(42);
+        let _: Q = &g - Q::from(42);
+        let _: Q = &h - Q::from(42);
+        let _: Q = &i - Q::from(42);
+        let _: Q = &j - Q::from(42);
+        let _: Q = &k - Q::from(42);
+
+        let _: Q = Q::from(42) - &b;
+        let _: Q = Q::from(42) - &c;
+        let _: Q = Q::from(42) - &d;
+        let _: Q = Q::from(42) - &e;
+        let _: Q = Q::from(42) - &f;
+        let _: Q = Q::from(42) - &g;
+        let _: Q = Q::from(42) - &h;
+        let _: Q = Q::from(42) - &i;
+        let _: Q = Q::from(42) - &j;
+        let _: Q = Q::from(42) - &k;
+
+        let _: Q = b - &a;
+        let _: Q = c - &a;
+        let _: Q = d - &a;
+        let _: Q = e - &a;
+        let _: Q = f - &a;
+        let _: Q = g - &a;
+        let _: Q = h - &a;
+        let _: Q = i - &a;
+        let _: Q = j - &a;
+        let _: Q = k - &a;
+
+        let _: Q = Q::from(42) - b;
+        let _: Q = Q::from(42) - c;
+        let _: Q = Q::from(42) - d;
+        let _: Q = Q::from(42) - e;
+        let _: Q = Q::from(42) - f;
+        let _: Q = Q::from(42) - g;
+        let _: Q = Q::from(42) - h;
+        let _: Q = Q::from(42) - i;
+        let _: Q = Q::from(42) - j;
+        let _: Q = Q::from(42) - k;
+
+        let _: Q = b - Q::from(42);
+        let _: Q = c - Q::from(42);
+        let _: Q = d - Q::from(42);
+        let _: Q = e - Q::from(42);
+        let _: Q = f - Q::from(42);
+        let _: Q = g - Q::from(42);
+        let _: Q = h - Q::from(42);
+        let _: Q = i - Q::from(42);
+        let _: Q = j - Q::from(42);
+        let _: Q = k - Q::from(42);
     }
 }
