@@ -13,7 +13,8 @@ use crate::{
     error::MathError,
     integer::Z,
     macros::arithmetics::{
-        arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+        arithmetic_between_types_zq, arithmetic_trait_borrowed_to_owned,
+        arithmetic_trait_mixed_borrowed_owned,
     },
 };
 use flint_sys::{
@@ -140,6 +141,8 @@ impl Add<&Z> for &Zq {
 arithmetic_trait_borrowed_to_owned!(Add, add, Zq, Z, Zq);
 arithmetic_trait_mixed_borrowed_owned!(Add, add, Zq, Z, Zq);
 
+arithmetic_between_types_zq!(Add, add, Zq, i64 i32 i16 i8 u64 u32 u16 u8);
+
 #[cfg(test)]
 mod test_add {
 
@@ -211,15 +214,13 @@ mod test_add {
     }
 }
 
-
 #[cfg(test)]
-mod test_add_between_z_and_zq {
+mod test_add_between_zq_and_z {
 
     use super::Z;
     use crate::integer_mod_q::Zq;
-    use std::str::FromStr;
 
-    /// testing addition for [`Q`] and [`Z`]
+    /// testing addition for [`Zq`] and [`Z`]
     #[test]
     fn add() {
         let a: Zq = Zq::try_from((4, 11)).unwrap();
@@ -228,50 +229,137 @@ mod test_add_between_z_and_zq {
         assert_eq!(c, Zq::try_from((2, 11)).unwrap());
     }
 
-    /// testing addition for both borrowed [`Q`] and [`Z`]
+    /// testing addition for both borrowed [`Zq`] and [`Z`]
     #[test]
     fn add_borrow() {
-        let a: Q = Q::from_str("5/7").unwrap();
-        let b: Z = Z::from(4);
-        let c: Q = &a + &b;
-        assert_eq!(c, Q::from_str("33/7").unwrap());
+        let a: Zq = Zq::try_from((4, 11)).unwrap();
+        let b: Z = Z::from(9);
+        let c: Zq = a + b;
+        assert_eq!(c, Zq::try_from((2, 11)).unwrap());
     }
 
-    /// testing addition for borrowed [`Q`] and [`Z`]
+    /// testing addition for borrowed [`Zq`] and [`Z`]
     #[test]
     fn add_first_borrowed() {
-        let a: Q = Q::from_str("5/7").unwrap();
-        let b: Z = Z::from(4);
-        let c: Q = &a + b;
-        assert_eq!(c, Q::from_str("33/7").unwrap());
+        let a: Zq = Zq::try_from((4, 11)).unwrap();
+        let b: Z = Z::from(9);
+        let c: Zq = a + b;
+        assert_eq!(c, Zq::try_from((2, 11)).unwrap());
     }
 
-    /// testing addition for [`Q`] and borrowed [`Z`]
+    /// testing addition for [`Zq`] and borrowed [`Z`]
     #[test]
     fn add_second_borrowed() {
-        let a: Q = Q::from_str("5/7").unwrap();
-        let b: Z = Z::from(4);
-        let c: Q = a + &b;
-        assert_eq!(c, Q::from_str("33/7").unwrap());
+        let a: Zq = Zq::try_from((4, 11)).unwrap();
+        let b: Z = Z::from(9);
+        let c: Zq = a + b;
+        assert_eq!(c, Zq::try_from((2, 11)).unwrap());
     }
 
     /// testing addition for big numbers
     #[test]
     fn add_large_numbers() {
-        let a: Q = Q::from_str(&format!("{}/2", u64::MAX)).unwrap();
-        let b: Q = Q::from_str(&format!("1/{}", u64::MAX)).unwrap();
+        let a: Zq = Zq::try_from((i64::MAX, u64::MAX - 58)).unwrap();
+        let b: Zq = Zq::try_from((i64::MAX - 1, i64::MAX)).unwrap();
         let c: Z = Z::from(u64::MAX);
-        let d: Q = a + &c;
-        let e: Q = b + c;
+        let d: Zq = a + &c;
+        let e: Zq = b + c;
         assert_eq!(
             d,
-            Q::from_str(&format!("{}/1", u64::MAX)).unwrap()
-                + Q::from_str(&format!("{}/2", u64::MAX)).unwrap()
+            Zq::try_from(((u64::MAX - 1) / 2 + 58, u64::MAX - 58)).unwrap()
         );
-        assert_eq!(
-            e,
-            Q::from_str(&format!("1/{}", u64::MAX)).unwrap()
-                + Q::from_str(&format!("{}/1", u64::MAX)).unwrap()
-        );
+        assert_eq!(e, Zq::try_from((0, i64::MAX)).unwrap());
+    }
+}
+
+#[cfg(test)]
+mod test_add_between_types {
+
+    use crate::integer_mod_q::Zq;
+
+    /// testing addition between different types
+    #[test]
+    #[allow(clippy::op_ref)]
+    fn add() {
+        let a: Zq = Zq::try_from((4, 11)).unwrap();
+        let b: u64 = 1;
+        let c: u32 = 1;
+        let d: u16 = 1;
+        let e: u8 = 1;
+        let f: i64 = 1;
+        let g: i32 = 1;
+        let h: i16 = 1;
+        let i: i8 = 1;
+        let _: Zq = &a + &b;
+        let _: Zq = &a + &c;
+        let _: Zq = &a + &d;
+        let _: Zq = &a + &e;
+        let _: Zq = &a + &f;
+        let _: Zq = &a + &g;
+        let _: Zq = &a + &h;
+        let _: Zq = &a + &i;
+
+        let _: Zq = &b + &a;
+        let _: Zq = &c + &a;
+        let _: Zq = &d + &a;
+        let _: Zq = &e + &a;
+        let _: Zq = &f + &a;
+        let _: Zq = &g + &a;
+        let _: Zq = &h + &a;
+        let _: Zq = &i + &a;
+
+        let _: Zq = &a + b;
+        let _: Zq = &a + c;
+        let _: Zq = &a + d;
+        let _: Zq = &a + e;
+        let _: Zq = &a + f;
+        let _: Zq = &a + g;
+        let _: Zq = &a + h;
+        let _: Zq = &a + i;
+
+        let _: Zq = &b + Zq::try_from((4, 11)).unwrap();
+        let _: Zq = &c + Zq::try_from((4, 11)).unwrap();
+        let _: Zq = &d + Zq::try_from((4, 11)).unwrap();
+        let _: Zq = &e + Zq::try_from((4, 11)).unwrap();
+        let _: Zq = &f + Zq::try_from((4, 11)).unwrap();
+        let _: Zq = &g + Zq::try_from((4, 11)).unwrap();
+        let _: Zq = &h + Zq::try_from((4, 11)).unwrap();
+        let _: Zq = &i + Zq::try_from((4, 11)).unwrap();
+
+        let _: Zq = Zq::try_from((4, 11)).unwrap() + &b;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() + &c;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() + &d;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() + &e;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() + &f;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() + &g;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() + &h;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() + &i;
+
+        let _: Zq = b + &a;
+        let _: Zq = c + &a;
+        let _: Zq = d + &a;
+        let _: Zq = e + &a;
+        let _: Zq = f + &a;
+        let _: Zq = g + &a;
+        let _: Zq = h + &a;
+        let _: Zq = i + &a;
+
+        let _: Zq = Zq::try_from((4, 11)).unwrap() + b;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() + c;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() + d;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() + e;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() + f;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() + g;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() + h;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() + i;
+
+        let _: Zq = b + Zq::try_from((4, 11)).unwrap();
+        let _: Zq = c + Zq::try_from((4, 11)).unwrap();
+        let _: Zq = d + Zq::try_from((4, 11)).unwrap();
+        let _: Zq = e + Zq::try_from((4, 11)).unwrap();
+        let _: Zq = f + Zq::try_from((4, 11)).unwrap();
+        let _: Zq = g + Zq::try_from((4, 11)).unwrap();
+        let _: Zq = h + Zq::try_from((4, 11)).unwrap();
+        let _: Zq = i + Zq::try_from((4, 11)).unwrap();
     }
 }

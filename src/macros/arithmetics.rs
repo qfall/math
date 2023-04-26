@@ -8,8 +8,6 @@
 
 //! This module implements macros which are used to implement arithmetic traits for data types.
 
-use crate::integer_mod_q::Zq;
-
 /// Implements the [`*trait*`] for [`*type*`] using the [`*trait*`] for
 /// [`&*type*`].
 ///
@@ -225,7 +223,7 @@ macro_rules! arithmetic_between_types_zq {
                 paste::paste! {
                     #[doc = "Documentation at [`Zq::" $trait_function "`]."]
                     fn $trait_function(self, other: &$other_type) -> Self::Output {
-                    self.$trait_function(Zq::try_from_z_z(Z::from(*other),self.get_modulus()))
+                    self.$trait_function(Zq::from_z_modulus(&Z::from(*other),&self.modulus))
                     }
                 }
             }
@@ -234,12 +232,12 @@ macro_rules! arithmetic_between_types_zq {
             arithmetic_trait_mixed_borrowed_owned!($trait,$trait_function,Zq,$other_type,$output_type);
 
             #[doc(hidden)]
-            impl $trait<&$type> for &$other_type {
+            impl $trait<&Zq> for &$other_type {
                 type Output = $output_type;
                 paste::paste! {
-                    #[doc = "Documentation at [`" $type "::" $trait_function "`]."]
-                    fn $trait_function(self, other: &$type) -> Self::Output {
-                    other.$trait_function(Zq::try_from_z_z(Z::from(*self),other.get_modulus()))
+                    #[doc = "Documentation at [`Zq::" $trait_function "`]."]
+                    fn $trait_function(self, other: &Zq) -> Self::Output {
+                    other.$trait_function(Zq::from_z_modulus(&Z::from(*self),&other.modulus))
                     }
                 }
             }

@@ -54,7 +54,7 @@ impl Add for &Q {
 
 arithmetic_trait_borrowed_to_owned!(Add, add, Q, Q, Q);
 arithmetic_trait_mixed_borrowed_owned!(Add, add, Q, Q, Q);
-arithmetic_between_types!(Add, add, Q, Q,  i64 i32 i16 i8 u64 u32 u16 u8);
+arithmetic_between_types!(Add, add, Q, Q, i64 i32 i16 i8 u64 u32 u16 u8);
 
 impl Add<&Z> for &Q {
     type Output = Q;
