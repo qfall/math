@@ -199,21 +199,21 @@ pub(crate) use arithmetic_trait_reverse;
 ///
 /// Returns the owned and borrowed Implementation code for the
 /// [`*trait*`] trait with the signatures:
-/// ```impl *trait*<&*other_type*> for &*output_type*```
+/// ```impl *trait*<&*other_type*> for &[`Zq`]```
 ///
-/// ```impl *trait*<*other_type*> for *output_type*```
+/// ```impl *trait*<*other_type*> for [`Zq`]```
 ///
-/// ```impl *trait*<&*other_type*> for *output_type*```
+/// ```impl *trait*<&*other_type*> for [`Zq`]```
 ///
-/// ```impl *trait*<*other_type*> for &*output_type*```
+/// ```impl *trait*<*other_type*> for &[`Zq`]```
 ///
-/// ```impl *trait*<&*output_type*> for &*other_type*```
+/// ```impl *trait*<&[`Zq`]> for &*other_type*```
 ///
-/// ```impl *trait*<*output_type*> for *other_type*```
+/// ```impl *trait*<[`Zq`]> for *other_type*```
 ///
-/// ```impl *trait*<&*output_type*> for *other_type*```
+/// ```impl *trait*<&[`Zq`]> for *other_type*```
 ///
-/// ```impl *trait*<*output_type*> for &*other_type*```
+/// ```impl *trait*<[`Zq`]> for &*other_type*```
 macro_rules! arithmetic_between_types_zq {
     ($trait:ident, $trait_function:ident, $output_type:ident, $($other_type:ident)*) => {
         $(
