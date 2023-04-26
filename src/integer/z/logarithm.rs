@@ -30,7 +30,7 @@ impl Z {
     /// use qfall_math::integer::Z;
     ///
     /// let value = Z::from(15);
-    /// let log = value.log_ceil(&Z::from(4)).unwrap();
+    /// let log = value.log_ceil(&4).unwrap();
     ///
     /// assert_eq!(Z::from(2), log);
     /// ```
@@ -40,8 +40,12 @@ impl Z {
     /// - Returns a [`MathError`] of type
     /// [`NotNaturalNumber`](MathError::NotNaturalNumber) if the `self` is not
     ///  greater than `0`.
-    pub fn log_ceil(&self, base: &Z) -> Result<Z, MathError> {
-        if base <= &Z::ONE {
+    pub fn log_ceil<T>(&self, base: &T) -> Result<Z, MathError>
+    where
+        T: Into<Z> + Clone,
+    {
+        let base = base.clone().into();
+        if base <= Z::ONE {
             Err(MathError::InvalidBase(format!(
                 "The base must be greater than 1, but the provided is {}",
                 base
@@ -70,7 +74,7 @@ impl Z {
     /// use qfall_math::integer::Z;
     ///
     /// let value = Z::from(15);
-    /// let log = value.log_floor(&Z::from(4)).unwrap();
+    /// let log = value.log_floor(&4).unwrap();
     ///
     /// assert_eq!(Z::from(1), log);
     /// ```
@@ -80,8 +84,12 @@ impl Z {
     /// - Returns a [`MathError`] of type
     /// [`NotNaturalNumber`](MathError::NotNaturalNumber) if the `self` is not
     ///  greater than `0`.
-    pub fn log_floor(&self, base: &Z) -> Result<Z, MathError> {
-        if base <= &Z::ONE {
+    pub fn log_floor<T>(&self, base: &T) -> Result<Z, MathError>
+    where
+        T: Into<Z> + Clone,
+    {
+        let base = base.clone().into();
+        if base <= Z::ONE {
             Err(MathError::InvalidBase(format!(
                 "The base must be greater than 1, but the provided is {}",
                 base
@@ -122,6 +130,54 @@ impl Z {
         } else {
             Ok(Q::from(unsafe { fmpz_dlog(&self.value) }))
         }
+    }
+
+    /// Computes the logarithm of a natural number (i.e. an integer greater than `0`)
+    /// with an integer base greater than `1` approximated as an [`f64`]
+    /// and returned as a [`Q`].
+    ///
+    /// **Warning**: It assumes that the return value does not overflow an [`f64`].
+    ///
+    /// Parameters:
+    /// - `base`: the base of the logarithm
+    ///
+    /// Returns $log_base(self)$ as a [`Q`] instance or a [`MathError`],
+    /// if at least one of the conditions `base > 1` and `self > 0` isn't met.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::rational::Q;
+    ///
+    /// let value = Z::from(2);
+    /// let log = value.log(&2).unwrap();
+    ///
+    /// assert_eq!(Q::ONE, log);
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`InvalidBase`](MathError::InvalidBase)
+    /// if the `base` is not greater than `1`.
+    /// - Returns a [`MathError`] of type
+    /// [`NotNaturalNumber`](MathError::NotNaturalNumber) if `self` is not
+    ///  greater than `0`.
+    pub fn log<T>(&self, base: &T) -> Result<Q, MathError>
+    where
+        T: Into<Z> + Clone,
+    {
+        let base: Z = base.clone().into();
+        if base <= Z::ONE {
+            return Err(MathError::InvalidBase(format!(
+                "The base must be greater than 1, but the provided is {}",
+                base
+            )));
+        }
+
+        let ln_value = self.ln()?;
+        let ln_base = base.ln()?;
+        let log_b = ln_value / ln_base;
+
+        Ok(log_b)
     }
 }
 
@@ -165,6 +221,23 @@ mod test_log_ceil {
             Z::from(u64::MAX).log_ceil(&Z::from(4)).unwrap()
         );
     }
+
+    /// ensures that `log_ceil` is available for all important types
+    /// that can be casted to a [`Z`] instance like u8, u16, i32, i64, ...
+    #[test]
+    fn availability() {
+        let value = Z::from(5);
+
+        let _ = value.log_ceil(&2_u8).unwrap();
+        let _ = value.log_ceil(&2_u16).unwrap();
+        let _ = value.log_ceil(&2_u32).unwrap();
+        let _ = value.log_ceil(&2_u64).unwrap();
+        let _ = value.log_ceil(&2_i8).unwrap();
+        let _ = value.log_ceil(&2_i16).unwrap();
+        let _ = value.log_ceil(&2_i32).unwrap();
+        let _ = value.log_ceil(&2_i64).unwrap();
+        let _ = value.log_ceil(&value).unwrap();
+    }
 }
 
 #[cfg(test)]
@@ -207,6 +280,23 @@ mod test_log_floor {
             Z::from(u64::MAX).log_floor(&Z::from(4)).unwrap()
         );
     }
+
+    /// ensures that `log_floor` is available for all important types
+    /// that can be casted to a [`Z`] instance like u8, u16, i32, i64, ...
+    #[test]
+    fn availability() {
+        let value = Z::from(5);
+
+        let _ = value.log_floor(&2_u8).unwrap();
+        let _ = value.log_floor(&2_u16).unwrap();
+        let _ = value.log_floor(&2_u32).unwrap();
+        let _ = value.log_floor(&2_u64).unwrap();
+        let _ = value.log_floor(&2_i8).unwrap();
+        let _ = value.log_floor(&2_i16).unwrap();
+        let _ = value.log_floor(&2_i32).unwrap();
+        let _ = value.log_floor(&2_i64).unwrap();
+        let _ = value.log_floor(&value).unwrap();
+    }
 }
 
 #[cfg(test)]
@@ -229,5 +319,89 @@ mod test_natural_ln {
         assert_eq!(Q::ZERO, Z::ONE.ln().unwrap());
         assert_eq!(Q::from(LN_2), Z::from(2).ln().unwrap());
         assert_eq!(Q::from(LN_10), Z::from(10).ln().unwrap());
+    }
+}
+
+#[cfg(test)]
+mod test_log {
+    use crate::{integer::Z, rational::Q, traits::Distance};
+
+    /// ensure that an error is returned if the base is too small
+    #[test]
+    fn base_too_small() {
+        let value = Z::from(17);
+
+        assert!(value.log(&Z::ZERO).is_err());
+        assert!(value.log(&Z::ONE).is_err());
+        assert!(value.log(&Z::MINUS_ONE).is_err());
+        assert!(value.log(&Z::from(i64::MIN)).is_err());
+    }
+
+    /// ensure that an error is returned if `self` is too small
+    #[test]
+    fn value_too_small() {
+        let base = Z::from(2);
+
+        assert!(Z::ZERO.log(&base).is_err());
+        assert!(Z::MINUS_ONE.log(&base).is_err());
+        assert!(Z::from(i64::MIN).log(&base).is_err());
+    }
+
+    /// checks whether the logarithm computation works correctly for small values
+    #[test]
+    fn small_values() {
+        let z_0 = Z::from(1);
+        let z_1 = Z::from(2);
+        let z_2 = Z::from(6);
+        let z_3 = Z::from(9);
+        let cmp_0 = Q::from(6_f64.log2());
+        let cmp_1 = Q::try_from((&2, &1)).unwrap();
+        let max_distance = Q::try_from((&1, &1_000_000_000)).unwrap();
+
+        let res_0 = z_0.log(&2).unwrap();
+        let res_1 = z_1.log(&2).unwrap();
+        let res_2 = z_2.log(&2).unwrap();
+        let res_3 = z_3.log(&3).unwrap();
+
+        assert_eq!(Q::ZERO, res_0);
+        assert_eq!(Q::ONE, res_1);
+        assert!(cmp_0.distance(res_2) < max_distance);
+        assert!(cmp_1.distance(res_3) < max_distance);
+    }
+
+    /// checks whether the logarithm computation works correctly for large values
+    #[test]
+    fn large_values() {
+        let z_0 = Z::from(i64::MAX as u64 + 1);
+        let z_1 = Z::from(i64::MAX);
+        let z_2 = Z::from(i32::MAX);
+        let cmp_0 = Q::try_from((&63, &1)).unwrap();
+        let cmp_1 = Q::from((i64::MAX as f64).log2());
+        let max_distance = Q::try_from((&1, &1_000_000_000)).unwrap();
+
+        let res_0 = z_0.log(&2).unwrap();
+        let res_1 = z_1.log(&2).unwrap();
+        let res_2 = z_2.log(&i32::MAX).unwrap();
+
+        assert!(cmp_0.distance(res_0) < max_distance);
+        assert!(cmp_1.distance(res_1) < max_distance);
+        assert_eq!(Q::ONE, res_2);
+    }
+
+    /// ensures that the logarithm function is available for all important types
+    /// that can be casted to a [`Z`] instance like u8, u16, i32, i64, ...
+    #[test]
+    fn availability() {
+        let value = Z::from(5);
+
+        let _ = value.log(&2_u8).unwrap();
+        let _ = value.log(&2_u16).unwrap();
+        let _ = value.log(&2_u32).unwrap();
+        let _ = value.log(&2_u64).unwrap();
+        let _ = value.log(&2_i8).unwrap();
+        let _ = value.log(&2_i16).unwrap();
+        let _ = value.log(&2_i32).unwrap();
+        let _ = value.log(&2_i64).unwrap();
+        let _ = value.log(&value).unwrap();
     }
 }
