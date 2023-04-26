@@ -19,6 +19,7 @@ mod from;
 mod get;
 mod inverse;
 mod ownership;
+mod sample;
 mod serialize;
 mod set;
 mod tensor;

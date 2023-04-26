@@ -18,6 +18,7 @@ mod concat;
 mod from;
 mod get;
 mod ownership;
+mod sample;
 mod serialize;
 mod set;
 mod tensor;

@@ -8,26 +8,24 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  RUSTDOCFLAGS: "-Dwarnings"
 
 jobs:
-  update_build_test:
-    name: Update, Build and Test
+  pipeline:
+    name: Pipeline - test and lints
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      # install action-rs toolchain 
-      # deprecated, but best tool for usage with clippy in PR context and only way to calculate test coverage
-      - uses: actions-rs/toolchain@v1
+      - name: Setup dtolnay/rust-toolchain 
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
           toolchain: stable
-          override: true
           components: clippy, rustfmt
 
-      # load cargo cache to reduce compilation time
-      - name: Set up cargo cache
+      # load project cache to reduce compilation time
+      - name: Setup project cache
         uses: actions/cache@v3
         continue-on-error: false
         with:
@@ -41,31 +39,18 @@ jobs:
           restore-keys: ${{ runner.os }}-cargo-
 
       - name: Update dependencies
-        uses: actions-rs/cargo@v1
-        with: 
-          command: update
+        run: cargo update
       - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
+        run: cargo build
+      - name: Generate docs
+        run: cargo doc
       
       - name: Test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --verbose
+        run: cargo test --verbose
 
-      # Lints
+      # Lints: Clippy and Fmt
       - name: Clippy
-        uses: actions-rs/clippy-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: -- -D warnings # escalate warnings s.t. pipeline fails
+        run: cargo clippy -- -D warnings
       - name: Format
         run:  cargo fmt --all -- --check
-      
-      # Cargo check for security issues
-      - name: Security audit
-        uses: actions-rs/audit-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+
