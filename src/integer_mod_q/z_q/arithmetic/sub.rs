@@ -13,10 +13,15 @@ use crate::{
     error::MathError,
     integer::Z,
     macros::arithmetics::{
-        arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+        arithmetic_between_types_zq, arithmetic_trait_borrowed_to_owned,
+        arithmetic_trait_mixed_borrowed_owned,
     },
+    rational::Q,
 };
-use flint_sys::fmpz_mod::fmpz_mod_sub;
+use flint_sys::{
+    fmpz::fmpz,
+    fmpz_mod::{fmpz_mod_sub, fmpz_mod_sub_fmpz},
+};
 use std::ops::Sub;
 
 impl Sub for &Zq {
@@ -94,6 +99,82 @@ impl Zq {
 
 arithmetic_trait_borrowed_to_owned!(Sub, sub, Zq, Zq, Zq);
 arithmetic_trait_mixed_borrowed_owned!(Sub, sub, Zq, Zq, Zq);
+arithmetic_between_types_zq!(Sub, sub, Zq, i64 i32 i16 i8 u64 u32 u16 u8);
+
+impl Sub<&Z> for &Zq {
+    type Output = Zq;
+
+    /// Implements the [`Sub`] trait for [`Zq`] and [`Z`] values.
+    /// [`Sub`] is implemented for any combination of owned and borrowed values.
+    ///
+    /// Parameters:
+    ///  - `other`: specifies the value to subtract from `self`
+    ///
+    /// Returns the result of the subtraction of both numbers as a [`Zq`].
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::integer_mod_q::Zq;
+    /// use qfall_math::integer::Z;
+    /// use std::str::FromStr;
+    ///
+    /// let a: Zq = Zq::from_str("42 mod 19").unwrap();
+    /// let b: Z = Z::from(42);
+    ///
+    /// let c: Zq = &a - &b;
+    /// let d: Zq = a - b;
+    /// let e: Zq = &c - Z::from(42);
+    /// let f: Zq = c - &Z::from(42);
+    /// ```
+    fn sub(self, other: &Z) -> Self::Output {
+        let mut out = fmpz(0);
+        unsafe {
+            fmpz_mod_sub_fmpz(
+                &mut out,
+                &self.value.value,
+                &other.value,
+                &*self.modulus.modulus,
+            );
+        }
+        Zq::from_z_modulus(&Z::from_fmpz(&out), &self.modulus)
+    }
+}
+
+arithmetic_trait_borrowed_to_owned!(Sub, sub, Zq, Z, Zq);
+arithmetic_trait_mixed_borrowed_owned!(Sub, sub, Zq, Z, Zq);
+
+impl Sub<&Q> for &Zq {
+    type Output = Q;
+
+    /// Implements the [`Sub`] trait for [`Zq`] and [`Q`] values.
+    /// [`Sub`] is implemented for any combination of owned and borrowed values.
+    ///
+    /// Parameters:
+    ///  - `other`: specifies the value to subtract from `self`
+    ///
+    /// Returns the result of subtraction of both numbers as a [`Q`].
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::rational::Q;
+    /// use qfall_math::integer_mod_q::Zq;
+    /// use std::str::FromStr;
+    ///
+    /// let a: Zq = Zq::from_str("42 mod 11").unwrap();
+    /// let b: Q = Q::from_str("42/19").unwrap();
+    ///
+    /// let c: Q = &a - &b;
+    /// let d: Q = a - b;
+    /// let e: Q = &Zq::from_str("42 mod 11").unwrap() - d;
+    /// let f: Q = Zq::from_str("42 mod 11").unwrap() - &e;
+    /// ```
+    fn sub(self, other: &Q) -> Self::Output {
+        Z::from(self.clone()) - other // todo do it more efficient -> later
+    }
+}
+
+arithmetic_trait_borrowed_to_owned!(Sub, sub, Zq, Q, Q);
+arithmetic_trait_mixed_borrowed_owned!(Sub, sub, Zq, Q, Q);
 
 #[cfg(test)]
 mod test_sub {
@@ -163,5 +244,220 @@ mod test_sub {
         let a: Zq = Zq::try_from((4, 11)).unwrap();
         let b: Zq = Zq::try_from((1, 3)).unwrap();
         assert!(&a.sub_safe(&b).is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_sub_between_z_and_zq {
+
+    use super::Z;
+    use crate::integer_mod_q::Zq;
+
+    /// testing subtraction for [`Q`] and [`Z`]
+    #[test]
+    fn sub() {
+        let a: Zq = Zq::try_from((4, 11)).unwrap();
+        let b: Z = Z::from(9);
+        let c: Zq = a - b;
+        assert_eq!(c, Zq::try_from((6, 11)).unwrap());
+    }
+
+    /// testing subtraction for both borrowed [`Q`] and [`Z`]
+    #[test]
+    fn sub_borrow() {
+        let a: Zq = Zq::try_from((4, 11)).unwrap();
+        let b: Z = Z::from(9);
+        let c: Zq = &a - &b;
+        assert_eq!(c, Zq::try_from((6, 11)).unwrap());
+    }
+
+    /// testing subtraction for borrowed [`Q`] and [`Z`]
+    #[test]
+    fn sub_first_borrowed() {
+        let a: Zq = Zq::try_from((4, 11)).unwrap();
+        let b: Z = Z::from(9);
+        let c: Zq = &a - b;
+        assert_eq!(c, Zq::try_from((6, 11)).unwrap());
+    }
+
+    /// testing subtraction for [`Q`] and borrowed [`Z`]
+    #[test]
+    fn sub_second_borrowed() {
+        let a: Zq = Zq::try_from((4, 11)).unwrap();
+        let b: Z = Z::from(9);
+        let c: Zq = a - &b;
+        assert_eq!(c, Zq::try_from((6, 11)).unwrap());
+    }
+
+    /// testing subtraction for big numbers
+    #[test]
+    fn sub_large_numbers() {
+        let a: Zq = Zq::try_from((i64::MAX, u64::MAX - 58)).unwrap();
+        let b: Zq = Zq::try_from((i64::MAX - 1, i64::MAX)).unwrap();
+        let c: Z = Z::from(u64::MAX);
+        let d: Zq = a - &c;
+        let e: Zq = b - c;
+        assert_eq!(
+            d,
+            Zq::try_from(((u64::MAX - 1) / 2 - 58, u64::MAX - 58)).unwrap()
+        );
+        assert_eq!(e, Zq::try_from((-2, i64::MAX)).unwrap());
+    }
+}
+
+#[cfg(test)]
+mod test_sub_between_zq_and_q {
+
+    use crate::integer_mod_q::Zq;
+    use crate::rational::Q;
+    use std::str::FromStr;
+
+    /// testing subtraction for [`Zq`] and [`Q`]
+    #[test]
+    fn sub() {
+        let a: Zq = Zq::try_from_int_int(4, 17).unwrap();
+        let b: Q = Q::from_str("5/7").unwrap();
+        let c: Q = a - b;
+        assert_eq!(c, Q::from_str("23/7").unwrap());
+    }
+
+    /// testing subtraction for both borrowed [`Zq`] and [`Q`]
+    #[test]
+    fn sub_borrow() {
+        let a: Zq = Zq::try_from_int_int(4, 17).unwrap();
+        let b: Q = Q::from_str("5/7").unwrap();
+        let c: Q = &a - &b;
+        assert_eq!(c, Q::from_str("23/7").unwrap());
+    }
+
+    /// testing subtraction for borrowed [`Zq`] and [`Q`]
+    #[test]
+    fn sub_first_borrowed() {
+        let a: Zq = Zq::try_from_int_int(4, 17).unwrap();
+        let b: Q = Q::from_str("5/7").unwrap();
+        let c: Q = &a - b;
+        assert_eq!(c, Q::from_str("23/7").unwrap());
+    }
+
+    /// testing subtraction for [`Zq`] and borrowed [`Q`]
+    #[test]
+    fn sub_second_borrowed() {
+        let a: Zq = Zq::try_from_int_int(4, 17).unwrap();
+        let b: Q = Q::from_str("5/7").unwrap();
+        let c: Q = a - &b;
+        assert_eq!(c, Q::from_str("23/7").unwrap());
+    }
+
+    /// testing subtraction for big numbers
+    #[test]
+    fn sub_large_numbers() {
+        let a: Zq = Zq::try_from_int_int(i64::MAX, u64::MAX - 58).unwrap();
+        let b: Q = Q::from_str(&format!("{}/2", u64::MAX)).unwrap();
+        let c: Q = Q::from_str(&format!("1/{}", u64::MAX)).unwrap();
+        let d: Q = &a - b;
+        let e: Q = a - c;
+        assert_eq!(
+            d,
+            Q::from_str(&format!("{}/1", i64::MAX)).unwrap()
+                - Q::from_str(&format!("{}/2", u64::MAX)).unwrap()
+        );
+        assert_eq!(
+            e,
+            Q::from_str(&format!("{}/1", i64::MAX)).unwrap()
+                - Q::from_str(&format!("1/{}", u64::MAX)).unwrap()
+        );
+    }
+}
+
+#[cfg(test)]
+mod test_add_between_types {
+
+    use crate::integer_mod_q::Zq;
+
+    /// testing addition between different types
+    #[test]
+    #[allow(clippy::op_ref)]
+    fn add() {
+        let a: Zq = Zq::try_from((4, 11)).unwrap();
+        let b: u64 = 1;
+        let c: u32 = 1;
+        let d: u16 = 1;
+        let e: u8 = 1;
+        let f: i64 = 1;
+        let g: i32 = 1;
+        let h: i16 = 1;
+        let i: i8 = 1;
+
+        let _: Zq = &a - &b;
+        let _: Zq = &a - &c;
+        let _: Zq = &a - &d;
+        let _: Zq = &a - &e;
+        let _: Zq = &a - &f;
+        let _: Zq = &a - &g;
+        let _: Zq = &a - &h;
+        let _: Zq = &a - &i;
+
+        let _: Zq = &b - &a;
+        let _: Zq = &c - &a;
+        let _: Zq = &d - &a;
+        let _: Zq = &e - &a;
+        let _: Zq = &f - &a;
+        let _: Zq = &g - &a;
+        let _: Zq = &h - &a;
+        let _: Zq = &i - &a;
+
+        let _: Zq = &a - b;
+        let _: Zq = &a - c;
+        let _: Zq = &a - d;
+        let _: Zq = &a - e;
+        let _: Zq = &a - f;
+        let _: Zq = &a - g;
+        let _: Zq = &a - h;
+        let _: Zq = &a - i;
+
+        let _: Zq = &b - Zq::try_from((4, 11)).unwrap();
+        let _: Zq = &c - Zq::try_from((4, 11)).unwrap();
+        let _: Zq = &d - Zq::try_from((4, 11)).unwrap();
+        let _: Zq = &e - Zq::try_from((4, 11)).unwrap();
+        let _: Zq = &f - Zq::try_from((4, 11)).unwrap();
+        let _: Zq = &g - Zq::try_from((4, 11)).unwrap();
+        let _: Zq = &h - Zq::try_from((4, 11)).unwrap();
+        let _: Zq = &i - Zq::try_from((4, 11)).unwrap();
+
+        let _: Zq = Zq::try_from((4, 11)).unwrap() - &b;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() - &c;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() - &d;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() - &e;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() - &f;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() - &g;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() - &h;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() - &i;
+
+        let _: Zq = b - &a;
+        let _: Zq = c - &a;
+        let _: Zq = d - &a;
+        let _: Zq = e - &a;
+        let _: Zq = f - &a;
+        let _: Zq = g - &a;
+        let _: Zq = h - &a;
+        let _: Zq = i - &a;
+
+        let _: Zq = Zq::try_from((4, 11)).unwrap() - b;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() - c;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() - d;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() - e;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() - f;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() - g;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() - h;
+        let _: Zq = Zq::try_from((4, 11)).unwrap() - i;
+
+        let _: Zq = b - Zq::try_from((4, 11)).unwrap();
+        let _: Zq = c - Zq::try_from((4, 11)).unwrap();
+        let _: Zq = d - Zq::try_from((4, 11)).unwrap();
+        let _: Zq = e - Zq::try_from((4, 11)).unwrap();
+        let _: Zq = f - Zq::try_from((4, 11)).unwrap();
+        let _: Zq = g - Zq::try_from((4, 11)).unwrap();
+        let _: Zq = h - Zq::try_from((4, 11)).unwrap();
+        let _: Zq = i - Zq::try_from((4, 11)).unwrap();
     }
 }
