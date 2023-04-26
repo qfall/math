@@ -122,8 +122,8 @@ impl Add<&Z> for &Zq {
     ///
     /// let c: Zq = &a + &b;
     /// let d: Zq = a + b;
-    /// let e: Zq = &c + d;
-    /// let f: Zq = c + &e;
+    /// let e: Zq = &c + Z::from(42);
+    /// let f: Zq = c + &Z::from(42);
     /// ```
     fn add(self, other: &Z) -> Self::Output {
         let mut out = fmpz(0);

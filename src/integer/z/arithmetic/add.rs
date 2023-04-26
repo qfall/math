@@ -81,8 +81,8 @@ impl Add<&Q> for &Z {
     ///
     /// let c: Q = &a + &b;
     /// let d: Q = a + b;
-    /// let e: Q = &c + d;
-    /// let f: Q = c + &e;
+    /// let e: Q = &Z::from(42) + d;
+    /// let f: Q = Z::from(42) + &e;
     /// ```
     fn add(self, other: &Q) -> Self::Output {
         let mut out = Q::default();
@@ -117,8 +117,8 @@ impl Add<&Zq> for &Z {
     ///
     /// let c: Zq = &a + &b;
     /// let d: Zq = a + b;
-    /// let e: Zq = &c + d;
-    /// let f: Zq = c + &e;
+    /// let e: Zq = &Z::from(42) + d;
+    /// let f: Zq = Z::from(42) + &e;
     /// ```
     fn add(self, other: &Zq) -> Self::Output {
         let mut out = fmpz(0);

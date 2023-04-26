@@ -79,8 +79,8 @@ impl Add<&Z> for &Q {
     ///
     /// let c: Q = &a + &b;
     /// let d: Q = a + b;
-    /// let e: Q = &c + d;
-    /// let f: Q = c + &e;
+    /// let e: Q = &c + Z::from(42);
+    /// let f: Q = c + &Z::from(42);
     /// ```
     fn add(self, other: &Z) -> Self::Output {
         let mut out = Q::default();
