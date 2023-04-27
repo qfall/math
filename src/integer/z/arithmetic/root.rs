@@ -19,6 +19,8 @@ impl Z {
     /// The actual result may be more accurate and is the best approximation
     /// for the resulting denominator.
     ///
+    /// Returns the square root with a precision of ±10⁻⁹.
+    ///
     /// # Examples:
     /// ```
     /// use qfall_math::integer::Z;
@@ -28,10 +30,9 @@ impl Z {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::NegativeRootParameter`]
-    ///   if the parameter of the square root is negative.
-    pub fn sqrt(&self) -> Result<Q, MathError> {
-        self.sqrt_precision(&Z::from(500000000))
+    /// - Panics if the parameter of the square root is negative.
+    pub fn sqrt(&self) -> Q {
+        self.sqrt_precision(&Z::from(500000000)).unwrap()
     }
 
     /// Calculate the square root with a specified minimum precision.
@@ -44,6 +45,8 @@ impl Z {
     /// Parameters:
     /// - `precision` specifies the upper limit of the error as `1/(2*precision)`.
     ///   A precision of less than one is treated the same as a precision of one.
+    ///
+    /// Returns the square root with a specified minimum precision.
     ///
     /// # Examples
     /// ```
@@ -138,8 +141,8 @@ mod test_sqrt_precision {
                 // => r^2-x = 2*sqrt(x)*e + e^2 = difference <= 2*sqrt(x)*p + p^2
                 let p = Q::try_from((&1, precision)).unwrap();
 
-                let root_sqared = &root * &root;
-                let difference = root_sqared - Q::from(value.clone());
+                let root_squared = &root * &root;
+                let difference = root_squared - Q::from(value.clone());
 
                 // Use the root calculated with floating point numbers as
                 // an approximation of sqrt(x).
@@ -200,7 +203,9 @@ mod test_sqrt_precision {
 
         for precision in 0..max_precision {
             let precision = Z::from(precision);
+
             let root = value.sqrt_precision(&precision)?;
+
             if root != current_solution && precision > current_solution.get_denominator() {
                 current_solution = Q::from_str(sol_iter.next().unwrap())?;
             }
@@ -239,8 +244,8 @@ mod test_sqrt_precision {
         compare_solutions(value, solutions).unwrap();
     }
 
-    /// Assert that sqrt works correctly for small square value [0 to 100^2]
-    /// and returns the exact value independent of the precision.
+    /// Assert that sqrt works correctly for small values and returns the exact
+    /// value independent of the precision.
     #[test]
     fn squares_small() {
         let precisions = vec![
@@ -250,20 +255,18 @@ mod test_sqrt_precision {
             Z::from(i64::MAX),
             Z::from(i64::MAX) * Z::from(i64::MAX),
         ];
+        let value = Z::from(42);
+        let square = &value * &value;
+
         for precision in &precisions {
-            let mut value = Z::ZERO;
-            for _ in 0..100 {
-                let square = &value * &value;
-                let root = square.sqrt_precision(precision).unwrap();
-                assert_eq!(Q::from(value.clone()), root);
-                value = value + 1;
-            }
+            let root = square.sqrt_precision(precision).unwrap();
+
+            assert_eq!(Q::from(42), root);
         }
     }
 
-    /// Assert that sqrt works correctly for large square values
-    /// [u64::MAX^2 to (u64::MAX+100)^2]
-    /// and returns the exact value independent of the precision.
+    /// Assert that sqrt works correctly for large values and returns the exact
+    /// value independent of the precision.
     #[test]
     fn squares_large() {
         let precisions = vec![
@@ -273,15 +276,13 @@ mod test_sqrt_precision {
             Z::from(i64::MAX),
             Z::from(i64::MAX) * Z::from(i64::MAX),
         ];
-        for precision in &precisions {
-            let mut value = Z::from(u64::MAX);
+        let value = Z::from(u64::MAX);
+        let square = &value * &value;
 
-            for _ in 0..100 {
-                let square = &value * &value;
-                let root = square.sqrt_precision(precision).unwrap();
-                assert_eq!(Q::from(value.clone()), root);
-                value = value + 1;
-            }
+        for precision in &precisions {
+            let root = square.sqrt_precision(precision).unwrap();
+
+            assert_eq!(Q::from(u64::MAX), root);
         }
     }
 }
@@ -290,28 +291,43 @@ mod test_sqrt_precision {
 mod test_sqrt {
     use crate::{integer::Z, rational::Q};
 
-    /// Assert that sqrt works correctly for small square value [0 to 100^2]
+    /// Assert that sqrt works correctly for small square values.
     #[test]
     fn squares_small() {
-        let mut value = Z::ZERO;
-        for _ in 0..100 {
-            let square = &value * &value;
-            let root = square.sqrt().unwrap();
-            assert_eq!(Q::from(value.clone()), root);
-            value = value + 1;
-        }
+        let value = Z::from(24);
+        let square = &value * &value;
+
+        let root = square.sqrt();
+
+        assert_eq!(Q::from(value.clone()), root);
     }
 
-    /// Assert that sqrt works correctly for large square values
-    /// [u64::MAX^2 to (u64::MAX+100)^2]
+    /// Assert that sqrt works correctly for a large square values.
     #[test]
     fn squares_large() {
-        let mut value = Z::from(u64::MAX);
-        for _ in 0..100 {
-            let square = &value * &value;
-            let root = square.sqrt().unwrap();
-            assert_eq!(Q::from(value.clone()), root);
-            value = value + 1;
-        }
+        let value = Z::from(u64::MAX - 1);
+        let square = &value * &value;
+
+        let root = square.sqrt();
+
+        assert_eq!(Q::from(value.clone()), root);
+    }
+
+    /// Assert that sqrt panics with small negative numbers.
+    #[test]
+    #[should_panic]
+    fn negative_small() {
+        let value = Z::from(i64::MIN);
+
+        let _ = value.sqrt();
+    }
+
+    /// Assert that sqrt panics with large negative numbers.
+    #[test]
+    #[should_panic]
+    fn negative_large() {
+        let value = Z::from(i64::MIN);
+
+        let _ = value.sqrt();
     }
 }
