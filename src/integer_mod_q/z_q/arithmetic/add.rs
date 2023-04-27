@@ -98,6 +98,7 @@ impl Zq {
 
 arithmetic_trait_borrowed_to_owned!(Add, add, Zq, Zq, Zq);
 arithmetic_trait_mixed_borrowed_owned!(Add, add, Zq, Zq, Zq);
+arithmetic_between_types_zq!(Add, add, Zq, i64 i32 i16 i8 u64 u32 u16 u8);
 
 impl Add<&Z> for &Zq {
     type Output = Zq;
@@ -140,7 +141,6 @@ impl Add<&Z> for &Zq {
 
 arithmetic_trait_borrowed_to_owned!(Add, add, Zq, Z, Zq);
 arithmetic_trait_mixed_borrowed_owned!(Add, add, Zq, Z, Zq);
-arithmetic_between_types_zq!(Add, add, Zq, i64 i32 i16 i8 u64 u32 u16 u8);
 
 #[cfg(test)]
 mod test_add {
