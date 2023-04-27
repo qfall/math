@@ -217,11 +217,10 @@ mod test_simplify {
     /// ensure that large values with pointer representations are reduced
     #[test]
     fn large_pointer_representation() {
-        let value = Q::try_from((&(i64::MAX - 1), &i64::MAX)).unwrap();
+        let value = Q::try_from((&(u64::MAX - 1), &u64::MAX)).unwrap();
         let precision = Q::try_from((&1, &u64::MAX)).unwrap();
 
-        let simplified = Q::try_from(1).unwrap();
-        assert_eq!(simplified, value.simplify(&precision));
+        assert_eq!(Q::ONE, value.simplify(&precision));
     }
 
     /// ensure that the simplified value stays in range
