@@ -10,7 +10,10 @@
 
 use super::Q;
 use crate::{integer::Z, traits::Distance};
-use flint_sys::fmpz::{fmpz_cdiv_q, fmpz_fdiv_q};
+use flint_sys::{
+    fmpq::fmpq_simplest_between,
+    fmpz::{fmpz_cdiv_q, fmpz_fdiv_q},
+};
 
 impl Q {
     /// Rounds the given rational [`Q`] down to the next integer [`Z`].
@@ -80,6 +83,42 @@ impl Q {
         } else {
             self.ceil()
         }
+    }
+
+    /// Returns the smallest rational with the smallest denominator in the range
+    /// `\[self - |precision|, self + |precision|\]`.
+    ///
+    /// Parameters:
+    /// -`precision`: the precision the new value can differ from `self`.
+    /// Note that the absolute value is relevant, not the sign.
+    ///
+    /// Returns the simplest [`Q`] within the defined range.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::Q;
+    ///
+    /// let value = Q::try_from((&17, &20)).unwrap();
+    /// let precision = Q::try_from((&1, &20)).unwrap();
+    ///
+    /// let simplified = Q::try_from((&4, &5)).unwrap();
+    /// assert_eq!(simplified, value.simplify(&precision));
+    /// ```
+    ///
+    /// ```
+    /// use qfall_math::rational::Q;
+    ///
+    /// let value = Q::try_from((&3, &2)).unwrap();
+    /// let precision = Q::try_from((&1, &2)).unwrap();
+    ///
+    /// assert_eq!(Q::ONE, value.simplify(&precision));
+    /// ```
+    pub fn simplify(&self, precision: &Q) -> Self {
+        let lower = self - precision;
+        let upper = self + precision;
+        let mut out = Q::default();
+        unsafe { fmpq_simplest_between(&mut out.value, &lower.value, &upper.value) };
+        out
     }
 }
 
@@ -155,5 +194,57 @@ mod test_round {
 
         assert_eq!(Z::from((-i64::MAX - 1) / 2 + 1), val_1.round());
         assert_eq!(Z::ZERO, val_2.round());
+    }
+}
+
+#[cfg(test)]
+mod test_simplify {
+    use crate::rational::Q;
+
+    /// ensure that negative precision works as expected
+    #[test]
+    fn precision_absolute_value() {
+        let value_1 = Q::try_from((&17, &20)).unwrap();
+        let value_2 = Q::try_from((&-17, &20)).unwrap();
+        let precision = Q::try_from((&-1, &20)).unwrap();
+
+        let simplified_1 = Q::try_from((&4, &5)).unwrap();
+        let simplified_2 = Q::try_from((&-4, &5)).unwrap();
+        assert_eq!(simplified_1, value_1.simplify(&precision));
+        assert_eq!(simplified_2, value_2.simplify(&precision));
+    }
+
+    /// ensure that large values with pointer representations are reduced
+    #[test]
+    fn large_pointer_representation() {
+        let value = Q::try_from((&(i64::MAX - 1), &i64::MAX)).unwrap();
+        let precision = Q::try_from((&1, &u64::MAX)).unwrap();
+
+        let simplified = Q::try_from(1).unwrap();
+        assert_eq!(simplified, value.simplify(&precision));
+    }
+
+    /// ensure that the simplified value stays in range
+    #[test]
+    fn stay_in_precision() {
+        let value = Q::try_from((&(i64::MAX - 1), &i64::MAX)).unwrap();
+        let precision = Q::try_from((&1, &(u64::MAX - 1))).unwrap();
+
+        let simplified = value.simplify(&precision);
+        assert!(&value - &precision <= simplified && simplified <= &value + &precision);
+        assert!(
+            Q::try_from((&(i64::MAX - 2), &i64::MAX)).unwrap() <= simplified
+                && simplified <= 1.into()
+        );
+    }
+
+    /// ensure that a value which can not be simplified is not changed
+    #[test]
+    fn no_change() {
+        let precision = Q::try_from((&1, &(u64::MAX - 1))).unwrap();
+
+        assert_eq!(Q::ONE, Q::ONE.simplify(&precision));
+        assert_eq!(Q::MINUS_ONE, Q::MINUS_ONE.simplify(&precision));
+        assert_eq!(Q::ZERO, Q::ZERO.simplify(&precision));
     }
 }
