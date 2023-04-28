@@ -233,7 +233,7 @@ mod test_add_between_zq_and_z {
     fn add_borrow() {
         let a: Zq = Zq::try_from((4, 11)).unwrap();
         let b: Z = Z::from(9);
-        let c: Zq = a + b;
+        let c: Zq = &a + &b;
         assert_eq!(c, Zq::try_from((2, 11)).unwrap());
     }
 
@@ -242,7 +242,7 @@ mod test_add_between_zq_and_z {
     fn add_first_borrowed() {
         let a: Zq = Zq::try_from((4, 11)).unwrap();
         let b: Z = Z::from(9);
-        let c: Zq = a + b;
+        let c: Zq = &a + b;
         assert_eq!(c, Zq::try_from((2, 11)).unwrap());
     }
 
@@ -251,7 +251,7 @@ mod test_add_between_zq_and_z {
     fn add_second_borrowed() {
         let a: Zq = Zq::try_from((4, 11)).unwrap();
         let b: Z = Z::from(9);
-        let c: Zq = a + b;
+        let c: Zq = a + &b;
         assert_eq!(c, Zq::try_from((2, 11)).unwrap());
     }
 
