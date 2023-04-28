@@ -114,6 +114,8 @@ fn sample_bits_uniform(nr_bits: usize) -> Vec<u8> {
     }
     let mut res = rng.try_fill_bytes(&mut byte_vector);
     while res.is_err() {
+        // Continue filling bytes at first zero byte found by binary search.
+        // This may potentially discard previously sampled values, but stays uniform in the distribution
         let first_unfilled_byte = find_first_unfilled_byte(&byte_vector);
         res = rng.try_fill_bytes(&mut byte_vector[first_unfilled_byte..]);
     }
