@@ -8,9 +8,8 @@
 
 //! This module provides implementations for calculating roots on [`Z`].
 
-use flint_sys::fmpz::fmpz_sqrtrem;
-
 use crate::{error::MathError, integer::Z, rational::Q};
+use flint_sys::fmpz::fmpz_sqrtrem;
 
 impl Z {
     /// Calculate the square root with a fixed precision.
@@ -29,8 +28,8 @@ impl Z {
     /// let root = value.sqrt();
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Panics if the parameter of the square root is negative.
+    /// # Panics ...
+    /// - if the provided value is negative.
     pub fn sqrt(&self) -> Q {
         self.sqrt_precision(&Z::from(500000000)).unwrap()
     }
@@ -142,7 +141,7 @@ mod test_sqrt_precision {
                 let p = Q::try_from((&1, precision)).unwrap();
 
                 let root_squared = &root * &root;
-                let difference = root_squared - Q::from(value.clone());
+                let difference = root_squared - value.clone();
 
                 // Use the root calculated with floating point numbers as
                 // an approximation of sqrt(x).
