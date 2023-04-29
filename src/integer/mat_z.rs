@@ -24,6 +24,7 @@ mod serialize;
 mod set;
 mod tensor;
 mod to_string;
+mod trace;
 mod transpose;
 mod vector;
 
