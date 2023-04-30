@@ -157,7 +157,7 @@ impl Div for &Z {
     /// ```
     ///
     /// # Panics ...
-    /// - if the divisor is `0`.
+    /// - ... if the divisor is `0`.
     fn div(self, other: Self) -> Self::Output {
         Q::try_from((self, other)).unwrap()
     }
@@ -210,6 +210,48 @@ mod test_div_floor {
         let _ = a.div_floor(&Z::ZERO);
     }
 }
+
+impl Div<&Q> for &Z {
+    type Output = Q;
+
+    /// Implements the [`Div`] trait for [`Z`] and [`Q`] values.
+    /// [`Div`] is implemented for any combination of owned and borrowed values.
+    ///
+    /// Parameters:
+    ///  - `other`: specifies the value to divide `self` by
+    ///
+    /// Returns the ratio of both numbers as a [`Q`].
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::rational::Q;
+    /// use qfall_math::integer::Z;
+    /// use std::str::FromStr;
+    ///
+    /// let a: Z = Z::from_str("-42").unwrap();
+    /// let b: Q = Q::from_str("42/19").unwrap();
+    ///
+    /// let c: Q = &a / &b;
+    /// let d: Q = a / b;
+    /// let e: Q = &Z::from(42) / d;
+    /// let f: Q = Z::from(42) / &e;
+    /// ```
+    ///
+    /// # Panics ...
+    /// - ... if the divisor is `0`
+    fn div(self, other: &Q) -> Self::Output {
+        if other == &Q::ZERO {
+            panic!(
+                "DivisionByZero: tried to divide {} by a Q of value 0",
+                other
+            );
+        }
+        Q::from(self.clone()) / other
+    }
+}
+
+arithmetic_trait_borrowed_to_owned!(Div, div, Z, Q, Q);
+arithmetic_trait_mixed_borrowed_owned!(Div, div, Z, Q, Q);
 
 #[cfg(test)]
 mod test_div_ceil {
@@ -446,5 +488,69 @@ mod test_div {
         let f: Q = c / d;
         assert_eq!(e, Q::from_int(Z::from(2).pow(62).unwrap()));
         assert_eq!(f, Q::MINUS_ONE);
+    }
+}
+
+#[cfg(test)]
+mod test_div_between_z_and_q {
+
+    use super::Z;
+    use crate::rational::Q;
+    use std::str::FromStr;
+
+    /// testing division for [`Z`] and [`Q`]
+    #[test]
+    fn div() {
+        let a: Z = Z::from(4);
+        let b: Q = Q::from_str("5/7").unwrap();
+        let c: Q = a / b;
+        assert_eq!(c, Q::from_str("28/5").unwrap());
+    }
+
+    /// testing division for both borrowed [`Z`] and [`Q`]
+    #[test]
+    fn div_borrow() {
+        let a: Z = Z::from(4);
+        let b: Q = Q::from_str("5/7").unwrap();
+        let c: Q = &a / &b;
+        assert_eq!(c, Q::from_str("28/5").unwrap());
+    }
+
+    /// testing division for borrowed [`Z`] and [`Q`]
+    #[test]
+    fn div_first_borrowed() {
+        let a: Z = Z::from(4);
+        let b: Q = Q::from_str("5/7").unwrap();
+        let c: Q = &a / b;
+        assert_eq!(c, Q::from_str("28/5").unwrap());
+    }
+
+    /// testing division for [`Z`] and borrowed [`Q`]
+    #[test]
+    fn div_second_borrowed() {
+        let a: Z = Z::from(4);
+        let b: Q = Q::from_str("5/7").unwrap();
+        let c: Q = a / &b;
+        assert_eq!(c, Q::from_str("28/5").unwrap());
+    }
+
+    /// testing division for big numbers
+    #[test]
+    fn div_large_numbers() {
+        let a: Z = Z::from(u64::MAX);
+        let b: Q = Q::from_str(&format!("1/{}", u64::MAX)).unwrap();
+        let c: Q = Q::from_str(&format!("{}/2", u64::MAX)).unwrap();
+        let d: Q = &a / b;
+        let e: Q = a / c;
+        assert_eq!(
+            d,
+            Q::from_str(&format!("{}/1", u64::MAX)).unwrap()
+                / Q::from_str(&format!("1/{}", u64::MAX)).unwrap()
+        );
+        assert_eq!(
+            e,
+            Q::from_str(&format!("{}/1", u64::MAX)).unwrap()
+                / Q::from_str(&format!("{}/2", u64::MAX)).unwrap()
+        );
     }
 }
