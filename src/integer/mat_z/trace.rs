@@ -26,13 +26,13 @@ impl MatZ {
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
-    /// let mut matrix = MatZ::from_str("[[1,2],[3,4]]").unwrap();
+    /// let matrix = MatZ::from_str("[[1,2],[3,4]]").unwrap();
     /// let trace = matrix.trace().unwrap();
     /// ```
     pub fn trace(&self) -> Result<Z, MathError> {
         // check if matrix is square
         if self.get_num_rows() != self.get_num_columns() {
-            return Err(MathError::NotSquare(self.to_string()));
+            return Err(MathError::NoSquareMatrix(self.to_string()));
         }
 
         let mut out = Z::default();
