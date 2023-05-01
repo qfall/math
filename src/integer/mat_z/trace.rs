@@ -24,7 +24,6 @@ impl MatZ {
     /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
-    /// use qfall_math::traits::*;
     /// use std::str::FromStr;
     ///
     /// let mut matrix = MatZ::from_str("[[1,2],[3,4]]").unwrap();
