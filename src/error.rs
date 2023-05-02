@@ -191,6 +191,10 @@ pub enum MathError {
     )]
     OutOfBounds(String, String),
 
+    /// specify a negative or zero precision
+    #[error("the precision must larger than zero. It is {0}")]
+    PrecisionNotPositive(String),
+
     /// if a function defined on vectors is called on a matrix that is not a vector
     #[error(
         "Function named {0} is only defined for vectors and 

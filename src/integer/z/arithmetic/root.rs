@@ -43,7 +43,7 @@ impl Z {
     ///
     /// Parameters:
     /// - `precision` specifies the upper limit of the error as `1/(2*precision)`.
-    ///   A precision of less than one is treated the same as a precision of one.
+    ///   The precision must larger than zero.
     ///
     /// Returns the square root with a specified minimum precision.
     ///
@@ -59,12 +59,18 @@ impl Z {
     /// ```
     ///
     /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::PrecisionNotPositive`]
+    ///   if the precision is negative.
     /// - Returns a [`MathError`] of type [`MathError::NegativeRootParameter`]
     ///   if the parameter of the square root is negative.
     pub fn sqrt_precision(&self, precision: &Z) -> Result<Q, MathError> {
         if self < &Z::ZERO {
             return Err(MathError::NegativeRootParameter(format!("{}", self)));
         }
+        if precision <= &Z::ZERO {
+            return Err(MathError::PrecisionNotPositive(format!("{}", precision)));
+        }
+
         let mut integer_result = Q::default();
         let remainder = Q::default();
 
@@ -141,7 +147,7 @@ mod test_sqrt_precision {
                 let p = Q::try_from((&1, precision)).unwrap();
 
                 let root_squared = &root * &root;
-                let difference = root_squared - value.clone();
+                let difference = root_squared - Q::from(value.clone());
 
                 // Use the root calculated with floating point numbers as
                 // an approximation of sqrt(x).
@@ -162,18 +168,16 @@ mod test_sqrt_precision {
         assert!(res.is_err());
     }
 
-    /// Assert that a precision smaller than one behaves the same
-    /// as a precision of one.
+    /// Assert that a precision smaller than one return an error.
     #[test]
-    fn negative_precision() {
+    fn non_positive_precision() {
         let value = Z::from(42);
         let precisions = vec![Z::from(i64::MIN), Z::from(-10), Z::ZERO];
-        let root_cmp = value.sqrt_precision(&Z::ONE).unwrap();
 
         for precision in &precisions {
-            let root = value.sqrt_precision(precision).unwrap();
+            let root = value.sqrt_precision(precision);
 
-            assert_eq!(&root_cmp, &root);
+            assert!(root.is_err());
         }
     }
 
@@ -200,7 +204,7 @@ mod test_sqrt_precision {
         let mut sol_iter = solutions.iter();
         let mut current_solution = Q::from_str(sol_iter.next().unwrap())?;
 
-        for precision in 0..max_precision {
+        for precision in 1..max_precision {
             let precision = Z::from(precision);
 
             let root = value.sqrt_precision(&precision)?;
