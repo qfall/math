@@ -73,14 +73,12 @@ pub(crate) fn sample_uniform_rejection(interval_size: &Z) -> Result<Z, MathError
     }
 
     let bit_size = interval_size.bits() as usize;
-    let bit_vector = sample_bits_uniform(bit_size);
 
-    let random = Z::from(&bit_vector);
-    if &random < interval_size {
-        Ok(random)
-    } else {
-        sample_uniform_rejection(interval_size)
+    let mut random = Z::from(&sample_bits_uniform(bit_size));
+    while &random >= interval_size {
+        random = Z::from(&sample_bits_uniform(bit_size));
     }
+    Ok(random)
 }
 
 /// Computes `nr_bits` many uniform at random chosen bits.
