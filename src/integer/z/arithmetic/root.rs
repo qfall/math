@@ -144,7 +144,7 @@ mod test_sqrt_precision {
                 // sqrt_precision(v,precision) = r = sqrt(x) + e
                 // => r^2 = x + 2*sqrt(x)*e + e^2
                 // => r^2-x = 2*sqrt(x)*e + e^2 = difference <= 2*sqrt(x)*p + p^2
-                let p = Q::try_from((&1, precision)).unwrap();
+                let p = Q::try_from((&1, precision)).unwrap() / Q::from(2);
 
                 let root_squared = &root * &root;
                 let difference = root_squared - Q::from(value.clone());
@@ -164,7 +164,9 @@ mod test_sqrt_precision {
     #[test]
     fn negative_value() {
         let value = Z::from(-10);
+
         let res = value.sqrt_precision(&Z::from(10));
+
         assert!(res.is_err());
     }
 
