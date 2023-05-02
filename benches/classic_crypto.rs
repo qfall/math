@@ -11,7 +11,6 @@
 use criterion::*;
 use qfall_math::integer::Z;
 
-#[allow(dead_code)]
 /// Outputs a prime in `[lower_bound, upper_bound)` if one exists.
 ///
 /// This is done via naive uniform rejection sampling by checking
@@ -58,7 +57,10 @@ mod rsa_textbook {
 
         let p = sample_prime_naive(&lower_bound, &upper_bound);
         let q = sample_prime_naive(&lower_bound, &upper_bound);
-        assert_ne!(p, q);
+        assert_ne!(
+            p, q,
+            "Primes used for modulus N calculation shouldn't be equal."
+        );
 
         let modulus = Modulus::try_from(&(&p * &q)).unwrap();
         let phi_mod = (&p - Z::ONE) * (&q - Z::ONE);
@@ -86,7 +88,7 @@ mod rsa_textbook {
 
     /// Encrypts a `msg` assumed to be smaller than `modulus` via RSA's `pk`.
     ///
-    /// `RSA.Enc(N, pk, msg) = msg^pk mod N`
+    /// `rsa_textbook.enc(N, pk, msg) = msg^pk mod N`
     pub fn enc(modulus: &Modulus, pk: &Z, msg: &Z) -> Zq {
         let msg = Zq::from_z_modulus(msg, modulus);
         msg.pow(pk).unwrap()
@@ -94,7 +96,7 @@ mod rsa_textbook {
 
     /// Decrypts a `cipher` via RSA's `sk`.
     ///
-    /// `RSA.Dec(N, sk, cipher) = cipher^sk mod N`
+    /// `rsa_textbook.dec(N, sk, cipher) = cipher^sk mod N`
     pub fn dec(sk: &Z, cipher: &Zq) -> Z {
         Z::from(cipher.pow(sk).unwrap())
     }
@@ -111,11 +113,6 @@ mod rsa_textbook {
         let cmp = dec(&sk, &cipher);
         assert_eq!(msg, cmp);
     }
-
-    /// Run `RSA.gen` with security parameter `1024`, i.e. 1024-bit security.
-    pub fn rsa_run_gen() {
-        let _ = gen(1024);
-    }
 }
 
 /// benchmark [`rsa enc+dec`]
@@ -125,9 +122,9 @@ pub fn bench_rsa_enc_dec(c: &mut Criterion) {
     });
 }
 
-/// benchmark [`rsa gen`]
+/// benchmark [`rsa gen`] for 1024 bit security
 pub fn bench_rsa_gen(c: &mut Criterion) {
-    c.bench_function("RSA gen", |b| b.iter(|| rsa_textbook::rsa_run_gen()));
+    c.bench_function("RSA gen", |b| b.iter(|| rsa_textbook::gen(1024)));
 }
 
 criterion_group!(benches, bench_rsa_enc_dec, bench_rsa_gen);
