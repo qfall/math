@@ -134,7 +134,10 @@ impl Mul<&Z> for &Zq {
                 &*self.modulus.modulus,
             );
         }
-        Zq::from_z_modulus(&Z::from_fmpz(&out), &self.modulus)
+        Zq {
+            modulus: self.modulus.clone(),
+            value: Z { value: out },
+        }
     }
 }
 
