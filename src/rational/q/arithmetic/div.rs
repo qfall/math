@@ -73,7 +73,7 @@ impl Div<&Z> for &Q {
     /// use std::str::FromStr;
     ///
     /// let a: Q = Q::from_str("42/19").unwrap();
-    /// let b: Z = Z::from_str("-42").unwrap();
+    /// let b: Z = Z::from(-42);
     ///
     /// let c: Q = &a / &b;
     /// let d: Q = a / b;
