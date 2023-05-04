@@ -283,9 +283,11 @@ mod test_sub {
         let a: Z = Z::from(u64::MAX - 1);
         let b: Z = Z::from(i64::MAX);
         let c: Z = Z::from(738201034);
+
         let d: Z = &a - &b;
         let e: Z = &b - a;
         let f: Z = b - c;
+
         assert_eq!(d, Z::from(i64::MAX));
         assert_eq!(e, Z::from(i64::MIN + 1));
         assert_eq!(f, Z::from(i64::MAX - 738201034));
@@ -341,6 +343,7 @@ mod test_sub_between_z_and_q {
         let a: Z = Z::from(u64::MAX);
         let b: Q = Q::from_str(&format!("1/{}", u64::MAX)).unwrap();
         let c: Q = Q::from_str(&format!("{}/2", u64::MAX)).unwrap();
+
         let d: Q = &a - b;
         let e: Q = a - c;
 
