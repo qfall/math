@@ -283,8 +283,10 @@ mod test_add_between_z_and_q {
         let a: Z = Z::from(u64::MAX);
         let b: Q = Q::from_str(&format!("1/{}", u64::MAX)).unwrap();
         let c: Q = Q::from_str(&format!("{}/2", u64::MAX)).unwrap();
+
         let d: Q = &a + b;
         let e: Q = a + c;
+
         assert_eq!(
             d,
             Q::from_str(&format!("1/{}", u64::MAX)).unwrap()
@@ -345,8 +347,10 @@ mod test_add {
         let a: Z = Z::from(u64::MAX);
         let b: Z = Z::from(-221319874);
         let c: Z = Z::from(i64::MIN);
+
         let d: Z = &a + b;
         let e: Z = a + c;
+
         assert_eq!(d, Z::from(u64::MAX - 221319874));
         assert_eq!(e, Z::from(i64::MAX));
     }
@@ -403,6 +407,7 @@ mod test_add_between_z_and_zq {
 
         let d: Zq = &a + b;
         let e: Zq = a + c;
+
         assert_eq!(
             d,
             Zq::try_from(((u64::MAX - 1) / 2 + 58, u64::MAX - 58)).unwrap()
