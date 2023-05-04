@@ -136,12 +136,14 @@ mod test_mul {
     #[test]
     /// testing multiplication for large numerators and divisors
     fn mul_large() {
-        let a: Q = Q::from_str(&(i64::MAX).to_string()).unwrap();
+        let a: Q = Q::from(i64::MAX);
         let b: Q = Q::from_str("2").unwrap();
         let c: Q = Q::from_str(&format!("1/{}", (i32::MAX))).unwrap();
         let d: Q = Q::from_str(&format!("1/{}", (u32::MAX))).unwrap();
+
         let e: Q = &a * &b;
         let f: Q = c * d;
+
         assert_eq!(e, Q::from_str(&(u64::MAX - 1).to_string()).unwrap());
         assert_eq!(
             f,
@@ -207,13 +209,11 @@ mod test_mul_between_q_and_z {
         let e: Q = b * c;
         assert_eq!(
             d,
-            Q::from(u64::MAX)
-                * Q::from_str(&format!("{}/2", u64::MAX)).unwrap()
+            Q::from(u64::MAX) * Q::from_str(&format!("{}/2", u64::MAX)).unwrap()
         );
         assert_eq!(
             e,
-            Q::from_str(&format!("1/{}", u64::MAX)).unwrap()
-                * Q::from(u64::MAX)
+            Q::from_str(&format!("1/{}", u64::MAX)).unwrap() * Q::from(u64::MAX)
         );
     }
 }
