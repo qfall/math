@@ -360,6 +360,7 @@ mod test_div_between_types {
         let g: i32 = 5;
         let h: i16 = 5;
         let i: i8 = 5;
+
         let _: Q = &a / &b;
         let _: Q = &a / &c;
         let _: Q = &a / &d;
@@ -484,8 +485,10 @@ mod test_div {
         let b: Z = Z::from(2);
         let c: Z = Z::from(i64::MIN);
         let d: Z = Z::from(i64::MAX as u64 + 1);
+
         let e: Q = a / b;
         let f: Q = c / d;
+
         assert_eq!(e, Q::from_int(Z::from(2).pow(62).unwrap()));
         assert_eq!(f, Q::MINUS_ONE);
     }
