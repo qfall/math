@@ -207,7 +207,7 @@ mod test_mul_between_q_and_z {
         let e: Q = b * c;
         assert_eq!(
             d,
-            Q::from_str(&format!("{}/1", u64::MAX)).unwrap()
+            Q::from(u64::MAX)
                 * Q::from_str(&format!("{}/2", u64::MAX)).unwrap()
         );
         assert_eq!(
