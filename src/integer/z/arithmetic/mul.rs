@@ -130,7 +130,10 @@ impl Mul<&Zq> for &Z {
                 &*other.modulus.modulus,
             );
         }
-        Zq::from_z_modulus(&Z::from_fmpz(&out), &other.modulus)
+        Zq {
+            modulus: other.modulus.clone(),
+            value: Z { value: out },
+        }
     }
 }
 
@@ -156,6 +159,7 @@ mod test_mul_between_types {
         let g: i32 = 5;
         let h: i16 = 5;
         let i: i8 = 5;
+
         let _: Z = &a * &b;
         let _: Z = &a * &c;
         let _: Z = &a * &d;
