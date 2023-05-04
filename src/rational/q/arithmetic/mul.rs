@@ -205,8 +205,10 @@ mod test_mul_between_q_and_z {
         let a: Q = Q::from_str(&format!("{}/2", u64::MAX)).unwrap();
         let b: Q = Q::from_str(&format!("1/{}", u64::MAX)).unwrap();
         let c: Z = Z::from(u64::MAX);
+
         let d: Q = a * &c;
         let e: Q = b * c;
+
         assert_eq!(
             d,
             Q::from(u64::MAX) * Q::from_str(&format!("{}/2", u64::MAX)).unwrap()
@@ -238,6 +240,7 @@ mod test_mul_between_types {
         let i: i8 = 1;
         let j: f32 = 0.3;
         let k: f64 = 0.3;
+
         let _: Q = &a * &b;
         let _: Q = &a * &c;
         let _: Q = &a * &d;
