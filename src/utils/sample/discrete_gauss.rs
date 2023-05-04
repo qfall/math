@@ -17,6 +17,9 @@ use rand::RngCore;
 /// Chooses a sample according to the discrete Gaussian distribution out of
 /// `[center - ⌈s * log_2(n)⌉ , center + ⌊s * log_2(n)⌋ ]`.
 ///
+/// This function implements discrete Gaussian sampling according to the definition of
+/// SampleZ in [GPV08](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=d9f54077d568784c786f7b1d030b00493eb3ae35).
+///
 /// Parameters:
 /// - `n`: specifies the range from which is sampled
 /// - `center`: specifies the position of the center with peak probability
@@ -65,10 +68,13 @@ pub(crate) fn sample_z(n: &Z, center: &Q, s: &Q) -> Result<Z, MathError> {
     // sample x in [c - s * log_2(n), c + s * log_2(n)]
     let mut sample = &lower_bound + sample_uniform_rejection(&interval_size).unwrap();
 
-    // rejection sample
+    // rejection sample according to GPV08
+    // https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=d9f54077d568784c786f7b1d030b00493eb3ae35
+    // this eprint version explains in more detail how sample_z works
     let rng = get_rng();
     // TODO: Change to Q::from_f64 once it works appropriately for large scale
-    while gaussian_function(&sample, center, s) < Q::try_from((&rng.next_u64(), &u64::MAX)).unwrap()
+    while gaussian_function(&sample, center, s)
+        <= Q::try_from((&rng.next_u64(), &u64::MAX)).unwrap()
     {
         sample = &lower_bound + sample_uniform_rejection(&interval_size).unwrap();
     }
@@ -76,7 +82,7 @@ pub(crate) fn sample_z(n: &Z, center: &Q, s: &Q) -> Result<Z, MathError> {
     Ok(sample)
 }
 
-/// Comptes the value of the Gaussian function for `x`.
+/// Computes the value of the Gaussian function for `x`.
 ///
 /// **WARNING:** This functions assumes `s != 0`.
 ///
