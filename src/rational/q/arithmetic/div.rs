@@ -181,8 +181,10 @@ mod test_div {
         let b: Q = Q::from_str("2").unwrap();
         let c: Q = Q::from_str(&format!("1/{}", (i32::MAX))).unwrap();
         let d: Q = Q::from_str(&format!("1/{}", (u32::MAX))).unwrap();
+
         let e: Q = &a / &b;
         let f: Q = c / d;
+
         assert_eq!(e, Q::from_str(&(i64::MAX).to_string()).unwrap());
         assert_eq!(
             f,
@@ -262,8 +264,10 @@ mod test_div_between_q_and_z {
         let a: Q = Q::from_str(&format!("{}/2", u64::MAX)).unwrap();
         let b: Q = Q::from_str(&format!("1/{}", u64::MAX)).unwrap();
         let c: Z = Z::from(u64::MAX);
+
         let d: Q = a / &c;
         let e: Q = b / c;
+
         assert_eq!(
             d,
             Q::from_str(&format!("{}/2", u64::MAX)).unwrap()
@@ -306,6 +310,7 @@ mod test_div_between_types {
         let i: i8 = 1;
         let j: f32 = 0.3;
         let k: f64 = 0.3;
+
         let _: Q = &a / &b;
         let _: Q = &a / &c;
         let _: Q = &a / &d;
