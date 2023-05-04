@@ -220,6 +220,72 @@ pub fn bench_dh(c: &mut Criterion) {
     c.bench_function("DH key exchange", |b| b.iter(|| dh_ke::dh_run()));
 }
 
+mod el_gamal_enc {
+    use super::GEN_PRIME_ORDER_GROUP;
+    use qfall_math::{
+        integer::Z,
+        integer_mod_q::{Modulus, Zq},
+        traits::*,
+    };
+    use std::str::FromStr;
+
+    /// Returns a pre-computed set of public parameters that was
+    /// computed with `gen_prime_order_group_plus_generator(1024)`.
+    pub fn static_gen_pp() -> (Modulus, Zq) {
+        let generator = Zq::from_str(GEN_PRIME_ORDER_GROUP).unwrap();
+        let modulus = generator.get_mod();
+        (modulus, generator)
+    }
+
+    /// Generates a (pk, sk) key pair for ElGamal's encryption scheme
+    ///
+    /// `gen_key_pair(p, g) -> (pk, sk)`,
+    /// where `pk = g^sk mod p` and `sk` uniformly random
+    pub fn gen_key_pair(modulus: &Modulus, generator: &Zq) -> (Zq, Z) {
+        let sk = Z::sample_uniform(&0, &Z::from_modulus(&modulus)).unwrap();
+        let pk = generator.pow(&sk).unwrap();
+        (pk, sk)
+    }
+
+    /// Encrypts a message `m` according to ElGamal's encryption scheme by outputting
+    /// `(c_0, c_1) = (g^r, pk^r * m) mod p`
+    pub fn enc(generator: &Zq, pk: &Zq, msg: &Zq) -> (Zq, Zq) {
+        let r = Z::sample_uniform(&0, &generator.get_mod()).unwrap();
+        let c_0 = generator.pow(&r).unwrap();
+        let c_1 = pk.pow(&r).unwrap() * msg;
+        (c_0, c_1)
+    }
+
+    /// Decrypts a `cipher = (c_0, c_1)` according to ElGamal's encryption scheme by outputting
+    /// `m = c_0^(-sk) * c_1`.
+    pub fn dec(sk: &Z, c_0: &Zq, c_1: &Zq) -> Zq {
+        c_0.inverse().unwrap().pow(sk).unwrap() * c_1
+    }
+
+    /// Run ElGamal gen+enc+dec with precomputed public parameters with 1024 bit security.
+    /// 1. get (p, g) from previously generated public parameters
+    /// 2. run one cycle of `gen_key_pair`, `enc`, `dec`, and compare the `msg` to the result
+    pub fn el_gamal_run() {
+        let (modulus, generator) = static_gen_pp();
+
+        let (pk, sk) = gen_key_pair(&modulus, &generator);
+
+        let msg = Zq::from_z_modulus(&Z::sample_uniform(&0, &modulus).unwrap(), &modulus);
+
+        let (c_0, c_1) = enc(&generator, &pk, &msg);
+        let cmp = dec(&sk, &c_0, &c_1);
+
+        assert_eq!(msg, cmp);
+    }
+}
+
+/// benchmark [`el_gamal`]
+pub fn bench_el_gamal(c: &mut Criterion) {
+    c.bench_function("El Gamal gen+enc+dec", |b| {
+        b.iter(|| el_gamal_enc::el_gamal_run())
+    });
+}
+
 criterion_group!(
     benches,
     bench_rsa_enc_dec,
