@@ -267,7 +267,7 @@ mod test_mul_between_zq_and_z {
 
         let d: Zq = a * &c;
         let e: Zq = b * c;
-        
+
         assert_eq!(
             d,
             Zq::try_from(((u64::MAX - 1) / 2, u64::MAX - 58)).unwrap()
@@ -298,7 +298,7 @@ mod test_mul_between_types {
         let g: i32 = 1;
         let h: i16 = 1;
         let i: i8 = 1;
-        
+
         let _: Zq = &a * &b;
         let _: Zq = &a * &c;
         let _: Zq = &a * &d;
