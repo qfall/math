@@ -543,8 +543,10 @@ mod test_div_between_z_and_q {
         let a: Z = Z::from(u64::MAX);
         let b: Q = Q::from_str(&format!("1/{}", u64::MAX)).unwrap();
         let c: Q = Q::from_str(&format!("{}/2", u64::MAX)).unwrap();
+
         let d: Q = &a / b;
         let e: Q = a / c;
+
         assert_eq!(
             d,
             Q::from_str(&format!("{}/1", u64::MAX)).unwrap()
