@@ -213,7 +213,7 @@ mod test_mul_between_q_and_z {
         assert_eq!(
             e,
             Q::from_str(&format!("1/{}", u64::MAX)).unwrap()
-                * Q::from_str(&format!("{}/1", u64::MAX)).unwrap()
+                * Q::from(u64::MAX)
         );
     }
 }
