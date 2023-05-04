@@ -135,7 +135,10 @@ impl Sub<&Z> for &Zq {
                 &*self.modulus.modulus,
             );
         }
-        Zq::from_z_modulus(&Z::from_fmpz(&out), &self.modulus)
+        Zq {
+            modulus: self.modulus.clone(),
+            value: Z { value: out },
+        }
     }
 }
 
@@ -261,8 +264,10 @@ mod test_sub_between_z_and_zq {
         let a: Zq = Zq::try_from((i64::MAX, u64::MAX - 58)).unwrap();
         let b: Zq = Zq::try_from((i64::MAX - 1, i64::MAX)).unwrap();
         let c: Z = Z::from(u64::MAX);
+
         let d: Zq = a - &c;
         let e: Zq = b - c;
+
         assert_eq!(
             d,
             Zq::try_from(((u64::MAX - 1) / 2 - 58, u64::MAX - 58)).unwrap()
