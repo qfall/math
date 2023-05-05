@@ -9,11 +9,19 @@
 //! Implementation of the [`Mul`] trait for [`Z`] values.
 
 use super::super::Z;
-use crate::macros::arithmetics::{
-    arithmetic_between_types, arithmetic_trait_borrowed_to_owned,
-    arithmetic_trait_mixed_borrowed_owned,
+use crate::{
+    integer_mod_q::Zq,
+    macros::arithmetics::{
+        arithmetic_between_types, arithmetic_trait_borrowed_to_owned,
+        arithmetic_trait_mixed_borrowed_owned,
+    },
+    rational::Q,
 };
-use flint_sys::fmpz::fmpz_mul;
+use flint_sys::{
+    fmpq::fmpq_mul_fmpz,
+    fmpz::{fmpz, fmpz_mul},
+    fmpz_mod::fmpz_mod_mul_fmpz,
+};
 use std::ops::Mul;
 
 impl Mul for &Z {
@@ -51,6 +59,87 @@ arithmetic_trait_borrowed_to_owned!(Mul, mul, Z, Z, Z);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Z, Z, Z);
 arithmetic_between_types!(Mul, mul, Z, Z, i64 i32 i16 i8 u64 u32 u16 u8);
 
+impl Mul<&Q> for &Z {
+    type Output = Q;
+
+    /// Implements the [`Mul`] trait for [`Z`] and [`Q`] values.
+    /// [`Mul`] is implemented for any combination of owned and borrowed values.
+    ///
+    /// Parameters:
+    ///  - `other`: specifies the value to multiply with `self`
+    ///
+    /// Returns the product of both numbers as a [`Q`].
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::rational::Q;
+    /// use qfall_math::integer::Z;
+    /// use std::str::FromStr;
+    ///
+    /// let a: Z = Z::from_str("-42").unwrap();
+    /// let b: Q = Q::from_str("42/19").unwrap();
+    ///
+    /// let c: Q = &a * &b;
+    /// let d: Q = a * b;
+    /// let e: Q = &Z::from(42) * d;
+    /// let f: Q = Z::from(42) * &e;
+    /// ```
+    fn mul(self, other: &Q) -> Self::Output {
+        let mut out = Q::default();
+        unsafe {
+            fmpq_mul_fmpz(&mut out.value, &other.value, &self.value);
+        }
+        out
+    }
+}
+
+arithmetic_trait_borrowed_to_owned!(Mul, mul, Z, Q, Q);
+arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Z, Q, Q);
+
+impl Mul<&Zq> for &Z {
+    type Output = Zq;
+    /// Implements the [`Mul`] trait for [`Z`] and [`Zq`] values.
+    /// [`Mul`] is implemented for any combination of owned and borrowed values.
+    ///
+    /// Parameters:
+    ///  - `other`: specifies the value to multiply with `self`
+    ///
+    /// Returns the product of both numbers as a [`Zq`].
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::integer_mod_q::Zq;
+    /// use qfall_math::integer::Z;
+    /// use std::str::FromStr;
+    ///
+    /// let a: Z = Z::from_str("42").unwrap();
+    /// let b: Zq = Zq::from_str("42 mod 19").unwrap();
+    ///
+    /// let c: Zq = &a * &b;
+    /// let d: Zq = a * b;
+    /// let e: Zq = &Z::from(42) * d;
+    /// let f: Zq = Z::from(42) * &e;
+    /// ```
+    fn mul(self, other: &Zq) -> Self::Output {
+        let mut out = fmpz(0);
+        unsafe {
+            fmpz_mod_mul_fmpz(
+                &mut out,
+                &other.value.value,
+                &self.value,
+                &*other.modulus.modulus,
+            );
+        }
+        Zq {
+            modulus: other.modulus.clone(),
+            value: Z { value: out },
+        }
+    }
+}
+
+arithmetic_trait_borrowed_to_owned!(Mul, mul, Z, Zq, Zq);
+arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Z, Zq, Zq);
+
 #[cfg(test)]
 mod test_mul_between_types {
 
@@ -70,6 +159,7 @@ mod test_mul_between_types {
         let g: i32 = 5;
         let h: i16 = 5;
         let i: i8 = 5;
+
         let _: Z = &a * &b;
         let _: Z = &a * &c;
         let _: Z = &a * &d;
@@ -192,9 +282,141 @@ mod test_mul {
         let b: Z = Z::from(2);
         let c: Z = Z::from(i32::MIN);
         let d: Z = Z::from(i32::MAX);
+
         let e: Z = a * b;
         let f: Z = c * d;
+
         assert_eq!(e, Z::from(u64::MAX - 1));
         assert_eq!(f, Z::from(i64::from(i32::MAX) * i64::from(i32::MIN)));
+    }
+}
+
+#[cfg(test)]
+mod test_mul_between_z_and_zq {
+
+    use super::Z;
+    use crate::integer_mod_q::Zq;
+
+    /// testing multiplication for [`Z`] and [`Zq`]
+    #[test]
+    fn mul() {
+        let a: Z = Z::from(9);
+        let b: Zq = Zq::try_from((4, 11)).unwrap();
+        let c: Zq = a * b;
+        assert_eq!(c, Zq::try_from((3, 11)).unwrap());
+    }
+
+    /// testing multiplication for both borrowed [`Z`] and [`Zq`]
+    #[test]
+    fn mul_borrow() {
+        let a: Z = Z::from(9);
+        let b: Zq = Zq::try_from((4, 11)).unwrap();
+        let c: Zq = &a * &b;
+        assert_eq!(c, Zq::try_from((3, 11)).unwrap());
+    }
+
+    /// testing multiplication for borrowed [`Z`] and [`Zq`]
+    #[test]
+    fn mul_first_borrowed() {
+        let a: Z = Z::from(9);
+        let b: Zq = Zq::try_from((4, 11)).unwrap();
+        let c: Zq = &a * b;
+        assert_eq!(c, Zq::try_from((3, 11)).unwrap());
+    }
+
+    /// testing multiplication for [`Z`] and borrowed [`Zq`]
+    #[test]
+    fn mul_second_borrowed() {
+        let a: Z = Z::from(9);
+        let b: Zq = Zq::try_from((4, 11)).unwrap();
+        let c: Zq = a * &b;
+        assert_eq!(c, Zq::try_from((3, 11)).unwrap());
+    }
+
+    /// testing multiplication for big numbers
+    #[test]
+    fn mul_large_numbers() {
+        let a: Z = Z::from(u64::MAX);
+        let b: Zq = Zq::try_from((i64::MAX, u64::MAX - 58)).unwrap();
+        let c: Zq = Zq::try_from((i64::MAX - 1, i64::MAX)).unwrap();
+
+        let d: Zq = &a * b;
+        let e: Zq = a * c;
+
+        assert_eq!(
+            d,
+            Zq::try_from(((u64::MAX - 1) / 2, u64::MAX - 58)).unwrap()
+                * Zq::try_from((u64::MAX, u64::MAX - 58)).unwrap()
+        );
+        assert_eq!(
+            e,
+            Zq::try_from((u64::MAX, i64::MAX)).unwrap() * Zq::try_from((-1, i64::MAX)).unwrap()
+        );
+    }
+}
+
+#[cfg(test)]
+mod test_mul_between_z_and_q {
+
+    use super::Z;
+    use crate::rational::Q;
+    use std::str::FromStr;
+
+    /// testing multiplication for [`Z`] and [`Q`]
+    #[test]
+    fn mul() {
+        let a: Z = Z::from(4);
+        let b: Q = Q::from_str("5/7").unwrap();
+        let c: Q = a * b;
+        assert_eq!(c, Q::from_str("20/7").unwrap());
+    }
+
+    /// testing multiplication for both borrowed [`Z`] and [`Q`]
+    #[test]
+    fn mul_borrow() {
+        let a: Z = Z::from(4);
+        let b: Q = Q::from_str("5/7").unwrap();
+        let c: Q = &a * &b;
+        assert_eq!(c, Q::from_str("20/7").unwrap());
+    }
+
+    /// testing multiplication for borrowed [`Z`] and [`Q`]
+    #[test]
+    fn mul_first_borrowed() {
+        let a: Z = Z::from(4);
+        let b: Q = Q::from_str("5/7").unwrap();
+        let c: Q = &a * b;
+        assert_eq!(c, Q::from_str("20/7").unwrap());
+    }
+
+    /// testing multiplication for [`Z`] and borrowed [`Q`]
+    #[test]
+    fn mul_second_borrowed() {
+        let a: Z = Z::from(4);
+        let b: Q = Q::from_str("5/7").unwrap();
+        let c: Q = a * &b;
+        assert_eq!(c, Q::from_str("20/7").unwrap());
+    }
+
+    /// testing multiplication for big numbers
+    #[test]
+    fn mul_large_numbers() {
+        let a: Z = Z::from(u64::MAX);
+        let b: Q = Q::from_str(&format!("1/{}", u64::MAX)).unwrap();
+        let c: Q = Q::from_str(&format!("{}/2", u64::MAX)).unwrap();
+
+        let d: Q = &a * b;
+        let e: Q = a * c;
+
+        assert_eq!(
+            d,
+            Q::from_str(&format!("1/{}", u64::MAX)).unwrap()
+                * Q::from_str(&format!("{}/1", u64::MAX)).unwrap()
+        );
+        assert_eq!(
+            e,
+            Q::from_str(&format!("{}/1", u64::MAX)).unwrap()
+                * Q::from_str(&format!("{}/2", u64::MAX)).unwrap()
+        );
     }
 }
