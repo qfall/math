@@ -342,6 +342,7 @@ mod test_mul_between_z_and_zq {
 
         let d: Zq = &a * b;
         let e: Zq = a * c;
+
         assert_eq!(
             d,
             Zq::try_from(((u64::MAX - 1) / 2, u64::MAX - 58)).unwrap()
