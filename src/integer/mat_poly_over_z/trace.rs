@@ -29,6 +29,11 @@ impl MatPolyOverZ {
     /// let matrix = MatPolyOverZ::from_str("[[1  42,2  1 2],[1  4, 0]]").unwrap();
     /// let trace = matrix.trace().unwrap();
     /// ```
+    ///
+    /// # Errors and Failures
+    /// Returns a [`MathError`] of type
+    /// [`NoSquareMatrix`](MathError::NoSquareMatrix)
+    /// if the matrix is not a square matrix
     pub fn trace(&self) -> Result<PolyOverZ, MathError> {
         // check if matrix is square
         if self.get_num_rows() != self.get_num_columns() {
@@ -52,13 +57,14 @@ mod test_trace {
     /// Test whether `trace` correctly calculates the trace of a matrix
     #[test]
     fn trace_works() {
-        let mat1 = MatPolyOverZ::from_str("[[1  5,1  2,0],[1  2,1  1,0],[0,0,1  1]]").unwrap();
-        let mat2 = MatPolyOverZ::from_str("[[1  -1,0],[0,1  1]]").unwrap();
+        let mat1 =
+            MatPolyOverZ::from_str("[[2  4 5,1  2,0],[1  2,1  1,0],[0,3  1 2 3,1  1]]").unwrap();
+        let mat2 = MatPolyOverZ::from_str("[[2  -1 -1,0],[0,2  1 1]]").unwrap();
 
         let trace1 = mat1.trace().unwrap();
         let trace2 = mat2.trace().unwrap();
 
-        assert_eq!(PolyOverZ::from_str("1  7").unwrap(), trace1);
+        assert_eq!(PolyOverZ::from_str("2  6 5").unwrap(), trace1);
         assert_eq!(PolyOverZ::from_str("0").unwrap(), trace2);
     }
 
@@ -69,9 +75,12 @@ mod test_trace {
             MatPolyOverZ::from_str(&format!("[[1  {},1  5],[1  1,1  {}]]", i64::MAX, i64::MAX))
                 .unwrap();
         let mat2 = MatPolyOverZ::from_str(&format!("[[1  {}]]", i64::MIN)).unwrap();
-        let mat3 =
-            MatPolyOverZ::from_str(&format!("[[1  {},1  5],[1  1,1  {}]]", i64::MIN, i64::MAX))
-                .unwrap();
+        let mat3 = MatPolyOverZ::from_str(&format!(
+            "[[1  {},1  5],[3  1 2 3,1  {}]]",
+            i64::MIN,
+            i64::MAX
+        ))
+        .unwrap();
 
         let trace1 = mat1.trace().unwrap();
         let trace2 = mat2.trace().unwrap();
@@ -92,7 +101,7 @@ mod test_trace {
     #[test]
     fn trace_error_not_squared() {
         let mat1 = MatPolyOverZ::from_str("[[1  1,0,1  1],[0,1  2,1  3]]").unwrap();
-        let mat2 = MatPolyOverZ::from_str("[[1  42,0],[0,1  17],[1  3,0]]").unwrap();
+        let mat2 = MatPolyOverZ::from_str("[[1  42,0],[0,3  17 9 8],[1  3,0]]").unwrap();
 
         assert!(mat1.trace().is_err());
         assert!(mat2.trace().is_err());
