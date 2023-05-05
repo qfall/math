@@ -29,6 +29,11 @@ impl MatZq {
     /// let matrix = MatZq::from_str("[[1,2],[3,4]] mod 5").unwrap();
     /// let trace = matrix.trace().unwrap();
     /// ```
+    ///
+    /// # Errors and Failures
+    /// Returns a [`MathError`] of type
+    /// [`NoSquareMatrix`](MathError::NoSquareMatrix)
+    /// if the matrix is not a square matrix
     pub fn trace(&self) -> Result<Zq, MathError> {
         // check if matrix is square
         if self.get_num_rows() != self.get_num_columns() {
@@ -52,7 +57,7 @@ mod test_trace {
     /// Test whether `trace` correctly calculates the trace of a matrix
     #[test]
     fn trace_works() {
-        let mat1 = MatZq::from_str("[[5,2,0],[2,1,0],[0,0,1]] mod 10").unwrap();
+        let mat1 = MatZq::from_str("[[5,2,0],[2,8,0],[0,0,4]] mod 10").unwrap();
         let mat2 = MatZq::from_str("[[-1,0],[0,1]] mod 2").unwrap();
 
         let trace1 = mat1.trace().unwrap();
