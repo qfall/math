@@ -29,6 +29,11 @@ impl MatQ {
     /// let matrix = MatQ::from_str("[[1/2,2],[3/7,4]]").unwrap();
     /// let trace = matrix.trace().unwrap();
     /// ```
+    ///
+    /// # Errors and Failures
+    /// Returns a [`MathError`] of type
+    /// [`NoSquareMatrix`](MathError::NoSquareMatrix)
+    /// if the matrix is not a square matrix
     pub fn trace(&self) -> Result<Q, MathError> {
         // check if matrix is square
         if self.get_num_rows() != self.get_num_columns() {
