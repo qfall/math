@@ -24,6 +24,8 @@ use thiserror::Error;
 /// - `DivisionByZeroError` is thrown if it is tried to perform a division by `0`
 /// - `InvalidBase` is thrown if the provided base to call a function is not valid
 /// - `InvalidExponent` is thrown if an invalid exponent is used for a `pow` function
+/// - `InvalidIntegerInput` is thrown if an integer input is provided as parameter that
+/// does not meet the conditions of that function
 /// - `InvalidInterval` is thrown if an invalid interval, e.g. of negative size, is provided
 /// - `InvalidIntToModulus` is thrown if an integer is provided, which is not greater than `0`
 /// - `InvalidMatrix` is thrown if an invalid string input of a matrix is given
@@ -88,6 +90,10 @@ pub enum MathError {
     /// invalid exponent
     #[error("Invalid exponent given: {0}")]
     InvalidExponent(String),
+
+    /// invalid integer was input to a specific function
+    #[error("an invalid integer input was given as a parameter: {0}")]
+    InvalidIntegerInput(String),
 
     /// invalid interval provided
     #[error("An invalid interval was given: {0}")]
