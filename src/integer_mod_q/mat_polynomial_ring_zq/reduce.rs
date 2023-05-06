@@ -26,14 +26,14 @@ impl MatPolynomialRingZq {
     ///
     /// # Examples
     /// ```compile_fail
-    /// use qfall_math::integer_mod_q::PolynomialRingZq;
+    /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
     /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
-    /// use qfall_math::integer::PolyOverZ;
+    /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
     /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
-    /// let mut poly_ring = PolynomialRingZq::from((&poly_mat, &modulus));
+    /// let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
     ///
     /// poly_ring.reduce()
     /// ```
@@ -63,25 +63,25 @@ mod test_reduced {
     fn reduces() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 11").unwrap();
         let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
-        let mut poly_ring = MatPolynomialRingZq {
+        let mut poly_ring_mat = MatPolynomialRingZq {
             matrix: poly_mat,
             modulus,
         };
 
         let cmp_modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 11").unwrap();
         let cmp_poly_mat = MatPolyOverZ::from_str("[[3  9 0 1, 1  9],[0, 2  1 2]]").unwrap();
-        let cmp_poly_ring = MatPolynomialRingZq {
+        let cmp_poly_ring_mat = MatPolynomialRingZq {
             matrix: cmp_poly_mat.clone(),
             modulus: cmp_modulus,
         };
 
         // we only compare the parts individually, not under the modulus, hence they should not be the same
         // unless they have been reduced
-        assert_ne!(poly_ring.matrix, cmp_poly_mat);
-        assert_ne!(poly_ring, cmp_poly_ring);
+        assert_ne!(poly_ring_mat.matrix, cmp_poly_mat);
+        assert_ne!(poly_ring_mat, cmp_poly_ring_mat);
 
-        poly_ring.reduce();
-        assert_eq!(poly_ring.matrix, cmp_poly_mat);
-        assert_eq!(poly_ring, cmp_poly_ring);
+        poly_ring_mat.reduce();
+        assert_eq!(poly_ring_mat.matrix, cmp_poly_mat);
+        assert_eq!(poly_ring_mat, cmp_poly_ring_mat);
     }
 }
