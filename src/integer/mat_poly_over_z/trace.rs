@@ -71,9 +71,12 @@ mod test_trace {
     /// Test whether `trace` works for big values
     #[test]
     fn trace_big_values() {
-        let mat1 =
-            MatPolyOverZ::from_str(&format!("[[1  {},1  5],[1  1,1  {}]]", i64::MAX, i64::MAX))
-                .unwrap();
+        let mat1 = MatPolyOverZ::from_str(&format!(
+            "[[2  -1 {},1  5],[3  1 2 3,1  {}]]",
+            i64::MAX,
+            i64::MAX
+        ))
+        .unwrap();
         let mat2 = MatPolyOverZ::from_str(&format!("[[1  {}]]", i64::MIN)).unwrap();
         let mat3 = MatPolyOverZ::from_str(&format!(
             "[[1  {},1  5],[3  1 2 3,1  {}]]",
@@ -87,7 +90,7 @@ mod test_trace {
         let trace3 = mat3.trace().unwrap();
 
         assert_eq!(
-            PolyOverZ::from_str(&format!("1  {}", 2 * i64::MAX as u64)).unwrap(),
+            PolyOverZ::from_str(&format!("2  {} {}", i64::MAX - 1, i64::MAX)).unwrap(),
             trace1
         );
         assert_eq!(
