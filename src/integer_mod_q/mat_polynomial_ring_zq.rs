@@ -11,6 +11,9 @@
 
 use super::ModulusPolynomialRingZq;
 use crate::integer::MatPolyOverZ;
+use serde::{Deserialize, Serialize};
+
+mod reduce;
 
 /// [`MatPolynomialRingZq`] is a matrix with entries of type [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq).
 ///
@@ -20,7 +23,7 @@ use crate::integer::MatPolyOverZ;
 /// modulus of the matrix
 ///
 /// TODO: Add Example
-#[derive(Debug)]
+#[derive(PartialEq, Eq, Debug, Serialize, Deserialize)]
 #[allow(dead_code)]
 pub struct MatPolynomialRingZq {
     pub(crate) matrix: MatPolyOverZ,
