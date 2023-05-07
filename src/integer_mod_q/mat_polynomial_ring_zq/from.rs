@@ -12,10 +12,9 @@
 //!
 //! The explicit functions contain the documentation.
 
-use std::fmt::Display;
-
 use super::MatPolynomialRingZq;
 use crate::{error::MathError, integer::MatPolyOverZ, integer_mod_q::ModulusPolynomialRingZq};
+use std::fmt::Display;
 
 impl MatPolynomialRingZq {
     /// Creates a new matrix with `num_rows` rows, `num_cols` columns,
@@ -52,11 +51,14 @@ impl MatPolynomialRingZq {
     pub fn new(
         num_rows: impl TryInto<i64> + Display + Copy,
         num_cols: impl TryInto<i64> + Display + Copy,
-        modulus: ModulusPolynomialRingZq,
+        modulus: &ModulusPolynomialRingZq,
     ) -> Result<Self, MathError> {
         let matrix = MatPolyOverZ::new(num_rows, num_cols)?;
 
-        Ok(MatPolynomialRingZq { matrix, modulus })
+        Ok(MatPolynomialRingZq {
+            matrix,
+            modulus: modulus.clone(),
+        })
     }
 }
 
@@ -73,7 +75,7 @@ mod test_new {
         let poly_mod = PolyOverZq::from_str("3  1 0 1 mod 17").unwrap();
         let modulus = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
 
-        assert!(MatPolynomialRingZq::new(2, 2, modulus).is_ok());
+        assert!(MatPolynomialRingZq::new(2, 2, &modulus).is_ok());
     }
 
     // TODO: add a test for zero entries
@@ -84,9 +86,9 @@ mod test_new {
         let poly_mod = PolyOverZq::from_str("3  1 0 1 mod 17").unwrap();
         let modulus = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
 
-        let matrix1 = MatPolynomialRingZq::new(0, 1, modulus.clone());
-        let matrix2 = MatPolynomialRingZq::new(1, 0, modulus.clone());
-        let matrix3 = MatPolynomialRingZq::new(0, 0, modulus);
+        let matrix1 = MatPolynomialRingZq::new(0, 1, &modulus);
+        let matrix2 = MatPolynomialRingZq::new(1, 0, &modulus);
+        let matrix3 = MatPolynomialRingZq::new(0, 0, &modulus);
 
         assert!(matrix1.is_err());
         assert!(matrix2.is_err());
@@ -100,6 +102,6 @@ mod test_new {
             PolyOverZq::from_str(&format!("3  1 {} 1 mod {}", i64::MAX, BITPRIME64)).unwrap();
         let modulus = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
 
-        assert!(MatPolynomialRingZq::new(2, 2, modulus).is_ok());
+        assert!(MatPolynomialRingZq::new(2, 2, &modulus).is_ok());
     }
 }
