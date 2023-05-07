@@ -38,7 +38,7 @@ impl MatPolynomialRingZq {
     /// let poly_mod = PolyOverZq::from_str("3  1 0 1 mod 17").unwrap();
     /// let modulus = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
     ///
-    /// let matrix = MatPolynomialRingZq::new(5, 10, modulus).unwrap();
+    /// let matrix = MatPolynomialRingZq::new(5, 10, &modulus).unwrap();
     /// ```
     ///
     /// # Errors and Failures
