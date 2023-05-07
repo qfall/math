@@ -217,7 +217,7 @@ impl FromStr for MatZq {
     /// if the modulus or an entry is not formatted correctly.
     /// - Returns a [`MathError`] of type
     /// [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
-    /// if the modulus is not greater than '0'.
+    /// if the modulus is not greater than `0`.
     fn from_str(string: &str) -> Result<Self, MathError> {
         let (matrix, modulus) = match string.split_once("mod") {
             Some((matrix, modulus)) => (matrix, modulus),
