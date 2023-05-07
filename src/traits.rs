@@ -10,6 +10,7 @@
 //! specific traits for matrices and polynomials.
 
 use crate::error::MathError;
+use flint_sys::fmpz::fmpz;
 use std::fmt::Display;
 
 /// Is implemented by polynomials to evaluate it for a certain input.
@@ -203,4 +204,42 @@ pub trait Xgcd<T = Self> {
     /// Returns a triple `(gcd(a,b), x, y)` containing the greatest common divisor,
     /// `x`, and `y` s.t. `gcd(a,b) = a*x + b*y`.
     fn xgcd(&self, other: T) -> Self::Output;
+}
+
+/// This is a trait to abstract Integers.
+///
+/// It is implemented by [`Z`](crate::integer::Z), [`Zq`](crate::integer_mod_q::Zq),
+/// and rust's 8, 16, 32, and 64 bit signed and unsigned integers.
+/// The implementations exist for their owned and borrowed variants.
+///
+/// # Safety
+/// Handling [`fmpz`] directly requires thinking about memory issues.
+/// Read the documentation of the functions carefully before you use them.
+pub(crate) unsafe trait AsInteger {
+    /// Return a [`fmpz`] representing the value.
+    /// Data about the original object might not be contained in the return value.
+    /// For example, [`Zq`](crate::integer_mod_q::Zq)'s return value does not
+    /// contain Information about the modulus.
+    ///
+    /// # Safety
+    /// The caller has to ensure that the returned [`fmpz`] is cleared properly.
+    /// This is not happening automatically.
+    /// Not clearing the [`fmpz`] is a memory leak.
+    unsafe fn into_fmpz(self) -> fmpz;
+
+    /// Returns a reference to an internal [`fmpz`] that represents the value.
+    /// If the data type does not contain a [`fmpz`] completely [`None`] is returned.
+    ///
+    /// It is intended to be used when a read only [`fmpz`] reference is required
+    /// for a Flint function call.
+    /// If the data type does not contain a [`fmpz`], [`into_fmpz`](AsInteger::into_fmpz)
+    /// can be used instead.
+    ///
+    /// # Safety
+    /// Modifying the returned [`fmpz`] may also also modify the original object.
+    /// This depends on the size of the value and the data type.
+    /// In general, the returned [`fmpz`] should just be read and not written to.
+    unsafe fn get_fmpz_ref(&self) -> Option<&fmpz> {
+        None
+    }
 }

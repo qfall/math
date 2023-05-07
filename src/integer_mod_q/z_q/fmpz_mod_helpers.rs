@@ -8,7 +8,11 @@
 
 //! This module contains helpful functions on [`fmpz`] values in a ring/`modulus` context.
 
-use crate::integer::{fmpz_helpers::distance, Z};
+use super::Zq;
+use crate::{
+    integer::{fmpz_helpers::distance, Z},
+    traits::AsInteger,
+};
 use flint_sys::fmpz::fmpz;
 
 const ZERO_FMPZ: fmpz = fmpz(0);
@@ -41,6 +45,31 @@ pub(crate) fn length(value: &fmpz, modulus: &fmpz) -> Z {
     } else {
         distance_modulus
     }
+}
+
+unsafe impl AsInteger for Zq {
+    unsafe fn into_fmpz(self) -> fmpz {
+        AsInteger::into_fmpz(&self.value)
+    }
+
+    unsafe fn get_fmpz_ref(&self) -> Option<&fmpz> {
+        AsInteger::get_fmpz_ref(&self.value)
+    }
+}
+
+unsafe impl AsInteger for &Zq {
+    unsafe fn into_fmpz(self) -> fmpz {
+        AsInteger::into_fmpz(&self.value)
+    }
+
+    unsafe fn get_fmpz_ref(&self) -> Option<&fmpz> {
+        AsInteger::get_fmpz_ref(&self.value)
+    }
+}
+
+#[cfg(test)]
+mod test_as_integer_zq {
+    // TODO: Add tests
 }
 
 #[cfg(test)]
