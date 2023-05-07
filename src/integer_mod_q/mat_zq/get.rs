@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementations to get entries from a [`MatZq`] matrix.
+//! Implementations to get information about a [`MatZq`] matrix.
 
 use super::MatZq;
 use crate::{
