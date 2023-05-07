@@ -12,6 +12,8 @@
 use super::ModulusPolynomialRingZq;
 use crate::integer::MatPolyOverZ;
 
+mod from;
+
 /// [`MatPolynomialRingZq`] is a matrix with entries of type [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq).
 ///
 /// Attributes:
