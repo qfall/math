@@ -234,12 +234,12 @@ mod test_get_entry {
     #[test]
     fn max_int_positive() {
         let mut matrix = MatZ::new(5, 10).unwrap();
-        let value = Z::from_i64(i64::MAX);
+        let value = Z::from(i64::MAX);
         matrix.set_entry(1, 1, value).unwrap();
 
         let entry = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!(Z::from_i64(i64::MAX), entry);
+        assert_eq!(Z::from(i64::MAX), entry);
     }
 
     /// Ensure that getting entries works with large numbers (larger than i64).
@@ -258,12 +258,12 @@ mod test_get_entry {
     #[test]
     fn max_int_negative() {
         let mut matrix = MatZ::new(5, 10).unwrap();
-        let value = Z::from_i64(i64::MIN);
+        let value = Z::from(i64::MIN);
         matrix.set_entry(1, 1, value).unwrap();
 
         let entry = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!(Z::from_i64(i64::MIN), entry);
+        assert_eq!(Z::from(i64::MIN), entry);
     }
 
     /// Ensure that getting entries works with large negative numbers (larger than i64).
@@ -284,12 +284,12 @@ mod test_get_entry {
     #[test]
     fn getting_at_zero() {
         let mut matrix = MatZ::new(5, 10).unwrap();
-        let value = Z::from_i64(i64::MIN);
+        let value = Z::from(i64::MIN);
         matrix.set_entry(0, 0, value).unwrap();
 
         let entry = matrix.get_entry(0, 0).unwrap();
 
-        assert_eq!(entry, Z::from_i64(i64::MIN));
+        assert_eq!(entry, Z::from(i64::MIN));
     }
 
     /// Ensure that a wrong number of rows yields an Error.
@@ -315,7 +315,7 @@ mod test_get_entry {
         let value = Z::from(u64::MAX);
         matrix.set_entry(1, 1, value).unwrap();
         let entry = matrix.get_entry(1, 1).unwrap();
-        matrix.set_entry(1, 1, Z::from_i64(0)).unwrap();
+        matrix.set_entry(1, 1, Z::from(0)).unwrap();
 
         assert_eq!(Z::from(u64::MAX), entry);
     }

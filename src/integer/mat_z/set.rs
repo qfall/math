@@ -30,7 +30,7 @@ impl SetEntry<&Z> for MatZ {
     /// use qfall_math::traits::*;
     ///
     /// let mut matrix = MatZ::new(5, 10).unwrap();
-    /// let value = Z::from_i64(5);
+    /// let value = Z::from(5);
     /// matrix.set_entry(1, 1, &value).unwrap();
     /// ```
     ///
@@ -73,24 +73,24 @@ mod test_setter {
     #[test]
     fn standard_value() {
         let mut matrix = MatZ::new(5, 10).unwrap();
-        let value = Z::from_i64(869);
+        let value = Z::from(869);
         matrix.set_entry(4, 7, &value).unwrap();
 
         let entry = matrix.get_entry(4, 7).unwrap();
 
-        assert_eq!(entry, Z::from_i64(869));
+        assert_eq!(entry, Z::from(869));
     }
 
     /// Ensure that setting entries works with large numbers.
     #[test]
     fn max_int_positive() {
         let mut matrix = MatZ::new(5, 10).unwrap();
-        let value = Z::from_i64(i64::MAX);
+        let value = Z::from(i64::MAX);
         matrix.set_entry(1, 1, value).unwrap();
 
         let entry = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!(entry, Z::from_i64(i64::MAX));
+        assert_eq!(entry, Z::from(i64::MAX));
     }
 
     /// Ensure that setting entries works with large numbers (larger than i64).
@@ -110,7 +110,7 @@ mod test_setter {
     fn big_positive_ref() {
         let mut matrix = MatZ::new(5, 10).unwrap();
         let value1 = Z::from(u64::MAX);
-        let value2 = Z::from_i64(8);
+        let value2 = Z::from(8);
         matrix.set_entry(1, 1, &value1).unwrap();
         matrix.set_entry(0, 0, value2).unwrap();
 
@@ -118,19 +118,19 @@ mod test_setter {
         let entry2 = matrix.get_entry(0, 0).unwrap();
 
         assert_eq!(entry1, Z::from(u64::MAX));
-        assert_eq!(entry2, Z::from_i64(8));
+        assert_eq!(entry2, Z::from(8));
     }
 
     /// Ensure that setting entries works with large negative numbers.
     #[test]
     fn max_int_negative() {
         let mut matrix = MatZ::new(5, 10).unwrap();
-        let value = Z::from_i64(i64::MIN);
+        let value = Z::from(i64::MIN);
         matrix.set_entry(1, 1, value).unwrap();
 
         let entry = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!(entry, Z::from_i64(i64::MIN));
+        assert_eq!(entry, Z::from(i64::MIN));
     }
 
     /// Ensure that setting entries works with large negative numbers (larger than i64).
@@ -151,19 +151,19 @@ mod test_setter {
     #[test]
     fn setting_at_zero() {
         let mut matrix = MatZ::new(5, 10).unwrap();
-        let value = Z::from_i64(i64::MIN);
+        let value = Z::from(i64::MIN);
         matrix.set_entry(0, 0, value).unwrap();
 
         let entry = matrix.get_entry(0, 0).unwrap();
 
-        assert_eq!(entry, Z::from_i64(i64::MIN));
+        assert_eq!(entry, Z::from(i64::MIN));
     }
 
     /// Ensure that a wrong number of rows yields an Error.
     #[test]
     fn error_wrong_row() {
         let mut matrix = MatZ::new(5, 10).unwrap();
-        let value = Z::from_i64(i64::MAX);
+        let value = Z::from(i64::MAX);
 
         assert!(matrix.set_entry(5, 1, value).is_err());
     }
@@ -172,7 +172,7 @@ mod test_setter {
     #[test]
     fn error_wrong_column() {
         let mut matrix = MatZ::new(5, 10).unwrap();
-        let value = Z::from_i64(i64::MAX);
+        let value = Z::from(i64::MAX);
 
         assert!(matrix.set_entry(1, 100, value).is_err());
     }
