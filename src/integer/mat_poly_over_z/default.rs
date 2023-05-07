@@ -15,7 +15,7 @@ use std::{fmt::Display, mem::MaybeUninit};
 
 impl MatPolyOverZ {
     /// Creates a new matrix with `num_rows` rows, `num_cols` columns and
-    /// zeros as entries, where each entry is a [`PolyOverZ`].
+    /// zeros as entries, where each entry is a [`PolyOverZ`](crate::integer::PolyOverZ).
     ///
     /// Parameters:
     /// - `num_rows`: number of rows the new matrix should have
