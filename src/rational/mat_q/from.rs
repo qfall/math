@@ -51,8 +51,8 @@ impl MatQ {
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the number of rows or columns is negative or it does not fit into an [`i64`].
     pub fn new(
-        num_rows: impl TryInto<i64> + Display + Copy,
-        num_cols: impl TryInto<i64> + Display + Copy,
+        num_rows: impl TryInto<i64> + Display,
+        num_cols: impl TryInto<i64> + Display,
     ) -> Result<Self, MathError> {
         let num_rows_i64 = evaluate_index(num_rows)?;
         let num_cols_i64 = evaluate_index(num_cols)?;
@@ -60,7 +60,7 @@ impl MatQ {
         if num_rows_i64 == 0 || num_cols_i64 == 0 {
             return Err(MathError::InvalidMatrix(format!(
                 "({},{})",
-                num_rows, num_cols,
+                num_rows_i64, num_cols_i64,
             )));
         }
 
@@ -123,8 +123,8 @@ impl MatQ {
     /// [`OutOfBounds`](MathError::OutOfBounds) if the provided number of rows and columns
     /// are not suited to create a matrix. For further information see [`MatQ::new`].
     pub fn identity(
-        num_rows: impl TryInto<i64> + Display + Copy,
-        num_cols: impl TryInto<i64> + Display + Copy,
+        num_rows: impl TryInto<i64> + Display,
+        num_cols: impl TryInto<i64> + Display,
     ) -> Result<Self, MathError> {
         let mut out = MatQ::new(num_rows, num_cols)?;
         unsafe { fmpq_mat_one(&mut out.matrix) };

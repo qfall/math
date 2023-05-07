@@ -53,8 +53,8 @@ impl MatZq {
     /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
     /// if the provided modulus is not greater than `0`.
     pub fn sample_uniform<T>(
-        num_rows: impl TryInto<i64> + Display + Copy,
-        num_cols: impl TryInto<i64> + Display + Copy,
+        num_rows: impl TryInto<i64> + Display,
+        num_cols: impl TryInto<i64> + Display,
         modulus: &T,
     ) -> Result<Self, MathError>
     where

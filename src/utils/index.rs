@@ -31,15 +31,29 @@ use std::fmt::Display;
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
 /// either the index is negative or it does not fit into an [`i64`].
-pub fn evaluate_index<S: TryInto<i64> + Display + Copy>(index: S) -> Result<i64, MathError> {
+pub fn evaluate_index<S: TryInto<i64> + Display>(index: S) -> Result<i64, MathError> {
     // the index must fit into an [`i64`]
-    let index: i64 = match index.try_into() {
-        Ok(index) => index,
-        _ => {
-            return Err(MathError::OutOfBounds(
-                "fit into a i64".to_owned(),
-                index.to_string(),
-            ))
+
+    let index: i64 = if cfg!(debug_assertions) {
+        let index_str = index.to_string();
+        match index.try_into() {
+            Ok(index) => index,
+            _ => {
+                return Err(MathError::OutOfBounds(
+                    "fit into a i64".to_owned(),
+                    index_str,
+                ))
+            }
+        }
+    } else {
+        match index.try_into() {
+            Ok(index) => index,
+            _ => {
+                return Err(MathError::OutOfBounds(
+                    "fit into a i64".to_owned(),
+                    "rerun in debug mode to obtain the incorrect index".to_owned(),
+                ))
+            }
         }
     };
 
@@ -68,8 +82,8 @@ pub fn evaluate_index<S: TryInto<i64> + Display + Copy>(index: S) -> Result<i64,
 /// if the number of rows or columns is greater than the matrix or negative.
 pub(crate) fn evaluate_indices<S: GetNumRows + GetNumColumns>(
     matrix: &S,
-    row: impl TryInto<i64> + Display + Copy,
-    column: impl TryInto<i64> + Display + Copy,
+    row: impl TryInto<i64> + Display,
+    column: impl TryInto<i64> + Display,
 ) -> Result<(i64, i64), MathError> {
     let row_i64 = evaluate_index(row)?;
     let column_i64 = evaluate_index(column)?;

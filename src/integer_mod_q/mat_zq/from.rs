@@ -57,8 +57,8 @@ impl MatZq {
     /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
     /// if the provided value is not greater than `0`.
     pub fn new(
-        num_rows: impl TryInto<i64> + Display + Copy,
-        num_cols: impl TryInto<i64> + Display + Copy,
+        num_rows: impl TryInto<i64> + Display,
+        num_cols: impl TryInto<i64> + Display,
         modulus: impl Into<Z>,
     ) -> Result<Self, MathError> {
         // TODO add separate function
@@ -68,7 +68,7 @@ impl MatZq {
         if num_rows_i64 == 0 || num_cols_i64 == 0 {
             return Err(MathError::InvalidMatrix(format!(
                 "({},{})",
-                num_rows, num_cols,
+                num_rows_i64, num_cols_i64,
             )));
         }
 
@@ -153,8 +153,8 @@ impl MatZq {
     /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
     /// if the modulus is not greater than `0`. For further information see [`MatZq::new`].
     pub fn identity(
-        num_rows: impl TryInto<i64> + Display + Copy,
-        num_cols: impl TryInto<i64> + Display + Copy,
+        num_rows: impl TryInto<i64> + Display,
+        num_cols: impl TryInto<i64> + Display,
         modulus: impl Into<Z>,
     ) -> Result<Self, MathError> {
         let mut out = MatZq::new(num_rows, num_cols, modulus)?;

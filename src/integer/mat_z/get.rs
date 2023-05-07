@@ -78,8 +78,8 @@ impl GetEntry<Z> for MatZ {
     /// if the number of rows or columns is greater than the matrix or negative.
     fn get_entry(
         &self,
-        row: impl TryInto<i64> + Display + Copy,
-        column: impl TryInto<i64> + Display + Copy,
+        row: impl TryInto<i64> + Display,
+        column: impl TryInto<i64> + Display,
     ) -> Result<Z, MathError> {
         let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
 
@@ -119,7 +119,7 @@ impl MatZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the number of the row is greater than the matrix or negative.
-    pub fn get_row(&self, row: impl TryInto<i64> + Display + Copy) -> Result<Self, MathError> {
+    pub fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError> {
         let row_i64 = evaluate_index(row)?;
 
         if self.get_num_rows() <= row_i64 {
@@ -165,10 +165,7 @@ impl MatZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the number of the column is greater than the matrix or negative.
-    pub fn get_column(
-        &self,
-        column: impl TryInto<i64> + Display + Copy,
-    ) -> Result<Self, MathError> {
+    pub fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError> {
         let column_i64 = evaluate_index(column)?;
 
         if self.get_num_columns() <= column_i64 {
