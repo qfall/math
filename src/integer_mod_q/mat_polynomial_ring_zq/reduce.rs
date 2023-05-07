@@ -35,7 +35,7 @@ impl MatPolynomialRingZq {
     /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
     /// let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
     ///
-    /// poly_ring.reduce()
+    /// poly_ring_mat.reduce()
     /// ```
     #[allow(dead_code)]
     pub(crate) fn reduce(&mut self) {
@@ -57,6 +57,8 @@ mod test_reduced {
         integer_mod_q::{mat_polynomial_ring_zq::MatPolynomialRingZq, ModulusPolynomialRingZq},
     };
     use std::str::FromStr;
+
+    const BITPRIME64: u64 = 18446744073709551557;
 
     /// ensure that the entries are reduced
     #[test]
@@ -81,6 +83,45 @@ mod test_reduced {
         assert_ne!(poly_ring_mat, cmp_poly_ring_mat);
 
         poly_ring_mat.reduce();
+        assert_eq!(poly_ring_mat.matrix, cmp_poly_mat);
+        assert_eq!(poly_ring_mat, cmp_poly_ring_mat);
+    }
+
+    /// ensure that reduce works with large entries and moduli
+    #[test]
+    fn large_values() {
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("4  {} 0 0 1 mod {}", i64::MAX, BITPRIME64))
+                .unwrap();
+        let poly_mat =
+            MatPolyOverZ::from_str(&format!("[[4  -1 0 {} 1, 1  42],[0, 2  1 2]]", i64::MAX))
+                .unwrap();
+        let mut poly_ring_mat = MatPolynomialRingZq {
+            matrix: poly_mat,
+            modulus,
+        };
+
+        let cmp_modulus =
+            ModulusPolynomialRingZq::from_str(&format!("4  {} 0 0 1 mod {}", i64::MAX, BITPRIME64))
+                .unwrap();
+        let cmp_poly_mat = MatPolyOverZ::from_str(&format!(
+            "[[3  {} 0 {}, 1  42],[0, 2  1 2]]",
+            BITPRIME64 - i64::MAX as u64 - 1,
+            i64::MAX
+        ))
+        .unwrap();
+        let cmp_poly_ring_mat = MatPolynomialRingZq {
+            matrix: cmp_poly_mat.clone(),
+            modulus: cmp_modulus,
+        };
+
+        // we only compare the parts individually, not under the modulus, hence they should not be the same
+        // unless they have been reduced
+        assert_ne!(poly_ring_mat.matrix, cmp_poly_mat);
+        assert_ne!(poly_ring_mat, cmp_poly_ring_mat);
+
+        poly_ring_mat.reduce();
+
         assert_eq!(poly_ring_mat.matrix, cmp_poly_mat);
         assert_eq!(poly_ring_mat, cmp_poly_ring_mat);
     }
