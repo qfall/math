@@ -6,12 +6,15 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementations to call the exponential function on a [`Q`].
+//! Implementations to call the exponential function on a [`Z`] integer.
 
-use super::Q;
-use crate::{rational::PolyOverQ, traits::Evaluate};
+use crate::{
+    integer::Z,
+    rational::{PolyOverQ, Q},
+    traits::Evaluate,
+};
 
-impl Q {
+impl Z {
     /// Computes e^self using taylor series approximation of the exponential function.
     ///
     /// Parameters:
@@ -22,13 +25,12 @@ impl Q {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::rational::Q;
-    /// use std::str::FromStr;
+    /// use qfall_math::integer::Z;
     ///
-    /// // sum_{k=0}^999 (17/3)^k/k!
-    /// let evaluation = Q::from_str("17/3").unwrap().exp_taylor(1000_u32);
+    /// // sum_{k=0}^999 17^k/k!
+    /// let evaluation = Z::from(17).exp_taylor(1000_u32);
     /// ```
-    pub fn exp_taylor(&self, length_taylor_polynomial: impl Into<u32>) -> Self {
+    pub fn exp_taylor(&self, length_taylor_polynomial: impl Into<u32>) -> Q {
         let exp_taylor_series = PolyOverQ::exp_function_taylor(length_taylor_polynomial);
         exp_taylor_series.evaluate(self)
     }
@@ -36,15 +38,15 @@ impl Q {
 
 #[cfg(test)]
 mod test_exp {
-    use crate::rational::Q;
+    use crate::{integer::Z, rational::Q};
     use std::str::FromStr;
 
     /// ensure that `0` is returned if the length `0` is provided
     #[test]
     fn zero_length() {
-        let q = Q::from_str("17/3").unwrap();
+        let z = Z::from(17);
 
-        assert_eq!(Q::default(), q.exp_taylor(0_u32));
+        assert_eq!(Q::default(), z.exp_taylor(0_u32));
     }
 
     /// test correct evaluation for some explicit values
@@ -52,15 +54,15 @@ mod test_exp {
     fn ten_length_value() {
         assert_eq!(
             Q::from_str("98641/36288").unwrap(),
-            Q::from_str("1").unwrap().exp_taylor(10_u32)
+            Z::ONE.exp_taylor(10_u32)
         );
         assert_eq!(
-            Q::from_str("2492063827/1785641760").unwrap(),
-            Q::from_str("1/3").unwrap().exp_taylor(10_u32)
+            Q::from_str("22471/1120").unwrap(),
+            Z::from(3).exp_taylor(10_u32)
         );
         assert_eq!(
-            Q::from_str("5729869/11160261").unwrap(),
-            Q::from_str("-2/3").unwrap().exp_taylor(10_u32)
+            Q::from_str("83/2240").unwrap(),
+            Z::from(-3).exp_taylor(10_u32)
         );
     }
 }

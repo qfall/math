@@ -50,7 +50,7 @@ impl SetCoefficient<&Z> for PolyOverZ {
     /// either the index is negative or it does not fit into an [`i64`].
     fn set_coeff(
         &mut self,
-        index: impl TryInto<i64> + Display + Copy,
+        index: impl TryInto<i64> + Display,
         value: &Z,
     ) -> Result<(), MathError> {
         let index = evaluate_index(index)?;

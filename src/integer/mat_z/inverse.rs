@@ -93,7 +93,7 @@ mod test_inverse {
         assert!(mat2.inverse().is_none());
     }
 
-    /// Ensure that a matrix that has a determinant of '0' yields `None` on inversion.
+    /// Ensure that a matrix that has a determinant of `0` yields `None` on inversion.
     #[test]
     fn inv_none_det_zero() {
         let mat = MatZ::from_str("[[2,0],[0,0]]").unwrap();

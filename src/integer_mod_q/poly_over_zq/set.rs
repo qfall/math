@@ -51,7 +51,7 @@ impl SetCoefficient<&Z> for PolyOverZq {
     /// either the index is negative or it does not fit into an [`i64`].
     fn set_coeff(
         &mut self,
-        index: impl TryInto<i64> + Display + Copy,
+        index: impl TryInto<i64> + Display,
         value: &Z,
     ) -> Result<(), MathError> {
         let index = evaluate_index(index)?;
@@ -101,7 +101,7 @@ impl SetCoefficient<&Zq> for PolyOverZq {
     /// the polynomial and the input mismatch
     fn set_coeff(
         &mut self,
-        index: impl TryInto<i64> + Display + Copy,
+        index: impl TryInto<i64> + Display,
         value: &Zq,
     ) -> Result<(), MathError> {
         if self.modulus != value.modulus {

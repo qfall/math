@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementations to get entries from a [`MatZ`] matrix.
+//! Implementations to get information about a [`MatZ`] matrix.
 
 use super::MatZ;
 use crate::{
@@ -78,8 +78,8 @@ impl GetEntry<Z> for MatZ {
     /// if the number of rows or columns is greater than the matrix or negative.
     fn get_entry(
         &self,
-        row: impl TryInto<i64> + Display + Copy,
-        column: impl TryInto<i64> + Display + Copy,
+        row: impl TryInto<i64> + Display,
+        column: impl TryInto<i64> + Display,
     ) -> Result<Z, MathError> {
         let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
 
@@ -119,7 +119,7 @@ impl MatZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the number of the row is greater than the matrix or negative.
-    pub fn get_row(&self, row: impl TryInto<i64> + Display + Copy) -> Result<Self, MathError> {
+    pub fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError> {
         let row_i64 = evaluate_index(row)?;
 
         if self.get_num_rows() <= row_i64 {
@@ -165,10 +165,7 @@ impl MatZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the number of the column is greater than the matrix or negative.
-    pub fn get_column(
-        &self,
-        column: impl TryInto<i64> + Display + Copy,
-    ) -> Result<Self, MathError> {
+    pub fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError> {
         let column_i64 = evaluate_index(column)?;
 
         if self.get_num_columns() <= column_i64 {
@@ -234,12 +231,12 @@ mod test_get_entry {
     #[test]
     fn max_int_positive() {
         let mut matrix = MatZ::new(5, 10).unwrap();
-        let value = Z::from_i64(i64::MAX);
+        let value = Z::from(i64::MAX);
         matrix.set_entry(1, 1, value).unwrap();
 
         let entry = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!(Z::from_i64(i64::MAX), entry);
+        assert_eq!(Z::from(i64::MAX), entry);
     }
 
     /// Ensure that getting entries works with large numbers (larger than i64).
@@ -258,12 +255,12 @@ mod test_get_entry {
     #[test]
     fn max_int_negative() {
         let mut matrix = MatZ::new(5, 10).unwrap();
-        let value = Z::from_i64(i64::MIN);
+        let value = Z::from(i64::MIN);
         matrix.set_entry(1, 1, value).unwrap();
 
         let entry = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!(Z::from_i64(i64::MIN), entry);
+        assert_eq!(Z::from(i64::MIN), entry);
     }
 
     /// Ensure that getting entries works with large negative numbers (larger than i64).
@@ -284,12 +281,12 @@ mod test_get_entry {
     #[test]
     fn getting_at_zero() {
         let mut matrix = MatZ::new(5, 10).unwrap();
-        let value = Z::from_i64(i64::MIN);
+        let value = Z::from(i64::MIN);
         matrix.set_entry(0, 0, value).unwrap();
 
         let entry = matrix.get_entry(0, 0).unwrap();
 
-        assert_eq!(entry, Z::from_i64(i64::MIN));
+        assert_eq!(entry, Z::from(i64::MIN));
     }
 
     /// Ensure that a wrong number of rows yields an Error.
@@ -315,7 +312,7 @@ mod test_get_entry {
         let value = Z::from(u64::MAX);
         matrix.set_entry(1, 1, value).unwrap();
         let entry = matrix.get_entry(1, 1).unwrap();
-        matrix.set_entry(1, 1, Z::from_i64(0)).unwrap();
+        matrix.set_entry(1, 1, Z::from(0)).unwrap();
 
         assert_eq!(Z::from(u64::MAX), entry);
     }
