@@ -33,7 +33,7 @@ pub trait GetCoefficient<T> {
     /// - `index`: The index of the coefficient
     ///
     /// Returns the coefficient of the polynomial.
-    fn get_coeff(&self, index: impl TryInto<i64> + Display + Copy) -> Result<T, MathError>;
+    fn get_coeff(&self, index: impl TryInto<i64> + Display) -> Result<T, MathError>;
 }
 
 /// Is implemented by polynomials to set individual coefficients.
@@ -44,11 +44,7 @@ pub trait SetCoefficient<T> {
     /// Parameters:
     /// - `index` : The coefficient to be set.
     /// - `value`: The value the coefficient is set to.
-    fn set_coeff(
-        &mut self,
-        index: impl TryInto<i64> + Display + Copy,
-        value: T,
-    ) -> Result<(), MathError>;
+    fn set_coeff(&mut self, index: impl TryInto<i64> + Display, value: T) -> Result<(), MathError>;
 }
 
 /// Is implemented by matrices to get the number of rows of the matrix.
@@ -76,8 +72,8 @@ pub trait GetEntry<T> {
     /// greater than the matrix or negative.
     fn get_entry(
         &self,
-        row: impl TryInto<i64> + Display + Copy,
-        column: impl TryInto<i64> + Display + Copy,
+        row: impl TryInto<i64> + Display,
+        column: impl TryInto<i64> + Display,
     ) -> Result<T, MathError>;
 }
 
@@ -94,8 +90,8 @@ pub trait SetEntry<T> {
     /// - `value`: specifies the value to which the entry is set.
     fn set_entry(
         &mut self,
-        row: impl TryInto<i64> + Display + Copy,
-        column: impl TryInto<i64> + Display + Copy,
+        row: impl TryInto<i64> + Display,
+        column: impl TryInto<i64> + Display,
         value: T,
     ) -> Result<(), MathError>;
 }

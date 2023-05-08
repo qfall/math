@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementations to get entries from a [`MatPolyOverZ`] matrix.
+//! Implementations to get information about a [`MatPolyOverZ`] matrix.
 
 use super::MatPolyOverZ;
 use crate::{
@@ -78,8 +78,8 @@ impl GetEntry<PolyOverZ> for MatPolyOverZ {
     /// if the number of rows or columns is greater than the matrix or negative.
     fn get_entry(
         &self,
-        row: impl TryInto<i64> + Display + Copy,
-        column: impl TryInto<i64> + Display + Copy,
+        row: impl TryInto<i64> + Display,
+        column: impl TryInto<i64> + Display,
     ) -> Result<PolyOverZ, MathError> {
         let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
 
@@ -120,7 +120,7 @@ impl MatPolyOverZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the number of the row is greater than the matrix or negative.
-    pub fn get_row(&self, row: impl TryInto<i64> + Display + Copy) -> Result<Self, MathError> {
+    pub fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError> {
         let row_i64 = evaluate_index(row)?;
 
         if self.get_num_rows() <= row_i64 {
@@ -165,10 +165,7 @@ impl MatPolyOverZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the number of the column is greater than the matrix or negative.
-    pub fn get_column(
-        &self,
-        column: impl TryInto<i64> + Display + Copy,
-    ) -> Result<Self, MathError> {
+    pub fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError> {
         let column_i64 = evaluate_index(column)?;
 
         if self.get_num_columns() <= column_i64 {

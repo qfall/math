@@ -80,7 +80,7 @@ impl FromStr for Q {
             return Err(MathError::InvalidStringToQInput(s.to_owned()));
         }
 
-        // `fmpq::default()` returns the value '0/0'
+        // `fmpq::default()` returns the value `0/0`
         let mut value = fmpq::default();
 
         let c_string = CString::new(s)?;

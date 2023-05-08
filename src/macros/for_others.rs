@@ -78,7 +78,7 @@ macro_rules! implement_for_others {
                 #[doc = "Documentation can be found at [`" $type "::set_coeff`]. Implicitly converts [`" $source_type "`] into [`" $bridge_type "`]."]
             fn set_coeff(
                 &mut self,
-                index: impl TryInto<i64> + Display + Copy,
+                index: impl TryInto<i64> + Display,
                 value: $source_type,
             ) -> Result<(), MathError> {
                 self.set_coeff(index, $bridge_type::from(value))
@@ -94,8 +94,8 @@ macro_rules! implement_for_others {
                 #[doc = "Documentation can be found at [`" $type "::set_entry`]. Implicitly converts [`" $source_type "`] into [`" $bridge_type "`]."]
             fn set_entry(
                 &mut self,
-                row: impl TryInto<i64> + Display + Copy,
-                column: impl TryInto<i64> + Display + Copy,
+                row: impl TryInto<i64> + Display,
+                column: impl TryInto<i64> + Display,
                 value: $source_type,
             ) -> Result<(), MathError> {
                 self.set_entry(row, column, $bridge_type::from(value))
@@ -281,7 +281,7 @@ macro_rules! implement_for_owned {
                 #[doc = "Documentation can be found at [`" $type "::set_coeff`]."]
             fn set_coeff(
                 &mut self,
-                index: impl TryInto<i64> + Display + Copy,
+                index: impl TryInto<i64> + Display,
                 value: $source_type,
             ) -> Result<(), MathError> {
                 self.set_coeff(index, &value)
@@ -297,8 +297,8 @@ macro_rules! implement_for_owned {
                 #[doc = "Documentation can be found at [`" $type "::set_entry`]."]
             fn set_entry(
                 &mut self,
-                row: impl TryInto<i64> + Display + Copy,
-                column: impl TryInto<i64> + Display + Copy,
+                row: impl TryInto<i64> + Display,
+                column: impl TryInto<i64> + Display,
                 value: $source_type,
             ) -> Result<(), MathError> {
                 self.set_entry(row, column, &value)

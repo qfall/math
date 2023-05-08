@@ -15,7 +15,6 @@ mod arithmetic;
 mod cmp;
 mod default;
 mod distance;
-mod exp;
 mod from;
 mod get;
 mod ownership;

@@ -10,5 +10,6 @@
 //! such as addition or subtraction.
 
 mod add;
+mod exp;
 mod mul;
 mod sub;

@@ -53,8 +53,8 @@ impl MatZ {
     /// if the given `upper_bound` isn't at least bigger than `lower_bound + 1`,
     /// i.e. the interval size is at most `1`.
     pub fn sample_uniform<T1, T2>(
-        num_rows: impl TryInto<i64> + Display + Copy,
-        num_cols: impl TryInto<i64> + Display + Copy,
+        num_rows: impl TryInto<i64> + Display,
+        num_cols: impl TryInto<i64> + Display,
         lower_bound: &T1,
         upper_bound: &T2,
     ) -> Result<Self, MathError>

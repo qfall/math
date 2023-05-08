@@ -41,8 +41,8 @@ impl SetEntry<&Q> for MatQ {
     /// if the number of rows or columns is greater than the matrix or negative.
     fn set_entry(
         &mut self,
-        row: impl TryInto<i64> + Display + Copy,
-        column: impl TryInto<i64> + Display + Copy,
+        row: impl TryInto<i64> + Display,
+        column: impl TryInto<i64> + Display,
         value: &Q,
     ) -> Result<(), MathError> {
         let (row_i64, column_i64) = evaluate_indices(self, row, column)?;

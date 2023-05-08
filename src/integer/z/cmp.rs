@@ -58,8 +58,8 @@ impl PartialOrd for Z {
     /// ```
     /// use qfall_math::integer::Z;
     ///
-    /// let a: Z = Z::from_i64(10);
-    /// let b: Z = Z::from_i64(42);
+    /// let a: Z = Z::from(10);
+    /// let b: Z = Z::from(42);
     ///
     /// assert!(a < b);
     /// assert!(a <= b);
@@ -241,10 +241,10 @@ mod test_partial_ord {
     /// and small [`Z`] (not using pointers).
     #[test]
     fn less_large_small() {
-        let max = Z::from_u64(u64::MAX);
-        let small_positive = Z::from_i64(1);
-        let small_negative = Z::from_i64(-1);
-        let max_negative = Z::from_i64(i64::MIN);
+        let max = Z::from(u64::MAX);
+        let small_positive = Z::from(1);
+        let small_negative = Z::from(-1);
+        let max_negative = Z::from(i64::MIN);
 
         // Comparisons with max
         assert!(small_positive < max);
@@ -263,9 +263,9 @@ mod test_partial_ord {
     /// (FLINT uses pointers)
     #[test]
     fn less_large() {
-        let max_1 = Z::from_u64(u64::MAX);
-        let max_2 = Z::from_u64(u64::MAX);
-        let max_negative = Z::from_i64(i64::MIN);
+        let max_1 = Z::from(u64::MAX);
+        let max_2 = Z::from(u64::MAX);
+        let max_negative = Z::from(i64::MIN);
 
         assert!(!(max_1 < max_2));
         assert!(!(max_2 < max_1));
@@ -297,10 +297,10 @@ mod test_partial_ord {
     /// and small [`Z`] (not using pointers).
     #[test]
     fn less_equal_large_small() {
-        let max = Z::from_u64(u64::MAX);
-        let small_positive = Z::from_i64(1);
-        let small_negative = Z::from_i64(-1);
-        let max_negative = Z::from_i64(i64::MIN);
+        let max = Z::from(u64::MAX);
+        let small_positive = Z::from(1);
+        let small_negative = Z::from(-1);
+        let max_negative = Z::from(i64::MIN);
 
         // Comparisons with max
         assert!(small_positive <= max);
@@ -319,9 +319,9 @@ mod test_partial_ord {
     /// (FLINT uses pointers)
     #[test]
     fn less_equal_large() {
-        let max_1 = Z::from_u64(u64::MAX);
-        let max_2 = Z::from_u64(u64::MAX);
-        let max_negative = Z::from_i64(i64::MIN);
+        let max_1 = Z::from(u64::MAX);
+        let max_2 = Z::from(u64::MAX);
+        let max_negative = Z::from(i64::MIN);
 
         assert!(max_1 <= max_2);
         assert!(max_2 <= max_1);
@@ -353,10 +353,10 @@ mod test_partial_ord {
     /// and small [`Z`] (not using pointers).
     #[test]
     fn greater_large_small() {
-        let max = Z::from_u64(u64::MAX);
-        let small_positive = Z::from_i64(1);
-        let small_negative = Z::from_i64(-1);
-        let max_negative = Z::from_i64(i64::MIN);
+        let max = Z::from(u64::MAX);
+        let small_positive = Z::from(1);
+        let small_negative = Z::from(-1);
+        let max_negative = Z::from(i64::MIN);
 
         // Comparisons with max
         assert!(!(small_positive > max));
@@ -375,9 +375,9 @@ mod test_partial_ord {
     /// (FLINT uses pointers)
     #[test]
     fn greater_large() {
-        let max_1 = Z::from_u64(u64::MAX);
-        let max_2 = Z::from_u64(u64::MAX);
-        let max_negative = Z::from_i64(i64::MIN);
+        let max_1 = Z::from(u64::MAX);
+        let max_2 = Z::from(u64::MAX);
+        let max_negative = Z::from(i64::MIN);
 
         assert!(!(max_1 > max_2));
         assert!(!(max_2 > max_1));
@@ -409,10 +409,10 @@ mod test_partial_ord {
     /// and small [`Z`] (not using pointers).
     #[test]
     fn greater_equal_large_small() {
-        let max = Z::from_u64(u64::MAX);
-        let small_positive = Z::from_i64(1);
-        let small_negative = Z::from_i64(-1);
-        let max_negative = Z::from_i64(i64::MIN);
+        let max = Z::from(u64::MAX);
+        let small_positive = Z::from(1);
+        let small_negative = Z::from(-1);
+        let max_negative = Z::from(i64::MIN);
 
         // Comparisons with max
         assert!(!(small_positive >= max));
@@ -431,9 +431,9 @@ mod test_partial_ord {
     /// (FLINT uses pointers)
     #[test]
     fn greater_equal_large() {
-        let max_1 = Z::from_u64(u64::MAX);
-        let max_2 = Z::from_u64(u64::MAX);
-        let max_negative = Z::from_i64(i64::MIN);
+        let max_1 = Z::from(u64::MAX);
+        let max_2 = Z::from(u64::MAX);
+        let max_negative = Z::from(i64::MIN);
 
         assert!(max_1 >= max_2);
         assert!(max_2 >= max_1);

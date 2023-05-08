@@ -8,8 +8,7 @@
 
 //! Implementations to call the logarithm on a [`Z`] integer.
 
-use super::Z;
-use crate::{error::MathError, rational::Q};
+use crate::{error::MathError, integer::Z, rational::Q};
 use flint_sys::fmpz::{fmpz_clog, fmpz_dlog, fmpz_flog};
 
 impl Z {

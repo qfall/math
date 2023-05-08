@@ -185,7 +185,7 @@ mod test_sub {
         );
     }
 
-    /// testing subtraction for [`PolynomialRingZq`] reduces '0' coefficients
+    /// testing subtraction for [`PolynomialRingZq`] reduces `0` coefficients
     #[test]
     fn sub_reduce() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
