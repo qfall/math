@@ -49,9 +49,7 @@ impl From<(&PolyOverZ, &Modulus)> for PolyOverZq {
     /// Create a [`PolyOverZq`] from a [`PolyOverZ`] and [`Modulus`].
     ///
     /// Parameters:
-    /// - `poly_modulus_tuple` is a tuple of the polynomial and the modulus.
-    ///     - The first value is the polynomial.
-    ///     - The second value is the modulus.
+    /// - `poly_modulus_tuple` is a tuple `(polynomial, modulus)`
     ///
     /// # Examples:
     /// ```
