@@ -17,12 +17,12 @@ use crate::{
     error::MathError,
     integer::Z,
     macros::from::{from_trait, from_type},
+    traits::Pow,
 };
 use flint_sys::{
     fmpq::{fmpq, fmpq_canonicalise, fmpq_clear, fmpq_set_str},
     fmpz::{fmpz_is_zero, fmpz_set, fmpz_swap},
 };
-use fraction::Fraction;
 use std::{ffi::CString, str::FromStr};
 
 impl FromStr for Q {
@@ -213,15 +213,24 @@ impl Q {
     /// let a: Q = Q::from_f64(-123.4567);
     /// ```
     pub fn from_f64(value: f64) -> Self {
-        let f = Fraction::from(value);
-        let sign = f
-            .sign()
-            .expect("Got None element instead of a fraction, may be overflow error (NaN)")
-            .is_positive();
-        match sign {
-            true => Q::try_from((f.numer().unwrap(), f.denom().unwrap())).unwrap(),
-            false => Q::try_from((f.numer().unwrap(), f.denom().unwrap())).unwrap() * Q::MINUS_ONE,
-        }
+        let bits: u64 = value.to_bits();
+        let sign = if bits >> 63 == 0 {
+            Q::ONE
+        } else {
+            Q::MINUS_ONE
+        };
+        let mut exponent: i16 = ((bits >> 52) & 0x7ff) as i16;
+        let mantissa = if exponent == 0 {
+            (bits & 0xfffffffffffff) << 1
+        } else {
+            (bits & 0xfffffffffffff) | 0x10000000000000
+        };
+        exponent -= 1023 + 52;
+        let shift = match exponent {
+            e if e >= 1 => Q::from(2).pow(e).unwrap(),
+            e => Q::try_from((&1, &2)).unwrap().pow(e.abs()).unwrap(),
+        };
+        sign * Z::from(mantissa) * shift
     }
 
     from_type!(f32, f64, Q, Q::from_f64);
@@ -604,6 +613,15 @@ mod test_from_z {
 mod test_from_float {
     use super::Q;
     use std::f64::consts::{E, LN_10, LN_2};
+
+    /// test large fraction representation for float
+    #[test]
+    fn large_fractions() {
+        // can only be approximated, as it is not representable perfectly
+        let f = 0.000_400_000_000_000_000_1;
+        println!("{}", f);
+        println!("{}", Q::from(f));
+    }
 
     /// Enure that the from works correctly for positive values
     #[test]
