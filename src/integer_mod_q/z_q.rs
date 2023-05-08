@@ -14,8 +14,9 @@
 //! optimizing modulo operations.
 //! This struct is wrapped in [`Modulus`](super::Modulus) for easy use.
 //!
-//! For **DEVELOPERS**: The [`PartialEq`] trait expects the [`Zq`] instance to be reduced.
-//! Hence, apply `reduce` after every possible `value` change!
+//! For **DEVELOPERS**: Many functions assume that the [`Zq`] instances are reduced.
+//! To avoid unnecessary checks and reductions, always return canonical/reduced
+//! values. The end-user should be unable to obtain a non-reduced value.
 
 use super::Modulus;
 use crate::integer::Z;

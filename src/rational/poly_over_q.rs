@@ -9,6 +9,11 @@
 //! [`PolyOverQ`] is a type of polynomial with arbitrarily many coefficients of type
 //! [`Q`](crate::rational::Q).
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
+//!
+//! For **DEVELOPERS**: Many functions assume that the [`PolyOverQ`] instances
+//! are reduced. To avoid unnecessary checks and reductions, always return
+//! canonical/reduced values. The end-user should be unable to obtain a
+//! non-reduced value.
 
 use flint_sys::fmpq_poly::fmpq_poly_struct;
 
