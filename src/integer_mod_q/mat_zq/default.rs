@@ -185,13 +185,7 @@ mod test_identity {
     /// Tests if an identity matrix can be created using a modulus of `1`.
     #[test]
     fn modulus_one() {
-        let matrix = MatZq::identity(10, 10, 1).unwrap();
-
-        for i in 0..10 {
-            for j in 0..10 {
-                assert_eq!(Z::ZERO, matrix.get_entry(i, j).unwrap())
-            }
-        }
+        assert!(MatZq::identity(10, 10, 1).is_err());
     }
 }
 
