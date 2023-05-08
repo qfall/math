@@ -35,6 +35,7 @@ pub fn evaluate_index<S: TryInto<i64> + Display>(index: S) -> Result<i64, MathEr
     // the index must fit into an [`i64`]
 
     let index: i64 = if cfg!(debug_assertions) {
+        // Only executed in debug mode
         let index_str = index.to_string();
         match index.try_into() {
             Ok(index) => index,
@@ -46,6 +47,7 @@ pub fn evaluate_index<S: TryInto<i64> + Display>(index: S) -> Result<i64, MathEr
             }
         }
     } else {
+        // Only executed when NOT in debug mode
         match index.try_into() {
             Ok(index) => index,
             _ => {
@@ -105,6 +107,7 @@ pub(crate) fn evaluate_indices<S: GetNumRows + GetNumColumns>(
 mod test_eval_index {
 
     use super::evaluate_index;
+    use crate::integer::Z;
 
     /// tests that negative indices are not accepted
     #[test]
@@ -122,6 +125,8 @@ mod test_eval_index {
         assert!(evaluate_index(u8::MAX).is_ok());
         assert!(evaluate_index(u16::MAX).is_ok());
         assert!(evaluate_index(u32::MAX).is_ok());
+
+        assert!(evaluate_index(&Z::from(10)).is_ok());
     }
 
     /// ensure that integers which can not be converted to an [`i64`]
