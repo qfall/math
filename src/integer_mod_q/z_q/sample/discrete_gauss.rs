@@ -112,10 +112,10 @@ mod test_sample_discrete_gauss {
         }
 
         let expl_text = String::from("This test can fail with probability close to 0. 
-        It fails if the sampled occurences do not look like a typical discrete Gaussian random distribution. 
+        It fails if the sampled occurrences do not look like a typical discrete Gaussian random distribution. 
         If this happens, rerun the tests several times and check whether this issue comes up again.");
 
-        // Check that the sampled occurences roughly look
+        // Check that the sampled occurrences roughly look
         // like a discrete Gaussian distriubtion
         assert!(counts[0] > 70, "{}", expl_text);
         assert!(counts[0] < 130, "{}", expl_text);

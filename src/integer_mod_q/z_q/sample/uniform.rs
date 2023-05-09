@@ -136,7 +136,7 @@ mod test_sample_uniform {
         // this could possibly fail for true uniform randomness with probability
         for count in counts {
             assert!(count > 150, "This test can fail with probability close to 0. 
-            It fails if the sampled occurences do not look like a typical uniform random distribution. 
+            It fails if the sampled occurrences do not look like a typical uniform random distribution. 
             If this happens, rerun the tests several times and check whether this issue comes up again.");
         }
     }
