@@ -182,7 +182,7 @@ mod test_identity {
         }
     }
 
-    /// Tests if an identity matrix can be created using a modulus of `1`.
+    /// Assert that a modulus of `1` is not allowed.
     #[test]
     fn modulus_one() {
         assert!(MatZq::identity(10, 10, 1).is_err());
