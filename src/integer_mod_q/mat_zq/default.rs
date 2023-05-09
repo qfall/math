@@ -23,7 +23,7 @@ impl MatZq {
     /// - `modulus`: the common modulus of the matrix entries
     ///
     /// Returns a [`MatZq`] or an error, if the number of rows or columns is
-    /// less than `1`.
+    /// less than `1` or the modulus is less than `1`.
     ///
     /// # Examples
     /// ```
@@ -39,7 +39,7 @@ impl MatZq {
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the number of rows or columns is negative or it does not fit into an [`i64`].
     /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
-    /// if the provided value is not greater than `0`.
+    /// if the provided value is not greater than `1`.
     pub fn new(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
@@ -58,12 +58,10 @@ impl MatZq {
 
         let modulus = std::convert::Into::<Z>::into(modulus);
 
-        if modulus < Z::ONE {
+        if modulus <= Z::ONE {
             return Err(MathError::InvalidIntToModulus(format!("{}", modulus)));
         }
 
-        // initialize variable with MaybeUn-initialized value to check
-        // correctness of initialization later
         let mut matrix = MaybeUninit::uninit();
         unsafe {
             fmpz_mod_mat_init(
@@ -75,7 +73,7 @@ impl MatZq {
 
             Ok(MatZq {
                 matrix: matrix.assume_init(),
-                // we can unwrap here since modulus > 0 was checked before
+                // we can unwrap here since modulus > 1 was checked before
                 modulus: Modulus::try_from(&modulus).unwrap(),
             })
         }
@@ -106,7 +104,7 @@ impl MatZq {
     /// [`OutOfBounds`](MathError::OutOfBounds) if the provided number of rows and columns
     /// are not suited to create a matrix. For further information see [`MatZq::new`].
     /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
-    /// if the modulus is not greater than `0`. For further information see [`MatZq::new`].
+    /// if the modulus is not greater than `1`. For further information see [`MatZq::new`].
     pub fn identity(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
@@ -184,16 +182,10 @@ mod test_identity {
         }
     }
 
-    /// Tests if an identity matrix can be created using a modulus of `1`.
+    /// Assert that a modulus of `1` is not allowed.
     #[test]
     fn modulus_one() {
-        let matrix = MatZq::identity(10, 10, 1).unwrap();
-
-        for i in 0..10 {
-            for j in 0..10 {
-                assert_eq!(Z::ZERO, matrix.get_entry(i, j).unwrap())
-            }
-        }
+        assert!(MatZq::identity(10, 10, 1).is_err());
     }
 }
 

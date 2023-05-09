@@ -69,8 +69,8 @@ mod test_eq {
     /// Checks whether two equal, small Moduli created with different constructors are equal
     #[test]
     fn equal_small() {
-        let a = Modulus::from_str("1").unwrap();
-        let b = Modulus::try_from_z(&Z::from_str("1").unwrap()).unwrap();
+        let a = Modulus::from_str("2").unwrap();
+        let b = Modulus::try_from_z(&Z::from(2)).unwrap();
         let b_clone = b.clone();
 
         assert_eq!(a, b);
@@ -81,7 +81,7 @@ mod test_eq {
     /// Checks whether unequal Moduli are unequal
     #[test]
     fn unequal() {
-        let one = Modulus::from_str("1").unwrap();
+        let one = Modulus::from_str("3").unwrap();
         let two = Modulus::from_str("2").unwrap();
         let big = Modulus::from_str(&"1".repeat(65)).unwrap();
 

@@ -6,8 +6,12 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! `MatQ` is a type of matrix with rational entries of arbitrary length.
+//! [`MatQ`] is a type of matrix with rational entries of arbitrary length.
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
+//!
+//! For **DEVELOPERS**: Many functions assume that the [`MatQ`] instances are reduced.
+//! To avoid unnecessary checks and reductions, always return canonical/reduced
+//! values. The end-user should be unable to obtain a non-reduced value.
 
 use flint_sys::fmpq_mat::fmpq_mat_struct;
 

@@ -9,6 +9,10 @@
 //! [`PolyOverZq`] is a type of polynomial with arbitrarily many coefficients of type
 //! [`Zq`](crate::integer_mod_q::Zq).
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
+//!
+//! For **DEVELOPERS**: Many functions assume that the [`PolyOverZq`] instances are reduced.
+//! To avoid unnecessary checks and reductions, always return canonical/reduced
+//! values. The end-user should be unable to obtain a non-reduced value.
 
 use super::modulus::Modulus;
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_struct;

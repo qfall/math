@@ -92,7 +92,7 @@ mod test_distance {
     #[test]
     fn availability() {
         let a = Z::ZERO;
-        let modulus = Modulus::try_from_z(&Z::ONE).unwrap();
+        let modulus = Modulus::try_from_z(&Z::from(2)).unwrap();
 
         let u_0 = a.distance(0_u8);
         let u_1 = a.distance(15_u16);
@@ -112,6 +112,6 @@ mod test_distance {
         assert_eq!(Z::from(15), i_1);
         assert_eq!(Z::from(35), i_2);
         assert_eq!(Z::from(i64::MIN).abs(), i_3);
-        assert_eq!(Z::ONE, dist_mod);
+        assert_eq!(Z::from(2), dist_mod);
     }
 }

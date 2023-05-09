@@ -35,7 +35,7 @@ impl Modulus {
     /// # Errors and Failures
     ///
     /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
-    /// if the provided value is not greater than `0`.
+    /// if the provided value is not greater than `1`.
     pub fn try_from_z(value: &Z) -> Result<Self, MathError> {
         let modulus = ctx_init(value);
         Ok(Self {
@@ -79,7 +79,7 @@ impl FromStr for Modulus {
     /// formatted [`Z`].
     /// - Returns a [`MathError`] of type
     /// [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
-    /// if the provided value is not greater than `0`.
+    /// if the provided value is not greater than `1`.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let z = Z::from_str(s)?;
 
@@ -96,13 +96,13 @@ impl FromStr for Modulus {
 /// - `s`: the value the modulus should have as [`Z`]
 ///
 /// Returns an initialized context object [`fmpz_mod_ctx`] or an error, if the
-/// provided value was not greater than `0`.
+/// provided value was not greater than `1`.
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
-/// if the provided value is not greater than `0`.
+/// if the provided value is not greater than `1`.
 fn ctx_init(n: &Z) -> Result<fmpz_mod_ctx, MathError> {
-    if n <= &Z::ZERO {
+    if n <= &Z::ONE {
         return Err(MathError::InvalidIntToModulus(n.to_string()));
     }
     let mut ctx = MaybeUninit::uninit();

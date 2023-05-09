@@ -227,16 +227,17 @@ impl Q {
     from_type!(f32, f64, Q, Q::from_f64);
 }
 
-impl<T1: Into<Z> + Clone, T2: Into<Z> + Clone> TryFrom<(&T1, &T2)> for Q {
+impl<IntegerNumerator: Into<Z> + Clone, IntegerDenominator: Into<Z> + Clone>
+    TryFrom<(&IntegerNumerator, &IntegerDenominator)> for Q
+{
     type Error = MathError;
 
     /// Create a [`Q`] from two values that can be converted to [`Z`].
     /// For example, [`Z`] and [`u32`].
     ///
     /// Parameters:
-    /// - `num_den_tuple`
-    ///     - first value: numerator of the new [`Q`].
-    ///     - second value: denominator of the new [`Q`].
+    /// - `num_den_tuple` is a tuple of integers `(numerator, denominator)`
+    ///   The first and second element of the tuple may have different integer types.
     ///
     /// Returns a [`Q`] or a [`MathError`]
     ///
@@ -256,7 +257,9 @@ impl<T1: Into<Z> + Clone, T2: Into<Z> + Clone> TryFrom<(&T1, &T2)> for Q {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`DivisionByZeroError`](MathError::DivisionByZeroError)
     /// if the denominator is zero.
-    fn try_from(num_den_tuple: (&T1, &T2)) -> Result<Self, Self::Error> {
+    fn try_from(
+        num_den_tuple: (&IntegerNumerator, &IntegerDenominator),
+    ) -> Result<Self, Self::Error> {
         Q::try_from_int_int(num_den_tuple.0, num_den_tuple.1)
     }
 }

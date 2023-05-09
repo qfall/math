@@ -6,9 +6,11 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! [`Modulus`] is a type of a positive non-zero integer that is used in order to
-//! do modulus operations. The modulus type itself is also used for
+//! [`Modulus`] is a type of a positive integer larger than `1` that is used in
+//! order to do modulus operations. The modulus type itself is also used for
 //! optimizations.
+//! A [`Modulus`] of `1` is not allowed, since operations would always just
+//! return `0`. This way, checks later in the code can be avoided.
 //!
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
@@ -23,7 +25,7 @@ mod properties;
 mod serialize;
 mod to_string;
 
-/// [`Modulus`] is a type of a positive non-zero integer that is used
+/// [`Modulus`] is a type of a positive integer larger than `1` that is used
 /// to do modulus operations.
 ///
 /// Attributes:

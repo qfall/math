@@ -49,9 +49,7 @@ impl From<(&PolyOverZ, &Modulus)> for PolyOverZq {
     /// Create a [`PolyOverZq`] from a [`PolyOverZ`] and [`Modulus`].
     ///
     /// Parameters:
-    /// - `poly_modulus_tuple` is a tuple of the polynomial and the modulus.
-    ///     - The first value is the polynomial.
-    ///     - The second value is the modulus.
+    /// - `poly_modulus_tuple` is a tuple `(polynomial, modulus)`
     ///
     /// # Examples:
     /// ```
@@ -120,7 +118,7 @@ impl FromStr for PolyOverZq {
     /// string was not formatted correctly to create a [`Z`](crate::integer::Z).
     /// - Returns a [`MathError`] of type
     /// [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
-    /// if the provided modulus is not greater than `0`.
+    /// if the provided modulus is not greater than `1`.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (poly_s, modulus) = match s.split_once("mod") {
             Some((poly_s, modulus)) => (poly_s, modulus.trim()),

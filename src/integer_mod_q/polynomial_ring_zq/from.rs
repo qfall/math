@@ -19,9 +19,8 @@ impl From<(&PolyOverZ, &ModulusPolynomialRingZq)> for PolynomialRingZq {
     /// Create a new polynomial ring element of type [`PolynomialRingZq`].
     ///
     /// Parameters:
-    /// - `value`: is a tuple of `(poly, modulus)`
-    ///     - `poly`: defines the polynomial
-    ///     - `modulus`: the modulus which defines the ring
+    /// - `value` is a tuple `(polynomial, modulus)`
+    ///   The modulus defines the ring.
     ///
     /// Returns a new element inside the polynomial ring.
     ///

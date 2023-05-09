@@ -27,7 +27,7 @@ use thiserror::Error;
 /// - `InvalidIntegerInput` is thrown if an integer input is provided as parameter that
 /// does not meet the conditions of that function
 /// - `InvalidInterval` is thrown if an invalid interval, e.g. of negative size, is provided
-/// - `InvalidIntToModulus` is thrown if an integer is provided, which is not greater than `0`
+/// - `InvalidIntToModulus` is thrown if an integer is provided, which is not greater than `1`
 /// - `InvalidMatrix` is thrown if an invalid string input of a matrix is given
 /// - `InvalidStringToCStringInput` is thrown if an invalid string is given to
 /// construct a [`CString`](std::ffi::CString)
@@ -102,7 +102,7 @@ pub enum MathError {
     /// parse int to modulus error
     #[error(
         "invalid integer input to parse to a modulus {0}. \
-        The value must be larger than 0."
+        The value must be larger than 1."
     )]
     InvalidIntToModulus(String),
 

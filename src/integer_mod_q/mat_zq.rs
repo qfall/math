@@ -8,6 +8,10 @@
 
 //! [`MatZq`] is a type of matrix with integer entries of arbitrary length modulo `q`.
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
+//!
+//! For **DEVELOPERS**: Many functions assume that the [`MatZq`] instances are reduced.
+//! To avoid unnecessary checks and reductions, always return canonical/reduced
+//! values. The end-user should be unable to obtain a non-reduced value.
 
 use crate::integer_mod_q::Modulus;
 use flint_sys::fmpz_mod_mat::fmpz_mod_mat_struct;

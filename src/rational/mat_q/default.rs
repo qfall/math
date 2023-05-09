@@ -51,8 +51,6 @@ impl MatQ {
             )));
         }
 
-        // initialize variable with MaybeUn-initialized value to check
-        // correctness of initialization later
         let mut matrix = MaybeUninit::uninit();
         unsafe {
             fmpq_mat_init(matrix.as_mut_ptr(), num_rows_i64, num_cols_i64);

@@ -48,7 +48,7 @@ impl Zq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
     ///   [`InvalidIntToModulus`](MathError::InvalidIntToModulus) if the
-    ///   provided value is not greater than `0`.
+    ///   provided value is not greater than `1`.
     pub fn try_from_z_z(value: &Z, modulus: &Z) -> Result<Self, MathError> {
         let modulus = Modulus::try_from_z(modulus)?;
 
@@ -131,7 +131,7 @@ impl Zq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
     ///   [`InvalidIntToModulus`](MathError::InvalidIntToModulus) if the
-    ///   provided value is not greater than `0`.
+    ///   provided value is not greater than `1`.
     pub fn try_from_int_int<T1: Into<Z>, T2: Into<Z>>(
         value: T1,
         modulus: T2,
@@ -142,19 +142,16 @@ impl Zq {
     }
 }
 
-impl<T1: Into<Z>, T2: Into<Z>> TryFrom<(T1, T2)> for Zq {
+impl<IntegerValue: Into<Z>, IntegerModulus: Into<Z>> TryFrom<(IntegerValue, IntegerModulus)>
+    for Zq
+{
     type Error = MathError;
     /// Implements the [`TryFrom`] trait. It is used to create [`Zq`] from a tuple
     /// with two values that can be converted into [`Z`].
     ///
-    /// The parameters have to implement the [`Into<Z>`] trait, which is
-    /// automatically the case if [`Z`] implements the [`From`] trait for this type.
-    /// The first and second element of the tuple may have different types.
-    ///
     /// Parameters:
-    /// - `value_modulus_tuple` is a tuple `(value, modulus)`:
-    ///     - The first value defines the value of the new [`Zq`].
-    ///     - The second value defines the new [`Modulus`], which is part of [`Zq`].
+    /// - `value_modulus_tuple` is a tuple of integers `(value, modulus)`
+    ///   The first and second element of the tuple may have different integer types.
     ///
     /// Returns the `value` mod `modulus` as a [`Zq`].
     ///
@@ -178,8 +175,8 @@ impl<T1: Into<Z>, T2: Into<Z>> TryFrom<(T1, T2)> for Zq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
     ///   [`InvalidIntToModulus`](MathError::InvalidIntToModulus) if the
-    ///   provided value is not greater than `0`.
-    fn try_from(value_modulus_tuple: (T1, T2)) -> Result<Self, Self::Error> {
+    ///   provided value is not greater than `1`.
+    fn try_from(value_modulus_tuple: (IntegerValue, IntegerModulus)) -> Result<Self, Self::Error> {
         let modulus = value_modulus_tuple.1;
         let value = value_modulus_tuple.0;
         Zq::try_from_int_int(value, modulus)
@@ -220,7 +217,7 @@ impl FromStr for Zq {
     /// if the provided modulus was not formatted correctly to create a [`Z`]
     /// - Returns a [`MathError`] of type
     /// [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
-    /// if the provided value is not greater than `0`.
+    /// if the provided value is not greater than `1`.
     /// - Returns a [`MathError`] of type
     /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
     /// if the provided string contains a Nul byte.

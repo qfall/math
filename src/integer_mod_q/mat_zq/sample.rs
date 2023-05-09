@@ -51,7 +51,7 @@ impl MatZq {
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
     /// if the given `modulus` is smaller than or equal to `1`.
     /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
-    /// if the provided modulus is not greater than `0`.
+    /// if the provided modulus is not greater than `1`.
     pub fn sample_uniform<T>(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
