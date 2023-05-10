@@ -83,9 +83,11 @@ mod test_sample_uniform {
     #[test]
     fn boundaries_kept_small() {
         let modulus = Z::from(17);
-        for _ in 0..32 {
-            let poly_zq = PolyOverZq::sample_uniform(1, &modulus).unwrap();
-            let sample: Z = poly_zq.get_coeff(0).unwrap();
+
+        let poly_zq = PolyOverZq::sample_uniform(32, &modulus).unwrap();
+
+        for i in 0..32 {
+            let sample: Z = poly_zq.get_coeff(i).unwrap();
             assert!(Z::ZERO <= sample);
             assert!(sample < modulus);
         }
@@ -95,9 +97,11 @@ mod test_sample_uniform {
     #[test]
     fn boundaries_kept_large() {
         let modulus = Z::from(i64::MAX);
-        for _ in 0..256 {
-            let poly_zq = PolyOverZq::sample_uniform(1, &modulus).unwrap();
-            let sample: Z = poly_zq.get_coeff(0).unwrap();
+
+        let poly_zq = PolyOverZq::sample_uniform(256, &modulus).unwrap();
+
+        for i in 0..256 {
+            let sample: Z = poly_zq.get_coeff(i).unwrap();
             assert!(Z::ZERO <= sample);
             assert!(sample < modulus);
         }
