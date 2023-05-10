@@ -88,7 +88,7 @@ impl PolyOverQ {
     ///
     /// let poly = PolyOverZ::from_str("4  0 1 102 3").unwrap();
     ///
-    /// let poly_q = PolyOverQ::from(&poly);
+    /// let poly_q = PolyOverQ::from_poly_over_z(&poly);
     ///
     /// # let cmp_poly = PolyOverQ::from_str("4  0 1 102 3").unwrap();
     /// # assert_eq!(cmp_poly, poly_q);
