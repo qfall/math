@@ -223,13 +223,18 @@ impl Q {
         let mantissa = if exponent == 0 {
             (bits & 0xfffffffffffff) << 1
         } else {
+            // prepend one bit to the mantissa because the most significant bit is implicit
             (bits & 0xfffffffffffff) | 0x10000000000000
         };
+
+        // -1023 because of the offset representation of the exponent
+        // -52 because the mantissa is 52 bit long
         exponent -= 1023 + 52;
         let shift = match exponent {
             e if e >= 1 => Q::from(2).pow(e).unwrap(),
             e => Q::try_from((&1, &2)).unwrap().pow(e.abs()).unwrap(),
         };
+
         sign * Z::from(mantissa) * shift
     }
 
@@ -612,7 +617,10 @@ mod test_from_z {
 #[cfg(test)]
 mod test_from_float {
     use super::Q;
-    use std::f64::consts::{E, LN_10, LN_2};
+    use std::{
+        f64::consts::{E, LN_10, LN_2},
+        str::FromStr,
+    };
 
     /// test large fraction representation for float
     #[test]
@@ -621,6 +629,32 @@ mod test_from_float {
         let f = 0.000_400_000_000_000_000_1;
         println!("{}", f);
         println!("{}", Q::from(f));
+    }
+
+    /// Test that a large number is correctly converted from float.
+    #[test]
+    fn large_value() {
+        // This is the exact value stored when creating a float with the value 1e+100
+        let a: f64 = 10000000000000000159028911097599180468360808563945281389781327557747838772170381060813469985856815104.0;
+
+        let q = Q::from(a);
+
+        let cmp = Q::from_str("10000000000000000159028911097599180468360808563945281389781327557747838772170381060813469985856815104")
+                    .unwrap();
+        assert_eq!(q, cmp);
+    }
+
+    // Test that a small number is correctly converted from float.
+    #[test]
+    fn small_value() {
+        // This is the exact value stored when creating a float with the value 0.1
+        let a: f64 = 0.1000000000000000055511151231257827021181583404541015625;
+
+        let q = Q::from(a);
+
+        let cmp = Q::from_str("1000000000000000055511151231257827021181583404541015625/10000000000000000000000000000000000000000000000000000000")
+            .unwrap();
+        assert_eq!(q, cmp);
     }
 
     /// Enure that the from works correctly for positive values
