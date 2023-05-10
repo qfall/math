@@ -96,7 +96,7 @@ impl PolyOverZq {
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
     ///
-    /// let poly_zq = PolyOverZq::from(&modulus);
+    /// let poly_zq = PolyOverZq::from_modulus_polynomial_ring_zq(&modulus);
     ///
     /// # let cmp_poly = PolyOverZq::from_str("4  1 0 0 1 mod 17").unwrap();
     /// # assert_eq!(cmp_poly, poly_zq);
