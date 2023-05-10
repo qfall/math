@@ -12,9 +12,14 @@
 //!
 //! The explicit functions contain the documentation.
 
-use super::PolyOverZq;
-use crate::{error::MathError, integer::PolyOverZ, integer_mod_q::modulus::Modulus};
-use flint_sys::fmpz_mod_poly::{fmpz_mod_poly_init, fmpz_mod_poly_set_fmpz_poly};
+use crate::{
+    error::MathError,
+    integer::PolyOverZ,
+    integer_mod_q::{modulus::Modulus, ModulusPolynomialRingZq, PolyOverZq},
+};
+use flint_sys::fmpz_mod_poly::{
+    fmpz_mod_poly_init, fmpz_mod_poly_set, fmpz_mod_poly_set_fmpz_poly,
+};
 use std::{mem::MaybeUninit, str::FromStr};
 
 impl From<&Modulus> for PolyOverZq {
@@ -75,6 +80,46 @@ impl From<(&PolyOverZ, &Modulus)> for PolyOverZq {
             );
         }
         res
+    }
+}
+
+impl PolyOverZq {
+    /// Create a [`PolyOverZ`] from a [`ModulusPolynomialRingZq`].
+    ///
+    /// Parameters:
+    /// - `modulus`: the context polynomial from which the coefficients are copied
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq};
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    ///
+    /// let poly_zq = PolyOverZq::from(&modulus);
+    ///
+    /// # let cmp_poly = PolyOverZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// # assert_eq!(cmp_poly, poly_zq);
+    /// ```
+    pub fn from_modulus_polynomial_ring_zq(modulus: &ModulusPolynomialRingZq) -> Self {
+        let mut out = PolyOverZq::from(&modulus.get_q());
+        unsafe {
+            fmpz_mod_poly_set(
+                &mut out.poly,
+                &modulus.get_fq_ctx_struct().modulus[0],
+                out.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
+        out
+    }
+}
+
+impl From<&ModulusPolynomialRingZq> for PolyOverZq {
+    /// Converts a modulus of type [`ModulusPolynomialRingZq`]
+    /// to a [`PolyOverZq`] using
+    /// [`PolyOverZq::from_modulus_polynomial_ring_zq`].
+    fn from(modulus: &ModulusPolynomialRingZq) -> Self {
+        Self::from_modulus_polynomial_ring_zq(modulus)
     }
 }
 
@@ -268,5 +313,26 @@ mod test_from_str {
             PolyOverZq::from_str("4  1 2 3 -4 mod 17").unwrap(),
             poly.unwrap()
         );
+    }
+}
+
+#[cfg(test)]
+mod test_from_modulus_polynomial_ring_zq {
+    use crate::integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq};
+    use std::str::FromStr;
+
+    /// ensure that the conversion works with positive large entries
+    #[test]
+    fn large_positive() {
+        let modulus_ring =
+            ModulusPolynomialRingZq::from_str(&format!("4  -1 0 0 1 mod {}", u64::MAX - 58))
+                .unwrap();
+
+        let modulus = PolyOverZq::from(&modulus_ring);
+
+        let cmp_poly =
+            PolyOverZq::from_str(&format!("4  {} 0 0 1 mod {}", u64::MAX - 59, u64::MAX - 58))
+                .unwrap();
+        assert_eq!(cmp_poly, modulus);
     }
 }
