@@ -13,8 +13,8 @@
 //! The explicit functions contain the documentation.
 
 use super::PolyOverQ;
-use crate::error::MathError;
-use flint_sys::fmpq_poly::{fmpq_poly_canonicalise, fmpq_poly_set_str};
+use crate::{error::MathError, integer::PolyOverZ};
+use flint_sys::fmpq_poly::{fmpq_poly_canonicalise, fmpq_poly_set_fmpz_poly, fmpq_poly_set_str};
 use std::{ffi::CString, str::FromStr};
 
 impl FromStr for PolyOverQ {
@@ -71,6 +71,40 @@ impl FromStr for PolyOverQ {
             )),
             _ => Err(MathError::InvalidStringToPolyInput(s.to_owned())),
         }
+    }
+}
+
+impl PolyOverQ {
+    /// Create a [`PolyOverQ`] from a [`PolyOverZ`].
+    ///
+    /// Parameters:
+    /// - `poly`: the polynomial from which the coefficients are copied
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::PolyOverZ;
+    /// use qfall_math::rational::PolyOverQ;
+    /// use std::str::FromStr;
+    ///
+    /// let poly = PolyOverZ::from_str("4  0 1 102 3").unwrap();
+    ///
+    /// let poly_q = PolyOverQ::from(&poly);
+    ///
+    /// # let cmp_poly = PolyOverQ::from_str("4  0 1 102 3").unwrap();
+    /// # assert_eq!(cmp_poly, poly_q);
+    /// ```
+    pub fn from_poly_over_z(poly: &PolyOverZ) -> Self {
+        let mut out = Self::default();
+        unsafe { fmpq_poly_set_fmpz_poly(&mut out.poly, &poly.poly) };
+        out
+    }
+}
+
+impl From<&PolyOverZ> for PolyOverQ {
+    /// Converts a polynomial of type [`PolyOverZ`] to a [`PolyOverQ`] using
+    /// [`PolyOverQ::from_poly_over_z`].
+    fn from(poly: &PolyOverZ) -> Self {
+        Self::from_poly_over_z(poly)
     }
 }
 
@@ -158,5 +192,44 @@ mod test_from_str {
             PolyOverQ::from_str("4  1/2 2/3 3/4 -4").unwrap(),
             poly.unwrap()
         );
+    }
+}
+
+#[cfg(test)]
+mod test_from_poly_over_z {
+    use crate::{integer::PolyOverZ, rational::PolyOverQ};
+    use std::str::FromStr;
+
+    /// ensure that the conversion works with negative entries
+    #[test]
+    fn small_negative() {
+        let poly = PolyOverZ::from_str("4  0 1 -102 -3").unwrap();
+
+        let poly_q = PolyOverQ::from(&poly);
+
+        let cmp_poly = PolyOverQ::from_str("4  0 1 -102 -3").unwrap();
+        assert_eq!(cmp_poly, poly_q);
+    }
+
+    /// ensure that the conversion works with negative large entries
+    #[test]
+    fn large_negative() {
+        let poly = PolyOverZ::from_str(&format!("4  0 1 -102 -{}", u64::MAX)).unwrap();
+
+        let poly_q = PolyOverQ::from(&poly);
+
+        let cmp_poly = PolyOverQ::from_str(&format!("4  0 1 -102 -{}", u64::MAX)).unwrap();
+        assert_eq!(cmp_poly, poly_q);
+    }
+
+    /// ensure that the conversion works with positive large entries
+    #[test]
+    fn large_positive() {
+        let poly = PolyOverZ::from_str(&format!("4  0 1 102 {}", u64::MAX)).unwrap();
+
+        let poly_q = PolyOverQ::from(&poly);
+
+        let cmp_poly = PolyOverQ::from_str(&format!("4  0 1 102 {}", u64::MAX)).unwrap();
+        assert_eq!(cmp_poly, poly_q);
     }
 }
