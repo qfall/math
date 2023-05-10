@@ -87,9 +87,10 @@ mod test_sample_uniform {
     fn boundaries_kept_small() {
         let lower_bound = Z::from(17);
         let upper_bound = Z::from(32);
-        for _ in 0..32 {
-            let poly_z = PolyOverZ::sample_uniform(1, &lower_bound, &upper_bound).unwrap();
-            let sample = poly_z.get_coeff(0).unwrap();
+        let poly_z = PolyOverZ::sample_uniform(32, &lower_bound, &upper_bound).unwrap();
+
+        for i in 0..32 {
+            let sample = poly_z.get_coeff(i).unwrap();
             assert!(lower_bound <= sample);
             assert!(sample < upper_bound);
         }
@@ -100,9 +101,11 @@ mod test_sample_uniform {
     fn boundaries_kept_large() {
         let lower_bound = Z::from(i64::MIN) - Z::from(u64::MAX);
         let upper_bound = Z::from(i64::MIN);
-        for _ in 0..256 {
-            let poly_z = PolyOverZ::sample_uniform(1, &lower_bound, &upper_bound).unwrap();
-            let sample = poly_z.get_coeff(0).unwrap();
+
+        let poly_z = PolyOverZ::sample_uniform(256, &lower_bound, &upper_bound).unwrap();
+
+        for i in 0..256 {
+            let sample = poly_z.get_coeff(i).unwrap();
             assert!(lower_bound <= sample);
             assert!(sample < upper_bound);
         }
