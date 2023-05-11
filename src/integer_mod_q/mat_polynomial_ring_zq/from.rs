@@ -13,95 +13,118 @@
 //! The explicit functions contain the documentation.
 
 use super::MatPolynomialRingZq;
-use crate::{error::MathError, integer::MatPolyOverZ, integer_mod_q::ModulusPolynomialRingZq};
-use std::fmt::Display;
+use crate::{integer::MatPolyOverZ, integer_mod_q::ModulusPolynomialRingZq};
 
-impl MatPolynomialRingZq {
-    /// Creates a new matrix with `num_rows` rows, `num_cols` columns,
-    /// zeros as entries and `modulus` as the modulus.
+impl From<(&MatPolyOverZ, &ModulusPolynomialRingZq)> for MatPolynomialRingZq {
+    /// Create a new polynomial ring matrix of type [`MatPolynomialRingZq`].
     ///
     /// Parameters:
-    /// - `num_rows`: number of rows the new matrix should have
-    /// - `num_cols`: number of columns the new matrix should have
-    /// - `modulus`: the common modulus of the matrix entries
+    /// - `value`: is a tuple of `(matrix, modulus)`
+    ///     - `matrix`: defines the polynomial matrix
+    ///     - `modulus`: the modulus which defines the ring
     ///
-    /// Returns a [`MatPolynomialRingZq`] or an error, if the number of rows or columns is
-    /// less than `1`.
+    /// Returns a new polynomial ring matrix.
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
     /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     ///
-    /// let poly_mod = PolyOverZq::from_str("3  1 0 1 mod 17").unwrap();
-    /// let modulus = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
-    ///
-    /// let matrix = MatPolynomialRingZq::new(5, 10, &modulus).unwrap();
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
+    /// let poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
     /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidMatrix`](MathError::InvalidMatrix)
-    /// if the number of rows or columns is `0`.
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    /// if the number of rows or columns is negative or it does not fit into an [`i64`].
-    #[allow(dead_code)]
-    pub fn new(
-        num_rows: impl TryInto<i64> + Display + Copy,
-        num_cols: impl TryInto<i64> + Display + Copy,
-        modulus: &ModulusPolynomialRingZq,
-    ) -> Result<Self, MathError> {
-        let matrix = MatPolyOverZ::new(num_rows, num_cols)?;
+    fn from(value: (&MatPolyOverZ, &ModulusPolynomialRingZq)) -> Self {
+        Self::from_poly_over_z_modulus_polynomial_ring_zq(value.0, value.1)
+    }
+}
 
-        Ok(MatPolynomialRingZq {
-            matrix,
+impl MatPolynomialRingZq {
+    /// Create a new polynomial ring matrix of type [`MatPolynomialRingZq`].
+    ///
+    /// Parameters:
+    /// - `matrix`: the polynomial matrix
+    /// - `modulus`: the modulus which defines the ring
+    ///
+    /// Returns a new polynomial ring matrix.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
+    /// let poly_ring_mat = MatPolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_mat, &modulus);
+    /// ```
+    pub fn from_poly_over_z_modulus_polynomial_ring_zq(
+        matrix: &MatPolyOverZ,
+        modulus: &ModulusPolynomialRingZq,
+    ) -> Self {
+        let mut out = Self {
+            matrix: matrix.clone(),
             modulus: modulus.clone(),
-        })
+        };
+        out.reduce();
+        out
     }
 }
 
 #[cfg(test)]
-mod test_new {
-    use crate::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq, PolyOverZq};
+mod test_from_poly_over_z_modulus_polynomial_ring_zq {
+    use crate::{
+        integer::MatPolyOverZ,
+        integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
+    };
     use std::str::FromStr;
 
     const BITPRIME64: u64 = 18446744073709551557;
 
-    /// Ensure that initialization works.
+    /// ensure that the modulus is applied with a large prime and large coefficients
     #[test]
-    fn initialization() {
-        let poly_mod = PolyOverZq::from_str("3  1 0 1 mod 17").unwrap();
-        let modulus = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
+    fn is_reduced_large() {
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", BITPRIME64)).unwrap();
 
-        assert!(MatPolynomialRingZq::new(2, 2, &modulus).is_ok());
+        let poly_mat = MatPolyOverZ::from_str(&format!(
+            "[[4  {} {} 1 1, 1  42],[0, 2  1 2]]",
+            BITPRIME64 + 2,
+            u64::MAX
+        ))
+        .unwrap();
+        let poly_ring_mat =
+            MatPolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_mat, &modulus);
+
+        let cmp_poly_mat = MatPolyOverZ::from_str("[[3  1 58 1, 1  42],[0, 2  1 2]]").unwrap();
+        let cmp_poly_ring_mat = MatPolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(
+            &cmp_poly_mat,
+            &modulus,
+        );
+
+        assert_eq!(poly_ring_mat, cmp_poly_ring_mat);
     }
 
-    // TODO: add a test for zero entries
-
-    /// Ensure that a new zero matrix fails with `0` as input.
+    /// ensure that two ring elements that are instantiated the same way are equal
     #[test]
-    fn error_zero() {
-        let poly_mod = PolyOverZq::from_str("3  1 0 1 mod 17").unwrap();
-        let modulus = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
+    fn same_instantiation() {
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", BITPRIME64)).unwrap();
+        let poly_mat = MatPolyOverZ::from_str(&format!(
+            "[[4  {} {} 1 1, 1  42],[0, 2  1 2]]",
+            BITPRIME64 + 2,
+            u64::MAX
+        ))
+        .unwrap();
 
-        let matrix1 = MatPolynomialRingZq::new(0, 1, &modulus);
-        let matrix2 = MatPolynomialRingZq::new(1, 0, &modulus);
-        let matrix3 = MatPolynomialRingZq::new(0, 0, &modulus);
+        let poly_ring_mat_1 =
+            MatPolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_mat, &modulus);
+        let poly_ring_mat_2 =
+            MatPolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_mat, &modulus);
 
-        assert!(matrix1.is_err());
-        assert!(matrix2.is_err());
-        assert!(matrix3.is_err());
-    }
-
-    /// Ensure that the modulus can be large.
-    #[test]
-    fn large_modulus() {
-        let poly_mod =
-            PolyOverZq::from_str(&format!("3  1 {} 1 mod {}", i64::MAX, BITPRIME64)).unwrap();
-        let modulus = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
-
-        assert!(MatPolynomialRingZq::new(2, 2, &modulus).is_ok());
+        assert_eq!(poly_ring_mat_1, poly_ring_mat_2);
     }
 }
