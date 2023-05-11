@@ -157,6 +157,32 @@ impl MatZ {
         unsafe { fmpz_mat_swap_rows(&mut self.matrix, null(), row0, row1) }
         Ok(())
     }
+
+    /// Reverses all columns of the specified matrix.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatZ;
+    ///
+    /// let mut matrix = MatZ::new(4, 3).unwrap();
+    /// matrix.reverse_columns();
+    /// ```
+    pub fn reverse_columns(&mut self) {
+        unsafe { fmpz_mat_invert_cols(&mut self.matrix, null_mut()) }
+    }
+
+    /// Reverses all rows of the specified matrix.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatZ;
+    ///
+    /// let mut matrix = MatZ::new(4, 3).unwrap();
+    /// matrix.reverse_rows();
+    /// ```
+    pub fn reverse_rows(&mut self) {
+        unsafe { fmpz_mat_invert_rows(&mut self.matrix, null_mut()) }
+    }
 }
 
 #[cfg(test)]
@@ -372,5 +398,83 @@ mod test_swaps {
         assert!(matrix.swap_rows(0, -1).is_err());
         assert!(matrix.swap_rows(4, 0).is_err());
         assert!(matrix.swap_rows(0, 4).is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_reverses {
+    use super::MatZ;
+    use std::str::FromStr;
+
+    /// Ensures that reversing columns works fine for small entries
+    #[test]
+    fn columns_small_entries() {
+        let mut matrix = MatZ::from_str("[[1,2,3],[4,5,6]]").unwrap();
+        let cmp_vec_0 = MatZ::from_str("[[1],[4]]").unwrap();
+        let cmp_vec_1 = MatZ::from_str("[[2],[5]]").unwrap();
+        let cmp_vec_2 = MatZ::from_str("[[3],[6]]").unwrap();
+
+        matrix.reverse_columns();
+
+        assert_eq!(cmp_vec_2, matrix.get_column(0).unwrap());
+        assert_eq!(cmp_vec_1, matrix.get_column(1).unwrap());
+        assert_eq!(cmp_vec_0, matrix.get_column(2).unwrap());
+    }
+
+    /// Ensures that reversing columns works fine for large entries
+    #[test]
+    fn columns_large_entries() {
+        let mut matrix = MatZ::from_str(&format!(
+            "[[{},1,3, 4],[{},4,{},5],[7,6,8,9]]",
+            i64::MIN,
+            i64::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+        let cmp_vec_0 = MatZ::from_str(&format!("[[{}],[{}],[7]]", i64::MIN, i64::MAX)).unwrap();
+        let cmp_vec_1 = MatZ::from_str("[[1],[4],[6]]").unwrap();
+        let cmp_vec_2 = MatZ::from_str(&format!("[[3],[{}],[8]]", u64::MAX)).unwrap();
+        let cmp_vec_3 = MatZ::from_str("[[4],[5],[9]]").unwrap();
+
+        let _ = matrix.reverse_columns();
+
+        assert_eq!(cmp_vec_3, matrix.get_column(0).unwrap());
+        assert_eq!(cmp_vec_2, matrix.get_column(1).unwrap());
+        assert_eq!(cmp_vec_1, matrix.get_column(2).unwrap());
+        assert_eq!(cmp_vec_0, matrix.get_column(3).unwrap());
+    }
+
+    /// Ensures that reversing rows works fine for small entries
+    #[test]
+    fn rows_small_entries() {
+        let mut matrix = MatZ::from_str("[[1,2],[3,4]]").unwrap();
+        let cmp_vec_0 = MatZ::from_str("[[1,2]]").unwrap();
+        let cmp_vec_1 = MatZ::from_str("[[3,4]]").unwrap();
+
+        let _ = matrix.reverse_rows();
+
+        assert_eq!(cmp_vec_1, matrix.get_row(0).unwrap());
+        assert_eq!(cmp_vec_0, matrix.get_row(1).unwrap());
+    }
+
+    /// Ensures that reversing rows works fine for large entries
+    #[test]
+    fn rows_large_entries() {
+        let mut matrix = MatZ::from_str(&format!(
+            "[[{},1,3, 4],[7,6,8,9],[{},4,{},5]]",
+            i64::MIN,
+            i64::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+        let cmp_vec_0 = MatZ::from_str(&format!("[[{},1,3, 4]]", i64::MIN)).unwrap();
+        let cmp_vec_1 = MatZ::from_str("[[7,6,8,9]]").unwrap();
+        let cmp_vec_2 = MatZ::from_str(&format!("[[{},4,{},5]]", i64::MAX, u64::MAX)).unwrap();
+
+        let _ = matrix.reverse_rows();
+
+        assert_eq!(cmp_vec_2, matrix.get_row(0).unwrap());
+        assert_eq!(cmp_vec_1, matrix.get_row(1).unwrap());
+        assert_eq!(cmp_vec_0, matrix.get_row(2).unwrap());
     }
 }
