@@ -78,6 +78,7 @@ pub(crate) fn distance(value_1: &fmpz, value_2: &fmpz) -> Z {
 }
 
 unsafe impl AsInteger for u64 {
+    /// Documentation at [`AsInteger::into_fmpz`]
     unsafe fn into_fmpz(self) -> fmpz {
         let mut ret_value = fmpz(0);
         fmpz_init_set_ui(&mut ret_value, self);
@@ -86,6 +87,7 @@ unsafe impl AsInteger for u64 {
 }
 
 unsafe impl AsInteger for &u64 {
+    /// Documentation at [`AsInteger::into_fmpz`]
     unsafe fn into_fmpz(self) -> fmpz {
         let mut ret_value = fmpz(0);
         fmpz_init_set_ui(&mut ret_value, *self);
@@ -95,7 +97,9 @@ unsafe impl AsInteger for &u64 {
 
 macro_rules! AsInteger_singed {
     ($($type:ident)*) => {
-        $(unsafe impl AsInteger for $type {
+        $(
+        /// Documentation at [`AsInteger::into_fmpz`]
+        unsafe impl AsInteger for $type {
             unsafe fn into_fmpz(self) -> fmpz {
                 let mut ret_value = fmpz(0);
                 fmpz_init_set_si(&mut ret_value, self as i64);
@@ -103,6 +107,7 @@ macro_rules! AsInteger_singed {
             }
         }
 
+        /// Documentation at [`AsInteger::into_fmpz`]
         unsafe impl AsInteger for &$type {
             unsafe fn into_fmpz(self) -> fmpz {
                 let mut ret_value = fmpz(0);
@@ -117,24 +122,28 @@ macro_rules! AsInteger_singed {
 AsInteger_singed!(i8 u8 i16 u16 i32 u32 i64);
 
 unsafe impl AsInteger for Z {
+    /// Documentation at [`AsInteger::into_fmpz`]
     unsafe fn into_fmpz(mut self) -> fmpz {
         let mut out = fmpz(0);
         fmpz_swap(&mut out, &mut self.value);
         out
     }
 
+    /// Documentation at [`AsInteger::get_fmpz_ref`]
     fn get_fmpz_ref(&self) -> Option<&fmpz> {
         Some(&self.value)
     }
 }
 
 unsafe impl AsInteger for &Z {
+    /// Documentation at [`AsInteger::into_fmpz`]
     unsafe fn into_fmpz(self) -> fmpz {
         let mut value = fmpz(0);
         fmpz_set(&mut value, &self.value);
         value
     }
 
+    /// Documentation at [`AsInteger::get_fmpz_ref`]
     fn get_fmpz_ref(&self) -> Option<&fmpz> {
         Some(&self.value)
     }
@@ -189,14 +198,14 @@ mod test_as_integer_z {
             (&z).into_fmpz()
         }; // z is dropped here
 
+        // create a new `Z` to potentially overwrite the memory
         let _ = Z::from(12);
 
-        let copy = Z::from_fmpz_ref(&value);
+        let copy = Z::from_fmpz(value);
         assert_eq!(copy, Z::from(42));
-        unsafe { fmpz_clear(&mut value) };
     }
 
-    /// Assert that the new fmpz is not effected by the original for large numbers.
+    /// Assert that the new [`fmpz`] is not effected by the original for large numbers.
     /// This can not be tested for an owned [`Z`], since that would violate the
     /// ownership constrain -> not compiling.
     #[test]
@@ -210,7 +219,7 @@ mod test_as_integer_z {
         let _a = Z::from(u64::MAX);
         let _b = Z::from(u64::MAX);
 
-        assert_eq!(Z { value }, Z::from(i64::MAX));
+        assert_eq!(Z::from_fmpz(value), Z::from(i64::MAX));
     }
 
     /// Assert that the new [`fmpz`] is not effecting the original [`Z`].
@@ -240,9 +249,8 @@ mod test_as_integer_z {
         let z = Z::from(10);
 
         let z_ref = z.get_fmpz_ref().unwrap();
-        let mut cmp = Z::default();
-        unsafe { fmpz_set(&mut cmp.value, z_ref) };
 
+        let cmp = Z::from_fmpz_ref(z_ref);
         assert_eq!(cmp, z)
     }
 
