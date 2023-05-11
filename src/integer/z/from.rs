@@ -102,6 +102,50 @@ impl Z {
     ///
     /// Returns the new integer.
     ///
+    /// # Safety
+    /// Since the parameter is a reference, it still has to be
+    /// properly cleared outside this function.
+    /// For example, by the drop trait of [`Z`].
+    ///
+    /// # Examples
+    /// ```compile_fail
+    /// use qfall_math::integer::Z;
+    ///
+    /// let z = Z::from(0);
+    ///
+    /// let a: Z = Z::from_fmpz_ref(&z.value);
+    /// ```
+    /// ```compile_fail
+    /// use qfall_math::integer::Z;
+    /// use flint_sys::fmpz::{fmpz,fmpz_clear};
+    ///
+    /// let value = fmpz(0);
+    ///
+    /// let a: Z = Z::from_fmpz_ref(&value);
+    ///
+    /// unsafe{fmpz_clear(&value)}
+    /// ```
+    pub(crate) fn from_fmpz_ref(value: &fmpz) -> Self {
+        let mut out = Z::default();
+        unsafe {
+            fmpz_set(&mut out.value, value);
+        }
+        out
+    }
+
+    #[allow(dead_code)]
+    /// Create a new Integer that can grow arbitrary large.
+    ///
+    /// Parameters:
+    /// - `value`: the initial value the integer should have
+    ///
+    /// Returns the new integer.
+    ///
+    /// # Safety
+    /// This function takes ownership. The caller has to ensure that the [`fmpz`]
+    /// is not dropped somewhere else. This means that calling this function
+    /// with a [`fmpz`] that is wrapped in a different data type is not allowed.
+    ///
     /// # Examples
     /// ```compile_fail
     /// use qfall_math::integer::Z;
@@ -109,14 +153,10 @@ impl Z {
     ///
     /// let value = fmpz(0);
     ///
-    /// let a: Z = Z::from_fmpz(&value);
+    /// let a: Z = Z::from_fmpz(value);
     /// ```
-    pub(crate) fn from_fmpz(value: &fmpz) -> Self {
-        let mut out = Z::default();
-        unsafe {
-            fmpz_set(&mut out.value, value);
-        }
-        out
+    pub(crate) fn from_fmpz(value: fmpz) -> Self {
+        Z { value }
     }
 
     /// Create a new Integer that can grow arbitrary large.
@@ -578,7 +618,7 @@ mod test_from_str_b {
 }
 
 #[cfg(test)]
-mod tests_from_modulus {
+mod test_from_modulus {
     use super::Z;
     use crate::integer_mod_q::Modulus;
     use std::str::FromStr;
@@ -609,6 +649,32 @@ mod tests_from_modulus {
 
 #[cfg(test)]
 mod test_from_fmpz {
+    use flint_sys::fmpz::{fmpz, fmpz_set_ui};
+
+    use super::Z;
+
+    /// Ensure that `from_fmpz` is available for small and large numbers
+    #[test]
+    fn small_numbers() {
+        let fmpz_1 = fmpz(0);
+        let fmpz_2 = fmpz(100);
+
+        assert_eq!(Z::from_fmpz(fmpz_1), Z::ZERO);
+        assert_eq!(Z::from_fmpz(fmpz_2), Z::from(100));
+    }
+
+    /// Ensure that `from_fmpz` is available for small and large numbers
+    #[test]
+    fn large_number() {
+        let mut fmpz_1 = fmpz(0);
+        unsafe { fmpz_set_ui(&mut fmpz_1, u64::MAX) }
+
+        assert_eq!(Z::from_fmpz(fmpz_1), Z::from(u64::MAX));
+    }
+}
+
+#[cfg(test)]
+mod test_from_fmpz_ref {
     use super::Z;
 
     /// Ensure that `from_fmpz` is available for small and large numbers
@@ -617,8 +683,8 @@ mod test_from_fmpz {
         let mod_1 = Z::from(u64::MAX);
         let mod_2 = Z::ZERO;
 
-        let _ = Z::from_fmpz(&mod_1.value);
-        let _ = Z::from_fmpz(&mod_2.value);
+        let _ = Z::from_fmpz_ref(&mod_1.value);
+        let _ = Z::from_fmpz_ref(&mod_2.value);
     }
 }
 
