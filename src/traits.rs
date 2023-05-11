@@ -234,12 +234,7 @@ pub(crate) unsafe trait AsInteger {
     /// for a Flint function call.
     /// If the data type does not contain a [`fmpz`], [`into_fmpz`](AsInteger::into_fmpz)
     /// can be used instead.
-    ///
-    /// # Safety
-    /// Modifying the returned [`fmpz`] may also also modify the original object.
-    /// This depends on the size of the value and the data type.
-    /// In general, the returned [`fmpz`] should just be read and not written to.
-    unsafe fn get_fmpz_ref(&self) -> Option<&fmpz> {
+    fn get_fmpz_ref(&self) -> Option<&fmpz> {
         None
     }
 }

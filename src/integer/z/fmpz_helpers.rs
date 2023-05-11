@@ -123,7 +123,7 @@ unsafe impl AsInteger for Z {
         out
     }
 
-    unsafe fn get_fmpz_ref(&self) -> Option<&fmpz> {
+    fn get_fmpz_ref(&self) -> Option<&fmpz> {
         Some(&self.value)
     }
 }
@@ -135,7 +135,7 @@ unsafe impl AsInteger for &Z {
         value
     }
 
-    unsafe fn get_fmpz_ref(&self) -> Option<&fmpz> {
+    fn get_fmpz_ref(&self) -> Option<&fmpz> {
         Some(&self.value)
     }
 }

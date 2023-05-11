@@ -52,7 +52,7 @@ unsafe impl AsInteger for Zq {
         AsInteger::into_fmpz(&self.value)
     }
 
-    unsafe fn get_fmpz_ref(&self) -> Option<&fmpz> {
+    fn get_fmpz_ref(&self) -> Option<&fmpz> {
         AsInteger::get_fmpz_ref(&self.value)
     }
 }
@@ -62,7 +62,7 @@ unsafe impl AsInteger for &Zq {
         AsInteger::into_fmpz(&self.value)
     }
 
-    unsafe fn get_fmpz_ref(&self) -> Option<&fmpz> {
+    fn get_fmpz_ref(&self) -> Option<&fmpz> {
         AsInteger::get_fmpz_ref(&self.value)
     }
 }
