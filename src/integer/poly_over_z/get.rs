@@ -11,7 +11,7 @@
 
 use super::PolyOverZ;
 use crate::{error::MathError, integer::Z, traits::GetCoefficient, utils::index::evaluate_index};
-use flint_sys::fmpz_poly::fmpz_poly_get_coeff_fmpz;
+use flint_sys::fmpz_poly::{fmpz_poly_degree, fmpz_poly_get_coeff_fmpz};
 use std::fmt::Display;
 
 impl GetCoefficient<Z> for PolyOverZ {
@@ -46,6 +46,26 @@ impl GetCoefficient<Z> for PolyOverZ {
         let index = evaluate_index(index)?;
         unsafe { fmpz_poly_get_coeff_fmpz(&mut out.value, &self.poly, index) }
         Ok(out)
+    }
+}
+
+impl PolyOverZ {
+    /// Returns the degree of a polynomial [`PolyOverZ`] as a [`i64`].
+    /// The zero polynomial has degree '-1'.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::PolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
+    ///
+    /// let degree = poly.get_degree(); // This would only return 3
+    /// ```
+    pub fn get_degree(&self) -> i64 {
+        unsafe {
+            return fmpz_poly_degree(&self.poly);
+        }
     }
 }
 
@@ -109,5 +129,45 @@ mod test_get_coeff {
             poly.get_coeff(0).unwrap()
         );
         assert_eq!(Z::from(i64::MIN), poly.get_coeff(1).unwrap());
+    }
+}
+
+#[cfg(test)]
+mod test_get_degree {
+
+    use crate::integer::PolyOverZ;
+    use std::str::FromStr;
+
+    /// ensure that degree is working
+    #[test]
+    fn degree() {
+        let poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
+
+        let deg = poly.get_degree();
+
+        assert_eq!(3, deg);
+    }
+
+    /// ensure that degree is working for constant polynomials
+    #[test]
+    fn degree_constant() {
+        let poly1 = PolyOverZ::from_str("1  1").unwrap();
+        let poly2 = PolyOverZ::from_str("0").unwrap();
+
+        let deg1 = poly1.get_degree();
+        let deg2 = poly2.get_degree();
+
+        assert_eq!(0, deg1);
+        assert_eq!(-1, deg2);
+    }
+
+    /// ensure that degree is working for polynomials with leading 0 coefficients
+    #[test]
+    fn degree_leading_zeros() {
+        let poly = PolyOverZ::from_str("4  1 0 0 0").unwrap();
+
+        let deg = poly.get_degree();
+
+        assert_eq!(0, deg);
     }
 }
