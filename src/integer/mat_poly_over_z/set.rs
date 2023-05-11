@@ -24,6 +24,9 @@ impl SetEntry<&PolyOverZ> for MatPolyOverZ {
     /// - `column`: specifies the column in which the entry is located
     /// - `value`: specifies the value to which the entry is set
     ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if the specified entry is not part of the matrix.
+    ///
     /// # Examples
     /// ```
     /// use qfall_math::integer::MatPolyOverZ;
