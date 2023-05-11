@@ -34,7 +34,7 @@ impl PolyOverZ {
         for i in 0..=self.get_degree() {
             res = res + self.get_coeff(i).unwrap() * self.get_coeff(i).unwrap();
         }
-        return res;
+        res
     }
 }
 
@@ -64,7 +64,7 @@ impl PolyOverZ {
                 res = self.get_coeff(i).unwrap().abs();
             }
         }
-        return res;
+        res
     }
 }
 

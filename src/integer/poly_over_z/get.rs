@@ -63,9 +63,7 @@ impl PolyOverZ {
     /// let degree = poly.get_degree(); // This would only return 3
     /// ```
     pub fn get_degree(&self) -> i64 {
-        unsafe {
-            return fmpz_poly_degree(&self.poly);
-        }
+        unsafe { fmpz_poly_degree(&self.poly) }
     }
 }
 
