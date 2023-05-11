@@ -141,6 +141,41 @@ unsafe impl AsInteger for &Z {
 }
 
 #[cfg(test)]
+mod test_as_integer_rust_ints {
+    use crate::{integer::Z, traits::AsInteger};
+
+    /// Assert that rust integers don't have an internal fmpz
+    #[test]
+    fn get_fmpz_ref_none() {
+        assert!(10u8.get_fmpz_ref().is_none());
+        assert!(10u16.get_fmpz_ref().is_none());
+        assert!(10u32.get_fmpz_ref().is_none());
+        assert!(10u64.get_fmpz_ref().is_none());
+        assert!(10i8.get_fmpz_ref().is_none());
+        assert!(10i16.get_fmpz_ref().is_none());
+        assert!(10i32.get_fmpz_ref().is_none());
+        assert!(10i64.get_fmpz_ref().is_none());
+    }
+
+    /// Assert that into_fmpz works correctly for small values
+    #[test]
+    fn into_fmpz_small() {
+        let z = Z::from(10);
+
+        unsafe {
+            assert_eq!(z, Z::from_fmpz(10u8.into_fmpz()));
+            assert_eq!(z, Z::from_fmpz(10u16.into_fmpz()));
+            assert_eq!(z, Z::from_fmpz(10u32.into_fmpz()));
+            assert_eq!(z, Z::from_fmpz(10u64.into_fmpz()));
+            assert_eq!(z, Z::from_fmpz(10i8.into_fmpz()));
+            assert_eq!(z, Z::from_fmpz(10i16.into_fmpz()));
+            assert_eq!(z, Z::from_fmpz(10i32.into_fmpz()));
+            assert_eq!(z, Z::from_fmpz(10i64.into_fmpz()));
+        }
+    }
+}
+
+#[cfg(test)]
 mod test_as_integer_z {
     use flint_sys::fmpz::{fmpz_clear, fmpz_set_ui};
 
@@ -156,7 +191,7 @@ mod test_as_integer_z {
 
         let _ = Z::from(12);
 
-        let copy = Z::from_fmpz(&value);
+        let copy = Z::from_fmpz_ref(&value);
         assert_eq!(copy, Z::from(42));
         unsafe { fmpz_clear(&mut value) };
     }
@@ -199,7 +234,29 @@ mod test_as_integer_z {
         assert_eq!(z, Z::from(i64::MAX));
     }
 
-    // TODO: Add more test cases
+    /// Assert that `get_fmpz_ref` returns a correct reference for small values
+    #[test]
+    fn get_ref_small() {
+        let z = Z::from(10);
+
+        let z_ref = z.get_fmpz_ref().unwrap();
+        let mut cmp = Z::default();
+        unsafe { fmpz_set(&mut cmp.value, z_ref) };
+
+        assert_eq!(cmp, z)
+    }
+
+    /// Assert that `get_fmpz_ref` returns a correct reference for large values
+    #[test]
+    fn get_ref_large() {
+        let z = Z::from(u64::MAX);
+
+        let z_ref = z.get_fmpz_ref().unwrap();
+        let mut cmp = Z::default();
+        unsafe { fmpz_set(&mut cmp.value, z_ref) };
+
+        assert_eq!(cmp, z)
+    }
 }
 
 #[cfg(test)]
