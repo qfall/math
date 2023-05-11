@@ -19,9 +19,7 @@ impl From<(&MatPolyOverZ, &ModulusPolynomialRingZq)> for MatPolynomialRingZq {
     /// Create a new polynomial ring matrix of type [`MatPolynomialRingZq`].
     ///
     /// Parameters:
-    /// - `value`: is a tuple of `(matrix, modulus)`
-    ///     - `matrix`: defines the polynomial matrix
-    ///     - `modulus`: the modulus which defines the ring
+    /// - `value` is a tuple of `(matrix, modulus)`
     ///
     /// Returns a new polynomial ring matrix.
     ///
@@ -126,5 +124,26 @@ mod test_from_poly_over_z_modulus_polynomial_ring_zq {
             MatPolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_mat, &modulus);
 
         assert_eq!(poly_ring_mat_1, poly_ring_mat_2);
+    }
+
+    /// ensure that from works for different dimensions
+    #[test]
+    fn different_dimensions() {
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("3  1 9 12 mod {}", BITPRIME64)).unwrap();
+        let poly_mat1 = MatPolyOverZ::from_str("[[2  1 8],[2  1 2]]").unwrap();
+        let poly_mat2 = MatPolyOverZ::from_str("[[2  1 8, 1  42, 0],[0, 2  1 2, 1  17]]").unwrap();
+        let poly_mat3 = MatPolyOverZ::from_str("[[2  1 8]]").unwrap();
+
+        let poly_ring_mat_1 =
+            MatPolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_mat1, &modulus);
+        let poly_ring_mat_2 =
+            MatPolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_mat2, &modulus);
+        let poly_ring_mat_3 =
+            MatPolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_mat3, &modulus);
+
+        assert_eq!(poly_ring_mat_1.matrix, poly_mat1);
+        assert_eq!(poly_ring_mat_2.matrix, poly_mat2);
+        assert_eq!(poly_ring_mat_3.matrix, poly_mat3);
     }
 }
