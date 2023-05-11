@@ -665,7 +665,7 @@ mod test_from_fmpz {
 
     /// Ensure that `from_fmpz` is available for small and large numbers
     #[test]
-    fn large_number() {
+    fn large_numbers() {
         let mut fmpz_1 = fmpz(0);
         unsafe { fmpz_set_ui(&mut fmpz_1, u64::MAX) }
 
