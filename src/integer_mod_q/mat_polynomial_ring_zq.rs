@@ -15,6 +15,7 @@ use serde::{Deserialize, Serialize};
 
 mod default;
 mod from;
+mod get;
 mod reduce;
 
 /// [`MatPolynomialRingZq`] is a matrix with entries of type [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq).
