@@ -1,4 +1,4 @@
-// Copyright © 2023 Marcel Luca Schmidt
+// Copyright © 2023 Marcel Luca Schmidt, Niklas Siemer
 //
 // This file is part of qFALL-math.
 //
@@ -8,13 +8,24 @@
 
 //! Implementation to set entries from a [`MatQ`] matrix.
 
-use super::MatQ;
-use crate::macros::for_others::implement_for_owned;
-use crate::traits::SetEntry;
-use crate::utils::index::evaluate_indices;
-use crate::{error::MathError, rational::Q};
-use flint_sys::{fmpq::fmpq_set, fmpq_mat::fmpq_mat_entry};
-use std::fmt::Display;
+use crate::{
+    error::MathError,
+    macros::for_others::implement_for_owned,
+    rational::{MatQ, Q},
+    traits::{GetNumColumns, GetNumRows, SetEntry},
+    utils::index::{evaluate_index, evaluate_indices},
+};
+use flint_sys::{
+    fmpq::fmpq_set,
+    fmpq_mat::{
+        fmpq_mat_entry, fmpq_mat_invert_cols, fmpq_mat_invert_rows, fmpq_mat_swap_cols,
+        fmpq_mat_swap_rows,
+    },
+};
+use std::{
+    fmt::Display,
+    ptr::{null, null_mut},
+};
 
 impl SetEntry<&Q> for MatQ {
     /// Sets the value of a specific matrix entry according to a given `value` of type [`Q`].
@@ -63,6 +74,90 @@ impl SetEntry<&Q> for MatQ {
 implement_for_owned!(Q, MatQ, SetEntry);
 
 // TODO add implementation for other types as well
+
+impl MatQ {
+    /// Swaps two columns of the specified matrix.
+    ///
+    /// Parameters:
+    /// - `col0`: specifies the first column which is swapped with the second one
+    /// - `col1`: specifies the second column which is swapped with the first one
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of the matrix.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::MatQ;
+    ///
+    /// let mut matrix = MatQ::new(4, 3).unwrap();
+    /// matrix.swap_columns(0, 2);
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
+    /// if one of the given columns is greater than the matrix or negative.
+    pub fn swap_columns(
+        &mut self,
+        col0: impl TryInto<i64> + Display,
+        col1: impl TryInto<i64> + Display,
+    ) -> Result<(), MathError> {
+        let col0 = evaluate_index(col0)?;
+        let col1 = evaluate_index(col1)?;
+        if col0 >= self.get_num_columns() || col1 >= self.get_num_columns() {
+            return Err(MathError::OutOfBounds(
+                format!("smaller than {}", self.get_num_columns()),
+                if col0 > col1 {
+                    col0.to_string()
+                } else {
+                    col1.to_string()
+                },
+            ));
+        }
+        unsafe { fmpq_mat_swap_cols(&mut self.matrix, null(), col0, col1) }
+        Ok(())
+    }
+
+    /// Swaps two rows of the specified matrix.
+    ///
+    /// Parameters:
+    /// - `row0`: specifies the first row which is swapped with the second one
+    /// - `row1`: specifies the second row which is swapped with the first one
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of the matrix.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::MatQ;
+    ///
+    /// let mut matrix = MatQ::new(4, 3).unwrap();
+    /// matrix.swap_rows(0, 2);
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
+    /// if one of the given rows is greater than the matrix or negative.
+    pub fn swap_rows(
+        &mut self,
+        row0: impl TryInto<i64> + Display,
+        row1: impl TryInto<i64> + Display,
+    ) -> Result<(), MathError> {
+        let row0 = evaluate_index(row0)?;
+        let row1 = evaluate_index(row1)?;
+        if row0 >= self.get_num_rows() || row1 >= self.get_num_rows() {
+            return Err(MathError::OutOfBounds(
+                format!("smaller than {}", self.get_num_columns()),
+                if row0 > row1 {
+                    row0.to_string()
+                } else {
+                    row1.to_string()
+                },
+            ));
+        }
+        unsafe { fmpq_mat_swap_rows(&mut self.matrix, null(), row0, row1) }
+        Ok(())
+    }
+}
 
 #[cfg(test)]
 mod test_setter {
@@ -179,5 +274,106 @@ mod test_setter {
         let matrix = MatQ::new(5, 10).unwrap();
 
         assert!(matrix.get_entry(1, 100).is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_swaps {
+    use super::MatQ;
+    use std::str::FromStr;
+
+    /// Ensures that swapping columns works fine for small entries
+    #[test]
+    fn columns_small_entries() {
+        let mut matrix = MatQ::from_str("[[1,2/-1,-3/1],[1/4,5/7,6]]").unwrap();
+        let cmp_vec_0 = MatQ::from_str("[[1],[1/4]]").unwrap();
+        let cmp_vec_1 = MatQ::from_str("[[-3],[6]]").unwrap();
+        let cmp_vec_2 = MatQ::from_str("[[-2],[5/7]]").unwrap();
+
+        let _ = matrix.swap_columns(1, 2);
+
+        assert_eq!(cmp_vec_0, matrix.get_column(0).unwrap());
+        assert_eq!(cmp_vec_1, matrix.get_column(1).unwrap());
+        assert_eq!(cmp_vec_2, matrix.get_column(2).unwrap());
+    }
+
+    /// Ensures that swapping columns works fine for large entries
+    #[test]
+    fn columns_large_entries() {
+        let mut matrix = MatQ::from_str(&format!(
+            "[[{},1,3,4/-3],[{}/2,4,-1/{},5],[7,6,8/9,9]]",
+            i64::MIN,
+            i64::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+        let cmp_vec_0 = MatQ::from_str(&format!("[[3],[-1/{}],[8/9]]", u64::MAX)).unwrap();
+        let cmp_vec_1 = MatQ::from_str("[[1],[4],[6]]").unwrap();
+        let cmp_vec_2 = MatQ::from_str(&format!("[[{}],[{}/2],[7]]", i64::MIN, i64::MAX)).unwrap();
+        let cmp_vec_3 = MatQ::from_str("[[4/-3],[5],[9]]").unwrap();
+
+        let _ = matrix.swap_columns(0, 2);
+
+        assert_eq!(cmp_vec_0, matrix.get_column(0).unwrap());
+        assert_eq!(cmp_vec_1, matrix.get_column(1).unwrap());
+        assert_eq!(cmp_vec_2, matrix.get_column(2).unwrap());
+        assert_eq!(cmp_vec_3, matrix.get_column(3).unwrap());
+    }
+
+    /// Ensures that `swap_columns` returns an error if one of the specified columns is out of bounds
+    #[test]
+    fn column_out_of_bounds() {
+        let mut matrix = MatQ::new(5, 2).unwrap();
+
+        assert!(matrix.swap_columns(-1, 0).is_err());
+        assert!(matrix.swap_columns(0, -1).is_err());
+        assert!(matrix.swap_columns(5, 0).is_err());
+        assert!(matrix.swap_columns(0, 5).is_err());
+    }
+
+    /// Ensures that swapping rows works fine for small entries
+    #[test]
+    fn rows_small_entries() {
+        let mut matrix = MatQ::from_str("[[1,2/-3],[3,-4/3]]").unwrap();
+        let cmp_vec_0 = MatQ::from_str("[[3,-4/3]]").unwrap();
+        let cmp_vec_1 = MatQ::from_str("[[1,2/-3]]").unwrap();
+
+        let _ = matrix.swap_rows(1, 0);
+
+        assert_eq!(cmp_vec_0, matrix.get_row(0).unwrap());
+        assert_eq!(cmp_vec_1, matrix.get_row(1).unwrap());
+    }
+
+    /// Ensures that swapping rows works fine for large entries
+    #[test]
+    fn rows_large_entries() {
+        let mut matrix = MatQ::from_str(&format!(
+            "[[{},1,3, 4],[7,6/-1,8,9/4],[1/{},4,-2/{},5/3]]",
+            i64::MIN,
+            i64::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+        let cmp_vec_0 =
+            MatQ::from_str(&format!("[[1/{},4,-2/{},5/3]]", i64::MAX, u64::MAX)).unwrap();
+        let cmp_vec_1 = MatQ::from_str("[[7,6/-1,8,9/4]]").unwrap();
+        let cmp_vec_2 = MatQ::from_str(&format!("[[{},1,3, 4]]", i64::MIN)).unwrap();
+
+        let _ = matrix.swap_rows(0, 2);
+
+        assert_eq!(cmp_vec_0, matrix.get_row(0).unwrap());
+        assert_eq!(cmp_vec_1, matrix.get_row(1).unwrap());
+        assert_eq!(cmp_vec_2, matrix.get_row(2).unwrap());
+    }
+
+    /// Ensures that `swap_rows` returns an error if one of the specified rows is out of bounds
+    #[test]
+    fn row_out_of_bounds() {
+        let mut matrix = MatQ::new(2, 4).unwrap();
+
+        assert!(matrix.swap_rows(-1, 0).is_err());
+        assert!(matrix.swap_rows(0, -1).is_err());
+        assert!(matrix.swap_rows(4, 0).is_err());
+        assert!(matrix.swap_rows(0, 4).is_err());
     }
 }
