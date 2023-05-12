@@ -1,4 +1,4 @@
-// Copyright © 2023 Marvin Beckmann
+// Copyright © 2023 Marvin Beckmann, Niklas Siemer
 //
 // This file is part of qFALL-math.
 //
@@ -10,10 +10,15 @@
 
 use super::MatPolyOverZ;
 use crate::{
-    error::MathError, integer::PolyOverZ, traits::SetEntry, utils::index::evaluate_indices,
+    error::MathError,
+    integer::PolyOverZ,
+    traits::{GetNumColumns, GetNumRows, SetEntry},
+    utils::index::{evaluate_index, evaluate_indices},
 };
-use flint_sys::fmpz_poly::fmpz_poly_swap;
-use flint_sys::{fmpz_poly::fmpz_poly_set, fmpz_poly_mat::fmpz_poly_mat_entry};
+use flint_sys::{
+    fmpz_poly::{fmpz_poly_set, fmpz_poly_swap},
+    fmpz_poly_mat::fmpz_poly_mat_entry,
+};
 use std::fmt::Display;
 
 impl SetEntry<&PolyOverZ> for MatPolyOverZ {
@@ -94,6 +99,102 @@ impl SetEntry<PolyOverZ> for MatPolyOverZ {
         unsafe {
             let entry = fmpz_poly_mat_entry(&self.matrix, row_i64, column_i64);
             fmpz_poly_swap(entry, &mut value.poly)
+        }
+        Ok(())
+    }
+}
+
+impl MatPolyOverZ {
+    /// Swaps two columns of the specified matrix.
+    ///
+    /// Parameters:
+    /// - `col0`: specifies the first column which is swapped with the second one
+    /// - `col1`: specifies the second column which is swapped with the first one
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of the matrix.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatPolyOverZ;
+    ///
+    /// let mut matrix = MatPolyOverZ::new(4, 3).unwrap();
+    /// matrix.swap_columns(0, 2);
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
+    /// if one of the given columns is greater than the matrix or negative.
+    pub fn swap_columns(
+        &mut self,
+        col0: impl TryInto<i64> + Display,
+        col1: impl TryInto<i64> + Display,
+    ) -> Result<(), MathError> {
+        let col0 = evaluate_index(col0)?;
+        let col1 = evaluate_index(col1)?;
+        if col0 >= self.get_num_columns() || col1 >= self.get_num_columns() {
+            return Err(MathError::OutOfBounds(
+                format!("smaller than {}", self.get_num_columns()),
+                if col0 > col1 {
+                    col0.to_string()
+                } else {
+                    col1.to_string()
+                },
+            ));
+        }
+        for row in 0..self.get_num_rows() {
+            unsafe {
+                let entry0 = fmpz_poly_mat_entry(&self.matrix, row, col0);
+                let entry1 = fmpz_poly_mat_entry(&self.matrix, row, col1);
+                fmpz_poly_swap(entry0, entry1);
+            }
+        }
+        Ok(())
+    }
+
+    /// Swaps two rows of the specified matrix.
+    ///
+    /// Parameters:
+    /// - `row0`: specifies the first row which is swapped with the second one
+    /// - `row1`: specifies the second row which is swapped with the first one
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of the matrix.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatPolyOverZ;
+    ///
+    /// let mut matrix = MatPolyOverZ::new(4, 3).unwrap();
+    /// matrix.swap_rows(0, 2);
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
+    /// if one of the given rows is greater than the matrix or negative.
+    pub fn swap_rows(
+        &mut self,
+        row0: impl TryInto<i64> + Display,
+        row1: impl TryInto<i64> + Display,
+    ) -> Result<(), MathError> {
+        let row0 = evaluate_index(row0)?;
+        let row1 = evaluate_index(row1)?;
+        if row0 >= self.get_num_rows() || row1 >= self.get_num_rows() {
+            return Err(MathError::OutOfBounds(
+                format!("smaller than {}", self.get_num_columns()),
+                if row0 > row1 {
+                    row0.to_string()
+                } else {
+                    row1.to_string()
+                },
+            ));
+        }
+        for col in 0..self.get_num_columns() {
+            unsafe {
+                let entry0 = fmpz_poly_mat_entry(&self.matrix, row0, col);
+                let entry1 = fmpz_poly_mat_entry(&self.matrix, row1, col);
+                fmpz_poly_swap(entry0, entry1);
+            }
         }
         Ok(())
     }
@@ -212,5 +313,111 @@ mod test_setter {
         let value = PolyOverZ::default();
 
         assert!(matrix.set_entry(1, 100, value).is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_swaps {
+    use super::MatPolyOverZ;
+    use std::str::FromStr;
+
+    /// Ensures that swapping columns works fine for small entries
+    #[test]
+    fn columns_small_entries() {
+        let mut matrix = MatPolyOverZ::from_str("[[1  1,1  2,1  3],[1  4,1  5,1  6]]").unwrap();
+        let cmp_vec_0 = MatPolyOverZ::from_str("[[1  1],[1  4]]").unwrap();
+        let cmp_vec_1 = MatPolyOverZ::from_str("[[1  3],[1  6]]").unwrap();
+        let cmp_vec_2 = MatPolyOverZ::from_str("[[1  2],[1  5]]").unwrap();
+
+        let _ = matrix.swap_columns(1, 2);
+
+        assert_eq!(cmp_vec_0, matrix.get_column(0).unwrap());
+        assert_eq!(cmp_vec_1, matrix.get_column(1).unwrap());
+        assert_eq!(cmp_vec_2, matrix.get_column(2).unwrap());
+    }
+
+    /// Ensures that swapping columns works fine for large entries
+    #[test]
+    fn columns_large_entries() {
+        let mut matrix = MatPolyOverZ::from_str(&format!(
+            "[[1  {},1  1,1  3,1  4],[1  {},1  4,1  {},1  5],[1  7,1  6,2  8 7,0]]",
+            i64::MIN,
+            i64::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+        let cmp_vec_0 =
+            MatPolyOverZ::from_str(&format!("[[1  3],[1  {}],[2  8 7]]", u64::MAX)).unwrap();
+        let cmp_vec_1 = MatPolyOverZ::from_str("[[1  1],[1  4],[1  6]]").unwrap();
+        let cmp_vec_2 =
+            MatPolyOverZ::from_str(&format!("[[1  {}],[1  {}],[1  7]]", i64::MIN, i64::MAX))
+                .unwrap();
+        let cmp_vec_3 = MatPolyOverZ::from_str("[[1  4],[1  5],[0]]").unwrap();
+
+        let _ = matrix.swap_columns(0, 2);
+
+        assert_eq!(cmp_vec_0, matrix.get_column(0).unwrap());
+        assert_eq!(cmp_vec_1, matrix.get_column(1).unwrap());
+        assert_eq!(cmp_vec_2, matrix.get_column(2).unwrap());
+        assert_eq!(cmp_vec_3, matrix.get_column(3).unwrap());
+    }
+
+    /// Ensures that `swap_columns` returns an error if one of the specified columns is out of bounds
+    #[test]
+    fn column_out_of_bounds() {
+        let mut matrix = MatPolyOverZ::new(5, 2).unwrap();
+
+        assert!(matrix.swap_columns(-1, 0).is_err());
+        assert!(matrix.swap_columns(0, -1).is_err());
+        assert!(matrix.swap_columns(5, 0).is_err());
+        assert!(matrix.swap_columns(0, 5).is_err());
+    }
+
+    /// Ensures that swapping rows works fine for small entries
+    #[test]
+    fn rows_small_entries() {
+        let mut matrix = MatPolyOverZ::from_str("[[1  1,1  2],[1  3,2  4 5]]").unwrap();
+        let cmp_vec_0 = MatPolyOverZ::from_str("[[1  3,2  4 5]]").unwrap();
+        let cmp_vec_1 = MatPolyOverZ::from_str("[[1  1,1  2]]").unwrap();
+
+        let _ = matrix.swap_rows(1, 0);
+
+        assert_eq!(cmp_vec_0, matrix.get_row(0).unwrap());
+        assert_eq!(cmp_vec_1, matrix.get_row(1).unwrap());
+    }
+
+    /// Ensures that swapping rows works fine for large entries
+    #[test]
+    fn rows_large_entries() {
+        let mut matrix = MatPolyOverZ::from_str(&format!(
+            "[[1  {},1  1,1  3,1  4],[1  7,1  6,1  8,0],[1  {},1  4,1  {},1  5]]",
+            i64::MIN,
+            i64::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+        let cmp_vec_0 =
+            MatPolyOverZ::from_str(&format!("[[1  {},1  4,1  {},1  5]]", i64::MAX, u64::MAX))
+                .unwrap();
+        let cmp_vec_1 = MatPolyOverZ::from_str("[[1  7,1  6,1  8,0]]").unwrap();
+        let cmp_vec_2 =
+            MatPolyOverZ::from_str(&format!("[[1  {},1  1,1  3,1  4]]", i64::MIN)).unwrap();
+
+        let _ = matrix.swap_rows(0, 2);
+
+        assert_eq!(cmp_vec_0, matrix.get_row(0).unwrap());
+        assert_eq!(cmp_vec_1, matrix.get_row(1).unwrap());
+        assert_eq!(cmp_vec_2, matrix.get_row(2).unwrap());
+    }
+
+    /// Ensures that `swap_rows` returns an error if one of the specified rows is out of bounds
+    #[test]
+    fn row_out_of_bounds() {
+        let mut matrix = MatPolyOverZ::new(2, 4).unwrap();
+
+        assert!(matrix.swap_rows(-1, 0).is_err());
+        assert!(matrix.swap_rows(0, -1).is_err());
+        assert!(matrix.swap_rows(4, 0).is_err());
+        assert!(matrix.swap_rows(0, 4).is_err());
     }
 }
