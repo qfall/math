@@ -31,8 +31,10 @@ impl PolyOverZ {
     /// ```
     pub fn norm_eucl_sqrd(&self) -> Z {
         let mut res = Z::ZERO;
+
         for i in 0..=self.get_degree() {
-            res = res + self.get_coeff(i).unwrap() * self.get_coeff(i).unwrap();
+            let coeff = self.get_coeff(i).unwrap();
+            res = res + &coeff * &coeff;
         }
         res
     }
