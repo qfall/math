@@ -80,9 +80,7 @@ pub(crate) fn distance(value_1: &fmpz, value_2: &fmpz) -> Z {
 unsafe impl AsInteger for u64 {
     /// Documentation at [`AsInteger::into_fmpz`]
     unsafe fn into_fmpz(self) -> fmpz {
-        let mut ret_value = fmpz(0);
-        fmpz_init_set_ui(&mut ret_value, self);
-        ret_value
+        (&self).into_fmpz()
     }
 }
 
@@ -95,15 +93,16 @@ unsafe impl AsInteger for &u64 {
     }
 }
 
-macro_rules! AsInteger_singed {
+/// Implement the [`AsInteger`] trait for the types in the parameter and their
+/// borrowed version.This macro is just intended for the rust integer types
+/// that can be converted into [`i64`].
+macro_rules! implement_as_integer_over_i64 {
     ($($type:ident)*) => {
         $(
         /// Documentation at [`AsInteger::into_fmpz`]
         unsafe impl AsInteger for $type {
             unsafe fn into_fmpz(self) -> fmpz {
-                let mut ret_value = fmpz(0);
-                fmpz_init_set_si(&mut ret_value, self as i64);
-                ret_value
+                (&self).into_fmpz()
             }
         }
 
@@ -119,7 +118,7 @@ macro_rules! AsInteger_singed {
     };
 }
 
-AsInteger_singed!(i8 u8 i16 u16 i32 u32 i64);
+implement_as_integer_over_i64!(i8 u8 i16 u16 i32 u32 i64);
 
 unsafe impl AsInteger for Z {
     /// Documentation at [`AsInteger::into_fmpz`]
@@ -186,61 +185,44 @@ mod test_as_integer_rust_ints {
 
 #[cfg(test)]
 mod test_as_integer_z {
-    use flint_sys::fmpz::{fmpz_clear, fmpz_set_ui};
-
     use super::*;
 
-    // Assert that the new fmpz is not related to the old one
+    /// Assert that the new [`fmpz`] contains the same value as the original
+    /// for small values (FLINT is not using pointers).
     #[test]
     fn small_into_fmpz() {
-        let mut value = unsafe {
-            let z = Z::from(42);
-            (&z).into_fmpz()
-        }; // z is dropped here
+        let z = Z::from(42);
 
-        // create a new `Z` to potentially overwrite the memory
-        let _ = Z::from(12);
+        let copy_1 = unsafe { Z::from_fmpz((&z).into_fmpz()) };
+        let copy_2 = unsafe { Z::from_fmpz(z.into_fmpz()) };
 
-        let copy = Z::from_fmpz(value);
-        assert_eq!(copy, Z::from(42));
+        assert_eq!(copy_1, Z::from(42));
+        assert_eq!(copy_2, Z::from(42));
     }
 
-    /// Assert that the new [`fmpz`] is not effected by the original for large numbers.
-    /// This can not be tested for an owned [`Z`], since that would violate the
-    /// ownership constrain -> not compiling.
+    /// Assert that the new [`fmpz`] contains the same value as the original
+    /// for large values (FLINT uses pointers).
     #[test]
-    fn original_not_effecting_new_large() {
-        let value = unsafe {
-            let z = Z::from(i64::MAX);
-            (&z).into_fmpz()
-        }; // z is dropped here
+    fn large_into_fmpz() {
+        let z = Z::from(u64::MAX);
 
-        // Create new Z values that would likely overwrite the memory of the original z.
-        let _a = Z::from(u64::MAX);
-        let _b = Z::from(u64::MAX);
+        let copy_1 = unsafe { Z::from_fmpz((&z).into_fmpz()) };
+        let copy_2 = unsafe { Z::from_fmpz(z.into_fmpz()) };
 
-        assert_eq!(Z::from_fmpz(value), Z::from(i64::MAX));
+        assert_eq!(copy_1, Z::from(u64::MAX));
+        assert_eq!(copy_2, Z::from(u64::MAX));
     }
 
-    /// Assert that the new [`fmpz`] is not effecting the original [`Z`].
+    /// Assert that the new [`fmpz`] using a different memory than the original
+    /// (Also as a pointer representation)
     #[test]
-    fn new_not_effecting_original_large() {
+    fn memory_safety() {
         let z = Z::from(i64::MAX);
 
-        let mut value = unsafe { (&z).into_fmpz() };
+        let value = unsafe { (&z).into_fmpz() };
 
-        // Setting the result of into_fmpz to a different value
-        // is not effecting the original.
-        unsafe { fmpz_set_ui(&mut value, u64::MAX) }
-        assert_eq!(z, Z::from(i64::MAX));
-
-        // Clearing the new fmpz and creating new values that likely
-        // occupy the memory of the just cleared value.
-        unsafe { fmpz_clear(&mut value) };
-        let _ = Z::from(u64::MAX - 1);
-        let _ = Z::from(u64::MAX);
-
-        assert_eq!(z, Z::from(i64::MAX));
+        // The `fmpz` values have to point to different memory locations.
+        assert_ne!(value.0, z.value.0);
     }
 
     /// Assert that `get_fmpz_ref` returns a correct reference for small values
@@ -248,10 +230,11 @@ mod test_as_integer_z {
     fn get_ref_small() {
         let z = Z::from(10);
 
-        let z_ref = z.get_fmpz_ref().unwrap();
+        let z_ref_1 = z.get_fmpz_ref().unwrap();
+        let z_ref_2 = (&z).get_fmpz_ref().unwrap();
 
-        let cmp = Z::from_fmpz_ref(z_ref);
-        assert_eq!(cmp, z)
+        assert_eq!(z.value.0, z_ref_1.0);
+        assert_eq!(z.value.0, z_ref_2.0);
     }
 
     /// Assert that `get_fmpz_ref` returns a correct reference for large values
@@ -259,11 +242,11 @@ mod test_as_integer_z {
     fn get_ref_large() {
         let z = Z::from(u64::MAX);
 
-        let z_ref = z.get_fmpz_ref().unwrap();
-        let mut cmp = Z::default();
-        unsafe { fmpz_set(&mut cmp.value, z_ref) };
+        let z_ref_1 = z.get_fmpz_ref().unwrap();
+        let z_ref_2 = (&z).get_fmpz_ref().unwrap();
 
-        assert_eq!(cmp, z)
+        assert_eq!(z.value.0, z_ref_1.0);
+        assert_eq!(z.value.0, z_ref_2.0);
     }
 }
 

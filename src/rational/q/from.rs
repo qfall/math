@@ -598,16 +598,12 @@ mod test_try_from_int_int {
 
     /// Test with zero denominator (not valid -> should lead to an error)
     #[test]
-    // TODO: Should this test case really panic?
-    // If not, it is necessary to implement try_from with a macro
     #[should_panic]
     fn divide_by_zero() {
         let numerator = 10;
         let denominator = 0;
 
         let _ = Q::try_from((&numerator, &denominator));
-
-        //assert!(new_q.is_err());
     }
 
     /// Test with either negative denominator or numerator
