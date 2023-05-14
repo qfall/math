@@ -55,7 +55,7 @@ impl PolyOverQ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::PolyOverQ;
+    /// use qfall_math::rational::PolyOverQ;
     /// use std::str::FromStr;
     ///
     /// let poly = PolyOverQ::from_str("4  0 1/9 2 -3/4").unwrap();
