@@ -23,6 +23,7 @@ mod default;
 mod evaluate;
 mod from;
 mod get;
+mod norm;
 mod ownership;
 mod serialize;
 mod set;

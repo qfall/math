@@ -11,7 +11,7 @@
 
 use super::PolyOverQ;
 use crate::{error::MathError, rational::Q, traits::GetCoefficient, utils::index::evaluate_index};
-use flint_sys::fmpq_poly::fmpq_poly_get_coeff_fmpq;
+use flint_sys::fmpq_poly::{fmpq_poly_degree, fmpq_poly_get_coeff_fmpq};
 use std::fmt::Display;
 
 impl GetCoefficient<Q> for PolyOverQ {
@@ -46,6 +46,24 @@ impl GetCoefficient<Q> for PolyOverQ {
         let index = evaluate_index(index)?;
         unsafe { fmpq_poly_get_coeff_fmpq(&mut out.value, &self.poly, index) }
         Ok(out)
+    }
+}
+
+impl PolyOverQ {
+    /// Returns the degree of a polynomial [`PolyOverQ`] as a [`i64`].
+    /// The zero polynomial has degree '-1'.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::PolyOverQ;
+    /// use std::str::FromStr;
+    ///
+    /// let poly = PolyOverQ::from_str("4  0 1/9 2 -3/4").unwrap();
+    ///
+    /// let degree = poly.get_degree(); // This would only return 3
+    /// ```
+    pub fn get_degree(&self) -> i64 {
+        unsafe { fmpq_poly_degree(&self.poly) }
     }
 }
 
@@ -121,5 +139,45 @@ mod test_get_coeff {
             Q::from_str(&u64::MAX.to_string()).unwrap(),
             poly.get_coeff(1).unwrap()
         );
+    }
+}
+
+#[cfg(test)]
+mod test_get_degree {
+
+    use crate::rational::PolyOverQ;
+    use std::str::FromStr;
+
+    /// ensure that degree is working
+    #[test]
+    fn degree() {
+        let poly = PolyOverQ::from_str("4  -12/7 1 2/9 3/7").unwrap();
+
+        let deg = poly.get_degree();
+
+        assert_eq!(3, deg);
+    }
+
+    /// ensure that degree is working for constant polynomials
+    #[test]
+    fn degree_constant() {
+        let poly1 = PolyOverQ::from_str("1  1/8").unwrap();
+        let poly2 = PolyOverQ::from_str("0").unwrap();
+
+        let deg1 = poly1.get_degree();
+        let deg2 = poly2.get_degree();
+
+        assert_eq!(0, deg1);
+        assert_eq!(-1, deg2);
+    }
+
+    /// ensure that degree is working for polynomials with leading 0 coefficients
+    #[test]
+    fn degree_leading_zeros() {
+        let poly = PolyOverQ::from_str("4  1/127 0 0 0").unwrap();
+
+        let deg = poly.get_degree();
+
+        assert_eq!(0, deg);
     }
 }
