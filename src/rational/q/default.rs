@@ -78,7 +78,8 @@ impl Q {
         },
     };
 
-    /// Returns an instantiation of [`Q`] with value `e ≈ 3.141592`.
+    /// Returns an instantiation of [`Q`] with value `e ≈ 2.718281...`
+    /// with a precision of ~ 10^-36.
     ///
     /// # Examples
     /// ```
@@ -87,13 +88,15 @@ impl Q {
     /// let a: Q = Q::E;
     /// ```
     pub const E: Q = Q {
+        // generated with continued fraction (40 factors)
         value: fmpq {
-            num: fmpz(543656365691809),
-            den: fmpz(200000000000000),
+            num: fmpz(2922842896378005707),
+            den: fmpz(1075253811351460636),
         },
     };
 
-    /// Returns an instantiation of [`Q`] with value `pi ≈ 3.141592`.
+    /// Returns an instantiation of [`Q`] with value `pi ≈ 3.141592...`
+    /// with a precision of ~ 10^-37.
     ///
     /// # Examples
     /// ```
@@ -102,9 +105,10 @@ impl Q {
     /// let a: Q = Q::PI;
     /// ```
     pub const PI: Q = Q {
+        // generated with continued fraction (33 factors)
         value: fmpq {
-            num: fmpz(3141592653589793),
-            den: fmpz(1000000000000000),
+            num: fmpz(2646693125139304345),
+            den: fmpz(842468587426513207),
         },
     };
 }
@@ -112,7 +116,6 @@ impl Q {
 #[cfg(test)]
 mod tests_init {
     use super::Q;
-    use std::f64::consts::{E, PI};
 
     /// Ensure that [`Default`] initializes [`Q`] with `0`.
     #[test]
@@ -136,17 +139,5 @@ mod tests_init {
     #[test]
     fn init_minus_one() {
         assert_eq!(Q::try_from((&-1, &1)).unwrap(), Q::MINUS_ONE);
-    }
-
-    /// Ensure that `E` initializes [`Q`] with `e ≈ 3.141592`.
-    #[test]
-    fn init_e() {
-        assert_eq!(Q::from(E), Q::E);
-    }
-
-    /// Ensure that `PI` initializes [`Q`] with `pi ≈ `.
-    #[test]
-    fn init_pi() {
-        assert_eq!(Q::from(PI), Q::PI);
     }
 }
