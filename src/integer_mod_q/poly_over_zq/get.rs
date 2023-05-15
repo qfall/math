@@ -108,7 +108,7 @@ impl PolyOverZq {
     /// let degree = poly.get_degree(); // This would only return 3
     /// ```
     pub fn get_degree(&self) -> i64 {
-        unsafe { fmpz_mod_poly_degree(&self.poly, &*self.modulus.modulus) }
+        unsafe { fmpz_mod_poly_degree(&self.poly, self.modulus.get_fmpz_mod_ctx_struct()) }
     }
 }
 
