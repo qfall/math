@@ -55,7 +55,7 @@ impl Zq {
     /// assert!(value.is_one())
     /// ```
     pub fn is_one(&self) -> bool {
-        1 == unsafe { fmpz_mod_is_one(&self.value.value, &*self.modulus.modulus) }
+        1 == unsafe { fmpz_mod_is_one(&self.value.value, self.modulus.get_fmpz_mod_ctx_struct()) }
     }
 }
 
