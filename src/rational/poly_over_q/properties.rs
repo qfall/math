@@ -52,9 +52,9 @@ mod test_is_one {
     /// ensure that is_one returns `true` for the one polynomial
     #[test]
     fn one_detection() {
-        let ident = PolyOverQ::from_str("1  1").unwrap();
+        let one = PolyOverQ::from_str("1  1").unwrap();
 
-        assert!(ident.is_one());
+        assert!(one.is_one());
     }
 
     /// ensure that is_one returns `false` for other polynomials

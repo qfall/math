@@ -185,9 +185,9 @@ mod test_is_one {
     /// ensure that is_one returns `true` for `1`
     #[test]
     fn one_detection() {
-        let zero = Q::from(1);
+        let one = Q::from(1);
 
-        assert!(zero.is_one());
+        assert!(one.is_one());
     }
 
     /// ensure that is_one returns `false` for other values
