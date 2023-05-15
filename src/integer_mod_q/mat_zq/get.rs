@@ -441,7 +441,7 @@ mod test_get_num {
         traits::{GetNumColumns, GetNumRows},
     };
 
-    /// Ensure that the getter for rows works correctly.
+    /// Ensure that the getter for number of rows works correctly.
     #[test]
     fn num_rows() {
         let matrix = MatZq::new(5, 10, 7).unwrap();
@@ -449,7 +449,7 @@ mod test_get_num {
         assert_eq!(matrix.get_num_rows(), 5);
     }
 
-    /// Ensure that the getter for columns works correctly.
+    /// Ensure that the getter for number of columns works correctly.
     #[test]
     fn num_columns() {
         let matrix = MatZq::new(5, 10, 7).unwrap();

@@ -34,6 +34,6 @@ mod reduce;
 /// # Examples
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize)]
 pub struct PolynomialRingZq {
-    poly: PolyOverZ,
-    modulus: ModulusPolynomialRingZq,
+    pub(crate) poly: PolyOverZ,
+    pub(crate) modulus: ModulusPolynomialRingZq,
 }
