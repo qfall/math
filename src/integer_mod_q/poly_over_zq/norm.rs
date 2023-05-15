@@ -9,7 +9,11 @@
 //! This module includes functionality to compute several norms
 //! defined on polynomials.
 
-use crate::{integer::Z, integer_mod_q::PolyOverZq, traits::GetCoefficient};
+use crate::{
+    integer::Z,
+    integer_mod_q::PolyOverZq,
+    traits::{GetCoefficient, Pow},
+};
 
 impl PolyOverZq {
     /// Returns the squared Euclidean norm or 2-norm of the given polynomial.
@@ -35,7 +39,7 @@ impl PolyOverZq {
                 //todo: use min once on dev
                 coeff = minus_coeff;
             }
-            res = res + &coeff * &coeff;
+            res = res + coeff.pow(2).unwrap();
         }
         res
     }
