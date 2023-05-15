@@ -19,6 +19,7 @@ mod evaluate;
 mod from;
 mod get;
 mod ownership;
+mod properties;
 mod sample;
 mod serialize;
 mod set;

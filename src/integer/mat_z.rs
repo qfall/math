@@ -20,6 +20,7 @@ mod from;
 mod get;
 mod inverse;
 mod ownership;
+mod properties;
 mod sample;
 mod serialize;
 mod set;

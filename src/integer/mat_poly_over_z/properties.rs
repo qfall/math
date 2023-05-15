@@ -11,7 +11,7 @@
 
 use super::MatPolyOverZ;
 use crate::traits::{GetNumColumns, GetNumRows};
-use flint_sys::fmpz_poly_mat::fmpz_poly_mat_is_one;
+use flint_sys::fmpz_poly_mat::{fmpz_poly_mat_is_one, fmpz_poly_mat_is_zero};
 
 impl MatPolyOverZ {
     /// Checks if a [`MatPolyOverZ`] is a identity matrix, i.e.
@@ -48,6 +48,25 @@ impl MatPolyOverZ {
     /// ```
     pub fn is_square(&self) -> bool {
         self.get_num_columns() == self.get_num_rows()
+    }
+
+    /// Checks if a [`MatPolyOverZ`] is a zero matrix, i.e.
+    /// all entries are the constant polynomial `0` everywhere.
+    ///
+    /// Returns `true` if the matrix is zero and `false` otherwise.
+    ///
+    /// ```
+    /// use std::str::FromStr;
+    /// use qfall_math::integer::MatPolyOverZ;
+    ///
+    /// let matrix = MatPolyOverZ::from_str("[[0, 0],[0, 0]]").unwrap();
+    /// let check = matrix.is_zero();
+    /// # assert!(check)
+    /// ```
+    pub fn is_zero(&self) -> bool {
+        // we have to test squareness manually, since FLINT does not check this
+        // directly with their method
+        unsafe { 0 != fmpz_poly_mat_is_zero(&self.matrix) }
     }
 }
 
@@ -146,5 +165,32 @@ mod test_is_square {
         assert!(!matrix_2x1.is_square());
         assert!(!matrix_2x3.is_square());
         assert!(!matrix_3x2.is_square());
+    }
+}
+
+#[cfg(test)]
+mod test_is_zero {
+    use super::MatPolyOverZ;
+    use std::str::FromStr;
+
+    /// ensure that is_zero returns `true` for all zero matrices
+
+    #[test]
+    fn zero_detection() {
+        let zero = MatPolyOverZ::from_str("[[0, 0],[0, 0]]").unwrap();
+
+        assert!(zero.is_zero());
+    }
+
+    /// ensure that is_zero returns `false` for non-zero matrices
+    #[test]
+    fn zero_rejection() {
+        let small = MatPolyOverZ::from_str("[[0, 0],[4  0 0 0 2, 0]]").unwrap();
+        let large =
+            MatPolyOverZ::from_str(&format!("[[0, 0],[1  {}, 0]]", (u128::MAX - 1) / 2 + 1))
+                .unwrap();
+
+        assert!(!(small.is_zero()));
+        assert!(!(large.is_zero()));
     }
 }
