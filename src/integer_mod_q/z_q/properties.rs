@@ -141,9 +141,9 @@ mod test_is_one {
     /// ensure that is_one returns `true` for `1`
     #[test]
     fn one_detection() {
-        let zero = Zq::from_str("8 mod 7").unwrap();
+        let one = Zq::from_str("8 mod 7").unwrap();
 
-        assert!(zero.is_one());
+        assert!(one.is_one());
     }
 
     /// ensure that is_one returns `false` for other values
