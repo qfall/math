@@ -238,12 +238,11 @@ mod test_get_entry {
 
 #[cfg(test)]
 mod test_get_num {
-    use std::str::FromStr;
-
     use crate::{
         integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
         traits::{GetNumColumns, GetNumRows},
     };
+    use std::str::FromStr;
 
     /// Ensure that the getter for number of rows works correctly.
     #[test]
