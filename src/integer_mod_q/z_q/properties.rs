@@ -8,6 +8,8 @@
 
 //! This module includes functionality about properties of [`Zq`] instances.
 
+use flint_sys::{fmpz::fmpz_is_zero, fmpz_mod::fmpz_mod_is_one};
+
 use super::Zq;
 use crate::traits::Pow;
 
@@ -26,6 +28,34 @@ impl Zq {
     /// ```
     pub fn inverse(&self) -> Option<Zq> {
         self.pow(-1).ok()
+    }
+
+    /// Checks if a [`Zq`] is `0`.
+    ///
+    /// Returns true if the value is `0`.
+    ///
+    /// ```
+    /// use qfall_math::integer_mod_q::Zq;
+    ///
+    /// let value = Zq::try_from((0,7)).unwrap();
+    /// assert!(value.is_zero())
+    /// ```
+    pub fn is_zero(&self) -> bool {
+        1 == unsafe { fmpz_is_zero(&self.value.value) }
+    }
+
+    /// Checks if a [`Zq`] is `1`.
+    ///
+    /// Returns true if the value is `1`.
+    ///
+    /// ```
+    /// use qfall_math::integer_mod_q::Zq;
+    ///
+    /// let value = Zq::try_from((1,7)).unwrap();
+    /// assert!(value.is_one())
+    /// ```
+    pub fn is_one(&self) -> bool {
+        1 == unsafe { fmpz_mod_is_one(&self.value.value, &*self.modulus.modulus) }
     }
 }
 
@@ -75,5 +105,55 @@ mod test_inv {
         assert!(val_0.inverse().is_none());
         assert!(val_1.inverse().is_none());
         assert!(val_2.inverse().is_none());
+    }
+}
+
+#[cfg(test)]
+mod test_is_zero {
+    use super::Zq;
+    use std::str::FromStr;
+
+    /// ensure that is_zero returns `true` for `0`
+    #[test]
+    fn zero_detection() {
+        let zero = Zq::from_str("7 mod 7").unwrap();
+
+        assert!(zero.is_zero());
+    }
+
+    /// ensure that is_zero returns `false` for non-zero values
+    #[test]
+    fn zero_rejection() {
+        let small = Zq::try_from_int_int(4, 9).unwrap();
+        let large =
+            Zq::from_str(&format!("{} mod {}", (u128::MAX - 1) / 2 + 1, u128::MAX)).unwrap();
+
+        assert!(!(small.is_zero()));
+        assert!(!(large.is_zero()));
+    }
+}
+
+#[cfg(test)]
+mod test_is_one {
+    use super::Zq;
+    use std::str::FromStr;
+
+    /// ensure that is_one returns `true` for `1`
+    #[test]
+    fn one_detection() {
+        let zero = Zq::from_str("8 mod 7").unwrap();
+
+        assert!(zero.is_one());
+    }
+
+    /// ensure that is_one returns `false` for other values
+    #[test]
+    fn one_rejection() {
+        let small = Zq::from_str("12 mod 7").unwrap();
+        let large =
+            Zq::from_str(&format!("{} mod {}", (u128::MAX - 1) / 2 + 2, u128::MAX)).unwrap();
+
+        assert!(!(small.is_one()));
+        assert!(!(large.is_one()));
     }
 }
