@@ -47,7 +47,7 @@ impl PolyOverZq {
     /// assert!(value.is_one())
     /// ```
     pub fn is_one(&self) -> bool {
-        1 == unsafe { fmpz_mod_poly_is_one(&self.poly, &*self.modulus.modulus) }
+        1 == unsafe { fmpz_mod_poly_is_one(&self.poly, self.modulus.get_fmpz_mod_ctx_struct()) }
     }
 
     /// Checks if every entry of a [`PolyOverZq`] is `0`.
@@ -62,7 +62,7 @@ impl PolyOverZq {
     /// assert!(value.is_zero())
     /// ```
     pub fn is_zero(&self) -> bool {
-        -1 == unsafe { fmpz_mod_poly_degree(&self.poly, &*self.modulus.modulus) }
+        -1 == unsafe { fmpz_mod_poly_degree(&self.poly, self.modulus.get_fmpz_mod_ctx_struct()) }
     }
 }
 
