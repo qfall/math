@@ -199,9 +199,9 @@ impl Q {
     }
 
     /// Create a new rational number of type [`Q`] from a [`f64`].
-    /// This function works with the bit representation of the float it received as input.
-    /// Floats like `0.1` that are not completely representable,
-    /// will not be instantiated as `1/10`.
+    /// This function works with the exact float it received as input.
+    /// Many numbers like `0.1` are not exactly representable as floats and 
+    /// will therefore not be instantiated as `1/10`.
     ///
     /// Input parameters:
     /// - `value` : The value the rational number will have, provided as a [`f64`]
@@ -234,6 +234,7 @@ impl Q {
         // -52 because the mantissa is 52 bit long
         exponent -= 1023 + 52;
         let shift = match exponent {
+            // This could be optimized with `fmpz_lshift_mpn` once it is part of flint_sys.
             e if e >= 1 => Q::from(2).pow(e).unwrap(),
             e => Q::try_from((&1, &2)).unwrap().pow(e.abs()).unwrap(),
         };
@@ -627,15 +628,6 @@ mod test_from_float {
         f64::consts::{E, LN_10, LN_2},
         str::FromStr,
     };
-
-    /// test large fraction representation for float
-    #[test]
-    fn large_fractions() {
-        // can only be approximated, as it is not representable perfectly
-        let f = 0.000_400_000_000_000_000_1;
-        println!("{}", f);
-        println!("{}", Q::from(f));
-    }
 
     /// Test that a large number is correctly converted from float.
     #[test]
