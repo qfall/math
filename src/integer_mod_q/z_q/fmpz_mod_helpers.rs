@@ -50,7 +50,7 @@ pub(crate) fn length(value: &fmpz, modulus: &fmpz) -> Z {
 unsafe impl AsInteger for Zq {
     /// Documentation at [`AsInteger::into_fmpz`]
     unsafe fn into_fmpz(self) -> fmpz {
-        (&self.value).into_fmpz()
+        AsInteger::into_fmpz(self.value)
     }
 
     /// Documentation at [`AsInteger::get_fmpz_ref`]
