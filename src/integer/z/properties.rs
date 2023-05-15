@@ -12,10 +12,38 @@ use super::Z;
 use crate::rational::Q;
 use flint_sys::{
     fmpq::{fmpq, fmpq_inv},
-    fmpz::{fmpz, fmpz_abs, fmpz_bits, fmpz_is_prime},
+    fmpz::{fmpz, fmpz_abs, fmpz_bits, fmpz_is_one, fmpz_is_prime, fmpz_is_zero},
 };
 
 impl Z {
+    /// Checks if a [`Z`] is `0`.
+    ///
+    /// Returns true if the value is `0`.
+    ///
+    /// ```
+    /// use qfall_math::integer::Z;
+    ///
+    /// let value = Z::from(0);
+    /// assert!(value.is_zero())
+    /// ```
+    pub fn is_zero(&self) -> bool {
+        1 == unsafe { fmpz_is_zero(&self.value) }
+    }
+
+    /// Checks if a [`Z`] is `1`.
+    ///
+    /// Returns true if the value is `1`.
+    ///
+    /// ```
+    /// use qfall_math::integer::Z;
+    ///
+    /// let value = Z::from(1);
+    /// assert!(value.is_one())
+    /// ```
+    pub fn is_one(&self) -> bool {
+        1 == unsafe { fmpz_is_one(&self.value) }
+    }
+
     /// Checks if a [`Z`] is prime.
     ///
     /// Returns true if the value is prime.
@@ -217,5 +245,53 @@ mod test_inv {
         let inv_zero = zero.inverse();
 
         assert!(inv_zero.is_none());
+    }
+}
+
+#[cfg(test)]
+mod test_is_zero {
+    use super::Z;
+    use std::str::FromStr;
+
+    /// ensure that is_zero returns `true` for `0`
+    #[test]
+    fn zero_detection() {
+        let zero = Z::from(0);
+
+        assert!(zero.is_zero());
+    }
+
+    /// ensure that is_zero returns `false` for non-zero values
+    #[test]
+    fn zero_rejection() {
+        let small = Z::from(2);
+        let large = Z::from_str(&format!("{}", (u128::MAX - 1) / 2 + 1)).unwrap();
+
+        assert!(!(small.is_zero()));
+        assert!(!(large.is_zero()));
+    }
+}
+
+#[cfg(test)]
+mod test_is_one {
+    use super::Z;
+    use std::str::FromStr;
+
+    /// ensure that is_one returns `true` for `1`
+    #[test]
+    fn one_detection() {
+        let zero = Z::from(1);
+
+        assert!(zero.is_one());
+    }
+
+    /// ensure that is_one returns `false` for other values
+    #[test]
+    fn one_rejection() {
+        let small = Z::from(2);
+        let large = Z::from_str(&format!("{}", (u128::MAX - 1) / 2 + 2)).unwrap();
+
+        assert!(!(small.is_one()));
+        assert!(!(large.is_one()));
     }
 }
