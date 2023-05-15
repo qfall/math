@@ -14,9 +14,7 @@ use crate::{
     integer::PolyOverZ,
     integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq},
     traits::{GetEntry, GetNumColumns, GetNumRows},
-    utils::index::evaluate_indices,
 };
-use flint_sys::{fmpz_poly::fmpz_poly_set, fmpz_poly_mat::fmpz_poly_mat_entry};
 use std::fmt::Display;
 
 impl MatPolynomialRingZq {
@@ -24,8 +22,7 @@ impl MatPolynomialRingZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
-    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
     /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     ///
@@ -41,12 +38,11 @@ impl MatPolynomialRingZq {
 }
 
 impl GetNumRows for MatPolynomialRingZq {
-    /// Returns the number of rows of the matrix as a [`i64`].
+    /// Returns the number of rows of the matrix as an [`i64`].
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
-    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
     /// use qfall_math::integer::MatPolyOverZ;
     /// use qfall_math::traits::*;
     /// use std::str::FromStr;
@@ -63,12 +59,11 @@ impl GetNumRows for MatPolynomialRingZq {
 }
 
 impl GetNumColumns for MatPolynomialRingZq {
-    /// Returns the number of columns of the matrix as a [`i64`].
+    /// Returns the number of columns of the matrix as an [`i64`].
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
-    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
     /// use qfall_math::integer::MatPolyOverZ;
     /// use qfall_math::traits::*;
     /// use std::str::FromStr;
@@ -97,10 +92,8 @@ impl GetEntry<PolyOverZ> for MatPolynomialRingZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
-    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
-    /// use qfall_math::integer::MatPolyOverZ;
-    /// use qfall_math::integer::PolyOverZ;
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use qfall_math::integer::{MatPolyOverZ, PolyOverZ};
     /// use qfall_math::traits::*;
     /// use std::str::FromStr;
     ///
@@ -119,17 +112,7 @@ impl GetEntry<PolyOverZ> for MatPolynomialRingZq {
         row: impl TryInto<i64> + Display,
         column: impl TryInto<i64> + Display,
     ) -> Result<PolyOverZ, MathError> {
-        let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
-
-        // since `self.matrix` is a correct fmpz_poly matrix and both row and column
-        // are previously checked to be inside of the matrix, no errors
-        // appear inside of `unsafe` and `fmpz_poly_set` can successfully clone the
-        // entry of the matrix. Therefore no memory leaks can appear.
-        let mut copy = PolyOverZ::default();
-        let entry = unsafe { fmpz_poly_mat_entry(&self.matrix.matrix, row_i64, column_i64) };
-        unsafe { fmpz_poly_set(&mut copy.poly, entry) };
-
-        Ok(copy)
+        self.matrix.get_entry(row, column)
     }
 }
 
@@ -146,11 +129,8 @@ impl GetEntry<PolynomialRingZq> for MatPolynomialRingZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
-    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
-    /// use qfall_math::integer_mod_q::PolynomialRingZq;
-    /// use qfall_math::integer::MatPolyOverZ;
-    /// use qfall_math::integer::PolyOverZ;
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq, PolynomialRingZq};
+    /// use qfall_math::integer::{MatPolyOverZ, PolyOverZ};
     /// use qfall_math::traits::*;
     /// use std::str::FromStr;
     ///
@@ -169,20 +149,10 @@ impl GetEntry<PolynomialRingZq> for MatPolynomialRingZq {
         row: impl TryInto<i64> + Display,
         column: impl TryInto<i64> + Display,
     ) -> Result<PolynomialRingZq, MathError> {
-        let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
-
-        // since `self.matrix` is a correct fmpz_poly matrix and both row and column
-        // are previously checked to be inside of the matrix, no errors
-        // appear inside of `unsafe` and `fmpz_poly_set` can successfully clone the
-        // entry of the matrix. Therefore no memory leaks can appear.
-        let mut copy = PolynomialRingZq {
-            poly: PolyOverZ::default(),
+        Ok(PolynomialRingZq {
+            poly: self.matrix.get_entry(row, column)?,
             modulus: self.get_mod(),
-        };
-        let entry = unsafe { fmpz_poly_mat_entry(&self.matrix.matrix, row_i64, column_i64) };
-        unsafe { fmpz_poly_set(&mut copy.poly.poly, entry) };
-
-        Ok(copy)
+        })
     }
 }
 
@@ -275,7 +245,7 @@ mod test_get_num {
         traits::{GetNumColumns, GetNumRows},
     };
 
-    /// Ensure that the getter for rows works correctly.
+    /// Ensure that the getter for number of rows works correctly.
     #[test]
     fn num_rows() {
         let modulus = ModulusPolynomialRingZq::from_str("2  42 17 mod 89").unwrap();
@@ -284,7 +254,7 @@ mod test_get_num {
         assert_eq!(matrix.get_num_rows(), 5);
     }
 
-    /// Ensure that the getter for columns works correctly.
+    /// Ensure that the getter for number of columns works correctly.
     #[test]
     fn num_columns() {
         let modulus = ModulusPolynomialRingZq::from_str("2  42 17 mod 89").unwrap();
