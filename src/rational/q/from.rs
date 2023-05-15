@@ -199,6 +199,9 @@ impl Q {
     }
 
     /// Create a new rational number of type [`Q`] from a [`f64`].
+    /// This function works with the bit representation of the float it received as input.
+    /// Floats like `0.1` that are not completely representable,
+    /// will not be instantiated as `1/10`.
     ///
     /// Input parameters:
     /// - `value` : The value the rational number will have, provided as a [`f64`]
@@ -298,6 +301,9 @@ impl<T: Into<Z>> From<T> for Q {
 
 impl From<f64> for Q {
     /// Create a new rational number of type [`Q`] from a [`f64`].
+    /// This function works with the bit representation of the float it received as input.
+    /// Floats like `0.1` that are not completely representable,
+    /// will not be instantiated as `1/10`.
     ///
     /// Input parameters:
     /// - `value` : The value the rational number will have, provided as a [`f64`]

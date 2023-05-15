@@ -100,7 +100,7 @@ mod test_distance {
         let i_2 = a.distance(35_i32);
         let i_3 = a.distance(i64::MIN);
         let f_0 = a.distance(4.25_f32);
-        let f_1 = a.distance(15.7_f64);
+        let f_1 = a.distance(0.66015625_f64);
 
         assert_eq!(Q::ZERO, u_0);
         assert_eq!(Q::from(15), u_1);
@@ -111,6 +111,6 @@ mod test_distance {
         assert_eq!(Q::from(35), i_2);
         assert_eq!(Q::from(i64::MIN).abs(), i_3);
         assert_eq!(Q::try_from((&425, &100)).unwrap(), f_0);
-        assert_eq!(Q::try_from((&157, &10)).unwrap(), f_1);
+        assert_eq!(Q::try_from((&169, &256)).unwrap(), f_1);
     }
 }
