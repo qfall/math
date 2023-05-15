@@ -11,7 +11,7 @@
 
 use crate::{
     rational::{PolyOverQ, Q},
-    traits::GetCoefficient,
+    traits::{GetCoefficient, Pow},
 };
 
 impl PolyOverQ {
@@ -34,7 +34,7 @@ impl PolyOverQ {
 
         for i in 0..=self.get_degree() {
             let coeff = self.get_coeff(i).unwrap();
-            res = res + &coeff * &coeff;
+            res = res + coeff.pow(2).unwrap();
         }
         res
     }
