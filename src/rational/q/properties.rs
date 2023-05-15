@@ -9,7 +9,7 @@
 //! This module includes functionality about properties of [`Q`] instances.
 
 use super::Q;
-use flint_sys::fmpq::{fmpq_abs, fmpq_inv};
+use flint_sys::fmpq::{fmpq_abs, fmpq_inv, fmpq_is_one, fmpq_is_zero};
 
 impl Q {
     /// Returns the given [`Q`] instance with its absolute value.
@@ -51,6 +51,34 @@ impl Q {
         let mut out = Q::ZERO;
         unsafe { fmpq_inv(&mut out.value, &self.value) };
         Some(out)
+    }
+
+    /// Checks if a [`Q`] is `0`.
+    ///
+    /// Returns true if the value is `0`.
+    ///
+    /// ```
+    /// use qfall_math::rational::Q;
+    ///
+    /// let value = Q::from(0);
+    /// assert!(value.is_zero())
+    /// ```
+    pub fn is_zero(&self) -> bool {
+        1 == unsafe { fmpq_is_zero(&self.value) }
+    }
+
+    /// Checks if a [`Q`] is `1`.
+    ///
+    /// Returns true if the value is `1`.
+    ///
+    /// ```
+    /// use qfall_math::rational::Q;
+    ///
+    /// let value = Q::from(1);
+    /// assert!(value.is_one())
+    /// ```
+    pub fn is_one(&self) -> bool {
+        1 == unsafe { fmpq_is_one(&self.value) }
     }
 }
 
@@ -122,5 +150,53 @@ mod test_inv {
         let inv_zero = zero.inverse();
 
         assert!(inv_zero.is_none());
+    }
+}
+
+#[cfg(test)]
+mod test_is_zero {
+    use super::Q;
+    use std::str::FromStr;
+
+    /// ensure that is_zero returns `true` for `0`
+    #[test]
+    fn zero_detection() {
+        let zero = Q::from(0);
+
+        assert!(zero.is_zero());
+    }
+
+    /// ensure that is_zero returns `false` for non-zero values
+    #[test]
+    fn zero_rejection() {
+        let small = Q::from(2);
+        let large = Q::from_str(&format!("{}", (u128::MAX - 1) / 2 + 1)).unwrap();
+
+        assert!(!(small.is_zero()));
+        assert!(!(large.is_zero()));
+    }
+}
+
+#[cfg(test)]
+mod test_is_one {
+    use super::Q;
+    use std::str::FromStr;
+
+    /// ensure that is_one returns `true` for `1`
+    #[test]
+    fn one_detection() {
+        let zero = Q::from(1);
+
+        assert!(zero.is_one());
+    }
+
+    /// ensure that is_one returns `false` for other values
+    #[test]
+    fn one_rejection() {
+        let small = Q::from(2);
+        let large = Q::from_str(&format!("1/{}", (u128::MAX - 1) / 2 + 2)).unwrap();
+
+        assert!(!(small.is_one()));
+        assert!(!(large.is_one()));
     }
 }

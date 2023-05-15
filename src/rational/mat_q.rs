@@ -25,6 +25,7 @@ mod get;
 mod gso;
 mod inverse;
 mod ownership;
+mod properties;
 mod serialize;
 mod set;
 mod sort;
