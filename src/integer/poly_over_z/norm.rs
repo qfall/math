@@ -11,7 +11,7 @@
 
 use crate::{
     integer::{PolyOverZ, Z},
-    traits::GetCoefficient,
+    traits::{GetCoefficient, Pow},
 };
 
 impl PolyOverZ {
@@ -34,7 +34,7 @@ impl PolyOverZ {
 
         for i in 0..=self.get_degree() {
             let coeff = self.get_coeff(i).unwrap();
-            res = res + &coeff * &coeff;
+            res = res + coeff.pow(2).unwrap();
         }
         res
     }
