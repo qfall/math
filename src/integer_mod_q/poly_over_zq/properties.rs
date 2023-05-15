@@ -10,7 +10,10 @@
 //! This includes checks such as reducibility.
 
 use super::PolyOverZq;
-use flint_sys::fmpz_mod_poly_factor::fmpz_mod_poly_is_irreducible;
+use flint_sys::{
+    fmpz_mod_poly::{fmpz_mod_poly_degree, fmpz_mod_poly_is_one},
+    fmpz_mod_poly_factor::fmpz_mod_poly_is_irreducible,
+};
 
 impl PolyOverZq {
     /// Checks if a [`PolyOverZq`] is irreducible.
@@ -30,6 +33,36 @@ impl PolyOverZq {
         1 == unsafe {
             fmpz_mod_poly_is_irreducible(&self.poly, self.modulus.get_fmpz_mod_ctx_struct())
         }
+    }
+
+    /// Checks if a [`PolyOverZq`] is the constant polynomial with coefficient `1`.
+    ///
+    /// Returns true if the first coefficient is `1` and is the only coefficient
+    ///
+    /// ```
+    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use std::str::FromStr;
+    ///
+    /// let value = PolyOverZq::from_str("1  1 mod 4").unwrap();
+    /// assert!(value.is_one())
+    /// ```
+    pub fn is_one(&self) -> bool {
+        1 == unsafe { fmpz_mod_poly_is_one(&self.poly, &*self.modulus.modulus) }
+    }
+
+    /// Checks if every entry of a [`PolyOverZq`] is `0`.
+    ///
+    /// Returns true if [`PolyOverZq`] has no coefficients
+    ///
+    /// ```
+    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use std::str::FromStr;
+    ///
+    /// let value = PolyOverZq::from_str("0 mod 7").unwrap();
+    /// assert!(value.is_zero())
+    /// ```
+    pub fn is_zero(&self) -> bool {
+        -1 == unsafe { fmpz_mod_poly_degree(&self.poly, &*self.modulus.modulus) }
     }
 }
 
@@ -51,5 +84,62 @@ mod test_is_irreducible {
     fn poly_is_reducible() {
         let poly_irr = PolyOverZq::from_str("3  1 2 1 mod 17").unwrap();
         assert!(!poly_irr.is_irreducible())
+    }
+}
+
+#[cfg(test)]
+mod test_is_one {
+    use super::PolyOverZq;
+    use std::str::FromStr;
+
+    /// ensure that is_one returns `true` for the one polynomial
+    #[test]
+    fn one_detection() {
+        let one = PolyOverZq::from_str("1  1 mod 7").unwrap();
+        let one2 = PolyOverZq::from_str("2  1 14 mod 7").unwrap();
+
+        assert!(one.is_one());
+        assert!(one2.is_one());
+    }
+
+    /// ensure that is_one returns `false` for other polynomials
+    #[test]
+    fn one_rejection() {
+        let small = PolyOverZq::from_str("4  1 0 0 1 mod 7").unwrap();
+        let large =
+            PolyOverZq::from_str(&format!("1  {} mod {}", (u128::MAX - 1) / 2 + 2, u128::MAX))
+                .unwrap();
+
+        assert!(!(small.is_one()));
+        assert!(!(large.is_one()));
+    }
+}
+
+#[cfg(test)]
+mod test_is_zero {
+    use super::PolyOverZq;
+    use std::str::FromStr;
+
+    /// ensure that is_zero returns `true` for the zero polynomial
+
+    #[test]
+    fn zero_detection() {
+        let zero = PolyOverZq::from_str("0 mod 7").unwrap();
+        let zero2 = PolyOverZq::from_str("2  7 14 mod 7").unwrap();
+
+        assert!(zero.is_zero());
+        assert!(zero2.is_zero());
+    }
+
+    /// ensure that is_zero returns `false` for non-zero polynomials
+    #[test]
+    fn zero_rejection() {
+        let small = PolyOverZq::from_str("4  0 0 0 1 mod 7").unwrap();
+        let large =
+            PolyOverZq::from_str(&format!("1  {} mod {}", (u128::MAX - 1) / 2 + 1, u128::MAX))
+                .unwrap();
+
+        assert!(!(small.is_zero()));
+        assert!(!(large.is_zero()));
     }
 }
