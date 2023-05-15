@@ -200,7 +200,7 @@ impl Q {
 
     /// Create a new rational number of type [`Q`] from a [`f64`].
     /// This function works with the exact float it received as input.
-    /// Many numbers like `0.1` are not exactly representable as floats and 
+    /// Many numbers like `0.1` are not exactly representable as floats and
     /// will therefore not be instantiated as `1/10`.
     ///
     /// Input parameters:
