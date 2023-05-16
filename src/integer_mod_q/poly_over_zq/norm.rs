@@ -11,7 +11,7 @@
 
 use crate::{
     integer::Z,
-    integer_mod_q::PolyOverZq,
+    integer_mod_q::{PolyOverZq, Zq},
     traits::{GetCoefficient, Pow},
 };
 
@@ -32,20 +32,15 @@ impl PolyOverZq {
     /// ```
     pub fn norm_eucl_sqrd(&self) -> Z {
         let mut res = Z::ZERO;
+        let zero = Zq::try_from((0, &self.modulus)).unwrap();
         for i in 0..=self.get_degree() {
-            let mut coeff: Z = self.get_coeff(i).unwrap();
-            let minus_coeff = Z::from(&self.modulus) - &coeff;
-            if minus_coeff < coeff {
-                //todo: use min once on dev
-                coeff = minus_coeff;
-            }
-            res = res + coeff.pow(2).unwrap();
+            let coeff: Zq = self.get_coeff(i).unwrap();
+            let dist = coeff.distance_safe(&zero).unwrap();
+            res = res + dist.pow(2).unwrap();
         }
         res
     }
-}
 
-impl PolyOverZq {
     /// Returns the infinity norm or the maximal absolute value of a
     /// coefficient of the given polynomial.
     ///
@@ -63,19 +58,16 @@ impl PolyOverZq {
     /// ```
     pub fn norm_infty(&self) -> Z {
         let mut res = Z::ZERO;
+        let zero = Zq::try_from((0, &self.modulus)).unwrap();
         for i in 0..=self.get_degree() {
-            let mut coeff: Z = self.get_coeff(i).unwrap();
-            let minus_coeff = Z::from(&self.modulus) - &coeff;
-            if minus_coeff < coeff {
-                //todo: use min once on dev
-                coeff = minus_coeff;
-            }
+            let coeff: Zq = self.get_coeff(i).unwrap();
+            let dist = coeff.distance_safe(&zero).unwrap();
 
             // todo: once ord is on dev use:
             // res = max(res, coeff);
             // AND todo: use std::cmp::max;
-            if res < coeff {
-                res = coeff;
+            if res < dist {
+                res = dist;
             }
         }
         res
