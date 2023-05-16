@@ -13,11 +13,11 @@ use crate::{
     error::MathError,
     integer::Z,
     macros::for_others::{implement_for_others, implement_for_owned},
-    traits::{GetEntry, GetNumColumns, GetNumRows, SetEntry},
+    traits::{GetNumColumns, GetNumRows, SetEntry},
     utils::index::{evaluate_index, evaluate_indices},
 };
 use flint_sys::{
-    fmpz::fmpz_set,
+    fmpz::{fmpz_set, fmpz_swap},
     fmpz_mat::{
         fmpz_mat_entry, fmpz_mat_invert_cols, fmpz_mat_invert_rows, fmpz_mat_swap_cols,
         fmpz_mat_swap_rows,
@@ -111,11 +111,12 @@ impl MatZ {
         let (row0, col0) = evaluate_indices(self, row0, col0)?;
         let (row1, col1) = evaluate_indices(self, row1, col1)?;
 
-        let entry0 = self.get_entry(row0, col0)?;
-        let entry1 = self.get_entry(row1, col1)?;
-
-        self.set_entry(row0, col0, entry1)?;
-        self.set_entry(row1, col1, entry0)?;
+        unsafe {
+            fmpz_swap(
+                fmpz_mat_entry(&self.matrix, row0, col0),
+                fmpz_mat_entry(&self.matrix, row1, col1),
+            )
+        };
         Ok(())
     }
 
