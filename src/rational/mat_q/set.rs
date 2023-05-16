@@ -16,7 +16,7 @@ use crate::{
     utils::index::{evaluate_index, evaluate_indices},
 };
 use flint_sys::{
-    fmpq::fmpq_set,
+    fmpq::{fmpq_set, fmpq_swap},
     fmpq_mat::{
         fmpq_mat_entry, fmpq_mat_invert_cols, fmpq_mat_invert_rows, fmpq_mat_swap_cols,
         fmpq_mat_swap_rows,
@@ -76,6 +76,47 @@ implement_for_owned!(Q, MatQ, SetEntry);
 // TODO add implementation for other types as well
 
 impl MatQ {
+    /// Swaps two entries of the specified matrix.
+    ///
+    /// Parameters:
+    /// - `row0`: specifies the row, in which the first entry is located
+    /// - `col0`: specifies the column, in which the first entry is located
+    /// - `row1`: specifies the row, in which the second entry is located
+    /// - `col1`: specifies the column, in which the second entry is located
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if one of the specified entries is not part of the matrix.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::MatQ;
+    ///
+    /// let mut matrix = MatQ::new(4, 3).unwrap();
+    /// matrix.swap_entries(0, 0, 2, 1);
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    /// if the number of rows or columns is greater than the matrix or negative.
+    pub fn swap_entries(
+        &mut self,
+        row0: impl TryInto<i64> + Display,
+        col0: impl TryInto<i64> + Display,
+        row1: impl TryInto<i64> + Display,
+        col1: impl TryInto<i64> + Display,
+    ) -> Result<(), MathError> {
+        let (row0, col0) = evaluate_indices(self, row0, col0)?;
+        let (row1, col1) = evaluate_indices(self, row1, col1)?;
+
+        unsafe {
+            fmpq_swap(
+                fmpq_mat_entry(&self.matrix, row0, col0),
+                fmpq_mat_entry(&self.matrix, row1, col1),
+            )
+        };
+        Ok(())
+    }
+
     /// Swaps two columns of the specified matrix.
     ///
     /// Parameters:
@@ -158,7 +199,8 @@ impl MatQ {
         Ok(())
     }
 
-    /// Reverses all columns of the specified matrix.
+    /// Swaps the `i`-th column with the `n-i`-th column for all i <= n/2
+    /// of the specified matrix with `n` columns.
     ///
     /// # Examples
     /// ```
@@ -168,10 +210,14 @@ impl MatQ {
     /// matrix.reverse_columns();
     /// ```
     pub fn reverse_columns(&mut self) {
+        // If the second argument to this function is not null, the permutation
+        // of the columns is also applied to this argument.
+        // Hence, passing in null is justified here.
         unsafe { fmpq_mat_invert_cols(&mut self.matrix, null_mut()) }
     }
 
-    /// Reverses all rows of the specified matrix.
+    /// Swaps the `i`-th row with the `n-i`-th row for all i <= n/2
+    /// of the specified matrix with `n` rows.
     ///
     /// # Examples
     /// ```
@@ -181,6 +227,9 @@ impl MatQ {
     /// matrix.reverse_rows();
     /// ```
     pub fn reverse_rows(&mut self) {
+        // If the second argument to this function is not null, the permutation
+        // of the rows is also applied to this argument.
+        // Hence, passing in null is justified here.
         unsafe { fmpq_mat_invert_rows(&mut self.matrix, null_mut()) }
     }
 }
@@ -308,6 +357,69 @@ mod test_swaps {
     use super::MatQ;
     use std::str::FromStr;
 
+    /// Ensures that swapping entries works fine for small entries
+    #[test]
+    fn entries_small_entries() {
+        let mut matrix = MatQ::from_str("[[1,1/2,3/-5],[-4/3,-5,6]]").unwrap();
+        let cmp = MatQ::from_str("[[1,-5,3/-5],[-4/3,1/2,6]]").unwrap();
+
+        let _ = matrix.swap_entries(1, 1, 0, 1);
+
+        assert_eq!(cmp, matrix);
+    }
+
+    /// Ensures that swapping entries works fine for large entries
+    #[test]
+    fn entries_large_entries() {
+        let mut matrix = MatQ::from_str(&format!(
+            "[[{}/2,1,3, 4],[{},4,-1/{},5],[7,6,8,9]]",
+            i64::MIN,
+            i64::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+        let cmp = MatQ::from_str(&format!(
+            "[[-1/{},1,3, 4],[{},4,{}/2,5],[7,6,8,9]]",
+            u64::MAX,
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
+
+        let _ = matrix.swap_entries(0, 0, 1, 2);
+
+        assert_eq!(cmp, matrix);
+    }
+
+    /// Ensures that swapping the same entry does not change anything
+    #[test]
+    fn entries_swap_same_entry() {
+        let mut matrix = MatQ::from_str(&format!(
+            "[[{},1,3, 4],[{},4,{},5],[7,6,8,9]]",
+            i64::MIN,
+            i64::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+        let cmp = matrix.clone();
+
+        let _ = matrix.swap_entries(0, 0, 0, 0);
+        let _ = matrix.swap_entries(1, 1, 1, 1);
+
+        assert_eq!(cmp, matrix);
+    }
+
+    /// Ensures that `swap_entries` returns an error if one of the specified entries is out of bounds
+    #[test]
+    fn entries_out_of_bounds() {
+        let mut matrix = MatQ::new(5, 2).unwrap();
+
+        assert!(matrix.swap_entries(-1, 0, 0, 0).is_err());
+        assert!(matrix.swap_entries(0, -1, 0, 0).is_err());
+        assert!(matrix.swap_entries(0, 0, 5, 0).is_err());
+        assert!(matrix.swap_entries(0, 5, 0, 0).is_err());
+    }
+
     /// Ensures that swapping columns works fine for small entries
     #[test]
     fn columns_small_entries() {
@@ -344,6 +456,23 @@ mod test_swaps {
         assert_eq!(cmp_vec_1, matrix.get_column(1).unwrap());
         assert_eq!(cmp_vec_2, matrix.get_column(2).unwrap());
         assert_eq!(cmp_vec_3, matrix.get_column(3).unwrap());
+    }
+
+    /// Ensures that swapping the same column does not change anything
+    #[test]
+    fn columns_swap_same_col() {
+        let mut matrix = MatQ::from_str(&format!(
+            "[[{},1,3, 4],[{},4,{},5],[7,6,8,9]]",
+            i64::MIN,
+            i64::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+        let cmp = matrix.clone();
+
+        let _ = matrix.swap_columns(0, 0);
+
+        assert_eq!(cmp, matrix);
     }
 
     /// Ensures that `swap_columns` returns an error if one of the specified columns is out of bounds
@@ -390,6 +519,23 @@ mod test_swaps {
         assert_eq!(cmp_vec_0, matrix.get_row(0).unwrap());
         assert_eq!(cmp_vec_1, matrix.get_row(1).unwrap());
         assert_eq!(cmp_vec_2, matrix.get_row(2).unwrap());
+    }
+
+    /// Ensures that swapping the same row does not change anything
+    #[test]
+    fn rows_swap_same_row() {
+        let mut matrix = MatQ::from_str(&format!(
+            "[[{},1,3, 4],[{},4,{},5],[7,6,8,9]]",
+            i64::MIN,
+            i64::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+        let cmp = matrix.clone();
+
+        let _ = matrix.swap_rows(1, 1);
+
+        assert_eq!(cmp, matrix);
     }
 
     /// Ensures that `swap_rows` returns an error if one of the specified rows is out of bounds
