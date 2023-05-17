@@ -40,7 +40,7 @@ mod to_string;
 ///
 /// // instantiations
 /// let a = Q::from_str("-876543/235")?;
-/// let b = Q::try_from((&21, &1))?;
+/// let b = Q::from((21, 1));
 /// let zero = Q::default();
 /// let _ = a.clone();
 ///

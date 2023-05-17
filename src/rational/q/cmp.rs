@@ -61,8 +61,8 @@ impl PartialOrd for Q {
     /// # use qfall_math::error::MathError;
     /// use qfall_math::rational::Q;
     ///
-    /// let a: Q = Q::try_from((&1,&10))?;
-    /// let b: Q = Q::try_from((&2,&10))?;
+    /// let a: Q = Q::from((1,10));
+    /// let b: Q = Q::from((2,10));
     ///
     /// assert!(a < b);
     /// assert!(a <= b);
