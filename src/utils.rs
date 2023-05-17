@@ -15,3 +15,4 @@ pub(crate) mod dimensions;
 pub mod index;
 pub(crate) mod parse;
 pub(crate) mod sample;
+pub(crate) mod sort;
