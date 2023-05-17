@@ -17,6 +17,7 @@ mod default;
 mod from;
 mod get;
 mod reduce;
+mod vector;
 
 /// [`MatPolynomialRingZq`] is a matrix with entries of type [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq).
 ///
@@ -27,7 +28,6 @@ mod reduce;
 ///
 /// TODO: Add Example
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize)]
-#[allow(dead_code)]
 pub struct MatPolynomialRingZq {
     pub(crate) matrix: MatPolyOverZ,
     pub(crate) modulus: ModulusPolynomialRingZq,
