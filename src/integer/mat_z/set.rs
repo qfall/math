@@ -96,9 +96,9 @@ impl MatZ {
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
-    /// let mut m1 = MatZ::new(2, 2).unwrap();
-    /// let m2 = MatZ::from_str("[[1],[2]]").unwrap();
-    /// m1.set_column(1, &m2, 0);
+    /// let mut mat1 = MatZ::new(2, 2).unwrap();
+    /// let mat2 = MatZ::from_str("[[1],[2]]").unwrap();
+    /// mat1.set_column(1, &mat2, 0);
     /// ```
     ///
     /// # Errors and Failures
@@ -163,9 +163,9 @@ impl MatZ {
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
-    /// let mut m1 = MatZ::new(2, 2).unwrap();
-    /// let m2 = MatZ::from_str("[[1,2]]").unwrap();
-    /// m1.set_row(0, &m2, 0);
+    /// let mut mat1 = MatZ::new(2, 2).unwrap();
+    /// let mat2 = MatZ::from_str("[[1,2]]").unwrap();
+    /// mat1.set_row(0, &mat2, 0);
     /// ```
     ///
     /// # Errors and Failures
