@@ -17,13 +17,12 @@ use crate::{
     error::MathError,
     integer::Z,
     macros::from::{from_trait, from_type},
-    traits::AsInteger,
+    traits::{AsInteger, Pow},
 };
 use flint_sys::{
     fmpq::{fmpq, fmpq_canonicalise, fmpq_clear, fmpq_set_str},
     fmpz::{fmpz_is_zero, fmpz_set},
 };
-use fraction::Fraction;
 use std::{ffi::CString, str::FromStr};
 
 impl FromStr for Q {
@@ -143,6 +142,9 @@ impl Q {
     }
 
     /// Create a new rational number of type [`Q`] from a [`f64`].
+    /// This function works with the exact float it received as input.
+    /// Many numbers like `0.1` are not exactly representable as floats and
+    /// will therefore not be instantiated as `1/10`.
     ///
     /// Input parameters:
     /// - `value` : The value the rational number will have, provided as a [`f64`]
@@ -157,15 +159,30 @@ impl Q {
     /// let a: Q = Q::from_f64(-123.4567);
     /// ```
     pub fn from_f64(value: f64) -> Self {
-        let f = Fraction::from(value);
-        let sign = f
-            .sign()
-            .expect("Got None element instead of a fraction, may be overflow error (NaN)")
-            .is_positive();
-        match sign {
-            true => Q::try_from((f.numer().unwrap(), f.denom().unwrap())).unwrap(),
-            false => Q::try_from((f.numer().unwrap(), f.denom().unwrap())).unwrap() * Q::MINUS_ONE,
-        }
+        let bits: u64 = value.to_bits();
+        let sign = if bits >> 63 == 0 {
+            Q::ONE
+        } else {
+            Q::MINUS_ONE
+        };
+        let mut exponent: i16 = ((bits >> 52) & 0x7ff) as i16;
+        let mantissa = if exponent == 0 {
+            (bits & 0xfffffffffffff) << 1
+        } else {
+            // prepend one bit to the mantissa because the most significant bit is implicit
+            (bits & 0xfffffffffffff) | 0x10000000000000
+        };
+
+        // -1023 because of the offset representation of the exponent
+        // -52 because the mantissa is 52 bit long
+        exponent -= 1023 + 52;
+        let shift = match exponent {
+            // This could be optimized with `fmpz_lshift_mpn` once it is part of flint_sys.
+            e if e >= 1 => Q::from(2).pow(e).unwrap(),
+            e => Q::try_from((&1, &2)).unwrap().pow(e.abs()).unwrap(),
+        };
+
+        sign * Z::from(mantissa) * shift
     }
 
     from_type!(f32, f64, Q, Q::from_f64);
@@ -237,6 +254,9 @@ impl<T: Into<Z>> From<T> for Q {
 
 impl From<f64> for Q {
     /// Create a new rational number of type [`Q`] from a [`f64`].
+    /// This function works with the bit representation of the float it received as input.
+    /// Floats like `0.1` that are not completely representable,
+    /// will not be instantiated as `1/10`.
     ///
     /// Input parameters:
     /// - `value` : The value the rational number will have, provided as a [`f64`]
@@ -711,7 +731,36 @@ mod test_from_z {
 #[cfg(test)]
 mod test_from_float {
     use super::Q;
-    use std::f64::consts::{E, LN_10, LN_2};
+    use std::{
+        f64::consts::{E, LN_10, LN_2},
+        str::FromStr,
+    };
+
+    /// Test that a large number is correctly converted from float.
+    #[test]
+    fn large_value() {
+        // This is the exact value stored when creating a float with the value 1e+100
+        let a: f64 = 10000000000000000159028911097599180468360808563945281389781327557747838772170381060813469985856815104.0;
+
+        let q = Q::from(a);
+
+        let cmp = Q::from_str("10000000000000000159028911097599180468360808563945281389781327557747838772170381060813469985856815104")
+                    .unwrap();
+        assert_eq!(q, cmp);
+    }
+
+    // Test that a small number is correctly converted from float.
+    #[test]
+    fn small_value() {
+        // This is the exact value stored when creating a float with the value 0.1
+        let a: f64 = 0.1000000000000000055511151231257827021181583404541015625;
+
+        let q = Q::from(a);
+
+        let cmp = Q::from_str("1000000000000000055511151231257827021181583404541015625/10000000000000000000000000000000000000000000000000000000")
+            .unwrap();
+        assert_eq!(q, cmp);
+    }
 
     /// Enure that the from works correctly for positive values
     #[test]

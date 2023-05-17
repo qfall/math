@@ -2,7 +2,7 @@ name: Pipeline
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [ main ]
 
 env:
   CARGO_TERM_COLOR: always
@@ -84,7 +84,6 @@ jobs:
       
       - name: Archive release build
         uses: actions/upload-artifact@v1
-        if: github.ref == 'ref/head/master'
         with:
           name: ${{ env.PROJECT_NAME }}-release_build-v${{ env.PROJECT_VERSION }}
           path: target/release/${{ env.PROJECT_NAME }}

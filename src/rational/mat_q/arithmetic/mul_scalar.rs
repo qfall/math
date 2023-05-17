@@ -280,12 +280,12 @@ mod test_mul_q {
         let mat1 = MatQ::from_str("[[1/2],[0],[4]]").unwrap();
         let mat2 = MatQ::from_str("[[2,5,6],[1,3,1]]").unwrap();
         let mat3 = MatQ::from_str("[[5/4],[0],[10]]").unwrap();
-        let mat4 = MatQ::from_str("[[-1999/20],[0],[-3998/5]]").unwrap();
-        let mat5 = MatQ::from_str("[[357/5, 357/2, 1071/5],[357/10, 1071/10, 357/10]]").unwrap();
+        let mat4 = MatQ::from_str("[[-799/8],[0],[-799]]").unwrap();
+        let mat5 = MatQ::from_str("[[285/4, 1425/8, 855/4],[285/8, 855/8, 285/8]]").unwrap();
 
         assert_eq!(mat3, 2.5f32 * &mat1);
-        assert_eq!(mat4, -199.9f64 * mat1);
-        assert_eq!(mat5, mat2 * 35.7);
+        assert_eq!(mat4, -199.75f64 * mat1);
+        assert_eq!(mat5, mat2 * 35.625);
     }
 
     /// Checks if scalar multiplication works fine for matrices of different dimensions
