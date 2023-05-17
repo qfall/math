@@ -21,11 +21,11 @@ impl MatPolynomialRingZq {
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
     /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
-    /// 
+    ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
     /// let poly_mat = MatPolyOverZ::from_str("[[1  42],[2  1 2],[1  17]]").unwrap();
     /// let poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
-    /// 
+    ///
     /// let transpose = poly_ring_mat.transpose();
     /// ```
     pub fn transpose(&self) -> Self {
