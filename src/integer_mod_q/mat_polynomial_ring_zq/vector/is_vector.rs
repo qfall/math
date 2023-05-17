@@ -110,12 +110,11 @@ impl MatPolynomialRingZq {
 
 #[cfg(test)]
 mod test_is_vector {
-    use std::str::FromStr;
-
     use crate::{
         integer::MatPolyOverZ,
         integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
     };
+    use std::str::FromStr;
 
     const BITPRIME64: u64 = 18446744073709551557;
 
