@@ -11,11 +11,9 @@
 use super::super::MatPolynomialRingZq;
 use crate::{
     error::MathError,
-    integer::MatPolyOverZ,
     macros::arithmetics::{
         arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
     },
-    traits::{GetNumColumns, GetNumRows},
 };
 use std::ops::Add;
 
@@ -50,6 +48,7 @@ impl Add for &MatPolynomialRingZq {
     ///
     /// # Panics ...
     /// - ... if the moduli of both [`MatPolynomialRingZq`] mismatch.
+    /// - ... if the dimensions of both [`MatPolynomialRingZq`] mismatch.
     fn add(self, other: Self) -> Self::Output {
         self.add_safe(other).unwrap()
     }
@@ -82,6 +81,8 @@ impl MatPolynomialRingZq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
     /// both [`MatPolynomialRingZq`] mismatch.
+    /// - Returns a [`MathError`] of type [`MathError::MismatchingMatrixDimension`]
+    /// if the dimensions of both [`MatPolynomialRingZq`] mismatch.
     pub fn add_safe(&self, other: &Self) -> Result<MatPolynomialRingZq, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
@@ -89,14 +90,9 @@ impl MatPolynomialRingZq {
                 self.modulus, other.modulus
             )));
         }
-        let mut out = MatPolynomialRingZq::from((
-            &MatPolyOverZ::new(self.get_num_rows(), self.get_num_columns()).unwrap(),
-            &self.modulus,
-        ));
-        out.matrix = &self.matrix + &other.matrix;
-        // TODO: use reduce only on coefficients
-        out.reduce();
-        Ok(out)
+        let matrix = self.matrix.add_safe(&other.matrix)?;
+
+        Ok(MatPolynomialRingZq::from((&matrix, &self.modulus)))
     }
 }
 
@@ -263,11 +259,38 @@ mod test_add {
         let _ = poly_ring_mat1 + poly_ring_mat2;
     }
 
+    /// testing addition for [`MatPolynomialRingZq`] with different dimensions does not work
+    #[test]
+    #[should_panic]
+    fn add_mismatching_dim() {
+        let modulus1 = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
+        let poly_mat1 = MatPolyOverZ::from_str("[[1  42],[2  1 2]]").unwrap();
+        let poly_ring_mat1 = MatPolynomialRingZq::from((&poly_mat1, &modulus1));
+        let modulus2 = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        let poly_mat2 = MatPolyOverZ::from_str("[[3  3 0 1, 1  42]]").unwrap();
+        let poly_ring_mat2 = MatPolynomialRingZq::from((&poly_mat2, &modulus2));
+
+        let _ = poly_ring_mat1 + poly_ring_mat2;
+    }
+
     /// testing whether add_safe throws an error for mismatching moduli
     #[test]
-    fn add_safe_is_err() {
+    fn add_safe_is_err_moduli() {
         let modulus1 = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
         let poly_mat1 = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
+        let poly_ring_mat1 = MatPolynomialRingZq::from((&poly_mat1, &modulus1));
+        let modulus2 = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        let poly_mat2 = MatPolyOverZ::from_str("[[3  3 0 1, 1  42],[0, 1  17]]").unwrap();
+        let poly_ring_mat2 = MatPolynomialRingZq::from((&poly_mat2, &modulus2));
+
+        assert!(&poly_ring_mat1.add_safe(&poly_ring_mat2).is_err());
+    }
+
+    /// testing whether add_safe throws an error for different dimensions
+    #[test]
+    fn add_safe_is_err_dim() {
+        let modulus1 = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
+        let poly_mat1 = MatPolyOverZ::from_str("[[4  -1 0 1 1],[2  1 2]]").unwrap();
         let poly_ring_mat1 = MatPolynomialRingZq::from((&poly_mat1, &modulus1));
         let modulus2 = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly_mat2 = MatPolyOverZ::from_str("[[3  3 0 1, 1  42],[0, 1  17]]").unwrap();
