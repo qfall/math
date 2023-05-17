@@ -13,6 +13,7 @@ use super::ModulusPolynomialRingZq;
 use crate::integer::MatPolyOverZ;
 use serde::{Deserialize, Serialize};
 
+mod arithmetic;
 mod default;
 mod from;
 mod get;
@@ -27,7 +28,6 @@ mod reduce;
 ///
 /// TODO: Add Example
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize)]
-#[allow(dead_code)]
 pub struct MatPolynomialRingZq {
     pub(crate) matrix: MatPolyOverZ,
     pub(crate) modulus: ModulusPolynomialRingZq,
