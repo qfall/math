@@ -18,6 +18,7 @@ mod from;
 mod get;
 mod reduce;
 mod transpose;
+mod vector;
 
 /// [`MatPolynomialRingZq`] is a matrix with entries of type [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq).
 ///
