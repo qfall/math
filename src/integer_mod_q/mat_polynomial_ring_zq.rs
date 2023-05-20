@@ -13,6 +13,7 @@ use super::ModulusPolynomialRingZq;
 use crate::integer::MatPolyOverZ;
 use serde::{Deserialize, Serialize};
 
+mod arithmetic;
 mod default;
 mod from;
 mod get;
