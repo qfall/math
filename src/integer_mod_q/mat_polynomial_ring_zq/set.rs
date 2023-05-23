@@ -25,6 +25,10 @@ impl SetEntry<&PolyOverZ> for MatPolynomialRingZq {
     /// - `column`: specifies the column in which the entry is located
     /// - `value`: specifies the value to which the entry is set
     ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if the specified entry is
+    /// not part of the matrix.
+    ///
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
@@ -71,6 +75,10 @@ impl SetEntry<&PolynomialRingZq> for MatPolynomialRingZq {
     /// - `row`: specifies the row in which the entry is located
     /// - `column`: specifies the column in which the entry is located
     /// - `value`: specifies the value to which the entry is set
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if the specified entry is
+    /// not part of the matrix or the moduli are different.
     ///
     /// # Examples
     /// ```
