@@ -43,7 +43,7 @@ impl Z {
     ///
     /// Parameters:
     /// - `precision` specifies the upper limit of the error as `1/(2*precision)`.
-    ///   The precision must larger than zero.
+    ///   The precision must be larger than zero.
     ///
     /// Returns the square root with a specified minimum precision.
     ///
