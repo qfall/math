@@ -54,12 +54,11 @@ impl Q {
     ///
     /// Given `Q::sqrt_precision(x/y,precision) = a/b` the maximum error to
     /// the true square root result is `a/b * (b + 1) * p/(b-p)`
-    /// with `p = 1/(2*precision)`
+    /// with `p = 1/(2*precision)`.
     /// The actual result may be more accurate.
     ///
     /// Parameters:
     /// - `precision` specifies the upper limit of the error.
-    ///
     ///   The precision must larger than zero.
     ///
     /// # Examples
@@ -76,6 +75,8 @@ impl Q {
     /// ```
     ///
     /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::PrecisionNotPositive`]
+    ///   if the precision is not larger than zero.
     /// - Returns a [`MathError`] of type [`MathError::NegativeRootParameter`]
     ///   if the parameter of the square root is negative.
     pub fn sqrt_precision(&self, precision: &Z) -> Result<Q, MathError> {
@@ -124,6 +125,7 @@ mod test_sqrt {
     #[test]
     fn square_rationals() {
         let values = vec![
+            Q::ZERO,
             Q::from((1, 3)),
             Q::from((10, 3)),
             Q::from((100000, 3)),
@@ -149,15 +151,16 @@ mod test_sqrt {
             Q::from((1, 3)),
             Q::from((10, 3)),
             Q::from((100000, 3)),
-            Q::from((i64::MAX, 1)),
-            Q::from((i64::MAX, i64::MAX - 1)) * Q::from(i64::MAX),
+            Q::from((u64::MAX, 1)),
+            Q::from((1, u64::MAX)),
+            Q::from((u64::MAX, u64::MAX - 1)) * Q::from(u64::MAX),
         ];
         let precisions = vec![
             Z::from(1),
             Z::from(10),
             Z::from(100000),
-            Z::from(i64::MAX),
-            Z::from(i64::MAX).pow(5).unwrap(),
+            Z::from(u64::MAX),
+            Z::from(u64::MAX).pow(5).unwrap(),
         ];
 
         // Test for all combinations of values and precisions

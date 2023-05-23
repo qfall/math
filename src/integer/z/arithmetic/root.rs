@@ -60,7 +60,7 @@ impl Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::PrecisionNotPositive`]
-    ///   if the precision is negative.
+    ///   if the precision is not larger than zero.
     /// - Returns a [`MathError`] of type [`MathError::NegativeRootParameter`]
     ///   if the parameter of the square root is negative.
     pub fn sqrt_precision(&self, precision: &Z) -> Result<Q, MathError> {
