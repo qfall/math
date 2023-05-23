@@ -18,7 +18,7 @@
 //! ```Q::sqrt(x/y) = (a+e_a)/(b+e_b) = a/b + (e_a*b - a*e_b)/(b*(b+e_b))```
 //!
 //! The Error is the largest with `e_a = p` and `e_b = -p`:
-//! ```|(e_a*b - a*e_b)/(b*(b+e_b))| <= (a/b + 1) * p/(b-p)```
+//! ```|(e_a*b - a*e_b)/(b*(b+e_b))| <= a/b * (b+1) * p/(b-p)```
 
 use crate::{error::MathError, integer::Z, rational::Q};
 
@@ -27,17 +27,18 @@ impl Q {
     ///
     /// The maximum error can be described by:
     /// `Q::sqrt(x/y) = a/b` the maximum error to the true square root result
-    /// is limited by `(a/b + 1) * 10⁻⁹/(b-10⁻⁹)`
+    /// is limited by `a/b * (b + 1) * 10⁻⁹/(b-10⁻⁹)`
+    /// which is less than `2 * a/b * 10^-9`.
     /// The actual result may be more accurate.
     ///
     /// # Examples:
     /// ```
     /// use qfall_math::rational::Q;
     ///
-    /// let value = Q::try_from((&9,&4)).unwrap();
-    /// let root = value.sqrt().unwrap();
+    /// let value = Q::from((9,4));
+    /// let root = value.sqrt();
     ///
-    /// assert_eq!(&root, &Q::try_from((&3,&2)).unwrap());
+    /// assert_eq!(&root, &Q::from((3,2)));
     /// ```
     ///
     /// # Panics ...
@@ -52,7 +53,7 @@ impl Q {
     /// Calculate the square root with a specified minimum precision.
     ///
     /// Given `Q::sqrt_precision(x/y,precision) = a/b` the maximum error to
-    /// the true square root result is `(a/b + 1) * p/(b-p)`
+    /// the true square root result is `a/b * (b + 1) * p/(b-p)`
     /// with `p = 1/(2*precision)`
     /// The actual result may be more accurate.
     ///
@@ -67,11 +68,11 @@ impl Q {
     /// use qfall_math::rational::Q;
     ///
     /// let precision = Z::from(1000);
-    /// let value = Q::try_from((&9,&4)).unwrap();
+    /// let value = Q::from((9,4));
     ///
     /// let root = value.sqrt_precision(&precision).unwrap();
     ///
-    /// assert_eq!(&root, &Q::try_from((&3,&2)).unwrap());
+    /// assert_eq!(&root, &Q::from((3,2)));
     /// ```
     ///
     /// # Errors and Failures
@@ -87,7 +88,7 @@ impl Q {
 
 #[cfg(test)]
 mod test_sqrt {
-    use crate::{integer::Z, rational::Q};
+    use crate::{integer::Z, rational::Q, traits::Pow};
 
     /// Assert that sqrt of zero works correctly
     #[test]
@@ -99,7 +100,7 @@ mod test_sqrt {
         assert_eq!(res, Q::ZERO);
     }
 
-    /// Assert that the root of a negative number results in an error.
+    /// Assert that [`Q::sqrt_precision()`] returns an error for negative values.
     #[test]
     fn negative_value() {
         let value = Q::from(-10);
@@ -109,57 +110,92 @@ mod test_sqrt {
         assert!(res.is_err());
     }
 
-    // TODO: this test might be correct, but fails because the f64 precision is to low.
-    /// Calculate sqrt of different values  with different precisions and
-    /// assert that the result meets the accuracy boundary.
+    /// Assert that [`Q::sqrt()`] panics for negative values
+    #[test]
+    #[should_panic]
+    fn negative_value_precision() {
+        let value = Q::from(-10);
+
+        let _ = value.sqrt();
+    }
+
+    /// Assert that [`Q::sqrt`] works correctly for rational numbers with squares in
+    /// numerator and denominator.
+    #[test]
+    fn square_rationals() {
+        let values = vec![
+            Q::from((1, 3)),
+            Q::from((10, 3)),
+            Q::from((100000, 3)),
+            Q::from((u64::MAX, 3)),
+            Q::from((u64::MAX, u64::MAX - 1)),
+        ];
+
+        // Test for all combinations of values and precisions
+        for value in values {
+            let value_sqr = &value * &value;
+
+            let root = value_sqr.sqrt();
+
+            assert_eq!(value, root);
+        }
+    }
+
+    /// Calculate the square root of different values with different precisions.
+    /// Assert that the result meets the accuracy boundary.
     #[test]
     fn precision_correct() {
-        // TODO: add dividers
         let values = vec![
-            Q::from(1),
-            Q::from(10),
-            Q::from(100000),
-            Q::from(i64::MAX),
-            Q::from(i64::MAX) * Q::from(i64::MAX),
+            Q::from((1, 3)),
+            Q::from((10, 3)),
+            Q::from((100000, 3)),
+            Q::from((i64::MAX, 1)),
+            Q::from((i64::MAX, i64::MAX - 1)) * Q::from(i64::MAX),
         ];
         let precisions = vec![
             Z::from(1),
             Z::from(10),
             Z::from(100000),
             Z::from(i64::MAX),
-            // Z::from(i64::MAX) * Z::from(i64::MAX),
+            Z::from(i64::MAX).pow(5).unwrap(),
         ];
 
         // Test for all combinations of values and precisions
         for value in values {
+            // Calculate the root using f64 for comparison later on.
+            let num: f64 = value.get_numerator().to_string().parse().unwrap();
+            let den: f64 = value.get_denominator().to_string().parse().unwrap();
+            let root_float: f64 = (num / den).sqrt();
+            let root_float = Q::from(root_float);
+
             for precision in &precisions {
                 let root = value.sqrt_precision(precision).unwrap();
 
-                // Reasoning behind the following lines:
-                // v = value, p_q = max_allowed_error = (a/b + 1) * p_z/(b-p_z), r = root, |e|<= p_q (actual error)
-                // sqrt_precision(v,precision) = r = sqrt(x) + e
-                // => r^2 = x + 2*sqrt(x)*e + e^2
-                // => r^2-x = 2*sqrt(x)*e + e^2 = difference <= 2*sqrt(x)*p_q + p_q^2
-
-                let p_z = Q::try_from((&1, precision)).unwrap() / Q::from(2);
-
-                // TODO: clean up once arithmetic between Q and Z is better supported.
-                let p_q = (&root + Q::ONE) * &p_z / (Q::from(root.get_denominator()) - &p_z);
+                // Explanation of the following lines:
+                // 1. Naming:
+                //   x: value from which the sqrt is taken
+                //   p_q and p_z are the maximum possible error of the sqrt for `Q` and `Z` resp.
+                //   |e|<= p_q: actual error
+                //   sqrt(x) = a/b: true square root result without error, approximated by f64::sqrt(x)
+                //   sqrt_precision(x,precision) = root = sqrt(x) + e (true square root result + error)
+                //
+                // 2. Calculation:
+                //   p_q = a/b * (b+1) * p_z/(b-p_z) (See derivation at the top of this file).
+                //   We square the the root and subtract the original value so that the comparison
+                //   of the precision bounds depends less on the precision of f64::sqrt(x).
+                //   => root^2 = x + 2*sqrt(x)*e + e^2
+                //   => root^2-x = 2*sqrt(x)*e + e^2 = difference <= 2*sqrt(x)*p_q + p_q^2
+                let p_z = Q::from((1, 2 * precision));
+                let p_q = &root_float * (root_float.get_denominator() + 1) * &p_z
+                    / (root_float.get_denominator() - &p_z);
 
                 let root_squared = &root * &root;
-                let difference = root_squared - Q::from(value.clone());
+                let error_after_squaring = &root_squared - &value;
 
-                // Use the root calculated with floating point numbers as
-                // an approximation of sqrt(x).
-                let root_from_float = Q::from((i64::MAX as f64).sqrt());
-                let precision_cmp = &Q::from(2) * &p_q * root_from_float + &p_q * &p_q;
+                let precision_bound_after_squaring = 2 * &p_q * &root_float + &p_q * &p_q;
 
-                println!(
-                    "value: {}\n result: {}\n difference: {} \n precision_cmp: {}",
-                    value, root, difference, precision_cmp
-                );
-                assert!(&difference > &(&Q::MINUS_ONE * &precision_cmp));
-                assert!(&difference < &precision_cmp);
+                assert!(&error_after_squaring > &(-1 * &precision_bound_after_squaring));
+                assert!(&error_after_squaring < &precision_bound_after_squaring);
             }
         }
     }
