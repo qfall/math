@@ -177,6 +177,7 @@ impl MatPolynomialRingZq {
     ///
     /// let fmpz_entries = poly_ring_mat.collect_entries();
     /// ```
+    #[allow(dead_code)]
     pub(crate) fn collect_entries(&self) -> Vec<fmpz_poly_struct> {
         let mut entries: Vec<fmpz_poly_struct> = vec![];
 
@@ -357,7 +358,9 @@ mod test_mod {
 
 #[cfg(test)]
 mod test_collect_entries {
-    use crate::integer::MatPolyOverZ;
+    use flint_sys::fmpz_poly::fmpz_poly_set;
+
+    use crate::integer::{MatPolyOverZ, PolyOverZ};
     use crate::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
     use std::str::FromStr;
 
@@ -368,7 +371,7 @@ mod test_collect_entries {
         let modulus =
             ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", BITPRIME64)).unwrap();
         let poly_mat1 = MatPolyOverZ::from_str(&format!(
-            "[[4  -1 0 {} 1, 1  42],[2  1 2, 3  {} 1 1]]",
+            "[[4  -1 0 3 1, 1  {}],[2  1 2, 3  {} 1 1]]",
             i64::MAX,
             i64::MIN,
         ))
@@ -380,8 +383,25 @@ mod test_collect_entries {
         let entries_1 = poly_ring_mat1.collect_entries();
         let entries_2 = poly_ring_mat2.collect_entries();
 
+        let mut entry1 = PolyOverZ::default();
+        let mut entry2 = entry1.clone();
+        let mut entry3 = entry1.clone();
+
+        unsafe { fmpz_poly_set(&mut entry1.poly, &entries_1[1]) }
+        unsafe { fmpz_poly_set(&mut entry2.poly, &entries_1[3]) }
+        unsafe { fmpz_poly_set(&mut entry3.poly, &entries_2[0]) }
+
         assert_eq!(entries_1.len(), 4);
+        assert_eq!(
+            PolyOverZ::from_str(&format!("1  {}", i64::MAX)).unwrap(),
+            entry1
+        );
+        assert_eq!(
+            PolyOverZ::from_str(&format!("3  {} 1 1", i64::MAX - 58)).unwrap(),
+            entry2
+        );
+
         assert_eq!(entries_2.len(), 2);
-        // TODO: add tests for entries
+        assert_eq!(PolyOverZ::from_str("1  42").unwrap(), entry3);
     }
 }
