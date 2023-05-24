@@ -57,7 +57,6 @@ use thiserror::Error;
 /// - `NotInvertible` is thrown if a matrix is not invertible
 /// - `NotNaturalNumber` is thrown if the function expects a natural number,
 /// but a number smaller than `1` is provided
-/// - `NotPrime` is thrown if a provided integer is not prime
 /// - `NoSquareMatrix` is thrown if a matrix is not square
 /// - `OutOfBounds` is thrown if a provided index is not in a desired range
 /// - `VectorFunctionCalledOnNonVector` is thrown if a function defined
@@ -186,10 +185,6 @@ pub enum MathError {
     /// if an integer is not a natural number (excluding the `´0`)
     #[error("invalid integer. The provided value needs to be a natural number and is {0}")]
     NotNaturalNumber(String),
-
-    /// if an integer or modulus is not prime
-    #[error("invalid integer. The integer has to be prime and the provided value is {0}")]
-    NotPrime(String),
 
     /// if a matrix is not square
     #[error("the matrix is not square {0}")]

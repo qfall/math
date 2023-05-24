@@ -119,12 +119,12 @@ mod test_deserialize {
         assert_eq!(poly_z, serde_json::from_str(&cmp_string).unwrap())
     }
 
-    /// tests whether deserialization of a non-prime large `q` [`ModulusPolynomialRingZq`] fails.
+    /// tests whether deserialization of a non-prime large `q` [`ModulusPolynomialRingZq`] works.
     #[test]
     fn non_prime_q() {
         let a: Result<ModulusPolynomialRingZq, serde_json::Error> =
             serde_json::from_str(&format!("{{\"poly\":\"2  17 42 mod {}\"}}", u64::MAX));
-        assert!(a.is_err());
+        assert!(a.is_ok());
     }
 
     /// tests whether deserialization of a negative `q` [`ModulusPolynomialRingZq`] fails.

@@ -39,14 +39,7 @@ impl TryFrom<&PolyOverZq> for ModulusPolynomialRingZq {
     /// let poly_mod = PolyOverZq::from_str("3  1 0 1 mod 17").unwrap();
     /// let modulus = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
     /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`NotPrime`](MathError::NotPrime) if the input
-    /// `modulus_poly` is not prime.
     fn try_from(modulus_poly: &PolyOverZq) -> Result<Self, MathError> {
-        if !modulus_poly.modulus.is_prime() {
-            return Err(MathError::NotPrime(modulus_poly.modulus.to_string()));
-        }
         let mut modulus = MaybeUninit::uninit();
         let c_string = CString::new("X").unwrap();
         unsafe {
@@ -88,8 +81,6 @@ impl FromStr for ModulusPolynomialRingZq {
     /// ```
     /// # Errors and Failures
     /// - Returns a [`MathError`]. For further details see Errors and Failures of [`PolyOverZq::from_str`]
-    /// - Returns a [`MathError`] of type [`NotPrime`](MathError::NotPrime) if the input
-    /// `modulus_poly` is not prime.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Self::try_from(&PolyOverZq::from_str(s)?)
     }
@@ -121,12 +112,12 @@ mod test_try_from_poly_zq {
         assert_eq!(cmp_str, poly_zq.to_string())
     }
 
-    /// ensure that non-primes yields an error
+    /// ensure that non-primes yields no error
     #[test]
     fn poly_zq_non_prime() {
         let in_str = format!("4  0 1 3 {} mod {}", u64::MAX, 2_i32.pow(16));
         let poly_zq = PolyOverZq::from_str(&in_str).unwrap();
-        assert!(ModulusPolynomialRingZq::try_from(&poly_zq).is_err())
+        assert!(ModulusPolynomialRingZq::try_from(&poly_zq).is_ok())
     }
 }
 
@@ -158,7 +149,7 @@ mod test_from_str {
         .is_ok());
     }
 
-    /// ensure that non-primes yields an error
+    /// ensure that non-primes yields no error
     #[test]
     fn poly_zq_non_prime() {
         assert!(ModulusPolynomialRingZq::from_str(&format!(
@@ -166,6 +157,6 @@ mod test_from_str {
             u64::MAX,
             2_i32.pow(16)
         ))
-        .is_err())
+        .is_ok())
     }
 }
