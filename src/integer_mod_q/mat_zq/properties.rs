@@ -16,7 +16,7 @@ use flint_sys::fmpz_mod_mat::{fmpz_mod_mat_is_square, fmpz_mod_mat_is_zero};
 impl MatZq {
     /// Checks if a [`MatZq`] is the identity matrix.
     ///
-    /// Returns true if every diagonal entry is one.
+    /// Returns true if every diagonal entry is one and all other entries are zero.
     ///
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
