@@ -14,7 +14,7 @@ use flint_sys::fmpq_mat::{fmpq_mat_is_one, fmpq_mat_is_square, fmpq_mat_is_zero}
 impl MatQ {
     /// Checks if a [`MatQ`] is the identity matrix.
     ///
-    /// Returns true if every diagonal entry is one.
+    /// Returns true if every diagonal entry is one and all other entries are zero.
     ///
     /// ```
     /// use qfall_math::rational::MatQ;
