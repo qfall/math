@@ -8,15 +8,16 @@
 
 //! This module includes functionality about properties of [`MatZq`] instances.
 
-use crate::traits::{GetNumColumns, GetNumRows};
-
 use super::MatZq;
-use flint_sys::fmpz_mod_mat::{fmpz_mod_mat_is_square, fmpz_mod_mat_is_zero};
+use flint_sys::{
+    fmpz_mat::fmpz_mat_is_one,
+    fmpz_mod_mat::{fmpz_mod_mat_is_square, fmpz_mod_mat_is_zero},
+};
 
 impl MatZq {
     /// Checks if a [`MatZq`] is the identity matrix.
     ///
-    /// Returns true if every diagonal entry is one and all other entries are zero.
+    /// Returns true if every diagonal entry is `1` and all other entries are `0` and the matrix is square.
     ///
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
@@ -26,13 +27,7 @@ impl MatZq {
     /// assert!(value.is_identity())
     /// ```
     pub fn is_identity(&self) -> bool {
-        if self.is_square() {
-            let identity =
-                MatZq::identity(self.get_num_rows(), self.get_num_columns(), &self.modulus)
-                    .unwrap();
-            return self == &identity;
-        }
-        false
+        self.is_square() && unsafe { 1 == fmpz_mat_is_one(&self.matrix.mat[0]) }
     }
 
     /// Checks if a [`MatZq`] is a square matrix.
@@ -74,7 +69,7 @@ mod test_is_identity {
     /// ensure that is_identity returns `true` for identity matrices
     #[test]
     fn identity_detection() {
-        let ident = MatZq::from_str("[[8, 0],[0, 1]] mod 7").unwrap();
+        let ident = MatZq::from_str("[[1, 0],[0, 1]] mod 7").unwrap();
 
         assert!(ident.is_identity());
     }
@@ -89,11 +84,17 @@ mod test_is_identity {
             u128::MAX
         ))
         .unwrap();
+
+        assert!(!small.is_identity());
+        assert!(!large.is_identity());
+    }
+
+    // ensure that is_identity returns false for non-square matrices
+    #[test]
+    fn identity_no_square() {
         let nosquare = MatZq::from_str("[[1, 0],[0, 1],[0, 0]] mod 5").unwrap();
 
-        assert!(!(small.is_identity()));
-        assert!(!(large.is_identity()));
-        assert!(!(nosquare.is_identity()));
+        assert!(!nosquare.is_identity());
     }
 }
 
@@ -103,12 +104,13 @@ mod test_is_zero {
     use std::str::FromStr;
 
     /// ensure that is_zero returns `true` for all zero matrices
-
     #[test]
     fn zero_detection() {
-        let zero = MatZq::from_str("[[0, 0],[7, 0]] mod 7").unwrap();
+        let zero1 = MatZq::from_str("[[0, 0],[0, 0]] mod 7").unwrap();
+        let zero2 = MatZq::from_str("[[0, 0],[0, 0],[0, 0],[0, 0]] mod 7").unwrap();
 
-        assert!(zero.is_zero());
+        assert!(zero1.is_zero());
+        assert!(zero2.is_zero());
     }
 
     /// ensure that is_zero returns `false` for non-zero matrices
@@ -122,8 +124,8 @@ mod test_is_zero {
         ))
         .unwrap();
 
-        assert!(!(small.is_zero()));
-        assert!(!(large.is_zero()));
+        assert!(!small.is_zero());
+        assert!(!large.is_zero());
     }
 }
 
@@ -153,7 +155,7 @@ mod test_is_square {
         ))
         .unwrap();
 
-        assert!(!(small.is_square()));
-        assert!(!(large.is_square()));
+        assert!(!small.is_square());
+        assert!(!large.is_square());
     }
 }

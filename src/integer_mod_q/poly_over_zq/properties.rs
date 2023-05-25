@@ -107,11 +107,11 @@ mod test_is_one {
     fn one_rejection() {
         let small = PolyOverZq::from_str("4  1 0 0 1 mod 7").unwrap();
         let large =
-            PolyOverZq::from_str(&format!("1  {} mod {}", (u128::MAX - 1) / 2 + 2, u128::MAX))
+            PolyOverZq::from_str(&format!("1  {} mod {}", (u128::MAX - 1) / 2 + 2, u128::MAX)) //2^127 + 1 the last memory entry is `1`
                 .unwrap();
 
-        assert!(!(small.is_one()));
-        assert!(!(large.is_one()));
+        assert!(!small.is_one());
+        assert!(!large.is_one());
     }
 }
 
@@ -121,7 +121,6 @@ mod test_is_zero {
     use std::str::FromStr;
 
     /// ensure that is_zero returns `true` for the zero polynomial
-
     #[test]
     fn zero_detection() {
         let zero = PolyOverZq::from_str("0 mod 7").unwrap();
@@ -136,10 +135,10 @@ mod test_is_zero {
     fn zero_rejection() {
         let small = PolyOverZq::from_str("4  0 0 0 1 mod 7").unwrap();
         let large =
-            PolyOverZq::from_str(&format!("1  {} mod {}", (u128::MAX - 1) / 2 + 1, u128::MAX))
+            PolyOverZq::from_str(&format!("1  {} mod {}", (u128::MAX - 1) / 2 + 1, u128::MAX)) //last 126 bits are 0
                 .unwrap();
 
-        assert!(!(small.is_zero()));
-        assert!(!(large.is_zero()));
+        assert!(!small.is_zero());
+        assert!(!large.is_zero());
     }
 }
