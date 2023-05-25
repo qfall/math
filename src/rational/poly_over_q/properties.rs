@@ -74,7 +74,6 @@ mod test_is_zero {
     use std::str::FromStr;
 
     /// ensure that is_zero returns `true` for the zero polynomial
-
     #[test]
     fn zero_detection() {
         let zero = PolyOverQ::from_str("0").unwrap();
