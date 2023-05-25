@@ -14,7 +14,8 @@ use flint_sys::fmpq_mat::{fmpq_mat_is_one, fmpq_mat_is_square, fmpq_mat_is_zero}
 impl MatQ {
     /// Checks if a [`MatQ`] is the identity matrix.
     ///
-    /// Returns true if every diagonal entry is one and all other entries are zero.
+    /// Returns true if every diagonal entry is `1` and all other entries are
+    /// `0` and the matrix is a square matrix.
     ///
     /// ```
     /// use qfall_math::rational::MatQ;
@@ -78,9 +79,9 @@ mod test_is_identity {
         let large = MatQ::from_str(&format!("[[1, 0],[0, {}]]", (u128::MAX - 1) / 2 + 2)).unwrap();
         let nosquare = MatQ::from_str("[[1, 0],[0, 1],[0, 0]]").unwrap();
 
-        assert!(!(small.is_identity()));
-        assert!(!(large.is_identity()));
-        assert!(!(nosquare.is_identity()));
+        assert!(!small.is_identity());
+        assert!(!large.is_identity());
+        assert!(!nosquare.is_identity());
     }
 }
 
@@ -90,7 +91,6 @@ mod test_is_zero {
     use std::str::FromStr;
 
     /// ensure that is_zero returns `true` for all zero matrices
-
     #[test]
     fn zero_detection() {
         let zero = MatQ::from_str("[[0, 0],[0, 0]]").unwrap();
@@ -104,8 +104,8 @@ mod test_is_zero {
         let small = MatQ::from_str("[[0, 7/8],[2, 0]]").unwrap();
         let large = MatQ::from_str(&format!("[[0, 0],[{}, 0]]", (u128::MAX - 1) / 2 + 1)).unwrap();
 
-        assert!(!(small.is_zero()));
-        assert!(!(large.is_zero()));
+        assert!(!small.is_zero());
+        assert!(!large.is_zero());
     }
 }
 
@@ -130,7 +130,7 @@ mod test_is_square {
         let small = MatQ::from_str("[[0, 5/6, 4],[2/7, 0, 1]]").unwrap();
         let large = MatQ::from_str("[[9, 0],[127/71, 0],[0, 0]]").unwrap();
 
-        assert!(!(small.is_square()));
-        assert!(!(large.is_square()));
+        assert!(!small.is_square());
+        assert!(!large.is_square());
     }
 }
