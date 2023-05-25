@@ -11,7 +11,7 @@
 
 use crate::{
     integer::Z,
-    integer_mod_q::{PolyOverZq, Zq},
+    integer_mod_q::{fmpz_mod_helpers::length, PolyOverZq, Zq},
     traits::{GetCoefficient, Pow},
 };
 
@@ -32,11 +32,12 @@ impl PolyOverZq {
     /// ```
     pub fn norm_eucl_sqrd(&self) -> Z {
         let mut res = Z::ZERO;
-        let zero = Zq::try_from((0, &self.modulus)).unwrap();
         for i in 0..=self.get_degree() {
-            let coeff: Zq = self.get_coeff(i).unwrap();
-            let dist = coeff.distance_safe(&zero).unwrap();
-            res = res + dist.pow(2).unwrap();
+            let coeff: Z = self.get_coeff(i).unwrap();
+            res = res
+                + length(&coeff.value, &self.modulus.get_fmpz_mod_ctx_struct().n[0])
+                    .pow(2)
+                    .unwrap();
         }
         res
     }
