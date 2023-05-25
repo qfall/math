@@ -196,7 +196,7 @@ impl MatPolyOverZ {
     ///
     /// # Examples
     /// ```compile_fail
-    /// use qfall_math::intger::MatPolyOverZ;
+    /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     ///
     /// let mat = MatPolyOverZ::from_str("[[1  1, 0],[1  3, 1  4],[0,1  6]]").unwrap();

@@ -12,16 +12,14 @@ use super::MatZ;
 use crate::{
     error::MathError,
     traits::{GetNumColumns, GetNumRows},
-    utils::sort::quicksort,
 };
 
 impl MatZ {
-    #[allow(clippy::needless_range_loop)]
-    /// Sorts the matrix based on some via `cond_func` specified condition of its columns.
+    /// Sorts the columns of the matrix based on some condition defined by `cond_func`.
     ///
     /// This condition is usually a norm with the described input-output behaviour.
     ///
-    /// Paramters:
+    /// Parameters:
     /// - `cond_func`: computes values implementing [`PartialOrd`] over the columns of the specified matrix.
     /// These values are then used to re-order / sort the rows of the matrix.
     ///
@@ -68,30 +66,29 @@ impl MatZ {
         cond_func: fn(&Self) -> Result<T, MathError>,
     ) -> Result<Self, MathError>
     where
-        T: PartialOrd,
+        T: Ord,
     {
-        let mut lengths = vec![];
+        let mut condition_values = vec![];
         for col in 0..self.get_num_columns() {
-            lengths.push(cond_func(&self.get_column(col).unwrap())?);
+            condition_values.push(cond_func(&self.get_column(col).unwrap())?);
         }
-        let length = lengths.len() - 1;
+
         let mut id_vec: Vec<usize> = (0..self.get_num_columns() as usize).collect();
-        quicksort(&mut lengths, 0, length, &mut id_vec);
+        id_vec.sort_by_key(|x| &condition_values[*x]);
 
         let mut out = Self::new(self.get_num_rows(), self.get_num_columns()).unwrap();
-        for col in 0..id_vec.len() {
-            out.set_column(col, self, id_vec[col]).unwrap();
+        for (col, item) in id_vec.iter().enumerate() {
+            out.set_column(col, self, *item).unwrap();
         }
 
         Ok(out)
     }
 
-    #[allow(clippy::needless_range_loop)]
-    /// Sorts the matrix based on some via `cond_func` specified condition of its rows.
+    /// Sorts the rows of the matrix based on some condition defined by `cond_func`.
     ///
     /// This condition is usually a norm with the described input-output behaviour.
     ///
-    /// Paramters:
+    /// Parameters:
     /// - `cond_func`: computes values implementing [`PartialOrd`] over the columns of the specified matrix.
     /// These values are then used to re-order / sort the columns of the matrix.
     ///
@@ -138,19 +135,18 @@ impl MatZ {
         cond_func: fn(&Self) -> Result<T, MathError>,
     ) -> Result<Self, MathError>
     where
-        T: PartialOrd,
+        T: Ord,
     {
-        let mut lengths = vec![];
+        let mut condition_values = vec![];
         for row in 0..self.get_num_rows() {
-            lengths.push(cond_func(&self.get_row(row).unwrap())?);
+            condition_values.push(cond_func(&self.get_row(row).unwrap())?);
         }
-        let last_element = lengths.len() - 1;
         let mut id_vec: Vec<usize> = (0..self.get_num_rows() as usize).collect();
-        quicksort(&mut lengths, 0, last_element, &mut id_vec);
+        id_vec.sort_by_key(|x| &condition_values[*x]);
 
         let mut out = Self::new(self.get_num_rows(), self.get_num_columns()).unwrap();
-        for row in 0..id_vec.len() {
-            out.set_row(row, self, id_vec[row]).unwrap();
+        for (row, item) in id_vec.iter().enumerate() {
+            out.set_row(row, self, *item).unwrap();
         }
 
         Ok(out)
