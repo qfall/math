@@ -245,10 +245,19 @@ mod test_get_degree {
     /// flint does not reduce the exponent due to computational cost
     #[test]
     fn degree_many_coefficients() {
-        let poly = PolyOverZq::from_str("7  1 2 3 4 8 1 3 mod 2").unwrap();
+        let poly1 = PolyOverZq::from_str("7  1 2 3 4 8 1 3 mod 2").unwrap();
+        let poly2 = PolyOverZq::from_str(&format!(
+            "7  1 2 3 4 8 {} {} mod {}",
+            u64::MAX,
+            i64::MAX,
+            u128::MAX
+        ))
+        .unwrap();
 
-        let deg = poly.get_degree();
+        let deg1 = poly1.get_degree();
+        let deg2 = poly2.get_degree();
 
-        assert_eq!(6, deg);
+        assert_eq!(6, deg1);
+        assert_eq!(6, deg2);
     }
 }
