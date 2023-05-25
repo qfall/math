@@ -11,7 +11,7 @@
 
 use crate::{
     integer::Z,
-    integer_mod_q::{fmpz_mod_helpers::length, PolyOverZq, Zq},
+    integer_mod_q::{fmpz_mod_helpers::length, PolyOverZq},
     traits::{GetCoefficient, Pow},
 };
 
@@ -59,16 +59,15 @@ impl PolyOverZq {
     /// ```
     pub fn norm_infty(&self) -> Z {
         let mut res = Z::ZERO;
-        let zero = Zq::try_from((0, &self.modulus)).unwrap();
-        for i in 0..=self.get_degree() {
-            let coeff: Zq = self.get_coeff(i).unwrap();
-            let dist = coeff.distance_safe(&zero).unwrap();
 
+        for i in 0..=self.get_degree() {
+            let coeff: Z = self.get_coeff(i).unwrap();
+            let len = length(&coeff.value, &self.modulus.get_fmpz_mod_ctx_struct().n[0]);
             // todo: once ord is on dev use:
             // res = max(res, coeff);
             // AND todo: use std::cmp::max;
-            if res < dist {
-                res = dist;
+            if res < len {
+                res = len;
             }
         }
         res
