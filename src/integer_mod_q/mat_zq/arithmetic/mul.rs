@@ -56,9 +56,9 @@ impl Mul for &MatZq {
 impl Mul<&MatZ> for &MatZq {
     type Output = MatZq;
 
-    /// Implements the [`Mul`] trait for two [`MatZq`] values.
+    /// Implements the [`Mul`] trait for [`MatZq`] and [`MatZ`].
     ///
-    /// [`Mul`] is implemented for any combination of owned and borrowed [`MatZq`].
+    /// [`Mul`] is implemented for any combination of owned and borrowed [`MatZq`] and [`MatZ`].
     ///
     /// Parameters:
     /// - `other`: specifies the value to multiply with `self`
@@ -261,8 +261,6 @@ mod test_mul_matz {
     fn errors() {
         let mat_1 = MatZq::from_str("[[2,1],[1,2]] mod 4").unwrap();
         let mat_2 = MatZ::from_str("[[1,0],[0,1],[0,0]]").unwrap();
-        let mat_3 = MatZ::from_str("[[2,1,4],[1,2,7]]").unwrap();
         let _ = &mat_1 * &mat_2;
-        let _ = &mat_1 * &mat_3;
     }
 }
