@@ -1,4 +1,4 @@
-// Copyright © 2023 Niklas Siemer
+// Copyright © 2023 Niklas Siemer, Sven Moog
 //
 // This file is part of qFALL-math.
 //
@@ -145,6 +145,34 @@ unsafe impl AsInteger for &Z {
     /// Documentation at [`AsInteger::get_fmpz_ref`]
     fn get_fmpz_ref(&self) -> Option<&fmpz> {
         Some(&self.value)
+    }
+}
+
+unsafe impl AsInteger for &fmpz {
+    /// Documentation at [`AsInteger::into_fmpz`]
+    unsafe fn into_fmpz(self) -> fmpz {
+        let mut value = fmpz(0);
+        fmpz_set(&mut value, self);
+        value
+    }
+
+    /// Documentation at [`AsInteger::get_fmpz_ref`]
+    fn get_fmpz_ref(&self) -> Option<&fmpz> {
+        Some(self)
+    }
+}
+
+unsafe impl AsInteger for fmpz {
+    /// Documentation at [`AsInteger::into_fmpz`]
+    unsafe fn into_fmpz(self) -> fmpz {
+        let mut value = fmpz(0);
+        fmpz_set(&mut value, &self);
+        value
+    }
+
+    /// Documentation at [`AsInteger::get_fmpz_ref`]
+    fn get_fmpz_ref(&self) -> Option<&fmpz> {
+        Some(&self)
     }
 }
 
