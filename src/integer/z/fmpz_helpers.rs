@@ -172,7 +172,7 @@ unsafe impl AsInteger for fmpz {
 
     /// Documentation at [`AsInteger::get_fmpz_ref`]
     fn get_fmpz_ref(&self) -> Option<&fmpz> {
-        Some(&self)
+        Some(self)
     }
 }
 
