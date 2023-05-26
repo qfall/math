@@ -43,7 +43,7 @@ impl Z {
     ///
     /// Parameters:
     /// - `precision` specifies the upper limit of the error as `1/(2*precision)`.
-    ///   The precision must larger than zero.
+    ///   The precision must be larger than zero.
     ///
     /// Returns the square root with a specified minimum precision.
     ///
@@ -60,7 +60,7 @@ impl Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::PrecisionNotPositive`]
-    ///   if the precision is negative.
+    ///   if the precision is not larger than zero.
     /// - Returns a [`MathError`] of type [`MathError::NegativeRootParameter`]
     ///   if the parameter of the square root is negative.
     pub fn sqrt_precision(&self, precision: &Z) -> Result<Q, MathError> {

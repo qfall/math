@@ -14,4 +14,5 @@ mod div;
 mod exp;
 mod mul;
 mod pow;
+mod root;
 mod sub;
