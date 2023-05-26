@@ -74,7 +74,7 @@ impl PolyOverZq {
 mod test_sample_uniform {
     use crate::{
         integer::Z,
-        integer_mod_q::{Modulus, PolyOverZq, Zq},
+        integer_mod_q::{Modulus, PolyOverZq},
         traits::GetCoefficient,
     };
     use std::str::FromStr;
@@ -137,7 +137,6 @@ mod test_sample_uniform {
     #[test]
     fn availability() {
         let modulus = Modulus::from_str("7").unwrap();
-        let zq = Zq::from_str("7 mod 10").unwrap();
         let z = Z::from(7);
 
         let _ = PolyOverZq::sample_uniform(1u64, &0u16);
@@ -149,7 +148,6 @@ mod test_sample_uniform {
         let _ = PolyOverZq::sample_uniform(1i16, &0i64);
         let _ = PolyOverZq::sample_uniform(1i8, &Z::ONE);
         let _ = PolyOverZq::sample_uniform(1, &z);
-        let _ = PolyOverZq::sample_uniform(1, &zq);
         let _ = PolyOverZq::sample_uniform(1, &modulus);
     }
 }
