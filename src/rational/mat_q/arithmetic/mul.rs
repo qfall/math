@@ -16,7 +16,7 @@ use crate::macros::arithmetics::{
     arithmetic_trait_reverse,
 };
 use crate::traits::{GetNumColumns, GetNumRows};
-use flint_sys::fmpq_mat::fmpq_mat_mul;
+use flint_sys::fmpq_mat::{fmpq_mat_mul, fmpq_mat_mul_fmpz_mat};
 use std::ops::Mul;
 
 impl Mul for &MatQ {
@@ -52,6 +52,9 @@ impl Mul for &MatQ {
     }
 }
 
+arithmetic_trait_borrowed_to_owned!(Mul, mul, MatQ, MatQ, MatQ);
+arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatQ, MatQ, MatQ);
+
 impl Mul<&MatZ> for &MatQ {
     type Output = MatQ;
 
@@ -66,11 +69,11 @@ impl Mul<&MatZ> for &MatQ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatQ;
     /// use qfall_math::integer::MatZ;
+    /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let a = MatQ::from_str("[[2/3,1/2],[8/4,7]] mod 3").unwrap();
+    /// let a = MatQ::from_str("[[2/3,1/2],[8/4,7]]").unwrap();
     /// let b = MatZ::from_str("[[1,0],[0,1]]").unwrap();
     ///
     /// let c = &a * &b;
@@ -86,9 +89,8 @@ impl Mul<&MatZ> for &MatQ {
             panic!("Tried to multiply matrices with mismatching matrix dimensions.");
         }
 
-        let other_matq = MatQ::from(other);
         let mut new = MatQ::new(self.get_num_rows(), other.get_num_columns()).unwrap();
-        unsafe { fmpq_mat_mul(&mut new.matrix, &self.matrix, &other_matq.matrix) };
+        unsafe { fmpq_mat_mul_fmpz_mat(&mut new.matrix, &self.matrix, &other.matrix) };
         new
     }
 }
@@ -139,9 +141,6 @@ impl MatQ {
         Ok(new)
     }
 }
-
-arithmetic_trait_borrowed_to_owned!(Mul, mul, MatQ, MatQ, MatQ);
-arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatQ, MatQ, MatQ);
 
 #[cfg(test)]
 mod test_mul {
