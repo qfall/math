@@ -16,7 +16,8 @@ use crate::macros::arithmetics::{
     arithmetic_trait_reverse,
 };
 use crate::traits::{GetNumColumns, GetNumRows};
-use flint_sys::fmpz_mod_mat::fmpz_mod_mat_mul;
+use flint_sys::fmpz_mat::fmpz_mat_mul;
+use flint_sys::fmpz_mod_mat::{_fmpz_mod_mat_reduce, fmpz_mod_mat_mul};
 use std::ops::Mul;
 
 impl Mul for &MatZq {
@@ -53,6 +54,9 @@ impl Mul for &MatZq {
     }
 }
 
+arithmetic_trait_borrowed_to_owned!(Mul, mul, MatZq, MatZq, MatZq);
+arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatZq, MatZq, MatZq);
+
 impl Mul<&MatZ> for &MatZq {
     type Output = MatZq;
 
@@ -87,10 +91,12 @@ impl Mul<&MatZ> for &MatZq {
             panic!("Tried to multiply matrices with mismatching matrix dimensions.");
         }
 
-        let other_matzq = MatZq::from((other, &self.get_mod()));
         let mut new =
             MatZq::new(self.get_num_rows(), other.get_num_columns(), self.get_mod()).unwrap();
-        unsafe { fmpz_mod_mat_mul(&mut new.matrix, &self.matrix, &other_matzq.matrix) };
+        unsafe {
+            fmpz_mat_mul(&mut new.matrix.mat[0], &self.matrix.mat[0], &other.matrix);
+            _fmpz_mod_mat_reduce(&mut new.matrix)
+        }
         new
     }
 }
@@ -151,9 +157,6 @@ impl MatZq {
         Ok(new)
     }
 }
-
-arithmetic_trait_borrowed_to_owned!(Mul, mul, MatZq, MatZq, MatZq);
-arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatZq, MatZq, MatZq);
 
 #[cfg(test)]
 mod test_mul {
