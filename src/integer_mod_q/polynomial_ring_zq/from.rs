@@ -81,7 +81,7 @@ mod test_from_poly_over_z_modulus_polynomial_ring_zq {
     };
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = 18446744073709551557;
+    const BITPRIME64: u64 = u64::MAX - 58;
 
     /// ensure that the modulus is applied with a large prime and large coefficients
     #[test]

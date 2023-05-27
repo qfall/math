@@ -8,8 +8,6 @@
 
 //! Implementations to get information about a [`MatPolynomialRingZq`] matrix.
 
-use flint_sys::{fmpz_poly::fmpz_poly_struct, fmpz_poly_mat::fmpz_poly_mat_entry};
-
 use super::MatPolynomialRingZq;
 use crate::{
     error::MathError,
@@ -17,6 +15,7 @@ use crate::{
     integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq},
     traits::{GetEntry, GetNumColumns, GetNumRows},
 };
+use flint_sys::{fmpz_poly::fmpz_poly_struct, fmpz_poly_mat::fmpz_poly_mat_entry};
 use std::fmt::Display;
 
 impl MatPolynomialRingZq {
@@ -200,7 +199,7 @@ mod test_get_entry {
     use crate::{error::MathError, traits::GetEntry};
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = 18446744073709551557;
+    const BITPRIME64: u64 = u64::MAX - 58;
 
     /// Ensure that getting entries works on the edge.
     #[test]
@@ -308,7 +307,7 @@ mod test_mod {
     };
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = 18446744073709551557;
+    const BITPRIME64: u64 = u64::MAX - 58;
 
     /// Ensure that the getter for modulus works correctly.
     #[test]
@@ -358,13 +357,12 @@ mod test_mod {
 
 #[cfg(test)]
 mod test_collect_entries {
-    use flint_sys::fmpz_poly::fmpz_poly_set;
-
     use crate::integer::{MatPolyOverZ, PolyOverZ};
     use crate::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    use flint_sys::fmpz_poly::fmpz_poly_set;
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = 18446744073709551557;
+    const BITPRIME64: u64 = u64::MAX - 58;
 
     #[test]
     fn all_entries_collected() {
@@ -403,5 +401,14 @@ mod test_collect_entries {
 
         assert_eq!(entries_2.len(), 2);
         assert_eq!(PolyOverZ::from_str("1  42").unwrap(), entry3);
+    }
+
+    #[test]
+    fn doc_test() {
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[2  1 2, 3  1 1 1]]").unwrap();
+        let poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
+
+        let _ = poly_ring_mat.collect_entries();
     }
 }

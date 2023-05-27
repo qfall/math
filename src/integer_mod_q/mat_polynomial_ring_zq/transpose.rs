@@ -45,7 +45,7 @@ mod test_transpose {
     };
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = 18446744073709551557;
+    const BITPRIME64: u64 = u64::MAX - 58;
 
     /// Checks if a row is correctly converted to a column
     #[test]
