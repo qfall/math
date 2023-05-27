@@ -17,12 +17,9 @@ use crate::{error::MathError, integer_mod_q::PolyOverZq};
 use flint_sys::fq::fq_ctx_init_modulus;
 use std::{ffi::CString, mem::MaybeUninit, rc::Rc, str::FromStr};
 
-impl TryFrom<&PolyOverZq> for ModulusPolynomialRingZq {
-    type Error = MathError;
+impl From<&PolyOverZq> for ModulusPolynomialRingZq {
     /// Create a new Modulus object of type [`ModulusPolynomialRingZq`]
     /// for [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq)
-    ///
-    /// Note: The modulus must be prime.
     ///
     /// Parameters:
     /// - `modulus_poly`: the polynomial which is used as the modulus
@@ -35,11 +32,10 @@ impl TryFrom<&PolyOverZq> for ModulusPolynomialRingZq {
     /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
     ///
-    /// // initialize X^2 + 1 mod 17, i.e. a polynomial with prime modulus
     /// let poly_mod = PolyOverZq::from_str("3  1 0 1 mod 17").unwrap();
     /// let modulus = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
     /// ```
-    fn try_from(modulus_poly: &PolyOverZq) -> Result<Self, MathError> {
+    fn from(modulus_poly: &PolyOverZq) -> Self {
         let mut modulus = MaybeUninit::uninit();
         let c_string = CString::new("X").unwrap();
         unsafe {
@@ -49,9 +45,9 @@ impl TryFrom<&PolyOverZq> for ModulusPolynomialRingZq {
                 modulus_poly.modulus.get_fmpz_mod_ctx_struct(),
                 c_string.as_ptr(),
             );
-            Ok(Self {
+            Self {
                 modulus: Rc::new(modulus.assume_init()),
-            })
+            }
         }
     }
 }
@@ -62,8 +58,6 @@ impl FromStr for ModulusPolynomialRingZq {
     /// Creating a Modulus object of type [`ModulusPolynomialRingZq`]
     /// for [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq). This first
     /// converts the provided string into a [`PolyOverZq`] and then into the Modulus object.
-    ///
-    /// Note: The modulus must be prime.
     ///
     /// Parameters:
     /// - `s`: has to be a valid string to create a [`PolyOverZq`] see [`PolyOverZq::from_str`]
@@ -76,13 +70,12 @@ impl FromStr for ModulusPolynomialRingZq {
     /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
     /// use std::str::FromStr;
     ///
-    /// // initialize X^2 + 1 mod 17, i.e. a polynomial with prime modulus
     /// let poly_mod = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
     /// ```
     /// # Errors and Failures
     /// - Returns a [`MathError`]. For further details see Errors and Failures of [`PolyOverZq::from_str`]
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Self::try_from(&PolyOverZq::from_str(s)?)
+        Ok(Self::from(&PolyOverZq::from_str(s)?))
     }
 }
 
