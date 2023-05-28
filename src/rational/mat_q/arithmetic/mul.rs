@@ -1,4 +1,4 @@
-// Copyright © 2023 Phil Milewski
+// Copyright © 2023 Marcel Luca Schmidt, Phil Milewski
 //
 // This file is part of qFALL-math.
 //
@@ -10,11 +10,13 @@
 
 use super::super::MatQ;
 use crate::error::MathError;
+use crate::integer::MatZ;
 use crate::macros::arithmetics::{
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+    arithmetic_trait_reverse,
 };
 use crate::traits::{GetNumColumns, GetNumRows};
-use flint_sys::fmpq_mat::fmpq_mat_mul;
+use flint_sys::fmpq_mat::{fmpq_mat_mul, fmpq_mat_mul_fmpz_mat};
 use std::ops::Mul;
 
 impl Mul for &MatQ {
@@ -49,6 +51,56 @@ impl Mul for &MatQ {
         self.mul_safe(other).unwrap()
     }
 }
+
+arithmetic_trait_borrowed_to_owned!(Mul, mul, MatQ, MatQ, MatQ);
+arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatQ, MatQ, MatQ);
+
+impl Mul<&MatZ> for &MatQ {
+    type Output = MatQ;
+
+    /// Implements the [`Mul`] trait for [`MatQ`] and [`MatZ`].
+    ///
+    /// [`Mul`] is implemented for any combination of owned and borrowed [`MatQ`] and [`MatZ`].
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to multiply with `self`
+    ///
+    /// Returns the product of `self` and `other` as a [`MatQ`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::rational::MatQ;
+    /// use std::str::FromStr;
+    ///
+    /// let a = MatQ::from_str("[[2/3,1/2],[8/4,7]]").unwrap();
+    /// let b = MatZ::from_str("[[1,0],[0,1]]").unwrap();
+    ///
+    /// let c = &a * &b;
+    /// let d = a * b;
+    /// let e = &c * d;
+    /// let f = c * &e;
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Panics if the dimensions of `self` and `other` do not match for multiplication.
+    fn mul(self, other: &MatZ) -> Self::Output {
+        if self.get_num_columns() != other.get_num_rows() {
+            panic!("Tried to multiply matrices with mismatching matrix dimensions.");
+        }
+
+        let mut new = MatQ::new(self.get_num_rows(), other.get_num_columns()).unwrap();
+        unsafe { fmpq_mat_mul_fmpz_mat(&mut new.matrix, &self.matrix, &other.matrix) };
+        new
+    }
+}
+
+arithmetic_trait_reverse!(Mul, mul, MatZ, MatQ, MatQ);
+
+arithmetic_trait_borrowed_to_owned!(Mul, mul, MatQ, MatZ, MatQ);
+arithmetic_trait_borrowed_to_owned!(Mul, mul, MatZ, MatQ, MatQ);
+arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatQ, MatZ, MatQ);
+arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatZ, MatQ, MatQ);
 
 impl MatQ {
     /// Implements multiplication for two [`MatQ`] values.
@@ -89,9 +141,6 @@ impl MatQ {
         Ok(new)
     }
 }
-
-arithmetic_trait_borrowed_to_owned!(Mul, mul, MatQ, MatQ, MatQ);
-arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatQ, MatQ, MatQ);
 
 #[cfg(test)]
 mod test_mul {
@@ -147,5 +196,61 @@ mod test_mul {
         let mat_2 = MatQ::from_str("[[1/6,0],[0,3/8],[0,0]]").unwrap();
 
         assert!((mat_1.mul_safe(&mat_2)).is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_mul_matz {
+
+    use super::MatQ;
+    use crate::integer::MatZ;
+    use crate::rational::Q;
+    use crate::traits::SetEntry;
+    use std::str::FromStr;
+
+    /// Checks if matrix multiplication works fine for squared matrices
+    #[test]
+    fn square_correctness() {
+        let mat_1 = MatQ::from_str("[[2/3,1],[1/2,2]]").unwrap();
+        let mat_2 = MatZ::from_str("[[1,0],[0,1]]").unwrap();
+        let mat_3 = MatZ::from_str("[[1,2],[2,1]]").unwrap();
+        let cmp = MatQ::from_str("[[8/3,7/3],[9/2,3]]").unwrap();
+
+        assert_eq!(mat_1, &mat_1 * &mat_2);
+        assert_eq!(cmp, &mat_1 * &mat_3);
+    }
+
+    /// Checks if matrix multiplication works fine for matrices of different dimensions
+    #[test]
+    fn different_dimensions_correctness() {
+        let mat = MatQ::from_str("[[2/3,1],[1/2,2]]").unwrap();
+        let vec = MatZ::from_str("[[2],[0]]").unwrap();
+        let cmp = MatQ::from_str("[[4/3],[1]]").unwrap();
+
+        assert_eq!(cmp, &mat * &vec);
+        assert_eq!(cmp, &vec * &mat);
+    }
+
+    /// Checks if matrix multiplication works fine for large entries
+    #[test]
+    fn large_entries() {
+        let mat = MatQ::from_str(&format!("[[{},1],[0,2/{}]]", u64::MAX, u64::MAX)).unwrap();
+        let vec = MatZ::from_str(&format!("[[{}],[0]]", u64::MAX)).unwrap();
+        let mut cmp = MatQ::new(2, 1).unwrap();
+        let max: Q = u64::MAX.into();
+        cmp.set_entry(0, 0, &(&max * &max)).unwrap();
+
+        assert_eq!(cmp, &mat * &vec);
+        assert_eq!(cmp, vec * mat);
+    }
+
+    /// Checks if matrix multiplication with incompatible matrix dimensions
+    /// throws an error as expected
+    #[test]
+    #[should_panic]
+    fn errors() {
+        let mat_1 = MatQ::from_str("[[2/3,1],[1/2,2]]").unwrap();
+        let mat_2 = MatZ::from_str("[[1,0],[0,1],[0,0]]").unwrap();
+        let _ = &mat_1 * &mat_2;
     }
 }
