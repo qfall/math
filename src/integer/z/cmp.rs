@@ -67,7 +67,47 @@ impl PartialOrd for Z {
     /// assert!(b >= a);
     /// ```
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        unsafe { Some(fmpz_cmp(&self.value, &other.value).cmp(&0)) }
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Z {
+    //! Enables the usage of `max`, `min`, and `clamp`.
+    //!
+    //! # Examples
+    //! ```
+    //! use qfall_math::integer::Z;
+    //! use std::cmp::{max, min};
+    //!
+    //! let a: Z = Z::from(10);
+    //! let b: Z = Z::from(42);
+    //!
+    //! assert_eq!(b, max(a.clone(), b.clone()));
+    //! assert_eq!(a, min(a.clone(), b.clone()));
+    //! assert_eq!(a, Z::ZERO.clamp(a.clone(), b.clone()));
+    //! ```
+
+    /// Compares two [`Z`] values. Used by the `<`, `<=`, `>`, and `>=` operators.
+    ///
+    /// Parameters:
+    /// - `other`: the other value that is used to compare the elements
+    ///
+    /// Returns the [`Ordering`] of the elements.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    ///
+    /// let a: Z = Z::from(10);
+    /// let b: Z = Z::from(42);
+    ///
+    /// assert!(a < b);
+    /// assert!(a <= b);
+    /// assert!(b > a);
+    /// assert!(b >= a);
+    /// ```
+    fn cmp(&self, other: &Self) -> Ordering {
+        unsafe { fmpz_cmp(&self.value, &other.value).cmp(&0) }
     }
 }
 
@@ -442,5 +482,43 @@ mod test_partial_ord {
         assert!(!(max_negative >= max_1));
         assert!(max_1 >= max_negative);
         assert!(max_negative >= max_negative);
+    }
+}
+
+#[cfg(test)]
+mod test_ord {
+    use super::Z;
+    use std::cmp::{max, min};
+
+    // `cmp` is extensively tested in module `test_partial_eq`, hence omitted here
+
+    /// Check whether default implementations `max`, `min`, `clamp`
+    /// work properly for small numbers
+    #[test]
+    fn default_implementations_small() {
+        let a: Z = Z::from(10);
+        let b: Z = Z::from(42);
+
+        assert_eq!(b, max(a.clone(), b.clone()));
+        assert_eq!(a, min(a.clone(), b.clone()));
+
+        assert_eq!(a, Z::ZERO.clamp(a.clone(), b.clone()));
+        assert_eq!(a, a.clone().clamp(Z::ZERO, b.clone()));
+        assert_eq!(a, b.clone().clamp(Z::ZERO, a.clone()));
+    }
+
+    /// Check whether default implementations `max`, `min`, `clamp`
+    /// work properly for large numbers
+    #[test]
+    fn default_implementations_large() {
+        let a: Z = Z::from(i64::MAX);
+        let b: Z = Z::from(u64::MAX);
+
+        assert_eq!(b, max(a.clone(), b.clone()));
+        assert_eq!(a, min(a.clone(), b.clone()));
+
+        assert_eq!(a, Z::ZERO.clamp(a.clone(), b.clone()));
+        assert_eq!(a, a.clone().clamp(Z::ZERO, b.clone()));
+        assert_eq!(a, b.clone().clamp(Z::ZERO, a.clone()));
     }
 }
