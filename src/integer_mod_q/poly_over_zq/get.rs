@@ -14,7 +14,7 @@ use crate::{
     error::MathError, integer::Z, integer_mod_q::Zq, traits::GetCoefficient,
     utils::index::evaluate_index,
 };
-use flint_sys::fmpz_mod_poly::fmpz_mod_poly_get_coeff_fmpz;
+use flint_sys::fmpz_mod_poly::{fmpz_mod_poly_degree, fmpz_mod_poly_get_coeff_fmpz};
 use std::fmt::Display;
 
 impl GetCoefficient<Zq> for PolyOverZq {
@@ -91,6 +91,24 @@ impl GetCoefficient<Z> for PolyOverZq {
             )
         }
         Ok(out)
+    }
+}
+
+impl PolyOverZq {
+    /// Returns the degree of a polynomial [`PolyOverZq`] as a [`i64`].
+    /// The zero polynomial has degree '-1'.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use std::str::FromStr;
+    ///
+    /// let poly = PolyOverZq::from_str("4  0 1 2 3 mod 7").unwrap();
+    ///
+    /// let degree = poly.get_degree(); // This would only return 3
+    /// ```
+    pub fn get_degree(&self) -> i64 {
+        unsafe { fmpz_mod_poly_degree(&self.poly, self.modulus.get_fmpz_mod_ctx_struct()) }
     }
 }
 
@@ -181,5 +199,65 @@ mod test_get_coeff_z {
 
         assert_eq!(Z::ZERO, poly.get_coeff(0).unwrap());
         assert_eq!(Z::from(i64::MAX), poly.get_coeff(1).unwrap());
+    }
+}
+
+#[cfg(test)]
+mod test_get_degree {
+
+    use crate::integer_mod_q::PolyOverZq;
+    use std::str::FromStr;
+
+    /// ensure that degree is working
+    #[test]
+    fn degree() {
+        let poly = PolyOverZq::from_str("4  0 1 2 3 mod 7").unwrap();
+
+        let deg = poly.get_degree();
+
+        assert_eq!(3, deg);
+    }
+
+    /// ensure that degree is working for constant polynomials
+    #[test]
+    fn degree_constant() {
+        let poly1 = PolyOverZq::from_str("1  1 mod 19").unwrap();
+        let poly2 = PolyOverZq::from_str("0 mod 19").unwrap();
+
+        let deg1 = poly1.get_degree();
+        let deg2 = poly2.get_degree();
+
+        assert_eq!(0, deg1);
+        assert_eq!(-1, deg2);
+    }
+
+    /// ensure that degree is working for polynomials with leading 0 coefficients
+    #[test]
+    fn degree_leading_zeros() {
+        let poly = PolyOverZq::from_str("4  1 0 0 0 mod 199").unwrap();
+
+        let deg = poly.get_degree();
+
+        assert_eq!(0, deg);
+    }
+
+    /// ensure that degree is working for polynomials with many coefficients
+    /// flint does not reduce the exponent due to computational cost
+    #[test]
+    fn degree_many_coefficients() {
+        let poly1 = PolyOverZq::from_str("7  1 2 3 4 8 1 3 mod 2").unwrap();
+        let poly2 = PolyOverZq::from_str(&format!(
+            "7  1 2 3 4 8 {} {} mod {}",
+            u64::MAX,
+            i64::MAX,
+            u128::MAX
+        ))
+        .unwrap();
+
+        let deg1 = poly1.get_degree();
+        let deg2 = poly2.get_degree();
+
+        assert_eq!(6, deg1);
+        assert_eq!(6, deg2);
     }
 }
