@@ -11,6 +11,7 @@
 //! This can include functions to pre-process inputs, find size of matrices
 //! and similar tasks.
 
+pub(crate) mod collective_evaluation;
 pub(crate) mod dimensions;
 pub mod index;
 pub(crate) mod parse;

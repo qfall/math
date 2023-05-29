@@ -14,7 +14,10 @@ use crate::{
     integer_mod_q::{MatZq, Zq},
     macros::for_others::{implement_for_others, implement_for_owned},
     traits::{GetNumColumns, GetNumRows, SetEntry},
-    utils::index::{evaluate_index, evaluate_indices},
+    utils::{
+        collective_evaluation::evaluate_matrix_set_row,
+        index::{evaluate_index, evaluate_indices},
+    },
 };
 use flint_sys::{
     fmpz::{fmpz_set, fmpz_swap},
@@ -161,25 +164,17 @@ impl MatZq {
     ) -> Result<(), MathError> {
         let col0 = evaluate_index(col0)?;
         let col1 = evaluate_index(col1)?;
-        if col0 >= self.get_num_columns() {
-            return Err(MathError::OutOfBounds(
-                format!("smaller than {}", self.get_num_columns()),
-                col0.to_string(),
-            ));
-        }
-        if col1 >= other.get_num_columns() {
-            return Err(MathError::OutOfBounds(
-                format!("smaller than {}", other.get_num_columns()),
-                col1.to_string(),
-            ));
-        }
-        if self.get_num_rows() != other.get_num_rows() {
-            return Err(MathError::MismatchingMatrixDimension(format!(
-                "as set_column was called on two matrices with different number of rows {} and {}",
-                self.get_num_rows(),
-                other.get_num_rows()
-            )));
-        }
+
+        evaluate_matrix_set_row(
+            "set_column",
+            col0,
+            col1,
+            self.get_num_columns(),
+            other.get_num_columns(),
+            self.get_num_rows(),
+            other.get_num_rows(),
+        )?;
+
         if self.get_mod() != other.get_mod() {
             return Err(MathError::MismatchingModulus(format!(
                 "set_column requires the moduli to be equal, but they {} differs from {}",
@@ -237,25 +232,17 @@ impl MatZq {
     ) -> Result<(), MathError> {
         let row0 = evaluate_index(row0)?;
         let row1 = evaluate_index(row1)?;
-        if row0 >= self.get_num_rows() {
-            return Err(MathError::OutOfBounds(
-                format!("smaller than {}", self.get_num_rows()),
-                row0.to_string(),
-            ));
-        }
-        if row1 >= other.get_num_rows() {
-            return Err(MathError::OutOfBounds(
-                format!("smaller than {}", other.get_num_rows()),
-                row1.to_string(),
-            ));
-        }
-        if self.get_num_columns() != other.get_num_columns() {
-            return Err(MathError::MismatchingMatrixDimension(format!(
-                "as set_column was called on two matrices with different number of columns {} and {}",
-                self.get_num_columns(),
-                other.get_num_columns()
-            )));
-        }
+
+        evaluate_matrix_set_row(
+            "set_row",
+            row0,
+            row1,
+            self.get_num_rows(),
+            other.get_num_rows(),
+            self.get_num_columns(),
+            other.get_num_columns(),
+        )?;
+
         if self.get_mod() != other.get_mod() {
             return Err(MathError::MismatchingModulus(format!(
                 "set_row requires the moduli to be equal, but they {} differs from {}",
