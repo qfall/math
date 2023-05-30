@@ -11,30 +11,42 @@
 
 use crate::error::MathError;
 
-/// Evaluates whether `row0` and `row1` is smaller than `self_num_rows` and `other_num_rows`.
-/// Additionally, whether `self_num_cols` equals `other_num_cols`.
+/// Evaluates whether the provided indices are within a provided upper bound, e.g. refer to a valid entry
+/// in a matrix, and check if the corresponding vectors in the matrix are of equal length.
+/// This function checks whether:
+/// - The `index_vector_0` and `index_vector_1` are both referencing a row/column within the matrix,
+/// i.e. it is smaller than the number of rows/columns of the respective matrix entered by the upper bound.
+/// - The referenced vectors are of equal length because replacing the vector is not properly defined otherwise
 ///
 /// Parameters:
 /// - `callee`: specifies the name of the calling function
-/// - `row0`: specifies a value that should be smaller than `self_num_rows`
-/// - `row1`: specifies a value that should be smaller than `other_num_rows`
-/// - `self_num_rows`: is evaluated against `row0`
-/// - `other_num_rows`: is evaluated against `row1`
-/// - `self_num_cols`: is used to check whether it equals `other_num_cols`
-/// - `other_num_cols`: is evaluated against `self_num_cols`
+/// - `index_vector_0`: specifies a value that should be smaller than `number_of_vectors_0`
+/// - `index_vector_1`: specifies a value that should be smaller than `number_of_vectors_1`
+/// - `number_of_vectors_0`: the upper bound for `index_vector_0`
+/// - `number_of_vectors_1`: the upper bound for `index_vector_1`
+/// - `length_vector_0`: is used to check whether it equals `length_vector_1`
+/// - `length_vector_1`: is evaluated against `length_vector_0`
 ///
-/// Returns an empty `Ok` if `row0 < self_num_rows`, `row1 < other_num_rows`, and `self_num_cols == other_num_cols`.
-/// Otherwise, a [`MathError`] is returned.
+/// Returns an empty `Ok` if `row0 < self_num_rows`, `row1 < other_num_rows`, and
+/// `self_num_cols == other_num_cols`. Otherwise, a [`MathError`] is returned.
 ///
 /// # Example
 /// ```compile_fail
-/// use qfall_math::utils::collective_evaluation::evaluate_matrix_set_row;
+/// use qfall_math::utils::collective_evaluation::evaluate_vec_dimensions_set_row_or_col;
 /// use qfall_math::integer_mod_q::MatZq;
 /// use std::str::FromStr;
 /// let mat1 = MatZq::from_str("[[1,2,3],[4,5,6]]").unwrap();
 /// let mat2 = mat1.clone();
 ///
-/// let _ = evaluate_matrix_set_row("set_row", 0, 1, row0, row1, mat1.get_num_rows(), mat2.get_num_rows(), mat1.get_num_columns(), mat2.get_num_columns());
+/// let _ = evaluate_vec_dimensions_set_row_or_col(
+///     "set_row",
+///     0,
+///     1,
+///     mat1.get_num_rows(),
+///     mat2.get_num_rows(),
+///     mat1.get_num_columns(),
+///     mat2.get_num_columns()
+/// );
 /// ```
 ///
 /// # Errors and Failures
@@ -42,31 +54,30 @@ use crate::error::MathError;
 /// if the number of rows is greater than the matrix dimensions or negative.
 /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
 /// if the number of columns of `self` and `other` differ.
-pub(crate) fn evaluate_matrix_set_row(
+pub(crate) fn evaluate_vec_dimensions_set_row_or_col(
     callee: &str,
-    row0: i64,
-    row1: i64,
-    self_num_rows: i64,
-    other_num_rows: i64,
-    self_num_cols: i64,
-    other_num_cols: i64,
+    index_vector_0: i64,
+    index_vector_1: i64,
+    number_of_vectors_0: i64,
+    number_of_vectors_1: i64,
+    length_vector_0: i64,
+    length_vector_1: i64,
 ) -> Result<(), MathError> {
-    if row0 >= self_num_rows {
+    if index_vector_0 >= number_of_vectors_0 {
         return Err(MathError::OutOfBounds(
-            format!("smaller than {}", self_num_rows),
-            row0.to_string(),
+            format!("smaller than {number_of_vectors_0}"),
+            index_vector_0.to_string(),
         ));
     }
-    if row1 >= other_num_rows {
+    if index_vector_1 >= number_of_vectors_1 {
         return Err(MathError::OutOfBounds(
-            format!("smaller than {}", other_num_rows),
-            row1.to_string(),
+            format!("smaller than {number_of_vectors_1}"),
+            index_vector_1.to_string(),
         ));
     }
-    if self_num_cols != other_num_cols {
+    if length_vector_0 != length_vector_1 {
         return Err(MathError::MismatchingMatrixDimension(format!(
-            "as {} was called on two matrices with different number of columns {} and {}",
-            callee, self_num_cols, other_num_cols
+            "as {callee} was called on two matrices with different number of columns {length_vector_0} and {length_vector_1}",
         )));
     }
     Ok(())

@@ -15,7 +15,7 @@ use crate::{
     macros::for_others::{implement_for_others, implement_for_owned},
     traits::{GetNumColumns, GetNumRows, SetEntry},
     utils::{
-        collective_evaluation::evaluate_matrix_set_row,
+        collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
         index::{evaluate_index, evaluate_indices},
     },
 };
@@ -165,7 +165,7 @@ impl MatZq {
         let col0 = evaluate_index(col0)?;
         let col1 = evaluate_index(col1)?;
 
-        evaluate_matrix_set_row(
+        evaluate_vec_dimensions_set_row_or_col(
             "set_column",
             col0,
             col1,
@@ -233,7 +233,7 @@ impl MatZq {
         let row0 = evaluate_index(row0)?;
         let row1 = evaluate_index(row1)?;
 
-        evaluate_matrix_set_row(
+        evaluate_vec_dimensions_set_row_or_col(
             "set_row",
             row0,
             row1,
