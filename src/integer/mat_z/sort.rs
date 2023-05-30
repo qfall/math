@@ -20,7 +20,7 @@ impl MatZ {
     /// This condition is usually a norm with the described input-output behaviour.
     ///
     /// Parameters:
-    /// - `cond_func`: computes values implementing [`PartialOrd`] over the columns of the specified matrix.
+    /// - `cond_func`: computes values implementing [`Ord`] over the columns of the specified matrix.
     /// These values are then used to re-order / sort the rows of the matrix.
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
@@ -89,7 +89,7 @@ impl MatZ {
     /// This condition is usually a norm with the described input-output behaviour.
     ///
     /// Parameters:
-    /// - `cond_func`: computes values implementing [`PartialOrd`] over the columns of the specified matrix.
+    /// - `cond_func`: computes values implementing [`Ord`] over the columns of the specified matrix.
     /// These values are then used to re-order / sort the columns of the matrix.
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
