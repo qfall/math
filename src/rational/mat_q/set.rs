@@ -13,7 +13,10 @@ use crate::{
     macros::for_others::implement_for_owned,
     rational::{MatQ, Q},
     traits::{GetNumColumns, GetNumRows, SetEntry},
-    utils::index::{evaluate_index, evaluate_indices},
+    utils::{
+        collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
+        index::{evaluate_index, evaluate_indices},
+    },
 };
 use flint_sys::{
     fmpq::{fmpq_set, fmpq_swap},
@@ -79,6 +82,122 @@ implement_for_owned!(Q, MatQ, SetEntry);
 // TODO add implementation for other types as well
 
 impl MatQ {
+    /// Sets a column of the given matrix to the provided column of `other`.
+    ///
+    /// Parameters:
+    /// - `col0`: specifies the column of `self` that should be modified
+    /// - `other`: specifies the matrix providing the column replacing the column in `self`
+    /// - `col1`: specifies the column of `other` providing
+    /// the values replacing the original column in `self`
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of its matrix
+    /// or if the number of rows differs.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::MatQ;
+    /// use std::str::FromStr;
+    ///
+    /// let mut mat1 = MatQ::new(2, 2).unwrap();
+    /// let mat2 = MatQ::from_str("[[1],[2]]").unwrap();
+    /// mat1.set_column(1, &mat2, 0);
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    /// if the number of columns is greater than the matrix dimensions or negative.
+    /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
+    /// if the number of rows of `self` and `other` differ.
+    pub fn set_column(
+        &mut self,
+        col0: impl TryInto<i64> + Display,
+        other: &Self,
+        col1: impl TryInto<i64> + Display,
+    ) -> Result<(), MathError> {
+        let col0 = evaluate_index(col0)?;
+        let col1 = evaluate_index(col1)?;
+
+        evaluate_vec_dimensions_set_row_or_col(
+            "set_column",
+            col0,
+            col1,
+            self.get_num_columns(),
+            other.get_num_columns(),
+            self.get_num_rows(),
+            other.get_num_rows(),
+        )?;
+
+        for row in 0..self.get_num_rows() {
+            unsafe {
+                fmpq_set(
+                    fmpq_mat_entry(&self.matrix, row, col0),
+                    fmpq_mat_entry(&other.matrix, row, col1),
+                )
+            };
+        }
+
+        Ok(())
+    }
+
+    /// Sets a row of the given matrix to the provided row of `other`.
+    ///
+    /// Parameters:
+    /// - `row0`: specifies the row of `self` that should be modified
+    /// - `other`: specifies the matrix providing the row replacing the row in `self`
+    /// - `row1`: specifies the row of `other` providing
+    /// the values replacing the original row in `self`
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of its matrix
+    /// or if the number of columns differs.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::MatQ;
+    /// use std::str::FromStr;
+    ///
+    /// let mut mat1 = MatQ::new(2, 2).unwrap();
+    /// let mat2 = MatQ::from_str("[[1,2]]").unwrap();
+    /// mat1.set_row(0, &mat2, 0);
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    /// if the number of rows is greater than the matrix dimensions or negative.
+    /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
+    /// if the number of columns of `self` and `other` differ.
+    pub fn set_row(
+        &mut self,
+        row0: impl TryInto<i64> + Display,
+        other: &Self,
+        row1: impl TryInto<i64> + Display,
+    ) -> Result<(), MathError> {
+        let row0 = evaluate_index(row0)?;
+        let row1 = evaluate_index(row1)?;
+
+        evaluate_vec_dimensions_set_row_or_col(
+            "set_row",
+            row0,
+            row1,
+            self.get_num_rows(),
+            other.get_num_rows(),
+            self.get_num_columns(),
+            other.get_num_columns(),
+        )?;
+
+        for col in 0..self.get_num_columns() {
+            unsafe {
+                fmpq_set(
+                    fmpq_mat_entry(&self.matrix, row0, col),
+                    fmpq_mat_entry(&other.matrix, row1, col),
+                )
+            };
+        }
+
+        Ok(())
+    }
+
     /// Swaps two entries of the specified matrix.
     ///
     /// Parameters:
@@ -352,6 +471,159 @@ mod test_setter {
         let matrix = MatQ::new(5, 10).unwrap();
 
         assert!(matrix.get_entry(1, 100).is_err());
+    }
+
+    /// Ensures that setting columns works fine for small entries
+    #[test]
+    fn column_small_entries() {
+        let mut m1 = MatQ::from_str("[[1,2,3/-1],[-4/3,5,6]]").unwrap();
+        let m2 = MatQ::from_str("[[0],[-1]]").unwrap();
+        let cmp = MatQ::from_str("[[1,0,-3],[4/-3,-1,6]]").unwrap();
+
+        let _ = m1.set_column(1, &m2, 0);
+
+        assert_eq!(cmp, m1);
+    }
+
+    /// Ensures that setting columns works fine for large entries
+    #[test]
+    fn column_large_entries() {
+        let mut m1 = MatQ::from_str(&format!(
+            "[[{}/1,1,3, 4],[{}/-1,4,-1/{},5],[7,6,8,9]]",
+            i64::MIN,
+            i64::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+        let m2 = MatQ::from_str(&format!("[[1,-2/{}],[{},0],[7,-1]]", i64::MIN, i64::MAX)).unwrap();
+        let cmp = MatQ::from_str(&format!(
+            "[[-2/{},1,3, 4],[0,4,-1/{},5],[-1,6,8,9]]",
+            i64::MIN,
+            u64::MAX
+        ))
+        .unwrap();
+
+        let _ = m1.set_column(0, &m2, 1);
+
+        assert_eq!(cmp, m1);
+    }
+
+    /// Ensures that setting the column to itself does not change anything
+    #[test]
+    fn column_swap_same_entry() {
+        let mut m1 = MatQ::from_str(&format!(
+            "[[{}/-3,1,3, 4],[{}/-1,4,-{}/2,5],[7,6,8,9]]",
+            i64::MIN,
+            i64::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+        let cmp = m1.clone();
+
+        let _ = m1.set_column(0, &cmp, 0);
+        let _ = m1.set_column(1, &cmp, 1);
+
+        assert_eq!(cmp, m1);
+    }
+
+    /// Ensures that `set_column` returns an error if one of the specified columns is out of bounds
+    #[test]
+    fn column_out_of_bounds() {
+        let mut m1 = MatQ::new(5, 2).unwrap();
+        let m2 = m1.clone();
+
+        assert!(m1.set_column(-1, &m2, 0).is_err());
+        assert!(m1.set_column(2, &m2, 0).is_err());
+        assert!(m1.set_column(1, &m2, -1).is_err());
+        assert!(m1.set_column(1, &m2, 2).is_err());
+    }
+
+    /// Ensures that mismatching row dimensions result in an error
+    #[test]
+    fn column_mismatching_columns() {
+        let mut m1 = MatQ::new(5, 2).unwrap();
+        let m2 = MatQ::new(2, 2).unwrap();
+
+        assert!(m1.set_column(0, &m2, 0).is_err());
+        assert!(m1.set_column(1, &m2, 1).is_err());
+    }
+
+    /// Ensures that setting rows works fine for small entries
+    #[test]
+    fn row_small_entries() {
+        let mut m1 = MatQ::from_str("[[1,2,3/-1],[-4/3,5,6]]").unwrap();
+        let m2 = MatQ::from_str("[[0,-1/2,2]]").unwrap();
+        let cmp = MatQ::from_str("[[1,2,-3],[0,-1/2,2]]").unwrap();
+
+        let _ = m1.set_row(1, &m2, 0);
+
+        assert_eq!(cmp, m1);
+    }
+
+    /// Ensures that setting rows works fine for large entries
+    #[test]
+    fn row_large_entries() {
+        let mut m1 = MatQ::from_str(&format!(
+            "[[{},1,3,4],[{},4,{},5],[7,6,8,9]]",
+            i64::MIN,
+            i64::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+        let m2 =
+            MatQ::from_str(&format!("[[0,0,0,0],[1/{},0,{}/3,0]]", i64::MIN, i64::MAX)).unwrap();
+        let cmp = MatQ::from_str(&format!(
+            "[[1/{},0,{}/3,0],[{},4,{},5],[7,6,8,9]]",
+            i64::MIN,
+            i64::MAX,
+            i64::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+
+        let _ = m1.set_row(0, &m2, 1);
+
+        assert_eq!(cmp, m1);
+    }
+
+    /// Ensures that setting the rows to itself does not change anything
+    #[test]
+    fn row_swap_same_entry() {
+        let mut m1 = MatQ::from_str(&format!(
+            "[[{},1,3,4],[-{}/-1,4,{}/-3,5],[7,6,8,9]]",
+            i64::MIN,
+            i64::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+        let cmp = m1.clone();
+
+        let _ = m1.set_row(0, &cmp, 0);
+        let _ = m1.set_row(1, &cmp, 1);
+
+        assert_eq!(cmp, m1);
+    }
+
+    /// Ensures that `set_row` returns an error if one of the specified rows is out of bounds
+    #[test]
+    fn row_out_of_bounds() {
+        let mut m1 = MatQ::new(5, 2).unwrap();
+        let m2 = m1.clone();
+
+        assert!(m1.set_row(-1, &m2, 0).is_err());
+        assert!(m1.set_row(5, &m2, 0).is_err());
+        assert!(m1.set_row(2, &m2, -1).is_err());
+        assert!(m1.set_row(2, &m2, 5).is_err());
+    }
+
+    /// Ensures that mismatching column dimensions result in an error
+    #[test]
+    fn row_mismatching_columns() {
+        let mut m1 = MatQ::new(3, 2).unwrap();
+        let m2 = MatQ::new(3, 3).unwrap();
+
+        assert!(m1.set_row(0, &m2, 0).is_err());
+        assert!(m1.set_row(1, &m2, 1).is_err());
     }
 }
 
