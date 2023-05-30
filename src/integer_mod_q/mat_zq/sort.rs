@@ -15,7 +15,7 @@ use crate::{
 };
 
 impl MatZq {
-    /// Sorts the columns of the matrix based on some condition defined by `cond_func`.
+    /// Sorts the columns of the matrix based on some condition defined by `cond_func` in an ascending order.
     ///
     /// This condition is usually a norm with the described input-output behaviour.
     ///
@@ -86,7 +86,7 @@ impl MatZq {
         Ok(out)
     }
 
-    /// Sorts the rows of the matrix based on some condition defined by `cond_func`.
+    /// Sorts the rows of the matrix based on some condition defined by `cond_func` in an ascending order.
     ///
     /// This condition is usually a norm with the described input-output behaviour.
     ///
