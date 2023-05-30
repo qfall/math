@@ -13,7 +13,10 @@ use crate::{
     error::MathError,
     integer::PolyOverZ,
     traits::{GetNumColumns, GetNumRows, SetEntry},
-    utils::index::{evaluate_index, evaluate_indices},
+    utils::{
+        collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
+        index::{evaluate_index, evaluate_indices},
+    },
 };
 use flint_sys::{
     fmpz_poly::{fmpz_poly_set, fmpz_poly_swap},
@@ -143,25 +146,16 @@ impl MatPolyOverZ {
     ) -> Result<(), MathError> {
         let col0 = evaluate_index(col0)?;
         let col1 = evaluate_index(col1)?;
-        if col0 >= self.get_num_columns() {
-            return Err(MathError::OutOfBounds(
-                format!("smaller than {}", self.get_num_columns()),
-                col0.to_string(),
-            ));
-        }
-        if col1 >= other.get_num_columns() {
-            return Err(MathError::OutOfBounds(
-                format!("smaller than {}", other.get_num_columns()),
-                col1.to_string(),
-            ));
-        }
-        if self.get_num_rows() != other.get_num_rows() {
-            return Err(MathError::MismatchingMatrixDimension(format!(
-                "as set_column was called on two matrices with different number of rows {} and {}",
-                self.get_num_rows(),
-                other.get_num_rows()
-            )));
-        }
+
+        evaluate_vec_dimensions_set_row_or_col(
+            "set_column",
+            col0,
+            col1,
+            self.get_num_columns(),
+            other.get_num_columns(),
+            self.get_num_rows(),
+            other.get_num_rows(),
+        )?;
 
         for row in 0..self.get_num_rows() {
             unsafe {
@@ -210,25 +204,16 @@ impl MatPolyOverZ {
     ) -> Result<(), MathError> {
         let row0 = evaluate_index(row0)?;
         let row1 = evaluate_index(row1)?;
-        if row0 >= self.get_num_rows() {
-            return Err(MathError::OutOfBounds(
-                format!("smaller than {}", self.get_num_rows()),
-                row0.to_string(),
-            ));
-        }
-        if row1 >= other.get_num_rows() {
-            return Err(MathError::OutOfBounds(
-                format!("smaller than {}", other.get_num_rows()),
-                row1.to_string(),
-            ));
-        }
-        if self.get_num_columns() != other.get_num_columns() {
-            return Err(MathError::MismatchingMatrixDimension(format!(
-                "as set_column was called on two matrices with different number of columns {} and {}",
-                self.get_num_columns(),
-                other.get_num_columns()
-            )));
-        }
+
+        evaluate_vec_dimensions_set_row_or_col(
+            "set_row",
+            row0,
+            row1,
+            self.get_num_rows(),
+            other.get_num_rows(),
+            self.get_num_columns(),
+            other.get_num_columns(),
+        )?;
 
         for col in 0..self.get_num_columns() {
             unsafe {
