@@ -18,7 +18,7 @@ impl ModulusPolynomialRingZq {
         self.modulus.as_ref()
     }
 
-    /// Returns a the prime q as a [`Modulus`]
+    /// Returns the context integer as a [`Z`]
     ///
     /// # Examples
     /// ```
