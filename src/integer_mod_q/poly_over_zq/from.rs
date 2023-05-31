@@ -102,7 +102,8 @@ impl From<&ModulusPolynomialRingZq> for PolyOverZq {
     /// # assert_eq!(cmp_poly, poly_zq);
     /// ```
     fn from(modulus: &ModulusPolynomialRingZq) -> Self {
-        let mut out = PolyOverZq::from(&modulus.get_q());
+        let modulus_q = Modulus::try_from(&modulus.get_q()).unwrap();
+        let mut out = PolyOverZq::from(&modulus_q);
         unsafe {
             fmpz_mod_poly_set(
                 &mut out.poly,

@@ -9,9 +9,8 @@
 //! Implementations to get content of a
 //! [`ModulusPolynomialRingZq].
 
-use crate::integer_mod_q::{Modulus, ModulusPolynomialRingZq};
-use flint_sys::{fmpz_mod::fmpz_mod_ctx_init, fq::fq_ctx_struct};
-use std::{mem::MaybeUninit, rc::Rc};
+use crate::{integer::Z, integer_mod_q::ModulusPolynomialRingZq};
+use flint_sys::{fmpz::fmpz_set, fq::fq_ctx_struct};
 
 impl ModulusPolynomialRingZq {
     /// Returns the [`fq_ctx_struct`] of a modulus and is only used internally.
@@ -23,42 +22,41 @@ impl ModulusPolynomialRingZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::{ModulusPolynomialRingZq, Modulus};
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
     /// use std::str::FromStr;
     ///
     /// let modulus_ring = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
     ///
     /// let modulus = modulus_ring.get_q();
     ///
-    /// # let cmp_modulus = Modulus::try_from(&17.into()).unwrap();
+    /// # let cmp_modulus = Z:from(17);
     /// # assert_eq!(cmp_modulus, modulus);
     /// ```
-    pub fn get_q(&self) -> Modulus {
-        let mut ctx = MaybeUninit::uninit();
+    pub fn get_q(&self) -> Z {
+        let mut out = Z::default();
         unsafe {
-            fmpz_mod_ctx_init(ctx.as_mut_ptr(), &self.get_fq_ctx_struct().ctxp[0].n[0]);
-            Modulus {
-                modulus: Rc::new(ctx.assume_init()),
-            }
+            fmpz_set(&mut out.value, &self.get_fq_ctx_struct().ctxp[0].n[0]);
         }
+        out
     }
 }
 
 #[cfg(test)]
 mod test_get_q {
-    use crate::integer_mod_q::{Modulus, ModulusPolynomialRingZq};
+    use crate::{integer::Z, integer_mod_q::ModulusPolynomialRingZq};
     use std::str::FromStr;
 
     /// ensure that the same modulus is correctly returned for a large modulus
     #[test]
     fn correct_large() {
+        let large_prime = u64::MAX - 58;
         let modulus_ring =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX - 58))
-                .unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", large_prime)).unwrap();
 
         let modulus = modulus_ring.get_q();
 
-        let cmp_modulus = Modulus::try_from(&(u64::MAX - 58).into()).unwrap();
+        let cmp_modulus = Z::from(large_prime);
         assert_eq!(cmp_modulus, modulus);
     }
 }
