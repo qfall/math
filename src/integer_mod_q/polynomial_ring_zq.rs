@@ -22,6 +22,7 @@ use serde::{Deserialize, Serialize};
 
 mod arithmetic;
 mod from;
+mod get;
 mod reduce;
 
 /// [`PolynomialRingZq`] represents polynomials over the finite field

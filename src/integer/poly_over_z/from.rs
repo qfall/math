@@ -120,34 +120,6 @@ impl From<&PolyOverZq> for PolyOverZ {
     }
 }
 
-impl From<&PolynomialRingZq> for PolyOverZ {
-    /// Create a [`PolyOverZ`] from a [`PolynomialRingZq`].
-    ///
-    /// Parameters:
-    /// - `poly_ring`: the polynomial from which the coefficients are copied
-    ///
-    /// Returns the representative polynomial of the [`PolynomialRingZq`] element.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer::PolyOverZ;
-    /// use qfall_math::integer_mod_q::{PolynomialRingZq, ModulusPolynomialRingZq};
-    /// use std::str::FromStr;
-    ///
-    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-    /// let poly = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
-    /// let poly_ring = PolynomialRingZq::from((&poly, &modulus));
-    ///
-    /// let poly_z = PolyOverZ::from(&poly_ring);
-    ///
-    /// # let cmp_poly = PolyOverZ::from_str("3  15 0 1").unwrap();
-    /// # assert_eq!(cmp_poly, poly_z);
-    /// ```
-    fn from(poly_ring: &PolynomialRingZq) -> Self {
-        poly_ring.poly.clone()
-    }
-}
-
 #[cfg(test)]
 mod test_from_str {
     use super::PolyOverZ;
@@ -230,29 +202,5 @@ mod test_from_poly_over_zq {
         let cmp_poly =
             PolyOverZ::from_str(&format!("4  0 1 102 {} mod {}", u64::MAX - 58, u64::MAX)).unwrap();
         assert_eq!(cmp_poly, poly_q);
-    }
-}
-
-#[cfg(test)]
-mod from_polynomial_ring_zq {
-    use crate::{
-        integer::PolyOverZ,
-        integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq},
-    };
-    use std::str::FromStr;
-
-    /// ensure that the conversion works with positive large entries
-    #[test]
-    fn large_positive() {
-        let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX - 58))
-                .unwrap();
-        let poly = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
-        let poly_ring = PolynomialRingZq::from((&poly, &modulus));
-
-        let poly_z = PolyOverZ::from(&poly_ring);
-
-        let cmp_poly = PolyOverZ::from_str(&format!("3  {} 0 1", u64::MAX - 60)).unwrap();
-        assert_eq!(cmp_poly, poly_z);
     }
 }
