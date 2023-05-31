@@ -90,6 +90,9 @@ impl From<&ModulusPolynomialRingZq> for PolyOverZq {
     /// - `modulus`: the context polynomial from which the coefficients are copied
     ///
     /// # Examples
+    ///
+    /// Returns the context [`PolyOverZq`] representing the modulus object
+    ///
     /// ```
     /// use qfall_math::integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq};
     /// use std::str::FromStr;
