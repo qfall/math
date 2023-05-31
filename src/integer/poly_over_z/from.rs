@@ -197,10 +197,9 @@ mod test_from_poly_over_zq {
         let poly = PolyOverZq::from_str(&format!("4  0 1 102 {} mod {}", u64::MAX - 58, u64::MAX))
             .unwrap();
 
-        let poly_q = PolyOverZ::from(&poly);
+        let poly_z = PolyOverZ::from(&poly);
 
-        let cmp_poly =
-            PolyOverZ::from_str(&format!("4  0 1 102 {} mod {}", u64::MAX - 58, u64::MAX)).unwrap();
-        assert_eq!(cmp_poly, poly_q);
+        let cmp_poly = PolyOverZ::from_str(&format!("4  0 1 102 {}", u64::MAX - 58)).unwrap();
+        assert_eq!(cmp_poly, poly_z);
     }
 }
