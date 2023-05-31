@@ -86,11 +86,13 @@ impl FromStr for PolyOverZ {
     }
 }
 
-impl PolyOverZ {
+impl From<&PolyOverZq> for PolyOverZ {
     /// Create a [`PolyOverZ`] from a [`PolyOverZq`].
     ///
     /// Parameters:
     /// - `poly`: the polynomial from which the coefficients are copied
+    ///
+    /// Returns representative polynomial of the [`PolyOverZq`] element.
     ///
     /// # Examples
     /// ```
@@ -100,12 +102,12 @@ impl PolyOverZ {
     ///
     /// let poly = PolyOverZq::from_str("4  0 1 102 3 mod 101").unwrap();
     ///
-    /// let poly_z = PolyOverZ::from_poly_over_zq(&poly);
+    /// let poly_z = PolyOverZ::from(&poly);
     ///
     /// # let cmp_poly = PolyOverZ::from_str("4  0 1 1 3").unwrap();
     /// # assert_eq!(cmp_poly, poly_z);
     /// ```
-    pub fn from_poly_over_zq(poly: &PolyOverZq) -> Self {
+    fn from(poly: &PolyOverZq) -> Self {
         let mut out = Self::default();
         unsafe {
             fmpz_mod_poly_get_fmpz_poly(
@@ -116,11 +118,15 @@ impl PolyOverZ {
         };
         out
     }
+}
 
+impl From<&PolynomialRingZq> for PolyOverZ {
     /// Create a [`PolyOverZ`] from a [`PolynomialRingZq`].
     ///
     /// Parameters:
     /// - `poly_ring`: the polynomial from which the coefficients are copied
+    ///
+    /// Returns the representative polynomial of the [`PolynomialRingZq`] element.
     ///
     /// # Examples
     /// ```
@@ -132,30 +138,13 @@ impl PolyOverZ {
     /// let poly = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
     /// let poly_ring = PolynomialRingZq::from((&poly, &modulus));
     ///
-    /// let poly_z = PolyOverZ::from_polynomial_ring_zq(&poly_ring);
+    /// let poly_z = PolyOverZ::from(&poly_ring);
     ///
     /// # let cmp_poly = PolyOverZ::from_str("3  15 0 1").unwrap();
     /// # assert_eq!(cmp_poly, poly_z);
     /// ```
-    pub fn from_polynomial_ring_zq(poly_ring: &PolynomialRingZq) -> Self {
-        poly_ring.poly.clone()
-    }
-}
-
-impl From<&PolyOverZq> for PolyOverZ {
-    /// Converts a polynomial of type [`PolyOverZq`] to a [`PolyOverZ`] using
-    /// [`PolyOverZ::from_poly_over_zq`].
-    fn from(poly: &PolyOverZq) -> Self {
-        Self::from_poly_over_zq(poly)
-    }
-}
-
-impl From<&PolynomialRingZq> for PolyOverZ {
-    /// Converts a polynomial ring element
-    ///  of type [`PolynomialRingZq`] to a [`PolyOverZ`] using
-    /// [`PolyOverZ::from_polynomial_ring_zq`].
     fn from(poly_ring: &PolynomialRingZq) -> Self {
-        Self::from_polynomial_ring_zq(poly_ring)
+        poly_ring.poly.clone()
     }
 }
 

@@ -83,7 +83,7 @@ impl From<(&PolyOverZ, &Modulus)> for PolyOverZq {
     }
 }
 
-impl PolyOverZq {
+impl From<&ModulusPolynomialRingZq> for PolyOverZq {
     /// Create a [`PolyOverZ`] from a [`ModulusPolynomialRingZq`].
     ///
     /// Parameters:
@@ -96,12 +96,12 @@ impl PolyOverZq {
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
     ///
-    /// let poly_zq = PolyOverZq::from_modulus_polynomial_ring_zq(&modulus);
+    /// let poly_zq = PolyOverZq::from(&modulus);
     ///
     /// # let cmp_poly = PolyOverZq::from_str("4  1 0 0 1 mod 17").unwrap();
     /// # assert_eq!(cmp_poly, poly_zq);
     /// ```
-    pub fn from_modulus_polynomial_ring_zq(modulus: &ModulusPolynomialRingZq) -> Self {
+    fn from(modulus: &ModulusPolynomialRingZq) -> Self {
         let mut out = PolyOverZq::from(&modulus.get_q());
         unsafe {
             fmpz_mod_poly_set(
@@ -111,15 +111,6 @@ impl PolyOverZq {
             )
         };
         out
-    }
-}
-
-impl From<&ModulusPolynomialRingZq> for PolyOverZq {
-    /// Converts a modulus of type [`ModulusPolynomialRingZq`]
-    /// to a [`PolyOverZq`] using
-    /// [`PolyOverZq::from_modulus_polynomial_ring_zq`].
-    fn from(modulus: &ModulusPolynomialRingZq) -> Self {
-        Self::from_modulus_polynomial_ring_zq(modulus)
     }
 }
 
@@ -179,12 +170,11 @@ impl FromStr for PolyOverZq {
 
 #[cfg(test)]
 mod test_from_poly_z_modulus {
+    use super::PolyOverZq;
     use crate::{
         integer::{PolyOverZ, Z},
         integer_mod_q::Modulus,
     };
-
-    use super::PolyOverZq;
     use std::str::FromStr;
 
     /// Test conversion of a [`PolyOverZ`] with small coefficients and small
