@@ -185,6 +185,8 @@ impl<Integer: AsInteger + IntoZ> From<Integer> for Z {
     /// # Parameters:
     /// `value` must be a rust integer, [`Modulus`], or a reference of these types.
     ///
+    /// Returns a new [`Z`] with the value specified in the parameter.
+    ///
     /// # Examples:
     /// ```
     /// use qfall_math::integer::Z;

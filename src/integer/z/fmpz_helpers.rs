@@ -165,9 +165,7 @@ unsafe impl AsInteger for &fmpz {
 unsafe impl AsInteger for fmpz {
     /// Documentation at [`AsInteger::into_fmpz`]
     unsafe fn into_fmpz(self) -> fmpz {
-        let mut value = fmpz(0);
-        fmpz_set(&mut value, &self);
-        value
+        (&self).into_fmpz()
     }
 
     /// Documentation at [`AsInteger::get_fmpz_ref`]
