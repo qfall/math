@@ -14,86 +14,13 @@
 
 use super::Z;
 use crate::{
-    error::MathError,
-    integer_mod_q::{Modulus, Zq},
-    macros::from::{from_trait, from_type},
+    error::MathError, integer_mod_q::Modulus, macros::for_others::implement_empty_trait_owned_ref,
+    traits::AsInteger,
 };
-use flint_sys::fmpz::{
-    fmpz, fmpz_combit, fmpz_get_si, fmpz_init_set_si, fmpz_init_set_ui, fmpz_set, fmpz_set_str,
-};
+use flint_sys::fmpz::{fmpz, fmpz_combit, fmpz_get_si, fmpz_set, fmpz_set_str};
 use std::{ffi::CString, str::FromStr};
 
 impl Z {
-    /// Create a new Integer that can grow arbitrary large.
-    ///
-    /// Parameters:
-    /// - `value`: the initial value the integer should have
-    ///
-    /// Returns the new integer.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer::Z;
-    ///
-    /// let a: Z = Z::from_i64(42);
-    /// ```
-    pub fn from_i64(value: i64) -> Self {
-        let mut ret_value = fmpz(0);
-        unsafe { fmpz_init_set_si(&mut ret_value, value) }
-        Z { value: ret_value }
-    }
-
-    /// Create a new Integer that can grow arbitrary large.
-    ///
-    /// Parameters:
-    /// - `value`: the initial value the integer should have
-    ///
-    /// Returns the new integer.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer::Z;
-    ///
-    /// let a: Z = Z::from_u64(42);
-    /// ```
-    pub fn from_u64(value: u64) -> Self {
-        let mut ret_value = fmpz(0);
-        unsafe { fmpz_init_set_ui(&mut ret_value, value) }
-        Z { value: ret_value }
-    }
-
-    // Generate from_<type> functions for singed and unsigned source types.
-    from_type!(i32, i64, Z, Z::from_i64);
-    from_type!(i16, i64, Z, Z::from_i64);
-    from_type!(i8, i64, Z, Z::from_i64);
-
-    from_type!(u32, u64, Z, Z::from_u64);
-    from_type!(u16, u64, Z, Z::from_u64);
-    from_type!(u8, u64, Z, Z::from_u64);
-
-    /// Create a new Integer that can grow arbitrary large.
-    ///
-    /// Parameters:
-    /// - `value`: the initial value the integer should have
-    ///
-    /// Returns the new integer.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer::Z;
-    /// use qfall_math::integer_mod_q::Modulus;
-    /// use std::str::FromStr;
-    ///
-    /// let m = Modulus::from_str("42").unwrap();
-    ///
-    /// let a: Z = Z::from_modulus(&m);
-    /// ```
-    pub fn from_modulus(value: &Modulus) -> Self {
-        let mut out = Z::default();
-        unsafe { fmpz_set(&mut out.value, &value.get_fmpz_mod_ctx_struct().n[0]) };
-        out
-    }
-
     #[allow(dead_code)]
     /// Create a new Integer that can grow arbitrary large.
     ///
@@ -123,7 +50,7 @@ impl Z {
     ///
     /// let a: Z = Z::from_fmpz_ref(&value);
     ///
-    /// unsafe{fmpz_clear(&value)}
+    /// unsafe{fmpz_clear(&mut value)}
     /// ```
     pub(crate) fn from_fmpz_ref(value: &fmpz) -> Self {
         let mut out = Z::default();
@@ -157,26 +84,6 @@ impl Z {
     /// ```
     pub(crate) fn from_fmpz(value: fmpz) -> Self {
         Z { value }
-    }
-
-    /// Create a new Integer that can grow arbitrary large.
-    ///
-    /// Parameters:
-    /// - `value`: the initial value the integer should have
-    ///
-    /// Returns the new integer.
-    ///
-    /// ```
-    /// use qfall_math::integer::Z;
-    /// use qfall_math::integer_mod_q::Zq;
-    /// use std::str::FromStr;
-    ///
-    /// let m = Zq::from_str("13 mod 17").unwrap();
-    ///
-    /// let a: Z = Z::from_zq(m);
-    /// ```
-    pub fn from_zq(value: Zq) -> Self {
-        value.value
     }
 
     /// Create a [`Z`] integer from a [`String`]. This function takes a base in which the number is represented between `2` and `62`
@@ -265,32 +172,39 @@ impl Z {
     }
 }
 
-impl From<&Modulus> for Z {
-    /// Convert [`Modulus`] to [`Z`] using [`Z::from_modulus`].
-    fn from(value: &Modulus) -> Self {
-        Z::from_modulus(value)
+/// A trait that indicates for which types the `From for Z` should be implemented.
+/// It is used as a workaround to implement the [`From`] trait without colliding
+/// with the default implementation for [`Z`] and also to filter out [`Zq`](crate::integer_mod_q::Zq).
+trait IntoZ {}
+
+implement_empty_trait_owned_ref!(IntoZ for Modulus u8 u16 u32 u64 i8 i16 i32 i64);
+
+impl<Integer: AsInteger + IntoZ> From<Integer> for Z {
+    /// Convert an integer to [`Z`].
+    ///
+    /// # Parameters:
+    /// `value` must be a rust integer, [`Modulus`], or a reference of these types.
+    ///
+    /// Returns a new [`Z`] with the value specified in the parameter.
+    ///
+    /// # Examples:
+    /// ```
+    /// use qfall_math::integer::Z;
+    ///
+    /// let a = Z::from(10);
+    /// let b = Z::from(i64::MAX);
+    /// let c = Z::from(&u64::MAX);
+    /// ```
+    fn from(value: Integer) -> Self {
+        match value.get_fmpz_ref() {
+            Some(val) => Z::from_fmpz_ref(val),
+            None => unsafe {
+                let value = value.into_fmpz();
+                Z { value }
+            },
+        }
     }
 }
-
-impl From<Modulus> for Z {
-    /// Convert [`Modulus`] to [`Z`] using [`Z::from_modulus`].
-    fn from(value: Modulus) -> Self {
-        Z::from_modulus(&value)
-    }
-}
-
-// Generate [`From`] trait for the different types.
-from_trait!(i64, Z, Z::from_i64);
-from_trait!(i32, Z, Z::from_i32);
-from_trait!(i16, Z, Z::from_i16);
-from_trait!(i8, Z, Z::from_i8);
-
-from_trait!(u64, Z, Z::from_u64);
-from_trait!(u32, Z, Z::from_u32);
-from_trait!(u16, Z, Z::from_u16);
-from_trait!(u8, Z, Z::from_u8);
-
-from_trait!(Zq, Z, Z::from_zq);
 
 impl FromStr for Z {
     type Err = MathError;
@@ -435,79 +349,77 @@ mod test_from_bytes {
 }
 
 #[cfg(test)]
+/// Test the different implementations for types that implement [`AsInteger`] and [`IntoZ`]
 mod tests_from_int {
-    use super::Z;
-
-    /// Ensure that initialization with large numbers works.
-    /// Numbers larger than 2^62 bits are represented differently in FLINT.
-    #[test]
-    fn from_i64_max_positive() {
-        Z::from_i64(i64::MAX);
-    }
-
-    /// Ensure that initialization with large negative numbers works.
-    /// Numbers smaller than -2^62 bits are represented differently in FLINT.
-    #[test]
-    fn from_i64_max_negative() {
-        Z::from_i64(i64::MIN);
-    }
-
-    /// Ensure that the [`From`] trait is available for i64 values
-    #[test]
-    fn from_i64_trait() {
-        let _ = Z::from(-10i64);
-    }
-
-    /// Ensure that the `from_<type_name>` functions are available for
-    /// singed and unsigned integers of 8, 16, 32, and 64 bit length.
-    /// Tested with their maximum value.
-    #[test]
-    fn from_functions_max() {
-        // signed
-        let _ = Z::from_i8(i8::MAX);
-        let _ = Z::from_i16(i16::MAX);
-        let _ = Z::from_i32(i32::MAX);
-        let _ = Z::from_i64(i64::MAX);
-
-        // unsigned
-        let _ = Z::from_u8(u8::MAX);
-        let _ = Z::from_u16(u16::MAX);
-        let _ = Z::from_u32(u32::MAX);
-        let _ = Z::from_u64(u64::MAX);
-    }
+    use super::*;
+    use crate::integer_mod_q::Modulus;
 
     /// Ensure that the [`From`] trait is available for singed and unsigned integers
-    /// of 8, 16, 32, and 64 bit length. Tested with their maximum value.
+    /// of 8, 16, 32, and 64 bit length and for their owned and borrowed variants.
+    /// Tested with their maximum value.
     #[test]
-    fn from_trait_max() {
+    fn rust_int_max() {
         // signed
         let _ = Z::from(i8::MAX);
         let _ = Z::from(i16::MAX);
         let _ = Z::from(i32::MAX);
         let _ = Z::from(i64::MAX);
+        let _ = Z::from(&i8::MAX);
+        let _ = Z::from(&i16::MAX);
+        let _ = Z::from(&i32::MAX);
+        let _ = Z::from(&i64::MAX);
 
         // unsigned
         let _ = Z::from(u8::MAX);
         let _ = Z::from(u16::MAX);
         let _ = Z::from(u32::MAX);
         let _ = Z::from(u64::MAX);
+        let _ = Z::from(&u8::MAX);
+        let _ = Z::from(&u16::MAX);
+        let _ = Z::from(&u32::MAX);
+        let _ = Z::from(&u64::MAX);
     }
 
     /// Ensure that the [`From`] trait is available for singed and unsigned integers
-    /// of 8, 16, 32, and 64 bit length. Tested with their minimum value.
+    /// of 8, 16, 32, and 64 bit length and for their owned and borrowed variants.
+    /// Tested with their minimum value.
     #[test]
-    fn from_trait_min() {
+    fn rust_int_min() {
         // signed
         let _ = Z::from(i8::MIN);
         let _ = Z::from(i16::MIN);
         let _ = Z::from(i32::MIN);
         let _ = Z::from(i64::MIN);
+        let _ = Z::from(&i8::MIN);
+        let _ = Z::from(&i16::MIN);
+        let _ = Z::from(&i32::MIN);
+        let _ = Z::from(&i64::MIN);
 
         // unsigned
         let _ = Z::from(u8::MIN);
         let _ = Z::from(u16::MIN);
         let _ = Z::from(u32::MIN);
         let _ = Z::from(u64::MIN);
+        let _ = Z::from(&u8::MIN);
+        let _ = Z::from(&u16::MIN);
+        let _ = Z::from(&u32::MIN);
+        let _ = Z::from(&u64::MIN);
+    }
+
+    /// Ensure that the [`From`] trait is available for small and large,
+    /// borrowed and owned [`Modulus`] instances.
+    #[test]
+    fn modulus() {
+        let val_1 = Z::from(u64::MAX);
+        let mod_1 = Modulus::try_from(&val_1).unwrap();
+        let val_2 = Z::from(10);
+        let mod_2 = Modulus::try_from(&val_2).unwrap();
+
+        assert_eq!(val_1, Z::from(&mod_1));
+        assert_eq!(val_2, Z::from(&mod_2));
+
+        assert_eq!(val_1, Z::from(mod_1));
+        assert_eq!(val_2, Z::from(mod_2));
     }
 }
 
@@ -618,36 +530,6 @@ mod test_from_str_b {
 }
 
 #[cfg(test)]
-mod test_from_modulus {
-    use super::Z;
-    use crate::integer_mod_q::Modulus;
-    use std::str::FromStr;
-
-    /// Ensure that `from_modulus` is available for small and large numbers
-    #[test]
-    fn large_and_small_numbers() {
-        let mod_1 = Modulus::from_str(&"1".repeat(65)).unwrap();
-        let mod_2 = Modulus::from_str("10").unwrap();
-
-        let _ = Z::from_modulus(&mod_1);
-        let _ = Z::from_modulus(&mod_2);
-    }
-
-    /// Ensure that the [`From`] trait is available for large
-    /// [`Modulus`] instances
-    #[test]
-    fn from_trait() {
-        let mod_1 = Modulus::from_str(&"1".repeat(65)).unwrap();
-        let mod_2 = Modulus::from_str("10").unwrap();
-
-        let _ = Z::from(&mod_1);
-        let _ = Z::from(&mod_2);
-        let _ = Z::from(mod_1);
-        let _ = Z::from(mod_2);
-    }
-}
-
-#[cfg(test)]
 mod test_from_fmpz {
     use flint_sys::fmpz::{fmpz, fmpz_set_ui};
 
@@ -685,34 +567,6 @@ mod test_from_fmpz_ref {
 
         let _ = Z::from_fmpz_ref(&mod_1.value);
         let _ = Z::from_fmpz_ref(&mod_2.value);
-    }
-}
-
-#[cfg(test)]
-mod test_from_zq {
-    use super::Z;
-    use crate::integer_mod_q::Zq;
-
-    /// Ensure that the `from_zq` function is available and works correctly for
-    /// small and large [`Zq`] entries.
-    #[test]
-    fn large_small_numbers() {
-        let zq_1 = Zq::try_from((i64::MAX, u64::MAX)).unwrap();
-        let zq_2 = Zq::try_from((17, u64::MAX)).unwrap();
-
-        assert_eq!(Z::from(i64::MAX), Z::from_zq(zq_1));
-        assert_eq!(Z::from(17), Z::from_zq(zq_2));
-    }
-
-    /// Ensure that the [`From`] trait is available for small and large
-    /// [`Zq`] instances.
-    #[test]
-    fn from_trait() {
-        let zq_1 = Zq::try_from((i64::MAX, u64::MAX)).unwrap();
-        let zq_2 = Zq::try_from((17, u64::MAX)).unwrap();
-
-        assert_eq!(Z::from(i64::MAX), Z::from(zq_1));
-        assert_eq!(Z::from(17), Z::from(zq_2));
     }
 }
 

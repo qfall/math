@@ -73,7 +73,7 @@ impl Distance<&Zq> for Zq {
     /// is calculated to `self`
     ///
     /// Returns the absolute minimum distance between the two given values as a new
-    /// [`Z`] instance or a [`MathError`] if the moduli mismatch.
+    /// [`Z`] instance.
     ///
     /// # Examples
     /// ```
@@ -98,6 +98,17 @@ impl Distance<&Zq> for Zq {
     }
 }
 
+impl Distance<Zq> for Zq {
+    type Output = Z;
+
+    // This reference links to the correct distance implementation
+    // just because the correct one is the first in this file.
+    /// Just calls [`Zq::distance<&Zq>`].
+    fn distance(&self, other: Zq) -> Self::Output {
+        self.distance(&other)
+    }
+}
+
 impl<T: Into<Z>> Distance<T> for Zq {
     type Output = Z;
 
@@ -108,7 +119,7 @@ impl<T: Into<Z>> Distance<T> for Zq {
     /// is calculated to `self`
     ///
     /// Returns the absolute minimum distance between the two given values as a new
-    /// [`Z`] instance or a [`MathError`] if the moduli mismatch.
+    /// [`Z`] instance.
     ///
     /// # Examples
     /// ```
@@ -126,9 +137,6 @@ impl<T: Into<Z>> Distance<T> for Zq {
     /// assert_eq!(Z::from(6), distance_0);
     /// assert_eq!(Z::from(2), distance_1);
     /// ```
-    ///
-    /// # Panics ...
-    /// - if the provided moduli mismatch.
     fn distance(&self, other: T) -> Self::Output {
         let other = Zq::from_z_modulus(&other.into(), &self.modulus.clone());
         self.distance(&other)

@@ -18,6 +18,7 @@ use flint_sys::fmpz_mod::fmpz_mod_ctx;
 use std::rc::Rc;
 
 mod cmp;
+mod fmpz_helpers;
 mod from;
 mod get;
 mod ownership;

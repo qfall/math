@@ -389,3 +389,22 @@ macro_rules! implement_for_owned {
 }
 
 pub(crate) use implement_for_owned;
+
+/// Implements a trait with an empty implementation for the specified types
+/// and their references.
+/// This macro be used for empty traits or to use just the
+/// default implementation of a trait.
+///
+/// # Examples
+/// ```compile_fail
+/// implement_empty_trait!(IntoZ for u8 u16 u32 u64 i8 i16 i32 i64);
+/// ```
+macro_rules! implement_empty_trait_owned_ref {
+    ($trait_name:ident for $($type:ty)*) => {
+      $(
+        impl $trait_name for $type {}
+        impl $trait_name for &$type {}
+      )*
+    };
+}
+pub(crate) use implement_empty_trait_owned_ref;
