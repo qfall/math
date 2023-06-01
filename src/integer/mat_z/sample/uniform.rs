@@ -62,8 +62,8 @@ impl MatZ {
         T1: Into<Z> + Clone,
         T2: Into<Z> + Clone,
     {
-        let lower_bound: Z = lower_bound.clone().into();
-        let upper_bound: Z = upper_bound.clone().into();
+        let lower_bound: Z = lower_bound.to_owned().into();
+        let upper_bound: Z = upper_bound.to_owned().into();
         let mut matrix = MatZ::new(num_rows, num_cols)?;
 
         let interval_size = &upper_bound - &lower_bound;
@@ -83,7 +83,7 @@ mod test_sample_uniform {
     use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
     use crate::{
         integer::{MatZ, Z},
-        integer_mod_q::{Modulus, Zq},
+        integer_mod_q::Modulus,
     };
     use std::str::FromStr;
 
@@ -135,7 +135,6 @@ mod test_sample_uniform {
     #[test]
     fn availability() {
         let modulus = Modulus::from_str("7").unwrap();
-        let zq = Zq::from_str("7 mod 10").unwrap();
         let z = Z::from(7);
 
         let _ = MatZ::sample_uniform(1, 1, &0u16, &7u8);
@@ -147,7 +146,6 @@ mod test_sample_uniform {
         let _ = MatZ::sample_uniform(1, 1, &0i64, &7i32);
         let _ = MatZ::sample_uniform(1, 1, &Z::ZERO, &7i64);
         let _ = MatZ::sample_uniform(1, 1, &0u8, &modulus);
-        let _ = MatZ::sample_uniform(1, 1, &0, &zq);
         let _ = MatZ::sample_uniform(1, 1, &0, &z);
     }
 
