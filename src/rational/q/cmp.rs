@@ -1,4 +1,4 @@
-// Copyright © 2023 Sven Moog
+// Copyright © 2023 Sven Moog, Niklas Siemer
 //
 // This file is part of qFALL-math.
 //
@@ -73,7 +73,47 @@ impl PartialOrd for Q {
     /// # Ok::<(), MathError>(())
     /// ```
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        unsafe { Some(fmpq_cmp(&self.value, &other.value).cmp(&0)) }
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Q {
+    //! Enables the usage of `max`, `min`, and `clamp`.
+    //!
+    //! # Examples
+    //! ```
+    //! use qfall_math::rational::Q;
+    //! use std::cmp::{max, min};
+    //!
+    //! let a: Q = Q::from(10);
+    //! let b: Q = Q::from(42);
+    //!
+    //! assert_eq!(b, max(a.clone(), b.clone()));
+    //! assert_eq!(a, min(a.clone(), b.clone()));
+    //! assert_eq!(a, Q::ZERO.clamp(a.clone(), b.clone()));
+    //! ```
+
+    /// Compares two [`Q`] values. Used by the `<`, `<=`, `>`, and `>=` operators.
+    ///
+    /// Parameters:
+    /// - `other`: the other value that is used to compare the elements
+    ///
+    /// Returns the [`Ordering`] of the elements.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::Q;
+    ///
+    /// let a: Q = Q::from(10);
+    /// let b: Q = Q::from(42);
+    ///
+    /// assert!(a < b);
+    /// assert!(a <= b);
+    /// assert!(b > a);
+    /// assert!(b >= a);
+    /// ```
+    fn cmp(&self, other: &Self) -> Ordering {
+        unsafe { fmpq_cmp(&self.value, &other.value).cmp(&0) }
     }
 }
 
@@ -556,5 +596,43 @@ mod test_partial_ord {
         assert!(small >= zero);
         assert!(!(small < zero));
         assert!(!(small <= zero));
+    }
+}
+
+#[cfg(test)]
+mod test_ord {
+    use super::Q;
+    use std::cmp::{max, min};
+
+    // `cmp` is extensively tested in module `test_partial_eq`, hence omitted here
+
+    /// Check whether default implementations `max`, `min`, `clamp`
+    /// work properly for small numbers
+    #[test]
+    fn default_implementations_small() {
+        let a: Q = Q::from((10, 3));
+        let b: Q = Q::from((42, 4));
+
+        assert_eq!(b, max(a.clone(), b.clone()));
+        assert_eq!(a, min(a.clone(), b.clone()));
+
+        assert_eq!(a, Q::ZERO.clamp(a.clone(), b.clone()));
+        assert_eq!(a, a.clone().clamp(Q::ZERO, b.clone()));
+        assert_eq!(a, b.clone().clamp(Q::ZERO, a.clone()));
+    }
+
+    /// Check whether default implementations `max`, `min`, `clamp`
+    /// work properly for large numbers
+    #[test]
+    fn default_implementations_large() {
+        let a: Q = Q::from(i64::MAX);
+        let b: Q = Q::from(u64::MAX);
+
+        assert_eq!(b, max(a.clone(), b.clone()));
+        assert_eq!(a, min(a.clone(), b.clone()));
+
+        assert_eq!(a, Q::ZERO.clamp(a.clone(), b.clone()));
+        assert_eq!(a, a.clone().clamp(Q::ZERO, b.clone()));
+        assert_eq!(a, b.clone().clamp(Q::ZERO, a.clone()));
     }
 }

@@ -102,7 +102,6 @@ mod test_sample_uniform {
     #[test]
     fn availability() {
         let modulus = Modulus::from_str("7").unwrap();
-        let zq = Zq::from_str("7 mod 10").unwrap();
         let z = Z::from(7);
 
         let _ = Zq::sample_uniform(&7u8);
@@ -114,7 +113,6 @@ mod test_sample_uniform {
         let _ = Zq::sample_uniform(&7i32);
         let _ = Zq::sample_uniform(&7i64);
         let _ = Zq::sample_uniform(&modulus);
-        let _ = Zq::sample_uniform(&zq);
         let _ = Zq::sample_uniform(&z);
     }
 

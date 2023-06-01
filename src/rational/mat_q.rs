@@ -27,6 +27,7 @@ mod inverse;
 mod ownership;
 mod serialize;
 mod set;
+mod sort;
 mod to_string;
 mod trace;
 mod transpose;

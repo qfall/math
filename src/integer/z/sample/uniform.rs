@@ -55,10 +55,7 @@ impl Z {
 
 #[cfg(test)]
 mod test_sample_uniform {
-    use crate::{
-        integer::Z,
-        integer_mod_q::{Modulus, Zq},
-    };
+    use crate::{integer::Z, integer_mod_q::Modulus};
     use std::str::FromStr;
 
     /// Checks whether the boundaries of the interval are kept for small intervals.
@@ -107,7 +104,6 @@ mod test_sample_uniform {
     #[test]
     fn availability() {
         let modulus = Modulus::from_str("7").unwrap();
-        let zq = Zq::from_str("7 mod 10").unwrap();
         let z = Z::from(7);
 
         let _ = Z::sample_uniform(&0u16, &7u8);
@@ -119,7 +115,6 @@ mod test_sample_uniform {
         let _ = Z::sample_uniform(&0i64, &7i32);
         let _ = Z::sample_uniform(&Z::ZERO, &7i64);
         let _ = Z::sample_uniform(&0u8, &modulus);
-        let _ = Z::sample_uniform(&0, &zq);
         let _ = Z::sample_uniform(&0, &z);
     }
 

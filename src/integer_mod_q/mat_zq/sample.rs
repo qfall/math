@@ -79,7 +79,7 @@ mod test_sample_uniform {
     use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
     use crate::{
         integer::Z,
-        integer_mod_q::{MatZq, Modulus, Zq},
+        integer_mod_q::{MatZq, Modulus},
     };
     use std::str::FromStr;
 
@@ -127,7 +127,6 @@ mod test_sample_uniform {
     #[test]
     fn availability() {
         let modulus = Modulus::from_str("7").unwrap();
-        let zq = Zq::from_str("7 mod 10").unwrap();
         let z = Z::from(7);
 
         let _ = MatZq::sample_uniform(1, 1, &7u8);
@@ -139,7 +138,6 @@ mod test_sample_uniform {
         let _ = MatZq::sample_uniform(1, 1, &7i32);
         let _ = MatZq::sample_uniform(1, 1, &7i64);
         let _ = MatZq::sample_uniform(1, 1, &modulus);
-        let _ = MatZq::sample_uniform(1, 1, &zq);
         let _ = MatZq::sample_uniform(1, 1, &z);
     }
 
