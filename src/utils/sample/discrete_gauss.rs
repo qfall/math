@@ -8,6 +8,13 @@
 
 //! This module includes core functionality to sample according to the
 //! discrete gaussian distribution.
+//!
+//! //! The main references are listed in the following
+//! and will be further referenced in submodules by these numbers:
+//! - \[1\] Gentry, Craig and Peikert, Chris and Vaikuntanathan, Vinod (2008).
+//! Trapdoors for hard lattices and new cryptographic constructions.
+//! In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
+//! <https://citeseerx.ist.psu.edu/document?doi=d9f54077d568784c786f7b1d030b00493eb3ae35>
 
 use super::uniform::{get_rng, sample_uniform_rejection};
 use crate::{
@@ -23,7 +30,7 @@ use rand::RngCore;
 /// `[center - ⌈s * log_2(n)⌉ , center + ⌊s * log_2(n)⌋ ]`.
 ///
 /// This function implements discrete Gaussian sampling according to the definition of
-/// SampleZ in [GPV08](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=d9f54077d568784c786f7b1d030b00493eb3ae35).
+/// SampleZ as in [\[1\]](<index.html#:~:text=[1]>).
 ///
 /// Parameters:
 /// - `n`: specifies the range from which is sampled
@@ -129,7 +136,8 @@ fn gaussian_function(x: &Z, c: &Q, s: &Q) -> Q {
 /// - `s`: specifies the Gaussian parameter, which is proportional
 /// to the standard deviation `sigma * sqrt(2 * pi) = s`
 ///
-/// Returns a vector with discrete gaussian error based on a lattice point.
+/// Returns a vector with discrete gaussian error based on a lattice point
+/// as in [\[1\]](<index.html#:~:text=[1]>): SampleD.
 ///
 /// # Example
 /// ```compile_fail

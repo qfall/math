@@ -37,6 +37,13 @@ impl Z {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
     /// if the `n <= 1` or `s <= 0`.
+    ///
+    ///
+    /// This function implements SampleZ according to:
+    /// - \[1\] Gentry, Craig and Peikert, Chris and Vaikuntanathan, Vinod (2008).
+    /// Trapdoors for hard lattices and new cryptographic constructions.
+    /// In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
+    /// <https://dl.acm.org/doi/pdf/10.1145/1374376.1374407>
     pub fn sample_discrete_gauss<T1, T2, T3>(n: &T1, center: &T2, s: &T3) -> Result<Self, MathError>
     where
         T1: Into<Z> + Clone,

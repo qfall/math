@@ -43,6 +43,12 @@ impl MatZ {
     /// if the number of rows of the `basis` and `center` differ.
     /// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix)
     /// if `center` is not a row vector.
+    ///
+    /// This function implements SampleD according to:
+    /// - \[1\] Gentry, Craig and Peikert, Chris and Vaikuntanathan, Vinod (2008).
+    /// Trapdoors for hard lattices and new cryptographic constructions.
+    /// In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
+    /// <https://dl.acm.org/doi/pdf/10.1145/1374376.1374407>
     pub fn sample_d<T1, T2>(basis: &MatZ, n: &T1, center: &MatQ, s: &T2) -> Result<Self, MathError>
     where
         T1: Into<Z> + Clone,
