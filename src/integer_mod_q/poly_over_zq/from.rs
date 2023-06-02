@@ -91,7 +91,7 @@ impl From<&ModulusPolynomialRingZq> for PolyOverZq {
     ///
     /// # Examples
     ///
-    /// Returns the context [`PolyOverZq`] representing the modulus object
+    /// Returns the context [`PolyOverZq`] representing the modulus object.
     ///
     /// ```
     /// use qfall_math::integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq};
@@ -101,8 +101,8 @@ impl From<&ModulusPolynomialRingZq> for PolyOverZq {
     ///
     /// let poly_zq = PolyOverZq::from(&modulus);
     ///
-    /// # let cmp_poly = PolyOverZq::from_str("4  1 0 0 1 mod 17").unwrap();
-    /// # assert_eq!(cmp_poly, poly_zq);
+    /// let cmp_poly = PolyOverZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// assert_eq!(cmp_poly, poly_zq);
     /// ```
     fn from(modulus: &ModulusPolynomialRingZq) -> Self {
         let modulus_q = Modulus::try_from(&modulus.get_q()).unwrap();

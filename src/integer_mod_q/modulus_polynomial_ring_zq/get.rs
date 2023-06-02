@@ -18,7 +18,7 @@ impl ModulusPolynomialRingZq {
         self.modulus.as_ref()
     }
 
-    /// Returns the context integer as a [`Z`]
+    /// Returns the context integer as a [`Z`].
     ///
     /// # Examples
     /// ```
@@ -30,8 +30,8 @@ impl ModulusPolynomialRingZq {
     ///
     /// let modulus = modulus_ring.get_q();
     ///
-    /// # let cmp_modulus = Z:from(17);
-    /// # assert_eq!(cmp_modulus, modulus);
+    /// let cmp_modulus = Z:from(17);
+    /// assert_eq!(cmp_modulus, modulus);
     /// ```
     pub fn get_q(&self) -> Z {
         let mut out = Z::default();

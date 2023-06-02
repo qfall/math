@@ -13,10 +13,7 @@
 //! The explicit functions contain the documentation.
 
 use super::PolyOverZ;
-use crate::{
-    error::MathError,
-    integer_mod_q::{PolyOverZq, PolynomialRingZq},
-};
+use crate::{error::MathError, integer_mod_q::PolyOverZq};
 use flint_sys::{fmpz_mod_poly::fmpz_mod_poly_get_fmpz_poly, fmpz_poly::fmpz_poly_set_str};
 use std::{ffi::CString, str::FromStr};
 
@@ -92,7 +89,8 @@ impl From<&PolyOverZq> for PolyOverZ {
     /// Parameters:
     /// - `poly`: the polynomial from which the coefficients are copied
     ///
-    /// Returns representative polynomial of the [`PolyOverZq`] element.
+    /// Returns representative polynomial (all reduced coefficients)
+    /// of the [`PolyOverZq`] as a [`PolyOverZ`].
     ///
     /// # Examples
     /// ```
@@ -100,7 +98,7 @@ impl From<&PolyOverZq> for PolyOverZ {
     /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
     ///
-    /// let poly = PolyOverZq::from_str("4  0 1 102 3 mod 101").unwrap();
+    /// let poly = PolyOverZq::from_str("4  0 1 5 3 mod 4").unwrap();
     ///
     /// let poly_z = PolyOverZ::from(&poly);
     ///

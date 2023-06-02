@@ -25,7 +25,9 @@ impl PolynomialRingZq {
     /// let poly = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
     /// let poly_ring = PolynomialRingZq::from((&poly, &modulus));
     ///
-    /// # assert_eq!(modulus, poly_ring.get_mod());
+    /// let poly_ring_mod = poly_ring.get_mod();
+    ///
+    /// assert_eq!(modulus, poly_ring_mod);
     /// ```
     pub fn get_mod(&self) -> ModulusPolynomialRingZq {
         self.modulus.clone()
@@ -43,12 +45,12 @@ impl PolynomialRingZq {
     /// let poly = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
     /// let poly_ring = PolynomialRingZq::from((&poly, &modulus));
     ///
-    /// let poly_z = poly_ring.get_value();
+    /// let poly_z = poly_ring.get_poly();
     ///
-    /// # let cmp_poly = PolyOverZ::from_str("3  15 0 1").unwrap();
-    /// # assert_eq!(cmp_poly, poly_z);
+    /// let cmp_poly = PolyOverZ::from_str("3  15 0 1").unwrap();
+    /// assert_eq!(cmp_poly, poly_z);
     /// ```
-    pub fn get_value(&self) -> PolyOverZ {
+    pub fn get_poly(&self) -> PolyOverZ {
         self.poly.clone()
     }
 }
@@ -91,7 +93,7 @@ mod test_get_value {
         let poly = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
         let poly_ring = PolynomialRingZq::from((&poly, &modulus));
 
-        let poly_z = poly_ring.get_value();
+        let poly_z = poly_ring.get_poly();
 
         let cmp_poly = PolyOverZ::from_str(&format!("3  {} 0 1", u64::MAX - 60)).unwrap();
         assert_eq!(cmp_poly, poly_z);
