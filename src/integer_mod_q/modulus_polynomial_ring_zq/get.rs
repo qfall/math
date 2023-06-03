@@ -30,7 +30,7 @@ impl ModulusPolynomialRingZq {
     ///
     /// let modulus = modulus_ring.get_q();
     ///
-    /// let cmp_modulus = Z:from(17);
+    /// let cmp_modulus = Z::from(17);
     /// assert_eq!(cmp_modulus, modulus);
     /// ```
     pub fn get_q(&self) -> Z {
