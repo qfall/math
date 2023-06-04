@@ -9,7 +9,7 @@
 //! This module includes core functionality to sample according to the
 //! discrete gaussian distribution.
 //!
-//! //! The main references are listed in the following
+//! The main references are listed in the following
 //! and will be further referenced in submodules by these numbers:
 //! - \[1\] Gentry, Craig and Peikert, Chris and Vaikuntanathan, Vinod (2008).
 //! Trapdoors for hard lattices and new cryptographic constructions.
@@ -129,8 +129,11 @@ fn gaussian_function(x: &Z, c: &Q, s: &Q) -> Q {
 
 /// SampleD samples a discrete Gaussian from the lattice with `basis` using [`sample_z`] as a subroutine.
 ///
+/// We do not check whether `basis` is actually a basis. Hence, the callee is
+/// responsible for making sure that `basis` provides a suitable basis.
+///
 /// Parameters:
-/// - `basis`: specifies a basis for a lattice
+/// - `basis`: specifies a basis for the lattice from which is sampled
 /// - `n`: specifies the range from which [`sample_z`] samples
 /// - `center`: specifies the positions of the center with peak probability
 /// - `s`: specifies the Gaussian parameter, which is proportional
@@ -157,24 +160,27 @@ fn gaussian_function(x: &Z, c: &Q, s: &Q) -> Q {
 /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
 /// if the number of rows of the `basis` and `center` differ.
 /// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix)
-/// if `center` is not a row vector.
+/// if `center` is not a column vector.
 pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ, MathError> {
     let mut center = center.clone();
     if center.get_num_rows() != basis.get_num_rows() {
-        return Err( MathError::MismatchingMatrixDimension(format!("sample_d requires center and basis to have the same number of columns, but they were {} and {}.", center.get_num_rows(), basis.get_num_rows())));
+        return Err( MathError::MismatchingMatrixDimension(format!(
+            "sample_d requires center and basis to have the same number of columns, but they were {} and {}.",
+            center.get_num_rows(),
+            basis.get_num_rows())
+        ));
     }
-    if center.is_row_vector() {
+    if !center.is_column_vector() {
         return Err(MathError::InvalidMatrix(format!(
-            "sample_d expects center to be a row vector, but it has dimensions {}x{}.",
+            "sample_d expects center to be a column vector, but it has dimensions {}x{}.",
             center.get_num_rows(),
             center.get_num_columns()
         )));
     }
     if s < &Q::ZERO {
         return Err(MathError::InvalidIntegerInput(format!(
-            "The value {} was provided for parameter s of the function sample_z.
-            This function expects this input to be bigger than 0.",
-            s
+            "The value {s} was provided for parameter s of the function sample_z.
+            This function expects this input to be bigger than 0."
         )));
     }
 
@@ -187,23 +193,24 @@ pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ
 
     for i in (0..basis_gso.get_num_columns()).rev() {
         // basisvector_i = b_tilde[i]
-        let basisvector_i = basis_gso.get_column(i).unwrap();
+        let basisvector_orth_i = basis_gso.get_column(i).unwrap();
 
         // define the center for sample_z as c2 = <c, b_tilde[i]> / <b_tilde[i], b_tilde[i]>;
-        let c2 = center.dot_product(&basisvector_i).unwrap()
-            / basisvector_i.dot_product(&basisvector_i).unwrap();
+        let c2 = center.dot_product(&basisvector_orth_i).unwrap()
+            / basisvector_orth_i.dot_product(&basisvector_orth_i).unwrap();
 
         // Defines the gaussian parameter to be normalized along the basis vector: s2 = s / ||b_tilde[i]||
-        let s2 = s / (basisvector_i.norm_eucl_sqrd().unwrap().sqrt());
+        let s2 = s / (basisvector_orth_i.norm_eucl_sqrd().unwrap().sqrt());
 
         // sample z ~ D_{Z, s2, c2}
         let z = sample_z(n, &c2, &s2)?;
 
         // update the center c = c - z * b[i]
-        center = center - MatQ::from(&(&z * basis.get_column(i).unwrap()));
+        let basisvector_i = basis.get_column(i).unwrap();
+        center = center - MatQ::from(&(&z * &basisvector_i));
 
         // out = out + z * b[i]
-        out = &out + &z * basis.get_column(i).unwrap();
+        out = &out + &z * &basisvector_i;
     }
 
     Ok(out)
@@ -353,11 +360,13 @@ mod test_gaussian_function {
 
 #[cfg(test)]
 mod test_sample_d {
+    use crate::traits::Concatenate;
     use crate::utils::sample::discrete_gauss::sample_d;
     use crate::{
         integer::{MatZ, Z},
         rational::{MatQ, Q},
     };
+    use flint_sys::fmpz_mat::fmpz_mat_hnf;
     use std::str::FromStr;
 
     /// Ensures that the doc-test compiles and runs properly
@@ -391,6 +400,41 @@ mod test_sample_d {
         let gaussian_parameter = Q::ONE;
 
         let _ = sample_d(&basis, &n, &center, &gaussian_parameter).unwrap();
+    }
+
+    /// Ensures that `sample_d` outputs a vector that's part of the specified lattice
+    #[test]
+    fn point_of_lattice() {
+        let basis = MatZ::from_str("[[7,0],[7,3]]").unwrap();
+        let n = Z::from(1024);
+        let center = MatQ::new(2, 1).unwrap();
+        let gaussian_parameter = Q::ONE;
+
+        let sample = sample_d(&basis, &n, &center, &gaussian_parameter).unwrap();
+
+        // check whether hermite normal form of HNF(b) = HNF([b|sample_vector])
+        let basis_concat_sample = basis.concat_horizontal(&sample).unwrap();
+        let mut hnf_basis = MatZ::new(2, 2).unwrap();
+        unsafe { fmpz_mat_hnf(&mut hnf_basis.matrix, &basis.matrix) };
+        let mut hnf_basis_concat_sample = MatZ::new(2, 3).unwrap();
+        unsafe {
+            fmpz_mat_hnf(
+                &mut hnf_basis_concat_sample.matrix,
+                &basis_concat_sample.matrix,
+            )
+        };
+        assert_eq!(
+            hnf_basis.get_column(0).unwrap(),
+            hnf_basis_concat_sample.get_column(0).unwrap()
+        );
+        assert_eq!(
+            hnf_basis.get_column(1).unwrap(),
+            hnf_basis_concat_sample.get_column(1).unwrap()
+        );
+        assert_eq!(
+            MatZ::new(2, 1).unwrap(),
+            hnf_basis_concat_sample.get_column(2).unwrap()
+        );
     }
 
     /// Checks whether `sample_d` returns an error if the gaussian parameter `s <= 0`
@@ -431,10 +475,10 @@ mod test_sample_d {
         assert!(res.is_err());
     }
 
-    /// Checks whether `sample_d` returns an error if center isn't a row vector
+    /// Checks whether `sample_d` returns an error if center isn't a column vector
     #[test]
-    fn center_not_row_vector() {
-        let basis = MatZ::identity(3, 5).unwrap();
+    fn center_not_column_vector() {
+        let basis = MatZ::identity(2, 2).unwrap();
         let n = Z::from(1024);
         let center = MatQ::new(2, 2).unwrap();
         let gaussian_parameter = Q::ONE;

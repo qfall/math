@@ -16,10 +16,13 @@ use crate::{
 };
 
 impl MatZ {
-    /// SampleD samples a discrete Gaussian from the lattice with `basis` as a subroutine.
+    /// SampleD samples a discrete Gaussian from the lattice with a provided `basis`.
+    ///
+    /// We do not check whether `basis` is actually a basis. Hence, the callee is
+    /// responsible for making sure that `basis` provides a suitable basis.
     ///
     /// Parameters:
-    /// - `basis`: specifies a basis for a lattice
+    /// - `basis`: specifies a basis for the lattice from which is sampled
     /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
     /// - `center`: specifies the positions of the center with peak probability
     /// - `s`: specifies the Gaussian parameter, which is proportional
@@ -42,7 +45,7 @@ impl MatZ {
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     /// if the number of rows of the `basis` and `center` differ.
     /// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix)
-    /// if `center` is not a row vector.
+    /// if `center` is not a column vector.
     ///
     /// This function implements SampleD according to:
     /// - \[1\] Gentry, Craig and Peikert, Chris and Vaikuntanathan, Vinod (2008).
