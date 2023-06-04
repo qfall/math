@@ -24,7 +24,7 @@ mod to_string;
 /// [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq)
 ///
 /// Attributes
-/// - `modulus`: holds the specific content, i.e. the prime `q` and f(X); it
+/// - `modulus`: holds the specific content, i.e. the modulus `q` and f(X); it
 /// holds [FLINT](https://flintlib.org/)'s [struct](fq_ctx_struct)
 ///
 /// # Examples
@@ -33,7 +33,7 @@ mod to_string;
 /// use qfall_math::integer_mod_q::PolyOverZq;
 /// use std::str::FromStr;
 ///
-/// // initialize X^2 + 1 mod 17, i.e. a polynomial with prime modulus
+/// // initialize X^2 + 1 mod 17, i.e. a polynomial with modulus
 /// let poly_mod = PolyOverZq::from_str("3  1 0 1 mod 17").unwrap();
 /// let modulus = ModulusPolynomialRingZq::try_from(&poly_mod);
 /// ```
