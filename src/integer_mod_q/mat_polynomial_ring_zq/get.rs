@@ -371,7 +371,7 @@ mod test_collect_entries {
         let poly_mat1 = MatPolyOverZ::from_str(&format!(
             "[[4  -1 0 3 1, 1  {}],[2  1 2, 3  {} 1 1]]",
             i64::MAX,
-            i64::MIN,
+            i64::MIN + 58,
         ))
         .unwrap();
         let poly_ring_mat1 = MatPolynomialRingZq::from((&poly_mat1, &modulus));
@@ -395,7 +395,7 @@ mod test_collect_entries {
             entry1
         );
         assert_eq!(
-            PolyOverZ::from_str(&format!("3  {} 1 1", i64::MAX - 58)).unwrap(),
+            PolyOverZ::from_str(&format!("3  {} 1 1", i64::MAX)).unwrap(),
             entry2
         );
 
