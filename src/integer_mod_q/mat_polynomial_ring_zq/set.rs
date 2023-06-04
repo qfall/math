@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementation to set entries from a [`MatPolynomialRingZq`] matrix.
+//! Implementation to set entries of a [`MatPolynomialRingZq`] matrix.
 
 use super::MatPolynomialRingZq;
 use crate::integer_mod_q::PolynomialRingZq;
@@ -55,10 +55,6 @@ impl SetEntry<&PolyOverZ> for MatPolynomialRingZq {
     ) -> Result<(), MathError> {
         let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
 
-        // since `self` is a correct matrix and both row and column
-        // are previously checked to be inside of the matrix, no errors
-        // appear inside of `unsafe` and `fmpz_set` can successfully clone the
-        // value inside the matrix. Therefore no memory leaks can appear.
         unsafe {
             let entry = fmpz_poly_mat_entry(&self.matrix.matrix, row_i64, column_i64);
             fmpz_poly_set(entry, &value.poly)
@@ -106,12 +102,16 @@ impl SetEntry<&PolynomialRingZq> for MatPolynomialRingZq {
         column: impl TryInto<i64> + Display,
         value: &PolynomialRingZq,
     ) -> Result<(), MathError> {
+        if self.modulus != value.modulus {
+            return Err(MathError::MismatchingModulus(format!(
+                " Modulus of matrix: '{}'. Modulus of value: '{}'.
+                If the modulus should be ignored please convert into a Z beforehand.",
+                self.modulus, value.modulus
+            )));
+        }
+
         let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
 
-        // since `self` is a correct matrix and both row and column
-        // are previously checked to be inside of the matrix, no errors
-        // appear inside of `unsafe` and `fmpz_set` can successfully clone the
-        // value inside the matrix. Therefore no memory leaks can appear.
         unsafe {
             let entry = fmpz_poly_mat_entry(&self.matrix.matrix, row_i64, column_i64);
             fmpz_poly_set(entry, &value.poly.poly)
@@ -133,7 +133,7 @@ mod test_setter {
     };
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = 18446744073709551557;
+    const BITPRIME64: u64 = u64::MAX - 58;
 
     /// Ensure that setting entries works with standard numbers.
     #[test]
@@ -181,8 +181,11 @@ mod test_setter {
     fn big_positive_ref() {
         let modulus =
             ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", BITPRIME64)).unwrap();
-        let poly_mat =
-            MatPolyOverZ::from_str(&format!("[[2  1 1, 1  42],[0, 2  {} 2]]", i64::MAX)).unwrap();
+        let poly_mat = MatPolyOverZ::from_str(&format!(
+            "[[2  1 1, 1  42, 0],[0, 2  {} 2, 1  1]]",
+            i64::MAX
+        ))
+        .unwrap();
         let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
         let value = PolyOverZ::from_str(&format!("3  1 {} 1", i64::MAX)).unwrap();
 
@@ -205,7 +208,7 @@ mod test_setter {
         let modulus =
             ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", BITPRIME64)).unwrap();
         let poly_mat =
-            MatPolyOverZ::from_str(&format!("[[2  1 1, 1  42],[0, 2  {} 2]]", i64::MAX)).unwrap();
+            MatPolyOverZ::from_str(&format!("[[2  1 1, 1  42],[0, 2  {} 2],[1  2, 0]]", i64::MAX)).unwrap();
         let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
         let value = PolyOverZ::from_str(&format!("3  1 {} 1", i64::MIN)).unwrap();
 
@@ -230,17 +233,32 @@ mod test_setter {
         let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
         let value = PolyOverZ::default();
 
-        assert!(poly_ring_mat.set_entry(5, 1, value).is_err());
+        assert!(poly_ring_mat.set_entry(2, 0, &value).is_err());
+        assert!(poly_ring_mat.set_entry(-1, 0, value).is_err());
     }
 
     /// Ensure that a wrong number of columns yields an Error.
     #[test]
     fn error_wrong_column() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-        let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
+        let poly_mat =
+            MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42, 0],[0, 2  1 2, 1  17]]").unwrap();
         let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
         let value = PolyOverZ::default();
 
-        assert!(poly_ring_mat.set_entry(1, 100, value).is_err());
+        assert!(poly_ring_mat.set_entry(0, 3, &value).is_err());
+        assert!(poly_ring_mat.set_entry(0, -1, value).is_err());
+    }
+
+    /// Ensure that differing moduli result in an error.
+    #[test]
+    fn modulus_error() {
+        let modulus1 = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        let modulus2 = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
+        let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
+        let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus1));
+        let value = PolynomialRingZq::from((&PolyOverZ::default(), &modulus2));
+
+        assert!(poly_ring_mat.set_entry(1, 1, value).is_err());
     }
 }

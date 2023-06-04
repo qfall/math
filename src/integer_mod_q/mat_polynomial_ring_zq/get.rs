@@ -163,7 +163,7 @@ mod test_get_entry {
     use crate::{error::MathError, traits::GetEntry};
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = 18446744073709551557;
+    const BITPRIME64: u64 = u64::MAX - 58;
 
     /// Ensure that getting entries works on the edge.
     #[test]
@@ -271,7 +271,7 @@ mod test_mod {
     };
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = 18446744073709551557;
+    const BITPRIME64: u64 = u64::MAX - 58;
 
     /// Ensure that the getter for modulus works correctly.
     #[test]

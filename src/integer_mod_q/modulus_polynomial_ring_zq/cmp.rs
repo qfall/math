@@ -76,7 +76,7 @@ mod test_partial_eq {
     use super::ModulusPolynomialRingZq;
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = 18446744073709551557;
+    const BITPRIME64: u64 = u64::MAX - 58;
 
     /// Demonstrate the different ways to use equal.
     /// We assume that they behave the same in the other tests.
