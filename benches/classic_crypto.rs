@@ -106,12 +106,11 @@ mod rsa_textbook {
         // standard prime value chosen as public key
         // to remove necessity of choosing it at random
         let pk = Z::from(65537);
-        let sk = Z::from(
-            Zq::try_from_z_z(&pk, &phi_mod)
-                .unwrap()
-                .inverse()
-                .expect("There must an inverse of this element as pk is prime."),
-        );
+        let sk = Zq::try_from_z_z(&pk, &phi_mod)
+            .unwrap()
+            .inverse()
+            .expect("There must an inverse of this element as pk is prime.")
+            .get_value();
 
         (modulus, pk, sk)
     }
@@ -136,7 +135,7 @@ mod rsa_textbook {
     ///
     /// `rsa_textbook.dec(N, sk, cipher) = cipher^sk mod N`
     pub fn dec(sk: &Z, cipher: &Zq) -> Z {
-        Z::from(cipher.pow(sk).unwrap())
+        cipher.pow(sk).unwrap().get_value()
     }
 
     /// Run textbook RSA encryption with 1024 bit security.
@@ -243,7 +242,7 @@ mod el_gamal_enc {
     /// `gen_key_pair(p, g) -> (pk, sk)`,
     /// where `pk = g^sk mod p` and `sk` uniformly random
     pub fn gen_key_pair(modulus: &Modulus, generator: &Zq) -> (Zq, Z) {
-        let sk = Z::sample_uniform(&0, &Z::from_modulus(&modulus)).unwrap();
+        let sk = Z::sample_uniform(&0, &Z::from(modulus)).unwrap();
         let pk = generator.pow(&sk).unwrap();
         (pk, sk)
     }
