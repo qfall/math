@@ -306,7 +306,7 @@ mod test_sqrt {
 
         let root = square.sqrt();
 
-        assert_eq!(Q::from(value.clone()), root);
+        assert_eq!(Q::from(value), root);
     }
 
     /// Assert that sqrt works correctly for a large square values.
@@ -317,7 +317,7 @@ mod test_sqrt {
 
         let root = square.sqrt();
 
-        assert_eq!(Q::from(value.clone()), root);
+        assert_eq!(Q::from(value), root);
     }
 
     /// Assert that sqrt panics with small negative numbers.
