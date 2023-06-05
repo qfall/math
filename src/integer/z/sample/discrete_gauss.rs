@@ -38,7 +38,6 @@ impl Z {
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
     /// if the `n <= 1` or `s <= 0`.
     ///
-    ///
     /// This function implements SampleZ according to:
     /// - \[1\] Gentry, Craig and Peikert, Chris and Vaikuntanathan, Vinod (2008).
     /// Trapdoors for hard lattices and new cryptographic constructions.

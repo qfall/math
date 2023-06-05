@@ -185,8 +185,12 @@ pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ
     }
 
     // we know that norm_eucl_sqrd does not output errors for column vectors => we can unwrap
-    let mut basis = basis.sort_by_column(MatZ::norm_eucl_sqrd).unwrap();
-    basis.reverse_columns();
+    let basis = basis.sort_by_column(MatZ::norm_eucl_sqrd).unwrap();
+    // we removed reversed ordering from the implementation of the challenge phase
+    // as it does not seem to impact the length of the sampled vectors
+    // and the paper states that the basis should be ordered, but not in which fashion.
+    // Hence, we assume the ordering to be from shortest to longest basis vector according
+    // to the euclidean norm.
     let basis_gso = MatQ::from_mat_z(&basis).gso();
 
     let mut out = MatZ::new(basis_gso.get_num_columns(), 1).unwrap();
@@ -403,6 +407,10 @@ mod test_sample_d {
     }
 
     /// Ensures that `sample_d` outputs a vector that's part of the specified lattice
+    ///
+    /// Checks whether the Hermite Normal Form HNF of the basis is equal to the HNF of
+    /// the basis concatenated with the sampled vector. If it is part of the lattice, it
+    /// should become a zero vector at the end of the matrix.
     #[test]
     fn point_of_lattice() {
         let basis = MatZ::from_str("[[7,0],[7,3]]").unwrap();
@@ -431,6 +439,7 @@ mod test_sample_d {
             hnf_basis.get_column(1).unwrap(),
             hnf_basis_concat_sample.get_column(1).unwrap()
         );
+        // check whether last vector is zero, i.e. was linearly dependend and part of lattice
         assert_eq!(
             MatZ::new(2, 1).unwrap(),
             hnf_basis_concat_sample.get_column(2).unwrap()
