@@ -90,6 +90,8 @@ impl Z {
             // https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Continued_fraction_expansion
 
             let two_int_res = &integer_result * Q::from(2);
+            // cargo clippy 0.1.70 falsely marks this clone as redundant.
+            #[allow(clippy::redundant_clone)]
             let mut temp = two_int_res.clone();
 
             // After the while loop, temp is inverted
