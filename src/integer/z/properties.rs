@@ -23,7 +23,7 @@ impl Z {
     /// ```
     /// use qfall_math::integer::Z;
     ///
-    /// let value = Z::from(0);
+    /// let value = Z::ZERO;
     /// assert!(value.is_zero())
     /// ```
     pub fn is_zero(&self) -> bool {
@@ -37,7 +37,7 @@ impl Z {
     /// ```
     /// use qfall_math::integer::Z;
     ///
-    /// let value = Z::from(1);
+    /// let value = Z::ONE;
     /// assert!(value.is_one())
     /// ```
     pub fn is_one(&self) -> bool {
@@ -256,7 +256,7 @@ mod test_is_zero {
     /// ensure that is_zero returns `true` for `0`
     #[test]
     fn zero_detection() {
-        let zero = Z::from(0);
+        let zero = Z::ZERO;
 
         assert!(zero.is_zero());
     }
@@ -280,7 +280,7 @@ mod test_is_one {
     /// ensure that is_one returns `true` for `1`
     #[test]
     fn one_detection() {
-        let zero = Z::from(1);
+        let zero = Z::ONE;
 
         assert!(zero.is_one());
     }

@@ -24,8 +24,8 @@ impl MatPolyOverZ {
     /// use qfall_math::integer::MatPolyOverZ;
     ///
     /// let matrix = MatPolyOverZ::from_str("[[1  1, 0],[0, 1  1]]").unwrap();
-    /// let check = matrix.is_identity();
-    /// # assert!(check)
+    ///
+    /// assert!(matrix.is_identity())
     /// ```
     pub fn is_identity(&self) -> bool {
         // we have to test squareness manually, since FLINT does not check this
