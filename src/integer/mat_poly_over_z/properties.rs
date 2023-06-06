@@ -28,9 +28,7 @@ impl MatPolyOverZ {
     /// # assert!(check)
     /// ```
     pub fn is_identity(&self) -> bool {
-        // we have to test squareness manually, since FLINT does not check this
-        // directly with their method
-        unsafe { 0 != fmpz_poly_mat_is_one(&self.matrix) && self.is_square() }
+        1 == unsafe { fmpz_poly_mat_is_one(&self.matrix) }
     }
 
     /// Checks if a [`MatPolyOverZ`] is a square matrix, i.e.
@@ -74,31 +72,21 @@ mod test_is_identity {
     use crate::integer::MatPolyOverZ;
     use std::str::FromStr;
 
-    /// ensure that true is returned for a 1x1, 2x2, 3x3 identity matrix
+    /// ensure that true is returned for a 1x1, 2x2, 3x3, 2x3, 3x2 identity matrix
     #[test]
     fn identity_true() {
         let matrix_1x1 = MatPolyOverZ::from_str("[[1  1]]").unwrap();
         let matrix_2x2 = MatPolyOverZ::from_str("[[1  1, 0],[0, 1  1]]").unwrap();
         let matrix_3x3 =
             MatPolyOverZ::from_str("[[1  1, 0, 0],[0, 1  1, 0],[0, 0, 1  1]]").unwrap();
+        let matrix_2x3 = MatPolyOverZ::from_str("[[1  1, 0, 0],[0, 1  1, 0]]").unwrap();
+        let matrix_3x2 = MatPolyOverZ::from_str("[[1  1, 0],[0, 1  1],[0, 0]]").unwrap();
 
         assert!(matrix_1x1.is_identity());
         assert!(matrix_2x2.is_identity());
         assert!(matrix_3x3.is_identity());
-    }
-
-    /// ensure that matrices which are not square do not return true
-    #[test]
-    fn not_square() {
-        let matrix_1x2 = MatPolyOverZ::from_str("[[1  1, 0]]").unwrap();
-        let matrix_2x1 = MatPolyOverZ::from_str("[[1  1],[0]]").unwrap();
-        let matrix_2x3 = MatPolyOverZ::from_str("[[1  1, 0, 0],[0, 1  1, 0]]").unwrap();
-        let matrix_3x2 = MatPolyOverZ::from_str("[[1  1, 0],[0, 1  1],[0, 0]]").unwrap();
-
-        assert!(!matrix_1x2.is_identity());
-        assert!(!matrix_2x1.is_identity());
-        assert!(!matrix_2x3.is_identity());
-        assert!(!matrix_3x2.is_identity());
+        assert!(matrix_2x3.is_identity());
+        assert!(matrix_3x2.is_identity());
     }
 
     /// ensure that matrices which are square but are not the identity matrix, return false
@@ -177,8 +165,10 @@ mod test_is_zero {
     #[test]
     fn zero_detection() {
         let zero = MatPolyOverZ::from_str("[[0, 0],[0, 0]]").unwrap();
+        let zero2 = MatPolyOverZ::from_str("[[0, 0],[0, 0],[0, 3  0 0 0]]").unwrap();
 
         assert!(zero.is_zero());
+        assert!(zero2.is_zero());
     }
 
     /// ensure that is_zero returns `false` for non-zero matrices
