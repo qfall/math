@@ -24,7 +24,7 @@ impl MatZ {
     /// assert!(value.is_identity())
     /// ```
     pub fn is_identity(&self) -> bool {
-        self.is_square() && 1 == unsafe { fmpz_mat_is_one(&self.matrix) }
+        1 == unsafe { fmpz_mat_is_one(&self.matrix) }
     }
 
     /// Checks if a [`MatZ`] is a square matrix.
@@ -67,8 +67,13 @@ mod test_is_identity {
     #[test]
     fn identity_detection() {
         let ident = MatZ::from_str("[[1, 0],[0, 1]]").unwrap();
+        let nosquare = MatZ::from_str("[[1, 0],[0, 1],[0, 0]]").unwrap();
 
         assert!(ident.is_identity());
+        assert!(nosquare.is_identity());
+        assert!(MatZ::identity(1, 1).unwrap().is_identity());
+        assert!(MatZ::identity(2, 4).unwrap().is_identity());
+        assert!(MatZ::identity(4, 4).unwrap().is_identity());
     }
 
     /// ensure that is_identity returns `false` for non-identity matrices
@@ -76,11 +81,9 @@ mod test_is_identity {
     fn identity_rejection() {
         let small = MatZ::from_str("[[0, 0],[2, 0]]").unwrap();
         let large = MatZ::from_str(&format!("[[1, 0],[0, {}]]", (u128::MAX - 1) / 2 + 2)).unwrap();
-        let nosquare = MatZ::from_str("[[1, 0],[0, 1],[0, 0]]").unwrap();
 
         assert!(!(small.is_identity()));
         assert!(!(large.is_identity()));
-        assert!(!(nosquare.is_identity()));
     }
 }
 
