@@ -10,12 +10,12 @@ autobenches = false
 criterion = { version = "0.5", features = ["html_reports"] }
 flint-sys = "0.7.3"
 fraction = "0.13.1"
-libc = "0.2.144"
-paste = "1.0.11"
+libc = "0.2"
+paste = "1.0"
 rand = "0.8.5"
 regex = "1"
-serde = {version="1.0.150", features=["derive"]}
-serde_json = "1.0.89"
+serde = {version="1.0", features=["derive"]}
+serde_json = "1.0"
 string-builder = "0.2.0"
 thiserror = "1.0"
 
