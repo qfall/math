@@ -277,6 +277,14 @@ impl From<f64> for Q {
 
 from_trait!(f32, Q, Q::from_f32);
 
+impl From<&Q> for Q {
+    /// An alias for clone.
+    /// It makes the use of generic `Into<Q>` types easier.
+    fn from(value: &Q) -> Self {
+        value.clone()
+    }
+}
+
 #[cfg(test)]
 mod tests_from_str {
 
@@ -801,5 +809,18 @@ mod test_from_float {
 
         let _ = Q::from(f);
         let _ = Q::from_f32(f);
+    }
+}
+
+#[cfg(test)]
+mod test_from_q_ref {
+    use crate::rational::Q;
+
+    /// Ensure that [`Q`] can be created from [`&Q`].
+    #[test]
+    fn availability() {
+        let q = Q::from(u64::MAX);
+
+        let _ = Q::from(&q);
     }
 }
