@@ -37,7 +37,7 @@ impl Z {
     /// ```
     /// use qfall_math::integer::Z;
     ///
-    /// let value = Z::from(1);
+    /// let value = Z::ONE;
     /// assert!(value.is_one())
     /// ```
     pub fn is_one(&self) -> bool {
