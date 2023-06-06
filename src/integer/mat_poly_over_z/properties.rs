@@ -60,8 +60,7 @@ impl MatPolyOverZ {
     /// use qfall_math::integer::MatPolyOverZ;
     ///
     /// let matrix = MatPolyOverZ::from_str("[[0, 0],[0, 0]]").unwrap();
-    /// let check = matrix.is_zero();
-    /// # assert!(check)
+    /// assert!(matrix.is_zero());
     /// ```
     pub fn is_zero(&self) -> bool {
         // we have to test squareness manually, since FLINT does not check this
