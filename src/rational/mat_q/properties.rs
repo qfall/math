@@ -12,7 +12,7 @@ use super::MatQ;
 use flint_sys::fmpq_mat::{fmpq_mat_is_one, fmpq_mat_is_square, fmpq_mat_is_zero};
 
 impl MatQ {
-    /// Checks if a [`MatQ`] is a matrix with diagonal entries `1`.
+    /// Checks if a [`MatQ`] is the identity matrix.
     ///
     /// Returns true if every diagonal entry is `1` and all other entries are
     /// `0`.
@@ -24,24 +24,8 @@ impl MatQ {
     /// let value = MatQ::from_str("[[1, 0],[0, 1]]").unwrap();
     /// assert!(value.is_identity())
     /// ```
-    pub fn is_one(&self) -> bool {
-        1 == unsafe { fmpq_mat_is_one(&self.matrix) }
-    }
-
-    /// Checks if a [`MatQ`] is the identity matrix.
-    ///
-    /// Returns true if every diagonal entry is `1` and all other entries are
-    /// `0` and the matrix is a square matrix.
-    ///
-    /// ```
-    /// use qfall_math::rational::MatQ;
-    /// use std::str::FromStr;
-    ///
-    /// let value = MatQ::from_str("[[1, 0],[0, 1]]").unwrap();
-    /// assert!(value.is_identity())
-    /// ```
     pub fn is_identity(&self) -> bool {
-        self.is_square() && 1 == unsafe { fmpq_mat_is_one(&self.matrix) }
+        1 == unsafe { fmpq_mat_is_one(&self.matrix) }
     }
 
     /// Checks if a [`MatQ`] is a square matrix.
@@ -91,38 +75,6 @@ mod test_is_identity {
     /// ensure that is_identity returns `false` for non-identity matrices
     #[test]
     fn identity_rejection() {
-        let small = MatQ::from_str("[[0, 0],[2/81, 0]]").unwrap();
-        let large = MatQ::from_str(&format!("[[1, 0],[0, {}]]", (u128::MAX - 1) / 2 + 2)).unwrap();
-
-        assert!(!small.is_identity());
-        assert!(!large.is_identity());
-    }
-
-    /// ensure that is_identity returns `false` for non-square matrices
-    #[test]
-    fn identity_rejection_non_square() {
-        let nosquare = MatQ::from_str("[[1, 0],[0, 1],[0, 0]]").unwrap();
-
-        assert!(!nosquare.is_identity());
-    }
-}
-
-#[cfg(test)]
-mod test_is_one {
-    use super::MatQ;
-    use std::str::FromStr;
-
-    /// ensure that is_one returns `true` for identity matrices
-    #[test]
-    fn one_detection() {
-        let ident = MatQ::from_str("[[1, 0],[0, 1],[0, 0]]").unwrap();
-
-        assert!(ident.is_one());
-    }
-
-    /// ensure that is_one returns `false` for non-identity matrices
-    #[test]
-    fn one_rejection() {
         let small = MatQ::from_str("[[0, 0],[2/81, 0]]").unwrap();
         let large = MatQ::from_str(&format!("[[1, 0],[0, {}]]", (u128::MAX - 1) / 2 + 2)).unwrap();
 
