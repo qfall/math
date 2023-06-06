@@ -243,7 +243,7 @@ mod test_from_integer {
     use super::*;
     use crate::traits::GetCoefficient;
 
-    /// Ensure that the [`From`] trait is works for large
+    /// Ensure that the [`From`] trait works for large
     /// borrowed and owned [`Z`] and [`u64`] instances.
     #[test]
     fn large() {
@@ -261,7 +261,7 @@ mod test_from_integer {
         assert_eq!(poly, poly_4);
     }
 
-    /// Ensure that the [`From`] trait is works for small
+    /// Ensure that the [`From`] trait works for small
     /// borrowed and owned [`Z`] and rust integer instances.
     #[test]
     fn small() {
@@ -285,7 +285,7 @@ mod test_from_integer {
         assert_eq!(poly, poly_6);
     }
 
-    /// Ensure that the [`From`] trait is works for large negative
+    /// Ensure that the [`From`] trait works for large negative
     /// borrowed and owned [`Z`] and rust integer instances.
     #[test]
     fn negative() {
