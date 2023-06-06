@@ -23,7 +23,7 @@ impl Z {
     /// ```
     /// use qfall_math::integer::Z;
     ///
-    /// let value = Z::from(0);
+    /// let value = Z::ZERO;
     /// assert!(value.is_zero())
     /// ```
     pub fn is_zero(&self) -> bool {
