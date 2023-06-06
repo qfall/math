@@ -178,6 +178,7 @@ impl Z {
 trait IntoZ {}
 
 implement_empty_trait_owned_ref!(IntoZ for Modulus u8 u16 u32 u64 i8 i16 i32 i64);
+impl IntoZ for &Z {}
 
 impl<Integer: AsInteger + IntoZ> From<Integer> for Z {
     /// Convert an integer to [`Z`].
@@ -420,6 +421,20 @@ mod tests_from_int {
 
         assert_eq!(val_1, Z::from(mod_1));
         assert_eq!(val_2, Z::from(mod_2));
+    }
+
+    /// Ensure that the [`From`] trait is available for small and large,
+    /// borrowed and owned [`Z`] instances.
+    #[test]
+    fn z() {
+        let original_large = Z::from(u64::MAX);
+        let original_small = Z::ONE;
+
+        assert_eq!(original_large, Z::from(&original_large));
+        assert_eq!(original_large, Z::from(original_large.clone()));
+
+        assert_eq!(original_small, Z::from(&original_small));
+        assert_eq!(original_small, Z::from(Z::ONE));
     }
 }
 
