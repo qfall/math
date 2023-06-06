@@ -126,7 +126,7 @@ mod test_is_square {
 
     /// ensure that is_square returns `false` for non-square matrices
     #[test]
-    fn sqaure_rejection() {
+    fn square_rejection() {
         let small = MatZ::from_str("[[0, 0, 4],[2, 0, 1]]").unwrap();
         let large =
             MatZ::from_str(&format!("[[9, 0],[{}, 0],[1, 4]]", (u128::MAX - 1) / 2 + 1)).unwrap();
