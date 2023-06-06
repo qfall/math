@@ -19,10 +19,13 @@ use flint_sys::fmpz::fmpz_addmul;
 impl MatZq {
     /// Returns the dot product of two vectors of type [`MatZq`].
     ///
+    /// The orientation of the input vectors (row vs. column) is ignored.
+    /// As a result, it can be chosen arbitrarily.
+    ///
     /// Paramters:
     /// - `other`: specifies the other vector the dot product is calculated over
     ///
-    /// Returns the resulting `dot_product` as a [`Zq`] or an error,
+    /// Returns the resulting dot product as a [`Zq`] or an error,
     /// if the given [`MatZq`] instances aren't vectors, have different
     /// numbers of entries, or mismatching moduli.
     ///
@@ -148,10 +151,10 @@ mod test_dot_product {
     /// Check whether the dot product is calculated correctly with large numbers
     #[test]
     fn large_numbers() {
-        let vec_1 = MatZq::from_str(&format!("[[1,-1,{}]] mod {}", i64::MAX, u64::MAX)).unwrap();
-        let vec_2 = MatZq::from_str(&format!("[[1,{},1]] mod {}", i64::MIN, u64::MAX)).unwrap();
-        let cmp = Z::from(-1) * Z::from(i64::MIN) + Z::from(i64::MAX) + Z::ONE;
-        let cmp = Zq::try_from_z_z(&cmp, &Z::from(u64::MAX)).unwrap();
+        let vec_1 = MatZq::from_str(&format!("[[1,1,{}]] mod {}", i64::MAX, u128::MAX)).unwrap();
+        let vec_2 = MatZq::from_str(&format!("[[1,{},1]] mod {}", i64::MIN, u128::MAX)).unwrap();
+        let cmp = Z::from(i64::MIN) + Z::from(i64::MAX) + Z::ONE;
+        let cmp = Zq::try_from_z_z(&cmp, &Z::from_str(&format!("{}", u128::MAX)).unwrap()).unwrap();
 
         let dot_prod = vec_1.dot_product(&vec_2).unwrap();
 
