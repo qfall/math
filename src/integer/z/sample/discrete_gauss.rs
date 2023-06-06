@@ -43,15 +43,15 @@ impl Z {
     /// Trapdoors for hard lattices and new cryptographic constructions.
     /// In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
     /// <https://dl.acm.org/doi/pdf/10.1145/1374376.1374407>
-    pub fn sample_discrete_gauss<T1, T2, T3>(n: &T1, center: &T2, s: &T3) -> Result<Self, MathError>
+    pub fn sample_discrete_gauss<T1, T2, T3>(n: T1, center: T2, s: T3) -> Result<Self, MathError>
     where
-        T1: Into<Z> + Clone,
-        T2: Into<Q> + Clone,
-        T3: Into<Q> + Clone,
+        T1: Into<Z>,
+        T2: Into<Q>,
+        T3: Into<Q>,
     {
-        let n: Z = n.to_owned().into();
-        let center: Q = center.to_owned().into();
-        let s: Q = s.to_owned().into();
+        let n: Z = n.into();
+        let center: Q = center.into();
+        let s: Q = s.into();
 
         sample_z(&n, &center, &s)
     }
@@ -65,8 +65,8 @@ mod test_sample_discrete_gauss {
     // utils::sample::discrete_gauss::test_sample_z and are thus omitted here.
 
     /// Checks whether `sample_discrete_gauss` is available for all types
-    /// implementing Into<Z> + Clone, i.e. u8, u16, u32, u64, i8, ...
-    /// or Into<Q> + Clone, i.e. u8, i16, f32, Z, Q, ...
+    /// implementing Into<Z>, i.e. u8, u16, u32, u64, i8, ...
+    /// or Into<Q>, i.e. u8, i16, f32, Z, Q, ...
     #[test]
     fn availability() {
         let z = Z::from(2);
@@ -83,8 +83,8 @@ mod test_sample_discrete_gauss {
         let _ = Z::sample_discrete_gauss(&2u8, &q, &1i64);
         let _ = Z::sample_discrete_gauss(&2, &0i8, &z);
         let _ = Z::sample_discrete_gauss(&2, &z, &q);
-        let _ = Z::sample_discrete_gauss(&2, &1f32, &1f64);
-        let _ = Z::sample_discrete_gauss(&2, &1f64, &1f32);
+        let _ = Z::sample_discrete_gauss(&2, 1f32, 1f64);
+        let _ = Z::sample_discrete_gauss(&2, 1f64, 1f32);
     }
 
     /// Roughly checks the collected samples are distributed
