@@ -60,7 +60,7 @@ impl Q {
     /// ```
     /// use qfall_math::rational::Q;
     ///
-    /// let value = Q::from(0);
+    /// let value = Q::ZERO;
     /// assert!(value.is_zero())
     /// ```
     pub fn is_zero(&self) -> bool {
@@ -74,7 +74,7 @@ impl Q {
     /// ```
     /// use qfall_math::rational::Q;
     ///
-    /// let value = Q::from(1);
+    /// let value = Q::ONE;
     /// assert!(value.is_one())
     /// ```
     pub fn is_one(&self) -> bool {
@@ -185,7 +185,7 @@ mod test_is_one {
     /// ensure that is_one returns `true` for `1`
     #[test]
     fn one_detection() {
-        let one = Q::from(1);
+        let one = Q::ONE;
 
         assert!(one.is_one());
     }
