@@ -13,8 +13,10 @@
 //! The explicit functions contain the documentation.
 
 use super::PolyOverQ;
-use crate::{error::MathError, integer::PolyOverZ};
-use flint_sys::fmpq_poly::{fmpq_poly_canonicalise, fmpq_poly_set_fmpz_poly, fmpq_poly_set_str};
+use crate::{error::MathError, integer::PolyOverZ, rational::Q};
+use flint_sys::fmpq_poly::{
+    fmpq_poly_canonicalise, fmpq_poly_set_fmpq, fmpq_poly_set_fmpz_poly, fmpq_poly_set_str,
+};
 use std::{ffi::CString, str::FromStr};
 
 impl FromStr for PolyOverQ {
@@ -105,6 +107,41 @@ impl From<&PolyOverZ> for PolyOverQ {
     /// [`PolyOverQ::from_poly_over_z`].
     fn from(poly: &PolyOverZ) -> Self {
         Self::from_poly_over_z(poly)
+    }
+}
+
+impl<T: Into<Q>> From<T> for PolyOverQ {
+    /// Create a constant [`PolyOverQ`] with a specified rational constant.
+    ///
+    /// # Parameters:
+    /// - `value` is the constant value the polynomial will have. It has to be a rational
+    ///   number like [`Q`], an integer or a tuple of integers `(numerator, denominator)`.
+    ///
+    /// Returns a new constant polynomial with the specified value.
+    ///
+    /// # Examples:
+    /// ```
+    /// use qfall_math::{rational::*, traits::GetCoefficient};
+    ///
+    /// let one = PolyOverQ::from(1);
+    /// let three_quarter = PolyOverQ::from(Q::from((3,4)));
+    /// let one_half = PolyOverQ::from((1,2));
+    ///
+    /// assert_eq!(one_half.get_coeff(0).unwrap(), Q::from((1,2)));
+    /// assert_eq!(one_half.get_degree(), 0);
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Panics if the provided value can not be converted into a [`Q`].
+    ///   For example, because of a division by zero.
+    fn from(value: T) -> Self {
+        let mut ret = PolyOverQ::default();
+        let value: Q = value.into();
+
+        unsafe {
+            fmpq_poly_set_fmpq(&mut ret.poly, &value.value);
+        }
+        ret
     }
 }
 
@@ -231,5 +268,59 @@ mod test_from_poly_over_z {
 
         let cmp_poly = PolyOverQ::from_str(&format!("4  0 1 102 {}", u64::MAX)).unwrap();
         assert_eq!(cmp_poly, poly_q);
+    }
+}
+
+#[cfg(test)]
+mod test_from_rational {
+    use crate::{integer::Z, traits::GetCoefficient};
+
+    use super::*;
+
+    /// Ensure that the [`From`] trait is works for large
+    /// borrowed and owned [`Q`], [`Z`] and [`u64`] instances.
+    #[test]
+    fn large() {
+        let value = Q::from(u64::MAX);
+
+        let poly = PolyOverQ::from(&value);
+        let poly_2 = PolyOverQ::from(value.clone());
+        let poly_3 = PolyOverQ::from(u64::MAX);
+        let poly_4 = PolyOverQ::from(&u64::MAX);
+        let poly_5 = PolyOverQ::from(Z::from(u64::MAX));
+        let poly_6 = PolyOverQ::from(&Z::from(u64::MAX));
+
+        assert_eq!(poly.get_coeff(0).unwrap(), value);
+        assert_eq!(poly.get_degree(), 0);
+        assert_eq!(poly, poly_2);
+        assert_eq!(poly, poly_3);
+        assert_eq!(poly, poly_4);
+        assert_eq!(poly, poly_5);
+        assert_eq!(poly, poly_6);
+    }
+
+    /// Ensure that the [`From`] trait is works for small
+    /// borrowed and owned [`Q`] and integer tuples instances.
+    #[test]
+    fn small() {
+        let value = Q::from((1, 2));
+
+        let poly = PolyOverQ::from(&value);
+        let poly_2 = PolyOverQ::from(value.clone());
+        let poly_3 = PolyOverQ::from((1, 2));
+        let poly_4 = PolyOverQ::from((&1, &2));
+
+        assert_eq!(poly.get_coeff(0).unwrap(), value);
+        assert_eq!(poly.get_degree(), 0);
+        assert_eq!(poly, poly_2);
+        assert_eq!(poly, poly_3);
+        assert_eq!(poly, poly_4);
+    }
+
+    /// Ensure that a division by zero panics.
+    #[test]
+    #[should_panic]
+    fn divide_by_zero() {
+        let _ = PolyOverQ::from((1, 0));
     }
 }
