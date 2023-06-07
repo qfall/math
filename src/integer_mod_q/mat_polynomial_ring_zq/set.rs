@@ -207,8 +207,11 @@ mod test_setter {
     fn big_negative() {
         let modulus =
             ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", BITPRIME64)).unwrap();
-        let poly_mat =
-            MatPolyOverZ::from_str(&format!("[[2  1 1, 1  42],[0, 2  {} 2],[1  2, 0]]", i64::MAX)).unwrap();
+        let poly_mat = MatPolyOverZ::from_str(&format!(
+            "[[2  1 1, 1  42],[0, 2  {} 2],[1  2, 0]]",
+            i64::MAX
+        ))
+        .unwrap();
         let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
         let value = PolyOverZ::from_str(&format!("3  1 {} 1", i64::MIN)).unwrap();
 
