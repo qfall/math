@@ -116,7 +116,7 @@ mod test_is_vector {
     };
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = 18446744073709551557;
+    const BITPRIME64: u64 = u64::MAX - 58;
 
     /// Check whether matrices with one row or one column
     /// get recognized as (row or column) vectors

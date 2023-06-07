@@ -49,7 +49,7 @@ mod test_reduced {
     };
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = 18446744073709551557;
+    const BITPRIME64: u64 = u64::MAX - 58;
 
     /// ensure that the entries are reduced
     #[test]

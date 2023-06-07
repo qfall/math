@@ -15,6 +15,7 @@ use crate::{
     integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq},
     traits::{GetEntry, GetNumColumns, GetNumRows},
 };
+use flint_sys::{fmpz_poly::fmpz_poly_struct, fmpz_poly_mat::fmpz_poly_mat_entry};
 use std::fmt::Display;
 
 impl MatPolynomialRingZq {
@@ -156,6 +157,41 @@ impl GetEntry<PolynomialRingZq> for MatPolynomialRingZq {
     }
 }
 
+impl MatPolynomialRingZq {
+    /// Efficiently collects all [`fmpz_poly_struct`]s in a [`MatPolynomialRingZq`] without cloning them.
+    ///
+    /// Hence, the values on the returned [`Vec`] are intended for short-term use
+    /// as the access to [`fmpz_poly_struct`] values could lead to memory leaks or modified values
+    /// once the [`MatPolynomialRingZq`] instance was modified or dropped.
+    ///
+    /// # Examples
+    /// ```compile_fail
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[2  1 2, 3  1 1 1]]").unwrap();
+    /// let poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
+    ///
+    /// let fmpz_entries = poly_ring_mat.collect_entries();
+    /// ```
+    #[allow(dead_code)]
+    pub(crate) fn collect_entries(&self) -> Vec<fmpz_poly_struct> {
+        let mut entries: Vec<fmpz_poly_struct> = vec![];
+
+        for row in 0..self.get_num_rows() {
+            for col in 0..self.get_num_columns() {
+                // efficiently get entry without cloning the entry itself
+                let entry = unsafe { *fmpz_poly_mat_entry(&self.matrix.matrix, row, col) };
+                entries.push(entry);
+            }
+        }
+
+        entries
+    }
+}
+
 #[cfg(test)]
 mod test_get_entry {
     use crate::integer::{MatPolyOverZ, PolyOverZ};
@@ -163,7 +199,7 @@ mod test_get_entry {
     use crate::{error::MathError, traits::GetEntry};
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = 18446744073709551557;
+    const BITPRIME64: u64 = u64::MAX - 58;
 
     /// Ensure that getting entries works on the edge.
     #[test]
@@ -271,7 +307,7 @@ mod test_mod {
     };
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = 18446744073709551557;
+    const BITPRIME64: u64 = u64::MAX - 58;
 
     /// Ensure that the getter for modulus works correctly.
     #[test]
@@ -316,5 +352,63 @@ mod test_mod {
             modulus,
             ModulusPolynomialRingZq::from_str(&format!("2  42 17 mod {}", BITPRIME64)).unwrap()
         );
+    }
+}
+
+#[cfg(test)]
+mod test_collect_entries {
+    use crate::integer::{MatPolyOverZ, PolyOverZ};
+    use crate::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    use flint_sys::fmpz_poly::fmpz_poly_set;
+    use std::str::FromStr;
+
+    const BITPRIME64: u64 = u64::MAX - 58;
+
+    #[test]
+    fn all_entries_collected() {
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", BITPRIME64)).unwrap();
+        let poly_mat1 = MatPolyOverZ::from_str(&format!(
+            "[[4  -1 0 3 1, 1  {}],[2  1 2, 3  {} 1 1]]",
+            i64::MAX,
+            i64::MIN + 58,
+        ))
+        .unwrap();
+        let poly_ring_mat1 = MatPolynomialRingZq::from((&poly_mat1, &modulus));
+        let poly_mat2 = MatPolyOverZ::from_str("[[1  42, 2  1 17]]").unwrap();
+        let poly_ring_mat2 = MatPolynomialRingZq::from((&poly_mat2, &modulus));
+
+        let entries_1 = poly_ring_mat1.collect_entries();
+        let entries_2 = poly_ring_mat2.collect_entries();
+
+        let mut entry1 = PolyOverZ::default();
+        let mut entry2 = entry1.clone();
+        let mut entry3 = entry1.clone();
+
+        unsafe { fmpz_poly_set(&mut entry1.poly, &entries_1[1]) }
+        unsafe { fmpz_poly_set(&mut entry2.poly, &entries_1[3]) }
+        unsafe { fmpz_poly_set(&mut entry3.poly, &entries_2[0]) }
+
+        assert_eq!(entries_1.len(), 4);
+        assert_eq!(
+            PolyOverZ::from_str(&format!("1  {}", i64::MAX)).unwrap(),
+            entry1
+        );
+        assert_eq!(
+            PolyOverZ::from_str(&format!("3  {} 1 1", i64::MAX)).unwrap(),
+            entry2
+        );
+
+        assert_eq!(entries_2.len(), 2);
+        assert_eq!(PolyOverZ::from_str("1  42").unwrap(), entry3);
+    }
+
+    #[test]
+    fn doc_test() {
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[2  1 2, 3  1 1 1]]").unwrap();
+        let poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
+
+        let _ = poly_ring_mat.collect_entries();
     }
 }
