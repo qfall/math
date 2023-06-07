@@ -8,10 +8,9 @@
 
 //! This module includes functionality about properties of [`Zq`] instances.
 
-use flint_sys::{fmpz::fmpz_is_zero, fmpz_mod::fmpz_mod_is_one};
-
 use super::Zq;
 use crate::traits::Pow;
+use flint_sys::{fmpz::fmpz_is_zero, fmpz_mod::fmpz_mod_is_one};
 
 impl Zq {
     /// Returns the inverse of `self` as a fresh [`Zq`] instance.
