@@ -9,6 +9,8 @@
 //! This module includes functionality to compute several norms
 //! defined on polynomials.
 
+use std::cmp::max;
+
 use crate::{
     integer::{PolyOverZ, Z},
     traits::{GetCoefficient, Pow},
@@ -56,11 +58,8 @@ impl PolyOverZ {
     pub fn norm_infty(&self) -> Z {
         let mut res = Z::ZERO;
         for i in 0..=self.get_degree() {
-            // todo: once ord is on dev use:
-            // res = max(res, self.get_coeff(i).unwrap().abs());
-            // AND todo: use std::cmp::max;
             if res < self.get_coeff(i).unwrap().abs() {
-                res = self.get_coeff(i).unwrap().abs();
+                res = max(res, self.get_coeff(i).unwrap().abs());
             }
         }
         res

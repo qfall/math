@@ -48,7 +48,6 @@ impl MatQ {
 
 #[cfg(test)]
 mod test_determinant {
-
     use crate::rational::{MatQ, Q};
     use std::str::FromStr;
 

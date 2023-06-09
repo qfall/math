@@ -56,7 +56,7 @@ mod test_reduce {
 
     const BITPRIME64: u64 = u64::MAX - 58;
 
-    /// ensure that large entries are reduced correctly
+    /// Ensure that large entries are reduced correctly
     #[test]
     fn reduces_large() {
         let modulus = Modulus::from_str(&format!("{}", BITPRIME64)).unwrap();
@@ -78,7 +78,7 @@ mod test_reduce {
         assert_eq!(original, cmp);
     }
 
-    /// ensure that small entries are reduced correctly
+    /// Ensure that small entries are reduced correctly
     #[test]
     fn reduces_small() {
         let modulus = Modulus::from_str("17").unwrap();

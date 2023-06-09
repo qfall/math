@@ -50,7 +50,6 @@ impl MatPolyOverZ {
 
 #[cfg(test)]
 mod test_trace {
-
     use crate::integer::{MatPolyOverZ, PolyOverZ};
     use std::str::FromStr;
 

@@ -45,11 +45,10 @@ impl fmt::Display for Zq {
 
 #[cfg(test)]
 mod test_to_string {
-
     use crate::integer_mod_q::Zq;
     use std::str::FromStr;
 
-    /// tests whether a large integer works in a roundtrip
+    /// Tests whether a large integer works in a roundtrip
     #[test]
     fn working_large_positive() {
         let cmp = Zq::from_str(&format!("{} mod {}", u64::MAX, u128::MAX)).unwrap();
@@ -57,7 +56,7 @@ mod test_to_string {
         assert_eq!(format!("{} mod {}", u64::MAX, u128::MAX), cmp.to_string())
     }
 
-    /// tests whether a large integer works in a roundtrip
+    /// Tests whether a large integer works in a roundtrip
     #[test]
     fn working_large_negative() {
         let cmp = Zq::from_str(&format!("-{} mod {}", u64::MAX, u128::MAX)).unwrap();
@@ -66,7 +65,7 @@ mod test_to_string {
         assert_eq!(format!("{} mod {}", diff, u128::MAX), cmp.to_string())
     }
 
-    /// tests whether a positive integer works in a roundtrip
+    /// Tests whether a positive integer works in a roundtrip
     #[test]
     fn working_positive() {
         let cmp = Zq::from_str("42 mod 60").unwrap();
@@ -74,7 +73,7 @@ mod test_to_string {
         assert_eq!("42 mod 60", cmp.to_string())
     }
 
-    /// tests whether a negative integer works in a roundtrip
+    /// Tests whether a negative integer works in a roundtrip
     #[test]
     fn working_negative() {
         let cmp = Zq::from_str("-40 mod 3").unwrap();
@@ -82,7 +81,7 @@ mod test_to_string {
         assert_eq!("2 mod 3", cmp.to_string())
     }
 
-    /// tests whether a integer that is created using a string, returns a
+    /// Tests whether a integer that is created using a string, returns a
     /// string that can be used to create a [`Zq`]
     #[test]
     fn working_use_result_of_to_string_as_input() {

@@ -119,13 +119,12 @@ arithmetic_trait_mixed_borrowed_owned!(
 
 #[cfg(test)]
 mod test_add {
-
     use crate::integer::PolyOverZ;
     use crate::integer_mod_q::ModulusPolynomialRingZq;
     use crate::integer_mod_q::PolynomialRingZq;
     use std::str::FromStr;
 
-    /// testing addition for two [`PolynomialRingZq`]
+    /// Testing addition for two [`PolynomialRingZq`]
     #[test]
     fn add() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -140,7 +139,7 @@ mod test_add {
         );
     }
 
-    /// testing addition for two borrowed [`PolynomialRingZq`]
+    /// Testing addition for two borrowed [`PolynomialRingZq`]
     #[test]
     fn add_borrow() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -155,7 +154,7 @@ mod test_add {
         );
     }
 
-    /// testing addition for borrowed [`PolynomialRingZq`] and [`PolynomialRingZq`]
+    /// Testing addition for borrowed [`PolynomialRingZq`] and [`PolynomialRingZq`]
     #[test]
     fn add_first_borrowed() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -170,7 +169,7 @@ mod test_add {
         );
     }
 
-    /// testing addition for [`PolynomialRingZq`] and borrowed [`PolynomialRingZq`]
+    /// Testing addition for [`PolynomialRingZq`] and borrowed [`PolynomialRingZq`]
     #[test]
     fn add_second_borrowed() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -185,7 +184,7 @@ mod test_add {
         );
     }
 
-    /// testing addition for [`PolynomialRingZq`] reduces `0` coefficients
+    /// Testing addition for [`PolynomialRingZq`] reduces `0` coefficients
     #[test]
     fn add_reduce() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -200,7 +199,7 @@ mod test_add {
         );
     }
 
-    /// testing addition for big [`PolynomialRingZq`]
+    /// Testing addition for big [`PolynomialRingZq`]
     #[test]
     fn add_large_numbers() {
         let modulus = ModulusPolynomialRingZq::from_str(&format!(
@@ -228,7 +227,7 @@ mod test_add {
         );
     }
 
-    /// testing addition for [`PolynomialRingZq`] with different moduli does not work
+    /// Testing addition for [`PolynomialRingZq`] with different moduli does not work
     #[test]
     #[should_panic]
     fn add_mismatching_modulus() {
@@ -241,7 +240,7 @@ mod test_add {
         let _ = a + b;
     }
 
-    /// testing whether add_safe throws an error for mismatching moduli
+    /// Testing whether add_safe throws an error for mismatching moduli
     #[test]
     fn add_safe_is_err() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();

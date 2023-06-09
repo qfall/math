@@ -89,7 +89,7 @@ impl Zq {
                 &mut out.value.value,
                 &self.value.value,
                 &other.value.value,
-                &*self.modulus.modulus,
+                self.modulus.get_fmpz_mod_ctx_struct(),
             );
         }
         Ok(out)
@@ -132,7 +132,7 @@ impl Sub<&Z> for &Zq {
                 &mut out,
                 &self.value.value,
                 &other.value,
-                &*self.modulus.modulus,
+                self.modulus.get_fmpz_mod_ctx_struct(),
             );
         }
         Zq {
@@ -147,10 +147,9 @@ arithmetic_trait_mixed_borrowed_owned!(Sub, sub, Zq, Z, Zq);
 
 #[cfg(test)]
 mod test_sub {
-
     use super::Zq;
 
-    /// testing subtraction for two [`Zq`]
+    /// Testing subtraction for two [`Zq`]
     #[test]
     fn sub() {
         let a: Zq = Zq::try_from((11, 17)).unwrap();
@@ -159,7 +158,7 @@ mod test_sub {
         assert_eq!(c, Zq::try_from((16, 17)).unwrap());
     }
 
-    /// testing subtraction for two borrowed [`Zq`]
+    /// Testing subtraction for two borrowed [`Zq`]
     #[test]
     fn sub_borrow() {
         let a: Zq = Zq::try_from((10, 11)).unwrap();
@@ -168,7 +167,7 @@ mod test_sub {
         assert_eq!(c, Zq::try_from((9, 11)).unwrap());
     }
 
-    /// testing subtraction for borrowed [`Zq`] and [`Zq`]
+    /// Testing subtraction for borrowed [`Zq`] and [`Zq`]
     #[test]
     fn sub_first_borrowed() {
         let a: Zq = Zq::try_from((2, 11)).unwrap();
@@ -177,7 +176,7 @@ mod test_sub {
         assert_eq!(c, Zq::try_from((-3, 11)).unwrap());
     }
 
-    /// testing subtraction for [`Zq`] and borrowed [`Zq`]
+    /// Testing subtraction for [`Zq`] and borrowed [`Zq`]
     #[test]
     fn sub_second_borrowed() {
         let a: Zq = Zq::try_from((12, 11)).unwrap();
@@ -186,7 +185,7 @@ mod test_sub {
         assert_eq!(c, Zq::try_from((2, 11)).unwrap());
     }
 
-    /// testing subtraction for big [`Zq`]
+    /// Testing subtraction for big [`Zq`]
     #[test]
     fn sub_large_numbers() {
         let a: Zq = Zq::try_from((u32::MAX, u32::MAX - 58)).unwrap();
@@ -198,7 +197,7 @@ mod test_sub {
         );
     }
 
-    /// testing subtraction for [`Zq`] with different moduli does not work
+    /// Testing subtraction for [`Zq`] with different moduli does not work
     #[test]
     #[should_panic]
     fn sub_mismatching_modulus() {
@@ -207,7 +206,7 @@ mod test_sub {
         let _c: Zq = a - b;
     }
 
-    /// testing whether sub_safe throws an error for mismatching moduli
+    /// Testing whether sub_safe throws an error for mismatching moduli
     #[test]
     fn sub_safe_is_err() {
         let a: Zq = Zq::try_from((4, 11)).unwrap();
@@ -218,11 +217,10 @@ mod test_sub {
 
 #[cfg(test)]
 mod test_sub_between_z_and_zq {
-
     use super::Z;
     use crate::integer_mod_q::Zq;
 
-    /// testing subtraction for [`Q`] and [`Z`]
+    /// Testing subtraction for [`Q`] and [`Z`]
     #[test]
     fn sub() {
         let a: Zq = Zq::try_from((4, 11)).unwrap();
@@ -231,7 +229,7 @@ mod test_sub_between_z_and_zq {
         assert_eq!(c, Zq::try_from((6, 11)).unwrap());
     }
 
-    /// testing subtraction for both borrowed [`Q`] and [`Z`]
+    /// Testing subtraction for both borrowed [`Q`] and [`Z`]
     #[test]
     fn sub_borrow() {
         let a: Zq = Zq::try_from((4, 11)).unwrap();
@@ -240,7 +238,7 @@ mod test_sub_between_z_and_zq {
         assert_eq!(c, Zq::try_from((6, 11)).unwrap());
     }
 
-    /// testing subtraction for borrowed [`Q`] and [`Z`]
+    /// Testing subtraction for borrowed [`Q`] and [`Z`]
     #[test]
     fn sub_first_borrowed() {
         let a: Zq = Zq::try_from((4, 11)).unwrap();
@@ -249,7 +247,7 @@ mod test_sub_between_z_and_zq {
         assert_eq!(c, Zq::try_from((6, 11)).unwrap());
     }
 
-    /// testing subtraction for [`Q`] and borrowed [`Z`]
+    /// Testing subtraction for [`Q`] and borrowed [`Z`]
     #[test]
     fn sub_second_borrowed() {
         let a: Zq = Zq::try_from((4, 11)).unwrap();
@@ -258,7 +256,7 @@ mod test_sub_between_z_and_zq {
         assert_eq!(c, Zq::try_from((6, 11)).unwrap());
     }
 
-    /// testing subtraction for big numbers
+    /// Testing subtraction for big numbers
     #[test]
     fn sub_large_numbers() {
         let a: Zq = Zq::try_from((i64::MAX, u64::MAX - 58)).unwrap();
@@ -278,10 +276,9 @@ mod test_sub_between_z_and_zq {
 
 #[cfg(test)]
 mod test_add_between_types {
-
     use crate::integer_mod_q::Zq;
 
-    /// testing addition between different types
+    /// Testing addition between different types
     #[test]
     #[allow(clippy::op_ref)]
     fn add() {

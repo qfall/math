@@ -160,7 +160,6 @@ impl MatZq {
 
 #[cfg(test)]
 mod test_mul {
-
     use super::MatZq;
     use crate::{integer::Z, traits::SetEntry};
     use std::str::FromStr;
@@ -214,7 +213,6 @@ mod test_mul {
 
 #[cfg(test)]
 mod test_mul_matz {
-
     use super::MatZq;
     use crate::integer::MatZ;
     use crate::{integer::Z, traits::SetEntry};

@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementation to set entries from a [`MatQ`] matrix.
+//! Implementation to manipulate a [`MatQ`] matrix.
 
 use crate::{
     error::MathError,
@@ -15,7 +15,7 @@ use crate::{
     traits::{GetNumColumns, GetNumRows, SetEntry},
     utils::{
         collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
-        index::{evaluate_index, evaluate_indices},
+        index::{evaluate_index, evaluate_indices_for_matrix},
     },
 };
 use flint_sys::{
@@ -62,7 +62,7 @@ impl SetEntry<&Q> for MatQ {
         column: impl TryInto<i64> + Display,
         value: &Q,
     ) -> Result<(), MathError> {
-        let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
+        let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
 
         // since `self` is a correct matrix and both row and column
         // are previously checked to be inside of the matrix, no errors
@@ -227,8 +227,8 @@ impl MatQ {
         row1: impl TryInto<i64> + Display,
         col1: impl TryInto<i64> + Display,
     ) -> Result<(), MathError> {
-        let (row0, col0) = evaluate_indices(self, row0, col0)?;
-        let (row1, col1) = evaluate_indices(self, row1, col1)?;
+        let (row0, col0) = evaluate_indices_for_matrix(self, row0, col0)?;
+        let (row1, col1) = evaluate_indices_for_matrix(self, row1, col1)?;
 
         unsafe {
             fmpq_swap(
@@ -861,7 +861,7 @@ mod test_reverses {
         let cmp_vec_2 = MatQ::from_str(&format!("[[3],[{}],[8/9]]", u64::MAX)).unwrap();
         let cmp_vec_3 = MatQ::from_str("[[4],[5],[9]]").unwrap();
 
-        let _ = matrix.reverse_columns();
+        matrix.reverse_columns();
 
         assert_eq!(cmp_vec_3, matrix.get_column(0).unwrap());
         assert_eq!(cmp_vec_2, matrix.get_column(1).unwrap());
@@ -876,7 +876,7 @@ mod test_reverses {
         let cmp_vec_0 = MatQ::from_str("[[1,-2]]").unwrap();
         let cmp_vec_1 = MatQ::from_str("[[-3,4]]").unwrap();
 
-        let _ = matrix.reverse_rows();
+        matrix.reverse_rows();
 
         assert_eq!(cmp_vec_1, matrix.get_row(0).unwrap());
         assert_eq!(cmp_vec_0, matrix.get_row(1).unwrap());
@@ -896,7 +896,7 @@ mod test_reverses {
         let cmp_vec_1 = MatQ::from_str("[[7,6,8,9]]").unwrap();
         let cmp_vec_2 = MatQ::from_str(&format!("[[{},4,-2/{},5]]", i64::MAX, u64::MAX)).unwrap();
 
-        let _ = matrix.reverse_rows();
+        matrix.reverse_rows();
 
         assert_eq!(cmp_vec_2, matrix.get_row(0).unwrap());
         assert_eq!(cmp_vec_1, matrix.get_row(1).unwrap());

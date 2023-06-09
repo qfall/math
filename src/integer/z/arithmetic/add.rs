@@ -127,7 +127,7 @@ impl Add<&Zq> for &Z {
                 &mut out,
                 &other.value.value,
                 &self.value,
-                &*other.modulus.modulus,
+                other.modulus.get_fmpz_mod_ctx_struct(),
             );
         }
         Zq {
@@ -142,11 +142,10 @@ arithmetic_trait_mixed_borrowed_owned!(Add, add, Z, Zq, Zq);
 
 #[cfg(test)]
 mod test_add_between_types {
-
     use crate::integer::Z;
     use std::str::FromStr;
 
-    /// testing addition between different types
+    /// Testing addition between different types
     #[test]
     #[allow(clippy::op_ref)]
     fn add() {
@@ -236,12 +235,11 @@ mod test_add_between_types {
 
 #[cfg(test)]
 mod test_add_between_z_and_q {
-
     use super::Z;
     use crate::rational::Q;
     use std::str::FromStr;
 
-    /// testing addition for [`Z`] and [`Q`]
+    /// Testing addition for [`Z`] and [`Q`]
     #[test]
     fn add() {
         let a: Z = Z::from(4);
@@ -250,7 +248,7 @@ mod test_add_between_z_and_q {
         assert_eq!(c, Q::from_str("33/7").unwrap());
     }
 
-    /// testing addition for both borrowed [`Z`] and [`Q`]
+    /// Testing addition for both borrowed [`Z`] and [`Q`]
     #[test]
     fn add_borrow() {
         let a: Z = Z::from(4);
@@ -259,7 +257,7 @@ mod test_add_between_z_and_q {
         assert_eq!(c, Q::from_str("33/7").unwrap());
     }
 
-    /// testing addition for borrowed [`Z`] and [`Q`]
+    /// Testing addition for borrowed [`Z`] and [`Q`]
     #[test]
     fn add_first_borrowed() {
         let a: Z = Z::from(4);
@@ -268,7 +266,7 @@ mod test_add_between_z_and_q {
         assert_eq!(c, Q::from_str("33/7").unwrap());
     }
 
-    /// testing addition for [`Z`] and borrowed [`Q`]
+    /// Testing addition for [`Z`] and borrowed [`Q`]
     #[test]
     fn add_second_borrowed() {
         let a: Z = Z::from(4);
@@ -277,7 +275,7 @@ mod test_add_between_z_and_q {
         assert_eq!(c, Q::from_str("33/7").unwrap());
     }
 
-    /// testing addition for big numbers
+    /// Testing addition for big numbers
     #[test]
     fn add_large_numbers() {
         let a: Z = Z::from(u64::MAX);
@@ -302,10 +300,9 @@ mod test_add_between_z_and_q {
 
 #[cfg(test)]
 mod test_add {
-
     use super::Z;
 
-    /// testing addition for two [`Z`]
+    /// Testing addition for two [`Z`]
     #[test]
     fn add() {
         let a: Z = Z::from(42);
@@ -314,7 +311,7 @@ mod test_add {
         assert_eq!(c, Z::from(66));
     }
 
-    /// testing addition for two borrowed [`Z`]
+    /// Testing addition for two borrowed [`Z`]
     #[test]
     fn add_borrow() {
         let a: Z = Z::from(42);
@@ -323,7 +320,7 @@ mod test_add {
         assert_eq!(c, Z::from(66));
     }
 
-    /// testing addition for borrowed [`Z`] and [`Z`]
+    /// Testing addition for borrowed [`Z`] and [`Z`]
     #[test]
     fn add_first_borrowed() {
         let a: Z = Z::from(42);
@@ -332,7 +329,7 @@ mod test_add {
         assert_eq!(c, Z::from(66));
     }
 
-    /// testing addition for [`Z`] and borrowed [`Z`]
+    /// Testing addition for [`Z`] and borrowed [`Z`]
     #[test]
     fn add_second_borrowed() {
         let a: Z = Z::from(42);
@@ -341,7 +338,7 @@ mod test_add {
         assert_eq!(c, Z::from(66));
     }
 
-    /// testing addition for big numbers
+    /// Testing addition for big numbers
     #[test]
     fn add_large_numbers() {
         let a: Z = Z::from(u64::MAX);
@@ -358,11 +355,10 @@ mod test_add {
 
 #[cfg(test)]
 mod test_add_between_z_and_zq {
-
     use super::Z;
     use crate::integer_mod_q::Zq;
 
-    /// testing addition for [`Z`] and [`Zq`]
+    /// Testing addition for [`Z`] and [`Zq`]
     #[test]
     fn add() {
         let a: Z = Z::from(9);
@@ -371,7 +367,7 @@ mod test_add_between_z_and_zq {
         assert_eq!(c, Zq::try_from((2, 11)).unwrap());
     }
 
-    /// testing addition for both borrowed [`Z`] and [`Zq`]
+    /// Testing addition for both borrowed [`Z`] and [`Zq`]
     #[test]
     fn add_borrow() {
         let a: Z = Z::from(9);
@@ -380,7 +376,7 @@ mod test_add_between_z_and_zq {
         assert_eq!(c, Zq::try_from((2, 11)).unwrap());
     }
 
-    /// testing addition for borrowed [`Z`] and [`Zq`]
+    /// Testing addition for borrowed [`Z`] and [`Zq`]
     #[test]
     fn add_first_borrowed() {
         let a: Z = Z::from(9);
@@ -389,7 +385,7 @@ mod test_add_between_z_and_zq {
         assert_eq!(c, Zq::try_from((2, 11)).unwrap());
     }
 
-    /// testing addition for [`Z`] and borrowed [`Zq`]
+    /// Testing addition for [`Z`] and borrowed [`Zq`]
     #[test]
     fn add_second_borrowed() {
         let a: Z = Z::from(9);
@@ -398,7 +394,7 @@ mod test_add_between_z_and_zq {
         assert_eq!(c, Zq::try_from((2, 11)).unwrap());
     }
 
-    /// testing addition for big numbers
+    /// Testing addition for big numbers
     #[test]
     fn add_large_numbers() {
         let a: Z = Z::from(u64::MAX);

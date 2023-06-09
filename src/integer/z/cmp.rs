@@ -162,8 +162,8 @@ mod test_partial_eq {
         assert!(small_1 == small_2);
         assert!(small_2 == small_1);
         assert!(small_1 == small_1);
-        assert!(!(small_1 == negative));
-        assert!(!(negative == small_1));
+        assert!(small_1 != negative);
+        assert!(negative != small_1);
     }
 
     /// Test not equal with small positive and negative numbers.
@@ -173,9 +173,9 @@ mod test_partial_eq {
         let small_2 = Z::from(10);
         let negative = Z::from(-1);
 
-        assert!(!(small_1 != small_2));
-        assert!(!(small_2 != small_1));
-        assert!(!(small_1 != small_1));
+        assert!(small_1 == small_2);
+        assert!(small_2 == small_1);
+        assert!(small_1 == small_1);
         assert!(small_1 != negative);
         assert!(negative != small_1);
     }
@@ -192,8 +192,8 @@ mod test_partial_eq {
         assert!(max_2 == max_1);
         assert!(max_1 == max_1);
         assert!(min == min);
-        assert!(!(max_1 == min));
-        assert!(!(min == max_1));
+        assert!(max_1 != min);
+        assert!(min != max_1);
     }
 
     /// Test not equal with a large [`Z`]
@@ -204,10 +204,10 @@ mod test_partial_eq {
         let max_2 = Z::from(u64::MAX);
         let min = Z::from(i64::MIN);
 
-        assert!(!(max_1 != max_2));
-        assert!(!(max_2 != max_1));
-        assert!(!(max_1 != max_1));
-        assert!(!(min != min));
+        assert!(max_1 == max_2);
+        assert!(max_2 == max_1);
+        assert!(max_1 == max_1);
+        assert!(min == min);
         assert!(max_1 != min);
         assert!(min != max_1);
     }
@@ -221,15 +221,15 @@ mod test_partial_eq {
         let small_negative = Z::from(-1);
         let min = Z::from(i64::MIN);
 
-        assert!(!(max == small_negative));
-        assert!(!(small_negative == max));
-        assert!(!(max == small_positive));
-        assert!(!(small_positive == max));
+        assert!(max != small_negative);
+        assert!(small_negative != max);
+        assert!(max != small_positive);
+        assert!(small_positive != max);
 
-        assert!(!(min == small_negative));
-        assert!(!(small_negative == min));
-        assert!(!(min == small_positive));
-        assert!(!(small_positive == min));
+        assert!(min != small_negative);
+        assert!(small_negative != min);
+        assert!(min != small_positive);
+        assert!(small_positive != min);
     }
 
     /// Test not equal with a large [`Z`] (uses FLINT's pointer representation)
@@ -257,7 +257,6 @@ mod test_partial_eq {
 #[allow(clippy::neg_cmp_op_on_partial_ord)]
 #[cfg(test)]
 mod test_partial_ord {
-
     use super::Z;
 
     /// Test less (<) comparison between small positive and negative [`Z`]
@@ -268,13 +267,13 @@ mod test_partial_ord {
         let small_positive_2 = Z::from(1);
         let small_negative = Z::from(-1);
 
-        assert!(!(small_positive_1 < small_positive_2));
-        assert!(!(small_positive_2 < small_positive_1));
-        assert!(!(small_positive_1 < small_positive_1));
+        assert!(small_positive_1 >= small_positive_2);
+        assert!(small_positive_2 >= small_positive_1);
+        assert!(small_positive_1 >= small_positive_1);
 
         assert!(small_negative < small_positive_1);
-        assert!(!(small_positive_1 < small_negative));
-        assert!(!(small_negative < small_negative));
+        assert!(small_positive_1 >= small_negative);
+        assert!(small_negative >= small_negative);
     }
 
     /// Test less (<) comparison between large [`Z`] (FLINT uses pointers)
@@ -289,14 +288,14 @@ mod test_partial_ord {
         // Comparisons with max
         assert!(small_positive < max);
         assert!(small_negative < max);
-        assert!(!(max < small_positive));
-        assert!(!(max < small_negative));
+        assert!(max >= small_positive);
+        assert!(max >= small_negative);
 
         // Comparisons with max_negative
         assert!(max_negative < small_positive);
         assert!(max_negative < small_negative);
-        assert!(!(small_positive < max_negative));
-        assert!(!(small_negative < max_negative));
+        assert!(small_positive >= max_negative);
+        assert!(small_negative >= max_negative);
     }
 
     /// Test less (<) comparison between large positive and negative [`Z`]
@@ -307,13 +306,13 @@ mod test_partial_ord {
         let max_2 = Z::from(u64::MAX);
         let max_negative = Z::from(i64::MIN);
 
-        assert!(!(max_1 < max_2));
-        assert!(!(max_2 < max_1));
-        assert!(!(max_1 < max_1));
+        assert!(max_1 >= max_2);
+        assert!(max_2 >= max_1);
+        assert!(max_1 >= max_1);
 
         assert!(max_negative < max_1);
-        assert!(!(max_1 < max_negative));
-        assert!(!(max_negative < max_negative));
+        assert!(max_1 >= max_negative);
+        assert!(max_negative >= max_negative);
     }
 
     /// Test less or equal (<=) comparison between small positive and negative [`Z`]
@@ -329,7 +328,7 @@ mod test_partial_ord {
         assert!(small_positive_1 <= small_positive_1);
 
         assert!(small_negative <= small_positive_1);
-        assert!(!(small_positive_1 <= small_negative));
+        assert!(small_positive_1 > small_negative);
         assert!(small_negative <= small_negative);
     }
 
@@ -345,14 +344,14 @@ mod test_partial_ord {
         // Comparisons with max
         assert!(small_positive <= max);
         assert!(small_negative <= max);
-        assert!(!(max <= small_positive));
-        assert!(!(max <= small_negative));
+        assert!(max > small_positive);
+        assert!(max > small_negative);
 
         // Comparisons with max_negative
         assert!(max_negative <= small_positive);
         assert!(max_negative <= small_negative);
-        assert!(!(small_positive <= max_negative));
-        assert!(!(small_negative <= max_negative));
+        assert!(small_positive > max_negative);
+        assert!(small_negative > max_negative);
     }
 
     /// Test less or equal (<=) comparison between large positive and negative [`Z`]
@@ -368,7 +367,7 @@ mod test_partial_ord {
         assert!(max_1 <= max_1);
 
         assert!(max_negative <= max_1);
-        assert!(!(max_1 <= max_negative));
+        assert!(max_1 > max_negative);
         assert!(max_negative <= max_negative);
     }
 
@@ -380,13 +379,13 @@ mod test_partial_ord {
         let small_positive_2 = Z::from(1);
         let small_negative = Z::from(-1);
 
-        assert!(!(small_positive_1 > small_positive_2));
-        assert!(!(small_positive_2 > small_positive_1));
-        assert!(!(small_positive_1 > small_positive_1));
+        assert!(small_positive_1 <= small_positive_2);
+        assert!(small_positive_2 <= small_positive_1);
+        assert!(small_positive_1 <= small_positive_1);
 
-        assert!(!(small_negative > small_positive_1));
+        assert!(small_negative <= small_positive_1);
         assert!(small_positive_1 > small_negative);
-        assert!(!(small_negative > small_negative));
+        assert!(small_negative <= small_negative);
     }
 
     /// Test greater (>) comparison between large [`Z`] (FLINT uses pointers)
@@ -399,14 +398,14 @@ mod test_partial_ord {
         let max_negative = Z::from(i64::MIN);
 
         // Comparisons with max
-        assert!(!(small_positive > max));
-        assert!(!(small_negative > max));
+        assert!(small_positive <= max);
+        assert!(small_negative <= max);
         assert!(max > small_positive);
         assert!(max > small_negative);
 
         // Comparisons with max_negative
-        assert!(!(max_negative > small_positive));
-        assert!(!(max_negative > small_negative));
+        assert!(max_negative <= small_positive);
+        assert!(max_negative <= small_negative);
         assert!(small_positive > max_negative);
         assert!(small_negative > max_negative);
     }
@@ -419,13 +418,13 @@ mod test_partial_ord {
         let max_2 = Z::from(u64::MAX);
         let max_negative = Z::from(i64::MIN);
 
-        assert!(!(max_1 > max_2));
-        assert!(!(max_2 > max_1));
-        assert!(!(max_1 > max_1));
+        assert!(max_1 <= max_2);
+        assert!(max_2 <= max_1);
+        assert!(max_1 <= max_1);
 
-        assert!(!(max_negative > max_1));
+        assert!(max_negative <= max_1);
         assert!(max_1 > max_negative);
-        assert!(!(max_negative > max_negative));
+        assert!(max_negative <= max_negative);
     }
 
     /// Test greater or equal (>=) comparison between small positive and negative [`Z`]
@@ -440,7 +439,7 @@ mod test_partial_ord {
         assert!(small_positive_2 >= small_positive_1);
         assert!(small_positive_1 >= small_positive_1);
 
-        assert!(!(small_negative >= small_positive_1));
+        assert!(small_negative < small_positive_1);
         assert!(small_positive_1 >= small_negative);
         assert!(small_negative >= small_negative);
     }
@@ -455,14 +454,14 @@ mod test_partial_ord {
         let max_negative = Z::from(i64::MIN);
 
         // Comparisons with max
-        assert!(!(small_positive >= max));
-        assert!(!(small_negative >= max));
+        assert!(small_positive < max);
+        assert!(small_negative < max);
         assert!(max >= small_positive);
         assert!(max >= small_negative);
 
         // Comparisons with max_negative
-        assert!(!(max_negative >= small_positive));
-        assert!(!(max_negative >= small_negative));
+        assert!(max_negative < small_positive);
+        assert!(max_negative < small_negative);
         assert!(small_positive >= max_negative);
         assert!(small_negative >= max_negative);
     }
@@ -479,7 +478,7 @@ mod test_partial_ord {
         assert!(max_2 >= max_1);
         assert!(max_1 >= max_1);
 
-        assert!(!(max_negative >= max_1));
+        assert!(max_negative < max_1);
         assert!(max_1 >= max_negative);
         assert!(max_negative >= max_negative);
     }
@@ -504,7 +503,7 @@ mod test_ord {
 
         assert_eq!(a, Z::ZERO.clamp(a.clone(), b.clone()));
         assert_eq!(a, a.clone().clamp(Z::ZERO, b.clone()));
-        assert_eq!(a, b.clone().clamp(Z::ZERO, a.clone()));
+        assert_eq!(a, b.clamp(Z::ZERO, a.clone()));
     }
 
     /// Check whether default implementations `max`, `min`, `clamp`
@@ -519,6 +518,6 @@ mod test_ord {
 
         assert_eq!(a, Z::ZERO.clamp(a.clone(), b.clone()));
         assert_eq!(a, a.clone().clamp(Z::ZERO, b.clone()));
-        assert_eq!(a, b.clone().clamp(Z::ZERO, a.clone()));
+        assert_eq!(a, b.clamp(Z::ZERO, a.clone()));
     }
 }

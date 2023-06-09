@@ -129,12 +129,11 @@ mod test_new {
 
 #[cfg(test)]
 mod test_identity {
-    use std::str::FromStr;
-
     use crate::{
         integer::{MatPolyOverZ, PolyOverZ},
         traits::GetEntry,
     };
+    use std::str::FromStr;
 
     /// Tests if an identity matrix is set from a zero matrix.
     #[test]

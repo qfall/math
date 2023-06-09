@@ -98,7 +98,7 @@ mod test_add {
     use super::Q;
     use std::str::FromStr;
 
-    /// testing addition for two [`Q`]
+    /// Testing addition for two [`Q`]
     #[test]
     fn add() {
         let a: Q = Q::from(42);
@@ -107,7 +107,7 @@ mod test_add {
         assert_eq!(c, Q::from_str("63").unwrap());
     }
 
-    /// testing addition for two borrowed [`Q`]
+    /// Testing addition for two borrowed [`Q`]
     #[test]
     fn add_borrow() {
         let a: Q = Q::from(42);
@@ -116,7 +116,7 @@ mod test_add {
         assert_eq!(c, Q::from_str("63").unwrap());
     }
 
-    /// testing addition for borrowed [`Q`] and [`Q`]
+    /// Testing addition for borrowed [`Q`] and [`Q`]
     #[test]
     fn add_first_borrowed() {
         let a: Q = Q::from_str("42/5").unwrap();
@@ -125,7 +125,7 @@ mod test_add {
         assert_eq!(c, Q::from_str("63/5").unwrap());
     }
 
-    /// testing addition for [`Q`] and borrowed [`Q`]
+    /// Testing addition for [`Q`] and borrowed [`Q`]
     #[test]
     fn add_second_borrowed() {
         let a: Q = Q::from(42);
@@ -135,7 +135,7 @@ mod test_add {
     }
 
     #[test]
-    /// testing addition for large numerators and divisors
+    /// Testing addition for large numerators and divisors
     fn add_large() {
         let a: Q = Q::from_str(&(i64::MAX).to_string()).unwrap();
         let b: Q = Q::from_str(&(u64::MAX - 1).to_string()).unwrap();
@@ -158,12 +158,11 @@ mod test_add {
 
 #[cfg(test)]
 mod test_add_between_q_and_z {
-
     use crate::integer::Z;
     use crate::rational::Q;
     use std::str::FromStr;
 
-    /// testing addition for [`Q`] and [`Z`]
+    /// Testing addition for [`Q`] and [`Z`]
     #[test]
     fn add() {
         let a: Q = Q::from_str("5/7").unwrap();
@@ -172,7 +171,7 @@ mod test_add_between_q_and_z {
         assert_eq!(c, Q::from_str("33/7").unwrap());
     }
 
-    /// testing addition for both borrowed [`Q`] and [`Z`]
+    /// Testing addition for both borrowed [`Q`] and [`Z`]
     #[test]
     fn add_borrow() {
         let a: Q = Q::from_str("5/7").unwrap();
@@ -181,7 +180,7 @@ mod test_add_between_q_and_z {
         assert_eq!(c, Q::from_str("33/7").unwrap());
     }
 
-    /// testing addition for borrowed [`Q`] and [`Z`]
+    /// Testing addition for borrowed [`Q`] and [`Z`]
     #[test]
     fn add_first_borrowed() {
         let a: Q = Q::from_str("5/7").unwrap();
@@ -190,7 +189,7 @@ mod test_add_between_q_and_z {
         assert_eq!(c, Q::from_str("33/7").unwrap());
     }
 
-    /// testing addition for [`Q`] and borrowed [`Z`]
+    /// Testing addition for [`Q`] and borrowed [`Z`]
     #[test]
     fn add_second_borrowed() {
         let a: Q = Q::from_str("5/7").unwrap();
@@ -199,7 +198,7 @@ mod test_add_between_q_and_z {
         assert_eq!(c, Q::from_str("33/7").unwrap());
     }
 
-    /// testing addition for big numbers
+    /// Testing addition for big numbers
     #[test]
     fn add_large_numbers() {
         let a: Q = Q::from_str(&format!("{}/2", u64::MAX)).unwrap();
@@ -225,7 +224,7 @@ mod test_add_between_types {
 
     use crate::rational::Q;
 
-    /// testing addition between different types
+    /// Testing addition between different types
     #[test]
     #[allow(clippy::op_ref)]
     fn add() {

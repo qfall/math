@@ -67,7 +67,6 @@ impl Drop for Modulus {
 /// Test that the [`Clone`] trait is correctly implemented.
 #[cfg(test)]
 mod test_clone {
-
     use super::Modulus;
     use std::{rc::Rc, str::FromStr};
 
@@ -105,7 +104,6 @@ mod test_clone {
 
 #[cfg(test)]
 mod test_drop {
-
     use super::Modulus;
     use std::{collections::HashSet, rc::Rc, str::FromStr};
 

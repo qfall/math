@@ -6,16 +6,17 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementation to set entries from a [`MatPolyOverZ`] matrix.
+//! Implementation to manipulate a [`MatPolyOverZ`] matrix.
 
 use super::MatPolyOverZ;
 use crate::{
     error::MathError,
     integer::PolyOverZ,
+    macros::for_others::implement_for_owned,
     traits::{GetNumColumns, GetNumRows, SetEntry},
     utils::{
         collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
-        index::{evaluate_index, evaluate_indices},
+        index::{evaluate_index, evaluate_indices_for_matrix},
     },
 };
 use flint_sys::{
@@ -55,7 +56,7 @@ impl SetEntry<&PolyOverZ> for MatPolyOverZ {
         column: impl TryInto<i64> + Display,
         value: &PolyOverZ,
     ) -> Result<(), MathError> {
-        let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
+        let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
 
         // since `self` is a correct matrix and both row and column
         // are previously checked to be inside of the matrix, no errors
@@ -70,45 +71,7 @@ impl SetEntry<&PolyOverZ> for MatPolyOverZ {
     }
 }
 
-impl SetEntry<PolyOverZ> for MatPolyOverZ {
-    /// Sets the value of a specific matrix entry according to a given `value` of type [`PolyOverZ`].
-    ///
-    /// Parameters:
-    /// - `row`: specifies the row in which the entry is located
-    /// - `column`: specifies the column in which the entry is located
-    /// - `value`: specifies the value to which the entry is set
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer::MatPolyOverZ;
-    /// use qfall_math::integer::PolyOverZ;
-    /// use qfall_math::traits::*;
-    ///
-    /// let mut matrix = MatPolyOverZ::new(5, 10).unwrap();
-    /// let value = PolyOverZ::default();
-    /// matrix.set_entry(1, 1, value).unwrap();
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    /// if the number of rows or columns is greater than the matrix or negative.
-    fn set_entry(
-        &mut self,
-        row: impl TryInto<i64> + Display,
-        column: impl TryInto<i64> + Display,
-        mut value: PolyOverZ,
-    ) -> Result<(), MathError> {
-        let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
-
-        // swapping the content of the entry with the given value since ownership
-        // of the input is provided.
-        unsafe {
-            let entry = fmpz_poly_mat_entry(&self.matrix, row_i64, column_i64);
-            fmpz_poly_swap(entry, &mut value.poly)
-        }
-        Ok(())
-    }
-}
+implement_for_owned!(PolyOverZ, MatPolyOverZ, SetEntry);
 
 impl MatPolyOverZ {
     /// Sets a column of the given matrix to the provided column of `other`.
@@ -256,8 +219,8 @@ impl MatPolyOverZ {
         row1: impl TryInto<i64> + Display,
         col1: impl TryInto<i64> + Display,
     ) -> Result<(), MathError> {
-        let (row0, col0) = evaluate_indices(self, row0, col0)?;
-        let (row1, col1) = evaluate_indices(self, row1, col1)?;
+        let (row0, col0) = evaluate_indices_for_matrix(self, row0, col0)?;
+        let (row1, col1) = evaluate_indices_for_matrix(self, row1, col1)?;
 
         unsafe {
             fmpz_poly_swap(
@@ -916,7 +879,7 @@ mod test_reverses {
             MatPolyOverZ::from_str(&format!("[[1  3],[1  {}],[2  8 9]]", u64::MAX)).unwrap();
         let cmp_vec_3 = MatPolyOverZ::from_str("[[1  4],[1  5],[0]]").unwrap();
 
-        let _ = matrix.reverse_columns();
+        matrix.reverse_columns();
 
         assert_eq!(cmp_vec_3, matrix.get_column(0).unwrap());
         assert_eq!(cmp_vec_2, matrix.get_column(1).unwrap());
@@ -931,7 +894,7 @@ mod test_reverses {
         let cmp_vec_0 = MatPolyOverZ::from_str("[[1  1,1  2]]").unwrap();
         let cmp_vec_1 = MatPolyOverZ::from_str("[[2  3 4,0]]").unwrap();
 
-        let _ = matrix.reverse_rows();
+        matrix.reverse_rows();
 
         assert_eq!(cmp_vec_1, matrix.get_row(0).unwrap());
         assert_eq!(cmp_vec_0, matrix.get_row(1).unwrap());
@@ -954,7 +917,7 @@ mod test_reverses {
             MatPolyOverZ::from_str(&format!("[[1  {},1  4,1  {},1  5]]", i64::MAX, u64::MAX))
                 .unwrap();
 
-        let _ = matrix.reverse_rows();
+        matrix.reverse_rows();
 
         assert_eq!(cmp_vec_2, matrix.get_row(0).unwrap());
         assert_eq!(cmp_vec_1, matrix.get_row(1).unwrap());

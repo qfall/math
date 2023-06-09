@@ -129,13 +129,12 @@ implement_for_owned!(Zq, Zq, PolyOverZq, Evaluate);
 
 #[cfg(test)]
 mod test_evaluate_z {
-
     use crate::integer::Z;
     use crate::integer_mod_q::{PolyOverZq, Zq};
     use crate::traits::Evaluate;
     use std::str::FromStr;
 
-    /// tests if evaluate works for [`Z`] as input
+    /// Tests if evaluate works for [`Z`] as input
     #[test]
     fn eval_z() {
         let poly = PolyOverZq::from_str("2  1 2 mod 17").unwrap();
@@ -145,7 +144,7 @@ mod test_evaluate_z {
         assert_eq!(Zq::try_from((7, 17)).unwrap(), res)
     }
 
-    /// tests if evaluate with a reference works
+    /// Tests if evaluate with a reference works
     #[test]
     fn eval_z_ref() {
         let poly = PolyOverZq::from_str("2  1 2 mod 17").unwrap();
@@ -155,7 +154,7 @@ mod test_evaluate_z {
         assert_eq!(Zq::try_from((7, 17)).unwrap(), res)
     }
 
-    /// tests if evaluate works with negative values
+    /// Tests if evaluate works with negative values
     #[test]
     fn eval_z_negative() {
         let poly = PolyOverZq::from_str("2  1 2 mod 17").unwrap();
@@ -165,7 +164,7 @@ mod test_evaluate_z {
         assert_eq!(Zq::try_from((8, 17)).unwrap(), res)
     }
 
-    /// tests if evaluate works with large integers
+    /// Tests if evaluate works with large integers
     #[test]
     fn eval_z_large() {
         let poly = PolyOverZq::from_str(&format!("2  3 2 mod {}", u64::MAX)).unwrap();
@@ -175,7 +174,7 @@ mod test_evaluate_z {
         assert_eq!(Zq::from_str(&format!("1 mod {}", u64::MAX)).unwrap(), res)
     }
 
-    /// test if evaluate works with max of [`i64`], [`i32`], ...
+    /// Test if evaluate works with max of [`i64`], [`i32`], ...
     #[test]
     fn eval_max() {
         let poly = PolyOverZq::from_str("2  1 2 mod 17").unwrap();
@@ -193,7 +192,7 @@ mod test_evaluate_z {
         let _ = poly.evaluate(u8::MAX);
     }
 
-    /// test if evaluate works with min of [`i64`], [`i32`], ...
+    /// Test if evaluate works with min of [`i64`], [`i32`], ...
     #[test]
     fn eval_min() {
         let poly = PolyOverZq::from_str("2  1 2 mod 17").unwrap();
@@ -220,7 +219,7 @@ mod test_evaluate_zq {
     };
     use std::str::FromStr;
 
-    /// ensures that positive values return expected evaluation
+    /// Ensures that positive values return expected evaluation
     #[test]
     fn evaluate_positive() {
         let poly = PolyOverZq::from_str("2  1 3 mod 17").unwrap();
@@ -233,7 +232,7 @@ mod test_evaluate_zq {
         assert_eq!(res_ref, res);
     }
 
-    /// ensures that positive large values return expected evaluation
+    /// Ensures that positive large values return expected evaluation
     #[test]
     fn evaluate_large_positive() {
         let poly =
@@ -248,7 +247,7 @@ mod test_evaluate_zq {
         assert_eq!(res_ref, res);
     }
 
-    /// ensure that evaluate panics if the moduli mismatch
+    /// Ensure that evaluate panics if the moduli mismatch
     #[test]
     #[should_panic]
     fn mismatching_modulus_panic() {
@@ -258,7 +257,7 @@ mod test_evaluate_zq {
         let _ = poly.evaluate(&value);
     }
 
-    /// ensure that evaluate_safe returns an error if the moduli mismatch
+    /// Ensure that evaluate_safe returns an error if the moduli mismatch
     #[test]
     fn mismatching_modulus_safe() {
         let poly = PolyOverZq::from_str(&format!("2  3 1 mod {}", u64::MAX)).unwrap();

@@ -65,7 +65,6 @@ impl Drop for Z {
 /// Test that the [`Clone`] trait is correctly implemented.
 #[cfg(test)]
 mod test_clone {
-
     use super::Z;
 
     /// check if large positive and negative values are cloned correctly
@@ -120,7 +119,6 @@ mod test_clone {
 /// Test that the [`Drop`] trait is correctly implemented.
 #[cfg(test)]
 mod test_drop {
-
     use super::Z;
 
     /// Check whether freed memory is reused afterwards

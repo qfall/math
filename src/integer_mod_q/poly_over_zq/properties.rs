@@ -38,7 +38,7 @@ mod test_is_irreducible {
     use crate::integer_mod_q::PolyOverZq;
     use std::str::FromStr;
 
-    /// ensure that a irreducible [`PolyOverZq`] returns `true`
+    /// Ensure that a irreducible [`PolyOverZq`] returns `true`
     #[test]
     fn poly_is_irreducible() {
         // 9X^2 + 12X + 10 is irreducible over Z17
@@ -46,7 +46,7 @@ mod test_is_irreducible {
         assert!(poly_irr.is_irreducible())
     }
 
-    /// ensure that a reducible [`PolyOverZq`] returns `false`
+    /// Ensure that a reducible [`PolyOverZq`] returns `false`
     #[test]
     fn poly_is_reducible() {
         let poly_irr = PolyOverZq::from_str("3  1 2 1 mod 17").unwrap();

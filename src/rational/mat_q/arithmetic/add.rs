@@ -97,12 +97,11 @@ arithmetic_trait_mixed_borrowed_owned!(Add, add, MatQ, MatQ, MatQ);
 
 #[cfg(test)]
 mod test_add {
-
     use super::MatQ;
     use crate::rational::Q;
     use std::str::FromStr;
 
-    /// testing addition for two [`MatQ`]
+    /// Testing addition for two [`MatQ`]
     #[test]
     fn add() {
         let a: MatQ = MatQ::from_str("[[1/2, 2, 3/2],[3/7, 4/7, 5/7]]").unwrap();
@@ -111,7 +110,7 @@ mod test_add {
         assert_eq!(c, MatQ::from_str("[[1, 4, 3],[6/7, 0, 10/7]]").unwrap());
     }
 
-    /// testing addition for two borrowed [`MatQ`]
+    /// Testing addition for two borrowed [`MatQ`]
     #[test]
     fn add_borrow() {
         let a: MatQ = MatQ::from_str("[[1/2, 2, 3/2],[3/7, 4/7, 5/7]]").unwrap();
@@ -120,7 +119,7 @@ mod test_add {
         assert_eq!(c, MatQ::from_str("[[1, 4, 3],[6/7, 0, 10/7]]").unwrap());
     }
 
-    /// testing addition for borrowed [`MatQ`] and [`MatQ`]
+    /// Testing addition for borrowed [`MatQ`] and [`MatQ`]
     #[test]
     fn add_first_borrowed() {
         let a: MatQ = MatQ::from_str("[[1/2, 2, 3/2],[3/7, 4/7, 5/7]]").unwrap();
@@ -129,7 +128,7 @@ mod test_add {
         assert_eq!(c, MatQ::from_str("[[1, 4, 3],[6/7, 0, 10/7]]").unwrap());
     }
 
-    /// testing addition for [`MatQ`] and borrowed [`MatQ`]
+    /// Testing addition for [`MatQ`] and borrowed [`MatQ`]
     #[test]
     fn add_second_borrowed() {
         let a: MatQ = MatQ::from_str("[[1/2, 2, 3/2],[3/7, 4/7, 5/7]]").unwrap();
@@ -138,7 +137,7 @@ mod test_add {
         assert_eq!(c, MatQ::from_str("[[1, 4, 3],[6/7, 0, 10/7]]").unwrap());
     }
 
-    /// testing addition for big numbers
+    /// Testing addition for big numbers
     #[test]
     fn add_large_numbers() {
         let a: MatQ =
@@ -162,7 +161,7 @@ mod test_add {
         );
     }
 
-    /// testing add_safe
+    /// Testing add_safe
     #[test]
     fn add_safe() {
         let a: MatQ = MatQ::from_str("[[1/9, 2/8, 3/4],[3, 4, 5]]").unwrap();
@@ -174,7 +173,7 @@ mod test_add {
         );
     }
 
-    /// testing add_safe throws error
+    /// Testing add_safe throws error
     #[test]
     fn add_safe_is_err() {
         let a: MatQ = MatQ::from_str("[[1, 2/7],[3/1912, 4]]").unwrap();

@@ -36,7 +36,6 @@ impl MatQ {
 
 #[cfg(test)]
 mod test_transpose {
-
     use super::MatQ;
     use std::str::FromStr;
 

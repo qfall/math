@@ -52,12 +52,11 @@ arithmetic_trait_mixed_borrowed_owned!(Sub, sub, PolyOverQ, PolyOverQ, PolyOverQ
 
 #[cfg(test)]
 mod test_sub {
-
     use super::PolyOverQ;
     use crate::rational::Q;
     use std::str::FromStr;
 
-    /// testing subtraction for two [`PolyOverQ`]
+    /// Testing subtraction for two [`PolyOverQ`]
     #[test]
     fn sub() {
         let a: PolyOverQ = PolyOverQ::from_str("3  1/9 2 -3/7").unwrap();
@@ -69,7 +68,7 @@ mod test_sub {
         );
     }
 
-    /// testing subtraction for two borrowed [`PolyOverQ`]
+    /// Testing subtraction for two borrowed [`PolyOverQ`]
     #[test]
     fn sub_borrow() {
         let a: PolyOverQ = PolyOverQ::from_str("3  1/9 2 -3/7").unwrap();
@@ -81,7 +80,7 @@ mod test_sub {
         );
     }
 
-    /// testing subtraction for borrowed [`PolyOverQ`] and [`PolyOverQ`]
+    /// Testing subtraction for borrowed [`PolyOverQ`] and [`PolyOverQ`]
     #[test]
     fn sub_first_borrowed() {
         let a: PolyOverQ = PolyOverQ::from_str("3  1/9 2 -3/7").unwrap();
@@ -93,7 +92,7 @@ mod test_sub {
         );
     }
 
-    /// testing subtraction for [`PolyOverQ`] and borrowed [`PolyOverQ`]
+    /// Testing subtraction for [`PolyOverQ`] and borrowed [`PolyOverQ`]
     #[test]
     fn sub_second_borrowed() {
         let a: PolyOverQ = PolyOverQ::from_str("3  1/9 2 -3/7").unwrap();
@@ -105,7 +104,7 @@ mod test_sub {
         );
     }
 
-    /// testing subtraction with eliminating coefficients
+    /// Testing subtraction with eliminating coefficients
     #[test]
     fn sub_eliminating_coefficients() {
         let a: PolyOverQ = PolyOverQ::from_str("3  1/8 2/7 -3").unwrap();
@@ -114,7 +113,7 @@ mod test_sub {
         assert_eq!(c, PolyOverQ::from_str("0").unwrap());
     }
 
-    /// testing subtraction for large [`PolyOverQ`]
+    /// Testing subtraction for large [`PolyOverQ`]
     #[test]
     fn sub_large_numbers() {
         let a: PolyOverQ = PolyOverQ::from_str(&format!(

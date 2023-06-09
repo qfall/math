@@ -51,7 +51,7 @@ mod test_to_string {
     use crate::integer::MatPolyOverZ;
     use std::str::FromStr;
 
-    /// tests whether a matrix with a large entry works in a roundtrip
+    /// Tests whether a matrix with a large entry works in a roundtrip
     #[test]
     fn working_large_positive() {
         let cmp = MatPolyOverZ::from_str(&format!(
@@ -69,7 +69,7 @@ mod test_to_string {
         )
     }
 
-    /// tests whether a matrix with a large negative entry works in a roundtrip
+    /// Tests whether a matrix with a large negative entry works in a roundtrip
     #[test]
     fn working_large_negative() {
         let cmp = MatPolyOverZ::from_str(&format!(
@@ -87,7 +87,7 @@ mod test_to_string {
         )
     }
 
-    /// tests whether a matrix with positive entries works in a roundtrip
+    /// Tests whether a matrix with positive entries works in a roundtrip
     #[test]
     fn working_positive() {
         let cmp =
@@ -99,7 +99,7 @@ mod test_to_string {
         )
     }
 
-    /// tests whether a matrix with negative entries works in a roundtrip
+    /// Tests whether a matrix with negative entries works in a roundtrip
     #[test]
     fn working_negative() {
         let cmp =
@@ -111,7 +111,7 @@ mod test_to_string {
         )
     }
 
-    /// tests whether a large matrix works in a roundtrip
+    /// Tests whether a large matrix works in a roundtrip
     #[test]
     fn working_big_dimensions() {
         let cmp1 = MatPolyOverZ::from_str(&format!(
@@ -134,7 +134,7 @@ mod test_to_string {
         );
     }
 
-    /// tests whether a matrix that is created using a string, returns a
+    /// Tests whether a matrix that is created using a string, returns a
     /// string that can be used to create a [`MatZ`]
     #[test]
     fn working_use_result_of_to_string_as_input() {

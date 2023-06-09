@@ -287,7 +287,6 @@ impl From<&Q> for Q {
 
 #[cfg(test)]
 mod tests_from_str {
-
     use crate::rational::Q;
     use std::str::FromStr;
 
@@ -583,7 +582,6 @@ mod test_from_int_int {
 
 #[cfg(test)]
 mod test_try_from_int_int {
-
     use crate::integer::Z;
     use crate::rational::Q;
 
@@ -759,6 +757,7 @@ mod test_from_float {
 
     // Test that a small number is correctly converted from float.
     #[test]
+    #[allow(clippy::excessive_precision)]
     fn small_value() {
         // This is the exact value stored when creating a float with the value 0.1
         let a: f64 = 0.1000000000000000055511151231257827021181583404541015625;

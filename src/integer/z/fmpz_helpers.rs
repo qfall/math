@@ -253,6 +253,7 @@ mod test_as_integer_z {
 
     /// Assert that `get_fmpz_ref` returns a correct reference for small values
     #[test]
+    #[allow(clippy::needless_borrow)]
     fn get_ref_small() {
         let z = Z::from(10);
 
@@ -265,6 +266,7 @@ mod test_as_integer_z {
 
     /// Assert that `get_fmpz_ref` returns a correct reference for large values
     #[test]
+    #[allow(clippy::needless_borrow)]
     fn get_ref_large() {
         let z = Z::from(u64::MAX);
 

@@ -52,11 +52,10 @@ arithmetic_trait_mixed_borrowed_owned!(Mul, mul, PolyOverZ, PolyOverZ, PolyOverZ
 
 #[cfg(test)]
 mod test_mul {
-
     use super::PolyOverZ;
     use std::str::FromStr;
 
-    /// testing multiplication for two [`PolyOverZ`]
+    /// Testing multiplication for two [`PolyOverZ`]
     #[test]
     fn mul() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
@@ -65,7 +64,7 @@ mod test_mul {
         assert_eq!(c, PolyOverZ::from_str("7  1 4 6 5 -11 1 -6").unwrap());
     }
 
-    /// testing multiplication for two borrowed [`PolyOverZ`]
+    /// Testing multiplication for two borrowed [`PolyOverZ`]
     #[test]
     fn mul_borrow() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
@@ -74,7 +73,7 @@ mod test_mul {
         assert_eq!(c, PolyOverZ::from_str("7  1 4 6 5 -11 1 -6").unwrap());
     }
 
-    /// testing multiplication for borrowed [`PolyOverZ`] and [`PolyOverZ`]
+    /// Testing multiplication for borrowed [`PolyOverZ`] and [`PolyOverZ`]
     #[test]
     fn mul_first_borrowed() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
@@ -83,7 +82,7 @@ mod test_mul {
         assert_eq!(c, PolyOverZ::from_str("7  1 4 6 5 -11 1 -6").unwrap());
     }
 
-    /// testing multiplication for [`PolyOverZ`] and borrowed [`PolyOverZ`]
+    /// Testing multiplication for [`PolyOverZ`] and borrowed [`PolyOverZ`]
     #[test]
     fn mul_second_borrowed() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
@@ -92,7 +91,7 @@ mod test_mul {
         assert_eq!(c, PolyOverZ::from_str("7  1 4 6 5 -11 1 -6").unwrap());
     }
 
-    /// testing multiplication with a constant [`PolyOverZ`]
+    /// Testing multiplication with a constant [`PolyOverZ`]
     #[test]
     fn mul_constant() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
@@ -101,7 +100,7 @@ mod test_mul {
         assert_eq!(c, PolyOverZ::from_str("3  4 8 -12").unwrap());
     }
 
-    /// testing multiplication with zero
+    /// Testing multiplication with zero
     #[test]
     fn mul_zero() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
@@ -110,7 +109,7 @@ mod test_mul {
         assert_eq!(c, PolyOverZ::default());
     }
 
-    /// testing multiplication for large [`PolyOverZ`]
+    /// Testing multiplication for large [`PolyOverZ`]
     #[test]
     fn mul_large_numbers() {
         let a: PolyOverZ = PolyOverZ::from_str(&format!("2  {} {}", u16::MAX, i32::MIN)).unwrap();

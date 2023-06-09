@@ -6,8 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementations to get coefficients of a [`PolyOverQ`].
-//! Each reasonable type should be allowed as a index.
+//! Implementations to get information about a [`PolyOverQ`].
 
 use super::PolyOverQ;
 use crate::{error::MathError, rational::Q, traits::GetCoefficient, utils::index::evaluate_index};
@@ -75,7 +74,7 @@ mod test_get_coeff {
     };
     use std::str::FromStr;
 
-    /// ensure that `0` is returned if the provided index is not yet set
+    /// Ensure that `0` is returned if the provided index is not yet set
     #[test]
     fn index_out_of_range() {
         let poly = PolyOverQ::from_str("4  0 1 2/3 3/2").unwrap();
@@ -85,7 +84,7 @@ mod test_get_coeff {
         assert_eq!(Q::from_str("0/1").unwrap(), zero_coeff)
     }
 
-    /// test if indices smaller than `0` return an error
+    /// Test if indices smaller than `0` return an error
     #[test]
     fn index_too_small() {
         let poly = PolyOverQ::default();
@@ -93,7 +92,7 @@ mod test_get_coeff {
         assert!(poly.get_coeff(-1).is_err());
     }
 
-    /// tests if negative coefficients are returned correctly
+    /// Tests if negative coefficients are returned correctly
     #[test]
     fn negative_coeff() {
         let poly = PolyOverQ::from_str("4  0 1 2/3 -3/2").unwrap();
@@ -103,7 +102,7 @@ mod test_get_coeff {
         assert_eq!(Q::from_str("-3/2").unwrap(), coeff)
     }
 
-    /// tests if positive coefficients are returned correctly
+    /// Tests if positive coefficients are returned correctly
     #[test]
     fn positive_coeff() {
         let poly = PolyOverQ::from_str("4  0 1 2/3 -3/2").unwrap();
@@ -113,7 +112,7 @@ mod test_get_coeff {
         assert_eq!(Q::from_str("2/3").unwrap(), coeff)
     }
 
-    /// tests if large coefficients are returned correctly
+    /// Tests if large coefficients are returned correctly
     #[test]
     fn large_coeff() {
         let q_str = format!("-{}/{}", u64::MAX, i64::MIN,);
@@ -127,7 +126,7 @@ mod test_get_coeff {
         );
     }
 
-    /// tests if large negative coefficients are returned correctly
+    /// Tests if large negative coefficients are returned correctly
     #[test]
     fn large_coeff_neg() {
         let q_str = format!("{}/{}", u64::MAX, i64::MIN,);
@@ -144,11 +143,10 @@ mod test_get_coeff {
 
 #[cfg(test)]
 mod test_get_degree {
-
     use crate::rational::PolyOverQ;
     use std::str::FromStr;
 
-    /// ensure that degree is working
+    /// Ensure that degree is working
     #[test]
     fn degree() {
         let poly = PolyOverQ::from_str("4  -12/7 1 2/9 3/7").unwrap();
@@ -158,7 +156,7 @@ mod test_get_degree {
         assert_eq!(3, deg);
     }
 
-    /// ensure that degree is working for constant polynomials
+    /// Ensure that degree is working for constant polynomials
     #[test]
     fn degree_constant() {
         let poly1 = PolyOverQ::from_str("1  1/8").unwrap();
@@ -171,7 +169,7 @@ mod test_get_degree {
         assert_eq!(-1, deg2);
     }
 
-    /// ensure that degree is working for polynomials with leading 0 coefficients
+    /// Ensure that degree is working for polynomials with leading 0 coefficients
     #[test]
     fn degree_leading_zeros() {
         let poly = PolyOverQ::from_str("4  1/127 0 0 0").unwrap();

@@ -31,7 +31,7 @@ use std::fmt::Display;
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
 /// either the index is negative or it does not fit into an [`i64`].
-pub fn evaluate_index<S: TryInto<i64> + Display>(index: S) -> Result<i64, MathError> {
+pub fn evaluate_index(index: impl TryInto<i64> + Display) -> Result<i64, MathError> {
     // the index must fit into an [`i64`]
 
     let index: i64 = if cfg!(debug_assertions) {
@@ -69,6 +69,36 @@ pub fn evaluate_index<S: TryInto<i64> + Display>(index: S) -> Result<i64, MathEr
     Ok(index)
 }
 
+/// Converts index1 and index2 into [`i64`] that must be greater than `0` and must fit into
+/// an [`i64`].
+///
+/// Parameters:
+/// - `index1`: the first index that has to be converted into an [`i64`].
+/// - `index2`: the second index that has to be converted into an [`i64`].
+///
+/// Returns an [`i64`] representation of index1 and index2 or an error, if the
+/// indices do not fulfill all conditions.
+///
+/// # Examples
+/// ```
+/// use qfall_math::utils::index::evaluate_indices;
+///
+/// let (index1, index2) = evaluate_indices(u32::MAX, 3).unwrap();
+/// ```
+///
+/// # Errors and Failures
+/// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
+/// either the index is negative or it does not fit into an [`i64`].
+pub fn evaluate_indices(
+    index1: impl TryInto<i64> + Display,
+    index2: impl TryInto<i64> + Display,
+) -> Result<(i64, i64), MathError> {
+    let row_i64 = evaluate_index(index1)?;
+    let column_i64 = evaluate_index(index2)?;
+
+    Ok((row_i64, column_i64))
+}
+
 /// Evaluates whether the provided row and column are referencing an entry in a matrix.
 ///
 /// Parameters:
@@ -82,7 +112,7 @@ pub fn evaluate_index<S: TryInto<i64> + Display>(index: S) -> Result<i64, MathEr
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
 /// if the number of rows or columns is greater than the matrix or negative.
-pub(crate) fn evaluate_indices<S: GetNumRows + GetNumColumns>(
+pub fn evaluate_indices_for_matrix<S: GetNumRows + GetNumColumns>(
     matrix: &S,
     row: impl TryInto<i64> + Display,
     column: impl TryInto<i64> + Display,
@@ -105,17 +135,16 @@ pub(crate) fn evaluate_indices<S: GetNumRows + GetNumColumns>(
 
 #[cfg(test)]
 mod test_eval_index {
-
     use super::evaluate_index;
     use crate::integer::Z;
 
-    /// tests that negative indices are not accepted
+    /// Tests that negative indices are not accepted
     #[test]
     fn is_err_negative() {
         assert!(evaluate_index(i32::MIN).is_err())
     }
 
-    /// tests that the function can be called with several types
+    /// Tests that the function can be called with several types
     #[test]
     fn is_ok_several_types() {
         assert!(evaluate_index(i8::MAX).is_ok());
@@ -129,7 +158,7 @@ mod test_eval_index {
         assert!(evaluate_index(&Z::from(10)).is_ok());
     }
 
-    /// ensure that integers which can not be converted to an [`i64`]
+    /// Ensure that integers which can not be converted to an [`i64`]
     /// are not accepted
     #[test]
     fn does_not_fit() {
@@ -139,48 +168,47 @@ mod test_eval_index {
 
 #[cfg(test)]
 mod test_eval_indices {
-
-    use super::evaluate_indices;
+    use super::evaluate_indices_for_matrix;
     use crate::integer::MatZ;
 
-    /// tests that negative indices are not accepted
+    /// Tests that negative indices are not accepted
     #[test]
     fn is_err_negative() {
         let matrix = MatZ::new(3, 3).unwrap();
-        assert!(evaluate_indices(&matrix, i32::MIN, 3).is_err())
+        assert!(evaluate_indices_for_matrix(&matrix, i32::MIN, 3).is_err())
     }
 
-    /// tests that the function can be called with several types
+    /// Tests that the function can be called with several types
     #[test]
     fn is_ok_several_types() {
         let matrix = MatZ::new(i16::MAX, u8::MAX).unwrap();
 
-        assert!(evaluate_indices(&matrix, 3i8, 0).is_ok());
-        assert!(evaluate_indices(&matrix, 3i16, 0).is_ok());
-        assert!(evaluate_indices(&matrix, 3i32, 0).is_ok());
-        assert!(evaluate_indices(&matrix, 3i64, 0).is_ok());
-        assert!(evaluate_indices(&matrix, 3u8, 0).is_ok());
-        assert!(evaluate_indices(&matrix, 3u16, 0).is_ok());
-        assert!(evaluate_indices(&matrix, 3u32, 0).is_ok());
-        assert!(evaluate_indices(&matrix, 3u64, 0).is_ok());
+        assert!(evaluate_indices_for_matrix(&matrix, 3i8, 0).is_ok());
+        assert!(evaluate_indices_for_matrix(&matrix, 3i16, 0).is_ok());
+        assert!(evaluate_indices_for_matrix(&matrix, 3i32, 0).is_ok());
+        assert!(evaluate_indices_for_matrix(&matrix, 3i64, 0).is_ok());
+        assert!(evaluate_indices_for_matrix(&matrix, 3u8, 0).is_ok());
+        assert!(evaluate_indices_for_matrix(&matrix, 3u16, 0).is_ok());
+        assert!(evaluate_indices_for_matrix(&matrix, 3u32, 0).is_ok());
+        assert!(evaluate_indices_for_matrix(&matrix, 3u64, 0).is_ok());
 
-        assert!(evaluate_indices(&matrix, 0, 3i8).is_ok());
-        assert!(evaluate_indices(&matrix, 0, 3i16).is_ok());
-        assert!(evaluate_indices(&matrix, 0, 3i32).is_ok());
-        assert!(evaluate_indices(&matrix, 0, 3i64).is_ok());
-        assert!(evaluate_indices(&matrix, 0, 3u8).is_ok());
-        assert!(evaluate_indices(&matrix, 0, 3u16).is_ok());
-        assert!(evaluate_indices(&matrix, 0, 3u32).is_ok());
-        assert!(evaluate_indices(&matrix, 0, 3u64).is_ok());
+        assert!(evaluate_indices_for_matrix(&matrix, 0, 3i8).is_ok());
+        assert!(evaluate_indices_for_matrix(&matrix, 0, 3i16).is_ok());
+        assert!(evaluate_indices_for_matrix(&matrix, 0, 3i32).is_ok());
+        assert!(evaluate_indices_for_matrix(&matrix, 0, 3i64).is_ok());
+        assert!(evaluate_indices_for_matrix(&matrix, 0, 3u8).is_ok());
+        assert!(evaluate_indices_for_matrix(&matrix, 0, 3u16).is_ok());
+        assert!(evaluate_indices_for_matrix(&matrix, 0, 3u32).is_ok());
+        assert!(evaluate_indices_for_matrix(&matrix, 0, 3u64).is_ok());
     }
 
-    /// ensure that integers which can not be converted to an [`i64`]
+    /// Ensure that integers which can not be converted to an [`i64`]
     /// are not accepted
     #[test]
     fn does_not_fit() {
         let matrix = MatZ::new(3, 3).unwrap();
 
-        assert!(evaluate_indices(&matrix, u64::MAX, 0).is_err());
-        assert!(evaluate_indices(&matrix, 0, u64::MAX).is_err());
+        assert!(evaluate_indices_for_matrix(&matrix, u64::MAX, 0).is_err());
+        assert!(evaluate_indices_for_matrix(&matrix, 0, u64::MAX).is_err());
     }
 }

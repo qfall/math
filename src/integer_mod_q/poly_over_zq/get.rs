@@ -6,8 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementations to get coefficients of a [`PolyOverZq`].
-//! Each reasonable type should be allowed as a index.
+//! Implementations to get information about a [`PolyOverZq`] polynomial.
 
 use super::PolyOverZq;
 use crate::{
@@ -116,14 +115,13 @@ impl PolyOverZq {
 // since get_coefficient for [`Z`] is called, where we will check the value itself
 #[cfg(test)]
 mod test_get_coeff_zq_modulus {
-
     use crate::{
         integer_mod_q::{Modulus, PolyOverZq, Zq},
         traits::GetCoefficient,
     };
     use std::str::FromStr;
 
-    /// ensure that the [`Modulus`] is transferred correctly when accessing an index out of bounds
+    /// Ensure that the [`Modulus`] is transferred correctly when accessing an index out of bounds
     #[test]
     fn index_out_of_range_modulus() {
         let modulus_str = format!("17{}", u64::MAX);
@@ -136,7 +134,7 @@ mod test_get_coeff_zq_modulus {
         assert_eq!(modulus, zero_coeff.modulus)
     }
 
-    /// ensure that the [`Modulus`] is transferred correctly when accessing an index in bounds
+    /// Ensure that the [`Modulus`] is transferred correctly when accessing an index in bounds
     #[test]
     fn index_in_range_modulus() {
         let modulus_str = format!("17{}", u64::MAX);
@@ -155,7 +153,7 @@ mod test_get_coeff_z {
     use crate::{integer::Z, integer_mod_q::PolyOverZq, traits::GetCoefficient};
     use std::str::FromStr;
 
-    /// ensure that `0` is returned if the provided index is not yet set
+    /// Ensure that `0` is returned if the provided index is not yet set
     #[test]
     fn index_out_of_range() {
         let modulus_str = format!("17{}", u64::MAX);
@@ -167,7 +165,7 @@ mod test_get_coeff_z {
         assert_eq!(Z::ZERO, zero_coeff)
     }
 
-    /// tests if positive coefficients are returned correctly
+    /// Tests if positive coefficients are returned correctly
     #[test]
     fn positive_coeff() {
         let modulus_str = format!("17{}", u64::MAX);
@@ -179,7 +177,7 @@ mod test_get_coeff_z {
         assert_eq!(Z::from(2), coeff)
     }
 
-    /// tests if large coefficients are returned correctly
+    /// Tests if large coefficients are returned correctly
     #[test]
     fn large_coeff() {
         let modulus_str = format!("17{}", u64::MAX);
@@ -190,7 +188,7 @@ mod test_get_coeff_z {
         assert_eq!(Z::from(i64::MAX), poly.get_coeff(1).unwrap());
     }
 
-    /// tests if large negative coefficients are returned correctly
+    /// Tests if large negative coefficients are returned correctly
     #[test]
     fn large_modulus_applied_negative_large_coefficient() {
         let modulus_str = format!("{}", u64::MAX);
@@ -204,11 +202,10 @@ mod test_get_coeff_z {
 
 #[cfg(test)]
 mod test_get_degree {
-
     use crate::integer_mod_q::PolyOverZq;
     use std::str::FromStr;
 
-    /// ensure that degree is working
+    /// Ensure that degree is working
     #[test]
     fn degree() {
         let poly = PolyOverZq::from_str("4  0 1 2 3 mod 7").unwrap();
@@ -218,7 +215,7 @@ mod test_get_degree {
         assert_eq!(3, deg);
     }
 
-    /// ensure that degree is working for constant polynomials
+    /// Ensure that degree is working for constant polynomials
     #[test]
     fn degree_constant() {
         let poly1 = PolyOverZq::from_str("1  1 mod 19").unwrap();
@@ -231,7 +228,7 @@ mod test_get_degree {
         assert_eq!(-1, deg2);
     }
 
-    /// ensure that degree is working for polynomials with leading 0 coefficients
+    /// Ensure that degree is working for polynomials with leading 0 coefficients
     #[test]
     fn degree_leading_zeros() {
         let poly = PolyOverZq::from_str("4  1 0 0 0 mod 199").unwrap();
@@ -241,7 +238,7 @@ mod test_get_degree {
         assert_eq!(0, deg);
     }
 
-    /// ensure that degree is working for polynomials with many coefficients
+    /// Ensure that degree is working for polynomials with many coefficients
     /// flint does not reduce the exponent due to computational cost
     #[test]
     fn degree_many_coefficients() {

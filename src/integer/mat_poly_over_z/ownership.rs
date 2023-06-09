@@ -146,7 +146,6 @@ mod test_clone {
 /// Test that the [`Drop`] trait is correctly implemented.
 #[cfg(test)]
 mod test_drop {
-
     use super::MatPolyOverZ;
     use std::{collections::HashSet, str::FromStr};
 

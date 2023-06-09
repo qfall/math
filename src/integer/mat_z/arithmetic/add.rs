@@ -97,11 +97,10 @@ arithmetic_trait_mixed_borrowed_owned!(Add, add, MatZ, MatZ, MatZ);
 
 #[cfg(test)]
 mod test_add {
-
     use super::MatZ;
     use std::str::FromStr;
 
-    /// testing addition for two [`MatZ`]
+    /// Testing addition for two [`MatZ`]
     #[test]
     fn add() {
         let a: MatZ = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();
@@ -110,7 +109,7 @@ mod test_add {
         assert_eq!(c, MatZ::from_str("[[2, 4, 6],[6, 0, 10]]").unwrap());
     }
 
-    /// testing addition for two borrowed [`MatZ`]
+    /// Testing addition for two borrowed [`MatZ`]
     #[test]
     fn add_borrow() {
         let a: MatZ = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();
@@ -119,7 +118,7 @@ mod test_add {
         assert_eq!(c, MatZ::from_str("[[2, 4, 6],[6, 0, 10]]").unwrap());
     }
 
-    /// testing addition for borrowed [`MatZ`] and [`MatZ`]
+    /// Testing addition for borrowed [`MatZ`] and [`MatZ`]
     #[test]
     fn add_first_borrowed() {
         let a: MatZ = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();
@@ -128,7 +127,7 @@ mod test_add {
         assert_eq!(c, MatZ::from_str("[[2, 4, 6],[6, 0, 10]]").unwrap());
     }
 
-    /// testing addition for [`MatZ`] and borrowed [`MatZ`]
+    /// Testing addition for [`MatZ`] and borrowed [`MatZ`]
     #[test]
     fn add_second_borrowed() {
         let a: MatZ = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();
@@ -137,7 +136,7 @@ mod test_add {
         assert_eq!(c, MatZ::from_str("[[2, 4, 6],[6, 0, 10]]").unwrap());
     }
 
-    /// testing addition for big numbers
+    /// Testing addition for big numbers
     #[test]
     fn add_large_numbers() {
         let a: MatZ =
@@ -156,7 +155,7 @@ mod test_add {
         );
     }
 
-    /// testing add_safe
+    /// Testing add_safe
     #[test]
     fn add_safe() {
         let a: MatZ = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();
@@ -168,7 +167,7 @@ mod test_add {
         );
     }
 
-    /// testing add_safe throws error
+    /// Testing add_safe throws error
     #[test]
     fn add_safe_is_err() {
         let a: MatZ = MatZ::from_str("[[1, 2],[3, 4]]").unwrap();

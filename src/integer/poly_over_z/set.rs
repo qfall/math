@@ -6,8 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementations to set coefficients for a [`PolyOverZ`] value from other types.
-//! Each reasonable type should be used to set a coefficient.
+//! Implementations to manipulate a [`PolyOverZ`] polynomial.
 
 use super::PolyOverZ;
 use crate::{
@@ -31,6 +30,10 @@ impl SetCoefficient<&Z> for PolyOverZ {
     /// Parameters:
     /// - `index`: the index of the coefficient to set (has to be positive)
     /// - `value`: the new value the index should have from a borrowed [`Z`].
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if either the index is negative
+    /// or it does not fit into an [`i64`].
     ///
     /// # Examples
     /// ```
@@ -67,14 +70,13 @@ implement_for_owned!(Z, PolyOverZ, SetCoefficient);
 
 #[cfg(test)]
 mod test_set_coeff {
-
     use crate::{
         integer::{PolyOverZ, Z},
         traits::SetCoefficient,
     };
     use std::str::FromStr;
 
-    /// ensure that the negative indices return an error
+    /// Ensure that the negative indices return an error
     #[test]
     fn set_min_negative_coeff() {
         let mut poly = PolyOverZ::from_str("2  1 1").unwrap();
@@ -85,7 +87,7 @@ mod test_set_coeff {
         assert!(poly.set_coeff(i8::MIN, 2).is_err());
     }
 
-    /// ensure that coefficients up to 2^15 -1 work
+    /// Ensure that coefficients up to 2^15 -1 work
     #[test]
     fn set_max_coeff() {
         let mut poly = PolyOverZ::from_str("2  1 1").unwrap();
@@ -94,7 +96,7 @@ mod test_set_coeff {
         assert!(poly.set_coeff(i16::MAX, 2).is_ok());
     }
 
-    /// ensure that the max of [`u8`] and [`u16`] works as a coefficient
+    /// Ensure that the max of [`u8`] and [`u16`] works as a coefficient
     #[test]
     fn set_unsigned_coeff() {
         let mut poly = PolyOverZ::from_str("2  1 1").unwrap();
@@ -103,7 +105,7 @@ mod test_set_coeff {
         assert!(poly.set_coeff(u16::MAX, 2).is_ok());
     }
 
-    /// ensure that a general case is working
+    /// Ensure that a general case is working
     #[test]
     fn set_coeff_working() {
         let mut poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
@@ -114,7 +116,7 @@ mod test_set_coeff {
         assert_eq!(PolyOverZ::from_str("6  10000 1 2 3 0 10000").unwrap(), poly);
     }
 
-    /// ensure that the correct coefficient is set and all others are set to `0`
+    /// Ensure that the correct coefficient is set and all others are set to `0`
     #[test]
     fn set_coeff_rest_zero() {
         let mut poly = PolyOverZ::default();
@@ -123,7 +125,7 @@ mod test_set_coeff {
         assert_eq!(PolyOverZ::from_str("5  0 0 0 0 -10").unwrap(), poly);
     }
 
-    /// ensure that setting with a z works
+    /// Ensure that setting with a z works
     #[test]
     fn set_coeff_z() {
         let mut poly = PolyOverZ::default();

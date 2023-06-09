@@ -52,11 +52,10 @@ arithmetic_trait_mixed_borrowed_owned!(Sub, sub, PolyOverZ, PolyOverZ, PolyOverZ
 
 #[cfg(test)]
 mod test_sub {
-
     use super::PolyOverZ;
     use std::str::FromStr;
 
-    /// testing subtraction for two [`PolyOverZ`]
+    /// Testing subtraction for two [`PolyOverZ`]
     #[test]
     fn sub() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
@@ -65,7 +64,7 @@ mod test_sub {
         assert_eq!(c, PolyOverZ::from_str("5  0 0 -8 -1 -2").unwrap());
     }
 
-    /// testing subtraction for two borrowed [`PolyOverZ`]
+    /// Testing subtraction for two borrowed [`PolyOverZ`]
     #[test]
     fn sub_borrow() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
@@ -74,7 +73,7 @@ mod test_sub {
         assert_eq!(c, PolyOverZ::from_str("5  0 0 -8 -1 -2").unwrap());
     }
 
-    /// testing subtraction for borrowed [`PolyOverZ`] and [`PolyOverZ`]
+    /// Testing subtraction for borrowed [`PolyOverZ`] and [`PolyOverZ`]
     #[test]
     fn sub_first_borrowed() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
@@ -83,7 +82,7 @@ mod test_sub {
         assert_eq!(c, PolyOverZ::from_str("5  0 0 -8 -1 -2").unwrap());
     }
 
-    /// testing subtraction for [`PolyOverZ`] and borrowed [`PolyOverZ`]
+    /// Testing subtraction for [`PolyOverZ`] and borrowed [`PolyOverZ`]
     #[test]
     fn sub_second_borrowed() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
@@ -92,7 +91,7 @@ mod test_sub {
         assert_eq!(c, PolyOverZ::from_str("5  0 0 -8 -1 -2").unwrap());
     }
 
-    /// testing subtraction with eliminating coefficients
+    /// Testing subtraction with eliminating coefficients
     #[test]
     fn sub_eliminating_coefficients() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
@@ -101,7 +100,7 @@ mod test_sub {
         assert_eq!(c, PolyOverZ::default());
     }
 
-    /// testing subtraction for large [`PolyOverZ`]
+    /// Testing subtraction for large [`PolyOverZ`]
     #[test]
     fn sub_large_numbers() {
         let a: PolyOverZ =

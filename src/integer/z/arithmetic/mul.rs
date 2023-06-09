@@ -127,7 +127,7 @@ impl Mul<&Zq> for &Z {
                 &mut out,
                 &other.value.value,
                 &self.value,
-                &*other.modulus.modulus,
+                other.modulus.get_fmpz_mod_ctx_struct(),
             );
         }
         Zq {
@@ -142,11 +142,10 @@ arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Z, Zq, Zq);
 
 #[cfg(test)]
 mod test_mul_between_types {
-
     use crate::integer::Z;
     use std::str::FromStr;
 
-    /// testing multiplication between different types
+    /// Testing multiplication between different types
     #[test]
     #[allow(clippy::op_ref)]
     fn mul() {
@@ -236,10 +235,9 @@ mod test_mul_between_types {
 
 #[cfg(test)]
 mod test_mul {
-
     use super::Z;
 
-    /// testing multiplication for two [`Z`]
+    /// Testing multiplication for two [`Z`]
     #[test]
     fn mul() {
         let a: Z = Z::from(42);
@@ -248,7 +246,7 @@ mod test_mul {
         assert_eq!(c, Z::from(168));
     }
 
-    /// testing multiplication for two borrowed [`Z`]
+    /// Testing multiplication for two borrowed [`Z`]
     #[test]
     fn mul_borrow() {
         let a: Z = Z::from(42);
@@ -257,7 +255,7 @@ mod test_mul {
         assert_eq!(c, Z::from(168));
     }
 
-    /// testing multiplication for borrowed [`Z`] and [`Z`]
+    /// Testing multiplication for borrowed [`Z`] and [`Z`]
     #[test]
     fn mul_first_borrowed() {
         let a: Z = Z::from(42);
@@ -266,7 +264,7 @@ mod test_mul {
         assert_eq!(c, Z::from(168));
     }
 
-    /// testing multiplication for [`Z`] and borrowed [`Z`]
+    /// Testing multiplication for [`Z`] and borrowed [`Z`]
     #[test]
     fn mul_second_borrowed() {
         let a: Z = Z::from(42);
@@ -275,7 +273,7 @@ mod test_mul {
         assert_eq!(c, Z::from(168));
     }
 
-    /// testing multiplication for big [`Z`]
+    /// Testing multiplication for big [`Z`]
     #[test]
     fn mul_large_numbers() {
         let a: Z = Z::from(i64::MAX);
@@ -293,11 +291,10 @@ mod test_mul {
 
 #[cfg(test)]
 mod test_mul_between_z_and_zq {
-
     use super::Z;
     use crate::integer_mod_q::Zq;
 
-    /// testing multiplication for [`Z`] and [`Zq`]
+    /// Testing multiplication for [`Z`] and [`Zq`]
     #[test]
     fn mul() {
         let a: Z = Z::from(9);
@@ -306,7 +303,7 @@ mod test_mul_between_z_and_zq {
         assert_eq!(c, Zq::try_from((3, 11)).unwrap());
     }
 
-    /// testing multiplication for both borrowed [`Z`] and [`Zq`]
+    /// Testing multiplication for both borrowed [`Z`] and [`Zq`]
     #[test]
     fn mul_borrow() {
         let a: Z = Z::from(9);
@@ -315,7 +312,7 @@ mod test_mul_between_z_and_zq {
         assert_eq!(c, Zq::try_from((3, 11)).unwrap());
     }
 
-    /// testing multiplication for borrowed [`Z`] and [`Zq`]
+    /// Testing multiplication for borrowed [`Z`] and [`Zq`]
     #[test]
     fn mul_first_borrowed() {
         let a: Z = Z::from(9);
@@ -324,7 +321,7 @@ mod test_mul_between_z_and_zq {
         assert_eq!(c, Zq::try_from((3, 11)).unwrap());
     }
 
-    /// testing multiplication for [`Z`] and borrowed [`Zq`]
+    /// Testing multiplication for [`Z`] and borrowed [`Zq`]
     #[test]
     fn mul_second_borrowed() {
         let a: Z = Z::from(9);
@@ -333,7 +330,7 @@ mod test_mul_between_z_and_zq {
         assert_eq!(c, Zq::try_from((3, 11)).unwrap());
     }
 
-    /// testing multiplication for big numbers
+    /// Testing multiplication for big numbers
     #[test]
     fn mul_large_numbers() {
         let a: Z = Z::from(u64::MAX);
@@ -357,12 +354,11 @@ mod test_mul_between_z_and_zq {
 
 #[cfg(test)]
 mod test_mul_between_z_and_q {
-
     use super::Z;
     use crate::rational::Q;
     use std::str::FromStr;
 
-    /// testing multiplication for [`Z`] and [`Q`]
+    /// Testing multiplication for [`Z`] and [`Q`]
     #[test]
     fn mul() {
         let a: Z = Z::from(4);
@@ -371,7 +367,7 @@ mod test_mul_between_z_and_q {
         assert_eq!(c, Q::from_str("20/7").unwrap());
     }
 
-    /// testing multiplication for both borrowed [`Z`] and [`Q`]
+    /// Testing multiplication for both borrowed [`Z`] and [`Q`]
     #[test]
     fn mul_borrow() {
         let a: Z = Z::from(4);
@@ -380,7 +376,7 @@ mod test_mul_between_z_and_q {
         assert_eq!(c, Q::from_str("20/7").unwrap());
     }
 
-    /// testing multiplication for borrowed [`Z`] and [`Q`]
+    /// Testing multiplication for borrowed [`Z`] and [`Q`]
     #[test]
     fn mul_first_borrowed() {
         let a: Z = Z::from(4);
@@ -389,7 +385,7 @@ mod test_mul_between_z_and_q {
         assert_eq!(c, Q::from_str("20/7").unwrap());
     }
 
-    /// testing multiplication for [`Z`] and borrowed [`Q`]
+    /// Testing multiplication for [`Z`] and borrowed [`Q`]
     #[test]
     fn mul_second_borrowed() {
         let a: Z = Z::from(4);
@@ -398,7 +394,7 @@ mod test_mul_between_z_and_q {
         assert_eq!(c, Q::from_str("20/7").unwrap());
     }
 
-    /// testing multiplication for big numbers
+    /// Testing multiplication for big numbers
     #[test]
     fn mul_large_numbers() {
         let a: Z = Z::from(u64::MAX);

@@ -33,7 +33,7 @@ impl Default for PolyOverZ {
     }
 }
 
-/// ensure that default initializes an empty polynomial
+/// Ensure that default initializes an empty polynomial
 #[cfg(test)]
 mod test_default {
     use crate::integer::PolyOverZ;

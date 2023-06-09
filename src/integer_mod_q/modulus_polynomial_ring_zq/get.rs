@@ -6,8 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementations to get content of a
-//! [`ModulusPolynomialRingZq].
+//! Implementations to get information about a [`ModulusPolynomialRingZq].
 
 use super::ModulusPolynomialRingZq;
 use flint_sys::fq::fq_ctx_struct;

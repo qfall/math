@@ -32,7 +32,7 @@ impl Mul<&Z> for &MatZ {
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use qfall_math::integer::Z;
-    ///  use std::str::FromStr;
+    /// use std::str::FromStr;
     ///
     /// let mat1 = MatZ::from_str("[[2,1],[1,2]]").unwrap();
     /// let integer = Z::from(3);
@@ -59,7 +59,6 @@ implement_for_others!(Z, MatZ, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
 
 #[cfg(test)]
 mod test_mul {
-
     use super::MatZ;
     use crate::integer::Z;
     use std::str::FromStr;

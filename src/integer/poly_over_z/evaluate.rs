@@ -83,12 +83,11 @@ implement_for_owned!(Q, Q, PolyOverZ, Evaluate);
 
 #[cfg(test)]
 mod test_evaluate_z {
-
     use crate::integer::{PolyOverZ, Z};
     use crate::traits::Evaluate;
     use std::str::FromStr;
 
-    /// tests if evaluate works for [`Z`] as input
+    /// Tests if evaluate works for [`Z`] as input
     #[test]
     fn eval_z() {
         let poly = PolyOverZ::from_str("2  1 2").unwrap();
@@ -98,7 +97,7 @@ mod test_evaluate_z {
         assert_eq!(Z::from(7), res)
     }
 
-    /// tests if evaluate with a reference works
+    /// Tests if evaluate with a reference works
     #[test]
     fn eval_z_ref() {
         let poly = PolyOverZ::from_str("2  1 2").unwrap();
@@ -108,7 +107,7 @@ mod test_evaluate_z {
         assert_eq!(Z::from(7), res)
     }
 
-    /// tests if evaluate works with negative values
+    /// Tests if evaluate works with negative values
     #[test]
     fn eval_z_negative() {
         let poly = PolyOverZ::from_str("2  1 2").unwrap();
@@ -118,7 +117,7 @@ mod test_evaluate_z {
         assert_eq!(Z::from(-9), res)
     }
 
-    /// tests if evaluate works with large integers
+    /// Tests if evaluate works with large integers
     #[test]
     fn eval_z_large() {
         let poly = PolyOverZ::from_str("2  1 2").unwrap();
@@ -130,7 +129,7 @@ mod test_evaluate_z {
         assert_eq!(Z::from_str(&res_cmp_str).unwrap(), res)
     }
 
-    /// test if evaluate works with max of [`i64`], [`i32`], ...
+    /// Test if evaluate works with max of [`i64`], [`i32`], ...
     #[test]
     fn eval_max() {
         let poly = PolyOverZ::from_str("2  1 2").unwrap();
@@ -148,7 +147,7 @@ mod test_evaluate_z {
         let _ = poly.evaluate(u8::MAX);
     }
 
-    /// test if evaluate works with min of [`i64`], [`i32`], ...
+    /// Test if evaluate works with min of [`i64`], [`i32`], ...
     #[test]
     fn eval_min() {
         let poly = PolyOverZ::from_str("2  1 2").unwrap();
@@ -172,7 +171,7 @@ mod test_evaluate_q {
     use crate::{integer::PolyOverZ, rational::Q, traits::Evaluate};
     use std::str::FromStr;
 
-    /// ensures that positive values return expected evaluation
+    /// Ensures that positive values return expected evaluation
     #[test]
     fn evaluate_positive() {
         let poly = PolyOverZ::from_str("2  1 3").unwrap();
@@ -185,7 +184,7 @@ mod test_evaluate_q {
         assert_eq!(res_ref, res);
     }
 
-    /// ensures that negative values return expected evaluation
+    /// Ensures that negative values return expected evaluation
     #[test]
     fn evaluate_negative() {
         let poly = PolyOverZ::from_str("2  1 3").unwrap();
@@ -198,7 +197,7 @@ mod test_evaluate_q {
         assert_eq!(res_ref, res);
     }
 
-    /// ensures that positive large values return expected evaluation
+    /// Ensures that positive large values return expected evaluation
     #[test]
     fn evaluate_large_positive() {
         let poly = PolyOverZ::from_str(&format!("2  {} 1", (u64::MAX - 1) / 2)).unwrap();
@@ -211,7 +210,7 @@ mod test_evaluate_q {
         assert_eq!(res_ref, res);
     }
 
-    /// ensures that negative large values return expected evaluation
+    /// Ensures that negative large values return expected evaluation
     #[test]
     fn evaluate_large_negative() {
         let poly = PolyOverZ::from_str(&format!("2  {} 2", u64::MAX)).unwrap();

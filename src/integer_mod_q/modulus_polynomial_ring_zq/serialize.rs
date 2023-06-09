@@ -29,7 +29,7 @@ mod test_serialize {
     use crate::integer_mod_q::ModulusPolynomialRingZq;
     use std::str::FromStr;
 
-    /// tests whether the serialization of a positive [`ModulusPolynomialRingZq`] works.
+    /// Tests whether the serialization of a positive [`ModulusPolynomialRingZq`] works.
     #[test]
     fn serialize_output_positive() {
         let poly_str = "2  17 42 mod 331";
@@ -39,7 +39,7 @@ mod test_serialize {
         assert_eq!(cmp_string, serde_json::to_string(&poly_z).unwrap())
     }
 
-    /// tests whether the serialization of a negative [`ModulusPolynomialRingZq`] works.
+    /// Tests whether the serialization of a negative [`ModulusPolynomialRingZq`] works.
     #[test]
     fn serialize_output_negative() {
         let poly_str = "3  -17 -42 1 mod 331";
@@ -49,7 +49,7 @@ mod test_serialize {
         assert_eq!(cmp_string, serde_json::to_string(&poly_z).unwrap())
     }
 
-    /// tests whether the serialization of a positive large [`ModulusPolynomialRingZq`] works.
+    /// Tests whether the serialization of a positive large [`ModulusPolynomialRingZq`] works.
     #[test]
     fn serialize_output_positive_large() {
         let poly_str = format!("3  1 {} 1 mod {}", u64::MAX, u64::MAX - 58);
@@ -59,7 +59,7 @@ mod test_serialize {
         assert_eq!(cmp_string, serde_json::to_string(&poly_z).unwrap())
     }
 
-    /// tests whether the serialization of a negative large [`ModulusPolynomialRingZq`] works.
+    /// Tests whether the serialization of a negative large [`ModulusPolynomialRingZq`] works.
     #[test]
     fn serialize_output_negative_large() {
         let poly_str = format!("3  1 -{} 1 mod {}", u64::MAX, u64::MAX - 58);
@@ -79,7 +79,7 @@ mod test_deserialize {
     use crate::integer_mod_q::ModulusPolynomialRingZq;
     use std::str::FromStr;
 
-    /// tests whether the deserialization of a positive [`ModulusPolynomialRingZq`] works.
+    /// Tests whether the deserialization of a positive [`ModulusPolynomialRingZq`] works.
     #[test]
     fn deserialize_positive() {
         let poly_str = "2  17 42 mod 331";
@@ -89,7 +89,7 @@ mod test_deserialize {
         assert_eq!(poly_z, serde_json::from_str(&cmp_string).unwrap())
     }
 
-    /// tests whether the deserialization of a negative [`ModulusPolynomialRingZq`] works.
+    /// Tests whether the deserialization of a negative [`ModulusPolynomialRingZq`] works.
     #[test]
     fn deserialize_negative() {
         let poly_str = "3  -17 -42 1 mod 331";
@@ -99,7 +99,7 @@ mod test_deserialize {
         assert_eq!(poly_z, serde_json::from_str(&cmp_string).unwrap())
     }
 
-    /// tests whether the deserialization of a positive large [`ModulusPolynomialRingZq`] works.
+    /// Tests whether the deserialization of a positive large [`ModulusPolynomialRingZq`] works.
     #[test]
     fn deserialize_positive_large() {
         let poly_str = format!("3  -17 {} 1 mod {}", u64::MAX, u64::MAX - 58);
@@ -109,7 +109,7 @@ mod test_deserialize {
         assert_eq!(poly_z, serde_json::from_str(&cmp_string).unwrap())
     }
 
-    /// tests whether the deserialization of a negative large [`ModulusPolynomialRingZq`] works.
+    /// Tests whether the deserialization of a negative large [`ModulusPolynomialRingZq`] works.
     #[test]
     fn deserialize_negative_large() {
         let poly_str = format!("3  -17 -{} 1 mod {}", u64::MAX, u64::MAX - 58);
@@ -119,7 +119,7 @@ mod test_deserialize {
         assert_eq!(poly_z, serde_json::from_str(&cmp_string).unwrap())
     }
 
-    /// tests whether deserialization of a non-prime large `q` [`ModulusPolynomialRingZq`] fails.
+    /// Tests whether deserialization of a non-prime large `q` [`ModulusPolynomialRingZq`] fails.
     #[test]
     fn non_prime_q() {
         let a: Result<ModulusPolynomialRingZq, serde_json::Error> =
@@ -127,7 +127,7 @@ mod test_deserialize {
         assert!(a.is_err());
     }
 
-    /// tests whether deserialization of a negative `q` [`ModulusPolynomialRingZq`] fails.
+    /// Tests whether deserialization of a negative `q` [`ModulusPolynomialRingZq`] fails.
     #[test]
     fn negative_q() {
         let a: Result<ModulusPolynomialRingZq, serde_json::Error> =
@@ -139,7 +139,7 @@ mod test_deserialize {
         assert!(b.is_err());
     }
 
-    /// tests whether no fields 'poly' provided yield an error [`ModulusPolynomialRingZq`] works.
+    /// Tests whether no fields 'poly' provided yield an error [`ModulusPolynomialRingZq`] works.
     #[test]
     fn no_field_value() {
         let a: Result<ModulusPolynomialRingZq, serde_json::Error> =
@@ -150,7 +150,7 @@ mod test_deserialize {
         assert!(b.is_err());
     }
 
-    /// tests whether too many fields yield an error
+    /// Tests whether too many fields yield an error
     #[test]
     fn too_many_fields() {
         let a: Result<ModulusPolynomialRingZq, serde_json::Error> = serde_json::from_str(

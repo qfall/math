@@ -72,19 +72,19 @@ mod test_sample_discrete_gauss {
         let z = Z::from(2);
         let q = Q::from(2);
 
-        let _ = Z::sample_discrete_gauss(&16u16, &7u8, &1u16);
-        let _ = Z::sample_discrete_gauss(&2u32, &7u16, &1u8);
-        let _ = Z::sample_discrete_gauss(&2u64, &7u32, &1u32);
-        let _ = Z::sample_discrete_gauss(&2i8, &7u64, &1u64);
-        let _ = Z::sample_discrete_gauss(&2i16, &7i8, &1i64);
-        let _ = Z::sample_discrete_gauss(&2i32, &7i16, &1i32);
-        let _ = Z::sample_discrete_gauss(&2i64, &7i32, &1i16);
-        let _ = Z::sample_discrete_gauss(&z, &7i64, &1i8);
-        let _ = Z::sample_discrete_gauss(&2u8, &q, &1i64);
-        let _ = Z::sample_discrete_gauss(&2, &0i8, &z);
-        let _ = Z::sample_discrete_gauss(&2, &z, &q);
-        let _ = Z::sample_discrete_gauss(&2, 1f32, 1f64);
-        let _ = Z::sample_discrete_gauss(&2, 1f64, 1f32);
+        let _ = Z::sample_discrete_gauss(16u16, 7u8, 1u16);
+        let _ = Z::sample_discrete_gauss(2u32, 7u16, 1u8);
+        let _ = Z::sample_discrete_gauss(2u64, 7u32, 1u32);
+        let _ = Z::sample_discrete_gauss(2i8, 7u64, 1u64);
+        let _ = Z::sample_discrete_gauss(2i16, 7i8, 1i64);
+        let _ = Z::sample_discrete_gauss(2i32, 7i16, 1i32);
+        let _ = Z::sample_discrete_gauss(2i64, 7i32, 1i16);
+        let _ = Z::sample_discrete_gauss(&z, 7i64, 1i8);
+        let _ = Z::sample_discrete_gauss(2u8, &q, 1i64);
+        let _ = Z::sample_discrete_gauss(2, 0i8, &z);
+        let _ = Z::sample_discrete_gauss(2, &z, &q);
+        let _ = Z::sample_discrete_gauss(2, 1f32, 1f64);
+        let _ = Z::sample_discrete_gauss(2, 1f64, 1f32);
     }
 
     /// Roughly checks the collected samples are distributed
@@ -97,16 +97,16 @@ mod test_sample_discrete_gauss {
         let mut counts = [0; 20];
         // count sampled instances
         for _ in 0..200 {
-            let sample = Z::sample_discrete_gauss(&1024, &10, &2).unwrap();
+            let sample = Z::sample_discrete_gauss(1024, 10, 2).unwrap();
             let sample_int = i64::try_from(&sample).unwrap() as usize;
             counts[sample_int] += 1;
         }
 
         let expl_text = String::from("This test can fail with probability close to 0. 
-        It fails if the sampled occurences do not look like a typical discrete Gaussian random distribution. 
+        It fails if the sampled occurrences do not look like a typical discrete Gaussian random distribution. 
         If this happens, rerun the tests several times and check whether this issue comes up again.");
 
-        // Check that the sampled occurences roughly look
+        // Check that the sampled occurrences roughly look
         // like a discrete Gaussian distriubtion
         assert!(counts[10] > 70, "{}", expl_text);
         assert!(counts[10] < 130, "{}", expl_text);
@@ -116,11 +116,11 @@ mod test_sample_discrete_gauss {
         assert!(counts[11] < 70, "{}", expl_text);
         assert!(counts[8] < 20, "{}", expl_text);
         assert!(counts[12] < 20, "{}", expl_text);
-        for i in 0..8 {
-            assert!(counts[i] < 10, "{}", expl_text);
+        for count in counts.iter().take(8) {
+            assert!(count < &10, "{}", expl_text);
         }
-        for i in 13..20 {
-            assert!(counts[i] < 10, "{}", expl_text);
+        for count in counts.iter().skip(13) {
+            assert!(count < &10, "{}", expl_text);
         }
     }
 }

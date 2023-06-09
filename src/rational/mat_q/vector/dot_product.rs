@@ -81,7 +81,6 @@ impl MatQ {
 
 #[cfg(test)]
 mod test_dot_product {
-
     use super::{MatQ, Q};
     use std::str::FromStr;
 

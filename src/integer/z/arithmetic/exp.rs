@@ -41,7 +41,7 @@ mod test_exp {
     use crate::{integer::Z, rational::Q};
     use std::str::FromStr;
 
-    /// ensure that `0` is returned if the length `0` is provided
+    /// Ensure that `0` is returned if the length `0` is provided
     #[test]
     fn zero_length() {
         let z = Z::from(17);
@@ -49,7 +49,7 @@ mod test_exp {
         assert_eq!(Q::default(), z.exp_taylor(0_u32));
     }
 
-    /// test correct evaluation for some explicit values
+    /// Test correct evaluation for some explicit values
     #[test]
     fn ten_length_value() {
         assert_eq!(

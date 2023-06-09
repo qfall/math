@@ -85,12 +85,11 @@ implement_for_owned!(Q, Q, PolyOverQ, Evaluate);
 // implemented.
 #[cfg(test)]
 mod test_evaluate {
-
     use crate::rational::{PolyOverQ, Q};
     use crate::traits::Evaluate;
     use std::str::FromStr;
 
-    /// tests if evaluate works for [`Q`] as input
+    /// Tests if evaluate works for [`Q`] as input
     #[test]
     fn eval_q_working() {
         let poly = PolyOverQ::from_str("2  1 2/7").unwrap();
@@ -100,7 +99,7 @@ mod test_evaluate {
         assert_eq!(Q::from_str("5/3").unwrap(), res)
     }
 
-    /// tests if evaluate works with negative values
+    /// Tests if evaluate works with negative values
     #[test]
     fn eval_q_negative() {
         let poly = PolyOverQ::from_str("2  1 2/7").unwrap();
@@ -110,7 +109,7 @@ mod test_evaluate {
         assert_eq!(Q::from_str("1/3").unwrap(), res)
     }
 
-    /// tests if evaluate works with large rationals
+    /// Tests if evaluate works with large rationals
     #[test]
     fn eval_q_large() {
         let q_str = format!("{}/{}", u64::MAX, i64::MIN,);
@@ -131,7 +130,7 @@ mod test_evaluate_z {
     use crate::traits::Evaluate;
     use std::str::FromStr;
 
-    /// tests if evaluate works for [`Z`] as input
+    /// Tests if evaluate works for [`Z`] as input
     #[test]
     fn eval_z_working() {
         let poly = PolyOverQ::from_str("2  1 2/7").unwrap();
@@ -141,7 +140,7 @@ mod test_evaluate_z {
         assert_eq!(Q::from_str("13/7").unwrap(), res)
     }
 
-    /// tests if evaluate works with negative values
+    /// Tests if evaluate works with negative values
     #[test]
     fn eval_z_negative() {
         let poly = PolyOverQ::from_str("2  1 2/7").unwrap();
@@ -151,7 +150,7 @@ mod test_evaluate_z {
         assert_eq!(Q::from_str("-3/7").unwrap(), res)
     }
 
-    /// test if evaluate works with large nominators and denominators
+    /// Test if evaluate works with large nominators and denominators
     #[test]
     fn eval_large_nom_denom_large_ref_z() {
         let q_str = format!("{}/{}", u64::MAX, i64::MIN,);
@@ -163,7 +162,7 @@ mod test_evaluate_z {
         assert_eq!(Q::default(), res)
     }
 
-    /// test if evaluate works with max of [`i64`], [`i32`], ...
+    /// Test if evaluate works with max of [`i64`], [`i32`], ...
     #[test]
     fn eval_max() {
         let poly = PolyOverQ::from_str("2  1/7 2/3").unwrap();
@@ -181,7 +180,7 @@ mod test_evaluate_z {
         let _ = poly.evaluate(u8::MAX);
     }
 
-    /// test if evaluate works with min of [`i64`], [`i32`], ...
+    /// Test if evaluate works with min of [`i64`], [`i32`], ...
     #[test]
     fn eval_min() {
         let poly = PolyOverQ::from_str("2  1/7 2/3").unwrap();
@@ -208,7 +207,7 @@ mod test_evaluate_q {
     };
     use std::str::FromStr;
 
-    /// tests if evaluate works for [`Q`] as input
+    /// Tests if evaluate works for [`Q`] as input
     #[test]
     fn eval_q_working() {
         let poly = PolyOverQ::from_str("2  1 2/7").unwrap();
@@ -218,7 +217,7 @@ mod test_evaluate_q {
         assert_eq!(Q::from_str("5/3").unwrap(), res)
     }
 
-    /// tests if evaluate works with negative values
+    /// Tests if evaluate works with negative values
     #[test]
     fn eval_q_negative() {
         let poly = PolyOverQ::from_str("2  1 2/7").unwrap();
@@ -228,7 +227,7 @@ mod test_evaluate_q {
         assert_eq!(Q::from_str("1/3").unwrap(), res)
     }
 
-    /// tests if evaluate works with large rationals
+    /// Tests if evaluate works with large rationals
     #[test]
     fn eval_q_large() {
         let q_str = format!("{}/{}", u64::MAX, i64::MIN,);

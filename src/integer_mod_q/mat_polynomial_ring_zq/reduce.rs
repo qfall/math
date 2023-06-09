@@ -60,7 +60,7 @@ mod test_reduced {
 
     const BITPRIME64: u64 = u64::MAX - 58;
 
-    /// ensure that the entries are reduced
+    /// Ensure that the entries are reduced
     #[test]
     fn reduces() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 11").unwrap();
@@ -87,7 +87,7 @@ mod test_reduced {
         assert_eq!(poly_ring_mat, cmp_poly_ring_mat);
     }
 
-    /// ensure that reduce works with large entries and moduli
+    /// Ensure that reduce works with large entries and moduli
     #[test]
     fn large_values() {
         let modulus =

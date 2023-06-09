@@ -49,7 +49,6 @@ impl Eq for Modulus {}
 
 #[cfg(test)]
 mod test_eq {
-
     use super::Modulus;
     use crate::integer::Z;
     use std::str::FromStr;

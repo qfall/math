@@ -113,7 +113,6 @@ arithmetic_trait_mixed_borrowed_owned!(
 
 #[cfg(test)]
 mod test_add {
-
     use crate::integer::MatPolyOverZ;
     use crate::integer_mod_q::MatPolynomialRingZq;
     use crate::integer_mod_q::ModulusPolynomialRingZq;
@@ -121,7 +120,7 @@ mod test_add {
 
     const BITPRIME64: u64 = 18446744073709551557;
 
-    /// testing addition for two [`MatPolynomialRingZq`]
+    /// Testing addition for two [`MatPolynomialRingZq`]
     #[test]
     fn add() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -137,7 +136,7 @@ mod test_add {
         assert_eq!(poly_ring_mat3, poly_ring_mat_cmp);
     }
 
-    /// testing addition for two borrowed [`MatPolynomialRingZq`]
+    /// Testing addition for two borrowed [`MatPolynomialRingZq`]
     #[test]
     fn add_borrow() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -153,7 +152,7 @@ mod test_add {
         assert_eq!(poly_ring_mat3, poly_ring_mat_cmp);
     }
 
-    /// testing addition for borrowed [`MatPolynomialRingZq`] and [`MatPolynomialRingZq`]
+    /// Testing addition for borrowed [`MatPolynomialRingZq`] and [`MatPolynomialRingZq`]
     #[test]
     fn add_first_borrowed() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -169,7 +168,7 @@ mod test_add {
         assert_eq!(poly_ring_mat3, poly_ring_mat_cmp);
     }
 
-    /// testing addition for [`MatPolynomialRingZq`] and borrowed [`MatPolynomialRingZq`]
+    /// Testing addition for [`MatPolynomialRingZq`] and borrowed [`MatPolynomialRingZq`]
     #[test]
     fn add_second_borrowed() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -185,7 +184,7 @@ mod test_add {
         assert_eq!(poly_ring_mat3, poly_ring_mat_cmp);
     }
 
-    /// testing addition for [`MatPolynomialRingZq`] reduces `0` coefficients
+    /// Testing addition for [`MatPolynomialRingZq`] reduces `0` coefficients
     #[test]
     fn add_reduce() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -200,7 +199,7 @@ mod test_add {
         );
     }
 
-    /// testing addition for big [`MatPolynomialRingZq`]
+    /// Testing addition for big [`MatPolynomialRingZq`]
     #[test]
     fn add_large_numbers() {
         let modulus = ModulusPolynomialRingZq::from_str(&format!(
@@ -231,7 +230,7 @@ mod test_add {
         assert_eq!(poly_ring_mat3, poly_ring_mat_cmp);
     }
 
-    /// testing addition for [`MatPolynomialRingZq`] with different moduli does not work
+    /// Testing addition for [`MatPolynomialRingZq`] with different moduli does not work
     #[test]
     #[should_panic]
     fn add_mismatching_modulus_modulus() {
@@ -245,7 +244,7 @@ mod test_add {
         let _ = poly_ring_mat1 + poly_ring_mat2;
     }
 
-    /// testing addition for [`MatPolynomialRingZq`] with different moduli does not work
+    /// Testing addition for [`MatPolynomialRingZq`] with different moduli does not work
     #[test]
     #[should_panic]
     fn add_mismatching_modulus_polynomial() {
@@ -259,7 +258,7 @@ mod test_add {
         let _ = poly_ring_mat1 + poly_ring_mat2;
     }
 
-    /// testing addition for [`MatPolynomialRingZq`] with different dimensions does not work
+    /// Testing addition for [`MatPolynomialRingZq`] with different dimensions does not work
     #[test]
     #[should_panic]
     fn add_mismatching_dim() {
@@ -273,7 +272,7 @@ mod test_add {
         let _ = poly_ring_mat1 + poly_ring_mat2;
     }
 
-    /// testing whether add_safe throws an error for mismatching moduli
+    /// Testing whether add_safe throws an error for mismatching moduli
     #[test]
     fn add_safe_is_err_moduli() {
         let modulus1 = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
@@ -286,7 +285,7 @@ mod test_add {
         assert!(&poly_ring_mat1.add_safe(&poly_ring_mat2).is_err());
     }
 
-    /// testing whether add_safe throws an error for different dimensions
+    /// Testing whether add_safe throws an error for different dimensions
     #[test]
     fn add_safe_is_err_dim() {
         let modulus1 = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();

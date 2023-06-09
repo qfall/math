@@ -70,7 +70,6 @@ impl Drop for ModulusPolynomialRingZq {
 /// Test that the [`Clone`] trait is correctly implemented.
 #[cfg(test)]
 mod test_clone {
-
     use super::ModulusPolynomialRingZq;
     use std::{rc::Rc, str::FromStr};
 
@@ -123,7 +122,6 @@ mod test_clone {
 /// Test that the [`Drop`] trait is correctly implemented.
 #[cfg(test)]
 mod test_drop {
-
     use super::ModulusPolynomialRingZq;
     use std::{collections::HashSet, rc::Rc, str::FromStr};
 

@@ -52,11 +52,10 @@ arithmetic_trait_mixed_borrowed_owned!(Add, add, PolyOverZ, PolyOverZ, PolyOverZ
 
 #[cfg(test)]
 mod test_add {
-
     use super::PolyOverZ;
     use std::str::FromStr;
 
-    /// testing addition for two [`PolyOverZ`]
+    /// Testing addition for two [`PolyOverZ`]
     #[test]
     fn add() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
@@ -65,7 +64,7 @@ mod test_add {
         assert_eq!(c, PolyOverZ::from_str("5  2 4 2 1 2").unwrap());
     }
 
-    /// testing addition for two borrowed [`PolyOverZ`]
+    /// Testing addition for two borrowed [`PolyOverZ`]
     #[test]
     fn add_borrow() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
@@ -74,7 +73,7 @@ mod test_add {
         assert_eq!(c, PolyOverZ::from_str("5  2 4 2 1 2").unwrap());
     }
 
-    /// testing addition for borrowed [`PolyOverZ`] and [`PolyOverZ`]
+    /// Testing addition for borrowed [`PolyOverZ`] and [`PolyOverZ`]
     #[test]
     fn add_first_borrowed() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
@@ -83,7 +82,7 @@ mod test_add {
         assert_eq!(c, PolyOverZ::from_str("5  2 4 2 1 2").unwrap());
     }
 
-    /// testing addition for [`PolyOverZ`] and borrowed P[`PolyOverZ`]
+    /// Testing addition for [`PolyOverZ`] and borrowed P[`PolyOverZ`]
     #[test]
     fn add_second_borrowed() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
@@ -92,7 +91,7 @@ mod test_add {
         assert_eq!(c, PolyOverZ::from_str("5  2 4 2 1 2").unwrap());
     }
 
-    /// testing addition with eliminating coefficients
+    /// Testing addition with eliminating coefficients
     #[test]
     fn add_eliminating_coefficients() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
@@ -101,7 +100,7 @@ mod test_add {
         assert_eq!(c, PolyOverZ::default());
     }
 
-    /// testing addition for large [`PolyOverZ`]
+    /// Testing addition for large [`PolyOverZ`]
     #[test]
     fn add_large_numbers() {
         let a: PolyOverZ =

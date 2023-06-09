@@ -38,7 +38,6 @@ impl MatPolynomialRingZq {
 
 #[cfg(test)]
 mod test_transpose {
-
     use crate::{
         integer::MatPolyOverZ,
         integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},

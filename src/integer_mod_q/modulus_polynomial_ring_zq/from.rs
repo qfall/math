@@ -102,7 +102,7 @@ mod test_try_from_poly_zq {
     use crate::{integer_mod_q::ModulusPolynomialRingZq, integer_mod_q::PolyOverZq};
     use std::str::FromStr;
 
-    /// ensure that it works with large coefficients
+    /// Ensure that it works with large coefficients
     #[test]
     fn working_large_entries() {
         let poly_mod =
@@ -111,7 +111,7 @@ mod test_try_from_poly_zq {
         let _ = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
     }
 
-    /// ensure that large entries work
+    /// Ensure that large entries work
     #[test]
     fn poly_zq_unchanged() {
         let in_str = format!("4  0 1 3 {} mod {}", u64::MAX, 2_i32.pow(16) + 1);
@@ -121,7 +121,7 @@ mod test_try_from_poly_zq {
         assert_eq!(cmp_str, poly_zq.to_string())
     }
 
-    /// ensure that non-primes yields an error
+    /// Ensure that non-primes yields an error
     #[test]
     fn poly_zq_non_prime() {
         let in_str = format!("4  0 1 3 {} mod {}", u64::MAX, 2_i32.pow(16));
@@ -137,7 +137,7 @@ mod test_from_str {
     use crate::integer_mod_q::ModulusPolynomialRingZq;
     use std::str::FromStr;
 
-    /// ensure that at input of a wrong format an error is returned
+    /// Ensure that at input of a wrong format an error is returned
     #[test]
     fn wrong_modulus_fmt() {
         assert!(ModulusPolynomialRingZq::from_str("3  4 0 1 mod -17").is_err());
@@ -147,7 +147,7 @@ mod test_from_str {
         assert!(ModulusPolynomialRingZq::from_str("3  4 0 1 mod ba").is_err());
     }
 
-    /// ensure that large coefficients work
+    /// Ensure that large coefficients work
     #[test]
     fn working_large_entries() {
         assert!(ModulusPolynomialRingZq::from_str(&format!(
@@ -158,7 +158,7 @@ mod test_from_str {
         .is_ok());
     }
 
-    /// ensure that non-primes yields an error
+    /// Ensure that non-primes yields an error
     #[test]
     fn poly_zq_non_prime() {
         assert!(ModulusPolynomialRingZq::from_str(&format!(

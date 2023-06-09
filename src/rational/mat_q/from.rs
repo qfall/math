@@ -130,7 +130,7 @@ mod test_from_mat_zq {
         traits::{GetEntry, GetNumColumns, GetNumRows, SetEntry},
     };
 
-    /// test if the dimensions are taken over correctly
+    /// Test if the dimensions are taken over correctly
     #[test]
     fn dimensions() {
         let matz = MatZ::new(15, 17).unwrap();
@@ -144,7 +144,7 @@ mod test_from_mat_zq {
         assert_eq!(17, matq_2.get_num_columns());
     }
 
-    /// test if entries are taken over correctly
+    /// Test if entries are taken over correctly
     #[test]
     fn entries_taken_over_correctly() {
         let mut matz = MatZ::new(2, 2).unwrap();

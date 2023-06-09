@@ -96,7 +96,6 @@ impl MatZq {
 
 #[cfg(test)]
 mod test_dot_product {
-
     use super::{MatZq, Zq, Z};
     use std::str::FromStr;
 

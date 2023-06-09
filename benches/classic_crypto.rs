@@ -154,9 +154,7 @@ mod rsa_textbook {
 
 /// benchmark [`rsa enc+dec`]
 pub fn bench_rsa_enc_dec(c: &mut Criterion) {
-    c.bench_function("RSA enc+dec", |b| {
-        b.iter(|| rsa_textbook::rsa_run_enc_dec())
-    });
+    c.bench_function("RSA enc+dec", |b| b.iter(rsa_textbook::rsa_run_enc_dec));
 }
 
 /// benchmark [`rsa gen`] for 1024 bit security
@@ -217,7 +215,7 @@ mod dh_ke {
 
 /// benchmark [`dh`] key exchange for both communication partners
 pub fn bench_dh(c: &mut Criterion) {
-    c.bench_function("DH key exchange", |b| b.iter(|| dh_ke::dh_run()));
+    c.bench_function("DH key exchange", |b| b.iter(dh_ke::dh_run));
 }
 
 mod el_gamal_enc {
@@ -282,7 +280,7 @@ mod el_gamal_enc {
 /// benchmark [`el_gamal`]
 pub fn bench_el_gamal(c: &mut Criterion) {
     c.bench_function("El Gamal gen+enc+dec", |b| {
-        b.iter(|| el_gamal_enc::el_gamal_run())
+        b.iter(el_gamal_enc::el_gamal_run)
     });
 }
 

@@ -183,7 +183,6 @@ mod test_from_poly_z_modulus {
 
 #[cfg(test)]
 mod test_from_str {
-
     use super::PolyOverZq;
     use std::str::FromStr;
 
@@ -259,7 +258,7 @@ mod test_from_str {
         assert!(PolyOverZq::from_str("4  0  1  -2  3 mod 42").is_err());
     }
 
-    /// ensure that the input works with strings that have to be trimmed
+    /// Ensure that the input works with strings that have to be trimmed
     #[test]
     fn trim_input() {
         let poly = PolyOverZq::from_str("                   4  1 2 3 -4                  mod              17                     ");

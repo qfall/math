@@ -31,10 +31,9 @@ impl Default for PolyOverQ {
     }
 }
 
-/// ensure that default initializes an empty polynomial
+/// Ensure that default initializes an empty polynomial
 #[cfg(test)]
 mod test_default {
-
     use crate::rational::PolyOverQ;
     use std::str::FromStr;
 

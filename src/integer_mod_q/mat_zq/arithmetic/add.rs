@@ -107,11 +107,10 @@ arithmetic_trait_mixed_borrowed_owned!(Add, add, MatZq, MatZq, MatZq);
 
 #[cfg(test)]
 mod test_add {
-
     use super::MatZq;
     use std::str::FromStr;
 
-    /// testing addition for two [`MatZq`]
+    /// Testing addition for two [`MatZq`]
     #[test]
     fn add() {
         let a: MatZq = MatZq::from_str("[[1, 2, 3],[3, 4, 5]] mod 7").unwrap();
@@ -120,7 +119,7 @@ mod test_add {
         assert_eq!(c, MatZq::from_str("[[2, 4, 6],[6, 6, 3]] mod 7").unwrap());
     }
 
-    /// testing addition for two borrowed [`MatZq`]
+    /// Testing addition for two borrowed [`MatZq`]
     #[test]
     fn add_borrow() {
         let a: MatZq = MatZq::from_str("[[1, 2, 3],[3, 4, 5]] mod 7").unwrap();
@@ -129,7 +128,7 @@ mod test_add {
         assert_eq!(c, MatZq::from_str("[[2, 4, 6],[6, 6, 3]] mod 7").unwrap());
     }
 
-    /// testing addition for borrowed [`MatZq`] and [`MatZq`]
+    /// Testing addition for borrowed [`MatZq`] and [`MatZq`]
     #[test]
     fn add_first_borrowed() {
         let a: MatZq = MatZq::from_str("[[1, 2, 3],[3, 4, 5]] mod 7").unwrap();
@@ -138,7 +137,7 @@ mod test_add {
         assert_eq!(c, MatZq::from_str("[[2, 4, 6],[6, 6, 3]] mod 7").unwrap());
     }
 
-    /// testing addition for [`MatZq`] and borrowed [`MatZq`]
+    /// Testing addition for [`MatZq`] and borrowed [`MatZq`]
     #[test]
     fn add_second_borrowed() {
         let a: MatZq = MatZq::from_str("[[1, 2, 3],[3, 4, 5]] mod 7").unwrap();
@@ -147,7 +146,7 @@ mod test_add {
         assert_eq!(c, MatZq::from_str("[[2, 4, 6],[6, 6, 3]] mod 7").unwrap());
     }
 
-    /// testing addition for big numbers
+    /// Testing addition for big numbers
     #[test]
     fn add_large_numbers() {
         let a: MatZq = MatZq::from_str(&format!(
@@ -177,7 +176,7 @@ mod test_add {
         );
     }
 
-    /// testing add_safe
+    /// Testing add_safe
     #[test]
     fn add_safe() {
         let a: MatZq = MatZq::from_str("[[1, 2, 3],[3, 4, 5]] mod 4").unwrap();
@@ -189,7 +188,7 @@ mod test_add {
         );
     }
 
-    /// testing add_safe throws errors
+    /// Testing add_safe throws errors
     #[test]
     fn add_safe_is_err() {
         let a: MatZq = MatZq::from_str("[[1, 2],[3, 4]] mod 4").unwrap();

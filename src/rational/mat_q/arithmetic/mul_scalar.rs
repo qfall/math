@@ -98,7 +98,6 @@ implement_for_others!(Q, MatQ, Mul Scalar for f32 f64);
 
 #[cfg(test)]
 mod test_mul_z {
-
     use super::MatQ;
     use crate::integer::Z;
     use std::str::FromStr;

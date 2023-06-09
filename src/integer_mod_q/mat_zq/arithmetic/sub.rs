@@ -107,11 +107,10 @@ arithmetic_trait_mixed_borrowed_owned!(Sub, sub, MatZq, MatZq, MatZq);
 
 #[cfg(test)]
 mod test_sub {
-
     use super::MatZq;
     use std::str::FromStr;
 
-    /// testing subtraction for two [`MatZq`]
+    /// Testing subtraction for two [`MatZq`]
     #[test]
     fn sub() {
         let a: MatZq = MatZq::from_str("[[1, 1, 2],[3, 4, -5]] mod 3").unwrap();
@@ -120,7 +119,7 @@ mod test_sub {
         assert_eq!(c, MatZq::from_str("[[0, -1, -1],[0, 8, 2]] mod 3").unwrap());
     }
 
-    /// testing subtraction for two borrowed [`MatZq`]
+    /// Testing subtraction for two borrowed [`MatZq`]
     #[test]
     fn sub_borrow() {
         let a: MatZq = MatZq::from_str("[[1, 1, 2],[3, 4, -5]] mod 7").unwrap();
@@ -132,7 +131,7 @@ mod test_sub {
         );
     }
 
-    /// testing subtraction for borrowed [`MatZq`] and [`MatZq`]
+    /// Testing subtraction for borrowed [`MatZq`] and [`MatZq`]
     #[test]
     fn sub_first_borrowed() {
         let a: MatZq = MatZq::from_str("[[1, 1, 2],[3, 4, -5]] mod 7").unwrap();
@@ -144,7 +143,7 @@ mod test_sub {
         );
     }
 
-    /// testing subtraction for [`MatZq`] and borrowed [`MatZq`]
+    /// Testing subtraction for [`MatZq`] and borrowed [`MatZq`]
     #[test]
     fn sub_second_borrowed() {
         let a: MatZq = MatZq::from_str("[[1, 1, 2],[3, 4, -5]] mod 7").unwrap();
@@ -156,7 +155,7 @@ mod test_sub {
         );
     }
 
-    /// testing subtraction for big numbers
+    /// Testing subtraction for big numbers
     #[test]
     fn sub_large_numbers() {
         let a: MatZq = MatZq::from_str(&format!(
@@ -186,7 +185,7 @@ mod test_sub {
         );
     }
 
-    /// testing sub_safe
+    /// Testing sub_safe
     #[test]
     fn sub_safe() {
         let a: MatZq = MatZq::from_str("[[1, 1, 2],[3, 4, -5]] mod 7").unwrap();
@@ -195,7 +194,7 @@ mod test_sub {
         assert_eq!(c, MatZq::from_str("[[0, -1, -1],[0, 8, 4]] mod 7").unwrap());
     }
 
-    /// testing sub_safe throws errors
+    /// Testing sub_safe throws errors
     #[test]
     fn sub_safe_is_err() {
         let a: MatZq = MatZq::from_str("[[1, 2],[3, 4]] mod 7").unwrap();
