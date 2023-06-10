@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementation to set entries from a [`MatQ`] matrix.
+//! Implementation to set entries of a [`MatQ`] matrix.
 
 use crate::{
     error::MathError,
