@@ -75,7 +75,7 @@ impl MatZq {
     /// Returns a [`MathError`] of type
     /// [`MathError::MismatchingModulus`] if the moduli mismatch.
     pub fn add_safe(&self, other: &Self) -> Result<MatZq, MathError> {
-        if self.get_mod() != other.get_mod() {
+        if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
                 " Tried to add matrixes with moduli '{}' and '{}'.",
                 self.get_mod(),

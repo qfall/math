@@ -65,7 +65,7 @@ impl SetEntry<&Z> for MatZq {
         value: &Z,
     ) -> Result<(), MathError> {
         // Calculate mod q before adding the entry to the matrix.
-        let value: Zq = Zq::from_z_modulus(value, &self.get_mod());
+        let value: Zq = Zq::from_z_modulus(value, &self.modulus);
 
         self.set_entry(row, column, value)
     }
@@ -109,7 +109,7 @@ impl SetEntry<&Zq> for MatZq {
     ) -> Result<(), MathError> {
         let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
 
-        if self.get_mod() != value.modulus {
+        if self.modulus != value.modulus {
             return Err(MathError::MismatchingModulus(format!(
                 " Modulus of matrix: '{}'. Modulus of value: '{}'.
             If the modulus should be ignored please convert into a Z beforehand.",
@@ -181,7 +181,7 @@ impl MatZq {
             other.get_num_rows(),
         )?;
 
-        if self.get_mod() != other.get_mod() {
+        if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
                 "set_column requires the moduli to be equal, but they {} differs from {}",
                 self.get_mod(),
@@ -249,7 +249,7 @@ impl MatZq {
             other.get_num_columns(),
         )?;
 
-        if self.get_mod() != other.get_mod() {
+        if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
                 "set_row requires the moduli to be equal, but they {} differs from {}",
                 self.get_mod(),

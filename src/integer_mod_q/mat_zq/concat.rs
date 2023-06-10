@@ -55,7 +55,7 @@ impl Concatenate for &MatZq {
             )));
         }
 
-        if self.get_mod() != other.get_mod() {
+        if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
                 "Tried to concatenate matrices with different moduli {} and {}.",
                 self.get_mod(),
@@ -112,7 +112,7 @@ impl Concatenate for &MatZq {
             )));
         }
 
-        if self.get_mod() != other.get_mod() {
+        if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
                 "Tried to concatenate matrices with different moduli {} and {}.",
                 self.get_mod(),

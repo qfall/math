@@ -117,7 +117,7 @@ impl MatZq {
     /// - Returns a [`MathError`] of type
     /// [`MismatchingModulus`](MathError::MismatchingModulus) if the moduli mismatch.
     pub fn mul_scalar_safe(&self, scalar: &Zq) -> Result<Self, MathError> {
-        if self.get_mod() != scalar.modulus {
+        if self.modulus != scalar.modulus {
             return Err(MathError::MismatchingModulus(format!(
                 " Tried to add matrixes with moduli '{}' and '{}'.",
                 self.get_mod(),

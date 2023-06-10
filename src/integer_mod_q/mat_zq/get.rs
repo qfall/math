@@ -138,9 +138,8 @@ impl GetEntry<Zq> for MatZq {
         column: impl TryInto<i64> + Display,
     ) -> Result<Zq, MathError> {
         let value = self.get_entry(row, column)?;
-        let modulus = self.get_mod();
 
-        Ok(Zq::from_z_modulus(&value, &modulus))
+        Ok(Zq::from_z_modulus(&value, &self.modulus))
     }
 }
 
