@@ -167,7 +167,7 @@ mod test_set_coeff_z {
     /// Ensure that the correct coefficient is set and all others are set to `0`
     #[test]
     fn set_coeff_rest_zero() {
-        let mut poly = PolyOverQ::from_str("0").unwrap();
+        let mut poly = PolyOverQ::default();
 
         poly.set_coeff(4, -10).unwrap();
         assert_eq!(PolyOverQ::from_str("5  0 0 0 0 -10").unwrap(), poly);
@@ -176,7 +176,7 @@ mod test_set_coeff_z {
     /// Ensure that setting with a [`Z`] works
     #[test]
     fn set_coeff_z() {
-        let mut poly = PolyOverQ::from_str("0").unwrap();
+        let mut poly = PolyOverQ::default();
 
         poly.set_coeff(4, Z::from(123)).unwrap();
         poly.set_coeff(5, &Z::from(321)).unwrap();
@@ -186,7 +186,7 @@ mod test_set_coeff_z {
     /// Ensure that setting large coefficients works
     #[test]
     fn large_coeff_z() {
-        let mut poly = PolyOverQ::from_str("0").unwrap();
+        let mut poly = PolyOverQ::default();
 
         poly.set_coeff(4, u64::MAX).unwrap();
         assert_eq!(

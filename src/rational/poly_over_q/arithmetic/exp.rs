@@ -49,7 +49,7 @@ mod test_exp_series {
     fn coefficient_set_correctly() {
         let length: u32 = 1000;
         let poly = PolyOverQ::exp_function_taylor(length);
-        let mut fac_value = Q::from_str("1").unwrap();
+        let mut fac_value = Q::ONE;
         assert_eq!(fac_value, poly.get_coeff(0).unwrap());
         for i in 1..length {
             fac_value = fac_value * Q::from_str(&format!("1/{}", i)).unwrap();

@@ -110,7 +110,7 @@ mod test_sub {
         let a: PolyOverQ = PolyOverQ::from_str("3  1/8 2/7 -3").unwrap();
         let b: PolyOverQ = PolyOverQ::from_str("3  1/8 2/7 -3").unwrap();
         let c: PolyOverQ = a - b;
-        assert_eq!(c, PolyOverQ::from_str("0").unwrap());
+        assert_eq!(c, PolyOverQ::default());
     }
 
     /// Testing subtraction for large [`PolyOverQ`]

@@ -704,7 +704,7 @@ mod test_from_z {
             Q::from_str(&u64::MAX.to_string()).unwrap(),
             Q::from_int(z_1)
         );
-        assert_eq!(Q::from_str("17").unwrap(), Q::from_int(z_2));
+        assert_eq!(Q::from(17), Q::from_int(z_2));
     }
 
     /// Ensure that the [`From`] trait is available and works correctly for
@@ -715,7 +715,7 @@ mod test_from_z {
         let z_2 = Z::from(17);
 
         assert_eq!(Q::from_str(&u64::MAX.to_string()).unwrap(), Q::from(z_1));
-        assert_eq!(Q::from_str("17").unwrap(), Q::from(z_2));
+        assert_eq!(Q::from(17), Q::from(z_2));
     }
 
     /// Ensure that all types that can be turned into an [`Z`]

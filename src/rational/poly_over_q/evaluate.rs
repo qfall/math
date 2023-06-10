@@ -119,7 +119,7 @@ mod test_evaluate {
 
         let res = poly.evaluate(Q::from_str(&q_str_rev).unwrap());
 
-        assert_eq!(Q::from_str("1").unwrap(), res)
+        assert_eq!(Q::from(1), res)
     }
 }
 
@@ -237,6 +237,6 @@ mod test_evaluate_q {
 
         let res = poly.evaluate(&Q::from_str(&q_str_rev).unwrap());
 
-        assert_eq!(Q::from_str("1").unwrap(), res)
+        assert_eq!(Q::from(1), res)
     }
 }

@@ -104,7 +104,7 @@ mod test_add {
         let a: Q = Q::from(42);
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a + b;
-        assert_eq!(c, Q::from_str("63").unwrap());
+        assert_eq!(c, Q::from(63));
     }
 
     /// Testing addition for two borrowed [`Q`]
@@ -113,7 +113,7 @@ mod test_add {
         let a: Q = Q::from(42);
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = &a + &b;
-        assert_eq!(c, Q::from_str("63").unwrap());
+        assert_eq!(c, Q::from(63));
     }
 
     /// Testing addition for borrowed [`Q`] and [`Q`]
@@ -131,7 +131,7 @@ mod test_add {
         let a: Q = Q::from(42);
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a + &b;
-        assert_eq!(c, Q::from_str("63").unwrap());
+        assert_eq!(c, Q::from(63));
     }
 
     #[test]

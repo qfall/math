@@ -30,7 +30,7 @@ impl Zq {
     /// use std::str::FromStr;
     ///
     /// let modulus = Modulus::from_str("17").unwrap();
-    /// let z = Z::from_str("18").unwrap();
+    /// let z = Z::from(18);
     /// let mut zq = Zq::from_z_modulus(&z, &modulus);
     ///
     /// zq.reduce();
@@ -64,7 +64,7 @@ mod test_reduce {
         let mut original = Zq { value, modulus };
 
         let cmp_modulus = Modulus::from_str(&format!("{}", BITPRIME64)).unwrap();
-        let cmp_value = Z::from_str("58").unwrap();
+        let cmp_value = Z::from(58);
 
         let cmp = Zq {
             value: cmp_value,
@@ -82,11 +82,11 @@ mod test_reduce {
     #[test]
     fn reduces_small() {
         let modulus = Modulus::from_str("17").unwrap();
-        let value = Z::from_str("20").unwrap();
+        let value = Z::from(20);
         let mut original = Zq { value, modulus };
 
         let cmp_modulus = Modulus::from_str("17").unwrap();
-        let cmp_value = Z::from_str("3").unwrap();
+        let cmp_value = Z::from(3);
 
         let cmp = Zq {
             value: cmp_value,

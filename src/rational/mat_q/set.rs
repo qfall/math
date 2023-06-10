@@ -369,12 +369,12 @@ mod test_setter {
     #[test]
     fn standard_value() {
         let mut matrix = MatQ::new(5, 10).unwrap();
-        let value = Q::from_str("869").unwrap();
+        let value = Q::from(869);
         matrix.set_entry(4, 7, &value).unwrap();
 
         let entry = matrix.get_entry(4, 7).unwrap();
 
-        assert_eq!(Q::from_str("869").unwrap(), entry);
+        assert_eq!(Q::from(869), entry);
     }
 
     /// Ensure that setting entries works with large large numerators and denominators.

@@ -133,8 +133,8 @@ mod test_partial_eq {
     #[test]
     #[allow(clippy::op_ref)]
     fn equal_call_methods() {
-        let one_1 = Q::from_str("1").unwrap();
-        let one_2 = Q::from_str("1").unwrap();
+        let one_1 = Q::ONE;
+        let one_2 = Q::ONE;
 
         assert!(one_1 == one_2);
         assert!(&one_1 == &one_2);
@@ -148,8 +148,8 @@ mod test_partial_eq {
     #[test]
     #[allow(clippy::op_ref)]
     fn not_equal_call_methods() {
-        let one = Q::from_str("1").unwrap();
-        let two = Q::from_str("2").unwrap();
+        let one = Q::ONE;
+        let two = Q::from(2);
 
         assert!(one != two);
         assert!(&one != &two);
@@ -161,9 +161,9 @@ mod test_partial_eq {
     /// Test equal with small positive and negative numbers.
     #[test]
     fn equal_small() {
-        let small_1 = Q::from_str("10").unwrap();
-        let small_2 = Q::from_str("10").unwrap();
-        let negative = Q::from_str("-1").unwrap();
+        let small_1 = Q::from(10);
+        let small_2 = Q::from(10);
+        let negative = Q::MINUS_ONE;
 
         assert!(small_1 == small_2);
         assert!(small_2 == small_1);
@@ -175,9 +175,9 @@ mod test_partial_eq {
     /// Test not equal with small positive and negative numbers.
     #[test]
     fn not_equal_small() {
-        let small_1 = Q::from_str("10").unwrap();
-        let small_2 = Q::from_str("10").unwrap();
-        let negative = Q::from_str("-1").unwrap();
+        let small_1 = Q::from(10);
+        let small_2 = Q::from(10);
+        let negative = Q::MINUS_ONE;
 
         assert!(small_1 == small_2);
         assert!(small_2 == small_1);
@@ -225,8 +225,8 @@ mod test_partial_eq {
     #[test]
     fn equal_large_small() {
         let max = Q::from_str(&"1".repeat(65)).unwrap();
-        let small_positive = Q::from_str("1").unwrap();
-        let small_negative = Q::from_str("-1").unwrap();
+        let small_positive = Q::ONE;
+        let small_negative = Q::MINUS_ONE;
         let large_negative_str = format!("-{:1<65}", "1");
         let min = Q::from_str(&large_negative_str).unwrap();
 
@@ -246,8 +246,8 @@ mod test_partial_eq {
     #[test]
     fn not_equal_large_small() {
         let max = Q::from_str(&"1".repeat(65)).unwrap();
-        let small_positive = Q::from_str("1").unwrap();
-        let small_negative = Q::from_str("-1").unwrap();
+        let small_positive = Q::ONE;
+        let small_negative = Q::MINUS_ONE;
         let large_negative_str = format!("-{:1<65}", "1");
         let min = Q::from_str(&large_negative_str).unwrap();
 

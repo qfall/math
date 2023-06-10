@@ -160,7 +160,7 @@ mod test_get_degree {
     #[test]
     fn degree_constant() {
         let poly1 = PolyOverQ::from_str("1  1/8").unwrap();
-        let poly2 = PolyOverQ::from_str("0").unwrap();
+        let poly2 = PolyOverQ::default();
 
         let deg1 = poly1.get_degree();
         let deg2 = poly2.get_degree();

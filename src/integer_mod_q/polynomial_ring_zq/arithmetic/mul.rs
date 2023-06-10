@@ -198,8 +198,8 @@ mod test_mul {
             PolynomialRingZq::from((&PolyOverZ::from_str("4  -3 0 3 3").unwrap(), &modulus))
         );
         assert_eq!(
-            PolynomialRingZq::from((&PolyOverZ::from_str("0").unwrap(), &modulus)),
-            a * PolynomialRingZq::from((&PolyOverZ::from_str("0").unwrap(), &modulus))
+            PolynomialRingZq::from((&PolyOverZ::default(), &modulus)),
+            a * PolynomialRingZq::from((&PolyOverZ::default(), &modulus))
         )
     }
 

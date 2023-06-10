@@ -35,8 +35,8 @@ impl Div for &Q {
     /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
     ///
-    /// let a: Q = Q::from_str("42").unwrap();
-    /// let b: Q = Q::from_str("24").unwrap();
+    /// let a: Q = Q::from(42);
+    /// let b: Q = Q::from(24);
     ///
     /// let c: Q = &a / &b;
     /// let d: Q = a / b;
@@ -108,8 +108,8 @@ impl Q {
     /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
     ///
-    /// let a: Q = Q::from_str("42").unwrap();
-    /// let b: Q = Q::from_str("24").unwrap();
+    /// let a: Q = Q::from(42);
+    /// let b: Q = Q::from(24);
     ///
     /// let c: Q = a.div_safe(&b).unwrap();
     /// ```
@@ -141,7 +141,7 @@ mod test_div {
     /// Testing division for two [`Q`]
     #[test]
     fn div() {
-        let a: Q = Q::from_str("2").unwrap();
+        let a: Q = Q::from(2);
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a / b;
         assert_eq!(c, Q::from_str("4/42").unwrap());
@@ -150,7 +150,7 @@ mod test_div {
     /// Testing division for two borrowed [`Q`]
     #[test]
     fn div_borrow() {
-        let a: Q = Q::from_str("2").unwrap();
+        let a: Q = Q::from(2);
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = &a / &b;
         assert_eq!(c, Q::from_str("4/42").unwrap());
@@ -159,7 +159,7 @@ mod test_div {
     /// Testing division for borrowed [`Q`] and [`Q`]
     #[test]
     fn div_first_borrowed() {
-        let a: Q = Q::from_str("4").unwrap();
+        let a: Q = Q::from(4);
         let b: Q = Q::from_str("42/10").unwrap();
         let c: Q = &a / b;
         assert_eq!(c, Q::from_str("40/42").unwrap());
@@ -168,7 +168,7 @@ mod test_div {
     /// Testing division for [`Q`] and borrowed [`Q`]
     #[test]
     fn div_second_borrowed() {
-        let a: Q = Q::from_str("2").unwrap();
+        let a: Q = Q::from(2);
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a / &b;
         assert_eq!(c, Q::from_str("4/42").unwrap());
@@ -178,7 +178,7 @@ mod test_div {
     /// Testing division for large numerators and divisors
     fn div_large() {
         let a: Q = Q::from_str(&(u64::MAX - 1).to_string()).unwrap();
-        let b: Q = Q::from_str("2").unwrap();
+        let b: Q = Q::from(2);
         let c: Q = Q::from_str(&format!("1/{}", (i32::MAX))).unwrap();
         let d: Q = Q::from_str(&format!("1/{}", (u32::MAX))).unwrap();
 
@@ -201,16 +201,16 @@ mod test_div {
     #[test]
     #[should_panic]
     fn div_by_zero() {
-        let a: Q = Q::from_str("2").unwrap();
-        let b: Q = Q::from_str("0").unwrap();
+        let a: Q = Q::from(2);
+        let b: Q = Q::default();
         let _c = a / b;
     }
 
     /// Testing division by `0` throws an error
     #[test]
     fn div_by_zero_safe() {
-        let a: Q = Q::from_str("2").unwrap();
-        let b: Q = Q::from_str("0").unwrap();
+        let a: Q = Q::from(2);
+        let b: Q = Q::default();
         assert!(&a.div_safe(&b).is_err());
     }
 }
@@ -284,7 +284,7 @@ mod test_div_between_q_and_z {
     #[should_panic]
     fn div_by_zero() {
         let a: Q = Q::from_str("2/3").unwrap();
-        let b: Z = Z::from_str("0").unwrap();
+        let b: Z = Z::default();
         let _c = a / b;
     }
 }

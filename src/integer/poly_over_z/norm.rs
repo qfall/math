@@ -75,7 +75,7 @@ mod test_norm_eucl_sqrd {
     /// with small coefficients is calculated correctly
     #[test]
     fn poly_small_coefficient() {
-        let poly1 = PolyOverZ::from_str("0").unwrap();
+        let poly1 = PolyOverZ::default();
         let poly2 = PolyOverZ::from_str("3  1 2 3").unwrap();
         let poly3 = PolyOverZ::from_str("3  1 20 90").unwrap();
 
@@ -114,7 +114,7 @@ mod test_norm_infty {
     /// with small coefficients is calculated correctly
     #[test]
     fn poly_small_coefficient() {
-        let poly1 = PolyOverZ::from_str("0").unwrap();
+        let poly1 = PolyOverZ::default();
         let poly2 = PolyOverZ::from_str("3  1 2 3").unwrap();
         let poly3 = PolyOverZ::from_str("3  1 2010 90").unwrap();
 

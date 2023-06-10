@@ -28,9 +28,9 @@ impl Modulus {
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::Modulus;
-    /// use std::str::FromStr;
+    /// use qfall_math::integer::Z;
     ///
-    /// let modulus = Modulus::from_str("42").unwrap();
+    /// let modulus = Modulus::try_from_z(&Z::from(42)).unwrap();
     /// ```
     /// # Errors and Failures
     ///

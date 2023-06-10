@@ -64,7 +64,7 @@ mod test_trace {
         let trace2 = mat2.trace().unwrap();
 
         assert_eq!(PolyOverZ::from_str("2  6 5").unwrap(), trace1);
-        assert_eq!(PolyOverZ::from_str("0").unwrap(), trace2);
+        assert_eq!(PolyOverZ::default(), trace2);
     }
 
     /// Test whether `trace` works for big values

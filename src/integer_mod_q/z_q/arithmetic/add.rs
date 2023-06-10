@@ -118,7 +118,7 @@ impl Add<&Z> for &Zq {
     /// use std::str::FromStr;
     ///
     /// let a: Zq = Zq::from_str("42 mod 19").unwrap();
-    /// let b: Z = Z::from_str("42").unwrap();
+    /// let b: Z = Z::from(42);
     ///
     /// let c: Zq = &a + &b;
     /// let d: Zq = a + b;

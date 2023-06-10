@@ -54,7 +54,7 @@ mod test_exp {
     fn ten_length_value() {
         assert_eq!(
             Q::from_str("98641/36288").unwrap(),
-            Q::from_str("1").unwrap().exp_taylor(10_u32)
+            Q::ONE.exp_taylor(10_u32)
         );
         assert_eq!(
             Q::from_str("2492063827/1785641760").unwrap(),

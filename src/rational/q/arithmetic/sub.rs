@@ -34,7 +34,7 @@ impl Sub for &Q {
     /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
     ///
-    /// let a: Q = Q::from_str("42").unwrap();
+    /// let a: Q = Q::from(42);
     /// let b: Q = Q::from_str("-42/2").unwrap();
     ///
     /// let c: Q = &a - &b;
@@ -100,19 +100,19 @@ mod test_sub {
     /// Testing subtraction for two [`Q`]
     #[test]
     fn sub() {
-        let a: Q = Q::from_str("42").unwrap();
+        let a: Q = Q::from(42);
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a - b;
-        assert_eq!(c, Q::from_str("21").unwrap());
+        assert_eq!(c, Q::from(21));
     }
 
     /// Testing subtraction for two borrowed [`Q`]
     #[test]
     fn sub_borrow() {
-        let a: Q = Q::from_str("42").unwrap();
+        let a: Q = Q::from(42);
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = &a - &b;
-        assert_eq!(c, Q::from_str("21").unwrap());
+        assert_eq!(c, Q::from(21));
     }
 
     /// Testing subtraction for borrowed [`Q`] and [`Q`]
@@ -127,10 +127,10 @@ mod test_sub {
     /// Testing subtraction for [`Q`] and borrowed [`Q`]
     #[test]
     fn sub_second_borrowed() {
-        let a: Q = Q::from_str("42").unwrap();
+        let a: Q = Q::from(42);
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a - &b;
-        assert_eq!(c, Q::from_str("21").unwrap());
+        assert_eq!(c, Q::from(21));
     }
 
     #[test]
