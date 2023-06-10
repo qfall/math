@@ -13,8 +13,8 @@
 //! The explicit functions contain the documentation.
 
 use super::PolyOverZ;
-use crate::error::MathError;
-use flint_sys::fmpz_poly::fmpz_poly_set_str;
+use crate::{error::MathError, integer_mod_q::PolyOverZq};
+use flint_sys::{fmpz_mod_poly::fmpz_mod_poly_get_fmpz_poly, fmpz_poly::fmpz_poly_set_str};
 use std::{ffi::CString, str::FromStr};
 
 impl FromStr for PolyOverZ {
@@ -83,6 +83,41 @@ impl FromStr for PolyOverZ {
     }
 }
 
+impl From<&PolyOverZq> for PolyOverZ {
+    /// Create a [`PolyOverZ`] from a [`PolyOverZq`].
+    ///
+    /// Parameters:
+    /// - `poly`: the polynomial from which the coefficients are copied
+    ///
+    /// Returns representative polynomial (all reduced coefficients)
+    /// of the [`PolyOverZq`] as a [`PolyOverZ`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::PolyOverZ;
+    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use std::str::FromStr;
+    ///
+    /// let poly = PolyOverZq::from_str("4  0 1 5 3 mod 4").unwrap();
+    ///
+    /// let poly_z = PolyOverZ::from(&poly);
+    ///
+    /// # let cmp_poly = PolyOverZ::from_str("4  0 1 1 3").unwrap();
+    /// # assert_eq!(cmp_poly, poly_z);
+    /// ```
+    fn from(poly: &PolyOverZq) -> Self {
+        let mut out = Self::default();
+        unsafe {
+            fmpz_mod_poly_get_fmpz_poly(
+                &mut out.poly,
+                &poly.poly,
+                poly.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
+        out
+    }
+}
+
 #[cfg(test)]
 mod test_from_str {
     use super::PolyOverZ;
@@ -146,5 +181,23 @@ mod test_from_str {
         let poly = PolyOverZ::from_str("                   4  1 2 3 -4                  ");
         assert!(poly.is_ok());
         assert_eq!(PolyOverZ::from_str("4  1 2 3 -4").unwrap(), poly.unwrap());
+    }
+}
+
+#[cfg(test)]
+mod test_from_poly_over_zq {
+    use crate::{integer::PolyOverZ, integer_mod_q::PolyOverZq};
+    use std::str::FromStr;
+
+    /// ensure that the conversion works with positive large entries
+    #[test]
+    fn large_positive() {
+        let poly = PolyOverZq::from_str(&format!("4  0 1 102 {} mod {}", u64::MAX - 58, u64::MAX))
+            .unwrap();
+
+        let poly_z = PolyOverZ::from(&poly);
+
+        let cmp_poly = PolyOverZ::from_str(&format!("4  0 1 102 {}", u64::MAX - 58)).unwrap();
+        assert_eq!(cmp_poly, poly_z);
     }
 }
