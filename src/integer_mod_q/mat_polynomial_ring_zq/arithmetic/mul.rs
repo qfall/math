@@ -136,7 +136,7 @@ mod test_mul {
     use crate::{integer::MatPolyOverZ, integer_mod_q::ModulusPolynomialRingZq};
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = 18446744073709551557;
+    const BITPRIME64: u64 = u64::MAX - 58;
 
     /// Checks if matrix multiplication works fine for squared matrices
     #[test]
