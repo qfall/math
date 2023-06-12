@@ -48,7 +48,7 @@ mod test_is_one {
     use super::PolyOverZ;
     use std::str::FromStr;
 
-    /// ensure that is_one returns `true` for the one polynomial
+    /// Ensure that is_one returns `true` for the one polynomial
     #[test]
     fn one_detection() {
         let ident = PolyOverZ::from_str("1  1").unwrap();
@@ -56,7 +56,7 @@ mod test_is_one {
         assert!(ident.is_one());
     }
 
-    /// ensure that is_one returns `false` for other polynomials
+    /// Ensure that is_one returns `false` for other polynomials
     #[test]
     fn one_rejection() {
         let small = PolyOverZ::from_str("4  1 0 0 1").unwrap();
@@ -72,7 +72,7 @@ mod test_is_zero {
     use super::PolyOverZ;
     use std::str::FromStr;
 
-    /// ensure that is_zero returns `true` for the zero polynomial
+    /// Ensure that is_zero returns `true` for the zero polynomial
 
     #[test]
     fn zero_detection() {
@@ -81,7 +81,7 @@ mod test_is_zero {
         assert!(zero.is_zero());
     }
 
-    /// ensure that is_zero returns `false` for non-zero polynomials
+    /// Ensure that is_zero returns `false` for non-zero polynomials
     #[test]
     fn zero_rejection() {
         let small = PolyOverZ::from_str("4  0 0 0 1").unwrap();

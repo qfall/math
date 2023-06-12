@@ -188,7 +188,7 @@ mod test_abs {
 mod test_is_prime {
     use super::Z;
 
-    /// ensure that primes are correctly detected
+    /// Ensure that primes are correctly detected
     #[test]
     fn prime_detection() {
         let small = Z::from(2_i32.pow(16) + 1);
@@ -197,7 +197,7 @@ mod test_is_prime {
         assert!(large.is_prime());
     }
 
-    /// ensure that non-primes are correctly detected
+    /// Ensure that non-primes are correctly detected
     #[test]
     fn non_prime_detection() {
         let small = Z::from(2_i32.pow(16));
@@ -253,7 +253,7 @@ mod test_is_zero {
     use super::Z;
     use std::str::FromStr;
 
-    /// ensure that is_zero returns `true` for `0`
+    /// Ensure that is_zero returns `true` for `0`
     #[test]
     fn zero_detection() {
         let zero = Z::ZERO;
@@ -261,7 +261,7 @@ mod test_is_zero {
         assert!(zero.is_zero());
     }
 
-    /// ensure that is_zero returns `false` for non-zero values
+    /// Ensure that is_zero returns `false` for non-zero values
     #[test]
     fn zero_rejection() {
         let small = Z::from(2);
@@ -277,7 +277,7 @@ mod test_is_one {
     use super::Z;
     use std::str::FromStr;
 
-    /// ensure that is_one returns `true` for `1`
+    /// Ensure that is_one returns `true` for `1`
     #[test]
     fn one_detection() {
         let zero = Z::ONE;
@@ -285,7 +285,7 @@ mod test_is_one {
         assert!(zero.is_one());
     }
 
-    /// ensure that is_one returns `false` for other values
+    /// Ensure that is_one returns `false` for other values
     #[test]
     fn one_rejection() {
         let small = Z::from(2);

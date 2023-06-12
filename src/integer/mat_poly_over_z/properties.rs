@@ -73,7 +73,7 @@ mod test_is_identity {
     use crate::integer::MatPolyOverZ;
     use std::str::FromStr;
 
-    /// ensure that true is returned for a 1x1, 2x2, 3x3, 2x3, 3x2 identity matrix
+    /// Ensure that true is returned for a 1x1, 2x2, 3x3, 2x3, 3x2 identity matrix
     #[test]
     fn identity_true() {
         let matrix_1x1 = MatPolyOverZ::from_str("[[1  1]]").unwrap();
@@ -90,7 +90,7 @@ mod test_is_identity {
         assert!(matrix_3x2.is_identity());
     }
 
-    /// ensure that matrices which are square but are not the identity matrix, return false
+    /// Ensure that matrices which are square but are not the identity matrix, return false
     #[test]
     fn not_identity() {
         let matrix_side_entry = MatPolyOverZ::from_str("[[1  1, 1  1],[0, 1  1]]").unwrap();
@@ -119,7 +119,7 @@ mod test_is_square {
 
     use crate::integer::MatPolyOverZ;
 
-    /// ensure that square matrices return true
+    /// Ensure that square matrices return true
     #[test]
     fn square_matrix() {
         let matrix_negative =
@@ -141,7 +141,7 @@ mod test_is_square {
         assert!(matrix_large_positive.is_square());
     }
 
-    /// ensure that non-square matrices return false
+    /// Ensure that non-square matrices return false
     #[test]
     fn not_square_matrix() {
         let matrix_1x2 = MatPolyOverZ::from_str("[[1  1, 0]]").unwrap();
@@ -161,7 +161,7 @@ mod test_is_zero {
     use super::MatPolyOverZ;
     use std::str::FromStr;
 
-    /// ensure that is_zero returns `true` for all zero matrices
+    /// Ensure that is_zero returns `true` for all zero matrices
 
     #[test]
     fn zero_detection() {
@@ -172,7 +172,7 @@ mod test_is_zero {
         assert!(zero2.is_zero());
     }
 
-    /// ensure that is_zero returns `false` for non-zero matrices
+    /// Ensure that is_zero returns `false` for non-zero matrices
     #[test]
     fn zero_rejection() {
         let small = MatPolyOverZ::from_str("[[0, 0],[4  0 0 0 2, 0]]").unwrap();

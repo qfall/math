@@ -63,7 +63,7 @@ mod test_is_identity {
     use super::MatZ;
     use std::str::FromStr;
 
-    /// ensure that is_identity returns `true` for identity matrices
+    /// Ensure that is_identity returns `true` for identity matrices
     #[test]
     fn identity_detection() {
         let ident = MatZ::from_str("[[1, 0],[0, 1]]").unwrap();
@@ -76,7 +76,7 @@ mod test_is_identity {
         assert!(MatZ::identity(4, 4).unwrap().is_identity());
     }
 
-    /// ensure that is_identity returns `false` for non-identity matrices
+    /// Ensure that is_identity returns `false` for non-identity matrices
     #[test]
     fn identity_rejection() {
         let small = MatZ::from_str("[[0, 0],[2, 0]]").unwrap();
@@ -92,7 +92,7 @@ mod test_is_zero {
     use super::MatZ;
     use std::str::FromStr;
 
-    /// ensure that is_zero returns `true` for all zero matrices
+    /// Ensure that is_zero returns `true` for all zero matrices
 
     #[test]
     fn zero_detection() {
@@ -101,7 +101,7 @@ mod test_is_zero {
         assert!(zero.is_zero());
     }
 
-    /// ensure that is_zero returns `false` for non-zero matrices
+    /// Ensure that is_zero returns `false` for non-zero matrices
     #[test]
     fn zero_rejection() {
         let small = MatZ::from_str("[[0, 0],[2, 0]]").unwrap();
@@ -117,7 +117,7 @@ mod test_is_square {
     use super::MatZ;
     use std::str::FromStr;
 
-    /// ensure that is_square returns `true` for square matrices
+    /// Ensure that is_square returns `true` for square matrices
     #[test]
     fn square_detection() {
         let square1 = MatZ::from_str("[[0, 4],[0, 0]]").unwrap();
@@ -127,7 +127,7 @@ mod test_is_square {
         assert!(square2.is_square());
     }
 
-    /// ensure that is_square returns `false` for non-square matrices
+    /// Ensure that is_square returns `false` for non-square matrices
     #[test]
     fn square_rejection() {
         let small = MatZ::from_str("[[0, 0, 4],[2, 0, 1]]").unwrap();
