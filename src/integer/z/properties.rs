@@ -20,6 +20,7 @@ impl Z {
     ///
     /// Returns true if the value is `0`.
     ///
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     ///
@@ -34,6 +35,7 @@ impl Z {
     ///
     /// Returns true if the value is `1`.
     ///
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     ///
@@ -48,6 +50,7 @@ impl Z {
     ///
     /// Returns true if the value is prime.
     ///
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     ///
@@ -131,7 +134,7 @@ mod test_bits {
     use super::Z;
 
     /// Checks whether the number of bits needed to store the absolute value
-    /// is output correctly for small values
+    /// is output correctly for small values.
     #[test]
     fn small_values() {
         assert_eq!(0, Z::ZERO.bits());
@@ -144,7 +147,7 @@ mod test_bits {
     }
 
     /// Checks whether the number of bits needed to store the absolute value
-    /// is output correctly for large values
+    /// is output correctly for large values.
     #[test]
     fn large_values() {
         let vector = vec![255; 16];
@@ -161,7 +164,7 @@ mod test_bits {
 mod test_abs {
     use super::Z;
 
-    /// Checks whether `abs` returns the positive value for small values correctly
+    /// Checks whether `abs` returns the positive value for small values correctly.
     #[test]
     fn small_values() {
         let pos = Z::ONE;
@@ -173,7 +176,7 @@ mod test_abs {
         assert_eq!(Z::from(15), neg.abs());
     }
 
-    /// Checks whether `abs` returns the positive value for large values correctly
+    /// Checks whether `abs` returns the positive value for large values correctly.
     #[test]
     fn large_values() {
         let pos = Z::from(i64::MAX);
@@ -188,7 +191,7 @@ mod test_abs {
 mod test_is_prime {
     use super::Z;
 
-    /// Ensure that primes are correctly detected
+    /// Ensure that primes are correctly detected.
     #[test]
     fn prime_detection() {
         let small = Z::from(2_i32.pow(16) + 1);
@@ -197,7 +200,7 @@ mod test_is_prime {
         assert!(large.is_prime());
     }
 
-    /// Ensure that non-primes are correctly detected
+    /// Ensure that non-primes are correctly detected.
     #[test]
     fn non_prime_detection() {
         let small = Z::from(2_i32.pow(16));
@@ -211,7 +214,7 @@ mod test_is_prime {
 mod test_inv {
     use super::{Q, Z};
 
-    /// Checks whether the inverse is correctly computed for small values
+    /// Checks whether the inverse is correctly computed for small values.
     #[test]
     fn small_values() {
         let val_0 = Z::from(4);
@@ -224,7 +227,7 @@ mod test_inv {
         assert_eq!(Q::try_from((&-1, &7)).unwrap(), inv_1);
     }
 
-    /// Checks whether the inverse is correctly computed for large values
+    /// Checks whether the inverse is correctly computed for large values.
     #[test]
     fn large_values() {
         let val_0 = Z::from(i64::MAX);
@@ -237,7 +240,7 @@ mod test_inv {
         assert_eq!(Q::try_from((&1, &i64::MIN)).unwrap(), inv_1);
     }
 
-    /// Checks whether the inverse of `0` returns `None`
+    /// Checks whether the inverse of `0` returns `None`.
     #[test]
     fn inv_zero_none() {
         let zero = Z::ZERO;
@@ -253,7 +256,7 @@ mod test_is_zero {
     use super::Z;
     use std::str::FromStr;
 
-    /// Ensure that is_zero returns `true` for `0`
+    /// Ensure that is_zero returns `true` for `0`.
     #[test]
     fn zero_detection() {
         let zero = Z::ZERO;
@@ -261,7 +264,7 @@ mod test_is_zero {
         assert!(zero.is_zero());
     }
 
-    /// Ensure that is_zero returns `false` for non-zero values
+    /// Ensure that is_zero returns `false` for non-zero values.
     #[test]
     fn zero_rejection() {
         let small = Z::from(2);
@@ -277,7 +280,7 @@ mod test_is_one {
     use super::Z;
     use std::str::FromStr;
 
-    /// Ensure that is_one returns `true` for `1`
+    /// Ensure that is_one returns `true` for `1`.
     #[test]
     fn one_detection() {
         let zero = Z::ONE;
@@ -285,7 +288,7 @@ mod test_is_one {
         assert!(zero.is_one());
     }
 
-    /// Ensure that is_one returns `false` for other values
+    /// Ensure that is_one returns `false` for other values.
     #[test]
     fn one_rejection() {
         let small = Z::from(2);

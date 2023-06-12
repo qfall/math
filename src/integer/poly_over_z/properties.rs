@@ -14,8 +14,9 @@ use flint_sys::fmpz_poly::{fmpz_poly_degree, fmpz_poly_is_one};
 impl PolyOverZ {
     /// Checks if a [`PolyOverZ`] is the constant polynomial with coefficient `1`.
     ///
-    /// Returns true if the first coefficient is `1` and is the only coefficient
+    /// Returns true if the first coefficient is `1` and is the only coefficient.
     ///
+    /// # Examples
     /// ```
     /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;
@@ -29,8 +30,9 @@ impl PolyOverZ {
 
     /// Checks if every entry of a [`PolyOverZ`] is `0`.
     ///
-    /// Returns true if [`PolyOverZ`] has no coefficients
+    /// Returns true if [`PolyOverZ`] has no coefficients.
     ///
+    /// # Examples
     /// ```
     /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;
@@ -48,7 +50,7 @@ mod test_is_one {
     use super::PolyOverZ;
     use std::str::FromStr;
 
-    /// Ensure that is_one returns `true` for the one polynomial
+    /// Ensure that is_one returns `true` for the one polynomial.
     #[test]
     fn one_detection() {
         let ident = PolyOverZ::from_str("1  1").unwrap();
@@ -56,7 +58,7 @@ mod test_is_one {
         assert!(ident.is_one());
     }
 
-    /// Ensure that is_one returns `false` for other polynomials
+    /// Ensure that is_one returns `false` for other polynomials.
     #[test]
     fn one_rejection() {
         let small = PolyOverZ::from_str("4  1 0 0 1").unwrap();
@@ -72,7 +74,7 @@ mod test_is_zero {
     use super::PolyOverZ;
     use std::str::FromStr;
 
-    /// Ensure that is_zero returns `true` for the zero polynomial
+    /// Ensure that is_zero returns `true` for the zero polynomial.
 
     #[test]
     fn zero_detection() {
@@ -81,7 +83,7 @@ mod test_is_zero {
         assert!(zero.is_zero());
     }
 
-    /// Ensure that is_zero returns `false` for non-zero polynomials
+    /// Ensure that is_zero returns `false` for non-zero polynomials.
     #[test]
     fn zero_rejection() {
         let small = PolyOverZ::from_str("4  0 0 0 1").unwrap();
