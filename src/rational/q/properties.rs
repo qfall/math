@@ -57,6 +57,7 @@ impl Q {
     ///
     /// Returns true if the value is `0`.
     ///
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     ///
@@ -71,6 +72,7 @@ impl Q {
     ///
     /// Returns true if the value is `1`.
     ///
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     ///
@@ -86,7 +88,7 @@ impl Q {
 mod test_abs {
     use super::Q;
 
-    /// Checks whether `abs` returns the positive value for small values correctly
+    /// Checks whether `abs` returns the positive value for small values correctly.
     #[test]
     fn small_values() {
         let pos = Q::ONE;
@@ -98,7 +100,7 @@ mod test_abs {
         assert_eq!(Q::from(15), neg.abs());
     }
 
-    /// Checks whether `abs` returns the positive value for large values correctly
+    /// Checks whether `abs` returns the positive value for large values correctly.
     #[test]
     fn large_values() {
         let pos = Q::from(i64::MAX);
@@ -116,7 +118,7 @@ mod test_abs {
 mod test_inv {
     use super::Q;
 
-    /// Checks whether the inverse is correctly computed for small values
+    /// Checks whether the inverse is correctly computed for small values.
     #[test]
     fn small_values() {
         let val_0 = Q::from(4);
@@ -129,7 +131,7 @@ mod test_inv {
         assert_eq!(Q::try_from((&-7, &2)).unwrap(), inv_1);
     }
 
-    /// Checks whether the inverse is correctly computed for large values
+    /// Checks whether the inverse is correctly computed for large values.
     #[test]
     fn large_values() {
         let val_0 = Q::try_from((&1, &i64::MAX)).unwrap();
@@ -142,7 +144,7 @@ mod test_inv {
         assert_eq!(Q::try_from((&1, &i64::MIN)).unwrap(), inv_1);
     }
 
-    /// Checks whether the inverse of `0` returns `None`
+    /// Checks whether the inverse of `0` returns `None`.
     #[test]
     fn inv_zero_none() {
         let zero = Q::ZERO;
@@ -158,7 +160,7 @@ mod test_is_zero {
     use super::Q;
     use std::str::FromStr;
 
-    /// ensure that is_zero returns `true` for `0`
+    /// Ensure that is_zero returns `true` for `0`.
     #[test]
     fn zero_detection() {
         let zero = Q::from(0);
@@ -166,7 +168,7 @@ mod test_is_zero {
         assert!(zero.is_zero());
     }
 
-    /// ensure that is_zero returns `false` for non-zero values
+    /// Ensure that is_zero returns `false` for non-zero values.
     #[test]
     fn zero_rejection() {
         let small = Q::from(2);
@@ -182,7 +184,7 @@ mod test_is_one {
     use super::Q;
     use std::str::FromStr;
 
-    /// ensure that is_one returns `true` for `1`
+    /// Ensure that is_one returns `true` for `1`.
     #[test]
     fn one_detection() {
         let one = Q::ONE;
@@ -190,7 +192,7 @@ mod test_is_one {
         assert!(one.is_one());
     }
 
-    /// ensure that is_one returns `false` for other values
+    /// Ensure that is_one returns `false` for other values.
     #[test]
     fn one_rejection() {
         let small = Q::from(2);

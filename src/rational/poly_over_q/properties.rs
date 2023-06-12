@@ -15,8 +15,9 @@ use super::PolyOverQ;
 impl PolyOverQ {
     /// Checks if a [`PolyOverQ`] is the constant polynomial with coefficient `1`.
     ///
-    /// Returns true if the first coefficient is `1` and is the only coefficient
+    /// Returns true if the first coefficient is `1` and is the only coefficient.
     ///
+    /// Examples
     /// ```
     /// use qfall_math::rational::PolyOverQ;
     /// use std::str::FromStr;
@@ -30,8 +31,9 @@ impl PolyOverQ {
 
     /// Checks if every entry of a [`PolyOverQ`] is `0`.
     ///
-    /// Returns true if [`PolyOverQ`] has no coefficients
+    /// Returns true if [`PolyOverQ`] has no coefficients.
     ///
+    /// # Examples
     /// ```
     /// use qfall_math::rational::PolyOverQ;
     /// use std::str::FromStr;
@@ -49,7 +51,7 @@ mod test_is_one {
     use super::PolyOverQ;
     use std::str::FromStr;
 
-    /// ensure that is_one returns `true` for the one polynomial
+    /// Ensure that is_one returns `true` for the one polynomial.
     #[test]
     fn one_detection() {
         let one = PolyOverQ::from_str("1  1").unwrap();
@@ -57,7 +59,7 @@ mod test_is_one {
         assert!(one.is_one());
     }
 
-    /// ensure that is_one returns `false` for other polynomials
+    /// Ensure that is_one returns `false` for other polynomials.
     #[test]
     fn one_rejection() {
         let small = PolyOverQ::from_str("4  1 0 0 1/123").unwrap();
@@ -73,7 +75,7 @@ mod test_is_zero {
     use super::PolyOverQ;
     use std::str::FromStr;
 
-    /// ensure that is_zero returns `true` for the zero polynomial
+    /// Ensure that is_zero returns `true` for the zero polynomial.
     #[test]
     fn zero_detection() {
         let zero = PolyOverQ::from_str("0").unwrap();
@@ -81,13 +83,13 @@ mod test_is_zero {
         assert!(zero.is_zero());
     }
 
-    /// ensure that is_zero returns `false` for non-zero polynomials
+    /// Ensure that is_zero returns `false` for non-zero polynomials.
     #[test]
     fn zero_rejection() {
         let small = PolyOverQ::from_str("4  0 0 0 1/8").unwrap();
         let large = PolyOverQ::from_str(&format!("1  {}", (u128::MAX - 1) / 2 + 1)).unwrap();
 
-        assert!(!(small.is_zero()));
-        assert!(!(large.is_zero()));
+        assert!(!small.is_zero());
+        assert!(!large.is_zero());
     }
 }

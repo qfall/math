@@ -14,14 +14,23 @@ use flint_sys::fmpq_mat::{fmpq_mat_is_one, fmpq_mat_is_square, fmpq_mat_is_zero}
 impl MatQ {
     /// Checks if a [`MatQ`] is the identity matrix.
     ///
-    /// Returns true if every diagonal entry is `1` and all other entries are
-    /// `0`.
+    /// Returns true if every diagonal entry of the upper square matrix is `1`
+    /// and all other entries are `0`.
     ///
+    /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
     /// let value = MatQ::from_str("[[1, 0],[0, 1]]").unwrap();
+    /// assert!(value.is_identity())
+    /// ```
+    ///
+    /// ```
+    /// use qfall_math::rational::MatQ;
+    /// use std::str::FromStr;
+    ///
+    /// let value = MatQ::from_str("[[1, 0],[0, 1],[0, 0]]").unwrap();
     /// assert!(value.is_identity())
     /// ```
     pub fn is_identity(&self) -> bool {
@@ -32,6 +41,7 @@ impl MatQ {
     ///
     /// Returns true if the number of rows and columns is identical.
     ///
+    /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
@@ -47,6 +57,7 @@ impl MatQ {
     ///
     /// Returns true if every entry is `0`.
     ///
+    /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
@@ -64,7 +75,7 @@ mod test_is_identity {
     use super::MatQ;
     use std::str::FromStr;
 
-    /// ensure that is_identity returns `true` for identity matrices
+    /// Ensure that is_identity returns `true` for identity matrices.
     #[test]
     fn identity_detection() {
         let ident = MatQ::from_str("[[1, 0],[0, 1]]").unwrap();
@@ -72,7 +83,7 @@ mod test_is_identity {
         assert!(ident.is_identity());
     }
 
-    /// ensure that is_identity returns `false` for non-identity matrices
+    /// Ensure that is_identity returns `false` for non-identity matrices.
     #[test]
     fn identity_rejection() {
         let small = MatQ::from_str("[[0, 0],[2/81, 0]]").unwrap();
@@ -88,7 +99,7 @@ mod test_is_zero {
     use super::MatQ;
     use std::str::FromStr;
 
-    /// ensure that is_zero returns `true` for all zero matrices
+    /// Ensure that is_zero returns `true` for all zero matrices.
     #[test]
     fn zero_detection() {
         let zero = MatQ::from_str("[[0, 0],[0, 0]]").unwrap();
@@ -96,7 +107,7 @@ mod test_is_zero {
         assert!(zero.is_zero());
     }
 
-    /// ensure that is_zero returns `false` for non-zero matrices
+    /// Ensure that is_zero returns `false` for non-zero matrices.
     #[test]
     fn zero_rejection() {
         let small = MatQ::from_str("[[0, 7/8],[2, 0]]").unwrap();
@@ -112,23 +123,23 @@ mod test_is_square {
     use super::MatQ;
     use std::str::FromStr;
 
-    /// ensure that is_square returns `true` for square matrices
+    /// Ensure that is_square returns `true` for square matrices.
     #[test]
     fn square_detection() {
-        let square1 = MatQ::from_str("[[0, 4/9],[0, 0]]").unwrap();
-        let square2 = MatQ::from_str("[[0, 6/123, 4/7],[0, 0, 1/213],[4/341, 6/83, 1]]").unwrap();
+        let mat_2x3 = MatQ::from_str("[[0, 4/9],[0, 0]]").unwrap();
+        let mat_3x2 = MatQ::from_str("[[0, 6/123, 4/7],[0, 0, 1/213],[4/341, 6/83, 1]]").unwrap();
 
-        assert!(square1.is_square());
-        assert!(square2.is_square());
+        assert!(mat_2x3.is_square());
+        assert!(mat_3x2.is_square());
     }
 
-    /// ensure that is_square returns `false` for non-square matrices
+    /// Ensure that is_square returns `false` for non-square matrices.
     #[test]
     fn sqaure_rejection() {
-        let small = MatQ::from_str("[[0, 5/6, 4],[2/7, 0, 1]]").unwrap();
-        let large = MatQ::from_str("[[9, 0],[127/71, 0],[0, 0]]").unwrap();
+        let mat_2x3 = MatQ::from_str("[[0, 5/6, 4],[2/7, 0, 1]]").unwrap();
+        let mat_3x2 = MatQ::from_str("[[9, 0],[127/71, 0],[0, 0]]").unwrap();
 
-        assert!(!small.is_square());
-        assert!(!large.is_square());
+        assert!(!mat_2x3.is_square());
+        assert!(!mat_3x2.is_square());
     }
 }
