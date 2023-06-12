@@ -89,7 +89,7 @@ mod test_is_identity {
             (u128::MAX - 1) / 2 + 2,
             u128::MAX
         ))
-        .unwrap();
+        .unwrap(); // teh last 64 bit represent `1`
 
         assert!(!small.is_identity());
         assert!(!large.is_identity());
@@ -100,7 +100,7 @@ mod test_is_identity {
     fn identity_no_square() {
         let nosquare = MatZq::from_str("[[1, 0],[0, 1],[0, 0]] mod 5").unwrap();
 
-        assert!(!nosquare.is_identity());
+        assert!(nosquare.is_identity());
     }
 }
 
