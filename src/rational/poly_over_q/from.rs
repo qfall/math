@@ -114,7 +114,7 @@ impl<T: Into<Q>> From<T> for PolyOverQ {
     /// Create a constant [`PolyOverQ`] with a specified rational constant.
     ///
     /// # Parameters:
-    /// - `value` is the constant value the polynomial will have. It has to be a rational
+    /// - `value`: the constant value the polynomial will have. It has to be a rational
     ///   number like [`Q`], an integer or a tuple of integers `(numerator, denominator)`.
     ///
     /// Returns a new constant polynomial with the specified value.
@@ -135,13 +135,13 @@ impl<T: Into<Q>> From<T> for PolyOverQ {
     /// - Panics if the provided value can not be converted into a [`Q`].
     ///   For example, because of a division by zero.
     fn from(value: T) -> Self {
-        let mut ret = PolyOverQ::default();
+        let mut out = PolyOverQ::default();
         let value: Q = value.into();
 
         unsafe {
-            fmpq_poly_set_fmpq(&mut ret.poly, &value.value);
+            fmpq_poly_set_fmpq(&mut out.poly, &value.value);
         }
-        ret
+        out
     }
 }
 
@@ -273,11 +273,10 @@ mod test_from_poly_over_z {
 
 #[cfg(test)]
 mod test_from_rational {
+    use super::*;
     use crate::{integer::Z, traits::GetCoefficient};
 
-    use super::*;
-
-    /// Ensure that the [`From`] trait is works for large
+    /// Ensure that the [`From`] trait works for large
     /// borrowed and owned [`Q`], [`Z`] and [`u64`] instances.
     #[test]
     fn large() {
@@ -299,7 +298,7 @@ mod test_from_rational {
         assert_eq!(poly, poly_6);
     }
 
-    /// Ensure that the [`From`] trait is works for small
+    /// Ensure that the [`From`] trait works for small
     /// borrowed and owned [`Q`] and integer tuples instances.
     #[test]
     fn small() {
