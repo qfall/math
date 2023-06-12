@@ -88,13 +88,13 @@ impl<Integer: Into<Z> + AsInteger> From<Integer> for PolyOverZ {
     /// Create a constant [`PolyOverZ`] with a specified integer constant.
     ///
     /// # Parameters:
-    /// `value` an integer like [`Z`], rust Integers or a reference to these values.
+    /// `value`: an integer like [`Z`], rust Integers or a reference to these values.
     ///
     /// Returns a new constant polynomial with the specified value.
     ///
     /// # Examples:
     /// ```
-    /// use qfall_math::{integer::*, traits::GetCoefficient};
+    /// use qfall_math::{integer::*, traits::*};
     ///
     /// let one = PolyOverZ::from(1);
     ///
@@ -254,7 +254,7 @@ mod test_from_integer {
         let poly_3 = PolyOverZ::from(u64::MAX);
         let poly_4 = PolyOverZ::from(&u64::MAX);
 
-        assert_eq!(poly.get_coeff(0).unwrap(), value);
+        assert_eq!(value, poly.get_coeff(0).unwrap());
         assert_eq!(poly.get_degree(), 0);
         assert_eq!(poly, poly_2);
         assert_eq!(poly, poly_3);
@@ -276,7 +276,7 @@ mod test_from_integer {
         let poly_6 = PolyOverZ::from(&1i64);
         // Assume that it also works for the other rust integers.
 
-        assert_eq!(poly.get_coeff(0).unwrap(), value);
+        assert_eq!(value, poly.get_coeff(0).unwrap());
         assert_eq!(poly.get_degree(), 0);
         assert_eq!(poly, poly_2);
         assert_eq!(poly, poly_3);
@@ -298,7 +298,7 @@ mod test_from_integer {
         let poly_4 = PolyOverZ::from(&i64::MIN);
         // Assume that it also works for the other rust integers.
 
-        assert_eq!(poly.get_coeff(0).unwrap(), value);
+        assert_eq!(value, poly.get_coeff(0).unwrap());
         assert_eq!(poly.get_degree(), 0);
         assert_eq!(poly, poly_2);
         assert_eq!(poly, poly_3);
