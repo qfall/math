@@ -33,6 +33,7 @@ impl Zq {
     ///
     /// Returns true if the value is `0`.
     ///
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
     ///
@@ -47,6 +48,7 @@ impl Zq {
     ///
     /// Returns true if the value is `1`.
     ///
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
     ///
@@ -62,7 +64,7 @@ impl Zq {
 mod test_inv {
     use super::Zq;
 
-    /// Checks whether the inverse is correctly computed for small values
+    /// Checks whether the inverse is correctly computed for small values.
     #[test]
     fn small_values() {
         let val_0 = Zq::try_from((4, 7)).unwrap();
@@ -75,7 +77,7 @@ mod test_inv {
         assert_eq!(Zq::try_from((3, 7)).unwrap(), inv_1);
     }
 
-    /// Checks whether the inverse is correctly computed for large values
+    /// Checks whether the inverse is correctly computed for large values.
     #[test]
     fn large_values() {
         let val_0 = Zq::try_from((i64::MAX, u64::MAX)).unwrap();
@@ -94,7 +96,7 @@ mod test_inv {
         );
     }
 
-    /// Checks whether `inv` returns `None` for any values without an inverse
+    /// Checks whether `inv` returns `None` for any values without an inverse.
     #[test]
     fn no_inverse_returns_none() {
         let val_0 = Zq::try_from((4, 8)).unwrap();
@@ -112,7 +114,7 @@ mod test_is_zero {
     use super::Zq;
     use std::str::FromStr;
 
-    /// Ensure that is_zero returns `true` for `0`
+    /// Ensure that is_zero returns `true` for `0`.
     #[test]
     fn zero_detection() {
         let zero = Zq::from_str("0 mod 7").unwrap();
@@ -120,7 +122,7 @@ mod test_is_zero {
         assert!(zero.is_zero());
     }
 
-    /// Ensure that is_zero returns `false` for non-zero values
+    /// Ensure that is_zero returns `false` for non-zero values.
     #[test]
     fn zero_rejection() {
         let small = Zq::try_from_int_int(4, 9).unwrap();
@@ -137,7 +139,7 @@ mod test_is_one {
     use super::Zq;
     use std::str::FromStr;
 
-    /// Ensure that is_one returns `true` for `1`
+    /// Ensure that is_one returns `true` for `1`.
     #[test]
     fn one_detection() {
         let one = Zq::from_str("8 mod 7").unwrap();
@@ -145,7 +147,7 @@ mod test_is_one {
         assert!(one.is_one());
     }
 
-    /// Ensure that is_one returns `false` for other values
+    /// Ensure that is_one returns `false` for other values.
     #[test]
     fn one_rejection() {
         let small = Zq::from_str("12 mod 7").unwrap();
