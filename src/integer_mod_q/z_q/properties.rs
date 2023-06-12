@@ -112,7 +112,7 @@ mod test_is_zero {
     use super::Zq;
     use std::str::FromStr;
 
-    /// ensure that is_zero returns `true` for `0`
+    /// Ensure that is_zero returns `true` for `0`
     #[test]
     fn zero_detection() {
         let zero = Zq::from_str("0 mod 7").unwrap();
@@ -120,7 +120,7 @@ mod test_is_zero {
         assert!(zero.is_zero());
     }
 
-    /// ensure that is_zero returns `false` for non-zero values
+    /// Ensure that is_zero returns `false` for non-zero values
     #[test]
     fn zero_rejection() {
         let small = Zq::try_from_int_int(4, 9).unwrap();
@@ -137,7 +137,7 @@ mod test_is_one {
     use super::Zq;
     use std::str::FromStr;
 
-    /// ensure that is_one returns `true` for `1`
+    /// Ensure that is_one returns `true` for `1`
     #[test]
     fn one_detection() {
         let one = Zq::from_str("8 mod 7").unwrap();
@@ -145,7 +145,7 @@ mod test_is_one {
         assert!(one.is_one());
     }
 
-    /// ensure that is_one returns `false` for other values
+    /// Ensure that is_one returns `false` for other values
     #[test]
     fn one_rejection() {
         let small = Zq::from_str("12 mod 7").unwrap();

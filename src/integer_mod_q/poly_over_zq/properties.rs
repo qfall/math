@@ -71,7 +71,7 @@ mod test_is_irreducible {
     use crate::integer_mod_q::PolyOverZq;
     use std::str::FromStr;
 
-    /// ensure that a irreducible [`PolyOverZq`] returns `true`
+    /// Ensure that a irreducible [`PolyOverZq`] returns `true`
     #[test]
     fn poly_is_irreducible() {
         // 9X^2 + 12X + 10 is irreducible over Z17
@@ -79,7 +79,7 @@ mod test_is_irreducible {
         assert!(poly_irr.is_irreducible())
     }
 
-    /// ensure that a reducible [`PolyOverZq`] returns `false`
+    /// Ensure that a reducible [`PolyOverZq`] returns `false`
     #[test]
     fn poly_is_reducible() {
         let poly_irr = PolyOverZq::from_str("3  1 2 1 mod 17").unwrap();
@@ -92,7 +92,7 @@ mod test_is_one {
     use super::PolyOverZq;
     use std::str::FromStr;
 
-    /// ensure that is_one returns `true` for the one polynomial
+    /// Ensure that is_one returns `true` for the one polynomial
     #[test]
     fn one_detection() {
         let one = PolyOverZq::from_str("1  1 mod 7").unwrap();
@@ -102,7 +102,7 @@ mod test_is_one {
         assert!(one2.is_one());
     }
 
-    /// ensure that is_one returns `false` for other polynomials
+    /// Ensure that is_one returns `false` for other polynomials
     #[test]
     fn one_rejection() {
         let small = PolyOverZq::from_str("4  1 0 0 1 mod 7").unwrap();
@@ -120,7 +120,7 @@ mod test_is_zero {
     use super::PolyOverZq;
     use std::str::FromStr;
 
-    /// ensure that is_zero returns `true` for the zero polynomial
+    /// Ensure that is_zero returns `true` for the zero polynomial
     #[test]
     fn zero_detection() {
         let zero = PolyOverZq::from_str("0 mod 7").unwrap();
@@ -130,7 +130,7 @@ mod test_is_zero {
         assert!(zero2.is_zero());
     }
 
-    /// ensure that is_zero returns `false` for non-zero polynomials
+    /// Ensure that is_zero returns `false` for non-zero polynomials
     #[test]
     fn zero_rejection() {
         let small = PolyOverZq::from_str("4  0 0 0 1 mod 7").unwrap();
