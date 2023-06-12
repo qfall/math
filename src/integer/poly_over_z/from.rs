@@ -13,14 +13,15 @@
 //! The explicit functions contain the documentation.
 
 use super::PolyOverZ;
-use crate::{error::MathError, integer_mod_q::PolyOverZq};
-use flint_sys::{fmpz_mod_poly::fmpz_mod_poly_get_fmpz_poly, fmpz_poly::fmpz_poly_set_str};
+use crate::integer_mod_q::PolyOverZq;
+use crate::{error::MathError, integer::Z, traits::AsInteger};
+use flint_sys::fmpz_mod_poly::fmpz_mod_poly_get_fmpz_poly;
+use flint_sys::fmpz_poly::{fmpz_poly_set_fmpz, fmpz_poly_set_str};
 use std::{ffi::CString, str::FromStr};
 
 impl FromStr for PolyOverZ {
     type Err = MathError;
 
-    // TODO: the second whitespace is not shown in the Rust-documentation
     /// Create a new polynomial with arbitrarily many coefficients of type
     /// [`Z`](crate::integer::Z).
     ///
@@ -80,6 +81,41 @@ impl FromStr for PolyOverZ {
             0 => Ok(res),
             _ => Err(MathError::InvalidStringToPolyInput(s.to_owned())),
         }
+    }
+}
+
+impl<Integer: Into<Z> + AsInteger> From<Integer> for PolyOverZ {
+    /// Create a constant [`PolyOverZ`] with a specified integer constant.
+    ///
+    /// # Parameters:
+    /// `value`: an integer like [`Z`], rust Integers or a reference to these values.
+    ///
+    /// Returns a new constant polynomial with the specified value.
+    ///
+    /// # Examples:
+    /// ```
+    /// use qfall_math::{integer::*, traits::*};
+    ///
+    /// let one = PolyOverZ::from(1);
+    ///
+    /// assert_eq!(one.get_coeff(0).unwrap(), Z::ONE);
+    /// assert_eq!(one.get_degree(), 0);
+    /// ```
+    fn from(value: Integer) -> Self {
+        let mut ret = PolyOverZ::default();
+        unsafe {
+            match value.get_fmpz_ref() {
+                Some(fmpz_ref) => fmpz_poly_set_fmpz(&mut ret.poly, fmpz_ref),
+                None => {
+                    // Does not include a fmpz in the original data Type.
+                    // We convert the value into Z to also handle the memory management.
+                    let z_value: Z = value.into();
+                    fmpz_poly_set_fmpz(&mut ret.poly, &z_value.value)
+                }
+            }
+        }
+
+        ret
     }
 }
 
@@ -199,5 +235,73 @@ mod test_from_poly_over_zq {
 
         let cmp_poly = PolyOverZ::from_str(&format!("4  0 1 102 {}", u64::MAX - 58)).unwrap();
         assert_eq!(cmp_poly, poly_z);
+    }
+}
+
+#[cfg(test)]
+mod test_from_integer {
+    use super::*;
+    use crate::traits::GetCoefficient;
+
+    /// Ensure that the [`From`] trait works for large
+    /// borrowed and owned [`Z`] and [`u64`] instances.
+    #[test]
+    fn large() {
+        let value = Z::from(u64::MAX);
+
+        let poly = PolyOverZ::from(&value);
+        let poly_2 = PolyOverZ::from(value.clone());
+        let poly_3 = PolyOverZ::from(u64::MAX);
+        let poly_4 = PolyOverZ::from(&u64::MAX);
+
+        assert_eq!(value, poly.get_coeff(0).unwrap());
+        assert_eq!(poly.get_degree(), 0);
+        assert_eq!(poly, poly_2);
+        assert_eq!(poly, poly_3);
+        assert_eq!(poly, poly_4);
+    }
+
+    /// Ensure that the [`From`] trait works for small
+    /// borrowed and owned [`Z`] and rust integer instances.
+    #[test]
+    fn small() {
+        let value = Z::ONE;
+
+        let poly = PolyOverZ::from(&value);
+        let poly_2 = PolyOverZ::from(value.clone());
+
+        let poly_3 = PolyOverZ::from(1u64);
+        let poly_4 = PolyOverZ::from(&1u64);
+        let poly_5 = PolyOverZ::from(1i64);
+        let poly_6 = PolyOverZ::from(&1i64);
+        // Assume that it also works for the other rust integers.
+
+        assert_eq!(value, poly.get_coeff(0).unwrap());
+        assert_eq!(poly.get_degree(), 0);
+        assert_eq!(poly, poly_2);
+        assert_eq!(poly, poly_3);
+        assert_eq!(poly, poly_4);
+        assert_eq!(poly, poly_5);
+        assert_eq!(poly, poly_6);
+    }
+
+    /// Ensure that the [`From`] trait works for large negative
+    /// borrowed and owned [`Z`] and rust integer instances.
+    #[test]
+    fn negative() {
+        let value = Z::from(i64::MIN);
+
+        let poly = PolyOverZ::from(&value);
+        let poly_2 = PolyOverZ::from(value.clone());
+
+        let poly_3 = PolyOverZ::from(i64::MIN);
+        let poly_4 = PolyOverZ::from(&i64::MIN);
+        // Assume that it also works for the other rust integers.
+
+        assert_eq!(value, poly.get_coeff(0).unwrap());
+        assert_eq!(poly.get_degree(), 0);
+        assert_eq!(poly, poly_2);
+        assert_eq!(poly, poly_3);
+        assert_eq!(poly, poly_4);
     }
 }
