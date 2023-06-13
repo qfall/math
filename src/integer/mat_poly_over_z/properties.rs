@@ -76,7 +76,6 @@ mod test_is_identity {
     use crate::integer::MatPolyOverZ;
     use std::str::FromStr;
 
-
     /// Ensure that true is returned for a 1x1, 2x2, 3x3, 2x3, 3x2 identity matrix.
     #[test]
     fn identity_true() {
