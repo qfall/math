@@ -202,7 +202,7 @@ mod test_div {
     #[should_panic]
     fn div_by_zero() {
         let a: Q = Q::from(2);
-        let b: Q = Q::default();
+        let b: Q = Q::ZERO;
         let _c = a / b;
     }
 
@@ -210,7 +210,7 @@ mod test_div {
     #[test]
     fn div_by_zero_safe() {
         let a: Q = Q::from(2);
-        let b: Q = Q::default();
+        let b: Q = Q::ZERO;
         assert!(&a.div_safe(&b).is_err());
     }
 }
@@ -284,7 +284,7 @@ mod test_div_between_q_and_z {
     #[should_panic]
     fn div_by_zero() {
         let a: Q = Q::from_str("2/3").unwrap();
-        let b: Z = Z::default();
+        let b: Z = Z::ZERO;
         let _c = a / b;
     }
 }

@@ -93,10 +93,10 @@ pub fn evaluate_indices(
     index1: impl TryInto<i64> + Display,
     index2: impl TryInto<i64> + Display,
 ) -> Result<(i64, i64), MathError> {
-    let row_i64 = evaluate_index(index1)?;
-    let column_i64 = evaluate_index(index2)?;
+    let index1_i64 = evaluate_index(index1)?;
+    let index2_i64 = evaluate_index(index2)?;
 
-    Ok((row_i64, column_i64))
+    Ok((index1_i64, index2_i64))
 }
 
 /// Evaluates whether the provided row and column are referencing an entry in a matrix.

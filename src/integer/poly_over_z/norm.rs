@@ -9,12 +9,11 @@
 //! This module includes functionality to compute several norms
 //! defined on polynomials.
 
-use std::cmp::max;
-
 use crate::{
     integer::{PolyOverZ, Z},
     traits::{GetCoefficient, Pow},
 };
+use std::cmp::max;
 
 impl PolyOverZ {
     /// Returns the squared Euclidean norm or 2-norm of the given polynomial.
