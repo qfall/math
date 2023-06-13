@@ -12,14 +12,45 @@ use super::Z;
 use crate::rational::Q;
 use flint_sys::{
     fmpq::{fmpq, fmpq_inv},
-    fmpz::{fmpz, fmpz_abs, fmpz_bits, fmpz_is_prime},
+    fmpz::{fmpz, fmpz_abs, fmpz_bits, fmpz_is_one, fmpz_is_prime, fmpz_is_zero},
 };
 
 impl Z {
+    /// Checks if a [`Z`] is `0`.
+    ///
+    /// Returns true if the value is `0`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    ///
+    /// let value = Z::ZERO;
+    /// assert!(value.is_zero())
+    /// ```
+    pub fn is_zero(&self) -> bool {
+        1 == unsafe { fmpz_is_zero(&self.value) }
+    }
+
+    /// Checks if a [`Z`] is `1`.
+    ///
+    /// Returns true if the value is `1`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    ///
+    /// let value = Z::ONE;
+    /// assert!(value.is_one())
+    /// ```
+    pub fn is_one(&self) -> bool {
+        1 == unsafe { fmpz_is_one(&self.value) }
+    }
+
     /// Checks if a [`Z`] is prime.
     ///
     /// Returns true if the value is prime.
     ///
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     ///
@@ -103,7 +134,7 @@ mod test_bits {
     use super::Z;
 
     /// Checks whether the number of bits needed to store the absolute value
-    /// is output correctly for small values
+    /// is output correctly for small values.
     #[test]
     fn small_values() {
         assert_eq!(0, Z::ZERO.bits());
@@ -116,7 +147,7 @@ mod test_bits {
     }
 
     /// Checks whether the number of bits needed to store the absolute value
-    /// is output correctly for large values
+    /// is output correctly for large values.
     #[test]
     fn large_values() {
         let vector = vec![255; 16];
@@ -133,7 +164,7 @@ mod test_bits {
 mod test_abs {
     use super::Z;
 
-    /// Checks whether `abs` returns the positive value for small values correctly
+    /// Checks whether `abs` returns the positive value for small values correctly.
     #[test]
     fn small_values() {
         let pos = Z::ONE;
@@ -145,7 +176,7 @@ mod test_abs {
         assert_eq!(Z::from(15), neg.abs());
     }
 
-    /// Checks whether `abs` returns the positive value for large values correctly
+    /// Checks whether `abs` returns the positive value for large values correctly.
     #[test]
     fn large_values() {
         let pos = Z::from(i64::MAX);
@@ -160,7 +191,7 @@ mod test_abs {
 mod test_is_prime {
     use super::Z;
 
-    /// ensure that primes are correctly detected
+    /// Ensure that primes are correctly detected.
     #[test]
     fn prime_detection() {
         let small = Z::from(2_i32.pow(16) + 1);
@@ -169,7 +200,7 @@ mod test_is_prime {
         assert!(large.is_prime());
     }
 
-    /// ensure that non-primes are correctly detected
+    /// Ensure that non-primes are correctly detected.
     #[test]
     fn non_prime_detection() {
         let small = Z::from(2_i32.pow(16));
@@ -183,7 +214,7 @@ mod test_is_prime {
 mod test_inv {
     use super::{Q, Z};
 
-    /// Checks whether the inverse is correctly computed for small values
+    /// Checks whether the inverse is correctly computed for small values.
     #[test]
     fn small_values() {
         let val_0 = Z::from(4);
@@ -196,7 +227,7 @@ mod test_inv {
         assert_eq!(Q::try_from((&-1, &7)).unwrap(), inv_1);
     }
 
-    /// Checks whether the inverse is correctly computed for large values
+    /// Checks whether the inverse is correctly computed for large values.
     #[test]
     fn large_values() {
         let val_0 = Z::from(i64::MAX);
@@ -209,7 +240,7 @@ mod test_inv {
         assert_eq!(Q::try_from((&1, &i64::MIN)).unwrap(), inv_1);
     }
 
-    /// Checks whether the inverse of `0` returns `None`
+    /// Checks whether the inverse of `0` returns `None`.
     #[test]
     fn inv_zero_none() {
         let zero = Z::ZERO;
@@ -217,5 +248,53 @@ mod test_inv {
         let inv_zero = zero.inverse();
 
         assert!(inv_zero.is_none());
+    }
+}
+
+#[cfg(test)]
+mod test_is_zero {
+    use super::Z;
+    use std::str::FromStr;
+
+    /// Ensure that is_zero returns `true` for `0`.
+    #[test]
+    fn zero_detection() {
+        let zero = Z::ZERO;
+
+        assert!(zero.is_zero());
+    }
+
+    /// Ensure that is_zero returns `false` for non-zero values.
+    #[test]
+    fn zero_rejection() {
+        let small = Z::from(2);
+        let large = Z::from_str(&format!("{}", (u128::MAX - 1) / 2 + 1)).unwrap();
+
+        assert!(!small.is_zero());
+        assert!(!large.is_zero());
+    }
+}
+
+#[cfg(test)]
+mod test_is_one {
+    use super::Z;
+    use std::str::FromStr;
+
+    /// Ensure that is_one returns `true` for `1`.
+    #[test]
+    fn one_detection() {
+        let zero = Z::ONE;
+
+        assert!(zero.is_one());
+    }
+
+    /// Ensure that is_one returns `false` for other values.
+    #[test]
+    fn one_rejection() {
+        let small = Z::from(2);
+        let large = Z::from_str(&format!("{}", (u128::MAX - 1) / 2 + 2)).unwrap();
+
+        assert!(!small.is_one());
+        assert!(!large.is_one());
     }
 }
