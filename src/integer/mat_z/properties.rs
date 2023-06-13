@@ -14,7 +14,7 @@ use flint_sys::fmpz_mat::{fmpz_mat_is_one, fmpz_mat_is_square, fmpz_mat_is_zero}
 impl MatZ {
     /// Checks if a [`MatZ`] is the identity matrix.
     ///
-    /// Returns true if every diagonal entry of the upper square matrix is `1`
+    /// Returns true if every diagonal entry of the matrix is `1`
     /// and every other entry is `0`.
     ///
     /// # Examples
@@ -47,7 +47,7 @@ impl MatZ {
 
     /// Checks if every entry of a [`MatZ`] is `0`.
     ///
-    /// Returns true if every entry is `0`.
+    /// Returns true if every entry of thr matrix is `0`.
     ///
     /// # Examples
     /// ```
@@ -97,12 +97,15 @@ mod test_is_zero {
     use std::str::FromStr;
 
     /// Ensure that is_zero returns `true` for all zero matrices.
-
     #[test]
     fn zero_detection() {
-        let zero = MatZ::from_str("[[0, 0],[0, 0]]").unwrap();
+        let zero1 = MatZ::from_str("[[0, 0],[0, 0],[0, 0]]").unwrap();
+        let zero2 = MatZ::from_str("[[0, 0, 0, 0],[0, 0, 0, 0]]").unwrap();
+        let zero3 = MatZ::from_str("[[0, 0],[0, 0]]").unwrap();
 
-        assert!(zero.is_zero());
+        assert!(zero1.is_zero());
+        assert!(zero2.is_zero());
+        assert!(zero3.is_zero());
     }
 
     /// Ensure that is_zero returns `false` for non-zero matrices.

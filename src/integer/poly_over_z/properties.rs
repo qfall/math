@@ -14,7 +14,7 @@ use flint_sys::fmpz_poly::{fmpz_poly_degree, fmpz_poly_is_one};
 impl PolyOverZ {
     /// Checks if a [`PolyOverZ`] is the constant polynomial with coefficient `1`.
     ///
-    /// Returns true if the first coefficient is `1` and is the only coefficient.
+    /// Returns true if there is only one coefficient, which is `1`.
     ///
     /// # Examples
     /// ```
@@ -53,9 +53,11 @@ mod test_is_one {
     /// Ensure that is_one returns `true` for the one polynomial.
     #[test]
     fn one_detection() {
-        let ident = PolyOverZ::from_str("1  1").unwrap();
+        let constant1 = PolyOverZ::from_str("1  1").unwrap();
+        let constant2 = PolyOverZ::from_str("3  1 0 0").unwrap();
 
-        assert!(ident.is_one());
+        assert!(constant1.is_one());
+        assert!(constant2.is_one());
     }
 
     /// Ensure that is_one returns `false` for other polynomials.
@@ -64,8 +66,8 @@ mod test_is_one {
         let small = PolyOverZ::from_str("4  1 0 0 1").unwrap();
         let large = PolyOverZ::from_str(&format!("1  {}", (u128::MAX - 1) / 2 + 2)).unwrap();
 
-        assert!(!(small.is_one()));
-        assert!(!(large.is_one()));
+        assert!(!small.is_one());
+        assert!(!large.is_one());
     }
 }
 
@@ -75,12 +77,13 @@ mod test_is_zero {
     use std::str::FromStr;
 
     /// Ensure that is_zero returns `true` for the zero polynomial.
-
     #[test]
     fn zero_detection() {
-        let zero = PolyOverZ::from_str("0").unwrap();
+        let zero1 = PolyOverZ::from_str("0").unwrap();
+        let zero2 = PolyOverZ::from_str("3  0 0 0").unwrap();
 
-        assert!(zero.is_zero());
+        assert!(zero1.is_zero());
+        assert!(zero2.is_zero());
     }
 
     /// Ensure that is_zero returns `false` for non-zero polynomials.
@@ -89,7 +92,7 @@ mod test_is_zero {
         let small = PolyOverZ::from_str("4  0 0 0 1").unwrap();
         let large = PolyOverZ::from_str(&format!("1  {}", (u128::MAX - 1) / 2 + 1)).unwrap();
 
-        assert!(!(small.is_zero()));
-        assert!(!(large.is_zero()));
+        assert!(!small.is_zero());
+        assert!(!large.is_zero());
     }
 }

@@ -35,7 +35,7 @@ impl MatPolyOverZ {
     /// Checks if a [`MatPolyOverZ`] is a square matrix, i.e.
     /// the number of rows and columns is identical.
     ///
-    /// Returns `true` if the matrix is the square and `false` otherwise.
+    /// Returns `true` if the number of rows and columns is identical.
     ///
     /// # Examples
     /// ```
@@ -165,7 +165,6 @@ mod test_is_zero {
     use std::str::FromStr;
 
     /// Ensure that is_zero returns `true` for all zero matrices.
-
     #[test]
     fn zero_detection() {
         let zero = MatPolyOverZ::from_str("[[0, 0],[0, 0]]").unwrap();
@@ -183,7 +182,7 @@ mod test_is_zero {
             MatPolyOverZ::from_str(&format!("[[0, 0],[1  {}, 0]]", (u128::MAX - 1) / 2 + 1))
                 .unwrap();
 
-        assert!(!(small.is_zero()));
-        assert!(!(large.is_zero()));
+        assert!(!small.is_zero());
+        assert!(!large.is_zero());
     }
 }

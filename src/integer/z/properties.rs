@@ -270,8 +270,8 @@ mod test_is_zero {
         let small = Z::from(2);
         let large = Z::from_str(&format!("{}", (u128::MAX - 1) / 2 + 1)).unwrap();
 
-        assert!(!(small.is_zero()));
-        assert!(!(large.is_zero()));
+        assert!(!small.is_zero());
+        assert!(!large.is_zero());
     }
 }
 
@@ -294,7 +294,7 @@ mod test_is_one {
         let small = Z::from(2);
         let large = Z::from_str(&format!("{}", (u128::MAX - 1) / 2 + 2)).unwrap();
 
-        assert!(!(small.is_one()));
-        assert!(!(large.is_one()));
+        assert!(!small.is_one());
+        assert!(!large.is_one());
     }
 }
