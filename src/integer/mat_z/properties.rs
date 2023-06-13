@@ -47,7 +47,7 @@ impl MatZ {
 
     /// Checks if every entry of a [`MatZ`] is `0`.
     ///
-    /// Returns true if every entry of thr matrix is `0`.
+    /// Returns true if every entry of the matrix is `0`.
     ///
     /// # Examples
     /// ```
