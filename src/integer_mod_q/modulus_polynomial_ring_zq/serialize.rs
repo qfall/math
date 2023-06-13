@@ -124,7 +124,7 @@ mod test_deserialize {
     fn non_prime_q() {
         let a: Result<ModulusPolynomialRingZq, serde_json::Error> =
             serde_json::from_str(&format!("{{\"poly\":\"2  17 42 mod {}\"}}", u64::MAX));
-        assert!(a.is_err());
+        assert!(a.is_ok());
     }
 
     /// Tests whether deserialization of a negative `q` [`ModulusPolynomialRingZq`] fails.

@@ -15,7 +15,7 @@ use flint_sys::{fmpz::fmpz_equal, fmpz_mod_poly::fmpz_mod_poly_equal};
 impl PartialEq for ModulusPolynomialRingZq {
     /// Checks if two modulus objects of type over [`ModulusPolynomialRingZq`] are equal.
     /// They are considered equal, if their representation as a
-    /// [`PolyOverZq`](crate::integer_mod_q::PolyOverZq) match: i.e. the prime `q`
+    /// [`PolyOverZq`](crate::integer_mod_q::PolyOverZq) match: i.e. the modulus `q`
     /// and the coefficients of the polynomial under modulus `q`.
     /// Used by the `==` and `!=` operators.
     ///
@@ -43,7 +43,7 @@ impl PartialEq for ModulusPolynomialRingZq {
     /// ```
     fn eq(&self, other: &Self) -> bool {
         unsafe {
-            // compares the prime `q`
+            // compares the modulus `q`
             1 == fmpz_equal(
                 &self.get_fq_ctx_struct().ctxp[0].n[0],
                 &other.get_fq_ctx_struct().ctxp[0].n[0],

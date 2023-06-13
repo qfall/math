@@ -36,37 +36,9 @@ impl From<(&PolyOverZ, &ModulusPolynomialRingZq)> for PolynomialRingZq {
     /// let poly_ring = PolynomialRingZq::from((&poly, &modulus));
     /// ```
     fn from(value: (&PolyOverZ, &ModulusPolynomialRingZq)) -> Self {
-        Self::from_poly_over_z_modulus_polynomial_ring_zq(value.0, value.1)
-    }
-}
-
-impl PolynomialRingZq {
-    /// Create a new polynomial ring object of type [`PolynomialRingZq`].
-    ///
-    /// Parameters:
-    /// - `poly`: the polynomial
-    /// - `modulus`: the modulus which defines the ring
-    ///
-    /// Returns a new element inside the polynomial ring.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer_mod_q::PolynomialRingZq;
-    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
-    /// use qfall_math::integer::PolyOverZ;
-    /// use std::str::FromStr;
-    ///
-    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-    /// let poly = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
-    /// let poly_ring = PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly, &modulus);
-    /// ```
-    pub fn from_poly_over_z_modulus_polynomial_ring_zq(
-        poly: &PolyOverZ,
-        modulus: &ModulusPolynomialRingZq,
-    ) -> Self {
         let mut out = Self {
-            poly: poly.clone(),
-            modulus: modulus.clone(),
+            poly: value.0.clone(),
+            modulus: value.1.clone(),
         };
         out.reduce();
         out
@@ -90,12 +62,10 @@ mod test_from_poly_over_z_modulus_polynomial_ring_zq {
             ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", BITPRIME64)).unwrap();
 
         let poly = PolyOverZ::from_str(&format!("4  {} {} 1 1", BITPRIME64 + 2, u64::MAX)).unwrap();
-        let poly_ring =
-            PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly, &modulus);
+        let poly_ring = PolynomialRingZq::from((&poly, &modulus));
 
         let cmp_poly = PolyOverZ::from_str("3  1 58 1").unwrap();
-        let cmp_poly_ring =
-            PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&cmp_poly, &modulus);
+        let cmp_poly_ring = PolynomialRingZq::from((&cmp_poly, &modulus));
 
         assert_eq!(poly_ring, cmp_poly_ring);
     }
@@ -107,10 +77,8 @@ mod test_from_poly_over_z_modulus_polynomial_ring_zq {
             ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", BITPRIME64)).unwrap();
         let poly = PolyOverZ::from_str(&format!("4  {} {} 1 1", BITPRIME64 + 2, u64::MAX)).unwrap();
 
-        let poly_ring_1 =
-            PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly, &modulus);
-        let poly_ring_2 =
-            PolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly, &modulus);
+        let poly_ring_1 = PolynomialRingZq::from((&poly, &modulus));
+        let poly_ring_2 = PolynomialRingZq::from((&poly, &modulus));
 
         assert_eq!(poly_ring_1, poly_ring_2);
     }
