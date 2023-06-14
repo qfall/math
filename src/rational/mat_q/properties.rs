@@ -23,7 +23,7 @@ impl MatQ {
     /// use std::str::FromStr;
     ///
     /// let value = MatQ::from_str("[[1, 0],[0, 1]]").unwrap();
-    /// assert!(value.is_identity())
+    /// assert!(value.is_identity());
     /// ```
     ///
     /// ```
@@ -31,7 +31,7 @@ impl MatQ {
     /// use std::str::FromStr;
     ///
     /// let value = MatQ::from_str("[[1, 0],[0, 1],[0, 0]]").unwrap();
-    /// assert!(value.is_identity())
+    /// assert!(value.is_identity());
     /// ```
     pub fn is_identity(&self) -> bool {
         1 == unsafe { fmpq_mat_is_one(&self.matrix) }
@@ -63,7 +63,7 @@ impl MatQ {
     /// use std::str::FromStr;
     ///
     /// let value = MatQ::from_str("[[0, 0],[0, 0]]").unwrap();
-    /// assert!(value.is_zero())
+    /// assert!(value.is_zero());
     /// ```
     pub fn is_zero(&self) -> bool {
         1 == unsafe { fmpq_mat_is_zero(&self.matrix) }

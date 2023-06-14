@@ -39,7 +39,7 @@ impl PolyOverQ {
     /// use std::str::FromStr;
     ///
     /// let value = PolyOverQ::from_str("0").unwrap();
-    /// assert!(value.is_zero())
+    /// assert!(value.is_zero());
     /// ```
     pub fn is_zero(&self) -> bool {
         -1 == unsafe { fmpq_poly_degree(&self.poly) }

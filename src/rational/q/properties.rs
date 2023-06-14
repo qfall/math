@@ -62,7 +62,7 @@ impl Q {
     /// use qfall_math::rational::Q;
     ///
     /// let value = Q::ZERO;
-    /// assert!(value.is_zero())
+    /// assert!(value.is_zero());
     /// ```
     pub fn is_zero(&self) -> bool {
         1 == unsafe { fmpq_is_zero(&self.value) }
