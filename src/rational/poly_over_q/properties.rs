@@ -17,7 +17,7 @@ impl PolyOverQ {
     ///
     /// Returns true if the first coefficient is `1` and is the only coefficient.
     ///
-    /// Examples
+    /// # Examples
     /// ```
     /// use qfall_math::rational::PolyOverQ;
     /// use std::str::FromStr;
