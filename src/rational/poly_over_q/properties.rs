@@ -65,8 +65,8 @@ mod test_is_one {
         let small = PolyOverQ::from_str("4  1 0 0 1/123").unwrap();
         let large = PolyOverQ::from_str(&format!("1  {}", (u128::MAX - 1) / 2 + 2)).unwrap();
 
-        assert!(!(small.is_one()));
-        assert!(!(large.is_one()));
+        assert!(!small.is_one());
+        assert!(!large.is_one());
     }
 }
 
