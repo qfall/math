@@ -198,7 +198,7 @@ mod test_is_one {
         let small = Q::from(2);
         let large = Q::from_str(&format!("1/{}", (u128::MAX - 1) / 2 + 2)).unwrap();
 
-        assert!(!(small.is_one()));
-        assert!(!(large.is_one()));
+        assert!(!small.is_one());
+        assert!(!large.is_one());
     }
 }
