@@ -33,7 +33,7 @@ impl MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let value = MatZq::from_str("[[1, 0],[0, 1], [0, 0]] mod 17").unwrap();
+    /// let value = MatZq::from_str("[[1, 0],[0, 1],[0, 0]] mod 17").unwrap();
     /// assert!(value.is_identity());
     /// ```
     pub fn is_identity(&self) -> bool {
