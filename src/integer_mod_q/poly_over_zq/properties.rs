@@ -27,7 +27,7 @@ impl PolyOverZq {
     ///
     /// let poly_irr = PolyOverZq::from_str("2  1 1 mod 17").unwrap();
     /// // returns true, since X + 1 is irreducible
-    /// assert!(poly_irr.is_irreducible())
+    /// assert!(poly_irr.is_irreducible());
     /// ```
     pub fn is_irreducible(&self) -> bool {
         1 == unsafe {
@@ -45,7 +45,7 @@ impl PolyOverZq {
     /// use std::str::FromStr;
     ///
     /// let value = PolyOverZq::from_str("1  1 mod 4").unwrap();
-    /// assert!(value.is_one())
+    /// assert!(value.is_one());
     /// ```
     pub fn is_one(&self) -> bool {
         1 == unsafe { fmpz_mod_poly_is_one(&self.poly, self.modulus.get_fmpz_mod_ctx_struct()) }
@@ -61,7 +61,7 @@ impl PolyOverZq {
     /// use std::str::FromStr;
     ///
     /// let value = PolyOverZq::from_str("0 mod 7").unwrap();
-    /// assert!(value.is_zero())
+    /// assert!(value.is_zero());
     /// ```
     pub fn is_zero(&self) -> bool {
         -1 == unsafe { fmpz_mod_poly_degree(&self.poly, self.modulus.get_fmpz_mod_ctx_struct()) }
@@ -78,14 +78,14 @@ mod test_is_irreducible {
     fn poly_is_irreducible() {
         // 9X^2 + 12X + 10 is irreducible over Z17
         let poly_irr = PolyOverZq::from_str("3  10 12 9 mod 17").unwrap();
-        assert!(poly_irr.is_irreducible())
+        assert!(poly_irr.is_irreducible());
     }
 
     /// Ensure that a reducible [`PolyOverZq`] returns `false`.
     #[test]
     fn poly_is_reducible() {
         let poly_irr = PolyOverZq::from_str("3  1 2 1 mod 17").unwrap();
-        assert!(!poly_irr.is_irreducible())
+        assert!(!poly_irr.is_irreducible());
     }
 }
 

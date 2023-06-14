@@ -38,7 +38,7 @@ impl Zq {
     /// use qfall_math::integer_mod_q::Zq;
     ///
     /// let value = Zq::try_from((0,7)).unwrap();
-    /// assert!(value.is_zero())
+    /// assert!(value.is_zero());
     /// ```
     pub fn is_zero(&self) -> bool {
         1 == unsafe { fmpz_is_zero(&self.value.value) }
@@ -53,7 +53,7 @@ impl Zq {
     /// use qfall_math::integer_mod_q::Zq;
     ///
     /// let value = Zq::try_from((1,7)).unwrap();
-    /// assert!(value.is_one())
+    /// assert!(value.is_one());
     /// ```
     pub fn is_one(&self) -> bool {
         1 == unsafe { fmpz_mod_is_one(&self.value.value, self.modulus.get_fmpz_mod_ctx_struct()) }

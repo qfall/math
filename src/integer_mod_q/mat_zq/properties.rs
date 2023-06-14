@@ -26,7 +26,7 @@ impl MatZq {
     /// use std::str::FromStr;
     ///
     /// let value = MatZq::from_str("[[1, 0],[0, 1]] mod 17").unwrap();
-    /// assert!(value.is_identity())
+    /// assert!(value.is_identity());
     /// ```
     ///
     /// ```
