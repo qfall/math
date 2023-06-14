@@ -26,6 +26,7 @@ mod ownership;
 mod sample;
 mod serialize;
 mod set;
+mod solve;
 mod sort;
 mod tensor;
 mod to_string;
