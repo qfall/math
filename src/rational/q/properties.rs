@@ -174,8 +174,8 @@ mod test_is_zero {
         let small = Q::from(2);
         let large = Q::from_str(&format!("{}", (u128::MAX - 1) / 2 + 1)).unwrap();
 
-        assert!(!(small.is_zero()));
-        assert!(!(large.is_zero()));
+        assert!(!small.is_zero());
+        assert!(!large.is_zero());
     }
 }
 
