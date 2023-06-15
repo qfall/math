@@ -217,7 +217,7 @@ mod test_sample_prime_uniform {
     fn is_prime() {
         for _ in 0..8 {
             let sample = Z::sample_prime_uniform(20, i64::MAX).unwrap();
-            assert!(sample.is_prime());
+            assert!(sample.is_prime(), "Can fail with probability ~2^-60.");
         }
     }
 
