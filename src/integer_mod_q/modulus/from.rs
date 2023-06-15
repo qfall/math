@@ -74,6 +74,7 @@ implement_empty_trait_owned_ref!(IntoModulus for Z fmpz u8 u16 u32 u64 i8 i16 i3
 
 impl<Integer: AsInteger + IntoModulus> From<Integer> for Modulus {
     /// Create a [`Modulus`] from a positive integer.
+    ///
     /// Parameters:
     /// - `value`: the initial value the modulus should have.
     ///   It must be larger than one.
@@ -81,6 +82,7 @@ impl<Integer: AsInteger + IntoModulus> From<Integer> for Modulus {
     /// Returns the new [`Modulus`] or an panics, if the
     /// provided value was not greater than `1`.
     ///
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::Modulus;
     /// use qfall_math::integer::Z;
@@ -133,8 +135,8 @@ impl FromStr for Modulus {
     ///
     /// let modulus = Modulus::from_str("42").unwrap();
     /// ```
-    /// # Errors and Failures
     ///
+    /// # Errors and Failures
     /// - Returns a [`MathError`] of type
     /// [`InvalidStringToZInput`](MathError::InvalidStringToZInput) if the
     /// provided string was not formatted correctly, e.g. not a correctly
