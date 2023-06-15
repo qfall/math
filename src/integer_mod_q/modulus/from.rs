@@ -172,6 +172,71 @@ impl FromStr for Modulus {
 }
 
 #[cfg(test)]
+mod test_from {
+    use super::*;
+
+    /// Showcase the different ways to initialize a [`Modulus`].
+    #[test]
+    fn available() {
+        // signed rust integer
+        let _ = Modulus::from(i8::MAX);
+        let _ = Modulus::from(i16::MAX);
+        let _ = Modulus::from(i32::MAX);
+        let _ = Modulus::from(i64::MAX);
+        let _ = Modulus::from(&i8::MAX);
+        let _ = Modulus::from(&i16::MAX);
+        let _ = Modulus::from(&i32::MAX);
+        let _ = Modulus::from(&i64::MAX);
+
+        // unsigned rust integer
+        let _ = Modulus::from(u8::MAX);
+        let _ = Modulus::from(u16::MAX);
+        let _ = Modulus::from(u32::MAX);
+        let _ = Modulus::from(u64::MAX);
+        let _ = Modulus::from(&u8::MAX);
+        let _ = Modulus::from(&u16::MAX);
+        let _ = Modulus::from(&u32::MAX);
+        let _ = Modulus::from(&u64::MAX);
+
+        // from Z
+        let _ = Modulus::from(Z::from(10));
+        let _ = Modulus::from(&Z::from(10));
+
+        // from fmpz
+        let z = Z::from(42);
+        let _ = Modulus::from(&z.value);
+        let modulus = Modulus::from(z.value);
+
+        // from Modulus
+        let _ = Modulus::from(&modulus);
+        let _ = Modulus::from(modulus);
+    }
+
+    /// Ensure that a modulus of one panics.
+    #[test]
+    #[should_panic]
+    fn invalid_modulus() {
+        let _ = Modulus::from(1);
+    }
+
+    /// Ensure that a large modulus is initialized correctly.
+    #[test]
+    fn large() {
+        let modulus = Modulus::from(i64::MAX);
+
+        assert_eq!(Z::from(modulus), Z::from(i64::MAX));
+    }
+
+    /// Ensure that a small modulus is initialized correctly.
+    #[test]
+    fn small() {
+        let modulus = Modulus::from(2);
+
+        assert_eq!(Z::from(modulus), Z::from(2));
+    }
+}
+
+#[cfg(test)]
 mod test_try_from_z {
     use super::Modulus;
     use crate::integer::Z;
