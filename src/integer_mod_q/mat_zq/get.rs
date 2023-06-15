@@ -479,10 +479,7 @@ mod test_mod {
     fn get_mod_large() {
         let matrix = MatZq::new(5, 10, u64::MAX).unwrap();
 
-        assert_eq!(
-            matrix.get_mod(),
-            Modulus::try_from_z(&Z::from(u64::MAX)).unwrap()
-        );
+        assert_eq!(matrix.get_mod(), Modulus::from(u64::MAX));
     }
 
     /// Ensure that no memory leak occurs in get_mod.
@@ -490,11 +487,11 @@ mod test_mod {
     fn get_mod_memory() {
         let matrix = MatZq::new(5, 10, u64::MAX).unwrap();
         let _ = matrix.get_mod();
-        let _ = Modulus::try_from_z(&Z::from(u64::MAX - 1));
+        let _ = Modulus::from(u64::MAX - 1);
 
         let modulus = matrix.get_mod();
 
-        assert_eq!(modulus, Modulus::try_from_z(&Z::from(u64::MAX)).unwrap());
+        assert_eq!(modulus, Modulus::from(u64::MAX));
     }
 }
 

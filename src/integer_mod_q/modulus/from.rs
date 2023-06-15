@@ -23,28 +23,6 @@ use flint_sys::{
 use std::{mem::MaybeUninit, rc::Rc, str::FromStr};
 
 impl Modulus {
-    /// Create a [`Modulus`] from [`Z`].
-    ///
-    /// Parameters:
-    /// - `value`: the value of the modulus
-    ///
-    /// Returns a [`Modulus`] or a [`MathError`]
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer_mod_q::Modulus;
-    /// use std::str::FromStr;
-    ///
-    /// let modulus = Modulus::from_str("42").unwrap();
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
-    /// if the provided value is not greater than `1`.
-    pub fn try_from_z(value: &Z) -> Result<Self, MathError> {
-        Modulus::from_fmpz_ref(&value.value)
-    }
-
     /// Initialize a [`Modulus`] from an fmpz reference.
     ///
     /// Parameters:
@@ -233,57 +211,6 @@ mod test_from {
         let modulus = Modulus::from(2);
 
         assert_eq!(Z::from(modulus), Z::from(2));
-    }
-}
-
-#[cfg(test)]
-mod test_try_from_z {
-    use super::Modulus;
-    use crate::integer::Z;
-
-    /// Demonstrate different ways to create a [`Modulus`] from a [`Z`] reference.
-    #[test]
-    fn z_to_modulus_reference() {
-        let value = Z::from(10);
-
-        let _: Modulus = (&value).try_into().unwrap();
-        let _: Modulus = <&Z>::try_into(&value).unwrap();
-        assert!(Modulus::try_from_z(&value).is_ok());
-        assert!(Modulus::try_from(&value).is_ok());
-    }
-
-    /// Test [`Modulus`] creation with small positive [`Z`] (valid).
-    #[test]
-    fn z_valid_small() {
-        let z = Z::from(10);
-
-        assert!(Modulus::try_from_z(&z).is_ok());
-    }
-
-    /// Test [`Modulus`] creation with large [`Z`] (valid).
-    /// (uses FLINT's pointer representation)
-    #[test]
-    fn z_valid_large() {
-        let z = Z::from(u64::MAX);
-
-        assert!(Modulus::try_from_z(&z).is_ok());
-    }
-
-    /// Test [`Modulus`] creation with small negative [`Z`] (invalid).
-    #[test]
-    fn z_negative_small() {
-        let z = Z::from(-10);
-
-        assert!(Modulus::try_from_z(&z).is_err());
-    }
-
-    /// Test [`Modulus`] creation with large negative [`Z`] (invalid).
-    /// (uses FLINT's pointer representation)
-    #[test]
-    fn z_negative_large() {
-        let z = Z::from(i64::MIN);
-
-        assert!(Modulus::try_from_z(&z).is_err());
     }
 }
 
