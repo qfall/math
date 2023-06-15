@@ -92,7 +92,7 @@ impl MatZ {
     /// ```
     /// use qfall_math::{integer::{MatZ, Z}, rational::{MatQ, Q}};
     /// let basis = MatZ::identity(5, 5);
-    /// let center = MatQ::new(5, 1).unwrap();
+    /// let center = MatQ::new(5, 1);
     ///
     /// let sample = MatZ::sample_d(&basis, 1024, &center, 1.25f32).unwrap();
     /// ```
@@ -175,7 +175,7 @@ mod test_sample_d {
     fn availability() {
         let basis = MatZ::identity(5, 5);
         let n = Z::from(1024);
-        let center = MatQ::new(5, 1).unwrap();
+        let center = MatQ::new(5, 1);
         let s = Q::ONE;
 
         let _ = MatZ::sample_d(&basis, &16u16, &center, &1u16);

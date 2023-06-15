@@ -24,7 +24,7 @@ impl MatQ {
     /// let mat_gso = mat.gso();
     /// ```
     pub fn gso(&self) -> Self {
-        let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns()).unwrap();
+        let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns());
         unsafe {
             fmpq_mat_gso(&mut out.matrix, &self.matrix);
         }

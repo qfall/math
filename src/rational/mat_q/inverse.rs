@@ -32,7 +32,7 @@ impl MatQ {
         }
 
         // check if determinant is not `0`, create new matrix to store inverted result in
-        let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns()).unwrap();
+        let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns());
         match unsafe { fmpq_mat_inv(&mut out.matrix, &self.matrix) } {
             0 => None,
             _ => Some(out),
@@ -69,7 +69,7 @@ mod test_inverse {
     #[test]
     fn inverse_correct() {
         let mat = MatQ::from_str("[[5/6,2],[2/9,1/3]]").unwrap();
-        let cmp = MatQ::identity(2, 2).unwrap();
+        let cmp = MatQ::identity(2, 2);
 
         let inv = mat.inverse().unwrap();
         let diag = &mat * &inv;

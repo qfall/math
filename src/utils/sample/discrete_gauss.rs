@@ -148,7 +148,7 @@ fn gaussian_function(x: &Z, c: &Q, s: &Q) -> Q {
 /// use qfall_math::utils::sample::discrete_gauss::sample_d;
 /// let basis = MatZ::identity(5, 5);
 /// let n = Z::from(1024);
-/// let center = MatQ::new(5, 1).unwrap();
+/// let center = MatQ::new(5, 1);
 /// let gaussian_parameter = Q::ONE;
 ///
 /// let sample = sample_d(basis, &n, &center, &gaussian_parameter).unwrap();
@@ -378,7 +378,7 @@ mod test_sample_d {
     fn doc_test() {
         let basis = MatZ::identity(5, 5);
         let n = Z::from(1024);
-        let center = MatQ::new(5, 1).unwrap();
+        let center = MatQ::new(5, 1);
         let gaussian_parameter = Q::ONE;
 
         let _ = sample_d(&basis, &n, &center, &gaussian_parameter).unwrap();
@@ -389,7 +389,7 @@ mod test_sample_d {
     fn non_zero_center() {
         let basis = MatZ::identity(5, 5);
         let n = Z::from(1024);
-        let center = MatQ::identity(5, 1).unwrap();
+        let center = MatQ::identity(5, 1);
         let gaussian_parameter = Q::ONE;
 
         let _ = sample_d(&basis, &n, &center, &gaussian_parameter).unwrap();
@@ -400,7 +400,7 @@ mod test_sample_d {
     fn non_identity_basis() {
         let basis = MatZ::from_str("[[2,1],[1,2]]").unwrap();
         let n = Z::from(1024);
-        let center = MatQ::new(2, 1).unwrap();
+        let center = MatQ::new(2, 1);
         let gaussian_parameter = Q::ONE;
 
         let _ = sample_d(&basis, &n, &center, &gaussian_parameter).unwrap();
@@ -415,7 +415,7 @@ mod test_sample_d {
     fn point_of_lattice() {
         let basis = MatZ::from_str("[[7,0],[7,3]]").unwrap();
         let n = Z::from(1024);
-        let center = MatQ::new(2, 1).unwrap();
+        let center = MatQ::new(2, 1);
         let gaussian_parameter = Q::ONE;
 
         let sample = sample_d(&basis, &n, &center, &gaussian_parameter).unwrap();
@@ -451,7 +451,7 @@ mod test_sample_d {
     fn invalid_gaussian_parameter() {
         let basis = MatZ::identity(5, 5);
         let n = Z::from(1024);
-        let center = MatQ::new(5, 1).unwrap();
+        let center = MatQ::new(5, 1);
 
         assert!(sample_d(&basis, &n, &center, &Q::ZERO).is_err());
         assert!(sample_d(&basis, &n, &center, &Q::MINUS_ONE).is_err());
@@ -462,7 +462,7 @@ mod test_sample_d {
     #[test]
     fn invalid_n() {
         let basis = MatZ::identity(5, 5);
-        let center = MatQ::new(5, 1).unwrap();
+        let center = MatQ::new(5, 1);
         let gaussian_parameter = Q::ONE;
 
         assert!(sample_d(&basis, &Z::ONE, &center, &gaussian_parameter).is_err());
@@ -476,7 +476,7 @@ mod test_sample_d {
     fn mismatching_matrix_dimensions() {
         let basis = MatZ::identity(3, 5);
         let n = Z::from(1024);
-        let center = MatQ::new(4, 1).unwrap();
+        let center = MatQ::new(4, 1);
         let gaussian_parameter = Q::ONE;
 
         let res = sample_d(&basis, &n, &center, &gaussian_parameter);
@@ -489,7 +489,7 @@ mod test_sample_d {
     fn center_not_column_vector() {
         let basis = MatZ::identity(2, 2);
         let n = Z::from(1024);
-        let center = MatQ::new(2, 2).unwrap();
+        let center = MatQ::new(2, 2);
         let gaussian_parameter = Q::ONE;
 
         let res = sample_d(&basis, &n, &center, &gaussian_parameter);
