@@ -30,11 +30,11 @@ impl Concatenate for &MatPolynomialRingZq {
     /// # Examples
     /// ```
     /// use crate::qfall_math::traits::*;
-    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq, PolyOverZq};
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
     /// use std::str::FromStr;
     ///
-    /// let poly_mod = PolyOverZq::from_str("3  1 17 1 mod 17").unwrap();
-    /// let modulus = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
+    /// let modulus_str = "3  1 0 1 mod 17";
+    /// let modulus = ModulusPolynomialRingZq::from_str(modulus_str).unwrap();
     ///
     /// let mat_1 = MatPolynomialRingZq::new(13, 5, &modulus).unwrap();
     /// let mat_2 = MatPolynomialRingZq::new(17, 5, &modulus).unwrap();
@@ -85,11 +85,11 @@ impl Concatenate for &MatPolynomialRingZq {
     /// # Examples
     /// ```
     /// use crate::qfall_math::traits::*;
-    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq, PolyOverZq};
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
     /// use std::str::FromStr;
     ///
-    /// let poly_mod = PolyOverZq::from_str("3  1 17 1 mod 17").unwrap();
-    /// let modulus = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
+    /// let modulus_str = "3  1 17 1 mod 17";
+    /// let modulus = ModulusPolynomialRingZq::from_str(&modulus_str).unwrap();
     ///
     /// let mat_1 = MatPolynomialRingZq::new(17, 5, &modulus).unwrap();
     /// let mat_2 = MatPolynomialRingZq::new(17, 7, &modulus).unwrap();
@@ -134,7 +134,7 @@ impl Concatenate for &MatPolynomialRingZq {
 mod test_concatenate {
     use crate::{
         integer::MatPolyOverZ,
-        integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq, PolyOverZq},
+        integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
         traits::{Concatenate, GetNumColumns, GetNumRows},
     };
     use std::str::FromStr;
@@ -142,81 +142,67 @@ mod test_concatenate {
     const BITPRIME64: u64 = u64::MAX - 58;
 
     /// Ensure that the dimensions are taken over correctly and an error occurs
-    /// if the dimensions mismatch
+    /// if the dimensions mismatch.
     #[test]
     fn dimensions_vertical() {
-        let poly_mod =
-            PolyOverZq::from_str(&format!("3  1 {} 1 mod {}", i64::MAX, BITPRIME64)).unwrap();
-        let modulus = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
+        let modulus_str = format!("3  1 {} 1 mod {}", i64::MAX, BITPRIME64);
+        let modulus = ModulusPolynomialRingZq::from_str(&modulus_str).unwrap();
         let mat_1 = MatPolynomialRingZq::new(13, 5, &modulus).unwrap();
         let mat_2 = MatPolynomialRingZq::new(17, 5, &modulus).unwrap();
         let mat_3 = MatPolynomialRingZq::new(17, 6, &modulus).unwrap();
 
         let mat_vert = mat_1.concat_vertical(&mat_2).unwrap();
 
+        assert!(mat_1.concat_vertical(&mat_3).is_err());
+
         assert_eq!(5, mat_vert.get_num_columns());
         assert_eq!(30, mat_vert.get_num_rows());
-        assert!(mat_1.concat_vertical(&mat_3).is_err());
     }
 
     /// Ensure that the dimensions are taken over correctly and an error occurs
-    /// if the dimensions mismatch
+    /// if the dimensions mismatch.
     #[test]
     fn dimensions_horizontal() {
-        let poly_mod =
-            PolyOverZq::from_str(&format!("3  1 {} 1 mod {}", i64::MAX, BITPRIME64)).unwrap();
-        let modulus = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
+        let modulus_str = format!("3  1 {} 1 mod {}", i64::MAX, BITPRIME64);
+        let modulus = ModulusPolynomialRingZq::from_str(&modulus_str).unwrap();
         let mat_1 = MatPolynomialRingZq::new(13, 5, &modulus).unwrap();
         let mat_2 = MatPolynomialRingZq::new(17, 5, &modulus).unwrap();
         let mat_3 = MatPolynomialRingZq::new(17, 6, &modulus).unwrap();
 
         let mat_vert = mat_2.concat_horizontal(&mat_3).unwrap();
 
+        assert!(mat_1.concat_horizontal(&mat_2).is_err());
+
         assert_eq!(11, mat_vert.get_num_columns());
         assert_eq!(17, mat_vert.get_num_rows());
-        assert!(mat_1.concat_horizontal(&mat_2).is_err());
     }
 
-    /// Ensure that vertical concatenation works correctly
+    /// Ensure that vertical concatenation works correctly.
     #[test]
     fn vertically_correct() {
-        let poly_mod =
-            PolyOverZq::from_str(&format!("3  1 {} 1 mod {}", i64::MAX, BITPRIME64)).unwrap();
-        let modulus = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
-        let poly_mat_1 = MatPolyOverZ::from_str(&format!(
-            "[[4  {} {} 1 1, 1  42],[0, 2  1 2]]",
-            BITPRIME64 + 2,
-            u64::MAX
-        ))
-        .unwrap();
+        let modulus_str = format!("3  1 {} 1 mod {}", i64::MAX, BITPRIME64);
+        let modulus = ModulusPolynomialRingZq::from_str(&modulus_str).unwrap();
+        let poly_mat_1 =
+            MatPolyOverZ::from_str(&format!("[[4  2 {} 1 1, 1  42],[0, 2  1 2]]", u64::MAX))
+                .unwrap();
         let poly_mat_2 = MatPolyOverZ::from_str("[[1  27, 2  10 5]]").unwrap();
-        let poly_ring_mat_1 =
-            MatPolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_mat_1, &modulus);
-        let poly_ring_mat_2 =
-            MatPolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_mat_2, &modulus);
+        let poly_ring_mat_1 = MatPolynomialRingZq::from((&poly_mat_1, &modulus));
+        let poly_ring_mat_2 = MatPolynomialRingZq::from((&poly_mat_2, &modulus));
 
         let mat_vertical = poly_ring_mat_1.concat_vertical(&poly_ring_mat_2).unwrap();
 
-        let poly_mat_cmp = MatPolyOverZ::from_str(&format!(
-            "[[4  {} {} 1 1, 1  42],[0, 2  1 2],[1  27, 2  10 5]]",
-            BITPRIME64 + 2,
-            u64::MAX
-        ))
-        .unwrap();
-        let poly_ring_mat_cmp = MatPolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(
-            &poly_mat_cmp,
-            &modulus,
-        );
+        let poly_mat_cmp =
+            MatPolyOverZ::from_str("[[4  2 58 1 1, 1  42],[0, 2  1 2],[1  27, 2  10 5]]").unwrap();
+        let poly_ring_mat_cmp = MatPolynomialRingZq::from((&poly_mat_cmp, &modulus));
 
         assert_eq!(poly_ring_mat_cmp, mat_vertical)
     }
 
-    /// Ensure that horizontal concatenation works correctly
+    /// Ensure that horizontal concatenation works correctly.
     #[test]
     fn horizontally_correct() {
-        let poly_mod =
-            PolyOverZq::from_str(&format!("3  1 {} 1 mod {}", i64::MAX, BITPRIME64)).unwrap();
-        let modulus = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
+        let modulus_str = format!("3  1 {} 1 mod {}", i64::MAX, BITPRIME64);
+        let modulus = ModulusPolynomialRingZq::from_str(&modulus_str).unwrap();
         let poly_mat_1 = MatPolyOverZ::from_str(&format!(
             "[[4  {} {} 1 1, 1  42],[0, 2  1 2]]",
             BITPRIME64 + 2,
@@ -224,23 +210,14 @@ mod test_concatenate {
         ))
         .unwrap();
         let poly_mat_2 = MatPolyOverZ::from_str("[[1  27],[2  10 5]]").unwrap();
-        let poly_ring_mat_1 =
-            MatPolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_mat_1, &modulus);
-        let poly_ring_mat_2 =
-            MatPolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_mat_2, &modulus);
+        let poly_ring_mat_1 = MatPolynomialRingZq::from((&poly_mat_1, &modulus));
+        let poly_ring_mat_2 = MatPolynomialRingZq::from((&poly_mat_2, &modulus));
 
         let mat_vertical = poly_ring_mat_1.concat_horizontal(&poly_ring_mat_2).unwrap();
 
-        let poly_mat_cmp = MatPolyOverZ::from_str(&format!(
-            "[[4  {} {} 1 1, 1  42, 1  27],[0, 2  1 2, 2  10 5]]",
-            BITPRIME64 + 2,
-            u64::MAX
-        ))
-        .unwrap();
-        let poly_ring_mat_cmp = MatPolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(
-            &poly_mat_cmp,
-            &modulus,
-        );
+        let poly_mat_cmp =
+            MatPolyOverZ::from_str("[[4  2 58 1 1, 1  42, 1  27],[0, 2  1 2, 2  10 5]]").unwrap();
+        let poly_ring_mat_cmp = MatPolynomialRingZq::from((&poly_mat_cmp, &modulus));
 
         assert_eq!(poly_ring_mat_cmp, mat_vertical)
     }
