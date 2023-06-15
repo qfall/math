@@ -11,9 +11,8 @@
 use super::MatPolynomialRingZq;
 use crate::integer_mod_q::PolynomialRingZq;
 use crate::macros::for_others::implement_for_owned;
-use crate::{
-    error::MathError, integer::PolyOverZ, traits::SetEntry, utils::index::evaluate_indices,
-};
+use crate::utils::index::evaluate_indices_for_matrix;
+use crate::{error::MathError, integer::PolyOverZ, traits::SetEntry};
 use flint_sys::{fmpz_poly::fmpz_poly_set, fmpz_poly_mat::fmpz_poly_mat_entry};
 use std::fmt::Display;
 
@@ -53,7 +52,7 @@ impl SetEntry<&PolyOverZ> for MatPolynomialRingZq {
         column: impl TryInto<i64> + Display,
         value: &PolyOverZ,
     ) -> Result<(), MathError> {
-        let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
+        let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
 
         unsafe {
             let entry = fmpz_poly_mat_entry(&self.matrix.matrix, row_i64, column_i64);
@@ -110,7 +109,7 @@ impl SetEntry<&PolynomialRingZq> for MatPolynomialRingZq {
             )));
         }
 
-        let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
+        let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
 
         unsafe {
             let entry = fmpz_poly_mat_entry(&self.matrix.matrix, row_i64, column_i64);

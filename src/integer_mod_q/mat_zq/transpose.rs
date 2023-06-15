@@ -37,7 +37,6 @@ impl MatZq {
 
 #[cfg(test)]
 mod test_transpose {
-
     use super::MatZq;
     use std::str::FromStr;
 

@@ -34,7 +34,7 @@ impl MatQ {
     ///
     /// let dot_prod = vec_1.dot_product(&vec_2).unwrap();
     ///
-    /// assert_eq!(Q::from_str("13").unwrap(), dot_prod);
+    /// assert_eq!(Q::from(13), dot_prod);
     /// ```
     ///
     /// Errors and Failures
@@ -81,7 +81,6 @@ impl MatQ {
 
 #[cfg(test)]
 mod test_dot_product {
-
     use super::{MatQ, Q};
     use std::str::FromStr;
 
@@ -138,9 +137,9 @@ mod test_dot_product {
     fn large_numbers() {
         let vec_1 = MatQ::from_str(&format!("[[1,-1,{}]]", i64::MAX)).unwrap();
         let vec_2 = MatQ::from_str(&format!("[[1,{},1]]", i64::MIN)).unwrap();
-        let cmp = Q::from_str("-1").unwrap() * Q::from_str(&format!("{}", i64::MIN)).unwrap()
+        let cmp = Q::MINUS_ONE * Q::from_str(&format!("{}", i64::MIN)).unwrap()
             + Q::from_str(&format!("{}", i64::MAX)).unwrap()
-            + Q::from_str("1").unwrap();
+            + Q::from(1);
 
         let dot_prod = vec_1.dot_product(&vec_2).unwrap();
 

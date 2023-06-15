@@ -64,7 +64,7 @@ impl MatZq {
                 other.get_num_columns(),
             ));
         }
-        if self.get_mod() != other.get_mod() {
+        if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
                 "dot_product needs matching moduli of both matrices, but they differ: {}, {}",
                 self.get_mod(),
@@ -90,13 +90,12 @@ impl MatZq {
             unsafe { fmpz_addmul(&mut result.value, &self_entries[i], &other_entries[i]) }
         }
 
-        Ok(Zq::from_z_modulus(&result, &self.get_mod()))
+        Ok(Zq::from_z_modulus(&result, &self.modulus))
     }
 }
 
 #[cfg(test)]
 mod test_dot_product {
-
     use super::{MatZq, Zq, Z};
     use std::str::FromStr;
 

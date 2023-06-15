@@ -343,11 +343,10 @@ mod test_div_exact {
 
 #[cfg(test)]
 mod test_div_between_types {
-
     use crate::integer::Z;
     use crate::rational::Q;
 
-    /// testing division between different types
+    /// Testing division between different types
     #[test]
     #[allow(clippy::op_ref)]
     fn div() {
@@ -437,12 +436,11 @@ mod test_div_between_types {
 
 #[cfg(test)]
 mod test_div {
-
     use super::Z;
     use crate::rational::Q;
     use crate::traits::Pow;
 
-    /// testing division for two [`Z`]
+    /// Testing division for two [`Z`]
     #[test]
     fn div() {
         let a: Z = Z::from(42);
@@ -451,7 +449,7 @@ mod test_div {
         assert_eq!(c, Q::try_from((&21, &2)).unwrap());
     }
 
-    /// testing division for two borrowed [`Z`]
+    /// Testing division for two borrowed [`Z`]
     #[test]
     fn div_borrow() {
         let a: Z = Z::from(42);
@@ -460,7 +458,7 @@ mod test_div {
         assert_eq!(c, Q::try_from((&21, &2)).unwrap());
     }
 
-    /// testing division for borrowed [`Z`] and [`Z`]
+    /// Testing division for borrowed [`Z`] and [`Z`]
     #[test]
     fn div_first_borrowed() {
         let a: Z = Z::from(42);
@@ -469,7 +467,7 @@ mod test_div {
         assert_eq!(c, Q::try_from((&21, &2)).unwrap());
     }
 
-    /// testing division for [`Z`] and borrowed [`Z`]
+    /// Testing division for [`Z`] and borrowed [`Z`]
     #[test]
     fn div_second_borrowed() {
         let a: Z = Z::from(42);
@@ -478,7 +476,7 @@ mod test_div {
         assert_eq!(c, Q::try_from((&21, &2)).unwrap());
     }
 
-    /// testing division for big [`Z`]
+    /// Testing division for big [`Z`]
     #[test]
     fn div_large_numbers() {
         let a: Z = Z::from(i64::MAX as u64 + 1);
@@ -496,12 +494,11 @@ mod test_div {
 
 #[cfg(test)]
 mod test_div_between_z_and_q {
-
     use super::Z;
     use crate::rational::Q;
     use std::str::FromStr;
 
-    /// testing division for [`Z`] and [`Q`]
+    /// Testing division for [`Z`] and [`Q`]
     #[test]
     fn div() {
         let a: Z = Z::from(4);
@@ -510,7 +507,7 @@ mod test_div_between_z_and_q {
         assert_eq!(c, Q::from_str("28/5").unwrap());
     }
 
-    /// testing division for both borrowed [`Z`] and [`Q`]
+    /// Testing division for both borrowed [`Z`] and [`Q`]
     #[test]
     fn div_borrow() {
         let a: Z = Z::from(4);
@@ -519,7 +516,7 @@ mod test_div_between_z_and_q {
         assert_eq!(c, Q::from_str("28/5").unwrap());
     }
 
-    /// testing division for borrowed [`Z`] and [`Q`]
+    /// Testing division for borrowed [`Z`] and [`Q`]
     #[test]
     fn div_first_borrowed() {
         let a: Z = Z::from(4);
@@ -528,7 +525,7 @@ mod test_div_between_z_and_q {
         assert_eq!(c, Q::from_str("28/5").unwrap());
     }
 
-    /// testing division for [`Z`] and borrowed [`Q`]
+    /// Testing division for [`Z`] and borrowed [`Q`]
     #[test]
     fn div_second_borrowed() {
         let a: Z = Z::from(4);
@@ -537,7 +534,7 @@ mod test_div_between_z_and_q {
         assert_eq!(c, Q::from_str("28/5").unwrap());
     }
 
-    /// testing division for big numbers
+    /// Testing division for big numbers
     #[test]
     fn div_large_numbers() {
         let a: Z = Z::from(u64::MAX);

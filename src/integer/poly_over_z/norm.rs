@@ -13,6 +13,7 @@ use crate::{
     integer::{PolyOverZ, Z},
     traits::{GetCoefficient, Pow},
 };
+use std::cmp::max;
 
 impl PolyOverZ {
     /// Returns the squared Euclidean norm or 2-norm of the given polynomial.
@@ -56,11 +57,8 @@ impl PolyOverZ {
     pub fn norm_infty(&self) -> Z {
         let mut res = Z::ZERO;
         for i in 0..=self.get_degree() {
-            // todo: once ord is on dev use:
-            // res = max(res, self.get_coeff(i).unwrap().abs());
-            // AND todo: use std::cmp::max;
             if res < self.get_coeff(i).unwrap().abs() {
-                res = self.get_coeff(i).unwrap().abs();
+                res = max(res, self.get_coeff(i).unwrap().abs());
             }
         }
         res
@@ -76,7 +74,7 @@ mod test_norm_eucl_sqrd {
     /// with small coefficients is calculated correctly
     #[test]
     fn poly_small_coefficient() {
-        let poly1 = PolyOverZ::from_str("0").unwrap();
+        let poly1 = PolyOverZ::default();
         let poly2 = PolyOverZ::from_str("3  1 2 3").unwrap();
         let poly3 = PolyOverZ::from_str("3  1 20 90").unwrap();
 
@@ -115,7 +113,7 @@ mod test_norm_infty {
     /// with small coefficients is calculated correctly
     #[test]
     fn poly_small_coefficient() {
-        let poly1 = PolyOverZ::from_str("0").unwrap();
+        let poly1 = PolyOverZ::default();
         let poly2 = PolyOverZ::from_str("3  1 2 3").unwrap();
         let poly3 = PolyOverZ::from_str("3  1 2010 90").unwrap();
 

@@ -96,7 +96,6 @@ arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatPolyOverZ, MatPolyOverZ, Mat
 
 #[cfg(test)]
 mod test_mul {
-
     use super::MatPolyOverZ;
     use std::str::FromStr;
 

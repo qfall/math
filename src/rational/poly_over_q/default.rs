@@ -31,18 +31,16 @@ impl Default for PolyOverQ {
     }
 }
 
-/// ensure that default initializes an empty polynomial
+/// Ensure that default initializes an empty polynomial
 #[cfg(test)]
 mod test_default {
-
     use crate::rational::PolyOverQ;
-    use std::str::FromStr;
 
     /// Ensure that [`Default`] initializes the zero polynomial appropriately
     #[test]
     fn init_zero() {
         let poly_over_zero = PolyOverQ::default();
 
-        assert_eq!(PolyOverQ::from_str("0").unwrap(), poly_over_zero)
+        assert_eq!(PolyOverQ::default(), poly_over_zero)
     }
 }

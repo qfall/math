@@ -9,13 +9,12 @@
 //! Create benchmark for integers in this file.
 
 use criterion::*;
-use std::str::FromStr;
-
 use qfall_math::{
     error::MathError,
     integer::*,
     traits::{GetEntry, SetEntry},
 };
+use std::str::FromStr;
 
 /// Create matrices of size 4x4 and vectors of size 4.
 /// 1. initialize them.
@@ -74,12 +73,12 @@ pub fn mat_z_100_100() -> Result<(), MathError> {
 
 /// benchmark [mat_z_4_4]
 pub fn bench_mat_z_4_4(c: &mut Criterion) {
-    c.bench_function("MatZ 4x4", |b| b.iter(|| mat_z_4_4()));
+    c.bench_function("MatZ 4x4", |b| b.iter(mat_z_4_4));
 }
 
 /// benchmark [mat_z_100_100]
 pub fn bench_mat_z_100_100(c: &mut Criterion) {
-    c.bench_function("MatZ 100x100", |b| b.iter(|| mat_z_100_100()));
+    c.bench_function("MatZ 100x100", |b| b.iter(mat_z_100_100));
 }
 
 criterion_group!(benches, bench_mat_z_4_4, bench_mat_z_100_100);

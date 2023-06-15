@@ -59,11 +59,10 @@ impl fmt::Display for Modulus {
 
 #[cfg(test)]
 mod test_to_string {
-
     use crate::integer_mod_q::Modulus;
     use std::str::FromStr;
 
-    /// tests whether a large modulus works in a roundtrip
+    /// Tests whether a large modulus works in a roundtrip
     #[test]
     fn working_large() {
         let cmp_string = "1".repeat(65);
@@ -72,7 +71,7 @@ mod test_to_string {
         assert_eq!(cmp_string, cmp.to_string())
     }
 
-    /// tests whether a positive modulus works in a roundtrip
+    /// Tests whether a positive modulus works in a roundtrip
     #[test]
     fn working_positive() {
         let cmp_string = "42";
@@ -81,7 +80,7 @@ mod test_to_string {
         assert_eq!(cmp_string, cmp.to_string())
     }
 
-    /// tests whether a modulus that is created using a string, returns a
+    /// Tests whether a modulus that is created using a string, returns a
     /// string that can be used to create a [`Modulus`]
     #[test]
     fn working_use_result_of_to_string_as_input() {

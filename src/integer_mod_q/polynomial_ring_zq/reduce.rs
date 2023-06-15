@@ -51,7 +51,7 @@ mod test_reduced {
 
     const BITPRIME64: u64 = u64::MAX - 58;
 
-    /// ensure that the entries are reduced
+    /// Ensure that the entries are reduced
     #[test]
     fn reduces() {
         let modulus =

@@ -34,7 +34,7 @@ impl Sub for &Q {
     /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
     ///
-    /// let a: Q = Q::from_str("42").unwrap();
+    /// let a: Q = Q::from(42);
     /// let b: Q = Q::from_str("-42/2").unwrap();
     ///
     /// let c: Q = &a - &b;
@@ -97,25 +97,25 @@ mod test_sub {
     use super::Q;
     use std::str::FromStr;
 
-    /// testing subtraction for two [`Q`]
+    /// Testing subtraction for two [`Q`]
     #[test]
     fn sub() {
-        let a: Q = Q::from_str("42").unwrap();
+        let a: Q = Q::from(42);
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a - b;
-        assert_eq!(c, Q::from_str("21").unwrap());
+        assert_eq!(c, Q::from(21));
     }
 
-    /// testing subtraction for two borrowed [`Q`]
+    /// Testing subtraction for two borrowed [`Q`]
     #[test]
     fn sub_borrow() {
-        let a: Q = Q::from_str("42").unwrap();
+        let a: Q = Q::from(42);
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = &a - &b;
-        assert_eq!(c, Q::from_str("21").unwrap());
+        assert_eq!(c, Q::from(21));
     }
 
-    /// testing subtraction for borrowed [`Q`] and [`Q`]
+    /// Testing subtraction for borrowed [`Q`] and [`Q`]
     #[test]
     fn sub_first_borrowed() {
         let a: Q = Q::from_str("42/5").unwrap();
@@ -124,17 +124,17 @@ mod test_sub {
         assert_eq!(c, Q::from_str("21/5").unwrap());
     }
 
-    /// testing subtraction for [`Q`] and borrowed [`Q`]
+    /// Testing subtraction for [`Q`] and borrowed [`Q`]
     #[test]
     fn sub_second_borrowed() {
-        let a: Q = Q::from_str("42").unwrap();
+        let a: Q = Q::from(42);
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a - &b;
-        assert_eq!(c, Q::from_str("21").unwrap());
+        assert_eq!(c, Q::from(21));
     }
 
     #[test]
-    /// testing subtraction for large numerators and divisors
+    /// Testing subtraction for large numerators and divisors
     fn sub_large() {
         let a: Q = Q::from_str(&(i64::MAX).to_string()).unwrap();
         let b: Q = Q::from_str(&(u64::MAX - 1).to_string()).unwrap();
@@ -153,12 +153,11 @@ mod test_sub {
 
 #[cfg(test)]
 mod test_sub_between_z_and_q {
-
     use super::Z;
     use crate::rational::Q;
     use std::str::FromStr;
 
-    /// testing subtraction for [`Q`] and [`Z`]
+    /// Testing subtraction for [`Q`] and [`Z`]
     #[test]
     fn sub() {
         let a: Q = Q::from_str("5/7").unwrap();
@@ -167,7 +166,7 @@ mod test_sub_between_z_and_q {
         assert_eq!(c, Q::from_str("-23/7").unwrap());
     }
 
-    /// testing subtraction for both borrowed [`Q`] and [`Z`]
+    /// Testing subtraction for both borrowed [`Q`] and [`Z`]
     #[test]
     fn sub_borrow() {
         let a: Q = Q::from_str("5/7").unwrap();
@@ -176,7 +175,7 @@ mod test_sub_between_z_and_q {
         assert_eq!(c, Q::from_str("-23/7").unwrap());
     }
 
-    /// testing subtraction for borrowed [`Q`] and [`Z`]
+    /// Testing subtraction for borrowed [`Q`] and [`Z`]
     #[test]
     fn sub_first_borrowed() {
         let a: Q = Q::from_str("5/7").unwrap();
@@ -185,7 +184,7 @@ mod test_sub_between_z_and_q {
         assert_eq!(c, Q::from_str("-23/7").unwrap());
     }
 
-    /// testing subtraction for [`Q`] and borrowed [`Z`]
+    /// Testing subtraction for [`Q`] and borrowed [`Z`]
     #[test]
     fn sub_second_borrowed() {
         let a: Q = Q::from_str("5/7").unwrap();
@@ -194,7 +193,7 @@ mod test_sub_between_z_and_q {
         assert_eq!(c, Q::from_str("-23/7").unwrap());
     }
 
-    /// testing subtraction for big numbers
+    /// Testing subtraction for big numbers
     #[test]
     fn sub_large_numbers() {
         let a: Q = Q::from_str(&format!("{}/2", u64::MAX)).unwrap();
@@ -217,10 +216,9 @@ mod test_sub_between_z_and_q {
 
 #[cfg(test)]
 mod test_sub_between_types {
-
     use crate::rational::Q;
 
-    /// testing subtraction between different types
+    /// Testing subtraction between different types
     #[test]
     #[allow(clippy::op_ref)]
     fn sub() {

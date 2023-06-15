@@ -252,7 +252,6 @@ mod test_from_fmpz_ref {
 
 #[cfg(test)]
 mod test_from_str {
-
     use super::Modulus;
     use std::str::FromStr;
 

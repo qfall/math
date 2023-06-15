@@ -9,7 +9,7 @@
 //! Initialize a [`MatZ`] with common defaults, e.g., zero and identity.
 
 use super::MatZ;
-use crate::{error::MathError, utils::index::evaluate_index};
+use crate::{error::MathError, utils::index::evaluate_indices};
 use flint_sys::fmpz_mat::{fmpz_mat_init, fmpz_mat_one};
 use std::{fmt::Display, mem::MaybeUninit};
 
@@ -41,8 +41,7 @@ impl MatZ {
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
     ) -> Result<Self, MathError> {
-        let num_rows_i64 = evaluate_index(num_rows)?;
-        let num_cols_i64 = evaluate_index(num_cols)?;
+        let (num_rows_i64, num_cols_i64) = evaluate_indices(num_rows, num_cols)?;
 
         if num_rows_i64 == 0 || num_cols_i64 == 0 {
             return Err(MathError::InvalidMatrix(

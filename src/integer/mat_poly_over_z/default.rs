@@ -129,12 +129,11 @@ mod test_new {
 
 #[cfg(test)]
 mod test_identity {
-    use std::str::FromStr;
-
     use crate::{
         integer::{MatPolyOverZ, PolyOverZ},
         traits::GetEntry,
     };
+    use std::str::FromStr;
 
     /// Tests if an identity matrix is set from a zero matrix.
     #[test]
@@ -144,10 +143,7 @@ mod test_identity {
         for i in 0..10 {
             for j in 0..10 {
                 if i != j {
-                    assert_eq!(
-                        PolyOverZ::from_str("0").unwrap(),
-                        matrix.get_entry(i, j).unwrap()
-                    );
+                    assert_eq!(PolyOverZ::default(), matrix.get_entry(i, j).unwrap());
                 } else {
                     assert_eq!(
                         PolyOverZ::from_str("1  1").unwrap(),
@@ -166,10 +162,7 @@ mod test_identity {
         for i in 0..10 {
             for j in 0..7 {
                 if i != j {
-                    assert_eq!(
-                        PolyOverZ::from_str("0").unwrap(),
-                        matrix.get_entry(i, j).unwrap()
-                    );
+                    assert_eq!(PolyOverZ::default(), matrix.get_entry(i, j).unwrap());
                 } else {
                     assert_eq!(
                         PolyOverZ::from_str("1  1").unwrap(),
@@ -184,10 +177,7 @@ mod test_identity {
         for i in 0..7 {
             for j in 0..10 {
                 if i != j {
-                    assert_eq!(
-                        PolyOverZ::from_str("0").unwrap(),
-                        matrix.get_entry(i, j).unwrap()
-                    );
+                    assert_eq!(PolyOverZ::default(), matrix.get_entry(i, j).unwrap());
                 } else {
                     assert_eq!(
                         PolyOverZ::from_str("1  1").unwrap(),

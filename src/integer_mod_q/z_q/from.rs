@@ -317,7 +317,6 @@ mod test_try_from_z_z {
 
 #[cfg(test)]
 mod test_try_from_trait {
-
     use crate::{integer::Z, integer_mod_q::Zq};
 
     /// Showcase some of the different types supported by the trait.
@@ -379,7 +378,6 @@ mod test_try_from_trait {
 
 #[cfg(test)]
 mod tests_from_str {
-
     use crate::integer_mod_q::Zq;
     use std::str::FromStr;
 

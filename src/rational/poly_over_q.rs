@@ -25,6 +25,7 @@ mod from;
 mod get;
 mod norm;
 mod ownership;
+mod properties;
 mod serialize;
 mod set;
 mod to_string;

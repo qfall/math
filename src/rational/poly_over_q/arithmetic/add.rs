@@ -52,12 +52,11 @@ arithmetic_trait_mixed_borrowed_owned!(Add, add, PolyOverQ, PolyOverQ, PolyOverQ
 
 #[cfg(test)]
 mod test_add {
-
     use super::PolyOverQ;
     use crate::rational::Q;
     use std::str::FromStr;
 
-    /// testing addition for two [`PolyOverQ`]
+    /// Testing addition for two [`PolyOverQ`]
     #[test]
     fn add() {
         let a: PolyOverQ = PolyOverQ::from_str("3  1/7 2 -3").unwrap();
@@ -66,7 +65,7 @@ mod test_add {
         assert_eq!(c, PolyOverQ::from_str("5  16/63 20/9 -1/2 1 2/7").unwrap());
     }
 
-    /// testing addition for two borrowed [`PolyOverQ`]
+    /// Testing addition for two borrowed [`PolyOverQ`]
     #[test]
     fn add_borrow() {
         let a: PolyOverQ = PolyOverQ::from_str("3  1/7 2 -3").unwrap();
@@ -75,7 +74,7 @@ mod test_add {
         assert_eq!(c, PolyOverQ::from_str("5  16/63 20/9 -1/2 1 2/7").unwrap());
     }
 
-    /// testing addition for borrowed [`PolyOverQ`] and [`PolyOverQ`]
+    /// Testing addition for borrowed [`PolyOverQ`] and [`PolyOverQ`]
     #[test]
     fn add_first_borrowed() {
         let a: PolyOverQ = PolyOverQ::from_str("3  1/7 2 -3").unwrap();
@@ -84,7 +83,7 @@ mod test_add {
         assert_eq!(c, PolyOverQ::from_str("5  16/63 20/9 -1/2 1 2/7").unwrap());
     }
 
-    /// testing addition for [`PolyOverQ`] and borrowed [`PolyOverQ`]
+    /// Testing addition for [`PolyOverQ`] and borrowed [`PolyOverQ`]
     #[test]
     fn add_second_borrowed() {
         let a: PolyOverQ = PolyOverQ::from_str("3  1/7 2 -3").unwrap();
@@ -93,7 +92,7 @@ mod test_add {
         assert_eq!(c, PolyOverQ::from_str("5  16/63 20/9 -1/2 1 2/7").unwrap());
     }
 
-    /// testing addition with eliminating coefficients
+    /// Testing addition with eliminating coefficients
     #[test]
     fn add_eliminating_coefficients() {
         let a: PolyOverQ = PolyOverQ::from_str("3  1/7 2/7 -3").unwrap();
@@ -102,7 +101,7 @@ mod test_add {
         assert_eq!(c, PolyOverQ::from_str("1  8/7").unwrap());
     }
 
-    /// testing addition for large [`PolyOverQ`]
+    /// Testing addition for large [`PolyOverQ`]
     #[test]
     fn add_large_numbers() {
         let a: PolyOverQ = PolyOverQ::from_str(&format!(

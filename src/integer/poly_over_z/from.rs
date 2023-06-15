@@ -64,7 +64,7 @@ impl FromStr for PolyOverZ {
 
         // fmpz_poly_set_str just skips the two symbols after the first space
         // behind the number of coefficients (even if not a space), hence
-        // it has to be checked here to ensure that no number is lost.
+        // it has to be checked here to Ensure that no number is lost.
         // We only have to check it once, because for every other position it checks
         // whether there is only one space.
         if !s_trimmed.contains("  ") {
@@ -168,7 +168,7 @@ mod test_from_str {
         assert_eq!(one_1, one_2)
     }
 
-    /// tests whether the same string yields the same polynomial
+    /// Tests whether the same string yields the same polynomial
     #[test]
     fn same_string() {
         let string1 = format!("3  1 {} {}", u64::MAX, i64::MIN);
@@ -179,14 +179,14 @@ mod test_from_str {
         assert_eq!(poly_1, poly_2)
     }
 
-    /// tests whether a correctly formatted string outputs an instantiation of a
+    /// Tests whether a correctly formatted string outputs an instantiation of a
     /// polynomial, i.e. does not return an error
     #[test]
     fn working_example() {
         assert!(PolyOverZ::from_str("3  1 2 -3").is_ok());
     }
 
-    /// tests whether a falsely formatted string (missing double-space) returns
+    /// Tests whether a falsely formatted string (missing double-space) returns
     /// an error
     #[test]
     fn missing_whitespace() {
@@ -197,21 +197,21 @@ mod test_from_str {
         assert!(PolyOverZ::from_str("  2 17 42").is_err());
     }
 
-    /// tests whether a falsely formatted string (too many whitespaces) returns
+    /// Tests whether a falsely formatted string (too many whitespaces) returns
     /// an error
     #[test]
     fn too_many_whitespaces() {
         assert!(PolyOverZ::from_str("3  1  2  -3").is_err());
     }
 
-    /// tests whether a falsely formatted string (wrong number of total
+    /// Tests whether a falsely formatted string (wrong number of total
     /// coefficients) returns an error
     #[test]
     fn false_number_of_coefficient() {
         assert!(PolyOverZ::from_str("4  1 2 -3").is_err());
     }
 
-    /// ensure that the input works with strings that have to be trimmed
+    /// Ensure that the input works with strings that have to be trimmed
     #[test]
     fn trim_input() {
         let poly = PolyOverZ::from_str("                   4  1 2 3 -4                  ");

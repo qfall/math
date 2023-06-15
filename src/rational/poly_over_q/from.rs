@@ -168,7 +168,7 @@ mod test_from_str {
         );
     }
 
-    /// tests whether the same string yields the same polynomial
+    /// Tests whether the same string yields the same polynomial
     #[test]
     fn same_string() {
         let string1 = format!("3  1 2/3 {}/{}", u64::MAX, i64::MIN);
@@ -179,14 +179,14 @@ mod test_from_str {
         assert_eq!(poly_1, poly_2)
     }
 
-    /// tests whether a correctly formatted string outputs an instantiation of a
+    /// Tests whether a correctly formatted string outputs an instantiation of a
     /// polynomial, i.e. does not return an error
     #[test]
     fn working_example() {
         assert!(PolyOverQ::from_str("3  1 2/5 -3/2").is_ok());
     }
 
-    /// tests whether a falsely formatted string (missing double-space) returns
+    /// Tests whether a falsely formatted string (missing double-space) returns
     /// an error
     #[test]
     fn missing_whitespace() {
@@ -199,28 +199,28 @@ mod test_from_str {
         assert!(PolyOverQ::from_str("  2 17/5 42").is_err());
     }
 
-    /// tests whether a falsely formatted string (too many whitespaces) returns
+    /// Tests whether a falsely formatted string (too many whitespaces) returns
     /// an error
     #[test]
     fn too_many_whitespaces() {
         assert!(PolyOverQ::from_str("3  1  2/5  -3/2").is_err());
     }
 
-    /// tests whether a falsely formatted string (wrong number of total
+    /// Tests whether a falsely formatted string (wrong number of total
     /// coefficients) returns an error
     #[test]
     fn false_number_of_coefficient() {
         assert!(PolyOverQ::from_str("4  1 2/5 -3/2").is_err());
     }
 
-    /// tests whether a falsely formatted string (too many divisors) returns
+    /// Tests whether a falsely formatted string (too many divisors) returns
     /// an error
     #[test]
     fn too_many_divisors() {
         assert!(PolyOverQ::from_str("3  1 2/5 -3/2/3").is_err());
     }
 
-    /// ensure that the input works with strings that have to be trimmed
+    /// Ensure that the input works with strings that have to be trimmed
     #[test]
     fn trim_input() {
         let poly = PolyOverQ::from_str("                   4  1/2 2/3 3/4 -4                  ");
@@ -237,7 +237,7 @@ mod test_from_poly_over_z {
     use crate::{integer::PolyOverZ, rational::PolyOverQ};
     use std::str::FromStr;
 
-    /// ensure that the conversion works with negative entries
+    /// Ensure that the conversion works with negative entries
     #[test]
     fn small_negative() {
         let poly = PolyOverZ::from_str("4  0 1 -102 -3").unwrap();
@@ -248,7 +248,7 @@ mod test_from_poly_over_z {
         assert_eq!(cmp_poly, poly_q);
     }
 
-    /// ensure that the conversion works with negative large entries
+    /// Ensure that the conversion works with negative large entries
     #[test]
     fn large_negative() {
         let poly = PolyOverZ::from_str(&format!("4  0 1 -102 -{}", u64::MAX)).unwrap();
@@ -259,7 +259,7 @@ mod test_from_poly_over_z {
         assert_eq!(cmp_poly, poly_q);
     }
 
-    /// ensure that the conversion works with positive large entries
+    /// Ensure that the conversion works with positive large entries
     #[test]
     fn large_positive() {
         let poly = PolyOverZ::from_str(&format!("4  0 1 102 {}", u64::MAX)).unwrap();

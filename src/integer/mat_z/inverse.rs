@@ -46,7 +46,6 @@ impl MatZ {
 
 #[cfg(test)]
 mod test_inverse {
-
     use crate::{integer::MatZ, rational::MatQ};
     use std::str::FromStr;
 

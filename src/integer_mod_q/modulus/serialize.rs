@@ -29,7 +29,7 @@ mod test_serialize {
     use crate::{integer::Z, integer_mod_q::Modulus};
     use std::str::FromStr;
 
-    /// tests whether the serialization of a positive [`Modulus`] works.
+    /// Tests whether the serialization of a positive [`Modulus`] works.
     #[test]
     fn serialize_output_positive() {
         let z = Modulus::try_from(&Z::from(17)).unwrap();
@@ -38,7 +38,7 @@ mod test_serialize {
         assert_eq!(cmp_string, serde_json::to_string(&z).unwrap())
     }
 
-    /// tests whether the serialization of a positive large [`Modulus`] works.
+    /// Tests whether the serialization of a positive large [`Modulus`] works.
     #[test]
     fn serialize_output_positive_large() {
         let val_str = u64::MAX.to_string();
@@ -54,7 +54,7 @@ mod test_deserialize {
     use crate::{integer::Z, integer_mod_q::Modulus};
     use std::str::FromStr;
 
-    /// tests whether the deserialization of a positive [`Modulus`] works.
+    /// Tests whether the deserialization of a positive [`Modulus`] works.
     #[test]
     fn deserialize_positive() {
         let z_string = "{\"modulus\":\"17\"}";
@@ -64,7 +64,7 @@ mod test_deserialize {
         )
     }
 
-    /// tests whether the deserialization of a negative [`Modulus`] fails.
+    /// Tests whether the deserialization of a negative [`Modulus`] fails.
     #[test]
     fn deserialize_negative() {
         let z_string = "{\"modulus\":\"-17\"}";
@@ -73,7 +73,7 @@ mod test_deserialize {
         assert!(a.is_err())
     }
 
-    /// tests whether the deserialization of a positive [`Modulus`] works.
+    /// Tests whether the deserialization of a positive [`Modulus`] works.
     #[test]
     fn deserialize_positive_large() {
         let val_str = u64::MAX.to_string();
@@ -85,7 +85,7 @@ mod test_deserialize {
         )
     }
 
-    /// tests whether the deserialization of a large negative [`Modulus`] fails.
+    /// Tests whether the deserialization of a large negative [`Modulus`] fails.
     #[test]
     fn deserialize_negative_large() {
         let val_str = format!("-{}", u64::MAX);
@@ -95,7 +95,7 @@ mod test_deserialize {
         assert!(a.is_err())
     }
 
-    /// tests whether no fields 'modulus' provided yield an error
+    /// Tests whether no fields 'modulus' provided yield an error
     #[test]
     fn no_field_value() {
         let a: Result<Modulus, serde_json::Error> = serde_json::from_str("{{\"tree\":\"{17}\"}}");
@@ -105,7 +105,7 @@ mod test_deserialize {
         assert!(b.is_err());
     }
 
-    /// tests whether too many fields yield an error
+    /// Tests whether too many fields yield an error
     #[test]
     fn too_many_fields() {
         let a: Result<Modulus, serde_json::Error> =

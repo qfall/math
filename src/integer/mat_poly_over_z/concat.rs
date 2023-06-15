@@ -115,7 +115,7 @@ mod test_concatenate {
     };
     use std::str::FromStr;
 
-    /// ensure that the dimensions are taken over correctly and an error occurs
+    /// Ensure that the dimensions are taken over correctly and an error occurs
     /// if the dimensions mismatch
     #[test]
     fn dimensions_vertical() {
@@ -130,7 +130,7 @@ mod test_concatenate {
         assert!(mat_1.concat_vertical(&mat_3).is_err());
     }
 
-    /// ensure that the dimensions are taken over correctly and an error occurs
+    /// Ensure that the dimensions are taken over correctly and an error occurs
     /// if the dimensions mismatch
     #[test]
     fn dimensions_horizontal() {
@@ -145,7 +145,7 @@ mod test_concatenate {
         assert!(mat_1.concat_horizontal(&mat_2).is_err());
     }
 
-    /// ensure that vertical concatenation works correctly
+    /// Ensure that vertical concatenation works correctly
     #[test]
     fn vertically_correct() {
         let mat_1 = MatPolyOverZ::from_str(&format!(
@@ -167,7 +167,7 @@ mod test_concatenate {
         assert_eq!(cmp_mat, mat_vertical)
     }
 
-    /// ensure that horizontal concatenation works correctly
+    /// Ensure that horizontal concatenation works correctly
     #[test]
     fn horizontally_correct() {
         let mat_1 = MatPolyOverZ::from_str(&format!(

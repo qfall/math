@@ -85,7 +85,7 @@ impl PolyOverZq {
                 &mut out.poly,
                 &self.poly,
                 &other.poly,
-                &*self.modulus.modulus,
+                self.modulus.get_fmpz_mod_ctx_struct(),
             );
         }
         Ok(out)
@@ -97,11 +97,10 @@ arithmetic_trait_mixed_borrowed_owned!(Sub, sub, PolyOverZq, PolyOverZq, PolyOve
 
 #[cfg(test)]
 mod test_sub {
-
     use super::PolyOverZq;
     use std::str::FromStr;
 
-    /// testing subtraction for two [`PolyOverZq`]
+    /// Testing subtraction for two [`PolyOverZq`]
     #[test]
     fn sub() {
         let a: PolyOverZq = PolyOverZq::from_str("3  2 4 6 mod 7").unwrap();
@@ -110,7 +109,7 @@ mod test_sub {
         assert_eq!(c, PolyOverZq::from_str("3  0 6 5 mod 7").unwrap());
     }
 
-    /// testing subtraction for two borrowed [`PolyOverZq`]
+    /// Testing subtraction for two borrowed [`PolyOverZq`]
     #[test]
     fn sub_borrow() {
         let a: PolyOverZq = PolyOverZq::from_str("3  2 4 6 mod 7").unwrap();
@@ -119,7 +118,7 @@ mod test_sub {
         assert_eq!(c, PolyOverZq::from_str("3  0 6 5 mod 7").unwrap());
     }
 
-    /// testing subtraction for borrowed [`PolyOverZq`] and [`PolyOverZq`]
+    /// Testing subtraction for borrowed [`PolyOverZq`] and [`PolyOverZq`]
     #[test]
     fn sub_first_borrowed() {
         let a: PolyOverZq = PolyOverZq::from_str("3  2 4 6 mod 7").unwrap();
@@ -128,7 +127,7 @@ mod test_sub {
         assert_eq!(c, PolyOverZq::from_str("3  0 6 5 mod 7").unwrap());
     }
 
-    /// testing subtraction for [`PolyOverZq`] and borrowed [`PolyOverZq`]
+    /// Testing subtraction for [`PolyOverZq`] and borrowed [`PolyOverZq`]
     #[test]
     fn sub_second_borrowed() {
         let a: PolyOverZq = PolyOverZq::from_str("3  2 4 6 mod 7").unwrap();
@@ -137,7 +136,7 @@ mod test_sub {
         assert_eq!(c, PolyOverZq::from_str("3  0 6 5 mod 7").unwrap());
     }
 
-    /// testing subtraction of [`PolyOverZq`] is reducing the polynomial
+    /// Testing subtraction of [`PolyOverZq`] is reducing the polynomial
     #[test]
     fn sub_reduce() {
         let a: PolyOverZq = PolyOverZq::from_str("3  2 4 1 mod 7").unwrap();
@@ -146,7 +145,7 @@ mod test_sub {
         assert_eq!(c, PolyOverZq::from_str("0 mod 7").unwrap());
     }
 
-    /// testing subtraction for big [`PolyOverZq`]
+    /// Testing subtraction for big [`PolyOverZq`]
     #[test]
     fn sub_large_numbers() {
         let a: PolyOverZq = PolyOverZq::from_str(&format!(
@@ -175,7 +174,7 @@ mod test_sub {
         );
     }
 
-    /// testing subtraction for [`PolyOverZq`] with different moduli does not work
+    /// Testing subtraction for [`PolyOverZq`] with different moduli does not work
     #[test]
     #[should_panic]
     fn sub_mismatching_modulus() {
@@ -184,7 +183,7 @@ mod test_sub {
         let _c: PolyOverZq = a - b;
     }
 
-    /// testing whether sub_safe throws an error for mismatching moduli
+    /// Testing whether sub_safe throws an error for mismatching moduli
     #[test]
     fn sub_safe_is_err() {
         let a: PolyOverZq = PolyOverZq::from_str("3  2 4 6 mod 9").unwrap();

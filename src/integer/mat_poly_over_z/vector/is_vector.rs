@@ -89,7 +89,6 @@ impl MatPolyOverZ {
 
 #[cfg(test)]
 mod test_is_vector {
-
     use super::*;
     use std::str::FromStr;
 

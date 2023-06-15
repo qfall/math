@@ -55,7 +55,7 @@ impl Concatenate for &MatZq {
             )));
         }
 
-        if self.get_mod() != other.get_mod() {
+        if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
                 "Tried to concatenate matrices with different moduli {} and {}.",
                 self.get_mod(),
@@ -112,7 +112,7 @@ impl Concatenate for &MatZq {
             )));
         }
 
-        if self.get_mod() != other.get_mod() {
+        if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
                 "Tried to concatenate matrices with different moduli {} and {}.",
                 self.get_mod(),
@@ -142,7 +142,7 @@ mod test_concatenate {
     };
     use std::str::FromStr;
 
-    /// ensure that the dimensions are taken over correctly and an error occurs
+    /// Ensure that the dimensions are taken over correctly and an error occurs
     /// if the dimensions mismatch
     #[test]
     fn dimensions_vertical() {
@@ -157,7 +157,7 @@ mod test_concatenate {
         assert!(mat_1.concat_vertical(&mat_3).is_err());
     }
 
-    /// ensure that the dimensions are taken over correctly and an error occurs
+    /// Ensure that the dimensions are taken over correctly and an error occurs
     /// if the dimensions mismatch
     #[test]
     fn dimensions_horizontal() {
@@ -172,7 +172,7 @@ mod test_concatenate {
         assert!(mat_1.concat_horizontal(&mat_2).is_err());
     }
 
-    /// ensure that concatenation of matrices with mismatching moduli results in
+    /// Ensure that concatenation of matrices with mismatching moduli results in
     /// in an error
     #[test]
     fn mismatching_moduli() {
@@ -186,7 +186,7 @@ mod test_concatenate {
         assert!(mat_vert.is_err());
     }
 
-    /// ensure that vertical concatenation works correctly
+    /// Ensure that vertical concatenation works correctly
     #[test]
     fn vertically_correct() {
         let mat_1 = MatZq::from_str(&format!(
@@ -210,7 +210,7 @@ mod test_concatenate {
         assert_eq!(cmp_mat, mat_vertical)
     }
 
-    /// ensure that horizontal concatenation works correctly
+    /// Ensure that horizontal concatenation works correctly
     #[test]
     fn horizontally_correct() {
         let mat_1 = MatZq::from_str(&format!(

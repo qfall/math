@@ -48,7 +48,6 @@ impl MatZ {
 
 #[cfg(test)]
 mod test_determinant {
-
     use crate::integer::{MatZ, Z};
     use std::str::FromStr;
 

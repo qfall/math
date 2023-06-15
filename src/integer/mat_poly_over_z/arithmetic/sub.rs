@@ -98,11 +98,10 @@ arithmetic_trait_mixed_borrowed_owned!(Sub, sub, MatPolyOverZ, MatPolyOverZ, Mat
 
 #[cfg(test)]
 mod test_sub {
-
     use super::MatPolyOverZ;
     use std::str::FromStr;
 
-    /// testing subtraction for two [`MatPolyOverZ`]
+    /// Testing subtraction for two [`MatPolyOverZ`]
     #[test]
     fn sub() {
         let a: MatPolyOverZ =
@@ -117,7 +116,7 @@ mod test_sub {
         );
     }
 
-    /// testing subtraction for two borrowed [`MatPolyOverZ`]
+    /// Testing subtraction for two borrowed [`MatPolyOverZ`]
     #[test]
     fn sub_borrow() {
         let a: MatPolyOverZ =
@@ -132,7 +131,7 @@ mod test_sub {
         );
     }
 
-    /// testing subtraction for borrowed [`MatPolyOverZ`] and [`MatPolyOverZ`]
+    /// Testing subtraction for borrowed [`MatPolyOverZ`] and [`MatPolyOverZ`]
     #[test]
     fn sub_first_borrowed() {
         let a: MatPolyOverZ =
@@ -147,7 +146,7 @@ mod test_sub {
         );
     }
 
-    /// testing subtraction for [`MatPolyOverZ`] and borrowed [`MatPolyOverZ`]
+    /// Testing subtraction for [`MatPolyOverZ`] and borrowed [`MatPolyOverZ`]
     #[test]
     fn sub_second_borrowed() {
         let a: MatPolyOverZ =
@@ -162,7 +161,7 @@ mod test_sub {
         );
     }
 
-    /// testing subtraction for big numbers
+    /// Testing subtraction for big numbers
     #[test]
     fn sub_large_numbers() {
         let a: MatPolyOverZ = MatPolyOverZ::from_str(&format!(
@@ -187,7 +186,7 @@ mod test_sub {
         );
     }
 
-    /// testing sub_safe
+    /// Testing sub_safe
     #[test]
     fn sub_safe() {
         let a: MatPolyOverZ =
@@ -202,7 +201,7 @@ mod test_sub {
         );
     }
 
-    /// testing sub_safe throws error
+    /// Testing sub_safe throws error
     #[test]
     fn sub_safe_is_err() {
         let a: MatPolyOverZ =

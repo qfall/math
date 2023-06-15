@@ -52,11 +52,10 @@ arithmetic_trait_mixed_borrowed_owned!(Mul, mul, PolyOverQ, PolyOverQ, PolyOverQ
 
 #[cfg(test)]
 mod test_mul {
-
     use super::PolyOverQ;
     use std::str::FromStr;
 
-    /// testing multiplication for two [`PolyOverQ`]
+    /// Testing multiplication for two [`PolyOverQ`]
     #[test]
     fn mul() {
         let a: PolyOverQ = PolyOverQ::from_str("3  1/7 2/7 -3/7").unwrap();
@@ -68,7 +67,7 @@ mod test_mul {
         );
     }
 
-    /// testing multiplication for two borrowed [`PolyOverQ`]
+    /// Testing multiplication for two borrowed [`PolyOverQ`]
     #[test]
     fn mul_borrow() {
         let a: PolyOverQ = PolyOverQ::from_str("3  1/7 2/7 -3/7").unwrap();
@@ -80,7 +79,7 @@ mod test_mul {
         );
     }
 
-    /// testing multiplication for borrowed [`PolyOverQ`] and [`PolyOverQ`]
+    /// Testing multiplication for borrowed [`PolyOverQ`] and [`PolyOverQ`]
     #[test]
     fn mul_first_borrowed() {
         let a: PolyOverQ = PolyOverQ::from_str("3  1/7 2/7 -3/7").unwrap();
@@ -92,7 +91,7 @@ mod test_mul {
         );
     }
 
-    /// testing multiplication for [`PolyOverQ`] and borrowed [`PolyOverQ`]
+    /// Testing multiplication for [`PolyOverQ`] and borrowed [`PolyOverQ`]
     #[test]
     fn mul_second_borrowed() {
         let a: PolyOverQ = PolyOverQ::from_str("3  1/7 2/7 -3/7").unwrap();
@@ -104,7 +103,7 @@ mod test_mul {
         );
     }
 
-    /// testing multiplication with a constant [`PolyOverQ`]
+    /// Testing multiplication with a constant [`PolyOverQ`]
     #[test]
     fn mul_constant() {
         let a: PolyOverQ = PolyOverQ::from_str("3  1/11 1/2 -7/3").unwrap();
@@ -113,16 +112,16 @@ mod test_mul {
         assert_eq!(c, PolyOverQ::from_str("3  4/77 2/7 -4/3").unwrap());
     }
 
-    /// testing multiplication with zero
+    /// Testing multiplication with zero
     #[test]
     fn mul_zero() {
         let a: PolyOverQ = PolyOverQ::from_str("3  1/18 2/7 -3/10").unwrap();
-        let b: PolyOverQ = PolyOverQ::from_str("0").unwrap();
+        let b: PolyOverQ = PolyOverQ::default();
         let c: PolyOverQ = a * b;
-        assert_eq!(c, PolyOverQ::from_str("0").unwrap());
+        assert_eq!(c, PolyOverQ::default());
     }
 
-    /// testing multiplication for large [`PolyOverQ`]
+    /// Testing multiplication for large [`PolyOverQ`]
     #[test]
     fn mul_large_numbers() {
         let a: PolyOverQ = PolyOverQ::from_str(&format!("2  {} {}", 2, i64::MIN)).unwrap();

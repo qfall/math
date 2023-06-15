@@ -32,7 +32,7 @@ impl Mul<&Z> for &MatPolyOverZ {
     /// ```
     /// use qfall_math::integer::MatPolyOverZ;
     /// use qfall_math::integer::Z;
-    ///  use std::str::FromStr;
+    /// use std::str::FromStr;
     ///
     /// let mat1 = MatPolyOverZ::from_str("[[2  1 42,1  17],[1  8,2  5 6]]").unwrap();
     /// let integer = Z::from(3);
@@ -70,7 +70,7 @@ impl Mul<&PolyOverZ> for &MatPolyOverZ {
     /// ```
     /// use qfall_math::integer::MatPolyOverZ;
     /// use qfall_math::integer::Z;
-    ///  use std::str::FromStr;
+    /// use std::str::FromStr;
     ///
     /// let mat1 = MatPolyOverZ::from_str("[[2  1 42,1  17],[1  8,2  5 6]]").unwrap();
     /// let integer = Z::from(3);
@@ -95,7 +95,6 @@ arithmetic_trait_mixed_borrowed_owned!(Mul, mul, PolyOverZ, MatPolyOverZ, MatPol
 
 #[cfg(test)]
 mod test_mul_z {
-
     use crate::integer::MatPolyOverZ;
     use crate::integer::Z;
     use std::str::FromStr;
@@ -202,7 +201,6 @@ mod test_mul_z {
 
 #[cfg(test)]
 mod test_mul_poly_over_z {
-
     use crate::integer::MatPolyOverZ;
     use crate::integer::PolyOverZ;
     use std::str::FromStr;

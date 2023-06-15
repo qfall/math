@@ -50,7 +50,6 @@ impl MatQ {
 
 #[cfg(test)]
 mod test_trace {
-
     use crate::rational::{MatQ, Q};
     use std::str::FromStr;
 

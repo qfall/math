@@ -82,7 +82,7 @@ mod test_from_poly_over_z_modulus_polynomial_ring_zq {
 
     const BITPRIME64: u64 = u64::MAX - 58;
 
-    /// ensure that the modulus is applied with a large prime and large coefficients
+    /// Ensure that the modulus is applied with a large prime and large coefficients
     #[test]
     fn is_reduced_large() {
         let modulus =
@@ -106,7 +106,7 @@ mod test_from_poly_over_z_modulus_polynomial_ring_zq {
         assert_eq!(poly_ring_mat, cmp_poly_ring_mat);
     }
 
-    /// ensure that two ring elements that are instantiated the same way are equal
+    /// Ensure that two ring elements that are instantiated the same way are equal
     #[test]
     fn same_instantiation() {
         let modulus =
@@ -126,7 +126,7 @@ mod test_from_poly_over_z_modulus_polynomial_ring_zq {
         assert_eq!(poly_ring_mat_1, poly_ring_mat_2);
     }
 
-    /// ensure that from works for different dimensions
+    /// Ensure that from works for different dimensions
     #[test]
     fn different_dimensions() {
         let modulus =

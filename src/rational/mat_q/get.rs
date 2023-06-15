@@ -10,7 +10,7 @@
 
 use super::MatQ;
 use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
-use crate::utils::index::{evaluate_index, evaluate_indices};
+use crate::utils::index::{evaluate_index, evaluate_indices_for_matrix};
 use crate::{error::MathError, rational::Q};
 use flint_sys::{
     fmpq::{fmpq, fmpq_set},
@@ -78,7 +78,7 @@ impl GetEntry<Q> for MatQ {
         row: impl TryInto<i64> + Display,
         column: impl TryInto<i64> + Display,
     ) -> Result<Q, MathError> {
-        let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
+        let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
 
         // since `self.matrix` is a correct fmpq matrix and both row and column
         // are previously checked to be inside of the matrix, no errors
@@ -334,7 +334,6 @@ mod test_get_entry {
 
 #[cfg(test)]
 mod test_get_num {
-
     use crate::{
         rational::MatQ,
         traits::{GetNumColumns, GetNumRows},
@@ -359,7 +358,6 @@ mod test_get_num {
 
 #[cfg(test)]
 mod test_get_vec {
-
     use crate::rational::MatQ;
     use std::str::FromStr;
 

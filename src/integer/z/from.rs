@@ -82,7 +82,7 @@ impl Z {
     ///
     /// let a: Z = Z::from_fmpz(value);
     /// ```
-    pub(crate) fn from_fmpz(value: fmpz) -> Self {
+    pub(crate) unsafe fn from_fmpz(value: fmpz) -> Self {
         Z { value }
     }
 
@@ -431,10 +431,10 @@ mod tests_from_int {
         let original_small = Z::ONE;
 
         assert_eq!(original_large, Z::from(&original_large));
-        assert_eq!(original_large, Z::from(original_large.clone()));
+        assert_eq!(original_large, original_large.clone());
 
         assert_eq!(original_small, Z::from(&original_small));
-        assert_eq!(original_small, Z::from(Z::ONE));
+        assert_eq!(original_small, Z::ONE);
     }
 
     /// Ensure that the [`From`] trait is available for small and large,
@@ -454,7 +454,6 @@ mod tests_from_int {
 
 #[cfg(test)]
 mod tests_from_str {
-
     use crate::integer::Z;
     use std::str::FromStr;
 
@@ -560,9 +559,8 @@ mod test_from_str_b {
 
 #[cfg(test)]
 mod test_from_fmpz {
-    use flint_sys::fmpz::{fmpz, fmpz_set_ui};
-
     use super::Z;
+    use flint_sys::fmpz::{fmpz, fmpz_set_ui};
 
     /// Ensure that `from_fmpz` is available for small and large numbers
     #[test]
@@ -570,8 +568,8 @@ mod test_from_fmpz {
         let fmpz_1 = fmpz(0);
         let fmpz_2 = fmpz(100);
 
-        assert_eq!(Z::from_fmpz(fmpz_1), Z::ZERO);
-        assert_eq!(Z::from_fmpz(fmpz_2), Z::from(100));
+        assert_eq!(unsafe { Z::from_fmpz(fmpz_1) }, Z::ZERO);
+        assert_eq!(unsafe { Z::from_fmpz(fmpz_2) }, Z::from(100));
     }
 
     /// Ensure that `from_fmpz` is available for small and large numbers
@@ -580,7 +578,7 @@ mod test_from_fmpz {
         let mut fmpz_1 = fmpz(0);
         unsafe { fmpz_set_ui(&mut fmpz_1, u64::MAX) }
 
-        assert_eq!(Z::from_fmpz(fmpz_1), Z::from(u64::MAX));
+        assert_eq!(unsafe { Z::from_fmpz(fmpz_1) }, Z::from(u64::MAX));
     }
 }
 

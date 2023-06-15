@@ -50,7 +50,7 @@ mod test_to_string {
     use crate::integer::MatZ;
     use std::str::FromStr;
 
-    /// tests whether a matrix with a large entry works in a roundtrip
+    /// Tests whether a matrix with a large entry works in a roundtrip
     #[test]
     fn working_large_positive() {
         let cmp = MatZ::from_str(&format!("[[{}, 1, 3],[5, 6, 7]]", u64::MAX)).unwrap();
@@ -58,7 +58,7 @@ mod test_to_string {
         assert_eq!(format!("[[{}, 1, 3],[5, 6, 7]]", u64::MAX), cmp.to_string())
     }
 
-    /// tests whether a matrix with a large negative entry works in a roundtrip
+    /// Tests whether a matrix with a large negative entry works in a roundtrip
     #[test]
     fn working_large_negative() {
         let cmp = MatZ::from_str(&format!("[[-{}, 1, 3],[5, 6, 7]]", u64::MAX)).unwrap();
@@ -69,7 +69,7 @@ mod test_to_string {
         )
     }
 
-    /// tests whether a matrix with positive entries works in a roundtrip
+    /// Tests whether a matrix with positive entries works in a roundtrip
     #[test]
     fn working_positive() {
         let cmp = MatZ::from_str("[[2, 1, 3],[5, 6, 7]]").unwrap();
@@ -77,7 +77,7 @@ mod test_to_string {
         assert_eq!("[[2, 1, 3],[5, 6, 7]]", cmp.to_string())
     }
 
-    /// tests whether a matrix with negative entries works in a roundtrip
+    /// Tests whether a matrix with negative entries works in a roundtrip
     #[test]
     fn working_negative() {
         let cmp = MatZ::from_str("[[-2, 1, 3],[5, -6, 7]]").unwrap();
@@ -85,7 +85,7 @@ mod test_to_string {
         assert_eq!("[[-2, 1, 3],[5, -6, 7]]", cmp.to_string())
     }
 
-    /// tests whether a matrix with positive entries works in a roundtrip
+    /// Tests whether a matrix with positive entries works in a roundtrip
     #[test]
     fn working_big_dimensions() {
         let cmp1 = MatZ::from_str(&format!("[{}[5, 6, 7]]", "[1, 2, 3],".repeat(99))).unwrap();
@@ -98,7 +98,7 @@ mod test_to_string {
         assert_eq!(format!("[[{}1]]", "1, ".repeat(99)), cmp2.to_string());
     }
 
-    /// tests whether a matrix that is created using a string, returns a
+    /// Tests whether a matrix that is created using a string, returns a
     /// string that can be used to create a [`MatZ`]
     #[test]
     fn working_use_result_of_to_string_as_input() {

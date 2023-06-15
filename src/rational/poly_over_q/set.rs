@@ -6,8 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementations to set coefficients for a [`PolyOverQ`] value from other types.
-//! Each reasonable type should be used to set a coefficient.
+//! Implementations to manipulate a [`PolyOverQ`] polynomial.
 
 use super::PolyOverQ;
 use crate::{
@@ -32,6 +31,10 @@ impl SetCoefficient<&Z> for PolyOverQ {
     /// Parameters:
     /// - `index`: the index of the coefficient to set (has to be positive)
     /// - `value`: the new value the index should have from a borrowed [`Z`].
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if either the index is negative
+    /// or it does not fit into an [`i64`].
     ///
     /// # Examples
     /// ```
@@ -75,6 +78,10 @@ impl SetCoefficient<&Q> for PolyOverQ {
     /// - `index`: the index of the coefficient to set (has to be positive)
     /// - `value`: the new value the index should have from a borrowed [`Q`].
     ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if either the index is negative
+    /// or it does not fit into an [`i64`].
+    ///
     /// # Examples
     /// ```
     /// use qfall_math::rational::PolyOverQ;
@@ -111,11 +118,10 @@ implement_for_owned!(Q, PolyOverQ, SetCoefficient);
 
 #[cfg(test)]
 mod test_set_coeff_z {
-
     use crate::{integer::Z, rational::PolyOverQ, traits::SetCoefficient};
     use std::str::FromStr;
 
-    /// ensure that the negative indices return an error
+    /// Ensure that the negative indices return an error
     #[test]
     fn set_min_negative_coeff() {
         let mut poly = PolyOverQ::from_str("2  -1 3/17").unwrap();
@@ -126,7 +132,7 @@ mod test_set_coeff_z {
         assert!(poly.set_coeff(i8::MIN, 2).is_err());
     }
 
-    /// ensure that coefficients up to 2^15 -1 work
+    /// Ensure that coefficients up to 2^15 -1 work
     #[test]
     fn set_max_coeff() {
         let mut poly = PolyOverQ::from_str("2  -1 3/17").unwrap();
@@ -135,7 +141,7 @@ mod test_set_coeff_z {
         assert!(poly.set_coeff(i16::MAX, 2).is_ok());
     }
 
-    /// ensure that the max of [`u8`] and [`u16`] works as a coefficient
+    /// Ensure that the max of [`u8`] and [`u16`] works as a coefficient
     #[test]
     fn set_unsigned_coeff() {
         let mut poly = PolyOverQ::from_str("2  -1 3/17").unwrap();
@@ -144,7 +150,7 @@ mod test_set_coeff_z {
         assert!(poly.set_coeff(u16::MAX, 2).is_ok());
     }
 
-    /// ensure that a general case is working
+    /// Ensure that a general case is working
     #[test]
     fn set_coeff_working() {
         let mut poly = PolyOverQ::from_str("4  0 -1 2 3/17").unwrap();
@@ -158,29 +164,29 @@ mod test_set_coeff_z {
         );
     }
 
-    /// ensure that the correct coefficient is set and all others are set to `0`
+    /// Ensure that the correct coefficient is set and all others are set to `0`
     #[test]
     fn set_coeff_rest_zero() {
-        let mut poly = PolyOverQ::from_str("0").unwrap();
+        let mut poly = PolyOverQ::default();
 
         poly.set_coeff(4, -10).unwrap();
         assert_eq!(PolyOverQ::from_str("5  0 0 0 0 -10").unwrap(), poly);
     }
 
-    /// ensure that setting with a [`Z`] works
+    /// Ensure that setting with a [`Z`] works
     #[test]
     fn set_coeff_z() {
-        let mut poly = PolyOverQ::from_str("0").unwrap();
+        let mut poly = PolyOverQ::default();
 
         poly.set_coeff(4, Z::from(123)).unwrap();
         poly.set_coeff(5, &Z::from(321)).unwrap();
         assert_eq!(PolyOverQ::from_str("6  0 0 0 0 123 321").unwrap(), poly);
     }
 
-    /// ensure that setting large coefficients works
+    /// Ensure that setting large coefficients works
     #[test]
     fn large_coeff_z() {
-        let mut poly = PolyOverQ::from_str("0").unwrap();
+        let mut poly = PolyOverQ::default();
 
         poly.set_coeff(4, u64::MAX).unwrap();
         assert_eq!(
@@ -198,7 +204,7 @@ mod test_set_coeff_q {
     };
     use std::str::FromStr;
 
-    /// ensure that setting with a large [`Q`] works
+    /// Ensure that setting with a large [`Q`] works
     #[test]
     fn large_coeff() {
         let mut poly = PolyOverQ::from_str("1  1").unwrap();

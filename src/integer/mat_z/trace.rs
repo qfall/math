@@ -50,7 +50,6 @@ impl MatZ {
 
 #[cfg(test)]
 mod test_trace {
-
     use crate::integer::{MatZ, Z};
     use std::str::FromStr;
 

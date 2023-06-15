@@ -34,7 +34,6 @@ impl MatQ {
 
 #[cfg(test)]
 mod test_gso {
-
     use crate::{
         rational::{MatQ, Q},
         traits::GetEntry,

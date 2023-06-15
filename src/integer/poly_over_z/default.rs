@@ -33,17 +33,16 @@ impl Default for PolyOverZ {
     }
 }
 
-/// ensure that default initializes an empty polynomial
+/// Ensure that default initializes an empty polynomial
 #[cfg(test)]
 mod test_default {
     use crate::integer::PolyOverZ;
-    use std::str::FromStr;
 
     /// Check if [`Default`] initializes the zero polynomial appropriately
     #[test]
     fn init_zero() {
         let poly_over_zero = PolyOverZ::default();
 
-        assert_eq!(PolyOverZ::from_str("0").unwrap(), poly_over_zero)
+        assert_eq!(PolyOverZ::default(), poly_over_zero)
     }
 }

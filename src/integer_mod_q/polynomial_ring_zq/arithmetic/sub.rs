@@ -119,13 +119,12 @@ arithmetic_trait_mixed_borrowed_owned!(
 
 #[cfg(test)]
 mod test_sub {
-
     use crate::integer::PolyOverZ;
     use crate::integer_mod_q::ModulusPolynomialRingZq;
     use crate::integer_mod_q::PolynomialRingZq;
     use std::str::FromStr;
 
-    /// testing subtraction for two [`PolynomialRingZq`]
+    /// Testing subtraction for two [`PolynomialRingZq`]
     #[test]
     fn sub() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -140,7 +139,7 @@ mod test_sub {
         );
     }
 
-    /// testing subtraction for two borrowed [`PolynomialRingZq`]
+    /// Testing subtraction for two borrowed [`PolynomialRingZq`]
     #[test]
     fn sub_borrow() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -155,7 +154,7 @@ mod test_sub {
         );
     }
 
-    /// testing subtraction for borrowed [`PolynomialRingZq`] and [`PolynomialRingZq`]
+    /// Testing subtraction for borrowed [`PolynomialRingZq`] and [`PolynomialRingZq`]
     #[test]
     fn sub_first_borrowed() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -170,7 +169,7 @@ mod test_sub {
         );
     }
 
-    /// testing subtraction for [`PolynomialRingZq`] and borrowed [`PolynomialRingZq`]
+    /// Testing subtraction for [`PolynomialRingZq`] and borrowed [`PolynomialRingZq`]
     #[test]
     fn sub_second_borrowed() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -185,7 +184,7 @@ mod test_sub {
         );
     }
 
-    /// testing subtraction for [`PolynomialRingZq`] reduces `0` coefficients
+    /// Testing subtraction for [`PolynomialRingZq`] reduces `0` coefficients
     #[test]
     fn sub_reduce() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -200,7 +199,7 @@ mod test_sub {
         );
     }
 
-    /// testing subtraction for big [`PolynomialRingZq`]
+    /// Testing subtraction for big [`PolynomialRingZq`]
     #[test]
     fn sub_large_numbers() {
         let modulus = ModulusPolynomialRingZq::from_str(&format!(
@@ -233,7 +232,7 @@ mod test_sub {
         );
     }
 
-    /// testing subtraction for [`PolynomialRingZq`] with different moduli does not work
+    /// Testing subtraction for [`PolynomialRingZq`] with different moduli does not work
     #[test]
     #[should_panic]
     fn sub_mismatching_modulus() {
@@ -246,7 +245,7 @@ mod test_sub {
         let _ = a - b;
     }
 
-    /// testing whether sub_safe throws an error for mismatching moduli
+    /// Testing whether sub_safe throws an error for mismatching moduli
     #[test]
     fn sub_safe_is_err() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
