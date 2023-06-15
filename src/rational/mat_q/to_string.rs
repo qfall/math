@@ -50,7 +50,7 @@ mod test_to_string {
     use crate::rational::MatQ;
     use std::str::FromStr;
 
-    /// tests whether a matrix with large nominators and denominators works in a
+    /// Tests whether a matrix with large nominators and denominators works in a
     /// roundtrip
     #[test]
     fn working_large_positive() {
@@ -63,7 +63,7 @@ mod test_to_string {
         )
     }
 
-    /// tests whether a matrix with large negative nominators and denominators
+    /// Tests whether a matrix with large negative nominators and denominators
     /// works in a roundtrip
     #[test]
     fn working_large_negative() {
@@ -76,7 +76,7 @@ mod test_to_string {
         )
     }
 
-    /// tests whether a matrix with positive nominators and denominators works
+    /// Tests whether a matrix with positive nominators and denominators works
     /// in a roundtrip
     #[test]
     fn working_positive() {
@@ -85,7 +85,7 @@ mod test_to_string {
         assert_eq!("[[2, 1, 2/3],[5, 6, 2]]", cmp.to_string())
     }
 
-    /// tests whether a matrix with negative nominators and denominators works
+    /// Tests whether a matrix with negative nominators and denominators works
     /// in a roundtrip
     #[test]
     fn working_negative() {
@@ -94,7 +94,7 @@ mod test_to_string {
         assert_eq!("[[-2, 1, -3/8],[5, -1/6, -2]]", cmp.to_string())
     }
 
-    /// tests whether a large matrix works in a roundtrip
+    /// Tests whether a large matrix works in a roundtrip
     #[test]
     fn working_big_dimensions() {
         let cmp1 = MatQ::from_str(&format!("[{}[5, 6, 7]]", "[1/2, 2, 3/8],".repeat(99))).unwrap();
@@ -107,7 +107,7 @@ mod test_to_string {
         assert_eq!(format!("[[{}1]]", "1/4, ".repeat(99)), cmp2.to_string());
     }
 
-    /// tests whether a matrix that is created using a string, returns a
+    /// Tests whether a matrix that is created using a string, returns a
     /// string that can be used to create a [`MatQ`]
     #[test]
     fn working_use_result_of_to_string_as_input() {

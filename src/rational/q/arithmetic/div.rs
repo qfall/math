@@ -35,8 +35,8 @@ impl Div for &Q {
     /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
     ///
-    /// let a: Q = Q::from_str("42").unwrap();
-    /// let b: Q = Q::from_str("24").unwrap();
+    /// let a: Q = Q::from(42);
+    /// let b: Q = Q::from(24);
     ///
     /// let c: Q = &a / &b;
     /// let d: Q = a / b;
@@ -108,8 +108,8 @@ impl Q {
     /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
     ///
-    /// let a: Q = Q::from_str("42").unwrap();
-    /// let b: Q = Q::from_str("24").unwrap();
+    /// let a: Q = Q::from(42);
+    /// let b: Q = Q::from(24);
     ///
     /// let c: Q = a.div_safe(&b).unwrap();
     /// ```
@@ -138,47 +138,47 @@ mod test_div {
     use super::Q;
     use std::str::FromStr;
 
-    /// testing division for two [`Q`]
+    /// Testing division for two [`Q`]
     #[test]
     fn div() {
-        let a: Q = Q::from_str("2").unwrap();
+        let a: Q = Q::from(2);
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a / b;
         assert_eq!(c, Q::from_str("4/42").unwrap());
     }
 
-    /// testing division for two borrowed [`Q`]
+    /// Testing division for two borrowed [`Q`]
     #[test]
     fn div_borrow() {
-        let a: Q = Q::from_str("2").unwrap();
+        let a: Q = Q::from(2);
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = &a / &b;
         assert_eq!(c, Q::from_str("4/42").unwrap());
     }
 
-    /// testing division for borrowed [`Q`] and [`Q`]
+    /// Testing division for borrowed [`Q`] and [`Q`]
     #[test]
     fn div_first_borrowed() {
-        let a: Q = Q::from_str("4").unwrap();
+        let a: Q = Q::from(4);
         let b: Q = Q::from_str("42/10").unwrap();
         let c: Q = &a / b;
         assert_eq!(c, Q::from_str("40/42").unwrap());
     }
 
-    /// testing division for [`Q`] and borrowed [`Q`]
+    /// Testing division for [`Q`] and borrowed [`Q`]
     #[test]
     fn div_second_borrowed() {
-        let a: Q = Q::from_str("2").unwrap();
+        let a: Q = Q::from(2);
         let b: Q = Q::from_str("42/2").unwrap();
         let c: Q = a / &b;
         assert_eq!(c, Q::from_str("4/42").unwrap());
     }
 
     #[test]
-    /// testing division for large numerators and divisors
+    /// Testing division for large numerators and divisors
     fn div_large() {
         let a: Q = Q::from_str(&(u64::MAX - 1).to_string()).unwrap();
-        let b: Q = Q::from_str("2").unwrap();
+        let b: Q = Q::from(2);
         let c: Q = Q::from_str(&format!("1/{}", (i32::MAX))).unwrap();
         let d: Q = Q::from_str(&format!("1/{}", (u32::MAX))).unwrap();
 
@@ -197,32 +197,31 @@ mod test_div {
         );
     }
 
-    /// testing division by `0` panics
+    /// Testing division by `0` panics
     #[test]
     #[should_panic]
     fn div_by_zero() {
-        let a: Q = Q::from_str("2").unwrap();
-        let b: Q = Q::from_str("0").unwrap();
+        let a: Q = Q::from(2);
+        let b: Q = Q::ZERO;
         let _c = a / b;
     }
 
-    /// testing division by `0` throws an error
+    /// Testing division by `0` throws an error
     #[test]
     fn div_by_zero_safe() {
-        let a: Q = Q::from_str("2").unwrap();
-        let b: Q = Q::from_str("0").unwrap();
+        let a: Q = Q::from(2);
+        let b: Q = Q::ZERO;
         assert!(&a.div_safe(&b).is_err());
     }
 }
 
 #[cfg(test)]
 mod test_div_between_q_and_z {
-
     use crate::integer::Z;
     use crate::rational::Q;
     use std::str::FromStr;
 
-    /// testing division for [`Q`] and [`Z`]
+    /// Testing division for [`Q`] and [`Z`]
     #[test]
     fn div() {
         let a: Q = Q::from_str("5/7").unwrap();
@@ -231,7 +230,7 @@ mod test_div_between_q_and_z {
         assert_eq!(c, Q::from_str("5/28").unwrap());
     }
 
-    /// testing division for both borrowed [`Q`] and [`Z`]
+    /// Testing division for both borrowed [`Q`] and [`Z`]
     #[test]
     fn div_borrow() {
         let a: Q = Q::from_str("5/7").unwrap();
@@ -240,7 +239,7 @@ mod test_div_between_q_and_z {
         assert_eq!(c, Q::from_str("5/28").unwrap());
     }
 
-    /// testing division for borrowed [`Q`] and [`Z`]
+    /// Testing division for borrowed [`Q`] and [`Z`]
     #[test]
     fn div_first_borrowed() {
         let a: Q = Q::from_str("5/7").unwrap();
@@ -249,7 +248,7 @@ mod test_div_between_q_and_z {
         assert_eq!(c, Q::from_str("5/28").unwrap());
     }
 
-    /// testing division for [`Q`] and borrowed [`Z`]
+    /// Testing division for [`Q`] and borrowed [`Z`]
     #[test]
     fn div_second_borrowed() {
         let a: Q = Q::from_str("5/7").unwrap();
@@ -258,7 +257,7 @@ mod test_div_between_q_and_z {
         assert_eq!(c, Q::from_str("5/28").unwrap());
     }
 
-    /// testing division for big numbers
+    /// Testing division for big numbers
     #[test]
     fn div_large_numbers() {
         let a: Q = Q::from_str(&format!("{}/2", u64::MAX)).unwrap();
@@ -280,22 +279,21 @@ mod test_div_between_q_and_z {
         );
     }
 
-    /// testing division by `0` panics
+    /// Testing division by `0` panics
     #[test]
     #[should_panic]
     fn div_by_zero() {
         let a: Q = Q::from_str("2/3").unwrap();
-        let b: Z = Z::from_str("0").unwrap();
+        let b: Z = Z::ZERO;
         let _c = a / b;
     }
 }
 
 #[cfg(test)]
 mod test_div_between_types {
-
     use crate::rational::Q;
 
-    /// testing division between different types
+    /// Testing division between different types
     #[test]
     #[allow(clippy::op_ref)]
     fn div() {
@@ -400,7 +398,7 @@ mod test_div_between_types {
         let _: Q = k / Q::from(42);
     }
 
-    /// testing division by `0` panics
+    /// Testing division by `0` panics
     #[test]
     #[should_panic]
     fn div_by_zero_u64() {
@@ -409,7 +407,7 @@ mod test_div_between_types {
         let _c = a / b;
     }
 
-    /// testing division by `0` panics
+    /// Testing division by `0` panics
     #[test]
     #[should_panic]
     fn div_by_zero_u32() {
@@ -418,7 +416,7 @@ mod test_div_between_types {
         let _c = a / b;
     }
 
-    /// testing division by `0` panics
+    /// Testing division by `0` panics
     #[test]
     #[should_panic]
     fn div_by_zero_u16() {
@@ -427,7 +425,7 @@ mod test_div_between_types {
         let _c = a / b;
     }
 
-    /// testing division by `0` panics
+    /// Testing division by `0` panics
     #[test]
     #[should_panic]
     fn div_by_zero_u8() {
@@ -436,7 +434,7 @@ mod test_div_between_types {
         let _c = a / b;
     }
 
-    /// testing division by `0` panics
+    /// Testing division by `0` panics
     #[test]
     #[should_panic]
     fn div_by_zero_i64() {
@@ -445,7 +443,7 @@ mod test_div_between_types {
         let _c = a / b;
     }
 
-    /// testing division by `0` panics
+    /// Testing division by `0` panics
     #[test]
     #[should_panic]
     fn div_by_zero_i32() {
@@ -454,7 +452,7 @@ mod test_div_between_types {
         let _c = a / b;
     }
 
-    /// testing division by `0` panics
+    /// Testing division by `0` panics
     #[test]
     #[should_panic]
     fn div_by_zero_i16() {
@@ -463,7 +461,7 @@ mod test_div_between_types {
         let _c = a / b;
     }
 
-    /// testing division by `0` panics
+    /// Testing division by `0` panics
     #[test]
     #[should_panic]
     fn div_by_zero_i8() {
@@ -472,7 +470,7 @@ mod test_div_between_types {
         let _c = a / b;
     }
 
-    /// testing division by `0` panics
+    /// Testing division by `0` panics
     #[test]
     #[should_panic]
     fn div_by_zero_f32() {
@@ -481,7 +479,7 @@ mod test_div_between_types {
         let _c = a / b;
     }
 
-    /// testing division by `0` panics
+    /// Testing division by `0` panics
     #[test]
     #[should_panic]
     fn div_by_zero_f64() {

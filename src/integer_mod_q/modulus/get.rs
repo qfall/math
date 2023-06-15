@@ -6,8 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementations to get content of a
-//! [`Modulus`].
+//! Implementations to get information about a [`Modulus`].
 
 use super::Modulus;
 use flint_sys::fmpz_mod::fmpz_mod_ctx_struct;

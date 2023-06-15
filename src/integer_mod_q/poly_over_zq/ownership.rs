@@ -88,7 +88,6 @@ impl Drop for PolyOverZq {
 /// Test that the [`Clone`] trait is correctly implemented.
 #[cfg(test)]
 mod test_clone {
-
     use super::PolyOverZq;
     use std::str::FromStr;
 
@@ -130,7 +129,6 @@ mod test_clone {
 
 #[cfg(test)]
 mod test_drop {
-
     use super::PolyOverZq;
     use std::{collections::HashSet, str::FromStr};
 

@@ -85,7 +85,7 @@ impl PolyOverZq {
                 &mut out.poly,
                 &self.poly,
                 &other.poly,
-                &*self.modulus.modulus,
+                self.modulus.get_fmpz_mod_ctx_struct(),
             );
         }
         Ok(out)
@@ -97,11 +97,10 @@ arithmetic_trait_mixed_borrowed_owned!(Add, add, PolyOverZq, PolyOverZq, PolyOve
 
 #[cfg(test)]
 mod test_add {
-
     use super::PolyOverZq;
     use std::str::FromStr;
 
-    /// testing addition for two [`PolyOverZq`]
+    /// Testing addition for two [`PolyOverZq`]
     #[test]
     fn add() {
         let a: PolyOverZq = PolyOverZq::from_str("3  2 4 1 mod 7").unwrap();
@@ -110,7 +109,7 @@ mod test_add {
         assert_eq!(c, PolyOverZq::from_str("3  4 1 2 mod 7").unwrap());
     }
 
-    /// testing addition for two borrowed [`PolyOverZq`]
+    /// Testing addition for two borrowed [`PolyOverZq`]
     #[test]
     fn add_borrow() {
         let a: PolyOverZq = PolyOverZq::from_str("3  2 4 1 mod 7").unwrap();
@@ -119,7 +118,7 @@ mod test_add {
         assert_eq!(c, PolyOverZq::from_str("3  4 1 2 mod 7").unwrap());
     }
 
-    /// testing addition for borrowed [`PolyOverZq`] and [`PolyOverZq`]
+    /// Testing addition for borrowed [`PolyOverZq`] and [`PolyOverZq`]
     #[test]
     fn add_first_borrowed() {
         let a: PolyOverZq = PolyOverZq::from_str("3  2 4 1 mod 7").unwrap();
@@ -128,7 +127,7 @@ mod test_add {
         assert_eq!(c, PolyOverZq::from_str("3  4 1 2 mod 7").unwrap());
     }
 
-    /// testing addition for [`PolyOverZq`] and borrowed [`PolyOverZq`]
+    /// Testing addition for [`PolyOverZq`] and borrowed [`PolyOverZq`]
     #[test]
     fn add_second_borrowed() {
         let a: PolyOverZq = PolyOverZq::from_str("3  2 4 1 mod 7").unwrap();
@@ -137,7 +136,7 @@ mod test_add {
         assert_eq!(c, PolyOverZq::from_str("3  4 1 2 mod 7").unwrap());
     }
 
-    /// testing addition of [`PolyOverZq`] is reducing the polynomial
+    /// Testing addition of [`PolyOverZq`] is reducing the polynomial
     #[test]
     fn add_reduce() {
         let a: PolyOverZq = PolyOverZq::from_str("3  2 4 1 mod 7").unwrap();
@@ -146,7 +145,7 @@ mod test_add {
         assert_eq!(c, PolyOverZq::from_str("2  4 1 mod 7").unwrap());
     }
 
-    /// testing addition for big [`PolyOverZq`]
+    /// Testing addition for big [`PolyOverZq`]
     #[test]
     fn add_large_numbers() {
         let a: PolyOverZq = PolyOverZq::from_str(&format!(
@@ -175,7 +174,7 @@ mod test_add {
         );
     }
 
-    /// testing addition for [`PolyOverZq`] with different moduli does not work
+    /// Testing addition for [`PolyOverZq`] with different moduli does not work
     #[test]
     #[should_panic]
     fn add_mismatching_modulus() {
@@ -184,7 +183,7 @@ mod test_add {
         let _c: PolyOverZq = a + b;
     }
 
-    /// testing whether add_safe throws an error for mismatching moduli
+    /// Testing whether add_safe throws an error for mismatching moduli
     #[test]
     fn add_safe_is_err() {
         let a: PolyOverZq = PolyOverZq::from_str("3  -5 4 1 mod 7").unwrap();

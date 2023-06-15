@@ -79,7 +79,7 @@ mod test_norm_eucl_sqrd {
     /// with small coefficients is calculated correctly
     #[test]
     fn poly_small_coefficient() {
-        let poly1 = PolyOverQ::from_str("0").unwrap();
+        let poly1 = PolyOverQ::default();
         let poly2 = PolyOverQ::from_str("3  1/7 2/7 3/7").unwrap();
         let poly3 = PolyOverQ::from_str("3  1/8 2010/19 90/29").unwrap();
 
@@ -124,7 +124,7 @@ mod test_norm_infty {
     /// with small coefficients is calculated correctly
     #[test]
     fn poly_small_coefficient() {
-        let poly1 = PolyOverQ::from_str("0").unwrap();
+        let poly1 = PolyOverQ::default();
         let poly2 = PolyOverQ::from_str("3  1/7 2/7 3/7").unwrap();
         let poly3 = PolyOverQ::from_str("3  1/8 2010/19 90/29").unwrap();
 

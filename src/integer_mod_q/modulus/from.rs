@@ -28,9 +28,9 @@ impl Modulus {
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::Modulus;
-    /// use std::str::FromStr;
+    /// use qfall_math::integer::Z;
     ///
-    /// let modulus = Modulus::from_str("42").unwrap();
+    /// let modulus = Modulus::try_from_z(&Z::from(42)).unwrap();
     /// ```
     /// # Errors and Failures
     ///
@@ -168,25 +168,25 @@ mod test_ctx_init {
     use super::ctx_init;
     use crate::integer::Z;
 
-    /// tests whether a small modulus ist instantiated correctly
+    /// Tests whether a small modulus ist instantiated correctly
     #[test]
     fn working_example() {
         assert!(ctx_init(&Z::from(100)).is_ok())
     }
 
-    /// tests whether a large modulus (> 64 bits) is instantiated correctly
+    /// Tests whether a large modulus (> 64 bits) is instantiated correctly
     #[test]
     fn large_modulus() {
         assert!(ctx_init(&Z::from(u64::MAX)).is_ok());
     }
 
-    /// tests whether a negative input value returns an error
+    /// Tests whether a negative input value returns an error
     #[test]
     fn negative_modulus() {
         assert!(ctx_init(&Z::from(-42)).is_err())
     }
 
-    /// tests whether a zero as input value returns an error
+    /// Tests whether a zero as input value returns an error
     #[test]
     fn zero_modulus() {
         assert!(ctx_init(&Z::ZERO).is_err())
@@ -195,37 +195,36 @@ mod test_ctx_init {
 
 #[cfg(test)]
 mod test_from_str {
-
     use super::Modulus;
     use std::str::FromStr;
 
-    /// tests whether a correctly formatted string outputs an instantiation of a
+    /// Tests whether a correctly formatted string outputs an instantiation of a
     /// Modulus, i.e. does not return an error
     #[test]
     fn working_example() {
         assert!(Modulus::from_str("42").is_ok());
     }
 
-    /// tests whether a large value (> 64 bits) is instantiated correctly
+    /// Tests whether a large value (> 64 bits) is instantiated correctly
     #[test]
     fn large_value() {
         assert!(Modulus::from_str(&"1".repeat(65)).is_ok())
     }
 
-    /// tests whether a falsely formatted string (wrong whitespaces) returns an
+    /// Tests whether a falsely formatted string (wrong whitespaces) returns an
     /// error
     #[test]
     fn false_format_whitespaces() {
         assert!(Modulus::from_str("4 2").is_err());
     }
 
-    /// tests whether a falsely formatted string (wrong symbols) returns an error
+    /// Tests whether a falsely formatted string (wrong symbols) returns an error
     #[test]
     fn false_format_symbols() {
         assert!(Modulus::from_str("b a").is_err());
     }
 
-    /// tests whether a false string (negative) returns an error
+    /// Tests whether a false string (negative) returns an error
     #[test]
     fn false_sign() {
         assert!(Modulus::from_str("-42").is_err());

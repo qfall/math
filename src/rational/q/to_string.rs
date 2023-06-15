@@ -61,11 +61,10 @@ impl fmt::Display for Q {
 
 #[cfg(test)]
 mod test_to_string {
-
     use crate::rational::Q;
     use std::str::FromStr;
 
-    /// tests whether a large positive rational works in a roundtrip
+    /// Tests whether a large positive rational works in a roundtrip
     #[test]
     fn working_large_positive_nom() {
         let cmp = Q::from_str(&u64::MAX.to_string()).unwrap();
@@ -73,7 +72,7 @@ mod test_to_string {
         assert_eq!(u64::MAX.to_string(), cmp.to_string())
     }
 
-    /// tests whether a large negative rational works in a roundtrip
+    /// Tests whether a large negative rational works in a roundtrip
     #[test]
     fn working_large_negative_nom() {
         let cmp = Q::from_str(&format!("-{}", u64::MAX)).unwrap();
@@ -81,7 +80,7 @@ mod test_to_string {
         assert_eq!(format!("-{}", u64::MAX), cmp.to_string())
     }
 
-    /// tests whether a large denominator works in a roundtrip
+    /// Tests whether a large denominator works in a roundtrip
     #[test]
     fn working_large_positive_den() {
         let cmp = Q::from_str(&format!("1/{}", u64::MAX)).unwrap();
@@ -89,7 +88,7 @@ mod test_to_string {
         assert_eq!(format!("1/{}", u64::MAX), cmp.to_string())
     }
 
-    /// tests whether a large negative denominator works in a roundtrip
+    /// Tests whether a large negative denominator works in a roundtrip
     #[test]
     fn working_large_negative_den() {
         let cmp = Q::from_str(&format!("1/-{}", u64::MAX)).unwrap();
@@ -97,7 +96,7 @@ mod test_to_string {
         assert_eq!(format!("-1/{}", u64::MAX), cmp.to_string())
     }
 
-    /// tests whether a positive rational works in a roundtrip
+    /// Tests whether a positive rational works in a roundtrip
     #[test]
     fn working_positive() {
         let cmp = Q::from_str("42/235").unwrap();
@@ -105,7 +104,7 @@ mod test_to_string {
         assert_eq!("42/235", cmp.to_string())
     }
 
-    /// tests whether a negative rational works in a roundtrip
+    /// Tests whether a negative rational works in a roundtrip
     #[test]
     fn working_negative() {
         let cmp = Q::from_str("-42/235").unwrap();
@@ -113,7 +112,7 @@ mod test_to_string {
         assert_eq!("-42/235", cmp.to_string())
     }
 
-    /// tests whether a rational that is created using a string, returns a
+    /// Tests whether a rational that is created using a string, returns a
     /// string that can be used to create a [`Q`]
     #[test]
     fn working_use_result_of_to_string_as_input() {

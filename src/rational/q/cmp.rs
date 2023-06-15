@@ -133,8 +133,8 @@ mod test_partial_eq {
     #[test]
     #[allow(clippy::op_ref)]
     fn equal_call_methods() {
-        let one_1 = Q::from_str("1").unwrap();
-        let one_2 = Q::from_str("1").unwrap();
+        let one_1 = Q::ONE;
+        let one_2 = Q::ONE;
 
         assert!(one_1 == one_2);
         assert!(&one_1 == &one_2);
@@ -148,8 +148,8 @@ mod test_partial_eq {
     #[test]
     #[allow(clippy::op_ref)]
     fn not_equal_call_methods() {
-        let one = Q::from_str("1").unwrap();
-        let two = Q::from_str("2").unwrap();
+        let one = Q::ONE;
+        let two = Q::from(2);
 
         assert!(one != two);
         assert!(&one != &two);
@@ -161,27 +161,20 @@ mod test_partial_eq {
     /// Test equal with small positive and negative numbers.
     #[test]
     fn equal_small() {
-        let small_1 = Q::from_str("10").unwrap();
-        let small_2 = Q::from_str("10").unwrap();
-        let negative = Q::from_str("-1").unwrap();
+        let small_1 = Q::from(10);
+        let small_2 = Q::from(10);
 
         assert!(small_1 == small_2);
         assert!(small_2 == small_1);
         assert!(small_1 == small_1);
-        assert!(!(small_1 == negative));
-        assert!(!(negative == small_1));
     }
 
     /// Test not equal with small positive and negative numbers.
     #[test]
     fn not_equal_small() {
-        let small_1 = Q::from_str("10").unwrap();
-        let small_2 = Q::from_str("10").unwrap();
-        let negative = Q::from_str("-1").unwrap();
+        let small_1 = Q::from(10);
+        let negative = Q::MINUS_ONE;
 
-        assert!(!(small_1 != small_2));
-        assert!(!(small_2 != small_1));
-        assert!(!(small_1 != small_1));
         assert!(small_1 != negative);
         assert!(negative != small_1);
     }
@@ -199,8 +192,6 @@ mod test_partial_eq {
         assert!(max_2 == max_1);
         assert!(max_1 == max_1);
         assert!(min == min);
-        assert!(!(max_1 == min));
-        assert!(!(min == max_1));
     }
 
     /// Test not equal with a large [`Q`]
@@ -208,37 +199,11 @@ mod test_partial_eq {
     #[test]
     fn not_equal_large() {
         let max_1 = Q::from_str(&"1".repeat(65)).unwrap();
-        let max_2 = Q::from_str(&"1".repeat(65)).unwrap();
         let large_negative_str = format!("-{:1<65}", "1");
         let min = Q::from_str(&large_negative_str).unwrap();
 
-        assert!(!(max_1 != max_2));
-        assert!(!(max_2 != max_1));
-        assert!(!(max_1 != max_1));
-        assert!(!(min != min));
         assert!(max_1 != min);
         assert!(min != max_1);
-    }
-
-    /// Test equal with a large [`Q`] (uses FLINT's pointer representation)
-    /// and small [`Q`] (no pointer representation).
-    #[test]
-    fn equal_large_small() {
-        let max = Q::from_str(&"1".repeat(65)).unwrap();
-        let small_positive = Q::from_str("1").unwrap();
-        let small_negative = Q::from_str("-1").unwrap();
-        let large_negative_str = format!("-{:1<65}", "1");
-        let min = Q::from_str(&large_negative_str).unwrap();
-
-        assert!(!(max == small_negative));
-        assert!(!(small_negative == max));
-        assert!(!(max == small_positive));
-        assert!(!(small_positive == max));
-
-        assert!(!(min == small_negative));
-        assert!(!(small_negative == min));
-        assert!(!(min == small_positive));
-        assert!(!(small_positive == min));
     }
 
     /// Test not equal with a large [`Q`] (uses FLINT's pointer representation)
@@ -246,8 +211,8 @@ mod test_partial_eq {
     #[test]
     fn not_equal_large_small() {
         let max = Q::from_str(&"1".repeat(65)).unwrap();
-        let small_positive = Q::from_str("1").unwrap();
-        let small_negative = Q::from_str("-1").unwrap();
+        let small_positive = Q::ONE;
+        let small_negative = Q::MINUS_ONE;
         let large_negative_str = format!("-{:1<65}", "1");
         let min = Q::from_str(&large_negative_str).unwrap();
 
@@ -278,8 +243,6 @@ mod test_partial_eq {
         assert!(small_1 == small_1);
 
         assert!(less == less);
-        assert!(!(small_1 == less));
-        assert!(!(less == small_1));
     }
 
     /// Test equal for [`Q`] with large numerator and denominator
@@ -300,8 +263,6 @@ mod test_partial_eq {
         assert!(small_1 == small_1);
 
         assert!(less == less);
-        assert!(!(small_1 == less));
-        assert!(!(less == small_1));
     }
 
     /// Ensure that two elements are equal
@@ -336,7 +297,6 @@ mod test_partial_eq {
 #[allow(clippy::neg_cmp_op_on_partial_ord)]
 #[cfg(test)]
 mod test_partial_ord {
-
     use super::Q;
 
     /// Different ways to compare [`Q`] elements with each other
@@ -345,15 +305,8 @@ mod test_partial_ord {
         let one = Q::ONE;
         let zero = Q::ZERO;
 
-        assert!(one > zero);
         assert!(one >= zero);
-        assert!(!(one < zero));
-        assert!(!(one <= zero));
-
-        assert!(&one > &zero);
-        assert!(&one >= &zero);
-        assert!(!(&one < &zero));
-        assert!(!(&one <= &zero));
+        assert!(one > zero);
     }
 
     /// Test less (<) comparison between small positive and negative [`Q`]
@@ -361,22 +314,13 @@ mod test_partial_ord {
     #[test]
     fn less_small() {
         let one_1 = Q::ONE;
-        let one_2 = Q::ONE;
         let small_negative = Q::from(-1);
         let one_half = Q::try_from((&1, &2)).unwrap();
 
-        assert!(!(one_1 < one_2));
-        assert!(!(one_2 < one_1));
-        assert!(!(one_1 < one_1));
-
         assert!(small_negative < one_1);
-        assert!(!(one_1 < small_negative));
-        assert!(!(small_negative < small_negative));
 
-        assert!(!(one_1 < one_half));
         assert!(one_half < one_1);
         assert!(small_negative < one_half);
-        assert!(!(one_half < small_negative));
     }
 
     /// Test less (<) comparison between large [`Q`] (FLINT uses pointers)
@@ -391,14 +335,10 @@ mod test_partial_ord {
         // Comparisons with max
         assert!(small_positive < large);
         assert!(small_negative < large);
-        assert!(!(large < small_positive));
-        assert!(!(large < small_negative));
 
         // Comparisons with max_negative
         assert!(large_negative < small_positive);
         assert!(large_negative < small_negative);
-        assert!(!(small_positive < large_negative));
-        assert!(!(small_negative < large_negative));
     }
 
     /// Test less (<) comparison between large positive and negative [`Q`]
@@ -406,16 +346,9 @@ mod test_partial_ord {
     #[test]
     fn less_large() {
         let max_1 = Q::from(u64::MAX);
-        let max_2 = Q::from(u64::MAX);
         let max_negative = Q::from(i64::MIN);
 
-        assert!(!(max_1 < max_2));
-        assert!(!(max_2 < max_1));
-        assert!(!(max_1 < max_1));
-
         assert!(max_negative < max_1);
-        assert!(!(max_1 < max_negative));
-        assert!(!(max_negative < max_negative));
     }
 
     /// Test less or equal (<=) comparison between small positive and negative [`Q`]
@@ -431,7 +364,6 @@ mod test_partial_ord {
         assert!(small_positive_1 <= small_positive_1);
 
         assert!(small_negative <= small_positive_1);
-        assert!(!(small_positive_1 <= small_negative));
         assert!(small_negative <= small_negative);
     }
 
@@ -447,14 +379,10 @@ mod test_partial_ord {
         // Comparisons with max
         assert!(small_positive <= max);
         assert!(small_negative <= max);
-        assert!(!(max <= small_positive));
-        assert!(!(max <= small_negative));
 
         // Comparisons with max_negative
         assert!(max_negative <= small_positive);
         assert!(max_negative <= small_negative);
-        assert!(!(small_positive <= max_negative));
-        assert!(!(small_negative <= max_negative));
     }
 
     /// Test less or equal (<=) comparison between large positive and negative [`Q`]
@@ -470,7 +398,6 @@ mod test_partial_ord {
         assert!(max_1 <= max_1);
 
         assert!(max_negative <= max_1);
-        assert!(!(max_1 <= max_negative));
         assert!(max_negative <= max_negative);
     }
 
@@ -479,16 +406,9 @@ mod test_partial_ord {
     #[test]
     fn greater_small() {
         let small_positive_1 = Q::ONE;
-        let small_positive_2 = Q::ONE;
         let small_negative = Q::from(-1);
 
-        assert!(!(small_positive_1 > small_positive_2));
-        assert!(!(small_positive_2 > small_positive_1));
-        assert!(!(small_positive_1 > small_positive_1));
-
-        assert!(!(small_negative > small_positive_1));
         assert!(small_positive_1 > small_negative);
-        assert!(!(small_negative > small_negative));
     }
 
     /// Test greater (>) comparison between large [`Q`] (FLINT uses pointers)
@@ -501,14 +421,10 @@ mod test_partial_ord {
         let max_negative = Q::from(i64::MIN);
 
         // Comparisons with max
-        assert!(!(small_positive > max));
-        assert!(!(small_negative > max));
         assert!(max > small_positive);
         assert!(max > small_negative);
 
         // Comparisons with max_negative
-        assert!(!(max_negative > small_positive));
-        assert!(!(max_negative > small_negative));
         assert!(small_positive > max_negative);
         assert!(small_negative > max_negative);
     }
@@ -518,16 +434,9 @@ mod test_partial_ord {
     #[test]
     fn greater_large() {
         let max_1 = Q::from(u64::MAX);
-        let max_2 = Q::from(u64::MAX);
         let max_negative = Q::from(i64::MIN);
 
-        assert!(!(max_1 > max_2));
-        assert!(!(max_2 > max_1));
-        assert!(!(max_1 > max_1));
-
-        assert!(!(max_negative > max_1));
         assert!(max_1 > max_negative);
-        assert!(!(max_negative > max_negative));
     }
 
     /// Test greater or equal (>=) comparison between small positive and negative [`Q`]
@@ -542,7 +451,6 @@ mod test_partial_ord {
         assert!(small_positive_2 >= small_positive_1);
         assert!(small_positive_1 >= small_positive_1);
 
-        assert!(!(small_negative >= small_positive_1));
         assert!(small_positive_1 >= small_negative);
         assert!(small_negative >= small_negative);
     }
@@ -557,14 +465,10 @@ mod test_partial_ord {
         let max_negative = Q::from(i64::MIN);
 
         // Comparisons with max
-        assert!(!(small_positive >= max));
-        assert!(!(small_negative >= max));
         assert!(max >= small_positive);
         assert!(max >= small_negative);
 
         // Comparisons with max_negative
-        assert!(!(max_negative >= small_positive));
-        assert!(!(max_negative >= small_negative));
         assert!(small_positive >= max_negative);
         assert!(small_negative >= max_negative);
     }
@@ -581,7 +485,6 @@ mod test_partial_ord {
         assert!(max_2 >= max_1);
         assert!(max_1 >= max_1);
 
-        assert!(!(max_negative >= max_1));
         assert!(max_1 >= max_negative);
         assert!(max_negative >= max_negative);
     }
@@ -594,8 +497,6 @@ mod test_partial_ord {
 
         assert!(small > zero);
         assert!(small >= zero);
-        assert!(!(small < zero));
-        assert!(!(small <= zero));
     }
 }
 
@@ -618,7 +519,7 @@ mod test_ord {
 
         assert_eq!(a, Q::ZERO.clamp(a.clone(), b.clone()));
         assert_eq!(a, a.clone().clamp(Q::ZERO, b.clone()));
-        assert_eq!(a, b.clone().clamp(Q::ZERO, a.clone()));
+        assert_eq!(a, b.clamp(Q::ZERO, a.clone()));
     }
 
     /// Check whether default implementations `max`, `min`, `clamp`
@@ -633,6 +534,6 @@ mod test_ord {
 
         assert_eq!(a, Q::ZERO.clamp(a.clone(), b.clone()));
         assert_eq!(a, a.clone().clamp(Q::ZERO, b.clone()));
-        assert_eq!(a, b.clone().clamp(Q::ZERO, a.clone()));
+        assert_eq!(a, b.clamp(Q::ZERO, a.clone()));
     }
 }

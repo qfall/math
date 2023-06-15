@@ -105,7 +105,7 @@ impl MatZq {
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::{MatZq, Zq};
-    ///  use std::str::FromStr;
+    /// use std::str::FromStr;
     ///
     /// let mat1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
     /// let integer = Zq::try_from((2, 61)).unwrap();
@@ -117,7 +117,7 @@ impl MatZq {
     /// - Returns a [`MathError`] of type
     /// [`MismatchingModulus`](MathError::MismatchingModulus) if the moduli mismatch.
     pub fn mul_scalar_safe(&self, scalar: &Zq) -> Result<Self, MathError> {
-        if self.get_mod() != scalar.modulus {
+        if self.modulus != scalar.modulus {
             return Err(MathError::MismatchingModulus(format!(
                 " Tried to add matrixes with moduli '{}' and '{}'.",
                 self.get_mod(),
@@ -136,7 +136,6 @@ impl MatZq {
 
 #[cfg(test)]
 mod test_mul_z {
-
     use crate::integer::Z;
     use crate::integer_mod_q::MatZq;
     use std::str::FromStr;
@@ -249,7 +248,6 @@ mod test_mul_z {
 
 #[cfg(test)]
 mod test_mul_zq {
-
     use crate::integer_mod_q::{MatZq, Zq};
     use std::str::FromStr;
 

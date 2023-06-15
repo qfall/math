@@ -61,7 +61,7 @@ mod test_to_string {
     use crate::integer_mod_q::ModulusPolynomialRingZq;
     use std::str::FromStr;
 
-    /// test whether a roundtrip works
+    /// Test whether a roundtrip works
     #[test]
     fn working_keeps_same_string() {
         let cmp_string = "3  1 2 2 mod 5";
@@ -70,7 +70,7 @@ mod test_to_string {
         assert_eq!(cmp_string, cmp.to_string())
     }
 
-    /// test whether a string returned from to_string can be used to construct a [`ModulusPolynomialRingZq`]
+    /// Test whether a string returned from to_string can be used to construct a [`ModulusPolynomialRingZq`]
     #[test]
     fn working_use_result_of_to_string() {
         let cmp_string = "3  1 2 2 mod 5";

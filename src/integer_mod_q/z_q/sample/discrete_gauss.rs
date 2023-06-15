@@ -131,8 +131,8 @@ mod test_sample_discrete_gauss {
         assert!(counts[1] < 70, "{}", expl_text);
         assert!(counts[18] < 20, "{}", expl_text);
         assert!(counts[2] < 20, "{}", expl_text);
-        for i in 3..18 {
-            assert!(counts[i] < 10, "{}", expl_text);
+        for count in counts.iter().take(18).skip(3) {
+            assert!(count < &10, "{}", expl_text);
         }
     }
 }

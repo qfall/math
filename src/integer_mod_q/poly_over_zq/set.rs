@@ -6,8 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementations to set coefficients for a [`PolyOverZq`] value from other types.
-//! Each reasonable type should be used to set a coefficient.
+//! Implementations to manipulate a [`PolyOverZq`] polynomial.
 
 use super::PolyOverZq;
 use crate::{
@@ -32,6 +31,10 @@ impl SetCoefficient<&Z> for PolyOverZq {
     /// Parameters:
     /// - `index`: the index of the coefficient to set (has to be positive)
     /// - `value`: the new value the index should have from a borrowed [`Z`].
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if either the index is negative
+    /// or it does not fit into an [`i64`].
     ///
     /// # Examples
     /// ```
@@ -80,6 +83,11 @@ impl SetCoefficient<&Zq> for PolyOverZq {
     /// - `index`: the index of the coefficient to set (has to be positive)
     /// - `value`: the new value the index should have from a borrowed [`Zq`].
     ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if either the index is negative
+    /// or it does not fit into an [`i64`], or the moduli of
+    /// the polynomial and the input mismatch.
+    ///
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::PolyOverZq;
@@ -117,11 +125,10 @@ implement_for_owned!(Zq, PolyOverZq, SetCoefficient);
 
 #[cfg(test)]
 mod test_set_coeff_z {
-
     use crate::{integer::Z, integer_mod_q::PolyOverZq, traits::SetCoefficient};
     use std::str::FromStr;
 
-    /// ensure that the negative indices return an error
+    /// Ensure that the negative indices return an error
     #[test]
     fn set_min_negative_coeff() {
         let mut poly = PolyOverZq::from_str("2  1 1 mod 11").unwrap();
@@ -132,7 +139,7 @@ mod test_set_coeff_z {
         assert!(poly.set_coeff(i8::MIN, 2).is_err());
     }
 
-    /// ensure that coefficients up to 2^15 -1 work
+    /// Ensure that coefficients up to 2^15 -1 work
     #[test]
     fn set_max_coeff() {
         let mut poly = PolyOverZq::from_str("2  1 1 mod 11").unwrap();
@@ -141,7 +148,7 @@ mod test_set_coeff_z {
         assert!(poly.set_coeff(i16::MAX, 2).is_ok());
     }
 
-    /// ensure that the max of [`u8`] and [`u16`] works as a coefficient
+    /// Ensure that the max of [`u8`] and [`u16`] works as a coefficient
     #[test]
     fn set_unsigned_coeff() {
         let mut poly = PolyOverZq::from_str("2  1 1 mod 11").unwrap();
@@ -150,7 +157,7 @@ mod test_set_coeff_z {
         assert!(poly.set_coeff(u16::MAX, 2).is_ok());
     }
 
-    /// ensure that a general case is working
+    /// Ensure that a general case is working
     #[test]
     fn set_coeff_working() {
         let mut poly = PolyOverZq::from_str("4  0 1 2 3 mod 11").unwrap();
@@ -164,7 +171,7 @@ mod test_set_coeff_z {
         );
     }
 
-    /// ensure that the correct coefficient is set and all others are set to `0`
+    /// Ensure that the correct coefficient is set and all others are set to `0`
     #[test]
     fn set_coeff_rest_zero() {
         let mut poly = PolyOverZq::from_str("0 mod 11").unwrap();
@@ -173,7 +180,7 @@ mod test_set_coeff_z {
         assert_eq!(PolyOverZq::from_str("5  0 0 0 0 1 mod 11").unwrap(), poly);
     }
 
-    /// ensure that setting with a z works
+    /// Ensure that setting with a z works
     #[test]
     fn set_coeff_z() {
         let mut poly = PolyOverZq::from_str("0 mod 11").unwrap();
@@ -193,7 +200,7 @@ mod test_set_coeff_zq {
     };
     use std::str::FromStr;
 
-    /// ensure that an error is returned if the moduli do not match
+    /// Ensure that an error is returned if the moduli do not match
     #[test]
     fn mismatching_moduli() {
         let mut poly = PolyOverZq::from_str(&format!("4  0 1 2 3 mod {}", u64::MAX - 58)).unwrap();
@@ -206,7 +213,7 @@ mod test_set_coeff_zq {
         )
     }
 
-    /// ensure that an ok is returned if the moduli not match
+    /// Ensure that an ok is returned if the moduli not match
     #[test]
     fn matching_moduli() {
         let mut poly = PolyOverZq::from_str(&format!("4  0 1 2 3 mod {}", u64::MAX - 58)).unwrap();

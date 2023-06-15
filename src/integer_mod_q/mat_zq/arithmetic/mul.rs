@@ -134,7 +134,7 @@ impl MatZq {
     /// - Returns a [`MathError`] of type
     /// [`MathError::MismatchingModulus`] if the moduli mismatch.
     pub fn mul_safe(&self, other: &Self) -> Result<Self, MathError> {
-        if self.get_mod() != other.get_mod() {
+        if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
                 " Tried to add matrixes with moduli '{}' and '{}'.",
                 self.get_mod(),
@@ -160,7 +160,6 @@ impl MatZq {
 
 #[cfg(test)]
 mod test_mul {
-
     use super::MatZq;
     use crate::{integer::Z, traits::SetEntry};
     use std::str::FromStr;
@@ -214,7 +213,6 @@ mod test_mul {
 
 #[cfg(test)]
 mod test_mul_matz {
-
     use super::MatZq;
     use crate::integer::MatZ;
     use crate::{integer::Z, traits::SetEntry};

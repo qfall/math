@@ -41,7 +41,7 @@ mod test_exp {
     use crate::rational::Q;
     use std::str::FromStr;
 
-    /// ensure that `0` is returned if the length `0` is provided
+    /// Ensure that `0` is returned if the length `0` is provided
     #[test]
     fn zero_length() {
         let q = Q::from_str("17/3").unwrap();
@@ -49,12 +49,12 @@ mod test_exp {
         assert_eq!(Q::default(), q.exp_taylor(0_u32));
     }
 
-    /// test correct evaluation for some explicit values
+    /// Test correct evaluation for some explicit values
     #[test]
     fn ten_length_value() {
         assert_eq!(
             Q::from_str("98641/36288").unwrap(),
-            Q::from_str("1").unwrap().exp_taylor(10_u32)
+            Q::ONE.exp_taylor(10_u32)
         );
         assert_eq!(
             Q::from_str("2492063827/1785641760").unwrap(),

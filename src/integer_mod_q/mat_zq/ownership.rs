@@ -72,7 +72,6 @@ impl Drop for MatZq {
 /// Test that the [`Clone`] trait is correctly implemented.
 #[cfg(test)]
 mod test_clone {
-
     use super::MatZq;
     use crate::integer::Z;
     use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
@@ -156,7 +155,6 @@ mod test_clone {
 /// Test that the [`Drop`] trait is correctly implemented.
 #[cfg(test)]
 mod test_drop {
-
     use super::MatZq;
     use crate::integer::Z;
     use crate::traits::GetEntry;

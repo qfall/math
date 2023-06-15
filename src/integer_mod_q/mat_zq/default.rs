@@ -9,7 +9,7 @@
 //! Initialize a [`MatZq`] with common defaults, e.g., zero and identity.
 
 use super::MatZq;
-use crate::{error::MathError, integer::Z, integer_mod_q::Modulus, utils::index::evaluate_index};
+use crate::{error::MathError, integer::Z, integer_mod_q::Modulus, utils::index::evaluate_indices};
 use flint_sys::fmpz_mod_mat::{fmpz_mod_mat_init, fmpz_mod_mat_one};
 use std::{fmt::Display, mem::MaybeUninit};
 
@@ -45,9 +45,7 @@ impl MatZq {
         num_cols: impl TryInto<i64> + Display,
         modulus: impl Into<Z>,
     ) -> Result<Self, MathError> {
-        // TODO add separate function
-        let num_rows_i64 = evaluate_index(num_rows)?;
-        let num_cols_i64 = evaluate_index(num_cols)?;
+        let (num_rows_i64, num_cols_i64) = evaluate_indices(num_rows, num_cols)?;
 
         if num_rows_i64 == 0 || num_cols_i64 == 0 {
             return Err(MathError::InvalidMatrix(format!(

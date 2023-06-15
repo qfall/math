@@ -197,8 +197,8 @@ mod test_sqrt {
 
                 let precision_bound_after_squaring = 2 * &p_q * &root_float + &p_q * &p_q;
 
-                assert!(&error_after_squaring > &(-1 * &precision_bound_after_squaring));
-                assert!(&error_after_squaring < &precision_bound_after_squaring);
+                assert!(error_after_squaring > (-1 * &precision_bound_after_squaring));
+                assert!(error_after_squaring < precision_bound_after_squaring);
             }
         }
     }

@@ -61,7 +61,6 @@ impl Drop for Q {
 /// Test that the [`Clone`] trait is correctly implemented.
 #[cfg(test)]
 mod test_clone {
-
     use super::Q;
     use crate::integer::Z;
     use std::str::FromStr;
@@ -150,7 +149,6 @@ mod test_clone {
 /// Test that the [`Drop`] trait is correctly implemented.
 #[cfg(test)]
 mod test_drop {
-
     use super::Q;
     use std::str::FromStr;
 

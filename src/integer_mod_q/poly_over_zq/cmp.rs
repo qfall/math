@@ -214,7 +214,7 @@ mod test_partial_eq {
         assert!(small_positive != min);
     }
 
-    /// ensure that polynomials with different [`Modulus`](crate::integer_mod_q::Modulus)
+    /// Ensure that polynomials with different [`Modulus`](crate::integer_mod_q::Modulus)
     #[test]
     #[allow(clippy::op_ref)]
     fn different_modulus_err() {
@@ -230,7 +230,7 @@ mod test_partial_eq {
         assert!(PolyOverZq::ne(&poly_1, &poly_2))
     }
 
-    /// ensure equal for polynomials of a high degree
+    /// Ensure equal for polynomials of a high degree
     #[test]
     fn equal_high_degree() {
         let str_1 = format!("7  {} 72 48 2028 23 392 1 mod 1{}", u64::MAX, u64::MAX);

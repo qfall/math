@@ -52,7 +52,6 @@ impl Eq for MatQ {}
 /// Test that the [`PartialEq`] trait is correctly implemented.
 #[cfg(test)]
 mod test_partial_eq {
-
     use super::MatQ;
     use crate::{rational::Q, traits::SetEntry};
     use std::str::FromStr;

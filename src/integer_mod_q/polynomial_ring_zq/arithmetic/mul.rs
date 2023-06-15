@@ -119,13 +119,12 @@ arithmetic_trait_mixed_borrowed_owned!(
 
 #[cfg(test)]
 mod test_mul {
-
     use crate::integer::PolyOverZ;
     use crate::integer_mod_q::ModulusPolynomialRingZq;
     use crate::integer_mod_q::PolynomialRingZq;
     use std::str::FromStr;
 
-    /// testing multiplication for two [`PolynomialRingZq`]
+    /// Testing multiplication for two [`PolynomialRingZq`]
     #[test]
     fn mul() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -140,7 +139,7 @@ mod test_mul {
         );
     }
 
-    /// testing multiplication for two borrowed [`PolynomialRingZq`]
+    /// Testing multiplication for two borrowed [`PolynomialRingZq`]
     #[test]
     fn mul_borrow() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -155,7 +154,7 @@ mod test_mul {
         );
     }
 
-    /// testing multiplication for borrowed [`PolynomialRingZq`] and [`PolynomialRingZq`]
+    /// Testing multiplication for borrowed [`PolynomialRingZq`] and [`PolynomialRingZq`]
     #[test]
     fn mul_first_borrowed() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -170,7 +169,7 @@ mod test_mul {
         );
     }
 
-    /// testing multiplication for [`PolynomialRingZq`] and borrowed [`PolynomialRingZq`]
+    /// Testing multiplication for [`PolynomialRingZq`] and borrowed [`PolynomialRingZq`]
     #[test]
     fn mul_second_borrowed() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -185,7 +184,7 @@ mod test_mul {
         );
     }
 
-    /// testing multiplication for [`PolynomialRingZq`] with constant
+    /// Testing multiplication for [`PolynomialRingZq`] with constant
     #[test]
     fn mul_constant() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -199,12 +198,12 @@ mod test_mul {
             PolynomialRingZq::from((&PolyOverZ::from_str("4  -3 0 3 3").unwrap(), &modulus))
         );
         assert_eq!(
-            PolynomialRingZq::from((&PolyOverZ::from_str("0").unwrap(), &modulus)),
-            a * PolynomialRingZq::from((&PolyOverZ::from_str("0").unwrap(), &modulus))
+            PolynomialRingZq::from((&PolyOverZ::default(), &modulus)),
+            a * PolynomialRingZq::from((&PolyOverZ::default(), &modulus))
         )
     }
 
-    /// testing multiplication for big [`PolynomialRingZq`]
+    /// Testing multiplication for big [`PolynomialRingZq`]
     #[test]
     fn mul_large_numbers() {
         let modulus = ModulusPolynomialRingZq::from_str(&format!(
@@ -240,7 +239,7 @@ mod test_mul {
         );
     }
 
-    /// testing multiplication for [`PolynomialRingZq`] with different moduli does not work
+    /// Testing multiplication for [`PolynomialRingZq`] with different moduli does not work
     #[test]
     #[should_panic]
     fn mul_mismatching_modulus() {
@@ -253,7 +252,7 @@ mod test_mul {
         let _ = a * b;
     }
 
-    /// testing whether mul_safe throws an error for mismatching moduli
+    /// Testing whether mul_safe throws an error for mismatching moduli
     #[test]
     fn mul_safe_is_err() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();

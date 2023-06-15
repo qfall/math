@@ -56,7 +56,6 @@ impl Z {
 #[cfg(test)]
 mod test_sample_uniform {
     use crate::{integer::Z, integer_mod_q::Modulus};
-    use std::str::FromStr;
 
     /// Checks whether the boundaries of the interval are kept for small intervals.
     #[test]
@@ -103,7 +102,7 @@ mod test_sample_uniform {
     /// implementing Into<Z> + Clone, i.e. u8, u16, u32, u64, i8, ...
     #[test]
     fn availability() {
-        let modulus = Modulus::from_str("7").unwrap();
+        let modulus = Modulus::try_from_z(&Z::from(7)).unwrap();
         let z = Z::from(7);
 
         let _ = Z::sample_uniform(&0u16, &7u8);
@@ -137,7 +136,7 @@ mod test_sample_uniform {
         // this could possibly fail for true uniform randomness with probability
         for count in counts {
             assert!(count > 150, "This test can fail with probability close to 0. 
-            It fails if the sampled occurences do not look like a typical uniform random distribution. 
+            It fails if the sampled occurrences do not look like a typical uniform random distribution. 
             If this happens, rerun the tests several times and check whether this issue comes up again.");
         }
     }

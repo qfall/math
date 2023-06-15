@@ -144,7 +144,6 @@ impl MatQ {
 
 #[cfg(test)]
 mod test_mul {
-
     use super::MatQ;
     use crate::{rational::Q, traits::SetEntry};
     use std::str::FromStr;
@@ -201,7 +200,6 @@ mod test_mul {
 
 #[cfg(test)]
 mod test_mul_matz {
-
     use super::MatQ;
     use crate::integer::MatZ;
     use crate::rational::Q;

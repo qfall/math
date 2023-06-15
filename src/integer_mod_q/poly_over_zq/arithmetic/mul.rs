@@ -85,7 +85,7 @@ impl PolyOverZq {
                 &mut out.poly,
                 &self.poly,
                 &other.poly,
-                &*self.modulus.modulus,
+                self.modulus.get_fmpz_mod_ctx_struct(),
             );
         }
         Ok(out)
@@ -97,11 +97,10 @@ arithmetic_trait_mixed_borrowed_owned!(Mul, mul, PolyOverZq, PolyOverZq, PolyOve
 
 #[cfg(test)]
 mod test_mul {
-
     use super::PolyOverZq;
     use std::str::FromStr;
 
-    /// testing multiplication for two [`PolyOverZq`]
+    /// Testing multiplication for two [`PolyOverZq`]
     #[test]
     fn mul() {
         let a: PolyOverZq = PolyOverZq::from_str("3  2 4 1 mod 7").unwrap();
@@ -110,7 +109,7 @@ mod test_mul {
         assert_eq!(c, PolyOverZq::from_str("4  4 2 4 4 mod 7").unwrap());
     }
 
-    /// testing multiplication for two borrowed [`PolyOverZq`]
+    /// Testing multiplication for two borrowed [`PolyOverZq`]
     #[test]
     fn mul_borrow() {
         let a: PolyOverZq = PolyOverZq::from_str("3  2 4 1 mod 7").unwrap();
@@ -119,7 +118,7 @@ mod test_mul {
         assert_eq!(c, PolyOverZq::from_str("4  4 2 4 4 mod 7").unwrap());
     }
 
-    /// testing multiplication for borrowed [`PolyOverZq`] and [`PolyOverZq`]
+    /// Testing multiplication for borrowed [`PolyOverZq`] and [`PolyOverZq`]
     #[test]
     fn mul_first_borrowed() {
         let a: PolyOverZq = PolyOverZq::from_str("3  2 4 1 mod 7").unwrap();
@@ -128,7 +127,7 @@ mod test_mul {
         assert_eq!(c, PolyOverZq::from_str("4  4 2 4 4 mod 7").unwrap());
     }
 
-    /// testing multiplication for [`PolyOverZq`] and borrowed [`PolyOverZq`]
+    /// Testing multiplication for [`PolyOverZq`] and borrowed [`PolyOverZq`]
     #[test]
     fn mul_second_borrowed() {
         let a: PolyOverZq = PolyOverZq::from_str("3  2 4 1 mod 7").unwrap();
@@ -137,7 +136,7 @@ mod test_mul {
         assert_eq!(c, PolyOverZq::from_str("4  4 2 4 4 mod 7").unwrap());
     }
 
-    /// testing multiplication for [`PolyOverZq`] and a constant [`PolyOverZq`]
+    /// Testing multiplication for [`PolyOverZq`] and a constant [`PolyOverZq`]
     #[test]
     fn mul_constant() {
         let a: PolyOverZq = PolyOverZq::from_str("3  2 4 1 mod 7").unwrap();
@@ -150,7 +149,7 @@ mod test_mul {
         );
     }
 
-    /// testing multiplication for big [`PolyOverZq`]
+    /// Testing multiplication for big [`PolyOverZq`]
     #[test]
     fn mul_large_numbers() {
         let a: PolyOverZq = PolyOverZq::from_str(&format!(
@@ -181,7 +180,7 @@ mod test_mul {
         );
     }
 
-    /// testing multiplication for [`PolyOverZq`] with different moduli does not work
+    /// Testing multiplication for [`PolyOverZq`] with different moduli does not work
     #[test]
     #[should_panic]
     fn mul_mismatching_modulus() {
@@ -190,7 +189,7 @@ mod test_mul {
         let _c: PolyOverZq = a * b;
     }
 
-    /// testing whether mul_safe throws an error for mismatching moduli
+    /// Testing whether mul_safe throws an error for mismatching moduli
     #[test]
     fn mul_safe_is_err() {
         let a: PolyOverZq = PolyOverZq::from_str("3  2 4 1 mod 9").unwrap();

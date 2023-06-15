@@ -47,11 +47,10 @@ impl fmt::Display for PolyOverZ {
 
 #[cfg(test)]
 mod test_to_string {
-
     use super::PolyOverZ;
     use std::str::FromStr;
 
-    /// tests whether a polynomial that is created using a string, returns the
+    /// Tests whether a polynomial that is created using a string, returns the
     /// same string, when it is converted back to a string
     #[test]
     fn working_keeps_same_string() {
@@ -61,7 +60,7 @@ mod test_to_string {
         assert_eq!(cmp_string, cmp.to_string())
     }
 
-    /// tests whether a polynomial that is created using a string, returns a
+    /// Tests whether a polynomial that is created using a string, returns a
     /// string that can be used to create a polynomial
     #[test]
     fn working_use_result_of_to_string_as_input() {
@@ -73,7 +72,7 @@ mod test_to_string {
         assert!(PolyOverZ::from_str(&cmp_string2).is_ok())
     }
 
-    /// tests whether large entries are correctly converted using to_string
+    /// Tests whether large entries are correctly converted using to_string
     #[test]
     fn large_entries() {
         let cmp_string = format!("3  1 {} -{}", u64::MAX, u64::MAX);

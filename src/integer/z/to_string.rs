@@ -100,11 +100,10 @@ impl Z {
 
 #[cfg(test)]
 mod test_to_string {
-
     use crate::integer::Z;
     use std::str::FromStr;
 
-    /// tests whether a large positive integer works in a roundtrip
+    /// Tests whether a large positive integer works in a roundtrip
     #[test]
     fn working_large_positive() {
         let cmp = Z::from(u64::MAX);
@@ -112,7 +111,7 @@ mod test_to_string {
         assert_eq!(u64::MAX.to_string(), cmp.to_string())
     }
 
-    /// tests whether a large negative integer works in a roundtrip
+    /// Tests whether a large negative integer works in a roundtrip
     #[test]
     fn working_large_negative() {
         let cmp = Z::from_str(&format!("-{}", u64::MAX)).unwrap();
@@ -120,7 +119,7 @@ mod test_to_string {
         assert_eq!(format!("-{}", u64::MAX), cmp.to_string())
     }
 
-    /// tests whether a positive integer works in a roundtrip
+    /// Tests whether a positive integer works in a roundtrip
     #[test]
     fn working_positive() {
         let cmp = Z::from(42);
@@ -128,7 +127,7 @@ mod test_to_string {
         assert_eq!("42", cmp.to_string())
     }
 
-    /// tests whether a negative integer works in a roundtrip
+    /// Tests whether a negative integer works in a roundtrip
     #[test]
     fn working_negative() {
         let cmp = Z::from(-42);
@@ -136,7 +135,7 @@ mod test_to_string {
         assert_eq!("-42", cmp.to_string())
     }
 
-    /// tests whether an integer that is created using a string, returns a
+    /// Tests whether an integer that is created using a string, returns a
     /// string that can be used to create a [`Z`]
     #[test]
     fn working_use_result_of_to_string_as_input() {
@@ -152,7 +151,7 @@ mod test_to_string {
 mod test_to_string_b {
     use crate::integer::Z;
 
-    /// ensure that an error is returned, if an invalid base is provided
+    /// Ensure that an error is returned, if an invalid base is provided
     #[test]
     fn out_of_bounds() {
         let value = Z::from(42);
@@ -162,7 +161,7 @@ mod test_to_string_b {
         assert!(value.to_string_b(63).is_err());
     }
 
-    /// ensure that binary representation works correctly
+    /// Ensure that binary representation works correctly
     #[test]
     fn binary() {
         let value_1 = Z::from(u64::MAX);

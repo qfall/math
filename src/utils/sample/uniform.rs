@@ -166,9 +166,8 @@ fn find_first_unfilled_byte(byte_arr: &[u8]) -> usize {
 
 #[cfg(test)]
 mod test_get_rng {
-    use rand::RngCore;
-
     use super::{get_rng, RNG};
+    use rand::RngCore;
 
     /// Checks whether the first initialization of the static RNG variable works
     /// correctly for usage

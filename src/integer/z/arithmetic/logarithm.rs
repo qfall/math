@@ -184,7 +184,7 @@ impl Z {
 mod test_log_ceil {
     use crate::integer::Z;
 
-    /// ensure that an error is returned if the base is too small
+    /// Ensure that an error is returned if the base is too small
     #[test]
     fn base_too_small() {
         let value = Z::from(17);
@@ -195,7 +195,7 @@ mod test_log_ceil {
         assert!(value.log_ceil(&Z::from(i64::MIN)).is_err());
     }
 
-    /// ensure that an error is returned if `self` is too small
+    /// Ensure that an error is returned if `self` is too small
     #[test]
     fn value_too_small() {
         let base = Z::from(2);
@@ -205,7 +205,7 @@ mod test_log_ceil {
         assert!(Z::from(i64::MIN).log_ceil(&base).is_err());
     }
 
-    /// ensure that the value is rounded up
+    /// Ensure that the value is rounded up
     #[test]
     fn rounded_up() {
         let base = Z::from(2);
@@ -221,7 +221,7 @@ mod test_log_ceil {
         );
     }
 
-    /// ensures that `log_ceil` is available for all important types
+    /// Ensures that `log_ceil` is available for all important types
     /// that can be casted to a [`Z`] instance like u8, u16, i32, i64, ...
     #[test]
     fn availability() {
@@ -243,7 +243,7 @@ mod test_log_ceil {
 mod test_log_floor {
     use crate::integer::Z;
 
-    /// ensure that an error is returned if the base is too small
+    /// Ensure that an error is returned if the base is too small
     #[test]
     fn base_too_small() {
         let value = Z::from(17);
@@ -254,7 +254,7 @@ mod test_log_floor {
         assert!(value.log_floor(&Z::from(i64::MIN)).is_err());
     }
 
-    /// ensure that an error is returned if `self` is too small
+    /// Ensure that an error is returned if `self` is too small
     #[test]
     fn value_too_small() {
         let base = Z::from(2);
@@ -264,7 +264,7 @@ mod test_log_floor {
         assert!(Z::from(i64::MIN).log_floor(&base).is_err());
     }
 
-    /// ensure that the value is rounded down
+    /// Ensure that the value is rounded down
     #[test]
     fn rounded_down() {
         let base = Z::from(2);
@@ -280,7 +280,7 @@ mod test_log_floor {
         );
     }
 
-    /// ensures that `log_floor` is available for all important types
+    /// Ensures that `log_floor` is available for all important types
     /// that can be casted to a [`Z`] instance like u8, u16, i32, i64, ...
     #[test]
     fn availability() {
@@ -303,7 +303,7 @@ mod test_natural_ln {
     use crate::{integer::Z, rational::Q};
     use std::f64::consts::{LN_10, LN_2};
 
-    /// ensure that an error is returned if `self` is too small
+    /// Ensure that an error is returned if `self` is too small
     #[test]
     fn value_too_small() {
         assert!(Z::ZERO.ln().is_err());
@@ -311,7 +311,7 @@ mod test_natural_ln {
         assert!(Z::from(i64::MIN).ln().is_err());
     }
 
-    /// ensure that the output of the function corresponds to the known
+    /// Ensure that the output of the function corresponds to the known
     /// approximated value in [`f64`]
     #[test]
     fn static_known_values() {
@@ -325,7 +325,7 @@ mod test_natural_ln {
 mod test_log {
     use crate::{integer::Z, rational::Q, traits::Distance};
 
-    /// ensure that an error is returned if the base is too small
+    /// Ensure that an error is returned if the base is too small
     #[test]
     fn base_too_small() {
         let value = Z::from(17);
@@ -336,7 +336,7 @@ mod test_log {
         assert!(value.log(&Z::from(i64::MIN)).is_err());
     }
 
-    /// ensure that an error is returned if `self` is too small
+    /// Ensure that an error is returned if `self` is too small
     #[test]
     fn value_too_small() {
         let base = Z::from(2);
@@ -387,7 +387,7 @@ mod test_log {
         assert_eq!(Q::ONE, res_2);
     }
 
-    /// ensures that the logarithm function is available for all important types
+    /// Ensures that the logarithm function is available for all important types
     /// that can be casted to a [`Z`] instance like u8, u16, i32, i64, ...
     #[test]
     fn availability() {

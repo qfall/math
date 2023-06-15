@@ -49,10 +49,8 @@ impl Eq for MatZ {}
 /// Test that the [`PartialEq`] trait is correctly implemented.
 #[cfg(test)]
 mod test_partial_eq {
-
-    use crate::traits::SetEntry;
-
     use super::MatZ;
+    use crate::traits::SetEntry;
     use std::str::FromStr;
 
     /// Ensures that different instantiations do not break the equality between matrices

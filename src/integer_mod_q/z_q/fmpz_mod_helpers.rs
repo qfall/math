@@ -115,6 +115,7 @@ mod test_as_integer_zq {
 
     /// Assert that `get_fmpz_ref` returns a correct reference for small values
     #[test]
+    #[allow(clippy::needless_borrow)]
     fn get_ref_small() {
         let zq = Zq::try_from((10, 100)).unwrap();
 
@@ -127,6 +128,7 @@ mod test_as_integer_zq {
 
     /// Assert that `get_fmpz_ref` returns a correct reference for large values
     #[test]
+    #[allow(clippy::needless_borrow)]
     fn get_ref_large() {
         let zq = Zq::try_from((i64::MAX - 1, i64::MAX)).unwrap();
 

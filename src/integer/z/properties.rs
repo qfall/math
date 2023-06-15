@@ -191,7 +191,7 @@ mod test_abs {
 mod test_is_prime {
     use super::Z;
 
-    /// Ensure that primes are correctly detected.
+    /// Ensure that primes are correctly detected
     #[test]
     fn prime_detection() {
         let small = Z::from(2_i32.pow(16) + 1);
@@ -200,7 +200,7 @@ mod test_is_prime {
         assert!(large.is_prime());
     }
 
-    /// Ensure that non-primes are correctly detected.
+    /// Ensure that non-primes are correctly detected
     #[test]
     fn non_prime_detection() {
         let small = Z::from(2_i32.pow(16));

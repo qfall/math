@@ -35,7 +35,6 @@ impl MatPolyOverZ {
 
 #[cfg(test)]
 mod test_transpose {
-
     use super::MatPolyOverZ;
     use std::str::FromStr;
 

@@ -97,11 +97,10 @@ arithmetic_trait_mixed_borrowed_owned!(Add, add, MatPolyOverZ, MatPolyOverZ, Mat
 
 #[cfg(test)]
 mod test_add {
-
     use super::MatPolyOverZ;
     use std::str::FromStr;
 
-    /// testing addition for two [`MatPolyOverZ`]
+    /// Testing addition for two [`MatPolyOverZ`]
     #[test]
     fn add() {
         let a: MatPolyOverZ =
@@ -117,7 +116,7 @@ mod test_add {
         );
     }
 
-    /// testing addition for two borrowed [`MatPolyOverZ`]
+    /// Testing addition for two borrowed [`MatPolyOverZ`]
     #[test]
     fn add_borrow() {
         let a: MatPolyOverZ =
@@ -133,7 +132,7 @@ mod test_add {
         );
     }
 
-    /// testing addition for borrowed [`MatPolyOverZ`] and [`MatPolyOverZ`]
+    /// Testing addition for borrowed [`MatPolyOverZ`] and [`MatPolyOverZ`]
     #[test]
     fn add_first_borrowed() {
         let a: MatPolyOverZ =
@@ -149,7 +148,7 @@ mod test_add {
         );
     }
 
-    /// testing addition for [`MatPolyOverZ`] and borrowed [`MatPolyOverZ`]
+    /// Testing addition for [`MatPolyOverZ`] and borrowed [`MatPolyOverZ`]
     #[test]
     fn add_second_borrowed() {
         let a: MatPolyOverZ =
@@ -165,7 +164,7 @@ mod test_add {
         );
     }
 
-    /// testing addition for big numbers
+    /// Testing addition for big numbers
     #[test]
     fn add_large_numbers() {
         let a: MatPolyOverZ = MatPolyOverZ::from_str(&format!(
@@ -195,7 +194,7 @@ mod test_add {
         );
     }
 
-    /// testing add_safe
+    /// Testing add_safe
     #[test]
     fn add_safe() {
         let a: MatPolyOverZ =
@@ -211,7 +210,7 @@ mod test_add {
         );
     }
 
-    /// testing add_safe throws error
+    /// Testing add_safe throws error
     #[test]
     fn add_safe_is_err() {
         let a: MatPolyOverZ =

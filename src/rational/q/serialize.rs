@@ -29,7 +29,7 @@ mod test_serialize {
     use crate::rational::Q;
     use std::str::FromStr;
 
-    /// tests whether the serialization of a positive [`Q`] works.
+    /// Tests whether the serialization of a positive [`Q`] works.
     #[test]
     fn serialize_output_positive() {
         let q = Q::from_str("17/3").unwrap();
@@ -38,7 +38,7 @@ mod test_serialize {
         assert_eq!(cmp_string, serde_json::to_string(&q).unwrap())
     }
 
-    /// tests whether the serialization of a negative [`Q`] works.
+    /// Tests whether the serialization of a negative [`Q`] works.
     #[test]
     fn serialize_output_negative() {
         let q = Q::from_str("-17/3").unwrap();
@@ -47,7 +47,7 @@ mod test_serialize {
         assert_eq!(cmp_string, serde_json::to_string(&q).unwrap())
     }
 
-    /// tests whether the serialization of a positive large [`Q`] works.
+    /// Tests whether the serialization of a positive large [`Q`] works.
     #[test]
     fn serialize_output_positive_large() {
         let val_str = format!("{}/2", u64::MAX);
@@ -57,7 +57,7 @@ mod test_serialize {
         assert_eq!(cmp_string, serde_json::to_string(&q).unwrap())
     }
 
-    /// tests whether the serialization of a negative large [`Q`] works.
+    /// Tests whether the serialization of a negative large [`Q`] works.
     #[test]
     fn serialize_output_negative_large() {
         let val_str = format!("-{}/2", u64::MAX);
@@ -73,7 +73,7 @@ mod test_deserialize {
     use crate::rational::Q;
     use std::str::FromStr;
 
-    /// tests whether the deserialization of a positive [`Q`] works.
+    /// Tests whether the deserialization of a positive [`Q`] works.
     #[test]
     fn deserialize_positive() {
         let q_string = "{\"value\":\"17/3\"}";
@@ -83,7 +83,7 @@ mod test_deserialize {
         )
     }
 
-    /// tests whether the deserialization of a negative [`Q`] works.
+    /// Tests whether the deserialization of a negative [`Q`] works.
     #[test]
     fn deserialize_negative() {
         let q_string = "{\"value\":\"-17/3\"}";
@@ -93,7 +93,7 @@ mod test_deserialize {
         )
     }
 
-    /// tests whether the deserialization of a positive large [`Q`] works.
+    /// Tests whether the deserialization of a positive large [`Q`] works.
     #[test]
     fn deserialize_positive_large() {
         let val_str = format!("{}/2", u64::MAX);
@@ -105,7 +105,7 @@ mod test_deserialize {
         )
     }
 
-    /// tests whether the deserialization of a negative large [`Q`] works.
+    /// Tests whether the deserialization of a negative large [`Q`] works.
     #[test]
     fn deserialize_negative_large() {
         let val_str = format!("-{}/2", u64::MAX);
@@ -117,7 +117,7 @@ mod test_deserialize {
         )
     }
 
-    /// tests whether no fields 'value' provided yield an error
+    /// Tests whether no fields 'value' provided yield an error
     #[test]
     fn no_field_value() {
         let a: Result<Q, serde_json::Error> = serde_json::from_str("{{\"tree\":\"{17}\"}}");
@@ -127,7 +127,7 @@ mod test_deserialize {
         assert!(b.is_err());
     }
 
-    /// tests whether too many fields yield an error
+    /// Tests whether too many fields yield an error
     #[test]
     fn too_many_fields() {
         let a: Result<Q, serde_json::Error> =

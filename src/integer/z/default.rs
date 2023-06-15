@@ -65,7 +65,6 @@ impl Z {
 
 #[cfg(test)]
 mod tests_init {
-
     use super::Z;
 
     /// Ensure that [`Default`] initializes [`Z`] with `0`.

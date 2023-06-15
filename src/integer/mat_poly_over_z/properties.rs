@@ -118,11 +118,10 @@ mod test_is_identity {
 
 #[cfg(test)]
 mod test_is_square {
+    use crate::integer::MatPolyOverZ;
     use std::str::FromStr;
 
-    use crate::integer::MatPolyOverZ;
-
-    /// Ensure that square matrices return true.
+    /// Ensure that square matrices return true
     #[test]
     fn square_matrix() {
         let matrix_negative =
@@ -144,7 +143,7 @@ mod test_is_square {
         assert!(matrix_large_positive.is_square());
     }
 
-    /// Ensure that non-square matrices return false.
+    /// Ensure that non-square matrices return false
     #[test]
     fn not_square_matrix() {
         let matrix_1x2 = MatPolyOverZ::from_str("[[1  1, 0]]").unwrap();

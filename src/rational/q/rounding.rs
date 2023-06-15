@@ -126,7 +126,7 @@ impl Q {
 mod test_floor {
     use crate::{integer::Z, rational::Q};
 
-    // ensure that positive rationals are rounded correctly
+    // Ensure that positive rationals are rounded correctly
     #[test]
     fn positive() {
         let val_1 = Q::try_from((&i64::MAX, &2)).unwrap();
@@ -136,7 +136,7 @@ mod test_floor {
         assert_eq!(Z::ZERO, val_2.floor());
     }
 
-    // ensure that negative rationals are rounded correctly
+    // Ensure that negative rationals are rounded correctly
     #[test]
     fn negative() {
         let val_1 = Q::try_from((&-i64::MAX, &2)).unwrap();
@@ -151,7 +151,7 @@ mod test_floor {
 mod test_ceil {
     use crate::{integer::Z, rational::Q};
 
-    // ensure that positive rationals are rounded correctly
+    // Ensure that positive rationals are rounded correctly
     #[test]
     fn positive() {
         let val_1 = Q::try_from((&i64::MAX, &2)).unwrap();
@@ -161,7 +161,7 @@ mod test_ceil {
         assert_eq!(Z::ONE, val_2.ceil());
     }
 
-    // ensure that negative rationals are rounded correctly
+    // Ensure that negative rationals are rounded correctly
     #[test]
     fn negative() {
         let val_1 = Q::try_from((&-i64::MAX, &2)).unwrap();
@@ -176,7 +176,7 @@ mod test_ceil {
 mod test_round {
     use crate::{integer::Z, rational::Q};
 
-    // ensure that positive rationals are rounded correctly
+    // Ensure that positive rationals are rounded correctly
     #[test]
     fn positive() {
         let val_1 = Q::try_from((&i64::MAX, &2)).unwrap();
@@ -186,7 +186,7 @@ mod test_round {
         assert_eq!(Z::ZERO, val_2.round());
     }
 
-    // ensure that negative rationals are rounded correctly
+    // Ensure that negative rationals are rounded correctly
     #[test]
     fn negative() {
         let val_1 = Q::try_from((&-i64::MAX, &2)).unwrap();
@@ -201,7 +201,7 @@ mod test_round {
 mod test_simplify {
     use crate::rational::Q;
 
-    /// ensure that negative precision works as expected
+    /// Ensure that negative precision works as expected
     #[test]
     fn precision_absolute_value() {
         let value_1 = Q::try_from((&17, &20)).unwrap();
@@ -214,7 +214,7 @@ mod test_simplify {
         assert_eq!(simplified_2, value_2.simplify(&precision));
     }
 
-    /// ensure that large values with pointer representations are reduced
+    /// Ensure that large values with pointer representations are reduced
     #[test]
     fn large_pointer_representation() {
         let value = Q::try_from((&(u64::MAX - 1), &u64::MAX)).unwrap();
@@ -223,7 +223,7 @@ mod test_simplify {
         assert_eq!(Q::ONE, value.simplify(&precision));
     }
 
-    /// ensure that the simplified value stays in range
+    /// Ensure that the simplified value stays in range
     #[test]
     fn stay_in_precision() {
         let value = Q::try_from((&(i64::MAX - 1), &i64::MAX)).unwrap();
@@ -237,7 +237,7 @@ mod test_simplify {
         );
     }
 
-    /// ensure that a value which can not be simplified is not changed
+    /// Ensure that a value which can not be simplified is not changed
     #[test]
     fn no_change() {
         let precision = Q::try_from((&1, &(u64::MAX - 1))).unwrap();

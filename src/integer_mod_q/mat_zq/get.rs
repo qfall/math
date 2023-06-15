@@ -14,7 +14,7 @@ use crate::{
     integer::Z,
     integer_mod_q::{fmpz_mod_helpers::length, Modulus, Zq},
     traits::{GetEntry, GetNumColumns, GetNumRows},
-    utils::index::{evaluate_index, evaluate_indices},
+    utils::index::{evaluate_index, evaluate_indices_for_matrix},
 };
 use flint_sys::{
     fmpz::{fmpz, fmpz_set},
@@ -99,7 +99,7 @@ impl GetEntry<Z> for MatZq {
         row: impl TryInto<i64> + Display,
         column: impl TryInto<i64> + Display,
     ) -> Result<Z, MathError> {
-        let (row_i64, column_i64) = evaluate_indices(self, row, column)?;
+        let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
 
         let mut out = Z::default();
         let entry = unsafe { fmpz_mod_mat_entry(&self.matrix, row_i64, column_i64) };
@@ -138,9 +138,8 @@ impl GetEntry<Zq> for MatZq {
         column: impl TryInto<i64> + Display,
     ) -> Result<Zq, MathError> {
         let value = self.get_entry(row, column)?;
-        let modulus = self.get_mod();
 
-        Ok(Zq::from_z_modulus(&value, &modulus))
+        Ok(Zq::from_z_modulus(&value, &self.modulus))
     }
 }
 
@@ -500,7 +499,6 @@ mod test_mod {
 
 #[cfg(test)]
 mod test_get_vec {
-
     use crate::integer_mod_q::MatZq;
     use std::str::FromStr;
 

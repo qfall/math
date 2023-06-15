@@ -44,7 +44,7 @@ impl Tensor for MatZq {
     ///
     /// # Panics ...
     /// - ... if the moduli of both matrices mismatch.
-    ///  Use [`tensor_product_safe`](crate::integer_mod_q::MatZq::tensor_product_safe) to get an error instead.
+    /// Use [`tensor_product_safe`](crate::integer_mod_q::MatZq::tensor_product_safe) to get an error instead.
     fn tensor_product(&self, other: &Self) -> Self {
         self.tensor_product_safe(other).unwrap()
     }
@@ -81,7 +81,7 @@ impl MatZq {
     /// [`MismatchingModulus`](MathError::MismatchingModulus) if the
     /// moduli of the provided matrices mismatch.
     pub fn tensor_product_safe(&self, other: &Self) -> Result<Self, MathError> {
-        if self.get_mod() != other.get_mod() {
+        if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
                 " Tried to compute tensor product of matrixes with moduli '{}' and '{}'.",
                 self.get_mod(),
@@ -132,7 +132,7 @@ mod test_tensor {
         assert_eq!(&mat_3, &mat_3_safe);
     }
 
-    /// ensure that the tensor works correctly with identity
+    /// Ensure that the tensor works correctly with identity
     #[test]
     fn identity() {
         let identity = MatZq::from_str(&format!("[[1, 0],[0, 1]] mod {}", u128::MAX)).unwrap();
@@ -180,7 +180,7 @@ mod test_tensor {
         assert_eq!(cmp_mat_3, mat_3_safe);
     }
 
-    /// ensure the tensor product works where one is a vector and the other is a matrix
+    /// Ensure the tensor product works where one is a vector and the other is a matrix
     #[test]
     fn vector_matrix() {
         let vector = MatZq::from_str(&format!("[[1],[-1]] mod {}", u128::MAX)).unwrap();
@@ -222,7 +222,7 @@ mod test_tensor {
         assert_eq!(cmp_mat_3, mat_3_safe);
     }
 
-    /// ensure that the tensor product works correctly with two vectors
+    /// Ensure that the tensor product works correctly with two vectors
     #[test]
     fn vector_vector() {
         let vec_1 = MatZq::from_str(&format!("[[2],[1]] mod {}", u128::MAX)).unwrap();
@@ -264,7 +264,7 @@ mod test_tensor {
         assert_eq!(cmp_vec_4, vec_4_safe);
     }
 
-    /// ensure that entries are reduced by the modulus
+    /// Ensure that entries are reduced by the modulus
     #[test]
     fn entries_reduced() {
         let mat_1 = MatZq::from_str(&format!("[[1, 2],[3, 4]] mod {}", u64::MAX - 58)).unwrap();
@@ -282,7 +282,7 @@ mod test_tensor {
         assert_eq!(mat_3_cmp, mat_3_safe);
     }
 
-    /// ensure that tensor panics if the moduli mismatch
+    /// Ensure that tensor panics if the moduli mismatch
     #[test]
     #[should_panic]
     fn mismatching_moduli_tensor_product() {
@@ -292,7 +292,7 @@ mod test_tensor {
         let _ = mat_1.tensor_product(&mat_2);
     }
 
-    /// ensure that tensor_product_safe returns an error if the moduli mismatch
+    /// Ensure that tensor_product_safe returns an error if the moduli mismatch
     #[test]
     fn mismatching_moduli_tensor_product_safe() {
         let mat_1 = MatZq::new(1, 2, u64::MAX).unwrap();

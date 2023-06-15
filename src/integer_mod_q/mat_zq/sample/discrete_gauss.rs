@@ -100,19 +100,19 @@ mod test_sample_discrete_gauss {
         let s = Q::ONE;
         let modulus = Modulus::try_from(&Z::from(83)).unwrap();
 
-        let _ = MatZq::sample_discrete_gauss(2u64, 3i8, &modulus, &16u16, 0f32, &1u16);
-        let _ = MatZq::sample_discrete_gauss(3u8, 2i16, &83u8, &2u32, &center, &1u8);
-        let _ = MatZq::sample_discrete_gauss(1, 1, &n, &2u64, &center, &1u32);
-        let _ = MatZq::sample_discrete_gauss(1, 1, &83i8, &2i8, &center, &1u64);
-        let _ = MatZq::sample_discrete_gauss(1, 1, &83, &2i16, &center, &1i64);
-        let _ = MatZq::sample_discrete_gauss(1, 1, &83, &2i32, &center, &1i32);
-        let _ = MatZq::sample_discrete_gauss(1, 1, &83, &2i64, &center, &1i16);
-        let _ = MatZq::sample_discrete_gauss(1, 1, &83, &n, &center, &1i8);
-        let _ = MatZq::sample_discrete_gauss(1, 1, &83, &2u8, &center, &1i64);
-        let _ = MatZq::sample_discrete_gauss(1, 1, &83, &2, &center, &n);
-        let _ = MatZq::sample_discrete_gauss(1, 1, &83, &2, &center, &s);
-        let _ = MatZq::sample_discrete_gauss(1, 1, &83, 2, &center, 1.25f64);
-        let _ = MatZq::sample_discrete_gauss(1, 1, &83, 2, 0, 1.25f64);
-        let _ = MatZq::sample_discrete_gauss(1, 1, 83, &2, center, 15.75f32);
+        let _ = MatZq::sample_discrete_gauss(2u64, 3i8, &modulus, 16u16, 0f32, 1u16);
+        let _ = MatZq::sample_discrete_gauss(3u8, 2i16, 83u8, 2u32, &center, 1u8);
+        let _ = MatZq::sample_discrete_gauss(1, 1, &n, 2u64, &center, 1u32);
+        let _ = MatZq::sample_discrete_gauss(1, 1, 83i8, 2i8, &center, 1u64);
+        let _ = MatZq::sample_discrete_gauss(1, 1, 83, 2i16, &center, 1i64);
+        let _ = MatZq::sample_discrete_gauss(1, 1, 83, 2i32, &center, 1i32);
+        let _ = MatZq::sample_discrete_gauss(1, 1, 83, 2i64, &center, 1i16);
+        let _ = MatZq::sample_discrete_gauss(1, 1, 83, &n, &center, 1i8);
+        let _ = MatZq::sample_discrete_gauss(1, 1, 83, 2u8, &center, 1i64);
+        let _ = MatZq::sample_discrete_gauss(1, 1, 83, 2, &center, &n);
+        let _ = MatZq::sample_discrete_gauss(1, 1, 83, 2, &center, &s);
+        let _ = MatZq::sample_discrete_gauss(1, 1, 83, 2, &center, 1.25f64);
+        let _ = MatZq::sample_discrete_gauss(1, 1, 83, 2, 0, 1.25f64);
+        let _ = MatZq::sample_discrete_gauss(1, 1, 83, 2, center, 15.75f32);
     }
 }

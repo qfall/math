@@ -287,7 +287,6 @@ impl From<&Q> for Q {
 
 #[cfg(test)]
 mod tests_from_str {
-
     use crate::rational::Q;
     use std::str::FromStr;
 
@@ -583,7 +582,6 @@ mod test_from_int_int {
 
 #[cfg(test)]
 mod test_try_from_int_int {
-
     use crate::integer::Z;
     use crate::rational::Q;
 
@@ -706,7 +704,7 @@ mod test_from_z {
             Q::from_str(&u64::MAX.to_string()).unwrap(),
             Q::from_int(z_1)
         );
-        assert_eq!(Q::from_str("17").unwrap(), Q::from_int(z_2));
+        assert_eq!(Q::from(17), Q::from_int(z_2));
     }
 
     /// Ensure that the [`From`] trait is available and works correctly for
@@ -717,7 +715,7 @@ mod test_from_z {
         let z_2 = Z::from(17);
 
         assert_eq!(Q::from_str(&u64::MAX.to_string()).unwrap(), Q::from(z_1));
-        assert_eq!(Q::from_str("17").unwrap(), Q::from(z_2));
+        assert_eq!(Q::from(17), Q::from(z_2));
     }
 
     /// Ensure that all types that can be turned into an [`Z`]
@@ -759,6 +757,7 @@ mod test_from_float {
 
     // Test that a small number is correctly converted from float.
     #[test]
+    #[allow(clippy::excessive_precision)]
     fn small_value() {
         // This is the exact value stored when creating a float with the value 0.1
         let a: f64 = 0.1000000000000000055511151231257827021181583404541015625;

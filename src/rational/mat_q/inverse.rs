@@ -42,7 +42,6 @@ impl MatQ {
 
 #[cfg(test)]
 mod test_inverse {
-
     use crate::rational::MatQ;
     use std::str::FromStr;
 

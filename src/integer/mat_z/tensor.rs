@@ -57,7 +57,7 @@ mod test_tensor {
     };
     use std::str::FromStr;
 
-    /// ensure that the dimensions of the tensor product are taken over correctly.
+    /// Ensure that the dimensions of the tensor product are taken over correctly.
     #[test]
     fn dimensions_fit() {
         let mat_1 = MatZ::new(17, 13).unwrap();
@@ -69,7 +69,7 @@ mod test_tensor {
         assert_eq!(52, mat_3.get_num_columns());
     }
 
-    /// ensure that the tensor works correctly with identity
+    /// Ensure that the tensor works correctly with identity
     #[test]
     fn identity() {
         let identity = MatZ::from_str("[[1, 0],[0, 1]]").unwrap();
@@ -100,7 +100,7 @@ mod test_tensor {
         assert_eq!(cmp_mat_3, mat_3);
     }
 
-    /// ensure the tensor product works where one is a vector and the other is a matrix
+    /// Ensure the tensor product works where one is a vector and the other is a matrix
     #[test]
     fn vector_matrix() {
         let vector = MatZ::from_str("[[1],[-1]]").unwrap();
@@ -131,7 +131,7 @@ mod test_tensor {
         assert_eq!(cmp_mat_3, mat_3);
     }
 
-    /// ensure that the tensor product works correctly with two vectors
+    /// Ensure that the tensor product works correctly with two vectors
     #[test]
     fn vector_vector() {
         let vec_1 = MatZ::from_str("[[2],[1]]").unwrap();

@@ -95,7 +95,6 @@ arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatZ, MatZ, MatZ);
 
 #[cfg(test)]
 mod test_mul {
-
     use super::MatZ;
     use crate::{integer::Z, traits::SetEntry};
     use std::str::FromStr;

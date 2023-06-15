@@ -45,12 +45,11 @@ implement_for_owned!(Z, MatZ, MatPolyOverZ, Evaluate);
 
 #[cfg(test)]
 mod test_evaluate {
-
     use crate::integer::{MatPolyOverZ, MatZ, Z};
     use crate::traits::Evaluate;
     use std::str::FromStr;
 
-    /// tests if evaluate works for [`Z`] as input
+    /// Tests if evaluate works for [`Z`] as input
     #[test]
     fn eval_z() {
         let poly_str = "[[1  17],[2  24 42]]";
@@ -61,7 +60,7 @@ mod test_evaluate {
         assert_eq!(MatZ::from_str("[[17],[150]]").unwrap(), res)
     }
 
-    /// tests if evaluate_z_ref with a reference works
+    /// Tests if evaluate_z_ref with a reference works
     #[test]
     fn eval_z_ref() {
         let poly_str = "[[1  17],[2  24 42]]";
@@ -72,7 +71,7 @@ mod test_evaluate {
         assert_eq!(MatZ::from_str("[[17],[150]]").unwrap(), res)
     }
 
-    /// tests if evaluate works with negative values
+    /// Tests if evaluate works with negative values
     #[test]
     fn eval_z_negative() {
         let poly_str = "[[1  17],[2  24 42]]";
@@ -83,7 +82,7 @@ mod test_evaluate {
         assert_eq!(MatZ::from_str("[[17],[-186]]").unwrap(), res)
     }
 
-    /// tests if evaluate works with large integers
+    /// Tests if evaluate works with large integers
     #[test]
     fn eval_z_large() {
         let poly_str = "[[1  17],[2  6 2]]";
@@ -95,7 +94,7 @@ mod test_evaluate {
         assert_eq!(MatZ::from_str(&res_cmp_str).unwrap(), res)
     }
 
-    /// tests whether evaluation of a large entry in the matrix with a large value works
+    /// Tests whether evaluation of a large entry in the matrix with a large value works
     #[test]
     fn eval_large_with_large() {
         let poly_str = format!("[[2  {} -1, 1  1],[1  {}, 2  0 1]]", u64::MAX, u64::MAX);
@@ -106,7 +105,7 @@ mod test_evaluate {
         assert_eq!(MatZ::from_str(&res_cmp_str).unwrap(), res)
     }
 
-    /// test if evaluate works with max of i64, i32, ...
+    /// Test if evaluate works with max of i64, i32, ...
     #[test]
     fn eval_max() {
         let poly_str = "[[1  17],[2  24 42]]";
@@ -125,7 +124,7 @@ mod test_evaluate {
         let _ = poly.evaluate(u8::MAX);
     }
 
-    /// test if evaluate works with min of i64, i32, ...
+    /// Test if evaluate works with min of i64, i32, ...
     #[test]
     fn eval_min() {
         let poly_str = "[[1  17],[2  24 42]]";
