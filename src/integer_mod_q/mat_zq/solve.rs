@@ -46,16 +46,16 @@ impl MatZq {
     /// - ... if the syndrome is not a column vector
     /// - ... if the moduli mismatch
     pub fn solve_gaussian_elimination(&self, y: &MatZq) -> Option<MatZq> {
-        assert!(y.is_column_vector(), "The syndrome is not a column vector");
+        assert!(y.is_column_vector(), "The syndrome is not a column vector.");
         assert_eq!(
             y.get_num_rows(),
             self.get_num_rows(),
-            "The syndrome is not a column vector"
+            "The syndrome and the matrix have a different number of rows."
         );
         assert_eq!(
             y.get_mod(),
             self.get_mod(),
-            "The syndrome is not a column vector"
+            "The syndrome and the matrix have a different modulus"
         );
 
         // append the solution vector to easily perform gaussian elimination
