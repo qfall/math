@@ -133,7 +133,7 @@ mod test_from_mat_zq {
     /// Test if the dimensions are taken over correctly
     #[test]
     fn dimensions() {
-        let matz = MatZ::new(15, 17).unwrap();
+        let matz = MatZ::new(15, 17);
 
         let matq_1 = MatQ::from(&matz);
         let matq_2 = MatQ::from_mat_z(&matz);
@@ -147,7 +147,7 @@ mod test_from_mat_zq {
     /// Test if entries are taken over correctly
     #[test]
     fn entries_taken_over_correctly() {
-        let mut matz = MatZ::new(2, 2).unwrap();
+        let mut matz = MatZ::new(2, 2);
         matz.set_entry(0, 0, u64::MAX - 58).unwrap();
         matz.set_entry(0, 1, i64::MIN).unwrap();
 

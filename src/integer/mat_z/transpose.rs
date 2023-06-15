@@ -28,7 +28,7 @@ impl MatZ {
     /// assert_eq!(mat.transpose(), cmp);
     /// ```
     pub fn transpose(&self) -> Self {
-        let mut out = Self::new(self.get_num_columns(), self.get_num_rows()).unwrap();
+        let mut out = Self::new(self.get_num_columns(), self.get_num_rows());
         unsafe { fmpz_mat_transpose(&mut out.matrix, &self.matrix) };
         out
     }

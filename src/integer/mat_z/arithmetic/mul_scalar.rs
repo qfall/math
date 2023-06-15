@@ -40,7 +40,7 @@ impl Mul<&Z> for &MatZ {
     /// let mat2 = &mat1 * &integer;
     /// ```
     fn mul(self, scalar: &Z) -> Self::Output {
-        let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns()).unwrap();
+        let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
         unsafe {
             fmpz_mat_scalar_mul_fmpz(&mut out.matrix, &self.matrix, &scalar.value);
         }

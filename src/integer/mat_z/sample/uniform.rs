@@ -64,7 +64,7 @@ impl MatZ {
     {
         let lower_bound: Z = lower_bound.to_owned().into();
         let upper_bound: Z = upper_bound.to_owned().into();
-        let mut matrix = MatZ::new(num_rows, num_cols)?;
+        let mut matrix = MatZ::new(num_rows, num_cols);
 
         let interval_size = &upper_bound - &lower_bound;
         for row in 0..matrix.get_num_rows() {
@@ -168,23 +168,5 @@ mod test_sample_uniform {
         assert_eq!(5, mat_2.get_num_columns());
         assert_eq!(15, mat_3.get_num_rows());
         assert_eq!(20, mat_3.get_num_columns());
-    }
-
-    /// Checks whether matrices with at least one dimension chosen smaller than `1`
-    /// or too big for an [`i64`] results in an error
-    #[test]
-    fn false_sizes() {
-        let lower_bound = Z::from(-15);
-        let upper_bound = Z::from(15);
-
-        let mat_0 = MatZ::sample_uniform(0, 3, &lower_bound, &upper_bound);
-        let mat_1 = MatZ::sample_uniform(3, 0, &lower_bound, &upper_bound);
-        let mat_2 = MatZ::sample_uniform(0, -1, &lower_bound, &upper_bound);
-        let mat_3 = MatZ::sample_uniform(2, u64::MAX, &lower_bound, &upper_bound);
-
-        assert!(mat_0.is_err());
-        assert!(mat_1.is_err());
-        assert!(mat_2.is_err());
-        assert!(mat_3.is_err());
     }
 }

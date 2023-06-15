@@ -57,7 +57,7 @@ mod test_partial_eq {
     #[test]
     fn equality_between_instantiations() {
         let a = MatZ::from_str("[[0,1],[0,0]]").unwrap();
-        let mut b = MatZ::new(2, 2).unwrap();
+        let mut b = MatZ::new(2, 2);
         b.set_entry(0, 1, 1).unwrap();
 
         assert_eq!(a, b);

@@ -43,7 +43,7 @@ impl MatZ {
     /// let a = MatZ::from_mat_zq(&m);
     /// ```
     pub fn from_mat_zq(matrix: &MatZq) -> Self {
-        let mut out = MatZ::new(matrix.get_num_rows(), matrix.get_num_columns()).unwrap();
+        let mut out = MatZ::new(matrix.get_num_rows(), matrix.get_num_columns());
         unsafe { fmpz_mat_set(&mut out.matrix, &matrix.matrix.mat[0]) };
         out
     }
@@ -87,7 +87,7 @@ impl FromStr for MatZ {
     fn from_str(string: &str) -> Result<Self, MathError> {
         let string_matrix = parse_matrix_string(string)?;
         let (num_rows, num_cols) = find_matrix_dimensions(&string_matrix)?;
-        let mut matrix = MatZ::new(num_rows, num_cols)?;
+        let mut matrix = MatZ::new(num_rows, num_cols);
 
         // fill entries of matrix according to entries in string_matrix
         for (row_num, row) in string_matrix.iter().enumerate() {

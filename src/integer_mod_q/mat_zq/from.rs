@@ -154,7 +154,7 @@ mod test_from_mat_z_modulus {
     /// Test if the dimensions are taken over correctly
     #[test]
     fn dimensions() {
-        let matz = MatZ::new(15, 17).unwrap();
+        let matz = MatZ::new(15, 17);
         let modulus = Modulus::try_from(&17.into()).unwrap();
 
         let matzq_1 = MatZq::from((&matz, &modulus));
@@ -169,7 +169,7 @@ mod test_from_mat_z_modulus {
     /// Test if entries are taken over correctly
     #[test]
     fn entries_taken_over_correctly() {
-        let mut matz = MatZ::new(2, 2).unwrap();
+        let mut matz = MatZ::new(2, 2);
         let modulus = Modulus::try_from(&u64::MAX.into()).unwrap();
 
         matz.set_entry(0, 0, u64::MAX - 58).unwrap();

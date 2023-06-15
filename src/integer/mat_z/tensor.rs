@@ -41,8 +41,7 @@ impl Tensor for MatZ {
         let mut out = MatZ::new(
             self.get_num_rows() * other.get_num_rows(),
             self.get_num_columns() * other.get_num_columns(),
-        )
-        .unwrap();
+        );
 
         unsafe { fmpz_mat_kronecker_product(&mut out.matrix, &self.matrix, &other.matrix) };
 
@@ -60,8 +59,8 @@ mod test_tensor {
     /// Ensure that the dimensions of the tensor product are taken over correctly.
     #[test]
     fn dimensions_fit() {
-        let mat_1 = MatZ::new(17, 13).unwrap();
-        let mat_2 = MatZ::new(3, 4).unwrap();
+        let mat_1 = MatZ::new(17, 13);
+        let mat_2 = MatZ::new(3, 4);
 
         let mat_3 = mat_1.tensor_product(&mat_2);
 
