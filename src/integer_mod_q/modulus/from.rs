@@ -32,15 +32,53 @@ impl Modulus {
     ///
     /// let modulus = Modulus::from_str("42").unwrap();
     /// ```
-    /// # Errors and Failures
     ///
+    /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
     /// if the provided value is not greater than `1`.
     pub fn try_from_z(value: &Z) -> Result<Self, MathError> {
-        let modulus = ctx_init(value);
-        Ok(Self {
-            modulus: Rc::new(modulus?),
-        })
+        Modulus::from_fmpz_ref(&value.value)
+    }
+
+    /// Initialize a [`Modulus`] from an fmpz reference.
+    ///
+    /// Parameters:
+    /// - `value`: the initial value the modulus should have.
+    ///   It must be larger than one.
+    ///
+    /// Returns the new [`Modulus`] or an error, if the
+    /// provided value was not greater than `1`.
+    ///
+    /// # Safety
+    /// Since the parameter is a reference, it still has to be
+    /// properly cleared outside this function.
+    /// For example, by the drop trait of [`Z`].
+    ///
+    /// # Examples
+    /// ```compile_fail
+    /// use qfall_math::integer_mod_q::Modulus;
+    /// use qfall_math::integer::Z;
+    ///
+    /// let z = Z::from(42);
+    /// let modulus = Modulus::from_fmpz_ref(&z.value);
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
+    /// if the provided value is not greater than `1`.
+    pub(crate) fn from_fmpz_ref(value: &fmpz) -> Result<Self, MathError> {
+        if (unsafe { fmpz_cmp_si(value, 1) } <= 0) {
+            let z = Z::from(value);
+            return Err(MathError::InvalidIntToModulus(z.to_string()));
+        }
+
+        let mut ctx = MaybeUninit::uninit();
+        unsafe {
+            fmpz_mod_ctx_init(ctx.as_mut_ptr(), value);
+            Ok(Self {
+                modulus: Rc::new(ctx.assume_init()),
+            })
+        }
     }
 }
 
@@ -83,32 +121,7 @@ impl FromStr for Modulus {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let z = Z::from_str(s)?;
 
-        let modulus = ctx_init(&z)?;
-        Ok(Self {
-            modulus: Rc::new(modulus),
-        })
-    }
-}
-
-/// Initializes the FLINT-context object using a [`Z`]-value as input
-///
-/// Parameters:
-/// - `s`: the value the modulus should have as [`Z`]
-///
-/// Returns an initialized context object [`fmpz_mod_ctx`] or an error, if the
-/// provided value was not greater than `1`.
-///
-/// # Errors and Failures
-/// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
-/// if the provided value is not greater than `1`.
-fn ctx_init(n: &Z) -> Result<fmpz_mod_ctx, MathError> {
-    if n <= &Z::ONE {
-        return Err(MathError::InvalidIntToModulus(n.to_string()));
-    }
-    let mut ctx = MaybeUninit::uninit();
-    unsafe {
-        fmpz_mod_ctx_init(ctx.as_mut_ptr(), &n.value);
-        Ok(ctx.assume_init())
+        Modulus::from_fmpz_ref(&z.value)
     }
 }
 
@@ -164,32 +177,36 @@ mod test_try_from_z {
 }
 
 #[cfg(test)]
-mod test_ctx_init {
-    use super::ctx_init;
+mod test_from_fmpz_ref {
+    use super::*;
     use crate::integer::Z;
 
-    /// tests whether a small modulus ist instantiated correctly
+    /// Tests whether a small modulus ist instantiated correctly.
     #[test]
     fn working_example() {
-        assert!(ctx_init(&Z::from(100)).is_ok())
+        let z = Z::from(100);
+        assert!(Modulus::from_fmpz_ref(&z.value).is_ok())
     }
 
-    /// tests whether a large modulus (> 64 bits) is instantiated correctly
+    /// Tests whether a large modulus (> 64 bits) is instantiated correctly.
     #[test]
     fn large_modulus() {
-        assert!(ctx_init(&Z::from(u64::MAX)).is_ok());
+        let z = &Z::from(u64::MAX);
+        assert!(Modulus::from_fmpz_ref(&z.value).is_ok());
     }
 
-    /// tests whether a negative input value returns an error
+    /// Tests whether a negative input value returns an error.
     #[test]
     fn negative_modulus() {
-        assert!(ctx_init(&Z::from(-42)).is_err())
+        let z = &Z::from(-42);
+        assert!(Modulus::from_fmpz_ref(&z.value).is_err())
     }
 
-    /// tests whether a zero as input value returns an error
+    /// Tests whether a zero as input value returns an error.
     #[test]
     fn zero_modulus() {
-        assert!(ctx_init(&Z::ZERO).is_err())
+        let z = &Z::ZERO;
+        assert!(Modulus::from_fmpz_ref(&z.value).is_err())
     }
 }
 
