@@ -9,7 +9,7 @@
 //! This module includes functionality about properties of [`Q`] instances.
 
 use super::Q;
-use flint_sys::fmpq::{fmpq_abs, fmpq_inv};
+use flint_sys::fmpq::{fmpq_abs, fmpq_inv, fmpq_is_one, fmpq_is_zero};
 
 impl Q {
     /// Returns the given [`Q`] instance with its absolute value.
@@ -52,13 +52,43 @@ impl Q {
         unsafe { fmpq_inv(&mut out.value, &self.value) };
         Some(out)
     }
+
+    /// Checks if a [`Q`] is `0`.
+    ///
+    /// Returns true if the value is `0`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::Q;
+    ///
+    /// let value = Q::ZERO;
+    /// assert!(value.is_zero());
+    /// ```
+    pub fn is_zero(&self) -> bool {
+        1 == unsafe { fmpq_is_zero(&self.value) }
+    }
+
+    /// Checks if a [`Q`] is `1`.
+    ///
+    /// Returns true if the value is `1`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::Q;
+    ///
+    /// let value = Q::ONE;
+    /// assert!(value.is_one())
+    /// ```
+    pub fn is_one(&self) -> bool {
+        1 == unsafe { fmpq_is_one(&self.value) }
+    }
 }
 
 #[cfg(test)]
 mod test_abs {
     use super::Q;
 
-    /// Checks whether `abs` returns the positive value for small values correctly
+    /// Checks whether `abs` returns the positive value for small values correctly.
     #[test]
     fn small_values() {
         let pos = Q::ONE;
@@ -70,7 +100,7 @@ mod test_abs {
         assert_eq!(Q::from(15), neg.abs());
     }
 
-    /// Checks whether `abs` returns the positive value for large values correctly
+    /// Checks whether `abs` returns the positive value for large values correctly.
     #[test]
     fn large_values() {
         let pos = Q::from(i64::MAX);
@@ -88,7 +118,7 @@ mod test_abs {
 mod test_inv {
     use super::Q;
 
-    /// Checks whether the inverse is correctly computed for small values
+    /// Checks whether the inverse is correctly computed for small values.
     #[test]
     fn small_values() {
         let val_0 = Q::from(4);
@@ -101,7 +131,7 @@ mod test_inv {
         assert_eq!(Q::try_from((&-7, &2)).unwrap(), inv_1);
     }
 
-    /// Checks whether the inverse is correctly computed for large values
+    /// Checks whether the inverse is correctly computed for large values.
     #[test]
     fn large_values() {
         let val_0 = Q::try_from((&1, &i64::MAX)).unwrap();
@@ -114,7 +144,7 @@ mod test_inv {
         assert_eq!(Q::try_from((&1, &i64::MIN)).unwrap(), inv_1);
     }
 
-    /// Checks whether the inverse of `0` returns `None`
+    /// Checks whether the inverse of `0` returns `None`.
     #[test]
     fn inv_zero_none() {
         let zero = Q::ZERO;
@@ -122,5 +152,53 @@ mod test_inv {
         let inv_zero = zero.inverse();
 
         assert!(inv_zero.is_none());
+    }
+}
+
+#[cfg(test)]
+mod test_is_zero {
+    use super::Q;
+    use std::str::FromStr;
+
+    /// Ensure that is_zero returns `true` for `0`.
+    #[test]
+    fn zero_detection() {
+        let zero = Q::from(0);
+
+        assert!(zero.is_zero());
+    }
+
+    /// Ensure that is_zero returns `false` for non-zero values.
+    #[test]
+    fn zero_rejection() {
+        let small = Q::from(2);
+        let large = Q::from_str(&format!("{}", (u128::MAX - 1) / 2 + 1)).unwrap();
+
+        assert!(!small.is_zero());
+        assert!(!large.is_zero());
+    }
+}
+
+#[cfg(test)]
+mod test_is_one {
+    use super::Q;
+    use std::str::FromStr;
+
+    /// Ensure that is_one returns `true` for `1`.
+    #[test]
+    fn one_detection() {
+        let one = Q::ONE;
+
+        assert!(one.is_one());
+    }
+
+    /// Ensure that is_one returns `false` for other values.
+    #[test]
+    fn one_rejection() {
+        let small = Q::from(2);
+        let large = Q::from_str(&format!("1/{}", (u128::MAX - 1) / 2 + 2)).unwrap();
+
+        assert!(!small.is_one());
+        assert!(!large.is_one());
     }
 }
