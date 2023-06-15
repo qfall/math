@@ -29,7 +29,7 @@ impl GetNumRows for MatPolyOverZ {
     /// use qfall_math::integer::MatPolyOverZ;
     /// use qfall_math::traits::*;
     ///
-    /// let matrix = MatPolyOverZ::new(5,6).unwrap();
+    /// let matrix = MatPolyOverZ::new(5,6);
     /// let rows = matrix.get_num_rows();
     /// ```
     fn get_num_rows(&self) -> i64 {
@@ -45,7 +45,7 @@ impl GetNumColumns for MatPolyOverZ {
     /// use qfall_math::integer::MatPolyOverZ;
     /// use qfall_math::traits::*;
     ///
-    /// let matrix = MatPolyOverZ::new(5,6).unwrap();
+    /// let matrix = MatPolyOverZ::new(5,6);
     /// let columns = matrix.get_num_columns();
     /// ```
     fn get_num_columns(&self) -> i64 {
@@ -69,7 +69,7 @@ impl GetEntry<PolyOverZ> for MatPolyOverZ {
     /// use qfall_math::integer::MatPolyOverZ;
     /// use qfall_math::traits::*;
     ///
-    /// let matrix = MatPolyOverZ::new(5, 10).unwrap();
+    /// let matrix = MatPolyOverZ::new(5, 10);
     /// let entry = matrix.get_entry(0, 1).unwrap();
     /// ```
     ///
@@ -130,7 +130,7 @@ impl MatPolyOverZ {
             ));
         }
 
-        let out = MatPolyOverZ::new(1, self.get_num_columns()).unwrap();
+        let out = MatPolyOverZ::new(1, self.get_num_columns());
         for column in 0..self.get_num_columns() {
             unsafe {
                 fmpz_poly_set(
@@ -175,7 +175,7 @@ impl MatPolyOverZ {
             ));
         }
 
-        let out = MatPolyOverZ::new(self.get_num_rows(), 1).unwrap();
+        let out = MatPolyOverZ::new(self.get_num_rows(), 1);
         for row in 0..self.get_num_rows() {
             unsafe {
                 fmpz_poly_set(
@@ -229,7 +229,7 @@ mod test_get_entry {
     /// Ensure that getting entries works with large polynomials.
     #[test]
     fn max_int_positive() {
-        let mut matrix = MatPolyOverZ::new(5, 10).unwrap();
+        let mut matrix = MatPolyOverZ::new(5, 10);
         let value = PolyOverZ::from_str(&format!("2  {} 1", i64::MAX)).unwrap();
         matrix.set_entry(1, 1, value).unwrap();
 
@@ -241,7 +241,7 @@ mod test_get_entry {
     /// Ensure that getting entries works with large polynomials (larger than [`i64`]).
     #[test]
     fn big_positive() {
-        let mut matrix = MatPolyOverZ::new(5, 10).unwrap();
+        let mut matrix = MatPolyOverZ::new(5, 10);
         let value = PolyOverZ::from_str(&format!("2  {} 1", u64::MAX)).unwrap();
         matrix.set_entry(1, 1, value).unwrap();
 
@@ -253,7 +253,7 @@ mod test_get_entry {
     /// Ensure that getting entries works with large negative polynomials.
     #[test]
     fn max_int_negative() {
-        let mut matrix = MatPolyOverZ::new(5, 10).unwrap();
+        let mut matrix = MatPolyOverZ::new(5, 10);
         let value = PolyOverZ::from_str(&format!("2  {} 1", i64::MIN)).unwrap();
         matrix.set_entry(1, 1, value).unwrap();
 
@@ -265,7 +265,7 @@ mod test_get_entry {
     /// Ensure that getting entries works with large negative polynomials (larger than [`i64`]).
     #[test]
     fn big_negative() {
-        let mut matrix = MatPolyOverZ::new(5, 10).unwrap();
+        let mut matrix = MatPolyOverZ::new(5, 10);
         let value = PolyOverZ::from_str(&format!("2  -{} 1", u64::MAX)).unwrap();
         matrix.set_entry(1, 1, value).unwrap();
 
@@ -277,7 +277,7 @@ mod test_get_entry {
     /// Ensure that polynomials with many entries are correctly retrieved
     #[test]
     fn large_poly() {
-        let mut matrix = MatPolyOverZ::new(5, 10).unwrap();
+        let mut matrix = MatPolyOverZ::new(5, 10);
         let value =
             PolyOverZ::from_str(&format!("10000  -{} 1{}", u64::MAX, " 17".repeat(9998))).unwrap();
         matrix.set_entry(1, 1, value).unwrap();
@@ -293,7 +293,7 @@ mod test_get_entry {
     /// Ensure that getting entries at (0,0) works.
     #[test]
     fn getting_at_zero() {
-        let mut matrix = MatPolyOverZ::new(5, 10).unwrap();
+        let mut matrix = MatPolyOverZ::new(5, 10);
         let value = PolyOverZ::from_str(&format!("2  {} 1", i64::MAX)).unwrap();
         matrix.set_entry(0, 0, value).unwrap();
 
@@ -305,7 +305,7 @@ mod test_get_entry {
     /// Ensure that a wrong number of rows yields an Error.
     #[test]
     fn error_wrong_row() {
-        let matrix = MatPolyOverZ::new(5, 10).unwrap();
+        let matrix = MatPolyOverZ::new(5, 10);
 
         assert!(matrix.get_entry(5, 1).is_err());
     }
@@ -313,7 +313,7 @@ mod test_get_entry {
     /// Ensure that a wrong number of columns yields an Error.
     #[test]
     fn error_wrong_column() {
-        let matrix = MatPolyOverZ::new(5, 10).unwrap();
+        let matrix = MatPolyOverZ::new(5, 10);
 
         assert!(matrix.get_entry(1, 100).is_err());
     }
@@ -321,7 +321,7 @@ mod test_get_entry {
     /// Ensure that the entry is a deep copy and not just a clone of the reference.
     #[test]
     fn memory_test() {
-        let mut matrix = MatPolyOverZ::new(5, 10).unwrap();
+        let mut matrix = MatPolyOverZ::new(5, 10);
         let value = PolyOverZ::from_str(&format!("2  {} 1", u64::MAX)).unwrap();
         matrix.set_entry(1, 1, value).unwrap();
         let entry = matrix.get_entry(1, 1).unwrap();
@@ -341,7 +341,7 @@ mod test_get_num {
     /// Ensure that the getter for number of rows works correctly.
     #[test]
     fn num_rows() {
-        let matrix = MatPolyOverZ::new(5, 10).unwrap();
+        let matrix = MatPolyOverZ::new(5, 10);
 
         assert_eq!(matrix.get_num_rows(), 5);
     }
@@ -349,7 +349,7 @@ mod test_get_num {
     /// Ensure that the getter for number of columns works correctly.
     #[test]
     fn num_columns() {
-        let matrix = MatPolyOverZ::new(5, 10).unwrap();
+        let matrix = MatPolyOverZ::new(5, 10);
 
         assert_eq!(matrix.get_num_columns(), 10);
     }

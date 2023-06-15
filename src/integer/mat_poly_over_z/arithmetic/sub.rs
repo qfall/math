@@ -85,7 +85,7 @@ impl MatPolyOverZ {
                 other.get_num_columns()
             )));
         }
-        let mut out = MatPolyOverZ::new(self.get_num_rows(), self.get_num_columns()).unwrap();
+        let mut out = MatPolyOverZ::new(self.get_num_rows(), self.get_num_columns());
         unsafe {
             fmpz_poly_mat_sub(&mut out.matrix, &self.matrix, &other.matrix);
         }

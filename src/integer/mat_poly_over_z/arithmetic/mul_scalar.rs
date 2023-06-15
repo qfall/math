@@ -40,7 +40,7 @@ impl Mul<&Z> for &MatPolyOverZ {
     /// let mat2 = &mat1 * &integer;
     /// ```
     fn mul(self, scalar: &Z) -> Self::Output {
-        let mut out = MatPolyOverZ::new(self.get_num_rows(), self.get_num_columns()).unwrap();
+        let mut out = MatPolyOverZ::new(self.get_num_rows(), self.get_num_columns());
         unsafe {
             fmpz_poly_mat_scalar_mul_fmpz(&mut out.matrix, &self.matrix, &scalar.value);
         }
@@ -78,7 +78,7 @@ impl Mul<&PolyOverZ> for &MatPolyOverZ {
     /// let mat2 = &mat1 * &integer;
     /// ```
     fn mul(self, scalar: &PolyOverZ) -> Self::Output {
-        let mut out = MatPolyOverZ::new(self.get_num_rows(), self.get_num_columns()).unwrap();
+        let mut out = MatPolyOverZ::new(self.get_num_rows(), self.get_num_columns());
         unsafe {
             fmpz_poly_mat_scalar_mul_fmpz_poly(&mut out.matrix, &self.matrix, &scalar.poly);
         }

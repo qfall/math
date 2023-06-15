@@ -98,7 +98,7 @@ impl FromStr for MatQ {
     /// - Returns a [`MathError`] of type
     /// [`InvalidStringToZInput`](MathError::InvalidStringToZInput)
     /// if an entry is not formatted correctly.
-    /// 
+    ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
     /// For further information see [`MatQ::new`].

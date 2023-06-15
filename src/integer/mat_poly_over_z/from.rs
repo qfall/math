@@ -69,13 +69,16 @@ impl FromStr for MatPolyOverZ {
     /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
     /// if the entries are not formatted correctly. For further details see [`PolyOverZ::from_str`]
     /// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix)
-    /// if the matrix is not formatted in a suitable way,
-    /// the number of rows or columns is too big (must fit into [`i64`]) or
+    /// if the matrix is not formatted in a suitable way, or
     /// if the number of entries in rows is unequal.
+    ///
+    /// # Panics ...
+    /// - if the provided number of rows and columns are not suited to create a matrix.
+    /// For further information see [`MatPolyOverZ::new`].
     fn from_str(string: &str) -> Result<Self, MathError> {
         let string_matrix = parse_matrix_string(string)?;
         let (num_rows, num_cols) = find_matrix_dimensions(&string_matrix)?;
-        let mut matrix = MatPolyOverZ::new(num_rows, num_cols)?;
+        let mut matrix = MatPolyOverZ::new(num_rows, num_cols);
 
         // fill entries of matrix according to entries in string_matrix
         for (row_num, row) in string_matrix.iter().enumerate() {
