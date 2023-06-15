@@ -13,8 +13,13 @@
 //! The explicit functions contain the documentation.
 
 use super::Modulus;
-use crate::{error::MathError, integer::Z};
-use flint_sys::fmpz_mod::{fmpz_mod_ctx, fmpz_mod_ctx_init};
+use crate::{
+    error::MathError, integer::Z, macros::for_others::implement_empty_trait_owned_ref, traits::*,
+};
+use flint_sys::{
+    fmpz::{fmpz, fmpz_clear, fmpz_cmp_si},
+    fmpz_mod::fmpz_mod_ctx_init,
+};
 use std::{mem::MaybeUninit, rc::Rc, str::FromStr};
 
 impl Modulus {
@@ -82,12 +87,53 @@ impl Modulus {
     }
 }
 
-// TODO: write macro to generate [`TryFrom`] trait.
-impl TryFrom<&Z> for Modulus {
-    type Error = MathError;
-    /// Create [`Modulus`] from [`Z`] reference using [`try_from_z`](Modulus::try_from_z)
-    fn try_from(value: &Z) -> Result<Self, Self::Error> {
-        Modulus::try_from_z(value)
+/// A trait that filters for which types the `From for Modulus` should be implemented.
+/// It is used as a workaround to implement the [`From`] trait without colliding
+/// with the default implementation for [`Modulus`] and also to filter out
+/// [`Zq`](crate::integer_mod_q::Zq) and [`&Modulus`].
+trait IntoModulus {}
+implement_empty_trait_owned_ref!(IntoModulus for Z fmpz u8 u16 u32 u64 i8 i16 i32 i64);
+
+impl<Integer: AsInteger + IntoModulus> From<Integer> for Modulus {
+    /// Create a [`Modulus`] from a positive integer.
+    /// Parameters:
+    /// - `value`: the initial value the modulus should have.
+    ///   It must be larger than one.
+    ///
+    /// Returns the new [`Modulus`] or an panics, if the
+    /// provided value was not greater than `1`.
+    ///
+    /// ```
+    /// use qfall_math::integer_mod_q::Modulus;
+    /// use qfall_math::integer::Z;
+    ///
+    /// let _ = Modulus::from(10);
+    /// let _ = Modulus::from(u64::MAX);
+    /// let _ = Modulus::from(Z::from(42));
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Panics if the provided value is not greater than `1`.
+    fn from(value: Integer) -> Self {
+        match value.get_fmpz_ref() {
+            Some(val) => Modulus::from_fmpz_ref(val).unwrap(),
+            None => unsafe {
+                let mut value = value.into_fmpz();
+                let out = Modulus::from_fmpz_ref(&value);
+                fmpz_clear(&mut value);
+                out.unwrap()
+            },
+        }
+    }
+}
+
+impl From<&Modulus> for Modulus {
+    // This is more efficient than the generic implementation above
+    // since only the smart pointer is increased here.
+
+    /// Alias for [`Modulus::clone`].
+    fn from(value: &Modulus) -> Self {
+        value.clone()
     }
 }
 

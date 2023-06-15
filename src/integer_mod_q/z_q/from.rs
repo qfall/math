@@ -69,15 +69,13 @@ impl Zq {
     ///
     /// # Examples
     /// ```
-    /// # use qfall_math::error::MathError;
     /// use qfall_math::integer::Z;
     /// use qfall_math::integer_mod_q::{Modulus, Zq};
     ///
     /// let value = Z::from(42);
-    /// let modulus = Modulus::try_from(&Z::from(100))?;
+    /// let modulus = Modulus::from(100);
     ///
     /// let answer_a = Zq::from_z_modulus(&value, &modulus);
-    /// # Ok::<(), MathError>(())
     /// ```
     pub fn from_z_modulus(value: &Z, modulus: &Modulus) -> Self {
         let mut out = Z::default();

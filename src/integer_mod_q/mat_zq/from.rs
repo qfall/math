@@ -41,7 +41,7 @@ impl MatZq {
     /// use std::str::FromStr;
     ///
     /// let m = MatZ::from_str("[[1, 2],[3, -1]]").unwrap();
-    /// let modulus = Modulus::try_from(&17.into()).unwrap();
+    /// let modulus = Modulus::from(17);
     ///
     /// let a = MatZq::from_mat_z_modulus(&m, &modulus);
     /// ```
@@ -155,7 +155,7 @@ mod test_from_mat_z_modulus {
     #[test]
     fn dimensions() {
         let matz = MatZ::new(15, 17).unwrap();
-        let modulus = Modulus::try_from(&17.into()).unwrap();
+        let modulus = Modulus::from(17);
 
         let matzq_1 = MatZq::from((&matz, &modulus));
         let matzq_2 = MatZq::from_mat_z_modulus(&matz, &modulus);
@@ -170,7 +170,7 @@ mod test_from_mat_z_modulus {
     #[test]
     fn entries_taken_over_correctly() {
         let mut matz = MatZ::new(2, 2).unwrap();
-        let modulus = Modulus::try_from(&u64::MAX.into()).unwrap();
+        let modulus = Modulus::from(u64::MAX);
 
         matz.set_entry(0, 0, u64::MAX - 58).unwrap();
         matz.set_entry(0, 1, -1).unwrap();

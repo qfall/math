@@ -47,19 +47,14 @@ impl PolyOverZq {
     /// if the given `modulus` isn't bigger than `1`, i.e. the interval size is at most `1`.
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
     /// the `nr_coeffs` is negative or it does not fit into an [`i64`].
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
-    /// if the provided modulus is not greater than `0`.
-    pub fn sample_uniform<T>(
+    /// - Panics if the provided modulus is not greater than `1`.
+    pub fn sample_uniform(
         nr_coeffs: impl TryInto<i64> + Display + Copy,
-        modulus: &T,
-    ) -> Result<Self, MathError>
-    where
-        T: Into<Z> + Clone,
-    {
+        modulus: impl Into<Z>,
+    ) -> Result<Self, MathError> {
         let nr_coeffs = evaluate_index(nr_coeffs)?;
-        let interval_size = modulus.to_owned().into();
-        let modulus = Modulus::try_from(&interval_size)?;
+        let interval_size = modulus.into();
+        let modulus = Modulus::from(&interval_size);
         let mut poly_zq = PolyOverZq::from(&modulus);
 
         for index in 0..nr_coeffs {
@@ -77,7 +72,6 @@ mod test_sample_uniform {
         integer_mod_q::{Modulus, PolyOverZq},
         traits::GetCoefficient,
     };
-    use std::str::FromStr;
 
     /// Checks whether the boundaries of the interval are kept for small moduli.
     #[test]
@@ -109,15 +103,16 @@ mod test_sample_uniform {
 
     /// Checks whether providing an invalid interval/ modulus results in an error.
     #[test]
-    fn invalid_modulus() {
-        let mod_0 = Z::from(i64::MIN);
-        let mod_1 = Z::ZERO;
+    #[should_panic]
+    fn invalid_modulus_negative() {
+        let _ = PolyOverZq::sample_uniform(1, i64::MIN);
+    }
 
-        let res_0 = PolyOverZq::sample_uniform(1, &mod_0);
-        let res_1 = PolyOverZq::sample_uniform(1, &mod_1);
-
-        assert!(res_0.is_err());
-        assert!(res_1.is_err());
+    /// Checks whether providing an invalid interval/ modulus results in an error.
+    #[test]
+    #[should_panic]
+    fn invalid_modulus_one() {
+        let _ = PolyOverZq::sample_uniform(1, 1);
     }
 
     /// Checks whether providing a length smaller than `1` results in an error.
@@ -136,18 +131,19 @@ mod test_sample_uniform {
     /// implementing Into<Z> + Clone, i.e. u8, u16, u32, u64, i8, ...
     #[test]
     fn availability() {
-        let modulus = Modulus::from_str("7").unwrap();
-        let z = Z::from(7);
+        let modulus = Modulus::from(10);
+        let z = Z::from(10);
 
-        let _ = PolyOverZq::sample_uniform(1u64, &0u16);
-        let _ = PolyOverZq::sample_uniform(1i64, &0u32);
-        let _ = PolyOverZq::sample_uniform(1u8, &0u64);
-        let _ = PolyOverZq::sample_uniform(1u16, &0i8);
-        let _ = PolyOverZq::sample_uniform(1u32, &0i16);
-        let _ = PolyOverZq::sample_uniform(1i32, &0i32);
-        let _ = PolyOverZq::sample_uniform(1i16, &0i64);
-        let _ = PolyOverZq::sample_uniform(1i8, &Z::ONE);
-        let _ = PolyOverZq::sample_uniform(1, &z);
-        let _ = PolyOverZq::sample_uniform(1, &modulus);
+        let _ = PolyOverZq::sample_uniform(1u64, 10u16).unwrap();
+        let _ = PolyOverZq::sample_uniform(1i64, 10u32).unwrap();
+        let _ = PolyOverZq::sample_uniform(1u8, 10u64).unwrap();
+        let _ = PolyOverZq::sample_uniform(1u16, 10i8).unwrap();
+        let _ = PolyOverZq::sample_uniform(1u32, 10i16).unwrap();
+        let _ = PolyOverZq::sample_uniform(1i32, 10i32).unwrap();
+        let _ = PolyOverZq::sample_uniform(1i16, 10i64).unwrap();
+        let _ = PolyOverZq::sample_uniform(1i8, &z).unwrap();
+        let _ = PolyOverZq::sample_uniform(1, z).unwrap();
+        let _ = PolyOverZq::sample_uniform(1, &modulus).unwrap();
+        let _ = PolyOverZq::sample_uniform(1, modulus).unwrap();
     }
 }
