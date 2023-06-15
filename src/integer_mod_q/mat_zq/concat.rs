@@ -31,8 +31,8 @@ impl Concatenate for &MatZq {
     /// use qfall_math::traits::*;
     /// use qfall_math::integer_mod_q::MatZq;
     ///
-    /// let mat_1 = MatZq::new(13, 5, 19).unwrap();
-    /// let mat_2 = MatZq::new(17, 5, 19).unwrap();
+    /// let mat_1 = MatZq::new(13, 5, 19);
+    /// let mat_2 = MatZq::new(17, 5, 19);
     ///
     /// let mat_vert = mat_1.concat_vertical(&mat_2).unwrap();
     /// ```
@@ -67,8 +67,7 @@ impl Concatenate for &MatZq {
             self.get_num_rows() + other.get_num_rows(),
             self.get_num_columns(),
             self.get_mod(),
-        )
-        .unwrap();
+        );
         unsafe {
             fmpz_mod_mat_concat_vertical(&mut out.matrix, &self.matrix, &other.matrix);
         }
@@ -88,8 +87,8 @@ impl Concatenate for &MatZq {
     /// use qfall_math::traits::*;
     /// use qfall_math::integer_mod_q::MatZq;
     ///
-    /// let mat_1 = MatZq::new(17, 5, 19).unwrap();
-    /// let mat_2 = MatZq::new(17, 6, 19).unwrap();
+    /// let mat_1 = MatZq::new(17, 5, 19);
+    /// let mat_2 = MatZq::new(17, 6, 19);
     ///
     /// let mat_vert = mat_1.concat_horizontal(&mat_2).unwrap();
     /// ```
@@ -124,8 +123,7 @@ impl Concatenate for &MatZq {
             self.get_num_rows(),
             self.get_num_columns() + other.get_num_columns(),
             self.get_mod(),
-        )
-        .unwrap();
+        );
         unsafe {
             fmpz_mod_mat_concat_horizontal(&mut out.matrix, &self.matrix, &other.matrix);
         }
@@ -146,9 +144,9 @@ mod test_concatenate {
     /// if the dimensions mismatch
     #[test]
     fn dimensions_vertical() {
-        let mat_1 = MatZq::new(13, 5, 17).unwrap();
-        let mat_2 = MatZq::new(17, 5, 17).unwrap();
-        let mat_3 = MatZq::new(17, 6, 17).unwrap();
+        let mat_1 = MatZq::new(13, 5, 17);
+        let mat_2 = MatZq::new(17, 5, 17);
+        let mat_3 = MatZq::new(17, 6, 17);
 
         let mat_vert = mat_1.concat_vertical(&mat_2).unwrap();
 
@@ -161,9 +159,9 @@ mod test_concatenate {
     /// if the dimensions mismatch
     #[test]
     fn dimensions_horizontal() {
-        let mat_1 = MatZq::new(13, 5, 17).unwrap();
-        let mat_2 = MatZq::new(17, 5, 17).unwrap();
-        let mat_3 = MatZq::new(17, 6, 17).unwrap();
+        let mat_1 = MatZq::new(13, 5, 17);
+        let mat_2 = MatZq::new(17, 5, 17);
+        let mat_3 = MatZq::new(17, 6, 17);
 
         let mat_hor = mat_2.concat_horizontal(&mat_3).unwrap();
 
@@ -176,8 +174,8 @@ mod test_concatenate {
     /// in an error
     #[test]
     fn mismatching_moduli() {
-        let mat_1 = MatZq::new(2, 2, 17).unwrap();
-        let mat_2 = MatZq::new(2, 2, 19).unwrap();
+        let mat_1 = MatZq::new(2, 2, 17);
+        let mat_2 = MatZq::new(2, 2, 19);
 
         let mat_hor = mat_1.concat_horizontal(&mat_2);
         let mat_vert = mat_1.concat_vertical(&mat_2);

@@ -91,8 +91,7 @@ impl Mul<&MatZ> for &MatZq {
             panic!("Tried to multiply matrices with mismatching matrix dimensions.");
         }
 
-        let mut new =
-            MatZq::new(self.get_num_rows(), other.get_num_columns(), self.get_mod()).unwrap();
+        let mut new = MatZq::new(self.get_num_rows(), other.get_num_columns(), self.get_mod());
         unsafe {
             fmpz_mat_mul(&mut new.matrix.mat[0], &self.matrix.mat[0], &other.matrix);
             _fmpz_mod_mat_reduce(&mut new.matrix)
@@ -151,8 +150,7 @@ impl MatZq {
             )));
         }
 
-        let mut new =
-            MatZq::new(self.get_num_rows(), other.get_num_columns(), self.get_mod()).unwrap();
+        let mut new = MatZq::new(self.get_num_rows(), other.get_num_columns(), self.get_mod());
         unsafe { fmpz_mod_mat_mul(&mut new.matrix, &self.matrix, &other.matrix) };
         Ok(new)
     }
@@ -192,7 +190,7 @@ mod test_mul {
         let mat =
             MatZq::from_str(&format!("[[{},1],[0,2]] mod {}", u64::MAX, u64::MAX - 58)).unwrap();
         let vec = MatZq::from_str(&format!("[[{}],[0]] mod {}", u64::MAX, u64::MAX - 58)).unwrap();
-        let mut cmp = MatZq::new(2, 1, u64::MAX - 58).unwrap();
+        let mut cmp = MatZq::new(2, 1, u64::MAX - 58);
         let max: Z = u64::MAX.into();
         cmp.set_entry(0, 0, &(&max * &max)).unwrap();
 
@@ -247,7 +245,7 @@ mod test_mul_matz {
         let mat =
             MatZq::from_str(&format!("[[{},1],[0,2]] mod {}", u64::MAX, u64::MAX - 58)).unwrap();
         let vec = MatZ::from_str(&format!("[[{}],[0]]", u64::MAX)).unwrap();
-        let mut cmp = MatZq::new(2, 1, u64::MAX - 58).unwrap();
+        let mut cmp = MatZq::new(2, 1, u64::MAX - 58);
         let max: Z = u64::MAX.into();
         cmp.set_entry(0, 0, &(&max * &max)).unwrap();
 

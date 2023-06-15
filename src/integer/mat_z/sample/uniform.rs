@@ -44,14 +44,13 @@ impl MatZ {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidMatrix`](MathError::InvalidMatrix)
-    /// if the number of rows or columns is `0`.
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    /// if the number of rows or columns is negative or it does not fit into an [`i64`].
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
     /// if the given `upper_bound` isn't at least bigger than `lower_bound + 1`,
     /// i.e. the interval size is at most `1`.
+    ///
+    /// # Panics ...
+    /// - if the provided number of rows and columns are not suited to create a matrix.
+    /// For further information see [`MatZ::new`].
     pub fn sample_uniform<T1, T2>(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,

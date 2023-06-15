@@ -42,13 +42,12 @@ impl MatZq {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidMatrix`](MathError::InvalidMatrix)
-    /// if the number of rows or columns is `0`.
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    /// if the number of rows or columns is negative or it does not fit into an [`i64`].
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
     /// if the `n <= 1` or `s <= 0`.
+    ///
+    /// # Panics ...
+    /// - if the provided number of rows and columns or the modulus are not suited to create a matrix.
+    /// For further information see [`MatZq::new`].
     pub fn sample_discrete_gauss<T, T1, T2, T3>(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
@@ -67,7 +66,7 @@ impl MatZq {
         let n: Z = n.into();
         let center: Q = center.into();
         let s: Q = s.into();
-        let mut out = Self::new(num_rows, num_cols, modulus)?;
+        let mut out = Self::new(num_rows, num_cols, modulus);
 
         for row in 0..out.get_num_rows() {
             for col in 0..out.get_num_columns() {

@@ -43,15 +43,12 @@ impl MatZq {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidMatrix`](MathError::InvalidMatrix)
-    /// if the number of rows or columns is `0`.
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    /// if the number of rows or columns is negative or it does not fit into an [`i64`].
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
     /// if the given `modulus` is smaller than or equal to `1`.
-    /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
-    /// if the provided modulus is not greater than `1`.
+    ///
+    /// # Panics ...
+    /// - if the provided number of rows and columns or the modulus are not suited to create a matrix.
+    /// For further information see [`MatZq::new`].
     pub fn sample_uniform<T>(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
@@ -61,7 +58,7 @@ impl MatZq {
         T: Into<Z> + Clone,
     {
         let modulus: Z = modulus.clone().into();
-        let mut matrix = MatZq::new(num_rows, num_cols, modulus.clone())?;
+        let mut matrix = MatZq::new(num_rows, num_cols, modulus.clone());
 
         for row in 0..matrix.get_num_rows() {
             for col in 0..matrix.get_num_columns() {
@@ -107,19 +104,10 @@ mod test_sample_uniform {
     }
 
     /// Checks whether providing an invalid interval/ modulus results in an error.
+    #[should_panic]
     #[test]
     fn invalid_modulus() {
-        let mat_0 = MatZq::sample_uniform(3, 3, &-1);
-        let mat_1 = MatZq::sample_uniform(4, 1, &1);
-        let mat_2 = MatZq::sample_uniform(1, 5, &0);
-        let mat_3 = MatZq::sample_uniform(1, 5, &i32::MIN);
-        let mat_4 = MatZq::sample_uniform(1, 5, &Z::from(i64::MIN));
-
-        assert!(mat_0.is_err());
-        assert!(mat_1.is_err());
-        assert!(mat_2.is_err());
-        assert!(mat_3.is_err());
-        assert!(mat_4.is_err());
+        let _ = MatZq::sample_uniform(4, 1, &1);
     }
 
     /// Checks whether `sample_uniform` is available for all types
@@ -160,22 +148,5 @@ mod test_sample_uniform {
         assert_eq!(5, mat_2.get_num_columns());
         assert_eq!(15, mat_3.get_num_rows());
         assert_eq!(20, mat_3.get_num_columns());
-    }
-
-    /// Checks whether matrices with at least one dimension chosen smaller than `1`
-    /// or too big for an [`i64`] results in an error
-    #[test]
-    fn false_sizes() {
-        let modulus = Z::from(15);
-
-        let mat_0 = MatZq::sample_uniform(0, 3, &modulus);
-        let mat_1 = MatZq::sample_uniform(3, 0, &modulus);
-        let mat_2 = MatZq::sample_uniform(0, -1, &modulus);
-        let mat_3 = MatZq::sample_uniform(2, u64::MAX, &modulus);
-
-        assert!(mat_0.is_err());
-        assert!(mat_1.is_err());
-        assert!(mat_2.is_err());
-        assert!(mat_3.is_err());
     }
 }

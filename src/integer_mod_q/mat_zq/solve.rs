@@ -83,7 +83,7 @@ impl MatZq {
         }
 
         // set the entries of the output vector using the indices vector
-        let mut out = MatZq::new(self.get_num_columns(), 1, &matrix.get_mod()).ok()?;
+        let mut out = MatZq::new(self.get_num_columns(), 1, &matrix.get_mod());
         for (i, j) in indices.iter() {
             let entry: Z = matrix.get_entry(*i, matrix.get_num_columns() - 1).ok()?;
             out.set_entry(*j, 0, &entry).ok()?;
@@ -177,7 +177,7 @@ mod test_solve {
         let y = MatZq::from_str("[[0],[0]] mod 8").unwrap();
         let x = mat.solve_gaussian_elimination(&y).unwrap();
 
-        assert_eq!(MatZq::new(3, 1, mat.get_mod()).unwrap(), x)
+        assert_eq!(MatZq::new(3, 1, mat.get_mod()), x)
     }
 
     /// Ensure that for different moduli the function panics

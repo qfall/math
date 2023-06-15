@@ -33,8 +33,7 @@ impl Clone for MatZq {
             self.get_num_rows(),
             self.get_num_columns(),
             Z::from(self.get_mod()),
-        )
-        .unwrap();
+        );
         unsafe {
             fmpz_mod_mat_init_set(&mut out.matrix, &self.matrix);
         }
