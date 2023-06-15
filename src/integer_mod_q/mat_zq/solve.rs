@@ -37,8 +37,27 @@ impl MatZq {
     /// let mat = MatZq::from_str("[[2,2,3],[2,5,7]] mod 8").unwrap();
     /// let y = MatZq::from_str("[[3],[5]] mod 8").unwrap();
     /// let x = mat.solve_gaussian_elimination(&y).unwrap();
+    ///
+    /// assert_eq!(y, mat*x);
     /// ```
+    ///
+    /// Panics ...
+    /// - ... if the the number of rows of the matrix and the syndrome are different
+    /// - ... if the syndrome is not a column vector
+    /// - ... if the moduli mismatch
     pub fn solve_gaussian_elimination(&self, y: &MatZq) -> Option<MatZq> {
+        assert!(y.is_column_vector(), "The syndrome is not a column vector");
+        assert_eq!(
+            y.get_num_rows(),
+            self.get_num_rows(),
+            "The syndrome is not a column vector"
+        );
+        assert_eq!(
+            y.get_mod(),
+            self.get_mod(),
+            "The syndrome is not a column vector"
+        );
+
         // append the solution vector to easily perform gaussian elimination
         let mut matrix = self.concat_horizontal(y).ok()?;
 
@@ -151,16 +170,6 @@ mod test_solve {
         assert_eq!(cmp_sol, x);
     }
 
-    /// Ensure that `None` is returned, if there is no solution
-    #[test]
-    fn working() {
-        let mat = MatZq::from_str("[[2,2,3],[2,5,7]] mod 8").unwrap();
-        let y = MatZq::from_str("[[3],[5]] mod 8").unwrap();
-        let x = mat.solve_gaussian_elimination(&y).unwrap();
-
-        println!("{x}");
-    }
-
     /// Ensure that the trivial solution can always be computed
     #[test]
     fn trivial_solution() {
@@ -177,20 +186,25 @@ mod test_solve {
     fn different_moduli() {
         let mat = MatZq::from_str("[[2,2,3],[2,5,7]] mod 8").unwrap();
         let y = MatZq::from_str("[[0],[0]] mod 7").unwrap();
-        let x = mat.solve_gaussian_elimination(&y).unwrap();
-
-        assert_eq!(MatZq::new(3, 1, mat.get_mod()).unwrap(), x)
+        let _ = mat.solve_gaussian_elimination(&y).unwrap();
     }
 
-    /// Ensure that for different lengths the function panics
+    /// Ensure that for different number of rows the function panics
     #[test]
     #[should_panic]
-    fn different_sizes() {
+    fn different_nr_rows() {
         let mat = MatZq::from_str("[[2,2,3],[2,5,7]] mod 8").unwrap();
         let y = MatZq::from_str("[[0],[0],[0]] mod 8").unwrap();
-        let x = mat.solve_gaussian_elimination(&y).unwrap();
+        let _ = mat.solve_gaussian_elimination(&y).unwrap();
+    }
 
-        assert_eq!(MatZq::new(3, 1, mat.get_mod()).unwrap(), x)
+    /// Ensure that for non-column vectors, the function panics
+    #[test]
+    #[should_panic]
+    fn not_column_vector() {
+        let mat = MatZq::from_str("[[2,2,3],[2,5,7]] mod 8").unwrap();
+        let y = MatZq::from_str("[[0, 1],[0, 1]] mod 8").unwrap();
+        let _ = mat.solve_gaussian_elimination(&y).unwrap();
     }
 }
 
