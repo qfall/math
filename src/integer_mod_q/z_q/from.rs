@@ -50,7 +50,12 @@ impl Zq {
     ///   [`InvalidIntToModulus`](MathError::InvalidIntToModulus) if the
     ///   provided value is not greater than `1`.
     pub fn try_from_z_z(value: &Z, modulus: &Z) -> Result<Self, MathError> {
-        let modulus = Modulus::try_from_z(modulus)?;
+        // TODO: This is not super nice but this function will be removed in the
+        // Zq::from rework anyway.
+        if modulus <= &Z::ONE {
+            return Err(MathError::InvalidIntToModulus(modulus.to_string()));
+        }
+        let modulus = Modulus::from(modulus);
 
         Ok(Self::from_z_modulus(value, &modulus))
     }

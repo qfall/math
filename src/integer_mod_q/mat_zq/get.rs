@@ -459,10 +459,7 @@ mod test_get_num {
 
 #[cfg(test)]
 mod test_mod {
-    use crate::{
-        integer::Z,
-        integer_mod_q::{MatZq, Modulus},
-    };
+    use crate::integer_mod_q::{MatZq, Modulus};
     use std::str::FromStr;
 
     /// Ensure that the getter for modulus works correctly.
