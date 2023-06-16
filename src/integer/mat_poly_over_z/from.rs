@@ -1,4 +1,4 @@
-// Copyright © 2023 Marvin Beckmann
+// Copyright © 2023 Marvin Beckmann, Sven Moog
 //
 // This file is part of qFALL-math.
 //
@@ -16,8 +16,8 @@
 use super::MatPolyOverZ;
 use crate::{
     error::MathError,
-    integer::PolyOverZ,
-    traits::SetEntry,
+    integer::{MatZ, PolyOverZ},
+    traits::*,
     utils::{dimensions::find_matrix_dimensions, parse::parse_matrix_string},
 };
 use std::str::FromStr;
@@ -88,6 +88,42 @@ impl FromStr for MatPolyOverZ {
             }
         }
         Ok(matrix)
+    }
+}
+
+impl From<&MatZ> for MatPolyOverZ {
+    /// Initialize a [`MatPolyOverZ`] with constant polynomials defined by a [`MatZ`].
+    ///
+    /// # Parameters
+    /// - `constants`: A matrix with constant integers.
+    ///
+    /// Returns a matrix of polynomial that all have the first coefficient
+    /// set to the value in the constants matrix.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::{MatZ, MatPolyOverZ};
+    ///
+    /// let mat_z = MatZ::identity(10,10).unwrap();
+    /// let mat_poly = MatPolyOverZ::from(&mat_z);
+    /// ```
+    fn from(constants: &MatZ) -> Self {
+        let num_rows = constants.get_num_rows();
+        let num_columns = constants.get_num_columns();
+        let mut out = MatPolyOverZ::new(num_rows, constants.get_num_columns()).unwrap();
+
+        for row in 0..num_rows {
+            for column in 0..num_columns {
+                out.set_entry(
+                    row,
+                    column,
+                    PolyOverZ::from(constants.get_entry(row, column).unwrap()),
+                )
+                .unwrap();
+            }
+        }
+
+        out
     }
 }
 
@@ -192,5 +228,43 @@ mod test_from_str {
         assert!(MatPolyOverZ::from_str(matrix_str7).is_err());
         assert!(MatPolyOverZ::from_str(matrix_str8).is_err());
         assert!(MatPolyOverZ::from_str(matrix_str9).is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_from_matz {
+    use super::*;
+    #[test]
+    fn small() {
+        let matz_str = "[[1,2,3],[4,5,6]]";
+        let matz = MatZ::from_str(matz_str).unwrap();
+
+        let mat_poly = MatPolyOverZ::from(&matz);
+
+        let poly_mat_cmp_str = "[[1  1, 1  2, 1  3],[1  4, 1  5, 1  6]]";
+        let mat_poly_cmp = MatPolyOverZ::from_str(poly_mat_cmp_str).unwrap();
+        assert_eq!(mat_poly, mat_poly_cmp);
+    }
+
+    #[test]
+    fn large() {
+        let matz_str = format!("[[{}],[{}]]", u64::MAX, i64::MIN);
+        let matz = MatZ::from_str(&matz_str).unwrap();
+
+        let mat_poly = MatPolyOverZ::from(&matz);
+
+        let poly_mat_cmp_str = format!("[[1  {}],[1  {}]]", u64::MAX, i64::MIN);
+        let mat_poly_cmp = MatPolyOverZ::from_str(&poly_mat_cmp_str).unwrap();
+        assert_eq!(mat_poly, mat_poly_cmp);
+    }
+
+    #[test]
+    fn zero() {
+        let matz = MatZ::new(100, 100).unwrap();
+
+        let mat_poly = MatPolyOverZ::from(&matz);
+
+        let mat_poly_cmp = MatPolyOverZ::new(100, 100).unwrap();
+        assert_eq!(mat_poly, mat_poly_cmp);
     }
 }
