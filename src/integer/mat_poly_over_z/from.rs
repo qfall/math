@@ -104,13 +104,13 @@ impl From<&MatZ> for MatPolyOverZ {
     /// ```
     /// use qfall_math::integer::{MatZ, MatPolyOverZ};
     ///
-    /// let mat_z = MatZ::identity(10,10).unwrap();
+    /// let mat_z = MatZ::identity(10,10);
     /// let mat_poly = MatPolyOverZ::from(&mat_z);
     /// ```
     fn from(constants: &MatZ) -> Self {
         let num_rows = constants.get_num_rows();
         let num_columns = constants.get_num_columns();
-        let mut out = MatPolyOverZ::new(num_rows, constants.get_num_columns()).unwrap();
+        let mut out = MatPolyOverZ::new(num_rows, constants.get_num_columns());
 
         for row in 0..num_rows {
             for column in 0..num_columns {
@@ -260,11 +260,11 @@ mod test_from_matz {
 
     #[test]
     fn zero() {
-        let matz = MatZ::new(100, 100).unwrap();
+        let matz = MatZ::new(100, 100);
 
         let mat_poly = MatPolyOverZ::from(&matz);
 
-        let mat_poly_cmp = MatPolyOverZ::new(100, 100).unwrap();
+        let mat_poly_cmp = MatPolyOverZ::new(100, 100);
         assert_eq!(mat_poly, mat_poly_cmp);
     }
 }
