@@ -93,8 +93,7 @@ impl MatZq {
             self.get_num_rows() * other.get_num_rows(),
             self.get_num_columns() * other.get_num_columns(),
             self.get_mod(),
-        )
-        .unwrap();
+        );
 
         unsafe {
             fmpz_mat_kronecker_product(
@@ -121,8 +120,8 @@ mod test_tensor {
     /// Ensure that the dimensions of the tensor product are taken over correctly.
     #[test]
     fn dimensions_fit() {
-        let mat_1 = MatZq::new(17, 13, 13).unwrap();
-        let mat_2 = MatZq::new(3, 4, 13).unwrap();
+        let mat_1 = MatZq::new(17, 13, 13);
+        let mat_2 = MatZq::new(3, 4, 13);
 
         let mat_3 = mat_1.tensor_product(&mat_2);
         let mat_3_safe = mat_1.tensor_product_safe(&mat_2).unwrap();
@@ -286,8 +285,8 @@ mod test_tensor {
     #[test]
     #[should_panic]
     fn mismatching_moduli_tensor_product() {
-        let mat_1 = MatZq::new(1, 2, u64::MAX).unwrap();
-        let mat_2 = MatZq::new(1, 2, u64::MAX - 58).unwrap();
+        let mat_1 = MatZq::new(1, 2, u64::MAX);
+        let mat_2 = MatZq::new(1, 2, u64::MAX - 58);
 
         let _ = mat_1.tensor_product(&mat_2);
     }
@@ -295,8 +294,8 @@ mod test_tensor {
     /// Ensure that tensor_product_safe returns an error if the moduli mismatch
     #[test]
     fn mismatching_moduli_tensor_product_safe() {
-        let mat_1 = MatZq::new(1, 2, u64::MAX).unwrap();
-        let mat_2 = MatZq::new(1, 2, u64::MAX - 58).unwrap();
+        let mat_1 = MatZq::new(1, 2, u64::MAX);
+        let mat_2 = MatZq::new(1, 2, u64::MAX - 58);
 
         assert!(mat_1.tensor_product_safe(&mat_2).is_err());
         assert!(mat_2.tensor_product_safe(&mat_1).is_err());

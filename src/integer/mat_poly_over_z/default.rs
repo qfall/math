@@ -9,7 +9,7 @@
 //! Initialize a [`MatPolyOverZ`] with common defaults, e.g., zero and identity.
 
 use super::MatPolyOverZ;
-use crate::{error::MathError, utils::index::evaluate_index};
+use crate::utils::index::evaluate_indices;
 use flint_sys::fmpz_poly_mat::{fmpz_poly_mat_init, fmpz_poly_mat_one};
 use std::{fmt::Display, mem::MaybeUninit};
 
@@ -21,34 +21,25 @@ impl MatPolyOverZ {
     /// - `num_rows`: number of rows the new matrix should have
     /// - `num_cols`: number of columns the new matrix should have
     ///
-    /// Returns a [`MatPolyOverZ`] or an error, if the number of rows or columns is
-    /// less or equal to `0`.
+    /// Returns a new [`MatPolyOverZ`] instance of the provided dimensions.
     ///
     /// # Examples
     /// ```
     /// use qfall_math::integer::MatPolyOverZ;
     ///
-    /// let matrix = MatPolyOverZ::new(5, 10).unwrap();
+    /// let matrix = MatPolyOverZ::new(5, 10);
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidMatrix`](MathError::InvalidMatrix)
-    /// if the number of rows or columns is `0`.
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    /// if the number of rows or columns is negative or it does not fit into an [`i64`].
+    /// # Panics ...
+    /// - if the number of rows or columns is negative, zero, or does not fit into an [`i64`].
     pub fn new(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
-    ) -> Result<Self, MathError> {
-        let num_rows_i64 = evaluate_index(num_rows)?;
-        let num_cols_i64 = evaluate_index(num_cols)?;
+    ) -> Self {
+        let (num_rows_i64, num_cols_i64) = evaluate_indices(num_rows, num_cols).unwrap();
 
         if num_rows_i64 == 0 || num_cols_i64 == 0 {
-            return Err(MathError::InvalidMatrix(format!(
-                "The provided matrix has dimensions ({},{})",
-                num_rows_i64, num_cols_i64,
-            )));
+            panic!("A matrix can not contain 0 rows or 0 columns");
         }
 
         let mut matrix = MaybeUninit::uninit();
@@ -56,9 +47,9 @@ impl MatPolyOverZ {
             fmpz_poly_mat_init(matrix.as_mut_ptr(), num_rows_i64, num_cols_i64);
 
             // Construct MatPolyOverZ from previously initialized fmpz_poly_mat
-            Ok(MatPolyOverZ {
+            MatPolyOverZ {
                 matrix: matrix.assume_init(),
-            })
+            }
         }
     }
 
@@ -75,22 +66,21 @@ impl MatPolyOverZ {
     /// ```
     /// use qfall_math::integer::MatPolyOverZ;
     ///
-    /// let matrix = MatPolyOverZ::identity(2, 3).unwrap();
+    /// let matrix = MatPolyOverZ::identity(2, 3);
     ///
-    /// let identity = MatPolyOverZ::identity(10, 10).unwrap();
+    /// let identity = MatPolyOverZ::identity(10, 10);
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix) or
-    /// [`OutOfBounds`](MathError::OutOfBounds) if the provided number of rows and columns
-    /// are not suited to create a matrix. For further information see [`MatZ::new`](crate::integer::MatZ::new).
+    /// # Panics ...
+    /// - if the provided number of rows and columns are not suited to create a matrix.
+    /// For further information see [`MatPolyOverZ::new`].
     pub fn identity(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
-    ) -> Result<Self, MathError> {
-        let mut out = MatPolyOverZ::new(num_rows, num_cols)?;
+    ) -> Self {
+        let mut out = MatPolyOverZ::new(num_rows, num_cols);
         unsafe { fmpz_poly_mat_one(&mut out.matrix) };
-        Ok(out)
+        out
     }
 }
 
@@ -101,7 +91,7 @@ mod test_new {
     /// Ensure that entries of a new matrix are `0`.
     #[test]
     fn entry_zero() {
-        let matrix = MatPolyOverZ::new(2, 2).unwrap();
+        let matrix = MatPolyOverZ::new(2, 2);
 
         let entry1 = matrix.get_entry(0, 0).unwrap();
         let entry2 = matrix.get_entry(0, 1).unwrap();
@@ -114,16 +104,18 @@ mod test_new {
         assert_eq!("0", entry4.to_string());
     }
 
-    /// Ensure that a new zero matrix fails with `0` as input.
+    /// Ensure that a new zero matrix fails with `0` as `num_cols`.
+    #[should_panic]
     #[test]
-    fn error_zero() {
-        let matrix1 = MatPolyOverZ::new(1, 0);
-        let matrix2 = MatPolyOverZ::new(0, 1);
-        let matrix3 = MatPolyOverZ::new(0, 0);
+    fn error_zero_num_cols() {
+        let _ = MatPolyOverZ::new(1, 0);
+    }
 
-        assert!(matrix1.is_err());
-        assert!(matrix2.is_err());
-        assert!(matrix3.is_err());
+    /// Ensure that a new zero matrix fails with `0` as `num_rows`.
+    #[should_panic]
+    #[test]
+    fn error_zero_num_rows() {
+        let _ = MatPolyOverZ::new(0, 1);
     }
 }
 
@@ -138,7 +130,7 @@ mod test_identity {
     /// Tests if an identity matrix is set from a zero matrix.
     #[test]
     fn identity() {
-        let matrix = MatPolyOverZ::identity(10, 10).unwrap();
+        let matrix = MatPolyOverZ::identity(10, 10);
 
         for i in 0..10 {
             for j in 0..10 {
@@ -157,7 +149,7 @@ mod test_identity {
     /// Tests if function works for a non-square matrix
     #[test]
     fn non_square_works() {
-        let matrix = MatPolyOverZ::identity(10, 7).unwrap();
+        let matrix = MatPolyOverZ::identity(10, 7);
 
         for i in 0..10 {
             for j in 0..7 {
@@ -172,7 +164,7 @@ mod test_identity {
             }
         }
 
-        let matrix = MatPolyOverZ::identity(7, 10).unwrap();
+        let matrix = MatPolyOverZ::identity(7, 10);
 
         for i in 0..7 {
             for j in 0..10 {

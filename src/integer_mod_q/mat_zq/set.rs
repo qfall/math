@@ -50,7 +50,7 @@ impl SetEntry<&Z> for MatZq {
     /// use std::str::FromStr;
     /// use qfall_math::traits::*;
     ///
-    /// let mut matrix = MatZq::new(5, 10, 7).unwrap();
+    /// let mut matrix = MatZq::new(5, 10, 7);
     /// let value = Z::from(5);
     /// matrix.set_entry(1, 1, &value).unwrap();
     /// ```
@@ -91,7 +91,7 @@ impl SetEntry<&Zq> for MatZq {
     /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
     ///
-    /// let mut matrix = MatZq::new(5, 10, 7).unwrap();
+    /// let mut matrix = MatZq::new(5, 10, 7);
     /// let value = Zq::from_str("5 mod 7").unwrap();
     /// matrix.set_entry(1, 1, &value).unwrap();
     /// ```
@@ -150,7 +150,7 @@ impl MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let mut mat1 = MatZq::new(2, 2, 3).unwrap();
+    /// let mut mat1 = MatZq::new(2, 2, 3);
     /// let mat2 = MatZq::from_str("[[1],[2]] mod 3").unwrap();
     /// mat1.set_column(1, &mat2, 0);
     /// ```
@@ -218,7 +218,7 @@ impl MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let mut mat1 = MatZq::new(2, 2, 3).unwrap();
+    /// let mut mat1 = MatZq::new(2, 2, 3);
     /// let mat2 = MatZq::from_str("[[1,2]] mod 3").unwrap();
     /// mat1.set_row(0, &mat2, 0);
     /// ```
@@ -284,7 +284,7 @@ impl MatZq {
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     ///
-    /// let mut matrix = MatZq::new(4, 3, 5).unwrap();
+    /// let mut matrix = MatZq::new(4, 3, 5);
     /// matrix.swap_entries(0, 0, 2, 1);
     /// ```
     ///
@@ -323,7 +323,7 @@ impl MatZq {
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     ///
-    /// let mut matrix = MatZq::new(4, 3, 5).unwrap();
+    /// let mut matrix = MatZq::new(4, 3, 5);
     /// matrix.swap_columns(0, 2);
     /// ```
     ///
@@ -364,7 +364,7 @@ impl MatZq {
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     ///
-    /// let mut matrix = MatZq::new(4, 3, 5).unwrap();
+    /// let mut matrix = MatZq::new(4, 3, 5);
     /// matrix.swap_rows(0, 2);
     /// ```
     ///
@@ -399,7 +399,7 @@ impl MatZq {
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     ///
-    /// let mut matrix = MatZq::new(4, 3, 5).unwrap();
+    /// let mut matrix = MatZq::new(4, 3, 5);
     /// matrix.reverse_columns();
     /// ```
     pub fn reverse_columns(&mut self) {
@@ -416,7 +416,7 @@ impl MatZq {
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     ///
-    /// let mut matrix = MatZq::new(4, 3, 5).unwrap();
+    /// let mut matrix = MatZq::new(4, 3, 5);
     /// matrix.reverse_rows();
     /// ```
     pub fn reverse_rows(&mut self) {
@@ -439,7 +439,7 @@ mod test_setter {
     /// Ensure that setting entries works with large numbers.
     #[test]
     fn max_int_positive() {
-        let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+        let mut matrix = MatZq::new(5, 10, u64::MAX);
         let value = Z::from(i64::MAX);
         matrix.set_entry(0, 0, value).unwrap();
 
@@ -451,7 +451,7 @@ mod test_setter {
     /// Ensure that setting entries works with large numbers (larger than [`i64`]).
     #[test]
     fn big_positive() {
-        let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+        let mut matrix = MatZq::new(5, 10, u64::MAX);
         let value = Z::from(u64::MAX - 1);
         matrix.set_entry(0, 0, value).unwrap();
 
@@ -463,7 +463,7 @@ mod test_setter {
     /// Ensure that setting entries works with large numbers.
     #[test]
     fn max_int_negative() {
-        let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+        let mut matrix = MatZq::new(5, 10, u64::MAX);
         let value = Z::from(-i64::MAX);
         matrix.set_entry(0, 0, value).unwrap();
 
@@ -475,7 +475,7 @@ mod test_setter {
     /// Ensure that setting entries works with large numbers (larger than [`i64`]).
     #[test]
     fn big_negative() {
-        let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+        let mut matrix = MatZq::new(5, 10, u64::MAX);
         let value = Z::from(-i64::MAX - 1);
         matrix.set_entry(0, 0, value).unwrap();
 
@@ -490,7 +490,7 @@ mod test_setter {
     /// Ensure that a wrong number of rows yields an Error.
     #[test]
     fn error_wrong_row() {
-        let mut matrix = MatZq::new(5, 10, 7).unwrap();
+        let mut matrix = MatZq::new(5, 10, 7);
 
         assert!(matrix.set_entry(5, 1, 3).is_err());
     }
@@ -498,7 +498,7 @@ mod test_setter {
     /// Ensure that a wrong number of columns yields an Error.
     #[test]
     fn error_wrong_column() {
-        let mut matrix = MatZq::new(5, 10, 7).unwrap();
+        let mut matrix = MatZq::new(5, 10, 7);
 
         assert!(matrix.set_entry(1, 100, 3).is_err());
     }
@@ -506,7 +506,7 @@ mod test_setter {
     /// Ensure that setting entries works with different types.
     #[test]
     fn diff_types() {
-        let mut matrix = MatZq::new(5, 10, 56).unwrap();
+        let mut matrix = MatZq::new(5, 10, 56);
 
         matrix.set_entry(0, 0, Z::default()).unwrap();
         matrix
@@ -522,7 +522,7 @@ mod test_setter {
     /// Ensure that value is correctly reduced.
     #[test]
     fn set_entry_reduce() {
-        let mut matrix = MatZq::new(5, 10, 3).unwrap();
+        let mut matrix = MatZq::new(5, 10, 3);
         matrix.set_entry(1, 1, Z::from(u64::MAX)).unwrap();
 
         let entry: Z = matrix.get_entry(1, 1).unwrap();
@@ -533,7 +533,7 @@ mod test_setter {
     /// Ensure that differing moduli result in an error.
     #[test]
     fn modulus_error() {
-        let mut matrix = MatZq::new(5, 10, 3).unwrap();
+        let mut matrix = MatZq::new(5, 10, 3);
         assert!(matrix
             .set_entry(1, 1, Zq::from_str("2 mod 5").unwrap())
             .is_err());
@@ -604,7 +604,7 @@ mod test_setter {
     /// Ensures that `set_column` returns an error if one of the specified columns is out of bounds
     #[test]
     fn column_out_of_bounds() {
-        let mut m1 = MatZq::new(5, 2, 17).unwrap();
+        let mut m1 = MatZq::new(5, 2, 17);
         let m2 = m1.clone();
 
         assert!(m1.set_column(-1, &m2, 0).is_err());
@@ -616,8 +616,8 @@ mod test_setter {
     /// Ensures that mismatching row dimensions result in an error
     #[test]
     fn column_mismatching_columns() {
-        let mut m1 = MatZq::new(5, 2, 17).unwrap();
-        let m2 = MatZq::new(2, 2, 17).unwrap();
+        let mut m1 = MatZq::new(5, 2, 17);
+        let m2 = MatZq::new(2, 2, 17);
 
         assert!(m1.set_column(0, &m2, 0).is_err());
         assert!(m1.set_column(1, &m2, 1).is_err());
@@ -626,8 +626,8 @@ mod test_setter {
     /// Ensures that mismatching moduli result in an error
     #[test]
     fn column_mismatching_moduli() {
-        let mut m1 = MatZq::new(3, 3, 19).unwrap();
-        let m2 = MatZq::new(3, 3, 17).unwrap();
+        let mut m1 = MatZq::new(3, 3, 19);
+        let m2 = MatZq::new(3, 3, 17);
 
         assert!(m1.set_column(0, &m2, 0).is_err());
     }
@@ -699,7 +699,7 @@ mod test_setter {
     /// Ensures that `set_row` returns an error if one of the specified rows is out of bounds
     #[test]
     fn row_out_of_bounds() {
-        let mut m1 = MatZq::new(5, 2, 17).unwrap();
+        let mut m1 = MatZq::new(5, 2, 17);
         let m2 = m1.clone();
 
         assert!(m1.set_row(-1, &m2, 0).is_err());
@@ -711,8 +711,8 @@ mod test_setter {
     /// Ensures that mismatching column dimensions result in an error
     #[test]
     fn row_mismatching_columns() {
-        let mut m1 = MatZq::new(3, 2, 17).unwrap();
-        let m2 = MatZq::new(3, 3, 17).unwrap();
+        let mut m1 = MatZq::new(3, 2, 17);
+        let m2 = MatZq::new(3, 3, 17);
 
         assert!(m1.set_row(0, &m2, 0).is_err());
         assert!(m1.set_row(1, &m2, 1).is_err());
@@ -721,8 +721,8 @@ mod test_setter {
     /// Ensures that mismatching moduli result in an error
     #[test]
     fn row_mismatching_moduli() {
-        let mut m1 = MatZq::new(3, 3, 19).unwrap();
-        let m2 = MatZq::new(3, 3, 17).unwrap();
+        let mut m1 = MatZq::new(3, 3, 19);
+        let m2 = MatZq::new(3, 3, 17);
 
         assert!(m1.set_row(0, &m2, 0).is_err());
     }
@@ -791,7 +791,7 @@ mod test_swaps {
     /// Ensures that `swap_entries` returns an error if one of the specified entries is out of bounds
     #[test]
     fn entries_out_of_bounds() {
-        let mut matrix = MatZq::new(5, 2, 5).unwrap();
+        let mut matrix = MatZq::new(5, 2, 5);
 
         assert!(matrix.swap_entries(-1, 0, 0, 0).is_err());
         assert!(matrix.swap_entries(0, -1, 0, 0).is_err());
@@ -866,7 +866,7 @@ mod test_swaps {
     /// Ensures that `swap_columns` returns an error if one of the specified columns is out of bounds
     #[test]
     fn column_out_of_bounds() {
-        let mut matrix = MatZq::new(5, 2, 5).unwrap();
+        let mut matrix = MatZq::new(5, 2, 5);
 
         assert!(matrix.swap_columns(-1, 0).is_err());
         assert!(matrix.swap_columns(0, -1).is_err());
@@ -937,7 +937,7 @@ mod test_swaps {
     /// Ensures that `swap_rows` returns an error if one of the specified rows is out of bounds
     #[test]
     fn row_out_of_bounds() {
-        let mut matrix = MatZq::new(2, 4, 5).unwrap();
+        let mut matrix = MatZq::new(2, 4, 5);
 
         assert!(matrix.swap_rows(-1, 0).is_err());
         assert!(matrix.swap_rows(0, -1).is_err());

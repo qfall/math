@@ -29,8 +29,7 @@ impl MatPolynomialRingZq {
     /// let transpose = poly_ring_mat.transpose();
     /// ```
     pub fn transpose(&self) -> Self {
-        let mut out =
-            Self::new(self.get_num_columns(), self.get_num_rows(), &self.modulus).unwrap();
+        let mut out = Self::new(self.get_num_columns(), self.get_num_rows(), &self.modulus);
         unsafe { fmpz_poly_mat_transpose(&mut out.matrix.matrix, &self.matrix.matrix) };
         out
     }

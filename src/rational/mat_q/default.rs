@@ -9,7 +9,7 @@
 //! Initialize a [`MatQ`] with common defaults, e.g., zero and identity.
 
 use super::MatQ;
-use crate::{error::MathError, utils::index::evaluate_indices};
+use crate::utils::index::evaluate_indices;
 use flint_sys::fmpq_mat::{fmpq_mat_init, fmpq_mat_one};
 use std::{fmt::Display, mem::MaybeUninit};
 
@@ -21,33 +21,25 @@ impl MatQ {
     /// - `num_rows`: number of rows the new matrix should have
     /// - `num_cols`: number of columns the new matrix should have
     ///
-    /// Returns a [`MatQ`] or an error, if the number of rows or columns is
-    /// less or equal to `0`.
+    /// Returns a new [`MatQ`] instance of the provided dimensions.
     ///
     /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
     ///
-    /// let matrix = MatQ::new(5, 10).unwrap();
+    /// let matrix = MatQ::new(5, 10);
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidMatrix`](MathError::InvalidMatrix)
-    /// if the number of rows or columns is `0`.
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    /// if the number of rows or columns is negative or it does not fit into an [`i64`].
+    /// # Panics ...
+    /// - if the number of rows or columns is negative, zero, or does not fit into an [`i64`].
     pub fn new(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
-    ) -> Result<Self, MathError> {
-        let (num_rows_i64, num_cols_i64) = evaluate_indices(num_rows, num_cols)?;
+    ) -> Self {
+        let (num_rows_i64, num_cols_i64) = evaluate_indices(num_rows, num_cols).unwrap();
 
         if num_rows_i64 == 0 || num_cols_i64 == 0 {
-            return Err(MathError::InvalidMatrix(format!(
-                "({},{})",
-                num_rows_i64, num_cols_i64,
-            )));
+            panic!("A matrix can not contain 0 rows or 0 columns");
         }
 
         let mut matrix = MaybeUninit::uninit();
@@ -55,9 +47,9 @@ impl MatQ {
             fmpq_mat_init(matrix.as_mut_ptr(), num_rows_i64, num_cols_i64);
 
             // Construct MatQ from previously initialized fmpq_mat
-            Ok(MatQ {
+            MatQ {
                 matrix: matrix.assume_init(),
-            })
+            }
         }
     }
 
@@ -74,22 +66,21 @@ impl MatQ {
     /// ```
     /// use qfall_math::rational::MatQ;
     ///
-    /// let matrix = MatQ::identity(2, 3).unwrap();
+    /// let matrix = MatQ::identity(2, 3);
     ///
-    /// let identity = MatQ::identity(10, 10).unwrap();
+    /// let identity = MatQ::identity(10, 10);
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix) or
-    /// [`OutOfBounds`](MathError::OutOfBounds) if the provided number of rows and columns
-    /// are not suited to create a matrix. For further information see [`MatQ::new`].
+    /// # Panics ...
+    /// - if the provided number of rows and columns are not suited to create a matrix.
+    /// For further information see [`MatQ::new`].
     pub fn identity(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
-    ) -> Result<Self, MathError> {
-        let mut out = MatQ::new(num_rows, num_cols)?;
+    ) -> Self {
+        let mut out = MatQ::new(num_rows, num_cols);
         unsafe { fmpq_mat_one(&mut out.matrix) };
-        Ok(out)
+        out
     }
 }
 
@@ -100,21 +91,22 @@ mod test_new {
     /// Ensure that initialization works.
     #[test]
     fn initialization() {
-        assert!(MatQ::new(2, 2).is_ok());
+        let _ = MatQ::new(2, 2);
     }
 
-    /// Ensure that a new zero matrix fails with `0` as input.
+    /// Ensure that a new zero matrix fails with `0` as `num_cols`.
+    #[should_panic]
     #[test]
-    fn error_zero() {
-        let matrix1 = MatQ::new(1, 0);
-        let matrix2 = MatQ::new(0, 1);
-        let matrix3 = MatQ::new(0, 0);
-
-        assert!(matrix1.is_err());
-        assert!(matrix2.is_err());
-        assert!(matrix3.is_err());
+    fn error_zero_num_cols() {
+        let _ = MatQ::new(1, 0);
     }
-    // TODO add test for `0` entries
+
+    /// Ensure that a new zero matrix fails with `0` as `num_rows`.
+    #[should_panic]
+    #[test]
+    fn error_zero_num_rows() {
+        let _ = MatQ::new(0, 1);
+    }
 }
 
 #[cfg(test)]
@@ -127,7 +119,7 @@ mod test_set_one {
     /// Tests if an identity matrix is set from a zero matrix.
     #[test]
     fn identity() {
-        let matrix = MatQ::identity(10, 10).unwrap();
+        let matrix = MatQ::identity(10, 10);
 
         for i in 0..10 {
             for j in 0..10 {
@@ -143,7 +135,7 @@ mod test_set_one {
     /// Tests if function works for a non-square matrix
     #[test]
     fn non_square_works() {
-        let matrix = MatQ::identity(10, 7).unwrap();
+        let matrix = MatQ::identity(10, 7);
 
         for i in 0..10 {
             for j in 0..7 {
@@ -155,7 +147,7 @@ mod test_set_one {
             }
         }
 
-        let matrix = MatQ::identity(7, 10).unwrap();
+        let matrix = MatQ::identity(7, 10);
 
         for i in 0..7 {
             for j in 0..10 {

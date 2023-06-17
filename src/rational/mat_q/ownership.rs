@@ -29,7 +29,7 @@ impl Clone for MatQ {
     /// let b = a.clone();
     /// ```
     fn clone(&self) -> Self {
-        let mut mat = MatQ::new(self.get_num_rows(), self.get_num_columns()).unwrap();
+        let mut mat = MatQ::new(self.get_num_rows(), self.get_num_columns());
         unsafe {
             fmpq_mat_set(&mut mat.matrix, &self.matrix);
         }

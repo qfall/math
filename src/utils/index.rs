@@ -174,14 +174,14 @@ mod test_eval_indices {
     /// Tests that negative indices are not accepted
     #[test]
     fn is_err_negative() {
-        let matrix = MatZ::new(3, 3).unwrap();
+        let matrix = MatZ::new(3, 3);
         assert!(evaluate_indices_for_matrix(&matrix, i32::MIN, 3).is_err())
     }
 
     /// Tests that the function can be called with several types
     #[test]
     fn is_ok_several_types() {
-        let matrix = MatZ::new(i16::MAX, u8::MAX).unwrap();
+        let matrix = MatZ::new(i16::MAX, u8::MAX);
 
         assert!(evaluate_indices_for_matrix(&matrix, 3i8, 0).is_ok());
         assert!(evaluate_indices_for_matrix(&matrix, 3i16, 0).is_ok());
@@ -206,7 +206,7 @@ mod test_eval_indices {
     /// are not accepted
     #[test]
     fn does_not_fit() {
-        let matrix = MatZ::new(3, 3).unwrap();
+        let matrix = MatZ::new(3, 3);
 
         assert!(evaluate_indices_for_matrix(&matrix, u64::MAX, 0).is_err());
         assert!(evaluate_indices_for_matrix(&matrix, 0, u64::MAX).is_err());

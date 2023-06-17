@@ -48,7 +48,7 @@ impl SetEntry<&Q> for MatQ {
     /// use std::str::FromStr;
     /// use qfall_math::traits::*;
     ///
-    /// let mut matrix = MatQ::new(5, 10).unwrap();
+    /// let mut matrix = MatQ::new(5, 10);
     /// let value = Q::from_str("5/2").unwrap();
     /// matrix.set_entry(1, 1, &value).unwrap();
     /// ```
@@ -99,7 +99,7 @@ impl MatQ {
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let mut mat1 = MatQ::new(2, 2).unwrap();
+    /// let mut mat1 = MatQ::new(2, 2);
     /// let mat2 = MatQ::from_str("[[1],[2]]").unwrap();
     /// mat1.set_column(1, &mat2, 0);
     /// ```
@@ -157,7 +157,7 @@ impl MatQ {
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let mut mat1 = MatQ::new(2, 2).unwrap();
+    /// let mut mat1 = MatQ::new(2, 2);
     /// let mat2 = MatQ::from_str("[[1,2]]").unwrap();
     /// mat1.set_row(0, &mat2, 0);
     /// ```
@@ -213,7 +213,7 @@ impl MatQ {
     /// ```
     /// use qfall_math::rational::MatQ;
     ///
-    /// let mut matrix = MatQ::new(4, 3).unwrap();
+    /// let mut matrix = MatQ::new(4, 3);
     /// matrix.swap_entries(0, 0, 2, 1);
     /// ```
     ///
@@ -252,7 +252,7 @@ impl MatQ {
     /// ```
     /// use qfall_math::rational::MatQ;
     ///
-    /// let mut matrix = MatQ::new(4, 3).unwrap();
+    /// let mut matrix = MatQ::new(4, 3);
     /// matrix.swap_columns(0, 2);
     /// ```
     ///
@@ -293,7 +293,7 @@ impl MatQ {
     /// ```
     /// use qfall_math::rational::MatQ;
     ///
-    /// let mut matrix = MatQ::new(4, 3).unwrap();
+    /// let mut matrix = MatQ::new(4, 3);
     /// matrix.swap_rows(0, 2);
     /// ```
     ///
@@ -328,7 +328,7 @@ impl MatQ {
     /// ```
     /// use qfall_math::rational::MatQ;
     ///
-    /// let mut matrix = MatQ::new(4, 3).unwrap();
+    /// let mut matrix = MatQ::new(4, 3);
     /// matrix.reverse_columns();
     /// ```
     pub fn reverse_columns(&mut self) {
@@ -345,7 +345,7 @@ impl MatQ {
     /// ```
     /// use qfall_math::rational::MatQ;
     ///
-    /// let mut matrix = MatQ::new(4, 3).unwrap();
+    /// let mut matrix = MatQ::new(4, 3);
     /// matrix.reverse_rows();
     /// ```
     pub fn reverse_rows(&mut self) {
@@ -368,7 +368,7 @@ mod test_setter {
     /// Ensure that setting entries works with standard numbers.
     #[test]
     fn standard_value() {
-        let mut matrix = MatQ::new(5, 10).unwrap();
+        let mut matrix = MatQ::new(5, 10);
         let value = Q::from(869);
         matrix.set_entry(4, 7, &value).unwrap();
 
@@ -380,7 +380,7 @@ mod test_setter {
     /// Ensure that setting entries works with large large numerators and denominators.
     #[test]
     fn max_int_positive() {
-        let mut matrix = MatQ::new(5, 10).unwrap();
+        let mut matrix = MatQ::new(5, 10);
         let value1 = Q::from_str(&format!("{}/1", i64::MAX)).unwrap();
         let value2 = Q::from_str(&format!("1/{}", i64::MAX)).unwrap();
         matrix.set_entry(0, 0, value1).unwrap();
@@ -396,7 +396,7 @@ mod test_setter {
     /// Ensure that setting entries works with large numerators and denominators (larger than [`i64`]).
     #[test]
     fn big_positive() {
-        let mut matrix = MatQ::new(5, 10).unwrap();
+        let mut matrix = MatQ::new(5, 10);
         let value1 = Q::from_str(&format!("{}", u64::MAX)).unwrap();
         let value2 = Q::from_str(&format!("1/{}", u64::MAX)).unwrap();
         matrix.set_entry(0, 0, value1).unwrap();
@@ -412,7 +412,7 @@ mod test_setter {
     /// Ensure that setting entries works with large negative numerators and denominators.
     #[test]
     fn max_int_negative() {
-        let mut matrix = MatQ::new(5, 10).unwrap();
+        let mut matrix = MatQ::new(5, 10);
         let value1 = Q::from_str(&format!("{}", i64::MIN)).unwrap();
         let value2 = Q::from_str(&format!("1/{}", i64::MIN)).unwrap();
         matrix.set_entry(0, 0, value1).unwrap();
@@ -428,7 +428,7 @@ mod test_setter {
     /// Ensure that setting entries works with large negative numerators and denominators (larger than [`i64`]).
     #[test]
     fn big_negative() {
-        let mut matrix = MatQ::new(5, 10).unwrap();
+        let mut matrix = MatQ::new(5, 10);
         let value1 = format!("-{}", u64::MAX);
         let value2 = format!("1/-{}", u64::MAX);
         matrix
@@ -448,7 +448,7 @@ mod test_setter {
     /// Ensure that setting entries at (0,0) works.
     #[test]
     fn getting_at_zero() {
-        let mut matrix = MatQ::new(5, 10).unwrap();
+        let mut matrix = MatQ::new(5, 10);
         let value = Q::from_str(&format!("{}", i64::MIN)).unwrap();
         matrix.set_entry(0, 0, value).unwrap();
 
@@ -460,7 +460,7 @@ mod test_setter {
     /// Ensure that a wrong number of rows yields an Error.
     #[test]
     fn error_wrong_row() {
-        let matrix = MatQ::new(5, 10).unwrap();
+        let matrix = MatQ::new(5, 10);
 
         assert!(matrix.get_entry(5, 1).is_err());
     }
@@ -468,7 +468,7 @@ mod test_setter {
     /// Ensure that a wrong number of columns yields an Error.
     #[test]
     fn error_wrong_column() {
-        let matrix = MatQ::new(5, 10).unwrap();
+        let matrix = MatQ::new(5, 10);
 
         assert!(matrix.get_entry(1, 100).is_err());
     }
@@ -529,7 +529,7 @@ mod test_setter {
     /// Ensures that `set_column` returns an error if one of the specified columns is out of bounds
     #[test]
     fn column_out_of_bounds() {
-        let mut m1 = MatQ::new(5, 2).unwrap();
+        let mut m1 = MatQ::new(5, 2);
         let m2 = m1.clone();
 
         assert!(m1.set_column(-1, &m2, 0).is_err());
@@ -541,8 +541,8 @@ mod test_setter {
     /// Ensures that mismatching row dimensions result in an error
     #[test]
     fn column_mismatching_columns() {
-        let mut m1 = MatQ::new(5, 2).unwrap();
-        let m2 = MatQ::new(2, 2).unwrap();
+        let mut m1 = MatQ::new(5, 2);
+        let m2 = MatQ::new(2, 2);
 
         assert!(m1.set_column(0, &m2, 0).is_err());
         assert!(m1.set_column(1, &m2, 1).is_err());
@@ -607,7 +607,7 @@ mod test_setter {
     /// Ensures that `set_row` returns an error if one of the specified rows is out of bounds
     #[test]
     fn row_out_of_bounds() {
-        let mut m1 = MatQ::new(5, 2).unwrap();
+        let mut m1 = MatQ::new(5, 2);
         let m2 = m1.clone();
 
         assert!(m1.set_row(-1, &m2, 0).is_err());
@@ -619,8 +619,8 @@ mod test_setter {
     /// Ensures that mismatching column dimensions result in an error
     #[test]
     fn row_mismatching_columns() {
-        let mut m1 = MatQ::new(3, 2).unwrap();
-        let m2 = MatQ::new(3, 3).unwrap();
+        let mut m1 = MatQ::new(3, 2);
+        let m2 = MatQ::new(3, 3);
 
         assert!(m1.set_row(0, &m2, 0).is_err());
         assert!(m1.set_row(1, &m2, 1).is_err());
@@ -687,7 +687,7 @@ mod test_swaps {
     /// Ensures that `swap_entries` returns an error if one of the specified entries is out of bounds
     #[test]
     fn entries_out_of_bounds() {
-        let mut matrix = MatQ::new(5, 2).unwrap();
+        let mut matrix = MatQ::new(5, 2);
 
         assert!(matrix.swap_entries(-1, 0, 0, 0).is_err());
         assert!(matrix.swap_entries(0, -1, 0, 0).is_err());
@@ -753,7 +753,7 @@ mod test_swaps {
     /// Ensures that `swap_columns` returns an error if one of the specified columns is out of bounds
     #[test]
     fn column_out_of_bounds() {
-        let mut matrix = MatQ::new(5, 2).unwrap();
+        let mut matrix = MatQ::new(5, 2);
 
         assert!(matrix.swap_columns(-1, 0).is_err());
         assert!(matrix.swap_columns(0, -1).is_err());
@@ -816,7 +816,7 @@ mod test_swaps {
     /// Ensures that `swap_rows` returns an error if one of the specified rows is out of bounds
     #[test]
     fn row_out_of_bounds() {
-        let mut matrix = MatQ::new(2, 4).unwrap();
+        let mut matrix = MatQ::new(2, 4);
 
         assert!(matrix.swap_rows(-1, 0).is_err());
         assert!(matrix.swap_rows(0, -1).is_err());

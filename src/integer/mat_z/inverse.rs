@@ -36,7 +36,7 @@ impl MatZ {
 
         // check if determinant is not `0`, create new matrix to store inverted result in
         // TODO improve runtime
-        let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns()).unwrap();
+        let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns());
         match unsafe { fmpq_mat_inv(&mut out.matrix, &MatQ::from(self).matrix) } {
             0 => None,
             _ => Some(out),

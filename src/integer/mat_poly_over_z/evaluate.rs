@@ -32,7 +32,7 @@ impl Evaluate<&Z, MatZ> for MatPolyOverZ {
     /// ```
     fn evaluate(&self, value: &Z) -> MatZ {
         // we can unwrap since we know, that the dimensions of our current matrix are positive
-        let mut res = MatZ::new(self.get_num_rows(), self.get_num_columns()).unwrap();
+        let mut res = MatZ::new(self.get_num_rows(), self.get_num_columns());
 
         unsafe { fmpz_poly_mat_evaluate_fmpz(&mut res.matrix, &self.matrix, &value.value) };
 

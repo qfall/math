@@ -41,13 +41,12 @@ impl MatZ {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidMatrix`](MathError::InvalidMatrix)
-    /// if the number of rows or columns is `0`.
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    /// if the number of rows or columns is negative or it does not fit into an [`i64`].
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
     /// if the `n <= 1` or `s <= 0`.
+    ///
+    /// # Panics ...
+    /// - if the provided number of rows and columns are not suited to create a matrix.
+    /// For further information see [`MatZ::new`].
     pub fn sample_discrete_gauss<T1, T2, T3>(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
@@ -60,7 +59,7 @@ impl MatZ {
         T2: Into<Q>,
         T3: Into<Q>,
     {
-        let mut out = Self::new(num_rows, num_cols)?;
+        let mut out = Self::new(num_rows, num_cols);
         let n: Z = n.into();
         let center: Q = center.into();
         let s: Q = s.into();
@@ -92,8 +91,8 @@ impl MatZ {
     /// # Example
     /// ```
     /// use qfall_math::{integer::{MatZ, Z}, rational::{MatQ, Q}};
-    /// let basis = MatZ::identity(5, 5).unwrap();
-    /// let center = MatQ::new(5, 1).unwrap();
+    /// let basis = MatZ::identity(5, 5);
+    /// let center = MatQ::new(5, 1);
     ///
     /// let sample = MatZ::sample_d(&basis, 1024, &center, 1.25f32).unwrap();
     /// ```
@@ -174,9 +173,9 @@ mod test_sample_d {
     /// or Into<Q>, i.e. u8, i16, f32, Z, Q, ...
     #[test]
     fn availability() {
-        let basis = MatZ::identity(5, 5).unwrap();
+        let basis = MatZ::identity(5, 5);
         let n = Z::from(1024);
-        let center = MatQ::new(5, 1).unwrap();
+        let center = MatQ::new(5, 1);
         let s = Q::ONE;
 
         let _ = MatZ::sample_d(&basis, &16u16, &center, &1u16);

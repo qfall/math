@@ -84,7 +84,7 @@ impl MatZ {
             )));
         }
 
-        let mut new = MatZ::new(self.get_num_rows(), other.get_num_columns()).unwrap();
+        let mut new = MatZ::new(self.get_num_rows(), other.get_num_columns());
         unsafe { fmpz_mat_mul(&mut new.matrix, &self.matrix, &other.matrix) };
         Ok(new)
     }
@@ -126,7 +126,7 @@ mod test_mul {
     fn large_entries() {
         let mat = MatZ::from_str(&format!("[[{},1],[0,2]]", i64::MAX)).unwrap();
         let vec = MatZ::from_str(&format!("[[{}],[0]]", i64::MAX)).unwrap();
-        let mut cmp = MatZ::new(2, 1).unwrap();
+        let mut cmp = MatZ::new(2, 1);
         let max: Z = i64::MAX.into();
         cmp.set_entry(0, 0, &(&max * &max)).unwrap();
 

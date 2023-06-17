@@ -75,9 +75,9 @@ mod test_is_identity {
 
         assert!(ident.is_identity());
         assert!(nosquare.is_identity());
-        assert!(MatZ::identity(1, 1).unwrap().is_identity());
-        assert!(MatZ::identity(2, 4).unwrap().is_identity());
-        assert!(MatZ::identity(4, 4).unwrap().is_identity());
+        assert!(MatZ::identity(1, 1).is_identity());
+        assert!(MatZ::identity(2, 4).is_identity());
+        assert!(MatZ::identity(4, 4).is_identity());
     }
 
     /// Ensure that is_identity returns `false` for non-identity matrices.

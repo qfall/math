@@ -31,8 +31,8 @@ impl Concatenate for &MatZ {
     /// use qfall_math::traits::*;
     /// use qfall_math::integer::MatZ;
     ///
-    /// let mat_1 = MatZ::new(13, 5).unwrap();
-    /// let mat_2 = MatZ::new(17, 5).unwrap();
+    /// let mat_1 = MatZ::new(13, 5);
+    /// let mat_2 = MatZ::new(17, 5);
     ///
     /// let mat_vert = mat_1.concat_vertical(&mat_2).unwrap();
     /// ```
@@ -54,8 +54,7 @@ impl Concatenate for &MatZ {
         let mut out = MatZ::new(
             self.get_num_rows() + other.get_num_rows(),
             self.get_num_columns(),
-        )
-        .unwrap();
+        );
         unsafe {
             fmpz_mat_concat_vertical(&mut out.matrix, &self.matrix, &other.matrix);
         }
@@ -75,8 +74,8 @@ impl Concatenate for &MatZ {
     /// use qfall_math::traits::*;
     /// use qfall_math::integer::MatZ;
     ///
-    /// let mat_1 = MatZ::new(17, 5).unwrap();
-    /// let mat_2 = MatZ::new(17, 6).unwrap();
+    /// let mat_1 = MatZ::new(17, 5);
+    /// let mat_2 = MatZ::new(17, 6);
     ///
     /// let mat_vert = mat_1.concat_horizontal(&mat_2).unwrap();
     /// ```
@@ -98,8 +97,7 @@ impl Concatenate for &MatZ {
         let mut out = MatZ::new(
             self.get_num_rows(),
             self.get_num_columns() + other.get_num_columns(),
-        )
-        .unwrap();
+        );
         unsafe {
             fmpz_mat_concat_horizontal(&mut out.matrix, &self.matrix, &other.matrix);
         }
@@ -119,9 +117,9 @@ mod test_concatenate {
     /// if the dimensions mismatch
     #[test]
     fn dimensions_vertical() {
-        let mat_1 = MatZ::new(13, 5).unwrap();
-        let mat_2 = MatZ::new(17, 5).unwrap();
-        let mat_3 = MatZ::new(17, 6).unwrap();
+        let mat_1 = MatZ::new(13, 5);
+        let mat_2 = MatZ::new(17, 5);
+        let mat_3 = MatZ::new(17, 6);
 
         let mat_vert = mat_1.concat_vertical(&mat_2).unwrap();
 
@@ -134,9 +132,9 @@ mod test_concatenate {
     /// if the dimensions mismatch
     #[test]
     fn dimensions_horizontal() {
-        let mat_1 = MatZ::new(13, 5).unwrap();
-        let mat_2 = MatZ::new(17, 5).unwrap();
-        let mat_3 = MatZ::new(17, 6).unwrap();
+        let mat_1 = MatZ::new(13, 5);
+        let mat_2 = MatZ::new(17, 5);
+        let mat_3 = MatZ::new(17, 6);
 
         let mat_vert = mat_2.concat_horizontal(&mat_3).unwrap();
 

@@ -205,7 +205,7 @@ mod test_get_entry {
     #[test]
     fn get_edges() {
         let modulus = ModulusPolynomialRingZq::from_str("2  42 17 mod 89").unwrap();
-        let matrix = MatPolynomialRingZq::new(5, 10, &modulus).unwrap();
+        let matrix = MatPolynomialRingZq::new(5, 10, &modulus);
 
         let entry1 = matrix.get_entry(0, 0).unwrap();
         let entry2 = matrix.get_entry(4, 9).unwrap();
@@ -239,7 +239,7 @@ mod test_get_entry {
         let modulus =
             ModulusPolynomialRingZq::from_str(&format!("5  42 17 1 2 3 mod {}", BITPRIME64))
                 .unwrap();
-        let matrix = MatPolynomialRingZq::new(5, 10, &modulus).unwrap();
+        let matrix = MatPolynomialRingZq::new(5, 10, &modulus);
         let entry1: Result<PolyOverZ, MathError> = matrix.get_entry(5, 1);
         let entry2: Result<PolyOverZ, MathError> = matrix.get_entry(5, 10);
 
@@ -253,7 +253,7 @@ mod test_get_entry {
         let modulus =
             ModulusPolynomialRingZq::from_str(&format!("5  42 17 1 2 3 mod {}", BITPRIME64))
                 .unwrap();
-        let matrix = MatPolynomialRingZq::new(5, 10, &modulus).unwrap();
+        let matrix = MatPolynomialRingZq::new(5, 10, &modulus);
         let entry: Result<PolyOverZ, MathError> = matrix.get_entry(1, 100);
 
         assert!(entry.is_err());
@@ -265,7 +265,7 @@ mod test_get_entry {
         let modulus =
             ModulusPolynomialRingZq::from_str(&format!("5  42 17 1 2 3 mod {}", BITPRIME64))
                 .unwrap();
-        let matrix = MatPolynomialRingZq::new(5, 10, &modulus).unwrap();
+        let matrix = MatPolynomialRingZq::new(5, 10, &modulus);
 
         let _: PolyOverZ = matrix.get_entry(0, 0).unwrap();
         let _: PolynomialRingZq = matrix.get_entry(0, 0).unwrap();
@@ -284,7 +284,7 @@ mod test_get_num {
     #[test]
     fn num_rows() {
         let modulus = ModulusPolynomialRingZq::from_str("2  42 17 mod 89").unwrap();
-        let matrix = MatPolynomialRingZq::new(5, 10, &modulus).unwrap();
+        let matrix = MatPolynomialRingZq::new(5, 10, &modulus);
 
         assert_eq!(matrix.get_num_rows(), 5);
     }
@@ -293,7 +293,7 @@ mod test_get_num {
     #[test]
     fn num_columns() {
         let modulus = ModulusPolynomialRingZq::from_str("2  42 17 mod 89").unwrap();
-        let matrix = MatPolynomialRingZq::new(5, 10, &modulus).unwrap();
+        let matrix = MatPolynomialRingZq::new(5, 10, &modulus);
 
         assert_eq!(matrix.get_num_columns(), 10);
     }

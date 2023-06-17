@@ -89,7 +89,7 @@ impl Mul<&MatZ> for &MatQ {
             panic!("Tried to multiply matrices with mismatching matrix dimensions.");
         }
 
-        let mut new = MatQ::new(self.get_num_rows(), other.get_num_columns()).unwrap();
+        let mut new = MatQ::new(self.get_num_rows(), other.get_num_columns());
         unsafe { fmpq_mat_mul_fmpz_mat(&mut new.matrix, &self.matrix, &other.matrix) };
         new
     }
@@ -136,7 +136,7 @@ impl MatQ {
             )));
         }
 
-        let mut new = MatQ::new(self.get_num_rows(), other.get_num_columns()).unwrap();
+        let mut new = MatQ::new(self.get_num_rows(), other.get_num_columns());
         unsafe { fmpq_mat_mul(&mut new.matrix, &self.matrix, &other.matrix) };
         Ok(new)
     }
@@ -175,7 +175,7 @@ mod test_mul {
     fn large_entries() {
         let mat = MatQ::from_str(&format!("[[{},1],[0,2]]", i64::MAX)).unwrap();
         let vec = MatQ::from_str(&format!("[[1/{}],[0]]", i64::MAX)).unwrap();
-        let mut cmp = MatQ::new(2, 1).unwrap();
+        let mut cmp = MatQ::new(2, 1);
         let max: Q = Q::from_str(format!("{}", i64::MAX).as_str()).unwrap();
         cmp.set_entry(
             0,
@@ -234,7 +234,7 @@ mod test_mul_matz {
     fn large_entries() {
         let mat = MatQ::from_str(&format!("[[{},1],[0,2/{}]]", u64::MAX, u64::MAX)).unwrap();
         let vec = MatZ::from_str(&format!("[[{}],[0]]", u64::MAX)).unwrap();
-        let mut cmp = MatQ::new(2, 1).unwrap();
+        let mut cmp = MatQ::new(2, 1);
         let max: Q = u64::MAX.into();
         cmp.set_entry(0, 0, &(&max * &max)).unwrap();
 
