@@ -142,14 +142,12 @@ mod test_solve {
             10,
             10 * 2 * 50,
             &Modulus::try_from(&Z::from(2).pow(50).unwrap()).unwrap(),
-        )
-        .unwrap();
+        );
         let y = MatZq::sample_uniform(
             10,
             1,
             &Modulus::try_from(&Z::from(2).pow(50).unwrap()).unwrap(),
-        )
-        .unwrap();
+        );
 
         let x = mat.solve_gaussian_elimination(&y).unwrap();
 

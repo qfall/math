@@ -21,8 +21,7 @@ impl MatPolynomialRingZq {
     /// - `num_cols`: number of columns the new matrix should have
     /// - `modulus`: the common modulus of the matrix entries
     ///
-    /// Returns a [`MatPolynomialRingZq`] or an error, if the number of rows or columns is
-    /// less than `1`.
+    /// Returns a new [`MatPolynomialRingZq`] instance of the provided dimensions..
     ///
     /// # Examples
     /// ```

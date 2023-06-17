@@ -21,8 +21,7 @@ impl MatZ {
     /// - `num_rows`: number of rows the new matrix should have
     /// - `num_cols`: number of columns the new matrix should have
     ///
-    /// Returns a [`MatZ`] or an error, if the number of rows or columns is
-    /// less or equal to `0`.
+    /// Returns a new [`MatZ`] instance of the provided dimensions.
     ///
     /// # Examples
     /// ```

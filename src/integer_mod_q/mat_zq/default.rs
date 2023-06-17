@@ -22,8 +22,7 @@ impl MatZq {
     /// - `num_cols`: number of columns the new matrix should have
     /// - `modulus`: the common modulus of the matrix entries
     ///
-    /// Returns a [`MatZq`] or an error, if the number of rows or columns is
-    /// less than `1` or the modulus is less than `1`.
+    /// Returns a new [`MatZq`] instance of the provided dimensions.
     ///
     /// # Examples
     /// ```

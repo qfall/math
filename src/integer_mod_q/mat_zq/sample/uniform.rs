@@ -9,7 +9,6 @@
 //! This module contains sampling algorithms for the uniform distributions.
 
 use crate::{
-    error::MathError,
     integer::Z,
     integer_mod_q::MatZq,
     traits::{GetNumColumns, GetNumRows, SetEntry},
@@ -32,42 +31,34 @@ impl MatZq {
     /// over which is sampled
     ///
     /// Returns a new [`MatZq`] instance with entries chosen
-    /// uniformly at random in `[0, modulus)` or a [`MathError`]
-    /// if the dimensions of the matrix or the modulus were chosen too small.
+    /// uniformly at random in `[0, modulus)`.
     ///
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     ///
-    /// let matrix = MatZq::sample_uniform(3, 3, &17).unwrap();
+    /// let matrix = MatZq::sample_uniform(3, 3, &17);
     /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    /// if the given `modulus` is smaller than or equal to `1`.
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns or the modulus are not suited to create a matrix.
     /// For further information see [`MatZq::new`].
-    pub fn sample_uniform<T>(
+    pub fn sample_uniform(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
-        modulus: &T,
-    ) -> Result<Self, MathError>
-    where
-        T: Into<Z> + Clone,
-    {
-        let modulus: Z = modulus.clone().into();
+        modulus: impl Into<Z>,
+    ) -> Self {
+        let modulus: Z = modulus.into();
         let mut matrix = MatZq::new(num_rows, num_cols, modulus.clone());
 
         for row in 0..matrix.get_num_rows() {
             for col in 0..matrix.get_num_columns() {
-                let sample = sample_uniform_rejection(&modulus)?;
+                let sample = sample_uniform_rejection(&modulus).unwrap();
                 matrix.set_entry(row, col, sample).unwrap();
             }
         }
 
-        Ok(matrix)
+        matrix
     }
 }
 
@@ -84,7 +75,7 @@ mod test_sample_uniform {
     #[test]
     fn boundaries_kept_small() {
         for _ in 0..32 {
-            let matrix = MatZq::sample_uniform(1, 1, &17).unwrap();
+            let matrix = MatZq::sample_uniform(1, 1, &17);
             let sample = matrix.get_entry(0, 0).unwrap();
             assert!(Z::ZERO <= sample);
             assert!(sample < Z::from(17));
@@ -96,7 +87,7 @@ mod test_sample_uniform {
     fn boundaries_kept_large() {
         let modulus = Z::from(u64::MAX);
         for _ in 0..256 {
-            let matrix = MatZq::sample_uniform(1, 1, &modulus).unwrap();
+            let matrix = MatZq::sample_uniform(1, 1, &modulus);
             let sample = matrix.get_entry(0, 0).unwrap();
             assert!(Z::ZERO <= sample);
             assert!(sample < modulus);
@@ -104,7 +95,7 @@ mod test_sample_uniform {
     }
 
     /// Checks whether matrices with at least one dimension chosen smaller than `1`
-    /// or too big for an [`i64`] results in an error.
+    /// or too big for an [`i64`] results in a panic.
     #[should_panic]
     #[test]
     fn false_size() {
@@ -113,7 +104,7 @@ mod test_sample_uniform {
         let _ = MatZq::sample_uniform(0, 3, &modulus);
     }
 
-    /// Checks whether providing an invalid interval/ modulus results in an error.
+    /// Checks whether providing an invalid interval/ modulus results in a panic.
     #[should_panic]
     #[test]
     fn invalid_modulus() {
@@ -145,10 +136,10 @@ mod test_sample_uniform {
     fn matrix_size() {
         let modulus = Z::from(15);
 
-        let mat_0 = MatZq::sample_uniform(3, 3, &modulus).unwrap();
-        let mat_1 = MatZq::sample_uniform(4, 1, &modulus).unwrap();
-        let mat_2 = MatZq::sample_uniform(1, 5, &modulus).unwrap();
-        let mat_3 = MatZq::sample_uniform(15, 20, &modulus).unwrap();
+        let mat_0 = MatZq::sample_uniform(3, 3, &modulus);
+        let mat_1 = MatZq::sample_uniform(4, 1, &modulus);
+        let mat_2 = MatZq::sample_uniform(1, 5, &modulus);
+        let mat_3 = MatZq::sample_uniform(15, 20, &modulus);
 
         assert_eq!(3, mat_0.get_num_rows());
         assert_eq!(3, mat_0.get_num_columns());

@@ -21,8 +21,7 @@ impl MatPolyOverZ {
     /// - `num_rows`: number of rows the new matrix should have
     /// - `num_cols`: number of columns the new matrix should have
     ///
-    /// Returns a [`MatPolyOverZ`] or an error, if the number of rows or columns is
-    /// less or equal to `0`.
+    /// Returns a new [`MatPolyOverZ`] instance of the provided dimensions.
     ///
     /// # Examples
     /// ```
