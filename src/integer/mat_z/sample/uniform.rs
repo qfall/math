@@ -111,6 +111,17 @@ mod test_sample_uniform {
         }
     }
 
+    /// Checks whether matrices with at least one dimension chosen smaller than `1`
+    /// or too big for an [`i64`] results in an error.
+    #[should_panic]
+    #[test]
+    fn false_size() {
+        let lower_bound = Z::from(-15);
+        let upper_bound = Z::from(15);
+
+        let _ = MatZ::sample_uniform(0, 3, &lower_bound, &upper_bound);
+    }
+
     /// Checks whether providing an invalid interval results in an error.
     #[test]
     fn invalid_interval() {

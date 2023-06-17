@@ -103,6 +103,16 @@ mod test_sample_uniform {
         }
     }
 
+    /// Checks whether matrices with at least one dimension chosen smaller than `1`
+    /// or too big for an [`i64`] results in an error.
+    #[should_panic]
+    #[test]
+    fn false_size() {
+        let modulus = Z::from(15);
+
+        let _ = MatZq::sample_uniform(0, 3, &modulus);
+    }
+
     /// Checks whether providing an invalid interval/ modulus results in an error.
     #[should_panic]
     #[test]
