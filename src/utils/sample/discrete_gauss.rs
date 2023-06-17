@@ -185,7 +185,12 @@ pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ
     }
 
     // we know that norm_eucl_sqrd does not output errors for column vectors => we can unwrap
-    let basis = basis.sort_by_column(MatZ::norm_eucl_sqrd).unwrap();
+    // if basis is identity, there's no need to sort => better performance for common case
+    let basis = if basis.is_identity() {
+        basis.to_owned()
+    } else {
+        basis.sort_by_column(MatZ::norm_eucl_sqrd).unwrap()
+    };
     // we removed reversed ordering from the implementation of the challenge phase
     // as it does not seem to impact the length of the sampled vectors
     // and the paper states that the basis should be ordered, but not in which fashion.
