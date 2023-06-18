@@ -45,7 +45,7 @@ impl Zq {
         let modulus: Z = modulus.clone().into();
 
         let random = sample_uniform_rejection(&modulus)?;
-        Zq::try_from((random, modulus))
+        Ok(Zq::from((random, modulus)))
     }
 }
 

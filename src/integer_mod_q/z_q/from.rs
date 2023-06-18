@@ -145,12 +145,10 @@ impl Zq {
     }
 }
 
-impl<IntegerValue: Into<Z>, IntegerModulus: Into<Z>> TryFrom<(IntegerValue, IntegerModulus)>
+impl<IntegerValue: Into<Z>, IntegerModulus: Into<Modulus>> From<(IntegerValue, IntegerModulus)>
     for Zq
 {
-    type Error = MathError;
-    /// Implements the [`TryFrom`] trait. It is used to create [`Zq`] from a tuple
-    /// with two values that can be converted into [`Z`].
+    /// Create [`Zq`] from a tuple with the values and the modulus.
     ///
     /// Parameters:
     /// - `value_modulus_tuple` is a tuple of integers `(value, modulus)`
@@ -160,29 +158,24 @@ impl<IntegerValue: Into<Z>, IntegerModulus: Into<Z>> TryFrom<(IntegerValue, Inte
     ///
     /// # Examples
     /// ```
-    /// # use qfall_math::error::MathError;
-    /// use qfall_math::integer::Z;
     /// use qfall_math::integer_mod_q::Zq;
+    /// use qfall_math::integer::Z;
     ///
-    /// let value_a: Z = Z::from(42);
-    /// let value_b: u64 = 1337+42;
-    /// let modulus: i32 = 1337;
+    /// let answer_a = Zq::from((1337 + 42, 1337));
+    /// let answer_b = Zq::from((Z::from(42), 1337));
     ///
-    /// let answer_a = Zq::try_from((value_a, modulus))?;
-    /// let answer_b = Zq::try_from((value_b, modulus))?;
-    ///
-    /// // TODO: assert_eq!(answer_a, answer_b);
-    /// # Ok::<(), MathError>(())
+    /// assert_eq!(answer_a, answer_b);
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type
-    ///   [`InvalidIntToModulus`](MathError::InvalidIntToModulus) if the
-    ///   provided value is not greater than `1`.
-    fn try_from(value_modulus_tuple: (IntegerValue, IntegerModulus)) -> Result<Self, Self::Error> {
-        let modulus = value_modulus_tuple.1;
-        let value = value_modulus_tuple.0;
-        Zq::try_from_int_int(value, modulus)
+    /// # Panics ...
+    /// - if the modulus is not greater than `1`.
+    fn from(value_modulus_tuple: (IntegerValue, IntegerModulus)) -> Self {
+        let value = value_modulus_tuple.0.into();
+        let modulus = value_modulus_tuple.1.into();
+
+        let mut out = Zq { value, modulus };
+        out.reduce();
+        out
     }
 }
 
@@ -321,63 +314,126 @@ mod test_try_from_z_z {
 }
 
 #[cfg(test)]
-mod test_try_from_trait {
-    use crate::{integer::Z, integer_mod_q::Zq};
+mod test_from_trait {
+    use crate::{
+        integer::Z,
+        integer_mod_q::{Modulus, Zq},
+    };
 
-    /// Showcase some of the different types supported by the trait.
+    /// Test that the different combinations of rust integers, [`Z`], and [`Modulus`]
+    /// in their owned and borrowed form can be used to create a [`Zq`].
     #[test]
-    fn types_example() {
-        // rust integers supported
-        assert!(Zq::try_from((1u8, 2u16)).is_ok());
-        assert!(Zq::try_from((1u32, 2u64)).is_ok());
-        assert!(Zq::try_from((1i8, 2i16)).is_ok());
-        assert!(Zq::try_from((1i32, 2i64)).is_ok());
+    fn different_types() {
+        let int_8: i8 = 10;
+        let int_16: i16 = 10;
+        let int_32: i32 = 10;
+        let int_64: i64 = 10;
+        let uint_8: u8 = 10;
+        let uint_16: u16 = 10;
+        let uint_32: u32 = 10;
+        let uint_64: u64 = 10;
+        let z = Z::from(10);
+        let modulus = Modulus::from(10);
 
-        // [`Z`] supported
-        assert!(Zq::try_from((Z::from(1), Z::from(2))).is_ok());
+        // owned, owned the same type in numerator and denominator
+        let _ = Zq::from((int_8, int_8));
+        let _ = Zq::from((int_16, int_16));
+        let _ = Zq::from((int_32, int_32));
+        let _ = Zq::from((int_64, int_64));
+        let _ = Zq::from((uint_8, uint_8));
+        let _ = Zq::from((uint_16, uint_16));
+        let _ = Zq::from((uint_32, uint_32));
+        let _ = Zq::from((uint_64, uint_64));
+        let _ = Zq::from((z.clone(), z.clone()));
+        let _ = Zq::from((modulus.clone(), modulus.clone()));
+
+        // borrowed, borrowed the same type in numerator and denominator
+        let _ = Zq::from((&int_8, &int_8));
+        let _ = Zq::from((&int_16, &int_16));
+        let _ = Zq::from((&int_32, &int_32));
+        let _ = Zq::from((&int_64, &int_64));
+        let _ = Zq::from((&uint_8, &uint_8));
+        let _ = Zq::from((&uint_16, &uint_16));
+        let _ = Zq::from((&uint_32, &uint_32));
+        let _ = Zq::from((&uint_64, &uint_64));
+        let _ = Zq::from((&z, &z));
+        let _ = Zq::from((&modulus, &modulus));
+
+        // From now on assume that i/u8, i/u16, i/u32 and i/u64 behave the same.
+        // This assumption is reasonable, since their implementation is the same.
+
+        // owned, owned mixed types
+        let _ = Zq::from((int_8, z.clone()));
+        let _ = Zq::from((z.clone(), int_8));
+        let _ = Zq::from((int_8, modulus.clone()));
+        let _ = Zq::from((z.clone(), modulus.clone()));
+        let _ = Zq::from((modulus.clone(), int_8));
+        let _ = Zq::from((modulus.clone(), z.clone()));
+
+        // owned, borrowed mixed types
+        let _ = Zq::from((int_8, &z));
+        let _ = Zq::from((modulus.clone(), &z));
+        let _ = Zq::from((z.clone(), &int_8));
+        let _ = Zq::from((z.clone(), &modulus));
+        let _ = Zq::from((int_8, &modulus));
+        let _ = Zq::from((modulus.clone(), &int_8));
+
+        // borrowed, owned mixed types
+        let _ = Zq::from((&int_8, z.clone()));
+        let _ = Zq::from((&modulus, z.clone()));
+        let _ = Zq::from((&z, int_8));
+        let _ = Zq::from((&z, modulus.clone()));
+        let _ = Zq::from((&int_8, modulus.clone()));
+        let _ = Zq::from((&modulus, int_8));
+
+        // borrowed, borrowed mixed types
+        let _ = Zq::from((&int_8, &z));
+        let _ = Zq::from((&modulus, &z));
+        let _ = Zq::from((&z, &int_8));
+        let _ = Zq::from((&z, &modulus));
+        let _ = Zq::from((&int_8, &modulus));
+        let _ = Zq::from((&modulus, &int_8));
     }
 
     /// Ensure that the modulus calculation is performed at initialization.
     #[test]
     fn modulus_at_initialization() {
-        let a = Zq::try_from((0, 10)).unwrap();
-        let b = Zq::try_from((10, 10)).unwrap();
+        let a = Zq::from((0, 10));
+        let b = Zq::from((10, 10));
 
-        // TODO: use Zq equal once implemented.
-        assert_eq!(&a.value, &b.value);
-        assert_eq!(&a.modulus, &b.modulus);
+        assert_eq!(a, b);
     }
 
     /// Test with small valid value and modulus.
     #[test]
     fn working_small() {
-        let new_zq = Zq::try_from((10, 15));
+        let zq_1 = Zq::from((10, 15));
+        let zq_2 = Zq::from((Z::from(10), Modulus::from(15)));
 
-        assert!(new_zq.is_ok());
+        assert_eq!(zq_1, zq_2)
     }
 
     /// Test with large value and modulus (FLINT uses pointer representation).
     #[test]
     fn working_large() {
-        let new_zq = Zq::try_from((u64::MAX - 1, u64::MAX));
+        let zq_1 = Zq::from((u64::MAX - 1, u64::MAX));
+        let zq_2 = Zq::from((&Z::from(u64::MAX - 1), Modulus::from(u64::MAX)));
 
-        assert!(new_zq.is_ok());
+        assert_eq!(zq_1, zq_2)
     }
 
     /// Test with zero modulus (not valid)
     #[test]
+    #[should_panic]
     fn modulus_zero() {
-        let new_zq = Zq::try_from((10, 0));
-
-        assert!(new_zq.is_err());
+        let _1 = Zq::from((10, 0));
     }
 
     /// Test with negative modulus (not valid)
     #[test]
+    #[should_panic]
     fn modulus_negative() {
-        let new_zq = Zq::try_from((10, -1));
-
-        assert!(new_zq.is_err());
+        let _1 = Zq::from((10, -1));
     }
 }
 

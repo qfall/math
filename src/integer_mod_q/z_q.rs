@@ -45,7 +45,7 @@ mod to_string;
 /// use std::str::FromStr;
 ///
 /// // instantiation
-/// let a = Zq::try_from((5, 10))?;
+/// let a = Zq::from((5, 10));
 /// let b = Zq::from_str("93 mod 10")?;
 /// let _ = a.clone();
 ///
