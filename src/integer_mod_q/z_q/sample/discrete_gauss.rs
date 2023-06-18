@@ -41,9 +41,9 @@ impl Zq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
     /// if `n <= 1` or `s <= 0`.
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidIntToModulus`](MathError::InvalidIntToModulus) if the
-    /// provided value is not greater than `0`.
+    ///
+    /// # Panics ...
+    /// - if the modulus is not greater than `1`.
     ///
     /// This function implements SampleZ according to:
     /// - \[1\] Gentry, Craig and Peikert, Chris and Vaikuntanathan, Vinod (2008).
@@ -68,7 +68,7 @@ impl Zq {
         let s: Q = s.to_owned().into();
 
         let sample = sample_z(&n, &center, &s)?;
-        Zq::try_from_z_z(&sample, &modulus)
+        Ok(Zq::from((&sample, &modulus)))
     }
 }
 

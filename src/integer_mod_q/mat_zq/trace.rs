@@ -40,7 +40,7 @@ impl MatZq {
             return Err(MathError::NoSquareMatrix(self.to_string()));
         }
 
-        let mut out = Zq::try_from_int_int(0, self.get_mod()).unwrap();
+        let mut out = Zq::from((0, self.get_mod()));
         unsafe {
             fmpz_mod_mat_trace(&mut out.value.value, &self.matrix);
         }
@@ -62,8 +62,8 @@ mod test_trace {
         let trace1 = mat1.trace().unwrap();
         let trace2 = mat2.trace().unwrap();
 
-        assert_eq!(Zq::try_from_int_int(7, 10).unwrap(), trace1);
-        assert_eq!(Zq::try_from_int_int(0, 2).unwrap(), trace2);
+        assert_eq!(Zq::from((7, 10)), trace1);
+        assert_eq!(Zq::from((0, 2)), trace2);
     }
 
     /// Test whether `trace` works for big values
@@ -89,12 +89,9 @@ mod test_trace {
         let trace2 = mat2.trace().unwrap();
         let trace3 = mat3.trace().unwrap();
 
-        assert_eq!(
-            Zq::try_from_int_int(2 * i64::MAX as u64, u64::MAX).unwrap(),
-            trace1
-        );
-        assert_eq!(Zq::try_from_int_int(i64::MIN, u64::MAX).unwrap(), trace2);
-        assert_eq!(Zq::try_from_int_int(-1, u64::MAX).unwrap(), trace3);
+        assert_eq!(Zq::from((2 * i64::MAX as u64, u64::MAX)), trace1);
+        assert_eq!(Zq::from((i64::MIN, u64::MAX)), trace2);
+        assert_eq!(Zq::from((-1, u64::MAX)), trace3);
     }
 
     /// Ensure that a matrix that is not square yields an error.

@@ -14,52 +14,6 @@ use flint_sys::fmpz_mod::fmpz_mod_set_fmpz;
 use std::str::FromStr;
 
 impl Zq {
-    /// Create [`Zq`] from two [`Z`] values.
-    ///
-    /// This function creates a copy of the value and creates a new [`Modulus`].
-    /// Therefore, it should be avoided to create multiple values with the
-    /// same [`Modulus`] with this function to improve performance.
-    /// It is better to use [`Zq::from_z_modulus()`] instead.
-    ///
-    /// Parameters:
-    /// - `value` defines the value of the new [`Zq`].
-    /// - `modulus` is used to create a new [`Modulus`] context that will be
-    ///   used by [`Zq`].
-    ///
-    /// Returns the new `value` mod `modulus` as a [`Zq`].
-    ///
-    /// # Examples
-    /// ```
-    /// # use qfall_math::error::MathError;
-    /// use qfall_math::integer::Z;
-    /// use qfall_math::integer_mod_q::Zq;
-    ///
-    /// let value_a = Z::from(42);
-    /// let value_b = Z::from(1337+42);
-    /// let modulus = Z::from(1337);
-    ///
-    /// let answer_a = Zq::try_from_z_z(&value_a, &modulus)?;
-    /// let answer_b = Zq::try_from_z_z(&value_b, &modulus)?;
-    ///
-    /// // TODO: assert_eq!(answer_a, answer_b); once equal for Zq is implemented
-    /// # Ok::<(), MathError>(())
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type
-    ///   [`InvalidIntToModulus`](MathError::InvalidIntToModulus) if the
-    ///   provided value is not greater than `1`.
-    pub fn try_from_z_z(value: &Z, modulus: &Z) -> Result<Self, MathError> {
-        // TODO: This is not super nice but this function will be removed in the
-        // Zq::from rework anyway.
-        if modulus <= &Z::ONE {
-            return Err(MathError::InvalidIntToModulus(modulus.to_string()));
-        }
-        let modulus = Modulus::from(modulus);
-
-        Ok(Self::from_z_modulus(value, &modulus))
-    }
-
     /// Create [`Zq`] from a [`Z`] values and a [`Modulus`].
     ///
     /// As the [`Modulus`] object counts its references and
@@ -99,49 +53,6 @@ impl Zq {
             value: out,
             modulus: modulus.clone(),
         }
-    }
-
-    /// Create [`Zq`] from two values that can be converted to [`Z`].
-    /// For example, [`i64`] and [`u32`].
-    ///
-    /// The parameters have to implement the [`Into<Z>`] trait, which is
-    /// automatically the case if [`Z`] implements the [`From`] trait for this type.
-    /// The first and second element of the tuple may have different types.
-    ///
-    /// Parameters:
-    /// - `value` is the value of the new [`Zq`].
-    /// - `modulus` defines the new [`Modulus`], which is part of [`Zq`].
-    ///
-    /// Returns the `value` mod `modulus` as a [`Zq`].
-    ///
-    /// # Examples
-    /// ```
-    /// # use qfall_math::error::MathError;
-    /// use qfall_math::integer::Z;
-    /// use qfall_math::integer_mod_q::Zq;
-    ///
-    /// let value_a: Z = Z::from(42);
-    /// let value_b: u64 = 1337+42;
-    /// let modulus: i32 = 1337;
-    ///
-    /// let answer_a = Zq::try_from_int_int(value_a, modulus)?;
-    /// let answer_b = Zq::try_from_int_int(value_b, modulus)?;
-    ///
-    /// // TODO: assert_eq!(answer_a, answer_b);
-    /// # Ok::<(), MathError>(())
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type
-    ///   [`InvalidIntToModulus`](MathError::InvalidIntToModulus) if the
-    ///   provided value is not greater than `1`.
-    pub fn try_from_int_int<T1: Into<Z>, T2: Into<Z>>(
-        value: T1,
-        modulus: T2,
-    ) -> Result<Self, MathError> {
-        let modulus: Z = modulus.into();
-        let value: Z = value.into();
-        Zq::try_from_z_z(&value, &modulus)
     }
 }
 
@@ -261,55 +172,6 @@ mod test_from_z_modulus {
         let modulus = Modulus::try_from(&Z::from(u64::MAX)).unwrap();
 
         let _ = Zq::from_z_modulus(&value, &modulus);
-    }
-}
-
-#[cfg(test)]
-mod test_try_from_z_z {
-    use super::Zq;
-    use crate::integer::Z;
-
-    /// Test with small valid value and modulus.
-    #[test]
-    fn working_small() {
-        let value = Z::from(10);
-        let modulus = Z::from(15);
-
-        let answer = Zq::try_from_z_z(&value, &modulus);
-        assert!(answer.is_ok());
-    }
-
-    /// Test with large value and modulus (FLINT uses pointer representation).
-    #[test]
-    fn working_large() {
-        let value = Z::from(u64::MAX - 1);
-        let modulus = Z::from(u64::MAX);
-
-        let answer = Zq::try_from_z_z(&value, &modulus);
-
-        assert!(answer.is_ok());
-    }
-
-    /// Test with zero modulus (not valid)
-    #[test]
-    fn modulus_zero() {
-        let value = Z::from(10);
-        let modulus = Z::ZERO;
-
-        let new_zq = Zq::try_from_z_z(&value, &modulus);
-
-        assert!(new_zq.is_err());
-    }
-
-    /// Test with negative modulus (not valid)
-    #[test]
-    fn modulus_negative() {
-        let value = Z::from(10);
-        let modulus = Z::from(-1);
-
-        let new_zq = Zq::try_from_z_z(&value, &modulus);
-
-        assert!(new_zq.is_err());
     }
 }
 
