@@ -58,7 +58,7 @@ pub fn gen_prime_order_group_plus_generator(security_lvl: u32) -> (Modulus, Zq) 
         generator = Zq::sample_uniform(&modulus).unwrap();
     }
 
-    (Modulus::try_from_z(&modulus).unwrap(), generator)
+    (Modulus::from(modulus), generator)
 }
 
 mod rsa_textbook {

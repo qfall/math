@@ -177,7 +177,7 @@ impl Z {
 /// with the default implementation for [`Z`] and also to filter out [`Zq`](crate::integer_mod_q::Zq).
 trait IntoZ {}
 
-implement_empty_trait_owned_ref!(IntoZ for Modulus u8 u16 u32 u64 i8 i16 i32 i64);
+implement_empty_trait_owned_ref!(IntoZ for Modulus fmpz u8 u16 u32 u64 i8 i16 i32 i64);
 impl IntoZ for &Z {}
 
 impl<Integer: AsInteger + IntoZ> From<Integer> for Z {
@@ -435,6 +435,20 @@ mod tests_from_int {
 
         assert_eq!(original_small, Z::from(&original_small));
         assert_eq!(original_small, Z::ONE);
+    }
+
+    /// Ensure that the [`From`] trait is available for small and large,
+    /// borrowed and owned [`fmpz`] instances.
+    #[test]
+    fn fmpz() {
+        let large_z = Z::from(u64::MAX);
+        let small_z = Z::ONE;
+
+        assert_eq!(large_z, Z::from(&large_z.value));
+        assert_eq!(large_z, Z::from(large_z.value));
+
+        assert_eq!(small_z, Z::from(&small_z.value));
+        assert_eq!(small_z, Z::from(small_z.value));
     }
 }
 

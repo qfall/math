@@ -459,10 +459,7 @@ mod test_get_num {
 
 #[cfg(test)]
 mod test_mod {
-    use crate::{
-        integer::Z,
-        integer_mod_q::{MatZq, Modulus},
-    };
+    use crate::integer_mod_q::{MatZq, Modulus};
     use std::str::FromStr;
 
     /// Ensure that the getter for modulus works correctly.
@@ -478,10 +475,7 @@ mod test_mod {
     fn get_mod_large() {
         let matrix = MatZq::new(5, 10, u64::MAX);
 
-        assert_eq!(
-            matrix.get_mod(),
-            Modulus::try_from_z(&Z::from(u64::MAX)).unwrap()
-        );
+        assert_eq!(matrix.get_mod(), Modulus::from(u64::MAX));
     }
 
     /// Ensure that no memory leak occurs in get_mod.
@@ -489,11 +483,11 @@ mod test_mod {
     fn get_mod_memory() {
         let matrix = MatZq::new(5, 10, u64::MAX);
         let _ = matrix.get_mod();
-        let _ = Modulus::try_from_z(&Z::from(u64::MAX - 1));
+        let _ = Modulus::from(u64::MAX - 1);
 
         let modulus = matrix.get_mod();
 
-        assert_eq!(modulus, Modulus::try_from_z(&Z::from(u64::MAX)).unwrap());
+        assert_eq!(modulus, Modulus::from(u64::MAX));
     }
 }
 

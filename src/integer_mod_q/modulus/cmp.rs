@@ -57,7 +57,7 @@ mod test_eq {
     #[test]
     fn equal_large() {
         let a = Modulus::from_str(&"1".repeat(65)).unwrap();
-        let b = Modulus::try_from_z(&Z::from_str(&"1".repeat(65)).unwrap()).unwrap();
+        let b = Modulus::from(&Z::from_str(&"1".repeat(65)).unwrap());
         let a_clone = a.clone();
 
         assert_eq!(a, b);
@@ -69,7 +69,7 @@ mod test_eq {
     #[test]
     fn equal_small() {
         let a = Modulus::from_str("2").unwrap();
-        let b = Modulus::try_from_z(&Z::from(2)).unwrap();
+        let b = Modulus::from(&Z::from(2));
         let b_clone = b.clone();
 
         assert_eq!(a, b);

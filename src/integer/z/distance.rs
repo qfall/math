@@ -92,7 +92,7 @@ mod test_distance {
     #[test]
     fn availability() {
         let a = Z::ZERO;
-        let modulus = Modulus::try_from_z(&Z::from(2)).unwrap();
+        let modulus = Modulus::from(2);
 
         let u_0 = a.distance(0_u8);
         let u_1 = a.distance(15_u16);
