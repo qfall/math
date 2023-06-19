@@ -146,9 +146,9 @@ fn gaussian_function(x: &Z, c: &Q, s: &Q) -> Q {
 /// ```compile_fail
 /// use qfall_math::{integer::{MatZ, Z}, rational::{MatQ, Q}};
 /// use qfall_math::utils::sample::discrete_gauss::sample_d;
-/// let basis = MatZ::identity(5, 5).unwrap();
+/// let basis = MatZ::identity(5, 5);
 /// let n = Z::from(1024);
-/// let center = MatQ::new(5, 1).unwrap();
+/// let center = MatQ::new(5, 1);
 /// let gaussian_parameter = Q::ONE;
 ///
 /// let sample = sample_d(basis, &n, &center, &gaussian_parameter).unwrap();
@@ -185,7 +185,12 @@ pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ
     }
 
     // we know that norm_eucl_sqrd does not output errors for column vectors => we can unwrap
-    let basis = basis.sort_by_column(MatZ::norm_eucl_sqrd).unwrap();
+    // if basis is identity, there's no need to sort => better performance for common case
+    let basis = if basis.is_identity() {
+        basis.to_owned()
+    } else {
+        basis.sort_by_column(MatZ::norm_eucl_sqrd).unwrap()
+    };
     // we removed reversed ordering from the implementation of the challenge phase
     // as it does not seem to impact the length of the sampled vectors
     // and the paper states that the basis should be ordered, but not in which fashion.
@@ -193,7 +198,7 @@ pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ
     // to the euclidean norm.
     let basis_gso = MatQ::from_mat_z(&basis).gso();
 
-    let mut out = MatZ::new(basis_gso.get_num_columns(), 1).unwrap();
+    let mut out = MatZ::new(basis_gso.get_num_columns(), 1);
 
     for i in (0..basis_gso.get_num_columns()).rev() {
         // basisvector_i = b_tilde[i]
@@ -376,9 +381,9 @@ mod test_sample_d {
     /// Ensures that the doc-test compiles and runs properly
     #[test]
     fn doc_test() {
-        let basis = MatZ::identity(5, 5).unwrap();
+        let basis = MatZ::identity(5, 5);
         let n = Z::from(1024);
-        let center = MatQ::new(5, 1).unwrap();
+        let center = MatQ::new(5, 1);
         let gaussian_parameter = Q::ONE;
 
         let _ = sample_d(&basis, &n, &center, &gaussian_parameter).unwrap();
@@ -387,9 +392,9 @@ mod test_sample_d {
     /// Ensures that `sample_d` works properly for a non-zero center
     #[test]
     fn non_zero_center() {
-        let basis = MatZ::identity(5, 5).unwrap();
+        let basis = MatZ::identity(5, 5);
         let n = Z::from(1024);
-        let center = MatQ::identity(5, 1).unwrap();
+        let center = MatQ::identity(5, 1);
         let gaussian_parameter = Q::ONE;
 
         let _ = sample_d(&basis, &n, &center, &gaussian_parameter).unwrap();
@@ -400,7 +405,7 @@ mod test_sample_d {
     fn non_identity_basis() {
         let basis = MatZ::from_str("[[2,1],[1,2]]").unwrap();
         let n = Z::from(1024);
-        let center = MatQ::new(2, 1).unwrap();
+        let center = MatQ::new(2, 1);
         let gaussian_parameter = Q::ONE;
 
         let _ = sample_d(&basis, &n, &center, &gaussian_parameter).unwrap();
@@ -415,16 +420,16 @@ mod test_sample_d {
     fn point_of_lattice() {
         let basis = MatZ::from_str("[[7,0],[7,3]]").unwrap();
         let n = Z::from(1024);
-        let center = MatQ::new(2, 1).unwrap();
+        let center = MatQ::new(2, 1);
         let gaussian_parameter = Q::ONE;
 
         let sample = sample_d(&basis, &n, &center, &gaussian_parameter).unwrap();
 
         // check whether hermite normal form of HNF(b) = HNF([b|sample_vector])
         let basis_concat_sample = basis.concat_horizontal(&sample).unwrap();
-        let mut hnf_basis = MatZ::new(2, 2).unwrap();
+        let mut hnf_basis = MatZ::new(2, 2);
         unsafe { fmpz_mat_hnf(&mut hnf_basis.matrix, &basis.matrix) };
-        let mut hnf_basis_concat_sample = MatZ::new(2, 3).unwrap();
+        let mut hnf_basis_concat_sample = MatZ::new(2, 3);
         unsafe {
             fmpz_mat_hnf(
                 &mut hnf_basis_concat_sample.matrix,
@@ -441,7 +446,7 @@ mod test_sample_d {
         );
         // check whether last vector is zero, i.e. was linearly dependend and part of lattice
         assert_eq!(
-            MatZ::new(2, 1).unwrap(),
+            MatZ::new(2, 1),
             hnf_basis_concat_sample.get_column(2).unwrap()
         );
     }
@@ -449,9 +454,9 @@ mod test_sample_d {
     /// Checks whether `sample_d` returns an error if the gaussian parameter `s <= 0`
     #[test]
     fn invalid_gaussian_parameter() {
-        let basis = MatZ::identity(5, 5).unwrap();
+        let basis = MatZ::identity(5, 5);
         let n = Z::from(1024);
-        let center = MatQ::new(5, 1).unwrap();
+        let center = MatQ::new(5, 1);
 
         assert!(sample_d(&basis, &n, &center, &Q::ZERO).is_err());
         assert!(sample_d(&basis, &n, &center, &Q::MINUS_ONE).is_err());
@@ -461,8 +466,8 @@ mod test_sample_d {
     /// Checks whether `sample_d` returns an error if `n <= 1`
     #[test]
     fn invalid_n() {
-        let basis = MatZ::identity(5, 5).unwrap();
-        let center = MatQ::new(5, 1).unwrap();
+        let basis = MatZ::identity(5, 5);
+        let center = MatQ::new(5, 1);
         let gaussian_parameter = Q::ONE;
 
         assert!(sample_d(&basis, &Z::ONE, &center, &gaussian_parameter).is_err());
@@ -474,9 +479,9 @@ mod test_sample_d {
     /// Checks whether `sample_d` returns an error if the basis and center number of rows differs
     #[test]
     fn mismatching_matrix_dimensions() {
-        let basis = MatZ::identity(3, 5).unwrap();
+        let basis = MatZ::identity(3, 5);
         let n = Z::from(1024);
-        let center = MatQ::new(4, 1).unwrap();
+        let center = MatQ::new(4, 1);
         let gaussian_parameter = Q::ONE;
 
         let res = sample_d(&basis, &n, &center, &gaussian_parameter);
@@ -487,9 +492,9 @@ mod test_sample_d {
     /// Checks whether `sample_d` returns an error if center isn't a column vector
     #[test]
     fn center_not_column_vector() {
-        let basis = MatZ::identity(2, 2).unwrap();
+        let basis = MatZ::identity(2, 2);
         let n = Z::from(1024);
-        let center = MatQ::new(2, 2).unwrap();
+        let center = MatQ::new(2, 2);
         let gaussian_parameter = Q::ONE;
 
         let res = sample_d(&basis, &n, &center, &gaussian_parameter);

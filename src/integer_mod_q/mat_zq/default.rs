@@ -9,7 +9,7 @@
 //! Initialize a [`MatZq`] with common defaults, e.g., zero and identity.
 
 use super::MatZq;
-use crate::{error::MathError, integer::Z, integer_mod_q::Modulus, utils::index::evaluate_indices};
+use crate::{integer::Z, integer_mod_q::Modulus, utils::index::evaluate_indices};
 use flint_sys::fmpz_mod_mat::{fmpz_mod_mat_init, fmpz_mod_mat_one};
 use std::{fmt::Display, mem::MaybeUninit};
 
@@ -22,42 +22,33 @@ impl MatZq {
     /// - `num_cols`: number of columns the new matrix should have
     /// - `modulus`: the common modulus of the matrix entries
     ///
-    /// Returns a [`MatZq`] or an error, if the number of rows or columns is
-    /// less than `1` or the modulus is less than `1`.
+    /// Returns a new [`MatZq`] instance of the provided dimensions.
     ///
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     ///
-    /// let matrix = MatZq::new(5, 10, 7).unwrap();
+    /// let matrix = MatZq::new(5, 10, 7);
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidMatrix`](MathError::InvalidMatrix)
-    /// if the number of rows or columns is `0`.
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    /// if the number of rows or columns is negative or it does not fit into an [`i64`].
-    /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
-    /// if the provided value is not greater than `1`.
+    /// # Panics ...
+    /// - if the number of rows or columns is negative, zero, or does not fit into an [`i64`].
+    /// - if the provided value is not greater than `1`.
     pub fn new(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
         modulus: impl Into<Z>,
-    ) -> Result<Self, MathError> {
-        let (num_rows_i64, num_cols_i64) = evaluate_indices(num_rows, num_cols)?;
+    ) -> Self {
+        let (num_rows_i64, num_cols_i64) = evaluate_indices(num_rows, num_cols).unwrap();
 
         if num_rows_i64 == 0 || num_cols_i64 == 0 {
-            return Err(MathError::InvalidMatrix(format!(
-                "({},{})",
-                num_rows_i64, num_cols_i64,
-            )));
+            panic!("A matrix can not contain 0 rows or 0 columns");
         }
 
-        let modulus = std::convert::Into::<Z>::into(modulus);
+        let modulus: Z = modulus.into();
 
         if modulus <= Z::ONE {
-            return Err(MathError::InvalidIntToModulus(format!("{}", modulus)));
+            panic!("The modulus provided for MatZq initialization must be bigger than 1, but it is {modulus}.");
         }
 
         let mut matrix = MaybeUninit::uninit();
@@ -69,11 +60,11 @@ impl MatZq {
                 &modulus.value,
             );
 
-            Ok(MatZq {
+            MatZq {
                 matrix: matrix.assume_init(),
                 // we can unwrap here since modulus > 1 was checked before
                 modulus: Modulus::try_from(&modulus).unwrap(),
-            })
+            }
         }
     }
 
@@ -92,27 +83,24 @@ impl MatZq {
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     ///
-    /// let matrix = MatZq::identity(2, 3, 3).unwrap();
+    /// let matrix = MatZq::identity(2, 3, 3);
     ///
-    /// let identity = MatZq::identity(10, 10, 3).unwrap();
+    /// let identity = MatZq::identity(10, 10, 3);
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix) or
-    /// [`OutOfBounds`](MathError::OutOfBounds) if the provided number of rows and columns
-    /// are not suited to create a matrix. For further information see [`MatZq::new`].
-    /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
-    /// if the modulus is not greater than `1`. For further information see [`MatZq::new`].
+    /// # Panics ...
+    /// - if the provided number of rows and columns or the modulus are not suited to create a matrix.
+    /// For further information see [`MatZq::new`].
     pub fn identity(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
         modulus: impl Into<Z>,
-    ) -> Result<Self, MathError> {
-        let mut out = MatZq::new(num_rows, num_cols, modulus)?;
+    ) -> Self {
+        let mut out = MatZq::new(num_rows, num_cols, modulus);
         if Z::ONE != Z::from(&out.modulus) {
             unsafe { fmpz_mod_mat_one(&mut out.matrix) };
         }
-        Ok(out)
+        out
     }
 }
 
@@ -123,7 +111,7 @@ mod test_identity {
     /// Tests if an identity matrix is set from a zero matrix.
     #[test]
     fn identity() {
-        let matrix = MatZq::identity(10, 10, 3).unwrap();
+        let matrix = MatZq::identity(10, 10, 3);
 
         for i in 0..10 {
             for j in 0..10 {
@@ -139,7 +127,7 @@ mod test_identity {
     /// Tests if function works for a non-square matrix
     #[test]
     fn non_square_works() {
-        let matrix = MatZq::identity(10, 7, 3).unwrap();
+        let matrix = MatZq::identity(10, 7, 3);
 
         for i in 0..10 {
             for j in 0..7 {
@@ -151,7 +139,7 @@ mod test_identity {
             }
         }
 
-        let matrix = MatZq::identity(7, 10, 3).unwrap();
+        let matrix = MatZq::identity(7, 10, 3);
 
         for i in 0..7 {
             for j in 0..10 {
@@ -167,7 +155,7 @@ mod test_identity {
     /// Tests if an identity matrix can be created using a large modulus.
     #[test]
     fn modulus_large() {
-        let matrix = MatZq::identity(10, 10, i64::MAX).unwrap();
+        let matrix = MatZq::identity(10, 10, i64::MAX);
 
         for i in 0..10 {
             for j in 0..10 {
@@ -181,9 +169,10 @@ mod test_identity {
     }
 
     /// Assert that a modulus of `1` is not allowed.
+    #[should_panic]
     #[test]
     fn modulus_one() {
-        assert!(MatZq::identity(10, 10, 1).is_err());
+        let _ = MatZq::identity(10, 10, 1);
     }
 }
 
@@ -194,13 +183,13 @@ mod test_new {
     /// Ensure that initialization works.
     #[test]
     fn initialization() {
-        assert!(MatZq::new(2, 2, 3).is_ok());
+        let _ = MatZq::new(2, 2, 3);
     }
 
     /// Ensure that entries of a new matrix are `0`.
     #[test]
     fn entry_zero() {
-        let matrix = MatZq::new(2, 2, 3).unwrap();
+        let matrix = MatZq::new(2, 2, 3);
 
         let entry1 = matrix.get_entry(0, 0).unwrap();
         let entry2 = matrix.get_entry(0, 1).unwrap();
@@ -213,22 +202,31 @@ mod test_new {
         assert_eq!(Z::ZERO, entry4);
     }
 
-    /// Ensure that a new zero matrix fails with `0` as input.
+    /// Ensure that a new zero matrix fails with `0` as `num_cols`.
+    #[should_panic]
     #[test]
-    fn error_zero() {
-        let matrix1 = MatZq::new(1, 0, 3);
-        let matrix2 = MatZq::new(0, 1, 3);
-        let matrix3 = MatZq::new(0, 0, 3);
+    fn error_zero_num_cols() {
+        let _ = MatZq::new(1, 0, 3);
+    }
 
-        assert!(matrix1.is_err());
-        assert!(matrix2.is_err());
-        assert!(matrix3.is_err());
+    /// Ensure that a new zero matrix fails with `0` as `num_rows`.
+    #[should_panic]
+    #[test]
+    fn error_zero_num_rows() {
+        let _ = MatZq::new(0, 1, 3);
     }
 
     /// Ensure that an invalid modulus yields an error.
+    #[should_panic]
     #[test]
     fn invalid_modulus_error() {
-        assert!(MatZq::new(2, 2, -3).is_err());
-        assert!(MatZq::new(2, 2, 0).is_err());
+        let _ = MatZq::new(2, 2, 1);
+    }
+
+    /// Ensure that a negative modulus yields an error.
+    #[should_panic]
+    #[test]
+    fn negative_modulus_error() {
+        let _ = MatZq::new(2, 2, -3);
     }
 }

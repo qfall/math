@@ -43,7 +43,7 @@ impl MatQ {
     /// let a = MatQ::from_mat_z(&m);
     /// ```
     pub fn from_mat_z(matrix: &MatZ) -> Self {
-        let mut out = MatQ::new(matrix.get_num_rows(), matrix.get_num_columns()).unwrap();
+        let mut out = MatQ::new(matrix.get_num_rows(), matrix.get_num_columns());
         unsafe { fmpq_mat_set_fmpz_mat(&mut out.matrix, &matrix.matrix) };
         out
     }
@@ -90,8 +90,7 @@ impl FromStr for MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix)
-    /// if the matrix is not formatted in a suitable way,
-    /// the number of rows or columns is too big (must fit into [`i64`]) or
+    /// if the matrix is not formatted in a suitable way, or
     /// if the number of entries in rows is unequal.
     /// - Returns a [`MathError`] of type
     /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
@@ -99,10 +98,14 @@ impl FromStr for MatQ {
     /// - Returns a [`MathError`] of type
     /// [`InvalidStringToZInput`](MathError::InvalidStringToZInput)
     /// if an entry is not formatted correctly.
+    ///
+    /// # Panics ...
+    /// - if the provided number of rows and columns are not suited to create a matrix.
+    /// For further information see [`MatQ::new`].
     fn from_str(string: &str) -> Result<Self, MathError> {
         let string_matrix = parse_matrix_string(string)?;
         let (num_rows, num_cols) = find_matrix_dimensions(&string_matrix)?;
-        let mut matrix = MatQ::new(num_rows, num_cols)?;
+        let mut matrix = MatQ::new(num_rows, num_cols);
 
         // fill entries of matrix according to entries in string_matrix
         for (row_num, row) in string_matrix.iter().enumerate() {
@@ -133,7 +136,7 @@ mod test_from_mat_zq {
     /// Test if the dimensions are taken over correctly
     #[test]
     fn dimensions() {
-        let matz = MatZ::new(15, 17).unwrap();
+        let matz = MatZ::new(15, 17);
 
         let matq_1 = MatQ::from(&matz);
         let matq_2 = MatQ::from_mat_z(&matz);
@@ -147,7 +150,7 @@ mod test_from_mat_zq {
     /// Test if entries are taken over correctly
     #[test]
     fn entries_taken_over_correctly() {
-        let mut matz = MatZ::new(2, 2).unwrap();
+        let mut matz = MatZ::new(2, 2);
         matz.set_entry(0, 0, u64::MAX - 58).unwrap();
         matz.set_entry(0, 1, i64::MIN).unwrap();
 

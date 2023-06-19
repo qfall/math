@@ -60,7 +60,7 @@ mod test_partial_eq {
     #[test]
     fn equality_between_instantiations() {
         let a = MatQ::from_str("[[0,1/2],[0/2,0]]").unwrap();
-        let mut b = MatQ::new(2, 2).unwrap();
+        let mut b = MatQ::new(2, 2);
         b.set_entry(0, 1, Q::from_str("2/4").unwrap()).unwrap();
 
         assert_eq!(a, b);

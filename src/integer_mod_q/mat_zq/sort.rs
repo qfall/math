@@ -77,8 +77,7 @@ impl MatZq {
         let mut id_vec: Vec<usize> = (0..self.get_num_columns() as usize).collect();
         id_vec.sort_by_key(|x| &condition_values[*x]);
 
-        let mut out =
-            Self::new(self.get_num_rows(), self.get_num_columns(), self.get_mod()).unwrap();
+        let mut out = Self::new(self.get_num_rows(), self.get_num_columns(), self.get_mod());
         for (col, item) in id_vec.iter().enumerate() {
             out.set_column(col, self, *item).unwrap();
         }
@@ -147,8 +146,7 @@ impl MatZq {
         let mut id_vec: Vec<usize> = (0..self.get_num_rows() as usize).collect();
         id_vec.sort_by_key(|x| &condition_values[*x]);
 
-        let mut out =
-            Self::new(self.get_num_rows(), self.get_num_columns(), self.get_mod()).unwrap();
+        let mut out = Self::new(self.get_num_rows(), self.get_num_columns(), self.get_mod());
         for (row, item) in id_vec.iter().enumerate() {
             out.set_row(row, self, *item).unwrap();
         }

@@ -84,7 +84,7 @@ impl MatZ {
                 other.get_num_columns()
             )));
         }
-        let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns()).unwrap();
+        let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
         unsafe {
             fmpz_mat_add(&mut out.matrix, &self.matrix, &other.matrix);
         }

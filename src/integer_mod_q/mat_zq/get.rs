@@ -30,7 +30,7 @@ impl MatZq {
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     ///
-    /// let matrix = MatZq::new(5, 10, 7).unwrap();
+    /// let matrix = MatZq::new(5, 10, 7);
     /// let entry = matrix.get_mod();
     /// ```
     pub fn get_mod(&self) -> Modulus {
@@ -46,7 +46,7 @@ impl GetNumRows for MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use qfall_math::traits::*;
     ///
-    /// let matrix = MatZq::new(5, 6, 7).unwrap();
+    /// let matrix = MatZq::new(5, 6, 7);
     /// let rows = matrix.get_num_rows();
     /// ```
     fn get_num_rows(&self) -> i64 {
@@ -62,7 +62,7 @@ impl GetNumColumns for MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use qfall_math::traits::*;
     ///
-    /// let matrix = MatZq::new(5, 6, 7).unwrap();
+    /// let matrix = MatZq::new(5, 6, 7);
     /// let rows = matrix.get_num_columns();
     /// ```
     fn get_num_columns(&self) -> i64 {
@@ -87,7 +87,7 @@ impl GetEntry<Z> for MatZq {
     /// use qfall_math::traits::GetEntry;
     /// use qfall_math::integer::Z;
     ///
-    /// let matrix = MatZq::new(5, 10, 7).unwrap();
+    /// let matrix = MatZq::new(5, 10, 7);
     /// let entry: Z = matrix.get_entry(0, 1).unwrap();
     /// ```
     ///
@@ -125,7 +125,7 @@ impl GetEntry<Zq> for MatZq {
     /// use qfall_math::traits::GetEntry;
     /// use qfall_math::integer::Z;
     ///
-    /// let matrix = MatZq::new(5, 10, 7).unwrap();
+    /// let matrix = MatZq::new(5, 10, 7);
     /// let entry: Z = matrix.get_entry(0, 1).unwrap();
     /// ```
     ///
@@ -177,7 +177,7 @@ impl MatZq {
             ));
         }
 
-        let out = MatZq::new(1, self.get_num_columns(), self.get_mod()).unwrap();
+        let out = MatZq::new(1, self.get_num_columns(), self.get_mod());
         for column in 0..self.get_num_columns() {
             unsafe {
                 fmpz_set(
@@ -223,7 +223,7 @@ impl MatZq {
             ));
         }
 
-        let out = MatZq::new(self.get_num_rows(), 1, self.get_mod()).unwrap();
+        let out = MatZq::new(self.get_num_rows(), 1, self.get_mod());
         for row in 0..self.get_num_rows() {
             unsafe {
                 fmpz_set(
@@ -303,7 +303,7 @@ mod test_get_entry {
     /// Ensure that getting entries works on the edge.
     #[test]
     fn get_edges() {
-        let matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+        let matrix = MatZq::new(5, 10, u64::MAX);
 
         let entry1 = matrix.get_entry(0, 0).unwrap();
         let entry2 = matrix.get_entry(4, 9).unwrap();
@@ -315,7 +315,7 @@ mod test_get_entry {
     /// Ensure that getting entries works with large numbers.
     #[test]
     fn max_int_positive() {
-        let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+        let mut matrix = MatZq::new(5, 10, u64::MAX);
         let value = Z::from(i64::MAX);
         matrix.set_entry(0, 0, value).unwrap();
 
@@ -327,7 +327,7 @@ mod test_get_entry {
     /// Ensure that getting entries works with large numbers (larger than [`i64`]).
     #[test]
     fn big_positive() {
-        let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+        let mut matrix = MatZq::new(5, 10, u64::MAX);
         let value = Z::from(u64::MAX - 1);
         matrix.set_entry(0, 0, value).unwrap();
 
@@ -339,7 +339,7 @@ mod test_get_entry {
     /// Ensure that getting entries works with large numbers.
     #[test]
     fn max_int_negative() {
-        let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+        let mut matrix = MatZq::new(5, 10, u64::MAX);
         let value = Z::from(-i64::MAX);
         matrix.set_entry(0, 0, value).unwrap();
 
@@ -351,7 +351,7 @@ mod test_get_entry {
     /// Ensure that getting entries works with large numbers (larger than [`i64`]).
     #[test]
     fn big_negative() {
-        let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+        let mut matrix = MatZq::new(5, 10, u64::MAX);
         let value = Z::from(-i64::MAX - 1);
         matrix.set_entry(0, 0, value).unwrap();
 
@@ -366,7 +366,7 @@ mod test_get_entry {
     /// Ensure that a wrong number of rows yields an Error.
     #[test]
     fn error_wrong_row() {
-        let matrix = MatZq::new(5, 10, 7).unwrap();
+        let matrix = MatZq::new(5, 10, 7);
         let entry1: Result<Zq, MathError> = matrix.get_entry(5, 1);
         let entry2: Result<Zq, MathError> = matrix.get_entry(5, 10);
 
@@ -377,7 +377,7 @@ mod test_get_entry {
     /// Ensure that a wrong number of columns yields an Error.
     #[test]
     fn error_wrong_column() {
-        let matrix = MatZq::new(5, 10, 7).unwrap();
+        let matrix = MatZq::new(5, 10, 7);
         let entry: Result<Zq, MathError> = matrix.get_entry(1, 100);
 
         assert!(entry.is_err());
@@ -386,7 +386,7 @@ mod test_get_entry {
     /// Ensure that the entry is a deep copy and not just a clone of the reference.
     #[test]
     fn memory_test() {
-        let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+        let mut matrix = MatZq::new(5, 10, u64::MAX);
         let value = Zq::from_str(&format!("{} mod {}", u64::MAX - 1, u64::MAX)).unwrap();
         matrix.set_entry(1, 1, value).unwrap();
         let entry = matrix.get_entry(1, 1).unwrap();
@@ -398,7 +398,7 @@ mod test_get_entry {
     /// Ensure that no memory leak occurs in get_entry with ['Z'](crate::integer::Z).
     #[test]
     fn get_entry_z_memory() {
-        let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+        let mut matrix = MatZq::new(5, 10, u64::MAX);
         matrix.set_entry(1, 1, Z::from(u64::MAX - 3)).unwrap();
         let _: Z = matrix.get_entry(1, 1).unwrap();
         matrix.set_entry(2, 2, Z::from(u64::MAX - 10)).unwrap();
@@ -412,7 +412,7 @@ mod test_get_entry {
     /// Ensure that no memory leak occurs in get_entry with ['Zq'](crate::integer_mod_q::Zq).
     #[test]
     fn get_entry_zq_memory() {
-        let mut matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+        let mut matrix = MatZq::new(5, 10, u64::MAX);
         matrix.set_entry(1, 1, Z::from(u64::MAX - 3)).unwrap();
         let _: Zq = matrix.get_entry(1, 1).unwrap();
         matrix.set_entry(2, 2, Z::from(u64::MAX - 10)).unwrap();
@@ -426,7 +426,7 @@ mod test_get_entry {
     /// Ensure that getting entries works with different types.
     #[test]
     fn diff_types() {
-        let matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+        let matrix = MatZq::new(5, 10, u64::MAX);
 
         let _: Z = matrix.get_entry(0, 0).unwrap();
         let _: Zq = matrix.get_entry(0, 0).unwrap();
@@ -443,7 +443,7 @@ mod test_get_num {
     /// Ensure that the getter for number of rows works correctly.
     #[test]
     fn num_rows() {
-        let matrix = MatZq::new(5, 10, 7).unwrap();
+        let matrix = MatZq::new(5, 10, 7);
 
         assert_eq!(matrix.get_num_rows(), 5);
     }
@@ -451,7 +451,7 @@ mod test_get_num {
     /// Ensure that the getter for number of columns works correctly.
     #[test]
     fn num_columns() {
-        let matrix = MatZq::new(5, 10, 7).unwrap();
+        let matrix = MatZq::new(5, 10, 7);
 
         assert_eq!(matrix.get_num_columns(), 10);
     }
@@ -465,7 +465,7 @@ mod test_mod {
     /// Ensure that the getter for modulus works correctly.
     #[test]
     fn get_mod() {
-        let matrix = MatZq::new(5, 10, 7).unwrap();
+        let matrix = MatZq::new(5, 10, 7);
 
         assert_eq!(matrix.get_mod(), Modulus::from_str("7").unwrap());
     }
@@ -473,7 +473,7 @@ mod test_mod {
     /// Ensure that the getter for modulus works with large numbers.
     #[test]
     fn get_mod_large() {
-        let matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+        let matrix = MatZq::new(5, 10, u64::MAX);
 
         assert_eq!(matrix.get_mod(), Modulus::from(u64::MAX));
     }
@@ -481,7 +481,7 @@ mod test_mod {
     /// Ensure that no memory leak occurs in get_mod.
     #[test]
     fn get_mod_memory() {
-        let matrix = MatZq::new(5, 10, u64::MAX).unwrap();
+        let matrix = MatZq::new(5, 10, u64::MAX);
         let _ = matrix.get_mod();
         let _ = Modulus::from(u64::MAX - 1);
 

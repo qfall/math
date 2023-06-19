@@ -29,7 +29,7 @@ impl Clone for MatZ {
     /// let b = a.clone();
     /// ```
     fn clone(&self) -> Self {
-        let mut mat = MatZ::new(self.get_num_rows(), self.get_num_columns()).unwrap();
+        let mut mat = MatZ::new(self.get_num_rows(), self.get_num_columns());
         unsafe {
             fmpz_mat_set(&mut mat.matrix, &self.matrix);
         }

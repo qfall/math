@@ -84,7 +84,7 @@ impl MatQ {
                 other.get_num_columns()
             )));
         }
-        let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns()).unwrap();
+        let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns());
         unsafe {
             fmpq_mat_add(&mut out.matrix, &self.matrix, &other.matrix);
         }

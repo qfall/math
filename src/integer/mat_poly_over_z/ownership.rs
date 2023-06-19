@@ -29,7 +29,7 @@ impl Clone for MatPolyOverZ {
     /// ```
     fn clone(&self) -> Self {
         // we can unwrap since we know, that the number of rows and columns is positive and fits into an [`i64`]
-        let mut clone = MatPolyOverZ::new(self.get_num_rows(), self.get_num_columns()).unwrap();
+        let mut clone = MatPolyOverZ::new(self.get_num_rows(), self.get_num_columns());
 
         unsafe { fmpz_poly_mat_set(&mut clone.matrix, &mut self.matrix.to_owned()) }
 

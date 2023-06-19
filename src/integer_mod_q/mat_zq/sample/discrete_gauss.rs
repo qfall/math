@@ -11,7 +11,7 @@
 use crate::{
     error::MathError,
     integer::{MatZ, Z},
-    integer_mod_q::MatZq,
+    integer_mod_q::{MatZq, Modulus},
     rational::{MatQ, Q},
     traits::{GetNumColumns, GetNumRows, SetEntry},
     utils::sample::discrete_gauss::{sample_d, sample_z},
@@ -42,32 +42,25 @@ impl MatZq {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidMatrix`](MathError::InvalidMatrix)
-    /// if the number of rows or columns is `0`.
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    /// if the number of rows or columns is negative or it does not fit into an [`i64`].
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
     /// if the `n <= 1` or `s <= 0`.
-    pub fn sample_discrete_gauss<T, T1, T2, T3>(
+    ///
+    /// # Panics ...
+    /// - if the provided number of rows and columns or the modulus are not suited to create a matrix.
+    /// For further information see [`MatZq::new`].
+    pub fn sample_discrete_gauss(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
-        modulus: T,
-        n: T1,
-        center: T2,
-        s: T3,
-    ) -> Result<MatZq, MathError>
-    where
-        T: Into<Z>,
-        T1: Into<Z>,
-        T2: Into<Q>,
-        T3: Into<Q>,
-    {
+        modulus: impl Into<Z>,
+        n: impl Into<Z>,
+        center: impl Into<Q>,
+        s: impl Into<Q>,
+    ) -> Result<MatZq, MathError> {
         let modulus: Z = modulus.into();
         let n: Z = n.into();
         let center: Q = center.into();
         let s: Q = s.into();
-        let mut out = Self::new(num_rows, num_cols, modulus)?;
+        let mut out = Self::new(num_rows, num_cols, modulus);
 
         for row in 0..out.get_num_rows() {
             for col in 0..out.get_num_columns() {
@@ -91,13 +84,13 @@ impl MatZq {
     /// - `s`: specifies the Gaussian parameter, which is proportional
     /// to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
-    /// Returns a vector with discrete gaussian error based on a lattice point.
+    /// Returns a lattice vector sampled according to the discrete Gaussian distribution.
     ///
     /// # Example
     /// ```
     /// use qfall_math::{integer_mod_q::MatZq, rational::MatQ};
-    /// let basis = MatZq::identity(5, 5, 17).unwrap();
-    /// let center = MatQ::new(5, 1).unwrap();
+    /// let basis = MatZq::identity(5, 5, 17);
+    /// let center = MatQ::new(5, 1);
     ///
     /// let sample = MatZq::sample_d(&basis, 1024, &center, 1.25f32).unwrap();
     /// ```
@@ -127,6 +120,32 @@ impl MatZq {
         let sample = sample_d(&MatZ::from(basis), &n, center, &s)?;
 
         Ok(MatZq::from_mat_z_modulus(&sample, &basis.get_mod()))
+    }
+
+    /// Runs [`MatZq::sample_d`] with identity basis and center vector `0`.
+    /// The full documentation can be found at [`MatZq::sample_d`].
+    ///
+    /// Parameters:
+    /// - `dimension`: specifies the number of rows and columns
+    /// that the identity basis should have
+    /// - `modulus`: specifies the modulus of the new matrix
+    /// - `n`: specifies the range from which
+    /// [`Zq::sample_discrete_gauss`](crate::integer_mod_q::Zq::sample_discrete_gauss) samples
+    /// - `s`: specifies the Gaussian parameter, which is proportional
+    /// to the standard deviation `sigma * sqrt(2 * pi) = s`
+    ///
+    /// Returns a lattice vector sampled according to the discrete Gaussian distribution.
+    /// The lattice specified as `Z^m` for `m = dimension` and its center fixed to `0^m`.
+    pub fn sample_d_common(
+        dimension: impl TryInto<i64> + Display + Clone,
+        modulus: &Modulus,
+        n: impl Into<Z>,
+        s: impl Into<Q>,
+    ) -> Result<Self, MathError> {
+        let basis = MatZq::identity(dimension.clone(), dimension, modulus);
+        let center = MatQ::new(basis.get_num_rows(), 1);
+
+        Self::sample_d(&basis, n, &center, s)
     }
 }
 
@@ -171,9 +190,10 @@ mod test_sample_discrete_gauss {
 mod test_sample_d {
     use crate::{
         integer::Z,
-        integer_mod_q::MatZq,
+        integer_mod_q::{MatZq, Modulus},
         rational::{MatQ, Q},
     };
+    use std::str::FromStr;
 
     // Appropriate inputs were tested in utils and thus omitted here.
     // This function only allows for a broader availability, which is tested here.
@@ -183,9 +203,9 @@ mod test_sample_d {
     /// or Into<Q>, i.e. u8, i16, f32, Z, Q, ...
     #[test]
     fn availability() {
-        let basis = MatZq::identity(5, 5, 17).unwrap();
+        let basis = MatZq::identity(5, 5, 17);
         let n = Z::from(1024);
-        let center = MatQ::new(5, 1).unwrap();
+        let center = MatQ::new(5, 1);
         let s = Q::ONE;
 
         let _ = MatZq::sample_d(&basis, &16u16, &center, &1u16);
@@ -201,5 +221,16 @@ mod test_sample_d {
         let _ = MatZq::sample_d(&basis, &2, &center, &s);
         let _ = MatZq::sample_d(&basis, &2, &center, 1.25f64);
         let _ = MatZq::sample_d(&basis, &2, &center, 15.75f32);
+    }
+
+    // As `sample_d_common` just calls `MatZq::sample_d` with identity basis
+    // and center 0, further tests are omitted.
+
+    /// Ensures that `sample_d_common` works properly.
+    #[test]
+    fn common() {
+        let modulus = Modulus::from_str("17").unwrap();
+
+        let _ = MatZq::sample_d_common(10, &modulus, 1024, 1.25f32).unwrap();
     }
 }

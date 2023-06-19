@@ -41,26 +41,20 @@ impl MatZ {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidMatrix`](MathError::InvalidMatrix)
-    /// if the number of rows or columns is `0`.
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    /// if the number of rows or columns is negative or it does not fit into an [`i64`].
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
     /// if the `n <= 1` or `s <= 0`.
-    pub fn sample_discrete_gauss<T1, T2, T3>(
+    ///
+    /// # Panics ...
+    /// - if the provided number of rows and columns are not suited to create a matrix.
+    /// For further information see [`MatZ::new`].
+    pub fn sample_discrete_gauss(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
-        n: T1,
-        center: T2,
-        s: T3,
-    ) -> Result<MatZ, MathError>
-    where
-        T1: Into<Z>,
-        T2: Into<Q>,
-        T3: Into<Q>,
-    {
-        let mut out = Self::new(num_rows, num_cols)?;
+        n: impl Into<Z>,
+        center: impl Into<Q>,
+        s: impl Into<Q>,
+    ) -> Result<MatZ, MathError> {
+        let mut out = Self::new(num_rows, num_cols);
         let n: Z = n.into();
         let center: Q = center.into();
         let s: Q = s.into();
@@ -87,13 +81,13 @@ impl MatZ {
     /// - `s`: specifies the Gaussian parameter, which is proportional
     /// to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
-    /// Returns a vector with discrete gaussian error based on a lattice point.
+    /// Returns a lattice vector sampled according to the discrete Gaussian distribution.
     ///
     /// # Example
     /// ```
     /// use qfall_math::{integer::{MatZ, Z}, rational::{MatQ, Q}};
-    /// let basis = MatZ::identity(5, 5).unwrap();
-    /// let center = MatQ::new(5, 1).unwrap();
+    /// let basis = MatZ::identity(5, 5);
+    /// let center = MatQ::new(5, 1);
     ///
     /// let sample = MatZ::sample_d(&basis, 1024, &center, 1.25f32).unwrap();
     /// ```
@@ -111,15 +105,43 @@ impl MatZ {
     /// Trapdoors for hard lattices and new cryptographic constructions.
     /// In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
     /// <https://dl.acm.org/doi/pdf/10.1145/1374376.1374407>
-    pub fn sample_d<T1, T2>(basis: &MatZ, n: T1, center: &MatQ, s: T2) -> Result<Self, MathError>
-    where
-        T1: Into<Z>,
-        T2: Into<Q>,
-    {
+    pub fn sample_d(
+        basis: &MatZ,
+        n: impl Into<Z>,
+        center: &MatQ,
+        s: impl Into<Q>,
+    ) -> Result<Self, MathError> {
         let n: Z = n.into();
         let s: Q = s.into();
 
         sample_d(basis, &n, center, &s)
+    }
+
+    /// Runs [`MatZ::sample_d`] with identity basis and center vector `0`.
+    /// The full documentation can be found at [`MatZ::sample_d`].
+    ///
+    /// Parameters:
+    /// - `dimension`: specifies the number of rows and columns
+    /// that the identity basis should have
+    /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
+    /// - `s`: specifies the Gaussian parameter, which is proportional
+    /// to the standard deviation `sigma * sqrt(2 * pi) = s`
+    ///
+    /// Returns a lattice vector sampled according to the discrete Gaussian distribution.
+    /// The lattice specified as `Z^m` for `m = dimension` and its center fixed to `0^m`.
+    ///
+    /// # Panics ...
+    /// - if the provided `dimension` is not suited to create a matrix.
+    /// For further information see [`MatZ::new`].
+    pub fn sample_d_common(
+        dimension: impl TryInto<i64> + Display + Clone,
+        n: impl Into<Z>,
+        s: impl Into<Q>,
+    ) -> Result<Self, MathError> {
+        let basis = MatZ::identity(dimension.clone(), dimension);
+        let center = MatQ::new(basis.get_num_rows(), 1);
+
+        MatZ::sample_d(&basis, n, &center, s)
     }
 }
 
@@ -174,9 +196,9 @@ mod test_sample_d {
     /// or Into<Q>, i.e. u8, i16, f32, Z, Q, ...
     #[test]
     fn availability() {
-        let basis = MatZ::identity(5, 5).unwrap();
+        let basis = MatZ::identity(5, 5);
         let n = Z::from(1024);
-        let center = MatQ::new(5, 1).unwrap();
+        let center = MatQ::new(5, 1);
         let s = Q::ONE;
 
         let _ = MatZ::sample_d(&basis, &16u16, &center, &1u16);
@@ -192,5 +214,14 @@ mod test_sample_d {
         let _ = MatZ::sample_d(&basis, &2, &center, &s);
         let _ = MatZ::sample_d(&basis, &2, &center, 1.25f64);
         let _ = MatZ::sample_d(&basis, &2, &center, 15.75f32);
+    }
+
+    // As `sample_d_common` just calls `MatZ::sample_d` with identity basis
+    // and center 0, further tests are omitted.
+
+    /// Ensures that `sample_d_common` works properly.
+    #[test]
+    fn common() {
+        let _ = MatZ::sample_d_common(10, 1024, 1.25f32).unwrap();
     }
 }

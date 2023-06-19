@@ -46,7 +46,7 @@ impl MatZq {
     /// let a = MatZq::from_mat_z_modulus(&m, &modulus);
     /// ```
     pub fn from_mat_z_modulus(matrix: &MatZ, modulus: &Modulus) -> Self {
-        let mut out = MatZq::new(matrix.get_num_rows(), matrix.get_num_columns(), modulus).unwrap();
+        let mut out = MatZq::new(matrix.get_num_rows(), matrix.get_num_columns(), modulus);
         unsafe {
             fmpz_mat_set(&mut out.matrix.mat[0], &matrix.matrix);
             _fmpz_mod_mat_reduce(&mut out.matrix);
@@ -96,8 +96,7 @@ impl FromStr for MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix)
-    /// if the matrix is not formatted in a suitable way,
-    /// the number of rows or columns is too big (must fit into [`i64`]) or
+    /// if the matrix is not formatted in a suitable way or
     /// if the number of entries in rows is unequal.
     /// - Returns a [`MathError`] of type
     /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
@@ -105,9 +104,10 @@ impl FromStr for MatZq {
     /// - Returns a [`MathError`] of type
     /// [`InvalidStringToZInput`](MathError::InvalidStringToZInput)
     /// if the modulus or an entry is not formatted correctly.
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
-    /// if the modulus is not greater than `1`.
+    ///
+    /// # Panics ...
+    /// - if the provided number of rows and columns or the modulus are not suited to create a matrix.
+    /// For further information see [`MatZq::new`].
     fn from_str(string: &str) -> Result<Self, MathError> {
         let (matrix, modulus) = match string.split_once("mod") {
             Some((matrix, modulus)) => (matrix, modulus),
@@ -123,7 +123,7 @@ impl FromStr for MatZq {
 
         let string_matrix = parse_matrix_string(matrix.trim())?;
         let (num_rows, num_cols) = find_matrix_dimensions(&string_matrix)?;
-        let mut matrix = MatZq::new(num_rows, num_cols, modulus)?;
+        let mut matrix = MatZq::new(num_rows, num_cols, modulus);
 
         // fill entries of matrix according to entries in string_matrix
         for (row_num, row) in string_matrix.iter().enumerate() {
@@ -154,7 +154,7 @@ mod test_from_mat_z_modulus {
     /// Test if the dimensions are taken over correctly
     #[test]
     fn dimensions() {
-        let matz = MatZ::new(15, 17).unwrap();
+        let matz = MatZ::new(15, 17);
         let modulus = Modulus::from(17);
 
         let matzq_1 = MatZq::from((&matz, &modulus));
@@ -169,7 +169,7 @@ mod test_from_mat_z_modulus {
     /// Test if entries are taken over correctly
     #[test]
     fn entries_taken_over_correctly() {
-        let mut matz = MatZ::new(2, 2).unwrap();
+        let mut matz = MatZ::new(2, 2);
         let modulus = Modulus::from(u64::MAX);
 
         matz.set_entry(0, 0, u64::MAX - 58).unwrap();

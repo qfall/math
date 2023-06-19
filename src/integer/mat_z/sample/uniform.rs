@@ -44,14 +44,13 @@ impl MatZ {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidMatrix`](MathError::InvalidMatrix)
-    /// if the number of rows or columns is `0`.
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    /// if the number of rows or columns is negative or it does not fit into an [`i64`].
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
     /// if the given `upper_bound` isn't at least bigger than `lower_bound + 1`,
     /// i.e. the interval size is at most `1`.
+    ///
+    /// # Panics ...
+    /// - if the provided number of rows and columns are not suited to create a matrix.
+    /// For further information see [`MatZ::new`].
     pub fn sample_uniform<T1, T2>(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
@@ -64,7 +63,7 @@ impl MatZ {
     {
         let lower_bound: Z = lower_bound.to_owned().into();
         let upper_bound: Z = upper_bound.to_owned().into();
-        let mut matrix = MatZ::new(num_rows, num_cols)?;
+        let mut matrix = MatZ::new(num_rows, num_cols);
 
         let interval_size = &upper_bound - &lower_bound;
         for row in 0..matrix.get_num_rows() {
@@ -110,6 +109,17 @@ mod test_sample_uniform {
             assert!(lower_bound <= sample);
             assert!(sample < upper_bound);
         }
+    }
+
+    /// Checks whether matrices with at least one dimension chosen smaller than `1`
+    /// or too big for an [`i64`] results in an error.
+    #[should_panic]
+    #[test]
+    fn false_size() {
+        let lower_bound = Z::from(-15);
+        let upper_bound = Z::from(15);
+
+        let _ = MatZ::sample_uniform(0, 3, &lower_bound, &upper_bound);
     }
 
     /// Checks whether providing an invalid interval results in an error.
@@ -168,23 +178,5 @@ mod test_sample_uniform {
         assert_eq!(5, mat_2.get_num_columns());
         assert_eq!(15, mat_3.get_num_rows());
         assert_eq!(20, mat_3.get_num_columns());
-    }
-
-    /// Checks whether matrices with at least one dimension chosen smaller than `1`
-    /// or too big for an [`i64`] results in an error
-    #[test]
-    fn false_sizes() {
-        let lower_bound = Z::from(-15);
-        let upper_bound = Z::from(15);
-
-        let mat_0 = MatZ::sample_uniform(0, 3, &lower_bound, &upper_bound);
-        let mat_1 = MatZ::sample_uniform(3, 0, &lower_bound, &upper_bound);
-        let mat_2 = MatZ::sample_uniform(0, -1, &lower_bound, &upper_bound);
-        let mat_3 = MatZ::sample_uniform(2, u64::MAX, &lower_bound, &upper_bound);
-
-        assert!(mat_0.is_err());
-        assert!(mat_1.is_err());
-        assert!(mat_2.is_err());
-        assert!(mat_3.is_err());
     }
 }

@@ -41,7 +41,7 @@ impl Mul<&Z> for &MatQ {
     /// let mat2 = &mat1 * &integer;
     /// ```
     fn mul(self, scalar: &Z) -> Self::Output {
-        let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns()).unwrap();
+        let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns());
         unsafe {
             fmpq_mat_scalar_mul_fmpz(&mut out.matrix, &self.matrix, &scalar.value);
         }
@@ -79,7 +79,7 @@ impl Mul<&Q> for &MatQ {
     /// let mat2 = &mat1 * &rational;
     /// ```
     fn mul(self, scalar: &Q) -> Self::Output {
-        let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns()).unwrap();
+        let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns());
         unsafe {
             fmpq_mat_scalar_mul_fmpq(&mut out.matrix, &self.matrix, &scalar.value);
         }

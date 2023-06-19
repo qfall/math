@@ -25,7 +25,7 @@ pub fn mat_z_4_4() -> Result<(), MathError> {
     let row_vector = MatZ::from_str("[[1,2,3,4]]")?;
     let col_vector = MatZ::from_str("[[1],[2],[3],[4]]")?;
     let mat_small = MatZ::from_str(mat_small_str)?;
-    let mat_large = MatZ::identity(4, 4)? * u64::MAX;
+    let mat_large = MatZ::identity(4, 4) * u64::MAX;
 
     let mat_res = &mat_small * &mat_large + &mat_large;
     let result: MatZ = &row_vector * (&mat_res * &col_vector);
@@ -43,10 +43,10 @@ pub fn mat_z_4_4() -> Result<(), MathError> {
 /// 2. multiply them together resulting in a 1x1 matrix
 /// 3. assert that the result is correct.
 pub fn mat_z_100_100() -> Result<(), MathError> {
-    let mat_a = 10 * MatZ::identity(100, 100)?;
-    let mut mat_b = MatZ::new(100, 100)?;
-    let mut row_vec_one = MatZ::new(1, 100)?;
-    let mut col_vec_one = MatZ::new(100, 1)?;
+    let mat_a = 10 * MatZ::identity(100, 100);
+    let mut mat_b = MatZ::new(100, 100);
+    let mut row_vec_one = MatZ::new(1, 100);
+    let mut col_vec_one = MatZ::new(100, 1);
     for i in 0..100 {
         col_vec_one.set_entry(i, 0, 1)?;
         row_vec_one.set_entry(0, i, 1)?;

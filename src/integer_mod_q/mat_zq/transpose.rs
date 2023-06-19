@@ -28,8 +28,7 @@ impl MatZq {
     /// assert_eq!(mat.transpose(), cmp);
     /// ```
     pub fn transpose(&self) -> Self {
-        let mut out =
-            Self::new(self.get_num_columns(), self.get_num_rows(), self.get_mod()).unwrap();
+        let mut out = Self::new(self.get_num_columns(), self.get_num_rows(), self.get_mod());
         unsafe { fmpz_mat_transpose(&mut out.matrix.mat[0], &self.matrix.mat[0]) };
         out
     }
