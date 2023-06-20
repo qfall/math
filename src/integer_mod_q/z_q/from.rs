@@ -59,7 +59,7 @@ impl Zq {
 impl<IntegerValue: Into<Z>, IntegerModulus: Into<Modulus>> From<(IntegerValue, IntegerModulus)>
     for Zq
 {
-    /// Create [`Zq`] from a tuple with the values and the modulus.
+    /// Create [`Zq`] from a tuple with the integer and the modulus.
     ///
     /// Parameters:
     /// - `value_modulus_tuple` is a tuple of integers `(value, modulus)`
@@ -288,14 +288,14 @@ mod test_from_trait {
     #[test]
     #[should_panic]
     fn modulus_zero() {
-        let _1 = Zq::from((10, 0));
+        let _ = Zq::from((10, 0));
     }
 
     /// Test with negative modulus (not valid)
     #[test]
     #[should_panic]
     fn modulus_negative() {
-        let _1 = Zq::from((10, -1));
+        let _ = Zq::from((10, -1));
     }
 }
 
