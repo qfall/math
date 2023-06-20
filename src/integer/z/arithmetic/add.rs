@@ -76,8 +76,8 @@ impl Add<&Q> for &Z {
     /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
     ///
-    /// let a: Z = Z::from_str("-42").unwrap();
-    /// let b: Q = Q::from_str("42/19").unwrap();
+    /// let a: Z = Z::from(-42);
+    /// let b: Q = Q::from((42,19));
     ///
     /// let c: Q = &a + &b;
     /// let d: Q = a + b;
@@ -236,64 +236,56 @@ mod test_add_between_types {
 mod test_add_between_z_and_q {
     use super::Z;
     use crate::rational::Q;
-    use std::str::FromStr;
+    
 
     /// Testing addition for [`Z`] and [`Q`]
     #[test]
     fn add() {
         let a: Z = Z::from(4);
-        let b: Q = Q::from_str("5/7").unwrap();
+        let b: Q = Q::from((5, 7));
         let c: Q = a + b;
-        assert_eq!(c, Q::from_str("33/7").unwrap());
+        assert_eq!(c, Q::from((33, 7)));
     }
 
     /// Testing addition for both borrowed [`Z`] and [`Q`]
     #[test]
     fn add_borrow() {
         let a: Z = Z::from(4);
-        let b: Q = Q::from_str("5/7").unwrap();
+        let b: Q = Q::from((5, 7));
         let c: Q = &a + &b;
-        assert_eq!(c, Q::from_str("33/7").unwrap());
+        assert_eq!(c, Q::from((33, 7)));
     }
 
     /// Testing addition for borrowed [`Z`] and [`Q`]
     #[test]
     fn add_first_borrowed() {
         let a: Z = Z::from(4);
-        let b: Q = Q::from_str("5/7").unwrap();
+        let b: Q = Q::from((5, 7));
         let c: Q = &a + b;
-        assert_eq!(c, Q::from_str("33/7").unwrap());
+        assert_eq!(c, Q::from((33, 7)));
     }
 
     /// Testing addition for [`Z`] and borrowed [`Q`]
     #[test]
     fn add_second_borrowed() {
         let a: Z = Z::from(4);
-        let b: Q = Q::from_str("5/7").unwrap();
+        let b: Q = Q::from((5, 7));
         let c: Q = a + &b;
-        assert_eq!(c, Q::from_str("33/7").unwrap());
+        assert_eq!(c, Q::from((33, 7)));
     }
 
     /// Testing addition for big numbers
     #[test]
     fn add_large_numbers() {
         let a: Z = Z::from(u64::MAX);
-        let b: Q = Q::from_str(&format!("1/{}", u64::MAX)).unwrap();
-        let c: Q = Q::from_str(&format!("{}/2", u64::MAX)).unwrap();
+        let b: Q = Q::from((1, u64::MAX));
+        let c: Q = Q::from((u64::MAX, 2));
 
         let d: Q = &a + b;
         let e: Q = a + c;
 
-        assert_eq!(
-            d,
-            Q::from_str(&format!("1/{}", u64::MAX)).unwrap()
-                + Q::from_str(&format!("{}/1", u64::MAX)).unwrap()
-        );
-        assert_eq!(
-            e,
-            Q::from_str(&format!("{}/1", u64::MAX)).unwrap()
-                + Q::from_str(&format!("{}/2", u64::MAX)).unwrap()
-        );
+        assert_eq!(d, Q::from((1, u64::MAX)) + Q::from((u64::MAX, 1)));
+        assert_eq!(e, Q::from((u64::MAX, 1)) + Q::from((u64::MAX, 2)));
     }
 }
 

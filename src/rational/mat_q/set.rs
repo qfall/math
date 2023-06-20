@@ -49,7 +49,7 @@ impl SetEntry<&Q> for MatQ {
     /// use qfall_math::traits::*;
     ///
     /// let mut matrix = MatQ::new(5, 10);
-    /// let value = Q::from_str("5/2").unwrap();
+    /// let value = Q::from((5, 2));
     /// matrix.set_entry(1, 1, &value).unwrap();
     /// ```
     ///
@@ -381,48 +381,48 @@ mod test_setter {
     #[test]
     fn max_int_positive() {
         let mut matrix = MatQ::new(5, 10);
-        let value1 = Q::from_str(&format!("{}/1", i64::MAX)).unwrap();
-        let value2 = Q::from_str(&format!("1/{}", i64::MAX)).unwrap();
+        let value1 = Q::from((i64::MAX, 1));
+        let value2 = Q::from((1, i64::MAX));
         matrix.set_entry(0, 0, value1).unwrap();
         matrix.set_entry(1, 1, value2).unwrap();
 
         let entry1 = matrix.get_entry(0, 0).unwrap();
         let entry2 = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!(Q::from_str(&format!("{}", i64::MAX)).unwrap(), entry1);
-        assert_eq!(Q::from_str(&format!("1/{}", i64::MAX)).unwrap(), entry2);
+        assert_eq!(Q::from(i64::MAX), entry1);
+        assert_eq!(Q::from((1, i64::MAX)), entry2);
     }
 
     /// Ensure that setting entries works with large numerators and denominators (larger than [`i64`]).
     #[test]
     fn big_positive() {
         let mut matrix = MatQ::new(5, 10);
-        let value1 = Q::from_str(&format!("{}", u64::MAX)).unwrap();
-        let value2 = Q::from_str(&format!("1/{}", u64::MAX)).unwrap();
+        let value1 = Q::from(u64::MAX);
+        let value2 = Q::from((1, u64::MAX));
         matrix.set_entry(0, 0, value1).unwrap();
         matrix.set_entry(1, 1, value2).unwrap();
 
         let entry1 = matrix.get_entry(0, 0).unwrap();
         let entry2 = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!(Q::from_str(&format!("{}", u64::MAX)).unwrap(), entry1);
-        assert_eq!(Q::from_str(&format!("1/{}", u64::MAX)).unwrap(), entry2);
+        assert_eq!(Q::from(u64::MAX), entry1);
+        assert_eq!(Q::from((1, u64::MAX)), entry2);
     }
 
     /// Ensure that setting entries works with large negative numerators and denominators.
     #[test]
     fn max_int_negative() {
         let mut matrix = MatQ::new(5, 10);
-        let value1 = Q::from_str(&format!("{}", i64::MIN)).unwrap();
-        let value2 = Q::from_str(&format!("1/{}", i64::MIN)).unwrap();
+        let value1 = Q::from(i64::MIN);
+        let value2 = Q::from((1, i64::MIN));
         matrix.set_entry(0, 0, value1).unwrap();
         matrix.set_entry(1, 1, value2).unwrap();
 
         let entry1 = matrix.get_entry(0, 0).unwrap();
         let entry2 = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!(Q::from_str(&format!("{}", i64::MIN)).unwrap(), entry1);
-        assert_eq!(Q::from_str(&format!("1/{}", i64::MIN)).unwrap(), entry2);
+        assert_eq!(Q::from(i64::MIN), entry1);
+        assert_eq!(Q::from((1, i64::MIN)), entry2);
     }
 
     /// Ensure that setting entries works with large negative numerators and denominators (larger than [`i64`]).
@@ -449,12 +449,12 @@ mod test_setter {
     #[test]
     fn getting_at_zero() {
         let mut matrix = MatQ::new(5, 10);
-        let value = Q::from_str(&format!("{}", i64::MIN)).unwrap();
+        let value = Q::from(i64::MIN);
         matrix.set_entry(0, 0, value).unwrap();
 
         let entry = matrix.get_entry(0, 0).unwrap();
 
-        assert_eq!(entry, Q::from_str(&format!("{}", i64::MIN)).unwrap());
+        assert_eq!(entry, Q::from(i64::MIN));
     }
 
     /// Ensure that a wrong number of rows yields an Error.

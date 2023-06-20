@@ -185,7 +185,7 @@ mod test_from_str {
         let matrix_str1 = "[[1/2,2/3,3/4],[4/5,5/6,6/7]]";
 
         assert_eq!(
-            Q::from_str("1/2").unwrap(),
+            Q::from((1, 2)),
             MatQ::from_str(matrix_str1)
                 .unwrap()
                 .get_entry(0, 0)
@@ -283,7 +283,7 @@ mod test_from_str {
         let matrix_str1 = "[[  1/2, 2/3 ,  3/4  ],[3/4 ,4/5,5/6 ]]";
 
         assert_eq!(
-            Q::from_str("1/2").unwrap(),
+            Q::from((1, 2)),
             MatQ::from_str(matrix_str1)
                 .unwrap()
                 .get_entry(0, 0)

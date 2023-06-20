@@ -691,7 +691,6 @@ mod test_try_from_int_int {
 mod test_from_z {
     use super::Q;
     use crate::integer::Z;
-    use std::str::FromStr;
 
     /// Ensure that the `from_int` function is available and works correctly for
     /// small and large instances of [`Z`] and structs implementing [`Into<Z>`].
@@ -700,10 +699,7 @@ mod test_from_z {
         let z_1 = Z::from(u64::MAX);
         let z_2 = Z::from(17);
 
-        assert_eq!(
-            Q::from_str(&u64::MAX.to_string()).unwrap(),
-            Q::from_int(z_1)
-        );
+        assert_eq!(Q::from(u64::MAX), Q::from_int(z_1));
         assert_eq!(Q::from(17), Q::from_int(z_2));
     }
 
@@ -714,7 +710,7 @@ mod test_from_z {
         let z_1 = Z::from(u64::MAX);
         let z_2 = Z::from(17);
 
-        assert_eq!(Q::from_str(&u64::MAX.to_string()).unwrap(), Q::from(z_1));
+        assert_eq!(Q::from(u64::MAX), Q::from(z_1));
         assert_eq!(Q::from(17), Q::from(z_2));
     }
 

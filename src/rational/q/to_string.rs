@@ -28,7 +28,7 @@ impl fmt::Display for Q {
     /// use qfall_math::rational::Q;
     /// use core::fmt;
     ///
-    /// let rational = Q::from_str("-1/235").unwrap();
+    /// let rational = Q::from((-1, 235));
     /// println!("{}", rational);
     /// ```
     ///
@@ -37,7 +37,7 @@ impl fmt::Display for Q {
     /// use qfall_math::rational::Q;
     /// use core::fmt;
     ///
-    /// let rational = Q::from_str("-1/235").unwrap();
+    /// let rational = Q::from((-1, 235));
     /// let integer_string = rational.to_string();
     /// ```
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -67,7 +67,7 @@ mod test_to_string {
     /// Tests whether a large positive rational works in a roundtrip
     #[test]
     fn working_large_positive_nom() {
-        let cmp = Q::from_str(&u64::MAX.to_string()).unwrap();
+        let cmp = Q::from(u64::MAX);
 
         assert_eq!(u64::MAX.to_string(), cmp.to_string())
     }
@@ -99,7 +99,7 @@ mod test_to_string {
     /// Tests whether a positive rational works in a roundtrip
     #[test]
     fn working_positive() {
-        let cmp = Q::from_str("42/235").unwrap();
+        let cmp = Q::from((42, 235));
 
         assert_eq!("42/235", cmp.to_string())
     }
@@ -107,7 +107,7 @@ mod test_to_string {
     /// Tests whether a negative rational works in a roundtrip
     #[test]
     fn working_negative() {
-        let cmp = Q::from_str("-42/235").unwrap();
+        let cmp = Q::from((-42, 235));
 
         assert_eq!("-42/235", cmp.to_string())
     }
@@ -116,7 +116,7 @@ mod test_to_string {
     /// string that can be used to create a [`Q`]
     #[test]
     fn working_use_result_of_to_string_as_input() {
-        let cmp = Q::from_str("42/235").unwrap();
+        let cmp = Q::from((42, 235));
 
         let cmp_string2 = cmp.to_string();
 

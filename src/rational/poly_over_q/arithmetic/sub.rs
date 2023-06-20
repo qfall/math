@@ -131,7 +131,7 @@ mod test_sub {
             c == PolyOverQ::from_str(&format!(
                 "3  0 {} {}",
                 (Q::from_str(&format!("{}/{}", i64::MIN, u128::MAX - 126)).unwrap()
-                    - Q::from_str(&format!("{}", i64::MAX)).unwrap()),
+                    - Q::from(i64::MAX)),
                 i64::MAX
             ))
             .unwrap()

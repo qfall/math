@@ -176,13 +176,9 @@ mod test_mul {
         let mat = MatQ::from_str(&format!("[[{},1],[0,2]]", i64::MAX)).unwrap();
         let vec = MatQ::from_str(&format!("[[1/{}],[0]]", i64::MAX)).unwrap();
         let mut cmp = MatQ::new(2, 1);
-        let max: Q = Q::from_str(format!("{}", i64::MAX).as_str()).unwrap();
-        cmp.set_entry(
-            0,
-            0,
-            &(&max * Q::from_str(format!("1/{}", i64::MAX).as_str()).unwrap()),
-        )
-        .unwrap();
+        let max: Q = Q::from(i64::MAX);
+        cmp.set_entry(0, 0, &(&max * Q::from((1, i64::MAX))))
+            .unwrap();
 
         assert_eq!(cmp, mat * vec);
     }

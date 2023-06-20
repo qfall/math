@@ -25,8 +25,8 @@ impl PartialEq for Q {
     /// ```
     /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
-    /// let a: Q = Q::from_str("42/24").unwrap();
-    /// let b: Q = Q::from_str("24/42").unwrap();
+    /// let a: Q = Q::from((42, 24));
+    /// let b: Q = Q::from((24, 42));
     ///
     /// // These are all equivalent and return false.
     /// let compared: bool = (a == b);
@@ -268,8 +268,8 @@ mod test_partial_eq {
     /// Ensure that two elements are equal
     #[test]
     fn equal_rational() {
-        let a = Q::from_str("1/2").unwrap();
-        let b = Q::from_str("2/4").unwrap();
+        let a = Q::from((1, 2));
+        let b = Q::from((2, 4));
 
         assert_eq!(a, b);
     }
@@ -277,8 +277,8 @@ mod test_partial_eq {
     /// assert not equal when denominator is different
     #[test]
     fn not_equal_different_denominator() {
-        let a = Q::from_str("1/2").unwrap();
-        let b = Q::from_str("1/4").unwrap();
+        let a = Q::from((1, 2));
+        let b = Q::from((1, 4));
 
         assert_ne!(a, b);
     }
@@ -286,8 +286,8 @@ mod test_partial_eq {
     /// assert equal for `0` when denominator is different
     #[test]
     fn zero_equal_different_denominator() {
-        let a = Q::from_str("0/2").unwrap();
-        let b = Q::from_str("0/4").unwrap();
+        let a = Q::from((0, 2));
+        let b = Q::from((0, 4));
 
         assert_eq!(a, b);
     }

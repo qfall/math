@@ -154,8 +154,7 @@ mod test_add {
             MatQ::from_str(&format!(
                 "[[2, 4, -{}],[6, 5, {}]]",
                 u64::MAX,
-                Q::from_str(format!("{}", i64::MAX).as_str()).unwrap()
-                    + Q::from_str(format!("1/{}", i64::MAX).as_str()).unwrap()
+                Q::from(i64::MAX) + Q::from((1, i64::MAX))
             ))
             .unwrap()
         );

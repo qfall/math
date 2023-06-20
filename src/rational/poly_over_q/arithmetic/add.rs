@@ -119,8 +119,7 @@ mod test_add {
             PolyOverQ::from_str(&format!(
                 "3  {} {} {}",
                 u128::from(u64::MAX) * 2,
-                (Q::from_str(&format!("{}/{}", i64::MIN, u128::MAX)).unwrap()
-                    + Q::from_str(&format!("{}", i64::MAX)).unwrap()),
+                (Q::from_str(&format!("{}/{}", i64::MIN, u128::MAX)).unwrap() + Q::from(i64::MAX)),
                 i64::MAX
             ))
             .unwrap()

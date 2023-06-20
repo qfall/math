@@ -23,7 +23,7 @@ impl Clone for Q {
     /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
     ///
-    /// let a = Q::from_str("3/4").unwrap();
+    /// let a = Q::from((3, 4));
     /// let b = a.clone();
     /// ```
     fn clone(&self) -> Self {
@@ -42,7 +42,7 @@ impl Drop for Q {
     /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
     /// {
-    ///     let a = Q::from_str("3/4").unwrap();
+    ///     let a = Q::from((3, 4));
     /// } // as a's scope ends here, it get's dropped
     /// ```
     ///
@@ -50,7 +50,7 @@ impl Drop for Q {
     /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
     ///
-    /// let a = Q::from_str("3/4").unwrap();
+    /// let a = Q::from((3, 4));
     /// drop(a); // explicitly drops a's value
     /// ```
     fn drop(&mut self) {
@@ -139,10 +139,10 @@ mod test_clone {
     fn keep_alive() {
         let a: Q;
         {
-            let b = Q::from_str("5/1").unwrap();
+            let b = Q::from((5, 1));
             a = b.clone();
         }
-        assert_eq!(a, Q::from_str("5/1").unwrap());
+        assert_eq!(a, Q::from((5, 1)));
     }
 }
 
