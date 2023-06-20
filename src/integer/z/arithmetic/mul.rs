@@ -351,7 +351,6 @@ mod test_mul_between_z_and_zq {
 mod test_mul_between_z_and_q {
     use super::Z;
     use crate::rational::Q;
-    
 
     /// Testing multiplication for [`Z`] and [`Q`]
     #[test]

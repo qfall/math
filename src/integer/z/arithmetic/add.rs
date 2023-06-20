@@ -236,7 +236,6 @@ mod test_add_between_types {
 mod test_add_between_z_and_q {
     use super::Z;
     use crate::rational::Q;
-    
 
     /// Testing addition for [`Z`] and [`Q`]
     #[test]

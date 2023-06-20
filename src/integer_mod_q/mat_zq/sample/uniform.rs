@@ -69,7 +69,6 @@ mod test_sample_uniform {
         integer::Z,
         integer_mod_q::{MatZq, Modulus},
     };
-    
 
     /// Checks whether the boundaries of the interval are kept for small moduli.
     #[test]

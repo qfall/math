@@ -209,7 +209,6 @@ mod test_sample_uniform {
 #[cfg(test)]
 mod test_sample_prime_uniform {
     use crate::{integer::Z, integer_mod_q::Modulus};
-    
 
     /// Checks whether `sample_prime_uniform` outputs a prime sample every time.
     #[test]

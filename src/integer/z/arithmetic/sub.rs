@@ -295,7 +295,6 @@ mod test_sub {
 mod test_sub_between_z_and_q {
     use super::Z;
     use crate::rational::Q;
-    
 
     /// Testing subtraction for [`Z`] and [`Q`]
     #[test]

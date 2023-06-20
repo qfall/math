@@ -459,7 +459,6 @@ mod test_get_num {
 #[cfg(test)]
 mod test_mod {
     use crate::integer_mod_q::{MatZq, Modulus};
-    
 
     /// Ensure that the getter for modulus works correctly.
     #[test]

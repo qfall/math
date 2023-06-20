@@ -55,7 +55,6 @@ mod test_sample_uniform {
         integer::Z,
         integer_mod_q::{Modulus, Zq},
     };
-    
 
     /// Checks whether the boundaries of the interval are kept for small moduli.
     /// These should be protected by the sampling algorithm and [`Zq`]s instantiation.

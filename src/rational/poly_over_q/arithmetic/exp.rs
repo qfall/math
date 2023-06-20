@@ -43,7 +43,6 @@ mod test_exp_series {
         traits::{Evaluate, GetCoefficient},
     };
     use flint_sys::fmpq::fmpq_get_d;
-    
 
     #[test]
     fn coefficient_set_correctly() {

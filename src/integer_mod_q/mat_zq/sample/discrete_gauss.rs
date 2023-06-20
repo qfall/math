@@ -193,7 +193,6 @@ mod test_sample_d {
         integer_mod_q::{MatZq, Modulus},
         rational::{MatQ, Q},
     };
-    
 
     // Appropriate inputs were tested in utils and thus omitted here.
     // This function only allows for a broader availability, which is tested here.

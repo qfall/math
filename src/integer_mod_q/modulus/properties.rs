@@ -32,7 +32,6 @@ impl Modulus {
 #[cfg(test)]
 mod test_is_prime {
     use crate::integer_mod_q::Modulus;
-    
 
     /// Ensure that if a [`Modulus`] is instantiated with a prime, `true` is returned
     #[test]
