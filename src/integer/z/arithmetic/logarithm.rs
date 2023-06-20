@@ -29,7 +29,7 @@ impl Z {
     /// use qfall_math::integer::Z;
     ///
     /// let value = Z::from(15);
-    /// let log = value.log_ceil(&4).unwrap();
+    /// let log = value.log_ceil(4).unwrap();
     ///
     /// assert_eq!(Z::from(2), log);
     /// ```
@@ -37,20 +37,17 @@ impl Z {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidBase`](MathError::InvalidBase) if the `base` is not greater than `1`.
     /// - Returns a [`MathError`] of type
-    /// [`NotNaturalNumber`](MathError::NotNaturalNumber) if the `self` is not
+    /// [`NotPositiveNumber`](MathError::NotPositiveNumber) if `self` is not
     ///  greater than `0`.
-    pub fn log_ceil<T>(&self, base: &T) -> Result<Z, MathError>
-    where
-        T: Into<Z> + Clone,
-    {
-        let base = base.clone().into();
+    pub fn log_ceil(&self, base: impl Into<Z>) -> Result<Z, MathError> {
+        let base: Z = base.into();
         if base <= Z::ONE {
             Err(MathError::InvalidBase(format!(
                 "The base must be greater than 1, but the provided is {}",
                 base
             )))
         } else if self <= &Z::ZERO {
-            Err(MathError::NotNaturalNumber(self.to_string()))
+            Err(MathError::NotPositiveNumber(self.to_string()))
         } else {
             Ok(Z::from(unsafe { fmpz_clog(&self.value, &base.value) }))
         }
@@ -73,7 +70,7 @@ impl Z {
     /// use qfall_math::integer::Z;
     ///
     /// let value = Z::from(15);
-    /// let log = value.log_floor(&4).unwrap();
+    /// let log = value.log_floor(4).unwrap();
     ///
     /// assert_eq!(Z::from(1), log);
     /// ```
@@ -81,20 +78,17 @@ impl Z {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidBase`](MathError::InvalidBase) if the `base` is not greater than `1`.
     /// - Returns a [`MathError`] of type
-    /// [`NotNaturalNumber`](MathError::NotNaturalNumber) if the `self` is not
+    /// [`NotPositiveNumber`](MathError::NotPositiveNumber) if `self` is not
     ///  greater than `0`.
-    pub fn log_floor<T>(&self, base: &T) -> Result<Z, MathError>
-    where
-        T: Into<Z> + Clone,
-    {
-        let base = base.clone().into();
+    pub fn log_floor(&self, base: impl Into<Z>) -> Result<Z, MathError> {
+        let base: Z = base.into();
         if base <= Z::ONE {
             Err(MathError::InvalidBase(format!(
                 "The base must be greater than 1, but the provided is {}",
                 base
             )))
         } else if self <= &Z::ZERO {
-            Err(MathError::NotNaturalNumber(self.to_string()))
+            Err(MathError::NotPositiveNumber(self.to_string()))
         } else {
             Ok(Z::from(unsafe { fmpz_flog(&self.value, &base.value) }))
         }
@@ -121,11 +115,11 @@ impl Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [`NotNaturalNumber`](MathError::NotNaturalNumber) if the `self` is not
+    /// [`NotPositiveNumber`](MathError::NotPositiveNumber) if `self` is not
     ///  greater than `0`.
     pub fn ln(&self) -> Result<Q, MathError> {
         if self <= &Z::ZERO {
-            Err(MathError::NotNaturalNumber(self.to_string()))
+            Err(MathError::NotPositiveNumber(self.to_string()))
         } else {
             Ok(Q::from(unsafe { fmpz_dlog(&self.value) }))
         }
@@ -149,7 +143,7 @@ impl Z {
     /// use qfall_math::rational::Q;
     ///
     /// let value = Z::from(2);
-    /// let log = value.log(&2).unwrap();
+    /// let log = value.log(2).unwrap();
     ///
     /// assert_eq!(Q::ONE, log);
     /// ```
@@ -158,13 +152,10 @@ impl Z {
     /// - Returns a [`MathError`] of type [`InvalidBase`](MathError::InvalidBase)
     /// if the `base` is not greater than `1`.
     /// - Returns a [`MathError`] of type
-    /// [`NotNaturalNumber`](MathError::NotNaturalNumber) if `self` is not
+    /// [`NotPositiveNumber`](MathError::NotPositiveNumber) if `self` is not
     ///  greater than `0`.
-    pub fn log<T>(&self, base: &T) -> Result<Q, MathError>
-    where
-        T: Into<Z> + Clone,
-    {
-        let base: Z = base.clone().into();
+    pub fn log(&self, base: impl Into<Z>) -> Result<Q, MathError> {
+        let base: Z = base.into();
         if base <= Z::ONE {
             return Err(MathError::InvalidBase(format!(
                 "The base must be greater than 1, but the provided is {}",
@@ -280,7 +271,7 @@ mod test_log_floor {
         );
     }
 
-    /// Ensures that `log_floor` is available for all important types
+    /// Ensures that `log_floor` is available for types
     /// that can be casted to a [`Z`] instance like u8, u16, i32, i64, ...
     #[test]
     fn availability() {
@@ -346,7 +337,7 @@ mod test_log {
         assert!(Z::from(i64::MIN).log(&base).is_err());
     }
 
-    /// checks whether the logarithm computation works correctly for small values
+    /// Checks whether the logarithm computation works correctly for small values
     #[test]
     fn small_values() {
         let z_0 = Z::from(1);
@@ -368,7 +359,7 @@ mod test_log {
         assert!(cmp_1.distance(res_3) < max_distance);
     }
 
-    /// checks whether the logarithm computation works correctly for large values
+    /// Checks whether the logarithm computation works correctly for large values
     #[test]
     fn large_values() {
         let z_0 = Z::from(i64::MAX as u64 + 1);

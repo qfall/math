@@ -55,7 +55,7 @@ use thiserror::Error;
 /// - `MismatchingVectorDimensions` is thrown if an operation of two vectors is
 /// called for which their dimensions do not match
 /// - `NotInvertible` is thrown if a matrix is not invertible
-/// - `NotNaturalNumber` is thrown if the function expects a natural number,
+/// - `NotPositiveNumber` is thrown if the function expects a positive number,
 /// but a number smaller than `1` is provided
 /// - `NoSquareMatrix` is thrown if a matrix is not square
 /// - `OutOfBounds` is thrown if a provided index is not in a desired range
@@ -182,9 +182,9 @@ pub enum MathError {
     #[error("the matrix could not be inverted. {0}")]
     NotInvertible(String),
 
-    /// if an integer is not a natural number (excluding the `´0`)
-    #[error("invalid integer. The provided value needs to be a natural number and is {0}")]
-    NotNaturalNumber(String),
+    /// if an integer is not a positive number (excluding the `´0`)
+    #[error("invalid integer. The provided value needs to be a positive number and is {0}")]
+    NotPositiveNumber(String),
 
     /// if a matrix is not square
     #[error("the matrix is not square {0}")]
