@@ -40,7 +40,7 @@ impl Zq {
     /// use qfall_math::integer_mod_q::{Zq, Modulus};
     /// use std::str::FromStr;
     /// let value = Zq::from((4, 7));
-    /// let cmp = Modulus::from_str("7").unwrap();
+    /// let cmp = Modulus::from(7);
     ///
     /// let modulus = value.get_mod();
     ///

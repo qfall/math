@@ -298,7 +298,6 @@ mod test_get_entry {
         integer_mod_q::MatZq,
         traits::{GetEntry, SetEntry},
     };
-    
 
     /// Ensure that getting entries works on the edge.
     #[test]
@@ -460,14 +459,14 @@ mod test_get_num {
 #[cfg(test)]
 mod test_mod {
     use crate::integer_mod_q::{MatZq, Modulus};
-    use std::str::FromStr;
+    
 
     /// Ensure that the getter for modulus works correctly.
     #[test]
     fn get_mod() {
         let matrix = MatZq::new(5, 10, 7);
 
-        assert_eq!(matrix.get_mod(), Modulus::from_str("7").unwrap());
+        assert_eq!(matrix.get_mod(), Modulus::from(7));
     }
 
     /// Ensure that the getter for modulus works with large numbers.

@@ -193,7 +193,7 @@ mod test_sample_d {
         integer_mod_q::{MatZq, Modulus},
         rational::{MatQ, Q},
     };
-    use std::str::FromStr;
+    
 
     // Appropriate inputs were tested in utils and thus omitted here.
     // This function only allows for a broader availability, which is tested here.
@@ -229,7 +229,7 @@ mod test_sample_d {
     /// Ensures that `sample_d_common` works properly.
     #[test]
     fn common() {
-        let modulus = Modulus::from_str("17").unwrap();
+        let modulus = Modulus::from(17);
 
         let _ = MatZq::sample_d_common(10, &modulus, 1024, 1.25f32).unwrap();
     }

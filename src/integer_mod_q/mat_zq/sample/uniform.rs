@@ -69,7 +69,7 @@ mod test_sample_uniform {
         integer::Z,
         integer_mod_q::{MatZq, Modulus},
     };
-    use std::str::FromStr;
+    
 
     /// Checks whether the boundaries of the interval are kept for small moduli.
     #[test]
@@ -115,7 +115,7 @@ mod test_sample_uniform {
     /// implementing Into<Z> + Clone, i.e. u8, u16, u32, u64, i8, ...
     #[test]
     fn availability() {
-        let modulus = Modulus::from_str("7").unwrap();
+        let modulus = Modulus::from(7);
         let z = Z::from(7);
 
         let _ = MatZq::sample_uniform(1, 1, &7u8);

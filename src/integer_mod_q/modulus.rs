@@ -41,6 +41,7 @@ mod to_string;
 /// let value = Z::from(10);
 ///
 /// // instantiations
+/// let _ = Modulus::from(10);
 /// let a = Modulus::from_str("42").unwrap();
 /// let b: Modulus = (&value).try_into().unwrap();
 ///

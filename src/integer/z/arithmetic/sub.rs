@@ -115,7 +115,7 @@ impl Sub<&Zq> for &Z {
     /// use std::str::FromStr;
     ///
     /// let a: Z = Z::from(42);
-    /// let b: Zq = Zq::from(42, 19);
+    /// let b: Zq = Zq::from((42, 19));
     ///
     /// let c: Zq = &a - &b;
     /// let d: Zq = a - b;

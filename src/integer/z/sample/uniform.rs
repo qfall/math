@@ -209,7 +209,7 @@ mod test_sample_uniform {
 #[cfg(test)]
 mod test_sample_prime_uniform {
     use crate::{integer::Z, integer_mod_q::Modulus};
-    use std::str::FromStr;
+    
 
     /// Checks whether `sample_prime_uniform` outputs a prime sample every time.
     #[test]
@@ -287,7 +287,7 @@ mod test_sample_prime_uniform {
     /// implementing Into<Z>, i.e. u8, u16, u32, u64, i8, ...
     #[test]
     fn availability() {
-        let modulus = Modulus::from_str("7").unwrap();
+        let modulus = Modulus::from(7);
         let z = Z::from(7);
 
         let _ = Z::sample_prime_uniform(&0u16, &7u8);

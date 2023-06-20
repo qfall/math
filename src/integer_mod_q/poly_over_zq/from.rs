@@ -33,7 +33,7 @@ impl From<&Modulus> for PolyOverZq {
     /// use qfall_math::integer_mod_q::{PolyOverZq, Modulus};
     /// use std::str::FromStr;
     ///
-    /// let modulus = Modulus::from_str("100").unwrap();
+    /// let modulus = Modulus::from(100);
     /// let poly = PolyOverZq::from(&modulus);
     ///
     /// let poly_cmp = PolyOverZq::from_str("0 mod 100").unwrap();
@@ -63,7 +63,7 @@ impl From<(&PolyOverZ, &Modulus)> for PolyOverZq {
     /// use std::str::FromStr;
     ///
     /// let poly = PolyOverZ::from_str("4  0 1 102 3").unwrap();
-    /// let modulus = Modulus::from_str("100").unwrap();
+    /// let modulus = Modulus::from(100);
     ///
     /// let mod_poly = PolyOverZq::from((&poly, &modulus));
     ///
