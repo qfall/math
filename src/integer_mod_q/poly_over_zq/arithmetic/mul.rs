@@ -43,7 +43,7 @@ impl Mul for &PolyOverZq {
     /// ```
     ///
     /// # Panics ...
-    /// - ... if the moduli of both [`PolyOverZq`] mismatch.
+    /// - if the moduli of both [`PolyOverZq`] mismatch.
     fn mul(self, other: Self) -> Self::Output {
         self.mul_safe(other).unwrap()
     }

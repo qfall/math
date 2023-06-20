@@ -41,10 +41,10 @@ impl MatZq {
     /// assert_eq!(y, mat*x);
     /// ```
     ///
-    /// Panics ...
-    /// - ... if the the number of rows of the matrix and the syndrome are different
-    /// - ... if the syndrome is not a column vector
-    /// - ... if the moduli mismatch
+    /// # Panics ...
+    /// - if the the number of rows of the matrix and the syndrome are different.
+    /// - if the syndrome is not a column vector.
+    /// - if the moduli mismatch.
     pub fn solve_gaussian_elimination(&self, y: &MatZq) -> Option<MatZq> {
         assert!(y.is_column_vector(), "The syndrome is not a column vector.");
         assert_eq!(

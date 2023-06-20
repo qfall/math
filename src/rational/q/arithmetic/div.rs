@@ -45,7 +45,7 @@ impl Div for &Q {
     /// ```
     ///
     /// # Panics ...
-    /// - ... if the `other` value is `0`.
+    /// - if the `other` value is `0`.
     fn div(self, other: Self) -> Self::Output {
         self.div_safe(other).unwrap()
     }

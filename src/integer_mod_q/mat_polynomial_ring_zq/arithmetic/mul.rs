@@ -46,9 +46,9 @@ impl Mul for &MatPolynomialRingZq {
     /// let poly_ring_mat6: MatPolynomialRingZq = poly_ring_mat3 * &poly_ring_mat5;
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Panics if the dimensions of `self` and `other` do not match for multiplication.
-    /// - Panics if the moduli mismatch.
+    /// # Panics ...
+    /// - if the dimensions of `self` and `other` do not match for multiplication.
+    /// - if the moduli mismatch.
     fn mul(self, other: Self) -> Self::Output {
         self.mul_safe(other).unwrap()
     }

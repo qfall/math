@@ -49,7 +49,7 @@ impl Add for &PolynomialRingZq {
     /// ```
     ///
     /// # Panics ...
-    /// - ... if the moduli of both [`PolynomialRingZq`] mismatch.
+    /// - if the moduli of both [`PolynomialRingZq`] mismatch.
     fn add(self, other: Self) -> Self::Output {
         self.add_safe(other).unwrap()
     }

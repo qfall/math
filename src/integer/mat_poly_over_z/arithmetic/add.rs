@@ -42,7 +42,7 @@ impl Add for &MatPolyOverZ {
     /// ```
     ///
     /// # Panics ...
-    /// - ... if the dimensions of both matrices mismatch
+    /// - if the dimensions of both matrices mismatch.
     fn add(self, other: Self) -> Self::Output {
         self.add_safe(other).unwrap()
     }

@@ -92,8 +92,8 @@ impl<Integer: AsInteger + IntoModulus> From<Integer> for Modulus {
     /// let _ = Modulus::from(Z::from(42));
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Panics if the provided value is not greater than `1`.
+    /// # Panics ...
+    /// - if the provided value is not greater than `1`.
     fn from(value: Integer) -> Self {
         match value.get_fmpz_ref() {
             Some(val) => Modulus::from_fmpz_ref(val).unwrap(),

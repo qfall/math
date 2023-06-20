@@ -47,7 +47,9 @@ impl PolyOverZq {
     /// if the given `modulus` isn't bigger than `1`, i.e. the interval size is at most `1`.
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
     /// the `nr_coeffs` is negative or it does not fit into an [`i64`].
-    /// - Panics if the provided modulus is not greater than `1`.
+    ///
+    /// # Panics ...
+    /// - if the provided modulus is not greater than `1`.
     pub fn sample_uniform(
         nr_coeffs: impl TryInto<i64> + Display + Copy,
         modulus: impl Into<Z>,

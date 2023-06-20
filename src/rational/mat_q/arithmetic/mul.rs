@@ -46,7 +46,7 @@ impl Mul for &MatQ {
     /// ```
     ///
     /// # Panics ...
-    /// - ... if the dimensions of `self` and `other` do not match for multiplication.
+    /// - if the dimensions of `self` and `other` do not match for multiplication.
     fn mul(self, other: Self) -> Self::Output {
         self.mul_safe(other).unwrap()
     }
@@ -82,8 +82,8 @@ impl Mul<&MatZ> for &MatQ {
     /// let f = c * &e;
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Panics if the dimensions of `self` and `other` do not match for multiplication.
+    /// # Panics ...
+    /// - if the dimensions of `self` and `other` do not match for multiplication.
     fn mul(self, other: &MatZ) -> Self::Output {
         if self.get_num_columns() != other.get_num_rows() {
             panic!("Tried to multiply matrices with mismatching matrix dimensions.");

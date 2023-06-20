@@ -131,8 +131,8 @@ impl<T: Into<Q>> From<T> for PolyOverQ {
     /// assert_eq!(one_half.get_degree(), 0);
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Panics if the provided value can not be converted into a [`Q`].
+    /// # Panics ...
+    /// - if the provided value can not be converted into a [`Q`].
     ///   For example, because of a division by zero.
     fn from(value: T) -> Self {
         let mut out = PolyOverQ::default();

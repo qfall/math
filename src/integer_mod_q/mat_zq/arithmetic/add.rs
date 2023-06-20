@@ -42,8 +42,8 @@ impl Add for &MatZq {
     /// ```
     ///
     /// # Panics ...
-    /// - ... if the dimensions of both matrices mismatch
-    /// - ... if the moduli mismatch
+    /// - if the dimensions of both matrices mismatch.
+    /// - if the moduli mismatch.
     fn add(self, other: Self) -> Self::Output {
         self.add_safe(other).unwrap()
     }

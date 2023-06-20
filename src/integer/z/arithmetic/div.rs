@@ -157,7 +157,7 @@ impl Div for &Z {
     /// ```
     ///
     /// # Panics ...
-    /// - ... if the divisor is `0`.
+    /// - if the divisor is `0`.
     fn div(self, other: Self) -> Self::Output {
         Q::try_from((self, other)).unwrap()
     }
@@ -238,7 +238,7 @@ impl Div<&Q> for &Z {
     /// ```
     ///
     /// # Panics ...
-    /// - ... if the divisor is `0`
+    /// - if the divisor is `0`.
     fn div(self, other: &Q) -> Self::Output {
         if other == &Q::ZERO {
             panic!(
@@ -487,7 +487,7 @@ mod test_div {
         let e: Q = a / b;
         let f: Q = c / d;
 
-        assert_eq!(e, Q::from_int(Z::from(2).pow(62).unwrap()));
+        assert_eq!(e, Q::from(Z::from(2).pow(62).unwrap()));
         assert_eq!(f, Q::MINUS_ONE);
     }
 }
@@ -496,7 +496,6 @@ mod test_div {
 mod test_div_between_z_and_q {
     use super::Z;
     use crate::rational::Q;
-    
 
     /// Testing division for [`Z`] and [`Q`]
     #[test]

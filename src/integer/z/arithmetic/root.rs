@@ -201,8 +201,8 @@ mod test_sqrt_precision {
     /// # Errors and Failures
     /// - Returns a [`MathError`] if a type conversion failed.
     ///
-    /// # Panics
-    /// - Panics if at any point the calculated solution is not matching
+    /// # Panics ...
+    /// - if at any point the calculated solution is not matching
     ///   the given solution.
     fn compare_solutions(value: Z, solutions: Vec<&str>) -> Result<(), MathError> {
         let max_precision = Q::from_str(solutions.last().unwrap())?.get_denominator();

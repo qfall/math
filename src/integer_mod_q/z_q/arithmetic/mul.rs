@@ -46,8 +46,8 @@ impl Mul for &Zq {
     /// let f: Zq = c * &e;
     /// ```
     ///
-    /// # Panics
-    /// - Panics if the moduli of both [`Zq`] mismatch.
+    /// # Panics ...
+    /// - if the moduli of both [`Zq`] mismatch.
     fn mul(self, other: Self) -> Self::Output {
         self.mul_safe(other).unwrap()
     }

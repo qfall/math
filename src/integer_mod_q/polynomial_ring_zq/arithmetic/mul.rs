@@ -49,7 +49,7 @@ impl Mul for &PolynomialRingZq {
     /// ```
     ///
     /// # Panics ...
-    /// - ... if the moduli of both [`PolynomialRingZq`] mismatch.
+    /// - if the moduli of both [`PolynomialRingZq`] mismatch.
     fn mul(self, other: Self) -> Self::Output {
         self.mul_safe(other).unwrap()
     }

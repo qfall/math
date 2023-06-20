@@ -47,8 +47,8 @@ impl Add for &MatPolynomialRingZq {
     /// ```
     ///
     /// # Panics ...
-    /// - ... if the moduli of both [`MatPolynomialRingZq`] mismatch.
-    /// - ... if the dimensions of both [`MatPolynomialRingZq`] mismatch.
+    /// - if the moduli of both [`MatPolynomialRingZq`] mismatch.
+    /// - if the dimensions of both [`MatPolynomialRingZq`] mismatch.
     fn add(self, other: Self) -> Self::Output {
         self.add_safe(other).unwrap()
     }

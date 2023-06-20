@@ -80,7 +80,7 @@ impl Evaluate<&Zq, Zq> for PolyOverZq {
     /// ```
     ///
     /// # Panics ...
-    /// - ... if the moduli of the polynomial and the input mismatch.
+    /// - if the moduli of the polynomial and the input mismatch.
     fn evaluate(&self, value: &Zq) -> Zq {
         self.evaluate_safe(value)
             .expect("The moduli of the provided inputs mismatch")
