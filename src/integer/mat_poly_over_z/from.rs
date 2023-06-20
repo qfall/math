@@ -95,10 +95,10 @@ impl From<&MatZ> for MatPolyOverZ {
     /// Initialize a [`MatPolyOverZ`] with constant polynomials defined by a [`MatZ`].
     ///
     /// # Parameters
-    /// - `constants`: A matrix with constant integers.
+    /// - `matrix`: A matrix with constant integers.
     ///
     /// Returns a matrix of polynomial that all have the first coefficient
-    /// set to the value in the constants matrix.
+    /// set to the value in the matrix.
     ///
     /// # Examples
     /// ```
@@ -107,17 +107,17 @@ impl From<&MatZ> for MatPolyOverZ {
     /// let mat_z = MatZ::identity(10,10);
     /// let mat_poly = MatPolyOverZ::from(&mat_z);
     /// ```
-    fn from(constants: &MatZ) -> Self {
-        let num_rows = constants.get_num_rows();
-        let num_columns = constants.get_num_columns();
-        let mut out = MatPolyOverZ::new(num_rows, constants.get_num_columns());
+    fn from(matrix: &MatZ) -> Self {
+        let num_rows = matrix.get_num_rows();
+        let num_columns = matrix.get_num_columns();
+        let mut out = MatPolyOverZ::new(num_rows, num_columns);
 
         for row in 0..num_rows {
             for column in 0..num_columns {
                 out.set_entry(
                     row,
                     column,
-                    PolyOverZ::from(constants.get_entry(row, column).unwrap()),
+                    PolyOverZ::from(matrix.get_entry(row, column).unwrap()),
                 )
                 .unwrap();
             }
@@ -234,6 +234,9 @@ mod test_from_str {
 #[cfg(test)]
 mod test_from_matz {
     use super::*;
+
+    /// Ensure that [`MatPolyOverZ`] can be initialized from [`MatZ`] with small
+    /// values. Validate that the correct [`MatPolyOverZ`] is created.
     #[test]
     fn small() {
         let matz_str = "[[1,2,3],[4,5,6]]";
@@ -246,6 +249,8 @@ mod test_from_matz {
         assert_eq!(mat_poly, mat_poly_cmp);
     }
 
+    /// Ensure that [`MatPolyOverZ`] can be initialized from [`MatZ`] with large
+    /// values. Validate that the correct [`MatPolyOverZ`] is created.
     #[test]
     fn large() {
         let matz_str = format!("[[{}],[{}]]", u64::MAX, i64::MIN);
@@ -258,6 +263,9 @@ mod test_from_matz {
         assert_eq!(mat_poly, mat_poly_cmp);
     }
 
+    /// Ensure that a 100x100 [`MatPolyOverZ`] can be initialized from [`MatZ`]
+    /// with zero coefficients.
+    /// Validate that the correct [`MatPolyOverZ`] is created.
     #[test]
     fn zero() {
         let matz = MatZ::new(100, 100);
