@@ -54,16 +54,16 @@ mod test_reduce {
     };
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = u64::MAX - 58;
+    const LARGE_PRIME: u64 = u64::MAX - 58;
 
     /// Ensure that large entries are reduced correctly
     #[test]
     fn reduces_large() {
-        let modulus = Modulus::from_str(&format!("{}", BITPRIME64)).unwrap();
+        let modulus = Modulus::from_str(&format!("{}", LARGE_PRIME)).unwrap();
         let value = Z::from_str(&format!("{}", u64::MAX)).unwrap();
         let mut original = Zq { value, modulus };
 
-        let cmp_modulus = Modulus::from_str(&format!("{}", BITPRIME64)).unwrap();
+        let cmp_modulus = Modulus::from_str(&format!("{}", LARGE_PRIME)).unwrap();
         let cmp_value = Z::from(58);
 
         let cmp = Zq {

@@ -116,7 +116,7 @@ mod test_is_vector {
     };
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = u64::MAX - 58;
+    const LARGE_PRIME: u64 = u64::MAX - 58;
 
     /// Check whether matrices with one row or one column
     /// get recognized as (row or column) vectors
@@ -125,7 +125,7 @@ mod test_is_vector {
         let modulus = ModulusPolynomialRingZq::from_str(&format!(
             "5  1 1 0 0 {} mod {}",
             i64::MAX,
-            BITPRIME64
+            LARGE_PRIME
         ))
         .unwrap();
         let poly_mat1 =
@@ -156,7 +156,7 @@ mod test_is_vector {
         let modulus = ModulusPolynomialRingZq::from_str(&format!(
             "5  1 1 0 0 {} mod {}",
             i64::MAX,
-            BITPRIME64
+            LARGE_PRIME
         ))
         .unwrap();
         let poly_mat1 = MatPolyOverZ::from_str(&format!(
@@ -188,7 +188,7 @@ mod test_is_vector {
         let modulus = ModulusPolynomialRingZq::from_str(&format!(
             "5  1 1 0 0 {} mod {}",
             i64::MAX,
-            BITPRIME64
+            LARGE_PRIME
         ))
         .unwrap();
         let poly_mat1 = MatPolyOverZ::from_str("[[1  42]]").unwrap();
@@ -218,7 +218,7 @@ mod test_is_vector {
         let modulus = ModulusPolynomialRingZq::from_str(&format!(
             "5  1 1 0 0 {} mod {}",
             i64::MAX,
-            BITPRIME64
+            LARGE_PRIME
         ))
         .unwrap();
         let poly_mat1 =

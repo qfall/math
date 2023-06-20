@@ -199,7 +199,7 @@ mod test_get_entry {
     use crate::{error::MathError, traits::GetEntry};
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = u64::MAX - 58;
+    const LARGE_PRIME: u64 = u64::MAX - 58;
 
     /// Ensure that getting entries works on the edge.
     #[test]
@@ -218,7 +218,7 @@ mod test_get_entry {
     #[test]
     fn big_positive() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("5  42 17 1 2 3 mod {}", BITPRIME64))
+            ModulusPolynomialRingZq::from_str(&format!("5  42 17 1 2 3 mod {}", LARGE_PRIME))
                 .unwrap();
         let poly_mat =
             MatPolyOverZ::from_str(&format!("[[4  1 0 {} 1, 1  42],[0, 2  1 2]]", i64::MAX))
@@ -237,7 +237,7 @@ mod test_get_entry {
     #[test]
     fn error_wrong_row() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("5  42 17 1 2 3 mod {}", BITPRIME64))
+            ModulusPolynomialRingZq::from_str(&format!("5  42 17 1 2 3 mod {}", LARGE_PRIME))
                 .unwrap();
         let matrix = MatPolynomialRingZq::new(5, 10, &modulus);
         let entry1: Result<PolyOverZ, MathError> = matrix.get_entry(5, 1);
@@ -251,7 +251,7 @@ mod test_get_entry {
     #[test]
     fn error_wrong_column() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("5  42 17 1 2 3 mod {}", BITPRIME64))
+            ModulusPolynomialRingZq::from_str(&format!("5  42 17 1 2 3 mod {}", LARGE_PRIME))
                 .unwrap();
         let matrix = MatPolynomialRingZq::new(5, 10, &modulus);
         let entry: Result<PolyOverZ, MathError> = matrix.get_entry(1, 100);
@@ -263,7 +263,7 @@ mod test_get_entry {
     #[test]
     fn diff_types() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("5  42 17 1 2 3 mod {}", BITPRIME64))
+            ModulusPolynomialRingZq::from_str(&format!("5  42 17 1 2 3 mod {}", LARGE_PRIME))
                 .unwrap();
         let matrix = MatPolynomialRingZq::new(5, 10, &modulus);
 
@@ -307,7 +307,7 @@ mod test_mod {
     };
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = u64::MAX - 58;
+    const LARGE_PRIME: u64 = u64::MAX - 58;
 
     /// Ensure that the getter for modulus works correctly.
     #[test]
@@ -326,13 +326,13 @@ mod test_mod {
     #[test]
     fn get_mod_large() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("2  42 17 mod {}", BITPRIME64)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("2  42 17 mod {}", LARGE_PRIME)).unwrap();
         let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
         let matrix = MatPolynomialRingZq::from((&poly_mat, &modulus));
 
         assert_eq!(
             matrix.get_mod(),
-            ModulusPolynomialRingZq::from_str(&format!("2  42 17 mod {}", BITPRIME64)).unwrap()
+            ModulusPolynomialRingZq::from_str(&format!("2  42 17 mod {}", LARGE_PRIME)).unwrap()
         );
     }
 
@@ -340,17 +340,18 @@ mod test_mod {
     #[test]
     fn get_mod_memory() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("2  42 17 mod {}", BITPRIME64)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("2  42 17 mod {}", LARGE_PRIME)).unwrap();
         let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
         let matrix = MatPolynomialRingZq::from((&poly_mat, &modulus));
         let _ = matrix.get_mod();
-        let _ = ModulusPolynomialRingZq::from_str(&format!("2  42 17 mod {}", BITPRIME64)).unwrap();
+        let _ =
+            ModulusPolynomialRingZq::from_str(&format!("2  42 17 mod {}", LARGE_PRIME)).unwrap();
 
         let modulus = matrix.get_mod();
 
         assert_eq!(
             modulus,
-            ModulusPolynomialRingZq::from_str(&format!("2  42 17 mod {}", BITPRIME64)).unwrap()
+            ModulusPolynomialRingZq::from_str(&format!("2  42 17 mod {}", LARGE_PRIME)).unwrap()
         );
     }
 }
@@ -362,12 +363,12 @@ mod test_collect_entries {
     use flint_sys::fmpz_poly::fmpz_poly_set;
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = u64::MAX - 58;
+    const LARGE_PRIME: u64 = u64::MAX - 58;
 
     #[test]
     fn all_entries_collected() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", BITPRIME64)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", LARGE_PRIME)).unwrap();
         let poly_mat1 = MatPolyOverZ::from_str(&format!(
             "[[4  -1 0 3 1, 1  {}],[2  1 2, 3  {} 1 1]]",
             i64::MAX,

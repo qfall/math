@@ -123,7 +123,7 @@ mod test_mul {
     use crate::{integer::MatPolyOverZ, integer_mod_q::ModulusPolynomialRingZq};
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = u64::MAX - 58;
+    const LARGE_PRIME: u64 = u64::MAX - 58;
 
     /// Checks if matrix multiplication works fine for squared matrices.
     #[test]
@@ -163,7 +163,7 @@ mod test_mul {
     #[test]
     fn large_entries() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", BITPRIME64)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", LARGE_PRIME)).unwrap();
         let poly_mat1 =
             MatPolyOverZ::from_str(&format!("[[2  3 {},1  15],[1  1,0]]", u64::MAX)).unwrap();
         let poly_ring_mat1 = MatPolynomialRingZq::from((&poly_mat1, &modulus));
