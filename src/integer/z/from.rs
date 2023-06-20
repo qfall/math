@@ -225,7 +225,7 @@ impl FromStr for Z {
     /// use qfall_math::integer::Z;
     ///  
     /// let a: Z = "100".parse().unwrap();
-    /// let b: Z = Z::from_str("100").unwrap();
+    /// let b: Z = Z::from(100);
     /// ```
     ///
     /// # Errors and Failures

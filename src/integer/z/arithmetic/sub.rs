@@ -76,7 +76,7 @@ impl Sub<&Q> for &Z {
     /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
     ///
-    /// let a: Z = Z::from_str("-42").unwrap();
+    /// let a: Z = Z::from(-42);
     /// let b: Q = Q::from_str("42/19").unwrap();
     ///
     /// let c: Q = &a - &b;
