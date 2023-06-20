@@ -19,11 +19,11 @@ impl Zq {
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
-    /// let value = Zq::try_from((4, 7)).unwrap();
+    /// let value = Zq::from((4, 7));
     ///
     /// let inverse = value.inverse().unwrap();
     ///
-    /// assert_eq!(Zq::try_from((2, 7)).unwrap(), inverse);
+    /// assert_eq!(Zq::from((2, 7)), inverse);
     /// ```
     pub fn inverse(&self) -> Option<Zq> {
         self.pow(-1).ok()
@@ -37,7 +37,7 @@ impl Zq {
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
     ///
-    /// let value = Zq::try_from((0,7)).unwrap();
+    /// let value = Zq::from((0,7));
     /// assert!(value.is_zero());
     /// ```
     pub fn is_zero(&self) -> bool {
@@ -52,7 +52,7 @@ impl Zq {
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
     ///
-    /// let value = Zq::try_from((1,7)).unwrap();
+    /// let value = Zq::from((1,7));
     /// assert!(value.is_one());
     /// ```
     pub fn is_one(&self) -> bool {
@@ -67,41 +67,35 @@ mod test_inv {
     /// Checks whether the inverse is correctly computed for small values.
     #[test]
     fn small_values() {
-        let val_0 = Zq::try_from((4, 7)).unwrap();
-        let val_1 = Zq::try_from((-2, 7)).unwrap();
+        let val_0 = Zq::from((4, 7));
+        let val_1 = Zq::from((-2, 7));
 
         let inv_0 = val_0.inverse().unwrap();
         let inv_1 = val_1.inverse().unwrap();
 
-        assert_eq!(Zq::try_from((2, 7)).unwrap(), inv_0);
-        assert_eq!(Zq::try_from((3, 7)).unwrap(), inv_1);
+        assert_eq!(Zq::from((2, 7)), inv_0);
+        assert_eq!(Zq::from((3, 7)), inv_1);
     }
 
     /// Checks whether the inverse is correctly computed for large values.
     #[test]
     fn large_values() {
-        let val_0 = Zq::try_from((i64::MAX, u64::MAX)).unwrap();
-        let val_1 = Zq::try_from((i64::MIN, u64::MAX)).unwrap();
+        let val_0 = Zq::from((i64::MAX, u64::MAX));
+        let val_1 = Zq::from((i64::MIN, u64::MAX));
 
         let inv_0 = val_0.inverse().unwrap();
         let inv_1 = val_1.inverse().unwrap();
 
-        assert_eq!(
-            Zq::try_from((18446744073709551613_u64, u64::MAX)).unwrap(),
-            inv_0
-        );
-        assert_eq!(
-            Zq::try_from((18446744073709551613_u64, u64::MAX)).unwrap(),
-            inv_1
-        );
+        assert_eq!(Zq::from((18446744073709551613_u64, u64::MAX)), inv_0);
+        assert_eq!(Zq::from((18446744073709551613_u64, u64::MAX)), inv_1);
     }
 
     /// Checks whether `inv` returns `None` for any values without an inverse.
     #[test]
     fn no_inverse_returns_none() {
-        let val_0 = Zq::try_from((4, 8)).unwrap();
-        let val_1 = Zq::try_from((3, 9)).unwrap();
-        let val_2 = Zq::try_from((0, 7)).unwrap();
+        let val_0 = Zq::from((4, 8));
+        let val_1 = Zq::from((3, 9));
+        let val_2 = Zq::from((0, 7));
 
         assert!(val_0.inverse().is_none());
         assert!(val_1.inverse().is_none());

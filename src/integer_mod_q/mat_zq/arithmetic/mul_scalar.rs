@@ -74,7 +74,7 @@ impl Mul<&Zq> for &MatZq {
     /// use std::str::FromStr;
     ///
     /// let mat1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
-    /// let integer = Zq::try_from((2, 61)).unwrap();
+    /// let integer = Zq::from((2, 61));
     ///
     /// let mat2 = &mat1 * &integer;
     /// ```
@@ -107,7 +107,7 @@ impl MatZq {
     /// use std::str::FromStr;
     ///
     /// let mat1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
-    /// let integer = Zq::try_from((2, 61)).unwrap();
+    /// let integer = Zq::from((2, 61));
     ///
     /// let mat2 = &mat1.mul_scalar_safe(&integer).unwrap();
     /// ```
@@ -255,7 +255,7 @@ mod test_mul_zq {
         let mat1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
         let mat2 = mat1.clone();
         let mat3 = MatZq::from_str("[[84, 34],[16, 12]] mod 61").unwrap();
-        let integer = Zq::try_from((2, 61)).unwrap();
+        let integer = Zq::from((2, 61));
 
         let mat1 = &mat1 * &integer;
         let mat2 = &integer * &mat2;
@@ -270,8 +270,8 @@ mod test_mul_zq {
         let mat1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
         let mat2 = mat1.clone();
         let mat3 = MatZq::from_str("[[84, 34],[16, 12]] mod 61").unwrap();
-        let integer1 = Zq::try_from((2, 61)).unwrap();
-        let integer2 = Zq::try_from((2, 61)).unwrap();
+        let integer1 = Zq::from((2, 61));
+        let integer2 = Zq::from((2, 61));
 
         let mat1 = mat1 * integer1;
         let mat2 = integer2 * mat2;
@@ -288,8 +288,8 @@ mod test_mul_zq {
         let mat3 = mat1.clone();
         let mat4 = mat1.clone();
         let mat5 = MatZq::from_str("[[84, 34],[16, 12]] mod 61").unwrap();
-        let integer1 = Zq::try_from((2, 61)).unwrap();
-        let integer2 = Zq::try_from((2, 61)).unwrap();
+        let integer1 = Zq::from((2, 61));
+        let integer2 = Zq::from((2, 61));
 
         let mat1 = mat1 * &integer1;
         let mat2 = &integer2 * mat2;
@@ -309,7 +309,7 @@ mod test_mul_zq {
         let mat2 = MatZq::from_str("[[2, 6, 5],[4, 42, 3]] mod 61").unwrap();
         let mat3 = MatZq::from_str("[[84],[0],[4]] mod 61").unwrap();
         let mat4 = MatZq::from_str("[[4, 12, 10],[8, 84, 6]] mod 61").unwrap();
-        let integer = Zq::try_from((2, 61)).unwrap();
+        let integer = Zq::from((2, 61));
 
         assert_eq!(mat3, &integer * mat1);
         assert_eq!(mat4, integer * mat2);
@@ -323,8 +323,8 @@ mod test_mul_zq {
         let mat3 =
             MatZq::from_str(&format!("[[3],[{}],[12]] mod {}", i64::MAX - 1, u64::MAX)).unwrap();
         let mat4 = MatZq::from_str(&format!("[[{}]] mod {}", i64::MAX - 1, u64::MAX)).unwrap();
-        let integer1 = Zq::try_from((3, u64::MAX)).unwrap();
-        let integer2 = Zq::try_from((i64::MAX, u64::MAX)).unwrap();
+        let integer1 = Zq::from((3, u64::MAX));
+        let integer2 = Zq::from((i64::MAX, u64::MAX));
 
         assert_eq!(mat3, integer1 * mat1);
         assert_eq!(mat4, integer2 * mat2);
@@ -335,7 +335,7 @@ mod test_mul_zq {
     #[should_panic]
     fn different_moduli_error() {
         let mat1 = MatZq::from_str("[[42],[0],[2]] mod 61").unwrap();
-        let integer = Zq::try_from((2, 3)).unwrap();
+        let integer = Zq::from((2, 3));
 
         _ = &integer * mat1;
     }
@@ -344,7 +344,7 @@ mod test_mul_zq {
     #[test]
     fn different_moduli_error_safe() {
         let mat1 = MatZq::from_str("[[42],[0],[2]] mod 61").unwrap();
-        let integer = Zq::try_from((2, 3)).unwrap();
+        let integer = Zq::from((2, 3));
 
         let mat2 = &mat1.mul_scalar_safe(&integer);
 

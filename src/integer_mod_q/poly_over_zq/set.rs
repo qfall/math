@@ -96,7 +96,7 @@ impl SetCoefficient<&Zq> for PolyOverZq {
     /// use std::str::FromStr;
     ///
     /// let mut poly = PolyOverZq::from_str("4  0 1 2 3 mod 17").unwrap();
-    /// let value = Zq::try_from((1000,17)).unwrap();
+    /// let value = Zq::from((1000,17));
     ///
     /// assert!(poly.set_coeff(4, &value).is_ok());
     /// ```
@@ -204,7 +204,7 @@ mod test_set_coeff_zq {
     #[test]
     fn mismatching_moduli() {
         let mut poly = PolyOverZq::from_str(&format!("4  0 1 2 3 mod {}", u64::MAX - 58)).unwrap();
-        let value = Zq::try_from((u64::MAX, u64::MAX - 57)).unwrap();
+        let value = Zq::from((u64::MAX, u64::MAX - 57));
 
         assert!(poly.set_coeff(4, &value).is_err());
         assert_eq!(
@@ -217,7 +217,7 @@ mod test_set_coeff_zq {
     #[test]
     fn matching_moduli() {
         let mut poly = PolyOverZq::from_str(&format!("4  0 1 2 3 mod {}", u64::MAX - 58)).unwrap();
-        let value = Zq::try_from((u64::MAX, u64::MAX - 58)).unwrap();
+        let value = Zq::from((u64::MAX, u64::MAX - 58));
 
         assert!(poly.set_coeff(4, &value).is_ok());
         assert_eq!(

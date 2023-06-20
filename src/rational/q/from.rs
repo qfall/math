@@ -443,7 +443,7 @@ mod test_from_int_int {
         let uint_32: u32 = 10;
         let uint_64: u64 = 10;
         let z = Z::from(10);
-        let zq = Zq::try_from((10, 20)).unwrap();
+        let zq = Zq::from((10, 20));
 
         // owned, owned the same type in numerator and denominator
         let _ = Q::from((int_8, int_8));

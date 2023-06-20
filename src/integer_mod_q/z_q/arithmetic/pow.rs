@@ -33,12 +33,12 @@ impl Pow<&Z> for Zq {
     /// use qfall_math::integer_mod_q::Zq;
     /// use qfall_math::traits::*;
     ///
-    /// let base = Zq::try_from((2, 9)).unwrap();
+    /// let base = Zq::from((2, 9));
     /// let exp = Z::from(4);
     ///
     /// let powered_value = base.pow(&exp).unwrap();
     ///
-    /// let cmp = Zq::try_from((7, 9)).unwrap();
+    /// let cmp = Zq::from((7, 9));
     /// assert_eq!(cmp, powered_value);
     /// ```
     ///
@@ -74,7 +74,7 @@ mod test_pow {
     /// Ensure that `pow` works for [`Zq`] properly for small values
     #[test]
     fn small() {
-        let base = Zq::try_from((2, 9)).unwrap();
+        let base = Zq::from((2, 9));
         let exp_0 = Z::from(4);
         let exp_1 = Z::ZERO;
         let exp_2 = Z::from(-2);
@@ -83,21 +83,21 @@ mod test_pow {
         let res_1 = base.pow(&exp_1).unwrap();
         let res_2 = base.pow(&exp_2).unwrap();
 
-        assert_eq!(Zq::try_from((7, 9)).unwrap(), res_0);
-        assert_eq!(Zq::try_from((1, 9)).unwrap(), res_1);
-        assert_eq!(Zq::try_from((7, 9)).unwrap(), res_2);
+        assert_eq!(Zq::from((7, 9)), res_0);
+        assert_eq!(Zq::from((1, 9)), res_1);
+        assert_eq!(Zq::from((7, 9)), res_2);
     }
 
     /// Ensure that `pow` works for [`Zq`] properly for large values
     #[test]
     fn large() {
-        let base = Zq::try_from((i64::MAX, u64::MAX)).unwrap();
+        let base = Zq::from((i64::MAX, u64::MAX));
         let exp_0 = Z::from(4);
         let exp_1 = Z::ZERO;
         let exp_2 = Z::from(-1);
-        let cmp_0 = Zq::try_from((1152921504606846976_i64, u64::MAX)).unwrap();
-        let cmp_1 = Zq::try_from((1, u64::MAX)).unwrap();
-        let cmp_2 = Zq::try_from((18446744073709551613_u64, u64::MAX)).unwrap();
+        let cmp_0 = Zq::from((1152921504606846976_i64, u64::MAX));
+        let cmp_1 = Zq::from((1, u64::MAX));
+        let cmp_2 = Zq::from((18446744073709551613_u64, u64::MAX));
 
         let res_0 = base.pow(&exp_0).unwrap();
         let res_1 = base.pow(&exp_1).unwrap();
@@ -111,7 +111,7 @@ mod test_pow {
     /// Ensures that the `pow` trait is available for other types
     #[test]
     fn availability() {
-        let base = Zq::try_from((i64::MAX, u64::MAX)).unwrap();
+        let base = Zq::from((i64::MAX, u64::MAX));
         let exp = Z::from(4);
 
         let _ = base.pow(exp);
@@ -129,7 +129,7 @@ mod test_pow {
     /// powered by a negative exponent
     #[test]
     fn non_invertible_detection() {
-        let base = Zq::try_from((2, 4)).unwrap();
+        let base = Zq::from((2, 4));
 
         assert!(base.pow(-1).is_err());
     }

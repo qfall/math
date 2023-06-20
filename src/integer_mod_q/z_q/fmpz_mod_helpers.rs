@@ -79,7 +79,7 @@ mod test_as_integer_zq {
     /// for small values (FLINT is not using pointers).
     #[test]
     fn small_into_fmpz() {
-        let zq = Zq::try_from((Z::from(42), Z::from(100))).unwrap();
+        let zq = Zq::from((42, 100));
 
         let copy_1 = unsafe { Z::from_fmpz((&zq).into_fmpz()) };
         let copy_2 = unsafe { Z::from_fmpz(zq.into_fmpz()) };
@@ -92,7 +92,7 @@ mod test_as_integer_zq {
     /// for large values (FLINT uses pointers).
     #[test]
     fn large_into_fmpz() {
-        let z = Zq::try_from((Z::from(u64::MAX - 1), Z::from(u64::MAX))).unwrap();
+        let z = Zq::from((u64::MAX - 1, u64::MAX));
 
         let copy_1 = unsafe { Z::from_fmpz((&z).into_fmpz()) };
         let copy_2 = unsafe { Z::from_fmpz(z.into_fmpz()) };
@@ -105,7 +105,7 @@ mod test_as_integer_zq {
     /// (Also as a pointer representation)
     #[test]
     fn memory_safety() {
-        let zq = Zq::try_from((i64::MAX - 1, i64::MAX)).unwrap();
+        let zq = Zq::from((i64::MAX - 1, i64::MAX));
 
         let value = unsafe { (&zq).into_fmpz() };
 
@@ -117,7 +117,7 @@ mod test_as_integer_zq {
     #[test]
     #[allow(clippy::needless_borrow)]
     fn get_ref_small() {
-        let zq = Zq::try_from((10, 100)).unwrap();
+        let zq = Zq::from((10, 100));
 
         let zq_ref_value_1 = zq.get_fmpz_ref().unwrap();
         let zq_ref_value_2 = (&zq).get_fmpz_ref().unwrap();
@@ -130,7 +130,7 @@ mod test_as_integer_zq {
     #[test]
     #[allow(clippy::needless_borrow)]
     fn get_ref_large() {
-        let zq = Zq::try_from((i64::MAX - 1, i64::MAX)).unwrap();
+        let zq = Zq::from((i64::MAX - 1, i64::MAX));
 
         let zq_ref_value_1 = zq.get_fmpz_ref().unwrap();
         let zq_ref_value_2 = (&zq).get_fmpz_ref().unwrap();

@@ -297,57 +297,53 @@ mod test_mul_between_z_and_zq {
     #[test]
     fn mul() {
         let a: Z = Z::from(9);
-        let b: Zq = Zq::try_from((4, 11)).unwrap();
+        let b: Zq = Zq::from((4, 11));
         let c: Zq = a * b;
-        assert_eq!(c, Zq::try_from((3, 11)).unwrap());
+        assert_eq!(c, Zq::from((3, 11)));
     }
 
     /// Testing multiplication for both borrowed [`Z`] and [`Zq`]
     #[test]
     fn mul_borrow() {
         let a: Z = Z::from(9);
-        let b: Zq = Zq::try_from((4, 11)).unwrap();
+        let b: Zq = Zq::from((4, 11));
         let c: Zq = &a * &b;
-        assert_eq!(c, Zq::try_from((3, 11)).unwrap());
+        assert_eq!(c, Zq::from((3, 11)));
     }
 
     /// Testing multiplication for borrowed [`Z`] and [`Zq`]
     #[test]
     fn mul_first_borrowed() {
         let a: Z = Z::from(9);
-        let b: Zq = Zq::try_from((4, 11)).unwrap();
+        let b: Zq = Zq::from((4, 11));
         let c: Zq = &a * b;
-        assert_eq!(c, Zq::try_from((3, 11)).unwrap());
+        assert_eq!(c, Zq::from((3, 11)));
     }
 
     /// Testing multiplication for [`Z`] and borrowed [`Zq`]
     #[test]
     fn mul_second_borrowed() {
         let a: Z = Z::from(9);
-        let b: Zq = Zq::try_from((4, 11)).unwrap();
+        let b: Zq = Zq::from((4, 11));
         let c: Zq = a * &b;
-        assert_eq!(c, Zq::try_from((3, 11)).unwrap());
+        assert_eq!(c, Zq::from((3, 11)));
     }
 
     /// Testing multiplication for big numbers
     #[test]
     fn mul_large_numbers() {
         let a: Z = Z::from(u64::MAX);
-        let b: Zq = Zq::try_from((i64::MAX, u64::MAX - 58)).unwrap();
-        let c: Zq = Zq::try_from((i64::MAX - 1, i64::MAX)).unwrap();
+        let b: Zq = Zq::from((i64::MAX, u64::MAX - 58));
+        let c: Zq = Zq::from((i64::MAX - 1, i64::MAX));
 
         let d: Zq = &a * b;
         let e: Zq = a * c;
 
         assert_eq!(
             d,
-            Zq::try_from(((u64::MAX - 1) / 2, u64::MAX - 58)).unwrap()
-                * Zq::try_from((u64::MAX, u64::MAX - 58)).unwrap()
+            Zq::from(((u64::MAX - 1) / 2, u64::MAX - 58)) * Zq::from((u64::MAX, u64::MAX - 58))
         );
-        assert_eq!(
-            e,
-            Zq::try_from((u64::MAX, i64::MAX)).unwrap() * Zq::try_from((-1, i64::MAX)).unwrap()
-        );
+        assert_eq!(e, Zq::from((u64::MAX, i64::MAX)) * Zq::from((-1, i64::MAX)));
     }
 }
 

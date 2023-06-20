@@ -365,52 +365,49 @@ mod test_sub_between_z_and_zq {
     #[test]
     fn sub() {
         let a: Z = Z::from(9);
-        let b: Zq = Zq::try_from((10, 11)).unwrap();
+        let b: Zq = Zq::from((10, 11));
         let c: Zq = a - b;
-        assert_eq!(c, Zq::try_from((10, 11)).unwrap());
+        assert_eq!(c, Zq::from((10, 11)));
     }
 
     /// Testing subtraction for both borrowed [`Z`] and [`Zq`]
     #[test]
     fn sub_borrow() {
         let a: Z = Z::from(9);
-        let b: Zq = Zq::try_from((4, 11)).unwrap();
+        let b: Zq = Zq::from((4, 11));
         let c: Zq = &a - &b;
-        assert_eq!(c, Zq::try_from((5, 11)).unwrap());
+        assert_eq!(c, Zq::from((5, 11)));
     }
 
     /// Testing subtraction for borrowed [`Z`] and [`Zq`]
     #[test]
     fn sub_first_borrowed() {
         let a: Z = Z::from(9);
-        let b: Zq = Zq::try_from((4, 11)).unwrap();
+        let b: Zq = Zq::from((4, 11));
         let c: Zq = &a - b;
-        assert_eq!(c, Zq::try_from((5, 11)).unwrap());
+        assert_eq!(c, Zq::from((5, 11)));
     }
 
     /// Testing subtraction for [`Z`] and borrowed [`Zq`]
     #[test]
     fn sub_second_borrowed() {
         let a: Z = Z::from(9);
-        let b: Zq = Zq::try_from((4, 11)).unwrap();
+        let b: Zq = Zq::from((4, 11));
         let c: Zq = a - &b;
-        assert_eq!(c, Zq::try_from((5, 11)).unwrap());
+        assert_eq!(c, Zq::from((5, 11)));
     }
 
     /// Testing subtraction for big numbers
     #[test]
     fn sub_large_numbers() {
         let a: Z = Z::from(u64::MAX);
-        let b: Zq = Zq::try_from((i64::MAX, u64::MAX - 58)).unwrap();
-        let c: Zq = Zq::try_from((i64::MAX - 1, i64::MAX)).unwrap();
+        let b: Zq = Zq::from((i64::MAX, u64::MAX - 58));
+        let c: Zq = Zq::from((i64::MAX - 1, i64::MAX));
 
         let d: Zq = &a - b;
         let e: Zq = a - c;
 
-        assert_eq!(
-            d,
-            Zq::try_from(((u64::MAX - 1) / 2 + 1, u64::MAX - 58)).unwrap()
-        );
-        assert_eq!(e, Zq::try_from((2, i64::MAX)).unwrap());
+        assert_eq!(d, Zq::from(((u64::MAX - 1) / 2 + 1, u64::MAX - 58)));
+        assert_eq!(e, Zq::from((2, i64::MAX)));
     }
 }

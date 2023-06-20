@@ -141,7 +141,7 @@ mod test_evaluate_z {
 
         let res = poly.evaluate(Z::from(3));
 
-        assert_eq!(Zq::try_from((7, 17)).unwrap(), res)
+        assert_eq!(Zq::from((7, 17)), res)
     }
 
     /// Tests if evaluate with a reference works
@@ -151,7 +151,7 @@ mod test_evaluate_z {
 
         let res = poly.evaluate(&Z::from(3));
 
-        assert_eq!(Zq::try_from((7, 17)).unwrap(), res)
+        assert_eq!(Zq::from((7, 17)), res)
     }
 
     /// Tests if evaluate works with negative values
@@ -161,7 +161,7 @@ mod test_evaluate_z {
 
         let res = poly.evaluate(&Z::from(-5));
 
-        assert_eq!(Zq::try_from((8, 17)).unwrap(), res)
+        assert_eq!(Zq::from((8, 17)), res)
     }
 
     /// Tests if evaluate works with large integers
