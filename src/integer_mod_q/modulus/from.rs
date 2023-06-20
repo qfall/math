@@ -157,6 +157,7 @@ mod test_from {
 
     /// Showcase the different ways to initialize a [`Modulus`].
     #[test]
+    #[allow(clippy::useless_conversion)]
     fn available() {
         // signed rust integer
         let _ = Modulus::from(i8::MAX);

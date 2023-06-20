@@ -106,8 +106,7 @@ mod rsa_textbook {
         // standard prime value chosen as public key
         // to remove necessity of choosing it at random
         let pk = Z::from(65537);
-        let sk = Zq::try_from_z_z(&pk, &phi_mod)
-            .unwrap()
+        let sk = Zq::from((&pk, &phi_mod))
             .inverse()
             .expect("There must an inverse of this element as pk is prime.")
             .get_value();
