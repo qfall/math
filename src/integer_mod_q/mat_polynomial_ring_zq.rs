@@ -14,6 +14,7 @@ use crate::integer::MatPolyOverZ;
 use serde::{Deserialize, Serialize};
 
 mod arithmetic;
+mod concat;
 mod default;
 mod from;
 mod get;
