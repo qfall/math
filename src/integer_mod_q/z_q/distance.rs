@@ -138,7 +138,7 @@ impl<T: Into<Z>> Distance<T> for Zq {
     /// assert_eq!(Z::from(2), distance_1);
     /// ```
     fn distance(&self, other: T) -> Self::Output {
-        let other = Zq::from_z_modulus(&other.into(), &self.modulus.clone());
+        let other = Zq::from((&other.into(), &self.modulus));
         self.distance(&other)
     }
 }

@@ -41,7 +41,7 @@ impl Evaluate<&Z, Zq> for PolyOverZq {
     /// let res = poly.evaluate(&value);
     /// ```
     fn evaluate(&self, value: &Z) -> Zq {
-        let mut res = Zq::from_z_modulus(&Z::default(), &self.modulus);
+        let mut res = Zq::from((0, &self.modulus));
 
         unsafe {
             fmpz_mod_poly_evaluate_fmpz(

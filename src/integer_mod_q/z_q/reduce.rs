@@ -29,9 +29,8 @@ impl Zq {
     /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
     ///
-    /// let modulus = Modulus::from_str("17").unwrap();
-    /// let z = Z::from(18);
-    /// let mut zq = Zq::from_z_modulus(&z, &modulus);
+    /// let modulus = Modulus::from(17);
+    /// let mut zq = Zq::from((18, &modulus));
     ///
     /// zq.reduce();
     /// ```

@@ -83,7 +83,7 @@ impl Zq {
                 self, other
             )));
         }
-        let mut out = Zq::from_z_modulus(&Z::from(1), &self.modulus);
+        let mut out = Zq::from((1, &self.modulus));
         unsafe {
             fmpz_mod_sub(
                 &mut out.value.value,

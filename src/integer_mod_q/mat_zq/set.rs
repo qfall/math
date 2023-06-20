@@ -65,7 +65,7 @@ impl SetEntry<&Z> for MatZq {
         value: &Z,
     ) -> Result<(), MathError> {
         // Calculate mod q before adding the entry to the matrix.
-        let value: Zq = Zq::from_z_modulus(value, &self.modulus);
+        let value: Zq = Zq::from((value, &self.modulus));
 
         self.set_entry(row, column, value)
     }

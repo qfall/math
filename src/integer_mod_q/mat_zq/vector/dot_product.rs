@@ -90,7 +90,7 @@ impl MatZq {
             unsafe { fmpz_addmul(&mut result.value, &self_entries[i], &other_entries[i]) }
         }
 
-        Ok(Zq::from_z_modulus(&result, &self.modulus))
+        Ok(Zq::from((result, &self.modulus)))
     }
 }
 
