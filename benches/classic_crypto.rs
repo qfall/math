@@ -100,7 +100,7 @@ mod rsa_textbook {
             "Primes used for modulus N calculation shouldn't be equal."
         );
 
-        let modulus = Modulus::try_from(&(&p * &q)).unwrap();
+        let modulus = Modulus::from(&p * &q);
         let phi_mod = (&p - Z::ONE) * (&q - Z::ONE);
 
         // standard prime value chosen as public key

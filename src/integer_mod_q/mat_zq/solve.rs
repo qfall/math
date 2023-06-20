@@ -137,17 +137,11 @@ mod test_solve {
     /// column that is not invertible
     #[test]
     fn large_matrix() {
+        let modulus = Modulus::from(Z::from(2).pow(50).unwrap());
+
         // matrix of size `n x 2n\log q`, hence almost always invertible
-        let mat = MatZq::sample_uniform(
-            10,
-            10 * 2 * 50,
-            &Modulus::try_from(&Z::from(2).pow(50).unwrap()).unwrap(),
-        );
-        let y = MatZq::sample_uniform(
-            10,
-            1,
-            &Modulus::try_from(&Z::from(2).pow(50).unwrap()).unwrap(),
-        );
+        let mat = MatZq::sample_uniform(10, 10 * 2 * 50, &modulus);
+        let y = MatZq::sample_uniform(10, 1, &modulus);
 
         let x = mat.solve_gaussian_elimination(&y).unwrap();
 

@@ -412,9 +412,9 @@ mod tests_from_int {
     #[test]
     fn modulus() {
         let val_1 = Z::from(u64::MAX);
-        let mod_1 = Modulus::try_from(&val_1).unwrap();
+        let mod_1 = Modulus::from(&val_1);
         let val_2 = Z::from(10);
-        let mod_2 = Modulus::try_from(&val_2).unwrap();
+        let mod_2 = Modulus::from(&val_2);
 
         assert_eq!(val_1, Z::from(&mod_1));
         assert_eq!(val_2, Z::from(&mod_2));

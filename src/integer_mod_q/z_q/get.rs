@@ -84,7 +84,7 @@ mod test_get_value {
 
 #[cfg(test)]
 mod test_get_mod {
-    use super::{Modulus, Zq, Z};
+    use super::{Modulus, Zq};
 
     /// Check whether `get_mod` outputs the correct modulus for small moduli
     #[test]
@@ -93,7 +93,7 @@ mod test_get_mod {
 
         let modulus = value.get_mod();
 
-        assert_eq!(modulus, Modulus::try_from(&Z::from(20)).unwrap());
+        assert_eq!(modulus, Modulus::from(20));
     }
 
     /// Check whether `get_mod` outputs the correct modulus for large moduli
@@ -103,6 +103,6 @@ mod test_get_mod {
 
         let modulus = value.get_mod();
 
-        assert_eq!(modulus, Modulus::try_from(&Z::from(u64::MAX)).unwrap());
+        assert_eq!(modulus, Modulus::from(u64::MAX));
     }
 }

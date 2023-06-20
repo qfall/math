@@ -105,7 +105,7 @@ impl From<&ModulusPolynomialRingZq> for PolyOverZq {
     /// assert_eq!(cmp_poly, poly_zq);
     /// ```
     fn from(modulus: &ModulusPolynomialRingZq) -> Self {
-        let modulus_q = Modulus::try_from(&modulus.get_q()).unwrap();
+        let modulus_q = Modulus::from(&modulus.get_q());
         let mut out = PolyOverZq::from(&modulus_q);
         unsafe {
             fmpz_mod_poly_set(
@@ -175,10 +175,7 @@ impl FromStr for PolyOverZq {
 #[cfg(test)]
 mod test_from_poly_z_modulus {
     use super::PolyOverZq;
-    use crate::{
-        integer::{PolyOverZ, Z},
-        integer_mod_q::Modulus,
-    };
+    use crate::{integer::PolyOverZ, integer_mod_q::Modulus};
     use std::str::FromStr;
 
     /// Test conversion of a [`PolyOverZ`] with small coefficients and small
@@ -186,7 +183,7 @@ mod test_from_poly_z_modulus {
     #[test]
     fn working_small() {
         let poly = PolyOverZ::from_str("4  0 1 -2 3").unwrap();
-        let modulus = Modulus::try_from(&Z::from(100)).unwrap();
+        let modulus = Modulus::from(100);
 
         let mod_poly = PolyOverZq::from((&poly, &modulus));
 
@@ -199,7 +196,7 @@ mod test_from_poly_z_modulus {
     #[test]
     fn working_large() {
         let poly = PolyOverZ::from_str(&format!("4  {} {} -2 3", u64::MAX - 1, u64::MAX)).unwrap();
-        let modulus = Modulus::try_from(&Z::from(u64::MAX)).unwrap();
+        let modulus = Modulus::from(u64::MAX);
 
         let mod_poly = PolyOverZq::from((&poly, &modulus));
 
@@ -211,7 +208,7 @@ mod test_from_poly_z_modulus {
     #[test]
     fn reduce() {
         let poly = PolyOverZ::from_str("4  100 101 -102 103").unwrap();
-        let modulus = Modulus::try_from(&Z::from(100)).unwrap();
+        let modulus = Modulus::from(100);
 
         let mod_poly = PolyOverZq::from((&poly, &modulus));
 
