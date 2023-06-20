@@ -125,7 +125,7 @@ mod test_is_zero {
     /// Ensure that is_zero returns `false` for non-zero values.
     #[test]
     fn zero_rejection() {
-        let small = Zq::try_from_int_int(4, 9).unwrap();
+        let small = Zq::from((4, 9));
         let large =
             Zq::from_str(&format!("{} mod {}", (u128::MAX - 1) / 2 + 1, u128::MAX)).unwrap();
 

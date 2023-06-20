@@ -153,7 +153,7 @@ mod test_dot_product {
         let vec_1 = MatZq::from_str(&format!("[[1,1,{}]] mod {}", i64::MAX, u128::MAX)).unwrap();
         let vec_2 = MatZq::from_str(&format!("[[1,{},1]] mod {}", i64::MIN, u128::MAX)).unwrap();
         let cmp = Z::from(i64::MIN) + Z::from(i64::MAX) + Z::ONE;
-        let cmp = Zq::try_from_z_z(&cmp, &Z::from_str(&format!("{}", u128::MAX)).unwrap()).unwrap();
+        let cmp = Zq::from((&cmp, &Z::from_str(&format!("{}", u128::MAX)).unwrap()));
 
         let dot_prod = vec_1.dot_product(&vec_2).unwrap();
 
