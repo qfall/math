@@ -113,7 +113,7 @@ impl Mul<&Zq> for &Z {
     /// use std::str::FromStr;
     ///
     /// let a: Z = Z::from(42);
-    /// let b: Zq = Zq::from_str("42 mod 19").unwrap();
+    /// let b: Zq = Zq::from(42, 9);
     ///
     /// let c: Zq = &a * &b;
     /// let d: Zq = a * b;

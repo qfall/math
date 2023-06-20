@@ -111,7 +111,7 @@ mod test_is_zero {
     /// Ensure that is_zero returns `true` for `0`.
     #[test]
     fn zero_detection() {
-        let zero = Zq::from_str("0 mod 7").unwrap();
+        let zero = Zq::from((0, 7));
 
         assert!(zero.is_zero());
     }
@@ -136,7 +136,7 @@ mod test_is_one {
     /// Ensure that is_one returns `true` for `1`.
     #[test]
     fn one_detection() {
-        let one = Zq::from_str("8 mod 7").unwrap();
+        let one = Zq::from((8, 7));
 
         assert!(one.is_one());
     }
@@ -144,7 +144,7 @@ mod test_is_one {
     /// Ensure that is_one returns `false` for other values.
     #[test]
     fn one_rejection() {
-        let small = Zq::from_str("12 mod 7").unwrap();
+        let small = Zq::from((12, 7));
         let large =
             Zq::from_str(&format!("{} mod {}", (u128::MAX - 1) / 2 + 2, u128::MAX)).unwrap();
 

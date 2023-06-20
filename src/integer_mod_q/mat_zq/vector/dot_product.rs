@@ -40,7 +40,7 @@ impl MatZq {
     /// let dot_prod = vec_1.dot_product(&vec_2).unwrap();
     ///
     /// // 1*1 + 2*3 + 3*2 = 3 mod 5
-    /// assert_eq!(Zq::from_str("3 mod 5").unwrap(), dot_prod);
+    /// assert_eq!(Zq::from((3, 5)), dot_prod);
     /// ```
     ///
     /// Errors and Failures
@@ -108,7 +108,7 @@ mod test_dot_product {
 
         let dot_prod = vec_1.dot_product(&vec_2).unwrap();
 
-        assert_eq!(dot_prod, Zq::from_str("1 mod 5").unwrap());
+        assert_eq!(dot_prod, Zq::from((1, 5)));
     }
 
     /// Check whether the dot product is calculated correctly for the combination:
@@ -120,7 +120,7 @@ mod test_dot_product {
 
         let dot_prod = vec_1.dot_product(&vec_2).unwrap();
 
-        assert_eq!(dot_prod, Zq::from_str("1 mod 5").unwrap());
+        assert_eq!(dot_prod, Zq::from((1, 5)));
     }
 
     /// Check whether the dot product is calculated correctly for the combination:
@@ -132,7 +132,7 @@ mod test_dot_product {
 
         let dot_prod = vec_1.dot_product(&vec_2).unwrap();
 
-        assert_eq!(dot_prod, Zq::from_str("1 mod 5").unwrap());
+        assert_eq!(dot_prod, Zq::from((1, 5)));
     }
 
     /// Check whether the dot product is calculated correctly for the combination:
@@ -144,7 +144,7 @@ mod test_dot_product {
 
         let dot_prod = vec_1.dot_product(&vec_2).unwrap();
 
-        assert_eq!(dot_prod, Zq::from_str("1 mod 5").unwrap());
+        assert_eq!(dot_prod, Zq::from((1, 5)));
     }
 
     /// Check whether the dot product is calculated correctly with large numbers

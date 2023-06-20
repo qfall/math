@@ -117,7 +117,7 @@ impl Sub<&Z> for &Zq {
     /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
     ///
-    /// let a: Zq = Zq::from_str("42 mod 19").unwrap();
+    /// let a: Zq = Zq::from((42, 19));
     /// let b: Z = Z::from(42);
     ///
     /// let c: Zq = &a - &b;

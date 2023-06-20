@@ -298,7 +298,7 @@ mod test_get_entry {
         integer_mod_q::MatZq,
         traits::{GetEntry, SetEntry},
     };
-    use std::str::FromStr;
+    
 
     /// Ensure that getting entries works on the edge.
     #[test]
@@ -387,7 +387,7 @@ mod test_get_entry {
     #[test]
     fn memory_test() {
         let mut matrix = MatZq::new(5, 10, u64::MAX);
-        let value = Zq::from_str(&format!("{} mod {}", u64::MAX - 1, u64::MAX)).unwrap();
+        let value = Zq::from((u64::MAX - 1, u64::MAX));
         matrix.set_entry(1, 1, value).unwrap();
         let entry = matrix.get_entry(1, 1).unwrap();
         matrix.set_entry(1, 1, Z::ONE).unwrap();
