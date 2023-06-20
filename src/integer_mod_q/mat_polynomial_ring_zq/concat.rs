@@ -36,8 +36,8 @@ impl Concatenate for &MatPolynomialRingZq {
     /// let modulus_str = "3  1 0 1 mod 17";
     /// let modulus = ModulusPolynomialRingZq::from_str(modulus_str).unwrap();
     ///
-    /// let mat_1 = MatPolynomialRingZq::new(13, 5, &modulus).unwrap();
-    /// let mat_2 = MatPolynomialRingZq::new(17, 5, &modulus).unwrap();
+    /// let mat_1 = MatPolynomialRingZq::new(13, 5, &modulus);
+    /// let mat_2 = MatPolynomialRingZq::new(17, 5, &modulus);
     ///
     /// let mat_vert = mat_1.concat_vertical(&mat_2).unwrap();
     /// ```
@@ -59,8 +59,7 @@ impl Concatenate for &MatPolynomialRingZq {
         let mut matrix = MatPolyOverZ::new(
             self.get_num_rows() + other.get_num_rows(),
             self.get_num_columns(),
-        )
-        .unwrap();
+        );
         unsafe {
             fmpz_poly_mat_concat_vertical(
                 &mut matrix.matrix,
@@ -91,8 +90,8 @@ impl Concatenate for &MatPolynomialRingZq {
     /// let modulus_str = "3  1 17 1 mod 17";
     /// let modulus = ModulusPolynomialRingZq::from_str(&modulus_str).unwrap();
     ///
-    /// let mat_1 = MatPolynomialRingZq::new(17, 5, &modulus).unwrap();
-    /// let mat_2 = MatPolynomialRingZq::new(17, 7, &modulus).unwrap();
+    /// let mat_1 = MatPolynomialRingZq::new(17, 5, &modulus);
+    /// let mat_2 = MatPolynomialRingZq::new(17, 7, &modulus);
     ///
     /// let mat_vert = mat_1.concat_horizontal(&mat_2).unwrap();
     /// ```
@@ -114,8 +113,7 @@ impl Concatenate for &MatPolynomialRingZq {
         let mut matrix = MatPolyOverZ::new(
             self.get_num_rows(),
             self.get_num_columns() + other.get_num_columns(),
-        )
-        .unwrap();
+        );
         unsafe {
             fmpz_poly_mat_concat_horizontal(
                 &mut matrix.matrix,
@@ -147,9 +145,9 @@ mod test_concatenate {
     fn dimensions_vertical() {
         let modulus_str = format!("3  1 {} 1 mod {}", i64::MAX, BITPRIME64);
         let modulus = ModulusPolynomialRingZq::from_str(&modulus_str).unwrap();
-        let mat_1 = MatPolynomialRingZq::new(13, 5, &modulus).unwrap();
-        let mat_2 = MatPolynomialRingZq::new(17, 5, &modulus).unwrap();
-        let mat_3 = MatPolynomialRingZq::new(17, 6, &modulus).unwrap();
+        let mat_1 = MatPolynomialRingZq::new(13, 5, &modulus);
+        let mat_2 = MatPolynomialRingZq::new(17, 5, &modulus);
+        let mat_3 = MatPolynomialRingZq::new(17, 6, &modulus);
 
         let mat_vert = mat_1.concat_vertical(&mat_2).unwrap();
 
@@ -165,9 +163,9 @@ mod test_concatenate {
     fn dimensions_horizontal() {
         let modulus_str = format!("3  1 {} 1 mod {}", i64::MAX, BITPRIME64);
         let modulus = ModulusPolynomialRingZq::from_str(&modulus_str).unwrap();
-        let mat_1 = MatPolynomialRingZq::new(13, 5, &modulus).unwrap();
-        let mat_2 = MatPolynomialRingZq::new(17, 5, &modulus).unwrap();
-        let mat_3 = MatPolynomialRingZq::new(17, 6, &modulus).unwrap();
+        let mat_1 = MatPolynomialRingZq::new(13, 5, &modulus);
+        let mat_2 = MatPolynomialRingZq::new(17, 5, &modulus);
+        let mat_3 = MatPolynomialRingZq::new(17, 6, &modulus);
 
         let mat_vert = mat_2.concat_horizontal(&mat_3).unwrap();
 
