@@ -16,6 +16,7 @@ use flint_sys::fq::{fq_add, fq_mul};
 
 impl MatPolynomialRingZq {
     /// Returns the dot product of two vectors of type [`MatPolynomialRingZq`].
+    /// Note that the dimensions of the two vectors are irrelevant for the dot product.
     ///
     /// Parameters:
     /// - `other`: specifies the other vector the dot product is calculated over
@@ -121,6 +122,7 @@ mod test_dot_product {
 
         assert_eq!(dot_prod, PolynomialRingZq::from((&cmp, &modulus)));
     }
+
     /// Check whether the dot product is calculated correctly for the combination:
     /// `self`: column vector, `other`: column vector.
     #[test]
