@@ -54,10 +54,10 @@ mod vector;
 ///
 /// // clone object, set and get entry
 /// let mut clone = id_mat.clone();
-/// clone.set_entry(0, 0, Q::try_from((&2, &1)).unwrap());
+/// clone.set_entry(0, 0, Q::from(2));
 /// assert_eq!(
 ///     clone.get_entry(1, 1).unwrap(),
-///     Q::try_from((&1, &1)).unwrap()
+///     Q::ONE
 /// );
 ///
 /// // to_string

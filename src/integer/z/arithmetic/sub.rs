@@ -342,8 +342,8 @@ mod test_sub_between_z_and_q {
         let d: Q = &a - b;
         let e: Q = a - c;
 
-        assert_eq!(d, Q::from((u64::MAX, 1)) - Q::from((1, u64::MAX)));
-        assert_eq!(e, Q::from((u64::MAX, 1)) - Q::from((u64::MAX, 2)));
+        assert_eq!(d, Q::from(u64::MAX) - Q::from((1, u64::MAX)));
+        assert_eq!(e, Q::from(u64::MAX) - Q::from((u64::MAX, 2)));
     }
 }
 

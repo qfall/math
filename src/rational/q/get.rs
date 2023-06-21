@@ -20,7 +20,7 @@ impl Q {
     /// use qfall_math::rational::Q;
     /// use qfall_math::integer::Z;
     ///
-    /// let value = Q::try_from((&2,&20)).unwrap();
+    /// let value = Q::from((2, 20));
     ///
     /// let den = value.get_denominator();
     ///
@@ -39,7 +39,7 @@ impl Q {
     /// use qfall_math::rational::Q;
     /// use qfall_math::integer::Z;
     ///
-    /// let value = Q::try_from((&2,&20)).unwrap();
+    /// let value = Q::from((2, 20));
     ///
     /// let num = value.get_numerator();
     ///
@@ -59,7 +59,7 @@ mod test_get_denominator {
     /// get a small denominator
     #[test]
     fn get_small() {
-        let value = Q::try_from((&2, &20)).unwrap();
+        let value = Q::from((2, 20));
         let den = value.get_denominator();
         assert_eq!(den, Z::from(10));
     }
@@ -67,7 +67,7 @@ mod test_get_denominator {
     /// get a large denominator (uses FLINT's pointer representation)
     #[test]
     fn get_large() {
-        let value = Q::try_from((&1, &i64::MAX)).unwrap();
+        let value = Q::from((1, i64::MAX));
         let den = value.get_denominator();
         assert_eq!(den, Z::from(i64::MAX));
     }
@@ -80,7 +80,7 @@ mod test_get_numerator {
     /// get a small numerator
     #[test]
     fn get_small() {
-        let value = Q::try_from((&2, &20)).unwrap();
+        let value = Q::from((2, 20));
         let num = value.get_numerator();
         assert_eq!(num, Z::from(1));
     }
@@ -88,7 +88,7 @@ mod test_get_numerator {
     /// get a large numerator (uses FLINT's pointer representation)
     #[test]
     fn get_large() {
-        let value = Q::try_from((&i64::MAX, &1)).unwrap();
+        let value = Q::from(i64::MAX);
         let num = value.get_numerator();
         assert_eq!(num, Z::from(i64::MAX));
     }

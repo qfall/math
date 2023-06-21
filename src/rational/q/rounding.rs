@@ -23,13 +23,13 @@ impl Q {
     /// use qfall_math::rational::Q;
     /// use qfall_math::integer::Z;
     ///
-    /// let value = Q::try_from((&5,&2)).unwrap();
+    /// let value = Q::from((5, 2));
     /// assert_eq!(Z::from(2), value.floor());
     ///
-    /// let value = Q::try_from((&-5,&2)).unwrap();
+    /// let value = Q::from((-5, 2));
     /// assert_eq!(Z::from(-3), value.floor());
     ///
-    /// let value = Q::try_from((&2,&1)).unwrap();
+    /// let value = Q::from(2);
     /// assert_eq!(Z::from(2), value.floor());
     /// ```
     pub fn floor(&self) -> Z {
@@ -45,13 +45,13 @@ impl Q {
     /// use qfall_math::rational::Q;
     /// use qfall_math::integer::Z;
     ///
-    /// let value = Q::try_from((&5,&2)).unwrap();
+    /// let value = Q::from((5, 2));
     /// assert_eq!(Z::from(3), value.ceil());
     ///
-    /// let value = Q::try_from((&-5,&2)).unwrap();
+    /// let value = Q::from((-5, 2));
     /// assert_eq!(Z::from(-2), value.ceil());
     ///
-    /// let value = Q::try_from((&2,&1)).unwrap();
+    /// let value = Q::from(2);
     /// assert_eq!(Z::from(2), value.ceil());
     /// ```
     pub fn ceil(&self) -> Z {
@@ -68,13 +68,13 @@ impl Q {
     /// use qfall_math::rational::Q;
     /// use qfall_math::integer::Z;
     ///
-    /// let value = Q::try_from((&5,&2)).unwrap();
+    /// let value = Q::from((5, 2));
     /// assert_eq!(Z::from(3), value.round());
     ///
-    /// let value = Q::try_from((&-5,&2)).unwrap();
+    /// let value = Q::from((-5, 2));
     /// assert_eq!(Z::from(-2), value.round());
     ///
-    /// let value = Q::try_from((&2,&1)).unwrap();
+    /// let value = Q::from(2);
     /// assert_eq!(Z::from(2), value.round());
     /// ```
     pub fn round(&self) -> Z {
@@ -98,18 +98,18 @@ impl Q {
     /// ```
     /// use qfall_math::rational::Q;
     ///
-    /// let value = Q::try_from((&17, &20)).unwrap();
-    /// let precision = Q::try_from((&1, &20)).unwrap();
+    /// let value = Q::from((17, 20));
+    /// let precision = Q::from((1, 20));
     ///
-    /// let simplified = Q::try_from((&4, &5)).unwrap();
+    /// let simplified = Q::from((4, 5));
     /// assert_eq!(simplified, value.simplify(&precision));
     /// ```
     ///
     /// ```
     /// use qfall_math::rational::Q;
     ///
-    /// let value = Q::try_from((&3, &2)).unwrap();
-    /// let precision = Q::try_from((&1, &2)).unwrap();
+    /// let value = Q::from((3, 2));
+    /// let precision = Q::from((1, 2));
     ///
     /// assert_eq!(Q::ONE, value.simplify(&precision));
     /// ```
@@ -129,8 +129,8 @@ mod test_floor {
     // Ensure that positive rationals are rounded correctly
     #[test]
     fn positive() {
-        let val_1 = Q::try_from((&i64::MAX, &2)).unwrap();
-        let val_2 = Q::try_from((&1, &u64::MAX)).unwrap();
+        let val_1 = Q::from((i64::MAX, 2));
+        let val_2 = Q::from((1, u64::MAX));
 
         assert_eq!(Z::from((i64::MAX - 1) / 2), val_1.floor());
         assert_eq!(Z::ZERO, val_2.floor());
@@ -139,8 +139,8 @@ mod test_floor {
     // Ensure that negative rationals are rounded correctly
     #[test]
     fn negative() {
-        let val_1 = Q::try_from((&-i64::MAX, &2)).unwrap();
-        let val_2 = Q::try_from((&-1, &u64::MAX)).unwrap();
+        let val_1 = Q::from((-i64::MAX, 2));
+        let val_2 = Q::from((-1, u64::MAX));
 
         assert_eq!(Z::from((-i64::MAX - 1) / 2), val_1.floor());
         assert_eq!(Z::MINUS_ONE, val_2.floor());
@@ -154,8 +154,8 @@ mod test_ceil {
     // Ensure that positive rationals are rounded correctly
     #[test]
     fn positive() {
-        let val_1 = Q::try_from((&i64::MAX, &2)).unwrap();
-        let val_2 = Q::try_from((&1, &u64::MAX)).unwrap();
+        let val_1 = Q::from((i64::MAX, 2));
+        let val_2 = Q::from((1, u64::MAX));
 
         assert_eq!(Z::from((i64::MAX - 1) / 2 + 1), val_1.ceil());
         assert_eq!(Z::ONE, val_2.ceil());
@@ -164,8 +164,8 @@ mod test_ceil {
     // Ensure that negative rationals are rounded correctly
     #[test]
     fn negative() {
-        let val_1 = Q::try_from((&-i64::MAX, &2)).unwrap();
-        let val_2 = Q::try_from((&-1, &u64::MAX)).unwrap();
+        let val_1 = Q::from((-i64::MAX, 2));
+        let val_2 = Q::from((-1, u64::MAX));
 
         assert_eq!(Z::from((-i64::MAX - 1) / 2 + 1), val_1.ceil());
         assert_eq!(Z::ZERO, val_2.ceil());
@@ -179,8 +179,8 @@ mod test_round {
     // Ensure that positive rationals are rounded correctly
     #[test]
     fn positive() {
-        let val_1 = Q::try_from((&i64::MAX, &2)).unwrap();
-        let val_2 = Q::try_from((&1, &u64::MAX)).unwrap();
+        let val_1 = Q::from((i64::MAX, 2));
+        let val_2 = Q::from((1, u64::MAX));
 
         assert_eq!(Z::from((i64::MAX - 1) / 2 + 1), val_1.round());
         assert_eq!(Z::ZERO, val_2.round());
@@ -189,8 +189,8 @@ mod test_round {
     // Ensure that negative rationals are rounded correctly
     #[test]
     fn negative() {
-        let val_1 = Q::try_from((&-i64::MAX, &2)).unwrap();
-        let val_2 = Q::try_from((&-1, &u64::MAX)).unwrap();
+        let val_1 = Q::from((-i64::MAX, 2));
+        let val_2 = Q::from((-1, u64::MAX));
 
         assert_eq!(Z::from((-i64::MAX - 1) / 2 + 1), val_1.round());
         assert_eq!(Z::ZERO, val_2.round());
@@ -204,12 +204,12 @@ mod test_simplify {
     /// Ensure that negative precision works as expected
     #[test]
     fn precision_absolute_value() {
-        let value_1 = Q::try_from((&17, &20)).unwrap();
-        let value_2 = Q::try_from((&-17, &20)).unwrap();
-        let precision = Q::try_from((&-1, &20)).unwrap();
+        let value_1 = Q::from((17, 20));
+        let value_2 = Q::from((-17, 20));
+        let precision = Q::from((-1, 20));
 
-        let simplified_1 = Q::try_from((&4, &5)).unwrap();
-        let simplified_2 = Q::try_from((&-4, &5)).unwrap();
+        let simplified_1 = Q::from((4, 5));
+        let simplified_2 = Q::from((-4, 5));
         assert_eq!(simplified_1, value_1.simplify(&precision));
         assert_eq!(simplified_2, value_2.simplify(&precision));
     }
@@ -217,8 +217,8 @@ mod test_simplify {
     /// Ensure that large values with pointer representations are reduced
     #[test]
     fn large_pointer_representation() {
-        let value = Q::try_from((&(u64::MAX - 1), &u64::MAX)).unwrap();
-        let precision = Q::try_from((&1, &u64::MAX)).unwrap();
+        let value = Q::from((u64::MAX - 1, u64::MAX));
+        let precision = Q::from((1, u64::MAX));
 
         assert_eq!(Q::ONE, value.simplify(&precision));
     }
@@ -226,21 +226,18 @@ mod test_simplify {
     /// Ensure that the simplified value stays in range
     #[test]
     fn stay_in_precision() {
-        let value = Q::try_from((&(i64::MAX - 1), &i64::MAX)).unwrap();
-        let precision = Q::try_from((&1, &(u64::MAX - 1))).unwrap();
+        let value = Q::from((i64::MAX - 1, i64::MAX));
+        let precision = Q::from((1, u64::MAX - 1));
 
         let simplified = value.simplify(&precision);
         assert!(&value - &precision <= simplified && simplified <= &value + &precision);
-        assert!(
-            Q::try_from((&(i64::MAX - 2), &i64::MAX)).unwrap() <= simplified
-                && simplified <= 1.into()
-        );
+        assert!(Q::from((i64::MAX - 2, i64::MAX)) <= simplified && simplified <= 1.into());
     }
 
     /// Ensure that a value which can not be simplified is not changed
     #[test]
     fn no_change() {
-        let precision = Q::try_from((&1, &(u64::MAX - 1))).unwrap();
+        let precision = Q::from((1, u64::MAX - 1));
 
         assert_eq!(Q::ONE, Q::ONE.simplify(&precision));
         assert_eq!(Q::MINUS_ONE, Q::MINUS_ONE.simplify(&precision));

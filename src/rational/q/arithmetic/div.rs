@@ -257,8 +257,8 @@ mod test_div_between_q_and_z {
         let d: Q = a / &c;
         let e: Q = b / c;
 
-        assert_eq!(d, Q::from((u64::MAX, 2)) / Q::from((u64::MAX, 1)));
-        assert_eq!(e, Q::from((1, u64::MAX)) / Q::from((u64::MAX, 1)));
+        assert_eq!(d, Q::from((u64::MAX, 2)) / Q::from(u64::MAX));
+        assert_eq!(e, Q::from((1, u64::MAX)) / Q::from(u64::MAX));
     }
 
     /// Testing division by `0` panics

@@ -227,7 +227,7 @@ mod test_get_entry {
     #[test]
     fn max_int_positive() {
         let mut matrix = MatQ::new(5, 10);
-        let value1 = Q::from((i64::MAX, 1));
+        let value1 = Q::from(i64::MAX);
         let value2 = Q::from((1, i64::MAX));
         matrix.set_entry(0, 0, value1).unwrap();
         matrix.set_entry(1, 1, value2).unwrap();
@@ -326,7 +326,7 @@ mod test_get_entry {
         let value = Q::from(u64::MAX);
         matrix.set_entry(1, 1, value).unwrap();
         let entry = matrix.get_entry(1, 1).unwrap();
-        matrix.set_entry(1, 1, Q::from(0)).unwrap();
+        matrix.set_entry(1, 1, Q::ZERO).unwrap();
 
         assert_eq!(Q::from(u64::MAX), entry);
     }

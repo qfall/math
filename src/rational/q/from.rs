@@ -179,7 +179,7 @@ impl Q {
         let shift = match exponent {
             // This could be optimized with `fmpz_lshift_mpn` once it is part of flint_sys.
             e if e >= 1 => Q::from(2).pow(e).unwrap(),
-            e => Q::try_from((&1, &2)).unwrap().pow(e.abs()).unwrap(),
+            e => Q::from((1, 2)).pow(e.abs()).unwrap(),
         };
 
         sign * Z::from(mantissa) * shift
@@ -207,7 +207,7 @@ impl<IntegerNumerator: AsInteger, IntegerDenominator: AsInteger>
     /// use qfall_math::integer::Z;
     ///
     /// let a = Q::from((42, &2));
-    /// let b = Q::from((Z::from(21), 1));
+    /// let b = Q::from((Z::from(84), 4));
     ///
     /// assert_eq!(a,b);
     /// ```
@@ -773,7 +773,7 @@ mod test_from_float {
 
         let value = Q::from(numerator as f64 / denominator as f64);
 
-        let cmp = Q::try_from((&numerator, &denominator)).unwrap();
+        let cmp = Q::from((numerator, denominator));
         assert_eq!(cmp, value)
     }
 
@@ -785,7 +785,7 @@ mod test_from_float {
 
         let value = Q::from(numerator as f64 / denominator as f64);
 
-        let cmp = Q::try_from((&numerator, &denominator)).unwrap();
+        let cmp = Q::from((numerator, denominator));
         assert_eq!(cmp, value)
     }
 

@@ -126,18 +126,18 @@ mod tests_init {
     /// Ensure that `ZERO` initializes [`Q`] with `0`.
     #[test]
     fn init_zero() {
-        assert_eq!(Q::try_from((&0, &1)).unwrap(), Q::ZERO);
+        assert_eq!(Q::from(0), Q::ZERO);
     }
 
     /// Ensure that `ONE` initializes [`Q`] with `1`.
     #[test]
     fn init_one() {
-        assert_eq!(Q::try_from((&1, &1)).unwrap(), Q::ONE);
+        assert_eq!(Q::from(1), Q::ONE);
     }
 
     /// Ensure that `MINUS_ONE` initializes [`Q`] with `-1`.
     #[test]
     fn init_minus_one() {
-        assert_eq!(Q::try_from((&-1, &1)).unwrap(), Q::MINUS_ONE);
+        assert_eq!(Q::from(-1), Q::MINUS_ONE);
     }
 }

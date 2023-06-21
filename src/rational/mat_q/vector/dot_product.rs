@@ -137,7 +137,7 @@ mod test_dot_product {
     fn large_numbers() {
         let vec_1 = MatQ::from_str(&format!("[[1,-1,{}]]", i64::MAX)).unwrap();
         let vec_2 = MatQ::from_str(&format!("[[1,{},1]]", i64::MIN)).unwrap();
-        let cmp = Q::MINUS_ONE * Q::from(i64::MIN) + Q::from(i64::MAX) + Q::from(1);
+        let cmp = -1 * Q::from(i64::MIN) + Q::from(i64::MAX) + 1;
 
         let dot_prod = vec_1.dot_product(&vec_2).unwrap();
 

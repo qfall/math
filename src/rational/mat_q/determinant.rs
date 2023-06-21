@@ -68,7 +68,7 @@ mod test_determinant {
 
         let cmp1 = Q::ONE;
         let cmp2 = Q::from(i64::MAX);
-        let cmp3 = Q::try_from((&-1, &i64::MIN)).unwrap();
+        let cmp3 = Q::from((-1, i64::MIN));
         let cmp4 = Q::ZERO;
         let cmp5 = Q::from(17);
 

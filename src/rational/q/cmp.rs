@@ -314,8 +314,8 @@ mod test_partial_ord {
     #[test]
     fn less_small() {
         let one_1 = Q::ONE;
-        let small_negative = Q::from(-1);
-        let one_half = Q::try_from((&1, &2)).unwrap();
+        let small_negative = Q::MINUS_ONE;
+        let one_half = Q::from((1, 2));
 
         assert!(small_negative < one_1);
 
@@ -327,9 +327,9 @@ mod test_partial_ord {
     /// and small [`Q`] (not using pointers).
     #[test]
     fn less_large_small() {
-        let large = Q::try_from((&u64::MAX, &2)).unwrap();
+        let large = Q::from((u64::MAX, 2));
         let small_positive = Q::ONE;
-        let small_negative = Q::try_from((&(i64::MIN + 1), &i64::MAX)).unwrap();
+        let small_negative = Q::from((i64::MIN + 1, i64::MAX));
         let large_negative = Q::from(i64::MIN);
 
         // Comparisons with max
@@ -357,7 +357,7 @@ mod test_partial_ord {
     fn less_equal_small() {
         let small_positive_1 = Q::ONE;
         let small_positive_2 = Q::ONE;
-        let small_negative = Q::from(-1);
+        let small_negative = Q::MINUS_ONE;
 
         assert!(small_positive_1 <= small_positive_2);
         assert!(small_positive_2 <= small_positive_1);
@@ -373,7 +373,7 @@ mod test_partial_ord {
     fn less_equal_large_small() {
         let max = Q::from(u64::MAX);
         let small_positive = Q::ONE;
-        let small_negative = Q::from(-1);
+        let small_negative = Q::MINUS_ONE;
         let max_negative = Q::from(i64::MIN);
 
         // Comparisons with max
@@ -406,7 +406,7 @@ mod test_partial_ord {
     #[test]
     fn greater_small() {
         let small_positive_1 = Q::ONE;
-        let small_negative = Q::from(-1);
+        let small_negative = Q::MINUS_ONE;
 
         assert!(small_positive_1 > small_negative);
     }
@@ -417,7 +417,7 @@ mod test_partial_ord {
     fn greater_large_small() {
         let max = Q::from(u64::MAX);
         let small_positive = Q::ONE;
-        let small_negative = Q::from(-1);
+        let small_negative = Q::MINUS_ONE;
         let max_negative = Q::from(i64::MIN);
 
         // Comparisons with max
@@ -445,7 +445,7 @@ mod test_partial_ord {
     fn greater_equal_small() {
         let small_positive_1 = Q::ONE;
         let small_positive_2 = Q::ONE;
-        let small_negative = Q::from(-1);
+        let small_negative = Q::MINUS_ONE;
 
         assert!(small_positive_1 >= small_positive_2);
         assert!(small_positive_2 >= small_positive_1);
@@ -461,7 +461,7 @@ mod test_partial_ord {
     fn greater_equal_large_small() {
         let max = Q::from(u64::MAX);
         let small_positive = Q::ONE;
-        let small_negative = Q::from(-1);
+        let small_negative = Q::MINUS_ONE;
         let max_negative = Q::from(i64::MIN);
 
         // Comparisons with max
@@ -492,7 +492,7 @@ mod test_partial_ord {
     /// Compare a number close to zero with zero
     #[test]
     fn close_to_zero() {
-        let small = Q::try_from((&1, &u64::MAX)).unwrap();
+        let small = Q::from((1, u64::MAX));
         let zero = Q::ZERO;
 
         assert!(small > zero);

@@ -57,15 +57,15 @@ mod test_distance {
     #[test]
     fn small_values() {
         let a = Q::ONE;
-        let b = Q::try_from((&5, &-15)).unwrap();
+        let b = Q::from((5, -15));
         let zero = Q::ZERO;
 
         assert_eq!(Q::ONE, a.distance(&zero));
         assert_eq!(Q::ONE, zero.distance(&a));
-        assert_eq!(Q::try_from((&4, &3)).unwrap(), a.distance(&b));
-        assert_eq!(Q::try_from((&4, &3)).unwrap(), b.distance(&a));
-        assert_eq!(Q::try_from((&1, &3)).unwrap(), b.distance(&zero));
-        assert_eq!(Q::try_from((&1, &3)).unwrap(), zero.distance(&b));
+        assert_eq!(Q::from((4, 3)), a.distance(&b));
+        assert_eq!(Q::from((4, 3)), b.distance(&a));
+        assert_eq!(Q::from((1, 3)), b.distance(&zero));
+        assert_eq!(Q::from((1, 3)), zero.distance(&b));
         assert_eq!(Q::ZERO, b.distance(&b))
     }
 
@@ -110,7 +110,7 @@ mod test_distance {
         assert_eq!(Q::from(15), i_1);
         assert_eq!(Q::from(35), i_2);
         assert_eq!(Q::from(i64::MIN).abs(), i_3);
-        assert_eq!(Q::try_from((&425, &100)).unwrap(), f_0);
-        assert_eq!(Q::try_from((&169, &256)).unwrap(), f_1);
+        assert_eq!(Q::from((425, 100)), f_0);
+        assert_eq!(Q::from((169, 256)), f_1);
     }
 }

@@ -152,14 +152,14 @@ impl Div for &Z {
     /// let c: Q = &a / &b;
     /// let d: Q = a / b;
     ///
-    /// assert_eq!(Q::try_from((&21, &10)).unwrap(), c);
-    /// assert_eq!(Q::try_from((&21, &10)).unwrap(), d);
+    /// assert_eq!(Q::from((21, 10)), c);
+    /// assert_eq!(Q::from((21, 10)), d);
     /// ```
     ///
     /// # Panics ...
     /// - if the divisor is `0`.
     fn div(self, other: Self) -> Self::Output {
-        Q::try_from((self, other)).unwrap()
+        Q::from((self, other))
     }
 }
 
@@ -446,7 +446,7 @@ mod test_div {
         let a: Z = Z::from(42);
         let b: Z = Z::from(4);
         let c: Q = a / b;
-        assert_eq!(c, Q::try_from((&21, &2)).unwrap());
+        assert_eq!(c, Q::from((21, 2)));
     }
 
     /// Testing division for two borrowed [`Z`]
@@ -455,7 +455,7 @@ mod test_div {
         let a: Z = Z::from(42);
         let b: Z = Z::from(4);
         let c: Q = &a / &b;
-        assert_eq!(c, Q::try_from((&21, &2)).unwrap());
+        assert_eq!(c, Q::from((21, 2)));
     }
 
     /// Testing division for borrowed [`Z`] and [`Z`]
@@ -464,7 +464,7 @@ mod test_div {
         let a: Z = Z::from(42);
         let b: Z = Z::from(4);
         let c: Q = &a / b;
-        assert_eq!(c, Q::try_from((&21, &2)).unwrap());
+        assert_eq!(c, Q::from((21, 2)));
     }
 
     /// Testing division for [`Z`] and borrowed [`Z`]
@@ -473,7 +473,7 @@ mod test_div {
         let a: Z = Z::from(42);
         let b: Z = Z::from(4);
         let c: Q = a / &b;
-        assert_eq!(c, Q::try_from((&21, &2)).unwrap());
+        assert_eq!(c, Q::from((21, 2)));
     }
 
     /// Testing division for big [`Z`]
@@ -487,7 +487,7 @@ mod test_div {
         let e: Q = a / b;
         let f: Q = c / d;
 
-        assert_eq!(e, Q::from(Z::from(2).pow(62).unwrap()));
+        assert_eq!(e, Q::from(2).pow(62).unwrap());
         assert_eq!(f, Q::MINUS_ONE);
     }
 }
@@ -543,7 +543,7 @@ mod test_div_between_z_and_q {
         let d: Q = &a / b;
         let e: Q = a / c;
 
-        assert_eq!(d, Q::from((u64::MAX, 1)) / Q::from((1, u64::MAX)));
-        assert_eq!(e, Q::from((u64::MAX, 1)) / Q::from((u64::MAX, 2)));
+        assert_eq!(d, Q::from(u64::MAX) / Q::from((1, u64::MAX)));
+        assert_eq!(e, Q::from(u64::MAX) / Q::from((u64::MAX, 2)));
     }
 }

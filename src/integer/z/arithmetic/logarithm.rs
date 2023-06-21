@@ -354,8 +354,8 @@ mod test_log {
         let z_2 = Z::from(6);
         let z_3 = Z::from(9);
         let cmp_0 = Q::from(6_f64.log2());
-        let cmp_1 = Q::try_from((&2, &1)).unwrap();
-        let max_distance = Q::try_from((&1, &1_000_000_000)).unwrap();
+        let cmp_1 = Q::from(2);
+        let max_distance = Q::from((1, 1_000_000_000));
 
         let res_0 = z_0.log(&2).unwrap();
         let res_1 = z_1.log(&2).unwrap();
@@ -374,9 +374,9 @@ mod test_log {
         let z_0 = Z::from(i64::MAX as u64 + 1);
         let z_1 = Z::from(i64::MAX);
         let z_2 = Z::from(i32::MAX);
-        let cmp_0 = Q::try_from((&63, &1)).unwrap();
+        let cmp_0 = Q::from(63);
         let cmp_1 = Q::from((i64::MAX as f64).log2());
-        let max_distance = Q::try_from((&1, &1_000_000_000)).unwrap();
+        let max_distance = Q::from((1, 1_000_000_000));
 
         let res_0 = z_0.log(&2).unwrap();
         let res_1 = z_1.log(&2).unwrap();

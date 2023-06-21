@@ -92,7 +92,7 @@ mod test_clone {
         assert_eq!(a.get_entry(0, 0).unwrap(), Q::from((1, 2)));
         assert_eq!(a.get_entry(0, 1).unwrap(), Q::from((2, 3)));
         assert_eq!(a.get_entry(0, 2).unwrap(), Q::from((3, 4)));
-        assert_eq!(a.get_entry(1, 0).unwrap(), Q::from((3, 1)));
+        assert_eq!(a.get_entry(1, 0).unwrap(), Q::from(3));
         assert_eq!(a.get_entry(1, 1).unwrap(), Q::from((4, 2)));
         assert_eq!(a.get_entry(1, 2).unwrap(), Q::from((5, 4)));
     }

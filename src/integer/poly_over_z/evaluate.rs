@@ -219,7 +219,7 @@ mod test_evaluate_q {
         let res_ref = poly.evaluate(&value);
         let res = poly.evaluate(value);
 
-        assert_eq!(Q::from(1), res);
+        assert_eq!(Q::ONE, res);
         assert_eq!(res_ref, res);
     }
 }

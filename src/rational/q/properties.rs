@@ -41,7 +41,7 @@ impl Q {
     ///
     /// let inverse = value.inverse().unwrap();
     ///
-    /// assert_eq!(Q::try_from((&1, &4)).unwrap(), inverse);
+    /// assert_eq!(Q::from((1, 4)), inverse);
     /// ```
     pub fn inverse(&self) -> Option<Q> {
         if self == &Q::ZERO {
@@ -104,13 +104,10 @@ mod test_abs {
     #[test]
     fn large_values() {
         let pos = Q::from(i64::MAX);
-        let neg = Q::try_from((&1, &i64::MIN)).unwrap();
+        let neg = Q::from((1, i64::MIN));
 
         assert_eq!(Q::from(i64::MAX), pos.abs());
-        assert_eq!(
-            Q::try_from((&1, &i64::MIN)).unwrap() * Q::from(-1),
-            neg.abs()
-        );
+        assert_eq!(Q::from((-1, i64::MIN)), neg.abs());
     }
 }
 
@@ -122,26 +119,26 @@ mod test_inv {
     #[test]
     fn small_values() {
         let val_0 = Q::from(4);
-        let val_1 = Q::try_from((&2, &-7)).unwrap();
+        let val_1 = Q::from((2, -7));
 
         let inv_0 = val_0.inverse().unwrap();
         let inv_1 = val_1.inverse().unwrap();
 
-        assert_eq!(Q::try_from((&1, &4)).unwrap(), inv_0);
-        assert_eq!(Q::try_from((&-7, &2)).unwrap(), inv_1);
+        assert_eq!(Q::from((1, 4)), inv_0);
+        assert_eq!(Q::from((-7, 2)), inv_1);
     }
 
     /// Checks whether the inverse is correctly computed for large values.
     #[test]
     fn large_values() {
-        let val_0 = Q::try_from((&1, &i64::MAX)).unwrap();
+        let val_0 = Q::from((1, i64::MAX));
         let val_1 = Q::from(i64::MIN);
 
         let inv_0 = val_0.inverse().unwrap();
         let inv_1 = val_1.inverse().unwrap();
 
         assert_eq!(Q::from(i64::MAX), inv_0);
-        assert_eq!(Q::try_from((&1, &i64::MIN)).unwrap(), inv_1);
+        assert_eq!(Q::from((1, i64::MIN)), inv_1);
     }
 
     /// Checks whether the inverse of `0` returns `None`.
@@ -163,7 +160,7 @@ mod test_is_zero {
     /// Ensure that is_zero returns `true` for `0`.
     #[test]
     fn zero_detection() {
-        let zero = Q::from(0);
+        let zero = Q::ZERO;
 
         assert!(zero.is_zero());
     }

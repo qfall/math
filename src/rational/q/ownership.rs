@@ -139,10 +139,10 @@ mod test_clone {
     fn keep_alive() {
         let a: Q;
         {
-            let b = Q::from((5, 1));
+            let b = Q::from(5);
             a = b.clone();
         }
-        assert_eq!(a, Q::from((5, 1)));
+        assert_eq!(a, Q::from(5));
     }
 }
 
