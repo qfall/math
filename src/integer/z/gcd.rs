@@ -20,7 +20,7 @@ impl Gcd<&Z> for Z {
     type Output = Z;
 
     /// Outputs the greatest common divisor (gcd) of the two given values
-    /// with `gcd(a,0) = |a|`.
+    /// with `gcd(a, 0) = |a|`.
     ///
     /// Paramters:
     /// - `other`: specifies one of the values of which the gcd is computed
@@ -54,13 +54,13 @@ impl Xgcd<&Z> for Z {
     type Output = (Z, Z, Z);
 
     /// Outputs the extended greatest common divisor (xgcd) of the two given values,
-    /// i.e. a triple `(gcd(a,b), x, y)`, where `a*x + b*y = gcd(a,b)*`.
+    /// i.e. a triple `(gcd(a, b), x, y)`, where `a*x + b*y = gcd(a, b)*`.
     ///
     /// Paramters:
     /// - `other`: specifies one of the values of which the gcd is computed
     ///
-    /// Returns a triple `(gcd(a,b), x, y)` containing the greatest common divisor,
-    /// `x`, and `y` s.t. `gcd(a,b) = a*x + b*y`.
+    /// Returns a triple `(gcd(a, b), x, y)` containing the greatest common divisor,
+    /// `x`, and `y` s.t. `gcd(a, b) = a*x + b*y`.
     ///
     /// # Examples
     /// ```
@@ -101,7 +101,7 @@ mod test_gcd {
     use super::{Gcd, Z};
 
     /// Ensures that the gcd is correctly computed for small [`Z`] instances
-    /// and ensures properties: `gcd(a,b) == gcd(b,a)` and `gcd(a,a) == a`
+    /// and ensures properties: `gcd(a, b) == gcd(b, a)` and `gcd(a, a) == a`
     #[test]
     fn small() {
         let pos_1 = Z::from(10);
@@ -129,8 +129,8 @@ mod test_gcd {
     }
 
     /// Ensures that the gcd is correctly computed for small [`Z`] instances
-    /// and ensures properties: `gcd(a,b) == gcd(b,a)`, `gcd(a,a) == a`, and
-    /// `gcd(a,0) == a`
+    /// and ensures properties: `gcd(a, b) == gcd(b, a)`, `gcd(a, a) == a`, and
+    /// `gcd(a, 0) == a`
     #[test]
     fn large() {
         let pos = Z::from(i64::MAX);
@@ -173,7 +173,7 @@ mod test_xgcd {
     use super::{Xgcd, Z};
 
     /// Ensures that the gcd is correctly computed for small [`Z`] instances
-    /// and ensures properties: `gcd(a,b) == gcd(b,a)` and `gcd(a,a) == a`
+    /// and ensures properties: `gcd(a, b) == gcd(b, a)` and `gcd(a, a) == a`
     #[test]
     fn gcd_small() {
         let pos_1 = Z::from(10);
@@ -201,8 +201,8 @@ mod test_xgcd {
     }
 
     /// Ensures that the gcd is correctly computed for small [`Z`] instances
-    /// and ensures properties: `gcd(a,b) == gcd(b,a)`, `gcd(a,a) == a`, and
-    /// `gcd(a,0) == a`
+    /// and ensures properties: `gcd(a, b) == gcd(b, a)`, `gcd(a, a) == a`, and
+    /// `gcd(a, 0) == a`
     #[test]
     fn gcd_large() {
         let pos = Z::from(i64::MAX);
@@ -224,7 +224,7 @@ mod test_xgcd {
     }
 
     /// Ensures that the computation of `x` and `y` works correctly
-    /// s.t. `a*x + b*y = gcd(a,b)` for small values
+    /// s.t. `a*x + b*y = gcd(a, b)` for small values
     #[test]
     fn xy_small() {
         let pos_1 = Z::from(10);
@@ -277,7 +277,7 @@ mod test_xgcd {
     }
 
     /// Ensures that the computation of `x` and `y` works correctly
-    /// s.t. `a*x + b*y = gcd(a,b)` for large values
+    /// s.t. `a*x + b*y = gcd(a, b)` for large values
     #[test]
     fn xy_large() {
         let pos = Z::from(i64::MAX);
@@ -290,7 +290,7 @@ mod test_xgcd {
         let xgcd_4 = neg.xgcd(&neg);
         let xgcd_5 = pos.xgcd(&neg);
 
-        // check that `gcd(a,b) == a * x + b * y`
+        // check that `gcd(a, b) == a * x + b * y`
         assert_eq!(xgcd_1.0, &pos * &xgcd_1.1 + &zero * &xgcd_1.2);
         assert_eq!(xgcd_2.0, &pos * &xgcd_2.1 + &pos * &xgcd_2.2);
         assert_eq!(xgcd_3.0, &neg * &xgcd_3.1 + &zero * &xgcd_3.2);

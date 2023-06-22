@@ -38,7 +38,7 @@ impl PartialEq for ModulusPolynomialRingZq {
     /// # assert!(!compared);
     /// let compared: bool = (a.eq(&b));
     /// # assert!(!compared);
-    /// let compared: bool = (ModulusPolynomialRingZq::eq(&a,&b));
+    /// let compared: bool = (ModulusPolynomialRingZq::eq(&a, &b));
     /// # assert!(!compared);
     /// ```
     fn eq(&self, other: &Self) -> bool {

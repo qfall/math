@@ -181,7 +181,7 @@ pub trait Gcd<T = Self> {
     type Output;
 
     /// Outputs the greatest common divisor (gcd) of the two given values
-    /// with `gcd(a,0) = |a|`.
+    /// with `gcd(a, 0) = |a|`.
     ///
     /// Paramters:
     /// - `other`: specifies one of the values of which the gcd is computed
@@ -196,13 +196,13 @@ pub trait Xgcd<T = Self> {
     type Output;
 
     /// Outputs the extended greatest common divisor (xgcd) of the two given values,
-    /// i.e. a triple `(gcd(a,b), x, y)`, where `a*x + b*y = gcd(a,b)*`.
+    /// i.e. a triple `(gcd(a, b), x, y)`, where `a*x + b*y = gcd(a, b)*`.
     ///
     /// Paramters:
     /// - `other`: specifies one of the values of which the gcd is computed
     ///
-    /// Returns a triple `(gcd(a,b), x, y)` containing the greatest common divisor,
-    /// `x`, and `y` s.t. `gcd(a,b) = a*x + b*y`.
+    /// Returns a triple `(gcd(a, b), x, y)` containing the greatest common divisor,
+    /// `x`, and `y` s.t. `gcd(a, b) = a*x + b*y`.
     fn xgcd(&self, other: T) -> Self::Output;
 }
 

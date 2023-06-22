@@ -148,7 +148,7 @@ mod test_distance_safe {
     use super::{Zq, Z};
 
     /// Checks if distance_safe is correctly computed for small [`Zq`] values
-    /// and whether distance(a,b) == distance(b,a) and distance(a,a) == 0
+    /// and whether distance(a, b) == distance(b, a) and distance(a, a) == 0
     #[test]
     fn small_values() {
         let a = Zq::from((1, 29));
@@ -177,7 +177,7 @@ mod test_distance_safe {
     }
 
     /// Checks if distance_safe is correctly computed for large [`Zq`] values
-    /// and whether distance(a,b) == distance(b,a), and distance(a,a) == 0
+    /// and whether distance(a, b) == distance(b, a), and distance(a, a) == 0
     #[test]
     fn large_values() {
         let a = Zq::from((i64::MAX, u64::MAX));

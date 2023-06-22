@@ -35,10 +35,10 @@ impl Q {
     /// ```
     /// use qfall_math::rational::Q;
     ///
-    /// let value = Q::from((9,4));
+    /// let value = Q::from((9, 4));
     /// let root = value.sqrt();
     ///
-    /// assert_eq!(&root, &Q::from((3,2)));
+    /// assert_eq!(&root, &Q::from((3, 2)));
     /// ```
     ///
     /// # Panics ...
@@ -52,7 +52,7 @@ impl Q {
 
     /// Calculate the square root with a specified minimum precision.
     ///
-    /// Given `Q::sqrt_precision(x/y,precision) = a/b` the maximum error to
+    /// Given `Q::sqrt_precision(x/y, precision) = a/b` the maximum error to
     /// the true square root result is `a/b * (b + 1) * p/(b-p)`
     /// with `p = 1/(2*precision)`.
     /// The actual result may be more accurate.
@@ -67,11 +67,11 @@ impl Q {
     /// use qfall_math::rational::Q;
     ///
     /// let precision = Z::from(1000);
-    /// let value = Q::from((9,4));
+    /// let value = Q::from((9, 4));
     ///
     /// let root = value.sqrt_precision(&precision).unwrap();
     ///
-    /// assert_eq!(&root, &Q::from((3,2)));
+    /// assert_eq!(&root, &Q::from((3, 2)));
     /// ```
     ///
     /// # Errors and Failures

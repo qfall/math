@@ -53,7 +53,7 @@ mod test_distance {
     use super::{Distance, Q};
 
     /// Checks if distance is correctly computed for small [`Q`] values
-    /// and whether distance(a,b) == distance(b,a), distance(a,a) == 0
+    /// and whether distance(a, b) == distance(b, a), distance(a, a) == 0
     #[test]
     fn small_values() {
         let a = Q::ONE;
@@ -70,7 +70,7 @@ mod test_distance {
     }
 
     /// Checks if distance is correctly computed for large [`Q`] values
-    /// and whether distance(a,b) == distance(b,a), distance(a,a) == 0
+    /// and whether distance(a, b) == distance(b, a), distance(a, a) == 0
     #[test]
     fn large_values() {
         let a = Q::from(i64::MAX);

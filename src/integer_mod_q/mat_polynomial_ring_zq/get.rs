@@ -102,7 +102,7 @@ impl GetEntry<PolyOverZ> for MatPolynomialRingZq {
     /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
     /// let poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
     ///
-    /// let entry: PolyOverZ = poly_ring_mat.get_entry(1,0).unwrap();
+    /// let entry: PolyOverZ = poly_ring_mat.get_entry(1, 0).unwrap();
     /// ```
     ///
     /// # Errors and Failures
@@ -139,7 +139,7 @@ impl GetEntry<PolynomialRingZq> for MatPolynomialRingZq {
     /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
     /// let poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
     ///
-    /// let entry: PolynomialRingZq = poly_ring_mat.get_entry(1,0).unwrap();
+    /// let entry: PolynomialRingZq = poly_ring_mat.get_entry(1, 0).unwrap();
     /// ```
     ///
     /// # Errors and Failures

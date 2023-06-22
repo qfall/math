@@ -96,7 +96,7 @@ impl SetCoefficient<&Zq> for PolyOverZq {
     /// use std::str::FromStr;
     ///
     /// let mut poly = PolyOverZq::from_str("4  0 1 2 3 mod 17").unwrap();
-    /// let value = Zq::from((1000,17));
+    /// let value = Zq::from((1000, 17));
     ///
     /// assert!(poly.set_coeff(4, &value).is_ok());
     /// ```
