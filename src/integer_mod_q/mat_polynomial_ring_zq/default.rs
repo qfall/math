@@ -60,7 +60,7 @@ mod test_new {
     use crate::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq, PolyOverZq};
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = u64::MAX - 58;
+    const LARGE_PRIME: u64 = u64::MAX - 58;
 
     /// Ensure that initialization works.
     #[test]
@@ -97,7 +97,7 @@ mod test_new {
     #[test]
     fn large_modulus() {
         let poly_mod =
-            PolyOverZq::from_str(&format!("3  1 {} 1 mod {}", i64::MAX, BITPRIME64)).unwrap();
+            PolyOverZq::from_str(&format!("3  1 {} 1 mod {}", i64::MAX, LARGE_PRIME)).unwrap();
         let modulus = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
 
         let _ = MatPolynomialRingZq::new(2, 2, &modulus);

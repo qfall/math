@@ -76,7 +76,7 @@ mod test_partial_eq {
     use super::ModulusPolynomialRingZq;
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = u64::MAX - 58;
+    const LARGE_PRIME: u64 = u64::MAX - 58;
 
     /// Demonstrate the different ways to use equal.
     /// We assume that they behave the same in the other tests.
@@ -140,8 +140,8 @@ mod test_partial_eq {
     /// (uses FLINT's pointer representation)
     #[test]
     fn equal_large() {
-        let max_str = format!("1  {} mod {}", u64::MAX, BITPRIME64);
-        let min_str = format!("1  {} mod {}", i64::MIN, BITPRIME64);
+        let max_str = format!("1  {} mod {}", u64::MAX, LARGE_PRIME);
+        let min_str = format!("1  {} mod {}", i64::MIN, LARGE_PRIME);
 
         let max_1 = ModulusPolynomialRingZq::from_str(&max_str).unwrap();
         let max_2 = ModulusPolynomialRingZq::from_str(&max_str).unwrap();
@@ -159,8 +159,8 @@ mod test_partial_eq {
     /// (uses FLINT's pointer representation)
     #[test]
     fn not_equal_large() {
-        let max_str = format!("1  {} mod {}", u64::MAX, BITPRIME64);
-        let min_str = format!("1  {} mod {}", i64::MIN, BITPRIME64);
+        let max_str = format!("1  {} mod {}", u64::MAX, LARGE_PRIME);
+        let min_str = format!("1  {} mod {}", i64::MIN, LARGE_PRIME);
 
         let max_1 = ModulusPolynomialRingZq::from_str(&max_str).unwrap();
         let max_2 = ModulusPolynomialRingZq::from_str(&max_str).unwrap();
@@ -178,8 +178,8 @@ mod test_partial_eq {
     /// and small polynomial with a small [`ModulusPolynomialRingZq`] (no pointer representation).
     #[test]
     fn equal_large_small() {
-        let max_str = format!("1  {} mod {}", u64::MAX, BITPRIME64);
-        let min_str = format!("1  {} mod {}", i64::MIN, BITPRIME64);
+        let max_str = format!("1  {} mod {}", u64::MAX, LARGE_PRIME);
+        let min_str = format!("1  {} mod {}", i64::MIN, LARGE_PRIME);
 
         let max = ModulusPolynomialRingZq::from_str(&max_str).unwrap();
         let min = ModulusPolynomialRingZq::from_str(&min_str).unwrap();
@@ -202,8 +202,8 @@ mod test_partial_eq {
     /// and small [`ModulusPolynomialRingZq`] (no pointer representation).
     #[test]
     fn not_equal_large_small() {
-        let max_str = format!("1  {} mod {}", u64::MAX, BITPRIME64);
-        let min_str = format!("1  {} mod {}", i64::MIN, BITPRIME64);
+        let max_str = format!("1  {} mod {}", u64::MAX, LARGE_PRIME);
+        let min_str = format!("1  {} mod {}", i64::MIN, LARGE_PRIME);
 
         let max = ModulusPolynomialRingZq::from_str(&max_str).unwrap();
         let min = ModulusPolynomialRingZq::from_str(&min_str).unwrap();

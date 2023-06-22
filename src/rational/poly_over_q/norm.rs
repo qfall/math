@@ -27,7 +27,7 @@ impl PolyOverQ {
     /// let sqrd_2_norm = poly.norm_eucl_sqrd();
     ///
     /// // (1*1 + 2*2 + 3*3)/49 = 14/49 = 2/7
-    /// assert_eq!(Q::from_str("2/7").unwrap(), sqrd_2_norm);
+    /// assert_eq!(Q::from((2, 7)), sqrd_2_norm);
     /// ```
     pub fn norm_eucl_sqrd(&self) -> Q {
         let mut res = Q::ZERO;
@@ -54,7 +54,7 @@ impl PolyOverQ {
     /// let infty_norm = poly.norm_infty();
     ///
     /// // max coefficient is 3/7
-    /// assert_eq!(Q::from_str("3/7").unwrap(), infty_norm);
+    /// assert_eq!(Q::from((3, 7)), infty_norm);
     /// ```
     pub fn norm_infty(&self) -> Q {
         let mut res = Q::ZERO;
@@ -84,12 +84,10 @@ mod test_norm_eucl_sqrd {
         let poly3 = PolyOverQ::from_str("3  1/8 2010/19 90/29").unwrap();
 
         assert_eq!(poly1.norm_eucl_sqrd(), Q::ZERO);
-        assert_eq!(poly2.norm_eucl_sqrd(), Q::from_str("2/7").unwrap());
+        assert_eq!(poly2.norm_eucl_sqrd(), Q::from((2, 7)));
         assert_eq!(
             poly3.norm_eucl_sqrd(),
-            Q::from_str("1/64").unwrap()
-                + Q::from_str("2010/19").unwrap() * Q::from_str("2010/19").unwrap()
-                + Q::from_str("8100/841").unwrap()
+            Q::from((1, 64)) + Q::from((2010, 19)) * Q::from((2010, 19)) + Q::from((8100, 841))
         );
     }
 
@@ -109,8 +107,7 @@ mod test_norm_eucl_sqrd {
             poly2.norm_eucl_sqrd(),
             Q::from(u64::MAX) * Q::from(u64::MAX)
                 + Q::from(i64::MIN) * Q::from(i64::MIN)
-                + Q::from_str(&format!("1/{}", i64::MAX)).unwrap()
-                    * Q::from_str(&format!("1/{}", i64::MAX)).unwrap()
+                + Q::from((1, i64::MAX)) * Q::from((1, i64::MAX))
         );
     }
 }
@@ -129,8 +126,8 @@ mod test_norm_infty {
         let poly3 = PolyOverQ::from_str("3  1/8 2010/19 90/29").unwrap();
 
         assert_eq!(poly1.norm_infty(), Q::ZERO);
-        assert_eq!(poly2.norm_infty(), Q::from_str("3/7").unwrap());
-        assert_eq!(poly3.norm_infty(), Q::from_str("2010/19").unwrap());
+        assert_eq!(poly2.norm_infty(), Q::from((3, 7)));
+        assert_eq!(poly3.norm_infty(), Q::from((2010, 19)));
     }
 
     /// Check whether the infinity norm for polynomials

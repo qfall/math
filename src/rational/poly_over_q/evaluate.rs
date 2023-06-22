@@ -36,7 +36,7 @@ impl Evaluate<&Q, Q> for PolyOverQ {
     /// use std::str::FromStr;
     ///
     /// let poly = PolyOverQ::from_str("5  0 1 2/3 -3/2 1").unwrap();
-    /// let value = Q::from_str("3/2").unwrap();
+    /// let value = Q::from((3, 2));
     /// let res = poly.evaluate(&value);
     /// ```
     fn evaluate(&self, value: &Q) -> Q {
@@ -65,7 +65,7 @@ impl Evaluate<&Z, Q> for PolyOverQ {
     /// use std::str::FromStr;
     ///
     /// let poly = PolyOverQ::from_str("5  0 1 2/3 -3/2 1").unwrap();
-    /// let value = Q::from_str("3/2").unwrap();
+    /// let value = Q::from((3, 2));
     /// let res = poly.evaluate(&value);
     /// ```
     fn evaluate(&self, value: &Z) -> Q {
@@ -94,9 +94,9 @@ mod test_evaluate {
     fn eval_q_working() {
         let poly = PolyOverQ::from_str("2  1 2/7").unwrap();
 
-        let res = poly.evaluate(Q::from_str("7/3").unwrap());
+        let res = poly.evaluate(Q::from((7, 3)));
 
-        assert_eq!(Q::from_str("5/3").unwrap(), res)
+        assert_eq!(Q::from((5, 3)), res)
     }
 
     /// Tests if evaluate works with negative values
@@ -104,9 +104,9 @@ mod test_evaluate {
     fn eval_q_negative() {
         let poly = PolyOverQ::from_str("2  1 2/7").unwrap();
 
-        let res = poly.evaluate(Q::from_str("-7/3").unwrap());
+        let res = poly.evaluate(Q::from((-7, 3)));
 
-        assert_eq!(Q::from_str("1/3").unwrap(), res)
+        assert_eq!(Q::from((1, 3)), res)
     }
 
     /// Tests if evaluate works with large rationals
@@ -119,7 +119,7 @@ mod test_evaluate {
 
         let res = poly.evaluate(Q::from_str(&q_str_rev).unwrap());
 
-        assert_eq!(Q::from(1), res)
+        assert_eq!(Q::ONE, res)
     }
 }
 
@@ -137,7 +137,7 @@ mod test_evaluate_z {
 
         let res = poly.evaluate(Z::from(3));
 
-        assert_eq!(Q::from_str("13/7").unwrap(), res)
+        assert_eq!(Q::from((13, 7)), res)
     }
 
     /// Tests if evaluate works with negative values
@@ -147,7 +147,7 @@ mod test_evaluate_z {
 
         let res = poly.evaluate(&Z::from(-5));
 
-        assert_eq!(Q::from_str("-3/7").unwrap(), res)
+        assert_eq!(Q::from((-3, 7)), res)
     }
 
     /// Test if evaluate works with large nominators and denominators
@@ -212,9 +212,9 @@ mod test_evaluate_q {
     fn eval_q_working() {
         let poly = PolyOverQ::from_str("2  1 2/7").unwrap();
 
-        let res = poly.evaluate(&Q::from_str("7/3").unwrap());
+        let res = poly.evaluate(&Q::from((7, 3)));
 
-        assert_eq!(Q::from_str("5/3").unwrap(), res)
+        assert_eq!(Q::from((5, 3)), res)
     }
 
     /// Tests if evaluate works with negative values
@@ -222,9 +222,9 @@ mod test_evaluate_q {
     fn eval_q_negative() {
         let poly = PolyOverQ::from_str("2  1 2/7").unwrap();
 
-        let res = poly.evaluate(&Q::from_str("-7/3").unwrap());
+        let res = poly.evaluate(&Q::from((-7, 3)));
 
-        assert_eq!(Q::from_str("1/3").unwrap(), res)
+        assert_eq!(Q::from((1, 3)), res)
     }
 
     /// Tests if evaluate works with large rationals
@@ -237,6 +237,6 @@ mod test_evaluate_q {
 
         let res = poly.evaluate(&Q::from_str(&q_str_rev).unwrap());
 
-        assert_eq!(Q::from(1), res)
+        assert_eq!(Q::ONE, res)
     }
 }

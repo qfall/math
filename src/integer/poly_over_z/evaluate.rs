@@ -65,7 +65,7 @@ impl Evaluate<&Q, Q> for PolyOverZ {
     /// use std::str::FromStr;
     ///
     /// let poly = PolyOverZ::from_str("5  0 1 2 -3 1").unwrap();
-    /// let value = Q::from_str("3/2").unwrap();
+    /// let value = Q::from((3,2));
     /// let res = poly.evaluate(&value);
     /// ```
     fn evaluate(&self, value: &Q) -> Q {
@@ -175,12 +175,12 @@ mod test_evaluate_q {
     #[test]
     fn evaluate_positive() {
         let poly = PolyOverZ::from_str("2  1 3").unwrap();
-        let value = Q::from_str("3/2").unwrap();
+        let value = Q::from((3, 2));
 
         let res_ref = poly.evaluate(&value);
         let res = poly.evaluate(value);
 
-        assert_eq!(Q::from_str("11/2").unwrap(), res);
+        assert_eq!(Q::from((11, 2)), res);
         assert_eq!(res_ref, res);
     }
 
@@ -188,12 +188,12 @@ mod test_evaluate_q {
     #[test]
     fn evaluate_negative() {
         let poly = PolyOverZ::from_str("2  1 3").unwrap();
-        let value = Q::from_str("-3/2").unwrap();
+        let value = Q::from((-3, 2));
 
         let res_ref = poly.evaluate(&value);
         let res = poly.evaluate(value);
 
-        assert_eq!(Q::from_str("-7/2").unwrap(), res);
+        assert_eq!(Q::from((-7, 2)), res);
         assert_eq!(res_ref, res);
     }
 
@@ -201,12 +201,12 @@ mod test_evaluate_q {
     #[test]
     fn evaluate_large_positive() {
         let poly = PolyOverZ::from_str(&format!("2  {} 1", (u64::MAX - 1) / 2)).unwrap();
-        let value = Q::from_str(&((u64::MAX - 1) / 2).to_string()).unwrap();
+        let value = Q::from((u64::MAX - 1) / 2);
 
         let res_ref = poly.evaluate(&value);
         let res = poly.evaluate(value);
 
-        assert_eq!(Q::from_str(&(u64::MAX - 1).to_string()).unwrap(), res);
+        assert_eq!(Q::from(u64::MAX - 1), res);
         assert_eq!(res_ref, res);
     }
 
@@ -219,7 +219,7 @@ mod test_evaluate_q {
         let res_ref = poly.evaluate(&value);
         let res = poly.evaluate(value);
 
-        assert_eq!(Q::from(1), res);
+        assert_eq!(Q::ONE, res);
         assert_eq!(res_ref, res);
     }
 }

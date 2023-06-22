@@ -42,8 +42,8 @@ impl Sub for &PolyOverZq {
     /// let f: PolyOverZq = c - &e;
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Panics if the moduli of both [`PolyOverZq`] mismatch.
+    /// # Panics ...
+    /// - if the moduli of both [`PolyOverZq`] mismatch.
     fn sub(self, other: Self) -> Self::Output {
         self.sub_safe(other).unwrap()
     }

@@ -26,9 +26,9 @@ impl PartialEq for Modulus {
     /// use qfall_math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
     ///
-    /// let a = Modulus::from_str("3").unwrap();
-    /// let b = Modulus::from_str("3").unwrap();
-    /// let c = Modulus::from_str("4").unwrap();
+    /// let a = Modulus::from(3);
+    /// let b = Modulus::from(3);
+    /// let c = Modulus::from(4);
     ///
     /// assert_eq!(a, b);
     /// assert_ne!(a, c);
@@ -68,7 +68,7 @@ mod test_eq {
     /// Checks whether two equal, small Moduli created with different constructors are equal
     #[test]
     fn equal_small() {
-        let a = Modulus::from_str("2").unwrap();
+        let a = Modulus::from(2);
         let b = Modulus::from(&Z::from(2));
         let b_clone = b.clone();
 
@@ -80,8 +80,8 @@ mod test_eq {
     /// Checks whether unequal Moduli are unequal
     #[test]
     fn unequal() {
-        let one = Modulus::from_str("3").unwrap();
-        let two = Modulus::from_str("2").unwrap();
+        let one = Modulus::from(3);
+        let two = Modulus::from(2);
         let big = Modulus::from_str(&"1".repeat(65)).unwrap();
 
         assert_ne!(one, two);

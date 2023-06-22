@@ -37,7 +37,7 @@ impl MatZq {
     pub fn new(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
-        modulus: impl Into<Z>,
+        modulus: impl Into<Modulus>,
     ) -> Self {
         let (num_rows_i64, num_cols_i64) = evaluate_indices(num_rows, num_cols).unwrap();
 
@@ -45,11 +45,7 @@ impl MatZq {
             panic!("A matrix can not contain 0 rows or 0 columns");
         }
 
-        let modulus: Z = modulus.into();
-
-        if modulus <= Z::ONE {
-            panic!("The modulus provided for MatZq initialization must be bigger than 1, but it is {modulus}.");
-        }
+        let modulus: Modulus = modulus.into();
 
         let mut matrix = MaybeUninit::uninit();
         unsafe {
@@ -57,13 +53,13 @@ impl MatZq {
                 matrix.as_mut_ptr(),
                 num_rows_i64,
                 num_cols_i64,
-                &modulus.value,
+                &modulus.get_fmpz_mod_ctx_struct().n[0],
             );
 
             MatZq {
                 matrix: matrix.assume_init(),
                 // we can unwrap here since modulus > 1 was checked before
-                modulus: Modulus::try_from(&modulus).unwrap(),
+                modulus,
             }
         }
     }
@@ -94,7 +90,7 @@ impl MatZq {
     pub fn identity(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
-        modulus: impl Into<Z>,
+        modulus: impl Into<Modulus>,
     ) -> Self {
         let mut out = MatZq::new(num_rows, num_cols, modulus);
         if Z::ONE != Z::from(&out.modulus) {

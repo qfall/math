@@ -223,7 +223,7 @@ macro_rules! arithmetic_between_types_zq {
                 paste::paste! {
                     #[doc = "Documentation at [`Zq::" $trait_function "`]."]
                     fn $trait_function(self, other: &$other_type) -> Self::Output {
-                    self.$trait_function(Zq::from_z_modulus(&Z::from(*other),&self.modulus))
+                    self.$trait_function(Zq::from((*other,&self.modulus)))
                     }
                 }
             }
@@ -237,7 +237,7 @@ macro_rules! arithmetic_between_types_zq {
                 paste::paste! {
                     #[doc = "Documentation at [`Zq::" $trait_function "`]."]
                     fn $trait_function(self, other: &Zq) -> Self::Output {
-                    other.$trait_function(Zq::from_z_modulus(&Z::from(*self),&other.modulus))
+                    other.$trait_function(Zq::from((*self,&other.modulus)))
                     }
                 }
             }

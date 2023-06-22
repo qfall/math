@@ -24,7 +24,7 @@ impl Clone for Modulus {
     /// use qfall_math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
     ///
-    /// let a = Modulus::from_str("3").unwrap();
+    /// let a = Modulus::from(3);
     /// let b = a.clone();
     /// ```
     fn clone(&self) -> Self {
@@ -43,7 +43,7 @@ impl Drop for Modulus {
     /// use qfall_math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
     /// {
-    ///     let a = Modulus::from_str("3").unwrap();
+    ///     let a = Modulus::from(3);
     /// } // as a's scope ends here, it get's dropped
     /// ```
     ///
@@ -51,7 +51,7 @@ impl Drop for Modulus {
     /// use qfall_math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
     ///
-    /// let a = Modulus::from_str("3").unwrap();
+    /// let a = Modulus::from(3);
     /// drop(a); // explicitly drops a's value
     /// ```
     fn drop(&mut self) {
@@ -73,7 +73,7 @@ mod test_clone {
     /// Check if new references/ cloned Moduli's increase the Rc counter
     #[test]
     fn references_increased() {
-        let a = Modulus::from_str("3").unwrap();
+        let a = Modulus::from(3);
         assert_eq!(Rc::strong_count(&a.modulus), 1);
 
         let b = a.clone();
@@ -110,7 +110,7 @@ mod test_drop {
     /// Check whether references are decreased when dropping instances
     #[test]
     fn references_decreased() {
-        let a = Modulus::from_str("3").unwrap();
+        let a = Modulus::from(3);
         assert_eq!(Rc::strong_count(&a.modulus), 1);
 
         {

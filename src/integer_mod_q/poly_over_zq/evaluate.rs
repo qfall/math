@@ -41,7 +41,7 @@ impl Evaluate<&Z, Zq> for PolyOverZq {
     /// let res = poly.evaluate(&value);
     /// ```
     fn evaluate(&self, value: &Z) -> Zq {
-        let mut res = Zq::from_z_modulus(&Z::default(), &self.modulus);
+        let mut res = Zq::from((0, &self.modulus));
 
         unsafe {
             fmpz_mod_poly_evaluate_fmpz(
@@ -75,12 +75,12 @@ impl Evaluate<&Zq, Zq> for PolyOverZq {
     /// use std::str::FromStr;
     ///
     /// let poly = PolyOverZq::from_str("5  0 1 2 -3 1 mod 17").unwrap();
-    /// let value = Zq::from_str("3 mod 17").unwrap();
+    /// let value = Zq::from((3, 17));
     /// let res = poly.evaluate(&value);
     /// ```
     ///
     /// # Panics ...
-    /// - ... if the moduli of the polynomial and the input mismatch.
+    /// - if the moduli of the polynomial and the input mismatch.
     fn evaluate(&self, value: &Zq) -> Zq {
         self.evaluate_safe(value)
             .expect("The moduli of the provided inputs mismatch")
@@ -105,7 +105,7 @@ impl PolyOverZq {
     /// use std::str::FromStr;
     ///
     /// let poly = PolyOverZq::from_str("5  0 1 2 -3 1 mod 17").unwrap();
-    /// let value = Zq::from_str("3 mod 17").unwrap();
+    /// let value = Zq::from((3, 17));
     /// let res = poly.evaluate(&value);
     /// ```
     ///
@@ -141,7 +141,7 @@ mod test_evaluate_z {
 
         let res = poly.evaluate(Z::from(3));
 
-        assert_eq!(Zq::try_from((7, 17)).unwrap(), res)
+        assert_eq!(Zq::from((7, 17)), res)
     }
 
     /// Tests if evaluate with a reference works
@@ -151,7 +151,7 @@ mod test_evaluate_z {
 
         let res = poly.evaluate(&Z::from(3));
 
-        assert_eq!(Zq::try_from((7, 17)).unwrap(), res)
+        assert_eq!(Zq::from((7, 17)), res)
     }
 
     /// Tests if evaluate works with negative values
@@ -161,7 +161,7 @@ mod test_evaluate_z {
 
         let res = poly.evaluate(&Z::from(-5));
 
-        assert_eq!(Zq::try_from((8, 17)).unwrap(), res)
+        assert_eq!(Zq::from((8, 17)), res)
     }
 
     /// Tests if evaluate works with large integers
@@ -171,7 +171,7 @@ mod test_evaluate_z {
 
         let res = poly.evaluate(&Z::from(u64::MAX - 1));
 
-        assert_eq!(Zq::from_str(&format!("1 mod {}", u64::MAX)).unwrap(), res)
+        assert_eq!(Zq::from((1, u64::MAX)), res)
     }
 
     /// Test if evaluate works with max of [`i64`], [`i32`], ...
@@ -223,12 +223,12 @@ mod test_evaluate_zq {
     #[test]
     fn evaluate_positive() {
         let poly = PolyOverZq::from_str("2  1 3 mod 17").unwrap();
-        let value = Zq::from_str("6 mod 17").unwrap();
+        let value = Zq::from((6, 17));
 
         let res_ref = poly.evaluate(&value);
         let res = poly.evaluate(value);
 
-        assert_eq!(Zq::from_str("2 mod 17").unwrap(), res);
+        assert_eq!(Zq::from((2, 17)), res);
         assert_eq!(res_ref, res);
     }
 
@@ -238,12 +238,12 @@ mod test_evaluate_zq {
         let poly =
             PolyOverZq::from_str(&format!("2  {} 1 mod {}", (u64::MAX - 1) / 2 + 2, u64::MAX))
                 .unwrap();
-        let value = Zq::from_str(&format!("{} mod {}", (u64::MAX - 1) / 2, u64::MAX)).unwrap();
+        let value = Zq::from(((u64::MAX - 1) / 2, u64::MAX));
 
         let res_ref = poly.evaluate(&value);
         let res = poly.evaluate(value);
 
-        assert_eq!(Zq::from_str(&format!("1 mod {}", u64::MAX)).unwrap(), res);
+        assert_eq!(Zq::from((1, u64::MAX)), res);
         assert_eq!(res_ref, res);
     }
 
@@ -252,7 +252,7 @@ mod test_evaluate_zq {
     #[should_panic]
     fn mismatching_modulus_panic() {
         let poly = PolyOverZq::from_str(&format!("2  3 1 mod {}", u64::MAX)).unwrap();
-        let value = Zq::from_str(&format!("3 mod {}", u64::MAX - 1)).unwrap();
+        let value = Zq::from((3, u64::MAX - 1));
 
         let _ = poly.evaluate(&value);
     }
@@ -261,7 +261,7 @@ mod test_evaluate_zq {
     #[test]
     fn mismatching_modulus_safe() {
         let poly = PolyOverZq::from_str(&format!("2  3 1 mod {}", u64::MAX)).unwrap();
-        let value = Zq::from_str(&format!("3 mod {}", u64::MAX - 1)).unwrap();
+        let value = Zq::from((3, u64::MAX - 1));
 
         assert!(poly.evaluate_safe(&value).is_err());
     }

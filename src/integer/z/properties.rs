@@ -90,7 +90,7 @@ impl Z {
     ///
     /// let inverse = value.inverse().unwrap();
     ///
-    /// assert_eq!(Q::try_from((&1, &4)).unwrap(), inverse);
+    /// assert_eq!(Q::from((1, 4)), inverse);
     /// ```
     pub fn inverse(&self) -> Option<Q> {
         if self == &Z::ZERO {
@@ -223,8 +223,8 @@ mod test_inv {
         let inv_0 = val_0.inverse().unwrap();
         let inv_1 = val_1.inverse().unwrap();
 
-        assert_eq!(Q::try_from((&1, &4)).unwrap(), inv_0);
-        assert_eq!(Q::try_from((&-1, &7)).unwrap(), inv_1);
+        assert_eq!(Q::from((1, 4)), inv_0);
+        assert_eq!(Q::from((-1, 7)), inv_1);
     }
 
     /// Checks whether the inverse is correctly computed for large values.
@@ -236,8 +236,8 @@ mod test_inv {
         let inv_0 = val_0.inverse().unwrap();
         let inv_1 = val_1.inverse().unwrap();
 
-        assert_eq!(Q::try_from((&1, &i64::MAX)).unwrap(), inv_0);
-        assert_eq!(Q::try_from((&1, &i64::MIN)).unwrap(), inv_1);
+        assert_eq!(Q::from((1, i64::MAX)), inv_0);
+        assert_eq!(Q::from((1, i64::MIN)), inv_1);
     }
 
     /// Checks whether the inverse of `0` returns `None`.

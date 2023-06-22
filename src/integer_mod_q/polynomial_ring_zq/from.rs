@@ -53,15 +53,16 @@ mod test_from_poly_over_z_modulus_polynomial_ring_zq {
     };
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = u64::MAX - 58;
+    const LARGE_PRIME: u64 = u64::MAX - 58;
 
     /// Ensure that the modulus is applied with a large prime and large coefficients
     #[test]
     fn is_reduced_large() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", BITPRIME64)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", LARGE_PRIME)).unwrap();
 
-        let poly = PolyOverZ::from_str(&format!("4  {} {} 1 1", BITPRIME64 + 2, u64::MAX)).unwrap();
+        let poly =
+            PolyOverZ::from_str(&format!("4  {} {} 1 1", LARGE_PRIME + 2, u64::MAX)).unwrap();
         let poly_ring = PolynomialRingZq::from((&poly, &modulus));
 
         let cmp_poly = PolyOverZ::from_str("3  1 58 1").unwrap();
@@ -74,8 +75,9 @@ mod test_from_poly_over_z_modulus_polynomial_ring_zq {
     #[test]
     fn same_instantiation() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", BITPRIME64)).unwrap();
-        let poly = PolyOverZ::from_str(&format!("4  {} {} 1 1", BITPRIME64 + 2, u64::MAX)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", LARGE_PRIME)).unwrap();
+        let poly =
+            PolyOverZ::from_str(&format!("4  {} {} 1 1", LARGE_PRIME + 2, u64::MAX)).unwrap();
 
         let poly_ring_1 = PolynomialRingZq::from((&poly, &modulus));
         let poly_ring_2 = PolynomialRingZq::from((&poly, &modulus));

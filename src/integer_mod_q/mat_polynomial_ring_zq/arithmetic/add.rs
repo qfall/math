@@ -47,8 +47,8 @@ impl Add for &MatPolynomialRingZq {
     /// ```
     ///
     /// # Panics ...
-    /// - ... if the moduli of both [`MatPolynomialRingZq`] mismatch.
-    /// - ... if the dimensions of both [`MatPolynomialRingZq`] mismatch.
+    /// - if the moduli of both [`MatPolynomialRingZq`] mismatch.
+    /// - if the dimensions of both [`MatPolynomialRingZq`] mismatch.
     fn add(self, other: Self) -> Self::Output {
         self.add_safe(other).unwrap()
     }
@@ -118,7 +118,7 @@ mod test_add {
     use crate::integer_mod_q::ModulusPolynomialRingZq;
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = 18446744073709551557;
+    const LARGE_PRIME: u64 = 18446744073709551557;
 
     /// Testing addition for two [`MatPolynomialRingZq`]
     #[test]
@@ -205,7 +205,7 @@ mod test_add {
         let modulus = ModulusPolynomialRingZq::from_str(&format!(
             "5  1 1 0 0 {} mod {}",
             i64::MAX,
-            BITPRIME64
+            LARGE_PRIME
         ))
         .unwrap();
         let poly_mat1 = MatPolyOverZ::from_str(&format!(

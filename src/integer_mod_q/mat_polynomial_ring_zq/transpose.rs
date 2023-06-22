@@ -43,7 +43,7 @@ mod test_transpose {
     };
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = u64::MAX - 58;
+    const LARGE_PRIME: u64 = u64::MAX - 58;
 
     /// Checks if a row is correctly converted to a column
     #[test]
@@ -71,13 +71,13 @@ mod test_transpose {
     #[test]
     fn different_entry_values() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", BITPRIME64)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", LARGE_PRIME)).unwrap();
         let poly_mat = MatPolyOverZ::from_str(&format!("[[1  {},1  -42,1  0]]", i64::MAX)).unwrap();
         let poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
         let cmp = MatPolyOverZ::from_str(&format!(
             "[[1  {}],[1  {}],[1  0]]",
             i64::MAX,
-            BITPRIME64 - 42
+            LARGE_PRIME - 42
         ))
         .unwrap();
 

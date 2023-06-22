@@ -29,8 +29,8 @@ impl Zq {
     ///     integer_mod_q::Zq,
     /// };
     ///
-    /// let a = Zq::try_from((-1, 13)).unwrap();
-    /// let b = Zq::try_from((5, 13)).unwrap();
+    /// let a = Zq::from((-1, 13));
+    /// let b = Zq::from((5, 13));
     ///
     /// let distance = a.distance_safe(&b).unwrap();
     ///
@@ -83,8 +83,8 @@ impl Distance<&Zq> for Zq {
     ///     traits::*,
     /// };
     ///
-    /// let a = Zq::try_from((-1, 13)).unwrap();
-    /// let b = Zq::try_from((5, 13)).unwrap();
+    /// let a = Zq::from((-1, 13));
+    /// let b = Zq::from((5, 13));
     ///
     /// let distance = a.distance(&b);
     ///
@@ -129,7 +129,7 @@ impl<T: Into<Z>> Distance<T> for Zq {
     ///     traits::*,
     /// };
     ///
-    /// let a = Zq::try_from((-1, 13)).unwrap();
+    /// let a = Zq::from((-1, 13));
     ///
     /// let distance_0 = a.distance(5);
     /// let distance_1 = a.distance(10);
@@ -138,7 +138,7 @@ impl<T: Into<Z>> Distance<T> for Zq {
     /// assert_eq!(Z::from(2), distance_1);
     /// ```
     fn distance(&self, other: T) -> Self::Output {
-        let other = Zq::from_z_modulus(&other.into(), &self.modulus.clone());
+        let other = Zq::from((&other.into(), &self.modulus));
         self.distance(&other)
     }
 }
@@ -151,9 +151,9 @@ mod test_distance_safe {
     /// and whether distance(a,b) == distance(b,a) and distance(a,a) == 0
     #[test]
     fn small_values() {
-        let a = Zq::try_from((1, 29)).unwrap();
-        let b = Zq::try_from((-12, 29)).unwrap();
-        let zero = Zq::try_from((0, 29)).unwrap();
+        let a = Zq::from((1, 29));
+        let b = Zq::from((-12, 29));
+        let zero = Zq::from((0, 29));
 
         let res_0 = a.distance_safe(&zero).unwrap();
         let res_1 = zero.distance_safe(&a).unwrap();
@@ -180,9 +180,9 @@ mod test_distance_safe {
     /// and whether distance(a,b) == distance(b,a), and distance(a,a) == 0
     #[test]
     fn large_values() {
-        let a = Zq::try_from((i64::MAX, u64::MAX)).unwrap();
-        let b = Zq::try_from((i64::MIN, u64::MAX)).unwrap();
-        let zero = Zq::try_from((0, u64::MAX)).unwrap();
+        let a = Zq::from((i64::MAX, u64::MAX));
+        let b = Zq::from((i64::MIN, u64::MAX));
+        let zero = Zq::from((0, u64::MAX));
 
         let res_0 = a.distance_safe(&b).unwrap();
         let res_1 = b.distance_safe(&a).unwrap();
@@ -204,8 +204,8 @@ mod test_distance_safe {
     /// Check whether mismatching provided moduli result in an error
     #[test]
     fn mismatching_moduli() {
-        let a = Zq::try_from((0, 17)).unwrap();
-        let b = Zq::try_from((0, 19)).unwrap();
+        let a = Zq::from((0, 17));
+        let b = Zq::from((0, 19));
 
         assert!(a.distance_safe(&b).is_err());
     }
@@ -218,7 +218,7 @@ mod test_distance {
     /// Check whether distance is available for owned [`Zq`] and other types
     #[test]
     fn availability() {
-        let a = Zq::try_from((0, u64::MAX)).unwrap();
+        let a = Zq::from((0, u64::MAX));
         let b = a.clone();
 
         let u_0 = a.distance(0_u8);
@@ -248,8 +248,8 @@ mod test_distance {
     #[test]
     #[should_panic]
     fn mismatching_moduli() {
-        let a = Zq::try_from((0, 17)).unwrap();
-        let b = Zq::try_from((0, 19)).unwrap();
+        let a = Zq::from((0, 17));
+        let b = Zq::from((0, 19));
 
         let _ = a.distance(&b);
     }

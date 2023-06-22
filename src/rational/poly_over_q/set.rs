@@ -90,7 +90,7 @@ impl SetCoefficient<&Q> for PolyOverQ {
     /// use std::str::FromStr;
     ///
     /// let mut poly = PolyOverQ::from_str("4  0 1 2/3 3/17").unwrap();
-    /// let value = Q::from_str("3/17").unwrap();
+    /// let value = Q::from((3, 17));
     ///
     /// assert!(poly.set_coeff(4, &value).is_ok());
     /// ```
@@ -208,7 +208,7 @@ mod test_set_coeff_q {
     #[test]
     fn large_coeff() {
         let mut poly = PolyOverQ::from_str("1  1").unwrap();
-        let q = Q::from_str(&format!("{}/{}", u64::MAX - 1, u64::MAX)).unwrap();
+        let q = Q::from((u64::MAX - 1, u64::MAX));
 
         poly.set_coeff(2, &q).unwrap();
 

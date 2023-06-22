@@ -85,9 +85,7 @@ pub(crate) fn sample_z(n: &Z, center: &Q, s: &Q) -> Result<Z, MathError> {
     // this eprint version explains in more detail how sample_z works
     let rng = get_rng();
     // TODO: Change to Q::from_f64 once it works appropriately for large scale
-    while gaussian_function(&sample, center, s)
-        <= Q::try_from((&rng.next_u64(), &u64::MAX)).unwrap()
-    {
+    while gaussian_function(&sample, center, s) <= Q::from((rng.next_u64(), u64::MAX)) {
         sample = &lower_bound + sample_uniform_rejection(&interval_size).unwrap();
     }
 
@@ -247,7 +245,7 @@ mod test_sample_z {
     fn small_interval() {
         let n = Z::from(1024);
         let center = Q::from(15);
-        let gaussian_parameter = Q::try_from((&1, &2)).unwrap();
+        let gaussian_parameter = Q::from((1, 2));
 
         for _ in 0..64 {
             let sample = sample_z(&n, &center, &gaussian_parameter).unwrap();
@@ -280,7 +278,7 @@ mod test_sample_z {
 
         assert!(sample_z(&n, &center, &Q::ZERO).is_err());
         assert!(sample_z(&n, &center, &Q::MINUS_ONE).is_err());
-        assert!(sample_z(&n, &center, &Q::try_from((&i64::MIN, &1)).unwrap()).is_err());
+        assert!(sample_z(&n, &center, &Q::from(i64::MIN)).is_err());
     }
 
     /// Checks whether `sample_z` returns an error if `n <= 1`
@@ -308,11 +306,11 @@ mod test_gaussian_function {
         let center = Q::ZERO;
         let gaussian_parameter = Q::ONE;
         // result roughly 0.0432139 computed via WolframAlpha
-        let cmp = Q::try_from((&43214, &1_000_000)).unwrap();
+        let cmp = Q::from((43214, 1_000_000));
 
         let value = gaussian_function(&sample, &center, &gaussian_parameter);
 
-        assert!(cmp.distance(&value) < Q::try_from((&1, &1_000_000)).unwrap());
+        assert!(cmp.distance(&value) < Q::from((1, 1_000_000)));
     }
 
     /// Checks whether the values for small values are computed appropriately
@@ -322,20 +320,20 @@ mod test_gaussian_function {
         let sample_0 = Z::ZERO;
         let sample_1 = Z::MINUS_ONE;
         let center = Q::MINUS_ONE;
-        let gaussian_parameter_0 = Q::try_from((&1, &2)).unwrap();
-        let gaussian_parameter_1 = Q::try_from((&3, &2)).unwrap();
+        let gaussian_parameter_0 = Q::from((1, 2));
+        let gaussian_parameter_1 = Q::from((3, 2));
         // result roughly 0.00000348734 computed via WolframAlpha
-        let cmp_0 = Q::try_from((&349, &100_000_000)).unwrap();
+        let cmp_0 = Q::from((349, 100_000_000));
         // result 0.247520 computed via WolframAlpha
-        let cmp_1 = Q::try_from((&24752, &100_000)).unwrap();
+        let cmp_1 = Q::from((24752, 100_000));
 
         let res_0 = gaussian_function(&sample_0, &center, &gaussian_parameter_0);
         let res_1 = gaussian_function(&sample_0, &center, &gaussian_parameter_1);
         let res_2 = gaussian_function(&sample_1, &center, &gaussian_parameter_0);
         let res_3 = gaussian_function(&sample_1, &center, &gaussian_parameter_1);
 
-        assert!(cmp_0.distance(&res_0) < Q::try_from((&3, &1_000_000_000)).unwrap());
-        assert!(cmp_1.distance(&res_1) < Q::try_from((&1, &1_000_000)).unwrap());
+        assert!(cmp_0.distance(&res_0) < Q::from((3, 1_000_000_000)));
+        assert!(cmp_1.distance(&res_1) < Q::from((1, 1_000_000)));
         assert_eq!(Q::ONE, res_2);
         assert_eq!(Q::ONE, res_3);
     }
@@ -346,13 +344,13 @@ mod test_gaussian_function {
     fn large_values() {
         let sample = Z::from(i64::MAX);
         let center = Q::from(i64::MAX as u64 + 1);
-        let gaussian_parameter = Q::try_from((&1, &2)).unwrap();
+        let gaussian_parameter = Q::from((1, 2));
         // result roughly 0.00000348734 computed via WolframAlpha
-        let cmp = Q::try_from((&349, &100_000_000)).unwrap();
+        let cmp = Q::from((349, 100_000_000));
 
         let res = gaussian_function(&sample, &center, &gaussian_parameter);
 
-        assert!(cmp.distance(&res) < Q::try_from((&3, &1_000_000_000)).unwrap());
+        assert!(cmp.distance(&res) < Q::from((3, 1_000_000_000)));
     }
 
     /// Checks whether `s = 0` results in a panic
@@ -460,7 +458,7 @@ mod test_sample_d {
 
         assert!(sample_d(&basis, &n, &center, &Q::ZERO).is_err());
         assert!(sample_d(&basis, &n, &center, &Q::MINUS_ONE).is_err());
-        assert!(sample_d(&basis, &n, &center, &Q::try_from((&i64::MIN, &1)).unwrap()).is_err());
+        assert!(sample_d(&basis, &n, &center, &Q::from(i64::MIN)).is_err());
     }
 
     /// Checks whether `sample_d` returns an error if `n <= 1`

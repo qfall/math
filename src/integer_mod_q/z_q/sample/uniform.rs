@@ -55,7 +55,6 @@ mod test_sample_uniform {
         integer::Z,
         integer_mod_q::{Modulus, Zq},
     };
-    use std::str::FromStr;
 
     /// Checks whether the boundaries of the interval are kept for small moduli.
     /// These should be protected by the sampling algorithm and [`Zq`]s instantiation.
@@ -101,7 +100,7 @@ mod test_sample_uniform {
     /// implementing Into<Z> + Clone, i.e. u8, u16, u32, u64, i8, ...
     #[test]
     fn availability() {
-        let modulus = Modulus::from_str("7").unwrap();
+        let modulus = Modulus::from(7);
         let z = Z::from(7);
 
         let _ = Zq::sample_uniform(&7u8);

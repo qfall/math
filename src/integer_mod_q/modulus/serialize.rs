@@ -26,13 +26,13 @@ deserialize!("modulus", Modulus, Modulus);
 
 #[cfg(test)]
 mod test_serialize {
-    use crate::{integer::Z, integer_mod_q::Modulus};
+    use crate::integer_mod_q::Modulus;
     use std::str::FromStr;
 
     /// Tests whether the serialization of a positive [`Modulus`] works.
     #[test]
     fn serialize_output_positive() {
-        let z = Modulus::try_from(&Z::from(17)).unwrap();
+        let z = Modulus::from(17);
         let cmp_string = "{\"modulus\":\"17\"}";
 
         assert_eq!(cmp_string, serde_json::to_string(&z).unwrap())
@@ -51,17 +51,14 @@ mod test_serialize {
 
 #[cfg(test)]
 mod test_deserialize {
-    use crate::{integer::Z, integer_mod_q::Modulus};
+    use crate::integer_mod_q::Modulus;
     use std::str::FromStr;
 
     /// Tests whether the deserialization of a positive [`Modulus`] works.
     #[test]
     fn deserialize_positive() {
         let z_string = "{\"modulus\":\"17\"}";
-        assert_eq!(
-            Modulus::try_from(&Z::from(17)).unwrap(),
-            serde_json::from_str(z_string).unwrap()
-        )
+        assert_eq!(Modulus::from(17), serde_json::from_str(z_string).unwrap())
     }
 
     /// Tests whether the deserialization of a negative [`Modulus`] fails.

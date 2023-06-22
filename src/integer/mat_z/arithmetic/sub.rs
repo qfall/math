@@ -41,8 +41,8 @@ impl Sub for &MatZ {
     /// let f: MatZ = c - &e;
     /// ```
     ///
-    /// # Panics
-    /// - Panics if the dimensions of both matrices mismatch
+    /// # Panics ...
+    /// - if the dimensions of both matrices mismatch.
     fn sub(self, other: Self) -> Self::Output {
         self.sub_safe(other).unwrap()
     }

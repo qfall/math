@@ -29,9 +29,8 @@ impl Zq {
     /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
     ///
-    /// let modulus = Modulus::from_str("17").unwrap();
-    /// let z = Z::from(18);
-    /// let mut zq = Zq::from_z_modulus(&z, &modulus);
+    /// let modulus = Modulus::from(17);
+    /// let mut zq = Zq::from((18, &modulus));
     ///
     /// zq.reduce();
     /// ```
@@ -52,18 +51,17 @@ mod test_reduce {
         integer::Z,
         integer_mod_q::{Modulus, Zq},
     };
-    use std::str::FromStr;
 
-    const BITPRIME64: u64 = u64::MAX - 58;
+    const LARGE_PRIME: u64 = u64::MAX - 58;
 
     /// Ensure that large entries are reduced correctly
     #[test]
     fn reduces_large() {
-        let modulus = Modulus::from_str(&format!("{}", BITPRIME64)).unwrap();
-        let value = Z::from_str(&format!("{}", u64::MAX)).unwrap();
+        let modulus = Modulus::from(LARGE_PRIME);
+        let value = Z::from(u64::MAX);
         let mut original = Zq { value, modulus };
 
-        let cmp_modulus = Modulus::from_str(&format!("{}", BITPRIME64)).unwrap();
+        let cmp_modulus = Modulus::from(LARGE_PRIME);
         let cmp_value = Z::from(58);
 
         let cmp = Zq {
@@ -81,11 +79,11 @@ mod test_reduce {
     /// Ensure that small entries are reduced correctly
     #[test]
     fn reduces_small() {
-        let modulus = Modulus::from_str("17").unwrap();
+        let modulus = Modulus::from(17);
         let value = Z::from(20);
         let mut original = Zq { value, modulus };
 
-        let cmp_modulus = Modulus::from_str("17").unwrap();
+        let cmp_modulus = Modulus::from(17);
         let cmp_value = Z::from(3);
 
         let cmp = Zq {

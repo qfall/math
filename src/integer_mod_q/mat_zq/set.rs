@@ -65,7 +65,7 @@ impl SetEntry<&Z> for MatZq {
         value: &Z,
     ) -> Result<(), MathError> {
         // Calculate mod q before adding the entry to the matrix.
-        let value: Zq = Zq::from_z_modulus(value, &self.modulus);
+        let value: Zq = Zq::from((value, &self.modulus));
 
         self.set_entry(row, column, value)
     }
@@ -92,7 +92,7 @@ impl SetEntry<&Zq> for MatZq {
     /// use std::str::FromStr;
     ///
     /// let mut matrix = MatZq::new(5, 10, 7);
-    /// let value = Zq::from_str("5 mod 7").unwrap();
+    /// let value = Zq::from((5, 7));
     /// matrix.set_entry(1, 1, &value).unwrap();
     /// ```
     ///
@@ -509,14 +509,10 @@ mod test_setter {
         let mut matrix = MatZq::new(5, 10, 56);
 
         matrix.set_entry(0, 0, Z::default()).unwrap();
-        matrix
-            .set_entry(0, 0, Zq::from_str("12 mod 56").unwrap())
-            .unwrap();
+        matrix.set_entry(0, 0, Zq::from((12, 56))).unwrap();
         matrix.set_entry(0, 0, 3).unwrap();
         matrix.set_entry(0, 0, &Z::default()).unwrap();
-        matrix
-            .set_entry(0, 0, &Zq::from_str("12 mod 56").unwrap())
-            .unwrap();
+        matrix.set_entry(0, 0, &Zq::from((12, 56))).unwrap();
     }
 
     /// Ensure that value is correctly reduced.
@@ -534,9 +530,7 @@ mod test_setter {
     #[test]
     fn modulus_error() {
         let mut matrix = MatZq::new(5, 10, 3);
-        assert!(matrix
-            .set_entry(1, 1, Zq::from_str("2 mod 5").unwrap())
-            .is_err());
+        assert!(matrix.set_entry(1, 1, Zq::from((2, 5))).is_err());
     }
 
     /// Ensures that setting columns works fine for small entries

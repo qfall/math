@@ -160,7 +160,7 @@ mod test_from_z_modulus {
     #[test]
     fn working_small() {
         let value = Z::from(10);
-        let modulus = Modulus::try_from(&Z::from(15)).unwrap();
+        let modulus = Modulus::from(&Z::from(15));
 
         let _ = Zq::from_z_modulus(&value, &modulus);
     }
@@ -169,7 +169,7 @@ mod test_from_z_modulus {
     #[test]
     fn working_large() {
         let value = Z::from(u64::MAX - 1);
-        let modulus = Modulus::try_from(&Z::from(u64::MAX)).unwrap();
+        let modulus = Modulus::from(&Z::from(u64::MAX));
 
         let _ = Zq::from_z_modulus(&value, &modulus);
     }

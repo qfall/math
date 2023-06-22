@@ -137,9 +137,9 @@ impl GetEntry<Zq> for MatZq {
         row: impl TryInto<i64> + Display,
         column: impl TryInto<i64> + Display,
     ) -> Result<Zq, MathError> {
-        let value = self.get_entry(row, column)?;
+        let value: Z = self.get_entry(row, column)?;
 
-        Ok(Zq::from_z_modulus(&value, &self.modulus))
+        Ok(Zq::from((value, &self.modulus)))
     }
 }
 
@@ -298,7 +298,6 @@ mod test_get_entry {
         integer_mod_q::MatZq,
         traits::{GetEntry, SetEntry},
     };
-    use std::str::FromStr;
 
     /// Ensure that getting entries works on the edge.
     #[test]
@@ -387,7 +386,7 @@ mod test_get_entry {
     #[test]
     fn memory_test() {
         let mut matrix = MatZq::new(5, 10, u64::MAX);
-        let value = Zq::from_str(&format!("{} mod {}", u64::MAX - 1, u64::MAX)).unwrap();
+        let value = Zq::from((u64::MAX - 1, u64::MAX));
         matrix.set_entry(1, 1, value).unwrap();
         let entry = matrix.get_entry(1, 1).unwrap();
         matrix.set_entry(1, 1, Z::ONE).unwrap();
@@ -460,14 +459,13 @@ mod test_get_num {
 #[cfg(test)]
 mod test_mod {
     use crate::integer_mod_q::{MatZq, Modulus};
-    use std::str::FromStr;
 
     /// Ensure that the getter for modulus works correctly.
     #[test]
     fn get_mod() {
         let matrix = MatZq::new(5, 10, 7);
 
-        assert_eq!(matrix.get_mod(), Modulus::from_str("7").unwrap());
+        assert_eq!(matrix.get_mod(), Modulus::from(7));
     }
 
     /// Ensure that the getter for modulus works with large numbers.

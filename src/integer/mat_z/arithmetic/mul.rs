@@ -44,7 +44,7 @@ impl Mul for &MatZ {
     /// ```
     ///
     /// # Panics ...
-    /// - ... if the dimensions of `self` and `other` do not match for multiplication.
+    /// - if the dimensions of `self` and `other` do not match for multiplication.
     fn mul(self, other: Self) -> Self::Output {
         self.mul_safe(other).unwrap()
     }

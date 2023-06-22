@@ -43,7 +43,6 @@ mod test_exp_series {
         traits::{Evaluate, GetCoefficient},
     };
     use flint_sys::fmpq::fmpq_get_d;
-    use std::str::FromStr;
 
     #[test]
     fn coefficient_set_correctly() {
@@ -52,7 +51,7 @@ mod test_exp_series {
         let mut fac_value = Q::ONE;
         assert_eq!(fac_value, poly.get_coeff(0).unwrap());
         for i in 1..length {
-            fac_value = fac_value * Q::from_str(&format!("1/{}", i)).unwrap();
+            fac_value = fac_value * Q::from((1, i));
             assert_eq!(fac_value, poly.get_coeff(i).unwrap())
         }
     }

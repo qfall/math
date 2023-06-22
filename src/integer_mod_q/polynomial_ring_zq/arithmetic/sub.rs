@@ -49,7 +49,7 @@ impl Sub for &PolynomialRingZq {
     /// ```
     ///
     /// # Panics ...
-    /// - ... if the moduli of both [`PolynomialRingZq`] mismatch.
+    /// - if the moduli of both [`PolynomialRingZq`] mismatch.
     fn sub(self, other: Self) -> Self::Output {
         self.sub_safe(other).unwrap()
     }

@@ -46,7 +46,7 @@ impl Mul for &MatQ {
     /// ```
     ///
     /// # Panics ...
-    /// - ... if the dimensions of `self` and `other` do not match for multiplication.
+    /// - if the dimensions of `self` and `other` do not match for multiplication.
     fn mul(self, other: Self) -> Self::Output {
         self.mul_safe(other).unwrap()
     }
@@ -82,8 +82,8 @@ impl Mul<&MatZ> for &MatQ {
     /// let f = c * &e;
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Panics if the dimensions of `self` and `other` do not match for multiplication.
+    /// # Panics ...
+    /// - if the dimensions of `self` and `other` do not match for multiplication.
     fn mul(self, other: &MatZ) -> Self::Output {
         if self.get_num_columns() != other.get_num_rows() {
             panic!("Tried to multiply matrices with mismatching matrix dimensions.");
@@ -176,13 +176,9 @@ mod test_mul {
         let mat = MatQ::from_str(&format!("[[{},1],[0,2]]", i64::MAX)).unwrap();
         let vec = MatQ::from_str(&format!("[[1/{}],[0]]", i64::MAX)).unwrap();
         let mut cmp = MatQ::new(2, 1);
-        let max: Q = Q::from_str(format!("{}", i64::MAX).as_str()).unwrap();
-        cmp.set_entry(
-            0,
-            0,
-            &(&max * Q::from_str(format!("1/{}", i64::MAX).as_str()).unwrap()),
-        )
-        .unwrap();
+        let max: Q = Q::from(i64::MAX);
+        cmp.set_entry(0, 0, &(&max * Q::from((1, i64::MAX))))
+            .unwrap();
 
         assert_eq!(cmp, mat * vec);
     }

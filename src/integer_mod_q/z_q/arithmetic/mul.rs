@@ -37,8 +37,8 @@ impl Mul for &Zq {
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
     ///
-    /// let a: Zq = Zq::try_from((23, 42)).unwrap();
-    /// let b: Zq = Zq::try_from((1, 42)).unwrap();
+    /// let a: Zq = Zq::from((23, 42));
+    /// let b: Zq = Zq::from((1, 42));
     ///
     /// let c: Zq = &a * &b;
     /// let d: Zq = a * b;
@@ -46,8 +46,8 @@ impl Mul for &Zq {
     /// let f: Zq = c * &e;
     /// ```
     ///
-    /// # Panics
-    /// - Panics if the moduli of both [`Zq`] mismatch.
+    /// # Panics ...
+    /// - if the moduli of both [`Zq`] mismatch.
     fn mul(self, other: Self) -> Self::Output {
         self.mul_safe(other).unwrap()
     }
@@ -67,8 +67,8 @@ impl Zq {
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
     ///
-    /// let a: Zq = Zq::try_from((23, 42)).unwrap();
-    /// let b: Zq = Zq::try_from((1, 42)).unwrap();
+    /// let a: Zq = Zq::from((23, 42));
+    /// let b: Zq = Zq::from((1, 42));
     ///
     /// let c: Zq = a.mul_safe(&b).unwrap();
     /// ```
@@ -83,7 +83,7 @@ impl Zq {
                 self, other
             )));
         }
-        let mut out = Zq::from_z_modulus(&Z::from(1), &self.modulus);
+        let mut out = Zq::from((1, &self.modulus));
         unsafe {
             fmpz_mod_mul(
                 &mut out.value.value,
@@ -116,7 +116,7 @@ impl Mul<&Z> for &Zq {
     /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
     ///
-    /// let a: Zq = Zq::from_str("42 mod 19").unwrap();
+    /// let a: Zq = Zq::from((42, 19));
     /// let b: Z = Z::from(42);
     ///
     /// let c: Zq = &a * &b;
@@ -152,48 +152,48 @@ mod test_mul {
     /// Testing multiplication for two [`Zq`]
     #[test]
     fn mul() {
-        let a: Zq = Zq::try_from((11, 17)).unwrap();
-        let b: Zq = Zq::try_from((12, 17)).unwrap();
+        let a: Zq = Zq::from((11, 17));
+        let b: Zq = Zq::from((12, 17));
         let c: Zq = a * b;
-        assert_eq!(c, Zq::try_from((13, 17)).unwrap());
+        assert_eq!(c, Zq::from((13, 17)));
     }
 
     /// Testing multiplication for two borrowed [`Zq`]
     #[test]
     fn mul_borrow() {
-        let a: Zq = Zq::try_from((10, 11)).unwrap();
-        let b: Zq = Zq::try_from((1, 11)).unwrap();
+        let a: Zq = Zq::from((10, 11));
+        let b: Zq = Zq::from((1, 11));
         let c: Zq = &a * &b;
-        assert_eq!(c, Zq::try_from((10, 11)).unwrap());
+        assert_eq!(c, Zq::from((10, 11)));
     }
 
     /// Testing multiplication for borrowed [`Zq`] and [`Zq`]
     #[test]
     fn mul_first_borrowed() {
-        let a: Zq = Zq::try_from((2, 11)).unwrap();
-        let b: Zq = Zq::try_from((5, 11)).unwrap();
+        let a: Zq = Zq::from((2, 11));
+        let b: Zq = Zq::from((5, 11));
         let c: Zq = &a * b;
-        assert_eq!(c, Zq::try_from((10, 11)).unwrap());
+        assert_eq!(c, Zq::from((10, 11)));
     }
 
     /// Testing multiplication for [`Zq`] and borrowed [`Zq`]
     #[test]
     fn mul_second_borrowed() {
-        let a: Zq = Zq::try_from((12, 11)).unwrap();
-        let b: Zq = Zq::try_from((10, 11)).unwrap();
+        let a: Zq = Zq::from((12, 11));
+        let b: Zq = Zq::from((10, 11));
         let c: Zq = a * &b;
-        assert_eq!(c, Zq::try_from((-1, 11)).unwrap());
+        assert_eq!(c, Zq::from((-1, 11)));
     }
 
     /// Testing multiplication for big [`Zq`]
     #[test]
     fn mul_large_numbers() {
-        let a: Zq = Zq::try_from((u32::MAX, u32::MAX - 58)).unwrap();
-        let b: Zq = Zq::try_from((i32::MAX, u32::MAX - 58)).unwrap();
+        let a: Zq = Zq::from((u32::MAX, u32::MAX - 58));
+        let b: Zq = Zq::from((i32::MAX, u32::MAX - 58));
         let c: Zq = a * b;
         assert_eq!(
             c,
-            Zq::try_from((u64::from((u32::MAX - 1) / 2) * 58, u32::MAX - 58)).unwrap()
+            Zq::from((u64::from((u32::MAX - 1) / 2) * 58, u32::MAX - 58))
         );
     }
 
@@ -201,16 +201,16 @@ mod test_mul {
     #[test]
     #[should_panic]
     fn mul_mismatching_modulus() {
-        let a: Zq = Zq::try_from((4, 11)).unwrap();
-        let b: Zq = Zq::try_from((1, 3)).unwrap();
+        let a: Zq = Zq::from((4, 11));
+        let b: Zq = Zq::from((1, 3));
         let _c: Zq = a * b;
     }
 
     /// Testing whether mul_safe throws an error for mismatching moduli
     #[test]
     fn mul_safe_is_err() {
-        let a: Zq = Zq::try_from((4, 11)).unwrap();
-        let b: Zq = Zq::try_from((1, 3)).unwrap();
+        let a: Zq = Zq::from((4, 11));
+        let b: Zq = Zq::from((1, 3));
         assert!(&a.mul_safe(&b).is_err());
     }
 }
@@ -223,44 +223,44 @@ mod test_mul_between_zq_and_z {
     /// Testing multiplication for [`Zq`] and [`Z`]
     #[test]
     fn mul() {
-        let a: Zq = Zq::try_from((4, 11)).unwrap();
+        let a: Zq = Zq::from((4, 11));
         let b: Z = Z::from(9);
         let c: Zq = a * b;
-        assert_eq!(c, Zq::try_from((3, 11)).unwrap());
+        assert_eq!(c, Zq::from((3, 11)));
     }
 
     /// Testing multiplication for both borrowed [`Zq`] and [`Z`]
     #[test]
     fn mul_borrow() {
-        let a: Zq = Zq::try_from((4, 11)).unwrap();
+        let a: Zq = Zq::from((4, 11));
         let b: Z = Z::from(9);
         let c: Zq = &a * &b;
-        assert_eq!(c, Zq::try_from((3, 11)).unwrap());
+        assert_eq!(c, Zq::from((3, 11)));
     }
 
     /// Testing multiplication for borrowed [`Zq`] and [`Z`]
     #[test]
     fn mul_first_borrowed() {
-        let a: Zq = Zq::try_from((4, 11)).unwrap();
+        let a: Zq = Zq::from((4, 11));
         let b: Z = Z::from(9);
         let c: Zq = &a * b;
-        assert_eq!(c, Zq::try_from((3, 11)).unwrap());
+        assert_eq!(c, Zq::from((3, 11)));
     }
 
     /// Testing multiplication for [`Zq`] and borrowed [`Z`]
     #[test]
     fn mul_second_borrowed() {
-        let a: Zq = Zq::try_from((4, 11)).unwrap();
+        let a: Zq = Zq::from((4, 11));
         let b: Z = Z::from(9);
         let c: Zq = a * &b;
-        assert_eq!(c, Zq::try_from((3, 11)).unwrap());
+        assert_eq!(c, Zq::from((3, 11)));
     }
 
     /// Testing multiplication for big numbers
     #[test]
     fn mul_large_numbers() {
-        let a: Zq = Zq::try_from((i64::MAX, u64::MAX - 58)).unwrap();
-        let b: Zq = Zq::try_from((i64::MAX - 1, i64::MAX)).unwrap();
+        let a: Zq = Zq::from((i64::MAX, u64::MAX - 58));
+        let b: Zq = Zq::from((i64::MAX - 1, i64::MAX));
         let c: Z = Z::from(u64::MAX);
 
         let d: Zq = a * &c;
@@ -268,13 +268,9 @@ mod test_mul_between_zq_and_z {
 
         assert_eq!(
             d,
-            Zq::try_from(((u64::MAX - 1) / 2, u64::MAX - 58)).unwrap()
-                * Zq::try_from((u64::MAX, u64::MAX - 58)).unwrap()
+            Zq::from(((u64::MAX - 1) / 2, u64::MAX - 58)) * Zq::from((u64::MAX, u64::MAX - 58))
         );
-        assert_eq!(
-            e,
-            Zq::try_from((-1, i64::MAX)).unwrap() * Zq::try_from((u64::MAX, i64::MAX)).unwrap()
-        );
+        assert_eq!(e, Zq::from((-1, i64::MAX)) * Zq::from((u64::MAX, i64::MAX)));
     }
 }
 
@@ -286,7 +282,7 @@ mod test_mul_between_types {
     #[test]
     #[allow(clippy::op_ref)]
     fn mul() {
-        let a: Zq = Zq::try_from((4, 11)).unwrap();
+        let a: Zq = Zq::from((4, 11));
         let b: u64 = 1;
         let c: u32 = 1;
         let d: u16 = 1;
@@ -323,23 +319,23 @@ mod test_mul_between_types {
         let _: Zq = &a * h;
         let _: Zq = &a * i;
 
-        let _: Zq = &b * Zq::try_from((4, 11)).unwrap();
-        let _: Zq = &c * Zq::try_from((4, 11)).unwrap();
-        let _: Zq = &d * Zq::try_from((4, 11)).unwrap();
-        let _: Zq = &e * Zq::try_from((4, 11)).unwrap();
-        let _: Zq = &f * Zq::try_from((4, 11)).unwrap();
-        let _: Zq = &g * Zq::try_from((4, 11)).unwrap();
-        let _: Zq = &h * Zq::try_from((4, 11)).unwrap();
-        let _: Zq = &i * Zq::try_from((4, 11)).unwrap();
+        let _: Zq = &b * Zq::from((4, 11));
+        let _: Zq = &c * Zq::from((4, 11));
+        let _: Zq = &d * Zq::from((4, 11));
+        let _: Zq = &e * Zq::from((4, 11));
+        let _: Zq = &f * Zq::from((4, 11));
+        let _: Zq = &g * Zq::from((4, 11));
+        let _: Zq = &h * Zq::from((4, 11));
+        let _: Zq = &i * Zq::from((4, 11));
 
-        let _: Zq = Zq::try_from((4, 11)).unwrap() * &b;
-        let _: Zq = Zq::try_from((4, 11)).unwrap() * &c;
-        let _: Zq = Zq::try_from((4, 11)).unwrap() * &d;
-        let _: Zq = Zq::try_from((4, 11)).unwrap() * &e;
-        let _: Zq = Zq::try_from((4, 11)).unwrap() * &f;
-        let _: Zq = Zq::try_from((4, 11)).unwrap() * &g;
-        let _: Zq = Zq::try_from((4, 11)).unwrap() * &h;
-        let _: Zq = Zq::try_from((4, 11)).unwrap() * &i;
+        let _: Zq = Zq::from((4, 11)) * &b;
+        let _: Zq = Zq::from((4, 11)) * &c;
+        let _: Zq = Zq::from((4, 11)) * &d;
+        let _: Zq = Zq::from((4, 11)) * &e;
+        let _: Zq = Zq::from((4, 11)) * &f;
+        let _: Zq = Zq::from((4, 11)) * &g;
+        let _: Zq = Zq::from((4, 11)) * &h;
+        let _: Zq = Zq::from((4, 11)) * &i;
 
         let _: Zq = b * &a;
         let _: Zq = c * &a;
@@ -350,22 +346,22 @@ mod test_mul_between_types {
         let _: Zq = h * &a;
         let _: Zq = i * &a;
 
-        let _: Zq = Zq::try_from((4, 11)).unwrap() * b;
-        let _: Zq = Zq::try_from((4, 11)).unwrap() * c;
-        let _: Zq = Zq::try_from((4, 11)).unwrap() * d;
-        let _: Zq = Zq::try_from((4, 11)).unwrap() * e;
-        let _: Zq = Zq::try_from((4, 11)).unwrap() * f;
-        let _: Zq = Zq::try_from((4, 11)).unwrap() * g;
-        let _: Zq = Zq::try_from((4, 11)).unwrap() * h;
-        let _: Zq = Zq::try_from((4, 11)).unwrap() * i;
+        let _: Zq = Zq::from((4, 11)) * b;
+        let _: Zq = Zq::from((4, 11)) * c;
+        let _: Zq = Zq::from((4, 11)) * d;
+        let _: Zq = Zq::from((4, 11)) * e;
+        let _: Zq = Zq::from((4, 11)) * f;
+        let _: Zq = Zq::from((4, 11)) * g;
+        let _: Zq = Zq::from((4, 11)) * h;
+        let _: Zq = Zq::from((4, 11)) * i;
 
-        let _: Zq = b * Zq::try_from((4, 11)).unwrap();
-        let _: Zq = c * Zq::try_from((4, 11)).unwrap();
-        let _: Zq = d * Zq::try_from((4, 11)).unwrap();
-        let _: Zq = e * Zq::try_from((4, 11)).unwrap();
-        let _: Zq = f * Zq::try_from((4, 11)).unwrap();
-        let _: Zq = g * Zq::try_from((4, 11)).unwrap();
-        let _: Zq = h * Zq::try_from((4, 11)).unwrap();
-        let _: Zq = i * Zq::try_from((4, 11)).unwrap();
+        let _: Zq = b * Zq::from((4, 11));
+        let _: Zq = c * Zq::from((4, 11));
+        let _: Zq = d * Zq::from((4, 11));
+        let _: Zq = e * Zq::from((4, 11));
+        let _: Zq = f * Zq::from((4, 11));
+        let _: Zq = g * Zq::from((4, 11));
+        let _: Zq = h * Zq::from((4, 11));
+        let _: Zq = i * Zq::from((4, 11));
     }
 }

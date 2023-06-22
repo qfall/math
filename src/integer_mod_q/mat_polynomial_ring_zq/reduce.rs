@@ -58,7 +58,7 @@ mod test_reduced {
     };
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = u64::MAX - 58;
+    const LARGE_PRIME: u64 = u64::MAX - 58;
 
     /// Ensure that the entries are reduced
     #[test]
@@ -90,9 +90,12 @@ mod test_reduced {
     /// Ensure that reduce works with large entries and moduli
     #[test]
     fn large_values() {
-        let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("4  {} 0 0 1 mod {}", i64::MAX, BITPRIME64))
-                .unwrap();
+        let modulus = ModulusPolynomialRingZq::from_str(&format!(
+            "4  {} 0 0 1 mod {}",
+            i64::MAX,
+            LARGE_PRIME
+        ))
+        .unwrap();
         let poly_mat =
             MatPolyOverZ::from_str(&format!("[[4  -1 0 {} 1, 1  42],[0, 2  1 2]]", i64::MAX))
                 .unwrap();
@@ -101,12 +104,15 @@ mod test_reduced {
             modulus,
         };
 
-        let cmp_modulus =
-            ModulusPolynomialRingZq::from_str(&format!("4  {} 0 0 1 mod {}", i64::MAX, BITPRIME64))
-                .unwrap();
+        let cmp_modulus = ModulusPolynomialRingZq::from_str(&format!(
+            "4  {} 0 0 1 mod {}",
+            i64::MAX,
+            LARGE_PRIME
+        ))
+        .unwrap();
         let cmp_poly_mat = MatPolyOverZ::from_str(&format!(
             "[[3  {} 0 {}, 1  42],[0, 2  1 2]]",
-            BITPRIME64 - i64::MAX as u64 - 1,
+            LARGE_PRIME - i64::MAX as u64 - 1,
             i64::MAX
         ))
         .unwrap();

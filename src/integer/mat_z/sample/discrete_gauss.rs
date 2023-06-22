@@ -160,7 +160,7 @@ mod test_sample_discrete_gauss {
     #[test]
     fn availability() {
         let n = Z::from(1024);
-        let center = Q::from(0);
+        let center = Q::ZERO;
         let s = Q::ONE;
 
         let _ = MatZ::sample_discrete_gauss(2u64, 3i8, &16u16, &center, &1u16);

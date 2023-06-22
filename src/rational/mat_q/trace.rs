@@ -62,8 +62,8 @@ mod test_trace {
         let trace1 = mat1.trace().unwrap();
         let trace2 = mat2.trace().unwrap();
 
-        assert_eq!(Q::try_from((&10, &3)).unwrap(), trace1);
-        assert_eq!(Q::try_from((&0, &1)).unwrap(), trace2);
+        assert_eq!(Q::from((10, 3)), trace1);
+        assert_eq!(Q::ZERO, trace2);
     }
 
     /// Test whether `trace` works for big values
@@ -77,12 +77,9 @@ mod test_trace {
         let trace2 = mat2.trace().unwrap();
         let trace3 = mat3.trace().unwrap();
 
-        assert_eq!(Q::try_from((&(2 * i64::MAX as u64), &1)).unwrap(), trace1);
-        assert_eq!(Q::try_from((&i64::MIN, &1)).unwrap(), trace2);
-        assert_eq!(
-            Q::try_from((&i64::MIN, &1)).unwrap() + Q::try_from((&1, &i64::MAX)).unwrap(),
-            trace3
-        );
+        assert_eq!(Q::from(2 * i64::MAX as u64), trace1);
+        assert_eq!(Q::from(i64::MIN), trace2);
+        assert_eq!(Q::from(i64::MIN) + Q::from((1, i64::MAX)), trace3);
     }
 
     /// Ensure that a matrix that is not square yields an error.

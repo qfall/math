@@ -42,8 +42,8 @@ impl Add for &PolyOverZq {
     /// let f: PolyOverZq = c + &e;
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Panics if the moduli of both [`PolyOverZq`] mismatch.
+    /// # Panics ...
+    /// - if the moduli of both [`PolyOverZq`] mismatch.
     fn add(self, other: Self) -> Self::Output {
         self.add_safe(other).unwrap()
     }

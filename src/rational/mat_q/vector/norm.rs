@@ -30,7 +30,7 @@ impl MatQ {
     /// let sqrd_2_norm = vec.norm_eucl_sqrd().unwrap();
     ///
     /// // 1*1 + 2*2 + 3*3 = 14
-    /// assert_eq!(Q::try_from((&14, &1)).unwrap(), sqrd_2_norm);
+    /// assert_eq!(Q::from(14), sqrd_2_norm);
     /// ```
     ///
     /// Errors and Failures
@@ -69,7 +69,7 @@ impl MatQ {
     /// let infty_norm = vec.norm_infty().unwrap();
     ///
     /// // max { 1, 2, 3 } = 3
-    /// assert_eq!(Q::try_from((&3, &1)).unwrap(), infty_norm);
+    /// assert_eq!(Q::from(3), infty_norm);
     /// ```
     ///
     /// Errors and Failures
@@ -116,14 +116,8 @@ mod test_norm_eucl_sqrd {
         let vec_3 = MatQ::from_str("[[1,10,100, 1000]]").unwrap();
 
         assert_eq!(vec_1.norm_eucl_sqrd().unwrap(), Q::ONE);
-        assert_eq!(
-            vec_2.norm_eucl_sqrd().unwrap(),
-            Q::try_from((&10101, &1)).unwrap()
-        );
-        assert_eq!(
-            vec_3.norm_eucl_sqrd().unwrap(),
-            Q::try_from((&1010101, &1)).unwrap()
-        );
+        assert_eq!(vec_2.norm_eucl_sqrd().unwrap(), Q::from(10101));
+        assert_eq!(vec_3.norm_eucl_sqrd().unwrap(), Q::from(1010101));
     }
 
     /// Check whether the squared euclidean norm for row vectors
@@ -131,9 +125,9 @@ mod test_norm_eucl_sqrd {
     #[test]
     fn row_vector_large_entries() {
         let vec = MatQ::from_str(&format!("[[{}/1,{}/-1, 2/1]]", i64::MAX, i64::MIN)).unwrap();
-        let max = Q::try_from((&i64::MAX, &1)).unwrap();
-        let min = Q::try_from((&i64::MIN, &1)).unwrap();
-        let cmp = &min * &min + &max * &max + Q::try_from((&4, &1)).unwrap();
+        let max = Q::from(i64::MAX);
+        let min = Q::from(i64::MIN);
+        let cmp = &min * &min + &max * &max + Q::from(4);
 
         assert_eq!(vec.norm_eucl_sqrd().unwrap(), cmp);
     }
@@ -145,14 +139,8 @@ mod test_norm_eucl_sqrd {
         let vec_1 = MatQ::from_str("[[1],[-100/10],[100]]").unwrap();
         let vec_2 = MatQ::from_str("[[1],[-10/-1],[100],[1000]]").unwrap();
 
-        assert_eq!(
-            vec_1.norm_eucl_sqrd().unwrap(),
-            Q::try_from((&10101, &1)).unwrap()
-        );
-        assert_eq!(
-            vec_2.norm_eucl_sqrd().unwrap(),
-            Q::try_from((&1010101, &1)).unwrap()
-        );
+        assert_eq!(vec_1.norm_eucl_sqrd().unwrap(), Q::from(10101));
+        assert_eq!(vec_2.norm_eucl_sqrd().unwrap(), Q::from(1010101));
     }
 
     /// Check whether the squared euclidean norm for column vectors
@@ -160,9 +148,9 @@ mod test_norm_eucl_sqrd {
     #[test]
     fn column_vector_large_entries() {
         let vec = MatQ::from_str(&format!("[[{}/-1],[-1/{}],[2]]", i64::MAX, i64::MIN)).unwrap();
-        let max = Q::try_from((&i64::MAX, &1)).unwrap();
-        let min = Q::try_from((&1, &i64::MIN)).unwrap();
-        let cmp = &min * &min + &max * &max + Q::try_from((&4, &1)).unwrap();
+        let max = Q::from(i64::MAX);
+        let min = Q::from((1, i64::MIN));
+        let cmp = &min * &min + &max * &max + Q::from(4);
 
         assert_eq!(vec.norm_eucl_sqrd().unwrap(), cmp);
     }
@@ -190,14 +178,8 @@ mod test_norm_infty {
         let vec_3 = MatQ::from_str("[[1,-10/-1,-100/1, 1000]]").unwrap();
 
         assert_eq!(vec_1.norm_infty().unwrap(), Q::ONE);
-        assert_eq!(
-            vec_2.norm_infty().unwrap(),
-            Q::try_from((&100, &1)).unwrap()
-        );
-        assert_eq!(
-            vec_3.norm_infty().unwrap(),
-            Q::try_from((&1000, &1)).unwrap()
-        );
+        assert_eq!(vec_2.norm_infty().unwrap(), Q::from(100));
+        assert_eq!(vec_3.norm_infty().unwrap(), Q::from(1000));
     }
 
     /// Check whether the infinity norm for row vectors
@@ -205,7 +187,7 @@ mod test_norm_infty {
     #[test]
     fn row_vector_large_entries() {
         let vec = MatQ::from_str(&format!("[[{}/-1,{}/1, 2]]", i64::MAX, i64::MIN)).unwrap();
-        let cmp = Q::try_from((&(-1), &1)).unwrap() * Q::try_from((&i64::MIN, &1)).unwrap();
+        let cmp = -1 * Q::from(i64::MIN);
 
         assert_eq!(vec.norm_infty().unwrap(), cmp);
     }
@@ -217,14 +199,8 @@ mod test_norm_infty {
         let vec_1 = MatQ::from_str("[[1],[100/10],[100]]").unwrap();
         let vec_2 = MatQ::from_str("[[-1/1],[10/-1],[-100/-1],[1000]]").unwrap();
 
-        assert_eq!(
-            vec_1.norm_infty().unwrap(),
-            Q::try_from((&100, &1)).unwrap()
-        );
-        assert_eq!(
-            vec_2.norm_infty().unwrap(),
-            Q::try_from((&1000, &1)).unwrap()
-        );
+        assert_eq!(vec_1.norm_infty().unwrap(), Q::from(100));
+        assert_eq!(vec_2.norm_infty().unwrap(), Q::from(1000));
     }
 
     /// Check whether the infinity norm for column vectors
@@ -232,7 +208,7 @@ mod test_norm_infty {
     #[test]
     fn column_vector_large_entries() {
         let vec = MatQ::from_str(&format!("[[{}/1],[{}],[2]]", i64::MAX, i64::MIN)).unwrap();
-        let cmp = Q::try_from((&-1, &1)).unwrap() * Q::try_from((&i64::MIN, &1)).unwrap();
+        let cmp = Q::from(-1) * Q::from(i64::MIN);
 
         assert_eq!(vec.norm_infty().unwrap(), cmp);
     }

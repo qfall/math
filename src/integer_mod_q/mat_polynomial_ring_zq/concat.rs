@@ -137,13 +137,13 @@ mod test_concatenate {
     };
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = u64::MAX - 58;
+    const LARGE_PRIME: u64 = u64::MAX - 58;
 
     /// Ensure that the dimensions are taken over correctly and an error occurs
     /// if the dimensions mismatch.
     #[test]
     fn dimensions_vertical() {
-        let modulus_str = format!("3  1 {} 1 mod {}", i64::MAX, BITPRIME64);
+        let modulus_str = format!("3  1 {} 1 mod {}", i64::MAX, LARGE_PRIME);
         let modulus = ModulusPolynomialRingZq::from_str(&modulus_str).unwrap();
         let mat_1 = MatPolynomialRingZq::new(13, 5, &modulus);
         let mat_2 = MatPolynomialRingZq::new(17, 5, &modulus);
@@ -161,7 +161,7 @@ mod test_concatenate {
     /// if the dimensions mismatch.
     #[test]
     fn dimensions_horizontal() {
-        let modulus_str = format!("3  1 {} 1 mod {}", i64::MAX, BITPRIME64);
+        let modulus_str = format!("3  1 {} 1 mod {}", i64::MAX, LARGE_PRIME);
         let modulus = ModulusPolynomialRingZq::from_str(&modulus_str).unwrap();
         let mat_1 = MatPolynomialRingZq::new(13, 5, &modulus);
         let mat_2 = MatPolynomialRingZq::new(17, 5, &modulus);
@@ -178,7 +178,7 @@ mod test_concatenate {
     /// Ensure that vertical concatenation works correctly.
     #[test]
     fn vertically_correct() {
-        let modulus_str = format!("3  1 {} 1 mod {}", i64::MAX, BITPRIME64);
+        let modulus_str = format!("3  1 {} 1 mod {}", i64::MAX, LARGE_PRIME);
         let modulus = ModulusPolynomialRingZq::from_str(&modulus_str).unwrap();
         let poly_mat_1 =
             MatPolyOverZ::from_str(&format!("[[4  2 {} 1 1, 1  42],[0, 2  1 2]]", u64::MAX))
@@ -199,11 +199,11 @@ mod test_concatenate {
     /// Ensure that horizontal concatenation works correctly.
     #[test]
     fn horizontally_correct() {
-        let modulus_str = format!("3  1 {} 1 mod {}", i64::MAX, BITPRIME64);
+        let modulus_str = format!("3  1 {} 1 mod {}", i64::MAX, LARGE_PRIME);
         let modulus = ModulusPolynomialRingZq::from_str(&modulus_str).unwrap();
         let poly_mat_1 = MatPolyOverZ::from_str(&format!(
             "[[4  {} {} 1 1, 1  42],[0, 2  1 2]]",
-            BITPRIME64 + 2,
+            LARGE_PRIME + 2,
             u64::MAX
         ))
         .unwrap();

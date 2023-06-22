@@ -23,7 +23,7 @@ impl Zq {
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
     /// use qfall_math::integer::Z;
-    /// let zq_value = Zq::try_from((4, 7)).unwrap();
+    /// let zq_value = Zq::from((4, 7));
     ///
     /// let z_value = zq_value.get_value();
     ///
@@ -39,8 +39,8 @@ impl Zq {
     /// ```
     /// use qfall_math::integer_mod_q::{Zq, Modulus};
     /// use std::str::FromStr;
-    /// let value = Zq::try_from((4, 7)).unwrap();
-    /// let cmp = Modulus::from_str("7").unwrap();
+    /// let value = Zq::from((4, 7));
+    /// let cmp = Modulus::from(7);
     ///
     /// let modulus = value.get_mod();
     ///
@@ -58,8 +58,8 @@ mod test_get_value {
     /// Check whether `get_value` outputs the correct value for small values
     #[test]
     fn get_small() {
-        let value_0 = Zq::try_from((2, 20)).unwrap();
-        let value_1 = Zq::try_from((-2, 20)).unwrap();
+        let value_0 = Zq::from((2, 20));
+        let value_1 = Zq::from((-2, 20));
 
         let res_0 = value_0.get_value();
         let res_1 = value_1.get_value();
@@ -71,8 +71,8 @@ mod test_get_value {
     /// Check whether `get_value` outputs the correct value for large values
     #[test]
     fn get_large() {
-        let value_0 = Zq::try_from((i64::MAX, u64::MAX)).unwrap();
-        let value_1 = Zq::try_from((i64::MIN, u64::MAX)).unwrap();
+        let value_0 = Zq::from((i64::MAX, u64::MAX));
+        let value_1 = Zq::from((i64::MIN, u64::MAX));
 
         let res_0 = value_0.get_value();
         let res_1 = value_1.get_value();
@@ -84,25 +84,25 @@ mod test_get_value {
 
 #[cfg(test)]
 mod test_get_mod {
-    use super::{Modulus, Zq, Z};
+    use super::{Modulus, Zq};
 
     /// Check whether `get_mod` outputs the correct modulus for small moduli
     #[test]
     fn get_small() {
-        let value = Zq::try_from((2, 20)).unwrap();
+        let value = Zq::from((2, 20));
 
         let modulus = value.get_mod();
 
-        assert_eq!(modulus, Modulus::try_from(&Z::from(20)).unwrap());
+        assert_eq!(modulus, Modulus::from(20));
     }
 
     /// Check whether `get_mod` outputs the correct modulus for large moduli
     #[test]
     fn get_large() {
-        let value = Zq::try_from((2, u64::MAX)).unwrap();
+        let value = Zq::from((2, u64::MAX));
 
         let modulus = value.get_mod();
 
-        assert_eq!(modulus, Modulus::try_from(&Z::from(u64::MAX)).unwrap());
+        assert_eq!(modulus, Modulus::from(u64::MAX));
     }
 }

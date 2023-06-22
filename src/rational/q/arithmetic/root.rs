@@ -151,7 +151,7 @@ mod test_sqrt {
             Q::from((1, 3)),
             Q::from((10, 3)),
             Q::from((100000, 3)),
-            Q::from((u64::MAX, 1)),
+            Q::from(u64::MAX),
             Q::from((1, u64::MAX)),
             Q::from((u64::MAX, u64::MAX - 1)) * Q::from(u64::MAX),
         ];

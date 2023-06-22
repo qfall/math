@@ -39,7 +39,6 @@ impl Z {
 #[cfg(test)]
 mod test_exp {
     use crate::{integer::Z, rational::Q};
-    use std::str::FromStr;
 
     /// Ensure that `0` is returned if the length `0` is provided
     #[test]
@@ -52,17 +51,8 @@ mod test_exp {
     /// Test correct evaluation for some explicit values
     #[test]
     fn ten_length_value() {
-        assert_eq!(
-            Q::from_str("98641/36288").unwrap(),
-            Z::ONE.exp_taylor(10_u32)
-        );
-        assert_eq!(
-            Q::from_str("22471/1120").unwrap(),
-            Z::from(3).exp_taylor(10_u32)
-        );
-        assert_eq!(
-            Q::from_str("83/2240").unwrap(),
-            Z::from(-3).exp_taylor(10_u32)
-        );
+        assert_eq!(Q::from((98641, 36288)), Z::ONE.exp_taylor(10_u32));
+        assert_eq!(Q::from((22471, 1120)), Z::from(3).exp_taylor(10_u32));
+        assert_eq!(Q::from((83, 2240)), Z::from(-3).exp_taylor(10_u32));
     }
 }

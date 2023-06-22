@@ -100,7 +100,7 @@ mod rsa_textbook {
             "Primes used for modulus N calculation shouldn't be equal."
         );
 
-        let modulus = Modulus::try_from(&(&p * &q)).unwrap();
+        let modulus = Modulus::from(&p * &q);
         let phi_mod = (&p - Z::ONE) * (&q - Z::ONE);
 
         // standard prime value chosen as public key
@@ -126,7 +126,7 @@ mod rsa_textbook {
     ///
     /// `rsa_textbook.enc(N, pk, msg) = msg^pk mod N`
     pub fn enc(modulus: &Modulus, pk: &Z, msg: &Z) -> Zq {
-        let msg = Zq::from_z_modulus(msg, modulus);
+        let msg = Zq::from((msg, modulus));
         msg.pow(pk).unwrap()
     }
 
@@ -267,7 +267,7 @@ mod el_gamal_enc {
 
         let (pk, sk) = gen_key_pair(&modulus, &generator);
 
-        let msg = Zq::from_z_modulus(&Z::sample_uniform(&0, &modulus).unwrap(), &modulus);
+        let msg = Zq::from((&Z::sample_uniform(&0, &modulus).unwrap(), &modulus));
 
         let (c_0, c_1) = enc(&generator, &pk, &msg);
         let cmp = dec(&sk, &c_0, &c_1);

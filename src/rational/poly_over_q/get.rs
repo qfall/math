@@ -81,7 +81,7 @@ mod test_get_coeff {
 
         let zero_coeff = poly.get_coeff(4).unwrap();
 
-        assert_eq!(Q::from_str("0/1").unwrap(), zero_coeff)
+        assert_eq!(Q::ZERO, zero_coeff)
     }
 
     /// Test if indices smaller than `0` return an error
@@ -99,7 +99,7 @@ mod test_get_coeff {
 
         let coeff = poly.get_coeff(3).unwrap();
 
-        assert_eq!(Q::from_str("-3/2").unwrap(), coeff)
+        assert_eq!(Q::from((-3, 2)), coeff)
     }
 
     /// Tests if positive coefficients are returned correctly
@@ -109,7 +109,7 @@ mod test_get_coeff {
 
         let coeff = poly.get_coeff(2).unwrap();
 
-        assert_eq!(Q::from_str("2/3").unwrap(), coeff)
+        assert_eq!(Q::from((2, 3)), coeff)
     }
 
     /// Tests if large coefficients are returned correctly
@@ -120,24 +120,17 @@ mod test_get_coeff {
         let poly = PolyOverQ::from_str(&large_string).unwrap();
 
         assert_eq!(Q::from_str(&q_str).unwrap(), poly.get_coeff(0).unwrap());
-        assert_eq!(
-            Q::from_str(&u64::MAX.to_string()).unwrap(),
-            poly.get_coeff(1).unwrap()
-        );
+        assert_eq!(Q::from(u64::MAX), poly.get_coeff(1).unwrap());
     }
 
     /// Tests if large negative coefficients are returned correctly
     #[test]
     fn large_coeff_neg() {
-        let q_str = format!("{}/{}", u64::MAX, i64::MIN,);
-        let large_string = format!("2  {} {}", q_str, u64::MAX);
+        let large_string = format!("2  {}/{} {}", u64::MAX, i64::MIN, u64::MAX);
         let poly = PolyOverQ::from_str(&large_string).unwrap();
 
-        assert_eq!(Q::from_str(&q_str).unwrap(), poly.get_coeff(0).unwrap());
-        assert_eq!(
-            Q::from_str(&u64::MAX.to_string()).unwrap(),
-            poly.get_coeff(1).unwrap()
-        );
+        assert_eq!(Q::from((u64::MAX, i64::MIN)), poly.get_coeff(0).unwrap());
+        assert_eq!(Q::from(u64::MAX), poly.get_coeff(1).unwrap());
     }
 }
 

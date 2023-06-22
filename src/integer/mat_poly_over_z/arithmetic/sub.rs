@@ -42,7 +42,7 @@ impl Sub for &MatPolyOverZ {
     /// ```
     ///
     /// # Panics ...
-    /// - ... if the dimensions of both matrices mismatch
+    /// - if the dimensions of both matrices mismatch.
     fn sub(self, other: Self) -> Self::Output {
         self.sub_safe(other).unwrap()
     }

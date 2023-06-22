@@ -89,12 +89,12 @@ mod test_clone {
         assert_eq!(a.get_num_rows(), 2);
         assert_eq!(a.get_num_columns(), 3);
 
-        assert_eq!(a.get_entry(0, 0).unwrap(), Q::from_str("1/2").unwrap());
-        assert_eq!(a.get_entry(0, 1).unwrap(), Q::from_str("2/3").unwrap());
-        assert_eq!(a.get_entry(0, 2).unwrap(), Q::from_str("3/4").unwrap());
-        assert_eq!(a.get_entry(1, 0).unwrap(), Q::from_str("3/1").unwrap());
-        assert_eq!(a.get_entry(1, 1).unwrap(), Q::from_str("4/2").unwrap());
-        assert_eq!(a.get_entry(1, 2).unwrap(), Q::from_str("5/4").unwrap());
+        assert_eq!(a.get_entry(0, 0).unwrap(), Q::from((1, 2)));
+        assert_eq!(a.get_entry(0, 1).unwrap(), Q::from((2, 3)));
+        assert_eq!(a.get_entry(0, 2).unwrap(), Q::from((3, 4)));
+        assert_eq!(a.get_entry(1, 0).unwrap(), Q::from(3));
+        assert_eq!(a.get_entry(1, 1).unwrap(), Q::from((4, 2)));
+        assert_eq!(a.get_entry(1, 2).unwrap(), Q::from((5, 4)));
     }
 
     /// check whether the cloned large entries are stored separately

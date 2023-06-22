@@ -26,8 +26,8 @@ impl fmt::Display for Zq {
     /// use std::str::FromStr;
     /// use core::fmt;
     ///
-    /// let integer = Zq::from_str("42 mod 3").unwrap();
-    /// println!("{}", integer);
+    /// let integer_mod_q = Zq::from((42, 3));
+    /// println!("{}", integer_mod_q);
     /// ```
     ///
     /// ```
@@ -35,8 +35,8 @@ impl fmt::Display for Zq {
     /// use std::str::FromStr;
     /// use core::fmt;
     ///
-    /// let integer = Zq::from_str("42 mod 3").unwrap();
-    /// let integer_string = integer.to_string();
+    /// let integer_mod_q = Zq::from((42, 3));
+    /// let integer_string = integer_mod_q.to_string();
     /// ```
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{} mod {}", self.value, self.modulus)
@@ -85,7 +85,7 @@ mod test_to_string {
     /// string that can be used to create a [`Zq`]
     #[test]
     fn working_use_result_of_to_string_as_input() {
-        let cmp = Zq::from_str("42 mod 10").unwrap();
+        let cmp = Zq::from((42, 10));
 
         let cmp_string = cmp.to_string();
 

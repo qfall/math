@@ -72,7 +72,7 @@ impl Mul<&Z> for &Q {
     /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
     ///
-    /// let a: Q = Q::from_str("42/19").unwrap();
+    /// let a: Q = Q::from((42, 19));
     /// let b: Z = Z::from(-42);
     ///
     /// let c: Q = &a * &b;
@@ -101,7 +101,7 @@ mod test_mul {
     #[test]
     fn mul() {
         let a: Q = Q::from(2);
-        let b: Q = Q::from_str("42/2").unwrap();
+        let b: Q = Q::from((42, 2));
         let c: Q = a * b;
         assert_eq!(c, Q::from(42));
     }
@@ -110,7 +110,7 @@ mod test_mul {
     #[test]
     fn mul_borrow() {
         let a: Q = Q::from(2);
-        let b: Q = Q::from_str("42/2").unwrap();
+        let b: Q = Q::from((42, 2));
         let c: Q = &a * &b;
         assert_eq!(c, Q::from(42));
     }
@@ -119,16 +119,16 @@ mod test_mul {
     #[test]
     fn mul_first_borrowed() {
         let a: Q = Q::from(4);
-        let b: Q = Q::from_str("42/10").unwrap();
+        let b: Q = Q::from((42, 10));
         let c: Q = &a * b;
-        assert_eq!(c, Q::from_str("168/10").unwrap());
+        assert_eq!(c, Q::from((168, 10)));
     }
 
     /// Testing multiplication for [`Q`] and borrowed [`Q`]
     #[test]
     fn mul_second_borrowed() {
         let a: Q = Q::from(2);
-        let b: Q = Q::from_str("42/2").unwrap();
+        let b: Q = Q::from((42, 2));
         let c: Q = a * &b;
         assert_eq!(c, Q::from(42));
     }
@@ -138,13 +138,13 @@ mod test_mul {
     fn mul_large() {
         let a: Q = Q::from(i64::MAX);
         let b: Q = Q::from(2);
-        let c: Q = Q::from_str(&format!("1/{}", (i32::MAX))).unwrap();
-        let d: Q = Q::from_str(&format!("1/{}", (u32::MAX))).unwrap();
+        let c: Q = Q::from((1, i32::MAX));
+        let d: Q = Q::from((1, u32::MAX));
 
         let e: Q = &a * &b;
         let f: Q = c * d;
 
-        assert_eq!(e, Q::from_str(&(u64::MAX - 1).to_string()).unwrap());
+        assert_eq!(e, Q::from(u64::MAX - 1));
         assert_eq!(
             f,
             Q::from_str(&format!(
@@ -160,62 +160,55 @@ mod test_mul {
 mod test_mul_between_q_and_z {
     use crate::integer::Z;
     use crate::rational::Q;
-    use std::str::FromStr;
 
     /// Testing multiplication for [`Q`] and [`Z`]
     #[test]
     fn mul() {
-        let a: Q = Q::from_str("5/7").unwrap();
+        let a: Q = Q::from((5, 7));
         let b: Z = Z::from(4);
         let c: Q = a * b;
-        assert_eq!(c, Q::from_str("20/7").unwrap());
+        assert_eq!(c, Q::from((20, 7)));
     }
 
     /// Testing multiplication for both borrowed [`Q`] and [`Z`]
     #[test]
     fn mul_borrow() {
-        let a: Q = Q::from_str("5/7").unwrap();
+        let a: Q = Q::from((5, 7));
         let b: Z = Z::from(4);
         let c: Q = &a * &b;
-        assert_eq!(c, Q::from_str("20/7").unwrap());
+        assert_eq!(c, Q::from((20, 7)));
     }
 
     /// Testing multiplication for borrowed [`Q`] and [`Z`]
     #[test]
     fn mul_first_borrowed() {
-        let a: Q = Q::from_str("5/7").unwrap();
+        let a: Q = Q::from((5, 7));
         let b: Z = Z::from(4);
         let c: Q = &a * b;
-        assert_eq!(c, Q::from_str("20/7").unwrap());
+        assert_eq!(c, Q::from((20, 7)));
     }
 
     /// Testing multiplication for [`Q`] and borrowed [`Z`]
     #[test]
     fn mul_second_borrowed() {
-        let a: Q = Q::from_str("5/7").unwrap();
+        let a: Q = Q::from((5, 7));
         let b: Z = Z::from(4);
         let c: Q = a * &b;
-        assert_eq!(c, Q::from_str("20/7").unwrap());
+        assert_eq!(c, Q::from((20, 7)));
     }
 
     /// Testing multiplication for big numbers
     #[test]
     fn mul_large_numbers() {
-        let a: Q = Q::from_str(&format!("{}/2", u64::MAX)).unwrap();
-        let b: Q = Q::from_str(&format!("1/{}", u64::MAX)).unwrap();
+        let a: Q = Q::from((u64::MAX, 2));
+        let b: Q = Q::from((1, u64::MAX));
         let c: Z = Z::from(u64::MAX);
 
         let d: Q = a * &c;
         let e: Q = b * c;
 
-        assert_eq!(
-            d,
-            Q::from(u64::MAX) * Q::from_str(&format!("{}/2", u64::MAX)).unwrap()
-        );
-        assert_eq!(
-            e,
-            Q::from_str(&format!("1/{}", u64::MAX)).unwrap() * Q::from(u64::MAX)
-        );
+        assert_eq!(d, Q::from(u64::MAX) * Q::from((u64::MAX, 2)));
+        assert_eq!(e, Q::from((1, u64::MAX)) * Q::from(u64::MAX));
     }
 }
 

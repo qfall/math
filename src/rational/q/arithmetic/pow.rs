@@ -32,12 +32,12 @@ impl Pow<&Z> for Q {
     /// use qfall_math::{rational::Q, integer::Z};
     /// use qfall_math::traits::*;
     ///
-    /// let base = Q::try_from((&3, &1)).unwrap();
+    /// let base = Q::from(3);
     /// let exp = Z::from(-2);
     ///
     /// let powered_value = base.pow(&exp).unwrap();
     ///
-    /// assert_eq!(Q::try_from((&1, &9)).unwrap(), powered_value);
+    /// assert_eq!(Q::from((1, 9)), powered_value);
     /// ```
     ///
     /// # Errors and Failures
@@ -77,8 +77,8 @@ mod test_pow {
     /// Ensure that `pow` works correctly for base values `1` and `-1`
     #[test]
     fn one() {
-        let base_pos = Q::try_from((&1, &1)).unwrap();
-        let base_neg = Q::try_from((&-1, &1)).unwrap();
+        let base_pos = Q::ONE;
+        let base_neg = Q::MINUS_ONE;
 
         assert_eq!(Q::ONE, base_pos.pow(0).unwrap());
         assert_eq!(Q::ONE, base_pos.pow(1).unwrap());
@@ -93,8 +93,8 @@ mod test_pow {
     /// Ensure that `pow` works for [`Q`] properly for small values
     #[test]
     fn small() {
-        let base_0 = Q::try_from((&2, &1)).unwrap();
-        let base_1 = Q::try_from((&1, &2)).unwrap();
+        let base_0 = Q::from(2);
+        let base_1 = Q::from((1, 2));
         let exp_pos = Z::from(4);
 
         let res_0 = base_0.pow(&exp_pos).unwrap();
@@ -102,17 +102,17 @@ mod test_pow {
         let res_2 = base_1.pow(&exp_pos).unwrap();
         let res_3 = base_1.pow(0).unwrap();
 
-        assert_eq!(Q::try_from((&16, &1)).unwrap(), res_0);
-        assert_eq!(Q::try_from((&1, &1)).unwrap(), res_1);
-        assert_eq!(Q::try_from((&1, &16)).unwrap(), res_2);
-        assert_eq!(Q::try_from((&1, &1)).unwrap(), res_3);
+        assert_eq!(Q::from(16), res_0);
+        assert_eq!(Q::ONE, res_1);
+        assert_eq!(Q::from((1, 16)), res_2);
+        assert_eq!(Q::ONE, res_3);
     }
 
     /// Ensure that `pow` works for [`Q`] properly for large values
     #[test]
     fn large() {
-        let base_0 = Q::try_from((&i64::MIN, &1)).unwrap();
-        let base_1 = Q::try_from((&1, &i64::MIN)).unwrap();
+        let base_0 = Q::from(i64::MIN);
+        let base_1 = Q::from((1, i64::MIN));
         let exp_pos = Z::from(3);
         let cmp_0 = &base_0 * &base_0 * &base_0;
         let cmp_1 = &base_1 * &base_1 * &base_1;
@@ -126,16 +126,16 @@ mod test_pow {
 
         assert_eq!(cmp_0, res_0);
         assert_eq!(Q::ONE, res_1);
-        assert_eq!(Q::try_from((&1, &i64::MIN)).unwrap(), res_2);
+        assert_eq!(Q::from((1, i64::MIN)), res_2);
         assert_eq!(cmp_1, res_3);
         assert_eq!(Q::ONE, res_4);
-        assert_eq!(Q::try_from((&i64::MIN, &1)).unwrap(), res_5);
+        assert_eq!(Q::from(i64::MIN), res_5);
     }
 
     /// Ensures that the `pow` trait is available for other types
     #[test]
     fn availability() {
-        let base = Q::try_from((&i64::MAX, &1)).unwrap();
+        let base = Q::from(i64::MAX);
         let exp = Z::from(4);
 
         let _ = base.pow(exp);
@@ -153,7 +153,7 @@ mod test_pow {
     /// i.e. for [`Q`] only 0, is powered by a negative exponent
     #[test]
     fn non_invertible_detection() {
-        let base = Q::try_from((&0, &1)).unwrap();
+        let base = Q::ZERO;
 
         assert!(base.pow(-1).is_err());
     }
