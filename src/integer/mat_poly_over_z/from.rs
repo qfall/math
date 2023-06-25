@@ -104,7 +104,7 @@ impl From<&MatZ> for MatPolyOverZ {
     /// ```
     /// use qfall_math::integer::{MatZ, MatPolyOverZ};
     ///
-    /// let mat_z = MatZ::identity(10,10);
+    /// let mat_z = MatZ::identity(10, 10);
     /// let mat_poly = MatPolyOverZ::from(&mat_z);
     /// ```
     fn from(matrix: &MatZ) -> Self {

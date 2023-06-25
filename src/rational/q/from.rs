@@ -209,7 +209,7 @@ impl<IntegerNumerator: AsInteger, IntegerDenominator: AsInteger>
     /// let a = Q::from((42, &2));
     /// let b = Q::from((Z::from(84), 4));
     ///
-    /// assert_eq!(a,b);
+    /// assert_eq!(a, b);
     /// ```
     ///
     /// # Panics ...

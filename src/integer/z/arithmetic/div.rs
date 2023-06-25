@@ -229,7 +229,7 @@ impl Div<&Q> for &Z {
     /// use std::str::FromStr;
     ///
     /// let a: Z = Z::from(-42);
-    /// let b: Q = Q::from((42,19));
+    /// let b: Q = Q::from((42, 19));
     ///
     /// let c: Q = &a / &b;
     /// let d: Q = a / b;

@@ -44,7 +44,7 @@ impl Z {
     /// ```
     /// ```compile_fail
     /// use qfall_math::integer::Z;
-    /// use flint_sys::fmpz::{fmpz,fmpz_clear};
+    /// use flint_sys::fmpz::{fmpz, fmpz_clear};
     ///
     /// let value = fmpz(0);
     ///

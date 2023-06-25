@@ -77,7 +77,7 @@ impl Add<&Q> for &Z {
     /// use std::str::FromStr;
     ///
     /// let a: Z = Z::from(-42);
-    /// let b: Q = Q::from((42,19));
+    /// let b: Q = Q::from((42, 19));
     ///
     /// let c: Q = &a + &b;
     /// let d: Q = a + b;
@@ -113,7 +113,7 @@ impl Add<&Zq> for &Z {
     /// use std::str::FromStr;
     ///
     /// let a: Z = Z::from(42);
-    /// let b: Zq = Zq::from((42,19));
+    /// let b: Zq = Zq::from((42, 19));
     ///
     /// let c: Zq = &a + &b;
     /// let d: Zq = a + b;

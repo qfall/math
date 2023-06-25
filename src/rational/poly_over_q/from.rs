@@ -124,10 +124,10 @@ impl<T: Into<Q>> From<T> for PolyOverQ {
     /// use qfall_math::{rational::*, traits::GetCoefficient};
     ///
     /// let one = PolyOverQ::from(1);
-    /// let three_quarter = PolyOverQ::from(Q::from((3,4)));
-    /// let one_half = PolyOverQ::from((1,2));
+    /// let three_quarter = PolyOverQ::from(Q::from((3, 4)));
+    /// let one_half = PolyOverQ::from((1, 2));
     ///
-    /// assert_eq!(one_half.get_coeff(0).unwrap(), Q::from((1,2)));
+    /// assert_eq!(one_half.get_coeff(0).unwrap(), Q::from((1, 2)));
     /// assert_eq!(one_half.get_degree(), 0);
     /// ```
     ///

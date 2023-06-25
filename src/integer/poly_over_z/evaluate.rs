@@ -65,7 +65,7 @@ impl Evaluate<&Q, Q> for PolyOverZ {
     /// use std::str::FromStr;
     ///
     /// let poly = PolyOverZ::from_str("5  0 1 2 -3 1").unwrap();
-    /// let value = Q::from((3,2));
+    /// let value = Q::from((3, 2));
     /// let res = poly.evaluate(&value);
     /// ```
     fn evaluate(&self, value: &Q) -> Q {

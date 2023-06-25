@@ -34,7 +34,7 @@ impl PartialEq for MatZ {
     /// # assert!(!compared);
     /// let compared: bool = (a.eq(&b));
     /// # assert!(!compared);
-    /// let compared: bool = (MatZ::eq(&a,&b));
+    /// let compared: bool = (MatZ::eq(&a, &b));
     /// # assert!(!compared);
     /// ```
     fn eq(&self, other: &Self) -> bool {

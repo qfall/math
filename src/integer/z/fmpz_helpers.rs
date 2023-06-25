@@ -340,7 +340,7 @@ mod test_distance {
     use flint_sys::fmpz::fmpz;
 
     /// Checks if distance is correctly output for small [`Z`] values
-    /// and whether distance(a,b) == distance(b,a), distance(a,a) == 0
+    /// and whether distance(a, b) == distance(b, a), distance(a, a) == 0
     #[test]
     fn small_values() {
         let a = fmpz(1);
@@ -359,7 +359,7 @@ mod test_distance {
     }
 
     /// Checks if distance is correctly output for large [`Z`] values
-    /// and whether distance(a,b) == distance(b,a), distance(a,a) == 0
+    /// and whether distance(a, b) == distance(b, a), distance(a, a) == 0
     #[test]
     fn large_values() {
         let a = Z::from(i64::MAX);

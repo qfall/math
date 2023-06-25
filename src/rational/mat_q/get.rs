@@ -26,7 +26,7 @@ impl GetNumRows for MatQ {
     /// use qfall_math::rational::MatQ;
     /// use qfall_math::traits::*;
     ///
-    /// let matrix = MatQ::new(5,6);
+    /// let matrix = MatQ::new(5, 6);
     /// let rows = matrix.get_num_rows();
     /// ```
     fn get_num_rows(&self) -> i64 {
@@ -42,7 +42,7 @@ impl GetNumColumns for MatQ {
     /// use qfall_math::rational::MatQ;
     /// use qfall_math::traits::*;
     ///
-    /// let matrix = MatQ::new(5,6);
+    /// let matrix = MatQ::new(5, 6);
     /// let columns = matrix.get_num_columns();
     /// ```
     fn get_num_columns(&self) -> i64 {

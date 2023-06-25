@@ -37,7 +37,7 @@ impl Zq {
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
     ///
-    /// let value = Zq::from((0,7));
+    /// let value = Zq::from((0, 7));
     /// assert!(value.is_zero());
     /// ```
     pub fn is_zero(&self) -> bool {
@@ -52,7 +52,7 @@ impl Zq {
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
     ///
-    /// let value = Zq::from((1,7));
+    /// let value = Zq::from((1, 7));
     /// assert!(value.is_one());
     /// ```
     pub fn is_one(&self) -> bool {

@@ -37,7 +37,7 @@ impl PartialEq for PolyOverZq {
     /// # assert!(!compared);
     /// let compared: bool = (a.eq(&b));
     /// # assert!(!compared);
-    /// let compared: bool = (PolyOverZq::eq(&a,&b));
+    /// let compared: bool = (PolyOverZq::eq(&a, &b));
     /// # assert!(!compared);
     /// ```
     fn eq(&self, other: &Self) -> bool {

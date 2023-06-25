@@ -54,7 +54,7 @@ mod test_lcm {
     use super::{Lcm, Z};
 
     /// Ensures that the lcm is correctly computed for small [`Z`] instances
-    /// and ensures properties: `lcm(a,b) == lcm(b,a)` and `lcm(a,a) == a`
+    /// and ensures properties: `lcm(a, b) == lcm(b, a)` and `lcm(a, a) == a`
     #[test]
     fn small() {
         let pos_1 = Z::from(10);
@@ -82,8 +82,8 @@ mod test_lcm {
     }
 
     /// Ensures that the lcm is correctly computed for small [`Z`] instances
-    /// and ensures properties: `lcm(a,b) == lcm(b,a)`, `lcm(a,a) == a`, and
-    /// `lcm(a,0) == 0`
+    /// and ensures properties: `lcm(a, b) == lcm(b, a)`, `lcm(a, a) == a`, and
+    /// `lcm(a, 0) == 0`
     #[test]
     fn large() {
         let pos = Z::from(i64::MAX);

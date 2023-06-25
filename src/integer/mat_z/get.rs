@@ -29,7 +29,7 @@ impl GetNumRows for MatZ {
     /// use qfall_math::integer::MatZ;
     /// use qfall_math::traits::*;
     ///
-    /// let matrix = MatZ::new(5,6);
+    /// let matrix = MatZ::new(5, 6);
     /// let rows = matrix.get_num_rows();
     /// ```
     fn get_num_rows(&self) -> i64 {
@@ -45,7 +45,7 @@ impl GetNumColumns for MatZ {
     /// use qfall_math::integer::MatZ;
     /// use qfall_math::traits::*;
     ///
-    /// let matrix = MatZ::new(5,6);
+    /// let matrix = MatZ::new(5, 6);
     /// let columns = matrix.get_num_columns();
     /// ```
     fn get_num_columns(&self) -> i64 {

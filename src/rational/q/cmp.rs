@@ -35,7 +35,7 @@ impl PartialEq for Q {
     /// # assert!(!compared);
     /// let compared: bool = (a.eq(&b));
     /// # assert!(!compared);
-    /// let compared: bool = (Q::eq(&a,&b));
+    /// let compared: bool = (Q::eq(&a, &b));
     /// # assert!(!compared);
     /// ```
     fn eq(&self, other: &Self) -> bool {
@@ -61,8 +61,8 @@ impl PartialOrd for Q {
     /// # use qfall_math::error::MathError;
     /// use qfall_math::rational::Q;
     ///
-    /// let a: Q = Q::from((1,10));
-    /// let b: Q = Q::from((2,10));
+    /// let a: Q = Q::from((1, 10));
+    /// let b: Q = Q::from((2, 10));
     ///
     /// assert!(a < b);
     /// assert!(a <= b);

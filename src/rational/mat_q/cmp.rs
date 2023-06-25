@@ -37,7 +37,7 @@ impl PartialEq for MatQ {
     /// # assert!(!compared);
     /// let compared: bool = (a1.eq(&b));
     /// # assert!(!compared);
-    /// let compared: bool = (MatQ::eq(&a1,&b));
+    /// let compared: bool = (MatQ::eq(&a1, &b));
     /// # assert!(!compared);
     /// ```
     fn eq(&self, other: &Self) -> bool {
