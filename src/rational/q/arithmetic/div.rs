@@ -469,4 +469,17 @@ mod test_div_between_types {
         let b: f64 = 0.0;
         let _c = a / b;
     }
+
+    /// Testing if division for different types returns the correct results.
+    #[test]
+    fn div_correct_i32() {
+        let a: i32 = 1;
+        let b: Q = Q::from(23);
+
+        let c = a / &b;
+        let d = &b / a;
+
+        assert_eq!(c, Q::from((1, 23)));
+        assert_eq!(d, Q::from(23));
+    }
 }
