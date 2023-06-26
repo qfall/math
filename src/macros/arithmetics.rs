@@ -119,7 +119,7 @@ pub(crate) use arithmetic_trait_mixed_borrowed_owned;
 macro_rules! arithmetic_between_types {
     ($trait:ident, $trait_function:ident, $type:ident, $output_type:ident, $($other_type:ident)*) => {
         $(
-            // #[doc(hidden)] //maybe also hide. current state: one doc per type
+            #[doc(hidden)] //maybe also hide. current state: zero doc per type
             impl $trait<&$other_type> for &$type {
                 type Output = $output_type;
                 paste::paste! {
@@ -139,7 +139,7 @@ macro_rules! arithmetic_between_types {
                 paste::paste! {
                     #[doc = "Documentation at [`" $type "::" $trait_function "`]."]
                     fn $trait_function(self, other: &$type) -> Self::Output {
-                    other.$trait_function($type::from(*self))
+                        $type::from(*self).$trait_function(other)
                     }
                 }
             }
