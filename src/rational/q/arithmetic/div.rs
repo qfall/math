@@ -470,7 +470,7 @@ mod test_div_between_types {
         let _c = a / b;
     }
 
-    /// testing if division for different types returns the correct results
+    /// Testing if division for different types returns the correct results.
     #[test]
     fn div_correct_i32() {
         let a: i32 = 1;
