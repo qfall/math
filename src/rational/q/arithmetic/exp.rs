@@ -14,6 +14,25 @@ use crate::{
 };
 
 impl Q {
+    /// Computes `e^self`. This is done by first converting the value to a [`f64`],
+    /// evaluating the exponential function and converting the float back to [`Q`].
+    /// As a result, the precision is limited to the precision of [`f64`].
+    /// More concrete, values smaller than `e^-745` are rounded to `0` and values
+    /// larger than `e^709` are all mapped to the [`Q`] representation of [`f64::INFINITY`].
+    ///
+    /// Returns e^self.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::Q;
+    ///
+    /// let evaluation = Q::from((17, 3)).exp();
+    /// let e = Q::ONE.exp();
+    /// ```
+    pub fn exp(&self) -> Self {
+        Q::from(f64::from(self).exp())
+    }
+
     /// Computes e^self using taylor series approximation of the exponential function.
     ///
     /// Parameters:
@@ -38,6 +57,25 @@ impl Q {
 
 #[cfg(test)]
 mod test_exp {
+    use super::*;
+
+    /// Ensure that `e^0 = 1`.
+    #[test]
+    fn zero() {
+        assert_eq!(Q::ONE, Q::ZERO.exp())
+    }
+
+    /// Ensure that `e^1 = e`.
+    #[test]
+    fn one() {
+        let e = Q::ONE.exp();
+
+        assert_eq!(e, Q::from(1.0f64.exp()))
+    }
+}
+
+#[cfg(test)]
+mod test_exp_taylor {
     use crate::rational::Q;
 
     /// Ensure that `0` is returned if the length `0` is provided
