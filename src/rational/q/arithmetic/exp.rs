@@ -13,12 +13,19 @@ use crate::{
     traits::Evaluate,
 };
 
+// Initialize the taylor expansion just once and not every time we call exp.
+lazy_static::lazy_static! {
+    /// The taylor expansion of the exponential function used when [`f64.exp`]
+    /// can no longer be used.
+    pub static ref EXP_TAYLOR_POLY: PolyOverQ = PolyOverQ::exp_function_taylor(100u32);
+}
+
 impl Q {
     /// Computes `e^self`. This is done by first converting the value to a [`f64`],
     /// evaluating the exponential function and converting the float back to [`Q`].
     /// As a result, the precision is limited to the precision of [`f64`].
-    /// More concrete, values smaller than `e^-745` are rounded to `0` and values
-    /// larger than `e^709` are all mapped to the [`Q`] representation of [`f64::INFINITY`].
+    /// More concrete, values smaller than `e^-745` are rounded to `0`.
+    /// For exponents above 709, a taylor series with 100 coefficients is used.
     ///
     /// Returns e^self.
     ///
@@ -30,7 +37,11 @@ impl Q {
     /// let e = Q::ONE.exp();
     /// ```
     pub fn exp(&self) -> Self {
-        Q::from(f64::from(self).exp())
+        if self < &Q::from(709) {
+            Q::from(f64::from(self).exp())
+        } else {
+            EXP_TAYLOR_POLY.evaluate(self)
+        }
     }
 
     /// Computes e^self using taylor series approximation of the exponential function.
@@ -71,6 +82,38 @@ mod test_exp {
         let e = Q::ONE.exp();
 
         assert_eq!(e, Q::from(1.0f64.exp()))
+    }
+
+    /// Show the exp behavior for large negative inputs zero e^-745, but values smaller than e^-745 do.
+    #[test]
+    fn large_negative_exponent() {
+        let small = Q::from(-745).exp();
+        let small_2 = Q::from((-7451, 10)).exp();
+        let zero = Q::from((-7452, 10)).exp();
+
+        println!("{}", &small);
+
+        assert_ne!(small, Q::ZERO);
+        assert_eq!(small, small_2);
+        assert_eq!(zero, Q::ZERO);
+    }
+
+    /// Test a large input very close to where exp stops using f64 for calculation.
+    /// It should not saturate f64 into infinity.
+    #[test]
+    fn large_float_calc() {
+        let result = (Q::from(709) - Q::from((1, u64::MAX))).exp();
+
+        assert_ne!(f64::from(&result), f64::INFINITY);
+    }
+
+    /// Ensure that the exponential function for large values outputs different results.
+    #[test]
+    fn large_exponent() {
+        let large_1 = Q::from(u64::MAX).exp();
+        let large_2 = Q::from(u64::MAX - 1).exp();
+
+        assert!(large_1 > large_2);
     }
 }
 
