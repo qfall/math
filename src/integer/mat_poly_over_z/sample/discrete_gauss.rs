@@ -83,12 +83,12 @@ fn polyz_vector_to_matz(poly_vec: &MatPolyOverZ, k: i64) -> Result<MatZ, MathErr
         assert!(entry.get_degree() < k);
         poly.push(entry);
     }
-    let mut out = MatZ::new(poly.len(), k);
+    let mut out = MatZ::new(k, poly.len());
 
     for (i, entry) in poly.iter().enumerate() {
         for j in 0..k {
             match entry.get_coeff(j) {
-                Ok(value) => out.set_entry(i, j, &value)?,
+                Ok(value) => out.set_entry(j, i, &value)?,
                 Err(_) => break,
             }
         }
@@ -139,9 +139,9 @@ mod test_helper_conversions {
     #[test]
     fn standard_basis() {
         let standard_basis = MatPolyOverZ::from_str("[[1  1, 2  0 1]]").unwrap();
-        let basis = polyz_vector_to_matz(&standard_basis, 2).unwrap();
+        let basis = polyz_vector_to_matz(&standard_basis, 3).unwrap();
 
-        assert_eq!(MatZ::identity(2, 2), basis)
+        assert_eq!(MatZ::identity(3, 2), basis)
     }
 
     #[test]
