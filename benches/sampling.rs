@@ -13,8 +13,8 @@ pub fn sample_d() {
 }
 
 /// benchmark [sample_d]
-pub fn bench_sample_z(c: &mut Criterion) {
+pub fn bench_sample_d(c: &mut Criterion) {
     c.bench_function("sample_d", |b| b.iter(sample_d));
 }
 
-criterion_group!(benches, bench_sample_z);
+criterion_group!(benches, bench_sample_d);
