@@ -19,6 +19,7 @@ mod default;
 mod from;
 mod get;
 mod reduce;
+mod sample;
 mod set;
 mod transpose;
 mod vector;
