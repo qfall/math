@@ -18,11 +18,12 @@ use crate::{
 impl MatPolynomialRingZq {
     pub fn sample_d(
         basis: &Self,
+        k: i64,
         n: impl Into<Z>,
         center: &PolyOverQ,
         s: impl Into<Q>,
     ) -> Result<PolynomialRingZq, MathError> {
-        let sample = MatPolyOverZ::sample_d(&basis.matrix, n, center, s)?;
+        let sample = MatPolyOverZ::sample_d(&basis.matrix, k, n, center, s)?;
         Ok(PolynomialRingZq::from((&sample, &basis.get_mod())))
     }
 }

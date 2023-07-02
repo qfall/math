@@ -15,7 +15,6 @@ use crate::{
     traits::{GetCoefficient, GetEntry, GetNumColumns, GetNumRows, SetCoefficient, SetEntry},
     utils::sample::discrete_gauss::sample_d,
 };
-use std::cmp::max;
 
 impl MatPolyOverZ {
     /// SampleD samples a discrete Gaussian from the lattice with a provided `basis`.
@@ -25,6 +24,7 @@ impl MatPolyOverZ {
     ///
     /// Parameters:
     /// - `basis`: specifies a basis for the lattice from which is sampled
+    /// - `k`: the maximal length the polynomial can have
     /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
     /// - `center`: specifies the positions of the center with peak probability
     /// - `s`: specifies the Gaussian parameter, which is proportional
@@ -51,6 +51,7 @@ impl MatPolyOverZ {
     /// <https://dl.acm.org/doi/pdf/10.1145/1374376.1374407>
     pub fn sample_d(
         basis: &Self,
+        k: i64,
         n: impl Into<Z>,
         center: &PolyOverQ,
         s: impl Into<Q>,
@@ -58,9 +59,8 @@ impl MatPolyOverZ {
         let n: Z = n.into();
         let s: Q = s.into();
 
-        let basis = polyz_vector_to_matz(basis)?;
-        // TODO: center might have smaller degree
-        let center = polyq_to_matq_vector(center)?;
+        let basis = polyz_vector_to_matz(basis, k)?;
+        let center = polyq_to_matq_vector(center, k)?;
 
         let sample = sample_d(&basis, &n, &center, &s)?;
 
@@ -68,7 +68,7 @@ impl MatPolyOverZ {
     }
 }
 
-fn polyz_vector_to_matz(poly_vec: &MatPolyOverZ) -> Result<MatZ, MathError> {
+fn polyz_vector_to_matz(poly_vec: &MatPolyOverZ, k: i64) -> Result<MatZ, MathError> {
     if !poly_vec.is_row_vector() {
         return Err(MathError::VectorFunctionCalledOnNonVector(
             String::from("polyz_vector_to_matz"),
@@ -78,16 +78,15 @@ fn polyz_vector_to_matz(poly_vec: &MatPolyOverZ) -> Result<MatZ, MathError> {
     }
 
     let mut poly: Vec<PolyOverZ> = Vec::new();
-    let mut length = 0;
     for i in 0..poly_vec.get_num_columns() {
         let entry = poly_vec.get_entry(0, i).unwrap();
-        length = max(length, entry.get_degree() + 1);
+        assert!(entry.get_degree() < k);
         poly.push(entry);
     }
-    let mut out = MatZ::new(poly.len(), length);
+    let mut out = MatZ::new(poly.len(), k);
 
     for (i, entry) in poly.iter().enumerate() {
-        for j in 0..length {
+        for j in 0..k {
             match entry.get_coeff(j) {
                 Ok(value) => out.set_entry(i, j, &value)?,
                 Err(_) => break,
@@ -98,10 +97,10 @@ fn polyz_vector_to_matz(poly_vec: &MatPolyOverZ) -> Result<MatZ, MathError> {
     Ok(out)
 }
 
-fn polyq_to_matq_vector(polyq: &PolyOverQ) -> Result<MatQ, MathError> {
-    let length = polyq.get_degree() + 1;
-    let mut out = MatQ::new(length, 1);
-    for j in 0..length {
+fn polyq_to_matq_vector(polyq: &PolyOverQ, k: i64) -> Result<MatQ, MathError> {
+    assert!(polyq.get_degree() < k);
+    let mut out = MatQ::new(k, 1);
+    for j in 0..k {
         match polyq.get_coeff(j) {
             Ok(value) => out.set_entry(j, 0, &value)?,
             Err(_) => break,
@@ -140,7 +139,7 @@ mod test_helper_conversions {
     #[test]
     fn standard_basis() {
         let standard_basis = MatPolyOverZ::from_str("[[1  1, 2  0 1]]").unwrap();
-        let basis = polyz_vector_to_matz(&standard_basis).unwrap();
+        let basis = polyz_vector_to_matz(&standard_basis, 2).unwrap();
 
         assert_eq!(MatZ::identity(2, 2), basis)
     }
@@ -148,7 +147,7 @@ mod test_helper_conversions {
     #[test]
     fn convert_center() {
         let poly = PolyOverQ::from_str("3  1/2 5 17/3").unwrap();
-        let center = polyq_to_matq_vector(&poly).unwrap();
+        let center = polyq_to_matq_vector(&poly, 3).unwrap();
 
         let cmp_center = MatQ::from_str("[[1/2],[5],[17/3]]").unwrap();
         assert_eq!(cmp_center, center)
