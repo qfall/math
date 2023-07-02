@@ -13,7 +13,6 @@ use crate::{
     integer::{MatPolyOverZ, MatZ, PolyOverZ, Z},
     rational::{MatQ, PolyOverQ, Q},
     traits::{GetCoefficient, GetEntry, GetNumColumns, GetNumRows, SetCoefficient, SetEntry},
-    utils::sample::discrete_gauss::sample_d,
 };
 
 impl MatPolyOverZ {
@@ -49,6 +48,9 @@ impl MatPolyOverZ {
     /// Trapdoors for hard lattices and new cryptographic constructions.
     /// In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
     /// <https://dl.acm.org/doi/pdf/10.1145/1374376.1374407>
+    ///
+    /// # Panics ...
+    /// - if the polynomials have higher length than the provided upper bound `k`
     pub fn sample_d(
         basis: &Self,
         k: i64,
@@ -56,22 +58,20 @@ impl MatPolyOverZ {
         center: &PolyOverQ,
         s: impl Into<Q>,
     ) -> Result<PolyOverZ, MathError> {
-        let n: Z = n.into();
-        let s: Q = s.into();
+        // use coefficient embedding and then call sampleD for the matrix representation
+        let basis = coefficient_embedding_matrix(basis, k)?;
+        let center = coefficient_embedding_vector(center, k)?;
+        let sample = MatZ::sample_d(&basis, n, &center, s)?;
 
-        let basis = polyz_vector_to_matz(basis, k)?;
-        let center = polyq_to_matq_vector(center, k)?;
-
-        let sample = sample_d(&basis, &n, &center, &s)?;
-
-        matz_vector_to_polyz(&sample)
+        // convert sample back to a polynomial using the coefficient embedding
+        from_coefficient_embedding(&sample)
     }
 }
 
-fn polyz_vector_to_matz(poly_vec: &MatPolyOverZ, k: i64) -> Result<MatZ, MathError> {
+fn coefficient_embedding_matrix(poly_vec: &MatPolyOverZ, k: i64) -> Result<MatZ, MathError> {
     if !poly_vec.is_row_vector() {
         return Err(MathError::VectorFunctionCalledOnNonVector(
-            String::from("polyz_vector_to_matz"),
+            String::from("coefficient_embedding_matrix"),
             poly_vec.get_num_rows(),
             poly_vec.get_num_columns(),
         ));
@@ -97,7 +97,7 @@ fn polyz_vector_to_matz(poly_vec: &MatPolyOverZ, k: i64) -> Result<MatZ, MathErr
     Ok(out)
 }
 
-fn polyq_to_matq_vector(polyq: &PolyOverQ, k: i64) -> Result<MatQ, MathError> {
+fn coefficient_embedding_vector(polyq: &PolyOverQ, k: i64) -> Result<MatQ, MathError> {
     assert!(polyq.get_degree() < k);
     let mut out = MatQ::new(k, 1);
     for j in 0..k {
@@ -109,10 +109,10 @@ fn polyq_to_matq_vector(polyq: &PolyOverQ, k: i64) -> Result<MatQ, MathError> {
     Ok(out)
 }
 
-fn matz_vector_to_polyz(matz_vector: &MatZ) -> Result<PolyOverZ, MathError> {
+fn from_coefficient_embedding(matz_vector: &MatZ) -> Result<PolyOverZ, MathError> {
     if !matz_vector.is_column_vector() {
         return Err(MathError::VectorFunctionCalledOnNonVector(
-            String::from("matz_vector_to_polyz"),
+            String::from("from_coefficient_embedding"),
             matz_vector.get_num_rows(),
             matz_vector.get_num_columns(),
         ));
@@ -126,11 +126,11 @@ fn matz_vector_to_polyz(matz_vector: &MatZ) -> Result<PolyOverZ, MathError> {
 
 #[cfg(test)]
 mod test_helper_conversions {
-    use super::{polyq_to_matq_vector, polyz_vector_to_matz};
+    use super::{coefficient_embedding_matrix, coefficient_embedding_vector};
     use crate::{
         integer::{
-            mat_poly_over_z::sample::discrete_gauss::matz_vector_to_polyz, MatPolyOverZ, MatZ,
-            PolyOverZ,
+            mat_poly_over_z::sample::discrete_gauss::from_coefficient_embedding, MatPolyOverZ,
+            MatZ, PolyOverZ,
         },
         rational::{MatQ, PolyOverQ},
     };
@@ -139,7 +139,7 @@ mod test_helper_conversions {
     #[test]
     fn standard_basis() {
         let standard_basis = MatPolyOverZ::from_str("[[1  1, 2  0 1]]").unwrap();
-        let basis = polyz_vector_to_matz(&standard_basis, 3).unwrap();
+        let basis = coefficient_embedding_matrix(&standard_basis, 3).unwrap();
 
         assert_eq!(MatZ::identity(3, 2), basis)
     }
@@ -147,7 +147,7 @@ mod test_helper_conversions {
     #[test]
     fn convert_center() {
         let poly = PolyOverQ::from_str("3  1/2 5 17/3").unwrap();
-        let center = polyq_to_matq_vector(&poly, 3).unwrap();
+        let center = coefficient_embedding_vector(&poly, 3).unwrap();
 
         let cmp_center = MatQ::from_str("[[1/2],[5],[17/3]]").unwrap();
         assert_eq!(cmp_center, center)
@@ -156,7 +156,7 @@ mod test_helper_conversions {
     #[test]
     fn convert_vector_to_poly() {
         let vector = MatZ::from_str("[[17],[3],[-5]]").unwrap();
-        let poly = matz_vector_to_polyz(&vector).unwrap();
+        let poly = from_coefficient_embedding(&vector).unwrap();
 
         let cmp_poly = PolyOverZ::from_str("3  17 3 -5").unwrap();
         assert_eq!(cmp_poly, poly)
