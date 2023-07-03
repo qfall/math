@@ -70,7 +70,7 @@ impl Sub<&Q> for &Z {
     ///
     /// Returns the result of the subtraction as a [`Q`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     /// use qfall_math::integer::Z;
@@ -108,7 +108,7 @@ impl Sub<&Zq> for &Z {
     ///
     /// Returns the result of subtraction of both numbers as a [`Zq`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
     /// use qfall_math::integer::Z;

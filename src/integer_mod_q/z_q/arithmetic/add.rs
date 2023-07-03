@@ -111,7 +111,7 @@ impl Add<&Z> for &Zq {
     ///
     /// Returns the sum of both numbers as a [`Zq`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
     /// use qfall_math::integer::Z;

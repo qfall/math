@@ -33,7 +33,7 @@ impl MatZ {
     /// Returns a matrix with each entry sampled independently from the
     /// specified discrete Gaussian distribution.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     ///
@@ -83,7 +83,7 @@ impl MatZ {
     ///
     /// Returns a lattice vector sampled according to the discrete Gaussian distribution.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::{integer::{MatZ, Z}, rational::{MatQ, Q}};
     /// let basis = MatZ::identity(5, 5);

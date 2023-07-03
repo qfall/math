@@ -30,7 +30,7 @@ use crate::error::MathError;
 /// Returns an empty `Ok` if `row0 < self_num_rows`, `row1 < other_num_rows`, and
 /// `self_num_cols == other_num_cols`. Otherwise, a [`MathError`] is returned.
 ///
-/// # Example
+/// # Examples
 /// ```compile_fail
 /// use qfall_math::utils::collective_evaluation::evaluate_vec_dimensions_set_row_or_col;
 /// use qfall_math::integer_mod_q::MatZq;
