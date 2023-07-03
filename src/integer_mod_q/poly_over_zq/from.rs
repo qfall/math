@@ -262,6 +262,13 @@ mod test_from_zq {
         let value_set: Zq = poly.get_coeff(0).unwrap();
         assert_eq!(value_set, Zq::from((2, 5)));
     }
+
+    /// Ensure that the polynomial can not be created with an invalid modulus.
+    #[test]
+    #[should_panic]
+    fn invalid_modulus() {
+        let _ = PolyOverZq::from((10, 1));
+    }
 }
 
 #[cfg(test)]
