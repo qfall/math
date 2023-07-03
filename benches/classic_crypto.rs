@@ -143,7 +143,7 @@ mod rsa_textbook {
     /// where `msg` is sampled uniformly at random in `[0, u64::MAX)`
     pub fn rsa_run_enc_dec() {
         let (modulus, pk, sk) = static_gen();
-        let msg = Z::sample_uniform(&0, &u64::MAX).unwrap();
+        let msg = Z::sample_uniform(0, u64::MAX).unwrap();
 
         let cipher = enc(&modulus, &pk, &msg);
         let cmp = dec(&sk, &cipher);
@@ -183,7 +183,7 @@ mod dh_ke {
     /// `dh_ke::gen_key_pair(modulus, generator) -> (pk, sk)`,
     /// where `pk = g^sk mod modulus` and `sk` uniformly random
     pub fn gen_key_pair(modulus: &Modulus, generator: &Zq) -> (Zq, Z) {
-        let sk = Z::sample_uniform(&0, &Z::from(modulus)).unwrap();
+        let sk = Z::sample_uniform(0, &Z::from(modulus)).unwrap();
         let pk = generator.pow(&sk).unwrap();
         (pk, sk)
     }
@@ -239,7 +239,7 @@ mod el_gamal_enc {
     /// `gen_key_pair(p, g) -> (pk, sk)`,
     /// where `pk = g^sk mod p` and `sk` uniformly random
     pub fn gen_key_pair(modulus: &Modulus, generator: &Zq) -> (Zq, Z) {
-        let sk = Z::sample_uniform(&0, &Z::from(modulus)).unwrap();
+        let sk = Z::sample_uniform(0, &Z::from(modulus)).unwrap();
         let pk = generator.pow(&sk).unwrap();
         (pk, sk)
     }
@@ -247,7 +247,7 @@ mod el_gamal_enc {
     /// Encrypts a message `m` according to ElGamal's encryption scheme by outputting
     /// `(c_0, c_1) = (g^r, pk^r * m) mod p`
     pub fn enc(generator: &Zq, pk: &Zq, msg: &Zq) -> (Zq, Zq) {
-        let r = Z::sample_uniform(&0, &generator.get_mod()).unwrap();
+        let r = Z::sample_uniform(0, &generator.get_mod()).unwrap();
         let c_0 = generator.pow(&r).unwrap();
         let c_1 = pk.pow(&r).unwrap() * msg;
         (c_0, c_1)
@@ -267,7 +267,7 @@ mod el_gamal_enc {
 
         let (pk, sk) = gen_key_pair(&modulus, &generator);
 
-        let msg = Zq::from((&Z::sample_uniform(&0, &modulus).unwrap(), &modulus));
+        let msg = Zq::from((&Z::sample_uniform(0, &modulus).unwrap(), &modulus));
 
         let (c_0, c_1) = enc(&generator, &pk, &msg);
         let cmp = dec(&sk, &c_0, &c_1);

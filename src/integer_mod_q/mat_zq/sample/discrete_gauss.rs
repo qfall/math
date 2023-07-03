@@ -207,19 +207,19 @@ mod test_sample_d {
         let center = MatQ::new(5, 1);
         let s = Q::ONE;
 
-        let _ = MatZq::sample_d(&basis, &16u16, &center, &1u16);
-        let _ = MatZq::sample_d(&basis, &2u32, &center, &1u8);
-        let _ = MatZq::sample_d(&basis, &2u64, &center, &1u32);
-        let _ = MatZq::sample_d(&basis, &2i8, &center, &1u64);
-        let _ = MatZq::sample_d(&basis, &2i16, &center, &1i64);
-        let _ = MatZq::sample_d(&basis, &2i32, &center, &1i32);
-        let _ = MatZq::sample_d(&basis, &2i64, &center, &1i16);
-        let _ = MatZq::sample_d(&basis, &n, &center, &1i8);
-        let _ = MatZq::sample_d(&basis, &2u8, &center, &1i64);
-        let _ = MatZq::sample_d(&basis, &2, &center, &n);
-        let _ = MatZq::sample_d(&basis, &2, &center, &s);
-        let _ = MatZq::sample_d(&basis, &2, &center, 1.25f64);
-        let _ = MatZq::sample_d(&basis, &2, &center, 15.75f32);
+        let _ = MatZq::sample_d(&basis, 16u16, &center, 1u16);
+        let _ = MatZq::sample_d(&basis, 2u32, &center, 1u8);
+        let _ = MatZq::sample_d(&basis, 2u64, &center, 1u32);
+        let _ = MatZq::sample_d(&basis, 2i8, &center, 1u64);
+        let _ = MatZq::sample_d(&basis, 2i16, &center, 1i64);
+        let _ = MatZq::sample_d(&basis, 2i32, &center, 1i32);
+        let _ = MatZq::sample_d(&basis, 2i64, &center, 1i16);
+        let _ = MatZq::sample_d(&basis, &n, &center, 1i8);
+        let _ = MatZq::sample_d(&basis, 2u8, &center, 1i64);
+        let _ = MatZq::sample_d(&basis, 2, &center, &n);
+        let _ = MatZq::sample_d(&basis, 2, &center, &s);
+        let _ = MatZq::sample_d(&basis, 2, &center, 1.25f64);
+        let _ = MatZq::sample_d(&basis, 2, &center, 15.75f32);
     }
 
     // As `sample_d_common` just calls `MatZq::sample_d` with identity basis

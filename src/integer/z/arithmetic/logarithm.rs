@@ -218,14 +218,14 @@ mod test_log_ceil {
     fn availability() {
         let value = Z::from(5);
 
-        let _ = value.log_ceil(&2_u8).unwrap();
-        let _ = value.log_ceil(&2_u16).unwrap();
-        let _ = value.log_ceil(&2_u32).unwrap();
-        let _ = value.log_ceil(&2_u64).unwrap();
-        let _ = value.log_ceil(&2_i8).unwrap();
-        let _ = value.log_ceil(&2_i16).unwrap();
-        let _ = value.log_ceil(&2_i32).unwrap();
-        let _ = value.log_ceil(&2_i64).unwrap();
+        let _ = value.log_ceil(2_u8).unwrap();
+        let _ = value.log_ceil(2_u16).unwrap();
+        let _ = value.log_ceil(2_u32).unwrap();
+        let _ = value.log_ceil(2_u64).unwrap();
+        let _ = value.log_ceil(2_i8).unwrap();
+        let _ = value.log_ceil(2_i16).unwrap();
+        let _ = value.log_ceil(2_i32).unwrap();
+        let _ = value.log_ceil(2_i64).unwrap();
         let _ = value.log_ceil(&value).unwrap();
     }
 }
@@ -277,14 +277,14 @@ mod test_log_floor {
     fn availability() {
         let value = Z::from(5);
 
-        let _ = value.log_floor(&2_u8).unwrap();
-        let _ = value.log_floor(&2_u16).unwrap();
-        let _ = value.log_floor(&2_u32).unwrap();
-        let _ = value.log_floor(&2_u64).unwrap();
-        let _ = value.log_floor(&2_i8).unwrap();
-        let _ = value.log_floor(&2_i16).unwrap();
-        let _ = value.log_floor(&2_i32).unwrap();
-        let _ = value.log_floor(&2_i64).unwrap();
+        let _ = value.log_floor(2_u8).unwrap();
+        let _ = value.log_floor(2_u16).unwrap();
+        let _ = value.log_floor(2_u32).unwrap();
+        let _ = value.log_floor(2_u64).unwrap();
+        let _ = value.log_floor(2_i8).unwrap();
+        let _ = value.log_floor(2_i16).unwrap();
+        let _ = value.log_floor(2_i32).unwrap();
+        let _ = value.log_floor(2_i64).unwrap();
         let _ = value.log_floor(&value).unwrap();
     }
 }
@@ -348,10 +348,10 @@ mod test_log {
         let cmp_1 = Q::from(2);
         let max_distance = Q::from((1, 1_000_000_000));
 
-        let res_0 = z_0.log(&2).unwrap();
-        let res_1 = z_1.log(&2).unwrap();
-        let res_2 = z_2.log(&2).unwrap();
-        let res_3 = z_3.log(&3).unwrap();
+        let res_0 = z_0.log(2).unwrap();
+        let res_1 = z_1.log(2).unwrap();
+        let res_2 = z_2.log(2).unwrap();
+        let res_3 = z_3.log(3).unwrap();
 
         assert_eq!(Q::ZERO, res_0);
         assert_eq!(Q::ONE, res_1);
@@ -369,9 +369,9 @@ mod test_log {
         let cmp_1 = Q::from((i64::MAX as f64).log2());
         let max_distance = Q::from((1, 1_000_000_000));
 
-        let res_0 = z_0.log(&2).unwrap();
-        let res_1 = z_1.log(&2).unwrap();
-        let res_2 = z_2.log(&i32::MAX).unwrap();
+        let res_0 = z_0.log(2).unwrap();
+        let res_1 = z_1.log(2).unwrap();
+        let res_2 = z_2.log(i32::MAX).unwrap();
 
         assert!(cmp_0.distance(res_0) < max_distance);
         assert!(cmp_1.distance(res_1) < max_distance);
@@ -384,14 +384,14 @@ mod test_log {
     fn availability() {
         let value = Z::from(5);
 
-        let _ = value.log(&2_u8).unwrap();
-        let _ = value.log(&2_u16).unwrap();
-        let _ = value.log(&2_u32).unwrap();
-        let _ = value.log(&2_u64).unwrap();
-        let _ = value.log(&2_i8).unwrap();
-        let _ = value.log(&2_i16).unwrap();
-        let _ = value.log(&2_i32).unwrap();
-        let _ = value.log(&2_i64).unwrap();
+        let _ = value.log(2_u8).unwrap();
+        let _ = value.log(2_u16).unwrap();
+        let _ = value.log(2_u32).unwrap();
+        let _ = value.log(2_u64).unwrap();
+        let _ = value.log(2_i8).unwrap();
+        let _ = value.log(2_i16).unwrap();
+        let _ = value.log(2_i32).unwrap();
+        let _ = value.log(2_i64).unwrap();
         let _ = value.log(&value).unwrap();
     }
 }

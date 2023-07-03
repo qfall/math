@@ -99,11 +99,11 @@ mod test_sample_discrete_gauss {
         let _ = Zq::sample_discrete_gauss(2, 1f64, 1f32, 17);
 
         // With references
-        let _ = Zq::sample_discrete_gauss(&2i64, &7i32, &1i16, &17i64);
-        let _ = Zq::sample_discrete_gauss(&z, &7i64, &1i8, &17i32);
-        let _ = Zq::sample_discrete_gauss(&2u8, &q, &1i64, &17);
-        let _ = Zq::sample_discrete_gauss(&2, &0i8, &z, &z);
-        let _ = Zq::sample_discrete_gauss(&2, &z, &q, &17);
+        let _ = Zq::sample_discrete_gauss(2i64, 7i32, 1i16, 17i64);
+        let _ = Zq::sample_discrete_gauss(&z, 7i64, 1i8, 17i32);
+        let _ = Zq::sample_discrete_gauss(2u8, &q, 1i64, 17);
+        let _ = Zq::sample_discrete_gauss(2, 0i8, &z, &z);
+        let _ = Zq::sample_discrete_gauss(2, &z, &q, 17);
     }
 
     /// Roughly checks the collected samples are distributed
@@ -126,7 +126,7 @@ mod test_sample_discrete_gauss {
         If this happens, rerun the tests several times and check whether this issue comes up again.");
 
         // Check that the sampled occurrences roughly look
-        // like a discrete Gaussian distriubtion
+        // like a discrete Gaussian distribution
         assert!(counts[0] > 70, "{}", expl_text);
         assert!(counts[0] < 130, "{}", expl_text);
         assert!(counts[19] > 20, "{}", expl_text);
