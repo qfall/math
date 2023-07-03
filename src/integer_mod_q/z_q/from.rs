@@ -18,7 +18,7 @@ impl Zq {
     ///
     /// As the [`Modulus`] object counts its references and
     /// its value itself is not cloned when a [`Modulus`] struct is cloned,
-    /// we clone the wrapping [`Modulus`] object everytime.
+    /// we clone the wrapping [`Modulus`] object every time.
     ///
     /// Parameters:
     /// - `value` defines the value of the new [`Zq`].
@@ -142,6 +142,14 @@ impl FromStr for Zq {
         out.reduce();
 
         Ok(out)
+    }
+}
+
+impl From<&Zq> for Zq {
+    /// An alias for clone.
+    /// It makes the use of generic `Into<Zq>` types easier.
+    fn from(value: &Zq) -> Self {
+        value.clone()
     }
 }
 
