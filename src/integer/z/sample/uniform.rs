@@ -74,7 +74,7 @@ impl Z {
     /// ```
     /// use qfall_math::integer::Z;
     ///
-    /// let prime = Z::sample_prime_uniform(&1, &100).unwrap();
+    /// let prime = Z::sample_prime_uniform(1, 100).unwrap();
     /// ```
     ///
     /// # Errors and Failures

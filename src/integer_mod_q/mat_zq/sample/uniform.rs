@@ -37,7 +37,7 @@ impl MatZq {
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     ///
-    /// let matrix = MatZq::sample_uniform(3, 3, &17);
+    /// let matrix = MatZq::sample_uniform(3, 3, 17);
     /// ```
     ///
     /// # Panics ...

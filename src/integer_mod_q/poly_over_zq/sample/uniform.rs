@@ -39,7 +39,7 @@ impl PolyOverZq {
     /// ```
     /// use qfall_math::integer_mod_q::PolyOverZq;
     ///
-    /// let sample = PolyOverZq::sample_uniform(3, &17).unwrap();
+    /// let sample = PolyOverZq::sample_uniform(3, 17).unwrap();
     /// ```
     ///
     /// # Errors and Failures
