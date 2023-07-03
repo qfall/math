@@ -24,12 +24,11 @@ impl MatZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::MatZ;
-    /// use qfall_math::traits::*;
+    /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let mut matrix = MatZ::from_str("[[1,2],[3,4]]").unwrap();
-    /// let matrix_invert = matrix.inverse().unwrap();
+    /// let mut matrix = MatZq::from_str("[[1,2],[3,4]] mod 7").unwrap();
+    /// let matrix_invert = matrix.inverse_prime();
     /// ```
     ///
     /// # Panics ...
@@ -40,6 +39,7 @@ impl MatZq {
         if det.gcd(Z::from(self.get_mod())) != Z::ONE {
             None
         } else {
+            // concatenate the matrix with the identity matrix
             let matrix_identity = self
                 .concat_horizontal(&MatZq::identity(
                     self.get_num_rows(),
@@ -50,6 +50,7 @@ impl MatZq {
 
             let identity_inverse = matrix_identity.gaussian_elimination_prime();
 
+            // the inverse is now the right half of the matrix `identity_inverse`
             let mut inverse =
                 MatZq::new(self.get_num_rows(), self.get_num_columns(), self.get_mod());
             for i in 0..self.get_num_columns() {
@@ -61,27 +62,27 @@ impl MatZq {
         }
     }
 
-    /// Returns the inverse of the matrix if it exists (is square and
-    /// has a determinant unequal to zero) and `None` otherwise.
+    /// Returns the `row echelon form` of the matrix using gaussian elimination.
     ///
     /// Note that the modulus is assumed to be prime.
     /// If it is not, it can happen that the function panics.
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::MatZ;
-    /// use qfall_math::traits::*;
+    /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let mut matrix = MatZ::from_str("[[1,2],[3,4]]").unwrap();
-    /// let matrix_invert = matrix.inverse().unwrap();
+    /// let mut matrix = MatZq::from_str("[[1,2],[3,4]] mod 7").unwrap();
+    /// let matrix_invert = matrix.gaussian_elimination_prime();
     /// ```
     ///
     /// # Panics ...
     /// - if the inverse of an entry can not be computed because the modulus is not prime
     pub fn gaussian_elimination_prime(&self) -> MatZq {
         let mut out = self.clone();
+        // row_count is the number of rows where we have a 1 entry already
         let mut row_count = 0;
+        // we iterate over all columns and try to find an entry that is not 0
         for column_nr in 0..self.get_num_columns() {
             if row_count >= self.get_num_rows() {
                 break;
