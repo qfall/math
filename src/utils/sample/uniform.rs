@@ -12,34 +12,6 @@
 use crate::{error::MathError, integer::Z};
 use rand::{rngs::ThreadRng, RngCore};
 
-#[allow(dead_code)]
-static mut RNG: Option<ThreadRng> = None;
-
-/// Returns a pointer to a static [`ThreadRng`] to sample uniform at random.
-/// If the Random Generator was not used/ instantiated before,
-/// it initializes the static variable.
-///
-/// **WARNING:** This function is strictly for single-threaded use!
-/// Otherwise access needs to be synchronized.
-///
-/// # Examples
-/// ```compile_fail
-/// use qfall_math::utils::sample::get_rng;
-///
-/// let rng = get_rng();
-/// ```
-#[allow(dead_code)]
-pub(crate) fn get_rng() -> &'static mut ThreadRng {
-    if unsafe { RNG.is_none() } {
-        // Instantiates a fresh thread-local RNG initialized with
-        // a random seed chosen from an OS-dependent RNG.
-        // ThreadRng uses ChaCha12, which is considered cryptographically secure.
-        unsafe { RNG = Some(ThreadRng::default()) };
-    }
-
-    unsafe { RNG.as_mut().unwrap() }
-}
-
 /// Computes a uniform at random chosen [`Z`] sample in `[0, interval_size)`.
 ///
 /// Parameters:
@@ -101,7 +73,7 @@ pub(crate) fn sample_uniform_rejection(interval_size: &Z) -> Result<Z, MathError
 /// ```
 #[allow(dead_code)]
 fn sample_bits_uniform(nr_bits: usize) -> Vec<u8> {
-    let rng = get_rng();
+    let mut rng = rand::thread_rng();
 
     // sample ⌈ nr_bits / 8 ⌉ bytes
     let mut byte_vector;
@@ -162,24 +134,6 @@ fn find_first_unfilled_byte(byte_arr: &[u8]) -> usize {
     } else {
         upper_bound
     }
-}
-
-#[cfg(test)]
-mod test_get_rng {
-    use super::{get_rng, RNG};
-    use rand::RngCore;
-
-    /// Checks whether the first initialization of the static RNG variable works
-    /// correctly for usage
-    #[test]
-    fn init() {
-        get_rng();
-        let rng = unsafe { RNG.as_mut().unwrap() };
-        let _ = rng.next_u32();
-    }
-
-    // TODO: Check whether the same instance is reused once `get_rng` is used a second time.
-    // problem: Eq is not implemented by `ThreadRng`
 }
 
 #[cfg(test)]

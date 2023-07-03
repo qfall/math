@@ -16,7 +16,7 @@
 //! In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
 //! <https://citeseerx.ist.psu.edu/document?doi=d9f54077d568784c786f7b1d030b00493eb3ae35>
 
-use super::uniform::{get_rng, sample_uniform_rejection};
+use super::uniform::sample_uniform_rejection;
 use crate::{
     error::MathError,
     integer::{MatZ, Z},
@@ -83,7 +83,7 @@ pub(crate) fn sample_z(n: &Z, center: &Q, s: &Q) -> Result<Z, MathError> {
     // rejection sample according to GPV08
     // https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=d9f54077d568784c786f7b1d030b00493eb3ae35
     // this eprint version explains in more detail how sample_z works
-    let rng = get_rng();
+    let mut rng = rand::thread_rng();
     // TODO: Change to Q::from_f64 once it works appropriately for large scale
     while gaussian_function(&sample, center, s) <= Q::from((rng.next_u64(), u64::MAX)) {
         sample = &lower_bound + sample_uniform_rejection(&interval_size).unwrap();
