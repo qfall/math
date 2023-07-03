@@ -143,15 +143,15 @@ mod test_sample_uniform {
         let modulus = Modulus::from(7);
         let z = Z::from(7);
 
-        let _ = PolyOverZ::sample_uniform(1u64, &0u16, &7u8);
-        let _ = PolyOverZ::sample_uniform(1i64, &0u32, &7u16);
-        let _ = PolyOverZ::sample_uniform(1u8, &0u64, &7u32);
-        let _ = PolyOverZ::sample_uniform(1u16, &0i8, &7u64);
-        let _ = PolyOverZ::sample_uniform(1u32, &0i16, &7i8);
-        let _ = PolyOverZ::sample_uniform(1i32, &0i32, &7i16);
-        let _ = PolyOverZ::sample_uniform(1i16, &0i64, &7i32);
-        let _ = PolyOverZ::sample_uniform(1i8, &Z::ZERO, &7i64);
-        let _ = PolyOverZ::sample_uniform(1, &0u8, &modulus);
-        let _ = PolyOverZ::sample_uniform(1, &0, &z);
+        let _ = PolyOverZ::sample_uniform(1u64, 0u16, 7u8);
+        let _ = PolyOverZ::sample_uniform(1i64, 0u32, 7u16);
+        let _ = PolyOverZ::sample_uniform(1u8, 0u64, 7u32);
+        let _ = PolyOverZ::sample_uniform(1u16, 0i8, 7u64);
+        let _ = PolyOverZ::sample_uniform(1u32, 0i16, 7i8);
+        let _ = PolyOverZ::sample_uniform(1i32, 0i32, 7i16);
+        let _ = PolyOverZ::sample_uniform(1i16, 0i64, 7i32);
+        let _ = PolyOverZ::sample_uniform(1i8, &Z::ZERO, 7i64);
+        let _ = PolyOverZ::sample_uniform(1, 0u8, &modulus);
+        let _ = PolyOverZ::sample_uniform(1, 0, &z);
     }
 }

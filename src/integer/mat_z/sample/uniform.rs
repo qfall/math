@@ -142,16 +142,16 @@ mod test_sample_uniform {
         let modulus = Modulus::from(7);
         let z = Z::from(7);
 
-        let _ = MatZ::sample_uniform(1, 1, &0u16, &7u8);
-        let _ = MatZ::sample_uniform(1, 1, &0u32, &7u16);
-        let _ = MatZ::sample_uniform(1, 1, &0u64, &7u32);
-        let _ = MatZ::sample_uniform(1, 1, &0i8, &7u64);
-        let _ = MatZ::sample_uniform(1, 1, &0i16, &7i8);
-        let _ = MatZ::sample_uniform(1, 1, &0i32, &7i16);
-        let _ = MatZ::sample_uniform(1, 1, &0i64, &7i32);
-        let _ = MatZ::sample_uniform(1, 1, &Z::ZERO, &7i64);
-        let _ = MatZ::sample_uniform(1, 1, &0u8, &modulus);
-        let _ = MatZ::sample_uniform(1, 1, &0, &z);
+        let _ = MatZ::sample_uniform(1, 1, 0u16, 7u8);
+        let _ = MatZ::sample_uniform(1, 1, 0u32, 7u16);
+        let _ = MatZ::sample_uniform(1, 1, 0u64, 7u32);
+        let _ = MatZ::sample_uniform(1, 1, 0i8, 7u64);
+        let _ = MatZ::sample_uniform(1, 1, 0i16, 7i8);
+        let _ = MatZ::sample_uniform(1, 1, 0i32, 7i16);
+        let _ = MatZ::sample_uniform(1, 1, 0i64, 7i32);
+        let _ = MatZ::sample_uniform(1, 1, &Z::ZERO, 7i64);
+        let _ = MatZ::sample_uniform(1, 1, 0u8, &modulus);
+        let _ = MatZ::sample_uniform(1, 1, 0, &z);
     }
 
     /// Checks whether the size of uniformly random sampled matrices

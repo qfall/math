@@ -100,14 +100,14 @@ mod test_sample_uniform {
         let modulus = Modulus::from(7);
         let z = Z::from(7);
 
-        let _ = Zq::sample_uniform(&7u8);
-        let _ = Zq::sample_uniform(&7u16);
-        let _ = Zq::sample_uniform(&7u32);
-        let _ = Zq::sample_uniform(&7u64);
-        let _ = Zq::sample_uniform(&7i8);
-        let _ = Zq::sample_uniform(&7i16);
-        let _ = Zq::sample_uniform(&7i32);
-        let _ = Zq::sample_uniform(&7i64);
+        let _ = Zq::sample_uniform(7u8);
+        let _ = Zq::sample_uniform(7u16);
+        let _ = Zq::sample_uniform(7u32);
+        let _ = Zq::sample_uniform(7u64);
+        let _ = Zq::sample_uniform(7i8);
+        let _ = Zq::sample_uniform(7i16);
+        let _ = Zq::sample_uniform(7i32);
+        let _ = Zq::sample_uniform(7i64);
         let _ = Zq::sample_uniform(&modulus);
         let _ = Zq::sample_uniform(&z);
     }
