@@ -231,7 +231,7 @@ impl<IntegerNumerator: AsInteger, IntegerDenominator: AsInteger>
     }
 }
 
-impl<T: Into<Z>> From<T> for Q {
+impl<Integer: Into<Z>> From<Integer> for Q {
     /// Create a new Integer that can grow arbitrary large.
     ///
     /// Parameters:
@@ -247,7 +247,7 @@ impl<T: Into<Z>> From<T> for Q {
     /// let a: Q = Q::from(17);
     /// let b: Q = Q::from(Z::from(17));
     /// ```
-    fn from(value: T) -> Self {
+    fn from(value: Integer) -> Self {
         Q::from_int(value)
     }
 }
@@ -297,7 +297,7 @@ impl From<&Q> for f64 {
 
 impl From<&Q> for Q {
     /// An alias for clone.
-    /// It makes the use of generic `Into<Q>` types easier.
+    /// It makes the use of generic [`Into<Q>`] types easier.
     fn from(value: &Q) -> Self {
         value.clone()
     }

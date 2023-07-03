@@ -40,7 +40,7 @@ impl PolyOverZ {
     /// ```
     /// use qfall_math::integer::{PolyOverZ, Z};
     ///
-    /// let sample = PolyOverZ::sample_uniform(3, &17, &26).unwrap();
+    /// let sample = PolyOverZ::sample_uniform(3, 17, 26).unwrap();
     /// ```
     ///
     /// # Errors and Failures
@@ -49,18 +49,14 @@ impl PolyOverZ {
     /// i.e. the interval size is at most `1`.
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
     /// the `nr_coefficients` is negative or it does not fit into an [`i64`].
-    pub fn sample_uniform<T1, T2>(
+    pub fn sample_uniform(
         nr_coeffs: impl TryInto<i64> + Display + Copy,
-        lower_bound: &T1,
-        upper_bound: &T2,
-    ) -> Result<Self, MathError>
-    where
-        T1: Into<Z> + Clone,
-        T2: Into<Z> + Clone,
-    {
+        lower_bound: impl Into<Z>,
+        upper_bound: impl Into<Z>,
+    ) -> Result<Self, MathError> {
         let nr_coeffs = evaluate_index(nr_coeffs)?;
-        let lower_bound: Z = lower_bound.to_owned().into();
-        let upper_bound: Z = upper_bound.to_owned().into();
+        let lower_bound: Z = lower_bound.into();
+        let upper_bound: Z = upper_bound.into();
 
         let interval_size = &upper_bound - &lower_bound;
         let mut poly_z = PolyOverZ::default();
@@ -141,7 +137,7 @@ mod test_sample_uniform {
     }
 
     /// Checks whether `sample_uniform` is available for all types
-    /// implementing Into<Z> + Clone, i.e. u8, u16, u32, u64, i8, ...
+    /// implementing [`Into<Z>`] + [`Clone`], i.e. u8, u16, u32, u64, i8, ...
     #[test]
     fn availability() {
         let modulus = Modulus::from(7);

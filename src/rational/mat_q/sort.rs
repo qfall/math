@@ -61,13 +61,10 @@ impl MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of the same type as `cond_func` if the execution of `cond_func` fails.
-    pub fn sort_by_column<T>(
+    pub fn sort_by_column<T: Ord>(
         &self,
         cond_func: fn(&Self) -> Result<T, MathError>,
-    ) -> Result<Self, MathError>
-    where
-        T: Ord,
-    {
+    ) -> Result<Self, MathError> {
         let mut condition_values = vec![];
         for col in 0..self.get_num_columns() {
             condition_values.push(cond_func(&self.get_column(col).unwrap())?);
@@ -130,13 +127,10 @@ impl MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of the same type as `cond_func` if the execution of `cond_func` fails.
-    pub fn sort_by_row<T>(
+    pub fn sort_by_row<T: Ord>(
         &self,
         cond_func: fn(&Self) -> Result<T, MathError>,
-    ) -> Result<Self, MathError>
-    where
-        T: Ord,
-    {
+    ) -> Result<Self, MathError> {
         let mut condition_values = vec![];
         for row in 0..self.get_num_rows() {
             condition_values.push(cond_func(&self.get_row(row).unwrap())?);

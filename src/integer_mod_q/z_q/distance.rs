@@ -109,7 +109,7 @@ impl Distance<Zq> for Zq {
     }
 }
 
-impl<T: Into<Z>> Distance<T> for Zq {
+impl<Integer: Into<Z>> Distance<Integer> for Zq {
     type Output = Z;
 
     /// Computes the absolute distance between `self` and `other`.
@@ -137,7 +137,7 @@ impl<T: Into<Z>> Distance<T> for Zq {
     /// assert_eq!(Z::from(6), distance_0);
     /// assert_eq!(Z::from(2), distance_1);
     /// ```
-    fn distance(&self, other: T) -> Self::Output {
+    fn distance(&self, other: Integer) -> Self::Output {
         let other = Zq::from((&other.into(), &self.modulus));
         self.distance(&other)
     }
