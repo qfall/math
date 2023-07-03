@@ -22,7 +22,7 @@ impl Gcd<&Z> for Z {
     /// Outputs the greatest common divisor (gcd) of the two given values
     /// with `gcd(a, 0) = |a|`.
     ///
-    /// Paramters:
+    /// Parameters:
     /// - `other`: specifies one of the values of which the gcd is computed
     ///
     /// Returns the greatest common divisor of `self` and `other` as
@@ -56,7 +56,7 @@ impl Xgcd<&Z> for Z {
     /// Outputs the extended greatest common divisor (xgcd) of the two given values,
     /// i.e. a triple `(gcd(a, b), x, y)`, where `a*x + b*y = gcd(a, b)*`.
     ///
-    /// Paramters:
+    /// Parameters:
     /// - `other`: specifies one of the values of which the gcd is computed
     ///
     /// Returns a triple `(gcd(a, b), x, y)` containing the greatest common divisor,

@@ -21,7 +21,7 @@ impl Lcm<&Z> for Z {
     /// Outputs the least common multiple (lcm) of the two given values
     /// with `lcm(a, 0) = 0`.
     ///
-    /// Paramters:
+    /// Parameters:
     /// - `other`: specifies one of the values of which the `lcm` is computed
     ///
     /// Returns the least common multiple of `self` and `other` as

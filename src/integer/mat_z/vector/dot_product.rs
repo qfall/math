@@ -16,7 +16,7 @@ use flint_sys::fmpz::fmpz_addmul;
 impl MatZ {
     /// Returns the dot product of two vectors of type [`MatZ`].
     ///
-    /// Paramters:
+    /// Parameters:
     /// - `other`: specifies the other vector the dot product is calculated over
     ///
     /// Returns the resulting `dot_product` as a [`Z`] or an error,
