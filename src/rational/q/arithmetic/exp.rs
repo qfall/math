@@ -106,8 +106,6 @@ mod test_exp {
         let small_2 = Q::from((-7451, 10)).exp();
         let zero = Q::from((-7452, 10)).exp();
 
-        println!("{}", &small);
-
         assert_ne!(small, Q::ZERO);
         assert_eq!(small, small_2);
         assert_eq!(zero, Q::ZERO);
@@ -162,12 +160,10 @@ mod test_exp {
         let mut value_prime = unsafe { fmpz_get_d_2exp(&mut exponent, &large.value.num) };
         value_prime = value_prime * 2f64.powi((exponent - 6196328016) as i32);
 
-        println!("{}, {}", value_prime, exponent);
-
         // Allow 6% Error (Error Bound chosen based on calculation result)
         let upper_bound = 1.06 * 2.42298514666;
         let lower_bound = 0.94 * 2.42298514666;
-        // let upper_bound =
+
         assert!(lower_bound < value_prime);
         assert!(upper_bound > value_prime);
     }
