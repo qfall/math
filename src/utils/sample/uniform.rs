@@ -10,7 +10,7 @@
 //! uniform random distribution.
 
 use crate::{error::MathError, integer::Z};
-use rand::{rngs::ThreadRng, RngCore};
+use rand::RngCore;
 
 /// Computes a uniform at random chosen [`Z`] sample in `[0, interval_size)`.
 ///
