@@ -122,7 +122,7 @@ fn gaussian_function(x: &Z, c: &Q, s: &Q) -> Q {
     let num = Q::MINUS_ONE * Q::PI * (Q::from(x.to_owned()) - c).pow(2).unwrap();
     let den = s.pow(2).unwrap();
     let res: Q = num / den;
-    res.exp_taylor(100u32)
+    res.exp()
 }
 
 /// SampleD samples a discrete Gaussian from the lattice with `basis` using [`sample_z`] as a subroutine.

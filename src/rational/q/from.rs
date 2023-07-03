@@ -20,7 +20,7 @@ use crate::{
     traits::{AsInteger, Pow},
 };
 use flint_sys::{
-    fmpq::{fmpq, fmpq_canonicalise, fmpq_clear, fmpq_set_str},
+    fmpq::{fmpq, fmpq_canonicalise, fmpq_clear, fmpq_get_d, fmpq_set_str},
     fmpz::{fmpz_is_zero, fmpz_set},
 };
 use std::{ffi::CString, str::FromStr};
@@ -276,6 +276,24 @@ impl From<f64> for Q {
 }
 
 from_trait!(f32, Q, Q::from_f32);
+
+impl From<&Q> for f64 {
+    /// Convert a rational [`Q`] into an [`f64`].
+    /// The value is rounded to the closest [`f64`] representation.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::Q;
+    ///
+    /// let one_half = Q::from((1,2));
+    /// let float = f64::from(&one_half);
+    ///
+    /// assert_eq!(0.5, float);
+    /// ```
+    fn from(value: &Q) -> Self {
+        unsafe { fmpq_get_d(&value.value) }
+    }
+}
 
 impl From<&Q> for Q {
     /// An alias for clone.
@@ -804,6 +822,41 @@ mod test_from_float {
 
         let _ = Q::from(f);
         let _ = Q::from_f32(f);
+    }
+}
+
+#[cfg(test)]
+mod test_into_float {
+    use super::*;
+
+    /// Ensure that `1/2` is correctly converted to `0.5`.
+    /// Special about `0.5` is that it can be exactly represented as a float.
+    #[test]
+    fn one_half() {
+        let one_half = Q::from((1, 2));
+        let float = f64::from(&one_half);
+
+        assert_eq!(0.5, float);
+    }
+
+    /// Ensure that a roundtrip [`f64`] -> [`Q`] -> [`f64`]
+    /// does not change the value.
+    #[test]
+    fn round_trip() {
+        let start_values = vec![
+            0.0,
+            0.1,
+            f64::MAX,
+            f64::MIN,
+            f64::MIN_POSITIVE,
+            f64::EPSILON,
+        ];
+
+        for start in start_values {
+            let end = f64::from(&Q::from(start));
+
+            assert_eq!(start, end);
+        }
     }
 }
 

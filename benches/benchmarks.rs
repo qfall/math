@@ -12,5 +12,6 @@ use criterion::criterion_main;
 
 pub mod classic_crypto;
 pub mod integer;
+pub mod sampling;
 
-criterion_main! {integer::benches, classic_crypto::benches}
+criterion_main! {integer::benches, classic_crypto::benches, sampling::benches}

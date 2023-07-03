@@ -15,6 +15,14 @@ use super::PolyOverQ;
 use flint_sys::fmpq_poly::{fmpq_poly_clear, fmpq_poly_init, fmpq_poly_set};
 use std::mem::MaybeUninit;
 
+// The use of [`PolyOverQ`] should be thread safe because
+// a) just mutable objects/references can manipulate the data in memory.
+// b) [`PolyOverQ`] just wraps a FLINT data type. These are probably
+//    thread safe, because FLINT supports multithreading. Additionally, FLINT
+//    relays on GMP which is thread safe in most conditions <https://gmplib.org/manual/Reentrancy>.
+unsafe impl Send for PolyOverQ {}
+unsafe impl Sync for PolyOverQ {}
+
 impl Clone for PolyOverQ {
     /// Clones the given [`PolyOverQ`] element by returning a deep clone,
     /// storing two separately stored [fmpz](flint_sys::fmpz::fmpz) values
