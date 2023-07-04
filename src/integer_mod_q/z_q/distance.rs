@@ -70,7 +70,7 @@ impl Distance<&Zq> for Zq {
     ///
     /// Parameters:
     /// - `other`: specifies one of the [`Zq`] values whose distance
-    /// is calculated to `self`
+    /// is calculated to `self`.
     ///
     /// Returns the absolute minimum distance between the two given values as a new
     /// [`Z`] instance.
@@ -116,7 +116,7 @@ impl<Integer: Into<Z>> Distance<Integer> for Zq {
     ///
     /// Parameters:
     /// - `other`: specifies one of the [`Zq`] values whose distance
-    /// is calculated to `self`
+    /// is calculated to `self`. The modulus from `self` will be used.
     ///
     /// Returns the absolute minimum distance between the two given values as a new
     /// [`Z`] instance.

@@ -94,7 +94,7 @@ mod test_sample_uniform {
     }
 
     /// Checks whether `sample_uniform` is available for all types
-    /// implementing [`Into<Z>`] + [`Clone`], i.e. u8, u16, u32, u64, i8, ...
+    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
     #[test]
     fn availability() {
         let modulus = Modulus::from(7);

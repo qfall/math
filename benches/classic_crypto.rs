@@ -183,7 +183,7 @@ mod dh_ke {
     /// `dh_ke::gen_key_pair(modulus, generator) -> (pk, sk)`,
     /// where `pk = g^sk mod modulus` and `sk` uniformly random
     pub fn gen_key_pair(modulus: &Modulus, generator: &Zq) -> (Zq, Z) {
-        let sk = Z::sample_uniform(0, &Z::from(modulus)).unwrap();
+        let sk = Z::sample_uniform(0, modulus).unwrap();
         let pk = generator.pow(&sk).unwrap();
         (pk, sk)
     }
@@ -239,7 +239,7 @@ mod el_gamal_enc {
     /// `gen_key_pair(p, g) -> (pk, sk)`,
     /// where `pk = g^sk mod p` and `sk` uniformly random
     pub fn gen_key_pair(modulus: &Modulus, generator: &Zq) -> (Zq, Z) {
-        let sk = Z::sample_uniform(0, &Z::from(modulus)).unwrap();
+        let sk = Z::sample_uniform(0, modulus).unwrap();
         let pk = generator.pow(&sk).unwrap();
         (pk, sk)
     }
