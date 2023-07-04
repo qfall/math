@@ -117,8 +117,52 @@ pub fn evaluate_indices_for_matrix<S: GetNumRows + GetNumColumns>(
     row: impl TryInto<i64> + Display,
     column: impl TryInto<i64> + Display,
 ) -> Result<(i64, i64), MathError> {
-    let row_i64 = evaluate_index(row)?;
-    let column_i64 = evaluate_index(column)?;
+    let mut row_i64: i64 = match row.try_into() {
+        Ok(index) => index,
+        _ => {
+            return Err(MathError::OutOfBounds(
+                "fit into a i64".to_owned(),
+                "unknown for performance reasons".to_owned(),
+            ))
+        }
+    };
+
+    let mut column_i64: i64 = match column.try_into() {
+        Ok(index) => index,
+        _ => {
+            return Err(MathError::OutOfBounds(
+                "fit into a i64".to_owned(),
+                "unknown for performance reasons".to_owned(),
+            ))
+        }
+    };
+
+    if row_i64 < 0 {
+        row_i64 += matrix.get_num_rows();
+        if row_i64 < 0 {
+            return Err(MathError::OutOfBounds(
+                format!(
+                    "be larger or equal to ({},{})",
+                    -matrix.get_num_rows(),
+                    -matrix.get_num_columns()
+                ),
+                format!("({},{})", row_i64 + matrix.get_num_rows(), column_i64),
+            ));
+        }
+    }
+    if column_i64 < 0 {
+        column_i64 += matrix.get_num_columns();
+        if row_i64 < 0 {
+            return Err(MathError::OutOfBounds(
+                format!(
+                    "be larger or equal to ({},{})",
+                    -matrix.get_num_rows(),
+                    -matrix.get_num_columns()
+                ),
+                format!("({},{})", row_i64, column_i64 + matrix.get_num_columns()),
+            ));
+        }
+    }
 
     if matrix.get_num_rows() <= row_i64 || matrix.get_num_columns() <= column_i64 {
         return Err(MathError::OutOfBounds(
@@ -171,14 +215,26 @@ mod test_eval_indices {
     use super::evaluate_indices_for_matrix;
     use crate::integer::MatZ;
 
-    /// Tests that negative indices are not accepted
+    /// Tests that negative indices beyond the dimension are not accepted.
     #[test]
     fn is_err_negative() {
         let matrix = MatZ::new(3, 3);
         assert!(evaluate_indices_for_matrix(&matrix, i32::MIN, 3).is_err())
     }
 
-    /// Tests that the function can be called with several types
+    /// Test that negative addressing works.
+    #[test]
+    fn small_negative() {
+        let matrix = MatZ::new(10, 10);
+
+        let (a, b) = evaluate_indices_for_matrix(&matrix, -1, -10)
+            .expect("No error with small negative index.");
+
+        assert_eq!(a, 9);
+        assert_eq!(b, 0);
+    }
+
+    /// Tests that the function can be called with several types.
     #[test]
     fn is_ok_several_types() {
         let matrix = MatZ::new(i16::MAX, u8::MAX);

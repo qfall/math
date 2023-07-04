@@ -60,22 +60,29 @@ impl GetEntry<Z> for MatZ {
     /// - `row`: specifies the row in which the entry is located
     /// - `column`: specifies the column in which the entry is located
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns the [`Z`] value of the matrix at the position of the given
     /// row and column or an error, if the number of rows or columns is
-    /// greater than the matrix or negative.
+    /// greater than the matrix.
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::integer::{MatZ, Z};
     /// use qfall_math::traits::GetEntry;
+    /// use std::str::FromStr;
     ///
-    /// let matrix = MatZ::new(5, 10);
-    /// let entry = matrix.get_entry(0, 1).unwrap();
+    /// let matrix = MatZ::from_str("[[1,2,3],[4,5,6],[7,8,9]]").unwrap();
+    ///
+    /// assert_eq!(matrix.get_entry(0, 2).unwrap(), Z::from(3));
+    /// assert_eq!(matrix.get_entry(2, 1).unwrap(), Z::from(8));
+    /// assert_eq!(matrix.get_entry(-1, -2).unwrap(), Z::from(8));
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    /// if the number of rows or columns is greater than the matrix or negative.
+    /// if `row` or `column` are greater than the matrix size.
     fn get_entry(
         &self,
         row: impl TryInto<i64> + Display,
@@ -353,6 +360,16 @@ mod test_get_entry {
         let matrix = MatZ::new(5, 10);
 
         assert!(matrix.get_entry(1, 100).is_err());
+    }
+
+    /// Ensure that negative indices return the correct values.
+    #[test]
+    fn negative_indexing() {
+        let matrix = MatZ::from_str("[[1,2,3],[4,5,6],[7,8,9]]").unwrap();
+
+        assert_eq!(matrix.get_entry(-1, -1).unwrap(), Z::from(9));
+        assert_eq!(matrix.get_entry(-1, -2).unwrap(), Z::from(8));
+        assert_eq!(matrix.get_entry(-3, -3).unwrap(), Z::from(1));
     }
 
     /// Ensure that the entry is a deep copy and not just a clone of the reference.
