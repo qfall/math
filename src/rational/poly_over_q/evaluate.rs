@@ -11,15 +11,10 @@
 //! of the [`Evaluate`] trait should be implemented.
 
 use super::PolyOverQ;
-use crate::{
-    integer::Z,
-    macros::for_others::{implement_for_others, implement_for_owned},
-    rational::Q,
-    traits::Evaluate,
-};
-use flint_sys::fmpq_poly::{fmpq_poly_evaluate_fmpq, fmpq_poly_evaluate_fmpz};
+use crate::{rational::Q, traits::Evaluate};
+use flint_sys::fmpq_poly::fmpq_poly_evaluate_fmpq;
 
-impl Evaluate<&Q, Q> for PolyOverQ {
+impl<Rational: Into<Q>> Evaluate<Rational, Q> for PolyOverQ {
     /// Evaluates a [`PolyOverQ`] on a given input of [`Q`]. Note that the
     /// [`Q`] in this case is only a reference.
     ///
@@ -39,7 +34,8 @@ impl Evaluate<&Q, Q> for PolyOverQ {
     /// let value = Q::from((3, 2));
     /// let res = poly.evaluate(&value);
     /// ```
-    fn evaluate(&self, value: &Q) -> Q {
+    fn evaluate(&self, value: Rational) -> Q {
+        let value = value.into();
         let mut res = Q::default();
 
         unsafe { fmpq_poly_evaluate_fmpq(&mut res.value, &self.poly, &value.value) };
@@ -47,39 +43,6 @@ impl Evaluate<&Q, Q> for PolyOverQ {
         res
     }
 }
-
-impl Evaluate<&Z, Q> for PolyOverQ {
-    /// Evaluates a [`PolyOverQ`] on a given input of [`Z`]. Note that the
-    /// [`Z`] in this case is only a reference.
-    ///
-    /// Parameters:
-    /// - `value`: the value with which to evaluate the polynomial.
-    ///
-    /// Returns the evaluation of the polynomial as a [`Q`].
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::traits::*;
-    /// use qfall_math::rational::Q;
-    /// use qfall_math::rational::PolyOverQ;
-    /// use std::str::FromStr;
-    ///
-    /// let poly = PolyOverQ::from_str("5  0 1 2/3 -3/2 1").unwrap();
-    /// let value = Q::from((3, 2));
-    /// let res = poly.evaluate(&value);
-    /// ```
-    fn evaluate(&self, value: &Z) -> Q {
-        let mut res = Q::default();
-
-        unsafe { fmpq_poly_evaluate_fmpz(&mut res.value, &self.poly, &value.value) };
-
-        res
-    }
-}
-
-implement_for_others!(Z, Q, PolyOverQ, Evaluate for u8 u16 u32 u64 i8 i16 i32 i64);
-implement_for_owned!(Z, Q, PolyOverQ, Evaluate);
-implement_for_owned!(Q, Q, PolyOverQ, Evaluate);
 
 // TODO: add traits for TryInto with other values, once the corresponding functions are
 // implemented.

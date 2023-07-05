@@ -9,12 +9,9 @@
 //! This module contains the implementation of the [`Distance`] trait for [`Q`].
 
 use super::Q;
-use crate::{
-    macros::for_others::{implement_for_others, implement_for_owned},
-    traits::Distance,
-};
+use crate::traits::Distance;
 
-impl Distance<&Q> for Q {
+impl<Rational: Into<Q>> Distance<Rational> for Q {
     type Output = Q;
 
     /// Computes the absolute distance between two [`Q`] instances.
@@ -39,14 +36,12 @@ impl Distance<&Q> for Q {
     /// # assert_eq!(Q::from(4), distance_0);
     /// # assert_eq!(Q::from(9), distance_1);
     /// ```
-    fn distance(&self, other: &Q) -> Self::Output {
+    fn distance(&self, other: Rational) -> Self::Output {
+        let other = other.into();
         let difference = other - self;
         difference.abs()
     }
 }
-
-implement_for_owned!(Q, Q, Distance);
-implement_for_others!(Q, Q, Distance for u8 u16 u32 u64 i8 i16 i32 i64 f64 f32);
 
 #[cfg(test)]
 mod test_distance {

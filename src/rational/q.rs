@@ -33,6 +33,16 @@ mod to_string;
 /// - `value`: holds [FLINT](https://flintlib.org/)'s [struct](fmpq)
 ///     for a rational value
 ///
+/// # Implicit Typecasting
+/// Most of our functions take as input values of type [`Into<Q>`].
+/// These capture all types that can be turned into a [`Q`] value.
+/// The types are [`Q`], [`Z`](crate::integer::Z), [`Zq`](crate::integer_mod_q::Zq),
+/// [`Modulus`](crate::integer_mod_q::Modulus), [`i8`], [`i16`], [`i32`],
+/// [`i64`], [`u8`], [`u16`], [`u32`], [`u64`], [`f32`], [`f64`]
+/// and the references of all of these types.
+/// These types are then implicitly casted to a [`Q`] before the desired action is
+/// performed.
+///
 /// # Examples
 /// ```
 /// use qfall_math::rational::Q;

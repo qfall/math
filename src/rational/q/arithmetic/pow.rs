@@ -8,16 +8,10 @@
 
 //! This module provides an implementation of the [`Pow`] trait for [`Q`].
 
-use crate::{
-    error::MathError,
-    integer::Z,
-    macros::for_others::{implement_for_others, implement_for_owned},
-    rational::Q,
-    traits::Pow,
-};
+use crate::{error::MathError, integer::Z, rational::Q, traits::Pow};
 use flint_sys::fmpq::fmpq_pow_fmpz;
 
-impl Pow<&Z> for Q {
+impl<Integer: Into<Z>> Pow<Integer> for Q {
     type Output = Q;
 
     /// Raises the value of `self` to the power of an integer `exp`.
@@ -43,8 +37,9 @@ impl Pow<&Z> for Q {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidExponent`](MathError::InvalidExponent)
     /// if the provided exponent is negative and the base value of `self` is not invertible.
-    fn pow(&self, exp: &Z) -> Result<Self::Output, MathError> {
-        if self == &Q::ZERO && exp < &Z::ZERO {
+    fn pow(&self, exp: Integer) -> Result<Self::Output, MathError> {
+        let exp = exp.into();
+        if self == &Q::ZERO && exp < Z::ZERO {
             return Err(MathError::InvalidExponent(format!(
                 "A negative exponent {} was used for a zero value. There's no inverse for zero values.",
                 exp,
@@ -56,9 +51,6 @@ impl Pow<&Z> for Q {
         Ok(out)
     }
 }
-
-implement_for_owned!(Z, Q, Pow);
-implement_for_others!(Z, Q, Pow for u8 u16 u32 u64 i8 i16 i32 i64);
 
 #[cfg(test)]
 mod test_pow {
