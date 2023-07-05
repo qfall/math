@@ -32,7 +32,7 @@ impl<Integer: Into<Z>> Evaluate<Integer, Z> for PolyOverZ {
     ///
     /// let poly = PolyOverZ::from_str("5  0 1 2 -3 1").unwrap();
     /// let value = Z::from(3);
-    /// let res = poly.evaluate(&value);
+    /// let res: Z = poly.evaluate(&value);
     /// ```
     fn evaluate(&self, value: Integer) -> Z {
         let value = value.into();
@@ -62,7 +62,7 @@ impl<Rational: Into<Q>> Evaluate<Rational, Q> for PolyOverZ {
     ///
     /// let poly = PolyOverZ::from_str("5  0 1 2 -3 1").unwrap();
     /// let value = Q::from((3, 2));
-    /// let res = poly.evaluate(&value);
+    /// let res: Q = poly.evaluate(&value);
     /// ```
     fn evaluate(&self, value: Rational) -> Q {
         let value = value.into();

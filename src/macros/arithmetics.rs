@@ -217,7 +217,7 @@ pub(crate) use arithmetic_trait_reverse;
 macro_rules! arithmetic_between_types_zq {
     ($trait:ident, $trait_function:ident, $output_type:ident, $($other_type:ident)*) => {
         $(
-            // #[doc(hidden)] //maybe also hide. current state: one doc per type
+            #[doc(hidden)] //maybe also hide. current state: one doc per type
             impl $trait<&$other_type> for &Zq {
                 type Output = $output_type;
                 paste::paste! {
