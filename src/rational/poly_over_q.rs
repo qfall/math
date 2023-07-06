@@ -19,6 +19,7 @@ use flint_sys::fmpq_poly::fmpq_poly_struct;
 
 mod arithmetic;
 mod cmp;
+mod coefficient_embedding;
 mod default;
 mod evaluate;
 mod from;
