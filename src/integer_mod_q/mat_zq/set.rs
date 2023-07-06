@@ -12,7 +12,7 @@ use crate::{
     error::MathError,
     integer::Z,
     integer_mod_q::{MatZq, Zq},
-    macros::for_others::{implement_for_others, implement_for_owned},
+    macros::for_others::implement_for_owned,
     traits::{GetNumColumns, GetNumRows, SetEntry},
     utils::{
         collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
@@ -32,7 +32,7 @@ use std::{
     ptr::{null, null_mut},
 };
 
-impl SetEntry<&Z> for MatZq {
+impl<Integer: Into<Z>> SetEntry<Integer> for MatZq {
     /// Sets the value of a specific matrix entry according to a given `value` of type [`Z`].
     ///
     /// Parameters:
@@ -62,7 +62,7 @@ impl SetEntry<&Z> for MatZq {
         &mut self,
         row: impl TryInto<i64> + Display,
         column: impl TryInto<i64> + Display,
-        value: &Z,
+        value: Integer,
     ) -> Result<(), MathError> {
         // Calculate mod q before adding the entry to the matrix.
         let value: Zq = Zq::from((value, &self.modulus));
@@ -127,10 +127,7 @@ impl SetEntry<&Zq> for MatZq {
     }
 }
 
-implement_for_owned!(Z, MatZq, SetEntry);
 implement_for_owned!(Zq, MatZq, SetEntry);
-
-implement_for_others!(Z, MatZq, SetEntry for i8 i16 i32 i64 u8 u16 u32 u64);
 
 impl MatZq {
     /// Sets a column of the given matrix to the provided column of `other`.
