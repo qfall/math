@@ -50,12 +50,12 @@ impl Add for &MatZq {
 }
 
 impl MatZq {
-    /// Implements addition for two [`MatZq`] matrixes.
+    /// Implements addition for two [`MatZq`] matrices.
     ///
     /// Parameters:
     /// - `other`: specifies the value to add to `self`
     ///
-    /// Returns the sum of both matrixes as a [`MatZq`] or an
+    /// Returns the sum of both matrices as a [`MatZq`] or an
     /// error if the matrix dimensions mismatch.
     ///
     /// # Examples
@@ -77,7 +77,7 @@ impl MatZq {
     pub fn add_safe(&self, other: &Self) -> Result<MatZq, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
-                " Tried to add matrixes with moduli '{}' and '{}'.",
+                " Tried to add matrices with moduli '{}' and '{}'.",
                 self.get_mod(),
                 other.get_mod()
             )));

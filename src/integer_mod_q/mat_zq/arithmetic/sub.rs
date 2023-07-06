@@ -50,7 +50,7 @@ impl Sub for &MatZq {
 }
 
 impl MatZq {
-    /// Implements subtraction for two [`MatZq`] matrixes.
+    /// Implements subtraction for two [`MatZq`] matrices.
     ///
     /// Parameters:
     /// - `other`: specifies the value to subtract to `self`
@@ -77,7 +77,7 @@ impl MatZq {
     pub fn sub_safe(&self, other: &Self) -> Result<MatZq, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
-                " Tried to add matrixes with moduli '{}' and '{}'.",
+                " Tried to subtract matrices with moduli '{}' and '{}'.",
                 self.get_mod(),
                 other.get_mod()
             )));

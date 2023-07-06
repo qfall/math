@@ -83,7 +83,7 @@ impl MatZq {
     pub fn tensor_product_safe(&self, other: &Self) -> Result<Self, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
-                " Tried to compute tensor product of matrixes with moduli '{}' and '{}'.",
+                " Tried to compute tensor product of matrices with moduli '{}' and '{}'.",
                 self.get_mod(),
                 other.get_mod()
             )));
