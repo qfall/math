@@ -78,7 +78,7 @@ impl Zq {
     pub fn sub_safe(&self, other: &Self) -> Result<Zq, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
-                " Tried to subtract '{}' from '{}'.
+                "Tried to subtract '{}' from '{}'.
             If the modulus should be ignored please convert into a Z beforehand.",
                 self, other
             )));

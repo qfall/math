@@ -85,7 +85,7 @@ impl PolynomialRingZq {
     pub fn sub_safe(&self, other: &Self) -> Result<PolynomialRingZq, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
-                " Tried to subtract polynomial with modulus '{}' and polynomial with modulus '{}'.",
+                "Tried to subtract polynomial with modulus '{}' and polynomial with modulus '{}'.",
                 self.modulus, other.modulus
             )));
         }
