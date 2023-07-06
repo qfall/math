@@ -196,7 +196,7 @@ pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ
     // to the euclidean norm.
     let basis_gso = MatQ::from_mat_z(&basis).gso();
 
-    let mut out = MatZ::new(basis_gso.get_num_columns(), 1);
+    let mut out = MatZ::new(basis_gso.get_num_rows(), 1);
 
     for i in (0..basis_gso.get_num_columns()).rev() {
         // basisvector_i = b_tilde[i]

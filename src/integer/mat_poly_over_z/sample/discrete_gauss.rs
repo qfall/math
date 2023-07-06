@@ -33,7 +33,16 @@ impl MatPolyOverZ {
     ///
     /// # Example
     /// ```
-    /// todo!()
+    /// use qfall_math::{
+    ///     integer::MatPolyOverZ,
+    ///     rational::PolyOverQ,
+    /// };
+    /// use std::str::FromStr;
+    ///
+    /// let base = MatPolyOverZ::from_str("[[1  1, 3  0 1 -1, 2  2 2]]").unwrap();
+    /// let center = PolyOverQ::default();
+    ///
+    /// let sample = MatPolyOverZ::sample_d(&base, 3, 100, &center, 10.5_f64).unwrap();
     /// ```
     ///
     /// # Errors and Failures
@@ -52,7 +61,7 @@ impl MatPolyOverZ {
     /// # Panics ...
     /// - if the polynomials have higher length than the provided upper bound `k`
     pub fn sample_d(
-        basis: &Self,
+        base: &Self,
         k: impl Into<i64>,
         n: impl Into<Z>,
         center: &PolyOverQ,
@@ -60,11 +69,61 @@ impl MatPolyOverZ {
     ) -> Result<PolyOverZ, MathError> {
         let k = k.into();
         // use coefficient embedding and then call sampleD for the matrix representation
-        let basis = basis.into_coefficient_embedding(k);
+        let basis = base.into_coefficient_embedding(k);
         let center = center.into_coefficient_embedding(k);
         let sample = MatZ::sample_d(&basis, n, &center, s)?;
 
         // convert sample back to a polynomial using the coefficient embedding
         Ok(PolyOverZ::from_coefficient_embedding(&sample))
+    }
+}
+
+#[cfg(test)]
+mod test_sample_d {
+    use crate::{
+        integer::{MatPolyOverZ, MatZ, Z},
+        rational::{PolyOverQ, Q},
+        traits::IntoCoefficientEmbedding,
+    };
+    use std::str::FromStr;
+
+    /// Ensure that the sample is from the base.
+    #[test]
+    fn ensure_sampled_from_base() {
+        let base = MatPolyOverZ::from_str("[[1  1, 3  0 1 -1]]").unwrap();
+        let center = PolyOverQ::default();
+
+        for _ in 0..10 {
+            let sample = MatPolyOverZ::sample_d(&base, 3, 100, &center, 10.5_f64).unwrap();
+            let sample_vec = sample.into_coefficient_embedding(3);
+            let orthogonal = MatZ::from_str("[[0],[1],[1]]").unwrap();
+
+            assert_eq!(Z::ZERO, sample_vec.dot_product(&orthogonal).unwrap())
+        }
+    }
+
+    /// Checks whether `sample_d` is available for all types
+    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
+    /// or [`Into<Q>`], i.e. u8, i16, f32, Z, Q, ...
+    #[test]
+    fn availability() {
+        let basis = MatPolyOverZ::from_str("[[1  1, 2  0 1, 3  0 0 1]]").unwrap();
+        let center = PolyOverQ::default();
+        let n = Z::from(1024);
+        let s = Q::ONE;
+
+        let _ = MatPolyOverZ::sample_d(&basis, 3, 16u16, &center, 1u16);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, 2u32, &center, 1u8);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, 2u64, &center, 1u32);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, 2i8, &center, 1u64);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, 2i16, &center, 1i64);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, 2i32, &center, 1i32);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, 2i64, &center, 1i16);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, &n, &center, 1i8);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, 2u8, &center, 1i64);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, 2, &center, &n);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, 2, &center, &s);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, 2, &center, 1.25f64);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, 2, &center, 15.75f32);
     }
 }
