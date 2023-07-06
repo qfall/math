@@ -241,18 +241,17 @@ pub(crate) unsafe trait AsInteger {
 
 pub trait IntoCoefficientEmbedding<T> {
     /// Returns a canonical coefficient embedding of the value,
-    /// e.g. a matrix representation of the coefficients of a polynomial
+    /// e.g. a matrix representation of the coefficients of a polynomial.
     ///
     /// Parameters:
     /// - `size`: determines the length of the object in which the coefficients are
     /// embedded, e.g. length of the vector
-    #[allow(clippy::wrong_self_convention)]
-    fn into_coefficient_embedding(&self, size: impl Into<i64>) -> T;
+    fn into_coefficient_embedding(self, size: impl Into<i64>) -> T;
 }
 
 pub trait FromCoefficientEmbedding<T> {
     /// Reverses the coefficient embedding, e.g. takes as input a vector and
-    /// returns a polynomial
+    /// returns a polynomial.
     ///
     /// Parameters:
     /// - `embedding`: the coefficient embedding

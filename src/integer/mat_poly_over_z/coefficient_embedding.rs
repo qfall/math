@@ -18,7 +18,7 @@ use crate::{
     },
 };
 
-impl IntoCoefficientEmbedding<MatZ> for MatPolyOverZ {
+impl IntoCoefficientEmbedding<MatZ> for &MatPolyOverZ {
     /// Computes the coefficient embedding of the row vector of polynomials
     /// in a [`MatZ`]. The (i,j) th entry corresponds to the i-th coefficient
     /// of the j-th polynomial provided.
@@ -26,7 +26,7 @@ impl IntoCoefficientEmbedding<MatZ> for MatPolyOverZ {
     /// Parameters:
     /// - `size`: determines the number of rows of the embedding
     ///
-    /// Returns a coefficient embedding as a matrix
+    /// Returns a coefficient embedding as a matrix.
     ///
     /// # Examples
     /// ```
@@ -46,14 +46,20 @@ impl IntoCoefficientEmbedding<MatZ> for MatPolyOverZ {
     /// - if `size` is not larger than the degree of the polynomial, i.e.
     /// the coefficients can not be embedded correctly.
     /// - if `self` is not a row vector
-    fn into_coefficient_embedding(&self, size: impl Into<i64>) -> MatZ {
+    fn into_coefficient_embedding(self, size: impl Into<i64>) -> MatZ {
         assert!(self.is_row_vector());
         let size = size.into();
 
         let mut poly: Vec<PolyOverZ> = Vec::new();
         for i in 0..self.get_num_columns() {
             let entry = self.get_entry(0, i).unwrap();
-            assert!(entry.get_degree() < size);
+            let length = entry.get_degree() + 1;
+            assert!(
+                size >= length,
+                "The polynomial can not be embedded in the vector, \
+                as the length of the polynomial ({length}) is larger than \
+                the provided size ({size})."
+            );
             poly.push(entry);
         }
         let mut out = MatZ::new(size, poly.len());
@@ -79,7 +85,7 @@ impl FromCoefficientEmbedding<&MatZ> for MatPolyOverZ {
     /// Parameters:
     /// - `embedding`: the column vector that encodes the embedding
     ///
-    /// Returns a row vector of polynomials that corresponds to the embedding
+    /// Returns a row vector of polynomials that corresponds to the embedding.
     ///
     /// # Examples
     /// ```
@@ -114,7 +120,7 @@ mod test_into_coefficient_embedding {
     };
     use std::str::FromStr;
 
-    /// Ensure that the initialization of the identity matrix works
+    /// Ensure that the initialization of the identity matrix works.
     #[test]
     fn standard_basis() {
         let standard_basis = MatPolyOverZ::from_str("[[1  1, 2  0 1]]").unwrap();
@@ -123,7 +129,7 @@ mod test_into_coefficient_embedding {
         assert_eq!(MatZ::identity(3, 2), basis)
     }
 
-    /// Ensure that the embedding works with large entries
+    /// Ensure that the embedding works with large entries.
     #[test]
     fn large_entries() {
         let cmp_poly =
@@ -135,14 +141,13 @@ mod test_into_coefficient_embedding {
         assert_eq!(cmp_matrix, matrix)
     }
 
-    /// Ensure that the function panics if the the provided size is too small
+    /// Ensure that the function panics if the the provided size is too small.
     #[test]
     #[should_panic]
     fn size_too_small() {
-        let cmp_poly =
-            MatPolyOverZ::from_str(&format!("[[3  17 {} {}, 2  0 1]]", i64::MAX, i64::MIN))
-                .unwrap();
-        let _ = cmp_poly.into_coefficient_embedding(2);
+        let poly = MatPolyOverZ::from_str("[[3  17 5 7, 2  0 1]]").unwrap();
+
+        let _ = poly.into_coefficient_embedding(2);
     }
 }
 
@@ -154,7 +159,7 @@ mod test_from_coefficient_embedding {
     };
     use std::str::FromStr;
 
-    /// Ensure that the embedding works with large entries
+    /// Ensure that the embedding works with large entries.
     #[test]
     fn large_entries() {
         let matrix =
