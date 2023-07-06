@@ -32,7 +32,7 @@ impl IntoCoefficientEmbedding<MatZq> for &PolyOverZq {
         for j in 0..size {
             let coeff: Result<Z, _> = self.get_coeff(j);
             match coeff {
-                Ok(value) => out.set_entry(j, 0, &value).unwrap(),
+                Ok(value) => out.set_entry(j, 0, value).unwrap(),
                 Err(_) => break,
             }
         }
@@ -63,10 +63,11 @@ mod test_into_coefficient_embedding {
     /// Ensure that the embedding works with large entries.
     #[test]
     fn large_entries() {
-        let cmp_poly =
+        let poly =
             PolyOverZq::from_str(&format!("3  17 {} {} mod {}", i64::MAX, i64::MIN, u64::MAX))
                 .unwrap();
-        let vector = cmp_poly.into_coefficient_embedding(3);
+
+        let vector = poly.into_coefficient_embedding(3);
 
         let cmp_vector = MatZq::from_str(&format!(
             "[[17],[{}],[{}]] mod {}",
@@ -106,6 +107,7 @@ mod test_from_coefficient_embedding {
             u64::MAX
         ))
         .unwrap();
+
         let poly = PolyOverZq::from_coefficient_embedding(&vector);
 
         let cmp_poly =
@@ -119,6 +121,7 @@ mod test_from_coefficient_embedding {
     #[should_panic]
     fn not_column_vector() {
         let vector = MatZq::from_str("[[17, 1],[-17, -1],[5, 9]] mod 42").unwrap();
+
         let _ = PolyOverZq::from_coefficient_embedding(&vector);
     }
 }

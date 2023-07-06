@@ -30,7 +30,7 @@ impl IntoCoefficientEmbedding<MatQ> for &PolyOverQ {
         let mut out = MatQ::new(size, 1);
         for j in 0..size {
             match self.get_coeff(j) {
-                Ok(value) => out.set_entry(j, 0, &value).unwrap(),
+                Ok(value) => out.set_entry(j, 0, value).unwrap(),
                 Err(_) => break,
             }
         }
@@ -61,9 +61,9 @@ mod test_into_coefficient_embedding {
     /// Ensure that the embedding works with large entries.
     #[test]
     fn large_entries() {
-        let cmp_poly =
-            PolyOverQ::from_str(&format!("3  17/3 {}/9 {}/2", i64::MAX, i64::MIN)).unwrap();
-        let vector = cmp_poly.into_coefficient_embedding(3);
+        let poly = PolyOverQ::from_str(&format!("3  17/3 {}/9 {}/2", i64::MAX, i64::MIN)).unwrap();
+
+        let vector = poly.into_coefficient_embedding(3);
 
         let cmp_vector =
             MatQ::from_str(&format!("[[17/3],[{}/9],[{}/2]]", i64::MAX, i64::MIN)).unwrap();
@@ -92,6 +92,7 @@ mod test_from_coefficient_embedding {
     #[test]
     fn large_entries() {
         let vector = MatQ::from_str(&format!("[[17/3],[{}],[{}/2]]", i64::MAX, i64::MIN)).unwrap();
+
         let poly = PolyOverQ::from_coefficient_embedding(&vector);
 
         let cmp_poly =
@@ -104,6 +105,7 @@ mod test_from_coefficient_embedding {
     #[should_panic]
     fn not_column_vector() {
         let vector = MatQ::from_str("[[17/3, 1],[-17, -1],[5, 9/9]]").unwrap();
+
         let _ = PolyOverQ::from_coefficient_embedding(&vector);
     }
 }
