@@ -23,7 +23,7 @@ impl<Rational: Into<Q>> SetCoefficient<Rational> for PolyOverQ {
     ///
     /// Parameters:
     /// - `index`: the index of the coefficient to set (has to be positive)
-    /// - `value`: the new value the index should have from a borrowed [`Q`].
+    /// - `value`: the new value the index should have
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if either the index is negative

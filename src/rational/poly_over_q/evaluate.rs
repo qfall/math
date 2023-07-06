@@ -15,8 +15,7 @@ use crate::{rational::Q, traits::Evaluate};
 use flint_sys::fmpq_poly::fmpq_poly_evaluate_fmpq;
 
 impl<Rational: Into<Q>> Evaluate<Rational, Q> for PolyOverQ {
-    /// Evaluates a [`PolyOverQ`] on a given input of [`Q`]. Note that the
-    /// [`Q`] in this case is only a reference.
+    /// Evaluates a [`PolyOverQ`] on a given input.
     ///
     /// Parameters:
     /// - `value`: the value with which to evaluate the polynomial.

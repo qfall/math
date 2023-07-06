@@ -15,8 +15,7 @@ use crate::{integer::Z, rational::Q, traits::Evaluate};
 use flint_sys::fmpz_poly::{fmpz_poly_evaluate_fmpq, fmpz_poly_evaluate_fmpz};
 
 impl<Integer: Into<Z>> Evaluate<Integer, Z> for PolyOverZ {
-    /// Evaluates a [`PolyOverZ`] on a given input of [`Z`]. Note that the
-    /// [`Z`] in this case is only a reference.
+    /// Evaluates a [`PolyOverZ`] on a given input.
     ///
     /// Parameters:
     /// - `value`: the value with which to evaluate the polynomial.
@@ -31,8 +30,7 @@ impl<Integer: Into<Z>> Evaluate<Integer, Z> for PolyOverZ {
     /// use std::str::FromStr;
     ///
     /// let poly = PolyOverZ::from_str("5  0 1 2 -3 1").unwrap();
-    /// let value = Z::from(3);
-    /// let res: Z = poly.evaluate(&value);
+    /// let res: Z = poly.evaluate(3);
     /// ```
     fn evaluate(&self, value: Integer) -> Z {
         let value = value.into();
@@ -45,8 +43,7 @@ impl<Integer: Into<Z>> Evaluate<Integer, Z> for PolyOverZ {
 }
 
 impl<Rational: Into<Q>> Evaluate<Rational, Q> for PolyOverZ {
-    /// Evaluates a [`PolyOverZ`] on a given input of [`Q`]. Note that the
-    /// [`Q`] in this case is only a reference.
+    /// Evaluates a [`PolyOverZ`] on a given input.
     ///
     /// Parameters:
     /// - `value`: the value with which to evaluate the polynomial.

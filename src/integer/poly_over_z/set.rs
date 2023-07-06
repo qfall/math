@@ -23,7 +23,7 @@ impl<Integer: Into<Z>> SetCoefficient<Integer> for PolyOverZ {
     ///
     /// Parameters:
     /// - `index`: the index of the coefficient to set (has to be positive)
-    /// - `value`: the new value the index should have from a borrowed [`Z`].
+    /// - `value`: the new value the index should have
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if either the index is negative
@@ -37,9 +37,8 @@ impl<Integer: Into<Z>> SetCoefficient<Integer> for PolyOverZ {
     /// use std::str::FromStr;
     ///
     /// let mut poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
-    /// let value = Z::from(1000);
     ///
-    /// assert!(poly.set_coeff(4, &value).is_ok());
+    /// assert!(poly.set_coeff(4, 1000).is_ok());
     /// ```
     ///
     /// # Errors and Failures

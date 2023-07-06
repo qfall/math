@@ -31,7 +31,7 @@ use std::{
 };
 
 impl<Integer: Into<Z>> SetEntry<Integer> for MatZ {
-    /// Sets the value of a specific matrix entry according to a given `value` of type [`Z`].
+    /// Sets the value of a specific matrix entry according to the provided value.
     ///
     /// Parameters:
     /// - `row`: specifies the row in which the entry is located
@@ -48,8 +48,7 @@ impl<Integer: Into<Z>> SetEntry<Integer> for MatZ {
     /// use qfall_math::traits::*;
     ///
     /// let mut matrix = MatZ::new(5, 10);
-    /// let value = Z::from(5);
-    /// matrix.set_entry(1, 1, &value).unwrap();
+    /// matrix.set_entry(1, 1, 5).unwrap();
     /// ```
     ///
     /// # Errors and Failures

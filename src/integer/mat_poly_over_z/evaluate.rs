@@ -10,8 +10,7 @@ use crate::{
 use flint_sys::fmpz_poly_mat::fmpz_poly_mat_evaluate_fmpz;
 
 impl<Integer: Into<Z>> Evaluate<Integer, MatZ> for MatPolyOverZ {
-    /// Evaluates a [`MatPolyOverZ`] on a given input of [`Z`] entrywise. Note that the
-    /// [`Z`] in this case is only a reference.
+    /// Evaluates a [`MatPolyOverZ`] on a given input entrywise.
     ///
     /// Parameters:
     /// - `value`: the value with which to evaluate the matrix of polynomials.
@@ -26,8 +25,7 @@ impl<Integer: Into<Z>> Evaluate<Integer, MatZ> for MatPolyOverZ {
     /// use std::str::FromStr;
     ///
     /// let poly = MatPolyOverZ::from_str("[[0, 1  17, 2  24 42],[2  24 42, 2  24 42, 2  24 42]]").unwrap();
-    /// let value = Z::from(3);
-    /// let res = poly.evaluate(&value);
+    /// let res = poly.evaluate(3);
     /// ```
     fn evaluate(&self, value: Integer) -> MatZ {
         let value = value.into();

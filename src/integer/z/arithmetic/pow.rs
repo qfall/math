@@ -27,9 +27,8 @@ impl<Integer: Into<Z>> Pow<Integer> for Z {
     /// use qfall_math::traits::*;
     ///
     /// let base = Z::from(9);
-    /// let exp = Z::from(3);
     ///
-    /// let powered_value = base.pow(&exp).unwrap();
+    /// let powered_value = base.pow(3).unwrap();
     ///
     /// assert_eq!(Z::from(729), powered_value);
     /// ```

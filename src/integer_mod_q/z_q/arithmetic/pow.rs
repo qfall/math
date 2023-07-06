@@ -28,9 +28,8 @@ impl<Integer: Into<Z>> Pow<Integer> for Zq {
     /// use qfall_math::traits::*;
     ///
     /// let base = Zq::from((2, 9));
-    /// let exp = Z::from(4);
     ///
-    /// let powered_value = base.pow(&exp).unwrap();
+    /// let powered_value = base.pow(4).unwrap();
     ///
     /// let cmp = Zq::from((7, 9));
     /// assert_eq!(cmp, powered_value);
