@@ -153,7 +153,7 @@ impl MatZq {
     /// row or an error, if the number of rows is
     /// greater than the matrix or negative.
     ///
-    /// # Example
+    /// # Examples
     /// ```rust
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
@@ -198,7 +198,7 @@ impl MatZq {
     /// column or an error, if the number of columns is
     /// greater than the matrix or negative.
     ///
-    /// # Example
+    /// # Examples
     /// ```rust
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;

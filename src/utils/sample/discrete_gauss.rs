@@ -140,7 +140,7 @@ fn gaussian_function(x: &Z, c: &Q, s: &Q) -> Q {
 /// Returns a vector with discrete gaussian error based on a lattice point
 /// as in [\[1\]](<index.html#:~:text=[1]>): SampleD.
 ///
-/// # Example
+/// # Examples
 /// ```compile_fail
 /// use qfall_math::{integer::{MatZ, Z}, rational::{MatQ, Q}};
 /// use qfall_math::utils::sample::discrete_gauss::sample_d;

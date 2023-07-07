@@ -9,18 +9,11 @@
 //! Implementations to manipulate a [`PolyOverQ`] polynomial.
 
 use super::PolyOverQ;
-use crate::{
-    error::MathError,
-    integer::Z,
-    macros::for_others::{implement_for_others, implement_for_owned},
-    rational::Q,
-    traits::SetCoefficient,
-    utils::index::evaluate_index,
-};
-use flint_sys::fmpq_poly::{fmpq_poly_set_coeff_fmpq, fmpq_poly_set_coeff_fmpz};
+use crate::{error::MathError, rational::Q, traits::SetCoefficient, utils::index::evaluate_index};
+use flint_sys::fmpq_poly::fmpq_poly_set_coeff_fmpq;
 use std::fmt::Display;
 
-impl SetCoefficient<&Z> for PolyOverQ {
+impl<Rational: Into<Q>> SetCoefficient<Rational> for PolyOverQ {
     /// Sets the coefficient of a polynomial [`PolyOverQ`].
     /// We advise to use small coefficients, since already 2^32 coefficients take space
     /// of roughly 34 GB. If not careful, be prepared that memory problems can occur, if
@@ -30,53 +23,7 @@ impl SetCoefficient<&Z> for PolyOverQ {
     ///
     /// Parameters:
     /// - `index`: the index of the coefficient to set (has to be positive)
-    /// - `value`: the new value the index should have from a borrowed [`Z`].
-    ///
-    /// Returns an empty `Ok` if the action could be performed successfully.
-    /// Otherwise, a [`MathError`] is returned if either the index is negative
-    /// or it does not fit into an [`i64`].
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::rational::PolyOverQ;
-    /// use qfall_math::integer::Z;
-    /// use qfall_math::traits::*;
-    /// use std::str::FromStr;
-    ///
-    /// let mut poly = PolyOverQ::from_str("4  0 1 2/3 3/17").unwrap();
-    /// let value = Z::from(1000);
-    ///
-    /// assert!(poly.set_coeff(4, &value).is_ok());
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    /// either the index is negative or it does not fit into an [`i64`].
-    fn set_coeff(
-        &mut self,
-        index: impl TryInto<i64> + Display,
-        value: &Z,
-    ) -> Result<(), MathError> {
-        let index = evaluate_index(index)?;
-
-        unsafe {
-            fmpq_poly_set_coeff_fmpz(&mut self.poly, index, &value.value);
-        };
-        Ok(())
-    }
-}
-
-impl SetCoefficient<&Q> for PolyOverQ {
-    /// Sets the coefficient of a polynomial [`PolyOverQ`].
-    /// We advise to use small coefficients, since already 2^32 coefficients take space
-    /// of roughly 34 GB. If not careful, be prepared that memory problems can occur, if
-    /// the index is very high.
-    ///
-    /// All entries which are not directly addressed are automatically treated as zero.
-    ///
-    /// Parameters:
-    /// - `index`: the index of the coefficient to set (has to be positive)
-    /// - `value`: the new value the index should have from a borrowed [`Q`].
+    /// - `value`: the new value the index should have
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if either the index is negative
@@ -101,8 +48,9 @@ impl SetCoefficient<&Q> for PolyOverQ {
     fn set_coeff(
         &mut self,
         index: impl TryInto<i64> + Display,
-        value: &Q,
+        value: Rational,
     ) -> Result<(), MathError> {
+        let value = value.into();
         let index = evaluate_index(index)?;
 
         unsafe {
@@ -111,10 +59,6 @@ impl SetCoefficient<&Q> for PolyOverQ {
         Ok(())
     }
 }
-
-implement_for_others!(Z, PolyOverQ, SetCoefficient for i8 i16 i32 i64 u8 u16 u32 u64);
-implement_for_owned!(Z, PolyOverQ, SetCoefficient);
-implement_for_owned!(Q, PolyOverQ, SetCoefficient);
 
 #[cfg(test)]
 mod test_set_coeff_z {

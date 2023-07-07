@@ -110,7 +110,7 @@ impl From<&PolyOverZ> for PolyOverQ {
     }
 }
 
-impl<T: Into<Q>> From<T> for PolyOverQ {
+impl<Rational: Into<Q>> From<Rational> for PolyOverQ {
     /// Create a constant [`PolyOverQ`] with a specified rational constant.
     ///
     /// # Parameters:
@@ -134,7 +134,7 @@ impl<T: Into<Q>> From<T> for PolyOverQ {
     /// # Panics ...
     /// - if the provided value can not be converted into a [`Q`].
     ///   For example, because of a division by zero.
-    fn from(value: T) -> Self {
+    fn from(value: Rational) -> Self {
         let mut out = PolyOverQ::default();
         let value: Q = value.into();
 

@@ -22,7 +22,7 @@ impl MatZq {
     /// The orientation of the input vectors (row vs. column) is ignored.
     /// As a result, it can be chosen arbitrarily.
     ///
-    /// Paramters:
+    /// Parameters:
     /// - `other`: specifies the other vector the dot product is calculated over
     ///
     /// Returns the resulting dot product as a [`Zq`] or an error,

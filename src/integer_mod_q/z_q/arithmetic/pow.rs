@@ -8,16 +8,10 @@
 
 //! This module provides an implementation of the [`Pow`] trait for [`Zq`].
 
-use crate::{
-    error::MathError,
-    integer::Z,
-    integer_mod_q::Zq,
-    macros::for_others::{implement_for_others, implement_for_owned},
-    traits::Pow,
-};
+use crate::{error::MathError, integer::Z, integer_mod_q::Zq, traits::Pow};
 use flint_sys::fmpz_mod::fmpz_mod_pow_fmpz;
 
-impl Pow<&Z> for Zq {
+impl<Integer: Into<Z>> Pow<Integer> for Zq {
     type Output = Zq;
 
     /// Raises the value of `self` to the power of an integer `exp`.
@@ -34,9 +28,8 @@ impl Pow<&Z> for Zq {
     /// use qfall_math::traits::*;
     ///
     /// let base = Zq::from((2, 9));
-    /// let exp = Z::from(4);
     ///
-    /// let powered_value = base.pow(&exp).unwrap();
+    /// let powered_value = base.pow(4).unwrap();
     ///
     /// let cmp = Zq::from((7, 9));
     /// assert_eq!(cmp, powered_value);
@@ -45,7 +38,8 @@ impl Pow<&Z> for Zq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidExponent`](MathError::InvalidExponent)
     /// if the provided exponent is negative and the base value of `self` is not invertible.
-    fn pow(&self, exp: &Z) -> Result<Self::Output, MathError> {
+    fn pow(&self, exp: Integer) -> Result<Self::Output, MathError> {
+        let exp = exp.into();
         let mut out = self.clone();
         if 0 == unsafe {
             fmpz_mod_pow_fmpz(
@@ -63,9 +57,6 @@ impl Pow<&Z> for Zq {
         Ok(out)
     }
 }
-
-implement_for_owned!(Z, Zq, Pow);
-implement_for_others!(Z, Zq, Pow for u8 u16 u32 u64 i8 i16 i32 i64);
 
 #[cfg(test)]
 mod test_pow {

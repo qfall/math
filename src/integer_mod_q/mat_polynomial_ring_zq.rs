@@ -30,7 +30,7 @@ mod vector;
 /// - `modulus` : holds the [`ModulusPolynomialRingZq`](crate::integer_mod_q::ModulusPolynomialRingZq)
 /// modulus of the matrix
 ///
-/// TODO: Add Example
+/// TODO: Add Examples
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize)]
 pub struct MatPolynomialRingZq {
     pub(crate) matrix: MatPolyOverZ,

@@ -9,13 +9,9 @@
 //! This module contains the implementation of the [`Distance`] trait for [`Z`].
 
 use super::Z;
-use crate::{
-    integer_mod_q::Modulus,
-    macros::for_others::{implement_for_others, implement_for_owned},
-    traits::Distance,
-};
+use crate::traits::Distance;
 
-impl Distance<&Z> for Z {
+impl<Integer: Into<Z>> Distance<Integer> for Z {
     type Output = Z;
 
     /// Computes the absolute distance between two [`Z`] instances.
@@ -41,18 +37,18 @@ impl Distance<&Z> for Z {
     /// # assert_eq!(Z::from(6), distance_0);
     /// # assert_eq!(Z::from(11), distance_1);
     /// ```
-    fn distance(&self, other: &Z) -> Self::Output {
+    fn distance(&self, other: Integer) -> Self::Output {
+        let other = other.into();
         let difference = other - self;
         difference.abs()
     }
 }
 
-implement_for_owned!(Z, Z, Distance);
-implement_for_others!(Z, Z, Distance for u8 u16 u32 u64 i8 i16 i32 i64 Modulus);
-
 #[cfg(test)]
 mod test_distance {
-    use super::{Distance, Modulus, Z};
+    use crate::integer_mod_q::Modulus;
+
+    use super::{Distance, Z};
 
     /// Checks if distance is correctly computed for small [`Z`] values
     /// and whether distance(a, b) == distance(b, a), distance(a, a) == 0

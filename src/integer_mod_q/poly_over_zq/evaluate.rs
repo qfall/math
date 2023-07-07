@@ -12,17 +12,13 @@
 
 use super::PolyOverZq;
 use crate::{
-    error::MathError,
-    integer::Z,
-    integer_mod_q::Zq,
-    macros::for_others::{implement_for_others, implement_for_owned},
+    error::MathError, integer::Z, integer_mod_q::Zq, macros::for_others::implement_for_owned,
     traits::Evaluate,
 };
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_evaluate_fmpz;
 
-impl Evaluate<&Z, Zq> for PolyOverZq {
-    /// Evaluates a [`PolyOverZq`] on a given input of [`Z`]. Note that the
-    /// [`Z`] in this case is only a reference.
+impl<Integer: Into<Z>> Evaluate<Integer, Zq> for PolyOverZq {
+    /// Evaluates a [`PolyOverZq`] on a given input of [`Z`].
     ///
     /// Parameters:
     /// - `value`: the value with which to evaluate the polynomial.
@@ -38,9 +34,12 @@ impl Evaluate<&Z, Zq> for PolyOverZq {
     ///
     /// let poly = PolyOverZq::from_str("5  0 1 2 -3 1 mod 17").unwrap();
     /// let value = Z::from(3);
+    ///
     /// let res = poly.evaluate(&value);
+    /// let res_2 = poly.evaluate(3);
     /// ```
-    fn evaluate(&self, value: &Z) -> Zq {
+    fn evaluate(&self, value: Integer) -> Zq {
+        let value: Z = value.into();
         let mut res = Zq::from((0, &self.modulus));
 
         unsafe {
@@ -123,8 +122,6 @@ impl PolyOverZq {
     }
 }
 
-implement_for_others!(Z, Zq, PolyOverZq, Evaluate for u8 u16 u32 u64 i8 i16 i32 i64);
-implement_for_owned!(Z, Zq, PolyOverZq, Evaluate);
 implement_for_owned!(Zq, Zq, PolyOverZq, Evaluate);
 
 #[cfg(test)]

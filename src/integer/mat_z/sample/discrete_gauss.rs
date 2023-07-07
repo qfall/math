@@ -33,7 +33,7 @@ impl MatZ {
     /// Returns a matrix with each entry sampled independently from the
     /// specified discrete Gaussian distribution.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
     ///
@@ -83,7 +83,7 @@ impl MatZ {
     ///
     /// Returns a lattice vector sampled according to the discrete Gaussian distribution.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::{integer::{MatZ, Z}, rational::{MatQ, Q}};
     /// let basis = MatZ::identity(5, 5);
@@ -155,29 +155,29 @@ mod test_sample_discrete_gauss {
     // This function only allows for a broader availability, which is tested here.
 
     /// Checks whether `sample_discrete_gauss` is available for all types
-    /// implementing Into<Z>, i.e. u8, u16, u32, u64, i8, ...
-    /// or Into<Q>, i.e. u8, i16, f32, Z, Q, ...
+    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
+    /// or [`Into<Q>`], i.e. u8, i16, f32, Z, Q, ...
     #[test]
     fn availability() {
         let n = Z::from(1024);
         let center = Q::ZERO;
         let s = Q::ONE;
 
-        let _ = MatZ::sample_discrete_gauss(2u64, 3i8, &16u16, &center, &1u16);
-        let _ = MatZ::sample_discrete_gauss(3u8, 2i16, &200u32, &center, &1u8);
-        let _ = MatZ::sample_discrete_gauss(1, 1, &200u64, &center, 1u32);
-        let _ = MatZ::sample_discrete_gauss(1, 1, &40i8, &center, &1u64);
-        let _ = MatZ::sample_discrete_gauss(1, 1, 200i16, &center, &1i64);
-        let _ = MatZ::sample_discrete_gauss(1, 1, &200i32, &center, &1i32);
-        let _ = MatZ::sample_discrete_gauss(1, 1, &200i64, &center, &1i16);
-        let _ = MatZ::sample_discrete_gauss(1, 1, &n, &center, &1i8);
-        let _ = MatZ::sample_discrete_gauss(1, 1, 2u8, &center, &1i64);
-        let _ = MatZ::sample_discrete_gauss(1, 1, &200, &center, &n);
+        let _ = MatZ::sample_discrete_gauss(2u64, 3i8, 16u16, &center, 1u16);
+        let _ = MatZ::sample_discrete_gauss(3u8, 2i16, 200u32, &center, 1u8);
+        let _ = MatZ::sample_discrete_gauss(1, 1, 200u64, &center, 1u32);
+        let _ = MatZ::sample_discrete_gauss(1, 1, 40i8, &center, 1u64);
+        let _ = MatZ::sample_discrete_gauss(1, 1, 200i16, &center, 1i64);
+        let _ = MatZ::sample_discrete_gauss(1, 1, 200i32, &center, 1i32);
+        let _ = MatZ::sample_discrete_gauss(1, 1, 200i64, &center, 1i16);
+        let _ = MatZ::sample_discrete_gauss(1, 1, &n, &center, 1i8);
+        let _ = MatZ::sample_discrete_gauss(1, 1, 2u8, &center, 1i64);
+        let _ = MatZ::sample_discrete_gauss(1, 1, 200, &center, &n);
         let _ = MatZ::sample_discrete_gauss(1, 1, 200, &center, &s);
-        let _ = MatZ::sample_discrete_gauss(1, 1, &200, &1, &s);
-        let _ = MatZ::sample_discrete_gauss(1, 1, &200, 2.25, &s);
-        let _ = MatZ::sample_discrete_gauss(1, 1, &200, &center, 1.25f64);
-        let _ = MatZ::sample_discrete_gauss(1, 1, &200, &center, 15.75f32);
+        let _ = MatZ::sample_discrete_gauss(1, 1, 200, 1, &s);
+        let _ = MatZ::sample_discrete_gauss(1, 1, 200, 2.25, &s);
+        let _ = MatZ::sample_discrete_gauss(1, 1, 200, &center, 1.25f64);
+        let _ = MatZ::sample_discrete_gauss(1, 1, 200, &center, 15.75f32);
     }
 }
 
@@ -192,8 +192,8 @@ mod test_sample_d {
     // This function only allows for a broader availability, which is tested here.
 
     /// Checks whether `sample_d` is available for all types
-    /// implementing Into<Z>, i.e. u8, u16, u32, u64, i8, ...
-    /// or Into<Q>, i.e. u8, i16, f32, Z, Q, ...
+    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
+    /// or [`Into<Q>`], i.e. u8, i16, f32, Z, Q, ...
     #[test]
     fn availability() {
         let basis = MatZ::identity(5, 5);
@@ -201,19 +201,19 @@ mod test_sample_d {
         let center = MatQ::new(5, 1);
         let s = Q::ONE;
 
-        let _ = MatZ::sample_d(&basis, &16u16, &center, &1u16);
-        let _ = MatZ::sample_d(&basis, &2u32, &center, &1u8);
-        let _ = MatZ::sample_d(&basis, &2u64, &center, &1u32);
-        let _ = MatZ::sample_d(&basis, &2i8, &center, &1u64);
-        let _ = MatZ::sample_d(&basis, &2i16, &center, &1i64);
-        let _ = MatZ::sample_d(&basis, &2i32, &center, &1i32);
-        let _ = MatZ::sample_d(&basis, &2i64, &center, &1i16);
-        let _ = MatZ::sample_d(&basis, &n, &center, &1i8);
-        let _ = MatZ::sample_d(&basis, &2u8, &center, &1i64);
-        let _ = MatZ::sample_d(&basis, &2, &center, &n);
-        let _ = MatZ::sample_d(&basis, &2, &center, &s);
-        let _ = MatZ::sample_d(&basis, &2, &center, 1.25f64);
-        let _ = MatZ::sample_d(&basis, &2, &center, 15.75f32);
+        let _ = MatZ::sample_d(&basis, 16u16, &center, 1u16);
+        let _ = MatZ::sample_d(&basis, 2u32, &center, 1u8);
+        let _ = MatZ::sample_d(&basis, 2u64, &center, 1u32);
+        let _ = MatZ::sample_d(&basis, 2i8, &center, 1u64);
+        let _ = MatZ::sample_d(&basis, 2i16, &center, 1i64);
+        let _ = MatZ::sample_d(&basis, 2i32, &center, 1i32);
+        let _ = MatZ::sample_d(&basis, 2i64, &center, 1i16);
+        let _ = MatZ::sample_d(&basis, &n, &center, 1i8);
+        let _ = MatZ::sample_d(&basis, 2u8, &center, 1i64);
+        let _ = MatZ::sample_d(&basis, 2, &center, &n);
+        let _ = MatZ::sample_d(&basis, 2, &center, &s);
+        let _ = MatZ::sample_d(&basis, 2, &center, 1.25f64);
+        let _ = MatZ::sample_d(&basis, 2, &center, 15.75f32);
     }
 
     // As `sample_d_common` just calls `MatZ::sample_d` with identity basis

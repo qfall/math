@@ -48,7 +48,7 @@ mod to_string;
 ///
 /// // evaluate function
 /// let value = Z::from(3);
-/// let res = poly_1.evaluate(&value);
+/// let res: Z = poly_1.evaluate(&value);
 ///
 /// // comparison
 /// assert_ne!(poly_1, poly_2);

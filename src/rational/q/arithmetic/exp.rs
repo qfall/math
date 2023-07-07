@@ -145,6 +145,7 @@ mod test_exp {
     /// Ensure that the exponential function for [`u32::MAX`] has an
     /// error of at most 6%.
     #[test]
+    #[allow(clippy::unnecessary_mut_passed)]
     fn large_exponent_error_bound() {
         let large = Q::from(u32::MAX).exp();
 
@@ -158,7 +159,7 @@ mod test_exp {
         // value_prime = large * 2^-6196328016
         let mut exponent = 0;
         let mut value_prime = unsafe { fmpz_get_d_2exp(&mut exponent, &large.value.num) };
-        value_prime = value_prime * 2f64.powi((exponent - 6196328016) as i32);
+        value_prime *= 2f64.powi((exponent - 6196328016) as i32);
 
         // Allow 6% Error (Error Bound chosen based on calculation result)
         let upper_bound = 1.06 * 2.42298514666;

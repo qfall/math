@@ -110,7 +110,7 @@ impl Mul<&Z> for &Zq {
     ///
     /// Returns the product of both numbers as a [`Zq`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
     /// use qfall_math::integer::Z;

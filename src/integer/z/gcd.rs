@@ -10,19 +10,16 @@
 //! and [`Xgcd`] trait for [`Z`].
 
 use super::Z;
-use crate::{
-    macros::for_others::{implement_for_others, implement_for_owned},
-    traits::{Gcd, Xgcd},
-};
+use crate::traits::{Gcd, Xgcd};
 use flint_sys::fmpz::{fmpz_gcd, fmpz_xgcd};
 
-impl Gcd<&Z> for Z {
+impl<Integer: Into<Z>> Gcd<Integer> for Z {
     type Output = Z;
 
     /// Outputs the greatest common divisor (gcd) of the two given values
     /// with `gcd(a, 0) = |a|`.
     ///
-    /// Paramters:
+    /// Parameters:
     /// - `other`: specifies one of the values of which the gcd is computed
     ///
     /// Returns the greatest common divisor of `self` and `other` as
@@ -40,23 +37,21 @@ impl Gcd<&Z> for Z {
     ///
     /// assert_eq!(Z::from(5), gcd);
     /// ```
-    fn gcd(&self, other: &Self) -> Self::Output {
+    fn gcd(&self, other: Integer) -> Self::Output {
+        let other = other.into();
         let mut out = Z::default();
         unsafe { fmpz_gcd(&mut out.value, &self.value, &other.value) };
         out
     }
 }
 
-implement_for_owned!(Z, Z, Gcd);
-implement_for_others!(Z, Z, Gcd for u8 u16 u32 u64 i8 i16 i32 i64);
-
-impl Xgcd<&Z> for Z {
+impl<Integer: Into<Z>> Xgcd<Integer> for Z {
     type Output = (Z, Z, Z);
 
     /// Outputs the extended greatest common divisor (xgcd) of the two given values,
     /// i.e. a triple `(gcd(a, b), x, y)`, where `a*x + b*y = gcd(a, b)*`.
     ///
-    /// Paramters:
+    /// Parameters:
     /// - `other`: specifies one of the values of which the gcd is computed
     ///
     /// Returns a triple `(gcd(a, b), x, y)` containing the greatest common divisor,
@@ -76,7 +71,8 @@ impl Xgcd<&Z> for Z {
     /// assert_eq!(Z::from(5), gcd);
     /// assert_eq!(gcd, cmp_gcd);
     /// ```
-    fn xgcd(&self, other: &Self) -> Self::Output {
+    fn xgcd(&self, other: Integer) -> Self::Output {
+        let other = other.into();
         let mut gcd = Z::ZERO;
         let mut x = Z::ZERO;
         let mut y = Z::ZERO;
@@ -92,9 +88,6 @@ impl Xgcd<&Z> for Z {
         (gcd, x, y)
     }
 }
-
-implement_for_owned!(Z, Z, Xgcd);
-implement_for_others!(Z, Z, Xgcd for u8 u16 u32 u64 i8 i16 i32 i64);
 
 #[cfg(test)]
 mod test_gcd {
