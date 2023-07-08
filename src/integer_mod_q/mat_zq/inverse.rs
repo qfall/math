@@ -11,9 +11,9 @@
 use super::MatZq;
 use crate::{
     integer::{MatZ, Z},
-    integer_mod_q::Zq,
-    traits::{Concatenate, Gcd, GetEntry, GetNumColumns, GetNumRows, Pow},
+    traits::{Concatenate, Gcd, GetNumRows},
 };
+use flint_sys::fmpz_mod_mat::fmpz_mod_mat_rref;
 
 impl MatZq {
     /// Returns the inverse of the matrix if it exists (is square and
@@ -40,38 +40,33 @@ impl MatZq {
     /// - if the number of rows is not equal to the number of columns.
     /// - if the inverse of an entry can not be computed because the modulus is not prime.
     pub fn inverse_prime(&self) -> Option<MatZq> {
-        // check if determinant is coprime to modulus
+        // Check if determinant is coprime to modulus.
         let det = MatZ::from(self).det().ok()?;
-        if det.gcd(Z::from(self.get_mod())) != Z::ONE {
+        if det.gcd(self.get_mod()) != Z::ONE {
             None
         } else {
-            // concatenate the matrix with the identity matrix
+            let dimensions = self.get_num_rows();
+
+            // Concatenate the matrix with the identity matrix.
             let matrix_identity = self
-                .concat_horizontal(&MatZq::identity(
-                    self.get_num_rows(),
-                    self.get_num_columns(),
-                    self.get_mod(),
-                ))
+                .concat_horizontal(&MatZq::identity(dimensions, dimensions, self.get_mod()))
                 .unwrap();
 
             let identity_inverse = matrix_identity.gaussian_elimination_prime();
 
-            // the inverse is now the right half of the matrix `identity_inverse`
-            let mut inverse =
-                MatZq::new(self.get_num_rows(), self.get_num_columns(), self.get_mod());
-            for i in 0..self.get_num_columns() {
+            // The inverse is now the right half of the matrix `identity_inverse`.
+            let mut inverse = MatZq::new(dimensions, dimensions, self.get_mod());
+            for i in 0..dimensions {
                 inverse
-                    .set_column(i, &identity_inverse, self.get_num_columns() + i)
+                    .set_column(i, &identity_inverse, dimensions + i)
                     .unwrap();
             }
             Some(inverse)
         }
     }
 
-    /// Returns the `row echelon form` of the matrix using gaussian elimination.
-    ///
-    /// Note that the modulus is assumed to be prime.
-    /// If it is not, it can happen that the function panics.
+    /// Returns the `row echelon form` of the matrix using gaussian elimination or
+    /// panics if the modulus is not prime.
     ///
     /// # Examples
     /// ```
@@ -79,117 +74,82 @@ impl MatZq {
     /// use std::str::FromStr;
     ///
     /// let mut matrix = MatZq::from_str("[[1,2],[3,4]] mod 7").unwrap();
-    /// let matrix_invert = matrix.gaussian_elimination_prime();
+    /// let matrix_gauss = matrix.gaussian_elimination_prime();
+    ///
+    /// assert_eq!("[[1, 0],[0, 1]] mod 7", matrix_gauss.to_string());
     /// ```
     ///
     /// # Panics ...
-    /// - if the inverse of an entry can not be computed because the modulus is not prime
-    pub fn gaussian_elimination_prime(&self) -> MatZq {
-        let mut out = self.clone();
-        // row_count is the number of rows where we have a 1 entry already
-        let mut row_count = 0;
-        // we iterate over all columns and try to find an entry that is not 0
-        for column_nr in 0..self.get_num_columns() {
-            if row_count >= self.get_num_rows() {
-                break;
-            }
-
-            let mut current_row = -1;
-            let mut entry = Zq::from((1, self.get_mod()));
-            for row_nr in row_count..self.get_num_rows() {
-                entry = out.get_entry(row_nr, column_nr).unwrap();
-                if !Zq::is_zero(&entry) {
-                    current_row = row_nr;
-                    break;
-                }
-            }
-            if current_row == -1 {
-                continue;
-            }
-
-            if let Ok(inv) = entry.pow(-1) {
-                let row = inv * out.get_row(current_row).unwrap();
-                out.set_row(current_row, &row, 0).unwrap();
-
-                // set all other entries in that column to `0` (gaussian elimination)
-                for row_nr_other in (0..self.get_num_rows()).filter(|x| *x != current_row) {
-                    let old_row = out.get_row(row_nr_other).unwrap();
-                    let entry: Z = old_row.get_entry(0, column_nr).unwrap();
-                    let new_row = &old_row - entry * &row;
-                    out.set_row(row_nr_other, &new_row, 0).unwrap();
-                }
-
-                if row_count != current_row {
-                    out.swap_rows(row_count, current_row).unwrap();
-                }
-                row_count += 1;
-            } else {
-                panic!("The modulus {} is not prime", self.get_mod());
-            }
+    /// - if the modulus is not prime.
+    pub fn gaussian_elimination_prime(self) -> MatZq {
+        if !self.get_mod().is_prime() {
+            panic!("The modulus of the matrix is not prime");
         }
 
-        out
+        // Since we only want the echelon form, the permutation `perm` is not relevant.
+        let mut perm: i64 = 1;
+        unsafe { fmpz_mod_mat_rref(&mut perm, &self.matrix) };
+
+        self
     }
 }
 
 #[cfg(test)]
 mod test_inverse {
-    use crate::{integer::MatZ, integer_mod_q::MatZq, rational::MatQ};
+    use crate::integer_mod_q::MatZq;
     use std::str::FromStr;
 
     /// Test whether `inverse` correctly calculates an inverse matrix.
     #[test]
     fn inverse_works() {
-        let mat1 = MatZq::from_str("[[5,2],[2,1]] mod 7").unwrap();
-        let cmp_inv1 = MatZq::from_str("[[1, 5],[5, 5]] mod 7").unwrap();
+        let mat = MatZq::from_str("[[5,2],[2,1]] mod 7").unwrap();
 
-        let inv1 = mat1.inverse_prime().unwrap();
+        let inv = mat.inverse_prime().unwrap();
 
-        assert_eq!(cmp_inv1, inv1);
+        let cmp_inv = MatZq::from_str("[[1, 5],[5, 5]] mod 7").unwrap();
+        assert_eq!(cmp_inv, inv);
     }
 
     /// Check if the multiplication of inverse and matrix result in an identity matrix.
     #[test]
     fn inverse_correct() {
-        let mat = MatZ::from_str("[[5,2],[2,1]]").unwrap();
-        let mat_q = MatQ::from(&mat);
-        let cmp = MatQ::from_str("[[1,0],[0,1]]").unwrap();
+        let mat = MatZq::from_str("[[5,2],[2,1]] mod 11").unwrap();
 
-        let inv = mat.inverse().unwrap();
-        let diag = &mat_q * &inv;
+        let inv = mat.inverse_prime().unwrap();
+        let diag = mat * inv;
 
+        let cmp = MatZq::from_str("[[1,0],[0,1]] mod 11").unwrap();
         assert_eq!(cmp, diag);
     }
 
     /// Check if the multiplication of inverse and matrix result in an identity matrix.
     #[test]
     fn inverse_correct_2() {
-        let mat = MatZ::from_str("[[0,2],[2,1]]").unwrap();
-        let mat_q = MatQ::from(&mat);
-        let cmp = MatQ::from_str("[[1,0],[0,1]]").unwrap();
+        let mat = MatZq::from_str("[[0,2],[2,1]] mod 3").unwrap();
 
-        let inv = mat.inverse().unwrap();
-        let diag = &mat_q * &inv;
+        let inv = mat.inverse_prime().unwrap();
+        let diag = mat * inv;
 
+        let cmp = MatZq::from_str("[[1,0],[0,1]] mod 3").unwrap();
         assert_eq!(cmp, diag);
     }
 
     /// Ensure that a matrix that is not square yields `None` on inversion.
     #[test]
     fn inv_none_not_squared() {
-        let mat1 = MatZ::from_str("[[1,0,1],[0,1,1]]").unwrap();
-        let mat2 = MatZ::from_str("[[1,0],[0,1],[1,0]]").unwrap();
+        let mat1 = MatZq::from_str("[[1,0,1],[0,1,1]] mod 3").unwrap();
+        let mat2 = MatZq::from_str("[[1,0],[0,1],[1,0]] mod 17").unwrap();
 
-        assert!(mat1.inverse().is_none());
-        assert!(mat2.inverse().is_none());
+        assert!(mat1.inverse_prime().is_none());
+        assert!(mat2.inverse_prime().is_none());
     }
 
     /// Ensure that a matrix that has a determinant of `0` yields `None` on inversion.
     #[test]
     fn inv_none_det_zero() {
-        let mat = MatZ::from_str("[[2,0],[0,0]]").unwrap();
+        let mat = MatZq::from_str("[[2,0],[0,0]] mod 11").unwrap();
 
-        assert!(mat.inverse().is_none());
+        assert!(mat.inverse_prime().is_none());
     }
 }
 
