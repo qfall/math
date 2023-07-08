@@ -7,7 +7,7 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! This module contains the implementation of the `inverse` function.
-//a commutative ring, is invertible iff its determinant is invertible
+
 use super::MatZq;
 use crate::{
     integer::{MatZ, Z},
@@ -28,11 +28,17 @@ impl MatZq {
     /// use std::str::FromStr;
     ///
     /// let mut matrix = MatZq::from_str("[[1,2],[3,4]] mod 7").unwrap();
-    /// let matrix_invert = matrix.inverse_prime();
+    /// let matrix_invert = matrix.inverse_prime().unwrap();
+    ///
+    /// let id = &matrix_invert * &matrix;
+    ///
+    /// assert_eq!("[[5, 1],[5, 3]] mod 7", matrix_invert.to_string());
+    /// assert_eq!("[[1, 0],[0, 1]] mod 7", id.to_string());
     /// ```
     ///
     /// # Panics ...
-    /// - if the inverse of an entry can not be computed because the modulus is not prime
+    /// - if the number of rows is not equal to the number of columns.
+    /// - if the inverse of an entry can not be computed because the modulus is not prime.
     pub fn inverse_prime(&self) -> Option<MatZq> {
         // check if determinant is coprime to modulus
         let det = MatZ::from(self).det().ok()?;
@@ -127,46 +133,6 @@ impl MatZq {
 }
 
 #[cfg(test)]
-mod test_gauss {
-    use crate::integer_mod_q::MatZq;
-    use std::str::FromStr;
-
-    /// Test whether `gaussian_elimination_prime` works correctly.
-    #[test]
-    fn gauss_works() {
-        let mat1 = MatZq::from_str("[[5,2,1,0],[2,1,0,1]] mod 7").unwrap();
-        let mat2 = MatZq::from_str("[[1,3,1,9],[1,1,130,1],[3,11,5,35]] mod 131").unwrap();
-        let mat3 = MatZq::from_str("[[5,0,2,1,0],[5,0,2,1,0],[2,0,1,0,1]] mod 7").unwrap();
-
-        let gauss_1 = mat1.gaussian_elimination_prime();
-        let gauss_2 = mat2.gaussian_elimination_prime();
-        let gauss_3 = mat3.gaussian_elimination_prime();
-
-        assert_eq!(
-            gauss_1,
-            MatZq::from_str("[[1, 0, 1, 5],[0, 1, 5, 5]] mod 7").unwrap()
-        );
-        assert_eq!(
-            gauss_2,
-            MatZq::from_str("[[1, 0, 129, 128],[0, 1, 1, 4],[0, 0, 0, 0]] mod 131").unwrap()
-        );
-        assert_eq!(
-            gauss_3,
-            MatZq::from_str("[[1, 0, 0, 1, 5],[0, 0, 1, 5, 5],[0, 0, 0, 0, 0]] mod 7").unwrap()
-        );
-    }
-
-    /// Test whether `gaussian_elimination_prime` yields an error if the inverse
-    /// of an entry can not be computed because the modulus is not prime.
-    #[test]
-    #[should_panic]
-    fn gauss_error() {
-        let mat1 = MatZq::from_str("[[5,2,1,0],[2,1,0,1]] mod 10").unwrap();
-        let _ = mat1.gaussian_elimination_prime();
-    }
-}
-
-#[cfg(test)]
 mod test_inverse {
     use crate::{integer::MatZ, integer_mod_q::MatZq, rational::MatQ};
     use std::str::FromStr;
@@ -224,5 +190,45 @@ mod test_inverse {
         let mat = MatZ::from_str("[[2,0],[0,0]]").unwrap();
 
         assert!(mat.inverse().is_none());
+    }
+}
+
+#[cfg(test)]
+mod test_gauss {
+    use crate::integer_mod_q::MatZq;
+    use std::str::FromStr;
+
+    /// Test whether `gaussian_elimination_prime` works correctly.
+    #[test]
+    fn gauss_works() {
+        let mat1 = MatZq::from_str("[[5,2,1,0],[2,1,0,1]] mod 7").unwrap();
+        let mat2 = MatZq::from_str("[[1,3,1,9],[1,1,130,1],[3,11,5,35]] mod 131").unwrap();
+        let mat3 = MatZq::from_str("[[5,0,2,1,0],[5,0,2,1,0],[2,0,1,0,1]] mod 7").unwrap();
+
+        let gauss_1 = mat1.gaussian_elimination_prime();
+        let gauss_2 = mat2.gaussian_elimination_prime();
+        let gauss_3 = mat3.gaussian_elimination_prime();
+
+        assert_eq!(
+            gauss_1,
+            MatZq::from_str("[[1, 0, 1, 5],[0, 1, 5, 5]] mod 7").unwrap()
+        );
+        assert_eq!(
+            gauss_2,
+            MatZq::from_str("[[1, 0, 129, 128],[0, 1, 1, 4],[0, 0, 0, 0]] mod 131").unwrap()
+        );
+        assert_eq!(
+            gauss_3,
+            MatZq::from_str("[[1, 0, 0, 1, 5],[0, 0, 1, 5, 5],[0, 0, 0, 0, 0]] mod 7").unwrap()
+        );
+    }
+
+    /// Test whether `gaussian_elimination_prime` yields an error if the inverse
+    /// of an entry can not be computed because the modulus is not prime.
+    #[test]
+    #[should_panic]
+    fn gauss_error() {
+        let mat1 = MatZq::from_str("[[5,2,1,0],[2,1,0,1]] mod 10").unwrap();
+        let _ = mat1.gaussian_elimination_prime();
     }
 }
