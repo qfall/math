@@ -36,7 +36,7 @@ mod to_string;
 /// # Implicit Typecasting
 /// Most of our functions take as input values of type [`Into<Q>`].
 /// These capture all types that can be turned into a [`Q`] value.
-/// The types are [`Q`], [`Z`](crate::integer::Z), [`Zq`](crate::integer_mod_q::Zq),
+/// The types are [`Q`], [`Z`](crate::integer::Z),
 /// [`Modulus`](crate::integer_mod_q::Modulus), [`i8`], [`i16`], [`i32`],
 /// [`i64`], [`u8`], [`u16`], [`u32`], [`u64`], [`f32`], [`f64`]
 /// and the references of all of these types.
