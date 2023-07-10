@@ -49,13 +49,13 @@ impl Add for &MatQ {
 }
 
 impl MatQ {
-    /// Implements addition for two [`MatQ`] matrixes.
+    /// Implements addition for two [`MatQ`] matrices.
     ///
     ///
     /// Parameters:
     /// - `other`: specifies the value to add to `self`
     ///
-    /// Returns the sum of both matrixes as a [`MatQ`] or an
+    /// Returns the sum of both matrices as a [`MatQ`] or an
     /// error if the matrix dimensions mismatch.
     ///
     /// # Examples

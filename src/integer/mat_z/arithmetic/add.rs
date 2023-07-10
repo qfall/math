@@ -49,13 +49,13 @@ impl Add for &MatZ {
 }
 
 impl MatZ {
-    /// Implements addition for two [`MatZ`] matrixes.
+    /// Implements addition for two [`MatZ`] matrices.
     ///
     ///
     /// Parameters:
     /// - `other`: specifies the value to add to `self`
     ///
-    /// Returns the sum of both matrixes as a [`MatZ`] or an
+    /// Returns the sum of both matrices as a [`MatZ`] or an
     /// error if the matrix dimensions mismatch.
     ///
     /// # Examples

@@ -74,7 +74,7 @@ impl PolyOverZq {
     pub fn add_safe(&self, other: &Self) -> Result<PolyOverZq, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
-                " Tried to add polynomial with modulus '{}' and polynomial with modulus '{}'.
+                "Tried to add polynomial with modulus '{}' and polynomial with modulus '{}'.
             If the modulus should be ignored please convert into a PolyOverZ beforehand.",
                 self.modulus, other.modulus
             )));
