@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! This modules contains implementations to transform a [`MatPolyOverZ`]
+//! This module contains implementations to transform a [`MatPolyOverZ`]
 //! into a [`MatZ`] and reverse by using the coefficient embedding.
 
 use super::MatPolyOverZ;
@@ -22,7 +22,7 @@ impl IntoCoefficientEmbedding<MatZ> for &MatPolyOverZ {
     /// Computes the coefficient embedding of the row vector of polynomials
     /// in a [`MatZ`]. The (i,j) th entry corresponds to the i-th coefficient
     /// of the j-th polynomial provided.
-    /// It inverses the operation of [`MatPolyOverZ::from_coefficient_embedding`]
+    /// It inverses the operation of [`MatPolyOverZ::from_coefficient_embedding`].
     ///
     /// Parameters:
     /// - `size`: determines the number of rows of the embedding. It has to be larger
@@ -83,7 +83,8 @@ impl FromCoefficientEmbedding<&MatZ> for MatPolyOverZ {
     /// Computes a row vector of polynomials from a matrix.
     /// The j-th entry of the i-th column vector is taken
     /// as the coefficient of the polynomial of the i-th polynomial.
-    /// It inverses the operation of `into_coefficient_embedding`.
+    /// It inverses the operation of
+    /// [`MatPolyOverZ::into_coefficient_embedding`](#method.into_coefficient_embedding).
     ///
     /// Parameters:
     /// - `embedding`: the column vector that encodes the embedding

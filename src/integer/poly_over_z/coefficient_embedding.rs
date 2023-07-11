@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! This modules contains implementations to transform a [`PolyOverZ`]
+//! This module contains implementations to transform a [`PolyOverZ`]
 //! into a [`MatZ`] and reverse by using the coefficient embedding.
 
 use crate::{
@@ -21,7 +21,7 @@ impl IntoCoefficientEmbedding<MatZ> for &PolyOverZ {
     /// Computes the coefficient embedding of the polynomial
     /// in a [`MatZ`] as a column vector, where the i-th entry
     /// of the vector corresponds to the i-th coefficient.
-    /// It inverses the operation of [`PolyOverZ::from_coefficient_embedding`]
+    /// It inverses the operation of [`PolyOverZ::from_coefficient_embedding`].
     ///
     /// Parameters:
     /// - `size`: determines the number of rows of the embedding. It has to be larger
@@ -70,7 +70,8 @@ impl FromCoefficientEmbedding<&MatZ> for PolyOverZ {
     /// Computes a polynomial from a vector.
     /// The first i-th entry of the column vector is taken
     /// as the coefficient of the polynomial.
-    /// It inverses the operation of `into_coefficient_embedding`.
+    /// It inverses the operation of
+    /// [`PolyOverZ::into_coefficient_embedding`](#method.into_coefficient_embedding).
     ///
     /// Parameters:
     /// - `embedding`: the column vector that encodes the embedding
