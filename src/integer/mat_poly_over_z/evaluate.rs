@@ -5,14 +5,12 @@
 use super::MatPolyOverZ;
 use crate::{
     integer::{MatZ, Z},
-    macros::for_others::{implement_for_others, implement_for_owned},
     traits::{Evaluate, GetNumColumns, GetNumRows},
 };
 use flint_sys::fmpz_poly_mat::fmpz_poly_mat_evaluate_fmpz;
 
-impl Evaluate<&Z, MatZ> for MatPolyOverZ {
-    /// Evaluates a [`MatPolyOverZ`] on a given input of [`Z`] entrywise. Note that the
-    /// [`Z`] in this case is only a reference.
+impl<Integer: Into<Z>> Evaluate<Integer, MatZ> for MatPolyOverZ {
+    /// Evaluates a [`MatPolyOverZ`] on a given input entrywise.
     ///
     /// Parameters:
     /// - `value`: the value with which to evaluate the matrix of polynomials.
@@ -27,10 +25,10 @@ impl Evaluate<&Z, MatZ> for MatPolyOverZ {
     /// use std::str::FromStr;
     ///
     /// let poly = MatPolyOverZ::from_str("[[0, 1  17, 2  24 42],[2  24 42, 2  24 42, 2  24 42]]").unwrap();
-    /// let value = Z::from(3);
-    /// let res = poly.evaluate(&value);
+    /// let res = poly.evaluate(3);
     /// ```
-    fn evaluate(&self, value: &Z) -> MatZ {
+    fn evaluate(&self, value: Integer) -> MatZ {
+        let value = value.into();
         // we can unwrap since we know, that the dimensions of our current matrix are positive
         let mut res = MatZ::new(self.get_num_rows(), self.get_num_columns());
 
@@ -39,9 +37,6 @@ impl Evaluate<&Z, MatZ> for MatPolyOverZ {
         res
     }
 }
-
-implement_for_others!(Z, MatZ, MatPolyOverZ, Evaluate for u8 u16 u32 u64 i8 i16 i32 i64);
-implement_for_owned!(Z, MatZ, MatPolyOverZ, Evaluate);
 
 #[cfg(test)]
 mod test_evaluate {

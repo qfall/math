@@ -140,7 +140,7 @@ fn gaussian_function(x: &Z, c: &Q, s: &Q) -> Q {
 /// Returns a vector with discrete gaussian error based on a lattice point
 /// as in [\[1\]](<index.html#:~:text=[1]>): SampleD.
 ///
-/// # Example
+/// # Examples
 /// ```compile_fail
 /// use qfall_math::{integer::{MatZ, Z}, rational::{MatQ, Q}};
 /// use qfall_math::utils::sample::discrete_gauss::sample_d;
@@ -182,19 +182,7 @@ pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ
         )));
     }
 
-    // we know that norm_eucl_sqrd does not output errors for column vectors => we can unwrap
-    // if basis is identity, there's no need to sort => better performance for common case
-    let basis = if basis.is_identity() {
-        basis.to_owned()
-    } else {
-        basis.sort_by_column(MatZ::norm_eucl_sqrd).unwrap()
-    };
-    // we removed reversed ordering from the implementation of the challenge phase
-    // as it does not seem to impact the length of the sampled vectors
-    // and the paper states that the basis should be ordered, but not in which fashion.
-    // Hence, we assume the ordering to be from shortest to longest basis vector according
-    // to the euclidean norm.
-    let basis_gso = MatQ::from_mat_z(&basis).gso();
+    let basis_gso = MatQ::from_mat_z(basis).gso();
 
     let mut out = MatZ::new(basis_gso.get_num_columns(), 1);
 

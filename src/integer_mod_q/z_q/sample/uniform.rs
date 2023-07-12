@@ -32,17 +32,14 @@ impl Zq {
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
     ///
-    /// let sample = Zq::sample_uniform(&17).unwrap();
+    /// let sample = Zq::sample_uniform(17).unwrap();
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
     /// if the given modulus is smaller than or equal to `1`.
-    pub fn sample_uniform<T>(modulus: &T) -> Result<Self, MathError>
-    where
-        T: Into<Z> + Clone,
-    {
-        let modulus: Z = modulus.clone().into();
+    pub fn sample_uniform(modulus: impl Into<Z>) -> Result<Self, MathError> {
+        let modulus: Z = modulus.into();
 
         let random = sample_uniform_rejection(&modulus)?;
         Ok(Zq::from((random, modulus)))
@@ -97,20 +94,20 @@ mod test_sample_uniform {
     }
 
     /// Checks whether `sample_uniform` is available for all types
-    /// implementing Into<Z> + Clone, i.e. u8, u16, u32, u64, i8, ...
+    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
     #[test]
     fn availability() {
         let modulus = Modulus::from(7);
         let z = Z::from(7);
 
-        let _ = Zq::sample_uniform(&7u8);
-        let _ = Zq::sample_uniform(&7u16);
-        let _ = Zq::sample_uniform(&7u32);
-        let _ = Zq::sample_uniform(&7u64);
-        let _ = Zq::sample_uniform(&7i8);
-        let _ = Zq::sample_uniform(&7i16);
-        let _ = Zq::sample_uniform(&7i32);
-        let _ = Zq::sample_uniform(&7i64);
+        let _ = Zq::sample_uniform(7u8);
+        let _ = Zq::sample_uniform(7u16);
+        let _ = Zq::sample_uniform(7u32);
+        let _ = Zq::sample_uniform(7u64);
+        let _ = Zq::sample_uniform(7i8);
+        let _ = Zq::sample_uniform(7i16);
+        let _ = Zq::sample_uniform(7i32);
+        let _ = Zq::sample_uniform(7i64);
         let _ = Zq::sample_uniform(&modulus);
         let _ = Zq::sample_uniform(&z);
     }

@@ -12,7 +12,6 @@ use super::MatZ;
 use crate::{
     error::MathError,
     integer::Z,
-    macros::for_others::{implement_for_others, implement_for_owned},
     traits::{GetNumColumns, GetNumRows, SetEntry},
     utils::{
         collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
@@ -31,8 +30,8 @@ use std::{
     ptr::{null, null_mut},
 };
 
-impl SetEntry<&Z> for MatZ {
-    /// Sets the value of a specific matrix entry according to a given `value` of type [`Z`].
+impl<Integer: Into<Z>> SetEntry<Integer> for MatZ {
+    /// Sets the value of a specific matrix entry according to the provided value.
     ///
     /// Parameters:
     /// - `row`: specifies the row in which the entry is located
@@ -49,8 +48,7 @@ impl SetEntry<&Z> for MatZ {
     /// use qfall_math::traits::*;
     ///
     /// let mut matrix = MatZ::new(5, 10);
-    /// let value = Z::from(5);
-    /// matrix.set_entry(1, 1, &value).unwrap();
+    /// matrix.set_entry(1, 1, 5).unwrap();
     /// ```
     ///
     /// # Errors and Failures
@@ -60,8 +58,9 @@ impl SetEntry<&Z> for MatZ {
         &mut self,
         row: impl TryInto<i64> + Display,
         column: impl TryInto<i64> + Display,
-        value: &Z,
+        value: Integer,
     ) -> Result<(), MathError> {
+        let value = value.into();
         let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
 
         // since `self` is a correct matrix and both row and column
@@ -76,10 +75,6 @@ impl SetEntry<&Z> for MatZ {
         Ok(())
     }
 }
-
-implement_for_owned!(Z, MatZ, SetEntry);
-
-implement_for_others!(Z, MatZ, SetEntry for i8 i16 i32 i64 u8 u16 u32 u64);
 
 impl MatZ {
     /// Sets a column of the given matrix to the provided column of `other`.

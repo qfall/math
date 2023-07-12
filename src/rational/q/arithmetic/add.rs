@@ -67,7 +67,7 @@ impl Add<&Z> for &Q {
     ///
     /// Returns the sum of both numbers as a [`Q`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     /// use qfall_math::integer::Z;

@@ -49,7 +49,7 @@ use thiserror::Error;
 /// - `InvalidStringToZqInput` is thrown if an invalid string is given to
 /// construct a [`Zq`](crate::integer_mod_q::Zq)
 /// - `MismatchingMatrixDimension` is thrown if arithmetic is done with
-/// matrixes of mismatching dimensions
+/// matrices of mismatching dimensions
 /// - `MismatchingModulus` is thrown if any function is called on two
 /// objects with different modulus where equal modulus is required
 /// - `MismatchingVectorDimensions` is thrown if an operation of two vectors is

@@ -78,7 +78,7 @@ impl Zq {
     pub fn mul_safe(&self, other: &Self) -> Result<Zq, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
-                " Tried to multiply '{}' and '{}'.
+                "Tried to multiply '{}' and '{}'.
             If the modulus should be ignored please convert into a Z beforehand.",
                 self, other
             )));
@@ -110,7 +110,7 @@ impl Mul<&Z> for &Zq {
     ///
     /// Returns the product of both numbers as a [`Zq`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
     /// use qfall_math::integer::Z;

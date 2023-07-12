@@ -78,7 +78,7 @@ impl Zq {
     pub fn add_safe(&self, other: &Self) -> Result<Zq, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
-                " Tried to add '{}' and '{}'.
+                "Tried to add '{}' and '{}'.
             If the modulus should be ignored please convert into a Z beforehand.",
                 self, other
             )));
@@ -111,7 +111,7 @@ impl Add<&Z> for &Zq {
     ///
     /// Returns the sum of both numbers as a [`Zq`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
     /// use qfall_math::integer::Z;

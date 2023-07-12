@@ -8,15 +8,10 @@
 
 //! This module provides an implementation of the [`Pow`] trait for [`Z`].
 
-use crate::{
-    error::MathError,
-    integer::Z,
-    macros::for_others::{implement_for_others, implement_for_owned},
-    traits::Pow,
-};
+use crate::{error::MathError, integer::Z, traits::Pow};
 use flint_sys::fmpz::fmpz_pow_fmpz;
 
-impl Pow<&Z> for Z {
+impl<Integer: Into<Z>> Pow<Integer> for Z {
     type Output = Z;
 
     /// Raises the value of `self` to the power of an integer `exp`.
@@ -32,9 +27,8 @@ impl Pow<&Z> for Z {
     /// use qfall_math::traits::*;
     ///
     /// let base = Z::from(9);
-    /// let exp = Z::from(3);
     ///
-    /// let powered_value = base.pow(&exp).unwrap();
+    /// let powered_value = base.pow(3).unwrap();
     ///
     /// assert_eq!(Z::from(729), powered_value);
     /// ```
@@ -42,24 +36,22 @@ impl Pow<&Z> for Z {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidExponent`](MathError::InvalidExponent)
     /// if the provided exponent is negative and the base value of `self` is not invertible.
-    fn pow(&self, exp: &Z) -> Result<Self::Output, MathError> {
+    fn pow(&self, exp: Integer) -> Result<Self::Output, MathError> {
+        let exp = exp.into();
         let mut out = Z::ZERO;
-        if exp < &Z::ZERO {
+        if exp < Z::ZERO {
             return Err(MathError::InvalidExponent(format!(
                 "A negative exponent {} was used for the integer value {}. 
                 If you want to get the inverse as a rational object in return use `.inverse().pow({})`",
-                exp,
+                &exp,
                 self,
-                -1 * exp
+                -1 * &exp
             )));
         }
         unsafe { fmpz_pow_fmpz(&mut out.value, &self.value, &exp.value) };
         Ok(out)
     }
 }
-
-implement_for_owned!(Z, Z, Pow);
-implement_for_others!(Z, Z, Pow for u8 u16 u32 u64 i8 i16 i32 i64);
 
 #[cfg(test)]
 mod test_pow {

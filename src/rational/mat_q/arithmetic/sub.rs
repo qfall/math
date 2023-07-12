@@ -49,7 +49,7 @@ impl Sub for &MatQ {
 }
 
 impl MatQ {
-    /// Implements subtraction for two [`MatQ`] matrixes.
+    /// Implements subtraction for two [`MatQ`] matrices.
     ///
     ///
     /// Parameters:

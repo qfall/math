@@ -49,7 +49,7 @@ impl Sub for &MatPolyOverZ {
 }
 
 impl MatPolyOverZ {
-    /// Implements subtraction for two [`MatPolyOverZ`] matrixes.
+    /// Implements subtraction for two [`MatPolyOverZ`] matrices.
     ///
     ///
     /// Parameters:

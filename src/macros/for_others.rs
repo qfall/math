@@ -58,7 +58,7 @@
 macro_rules! implement_for_others {
     // [`Evaluate`] trait
     ($bridge_type:ident, $output_type:ident, $type:ident, Evaluate for $($source_type:ident)*) => {
-        $(impl Evaluate<$source_type, $output_type> for $type {
+        $(#[doc(hidden)] impl Evaluate<$source_type, $output_type> for $type {
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::evaluate`]. Implicitly converts [`" $source_type "`] into [`" $bridge_type "`]."]
             fn evaluate(
@@ -73,7 +73,7 @@ macro_rules! implement_for_others {
 
     // [`SetCoefficient`] trait
     ($bridge_type:ident, $type:ident, SetCoefficient for $($source_type:ident)*) => {
-        $(impl SetCoefficient<$source_type> for $type {
+        $(#[doc(hidden)] impl SetCoefficient<$source_type> for $type {
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::set_coeff`]. Implicitly converts [`" $source_type "`] into [`" $bridge_type "`]."]
             fn set_coeff(
@@ -89,7 +89,7 @@ macro_rules! implement_for_others {
 
     // [`SetEntry`] trait
     ($bridge_type:ident, $type:ident, SetEntry for $($source_type:ident)*) => {
-        $(impl SetEntry<$source_type> for $type {
+        $(#[doc(hidden)] impl SetEntry<$source_type> for $type {
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::set_entry`]. Implicitly converts [`" $source_type "`] into [`" $bridge_type "`]."]
             fn set_entry(
@@ -106,7 +106,7 @@ macro_rules! implement_for_others {
 
     // [`Mul`] trait scalar
     ($bridge_type:ident, $type:ident, Mul Scalar for $($source_type:ident)*) => {
-        $(impl Mul<$source_type> for &$type {
+        $(#[doc(hidden)] impl Mul<$source_type> for &$type {
             type Output = $type;
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::mul`]."]
@@ -116,6 +116,7 @@ macro_rules! implement_for_others {
             }
         }
 
+        #[doc(hidden)]
         impl Mul<$source_type> for $type {
             type Output = $type;
             paste::paste! {
@@ -126,6 +127,7 @@ macro_rules! implement_for_others {
             }
         }
 
+        #[doc(hidden)]
         impl Mul<&$type> for $source_type {
             type Output = $type;
             paste::paste! {
@@ -136,6 +138,7 @@ macro_rules! implement_for_others {
             }
         }
 
+        #[doc(hidden)]
         impl Mul<$type> for $source_type {
             type Output = $type;
             paste::paste! {
@@ -149,7 +152,7 @@ macro_rules! implement_for_others {
 
     // [`Distance`] trait
     ($out_type:ident, $type:ident, Distance for $($source_type:ident)*) => {
-        $(impl Distance<$source_type> for $type {
+        $(#[doc(hidden)] impl Distance<$source_type> for $type {
             type Output = $out_type;
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::distance`]. Implicitly converts [`" $source_type "`] into [`" $type "`]."]
@@ -165,7 +168,7 @@ macro_rules! implement_for_others {
 
     // [`Lcm`] trait
     ($out_type:ident, $type:ident, Lcm for $($source_type:ident)*) => {
-        $(impl Lcm<$source_type> for $type {
+        $(#[doc(hidden)] impl Lcm<$source_type> for $type {
             type Output = $out_type;
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::lcm`]. Implicitly converts [`" $source_type "`] into [`" $type "`]."]
@@ -178,7 +181,7 @@ macro_rules! implement_for_others {
 
     // [`Pow`] trait
     ($bridge_type:ident, $type:ident, Pow for $($source_type:ident)*) => {
-        $(impl Pow<$source_type> for $type {
+        $(#[doc(hidden)] impl Pow<$source_type> for $type {
             type Output = $type;
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::pow`]. Implicitly converts [`" $source_type "`] into [`" $bridge_type "`]."]
@@ -191,7 +194,7 @@ macro_rules! implement_for_others {
 
     // [`Gcd`] trait
     ($out_type:ident, $type:ident, Gcd for $($source_type:ident)*) => {
-        $(impl Gcd<$source_type> for $type {
+        $(#[doc(hidden)] impl Gcd<$source_type> for $type {
             type Output = $out_type;
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::gcd`]. Implicitly converts [`" $source_type "`] into [`" $type "`]."]
@@ -207,7 +210,7 @@ macro_rules! implement_for_others {
 
     // [`Xgcd`] trait
     ($out_type:ident, $type:ident, Xgcd for $($source_type:ident)*) => {
-        $(impl Xgcd<$source_type> for $type {
+        $(#[doc(hidden)] impl Xgcd<$source_type> for $type {
             type Output = ($out_type, $out_type, $out_type);
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::xgcd`]. Implicitly converts [`" $source_type "`] into [`" $type "`]."]
@@ -261,6 +264,7 @@ pub(crate) use implement_for_others;
 macro_rules! implement_for_owned {
     // [`Evaluate`] trait
     ($source_type:ident, $output_type:ident, $type:ident, Evaluate) => {
+        #[doc(hidden)]
         impl Evaluate<$source_type, $output_type> for $type {
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::evaluate`]."]
@@ -276,6 +280,7 @@ macro_rules! implement_for_owned {
 
     // [`SetCoefficient`] trait
     ($source_type:ident, $type:ident, SetCoefficient) => {
+        #[doc(hidden)]
         impl SetCoefficient<$source_type> for $type {
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::set_coeff`]."]
@@ -292,6 +297,7 @@ macro_rules! implement_for_owned {
 
     // [`SetEntry`] trait
     ($source_type:ident, $type:ident, SetEntry) => {
+        #[doc(hidden)]
         impl SetEntry<$source_type> for $type {
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::set_entry`]."]
@@ -309,6 +315,7 @@ macro_rules! implement_for_owned {
 
     // [`Distance`] trait
     ($out_type:ident, $type:ident, Distance) => {
+        #[doc(hidden)]
         impl Distance<$type> for $type {
             type Output = $out_type;
             paste::paste! {
@@ -325,6 +332,7 @@ macro_rules! implement_for_owned {
 
     // [`Lcm`] trait
     ($out_type:ident, $type:ident, Lcm) => {
+        #[doc(hidden)]
         impl Lcm<$type> for $type {
             type Output = $out_type;
             paste::paste! {
@@ -341,6 +349,7 @@ macro_rules! implement_for_owned {
 
     // [`Pow`] trait
     ($exp_type:ident, $type:ident, Pow) => {
+        #[doc(hidden)]
         impl Pow<$exp_type> for $type {
             type Output = $type;
             paste::paste! {
@@ -357,6 +366,7 @@ macro_rules! implement_for_owned {
 
     // [`Gcd`] trait
     ($out_type:ident, $type:ident, Gcd) => {
+        #[doc(hidden)]
         impl Gcd<$type> for $type {
             type Output = $out_type;
             paste::paste! {
@@ -373,6 +383,7 @@ macro_rules! implement_for_owned {
 
     // [`Xgcd`] trait
     ($out_type:ident, $type:ident, Xgcd) => {
+        #[doc(hidden)]
         impl Xgcd<$type> for $type {
             type Output = ($out_type, $out_type, $out_type);
             paste::paste! {

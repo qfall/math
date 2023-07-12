@@ -9,19 +9,16 @@
 //! This module contains the implementation of the [`Lcm`] trait for [`Z`].
 
 use super::Z;
-use crate::{
-    macros::for_others::{implement_for_others, implement_for_owned},
-    traits::Lcm,
-};
+use crate::traits::Lcm;
 use flint_sys::fmpz::fmpz_lcm;
 
-impl Lcm<&Z> for Z {
+impl<Integer: Into<Z>> Lcm<Integer> for Z {
     type Output = Z;
 
     /// Outputs the least common multiple (lcm) of the two given values
     /// with `lcm(a, 0) = 0`.
     ///
-    /// Paramters:
+    /// Parameters:
     /// - `other`: specifies one of the values of which the `lcm` is computed
     ///
     /// Returns the least common multiple of `self` and `other` as
@@ -39,15 +36,13 @@ impl Lcm<&Z> for Z {
     ///
     /// assert_eq!(Z::from(30), lcm);
     /// ```
-    fn lcm(&self, other: &Self) -> Self::Output {
+    fn lcm(&self, other: Integer) -> Self::Output {
+        let other = other.into();
         let mut out = Z::ZERO;
         unsafe { fmpz_lcm(&mut out.value, &self.value, &other.value) };
         out
     }
 }
-
-implement_for_owned!(Z, Z, Lcm);
-implement_for_others!(Z, Z, Lcm for u8 u16 u32 u64 i8 i16 i32 i64);
 
 #[cfg(test)]
 mod test_lcm {

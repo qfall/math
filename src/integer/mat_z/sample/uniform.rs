@@ -40,7 +40,7 @@ impl MatZ {
     /// ```
     /// use qfall_math::integer::MatZ;
     ///
-    /// let matrix = MatZ::sample_uniform(3, 3, &17, &26).unwrap();
+    /// let matrix = MatZ::sample_uniform(3, 3, 17, 26).unwrap();
     /// ```
     ///
     /// # Errors and Failures
@@ -51,18 +51,14 @@ impl MatZ {
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
     /// For further information see [`MatZ::new`].
-    pub fn sample_uniform<T1, T2>(
+    pub fn sample_uniform(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
-        lower_bound: &T1,
-        upper_bound: &T2,
-    ) -> Result<Self, MathError>
-    where
-        T1: Into<Z> + Clone,
-        T2: Into<Z> + Clone,
-    {
-        let lower_bound: Z = lower_bound.to_owned().into();
-        let upper_bound: Z = upper_bound.to_owned().into();
+        lower_bound: impl Into<Z>,
+        upper_bound: impl Into<Z>,
+    ) -> Result<Self, MathError> {
+        let lower_bound: Z = lower_bound.into();
+        let upper_bound: Z = upper_bound.into();
         let mut matrix = MatZ::new(num_rows, num_cols);
 
         let interval_size = &upper_bound - &lower_bound;
@@ -140,22 +136,22 @@ mod test_sample_uniform {
     }
 
     /// Checks whether `sample_uniform` is available for all types
-    /// implementing Into<Z> + Clone, i.e. u8, u16, u32, u64, i8, ...
+    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
     #[test]
     fn availability() {
         let modulus = Modulus::from(7);
         let z = Z::from(7);
 
-        let _ = MatZ::sample_uniform(1, 1, &0u16, &7u8);
-        let _ = MatZ::sample_uniform(1, 1, &0u32, &7u16);
-        let _ = MatZ::sample_uniform(1, 1, &0u64, &7u32);
-        let _ = MatZ::sample_uniform(1, 1, &0i8, &7u64);
-        let _ = MatZ::sample_uniform(1, 1, &0i16, &7i8);
-        let _ = MatZ::sample_uniform(1, 1, &0i32, &7i16);
-        let _ = MatZ::sample_uniform(1, 1, &0i64, &7i32);
-        let _ = MatZ::sample_uniform(1, 1, &Z::ZERO, &7i64);
-        let _ = MatZ::sample_uniform(1, 1, &0u8, &modulus);
-        let _ = MatZ::sample_uniform(1, 1, &0, &z);
+        let _ = MatZ::sample_uniform(1, 1, 0u16, 7u8);
+        let _ = MatZ::sample_uniform(1, 1, 0u32, 7u16);
+        let _ = MatZ::sample_uniform(1, 1, 0u64, 7u32);
+        let _ = MatZ::sample_uniform(1, 1, 0i8, 7u64);
+        let _ = MatZ::sample_uniform(1, 1, 0i16, 7i8);
+        let _ = MatZ::sample_uniform(1, 1, 0i32, 7i16);
+        let _ = MatZ::sample_uniform(1, 1, 0i64, 7i32);
+        let _ = MatZ::sample_uniform(1, 1, &Z::ZERO, 7i64);
+        let _ = MatZ::sample_uniform(1, 1, 0u8, &modulus);
+        let _ = MatZ::sample_uniform(1, 1, 0, &z);
     }
 
     /// Checks whether the size of uniformly random sampled matrices

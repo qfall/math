@@ -10,7 +10,6 @@
 
 use crate::{
     error::MathError,
-    macros::for_others::implement_for_owned,
     rational::{MatQ, Q},
     traits::{GetNumColumns, GetNumRows, SetEntry},
     utils::{
@@ -30,7 +29,7 @@ use std::{
     ptr::{null, null_mut},
 };
 
-impl SetEntry<&Q> for MatQ {
+impl<Rational: Into<Q>> SetEntry<Rational> for MatQ {
     /// Sets the value of a specific matrix entry according to a given `value` of type [`Q`].
     ///
     /// Parameters:
@@ -60,8 +59,9 @@ impl SetEntry<&Q> for MatQ {
         &mut self,
         row: impl TryInto<i64> + Display,
         column: impl TryInto<i64> + Display,
-        value: &Q,
+        value: Rational,
     ) -> Result<(), MathError> {
+        let value: Q = value.into();
         let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
 
         // since `self` is a correct matrix and both row and column
@@ -76,10 +76,6 @@ impl SetEntry<&Q> for MatQ {
         Ok(())
     }
 }
-
-implement_for_owned!(Q, MatQ, SetEntry);
-
-// TODO add implementation for other types as well
 
 impl MatQ {
     /// Sets a column of the given matrix to the provided column of `other`.
@@ -360,10 +356,38 @@ impl MatQ {
 mod test_setter {
     use super::Q;
     use crate::{
+        integer::Z,
+        integer_mod_q::Modulus,
         rational::MatQ,
         traits::{GetEntry, SetEntry},
     };
     use std::str::FromStr;
+
+    /// Test the different types that can be used to set an entry.
+    #[test]
+    fn availability() {
+        let mut matrix = MatQ::new(1, 1);
+
+        // Set with rationals
+        matrix.set_entry(0, 0, (1, 2)).unwrap();
+        matrix.set_entry(0, 0, (1i16, 2u64)).unwrap();
+        matrix.set_entry(0, 0, Q::from((1, 2))).unwrap();
+        matrix.set_entry(0, 0, &Q::from((1, 2))).unwrap();
+
+        // Set with integers
+        matrix.set_entry(0, 0, 1u8).unwrap();
+        matrix.set_entry(0, 0, 1i8).unwrap();
+        matrix.set_entry(0, 0, 1u16).unwrap();
+        matrix.set_entry(0, 0, 1i16).unwrap();
+        matrix.set_entry(0, 0, 1u32).unwrap();
+        matrix.set_entry(0, 0, 1i32).unwrap();
+        matrix.set_entry(0, 0, 1u64).unwrap();
+        matrix.set_entry(0, 0, 1i64).unwrap();
+        matrix.set_entry(0, 0, Z::from(1)).unwrap();
+        matrix.set_entry(0, 0, &Z::from(1)).unwrap();
+        matrix.set_entry(0, 0, Modulus::from(3)).unwrap();
+        matrix.set_entry(0, 0, &Modulus::from(3)).unwrap();
+    }
 
     /// Ensure that setting entries works with standard numbers.
     #[test]

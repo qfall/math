@@ -135,7 +135,7 @@ impl MatZq {
     pub fn mul_safe(&self, other: &Self) -> Result<Self, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
-                " Tried to add matrixes with moduli '{}' and '{}'.",
+                "Tried to multiply matrices with moduli '{}' and '{}'.",
                 self.get_mod(),
                 other.get_mod()
             )));

@@ -9,17 +9,11 @@
 //! Implementations to manipulate a [`PolyOverZ`] polynomial.
 
 use super::PolyOverZ;
-use crate::{
-    error::MathError,
-    integer::Z,
-    macros::for_others::{implement_for_others, implement_for_owned},
-    traits::SetCoefficient,
-    utils::index::evaluate_index,
-};
+use crate::{error::MathError, integer::Z, traits::SetCoefficient, utils::index::evaluate_index};
 use flint_sys::fmpz_poly::fmpz_poly_set_coeff_fmpz;
 use std::fmt::Display;
 
-impl SetCoefficient<&Z> for PolyOverZ {
+impl<Integer: Into<Z>> SetCoefficient<Integer> for PolyOverZ {
     /// Sets the coefficient of a polynomial [`PolyOverZ`].
     /// We advise to use small coefficients, since already 2^32 coefficients take space
     /// of roughly 34 GB. If not careful, be prepared that memory problems can occur, if
@@ -29,7 +23,7 @@ impl SetCoefficient<&Z> for PolyOverZ {
     ///
     /// Parameters:
     /// - `index`: the index of the coefficient to set (has to be positive)
-    /// - `value`: the new value the index should have from a borrowed [`Z`].
+    /// - `value`: the new value the index should have
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if either the index is negative
@@ -43,9 +37,8 @@ impl SetCoefficient<&Z> for PolyOverZ {
     /// use std::str::FromStr;
     ///
     /// let mut poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
-    /// let value = Z::from(1000);
     ///
-    /// assert!(poly.set_coeff(4, &value).is_ok());
+    /// assert!(poly.set_coeff(4, 1000).is_ok());
     /// ```
     ///
     /// # Errors and Failures
@@ -54,8 +47,9 @@ impl SetCoefficient<&Z> for PolyOverZ {
     fn set_coeff(
         &mut self,
         index: impl TryInto<i64> + Display,
-        value: &Z,
+        value: Integer,
     ) -> Result<(), MathError> {
+        let value = value.into();
         let index = evaluate_index(index)?;
 
         unsafe {
@@ -64,9 +58,6 @@ impl SetCoefficient<&Z> for PolyOverZ {
         Ok(())
     }
 }
-
-implement_for_others!(Z, PolyOverZ, SetCoefficient for i8 i16 i32 i64 u8 u16 u32 u64);
-implement_for_owned!(Z, PolyOverZ, SetCoefficient);
 
 #[cfg(test)]
 mod test_set_coeff {

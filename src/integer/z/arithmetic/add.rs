@@ -70,7 +70,7 @@ impl Add<&Q> for &Z {
     ///
     /// Returns the sum of both numbers as a [`Q`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     /// use qfall_math::integer::Z;
@@ -106,7 +106,7 @@ impl Add<&Zq> for &Z {
     ///
     /// Returns the sum of both numbers as a [`Zq`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
     /// use qfall_math::integer::Z;

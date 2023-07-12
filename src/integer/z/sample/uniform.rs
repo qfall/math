@@ -74,7 +74,7 @@ impl Z {
     /// ```
     /// use qfall_math::integer::Z;
     ///
-    /// let prime = Z::sample_prime_uniform(&1, &100).unwrap();
+    /// let prime = Z::sample_prime_uniform(1, 100).unwrap();
     /// ```
     ///
     /// # Errors and Failures
@@ -163,22 +163,22 @@ mod test_sample_uniform {
     }
 
     /// Checks whether `sample_uniform` is available for all types
-    /// implementing Into<Z>, i.e. u8, u16, u32, u64, i8, ...
+    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
     #[test]
     fn availability() {
         let modulus = Modulus::from(7);
         let z = Z::from(7);
 
-        let _ = Z::sample_uniform(&0u16, &7u8);
-        let _ = Z::sample_uniform(&0u32, &7u16);
-        let _ = Z::sample_uniform(&0u64, &7u32);
-        let _ = Z::sample_uniform(&0i8, &7u64);
-        let _ = Z::sample_uniform(&0i16, &7i8);
-        let _ = Z::sample_uniform(&0i32, &7i16);
-        let _ = Z::sample_uniform(&0i64, &7i32);
-        let _ = Z::sample_uniform(&Z::ZERO, &7i64);
-        let _ = Z::sample_uniform(&0u8, &modulus);
-        let _ = Z::sample_uniform(&0, &z);
+        let _ = Z::sample_uniform(0u16, 7u8);
+        let _ = Z::sample_uniform(0u32, 7u16);
+        let _ = Z::sample_uniform(0u64, 7u32);
+        let _ = Z::sample_uniform(0i8, 7u64);
+        let _ = Z::sample_uniform(0i16, 7i8);
+        let _ = Z::sample_uniform(0i32, 7i16);
+        let _ = Z::sample_uniform(0i64, 7i32);
+        let _ = Z::sample_uniform(&Z::ZERO, 7i64);
+        let _ = Z::sample_uniform(0u8, &modulus);
+        let _ = Z::sample_uniform(0, &z);
     }
 
     /// Roughly checks the uniformity of the distribution.
@@ -283,21 +283,21 @@ mod test_sample_prime_uniform {
     }
 
     /// Checks whether `sample_prime_uniform` is available for types
-    /// implementing Into<Z>, i.e. u8, u16, u32, u64, i8, ...
+    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
     #[test]
     fn availability() {
         let modulus = Modulus::from(7);
         let z = Z::from(7);
 
-        let _ = Z::sample_prime_uniform(&0u16, &7u8);
-        let _ = Z::sample_prime_uniform(&0u32, &7u16);
-        let _ = Z::sample_prime_uniform(&0u64, &7u32);
-        let _ = Z::sample_prime_uniform(&0i8, &7u64);
-        let _ = Z::sample_prime_uniform(&0i16, &7i8);
-        let _ = Z::sample_prime_uniform(&0i32, &7i16);
-        let _ = Z::sample_prime_uniform(&0i64, &7i32);
-        let _ = Z::sample_prime_uniform(&Z::ZERO, &7i64);
-        let _ = Z::sample_prime_uniform(&0u8, &modulus);
-        let _ = Z::sample_prime_uniform(&0, &z);
+        let _ = Z::sample_prime_uniform(0u16, 7u8);
+        let _ = Z::sample_prime_uniform(0u32, 7u16);
+        let _ = Z::sample_prime_uniform(0u64, 7u32);
+        let _ = Z::sample_prime_uniform(0i8, 7u64);
+        let _ = Z::sample_prime_uniform(0i16, 7i8);
+        let _ = Z::sample_prime_uniform(0i32, 7i16);
+        let _ = Z::sample_prime_uniform(0i64, 7i32);
+        let _ = Z::sample_prime_uniform(&Z::ZERO, 7i64);
+        let _ = Z::sample_prime_uniform(0u8, &modulus);
+        let _ = Z::sample_prime_uniform(0, &z);
     }
 }

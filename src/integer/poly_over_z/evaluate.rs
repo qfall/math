@@ -11,17 +11,11 @@
 //! of the [`Evaluate`] trait should be implemented.
 
 use super::PolyOverZ;
-use crate::{
-    integer::Z,
-    macros::for_others::{implement_for_others, implement_for_owned},
-    rational::Q,
-    traits::Evaluate,
-};
+use crate::{integer::Z, rational::Q, traits::Evaluate};
 use flint_sys::fmpz_poly::{fmpz_poly_evaluate_fmpq, fmpz_poly_evaluate_fmpz};
 
-impl Evaluate<&Z, Z> for PolyOverZ {
-    /// Evaluates a [`PolyOverZ`] on a given input of [`Z`]. Note that the
-    /// [`Z`] in this case is only a reference.
+impl<Integer: Into<Z>> Evaluate<Integer, Z> for PolyOverZ {
+    /// Evaluates a [`PolyOverZ`] on a given input.
     ///
     /// Parameters:
     /// - `value`: the value with which to evaluate the polynomial.
@@ -36,10 +30,10 @@ impl Evaluate<&Z, Z> for PolyOverZ {
     /// use std::str::FromStr;
     ///
     /// let poly = PolyOverZ::from_str("5  0 1 2 -3 1").unwrap();
-    /// let value = Z::from(3);
-    /// let res = poly.evaluate(&value);
+    /// let res: Z = poly.evaluate(3);
     /// ```
-    fn evaluate(&self, value: &Z) -> Z {
+    fn evaluate(&self, value: Integer) -> Z {
+        let value = value.into();
         let mut res = Z::default();
 
         unsafe { fmpz_poly_evaluate_fmpz(&mut res.value, &self.poly, &value.value) };
@@ -48,9 +42,8 @@ impl Evaluate<&Z, Z> for PolyOverZ {
     }
 }
 
-impl Evaluate<&Q, Q> for PolyOverZ {
-    /// Evaluates a [`PolyOverZ`] on a given input of [`Q`]. Note that the
-    /// [`Q`] in this case is only a reference.
+impl<Rational: Into<Q>> Evaluate<Rational, Q> for PolyOverZ {
+    /// Evaluates a [`PolyOverZ`] on a given input.
     ///
     /// Parameters:
     /// - `value`: the value with which to evaluate the polynomial.
@@ -66,9 +59,10 @@ impl Evaluate<&Q, Q> for PolyOverZ {
     ///
     /// let poly = PolyOverZ::from_str("5  0 1 2 -3 1").unwrap();
     /// let value = Q::from((3, 2));
-    /// let res = poly.evaluate(&value);
+    /// let res: Q = poly.evaluate(&value);
     /// ```
-    fn evaluate(&self, value: &Q) -> Q {
+    fn evaluate(&self, value: Rational) -> Q {
+        let value = value.into();
         let mut res = Q::default();
 
         unsafe { fmpz_poly_evaluate_fmpq(&mut res.value, &self.poly, &value.value) };
@@ -76,10 +70,6 @@ impl Evaluate<&Q, Q> for PolyOverZ {
         res
     }
 }
-
-implement_for_others!(Z, Z, PolyOverZ, Evaluate for u8 u16 u32 u64 i8 i16 i32 i64);
-implement_for_owned!(Z, Z, PolyOverZ, Evaluate);
-implement_for_owned!(Q, Q, PolyOverZ, Evaluate);
 
 #[cfg(test)]
 mod test_evaluate_z {
@@ -135,16 +125,16 @@ mod test_evaluate_z {
         let poly = PolyOverZ::from_str("2  1 2").unwrap();
 
         // signed
-        let _ = poly.evaluate(i64::MAX);
-        let _ = poly.evaluate(i32::MAX);
-        let _ = poly.evaluate(i16::MAX);
-        let _ = poly.evaluate(i8::MAX);
+        let _: Z = poly.evaluate(i64::MAX);
+        let _: Z = poly.evaluate(i32::MAX);
+        let _: Z = poly.evaluate(i16::MAX);
+        let _: Z = poly.evaluate(i8::MAX);
 
         //unsigned
-        let _ = poly.evaluate(u64::MAX);
-        let _ = poly.evaluate(u32::MAX);
-        let _ = poly.evaluate(u16::MAX);
-        let _ = poly.evaluate(u8::MAX);
+        let _: Z = poly.evaluate(u64::MAX);
+        let _: Z = poly.evaluate(u32::MAX);
+        let _: Z = poly.evaluate(u16::MAX);
+        let _: Z = poly.evaluate(u8::MAX);
     }
 
     /// Test if evaluate works with min of [`i64`], [`i32`], ...
@@ -153,16 +143,16 @@ mod test_evaluate_z {
         let poly = PolyOverZ::from_str("2  1 2").unwrap();
 
         // signed
-        let _ = poly.evaluate(i64::MIN);
-        let _ = poly.evaluate(i32::MIN);
-        let _ = poly.evaluate(i16::MIN);
-        let _ = poly.evaluate(i8::MIN);
+        let _: Z = poly.evaluate(i64::MIN);
+        let _: Z = poly.evaluate(i32::MIN);
+        let _: Z = poly.evaluate(i16::MIN);
+        let _: Z = poly.evaluate(i8::MIN);
 
         // unsigned
-        let _ = poly.evaluate(u64::MIN);
-        let _ = poly.evaluate(u32::MIN);
-        let _ = poly.evaluate(u16::MIN);
-        let _ = poly.evaluate(u8::MIN);
+        let _: Z = poly.evaluate(u64::MIN);
+        let _: Z = poly.evaluate(u32::MIN);
+        let _: Z = poly.evaluate(u16::MIN);
+        let _: Z = poly.evaluate(u8::MIN);
     }
 }
 

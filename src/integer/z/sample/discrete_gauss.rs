@@ -31,7 +31,7 @@ impl Z {
     /// ```
     /// use qfall_math::integer::Z;
     ///
-    /// let sample = Z::sample_discrete_gauss(&128, &0, &1).unwrap();
+    /// let sample = Z::sample_discrete_gauss(128, 0, 1).unwrap();
     /// ```
     ///
     /// # Errors and Failures
@@ -43,12 +43,11 @@ impl Z {
     /// Trapdoors for hard lattices and new cryptographic constructions.
     /// In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
     /// <https://dl.acm.org/doi/pdf/10.1145/1374376.1374407>
-    pub fn sample_discrete_gauss<T1, T2, T3>(n: T1, center: T2, s: T3) -> Result<Self, MathError>
-    where
-        T1: Into<Z>,
-        T2: Into<Q>,
-        T3: Into<Q>,
-    {
+    pub fn sample_discrete_gauss(
+        n: impl Into<Z>,
+        center: impl Into<Q>,
+        s: impl Into<Q>,
+    ) -> Result<Self, MathError> {
         let n: Z = n.into();
         let center: Q = center.into();
         let s: Q = s.into();
@@ -65,8 +64,8 @@ mod test_sample_discrete_gauss {
     // utils::sample::discrete_gauss::test_sample_z and are thus omitted here.
 
     /// Checks whether `sample_discrete_gauss` is available for all types
-    /// implementing Into<Z>, i.e. u8, u16, u32, u64, i8, ...
-    /// or Into<Q>, i.e. u8, i16, f32, Z, Q, ...
+    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
+    /// or [`Into<Q>`], i.e. u8, i16, f32, Z, Q, ...
     #[test]
     fn availability() {
         let z = Z::from(2);

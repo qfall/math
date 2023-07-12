@@ -49,13 +49,13 @@ impl Add for &MatPolyOverZ {
 }
 
 impl MatPolyOverZ {
-    /// Implements addition for two [`MatPolyOverZ`] matrixes.
+    /// Implements addition for two [`MatPolyOverZ`] matrices.
     ///
     ///
     /// Parameters:
     /// - `other`: specifies the value to add to `self`
     ///
-    /// Returns the sum of both matrixes as a [`MatPolyOverZ`] or an
+    /// Returns the sum of both matrices as a [`MatPolyOverZ`] or an
     /// error if the matrix dimensions mismatch.
     ///
     /// # Examples

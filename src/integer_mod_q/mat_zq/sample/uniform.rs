@@ -37,7 +37,7 @@ impl MatZq {
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     ///
-    /// let matrix = MatZq::sample_uniform(3, 3, &17);
+    /// let matrix = MatZq::sample_uniform(3, 3, 17);
     /// ```
     ///
     /// # Panics ...
@@ -74,7 +74,7 @@ mod test_sample_uniform {
     #[test]
     fn boundaries_kept_small() {
         for _ in 0..32 {
-            let matrix = MatZq::sample_uniform(1, 1, &17);
+            let matrix = MatZq::sample_uniform(1, 1, 17);
             let sample = matrix.get_entry(0, 0).unwrap();
             assert!(Z::ZERO <= sample);
             assert!(sample < Z::from(17));
@@ -107,24 +107,24 @@ mod test_sample_uniform {
     #[should_panic]
     #[test]
     fn invalid_modulus() {
-        let _ = MatZq::sample_uniform(4, 1, &1);
+        let _ = MatZq::sample_uniform(4, 1, 1);
     }
 
     /// Checks whether `sample_uniform` is available for all types
-    /// implementing Into<Z> + Clone, i.e. u8, u16, u32, u64, i8, ...
+    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
     #[test]
     fn availability() {
         let modulus = Modulus::from(7);
         let z = Z::from(7);
 
-        let _ = MatZq::sample_uniform(1, 1, &7u8);
-        let _ = MatZq::sample_uniform(1, 1, &7u16);
-        let _ = MatZq::sample_uniform(1, 1, &7u32);
-        let _ = MatZq::sample_uniform(1, 1, &7u64);
-        let _ = MatZq::sample_uniform(1, 1, &7i8);
-        let _ = MatZq::sample_uniform(1, 1, &7i16);
-        let _ = MatZq::sample_uniform(1, 1, &7i32);
-        let _ = MatZq::sample_uniform(1, 1, &7i64);
+        let _ = MatZq::sample_uniform(1, 1, 7u8);
+        let _ = MatZq::sample_uniform(1, 1, 7u16);
+        let _ = MatZq::sample_uniform(1, 1, 7u32);
+        let _ = MatZq::sample_uniform(1, 1, 7u64);
+        let _ = MatZq::sample_uniform(1, 1, 7i8);
+        let _ = MatZq::sample_uniform(1, 1, 7i16);
+        let _ = MatZq::sample_uniform(1, 1, 7i32);
+        let _ = MatZq::sample_uniform(1, 1, 7i64);
         let _ = MatZq::sample_uniform(1, 1, &modulus);
         let _ = MatZq::sample_uniform(1, 1, &z);
     }

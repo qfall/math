@@ -86,7 +86,7 @@ impl MatPolynomialRingZq {
     pub fn add_safe(&self, other: &Self) -> Result<MatPolynomialRingZq, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
-                " Tried to add polynomial with modulus '{}' and polynomial with modulus '{}'.",
+                "Tried to add polynomial with modulus '{}' and polynomial with modulus '{}'.",
                 self.modulus, other.modulus
             )));
         }

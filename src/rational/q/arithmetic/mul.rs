@@ -66,7 +66,7 @@ impl Mul<&Z> for &Q {
     ///
     /// Returns the product of both numbers as a [`Q`].
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     /// use qfall_math::integer::Z;

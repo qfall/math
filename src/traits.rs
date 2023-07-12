@@ -156,7 +156,7 @@ pub trait Lcm<T = Self> {
     /// Outputs the least common multiple (lcm) of the two given values
     /// with `lcm(a, 0) = 0`.
     ///
-    /// Paramters:
+    /// Parameters:
     /// - `other`: specifies one of the values of which the `lcm` is computed
     ///
     /// Returns the least common multiple of `self` and `other` as a new value.
@@ -183,7 +183,7 @@ pub trait Gcd<T = Self> {
     /// Outputs the greatest common divisor (gcd) of the two given values
     /// with `gcd(a, 0) = |a|`.
     ///
-    /// Paramters:
+    /// Parameters:
     /// - `other`: specifies one of the values of which the gcd is computed
     ///
     /// Returns the greatest common divisor of `self` and `other`.
@@ -198,7 +198,7 @@ pub trait Xgcd<T = Self> {
     /// Outputs the extended greatest common divisor (xgcd) of the two given values,
     /// i.e. a triple `(gcd(a, b), x, y)`, where `a*x + b*y = gcd(a, b)*`.
     ///
-    /// Paramters:
+    /// Parameters:
     /// - `other`: specifies one of the values of which the gcd is computed
     ///
     /// Returns a triple `(gcd(a, b), x, y)` containing the greatest common divisor,

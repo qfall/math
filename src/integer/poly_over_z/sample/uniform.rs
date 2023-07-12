@@ -40,7 +40,7 @@ impl PolyOverZ {
     /// ```
     /// use qfall_math::integer::{PolyOverZ, Z};
     ///
-    /// let sample = PolyOverZ::sample_uniform(3, &17, &26).unwrap();
+    /// let sample = PolyOverZ::sample_uniform(3, 17, 26).unwrap();
     /// ```
     ///
     /// # Errors and Failures
@@ -49,18 +49,14 @@ impl PolyOverZ {
     /// i.e. the interval size is at most `1`.
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
     /// the `nr_coefficients` is negative or it does not fit into an [`i64`].
-    pub fn sample_uniform<T1, T2>(
+    pub fn sample_uniform(
         nr_coeffs: impl TryInto<i64> + Display + Copy,
-        lower_bound: &T1,
-        upper_bound: &T2,
-    ) -> Result<Self, MathError>
-    where
-        T1: Into<Z> + Clone,
-        T2: Into<Z> + Clone,
-    {
+        lower_bound: impl Into<Z>,
+        upper_bound: impl Into<Z>,
+    ) -> Result<Self, MathError> {
         let nr_coeffs = evaluate_index(nr_coeffs)?;
-        let lower_bound: Z = lower_bound.to_owned().into();
-        let upper_bound: Z = upper_bound.to_owned().into();
+        let lower_bound: Z = lower_bound.into();
+        let upper_bound: Z = upper_bound.into();
 
         let interval_size = &upper_bound - &lower_bound;
         let mut poly_z = PolyOverZ::default();
@@ -141,21 +137,21 @@ mod test_sample_uniform {
     }
 
     /// Checks whether `sample_uniform` is available for all types
-    /// implementing Into<Z> + Clone, i.e. u8, u16, u32, u64, i8, ...
+    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
     #[test]
     fn availability() {
         let modulus = Modulus::from(7);
         let z = Z::from(7);
 
-        let _ = PolyOverZ::sample_uniform(1u64, &0u16, &7u8);
-        let _ = PolyOverZ::sample_uniform(1i64, &0u32, &7u16);
-        let _ = PolyOverZ::sample_uniform(1u8, &0u64, &7u32);
-        let _ = PolyOverZ::sample_uniform(1u16, &0i8, &7u64);
-        let _ = PolyOverZ::sample_uniform(1u32, &0i16, &7i8);
-        let _ = PolyOverZ::sample_uniform(1i32, &0i32, &7i16);
-        let _ = PolyOverZ::sample_uniform(1i16, &0i64, &7i32);
-        let _ = PolyOverZ::sample_uniform(1i8, &Z::ZERO, &7i64);
-        let _ = PolyOverZ::sample_uniform(1, &0u8, &modulus);
-        let _ = PolyOverZ::sample_uniform(1, &0, &z);
+        let _ = PolyOverZ::sample_uniform(1u64, 0u16, 7u8);
+        let _ = PolyOverZ::sample_uniform(1i64, 0u32, 7u16);
+        let _ = PolyOverZ::sample_uniform(1u8, 0u64, 7u32);
+        let _ = PolyOverZ::sample_uniform(1u16, 0i8, 7u64);
+        let _ = PolyOverZ::sample_uniform(1u32, 0i16, 7i8);
+        let _ = PolyOverZ::sample_uniform(1i32, 0i32, 7i16);
+        let _ = PolyOverZ::sample_uniform(1i16, 0i64, 7i32);
+        let _ = PolyOverZ::sample_uniform(1i8, &Z::ZERO, 7i64);
+        let _ = PolyOverZ::sample_uniform(1, 0u8, &modulus);
+        let _ = PolyOverZ::sample_uniform(1, 0, &z);
     }
 }
