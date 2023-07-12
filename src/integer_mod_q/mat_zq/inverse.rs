@@ -28,17 +28,17 @@ impl MatZq {
     /// use std::str::FromStr;
     ///
     /// let mut matrix = MatZq::from_str("[[1,2],[3,4]] mod 7").unwrap();
+    ///
     /// let matrix_invert = matrix.inverse_prime().unwrap();
     ///
     /// let id = &matrix_invert * &matrix;
-    ///
     /// assert_eq!("[[5, 1],[5, 3]] mod 7", matrix_invert.to_string());
     /// assert_eq!("[[1, 0],[0, 1]] mod 7", id.to_string());
     /// ```
     ///
     /// # Panics ...
     /// - if the number of rows is not equal to the number of columns.
-    /// - if the inverse of an entry can not be computed because the modulus is not prime.
+    /// - if the modulus is not prime.
     pub fn inverse_prime(&self) -> Option<MatZq> {
         // Check if determinant is coprime to modulus.
         let det = MatZ::from(self).det().ok()?;
@@ -74,6 +74,7 @@ impl MatZq {
     /// use std::str::FromStr;
     ///
     /// let mut matrix = MatZq::from_str("[[1,2],[3,4]] mod 7").unwrap();
+    ///
     /// let matrix_gauss = matrix.gaussian_elimination_prime();
     ///
     /// assert_eq!("[[1, 0],[0, 1]] mod 7", matrix_gauss.to_string());
@@ -116,9 +117,9 @@ mod test_inverse {
         let mat = MatZq::from_str("[[5,2],[2,1]] mod 11").unwrap();
 
         let inv = mat.inverse_prime().unwrap();
-        let diag = mat * inv;
 
-        let cmp = MatZq::from_str("[[1,0],[0,1]] mod 11").unwrap();
+        let diag = mat * inv;
+        let cmp = MatZq::identity(2, 2, 11);
         assert_eq!(cmp, diag);
     }
 
@@ -150,6 +151,15 @@ mod test_inverse {
         let mat = MatZq::from_str("[[2,0],[0,0]] mod 11").unwrap();
 
         assert!(mat.inverse_prime().is_none());
+    }
+
+    /// Ensure that the function panics if a matrix with a non prime modulus is given as input.
+    #[test]
+    #[should_panic]
+    fn not_prime_error() {
+        let mat = MatZq::from_str("[[2,0],[0,2]] mod 10").unwrap();
+
+        let _inv = mat.inverse_prime().unwrap();
     }
 }
 
