@@ -19,8 +19,7 @@ impl MatZq {
     /// Returns the inverse of the matrix if it exists (is square and
     /// has a determinant unequal to zero) and `None` otherwise.
     ///
-    /// Note that the modulus is assumed to be prime.
-    /// If it is not, it can happen that the function panics.
+    /// Note that the modulus is assumed to be prime, otherwise the function panics.
     ///
     /// # Examples
     /// ```
