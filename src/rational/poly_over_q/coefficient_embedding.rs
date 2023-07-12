@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! This modules contains implementations to transform a [`PolyOverQ`]
+//! This module contains implementations to transform a [`PolyOverQ`]
 //! into a [`MatQ`] and reverse by using the coefficient embedding.
 
 use crate::{
@@ -18,6 +18,34 @@ use crate::{
 };
 
 impl IntoCoefficientEmbedding<MatQ> for &PolyOverQ {
+    /// Computes the coefficient embedding of the polynomial
+    /// in a [`MatQ`] as a column vector, where the i-th entry
+    /// of the vector corresponds to the i-th coefficient.
+    /// It inverses the operation of [`PolyOverZq::from_coefficient_embedding`].
+    ///
+    /// Parameters:
+    /// - `size`: determines the number of rows of the embedding. It has to be larger
+    /// than the degree of the polynomial.
+    ///
+    /// Returns a coefficient embedding as a vector if `size` is large enough.
+    ///
+    /// # Examples
+    /// ```
+    /// use std::str::FromStr;
+    /// use qfall_math::{
+    ///     rational::{MatQ, PolyOverQ},
+    ///     traits::IntoCoefficientEmbedding,
+    /// };
+    ///
+    /// let poly = PolyOverQ::from_str("3  17/3 3/2 -5").unwrap();
+    /// let vector = poly.into_coefficient_embedding(4);
+    /// let cmp_vector = MatQ::from_str("[[17/3],[3/2],[-5],[0]]").unwrap();
+    /// assert_eq!(cmp_vector, vector)
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if `size` is not larger than the degree of the polynomial, i.e.
+    /// not all coefficients can be embedded.
     fn into_coefficient_embedding(self, size: impl Into<i64>) -> MatQ {
         let size = size.into();
         let length = self.get_degree() + 1;
@@ -39,6 +67,33 @@ impl IntoCoefficientEmbedding<MatQ> for &PolyOverQ {
 }
 
 impl FromCoefficientEmbedding<&MatQ> for PolyOverQ {
+    /// Computes a polynomial from a vector.
+    /// The first i-th entry of the column vector is taken
+    /// as the coefficient of the polynomial.
+    /// It inverses the operation of
+    /// [`PolyOverQ::into_coefficient_embedding`](#method.into_coefficient_embedding).
+    ///
+    /// Parameters:
+    /// - `embedding`: the column vector that encodes the embedding
+    ///
+    /// Returns a polynomial that corresponds to the embedding.
+    ///
+    /// # Examples
+    /// ```
+    /// use std::str::FromStr;
+    /// use qfall_math::{
+    ///     rational::{MatQ, PolyOverQ},
+    ///     traits::FromCoefficientEmbedding,
+    /// };
+    ///
+    /// let vector = MatQ::from_str("[[17/3],[3/2],[-5]]").unwrap();
+    /// let poly = PolyOverQ::from_coefficient_embedding(&vector);
+    /// let cmp_poly = PolyOverQ::from_str("3  17/3 3/2 -5").unwrap();
+    /// assert_eq!(cmp_poly, poly)
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the provided embedding is not a column vector.
     fn from_coefficient_embedding(embedding: &MatQ) -> Self {
         assert!(embedding.is_column_vector());
         let mut out = PolyOverQ::default();
