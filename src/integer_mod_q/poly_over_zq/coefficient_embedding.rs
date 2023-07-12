@@ -6,22 +6,23 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! This module contains implementations to transform a [`PolyOverZ`]
-//! into a [`MatZ`] and reverse by using the coefficient embedding.
+//! This module contains implementations to transform a [`PolyOverZq`]
+//! into a [`MatZq`] and reverse by using the coefficient embedding.
 
 use crate::{
-    integer::{MatZ, PolyOverZ},
+    integer::Z,
+    integer_mod_q::{MatZq, PolyOverZq},
     traits::{
         FromCoefficientEmbedding, GetCoefficient, GetEntry, GetNumRows, IntoCoefficientEmbedding,
         SetCoefficient, SetEntry,
     },
 };
 
-impl IntoCoefficientEmbedding<MatZ> for &PolyOverZ {
+impl IntoCoefficientEmbedding<MatZq> for &PolyOverZq {
     /// Computes the coefficient embedding of the polynomial
-    /// in a [`MatZ`] as a column vector, where the i-th entry
+    /// in a [`MatZq`] as a column vector, where the i-th entry
     /// of the vector corresponds to the i-th coefficient.
-    /// It inverts the operation of [`PolyOverZ::from_coefficient_embedding`].
+    /// It inverts the operation of [`PolyOverZq::from_coefficient_embedding`].
     ///
     /// Parameters:
     /// - `size`: determines the number of rows of the embedding. It has to be larger
@@ -33,20 +34,20 @@ impl IntoCoefficientEmbedding<MatZ> for &PolyOverZ {
     /// ```
     /// use std::str::FromStr;
     /// use qfall_math::{
-    ///     integer::{MatZ, PolyOverZ},
+    ///     integer_mod_q::{MatZq, PolyOverZq},
     ///     traits::IntoCoefficientEmbedding,
     /// };
     ///
-    /// let poly = PolyOverZ::from_str("3  17 3 -5").unwrap();
+    /// let poly = PolyOverZq::from_str("3  17 3 -5 mod 19").unwrap();
     /// let vector = poly.into_coefficient_embedding(4);
-    /// let cmp_vector = MatZ::from_str("[[17],[3],[-5],[0]]").unwrap();
+    /// let cmp_vector = MatZq::from_str("[[17],[3],[-5],[0]] mod 19").unwrap();
     /// assert_eq!(cmp_vector, vector)
     /// ```
     ///
     /// # Panics ...
     /// - if `size` is not larger than the degree of the polynomial, i.e.
     /// not all coefficients can be embedded.
-    fn into_coefficient_embedding(self, size: impl Into<i64>) -> MatZ {
+    fn into_coefficient_embedding(self, size: impl Into<i64>) -> MatZq {
         let size = size.into();
         let length = self.get_degree() + 1;
         assert!(
@@ -55,9 +56,10 @@ impl IntoCoefficientEmbedding<MatZ> for &PolyOverZ {
             as the length of the polynomial ({length}) is larger than \
             the provided size ({size})."
         );
-        let mut out = MatZ::new(size, 1);
+        let mut out = MatZq::new(size, 1, &self.modulus);
         for j in 0..size {
-            match self.get_coeff(j) {
+            let coeff: Result<Z, _> = self.get_coeff(j);
+            match coeff {
                 Ok(value) => out.set_entry(j, 0, value).unwrap(),
                 Err(_) => break,
             }
@@ -66,12 +68,12 @@ impl IntoCoefficientEmbedding<MatZ> for &PolyOverZ {
     }
 }
 
-impl FromCoefficientEmbedding<&MatZ> for PolyOverZ {
+impl FromCoefficientEmbedding<&MatZq> for PolyOverZq {
     /// Computes a polynomial from a vector.
     /// The first i-th entry of the column vector is taken
     /// as the coefficient of the polynomial.
     /// It inverts the operation of
-    /// [`PolyOverZ::into_coefficient_embedding`](#method.into_coefficient_embedding).
+    /// [`PolyOverZq::into_coefficient_embedding`](#method.into_coefficient_embedding).
     ///
     /// Parameters:
     /// - `embedding`: the column vector that encodes the embedding
@@ -82,24 +84,24 @@ impl FromCoefficientEmbedding<&MatZ> for PolyOverZ {
     /// ```
     /// use std::str::FromStr;
     /// use qfall_math::{
-    ///     integer::{MatZ, PolyOverZ},
+    ///     integer_mod_q::{MatZq, PolyOverZq},
     ///     traits::FromCoefficientEmbedding,
     /// };
     ///
-    /// let vector = MatZ::from_str("[[17],[3],[-5]]").unwrap();
-    /// let poly = PolyOverZ::from_coefficient_embedding(&vector);
-    /// let cmp_poly = PolyOverZ::from_str("3  17 3 -5").unwrap();
+    /// let vector = MatZq::from_str("[[17],[3],[-5]] mod 19").unwrap();
+    /// let poly = PolyOverZq::from_coefficient_embedding(&vector);
+    /// let cmp_poly = PolyOverZq::from_str("3  17 3 -5 mod 19").unwrap();
     /// assert_eq!(cmp_poly, poly)
     /// ```
     ///
     /// # Panics ...
     /// - if the provided embedding is not a column vector.
-    fn from_coefficient_embedding(embedding: &MatZ) -> Self {
+    fn from_coefficient_embedding(embedding: &MatZq) -> Self {
         assert!(embedding.is_column_vector());
-        let mut out = PolyOverZ::default();
+        let mut out = PolyOverZq::from(&embedding.get_mod());
         for i in 0..embedding.get_num_rows() {
-            out.set_coeff(i, embedding.get_entry(i, 0).unwrap())
-                .unwrap()
+            let entry: Z = embedding.get_entry(i, 0).unwrap();
+            out.set_coeff(i, &entry).unwrap()
         }
         out
     }
@@ -108,7 +110,7 @@ impl FromCoefficientEmbedding<&MatZ> for PolyOverZ {
 #[cfg(test)]
 mod test_into_coefficient_embedding {
     use crate::{
-        integer::{MatZ, PolyOverZ},
+        integer_mod_q::{MatZq, PolyOverZq},
         traits::IntoCoefficientEmbedding,
     };
     use std::str::FromStr;
@@ -116,11 +118,19 @@ mod test_into_coefficient_embedding {
     /// Ensure that the embedding works with large entries.
     #[test]
     fn large_entries() {
-        let poly = PolyOverZ::from_str(&format!("3  17 {} {}", i64::MAX, i64::MIN)).unwrap();
+        let poly =
+            PolyOverZq::from_str(&format!("3  17 {} {} mod {}", i64::MAX, i64::MIN, u64::MAX))
+                .unwrap();
 
         let vector = poly.into_coefficient_embedding(3);
 
-        let cmp_vector = MatZ::from_str(&format!("[[17],[{}],[{}]]", i64::MAX, i64::MIN)).unwrap();
+        let cmp_vector = MatZq::from_str(&format!(
+            "[[17],[{}],[{}]] mod {}",
+            i64::MAX,
+            i64::MIN,
+            u64::MAX
+        ))
+        .unwrap();
         assert_eq!(cmp_vector, vector)
     }
 
@@ -128,7 +138,7 @@ mod test_into_coefficient_embedding {
     #[test]
     #[should_panic]
     fn size_too_small() {
-        let poly = PolyOverZ::from_str("3  17 12 -1").unwrap();
+        let poly = PolyOverZq::from_str("3  17 1 2 mod 19").unwrap();
 
         let _ = poly.into_coefficient_embedding(2);
     }
@@ -137,7 +147,7 @@ mod test_into_coefficient_embedding {
 #[cfg(test)]
 mod test_from_coefficient_embedding {
     use crate::{
-        integer::{MatZ, PolyOverZ},
+        integer_mod_q::{MatZq, PolyOverZq},
         traits::FromCoefficientEmbedding,
     };
     use std::str::FromStr;
@@ -145,11 +155,19 @@ mod test_from_coefficient_embedding {
     /// Ensure that the embedding works with large entries.
     #[test]
     fn large_entries() {
-        let vector = MatZ::from_str(&format!("[[17],[{}],[{}]]", i64::MAX, i64::MIN)).unwrap();
+        let vector = MatZq::from_str(&format!(
+            "[[17],[{}],[{}]] mod {}",
+            i64::MAX,
+            i64::MIN,
+            u64::MAX
+        ))
+        .unwrap();
 
-        let poly = PolyOverZ::from_coefficient_embedding(&vector);
+        let poly = PolyOverZq::from_coefficient_embedding(&vector);
 
-        let cmp_poly = PolyOverZ::from_str(&format!("3  17 {} {}", i64::MAX, i64::MIN)).unwrap();
+        let cmp_poly =
+            PolyOverZq::from_str(&format!("3  17 {} {} mod {}", i64::MAX, i64::MIN, u64::MAX))
+                .unwrap();
         assert_eq!(cmp_poly, poly)
     }
 
@@ -157,8 +175,8 @@ mod test_from_coefficient_embedding {
     #[test]
     #[should_panic]
     fn not_column_vector() {
-        let vector = MatZ::from_str("[[17, 1],[-17, -1],[5, 9]]").unwrap();
+        let vector = MatZq::from_str("[[17, 1],[-17, -1],[5, 9]] mod 42").unwrap();
 
-        let _ = PolyOverZ::from_coefficient_embedding(&vector);
+        let _ = PolyOverZq::from_coefficient_embedding(&vector);
     }
 }
