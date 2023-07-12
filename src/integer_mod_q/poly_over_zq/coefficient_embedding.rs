@@ -22,13 +22,13 @@ impl IntoCoefficientEmbedding<MatZq> for &PolyOverZq {
     /// Computes the coefficient embedding of the polynomial
     /// in a [`MatZq`] as a column vector, where the i-th entry
     /// of the vector corresponds to the i-th coefficient.
-    /// It inverses the operation of [`PolyOverZq::from_coefficient_embedding`].
+    /// It inverts the operation of [`PolyOverZq::from_coefficient_embedding`].
     ///
     /// Parameters:
     /// - `size`: determines the number of rows of the embedding. It has to be larger
     /// than the degree of the polynomial.
     ///
-    /// Returns a coefficient embedding as a vector if `size` is large enough.
+    /// Returns a coefficient embedding as a column vector if `size` is large enough.
     ///
     /// # Examples
     /// ```
@@ -72,7 +72,7 @@ impl FromCoefficientEmbedding<&MatZq> for PolyOverZq {
     /// Computes a polynomial from a vector.
     /// The first i-th entry of the column vector is taken
     /// as the coefficient of the polynomial.
-    /// It inverses the operation of
+    /// It inverts the operation of
     /// [`PolyOverZq::into_coefficient_embedding`](#method.into_coefficient_embedding).
     ///
     /// Parameters:

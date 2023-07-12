@@ -22,7 +22,7 @@ impl IntoCoefficientEmbedding<MatZ> for &MatPolyOverZ {
     /// Computes the coefficient embedding of the row vector of polynomials
     /// in a [`MatZ`]. The (i,j) th entry corresponds to the i-th coefficient
     /// of the j-th polynomial provided.
-    /// It inverses the operation of [`MatPolyOverZ::from_coefficient_embedding`].
+    /// It inverts the operation of [`MatPolyOverZ::from_coefficient_embedding`].
     ///
     /// Parameters:
     /// - `size`: determines the number of rows of the embedding. It has to be larger
@@ -83,7 +83,7 @@ impl FromCoefficientEmbedding<&MatZ> for MatPolyOverZ {
     /// Computes a row vector of polynomials from a matrix.
     /// The j-th entry of the i-th column vector is taken
     /// as the coefficient of the polynomial of the i-th polynomial.
-    /// It inverses the operation of
+    /// It inverts the operation of
     /// [`MatPolyOverZ::into_coefficient_embedding`](#method.into_coefficient_embedding).
     ///
     /// Parameters:
