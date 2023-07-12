@@ -21,7 +21,7 @@ impl IntoCoefficientEmbedding<MatQ> for &PolyOverQ {
     /// Computes the coefficient embedding of the polynomial
     /// in a [`MatQ`] as a column vector, where the i-th entry
     /// of the vector corresponds to the i-th coefficient.
-    /// It inverses the operation of [`PolyOverZq::from_coefficient_embedding`].
+    /// It inverses the operation of [`PolyOverQ::from_coefficient_embedding`].
     ///
     /// Parameters:
     /// - `size`: determines the number of rows of the embedding. It has to be larger
