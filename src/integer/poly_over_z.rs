@@ -14,6 +14,7 @@ use flint_sys::fmpz_poly::fmpz_poly_struct;
 
 mod arithmetic;
 mod cmp;
+mod coefficient_embedding;
 mod default;
 mod evaluate;
 mod from;

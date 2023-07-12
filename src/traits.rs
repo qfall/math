@@ -238,3 +238,22 @@ pub(crate) unsafe trait AsInteger {
         None
     }
 }
+
+pub trait IntoCoefficientEmbedding<T> {
+    /// Returns a canonical coefficient embedding of the value,
+    /// e.g. a matrix representation of the coefficients of a polynomial.
+    ///
+    /// Parameters:
+    /// - `size`: determines the length of the object in which the coefficients are
+    /// embedded, e.g. length of the vector
+    fn into_coefficient_embedding(self, size: impl Into<i64>) -> T;
+}
+
+pub trait FromCoefficientEmbedding<T> {
+    /// Reverses the coefficient embedding, e.g. takes as input a vector and
+    /// returns a polynomial.
+    ///
+    /// Parameters:
+    /// - `embedding`: the coefficient embedding
+    fn from_coefficient_embedding(embedding: T) -> Self;
+}

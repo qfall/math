@@ -13,6 +13,7 @@ use flint_sys::fmpz_poly_mat::fmpz_poly_mat_struct;
 
 mod arithmetic;
 mod cmp;
+mod coefficient_embedding;
 mod concat;
 mod default;
 mod evaluate;
