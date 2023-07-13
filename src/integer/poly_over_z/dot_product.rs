@@ -19,9 +19,7 @@ impl PolyOverZ {
     /// Parameters:
     /// - `other`: specifies the other polynomial the dot product is calculated over
     ///
-    /// Returns the resulting `dot_product` as a [`PolyOverZ`] or an error,
-    /// if the given [`PolyOverZ`] instances have different
-    /// numbers of entries.
+    /// Returns the resulting `dot_product` as a [`PolyOverZ`].
     ///
     /// # Examples
     /// ```
@@ -33,10 +31,6 @@ impl PolyOverZ {
     ///
     /// let dot_prod = poly1.dot_product(&poly2).unwrap();
     /// ```
-    ///
-    /// Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::MismatchingVectorDimensions`] if
-    /// the given polynomials have different lengths.
     pub fn dot_product(&self, other: &Self) -> Result<Z, MathError> {
         let self_degree = self.get_degree();
         let other_degree = other.get_degree();
