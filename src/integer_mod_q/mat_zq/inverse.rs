@@ -11,7 +11,7 @@
 use super::MatZq;
 use crate::{
     integer::{MatZ, Z},
-    traits::{Concatenate, Gcd, GetNumRows},
+    traits::{Concatenate, GetNumRows},
 };
 use flint_sys::fmpz_mod_mat::fmpz_mod_mat_rref;
 
@@ -44,8 +44,7 @@ impl MatZq {
 
         // Check if the matrix is spare and compute determinant
         if let Ok(det) = MatZ::from(self).det() {
-            // Check if determinant is coprime to modulus.
-            if det.gcd(self.get_mod()) != Z::ONE {
+            if det == Z::ZERO {
                 None
             } else {
                 let dimensions = self.get_num_rows();
