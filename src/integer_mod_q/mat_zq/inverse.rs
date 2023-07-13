@@ -19,8 +19,7 @@ impl MatZq {
     /// Returns the inverse of the matrix if it exists (is square and
     /// has a determinant unequal to zero) and `None` otherwise.
     ///
-    /// Note that the modulus is assumed to be prime.
-    /// If it is not, it can happen that the function panics.
+    /// Note that the modulus is assumed to be prime, otherwise the function panics.
     ///
     /// # Examples
     /// ```
@@ -37,36 +36,44 @@ impl MatZq {
     /// ```
     ///
     /// # Panics ...
-    /// - if the number of rows is not equal to the number of columns.
     /// - if the modulus is not prime.
     pub fn inverse_prime(&self) -> Option<MatZq> {
-        // Check if determinant is coprime to modulus.
-        let det = MatZ::from(self).det().ok()?;
-        if det.gcd(self.get_mod()) != Z::ONE {
-            None
-        } else {
-            let dimensions = self.get_num_rows();
+        if !self.get_mod().is_prime() {
+            panic!("The modulus of the matrix is not prime");
+        }
 
-            // Concatenate the matrix with the identity matrix.
-            let matrix_identity = self
-                .concat_horizontal(&MatZq::identity(dimensions, dimensions, self.get_mod()))
-                .unwrap();
+        // Check if the matrix is spare and compute determinant
+        if let Ok(det) = MatZ::from(self).det() {
+            // Check if determinant is coprime to modulus.
+            if det.gcd(self.get_mod()) != Z::ONE {
+                None
+            } else {
+                let dimensions = self.get_num_rows();
 
-            let identity_inverse = matrix_identity.gaussian_elimination_prime();
-
-            // The inverse is now the right half of the matrix `identity_inverse`.
-            let mut inverse = MatZq::new(dimensions, dimensions, self.get_mod());
-            for i in 0..dimensions {
-                inverse
-                    .set_column(i, &identity_inverse, dimensions + i)
+                // Concatenate the matrix with the identity matrix.
+                let matrix_identity = self
+                    .concat_horizontal(&MatZq::identity(dimensions, dimensions, self.get_mod()))
                     .unwrap();
+
+                let identity_inverse = matrix_identity.gaussian_elimination_prime();
+
+                // The inverse is now the right half of the matrix `identity_inverse`.
+                let mut inverse = MatZq::new(dimensions, dimensions, self.get_mod());
+                for i in 0..dimensions {
+                    inverse
+                        .set_column(i, &identity_inverse, dimensions + i)
+                        .unwrap();
+                }
+                Some(inverse)
             }
-            Some(inverse)
+        } else {
+            None
         }
     }
 
-    /// Returns the `row echelon form` of the matrix using gaussian elimination or
-    /// panics if the modulus is not prime.
+    /// Returns the `row echelon form` of the matrix using gaussian elimination.
+    ///
+    /// Note that the modulus is assumed to be prime, otherwise the function panics.
     ///
     /// # Examples
     /// ```
