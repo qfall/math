@@ -118,8 +118,9 @@ impl PolyOverZq {
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use std::str::FromStr;
     ///
-    /// let matrix = PolyOverZq::from_str("2  1 3 mod 7");
+    /// let matrix = PolyOverZq::from_str("2  1 3 mod 7").unwrap();
     /// let modulus = matrix.get_mod();
     /// ```
     pub fn get_mod(&self) -> Modulus {
