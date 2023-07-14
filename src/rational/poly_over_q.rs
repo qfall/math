@@ -21,6 +21,7 @@ mod arithmetic;
 mod cmp;
 mod coefficient_embedding;
 mod default;
+mod dot_product;
 mod evaluate;
 mod from;
 mod get;
