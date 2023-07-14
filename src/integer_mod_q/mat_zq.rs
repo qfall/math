@@ -22,6 +22,7 @@ mod concat;
 mod default;
 mod from;
 mod get;
+mod inverse;
 mod ownership;
 mod properties;
 mod sample;
