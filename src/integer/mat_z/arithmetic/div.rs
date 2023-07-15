@@ -34,10 +34,12 @@ impl Div<&Z> for &MatZ {
     /// use qfall_math::integer::{MatZ, Z};
     /// use std::str::FromStr;
     ///
-    /// let mat1 = MatZ::from_str("[[3,6],[9,27]]").unwrap();
+    /// let mat = MatZ::from_str("[[3,5],[9,22]]").unwrap();
     /// let integer = Z::from(3);
     ///
-    /// let mat2 = &mat1 / &integer;
+    /// let mat_q = &mat / &integer;
+    ///
+    /// assert_eq!("[[1, 5/3],[3, 22/3]]", mat_q.to_string());
     /// ```
     ///
     /// # Panics ...
@@ -77,9 +79,11 @@ impl MatZ {
     /// use qfall_math::integer::{MatZ, Z};
     /// use std::str::FromStr;
     ///
-    /// let mut mat1 = MatZ::from_str("[[3,6],[9,27]]").unwrap();
+    /// let mut mat = MatZ::from_str("[[3,6],[9,27]]").unwrap();
     ///
-    /// let mat2 = unsafe{ mat1.div_exact(3)};
+    /// let mat_q = unsafe{ mat.div_exact(3)};
+    ///
+    /// assert_eq!("[[1, 2],[3, 9]]", mat_q.to_string());
     /// ```
     ///
     /// # Panics ...
@@ -100,8 +104,8 @@ impl MatZ {
     /// Parameters:
     /// - `divisor`: specifies the divisor by which the matrix is divided
     ///
-    /// Returns the product of `self` and `other` as a [`MatZ`] or panics if
-    /// the divisor is 0.
+    /// Returns the division of `self` divided by `other` as a [`MatZ`]
+    /// or panics if the divisor is 0.
     ///
     /// # Safety
     /// The divisor MUST exactly divide each element in the matrix.
@@ -113,13 +117,20 @@ impl MatZ {
     /// use qfall_math::integer::{MatZ, Z};
     /// use std::str::FromStr;
     ///
-    /// let mat1 = MatZ::from_str("[[3,6],[9,27]]").unwrap();
-    /// let integer = Z::from(3);
+    /// let mat = MatZ::from_str("[[3,6],[9,27]]").unwrap();
     ///
-    /// let mat2 = unsafe{&mat1.div_exact_ref(&integer)};
+    /// let mat_q = unsafe{&mat.div_exact_ref(3)};
+    ///
+    /// assert_eq!("[[1, 2],[3, 9]]", mat_q.to_string());
     /// ```
+    ///
+    /// # Panics ...
+    /// - if the divisor is `0`.
     pub unsafe fn div_exact_ref(&self, divisor: impl Into<Z>) -> MatZ {
         let divisor: Z = divisor.into();
+        if divisor == Z::ZERO {
+            panic!("DivisionByZero: tried to divide {} by zero", self);
+        }
 
         let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
         fmpz_mat_scalar_divexact_fmpz(&mut out.matrix, &self.matrix, &divisor.value);
@@ -130,57 +141,67 @@ impl MatZ {
 
 #[cfg(test)]
 mod test_div_exact {
-    use crate::integer_mod_q::Modulus;
-
     use super::*;
+    use crate::integer_mod_q::Modulus;
     use std::str::FromStr;
 
-    /// Checks if matrix division works fine for both borrowed.
+    /// Tests that division is available for other types
     #[test]
-    fn borrowed_correctness() {
-        let mat1 = MatZ::from_str("[[6,3],[3,6]]").unwrap();
-        let mat2 = mat1.clone();
-        let integer = Z::from(3);
+    fn availability() {
+        let mat = MatZ::from_str("[[6,3],[3,6]]").unwrap();
 
-        let mat1 = unsafe { mat1.div_exact_ref(&integer) };
-        let mat2 = unsafe { mat2.div_exact(&integer) };
+        let _ = unsafe { mat.div_exact_ref(3i64) };
+        let _ = unsafe { mat.div_exact_ref(3i32) };
+        let _ = unsafe { mat.div_exact_ref(3i16) };
+        let _ = unsafe { mat.div_exact_ref(3i8) };
+        let _ = unsafe { mat.div_exact_ref(3u64) };
+        let _ = unsafe { mat.div_exact_ref(3u32) };
+        let _ = unsafe { mat.div_exact_ref(3u16) };
+        let _ = unsafe { mat.div_exact_ref(3u8) };
+        let _ = unsafe { mat.div_exact_ref(Z::from(3)) };
+        let _ = unsafe { mat.div_exact_ref(Modulus::from(3)) };
+        let _ = unsafe { mat.div_exact_ref(&Z::from(3)) };
+        let _ = unsafe { mat.div_exact_ref(&Modulus::from(3)) };
 
-        let mat_cmp = MatZ::from_str("[[2,1],[1,2]]").unwrap();
-        assert_eq!(mat_cmp, mat1);
-        assert_eq!(mat_cmp, mat2);
+        let _ = unsafe { mat.clone().div_exact(3i64) };
+        let _ = unsafe { mat.clone().div_exact(3i32) };
+        let _ = unsafe { mat.clone().div_exact(3i16) };
+        let _ = unsafe { mat.clone().div_exact(3i8) };
+        let _ = unsafe { mat.clone().div_exact(3u64) };
+        let _ = unsafe { mat.clone().div_exact(3u32) };
+        let _ = unsafe { mat.clone().div_exact(3u16) };
+        let _ = unsafe { mat.clone().div_exact(3u8) };
+        let _ = unsafe { mat.clone().div_exact(Z::from(3)) };
+        let _ = unsafe { mat.clone().div_exact(Modulus::from(3)) };
+        let _ = unsafe { mat.clone().div_exact(&Z::from(3)) };
+        let _ = unsafe { mat.div_exact(&Modulus::from(3)) };
     }
 
-    /// Checks if matrix division works fine for both owned.
+    /// Checks if matrix division works correctly.
     #[test]
-    fn owned_correctness() {
-        let mat1 = MatZ::from_str("[[6,3],[3,6]]").unwrap();
-        let mat2 = mat1.clone();
-        let integer1 = Z::from(3);
-        let integer2 = Z::from(3);
+    fn division_correctness() {
+        let mat = MatZ::from_str("[[6,3],[3,6]]").unwrap();
 
-        let mat1 = unsafe { mat1.div_exact_ref(integer1) };
-        let mat2 = unsafe { mat2.div_exact(integer2) };
+        let mat_divided_1 = unsafe { mat.div_exact_ref(3) };
+        let mat_divided_2 = unsafe { mat.div_exact(3) };
 
         let mat_cmp = MatZ::from_str("[[2,1],[1,2]]").unwrap();
-        assert_eq!(mat_cmp, mat1);
-        assert_eq!(mat_cmp, mat2);
+        assert_eq!(mat_cmp, mat_divided_1);
+        assert_eq!(mat_cmp, mat_divided_2);
     }
 
-    /// Checks if matrix division works for different types.
+    /// Checks if matrix division works for negative numbers.
     #[test]
-    fn types_correctness() {
-        let mat1 = MatZ::from_str("[[6,3],[3,6]]").unwrap();
-        let mat2 = mat1.clone();
-        let integer1 = Modulus::from(3);
-        let integer2 = -3;
+    fn negative_correctness() {
+        let mat = MatZ::from_str("[[6,-3],[3,-6]]").unwrap();
 
-        let mat1 = unsafe { mat1.div_exact_ref(integer1) };
-        let mat2 = unsafe { mat2.div_exact_ref(integer2) };
+        let mat_divided_1 = unsafe { mat.div_exact_ref(3) };
+        let mat_divided_2 = unsafe { mat.div_exact_ref(-3) };
 
-        let mat_cmp1 = MatZ::from_str("[[2,1],[1,2]]").unwrap();
-        let mat_cmp2 = MatZ::from_str("[[-2,-1],[-1,-2]]").unwrap();
-        assert_eq!(mat_cmp1, mat1);
-        assert_eq!(mat_cmp2, mat2);
+        let mat_cmp1 = MatZ::from_str("[[2,-1],[1,-2]]").unwrap();
+        let mat_cmp2 = MatZ::from_str("[[-2,1],[-1,2]]").unwrap();
+        assert_eq!(mat_cmp1, mat_divided_1);
+        assert_eq!(mat_cmp2, mat_divided_2);
     }
 
     /// Checks if matrix division works fine for matrices of different dimensions.
@@ -188,39 +209,49 @@ mod test_div_exact {
     fn different_dimensions_correctness() {
         let mat1 = MatZ::from_str("[[-3],[0],[12]]").unwrap();
         let mat2 = MatZ::from_str("[[6,15,18],[3,-9,3]]").unwrap();
-        let integer = Z::from(3);
 
         let mat_cmp1 = MatZ::from_str("[[-1],[0],[4]]").unwrap();
         let mat_cmp2 = MatZ::from_str("[[2,5,6],[1,-3,1]]").unwrap();
-        assert_eq!(mat_cmp1, unsafe { mat1.div_exact_ref(&integer) });
-        assert_eq!(mat_cmp2, unsafe { mat2.div_exact_ref(&integer) });
-        assert_eq!(mat_cmp1, unsafe { mat1.div_exact(&integer) });
-        assert_eq!(mat_cmp2, unsafe { mat2.div_exact(&integer) });
+        assert_eq!(mat_cmp1, unsafe { mat1.div_exact_ref(3) });
+        assert_eq!(mat_cmp2, unsafe { mat2.div_exact_ref(3) });
+        assert_eq!(mat_cmp1, unsafe { mat1.div_exact(3) });
+        assert_eq!(mat_cmp2, unsafe { mat2.div_exact(3) });
     }
 
     /// Checks if matrix division works fine for large values.
     #[test]
     fn large_entries() {
-        let mat1 = MatZ::from_str(&format!("[[6],[{}],[2]]", i64::MAX / 3)).unwrap();
+        let mat1 = MatZ::from_str(&format!("[[6],[{}],[{}]]", i64::MAX / 3, i64::MIN / 3)).unwrap();
         let mat2 = MatZ::from_str(&format!("[[{}]]", i64::MAX)).unwrap();
-        let integer1 = Z::from(2);
-        let integer2 = Z::from(i64::MAX);
+        let mat3 = MatZ::from_str(&format!("[[{}]]", i64::MIN)).unwrap();
 
-        let mat_cmp1 = MatZ::from_str(&format!("[[3],[{}],[1]]", (i64::MAX / 6))).unwrap();
+        let mat_cmp1 =
+            MatZ::from_str(&format!("[[3],[{}],[{}]]", (i64::MAX / 6), (i64::MIN / 6))).unwrap();
         let mat_cmp2 = MatZ::from_str("[[1]]").unwrap();
-        assert_eq!(mat_cmp1, unsafe { mat1.div_exact_ref(&integer1) });
-        assert_eq!(mat_cmp2, unsafe { mat2.div_exact_ref(&integer2) });
-        assert_eq!(mat_cmp1, unsafe { mat1.div_exact(&integer1) });
-        assert_eq!(mat_cmp2, unsafe { mat2.div_exact(&integer2) });
+        assert_eq!(mat_cmp1, unsafe { mat1.div_exact_ref(2) });
+        assert_eq!(mat_cmp2, unsafe { mat2.div_exact_ref(i64::MAX) });
+        assert_eq!(mat_cmp2, unsafe { mat3.div_exact_ref(i64::MIN) });
+        assert_eq!(mat_cmp1, unsafe { mat1.div_exact(2) });
+        assert_eq!(mat_cmp2, unsafe { mat2.div_exact(i64::MAX) });
+        assert_eq!(mat_cmp2, unsafe { mat3.div_exact(i64::MIN) });
     }
 
-    /// Checks if matrix division yields an error with not divisible entries.
+    /// Checks if matrix division panics on division by 0.
     #[test]
-    fn not_divisible_error() {
+    #[should_panic]
+    fn div_by_0_error() {
         let mat = MatZ::from_str("[[6,2],[3,10]]").unwrap();
-        let integer = Z::from(3);
 
-        let _mat = &mat / &integer;
+        let _mat = unsafe { mat.div_exact(0) };
+    }
+
+    /// Checks if matrix division panics on division by 0.
+    #[test]
+    #[should_panic]
+    fn div_by_0_error_ref() {
+        let mat = MatZ::from_str("[[6,2],[3,10]]").unwrap();
+
+        let _mat = unsafe { mat.div_exact_ref(0) };
     }
 }
 
@@ -229,43 +260,28 @@ mod test_div {
     use super::*;
     use std::str::FromStr;
 
-    /// Checks if matrix division works fine for both borrowed.
+    /// Tests that division is available for other types
     #[test]
-    fn borrowed_correctness() {
-        let mat1 = MatZ::from_str("[[6,3],[3,6]]").unwrap();
+    fn availability() {
+        let mat = MatZ::from_str("[[6,5],[2,6]]").unwrap();
         let integer = Z::from(3);
 
-        let mat1 = &mat1 / &integer;
-
-        let mat_cmp = MatQ::from_str("[[2,1],[1,2]]").unwrap();
-        assert_eq!(mat_cmp, mat1);
+        let _ = &mat / &integer;
+        let _ = mat.clone() / &integer;
+        let _ = &mat / integer.clone();
+        let _ = mat / integer;
     }
 
-    /// Checks if matrix division works fine for both owned.
+    /// Checks if matrix division works correctly.
     #[test]
-    fn owned_correctness() {
-        let mat1 = MatZ::from_str("[[6,3],[3,6]]").unwrap();
+    fn division_correctness() {
+        let mat = MatZ::from_str("[[6,5],[2,6]]").unwrap();
         let integer = Z::from(3);
 
-        let mat1 = mat1 / integer;
+        let mat_q = &mat / &integer;
 
-        let mat_cmp = MatQ::from_str("[[2,1],[1,2]]").unwrap();
-        assert_eq!(mat_cmp, mat1);
-    }
-
-    /// Checks if matrix division works fine for half owned/borrowed.
-    #[test]
-    fn half_correctness() {
-        let mat1 = MatZ::from_str("[[6,3],[3,6]]").unwrap();
-        let mat2 = mat1.clone();
-        let integer1 = Z::from(3);
-
-        let mat1 = mat1 / &integer1;
-        let mat2 = &mat2 / integer1;
-
-        let mat_cmp = MatQ::from_str("[[2,1],[1,2]]").unwrap();
-        assert_eq!(mat_cmp, mat1);
-        assert_eq!(mat_cmp, mat2);
+        let mat_cmp = MatQ::from_str("[[2,5/3],[2/3,2]]").unwrap();
+        assert_eq!(mat_cmp, mat_q);
     }
 
     /// Checks if matrix division works fine for matrices of different dimensions.
@@ -284,23 +300,39 @@ mod test_div {
     /// Checks if matrix division works fine for large values.
     #[test]
     fn large_entries() {
-        let mat1 = MatZ::from_str(&format!("[[6],[{}],[2]]", i64::MAX / 3)).unwrap();
+        let mat1 = MatZ::from_str(&format!("[[6],[{}],[{}]]", i64::MAX / 3, i64::MIN / 3)).unwrap();
         let mat2 = MatZ::from_str(&format!("[[{}]]", i64::MAX)).unwrap();
+        let mat3 = MatZ::from_str(&format!("[[{}]]", i64::MIN)).unwrap();
         let integer1 = Z::from(2);
         let integer2 = Z::from(i64::MAX);
+        let integer3 = Z::from(i64::MIN);
 
-        let mat_cmp1 = MatQ::from_str(&format!("[[3],[{}],[1]]", (i64::MAX / 6))).unwrap();
+        let mat_cmp1 =
+            MatQ::from_str(&format!("[[3],[{}],[{}]]", (i64::MAX / 6), (i64::MIN / 6))).unwrap();
         let mat_cmp2 = MatQ::from_str("[[1]]").unwrap();
         assert_eq!(mat_cmp1, mat1 / integer1);
         assert_eq!(mat_cmp2, mat2 / integer2);
+        assert_eq!(mat_cmp2, mat3 / integer3);
+    }
+
+    /// Checks if matrix division panics on division by 0.
+    #[test]
+    #[should_panic]
+    fn div_by_0_error() {
+        let mat = MatZ::from_str("[[6,2],[3,10]]").unwrap();
+        let integer = Z::ZERO;
+
+        let _mat = mat / integer;
     }
 
     /// Checks if the doctest works.
     #[test]
     fn doctest_correct() {
-        let mat1 = MatZ::from_str("[[3,6],[9,27]]").unwrap();
+        let mat = MatZ::from_str("[[3,5],[9,22]]").unwrap();
         let integer = Z::from(3);
 
-        let _ = &mat1 / &integer;
+        let mat_q = &mat / &integer;
+
+        assert_eq!("[[1, 5/3],[3, 22/3]]", mat_q.to_string());
     }
 }
