@@ -27,7 +27,7 @@ impl Div<&Z> for &MatZ {
     /// - `divisor`: specifies the divisor by which the matrix is divided
     ///
     /// Returns the quotient of `self` divided by `other` as a [`MatQ`]
-    /// or panics if the divisor is 0.
+    /// or panics if the divisor is `0`.
     ///
     /// # Examples
     /// ```
@@ -45,7 +45,7 @@ impl Div<&Z> for &MatZ {
     /// # Panics ...
     /// - if the divisor is `0`.
     fn div(self, divisor: &Z) -> Self::Output {
-        if divisor == &Z::ZERO {
+        if divisor.is_zero() {
             panic!("DivisionByZero: tried to divide {} by zero", self);
         }
 
@@ -66,8 +66,8 @@ impl MatZ {
     /// Parameters:
     /// - `divisor`: specifies the divisor by which the matrix is divided
     ///
-    /// Returns the division of `self` divided by `other` as a [`MatZ`]
-    /// or panics if the divisor is 0.
+    /// Returns the quotient of `self` divided by `other` as a [`MatZ`]
+    /// or panics if the divisor is `0`.
     ///
     /// # Safety
     /// The divisor MUST exactly divide each element in the matrix.
@@ -90,7 +90,7 @@ impl MatZ {
     /// - if the divisor is `0`.
     pub unsafe fn div_exact(mut self, divisor: impl Into<Z>) -> MatZ {
         let divisor: Z = divisor.into();
-        if divisor == Z::ZERO {
+        if divisor.is_zero() {
             panic!("DivisionByZero: tried to divide {} by zero", self);
         }
 
@@ -104,8 +104,8 @@ impl MatZ {
     /// Parameters:
     /// - `divisor`: specifies the divisor by which the matrix is divided
     ///
-    /// Returns the division of `self` divided by `other` as a [`MatZ`]
-    /// or panics if the divisor is 0.
+    /// Returns the quotient of `self` divided by `other` as a [`MatZ`]
+    /// or panics if the divisor is `0`.
     ///
     /// # Safety
     /// The divisor MUST exactly divide each element in the matrix.
@@ -119,16 +119,16 @@ impl MatZ {
     ///
     /// let mat = MatZ::from_str("[[3,6],[9,27]]").unwrap();
     ///
-    /// let mat_q = unsafe{&mat.div_exact_ref(3)};
+    /// let mat_z = unsafe { mat.div_exact_ref(3) };
     ///
-    /// assert_eq!("[[1, 2],[3, 9]]", mat_q.to_string());
+    /// assert_eq!("[[1, 2],[3, 9]]", mat_z.to_string());
     /// ```
     ///
     /// # Panics ...
     /// - if the divisor is `0`.
     pub unsafe fn div_exact_ref(&self, divisor: impl Into<Z>) -> MatZ {
         let divisor: Z = divisor.into();
-        if divisor == Z::ZERO {
+        if divisor.is_zero() {
             panic!("DivisionByZero: tried to divide {} by zero", self);
         }
 
@@ -145,7 +145,7 @@ mod test_div_exact {
     use crate::integer_mod_q::Modulus;
     use std::str::FromStr;
 
-    /// Tests that division is available for other types
+    /// Tests that division is available for other types.
     #[test]
     fn availability() {
         let mat = MatZ::from_str("[[6,3],[3,6]]").unwrap();
@@ -260,7 +260,7 @@ mod test_div {
     use super::*;
     use std::str::FromStr;
 
-    /// Tests that division is available for other types
+    /// Tests that division is available for other types.
     #[test]
     fn availability() {
         let mat = MatZ::from_str("[[6,5],[2,6]]").unwrap();
