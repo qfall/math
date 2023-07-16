@@ -81,9 +81,9 @@ impl MatZ {
     ///
     /// let mut mat = MatZ::from_str("[[3,6],[9,27]]").unwrap();
     ///
-    /// let mat_q = unsafe{ mat.div_exact(3)};
+    /// let mat_z = unsafe { mat.div_exact(3) };
     ///
-    /// assert_eq!("[[1, 2],[3, 9]]", mat_q.to_string());
+    /// assert_eq!("[[1, 2],[3, 9]]", mat_z.to_string());
     /// ```
     ///
     /// # Panics ...
