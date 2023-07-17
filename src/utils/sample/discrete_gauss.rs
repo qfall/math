@@ -503,6 +503,10 @@ mod test_sample_d {
             }
         }
 
+        let expl_text = String::from("This test can fail with probability close to 0. 
+        It fails if the length of the sampled is longer than expected. 
+        If this happens, rerun the tests several times and check whether this issue comes up again.");
+
         let center = MatQ::new(&n, 1);
         let standard_deviation =
             len * n.log(2).unwrap().sqrt() * (n.log(2).unwrap().log(2).unwrap());
@@ -511,7 +515,9 @@ mod test_sample_d {
             let res = sample_d(&basis, &n, &center, &standard_deviation).unwrap();
 
             assert!(
-                res.norm_eucl_sqrd().unwrap() <= standard_deviation.pow(2).unwrap().round() * &n
+                res.norm_eucl_sqrd().unwrap() <= standard_deviation.pow(2).unwrap().round() * &n,
+                "{}",
+                expl_text
             );
         }
     }
