@@ -119,7 +119,7 @@ pub(crate) fn sample_z(n: &Z, center: &Q, s: &Q) -> Result<Z, MathError> {
 /// - if `s = 0`.
 fn gaussian_function(x: &Z, c: &Q, s: &Q) -> Q {
     // TODO: Change this functions signature to use std_deviation/ sigma and not Gaussian parameter
-    let num = Q::MINUS_ONE * Q::PI * (Q::from(x.to_owned()) - c).pow(2).unwrap();
+    let num = Q::MINUS_ONE * Q::PI * (x - c).pow(2).unwrap();
     let den = s.pow(2).unwrap();
     let res: Q = num / den;
     res.exp()
@@ -182,7 +182,7 @@ pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ
         )));
     }
 
-    let basis_gso = MatQ::from_mat_z(basis).gso();
+    let basis_gso = MatQ::from(basis).gso();
 
     let mut out = MatZ::new(basis_gso.get_num_rows(), 1);
 
@@ -355,7 +355,7 @@ mod test_gaussian_function {
 
 #[cfg(test)]
 mod test_sample_d {
-    use crate::traits::Concatenate;
+    use crate::traits::{Concatenate, GetNumColumns, Pow};
     use crate::utils::sample::discrete_gauss::sample_d;
     use crate::{
         integer::{MatZ, Z},
@@ -486,5 +486,33 @@ mod test_sample_d {
         let res = sample_d(&basis, &n, &center, &gaussian_parameter);
 
         assert!(res.is_err());
+    }
+
+    /// Ensures that the concentration bound holds.
+    #[test]
+    fn concentration_bound() {
+        let n = Z::from(20);
+        let basis = MatZ::sample_uniform(&n, &n, 0, 5000).unwrap();
+        let orth = MatQ::from(&basis).gso();
+        let mut len = Q::ZERO;
+        for i in 0..orth.get_num_columns() {
+            let column = orth.get_column(i).unwrap();
+            let column_len = column.norm_eucl_sqrd().unwrap().sqrt();
+            if column_len > len {
+                len = column_len
+            }
+        }
+
+        let center = MatQ::new(&n, 1);
+        let standard_deviation =
+            len * n.log(2).unwrap().sqrt() * (n.log(2).unwrap().log(2).unwrap());
+
+        for _ in 0..20 {
+            let res = sample_d(&basis, &n, &center, &standard_deviation).unwrap();
+
+            assert!(
+                res.norm_eucl_sqrd().unwrap() <= standard_deviation.pow(2).unwrap().round() * &n
+            );
+        }
     }
 }
