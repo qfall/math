@@ -133,8 +133,8 @@ mod test_mul {
         assert_eq!(c, Q::from(42));
     }
 
-    #[test]
     /// Testing multiplication for large numerators and divisors
+    #[test]
     fn mul_large() {
         let a: Q = Q::from(i64::MAX);
         let b: Q = Q::from(2);

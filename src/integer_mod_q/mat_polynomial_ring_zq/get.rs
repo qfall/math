@@ -364,6 +364,7 @@ mod test_collect_entries {
 
     const LARGE_PRIME: u64 = u64::MAX - 58;
 
+    /// Ensures that all entries of the polynomial are actually collected in the vector.
     #[test]
     fn all_entries_collected() {
         let modulus =
@@ -403,6 +404,7 @@ mod test_collect_entries {
         assert_eq!(PolyOverZ::from_str("1  42").unwrap(), entry3);
     }
 
+    /// Ensure that the doc-test compiles and works correctly.
     #[test]
     fn doc_test() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();

@@ -401,6 +401,7 @@ mod test_collect_entries {
     use super::MatZ;
     use std::str::FromStr;
 
+    /// Ensures that all entries from the matrices are actually collected in the vector.
     #[test]
     fn all_entries_collected() {
         let mat_1 = MatZ::from_str(&format!("[[1,2],[{},{}],[3,4]]", i64::MAX, i64::MIN)).unwrap();

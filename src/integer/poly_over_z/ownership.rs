@@ -67,7 +67,7 @@ mod test_clone {
     use crate::integer::PolyOverZ;
     use std::str::FromStr;
 
-    /// check if a clone of a [`PolyOverZ`] with an entry larger than 64 bits
+    /// Check if a clone of a [`PolyOverZ`] with an entry larger than 64 bits
     /// works
     #[test]
     fn large_entries() {
@@ -84,7 +84,7 @@ mod test_clone {
         assert_eq!(poly_1.to_string(), poly_2.to_string())
     }
 
-    /// check if several instantiations are cloned correctly
+    /// Check if several instantiations are cloned correctly
     #[test]
     fn small_examples() {
         let pos_1 = PolyOverZ::from_str("2  0 11").unwrap();
@@ -100,7 +100,7 @@ mod test_clone {
         assert_eq!(neg_1.to_string(), neg_2.to_string());
     }
 
-    /// check if a cloned value is still alive after the original value ran out of scope
+    /// Check if a cloned value is still alive after the original value ran out of scope
     #[test]
     #[allow(clippy::redundant_clone)]
     fn keep_alive() {

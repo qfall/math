@@ -132,8 +132,8 @@ mod test_sub {
         assert_eq!(c, Q::from(21));
     }
 
-    #[test]
     /// Testing subtraction for large numerators and divisors
+    #[test]
     fn sub_large() {
         let a: Q = Q::from(i64::MAX);
         let b: Q = Q::from(u64::MAX - 1);

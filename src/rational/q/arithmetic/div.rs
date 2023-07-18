@@ -171,8 +171,8 @@ mod test_div {
         assert_eq!(c, Q::from((4, 42)));
     }
 
-    #[test]
     /// Testing division for large numerators and divisors
+    #[test]
     fn div_large() {
         let a: Q = Q::from(u64::MAX - 1);
         let b: Q = Q::from(2);

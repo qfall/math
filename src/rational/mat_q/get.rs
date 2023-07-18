@@ -442,6 +442,7 @@ mod test_collect_entries {
     use super::MatQ;
     use std::str::FromStr;
 
+    /// Ensures that all entries from the matrices are actually collected in the vector.
     #[test]
     fn all_entries_collected() {
         let mat_1 = MatQ::from_str(&format!(

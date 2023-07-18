@@ -571,6 +571,7 @@ mod test_collect_entries {
     use super::MatZq;
     use std::str::FromStr;
 
+    /// Ensures that all entries from the matrices are actually collected in the vector.
     #[test]
     fn all_entries_collected() {
         let mat_1 = MatZq::from_str(&format!(
@@ -604,6 +605,7 @@ mod test_collect_lengths {
     use super::{MatZq, Z};
     use std::str::FromStr;
 
+    /// Ensures that the lengths of the matrices are collected correctly.
     #[test]
     fn lengths_correctly_computed() {
         let mat_1 = MatZq::from_str(&format!(

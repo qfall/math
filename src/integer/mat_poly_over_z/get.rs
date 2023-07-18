@@ -430,6 +430,7 @@ mod test_collect_entries {
     use super::MatPolyOverZ;
     use std::str::FromStr;
 
+    /// Ensures that all entries from the matrices are actually collected in the vector.
     #[test]
     fn all_entries_collected() {
         let mat_1 = MatPolyOverZ::from_str(&format!(
