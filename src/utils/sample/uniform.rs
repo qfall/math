@@ -101,7 +101,7 @@ fn sample_bits_uniform(nr_bits: usize) -> Vec<u8> {
 /// Binary search to find the first zero byte.
 ///
 /// As we do not mark the filled bytes, the first zero byte is our
-/// best guess to identify a not yet randomly/ unfiilled byte.
+/// best guess to identify a not yet randomly/ unfilled byte.
 ///
 /// Parameters:
 /// - `byte_arr`: specifies the slice whose first zero byte is looked for

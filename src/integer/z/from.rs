@@ -151,7 +151,7 @@ impl Z {
     /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
-    /// // instantiate a byte-vector correspinding to "100000001"
+    /// // instantiate a byte-vector corresponding to "100000001"
     /// // vec![0x01, 0x01] would also be sufficient
     /// let bytes: Vec<u8> = vec![1, 1];
     ///  

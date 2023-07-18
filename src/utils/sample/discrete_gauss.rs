@@ -428,7 +428,7 @@ mod test_sample_d {
             hnf_basis.get_column(1).unwrap(),
             hnf_basis_concat_sample.get_column(1).unwrap()
         );
-        // check whether last vector is zero, i.e. was linearly dependend and part of lattice
+        // check whether last vector is zero, i.e. was linearly dependent and part of lattice
         assert_eq!(
             MatZ::new(2, 1),
             hnf_basis_concat_sample.get_column(2).unwrap()
