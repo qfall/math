@@ -516,8 +516,7 @@ mod test_sample_d {
 
             assert!(
                 res.norm_eucl_sqrd().unwrap() <= gaussian_parameter.pow(2).unwrap().round() * &n,
-                "{}",
-                expl_text
+                "{expl_text}"
             );
         }
     }
