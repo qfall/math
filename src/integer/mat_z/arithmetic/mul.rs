@@ -35,7 +35,7 @@ impl Mul for &MatZ {
     /// use std::str::FromStr;
     ///
     /// let a = MatZ::from_str("[[2,1],[1,2]]").unwrap();
-    /// let b = MatZ::from_str("[[1,0],[0,1]]").unwrap();
+    /// let b = MatZ::identity(2, 2);
     ///
     /// let c = &a * &b;
     /// let d = a * b;
@@ -64,7 +64,7 @@ impl MatZ {
     /// use std::str::FromStr;
     ///
     /// let a = MatZ::from_str("[[2,1],[1,2]]").unwrap();
-    /// let b = MatZ::from_str("[[1,0],[0,1]]").unwrap();
+    /// let b = MatZ::identity(2, 2);
     ///
     /// let c: MatZ = a.mul_safe(&b).unwrap();
     /// ```
@@ -103,7 +103,7 @@ mod test_mul {
     #[test]
     fn square_correctness() {
         let mat_1 = MatZ::from_str("[[2,1],[1,2]]").unwrap();
-        let mat_2 = MatZ::from_str("[[1,0],[0,1]]").unwrap();
+        let mat_2 = MatZ::identity(2, 2);
         let mat_3 = MatZ::from_str("[[1,2],[2,1]]").unwrap();
         let cmp = MatZ::from_str("[[4,5],[5,4]]").unwrap();
 

@@ -20,9 +20,8 @@ impl MatQ {
     /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
-    /// use std::str::FromStr;
     ///
-    /// let value = MatQ::from_str("[[1, 0],[0, 1]]").unwrap();
+    /// let value = MatQ::identity(2, 2);
     /// assert!(value.is_identity());
     /// ```
     ///
@@ -78,7 +77,7 @@ mod test_is_identity {
     /// Ensure that is_identity returns `true` for identity matrices.
     #[test]
     fn identity_detection() {
-        let ident = MatQ::from_str("[[1, 0],[0, 1]]").unwrap();
+        let ident = MatQ::identity(2, 2);
 
         assert!(ident.is_identity());
     }
