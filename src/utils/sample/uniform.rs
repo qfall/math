@@ -264,9 +264,8 @@ mod test_sample_bits_uniform {
 
             if !found_1 {
                 panic!(
-                    "None of the inspected 64 random bits at position {} was 1. 
-                    This seems suspicious.",
-                    position
+                    "None of the inspected 64 random bits at position {position} was 1. 
+                    This seems suspicious."
                 );
             }
         }

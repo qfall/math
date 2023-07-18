@@ -40,9 +40,7 @@ impl Z {
     /// # Panics ...
     /// - if the divisor is `0`.
     pub fn div_floor(&self, other: &Self) -> Self {
-        if other == &Z::ZERO {
-            panic!("Tried to divide {} by 0", self);
-        }
+        assert!(!other.is_zero(), "Tried to divide {self} by zero.");
         let mut out = Z::default();
         unsafe {
             fmpz_fdiv_q(&mut out.value, &self.value, &other.value);
@@ -72,9 +70,7 @@ impl Z {
     /// # Panics ...
     /// - if the divisor is `0`.
     pub fn div_ceil(&self, other: &Self) -> Self {
-        if other == &Z::ZERO {
-            panic!("Tried to divide {} by 0", self);
-        }
+        assert!(!other.is_zero(), "Tried to divide {self} by zero.");
         let mut out = Z::default();
         unsafe {
             fmpz_cdiv_q(&mut out.value, &self.value, &other.value);
@@ -108,9 +104,7 @@ impl Z {
     /// # Panics ...
     /// - if the divisor is `0`.
     pub fn div_exact(&self, other: &Self) -> Option<Self> {
-        if other == &Z::ZERO {
-            panic!("Tried to divide {} by 0", self);
-        }
+        assert!(!other.is_zero(), "Tried to divide {self} by zero.");
 
         let mut quotient = Z::default();
         let mut reminder = Z::default();
@@ -240,12 +234,7 @@ impl Div<&Q> for &Z {
     /// # Panics ...
     /// - if the divisor is `0`.
     fn div(self, other: &Q) -> Self::Output {
-        if other == &Q::ZERO {
-            panic!(
-                "DivisionByZero: tried to divide {} by a Q of value 0",
-                other
-            );
-        }
+        assert!(!other.is_zero(), "Tried to divide {self} by zero.");
         Q::from(self.clone()) / other
     }
 }

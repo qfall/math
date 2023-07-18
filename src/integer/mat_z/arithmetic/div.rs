@@ -45,10 +45,7 @@ impl Div<&Z> for &MatZ {
     /// # Panics ...
     /// - if the divisor is `0`.
     fn div(self, divisor: &Z) -> Self::Output {
-        if divisor.is_zero() {
-            panic!("DivisionByZero: tried to divide {} by zero", self);
-        }
-
+        assert!(!divisor.is_zero(), "Tried to divide {self} by zero.");
         let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns());
         unsafe {
             fmpq_mat_set_fmpz_mat_div_fmpz(&mut out.matrix, &self.matrix, &divisor.value);
@@ -90,9 +87,7 @@ impl MatZ {
     /// - if the divisor is `0`.
     pub unsafe fn div_exact(mut self, divisor: impl Into<Z>) -> MatZ {
         let divisor: Z = divisor.into();
-        if divisor.is_zero() {
-            panic!("DivisionByZero: tried to divide {} by zero", self);
-        }
+        assert!(!divisor.is_zero(), "Tried to divide {self} by zero.");
 
         fmpz_mat_scalar_divexact_fmpz(&mut self.matrix, &self.matrix, &divisor.value);
 
@@ -128,9 +123,7 @@ impl MatZ {
     /// - if the divisor is `0`.
     pub unsafe fn div_exact_ref(&self, divisor: impl Into<Z>) -> MatZ {
         let divisor: Z = divisor.into();
-        if divisor.is_zero() {
-            panic!("DivisionByZero: tried to divide {} by zero", self);
-        }
+        assert!(!divisor.is_zero(), "Tried to divide {self} by zero.");
 
         let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
         fmpz_mat_scalar_divexact_fmpz(&mut out.matrix, &self.matrix, &divisor.value);

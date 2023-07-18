@@ -85,9 +85,10 @@ impl Mul<&MatZ> for &MatQ {
     /// # Panics ...
     /// - if the dimensions of `self` and `other` do not match for multiplication.
     fn mul(self, other: &MatZ) -> Self::Output {
-        if self.get_num_columns() != other.get_num_rows() {
-            panic!("Tried to multiply matrices with mismatching matrix dimensions.");
-        }
+        assert!(
+            self.get_num_columns() == other.get_num_rows(),
+            "Tried to multiply matrices with mismatching matrix dimensions."
+        );
 
         let mut new = MatQ::new(self.get_num_rows(), other.get_num_columns());
         unsafe { fmpq_mat_mul_fmpz_mat(&mut new.matrix, &self.matrix, &other.matrix) };

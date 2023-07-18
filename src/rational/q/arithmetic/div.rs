@@ -81,9 +81,8 @@ impl Div<&Z> for &Q {
     /// let f: Q = c / &Z::from(42);
     /// ```
     fn div(self, other: &Z) -> Self::Output {
-        if other == &Z::ZERO {
-            panic!("Tried to divide {} by 0", self);
-        }
+        assert!(!other.is_zero(), "Tried to divide {self} by zero.");
+
         let mut out = Q::default();
         unsafe {
             fmpq_div_fmpz(&mut out.value, &self.value, &other.value);
