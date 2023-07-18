@@ -372,12 +372,12 @@ mod test_setter {
     #[test]
     fn standard_value() {
         let mut matrix = MatPolyOverZ::new(5, 10);
-        let value = PolyOverZ::from_str(&format!("2  {} 1", 889)).unwrap();
+        let value = PolyOverZ::from_str("2  889 1").unwrap();
         matrix.set_entry(4, 7, &value).unwrap();
 
         let entry = matrix.get_entry(4, 7).unwrap();
 
-        assert_eq!(format!("2  {} 1", 889), entry.to_string());
+        assert_eq!("2  889 1", entry.to_string());
     }
 
     /// Ensure that setting entries works with large numbers.
@@ -409,7 +409,7 @@ mod test_setter {
     fn big_positive_ref() {
         let mut matrix = MatPolyOverZ::new(5, 10);
         let value1 = PolyOverZ::from_str(&format!("2  {} 1", u64::MAX)).unwrap();
-        let value2 = PolyOverZ::from_str(&format!("2  {} 1", 8)).unwrap();
+        let value2 = PolyOverZ::from_str("2  8 1").unwrap();
         matrix.set_entry(1, 1, &value1).unwrap();
         matrix.set_entry(0, 0, value2).unwrap();
 
@@ -417,7 +417,7 @@ mod test_setter {
         let entry2 = matrix.get_entry(0, 0).unwrap();
 
         assert_eq!(format!("2  {} 1", u64::MAX), entry1.to_string());
-        assert_eq!(format!("2  {} 1", 8), entry2.to_string());
+        assert_eq!("2  8 1", entry2.to_string());
     }
 
     /// Ensure that setting entries works with large negative numbers.

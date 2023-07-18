@@ -60,16 +60,14 @@ pub(crate) fn sample_z(n: &Z, center: &Q, s: &Q) -> Result<Z, MathError> {
     // TODO: Change this functions signature to use std_deviation/ sigma and not Gaussian parameter
     if n <= &Z::ONE {
         return Err(MathError::InvalidIntegerInput(format!(
-            "The value {} was provided for parameter n of the function sample_z.
-            This function expects this input to be bigger than 1.",
-            n
+            "The value {n} was provided for parameter n of the function sample_z.
+            This function expects this input to be bigger than 1."
         )));
     }
     if s <= &Q::ZERO {
         return Err(MathError::InvalidIntegerInput(format!(
-            "The value {} was provided for parameter s of the function sample_z.
-            This function expects this input to be bigger than 0.",
-            s
+            "The value {s} was provided for parameter s of the function sample_z.
+            This function expects this input to be bigger than 0."
         )));
     }
 

@@ -120,8 +120,7 @@ impl Q {
     pub fn div_safe(&self, divisor: &Q) -> Result<Q, MathError> {
         if 0 != unsafe { fmpq_is_zero(&divisor.value) } {
             return Err(MathError::DivisionByZeroError(format!(
-                "tried to divide Q with value {} by Q with value {}",
-                self, divisor
+                "tried to divide Q with value {self} by Q with value {divisor}"
             )));
         }
         let mut out = Q::default();

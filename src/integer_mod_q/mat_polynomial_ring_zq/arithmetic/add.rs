@@ -203,9 +203,8 @@ mod test_add {
     #[test]
     fn add_large_numbers() {
         let modulus = ModulusPolynomialRingZq::from_str(&format!(
-            "5  1 1 0 0 {} mod {}",
-            i64::MAX,
-            LARGE_PRIME
+            "5  1 1 0 0 {} mod {LARGE_PRIME}",
+            i64::MAX
         ))
         .unwrap();
         let poly_mat1 = MatPolyOverZ::from_str(&format!(

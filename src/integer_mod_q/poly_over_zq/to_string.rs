@@ -26,7 +26,7 @@ impl fmt::Display for PolyOverZq {
     /// use core::fmt;
     ///
     /// let poly = PolyOverZq::from_str("4  0 1 2 3 mod 5").unwrap();
-    /// println!("{}", poly);
+    /// println!("{poly}");
     /// ```
     ///
     /// ```
@@ -48,7 +48,7 @@ impl fmt::Display for PolyOverZq {
                 self.modulus.get_fmpz_mod_ctx_struct(),
             )
         };
-        write!(f, "{} mod {}", poly_over_z, self.modulus)
+        write!(f, "{poly_over_z} mod {}", self.modulus)
     }
 }
 

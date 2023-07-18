@@ -39,8 +39,7 @@ use rand::RngCore;
 pub(crate) fn sample_uniform_rejection(interval_size: &Z) -> Result<Z, MathError> {
     if interval_size <= &Z::ONE {
         return Err(MathError::InvalidInterval(format!(
-            "An invalid interval size {} was provided.",
-            interval_size
+            "An invalid interval size {interval_size} was provided."
         )));
     }
 

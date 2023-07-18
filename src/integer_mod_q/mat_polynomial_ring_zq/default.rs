@@ -97,7 +97,7 @@ mod test_new {
     #[test]
     fn large_modulus() {
         let poly_mod =
-            PolyOverZq::from_str(&format!("3  1 {} 1 mod {}", i64::MAX, LARGE_PRIME)).unwrap();
+            PolyOverZq::from_str(&format!("3  1 {} 1 mod {LARGE_PRIME}", i64::MAX)).unwrap();
         let modulus = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
 
         let _ = MatPolynomialRingZq::new(2, 2, &modulus);

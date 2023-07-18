@@ -173,7 +173,7 @@ impl MatZq {
         if self.get_num_rows() <= row_i64 {
             return Err(MathError::OutOfBounds(
                 format!("be smaller than {}", self.get_num_rows()),
-                format!("{}", row_i64),
+                format!("{row_i64}"),
             ));
         }
 
@@ -219,7 +219,7 @@ impl MatZq {
         if self.get_num_columns() <= column_i64 {
             return Err(MathError::OutOfBounds(
                 format!("be smaller than {}", self.get_num_columns()),
-                format!("{}", column_i64),
+                format!("{column_i64}"),
             ));
         }
 

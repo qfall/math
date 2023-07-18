@@ -71,8 +71,7 @@ mod test_clone {
     /// works
     #[test]
     fn large_entries() {
-        let u64_string = u64::MAX.to_string();
-        let input = format!("2  {} -{}", u64_string, u64_string);
+        let input = format!("2  {} -{}", u64::MAX, u64::MAX);
 
         let poly_1 = PolyOverZ::from_str(&input).unwrap();
         let poly_2 = poly_1.clone();

@@ -127,7 +127,7 @@ pub fn evaluate_indices_for_matrix<S: GetNumRows + GetNumColumns>(
                 matrix.get_num_rows(),
                 matrix.get_num_columns()
             ),
-            format!("({},{})", row_i64, column_i64),
+            format!("({row_i64},{column_i64})"),
         ));
     }
     Ok((row_i64, column_i64))

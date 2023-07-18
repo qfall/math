@@ -78,9 +78,8 @@ impl Zq {
     pub fn add_safe(&self, other: &Self) -> Result<Zq, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
-                "Tried to add '{}' and '{}'.
-            If the modulus should be ignored please convert into a Z beforehand.",
-                self, other
+                "Tried to add '{self}' and '{other}'.
+            If the modulus should be ignored please convert into a Z beforehand."
             )));
         }
         let mut out = Zq::from((1, &self.modulus));

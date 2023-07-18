@@ -276,8 +276,7 @@ impl TryFrom<&Z> for i64 {
         } else {
             Err(MathError::ConversionError(format!(
                 "The provided value has to fit into an i64 and it doesn't as the 
-                provided value is {}.",
-                value
+                provided value is {value}."
             )))
         }
     }

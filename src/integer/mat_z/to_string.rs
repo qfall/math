@@ -29,7 +29,7 @@ impl fmt::Display for MatZ {
     /// use std::str::FromStr;
     ///
     /// let matrix = MatZ::from_str("[[1,2,3],[4,5,6]]").unwrap();
-    /// println!("{}", matrix);
+    /// println!("{matrix}");
     /// ```
     ///
     /// ```

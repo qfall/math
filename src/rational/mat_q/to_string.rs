@@ -29,7 +29,7 @@ impl fmt::Display for MatQ {
     /// use std::str::FromStr;
     ///
     /// let matrix = MatQ::from_str("[[1/2,2,3/4],[4,5/3,6]]").unwrap();
-    /// println!("{}", matrix);
+    /// println!("{matrix}");
     /// ```
     ///
     /// ```

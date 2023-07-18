@@ -89,7 +89,7 @@ mod test_get_value {
     fn large_positive() {
         let large_prime = u64::MAX - 58;
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", large_prime)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {large_prime}")).unwrap();
         let poly = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
         let poly_ring = PolynomialRingZq::from((&poly, &modulus));
 

@@ -51,7 +51,7 @@ mod test_get_q {
     fn correct_large() {
         let large_prime = u64::MAX - 58;
         let modulus_ring =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", large_prime)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {large_prime}")).unwrap();
 
         let modulus = modulus_ring.get_q();
 

@@ -26,7 +26,7 @@ impl fmt::Display for Modulus {
     /// use core::fmt;
     ///
     /// let modulus = Modulus::from(42);
-    /// println!("{}", modulus);
+    /// println!("{modulus}");
     /// ```
     ///
     /// ```
@@ -53,7 +53,7 @@ impl fmt::Display for Modulus {
 
         unsafe { libc::free(c_str_ptr as *mut libc::c_void) };
 
-        write!(f, "{}", return_str)
+        write!(f, "{return_str}")
     }
 }
 
