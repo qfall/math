@@ -508,14 +508,14 @@ mod test_sample_d {
         If this happens, rerun the tests several times and check whether this issue comes up again.");
 
         let center = MatQ::new(&n, 1);
-        let standard_deviation =
+        let gaussian_parameter =
             len * n.log(2).unwrap().sqrt() * (n.log(2).unwrap().log(2).unwrap());
 
         for _ in 0..20 {
-            let res = sample_d(&basis, &n, &center, &standard_deviation).unwrap();
+            let res = sample_d(&basis, &n, &center, &gaussian_parameter).unwrap();
 
             assert!(
-                res.norm_eucl_sqrd().unwrap() <= standard_deviation.pow(2).unwrap().round() * &n,
+                res.norm_eucl_sqrd().unwrap() <= gaussian_parameter.pow(2).unwrap().round() * &n,
                 "{}",
                 expl_text
             );
