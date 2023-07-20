@@ -16,7 +16,7 @@ use crate::{
 use flint_sys::{fmpz_mat::fmpz_mat_kronecker_product, fmpz_mod_mat::_fmpz_mod_mat_reduce};
 
 impl Tensor for MatZq {
-    /// Computes the tensor product of `self` with `other`
+    /// Computes the tensor product of `self` with `other`.
     ///
     /// Parameters:
     /// - `other`: the value with which the tensor product is computed.
@@ -34,11 +34,11 @@ impl Tensor for MatZq {
     /// let mat_b = MatZq::from_str("[[1, 2],[3, 4]] mod 7").unwrap();
     ///
     /// let mat_ab = mat_a.tensor_product(&mat_b);
-    /// let res_ab = "[[1, 2, 1, 2],[3, 4, 3, 4],[2, 4, 2, 4],[6, 1, 6, 1]] mod 7";
-    /// assert_eq!(mat_ab, MatZq::from_str(res_ab).unwrap());
-    ///
     /// let mat_ba = mat_b.tensor_product(&mat_a);
+    ///
+    /// let res_ab = "[[1, 2, 1, 2],[3, 4, 3, 4],[2, 4, 2, 4],[6, 1, 6, 1]] mod 7";
     /// let res_ba = "[[1, 1, 2, 2],[2, 2, 4, 4],[3, 3, 4, 4],[6, 6, 1, 1]] mod 7";
+    /// assert_eq!(mat_ab, MatZq::from_str(res_ab).unwrap());
     /// assert_eq!(mat_ba, MatZq::from_str(res_ba).unwrap());
     /// ```
     ///
@@ -51,7 +51,7 @@ impl Tensor for MatZq {
 }
 
 impl MatZq {
-    /// Computes the tensor product of `self` with `other`
+    /// Computes the tensor product of `self` with `other`.
     ///
     /// Parameters:
     /// - `other`: the value with which the tensor product is computed.
@@ -68,11 +68,11 @@ impl MatZq {
     /// let mat_b = MatZq::from_str("[[1, 2],[3, 4]] mod 7").unwrap();
     ///
     /// let mat_ab = mat_a.tensor_product_safe(&mat_b).unwrap();
-    /// let res_ab = "[[1, 2, 1, 2],[3, 4, 3, 4],[2, 4, 2, 4],[6, 1, 6, 1]] mod 7";
-    /// assert_eq!(mat_ab, MatZq::from_str(res_ab).unwrap());
-    ///
     /// let mat_ba = mat_b.tensor_product_safe(&mat_a).unwrap();
+    ///
+    /// let res_ab = "[[1, 2, 1, 2],[3, 4, 3, 4],[2, 4, 2, 4],[6, 1, 6, 1]] mod 7";
     /// let res_ba = "[[1, 1, 2, 2],[2, 2, 4, 4],[3, 3, 4, 4],[6, 6, 1, 1]] mod 7";
+    /// assert_eq!(mat_ab, MatZq::from_str(res_ab).unwrap());
     /// assert_eq!(mat_ba, MatZq::from_str(res_ba).unwrap());
     /// ```
     ///
@@ -131,7 +131,7 @@ mod test_tensor {
         assert_eq!(&mat_3, &mat_3_safe);
     }
 
-    /// Ensure that the tensor works correctly with identity
+    /// Ensure that the tensor works correctly with identity.
     #[test]
     fn identity() {
         let identity = MatZq::from_str(&format!("[[1, 0],[0, 1]] mod {}", u128::MAX)).unwrap();
@@ -179,7 +179,7 @@ mod test_tensor {
         assert_eq!(cmp_mat_3, mat_3_safe);
     }
 
-    /// Ensure the tensor product works where one is a vector and the other is a matrix
+    /// Ensure the tensor product works where one is a vector and the other is a matrix.
     #[test]
     fn vector_matrix() {
         let vector = MatZq::from_str(&format!("[[1],[-1]] mod {}", u128::MAX)).unwrap();
@@ -221,7 +221,7 @@ mod test_tensor {
         assert_eq!(cmp_mat_3, mat_3_safe);
     }
 
-    /// Ensure that the tensor product works correctly with two vectors
+    /// Ensure that the tensor product works correctly with two vectors.
     #[test]
     fn vector_vector() {
         let vec_1 = MatZq::from_str(&format!("[[2],[1]] mod {}", u128::MAX)).unwrap();
@@ -263,7 +263,7 @@ mod test_tensor {
         assert_eq!(cmp_vec_4, vec_4_safe);
     }
 
-    /// Ensure that entries are reduced by the modulus
+    /// Ensure that entries are reduced by the modulus.
     #[test]
     fn entries_reduced() {
         let mat_1 = MatZq::from_str(&format!("[[1, 2],[3, 4]] mod {}", u64::MAX - 58)).unwrap();
@@ -281,7 +281,7 @@ mod test_tensor {
         assert_eq!(mat_3_cmp, mat_3_safe);
     }
 
-    /// Ensure that tensor panics if the moduli mismatch
+    /// Ensure that tensor panics if the moduli mismatch.
     #[test]
     #[should_panic]
     fn mismatching_moduli_tensor_product() {
@@ -291,7 +291,7 @@ mod test_tensor {
         let _ = mat_1.tensor_product(&mat_2);
     }
 
-    /// Ensure that tensor_product_safe returns an error if the moduli mismatch
+    /// Ensure that tensor_product_safe returns an error if the moduli mismatch.
     #[test]
     fn mismatching_moduli_tensor_product_safe() {
         let mat_1 = MatZq::new(1, 2, u64::MAX);

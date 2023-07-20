@@ -16,7 +16,7 @@ use crate::{
 use flint_sys::{fmpz_poly::fmpz_poly_mul, fmpz_poly_mat::fmpz_poly_mat_entry};
 
 impl Tensor for MatPolyOverZ {
-    /// Computes the tensor product of `self` with `other`
+    /// Computes the tensor product of `self` with `other`.
     ///
     /// Parameters:
     /// - `other`: the value with which the tensor product is computed.
@@ -33,11 +33,11 @@ impl Tensor for MatPolyOverZ {
     /// let mat_b = MatPolyOverZ::from_str("[[1  1, 1  2]]").unwrap();
     ///
     /// let mat_ab = mat_a.tensor_product(&mat_b);
-    /// let res_ab = "[[1  1, 1  2, 2  1 1, 2  2 2]]";
-    /// assert_eq!(mat_ab, MatPolyOverZ::from_str(res_ab).unwrap());
-    ///
     /// let mat_ba = mat_b.tensor_product(&mat_a);
+    ///
+    /// let res_ab = "[[1  1, 1  2, 2  1 1, 2  2 2]]";
     /// let res_ba = "[[1  1, 2  1 1, 1  2, 2  2 2]]";
+    /// assert_eq!(mat_ab, MatPolyOverZ::from_str(res_ab).unwrap());
     /// assert_eq!(mat_ba, MatPolyOverZ::from_str(res_ba).unwrap());
     /// ```
     fn tensor_product(&self, other: &Self) -> Self {
@@ -77,6 +77,14 @@ impl Tensor for MatPolyOverZ {
 ///
 /// Implicitly sets the entries of the matrix according to the definition
 /// of the tensor product.
+///
+/// # Security
+/// This function accesses memory directly without checking whether the memory is
+/// actually obtained by the matrix out.
+/// This means that this function should only be called wisely.
+/// If `row_left` or `row_upper` together with the length of the matrix exceeds the
+/// range of the matrix other memory could be overwritten.
+/// We included asserts to check whether this occurs, but we advise careful usage.
 unsafe fn set_matrix_window_mul(
     out: &mut MatPolyOverZ,
     row_left: i64,
@@ -86,6 +94,9 @@ unsafe fn set_matrix_window_mul(
 ) {
     let columns_other = matrix.get_num_columns();
     let rows_other = matrix.get_num_rows();
+
+    assert!(row_left >= 0 && row_left + rows_other <= out.get_num_rows());
+    assert!(column_upper >= 0 && column_upper + columns_other <= out.get_num_columns());
 
     for i_other in 0..rows_other {
         for j_other in 0..columns_other {
@@ -124,10 +135,10 @@ mod test_tensor {
         assert_eq!(52, mat_3.get_num_columns());
     }
 
-    /// Ensure that the tensor works correctly with identity
+    /// Ensure that the tensor works correctly with identity.
     #[test]
     fn identity() {
-        let identity = MatPolyOverZ::from_str("[[1  1, 0],[0, 1  1]]").unwrap();
+        let identity = MatPolyOverZ::identity(2, 2);
         let mat_1 = MatPolyOverZ::from_str(&format!(
             "[[1  1, 1  {}, 1  1],[0, 1  {}, 1  -1]]",
             u64::MAX,
@@ -159,7 +170,7 @@ mod test_tensor {
         assert_eq!(cmp_mat_3, mat_3);
     }
 
-    /// Ensure the tensor product works where one is a vector and the other is a matrix
+    /// Ensure the tensor product works where one is a vector and the other is a matrix.
     #[test]
     fn vector_matrix() {
         let vector = MatPolyOverZ::from_str("[[1  1],[1  -1]]").unwrap();
@@ -194,7 +205,7 @@ mod test_tensor {
         assert_eq!(cmp_mat_3, mat_3);
     }
 
-    /// Ensure that the tensor product works correctly with two vectors
+    /// Ensure that the tensor product works correctly with two vectors.
     #[test]
     fn vector_vector() {
         let vec_1 = MatPolyOverZ::from_str("[[1  2],[1  1]]").unwrap();
