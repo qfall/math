@@ -180,7 +180,7 @@ impl MatZq {
 
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
-                "set_column requires the moduli to be equal, but they {} differs from {}",
+                "set_column requires the moduli to be equal, but {} differs from {}",
                 self.get_mod(),
                 other.get_mod()
             )));
@@ -248,7 +248,7 @@ impl MatZq {
 
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
-                "set_row requires the moduli to be equal, but they {} differs from {}",
+                "set_row requires the moduli to be equal, but {} differs from {}",
                 self.get_mod(),
                 other.get_mod()
             )));

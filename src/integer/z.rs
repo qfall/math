@@ -15,6 +15,7 @@ mod arithmetic;
 mod cmp;
 mod default;
 mod distance;
+pub(crate) mod factor;
 pub(crate) mod fmpz_helpers;
 mod from;
 mod gcd;
