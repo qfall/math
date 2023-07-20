@@ -172,7 +172,7 @@ impl FromStr for PolyOverZq {
     }
 }
 
-impl<IntoZq: Into<Zq>> From<IntoZq> for PolyOverZq {
+impl<IntegerModQ: Into<Zq>> From<IntegerModQ> for PolyOverZq {
     /// Create a constant [`PolyOverZq`] with a specified constant.
     ///
     /// # Parameters:
@@ -197,7 +197,7 @@ impl<IntoZq: Into<Zq>> From<IntoZq> for PolyOverZq {
     /// # Panics ...
     /// - if the provided value can not be converted into a [`Zq`].
     ///   For example, if the modulus is not larger than one.
-    fn from(value: IntoZq) -> Self {
+    fn from(value: IntegerModQ) -> Self {
         let value: Zq = value.into();
         let poly_z = PolyOverZ::from(value.value);
 
