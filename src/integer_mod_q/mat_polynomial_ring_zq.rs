@@ -11,6 +11,7 @@
 
 use super::ModulusPolynomialRingZq;
 use crate::integer::MatPolyOverZ;
+use derive_more::Display;
 use serde::{Deserialize, Serialize};
 
 mod arithmetic;
@@ -32,7 +33,8 @@ mod vector;
 /// modulus of the matrix
 ///
 /// TODO: Add Examples
-#[derive(PartialEq, Eq, Debug, Serialize, Deserialize)]
+#[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Display)]
+#[display(fmt = "{matrix} / {modulus}")]
 pub struct MatPolynomialRingZq {
     pub(crate) matrix: MatPolyOverZ,
     pub(crate) modulus: ModulusPolynomialRingZq,
