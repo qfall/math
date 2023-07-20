@@ -59,7 +59,7 @@ mod test_from_poly_over_z_modulus_polynomial_ring_zq {
     #[test]
     fn is_reduced_large() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", LARGE_PRIME)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {LARGE_PRIME}")).unwrap();
 
         let poly =
             PolyOverZ::from_str(&format!("4  {} {} 1 1", LARGE_PRIME + 2, u64::MAX)).unwrap();
@@ -75,7 +75,7 @@ mod test_from_poly_over_z_modulus_polynomial_ring_zq {
     #[test]
     fn same_instantiation() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", LARGE_PRIME)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {LARGE_PRIME}")).unwrap();
         let poly =
             PolyOverZ::from_str(&format!("4  {} {} 1 1", LARGE_PRIME + 2, u64::MAX)).unwrap();
 

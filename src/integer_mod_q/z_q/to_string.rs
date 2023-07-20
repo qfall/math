@@ -27,7 +27,7 @@ impl fmt::Display for Zq {
     /// use core::fmt;
     ///
     /// let integer_mod_q = Zq::from((42, 3));
-    /// println!("{}", integer_mod_q);
+    /// println!("{integer_mod_q}");
     /// ```
     ///
     /// ```
@@ -62,7 +62,7 @@ mod test_to_string {
         let cmp = Zq::from_str(&format!("-{} mod {}", u64::MAX, u128::MAX)).unwrap();
         let diff = u128::MAX - u64::MAX as u128;
 
-        assert_eq!(format!("{} mod {}", diff, u128::MAX), cmp.to_string())
+        assert_eq!(format!("{diff} mod {}", u128::MAX), cmp.to_string())
     }
 
     /// Tests whether a positive integer works in a roundtrip

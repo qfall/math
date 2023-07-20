@@ -39,8 +39,7 @@ use rand::RngCore;
 pub(crate) fn sample_uniform_rejection(interval_size: &Z) -> Result<Z, MathError> {
     if interval_size <= &Z::ONE {
         return Err(MathError::InvalidInterval(format!(
-            "An invalid interval size {} was provided.",
-            interval_size
+            "An invalid interval size {interval_size} was provided."
         )));
     }
 
@@ -102,7 +101,7 @@ fn sample_bits_uniform(nr_bits: usize) -> Vec<u8> {
 /// Binary search to find the first zero byte.
 ///
 /// As we do not mark the filled bytes, the first zero byte is our
-/// best guess to identify a not yet randomly/ unfiilled byte.
+/// best guess to identify a not yet randomly/ unfilled byte.
 ///
 /// Parameters:
 /// - `byte_arr`: specifies the slice whose first zero byte is looked for
@@ -264,9 +263,8 @@ mod test_sample_bits_uniform {
 
             if !found_1 {
                 panic!(
-                    "None of the inspected 64 random bits at position {} was 1. 
-                    This seems suspicious.",
-                    position
+                    "None of the inspected 64 random bits at position {position} was 1. 
+                    This seems suspicious."
                 );
             }
         }

@@ -173,7 +173,7 @@ impl MatZq {
         if self.get_num_rows() <= row_i64 {
             return Err(MathError::OutOfBounds(
                 format!("be smaller than {}", self.get_num_rows()),
-                format!("{}", row_i64),
+                format!("{row_i64}"),
             ));
         }
 
@@ -219,7 +219,7 @@ impl MatZq {
         if self.get_num_columns() <= column_i64 {
             return Err(MathError::OutOfBounds(
                 format!("be smaller than {}", self.get_num_columns()),
-                format!("{}", column_i64),
+                format!("{column_i64}"),
             ));
         }
 
@@ -243,7 +243,7 @@ impl MatZq {
     ///
     /// # Examples
     /// ```compile_fail
-    /// use qfall_math::intger_mod_q::MatZq;
+    /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
     /// let mat = MatZq::from_str("[[1,2],[3,4],[5,6]] mod 3").unwrap();
@@ -269,7 +269,7 @@ impl MatZq {
     ///
     /// # Examples
     /// ```compile_fail
-    /// use qfall_math::intger_mod_q::MatZq;
+    /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
     /// let mat = MatZq::from_str("[[1,2],[3,4]] mod 3").unwrap();
@@ -571,6 +571,7 @@ mod test_collect_entries {
     use super::MatZq;
     use std::str::FromStr;
 
+    /// Ensures that all entries from the matrices are actually collected in the vector.
     #[test]
     fn all_entries_collected() {
         let mat_1 = MatZq::from_str(&format!(
@@ -604,6 +605,7 @@ mod test_collect_lengths {
     use super::{MatZq, Z};
     use std::str::FromStr;
 
+    /// Ensures that the lengths of the matrices are collected correctly.
     #[test]
     fn lengths_correctly_computed() {
         let mat_1 = MatZq::from_str(&format!(

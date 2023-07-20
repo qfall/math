@@ -76,7 +76,7 @@ mod test_evaluate {
     fn eval_q_large() {
         let q_str = format!("{}/{}", u64::MAX, i64::MIN,);
         let q_str_rev = format!("{}/{}", i64::MIN, u64::MAX);
-        let large_string = format!("2  0 {}", q_str);
+        let large_string = format!("2  0 {q_str}");
         let poly = PolyOverQ::from_str(&large_string).unwrap();
 
         let res = poly.evaluate(Q::from_str(&q_str_rev).unwrap());
@@ -116,7 +116,7 @@ mod test_evaluate_z {
     #[test]
     fn eval_large_nom_denom_large_ref_z() {
         let q_str = format!("{}/{}", u64::MAX, i64::MIN,);
-        let large_string = format!("2  -{} {}", u64::MAX, q_str);
+        let large_string = format!("2  -{} {q_str}", u64::MAX);
         let poly = PolyOverQ::from_str(&large_string).unwrap();
 
         let res = poly.evaluate(&Z::from(i64::MIN));
@@ -194,7 +194,7 @@ mod test_evaluate_q {
     fn eval_q_large() {
         let q_str = format!("{}/{}", u64::MAX, i64::MIN,);
         let q_str_rev = format!("{}/{}", i64::MIN, u64::MAX);
-        let large_string = format!("2  0 {}", q_str);
+        let large_string = format!("2  0 {q_str}");
         let poly = PolyOverQ::from_str(&large_string).unwrap();
 
         let res = poly.evaluate(&Q::from_str(&q_str_rev).unwrap());

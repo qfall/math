@@ -40,10 +40,11 @@ impl PolyOverQ {
 mod test_exp_series {
     use crate::{
         rational::{PolyOverQ, Q},
-        traits::{Evaluate, GetCoefficient},
+        traits::GetCoefficient,
     };
-    use flint_sys::fmpq::fmpq_get_d;
 
+    /// Ensures that the coefficients of the Taylor polynomial for the
+    /// exponential function are set correctly.
     #[test]
     fn coefficient_set_correctly() {
         let length: u32 = 1000;
@@ -56,20 +57,12 @@ mod test_exp_series {
         }
     }
 
+    /// Ensures that the length of the Taylor polynomial for the exponential function
+    /// is correct
     #[test]
     fn correct_len() {
         let length: u32 = 170;
         let poly = PolyOverQ::exp_function_taylor(length);
         assert_eq!(length as i64, poly.poly.length);
-
-        println!("{}", PolyOverQ::exp_function_taylor(1000_u32).evaluate(1));
-
-        println!("{}", unsafe {
-            fmpq_get_d(
-                &PolyOverQ::exp_function_taylor(1000_u32)
-                    .evaluate(1_i32)
-                    .value,
-            )
-        })
     }
 }

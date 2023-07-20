@@ -71,7 +71,7 @@ mod test_clone {
     use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
     use std::str::FromStr;
 
-    /// check if a cloned value is still alive after the original value ran out of scope
+    /// Check if a cloned value is still alive after the original value ran out of scope
     #[test]
     #[allow(clippy::redundant_clone)]
     fn keep_alive() {
@@ -94,7 +94,7 @@ mod test_clone {
         assert_eq!(a.get_entry(1, 2).unwrap(), 5.into());
     }
 
-    /// check whether the cloned entries are stored separately
+    /// Check whether the cloned entries are stored separately
     #[test]
     fn entries_stored_separately() {
         let a: MatZ;

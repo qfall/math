@@ -41,10 +41,8 @@ impl<Integer: Into<Z>> Pow<Integer> for Z {
         let mut out = Z::ZERO;
         if exp < Z::ZERO {
             return Err(MathError::InvalidExponent(format!(
-                "A negative exponent {} was used for the integer value {}. 
+                "A negative exponent {exp} was used for the integer value {self}. 
                 If you want to get the inverse as a rational object in return use `.inverse().pow({})`",
-                &exp,
-                self,
                 -1 * &exp
             )));
         }

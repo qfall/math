@@ -81,9 +81,8 @@ impl Div<&Z> for &Q {
     /// let f: Q = c / &Z::from(42);
     /// ```
     fn div(self, other: &Z) -> Self::Output {
-        if other == &Z::ZERO {
-            panic!("Tried to divide {} by 0", self);
-        }
+        assert!(!other.is_zero(), "Tried to divide {self} by zero.");
+
         let mut out = Q::default();
         unsafe {
             fmpq_div_fmpz(&mut out.value, &self.value, &other.value);
@@ -121,8 +120,7 @@ impl Q {
     pub fn div_safe(&self, divisor: &Q) -> Result<Q, MathError> {
         if 0 != unsafe { fmpq_is_zero(&divisor.value) } {
             return Err(MathError::DivisionByZeroError(format!(
-                "tried to divide Q with value {} by Q with value {}",
-                self, divisor
+                "tried to divide Q with value {self} by Q with value {divisor}"
             )));
         }
         let mut out = Q::default();
@@ -173,8 +171,8 @@ mod test_div {
         assert_eq!(c, Q::from((4, 42)));
     }
 
-    #[test]
     /// Testing division for large numerators and divisors
+    #[test]
     fn div_large() {
         let a: Q = Q::from(u64::MAX - 1);
         let b: Q = Q::from(2);

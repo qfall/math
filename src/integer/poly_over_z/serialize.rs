@@ -34,7 +34,7 @@ mod test_serialize {
     fn serialize_output_positive() {
         let poly_str = "2  17 42";
         let poly_z = PolyOverZ::from_str(poly_str).unwrap();
-        let cmp_string = format!("{{\"poly\":\"{}\"}}", poly_str);
+        let cmp_string = format!("{{\"poly\":\"{poly_str}\"}}");
 
         assert_eq!(cmp_string, serde_json::to_string(&poly_z).unwrap())
     }
@@ -44,7 +44,7 @@ mod test_serialize {
     fn serialize_output_negative() {
         let poly_str = "3  -17 -42 1";
         let poly_z = PolyOverZ::from_str(poly_str).unwrap();
-        let cmp_string = format!("{{\"poly\":\"{}\"}}", poly_str);
+        let cmp_string = format!("{{\"poly\":\"{poly_str}\"}}");
 
         assert_eq!(cmp_string, serde_json::to_string(&poly_z).unwrap())
     }
@@ -54,7 +54,7 @@ mod test_serialize {
     fn serialize_output_positive_large() {
         let poly_str = format!("3  -17 {} 1", u64::MAX);
         let poly_z = PolyOverZ::from_str(&poly_str).unwrap();
-        let cmp_string = format!("{{\"poly\":\"{}\"}}", poly_str);
+        let cmp_string = format!("{{\"poly\":\"{poly_str}\"}}");
 
         assert_eq!(cmp_string, serde_json::to_string(&poly_z).unwrap())
     }
@@ -64,7 +64,7 @@ mod test_serialize {
     fn serialize_output_negative_large() {
         let poly_str = format!("3  -17 -{} 1", u64::MAX);
         let poly_z = PolyOverZ::from_str(&poly_str).unwrap();
-        let cmp_string = format!("{{\"poly\":\"{}\"}}", poly_str);
+        let cmp_string = format!("{{\"poly\":\"{poly_str}\"}}");
 
         assert_eq!(cmp_string, serde_json::to_string(&poly_z).unwrap())
     }
@@ -79,7 +79,7 @@ mod test_deserialize {
     #[test]
     fn deserialize_positive() {
         let poly_str = "2  17 42";
-        let cmp_string = format!("{{\"poly\":\"{}\"}}", poly_str);
+        let cmp_string = format!("{{\"poly\":\"{poly_str}\"}}");
 
         let poly_z = PolyOverZ::from_str(poly_str).unwrap();
         assert_eq!(poly_z, serde_json::from_str(&cmp_string).unwrap())
@@ -89,7 +89,7 @@ mod test_deserialize {
     #[test]
     fn deserialize_negative() {
         let poly_str = "3  -17 -42 1";
-        let cmp_string = format!("{{\"poly\":\"{}\"}}", poly_str);
+        let cmp_string = format!("{{\"poly\":\"{poly_str}\"}}");
 
         let poly_z = PolyOverZ::from_str(poly_str).unwrap();
         assert_eq!(poly_z, serde_json::from_str(&cmp_string).unwrap())
@@ -99,7 +99,7 @@ mod test_deserialize {
     #[test]
     fn deserialize_positive_large() {
         let poly_str = format!("3  -17 {} 1", u64::MAX);
-        let cmp_string = format!("{{\"poly\":\"{}\"}}", poly_str);
+        let cmp_string = format!("{{\"poly\":\"{poly_str}\"}}");
 
         let poly_z = PolyOverZ::from_str(&poly_str).unwrap();
         assert_eq!(poly_z, serde_json::from_str(&cmp_string).unwrap())
@@ -109,7 +109,7 @@ mod test_deserialize {
     #[test]
     fn deserialize_negative_large() {
         let poly_str = format!("3  -17 -{} 1", u64::MAX);
-        let cmp_string = format!("{{\"poly\":\"{}\"}}", poly_str);
+        let cmp_string = format!("{{\"poly\":\"{poly_str}\"}}");
 
         let poly_z = PolyOverZ::from_str(&poly_str).unwrap();
         assert_eq!(poly_z, serde_json::from_str(&cmp_string).unwrap())

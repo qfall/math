@@ -38,9 +38,10 @@ impl MatZq {
     /// # Panics ...
     /// - if the modulus is not prime.
     pub fn inverse_prime(&self) -> Option<MatZq> {
-        if !self.get_mod().is_prime() {
-            panic!("The modulus of the matrix is not prime");
-        }
+        assert!(
+            self.get_mod().is_prime(),
+            "The modulus of the matrix is not prime"
+        );
 
         // Check if the matrix is spare and compute determinant
         if let Ok(det) = MatZ::from(self).det() {
@@ -89,9 +90,10 @@ impl MatZq {
     /// # Panics ...
     /// - if the modulus is not prime.
     pub fn gaussian_elimination_prime(self) -> MatZq {
-        if !self.get_mod().is_prime() {
-            panic!("The modulus of the matrix is not prime");
-        }
+        assert!(
+            self.get_mod().is_prime(),
+            "The modulus of the matrix is not prime"
+        );
 
         // Since we only want the echelon form, the permutation `perm` is not relevant.
         let mut perm: i64 = 1;

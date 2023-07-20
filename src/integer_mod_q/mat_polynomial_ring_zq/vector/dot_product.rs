@@ -105,7 +105,7 @@ mod test_dot_product {
     };
     use std::str::FromStr;
 
-    const BITPRIME64: u64 = u64::MAX - 58;
+    const LARGE_PRIME: u64 = u64::MAX - 58;
 
     /// Check whether the dot product is calculated correctly for the combination:
     /// `self`: row vector, `other`: row vector.
@@ -175,7 +175,7 @@ mod test_dot_product {
     #[test]
     fn large_numbers() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", BITPRIME64)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {LARGE_PRIME}")).unwrap();
         let poly_vec1 = MatPolyOverZ::from_str("[[2  1 1, 1  2, 1  1]]").unwrap();
         let poly_ring_vec1 = MatPolynomialRingZq::from((&poly_vec1, &modulus));
         let poly_vec2 =

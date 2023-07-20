@@ -125,7 +125,7 @@ impl MatZ {
         if self.get_num_rows() <= row_i64 {
             return Err(MathError::OutOfBounds(
                 format!("be smaller than {}", self.get_num_rows()),
-                format!("{}", row_i64),
+                format!("{row_i64}"),
             ));
         }
 
@@ -171,7 +171,7 @@ impl MatZ {
         if self.get_num_columns() <= column_i64 {
             return Err(MathError::OutOfBounds(
                 format!("be smaller than {}", self.get_num_columns()),
-                format!("{}", column_i64),
+                format!("{column_i64}"),
             ));
         }
 
@@ -195,7 +195,7 @@ impl MatZ {
     ///
     /// # Examples
     /// ```compile_fail
-    /// use qfall_math::intger::MatZ;
+    /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
     /// let mat = MatZ::from_str("[[1,2],[3,4],[5,6]]").unwrap();
@@ -401,6 +401,7 @@ mod test_collect_entries {
     use super::MatZ;
     use std::str::FromStr;
 
+    /// Ensures that all entries from the matrices are actually collected in the vector.
     #[test]
     fn all_entries_collected() {
         let mat_1 = MatZ::from_str(&format!("[[1,2],[{},{}],[3,4]]", i64::MAX, i64::MIN)).unwrap();

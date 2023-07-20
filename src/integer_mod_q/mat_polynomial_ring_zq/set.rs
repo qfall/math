@@ -156,7 +156,7 @@ mod test_setter {
     #[test]
     fn big_positive() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", LARGE_PRIME)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {LARGE_PRIME}")).unwrap();
         let poly_mat =
             MatPolyOverZ::from_str(&format!("[[2  1 1, 1  42],[0, 2  {} 2]]", i64::MAX)).unwrap();
         let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
@@ -170,7 +170,7 @@ mod test_setter {
         assert_eq!(format!("3  1 {} 1", i64::MAX), entry_z.to_string());
         assert_eq!(format!("3  1 {} 1", i64::MAX), entry_zq.poly.to_string());
         assert_eq!(
-            format!("4  1 0 0 1 mod {}", LARGE_PRIME),
+            format!("4  1 0 0 1 mod {LARGE_PRIME}"),
             entry_zq.modulus.to_string()
         );
     }
@@ -179,7 +179,7 @@ mod test_setter {
     #[test]
     fn big_positive_ref() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", LARGE_PRIME)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {LARGE_PRIME}")).unwrap();
         let poly_mat = MatPolyOverZ::from_str(&format!(
             "[[2  1 1, 1  42, 0],[0, 2  {} 2, 1  1]]",
             i64::MAX
@@ -196,7 +196,7 @@ mod test_setter {
         assert_eq!(format!("3  1 {} 1", i64::MAX), entry_z.to_string());
         assert_eq!(format!("3  1 {} 1", i64::MAX), entry_zq.poly.to_string());
         assert_eq!(
-            format!("4  1 0 0 1 mod {}", LARGE_PRIME),
+            format!("4  1 0 0 1 mod {LARGE_PRIME}"),
             entry_zq.modulus.to_string()
         );
     }
@@ -205,7 +205,7 @@ mod test_setter {
     #[test]
     fn big_negative() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", LARGE_PRIME)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {LARGE_PRIME}")).unwrap();
         let poly_mat = MatPolyOverZ::from_str(&format!(
             "[[2  1 1, 1  42],[0, 2  {} 2],[1  2, 0]]",
             i64::MAX
@@ -222,7 +222,7 @@ mod test_setter {
         assert_eq!(format!("3  1 {} 1", i64::MIN), entry_z.to_string());
         assert_eq!(format!("3  1 {} 1", i64::MIN), entry_zq.poly.to_string());
         assert_eq!(
-            format!("4  1 0 0 1 mod {}", LARGE_PRIME),
+            format!("4  1 0 0 1 mod {LARGE_PRIME}"),
             entry_zq.modulus.to_string()
         );
     }

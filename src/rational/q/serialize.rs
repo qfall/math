@@ -52,7 +52,7 @@ mod test_serialize {
     fn serialize_output_positive_large() {
         let val_str = format!("{}/2", u64::MAX);
         let q = Q::from_str(&val_str).unwrap();
-        let cmp_string = format!("{{\"value\":\"{}\"}}", val_str);
+        let cmp_string = format!("{{\"value\":\"{val_str}\"}}");
 
         assert_eq!(cmp_string, serde_json::to_string(&q).unwrap())
     }
@@ -62,7 +62,7 @@ mod test_serialize {
     fn serialize_output_negative_large() {
         let val_str = format!("-{}/2", u64::MAX);
         let q = Q::from_str(&val_str).unwrap();
-        let cmp_string = format!("{{\"value\":\"{}\"}}", val_str);
+        let cmp_string = format!("{{\"value\":\"{val_str}\"}}");
 
         assert_eq!(cmp_string, serde_json::to_string(&q).unwrap())
     }
@@ -91,7 +91,7 @@ mod test_deserialize {
     #[test]
     fn deserialize_positive_large() {
         let val_str = format!("{}/2", u64::MAX);
-        let z_string = format!("{{\"value\":\"{}\"}}", val_str);
+        let z_string = format!("{{\"value\":\"{val_str}\"}}");
 
         assert_eq!(
             Q::from_str(&val_str).unwrap(),
@@ -103,7 +103,7 @@ mod test_deserialize {
     #[test]
     fn deserialize_negative_large() {
         let val_str = format!("-{}/2", u64::MAX);
-        let z_string = format!("{{\"value\":\"{}\"}}", val_str);
+        let z_string = format!("{{\"value\":\"{val_str}\"}}");
 
         assert_eq!(
             Q::from_str(&val_str).unwrap(),

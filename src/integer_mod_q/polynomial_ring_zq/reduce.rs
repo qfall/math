@@ -55,13 +55,13 @@ mod test_reduced {
     #[test]
     fn reduces() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", LARGE_PRIME)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {LARGE_PRIME}")).unwrap();
         let poly =
             PolyOverZ::from_str(&format!("4  {} {} 1 1", LARGE_PRIME + 2, u64::MAX)).unwrap();
         let mut poly_ring = PolynomialRingZq { poly, modulus };
 
         let cmp_modulus =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", LARGE_PRIME)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {LARGE_PRIME}")).unwrap();
         let cmp_poly = PolyOverZ::from_str("3  1 58 1").unwrap();
         let cmp_poly_ring = PolynomialRingZq {
             poly: cmp_poly.clone(),

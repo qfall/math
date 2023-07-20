@@ -40,8 +40,7 @@ impl<Integer: Into<Z>> Pow<Integer> for Q {
         let exp = exp.into();
         if self == &Q::ZERO && exp < Z::ZERO {
             return Err(MathError::InvalidExponent(format!(
-                "A negative exponent {} was used for a zero value. There's no inverse for zero values.",
-                exp,
+                "A negative exponent {exp} was used for a zero value. There's no inverse for zero values."
             )));
         }
 

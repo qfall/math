@@ -90,12 +90,9 @@ mod test_reduced {
     /// Ensure that reduce works with large entries and moduli
     #[test]
     fn large_values() {
-        let modulus = ModulusPolynomialRingZq::from_str(&format!(
-            "4  {} 0 0 1 mod {}",
-            i64::MAX,
-            LARGE_PRIME
-        ))
-        .unwrap();
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("4  {} 0 0 1 mod {LARGE_PRIME}", i64::MAX))
+                .unwrap();
         let poly_mat =
             MatPolyOverZ::from_str(&format!("[[4  -1 0 {} 1, 1  42],[0, 2  1 2]]", i64::MAX))
                 .unwrap();
@@ -104,12 +101,9 @@ mod test_reduced {
             modulus,
         };
 
-        let cmp_modulus = ModulusPolynomialRingZq::from_str(&format!(
-            "4  {} 0 0 1 mod {}",
-            i64::MAX,
-            LARGE_PRIME
-        ))
-        .unwrap();
+        let cmp_modulus =
+            ModulusPolynomialRingZq::from_str(&format!("4  {} 0 0 1 mod {LARGE_PRIME}", i64::MAX))
+                .unwrap();
         let cmp_poly_mat = MatPolyOverZ::from_str(&format!(
             "[[3  {} 0 {}, 1  42],[0, 2  1 2]]",
             LARGE_PRIME - i64::MAX as u64 - 1,

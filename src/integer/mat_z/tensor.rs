@@ -71,7 +71,7 @@ mod test_tensor {
     /// Ensure that the tensor works correctly with identity
     #[test]
     fn identity() {
-        let identity = MatZ::from_str("[[1, 0],[0, 1]]").unwrap();
+        let identity = MatZ::identity(2, 2);
         let mat_1 =
             MatZ::from_str(&format!("[[1, {}, 1],[0, {}, -1]]", u64::MAX, i64::MIN)).unwrap();
 

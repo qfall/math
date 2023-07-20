@@ -126,7 +126,7 @@ impl MatPolyOverZ {
         if self.get_num_rows() <= row_i64 {
             return Err(MathError::OutOfBounds(
                 format!("be smaller than {}", self.get_num_rows()),
-                format!("{}", row_i64),
+                format!("{row_i64}"),
             ));
         }
 
@@ -171,7 +171,7 @@ impl MatPolyOverZ {
         if self.get_num_columns() <= column_i64 {
             return Err(MathError::OutOfBounds(
                 format!("be smaller than {}", self.get_num_columns()),
-                format!("{}", column_i64),
+                format!("{column_i64}"),
             ));
         }
 
@@ -430,6 +430,7 @@ mod test_collect_entries {
     use super::MatPolyOverZ;
     use std::str::FromStr;
 
+    /// Ensures that all entries from the matrices are actually collected in the vector.
     #[test]
     fn all_entries_collected() {
         let mat_1 = MatPolyOverZ::from_str(&format!(

@@ -76,7 +76,7 @@ impl Mul<&MatZ> for &MatZq {
     /// use std::str::FromStr;
     ///
     /// let a = MatZq::from_str("[[2,1],[1,2]] mod 3").unwrap();
-    /// let b = MatZ::from_str("[[1,0],[0,1]]").unwrap();
+    /// let b = MatZ::identity(2, 2);
     ///
     /// let c = &a * &b;
     /// let d = a * b;
@@ -87,9 +87,11 @@ impl Mul<&MatZ> for &MatZq {
     /// # Panics ...
     /// - if the dimensions of `self` and `other` do not match for multiplication.
     fn mul(self, other: &MatZ) -> Self::Output {
-        if self.get_num_columns() != other.get_num_rows() {
-            panic!("Tried to multiply matrices with mismatching matrix dimensions.");
-        }
+        assert_eq!(
+            self.get_num_columns(),
+            other.get_num_rows(),
+            "Tried to multiply matrices with mismatching matrix dimensions."
+        );
 
         let mut new = MatZq::new(self.get_num_rows(), other.get_num_columns(), self.get_mod());
         unsafe {
@@ -220,7 +222,7 @@ mod test_mul_matz {
     #[test]
     fn square_correctness() {
         let mat_1 = MatZq::from_str("[[2,1],[1,2]] mod 3").unwrap();
-        let mat_2 = MatZ::from_str("[[1,0],[0,1]]").unwrap();
+        let mat_2 = MatZ::identity(2, 2);
         let mat_3 = MatZ::from_str("[[1,2],[2,1]]").unwrap();
         let cmp = MatZq::from_str("[[4,5],[2,4]] mod 3").unwrap();
 

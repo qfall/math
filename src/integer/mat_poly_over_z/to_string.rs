@@ -30,7 +30,7 @@ impl fmt::Display for MatPolyOverZ {
     /// use std::str::FromStr;
     ///
     /// let matrix = MatPolyOverZ::from_str("[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]").unwrap();
-    /// println!("{}", matrix);
+    /// println!("{matrix}");
     /// ```
     ///
     /// ```

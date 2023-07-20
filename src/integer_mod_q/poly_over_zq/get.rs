@@ -127,7 +127,7 @@ mod test_get_coeff_zq_modulus {
         let modulus_str = format!("17{}", u64::MAX);
         let modulus = Modulus::from_str(&modulus_str).unwrap();
 
-        let poly = PolyOverZq::from_str(&format!("4  0 1 2 3 mod {}", modulus_str)).unwrap();
+        let poly = PolyOverZq::from_str(&format!("4  0 1 2 3 mod {modulus_str}")).unwrap();
 
         let zero_coeff: Zq = poly.get_coeff(4).unwrap();
 
@@ -140,7 +140,7 @@ mod test_get_coeff_zq_modulus {
         let modulus_str = format!("17{}", u64::MAX);
         let modulus = Modulus::from_str(&modulus_str).unwrap();
 
-        let poly = PolyOverZq::from_str(&format!("4  0 1 2 3 mod {}", modulus_str)).unwrap();
+        let poly = PolyOverZq::from_str(&format!("4  0 1 2 3 mod {modulus_str}")).unwrap();
 
         let third_coeff: Zq = poly.get_coeff(3).unwrap();
 
@@ -158,7 +158,7 @@ mod test_get_coeff_z {
     fn index_out_of_range() {
         let modulus_str = format!("17{}", u64::MAX);
 
-        let poly = PolyOverZq::from_str(&format!("4  0 1 2 3 mod {}", modulus_str)).unwrap();
+        let poly = PolyOverZq::from_str(&format!("4  0 1 2 3 mod {modulus_str}")).unwrap();
 
         let zero_coeff = poly.get_coeff(4).unwrap();
 
@@ -170,7 +170,7 @@ mod test_get_coeff_z {
     fn positive_coeff() {
         let modulus_str = format!("17{}", u64::MAX);
 
-        let poly = PolyOverZq::from_str(&format!("4  0 1 2 3 mod {}", modulus_str)).unwrap();
+        let poly = PolyOverZq::from_str(&format!("4  0 1 2 3 mod {modulus_str}")).unwrap();
 
         let coeff = poly.get_coeff(2).unwrap();
 
@@ -181,7 +181,7 @@ mod test_get_coeff_z {
     #[test]
     fn large_coeff() {
         let modulus_str = format!("17{}", u64::MAX);
-        let large_string = format!("2  {} {} mod {}", u64::MAX, i64::MAX, modulus_str);
+        let large_string = format!("2  {} {} mod {modulus_str}", u64::MAX, i64::MAX);
         let poly = PolyOverZq::from_str(&large_string).unwrap();
 
         assert_eq!(Z::from(u64::MAX), poly.get_coeff(0).unwrap());
@@ -192,7 +192,7 @@ mod test_get_coeff_z {
     #[test]
     fn large_modulus_applied_negative_large_coefficient() {
         let modulus_str = format!("{}", u64::MAX);
-        let large_string = format!("2  -{} {} mod {}", u64::MAX, i64::MAX, modulus_str);
+        let large_string = format!("2  -{} {} mod {modulus_str}", u64::MAX, i64::MAX);
         let poly = PolyOverZq::from_str(&large_string).unwrap();
 
         assert_eq!(Z::ZERO, poly.get_coeff(0).unwrap());

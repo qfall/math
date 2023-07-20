@@ -43,7 +43,7 @@ mod test_serialize {
     fn serialize_output_positive_large() {
         let val_str = u64::MAX.to_string();
         let z = Modulus::from_str(&val_str).unwrap();
-        let cmp_string = format!("{{\"modulus\":\"{}\"}}", val_str);
+        let cmp_string = format!("{{\"modulus\":\"{val_str}\"}}");
 
         assert_eq!(cmp_string, serde_json::to_string(&z).unwrap())
     }
@@ -74,7 +74,7 @@ mod test_deserialize {
     #[test]
     fn deserialize_positive_large() {
         let val_str = u64::MAX.to_string();
-        let z_string = format!("{{\"modulus\":\"{}\"}}", val_str);
+        let z_string = format!("{{\"modulus\":\"{val_str}\"}}");
 
         assert_eq!(
             Modulus::from_str(&val_str).unwrap(),
@@ -86,7 +86,7 @@ mod test_deserialize {
     #[test]
     fn deserialize_negative_large() {
         let val_str = format!("-{}", u64::MAX);
-        let z_string = format!("{{\"modulus\":\"{}\"}}", val_str);
+        let z_string = format!("{{\"modulus\":\"{val_str}\"}}");
 
         let a: Result<Modulus, serde_json::Error> = serde_json::from_str(&z_string);
         assert!(a.is_err())
