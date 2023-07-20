@@ -395,7 +395,7 @@ mod test_get_mat {
 
     /// Ensure that the getter for a large modulus and large entries works.
     #[test]
-    fn get_mod_large() {
+    fn get_mat_large_entry_and_modulus() {
         let modulus =
             ModulusPolynomialRingZq::from_str(&format!("5  42 0 0 0 1 mod {LARGE_PRIME}")).unwrap();
         let poly_mat = MatPolyOverZ::from_str("[[4  1 0 0 1, 1  42],[0, 1  -1]]").unwrap();
