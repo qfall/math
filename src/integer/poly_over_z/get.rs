@@ -16,7 +16,7 @@ use std::fmt::Display;
 impl GetCoefficient<Z> for PolyOverZ {
     /// Returns the coefficient of a polynomial [`PolyOverZ`] as a [`Z`].
     ///
-    /// If a index is provided which exceeds the highest set coefficient, `0` is returned.
+    /// If an index is provided which exceeds the highest set coefficient, `0` is returned.
     ///
     /// Parameters:
     /// - `index`: the index of the coefficient to get (has to be positive)
@@ -59,7 +59,8 @@ impl PolyOverZ {
     ///
     /// let poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
     ///
-    /// let degree = poly.get_degree(); // This would only return 3
+    /// let degree = poly.get_degree();
+    /// assert_eq!(3, degree);
     /// ```
     pub fn get_degree(&self) -> i64 {
         unsafe { fmpz_poly_degree(&self.poly) }
