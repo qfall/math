@@ -57,7 +57,7 @@ impl PolyOverZq {
         // calculate dot product of polynomials
         let mut result = Zq::from((Z::default(), self.get_mod()));
         let mut temp = Zq::from((Z::default(), self.get_mod()));
-        for i in 0..smaller_degree + 1 {
+        for i in 0..=smaller_degree {
             // sets result = result + coefficient1 * coefficient2
             unsafe {
                 let mut coefficient1 = Z::default();
