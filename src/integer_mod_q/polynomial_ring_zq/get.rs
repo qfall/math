@@ -131,7 +131,7 @@ mod test_get_coeff {
     };
     use std::str::FromStr;
 
-    /// Ensure that 0 is returned if the provided index is not yet set
+    /// Ensure that 0 is returned if the provided index is not yet set.
     #[test]
     fn index_out_of_range() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -143,19 +143,19 @@ mod test_get_coeff {
         assert_eq!(Z::ZERO, zero_coeff)
     }
 
-    /// Tests if coefficients are returned correctly
+    /// Tests if coefficients are returned correctly.
     #[test]
     fn coeff_correct() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly = PolyOverZ::from_str("3  1 0 3").unwrap();
         let poly_ring = PolynomialRingZq::from((&poly, &modulus));
 
-        let coeff = poly.get_coeff(2).unwrap();
+        let coeff = poly_ring.get_coeff(2).unwrap();
 
         assert_eq!(Z::from(3), coeff)
     }
 
-    /// Tests if large coefficients are returned correctly
+    /// Tests if large coefficients are returned correctly.
     #[test]
     fn large_coeff() {
         let modulus =
@@ -164,6 +164,18 @@ mod test_get_coeff {
         let poly_ring = PolynomialRingZq::from((&poly, &modulus));
 
         assert_eq!(Z::from(i64::MAX), poly_ring.get_coeff(1).unwrap());
+    }
+
+    /// Tests if negative index yields an error.
+    #[test]
+    fn negative_index_error() {
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        let poly = PolyOverZ::from_str("3  1 0 3").unwrap();
+        let poly_ring = PolynomialRingZq::from((&poly, &modulus));
+
+        let coeff = poly_ring.get_coeff(-1);
+
+        assert!(coeff.is_err())
     }
 }
 
@@ -175,7 +187,7 @@ mod test_get_mod {
     };
     use std::str::FromStr;
 
-    /// ensure that the large modulus polynomial is returned correctly
+    /// ensure that the large modulus polynomial is returned correctly.
     #[test]
     fn large_positive() {
         let modulus =
@@ -196,7 +208,7 @@ mod test_get_value {
     };
     use std::str::FromStr;
 
-    /// ensure that the getter returns for large entries
+    /// ensure that the getter returns for large entries.
     #[test]
     fn large_positive() {
         let large_prime = u64::MAX - 58;
@@ -220,7 +232,7 @@ mod test_get_degree {
     };
     use std::str::FromStr;
 
-    /// Ensure that degree is working
+    /// Ensure that degree is working.
     #[test]
     fn degree() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -232,7 +244,7 @@ mod test_get_degree {
         assert_eq!(2, deg);
     }
 
-    /// Ensure that degree is working for constant polynomials
+    /// Ensure that degree is working for constant polynomials.
     #[test]
     fn degree_constant() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -244,7 +256,7 @@ mod test_get_degree {
         assert_eq!(0, deg);
     }
 
-    /// Ensure that degree is working for polynomials with leading 0 coefficients
+    /// Ensure that degree is working for polynomials with leading 0 coefficients.
     #[test]
     fn degree_leading_zeros() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();

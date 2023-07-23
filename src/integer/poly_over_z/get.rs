@@ -75,7 +75,7 @@ mod test_get_coeff {
     };
     use std::str::FromStr;
 
-    /// Ensure that 0 is returned if the provided index is not yet set
+    /// Ensure that 0 is returned if the provided index is not yet set.
     #[test]
     fn index_out_of_range() {
         let poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
@@ -85,7 +85,7 @@ mod test_get_coeff {
         assert_eq!(Z::ZERO, zero_coeff)
     }
 
-    /// Tests if negative coefficients are returned correctly
+    /// Tests if negative coefficients are returned correctly.
     #[test]
     fn negative_coeff() {
         let poly = PolyOverZ::from_str("4  0 1 2 -3").unwrap();
@@ -95,7 +95,7 @@ mod test_get_coeff {
         assert_eq!(Z::from(-3), coeff)
     }
 
-    /// Tests if positive coefficients are returned correctly
+    /// Tests if positive coefficients are returned correctly.
     #[test]
     fn positive_coeff() {
         let poly = PolyOverZ::from_str("4  0 1 2 -3").unwrap();
@@ -105,7 +105,7 @@ mod test_get_coeff {
         assert_eq!(Z::from(2), coeff)
     }
 
-    /// Tests if large coefficients are returned correctly
+    /// Tests if large coefficients are returned correctly.
     #[test]
     fn large_coeff() {
         let large_string = format!("2  {} {}", u64::MAX, i64::MIN);
@@ -115,7 +115,7 @@ mod test_get_coeff {
         assert_eq!(Z::from(i64::MIN), poly.get_coeff(1).unwrap());
     }
 
-    /// Tests if large negative coefficients are returned correctly
+    /// Tests if large negative coefficients are returned correctly.
     #[test]
     fn large_coeff_neg() {
         let large_string = format!("2  -{} {}", u64::MAX, i64::MIN);
@@ -127,6 +127,16 @@ mod test_get_coeff {
         );
         assert_eq!(Z::from(i64::MIN), poly.get_coeff(1).unwrap());
     }
+
+    /// Tests if negative index yields an error.
+    #[test]
+    fn negative_index_error() {
+        let poly = PolyOverZ::from_str("4  0 1 2 -3").unwrap();
+
+        let coeff = poly.get_coeff(-1);
+
+        assert!(coeff.is_err())
+    }
 }
 
 #[cfg(test)]
@@ -134,7 +144,7 @@ mod test_get_degree {
     use crate::integer::PolyOverZ;
     use std::str::FromStr;
 
-    /// Ensure that degree is working
+    /// Ensure that degree is working.
     #[test]
     fn degree() {
         let poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
@@ -144,7 +154,7 @@ mod test_get_degree {
         assert_eq!(3, deg);
     }
 
-    /// Ensure that degree is working for constant polynomials
+    /// Ensure that degree is working for constant polynomials.
     #[test]
     fn degree_constant() {
         let poly1 = PolyOverZ::from_str("1  1").unwrap();
@@ -157,7 +167,7 @@ mod test_get_degree {
         assert_eq!(-1, deg2);
     }
 
-    /// Ensure that degree is working for polynomials with leading 0 coefficients
+    /// Ensure that degree is working for polynomials with leading 0 coefficients.
     #[test]
     fn degree_leading_zeros() {
         let poly = PolyOverZ::from_str("4  1 0 0 0").unwrap();
