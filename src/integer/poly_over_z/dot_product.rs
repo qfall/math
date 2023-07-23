@@ -43,7 +43,7 @@ impl PolyOverZ {
         // calculate dot product of polynomials
         let mut result = Z::default();
         let mut temp = Z::default();
-        for i in 0..smaller_degree + 1 {
+        for i in 0..=smaller_degree {
             // sets result = result + coefficient1 * coefficient2
             unsafe {
                 let mut coefficient1 = Z::default();
