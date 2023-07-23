@@ -10,7 +10,10 @@
 
 use super::PolyOverZq;
 use crate::{
-    error::MathError, integer::Z, integer_mod_q::Zq, traits::GetCoefficient,
+    error::MathError,
+    integer::Z,
+    integer_mod_q::{Modulus, Zq},
+    traits::GetCoefficient,
     utils::index::evaluate_index,
 };
 use flint_sys::fmpz_mod_poly::{fmpz_mod_poly_degree, fmpz_mod_poly_get_coeff_fmpz};
@@ -108,6 +111,20 @@ impl PolyOverZq {
     /// ```
     pub fn get_degree(&self) -> i64 {
         unsafe { fmpz_mod_poly_degree(&self.poly, self.modulus.get_fmpz_mod_ctx_struct()) }
+    }
+
+    /// Returns the modulus of the polynomial as a [`Modulus`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use std::str::FromStr;
+    ///
+    /// let matrix = PolyOverZq::from_str("2  1 3 mod 7").unwrap();
+    /// let modulus = matrix.get_mod();
+    /// ```
+    pub fn get_mod(&self) -> Modulus {
+        self.modulus.clone()
     }
 }
 
@@ -256,5 +273,27 @@ mod test_get_degree {
 
         assert_eq!(6, deg1);
         assert_eq!(6, deg2);
+    }
+}
+
+#[cfg(test)]
+mod test_mod {
+    use crate::integer_mod_q::{Modulus, PolyOverZq};
+    use std::str::FromStr;
+
+    /// Ensure that the getter for modulus works correctly.
+    #[test]
+    fn get_mod() {
+        let poly = PolyOverZq::from_str("2  1 2 mod 7").unwrap();
+
+        assert_eq!(poly.get_mod(), Modulus::from(7));
+    }
+
+    /// Ensure that the getter for modulus works with large numbers.
+    #[test]
+    fn get_mod_large() {
+        let poly = PolyOverZq::from_str(&format!("2  1 2 mod {}", u64::MAX)).unwrap();
+
+        assert_eq!(poly.get_mod(), Modulus::from(u64::MAX));
     }
 }
