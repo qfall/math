@@ -24,6 +24,7 @@ mod arithmetic;
 mod from;
 mod get;
 mod reduce;
+mod set;
 
 /// [`PolynomialRingZq`] represents polynomials over the finite field
 /// [`PolyOverZq`](crate::integer_mod_q::PolyOverZq)/f(X) where f(X) is a polynomial over [`Zq`](super::Zq).
