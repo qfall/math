@@ -196,7 +196,13 @@ impl MatZ {
     ///
     /// # Panics ...
     /// - if the `c1 > c2` or `r1 > r2`.
-    pub fn get_submatrix(&self, r1: i64, r2: i64, c1: i64, c2: i64) -> Result<Self, MathError> {
+    pub fn get_submatrix(
+        &self,
+        r1: impl TryInto<i64> + Display,
+        r2: impl TryInto<i64> + Display,
+        c1: impl TryInto<i64> + Display,
+        c2: impl TryInto<i64> + Display,
+    ) -> Result<Self, MathError> {
         let (r1, c1) = evaluate_indices_for_matrix(self, r1, c1)?;
         let (r2, c2) = evaluate_indices_for_matrix(self, r2, c2)?;
         assert!(
@@ -440,7 +446,7 @@ mod test_get_vec {
 #[cfg(test)]
 mod test_get_submatrix {
     use crate::{
-        integer::MatZ,
+        integer::{MatZ, Z},
         traits::{GetNumColumns, GetNumRows},
     };
     use std::str::FromStr;
@@ -517,6 +523,22 @@ mod test_get_submatrix {
         let mat = MatZ::identity(10, 10);
 
         let _ = mat.get_submatrix(5, 4, 0, 0);
+    }
+
+    /// Ensure that the submatrix function can be called with several types.
+    #[test]
+    fn availability() {
+        let mat = MatZ::identity(10, 10);
+
+        let _ = mat.get_submatrix(0_i8, 0_i8, 0_i8, 0_i8);
+        let _ = mat.get_submatrix(0_i16, 0_i16, 0_i16, 0_i16);
+        let _ = mat.get_submatrix(0_i32, 0_i32, 0_i32, 0_i32);
+        let _ = mat.get_submatrix(0_i64, 0_i64, 0_i64, 0_i64);
+        let _ = mat.get_submatrix(0_u8, 0_u8, 0_u8, 0_u8);
+        let _ = mat.get_submatrix(0_u16, 0_i16, 0_u16, 0_u16);
+        let _ = mat.get_submatrix(0_u32, 0_i32, 0_u32, 0_u32);
+        let _ = mat.get_submatrix(0_u64, 0_i64, 0_u64, 0_u64);
+        let _ = mat.get_submatrix(&Z::ZERO, &Z::ZERO, &Z::ZERO, &Z::ZERO);
     }
 }
 
