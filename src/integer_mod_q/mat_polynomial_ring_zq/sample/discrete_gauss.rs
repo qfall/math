@@ -47,7 +47,7 @@ impl MatPolynomialRingZq {
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
     /// let poly_mat = MatPolyOverZ::from_str("[[1  1, 3  0 0 1, 2  0 1]]").unwrap();
     /// let basis = MatPolynomialRingZq::from((&poly_mat, &modulus));
-    /// let center = PolyOverQ::default();
+    /// let center = vec![PolyOverQ::default()];
     /// let n = Z::from(1024);
     /// let s = Q::from(8);
     ///
@@ -73,7 +73,7 @@ impl MatPolynomialRingZq {
         basis: &Self,
         k: impl Into<i64>,
         n: impl Into<Z>,
-        center: &PolyOverQ,
+        center: &[PolyOverQ],
         s: impl Into<Q>,
     ) -> Result<MatPolynomialRingZq, MathError> {
         let sample = MatPolyOverZ::sample_d(&basis.matrix, k, n, center, s)?;
@@ -97,7 +97,7 @@ mod test_sample_d {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly_mat = MatPolyOverZ::from_str("[[1  1, 3  0 1 -1]]").unwrap();
         let base = MatPolynomialRingZq::from((&poly_mat, &modulus));
-        let center = PolyOverQ::default();
+        let center = vec![PolyOverQ::default()];
 
         for _ in 0..10 {
             let sample = MatPolynomialRingZq::sample_d(&base, 3, 100, &center, 20.5_f64).unwrap();
@@ -121,7 +121,7 @@ mod test_sample_d {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly_mat = MatPolyOverZ::from_str("[[1  1, 3  0 0 1, 2  0 1]]").unwrap();
         let basis = MatPolynomialRingZq::from((&poly_mat, &modulus));
-        let center = PolyOverQ::default();
+        let center = vec![PolyOverQ::default()];
         let n = Z::from(1024);
         let s = Q::from(8);
 
