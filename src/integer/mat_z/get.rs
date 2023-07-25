@@ -170,17 +170,17 @@ impl MatZ {
     }
 
     /// Returns a deep copy of the submatrix defined by the given parameters.
-    /// All entries starting from `(r1, c1)` to `(r2, c2)`(inclusively) are collected in
+    /// All entries starting from `(row1, col1)` to `(row2, col2)`(inclusively) are collected in
     /// a new matrix.
-    /// Note that `r1 >= r2` and `c1 >= c2` must hold. Otherwise the function will panic.
+    /// Note that `row1 >= row2` and `col1 >= col2` must hold. Otherwise the function will panic.
     ///
     /// Parameters:
-    /// `r1`: The starting row of the submatrix
-    /// `r2`: The ending row of the submatrix
-    /// `c1`: The starting column of the submatrix
-    /// `c2`: The ending column of the submatrix
+    /// `row1`: The starting row of the submatrix
+    /// `row2`: The ending row of the submatrix
+    /// `col1`: The starting column of the submatrix
+    /// `col2`: The ending column of the submatrix
     ///
-    /// Returns the submatrix from `(r1, c1)` to `(r2, c2)`(inclusively).
+    /// Returns the submatrix from `(row1, col1)` to `(row2, col2)`(inclusively).
     ///
     /// # Examples
     /// ```
@@ -195,32 +195,32 @@ impl MatZ {
     /// if any provided row or column is greater than the matrix or negative.
     ///
     /// # Panics ...
-    /// - if `c1 > c2` or `r1 > r2`.
+    /// - if `col1 > col2` or `row1 > row2`.
     pub fn get_submatrix(
         &self,
-        r1: impl TryInto<i64> + Display,
-        r2: impl TryInto<i64> + Display,
-        c1: impl TryInto<i64> + Display,
-        c2: impl TryInto<i64> + Display,
+        row1: impl TryInto<i64> + Display,
+        row2: impl TryInto<i64> + Display,
+        col1: impl TryInto<i64> + Display,
+        col2: impl TryInto<i64> + Display,
     ) -> Result<Self, MathError> {
-        let (r1, c1) = evaluate_indices_for_matrix(self, r1, c1)?;
-        let (r2, c2) = evaluate_indices_for_matrix(self, r2, c2)?;
+        let (row1, col1) = evaluate_indices_for_matrix(self, row1, col1)?;
+        let (row2, col2) = evaluate_indices_for_matrix(self, row2, col2)?;
         assert!(
-            r2 >= r1,
-            "The number of rows must be positive, i.e. r2 ({r2}) must be greater or equal r1 ({r1})"
+            row2 >= row1,
+            "The number of rows must be positive, i.e. row2 ({row2}) must be greater or equal row1 ({row1})"
         );
 
         assert!(
-            c2 >= c1,
-            "The number of columns must be positive, i.e. c2 ({c2}) must be greater or equal c1 ({c1})"
+            col2 >= col1,
+            "The number of columns must be positive, i.e. col2 ({col2}) must be greater or equal col1 ({col1})"
         );
 
         // increase both values to have an inclusive capturing of the matrix entries
-        let (r2, c2) = (r2 + 1, c2 + 1);
+        let (row2, col2) = (row2 + 1, col2 + 1);
 
         let mut window = MaybeUninit::uninit();
         // The memory for the elements of window is shared with self.
-        unsafe { fmpz_mat_window_init(window.as_mut_ptr(), &self.matrix, r1, c1, r2, c2) };
+        unsafe { fmpz_mat_window_init(window.as_mut_ptr(), &self.matrix, row1, col1, row2, col2) };
         let mut window_copy = MaybeUninit::uninit();
         unsafe {
             // Deep clone of the content of the window
