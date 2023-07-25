@@ -152,7 +152,7 @@ pub fn evaluate_indices_for_matrix<S: GetNumRows + GetNumColumns>(
     }
     if column_i64 < 0 {
         column_i64 += matrix.get_num_columns();
-        if row_i64 < 0 {
+        if column_i64 < 0 {
             return Err(MathError::OutOfBounds(
                 format!(
                     "be larger or equal to ({},{})",
@@ -215,13 +215,6 @@ mod test_eval_indices {
     use super::evaluate_indices_for_matrix;
     use crate::integer::MatZ;
 
-    /// Tests that negative indices beyond the dimension are not accepted.
-    #[test]
-    fn is_err_negative() {
-        let matrix = MatZ::new(3, 3);
-        assert!(evaluate_indices_for_matrix(&matrix, i32::MIN, 3).is_err())
-    }
-
     /// Test that negative addressing works.
     #[test]
     fn small_negative() {
@@ -232,6 +225,17 @@ mod test_eval_indices {
 
         assert_eq!(a, 9);
         assert_eq!(b, 0);
+    }
+
+    /// Assert that an error is returned if either the row or column
+    /// are just out of bounds.
+    #[test]
+    fn negative_out_of_bounds() {
+        let matrix = MatZ::new(1, 1);
+
+        assert!(evaluate_indices_for_matrix(&matrix, 0, -2).is_err());
+        assert!(evaluate_indices_for_matrix(&matrix, -2, 0).is_err());
+        assert!(evaluate_indices_for_matrix(&matrix, -2, -2).is_err());
     }
 
     /// Tests that the function can be called with several types.
