@@ -195,7 +195,7 @@ impl MatZ {
     /// if any provided row or column is greater than the matrix or negative.
     ///
     /// # Panics ...
-    /// - if the `c1 > c2` or `r1 > r2`.
+    /// - if `c1 > c2` or `r1 > r2`.
     pub fn get_submatrix(
         &self,
         r1: impl TryInto<i64> + Display,
@@ -487,11 +487,11 @@ mod test_get_submatrix {
     /// entries.
     #[test]
     fn large_entries() {
-        let mat = MatZ::from_str(&format!("[[{}, 2, 3],[1, {}, 3]]", u64::MAX, i64::MAX)).unwrap();
+        let mat = MatZ::from_str(&format!("[[{}, 2, 3],[1, {}, 3]]", u64::MAX, i64::MIN)).unwrap();
 
         let sub_mat = mat.get_submatrix(0, 1, 0, 1).unwrap();
 
-        let cmp_mat = MatZ::from_str(&format!("[[{}, 2],[1, {}]]", u64::MAX, i64::MAX)).unwrap();
+        let cmp_mat = MatZ::from_str(&format!("[[{}, 2],[1, {}]]", u64::MAX, i64::MIN)).unwrap();
         assert_eq!(cmp_mat, sub_mat)
     }
 
@@ -507,7 +507,7 @@ mod test_get_submatrix {
         assert!(mat.get_submatrix(-1, 0, 0, 0).is_err());
     }
 
-    /// Ensures that the function panics if the no columns of the matrix are addressed.
+    /// Ensures that the function panics if no columns of the matrix are addressed.
     #[test]
     #[should_panic]
     fn no_columns() {
@@ -516,7 +516,7 @@ mod test_get_submatrix {
         let _ = mat.get_submatrix(0, 0, 6, 5);
     }
 
-    /// Ensures that the function panics if the no rows of the matrix are addressed.
+    /// Ensures that the function panics if no rows of the matrix are addressed.
     #[test]
     #[should_panic]
     fn no_rows() {
