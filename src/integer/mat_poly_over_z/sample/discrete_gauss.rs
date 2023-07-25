@@ -12,7 +12,9 @@ use crate::{
     error::MathError,
     integer::{MatPolyOverZ, MatZ, PolyOverZ, Z},
     rational::{PolyOverQ, Q},
-    traits::{FromCoefficientEmbedding, IntoCoefficientEmbedding},
+    traits::{
+        Concatenate, FromCoefficientEmbedding, GetNumRows, IntoCoefficientEmbedding, SetEntry,
+    },
 };
 
 impl MatPolyOverZ {
@@ -29,7 +31,8 @@ impl MatPolyOverZ {
     /// - `s`: specifies the Gaussian parameter, which is proportional
     /// to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
-    /// Returns a polynomial sampled according to the discrete Gaussian distribution.
+    /// Returns a vector of polynomials sampled according to the
+    /// discrete Gaussian distribution.
     ///
     /// # Example
     /// ```
@@ -66,15 +69,29 @@ impl MatPolyOverZ {
         n: impl Into<Z>,
         center: &PolyOverQ,
         s: impl Into<Q>,
-    ) -> Result<PolyOverZ, MathError> {
+    ) -> Result<MatPolyOverZ, MathError> {
         let k = k.into();
         // use coefficient embedding and then call sampleD for the matrix representation
-        let basis = base.into_coefficient_embedding(k);
+        let mut base_embedded = base.get_row(0).unwrap().into_coefficient_embedding(k);
+        for row in 1..base.get_num_rows() {
+            let b_row = base.get_row(row)?.into_coefficient_embedding(k);
+            base_embedded = base_embedded.concat_vertical(&b_row)?;
+        }
         let center = center.into_coefficient_embedding(k);
-        let sample = MatZ::sample_d(&basis, n, &center, s)?;
+        let sample = MatZ::sample_d(&base_embedded, n, &center, s)?;
 
+        let mut out = MatPolyOverZ::new(base.get_num_rows(), 1);
         // convert sample back to a polynomial using the coefficient embedding
-        Ok(PolyOverZ::from_coefficient_embedding(&sample))
+        for i in 0..base.get_num_rows() {
+            let poly_i = PolyOverZ::from_coefficient_embedding(&sample.get_submatrix(
+                i * k,
+                (i + 1) * k - 1,
+                0,
+                0,
+            )?);
+            out.set_entry(i, 0, poly_i)?
+        }
+        Ok(out)
     }
 }
 
