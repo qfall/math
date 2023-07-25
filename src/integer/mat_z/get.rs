@@ -1,4 +1,4 @@
-// Copyright © 2023 Marcel Luca Schmidt
+// Copyright © 2023 Marcel Luca Schmidt, Marvin Beckmann
 //
 // This file is part of qFALL-math.
 //
@@ -17,9 +17,9 @@ use crate::{
 };
 use flint_sys::{
     fmpz::{fmpz, fmpz_set},
-    fmpz_mat::fmpz_mat_entry,
+    fmpz_mat::{fmpz_mat_entry, fmpz_mat_init_set, fmpz_mat_window_clear, fmpz_mat_window_init},
 };
-use std::fmt::Display;
+use std::{fmt::Display, mem::MaybeUninit};
 
 impl GetNumRows for MatZ {
     /// Returns the number of rows of the matrix as a [`i64`].
@@ -129,16 +129,7 @@ impl MatZ {
             ));
         }
 
-        let out = MatZ::new(1, self.get_num_columns());
-        for column in 0..self.get_num_columns() {
-            unsafe {
-                fmpz_set(
-                    fmpz_mat_entry(&out.matrix, 0, column),
-                    fmpz_mat_entry(&self.matrix, row_i64, column),
-                )
-            };
-        }
-        Ok(out)
+        self.get_submatrix(row_i64, row_i64, 0, self.get_num_columns() - 1)
     }
 
     /// Outputs a column vector of the specified column.
@@ -175,16 +166,66 @@ impl MatZ {
             ));
         }
 
-        let out = MatZ::new(self.get_num_rows(), 1);
-        for row in 0..self.get_num_rows() {
-            unsafe {
-                fmpz_set(
-                    fmpz_mat_entry(&out.matrix, row, 0),
-                    fmpz_mat_entry(&self.matrix, row, column_i64),
-                )
-            };
+        self.get_submatrix(0, self.get_num_rows() - 1, column_i64, column_i64)
+    }
+
+    /// Returns a deep copy of the submatrix defined by the given parameters.
+    /// All entries starting from `(r1, c1)` to `(r2, c2)`(inclusively) are collected in
+    /// a new matrix.
+    /// Note that `r1 >= r2` and `c1 >= c2` must hold. Otherwise the function will panic.
+    ///
+    /// Parameters:
+    /// `r1`: The starting row of the submatrix
+    /// `r2`: The ending row of the submatrix
+    /// `c1`: The starting column of the submatrix
+    /// `c2`: The ending column of the submatrix
+    ///
+    /// Returns the submatrix from `(r1, c1)` to `(r2, c2)`(inclusively).
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatZ;
+    ///
+    /// let mat = MatZ::identity(3,3);
+    /// let sub_mat = mat.get_submatrix(0, 2, 1, 1).unwrap();
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    /// if any provided row or column is greater than the matrix or negative.
+    ///
+    /// # Panics ...
+    /// - if the `c1 > c2` or `r1 > r2`.
+    pub fn get_submatrix(&self, r1: i64, r2: i64, c1: i64, c2: i64) -> Result<Self, MathError> {
+        let (r1, c1) = evaluate_indices_for_matrix(self, r1, c1)?;
+        let (r2, c2) = evaluate_indices_for_matrix(self, r2, c2)?;
+        assert!(
+            r2 >= r1,
+            "The number of rows must be positive, i.e. r2 ({r2}) must be greater or equal r1 ({r1})"
+        );
+
+        assert!(
+            c2 >= c1,
+            "The number of columns must be positive, i.e. c2 ({c2}) must be greater or equal c1 ({c1})"
+        );
+
+        // increase both values to have an inclusive capturing of the matrix entries
+        let (r2, c2) = (r2 + 1, c2 + 1);
+
+        let mut window = MaybeUninit::uninit();
+        // The memory for the elements of window is shared with self.
+        unsafe { fmpz_mat_window_init(window.as_mut_ptr(), &self.matrix, r1, c1, r2, c2) };
+        let mut window_copy = MaybeUninit::uninit();
+        unsafe {
+            // Deep clone of the content of the window
+            fmpz_mat_init_set(window_copy.as_mut_ptr(), window.as_ptr());
+            // Clears the matrix window and releases any memory that it uses. Note that
+            // the memory to the underlying matrix that window points to is not freed
+            fmpz_mat_window_clear(window.as_mut_ptr());
         }
-        Ok(out)
+        Ok(MatZ {
+            matrix: unsafe { window_copy.assume_init() },
+        })
     }
 
     /// Efficiently collects all [`fmpz`]s in a [`MatZ`] without cloning them.
@@ -393,6 +434,89 @@ mod test_get_vec {
         assert!(row2.is_err());
         assert!(column1.is_err());
         assert!(column2.is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_get_submatrix {
+    use crate::{
+        integer::MatZ,
+        traits::{GetNumColumns, GetNumRows},
+    };
+    use std::str::FromStr;
+
+    /// Ensures that getting the entire matrix as a submatrix works.
+    #[test]
+    fn entire_matrix() {
+        let mat = MatZ::identity(5, 5);
+
+        let sub_mat = mat.get_submatrix(0, 4, 0, 4).unwrap();
+
+        assert_eq!(mat, sub_mat)
+    }
+
+    /// Ensures that a single matrix entry can be retrieved.
+    #[test]
+    fn matrix_single_entry() {
+        let mat = MatZ::identity(5, 5);
+
+        let sub_mat = mat.get_submatrix(0, 0, 0, 0).unwrap();
+
+        let cmp_mat = MatZ::identity(1, 1);
+        assert_eq!(cmp_mat, sub_mat)
+    }
+
+    /// Ensures that the dimensions of the submatrix are correct.
+    #[test]
+    fn correct_dimensions() {
+        let mat = MatZ::identity(100, 100);
+
+        let sub_mat = mat.get_submatrix(1, 37, 0, 29).unwrap();
+
+        assert_eq!(37, sub_mat.get_num_rows());
+        assert_eq!(30, sub_mat.get_num_columns())
+    }
+
+    /// Ensures that a submatrix can be correctly retrieved for a matrix with large
+    /// entries.
+    #[test]
+    fn large_entries() {
+        let mat = MatZ::from_str(&format!("[[{}, 2, 3],[1, {}, 3]]", u64::MAX, i64::MAX)).unwrap();
+
+        let sub_mat = mat.get_submatrix(0, 1, 0, 1).unwrap();
+
+        let cmp_mat = MatZ::from_str(&format!("[[{}, 2],[1, {}]]", u64::MAX, i64::MAX)).unwrap();
+        assert_eq!(cmp_mat, sub_mat)
+    }
+
+    /// Ensures that an error is returned if coordinates are addressed that are not
+    /// within the matrix.
+    #[test]
+    fn invalid_coordinates() {
+        let mat = MatZ::identity(10, 10);
+
+        assert!(mat.get_submatrix(0, 0, 0, 10).is_err());
+        assert!(mat.get_submatrix(0, 10, 0, 0).is_err());
+        assert!(mat.get_submatrix(0, 0, -1, 0).is_err());
+        assert!(mat.get_submatrix(-1, 0, 0, 0).is_err());
+    }
+
+    /// Ensures that the function panics if the no columns of the matrix are addressed.
+    #[test]
+    #[should_panic]
+    fn no_columns() {
+        let mat = MatZ::identity(10, 10);
+
+        let _ = mat.get_submatrix(0, 0, 6, 5);
+    }
+
+    /// Ensures that the function panics if the no rows of the matrix are addressed.
+    #[test]
+    #[should_panic]
+    fn no_rows() {
+        let mat = MatZ::identity(10, 10);
+
+        let _ = mat.get_submatrix(5, 4, 0, 0);
     }
 }
 
