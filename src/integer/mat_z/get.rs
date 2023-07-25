@@ -185,9 +185,13 @@ impl MatZ {
     /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
+    /// use std::str::FromStr;
     ///
     /// let mat = MatZ::identity(3,3);
     /// let sub_mat = mat.get_submatrix(0, 2, 1, 1).unwrap();
+    ///
+    /// let e2 = MatZ::from_str("[[0],[1],[0]]").unwrap();
+    /// assert_eq!(e2, sub_mat)
     /// ```
     ///
     /// # Errors and Failures
