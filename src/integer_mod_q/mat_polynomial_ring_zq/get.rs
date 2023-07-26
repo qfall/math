@@ -41,8 +41,8 @@ impl MatPolynomialRingZq {
 impl MatPolynomialRingZq {
     /// Returns the [`MatPolyOverZ`] value of the [`MatPolynomialRingZq`] element.
     ///
-    /// The representation of each coefficient is in the range `[0,q[`
-    /// (`0` inclusive, `q` exclusive) is returned.
+    /// The representation of each coefficient is returned. 
+    /// It is in the range `[0,q[` (`0` inclusive, `q` exclusive).
     /// Each entry is reduced as much as possible.
     ///
     /// # Examples
