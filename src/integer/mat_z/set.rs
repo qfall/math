@@ -46,14 +46,13 @@ impl<Integer: Into<Z>> SetEntry<Integer> for MatZ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::MatZ;
-    /// use qfall_math::integer::Z;
+    /// use qfall_math::integer::{MatZ, Z};
     /// use qfall_math::traits::*;
     ///
     /// let mut matrix = MatZ::new(3, 3);
     ///
     /// matrix.set_entry(0, 1, 5).unwrap();
-    /// matrix.set_entry(-1,2, 9).unwrap();
+    /// matrix.set_entry(-1, 2, 9).unwrap();
     ///
     /// assert_eq!("[[0, 5, 0],[0, 0, 0],[0, 0, 9]]", matrix.to_string());
     /// ```

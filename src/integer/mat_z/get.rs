@@ -352,6 +352,7 @@ mod test_get_entry {
         let matrix = MatZ::new(5, 10);
 
         assert!(matrix.get_entry(5, 1).is_err());
+        assert!(matrix.get_entry(-6, 1).is_err());
     }
 
     /// Ensure that a wrong number of columns yields an Error.
@@ -360,6 +361,7 @@ mod test_get_entry {
         let matrix = MatZ::new(5, 10);
 
         assert!(matrix.get_entry(1, 100).is_err());
+        assert!(matrix.get_entry(1, -11).is_err());
     }
 
     /// Ensure that negative indices return the correct values.
