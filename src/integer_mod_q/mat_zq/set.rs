@@ -40,24 +40,28 @@ impl<Integer: Into<Z>> SetEntry<Integer> for MatZq {
     /// - `column`: specifies the column in which the entry is located
     /// - `value`: specifies the value to which the entry is set
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if the specified entry is not part of the matrix.
     ///
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
-    /// use qfall_math::integer::Z;
-    /// use std::str::FromStr;
     /// use qfall_math::traits::*;
     ///
-    /// let mut matrix = MatZq::new(5, 10, 7);
-    /// let value = Z::from(5);
-    /// matrix.set_entry(1, 1, &value).unwrap();
+    /// let mut matrix = MatZq::new(3, 3, 10);
+    ///
+    /// matrix.set_entry(0, 1, 5).unwrap();
+    /// matrix.set_entry(-1, 2, 19).unwrap();
+    ///
+    /// assert_eq!("[[0, 5, 0],[0, 0, 0],[0, 0, 9]] mod 10", matrix.to_string());
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    /// if the number of rows or columns is greater than the matrix or negative.
+    /// if `row` or `column` are greater than the matrix size.
     fn set_entry(
         &mut self,
         row: impl TryInto<i64> + Display,
@@ -79,26 +83,30 @@ impl SetEntry<&Zq> for MatZq {
     /// - `column`: specifies the column in which the entry is located
     /// - `value`: specifies the value to which the entry is set
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns an empty `Ok` if the action could be performed successfully.
-    /// Otherwise, a [`MathError`] is returned if either the index is negative
-    /// or it does not fit into an [`i64`], or the moduli mismatch.
+    /// Otherwise, a [`MathError`] is returned if either the specified entry
+    /// is not part of the matrix or the moduli mismatch.
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::integer_mod_q::{MatZq, Zq};
     /// use qfall_math::traits::SetEntry;
-    /// use qfall_math::integer_mod_q::Zq;
-    /// use qfall_math::integer::Z;
-    /// use std::str::FromStr;
     ///
-    /// let mut matrix = MatZq::new(5, 10, 7);
-    /// let value = Zq::from((5, 7));
-    /// matrix.set_entry(1, 1, &value).unwrap();
+    /// let mut matrix = MatZq::new(3, 3, 10);
+    /// let value = Zq::from((5, 10));
+    ///
+    /// matrix.set_entry(0, 1, &value).unwrap();
+    /// matrix.set_entry(-1, 2, Zq::from((9, 10))).unwrap();
+    ///
+    /// assert_eq!("[[0, 5, 0],[0, 0, 0],[0, 0, 9]] mod 10", matrix.to_string());
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    /// if the number of rows or columns is greater than the matrix or negative.
+    /// if `row` or `column` are greater than the matrix size.
     /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`]
     /// if the moduli mismatch.
     fn set_entry(
@@ -274,6 +282,9 @@ impl MatZq {
     /// - `row1`: specifies the row, in which the second entry is located
     /// - `col1`: specifies the column, in which the second entry is located
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified entries is not part of the matrix.
     ///
@@ -287,7 +298,7 @@ impl MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    /// if the number of rows or columns is greater than the matrix or negative.
+    /// if row or column are greater than the matrix size.
     pub fn swap_entries(
         &mut self,
         row0: impl TryInto<i64> + Display,
@@ -490,6 +501,7 @@ mod test_setter {
         let mut matrix = MatZq::new(5, 10, 7);
 
         assert!(matrix.set_entry(5, 1, 3).is_err());
+        assert!(matrix.set_entry(-6, 1, 1).is_err());
     }
 
     /// Ensure that a wrong number of columns yields an Error.
@@ -498,6 +510,7 @@ mod test_setter {
         let mut matrix = MatZq::new(5, 10, 7);
 
         assert!(matrix.set_entry(1, 100, 3).is_err());
+        assert!(matrix.set_entry(1, -11, 1).is_err());
     }
 
     /// Ensure that setting entries works with different types.
@@ -510,6 +523,19 @@ mod test_setter {
         matrix.set_entry(0, 0, 3).unwrap();
         matrix.set_entry(0, 0, &Z::default()).unwrap();
         matrix.set_entry(0, 0, &Zq::from((12, 56))).unwrap();
+    }
+
+    /// Ensure that negative indices return address the correct entires.
+    #[test]
+    fn negative_indexing() {
+        let mut matrix = MatZq::new(3, 3, 10);
+
+        matrix.set_entry(-1, -1, 9).unwrap();
+        matrix.set_entry(-1, -2, 8).unwrap();
+        matrix.set_entry(-3, -3, Zq::from((1, 10))).unwrap();
+
+        let matrix_cmp = MatZq::from_str("[[1,0,0],[0,0,0],[0,8,9]] mod 10").unwrap();
+        assert_eq!(matrix_cmp, matrix);
     }
 
     /// Ensure that value is correctly reduced.
@@ -784,10 +810,19 @@ mod test_swaps {
     fn entries_out_of_bounds() {
         let mut matrix = MatZq::new(5, 2, 5);
 
-        assert!(matrix.swap_entries(-1, 0, 0, 0).is_err());
-        assert!(matrix.swap_entries(0, -1, 0, 0).is_err());
+        assert!(matrix.swap_entries(-6, 0, 0, 0).is_err());
+        assert!(matrix.swap_entries(0, -3, 0, 0).is_err());
         assert!(matrix.swap_entries(0, 0, 5, 0).is_err());
         assert!(matrix.swap_entries(0, 5, 0, 0).is_err());
+    }
+
+    /// Ensure that `swap_entries` can properly handle negative indexing.
+    #[test]
+    fn entries_negative_indexing() {
+        let mut matrix = MatZq::identity(2, 2, 2);
+
+        matrix.swap_entries(-2, -2, -2, -1).unwrap();
+        assert_eq!("[[0, 1],[0, 1]] mod 2", matrix.to_string());
     }
 
     /// Ensures that swapping columns works fine for small entries

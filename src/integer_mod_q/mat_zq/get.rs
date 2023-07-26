@@ -79,23 +79,30 @@ impl GetEntry<Z> for MatZq {
     /// - `row`: specifies the row in which the entry is located
     /// - `column`: specifies the column in which the entry is located
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns the [`Z`] value of the matrix at the position of the given
     /// row and column or an error, if the number of rows or columns is
-    /// greater than the matrix or negative.
+    /// greater than the matrix or greater than the matrix.
     ///
     /// # Examples
     /// ```rust
     /// use qfall_math::integer_mod_q::MatZq;
     /// use qfall_math::traits::GetEntry;
     /// use qfall_math::integer::Z;
+    /// use std::str::FromStr;
     ///
-    /// let matrix = MatZq::new(5, 10, 7);
-    /// let entry: Z = matrix.get_entry(0, 1).unwrap();
+    /// let matrix = MatZq::from_str("[[1,2,3],[4,5,6],[7,8,9]] mod 10").unwrap();
+    ///
+    /// assert_eq!(Z::from(3), matrix.get_entry(0, 2).unwrap());
+    /// assert_eq!(Z::from(8), matrix.get_entry(2, 1).unwrap());
+    /// assert_eq!(Z::from(8), matrix.get_entry(-1, -2).unwrap());
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    /// if the number of rows or columns is greater than the matrix or negative.
+    /// if `row` or `column` are greater than the matrix size.
     fn get_entry(
         &self,
         row: impl TryInto<i64> + Display,
@@ -117,23 +124,29 @@ impl GetEntry<Zq> for MatZq {
     /// - `row`: specifies the row in which the entry is located
     /// - `column`: specifies the column in which the entry is located
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns the [`Zq`] value of the matrix at the position of the given
     /// row and column or an error, if the number of rows or columns is
-    /// greater than the matrix or negative.
+    /// greater than the matrix.
     ///
     /// # Examples
     /// ```rust
-    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::integer_mod_q::{MatZq, Zq};
     /// use qfall_math::traits::GetEntry;
-    /// use qfall_math::integer::Z;
+    /// use std::str::FromStr;
     ///
-    /// let matrix = MatZq::new(5, 10, 7);
-    /// let entry: Z = matrix.get_entry(0, 1).unwrap();
+    /// let matrix = MatZq::from_str("[[1,2,3],[4,5,6],[7,8,9]] mod 10").unwrap();
+    ///
+    /// assert_eq!(Zq::from((3, 10)), matrix.get_entry(0, 2).unwrap());
+    /// assert_eq!(Zq::from((8, 10)), matrix.get_entry(2, 1).unwrap());
+    /// assert_eq!(Zq::from((8, 10)), matrix.get_entry(-1, -2).unwrap());
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    /// if the number of rows or columns is greater than the matrix or negative.
+    /// if `row` or `column` are greater than the matrix size.
     fn get_entry(
         &self,
         row: impl TryInto<i64> + Display,
@@ -349,11 +362,11 @@ impl MatZq {
 mod test_get_entry {
     use super::Zq;
     use crate::{
-        error::MathError,
         integer::Z,
         integer_mod_q::MatZq,
         traits::{GetEntry, SetEntry},
     };
+    use std::str::FromStr;
 
     /// Ensure that getting entries works on the edge.
     #[test]
@@ -421,21 +434,54 @@ mod test_get_entry {
     /// Ensure that a wrong number of rows yields an Error.
     #[test]
     fn error_wrong_row() {
-        let matrix = MatZq::new(5, 10, 7);
-        let entry1: Result<Zq, MathError> = matrix.get_entry(5, 1);
-        let entry2: Result<Zq, MathError> = matrix.get_entry(5, 10);
+        let matrix: MatZq = MatZq::new(5, 10, 7);
 
-        assert!(entry1.is_err());
-        assert!(entry2.is_err());
+        assert!(GetEntry::<Z>::get_entry(&matrix, 5, 1).is_err());
+        assert!(GetEntry::<Z>::get_entry(&matrix, -6, 1).is_err());
+        assert!(GetEntry::<Zq>::get_entry(&matrix, 5, 1).is_err());
+        assert!(GetEntry::<Zq>::get_entry(&matrix, -6, 1).is_err());
     }
 
     /// Ensure that a wrong number of columns yields an Error.
     #[test]
     fn error_wrong_column() {
         let matrix = MatZq::new(5, 10, 7);
-        let entry: Result<Zq, MathError> = matrix.get_entry(1, 100);
 
-        assert!(entry.is_err());
+        assert!(GetEntry::<Z>::get_entry(&matrix, 1, 10).is_err());
+        assert!(GetEntry::<Z>::get_entry(&matrix, 1, -11).is_err());
+        assert!(GetEntry::<Zq>::get_entry(&matrix, 1, 10).is_err());
+        assert!(GetEntry::<Zq>::get_entry(&matrix, 1, -11).is_err());
+    }
+
+    /// Ensure that negative indices return the correct values.
+    #[test]
+    fn negative_indexing() {
+        let matrix = MatZq::from_str("[[1,2,3],[4,5,6],[7,8,9]] mod 10").unwrap();
+
+        assert_eq!(
+            GetEntry::<Z>::get_entry(&matrix, -1, -1).unwrap(),
+            Z::from(9)
+        );
+        assert_eq!(
+            GetEntry::<Z>::get_entry(&matrix, -1, -2).unwrap(),
+            Z::from(8)
+        );
+        assert_eq!(
+            GetEntry::<Z>::get_entry(&matrix, -3, -3).unwrap(),
+            Z::from(1)
+        );
+        assert_eq!(
+            GetEntry::<Zq>::get_entry(&matrix, -1, -1).unwrap(),
+            Zq::from((9, 10))
+        );
+        assert_eq!(
+            GetEntry::<Zq>::get_entry(&matrix, -1, -2).unwrap(),
+            Zq::from((8, 10))
+        );
+        assert_eq!(
+            GetEntry::<Zq>::get_entry(&matrix, -3, -3).unwrap(),
+            Zq::from((1, 10))
+        );
     }
 
     /// Ensure that the entry is a deep copy and not just a clone of the reference.
