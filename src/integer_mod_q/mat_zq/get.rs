@@ -287,7 +287,7 @@ impl MatZq {
         }
         Ok(MatZq {
             matrix: unsafe { window_copy.assume_init() },
-            modulus: self.modulus.clone(),
+            modulus: self.get_mod(),
         })
     }
 

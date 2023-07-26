@@ -203,7 +203,7 @@ impl MatPolynomialRingZq {
     ) -> Result<Self, MathError> {
         Ok(MatPolynomialRingZq {
             matrix: self.matrix.get_submatrix(row1, row2, col1, col2)?,
-            modulus: self.modulus.clone(),
+            modulus: self.get_mod(),
         })
     }
     /// Efficiently collects all [`fmpz_poly_struct`]s in a [`MatPolynomialRingZq`] without cloning them.
