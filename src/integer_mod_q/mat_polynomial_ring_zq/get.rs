@@ -548,7 +548,7 @@ mod test_get_vec {
         assert_eq!(cmp3, column3);
     }
 
-    /// Ensure that wrong row and column dimensions yields an error
+    /// Ensure that wrong row and column dimensions yields an error.
     #[test]
     fn wrong_dim_error() {
         let modulus =
