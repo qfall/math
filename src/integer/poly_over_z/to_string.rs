@@ -26,7 +26,7 @@ impl fmt::Display for PolyOverZ {
     /// use core::fmt;
     ///
     /// let poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
-    /// println!("{}", poly);
+    /// println!("{poly}");
     /// ```
     ///
     /// ```

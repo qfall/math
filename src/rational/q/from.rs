@@ -219,9 +219,7 @@ impl<IntegerNumerator: AsInteger, IntegerDenominator: AsInteger>
             let num = num_den_tuple.0.into_fmpz();
             let den = num_den_tuple.1.into_fmpz();
 
-            if den.0 == 0 {
-                panic!("Division by zero");
-            }
+            assert_ne!(den.0, 0, "The denominator can not be zero");
 
             let mut value = fmpq { num, den };
             fmpq_canonicalise(&mut value);

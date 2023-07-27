@@ -74,7 +74,7 @@ mod test_inverse {
     fn inverse_correct() {
         let mat = MatZ::from_str("[[5,2],[2,1]]").unwrap();
         let mat_q = MatQ::from(&mat);
-        let cmp = MatQ::from_str("[[1,0],[0,1]]").unwrap();
+        let cmp = MatQ::identity(2, 2);
 
         let inv = mat.inverse().unwrap();
         let diag = &mat_q * &inv;

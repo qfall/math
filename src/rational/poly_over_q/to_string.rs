@@ -26,7 +26,7 @@ impl fmt::Display for PolyOverQ {
     /// use core::fmt;
     ///
     /// let poly = PolyOverQ::from_str("5  0 1 2/5 -3/2 1").unwrap();
-    /// println!("{}", poly);
+    /// println!("{poly}");
     /// ```
     ///
     /// ```
@@ -41,7 +41,7 @@ impl fmt::Display for PolyOverQ {
         let return_str = unsafe { CStr::from_ptr(c_str_ptr).to_str().unwrap().to_owned() };
         // free the space allocated by the pointer
         unsafe { libc::free(c_str_ptr as *mut libc::c_void) };
-        write!(f, "{}", return_str)
+        write!(f, "{return_str}")
     }
 }
 

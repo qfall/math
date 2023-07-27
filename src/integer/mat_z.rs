@@ -44,10 +44,9 @@ mod vector;
 ///     integer::{MatZ, Z},
 ///     traits::{GetEntry, SetEntry},
 /// };
-/// use std::str::FromStr;
 ///
 /// // instantiate new matrix
-/// let id_mat = MatZ::from_str("[[1,0],[0,1]]").unwrap();
+/// let id_mat = MatZ::identity(2,2);
 ///
 /// // clone object, set and get entry
 /// let mut clone = id_mat.clone();

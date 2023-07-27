@@ -30,7 +30,7 @@ impl fmt::Display for Z {
     /// use core::fmt;
     ///
     /// let integer = Z::from(42);
-    /// println!("{}", integer);
+    /// println!("{integer}");
     /// ```
     ///
     /// ```
@@ -58,7 +58,7 @@ impl Z {
     /// use core::fmt;
     ///
     /// let integer = Z::from(42);
-    /// println!("{}", integer);
+    /// println!("{integer}");
     /// ```
     ///
     /// ```

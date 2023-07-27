@@ -152,10 +152,8 @@ mod test_from_str {
     #[test]
     fn init_works_large_numbers() {
         let entry = format!("1  {}", u64::MAX);
-        let matrix_string1 = format!(
-            "[[{}, 2  24 42, 2  24 42],[2  24 42, 2  24 42, 2  24 42]]",
-            entry,
-        );
+        let matrix_string1 =
+            format!("[[{entry}, 2  24 42, 2  24 42],[2  24 42, 2  24 42, 2  24 42]]");
 
         assert_eq!(
             entry,

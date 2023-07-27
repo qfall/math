@@ -134,8 +134,8 @@ mod test_add {
         assert_eq!(c, Q::from(63));
     }
 
-    #[test]
     /// Testing addition for large numerators and divisors
+    #[test]
     fn add_large() {
         let a: Q = Q::from(i64::MAX);
         let b: Q = Q::from(u64::MAX - 1);

@@ -60,16 +60,14 @@ pub(crate) fn sample_z(n: &Z, center: &Q, s: &Q) -> Result<Z, MathError> {
     // TODO: Change this functions signature to use std_deviation/ sigma and not Gaussian parameter
     if n <= &Z::ONE {
         return Err(MathError::InvalidIntegerInput(format!(
-            "The value {} was provided for parameter n of the function sample_z.
-            This function expects this input to be bigger than 1.",
-            n
+            "The value {n} was provided for parameter n of the function sample_z.
+            This function expects this input to be bigger than 1."
         )));
     }
     if s <= &Q::ZERO {
         return Err(MathError::InvalidIntegerInput(format!(
-            "The value {} was provided for parameter s of the function sample_z.
-            This function expects this input to be bigger than 0.",
-            s
+            "The value {s} was provided for parameter s of the function sample_z.
+            This function expects this input to be bigger than 0."
         )));
     }
 
@@ -430,7 +428,7 @@ mod test_sample_d {
             hnf_basis.get_column(1).unwrap(),
             hnf_basis_concat_sample.get_column(1).unwrap()
         );
-        // check whether last vector is zero, i.e. was linearly dependend and part of lattice
+        // check whether last vector is zero, i.e. was linearly dependent and part of lattice
         assert_eq!(
             MatZ::new(2, 1),
             hnf_basis_concat_sample.get_column(2).unwrap()

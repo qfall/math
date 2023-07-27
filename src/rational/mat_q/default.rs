@@ -38,9 +38,10 @@ impl MatQ {
     ) -> Self {
         let (num_rows_i64, num_cols_i64) = evaluate_indices(num_rows, num_cols).unwrap();
 
-        if num_rows_i64 == 0 || num_cols_i64 == 0 {
-            panic!("A matrix can not contain 0 rows or 0 columns");
-        }
+        assert!(
+            num_rows_i64 != 0 && num_cols_i64 != 0,
+            "A matrix can not contain 0 rows or 0 columns."
+        );
 
         let mut matrix = MaybeUninit::uninit();
         unsafe {

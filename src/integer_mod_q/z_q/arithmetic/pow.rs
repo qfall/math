@@ -50,8 +50,7 @@ impl<Integer: Into<Z>> Pow<Integer> for Zq {
             )
         } {
             return Err(MathError::InvalidExponent(format!(
-                "The negative exponent {} was used for a non-invertible base {}",
-                exp, self
+                "The negative exponent {exp} was used for a non-invertible base {self}"
             )));
         }
         Ok(out)

@@ -107,7 +107,7 @@ mod test_clone {
         let signs = ["", "-"];
 
         for sign in signs {
-            let val = Q::from_str(&format!("{}{}/2", sign, &big)).unwrap();
+            let val = Q::from_str(&format!("{sign}{big}/2")).unwrap();
             let val_clone = val.clone();
 
             assert_eq!(

@@ -113,8 +113,7 @@ impl FromStr for MatZq {
             Some((matrix, modulus)) => (matrix, modulus),
             None => {
                 return Err(MathError::InvalidStringToMatZqInput(format!(
-                    "The word 'mod' could not be found: {}",
-                    string.to_owned()
+                    "The word 'mod' could not be found: {string}"
                 )))
             }
         };

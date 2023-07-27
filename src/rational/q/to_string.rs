@@ -29,7 +29,7 @@ impl fmt::Display for Q {
     /// use core::fmt;
     ///
     /// let rational = Q::from((-1, 235));
-    /// println!("{}", rational);
+    /// println!("{rational}");
     /// ```
     ///
     /// ```
@@ -55,7 +55,7 @@ impl fmt::Display for Q {
 
         unsafe { libc::free(c_str_ptr as *mut libc::c_void) };
 
-        write!(f, "{}", return_str)
+        write!(f, "{return_str}")
     }
 }
 

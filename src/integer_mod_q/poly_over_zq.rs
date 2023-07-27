@@ -20,6 +20,7 @@ use flint_sys::fmpz_mod_poly::fmpz_mod_poly_struct;
 mod arithmetic;
 mod cmp;
 mod coefficient_embedding;
+mod dot_product;
 mod evaluate;
 mod from;
 mod get;

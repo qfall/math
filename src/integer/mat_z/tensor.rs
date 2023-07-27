@@ -13,7 +13,7 @@ use crate::traits::{GetNumColumns, GetNumRows, Tensor};
 use flint_sys::fmpz_mat::fmpz_mat_kronecker_product;
 
 impl Tensor for MatZ {
-    /// Computes the tensor product of `self` with `other`
+    /// Computes the tensor product of `self` with `other`.
     ///
     /// Parameters:
     /// - `other`: the value with which the tensor product is computed.
@@ -30,11 +30,11 @@ impl Tensor for MatZ {
     /// let mat_b = MatZ::from_str("[[1, 2],[3, 4]]").unwrap();
     ///
     /// let mat_ab = mat_a.tensor_product(&mat_b);
-    /// let res_ab = "[[1, 2, 1, 2],[3, 4, 3, 4],[2, 4, 2, 4],[6, 8, 6, 8]]";
-    /// assert_eq!(mat_ab, MatZ::from_str(res_ab).unwrap());
-    ///
     /// let mat_ba = mat_b.tensor_product(&mat_a);
+    ///
+    /// let res_ab = "[[1, 2, 1, 2],[3, 4, 3, 4],[2, 4, 2, 4],[6, 8, 6, 8]]";
     /// let res_ba = "[[1, 1, 2, 2],[2, 2, 4, 4],[3, 3, 4, 4],[6, 6, 8, 8]]";
+    /// assert_eq!(mat_ab, MatZ::from_str(res_ab).unwrap());
     /// assert_eq!(mat_ba, MatZ::from_str(res_ba).unwrap());
     /// ```
     fn tensor_product(&self, other: &Self) -> Self {
@@ -68,10 +68,10 @@ mod test_tensor {
         assert_eq!(52, mat_3.get_num_columns());
     }
 
-    /// Ensure that the tensor works correctly with identity
+    /// Ensure that the tensor works correctly with identity.
     #[test]
     fn identity() {
-        let identity = MatZ::from_str("[[1, 0],[0, 1]]").unwrap();
+        let identity = MatZ::identity(2, 2);
         let mat_1 =
             MatZ::from_str(&format!("[[1, {}, 1],[0, {}, -1]]", u64::MAX, i64::MIN)).unwrap();
 
@@ -99,7 +99,7 @@ mod test_tensor {
         assert_eq!(cmp_mat_3, mat_3);
     }
 
-    /// Ensure the tensor product works where one is a vector and the other is a matrix
+    /// Ensure the tensor product works where one is a vector and the other is a matrix.
     #[test]
     fn vector_matrix() {
         let vector = MatZ::from_str("[[1],[-1]]").unwrap();
@@ -130,7 +130,7 @@ mod test_tensor {
         assert_eq!(cmp_mat_3, mat_3);
     }
 
-    /// Ensure that the tensor product works correctly with two vectors
+    /// Ensure that the tensor product works correctly with two vectors.
     #[test]
     fn vector_vector() {
         let vec_1 = MatZ::from_str("[[2],[1]]").unwrap();

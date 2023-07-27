@@ -43,8 +43,7 @@ impl Z {
         let base: Z = base.into();
         if base <= Z::ONE {
             Err(MathError::InvalidBase(format!(
-                "The base must be greater than 1, but the provided is {}",
-                base
+                "The base must be greater than 1, but the provided is {base}"
             )))
         } else if self <= &Z::ZERO {
             Err(MathError::NotPositiveNumber(self.to_string()))
@@ -84,8 +83,7 @@ impl Z {
         let base: Z = base.into();
         if base <= Z::ONE {
             Err(MathError::InvalidBase(format!(
-                "The base must be greater than 1, but the provided is {}",
-                base
+                "The base must be greater than 1, but the provided is {base}"
             )))
         } else if self <= &Z::ZERO {
             Err(MathError::NotPositiveNumber(self.to_string()))
@@ -158,8 +156,7 @@ impl Z {
         let base: Z = base.into();
         if base <= Z::ONE {
             return Err(MathError::InvalidBase(format!(
-                "The base must be greater than 1, but the provided is {}",
-                base
+                "The base must be greater than 1, but the provided is {base}"
             )));
         }
 

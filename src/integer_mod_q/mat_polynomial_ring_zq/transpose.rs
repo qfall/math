@@ -71,7 +71,7 @@ mod test_transpose {
     #[test]
     fn different_entry_values() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", LARGE_PRIME)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {LARGE_PRIME}")).unwrap();
         let poly_mat = MatPolyOverZ::from_str(&format!("[[1  {},1  -42,1  0]]", i64::MAX)).unwrap();
         let poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
         let cmp = MatPolyOverZ::from_str(&format!(

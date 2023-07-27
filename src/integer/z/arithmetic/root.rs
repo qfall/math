@@ -65,10 +65,10 @@ impl Z {
     ///   if the parameter of the square root is negative.
     pub fn sqrt_precision(&self, precision: &Z) -> Result<Q, MathError> {
         if self < &Z::ZERO {
-            return Err(MathError::NegativeRootParameter(format!("{}", self)));
+            return Err(MathError::NegativeRootParameter(format!("{self}")));
         }
         if precision <= &Z::ZERO {
-            return Err(MathError::PrecisionNotPositive(format!("{}", precision)));
+            return Err(MathError::PrecisionNotPositive(format!("{precision}")));
         }
 
         let mut integer_result = Q::default();

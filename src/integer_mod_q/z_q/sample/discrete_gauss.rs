@@ -127,16 +127,16 @@ mod test_sample_discrete_gauss {
 
         // Check that the sampled occurrences roughly look
         // like a discrete Gaussian distribution
-        assert!(counts[0] > 70, "{}", expl_text);
-        assert!(counts[0] < 130, "{}", expl_text);
-        assert!(counts[19] > 20, "{}", expl_text);
-        assert!(counts[19] < 70, "{}", expl_text);
-        assert!(counts[1] > 20, "{}", expl_text);
-        assert!(counts[1] < 70, "{}", expl_text);
-        assert!(counts[18] < 20, "{}", expl_text);
-        assert!(counts[2] < 20, "{}", expl_text);
+        assert!(counts[0] > 70, "{expl_text}");
+        assert!(counts[0] < 130, "{expl_text}");
+        assert!(counts[19] > 20, "{expl_text}");
+        assert!(counts[19] < 70, "{expl_text}");
+        assert!(counts[1] > 20, "{expl_text}");
+        assert!(counts[1] < 70, "{expl_text}");
+        assert!(counts[18] < 20, "{expl_text}");
+        assert!(counts[2] < 20, "{expl_text}");
         for count in counts.iter().take(18).skip(3) {
-            assert!(count < &10, "{}", expl_text);
+            assert!(count < &10, "{expl_text}");
         }
     }
 }

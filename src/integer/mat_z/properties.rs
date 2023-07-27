@@ -20,9 +20,8 @@ impl MatZ {
     /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
-    /// use std::str::FromStr;
     ///
-    /// let value = MatZ::from_str("[[1, 0],[0, 1]]").unwrap();
+    /// let value = MatZ::identity(2, 2);
     /// assert!(value.is_identity())
     /// ```
     pub fn is_identity(&self) -> bool {
@@ -70,7 +69,7 @@ mod test_is_identity {
     /// Ensure that is_identity returns `true` for identity matrices.
     #[test]
     fn identity_detection() {
-        let ident = MatZ::from_str("[[1, 0],[0, 1]]").unwrap();
+        let ident = MatZ::identity(2, 2);
         let nosquare = MatZ::from_str("[[1, 0],[0, 1],[0, 0]]").unwrap();
 
         assert!(ident.is_identity());

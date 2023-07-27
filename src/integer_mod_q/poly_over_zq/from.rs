@@ -15,7 +15,7 @@
 use crate::{
     error::MathError,
     integer::PolyOverZ,
-    integer_mod_q::{modulus::Modulus, ModulusPolynomialRingZq, PolyOverZq},
+    integer_mod_q::{modulus::Modulus, ModulusPolynomialRingZq, PolyOverZq, Zq},
 };
 use flint_sys::fmpz_mod_poly::{
     fmpz_mod_poly_init, fmpz_mod_poly_set, fmpz_mod_poly_set_fmpz_poly,
@@ -169,6 +169,105 @@ impl FromStr for PolyOverZq {
         let modulus = Modulus::from_str(modulus)?;
 
         Ok(Self::from((&poly_over_z, &modulus)))
+    }
+}
+
+impl<IntegerModQ: Into<Zq>> From<IntegerModQ> for PolyOverZq {
+    /// Create a constant [`PolyOverZq`] with a specified constant.
+    ///
+    /// # Parameters:
+    /// - `value`: the constant value the polynomial will have.
+    ///   It has to be a [`Zq`], or a value that can be converted into [`Zq`].
+    ///   
+    /// Returns a new constant polynomial with the specified value and modulus.
+    ///
+    /// # Examples:
+    /// ```
+    /// use qfall_math::{integer_mod_q::*, traits::*};
+    ///
+    /// let poly = PolyOverZq::from((1,10));
+    /// let poly_2 = PolyOverZq::from(Zq::from((1,10)));
+    ///
+    /// let value_cmp: Zq = poly.get_coeff(0).unwrap();
+    /// assert_eq!(value_cmp, Zq::from((1, 10)));
+    /// assert_eq!(poly.get_degree(), 0);
+    /// assert_eq!(poly, poly_2);
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the provided value can not be converted into a [`Zq`].
+    ///   For example, if the modulus is not larger than one.
+    fn from(value: IntegerModQ) -> Self {
+        let value: Zq = value.into();
+        let poly_z = PolyOverZ::from(value.value);
+
+        PolyOverZq::from((&poly_z, &value.modulus))
+    }
+}
+
+#[cfg(test)]
+mod test_from_zq {
+    use super::*;
+    use crate::{integer::Z, traits::GetCoefficient};
+
+    /// Ensure that the [`From`] trait works for small
+    /// borrowed and owned [`Zq`], and tuples of value and modulus instances
+    #[test]
+    fn small() {
+        let value: Zq = Zq::from((1, 2));
+
+        let poly = PolyOverZq::from(&value);
+        let poly_2 = PolyOverZq::from(value.clone());
+        let poly_3 = PolyOverZq::from((1, 2));
+        let poly_4 = PolyOverZq::from((&1, &2));
+
+        let value_set: Zq = poly.get_coeff(0).unwrap();
+        assert_eq!(value_set, value);
+        assert_eq!(poly.get_degree(), 0);
+        assert_eq!(poly, poly_2);
+        assert_eq!(poly, poly_3);
+        assert_eq!(poly, poly_4);
+    }
+
+    /// Ensure that the [`From`] trait works for large
+    /// borrowed and owned [`Zq`], and tuples of value and modulus instances.
+    #[test]
+    fn large() {
+        let value = Zq::from((u64::MAX - 1, u64::MAX));
+        let modulus = Modulus::from(u64::MAX);
+
+        let poly = PolyOverZq::from(&value);
+        let poly_2 = PolyOverZq::from(value.clone());
+        let poly_3 = PolyOverZq::from((u64::MAX - 1, &modulus));
+        let poly_4 = PolyOverZq::from((&(u64::MAX - 1), &modulus));
+        let poly_5 = PolyOverZq::from((Z::from(u64::MAX - 1), &u64::MAX));
+        let poly_6 = PolyOverZq::from((&Z::from(u64::MAX - 1), u64::MAX));
+
+        let value_set: Zq = poly.get_coeff(0).unwrap();
+        assert_eq!(value_set, value);
+        assert_eq!(poly.get_degree(), 0);
+        assert_eq!(poly, poly_2);
+        assert_eq!(poly, poly_3);
+        assert_eq!(poly, poly_4);
+        assert_eq!(poly, poly_5);
+        assert_eq!(poly, poly_6);
+    }
+
+    /// Ensure that the modulus is applied when creating a [`PolyOverZq`]
+    /// from a constant [`Zq`].
+    #[test]
+    fn modulus_reduction() {
+        let poly = PolyOverZq::from((42, 5));
+
+        let value_set: Zq = poly.get_coeff(0).unwrap();
+        assert_eq!(value_set, Zq::from((2, 5)));
+    }
+
+    /// Ensure that the polynomial can not be created with an invalid modulus.
+    #[test]
+    #[should_panic]
+    fn invalid_modulus() {
+        let _ = PolyOverZq::from((10, 1));
     }
 }
 

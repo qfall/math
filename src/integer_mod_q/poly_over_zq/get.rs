@@ -10,7 +10,10 @@
 
 use super::PolyOverZq;
 use crate::{
-    error::MathError, integer::Z, integer_mod_q::Zq, traits::GetCoefficient,
+    error::MathError,
+    integer::Z,
+    integer_mod_q::{Modulus, Zq},
+    traits::GetCoefficient,
     utils::index::evaluate_index,
 };
 use flint_sys::fmpz_mod_poly::{fmpz_mod_poly_degree, fmpz_mod_poly_get_coeff_fmpz};
@@ -109,6 +112,20 @@ impl PolyOverZq {
     pub fn get_degree(&self) -> i64 {
         unsafe { fmpz_mod_poly_degree(&self.poly, self.modulus.get_fmpz_mod_ctx_struct()) }
     }
+
+    /// Returns the modulus of the polynomial as a [`Modulus`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use std::str::FromStr;
+    ///
+    /// let matrix = PolyOverZq::from_str("2  1 3 mod 7").unwrap();
+    /// let modulus = matrix.get_mod();
+    /// ```
+    pub fn get_mod(&self) -> Modulus {
+        self.modulus.clone()
+    }
 }
 
 // we omit the tests for the value of the [`Zq`], and focus on the [`Modulus`] being set correctly
@@ -127,7 +144,7 @@ mod test_get_coeff_zq_modulus {
         let modulus_str = format!("17{}", u64::MAX);
         let modulus = Modulus::from_str(&modulus_str).unwrap();
 
-        let poly = PolyOverZq::from_str(&format!("4  0 1 2 3 mod {}", modulus_str)).unwrap();
+        let poly = PolyOverZq::from_str(&format!("4  0 1 2 3 mod {modulus_str}")).unwrap();
 
         let zero_coeff: Zq = poly.get_coeff(4).unwrap();
 
@@ -140,7 +157,7 @@ mod test_get_coeff_zq_modulus {
         let modulus_str = format!("17{}", u64::MAX);
         let modulus = Modulus::from_str(&modulus_str).unwrap();
 
-        let poly = PolyOverZq::from_str(&format!("4  0 1 2 3 mod {}", modulus_str)).unwrap();
+        let poly = PolyOverZq::from_str(&format!("4  0 1 2 3 mod {modulus_str}")).unwrap();
 
         let third_coeff: Zq = poly.get_coeff(3).unwrap();
 
@@ -158,7 +175,7 @@ mod test_get_coeff_z {
     fn index_out_of_range() {
         let modulus_str = format!("17{}", u64::MAX);
 
-        let poly = PolyOverZq::from_str(&format!("4  0 1 2 3 mod {}", modulus_str)).unwrap();
+        let poly = PolyOverZq::from_str(&format!("4  0 1 2 3 mod {modulus_str}")).unwrap();
 
         let zero_coeff = poly.get_coeff(4).unwrap();
 
@@ -170,7 +187,7 @@ mod test_get_coeff_z {
     fn positive_coeff() {
         let modulus_str = format!("17{}", u64::MAX);
 
-        let poly = PolyOverZq::from_str(&format!("4  0 1 2 3 mod {}", modulus_str)).unwrap();
+        let poly = PolyOverZq::from_str(&format!("4  0 1 2 3 mod {modulus_str}")).unwrap();
 
         let coeff = poly.get_coeff(2).unwrap();
 
@@ -181,7 +198,7 @@ mod test_get_coeff_z {
     #[test]
     fn large_coeff() {
         let modulus_str = format!("17{}", u64::MAX);
-        let large_string = format!("2  {} {} mod {}", u64::MAX, i64::MAX, modulus_str);
+        let large_string = format!("2  {} {} mod {modulus_str}", u64::MAX, i64::MAX);
         let poly = PolyOverZq::from_str(&large_string).unwrap();
 
         assert_eq!(Z::from(u64::MAX), poly.get_coeff(0).unwrap());
@@ -192,7 +209,7 @@ mod test_get_coeff_z {
     #[test]
     fn large_modulus_applied_negative_large_coefficient() {
         let modulus_str = format!("{}", u64::MAX);
-        let large_string = format!("2  -{} {} mod {}", u64::MAX, i64::MAX, modulus_str);
+        let large_string = format!("2  -{} {} mod {modulus_str}", u64::MAX, i64::MAX);
         let poly = PolyOverZq::from_str(&large_string).unwrap();
 
         assert_eq!(Z::ZERO, poly.get_coeff(0).unwrap());
@@ -256,5 +273,27 @@ mod test_get_degree {
 
         assert_eq!(6, deg1);
         assert_eq!(6, deg2);
+    }
+}
+
+#[cfg(test)]
+mod test_mod {
+    use crate::integer_mod_q::{Modulus, PolyOverZq};
+    use std::str::FromStr;
+
+    /// Ensure that the getter for modulus works correctly.
+    #[test]
+    fn get_mod() {
+        let poly = PolyOverZq::from_str("2  1 2 mod 7").unwrap();
+
+        assert_eq!(poly.get_mod(), Modulus::from(7));
+    }
+
+    /// Ensure that the getter for modulus works with large numbers.
+    #[test]
+    fn get_mod_large() {
+        let poly = PolyOverZq::from_str(&format!("2  1 2 mod {}", u64::MAX)).unwrap();
+
+        assert_eq!(poly.get_mod(), Modulus::from(u64::MAX));
     }
 }

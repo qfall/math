@@ -34,8 +34,8 @@ use string_builder::Builder;
 pub(crate) fn parse_matrix_string(string: &str) -> Result<Vec<Vec<String>>, MathError> {
     // check if the matrix format is correct
     let entry_str = r"([^\[\],]+)";
-    let row_str = format!(r"\[({},)*({})\]", entry_str, entry_str);
-    let matrix_str = format!(r"^\[({},)*({})\]$", row_str, row_str);
+    let row_str = format!(r"\[({entry_str},)*({entry_str})\]");
+    let matrix_str = format!(r"^\[({row_str},)*({row_str})\]$");
     let regex = Regex::new(&matrix_str).expect("The regular expression could not be processed.");
 
     // explanation of this regex:
