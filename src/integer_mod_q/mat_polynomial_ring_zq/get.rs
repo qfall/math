@@ -459,6 +459,7 @@ mod test_get_mat {
     }
 }
 
+#[cfg(test)]
 mod test_get_submatrix {
     use crate::{
         integer::{MatPolyOverZ, Z},
