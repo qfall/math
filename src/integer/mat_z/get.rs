@@ -199,6 +199,7 @@ impl MatZ {
     /// use std::str::FromStr;
     ///
     /// let mat = MatZ::identity(3,3);
+    ///
     /// let sub_mat_1 = mat.get_submatrix(0, 2, 1, 1).unwrap();
     /// let sub_mat_2 = mat.get_submatrix(0, -1, 1, -2).unwrap();
     ///
@@ -209,7 +210,7 @@ impl MatZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    /// if any provided row or column is greater than the matrix or negative.
+    /// if any provided row or column is greater than the matrix.
     ///
     /// # Panics ...
     /// - if `col1 > col2` or `row1 > row2`.

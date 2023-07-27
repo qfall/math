@@ -258,13 +258,17 @@ impl MatPolynomialRingZq {
     /// Returns a deep copy of the submatrix defined by the given parameters.
     /// All entries starting from `(row1, col1)` to `(row2, col2)`(inclusively) are collected in
     /// a new matrix.
-    /// Note that `row1 >= row2` and `col1 >= col2` must hold. Otherwise the function will panic.
+    /// Note that `row1 >= row2` and `col1 >= col2` must hold after converting negative indices.
+    /// Otherwise the function will panic.
     ///
     /// Parameters:
     /// `row1`: The starting row of the submatrix
     /// `row2`: The ending row of the submatrix
     /// `col1`: The starting column of the submatrix
     /// `col2`: The ending column of the submatrix
+    ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
     ///
     /// Returns the submatrix from `(row1, col1)` to `(row2, col2)`(inclusively).
     ///
@@ -278,16 +282,18 @@ impl MatPolynomialRingZq {
     /// let mat = MatPolyOverZ::identity(3,3);
     /// let poly_ring_mat = MatPolynomialRingZq::from((&mat, &modulus));
     ///
-    /// let sub_mat = poly_ring_mat.get_submatrix(0, 2, 1, 1).unwrap();
+    /// let sub_mat_1 = poly_ring_mat.get_submatrix(0, 2, 1, 1).unwrap();
+    /// let sub_mat_2 = poly_ring_mat.get_submatrix(0, -1, 1, -2).unwrap();
     ///
     /// let e2 = MatPolyOverZ::from_str("[[0],[1  1],[0]]").unwrap();
     /// let e2 = MatPolynomialRingZq::from((&e2, &modulus));
-    /// assert_eq!(e2, sub_mat)
+    /// assert_eq!(e2, sub_mat_1);
+    /// assert_eq!(e2, sub_mat_2)
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    /// if any provided row or column is greater than the matrix or negative.
+    /// if any provided row or column is greater than the matrix.
     ///
     /// # Panics ...
     /// - if `col1 > col2` or `row1 > row2`.
@@ -679,8 +685,20 @@ mod test_get_submatrix {
 
         assert!(mat.get_submatrix(0, 0, 0, 10).is_err());
         assert!(mat.get_submatrix(0, 10, 0, 0).is_err());
-        assert!(mat.get_submatrix(0, 0, -1, 0).is_err());
-        assert!(mat.get_submatrix(-1, 0, 0, 0).is_err());
+        assert!(mat.get_submatrix(0, 0, -11, 0).is_err());
+        assert!(mat.get_submatrix(-11, 0, 0, 0).is_err());
+    }
+
+    /// Ensure that negative indices return the correct submatrix.
+    #[test]
+    fn negative_indexing() {
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
+        let mat = MatPolyOverZ::identity(3, 3);
+        let matrix = MatPolynomialRingZq::from((&mat, &modulus));
+
+        assert_eq!(matrix, matrix.get_submatrix(0, -1, 0, -1).unwrap());
+        assert_eq!(matrix, matrix.get_submatrix(-3, -1, -3, -1).unwrap());
     }
 
     /// Ensures that the function panics if no columns of the matrix are addressed.
