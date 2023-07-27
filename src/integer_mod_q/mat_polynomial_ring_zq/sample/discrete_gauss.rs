@@ -11,7 +11,7 @@
 use crate::{
     error::MathError,
     integer::{MatPolyOverZ, Z},
-    integer_mod_q::{MatPolynomialRingZq, PolynomialRingZq},
+    integer_mod_q::MatPolynomialRingZq,
     rational::{PolyOverQ, Q},
 };
 
@@ -29,7 +29,8 @@ impl MatPolynomialRingZq {
     /// - `s`: specifies the Gaussian parameter, which is proportional
     /// to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
-    /// Returns a polynomial sampled according to the discrete Gaussian distribution.
+    /// Returns a vector of polynomials sampled according to the
+    /// discrete Gaussian distribution.
     ///
     /// # Example
     /// ```
@@ -46,7 +47,7 @@ impl MatPolynomialRingZq {
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
     /// let poly_mat = MatPolyOverZ::from_str("[[1  1, 3  0 0 1, 2  0 1]]").unwrap();
     /// let basis = MatPolynomialRingZq::from((&poly_mat, &modulus));
-    /// let center = PolyOverQ::default();
+    /// let center = vec![PolyOverQ::default()];
     /// let n = Z::from(1024);
     /// let s = Q::from(8);
     ///
@@ -72,21 +73,21 @@ impl MatPolynomialRingZq {
         basis: &Self,
         k: impl Into<i64>,
         n: impl Into<Z>,
-        center: &PolyOverQ,
+        center: &[PolyOverQ],
         s: impl Into<Q>,
-    ) -> Result<PolynomialRingZq, MathError> {
+    ) -> Result<MatPolynomialRingZq, MathError> {
         let sample = MatPolyOverZ::sample_d(&basis.matrix, k, n, center, s)?;
-        Ok(PolynomialRingZq::from((&sample, &basis.get_mod())))
+        Ok(MatPolynomialRingZq::from((&sample, &basis.get_mod())))
     }
 }
 
 #[cfg(test)]
 mod test_sample_d {
     use crate::{
-        integer::{MatPolyOverZ, Z},
+        integer::{MatPolyOverZ, PolyOverZ, Z},
         integer_mod_q::{MatPolynomialRingZq, MatZq, Modulus, ModulusPolynomialRingZq, Zq},
         rational::{PolyOverQ, Q},
-        traits::IntoCoefficientEmbedding,
+        traits::{GetEntry, IntoCoefficientEmbedding},
     };
     use std::str::FromStr;
 
@@ -96,14 +97,13 @@ mod test_sample_d {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly_mat = MatPolyOverZ::from_str("[[1  1, 3  0 1 -1]]").unwrap();
         let base = MatPolynomialRingZq::from((&poly_mat, &modulus));
-        let center = PolyOverQ::default();
+        let center = vec![PolyOverQ::default()];
 
         for _ in 0..10 {
             let sample = MatPolynomialRingZq::sample_d(&base, 3, 100, &center, 20.5_f64).unwrap();
-            let sample_vec = MatZq::from((
-                &sample.get_poly().into_coefficient_embedding(3),
-                &Modulus::from(17),
-            ));
+            let sample: PolyOverZ = sample.get_entry(0, 0).unwrap();
+            let sample_vec =
+                MatZq::from((&sample.into_coefficient_embedding(3), &Modulus::from(17)));
             let orthogonal = MatZq::from_str("[[0],[1],[1]] mod 17").unwrap();
 
             assert_eq!(
@@ -121,7 +121,7 @@ mod test_sample_d {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly_mat = MatPolyOverZ::from_str("[[1  1, 3  0 0 1, 2  0 1]]").unwrap();
         let basis = MatPolynomialRingZq::from((&poly_mat, &modulus));
-        let center = PolyOverQ::default();
+        let center = vec![PolyOverQ::default()];
         let n = Z::from(1024);
         let s = Q::from(8);
 
