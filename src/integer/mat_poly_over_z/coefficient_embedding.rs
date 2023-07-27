@@ -215,12 +215,11 @@ impl FromCoefficientEmbedding<&MatZ> for MatPolyOverZ {
 
 #[cfg(test)]
 mod test_into_coefficient_embedding_from_matrix {
-    use std::str::FromStr;
-
     use crate::{
         integer::{MatPolyOverZ, MatZ},
         traits::Concatenate,
     };
+    use std::str::FromStr;
 
     /// Ensure that the initialization of the identity matrix works.
     #[test]
@@ -269,9 +268,8 @@ mod test_into_coefficient_embedding_from_matrix {
 
 #[cfg(test)]
 mod test_from_coefficient_embedding_to_matrix {
-    use std::str::FromStr;
-
     use crate::integer::{MatPolyOverZ, MatZ};
+    use std::str::FromStr;
 
     /// Ensure that the embedding works with large entries.
     #[test]
@@ -290,11 +288,11 @@ mod test_from_coefficient_embedding_to_matrix {
         assert_eq!(cmp_poly, poly)
     }
 
-    /// Ensure that the function panics if the provided number of rows does not divide
-    /// the number of rows of the embedding
+    /// Ensure that the function panics if the provided degree does not divide
+    /// the number of rows of the embedding.
     #[test]
     #[should_panic]
-    fn rows_not_dividing() {
+    fn degree_not_dividing() {
         let matrix =
             MatZ::from_str(&format!("[[17, 0],[{}, -1],[{}, 0]]", i64::MAX, i64::MIN)).unwrap();
 
