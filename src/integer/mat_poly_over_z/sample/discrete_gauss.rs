@@ -10,11 +10,9 @@
 
 use crate::{
     error::MathError,
-    integer::{MatPolyOverZ, MatZ, PolyOverZ, Z},
+    integer::{MatPolyOverZ, MatZ, Z},
     rational::{PolyOverQ, Q},
-    traits::{
-        Concatenate, FromCoefficientEmbedding, GetNumRows, IntoCoefficientEmbedding, SetEntry,
-    },
+    traits::{Concatenate, IntoCoefficientEmbedding},
 };
 
 impl MatPolyOverZ {
@@ -72,11 +70,7 @@ impl MatPolyOverZ {
     ) -> Result<MatPolyOverZ, MathError> {
         let k = k.into();
         // use coefficient embedding and then call sampleD for the matrix representation
-        let mut base_embedded = base.get_row(0).unwrap().into_coefficient_embedding(k);
-        for row in 1..base.get_num_rows() {
-            let b_row = base.get_row(row)?.into_coefficient_embedding(k);
-            base_embedded = base_embedded.concat_vertical(&b_row)?;
-        }
+        let base_embedded = base.into_coefficient_embedding_from_matrix(k);
 
         // use coefficient embedding to get center
         let mut center_embedded = center[0].into_coefficient_embedding(k);
@@ -87,18 +81,9 @@ impl MatPolyOverZ {
 
         let sample = MatZ::sample_d(&base_embedded, n, &center_embedded, s)?;
 
-        let mut out = MatPolyOverZ::new(base.get_num_rows(), 1);
-        // convert sample back to a polynomial using the coefficient embedding
-        for i in 0..base.get_num_rows() {
-            let poly_i = PolyOverZ::from_coefficient_embedding(&sample.get_submatrix(
-                i * k,
-                (i + 1) * k - 1,
-                0,
-                0,
-            )?);
-            out.set_entry(i, 0, poly_i)?
-        }
-        Ok(out)
+        Ok(MatPolyOverZ::from_coefficient_embedding_to_matrix(
+            &sample, k,
+        ))
     }
 }
 
@@ -107,7 +92,7 @@ mod test_sample_d {
     use crate::{
         integer::{MatPolyOverZ, MatZ, Z},
         rational::{PolyOverQ, Q},
-        traits::{Concatenate, GetNumRows, IntoCoefficientEmbedding},
+        traits::IntoCoefficientEmbedding,
     };
     use std::str::FromStr;
 
@@ -139,11 +124,7 @@ mod test_sample_d {
         let orthogonal = MatZ::from_str("[[0, 1, 1, 0, 1, 1, 0 ,0, 0]]").unwrap();
         for _ in 0..10 {
             let sample = MatPolyOverZ::sample_d(&base, 3, 100, &center, 10.5_f64).unwrap();
-            let mut sample_embedded = sample.get_row(0).unwrap().into_coefficient_embedding(3);
-            for row in 1..sample.get_num_rows() {
-                let b_row = sample.get_row(row).unwrap().into_coefficient_embedding(3);
-                sample_embedded = sample_embedded.concat_vertical(&b_row).unwrap();
-            }
+            let sample_embedded = sample.into_coefficient_embedding_from_matrix(3);
 
             assert_eq!(MatZ::new(1, 1), &orthogonal * &sample_embedded)
         }

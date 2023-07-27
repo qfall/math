@@ -58,14 +58,14 @@ impl MatPolyOverZ {
     }
 
     /// Computes a matrix of polynomials from a matrix.
-    /// The embedding is split into `rows` submatrices.
+    /// The embedding is split into submatrices with `degree` number of rows.
     /// All submatrices are independently turned into a row vector of polynomials
     /// and then vertically concatenated to a matrix of polynomials.
     /// It inverts the operation of
     /// [`MatPolyOverZ::into_coefficient_embedding_from_matrix`].
     ///
     /// Parameters:
-    /// - `rows`: the number of submatrices in which the matrix is divided
+    /// - `degree`: the maximal degree of the polynomials by which the matrix is split
     ///
     /// Returns a matrix of polynomials that corresponds to the embedding.
     ///
@@ -83,23 +83,23 @@ impl MatPolyOverZ {
     /// ```
     ///
     /// # Panics...
-    /// - if `rows` does not divide the number of rows of the embedding.
-    pub fn from_coefficient_embedding_to_matrix(embedding: &MatZ, rows: impl Into<i64>) -> Self {
-        let rows = rows.into();
+    /// - if `degree` does not divide the number of rows of the embedding.
+    pub fn from_coefficient_embedding_to_matrix(embedding: &MatZ, degree: impl Into<i64>) -> Self {
+        let degree = degree.into();
         assert_eq!(
-            embedding.get_num_rows() % rows,
+            embedding.get_num_rows() % degree,
             0,
-            "The provided number of rows ({rows}) must divide the number of rows of the embedding ({}).",
+            "The provided degree of polynomials ({degree}) must divide the number of rows of the embedding ({}).",
             embedding.get_num_rows()
         );
 
-        let nr_rows_sub_mat = embedding.get_num_rows() / rows;
+        let nr_sub_mat = embedding.get_num_rows() / degree;
         let mut row_poly_mat = Vec::new();
-        for i in 0..rows {
+        for i in 0..nr_sub_mat {
             let sub_mat_i = embedding
                 .get_submatrix(
-                    i * nr_rows_sub_mat,
-                    (i + 1) * nr_rows_sub_mat - 1,
+                    i * degree,
+                    (i + 1) * degree - 1,
                     0,
                     embedding.get_num_columns() - 1,
                 )
@@ -279,7 +279,7 @@ mod test_from_coefficient_embedding_to_matrix {
         let matrix =
             MatZ::from_str(&format!("[[17, 0],[{}, -1],[{}, 0]]", i64::MAX, i64::MIN)).unwrap();
 
-        let poly = MatPolyOverZ::from_coefficient_embedding_to_matrix(&matrix, 3);
+        let poly = MatPolyOverZ::from_coefficient_embedding_to_matrix(&matrix, 1);
 
         let cmp_poly = MatPolyOverZ::from_str(&format!(
             "[[1  17, 0],[1  {},1  -1],[1  {}, 0]]",
