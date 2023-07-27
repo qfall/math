@@ -282,6 +282,37 @@ impl TryFrom<&Z> for i64 {
     }
 }
 
+impl TryFrom<Z> for i64 {
+    type Error = MathError;
+
+    /// Converts a [`Z`] into an [`i64`]. If the value is either too large
+    /// or too small an error is returned.
+    ///
+    /// Parameters:
+    /// - `value`: the value that will be converted into an [`i64`]
+    ///
+    /// Returns the value as an [`i64`] or an error, if it does not fit
+    /// into an [`i64`]
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    ///
+    /// let max = Z::from(i64::MAX);
+    /// assert_eq!(i64::MAX, i64::try_from(max).unwrap());
+    ///
+    /// let max = Z::from(u64::MAX);
+    /// assert!(i64::try_from(max).is_err());
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
+    /// if the value does not fit into an [`i64`]
+    fn try_from(value: Z) -> Result<Self, Self::Error> {
+        i64::try_from(&value)
+    }
+}
+
 impl From<&Vec<u8>> for Z {
     /// Converts a byte vector of type [`u8`] to [`Z`] using [`Z::from_bytes`].
     fn from(value: &Vec<u8>) -> Self {
@@ -606,6 +637,8 @@ mod test_try_from_into_i64 {
     fn overflow() {
         assert!(i64::try_from(&Z::from(u64::MAX)).is_err());
         assert!(i64::try_from(&(-1 * Z::from(u64::MAX))).is_err());
+        assert!(i64::try_from(Z::from(u64::MAX)).is_err());
+        assert!(i64::try_from(-1 * Z::from(u64::MAX)).is_err());
     }
 
     /// ensure that a correct value is returned for values in bounds.
@@ -619,5 +652,10 @@ mod test_try_from_into_i64 {
         assert_eq!(i64::MAX, i64::try_from(&max).unwrap());
         assert_eq!(0, i64::try_from(&Z::ZERO).unwrap());
         assert_eq!(42, i64::try_from(&z_42).unwrap());
+
+        assert_eq!(i64::MIN, i64::try_from(min).unwrap());
+        assert_eq!(i64::MAX, i64::try_from(max).unwrap());
+        assert_eq!(0, i64::try_from(Z::ZERO).unwrap());
+        assert_eq!(42, i64::try_from(z_42).unwrap());
     }
 }
