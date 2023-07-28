@@ -11,7 +11,7 @@
 use super::MatPolynomialRingZq;
 use crate::{
     error::MathError,
-    integer::PolyOverZ,
+    integer::{MatPolyOverZ, PolyOverZ},
     integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq},
     traits::{GetEntry, GetNumColumns, GetNumRows},
     utils::index::evaluate_index,
@@ -36,6 +36,33 @@ impl MatPolynomialRingZq {
     /// ```
     pub fn get_mod(&self) -> ModulusPolynomialRingZq {
         self.modulus.clone()
+    }
+}
+
+impl MatPolynomialRingZq {
+    /// Returns the [`MatPolyOverZ`] value of the [`MatPolynomialRingZq`] element.
+    ///
+    /// The representation of each coefficient is returned.
+    /// It is in the range `[0,q[` (`0` inclusive, `q` exclusive).
+    /// Each entry is reduced as much as possible.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
+    /// let poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
+    ///
+    /// let matrix = poly_ring_mat.get_mat();
+    ///
+    /// let cmp_poly_mat = MatPolyOverZ::from_str("[[3  15 0 1, 1  8],[0, 2  1 2]]").unwrap();
+    /// assert_eq!(cmp_poly_mat, matrix)
+    /// ```
+    pub fn get_mat(&self) -> MatPolyOverZ {
+        self.matrix.clone()
     }
 }
 
@@ -482,6 +509,35 @@ mod test_mod {
             modulus,
             ModulusPolynomialRingZq::from_str(&format!("2  42 17 mod {LARGE_PRIME}")).unwrap()
         );
+    }
+}
+
+#[cfg(test)]
+mod test_get_mat {
+    use crate::{
+        integer::MatPolyOverZ,
+        integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
+    };
+    use std::str::FromStr;
+
+    const LARGE_PRIME: u64 = u64::MAX - 58;
+
+    /// Ensure that the getter for a large modulus and large entries works.
+    #[test]
+    fn get_mat_large_entry_and_modulus() {
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("5  42 0 0 0 1 mod {LARGE_PRIME}")).unwrap();
+        let poly_mat = MatPolyOverZ::from_str("[[4  1 0 0 1, 1  42],[0, 1  -1]]").unwrap();
+        let matrix = MatPolynomialRingZq::from((&poly_mat, &modulus));
+
+        assert_eq!(
+            MatPolyOverZ::from_str(&format!(
+                "[[4  1 0 0 1, 1  42],[0, 1  {}]]",
+                LARGE_PRIME - 1
+            ))
+            .unwrap(),
+            matrix.get_mat()
+        )
     }
 }
 
