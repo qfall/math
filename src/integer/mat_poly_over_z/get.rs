@@ -63,22 +63,28 @@ impl GetEntry<PolyOverZ> for MatPolyOverZ {
     /// - `row`: specifies the row in which the entry is located
     /// - `column`: specifies the column in which the entry is located
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns the [`PolyOverZ`] value of the matrix at the position of the given
     /// row and column or an error, if the number of rows or columns is
-    /// greater than the matrix or negative.
+    /// greater than the matrix.
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::integer::{MatPolyOverZ, PolyOverZ};
     /// use qfall_math::traits::*;
+    /// use std::str::FromStr;
     ///
-    /// let matrix = MatPolyOverZ::new(5, 10);
-    /// let entry = matrix.get_entry(0, 1).unwrap();
+    /// let matrix = MatPolyOverZ::from_str("[[1  1, 1  2],[1  3, 1  4],[0,1  6]]").unwrap();
+    ///
+    /// assert_eq!(PolyOverZ::from(2), matrix.get_entry(0, 1).unwrap());
+    /// assert_eq!(PolyOverZ::from(4), matrix.get_entry(-2, 1).unwrap());
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    /// if the number of rows or columns is greater than the matrix or negative.
+    /// if `row` or `column` are greater than the matrix size.
     fn get_entry(
         &self,
         row: impl TryInto<i64> + Display,
@@ -175,13 +181,17 @@ impl MatPolyOverZ {
     /// Returns a deep copy of the submatrix defined by the given parameters.
     /// All entries starting from `(row1, col1)` to `(row2, col2)`(inclusively) are collected in
     /// a new matrix.
-    /// Note that `row1 >= row2` and `col1 >= col2` must hold. Otherwise the function will panic.
+    /// Note that `row1 >= row2` and `col1 >= col2` must hold after converting negative indices.
+    /// Otherwise the function will panic.
     ///
     /// Parameters:
     /// `row1`: The starting row of the submatrix
     /// `row2`: The ending row of the submatrix
     /// `col1`: The starting column of the submatrix
     /// `col2`: The ending column of the submatrix
+    ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
     ///
     /// Returns the submatrix from `(row1, col1)` to `(row2, col2)`(inclusively).
     ///
@@ -191,15 +201,18 @@ impl MatPolyOverZ {
     /// use std::str::FromStr;
     ///
     /// let mat = MatPolyOverZ::identity(3,3);
-    /// let sub_mat = mat.get_submatrix(0, 2, 1, 1).unwrap();
+    ///
+    /// let sub_mat_1 = mat.get_submatrix(0, 2, 1, 1).unwrap();
+    /// let sub_mat_2 = mat.get_submatrix(0, -1, 1, -2).unwrap();
     ///
     /// let e2 = MatPolyOverZ::from_str("[[0],[1  1],[0]]").unwrap();
-    /// assert_eq!(e2, sub_mat)
+    /// assert_eq!(e2, sub_mat_1);
+    /// assert_eq!(e2, sub_mat_2);
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    /// if any provided row or column is greater than the matrix or negative.
+    /// if any provided row or column is greater than the matrix.
     ///
     /// # Panics ...
     /// - if `col1 > col2` or `row1 > row2`.
@@ -364,6 +377,7 @@ mod test_get_entry {
         let matrix = MatPolyOverZ::new(5, 10);
 
         assert!(matrix.get_entry(5, 1).is_err());
+        assert!(matrix.get_entry(-6, 1).is_err());
     }
 
     /// Ensure that a wrong number of columns yields an Error.
@@ -372,6 +386,18 @@ mod test_get_entry {
         let matrix = MatPolyOverZ::new(5, 10);
 
         assert!(matrix.get_entry(1, 100).is_err());
+        assert!(matrix.get_entry(1, -11).is_err());
+    }
+
+    /// Ensure that negative indices return the correct values.
+    #[test]
+    fn negative_indexing() {
+        let matrix = MatPolyOverZ::from_str("[[1  1, 1  2],[1  3, 1  4],[1  5 ,1  6]]").unwrap();
+
+        assert_eq!(PolyOverZ::from(2), matrix.get_entry(0, -1).unwrap());
+        assert_eq!(PolyOverZ::from(4), matrix.get_entry(-2, 1).unwrap());
+        assert_eq!(PolyOverZ::from(4), matrix.get_entry(-2, -1).unwrap());
+        assert_eq!(PolyOverZ::from(6), matrix.get_entry(-1, -1).unwrap());
     }
 
     /// Ensure that the entry is a deep copy and not just a clone of the reference.
@@ -553,8 +579,21 @@ mod test_get_submatrix {
 
         assert!(mat.get_submatrix(0, 0, 0, 10).is_err());
         assert!(mat.get_submatrix(0, 10, 0, 0).is_err());
-        assert!(mat.get_submatrix(0, 0, -1, 0).is_err());
-        assert!(mat.get_submatrix(-1, 0, 0, 0).is_err());
+        assert!(mat.get_submatrix(0, 0, -11, 0).is_err());
+        assert!(mat.get_submatrix(-11, 0, 0, 0).is_err());
+    }
+
+    /// Ensure that negative indices return the correct submatrix.
+    #[test]
+    fn negative_indexing() {
+        let matrix = MatPolyOverZ::identity(3, 3);
+
+        assert_eq!(matrix, matrix.get_submatrix(0, -1, 0, -1).unwrap());
+        assert_eq!(matrix, matrix.get_submatrix(-3, -1, -3, -1).unwrap());
+        assert_eq!(
+            matrix.get_row(0).unwrap(),
+            matrix.get_submatrix(0, -3, -3, -1).unwrap()
+        );
     }
 
     /// Ensures that the function panics if no columns of the matrix are addressed.

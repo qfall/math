@@ -37,6 +37,9 @@ impl<Rational: Into<Q>> SetEntry<Rational> for MatQ {
     /// - `column`: specifies the column in which the entry is located
     /// - `value`: specifies the value to which the entry is set
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if the specified entry is not part of the matrix.
     ///
@@ -44,17 +47,21 @@ impl<Rational: Into<Q>> SetEntry<Rational> for MatQ {
     /// ```
     /// use qfall_math::rational::MatQ;
     /// use qfall_math::rational::Q;
-    /// use std::str::FromStr;
     /// use qfall_math::traits::*;
     ///
-    /// let mut matrix = MatQ::new(5, 10);
+    /// let mut matrix = MatQ::new(3, 3);
     /// let value = Q::from((5, 2));
-    /// matrix.set_entry(1, 1, &value).unwrap();
+    ///
+    /// matrix.set_entry(0, 1, &value).unwrap();
+    /// matrix.set_entry(-1, -1, 5).unwrap();
+    /// matrix.set_entry(0, -1, (2,3)).unwrap();
+    ///
+    /// assert_eq!("[[0, 5/2, 2/3],[0, 0, 0],[0, 0, 5]]", matrix.to_string());
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    /// if the number of rows or columns is greater than the matrix or negative.
+    /// if `row` or `column` are greater than the matrix size.
     fn set_entry(
         &mut self,
         row: impl TryInto<i64> + Display,
@@ -202,8 +209,12 @@ impl MatQ {
     /// - `row1`: specifies the row, in which the second entry is located
     /// - `col1`: specifies the column, in which the second entry is located
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns an empty `Ok` if the action could be performed successfully.
-    /// Otherwise, a [`MathError`] is returned if one of the specified entries is not part of the matrix.
+    /// Otherwise, a [`MathError`] is returned if one of the specified entries
+    /// is not part of the matrix.
     ///
     /// # Examples
     /// ```
@@ -215,7 +226,7 @@ impl MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    /// if the number of rows or columns is greater than the matrix or negative.
+    /// if row or column are greater than the matrix size.
     pub fn swap_entries(
         &mut self,
         row0: impl TryInto<i64> + Display,
@@ -487,6 +498,7 @@ mod test_setter {
         let matrix = MatQ::new(5, 10);
 
         assert!(matrix.get_entry(5, 1).is_err());
+        assert!(matrix.get_entry(-6, 1).is_err());
     }
 
     /// Ensure that a wrong number of columns yields an Error.
@@ -495,6 +507,20 @@ mod test_setter {
         let matrix = MatQ::new(5, 10);
 
         assert!(matrix.get_entry(1, 100).is_err());
+        assert!(matrix.get_entry(1, -11).is_err());
+    }
+
+    /// Ensure that negative indices return address the correct entires.
+    #[test]
+    fn negative_indexing() {
+        let mut matrix = MatQ::new(3, 3);
+
+        matrix.set_entry(-1, -1, 9).unwrap();
+        matrix.set_entry(-1, -2, 8).unwrap();
+        matrix.set_entry(-3, -3, 1).unwrap();
+
+        let matrix_cmp = MatQ::from_str("[[1,0,0],[0,0,0],[0,8,9]]").unwrap();
+        assert_eq!(matrix_cmp, matrix);
     }
 
     /// Ensures that setting columns works fine for small entries
@@ -713,8 +739,8 @@ mod test_swaps {
     fn entries_out_of_bounds() {
         let mut matrix = MatQ::new(5, 2);
 
-        assert!(matrix.swap_entries(-1, 0, 0, 0).is_err());
-        assert!(matrix.swap_entries(0, -1, 0, 0).is_err());
+        assert!(matrix.swap_entries(-6, 0, 0, 0).is_err());
+        assert!(matrix.swap_entries(0, -3, 0, 0).is_err());
         assert!(matrix.swap_entries(0, 0, 5, 0).is_err());
         assert!(matrix.swap_entries(0, 5, 0, 0).is_err());
     }

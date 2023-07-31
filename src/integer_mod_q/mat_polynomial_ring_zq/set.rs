@@ -24,6 +24,9 @@ impl SetEntry<&PolyOverZ> for MatPolynomialRingZq {
     /// - `column`: specifies the column in which the entry is located
     /// - `value`: specifies the value to which the entry is set
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if the specified entry is
     /// not part of the matrix.
@@ -36,16 +39,20 @@ impl SetEntry<&PolyOverZ> for MatPolynomialRingZq {
     /// use std::str::FromStr;
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-    /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
+    /// let poly_mat = MatPolyOverZ::from_str("[[0, 1  42],[0, 2  1 2]]").unwrap();
     /// let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
     /// let value = PolyOverZ::default();
     ///
-    /// poly_ring_mat.set_entry(1, 1, &value).unwrap();
+    /// poly_ring_mat.set_entry(0, 1, &value).unwrap();
+    /// poly_ring_mat.set_entry(-1, -1, &value).unwrap();
+    ///
+    /// let mat_cmp = MatPolynomialRingZq::from((&MatPolyOverZ::new(2,2), &modulus));
+    /// assert_eq!(poly_ring_mat, mat_cmp);
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    /// if the number of rows or columns is greater than the matrix or negative.
+    /// if `row` or `column` are greater than the matrix size.
     fn set_entry(
         &mut self,
         row: impl TryInto<i64> + Display,
@@ -71,6 +78,9 @@ impl SetEntry<&PolynomialRingZq> for MatPolynomialRingZq {
     /// - `column`: specifies the column in which the entry is located
     /// - `value`: specifies the value to which the entry is set
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if the specified entry is
     /// not part of the matrix or the moduli are different.
@@ -83,16 +93,20 @@ impl SetEntry<&PolynomialRingZq> for MatPolynomialRingZq {
     /// use std::str::FromStr;
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-    /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
+    /// let poly_mat = MatPolyOverZ::from_str("[[0, 1  42],[0, 2  1 2]]").unwrap();
     /// let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
     /// let value = PolynomialRingZq::from((&PolyOverZ::default(), &modulus));
     ///
-    /// poly_ring_mat.set_entry(1, 1, &value).unwrap();
+    /// poly_ring_mat.set_entry(0, 1, &value).unwrap();
+    /// poly_ring_mat.set_entry(-1, -1, &value).unwrap();
+    ///
+    /// let mat_cmp = MatPolynomialRingZq::from((&MatPolyOverZ::new(2,2), &modulus));
+    /// assert_eq!(poly_ring_mat, mat_cmp);
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    /// if the number of rows or columns is greater than the matrix or negative.
+    /// if `row` or `column` are greater than the matrix size.
     /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`]
     /// if the moduli are different.
     fn set_entry(
@@ -236,7 +250,7 @@ mod test_setter {
         let value = PolyOverZ::default();
 
         assert!(poly_ring_mat.set_entry(2, 0, &value).is_err());
-        assert!(poly_ring_mat.set_entry(-1, 0, value).is_err());
+        assert!(poly_ring_mat.set_entry(-3, 0, value).is_err());
     }
 
     /// Ensure that a wrong number of columns yields an Error.
@@ -249,7 +263,7 @@ mod test_setter {
         let value = PolyOverZ::default();
 
         assert!(poly_ring_mat.set_entry(0, 3, &value).is_err());
-        assert!(poly_ring_mat.set_entry(0, -1, value).is_err());
+        assert!(poly_ring_mat.set_entry(0, -4, value).is_err());
     }
 
     /// Ensure that differing moduli result in an error.
