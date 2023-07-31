@@ -79,8 +79,8 @@ mod test_set_coeff_z {
     fn set_coeff_big() {
         let mut poly = PolyOverQ::from_str("2  -1 3/17").unwrap();
 
-        assert!(poly.set_coeff(2, i8::MAX).is_ok());
-        assert!(poly.set_coeff(2, i16::MAX).is_ok());
+        assert!(poly.set_coeff(2, i32::MAX).is_ok());
+        assert!(poly.set_coeff(2, i64::MAX).is_ok());
     }
 
     /// Ensure that the max of [`u8`] and [`u16`] works as an index.

@@ -157,7 +157,7 @@ mod test_set_coeff {
 
     /// Ensure that the negative indices return an error.
     #[test]
-    fn set_min_negative_coeff() {
+    fn set_negative_index() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly = PolyOverZ::from_str("3  0 1 1").unwrap();
         let mut poly_ring = PolynomialRingZq::from((&poly, &modulus));

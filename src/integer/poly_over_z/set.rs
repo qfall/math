@@ -67,7 +67,7 @@ mod test_set_coeff {
 
     /// Ensure that the negative indices return an error.
     #[test]
-    fn set_min_negative_coeff() {
+    fn set_negative_index() {
         let mut poly = PolyOverZ::from_str("2  1 1").unwrap();
 
         assert!(poly.set_coeff(i64::MIN, 2).is_err());
@@ -81,13 +81,13 @@ mod test_set_coeff {
     fn set_coeff_big() {
         let mut poly = PolyOverZ::from_str("2  1 1").unwrap();
 
-        assert!(poly.set_coeff(i8::MAX, 2).is_ok());
-        assert!(poly.set_coeff(i16::MAX, 2).is_ok());
+        assert!(poly.set_coeff(2, i32::MAX).is_ok());
+        assert!(poly.set_coeff(2, i64::MAX).is_ok());
     }
 
     /// Ensure that the max of [`u8`] and [`u16`] works as an index.
     #[test]
-    fn set_unsigned_coeff() {
+    fn set_index_big() {
         let mut poly = PolyOverZ::from_str("2  1 1").unwrap();
 
         assert!(poly.set_coeff(u8::MAX, 2).is_ok());
