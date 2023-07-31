@@ -38,8 +38,8 @@ impl GetCoefficient<Zq> for PolyOverZq {
     ///
     /// let coeff_0: Zq = poly.get_coeff(0).unwrap();
     /// let coeff_1: Zq = poly.get_coeff(1).unwrap();
-    /// let coeff_4: Zq = poly.get_coeff(4).unwrap(); 
-    /// 
+    /// let coeff_4: Zq = poly.get_coeff(4).unwrap();
+    ///
     /// assert_eq!(Zq::from((0, 17)), coeff_0);
     /// assert_eq!(Zq::from((1, 17)), coeff_1);
     /// assert_eq!(Zq::from((0, 17)), coeff_4);
@@ -77,7 +77,7 @@ impl GetCoefficient<Z> for PolyOverZq {
     /// let coeff_0: Z = poly.get_coeff(0).unwrap();
     /// let coeff_1: Z = poly.get_coeff(1).unwrap();
     /// let coeff_4: Z = poly.get_coeff(4).unwrap();
-    /// 
+    ///
     /// assert_eq!(Z::ZERO, coeff_0);
     /// assert_eq!(Z::ONE, coeff_1);
     /// assert_eq!(Z::ZERO, coeff_4);

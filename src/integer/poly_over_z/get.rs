@@ -35,7 +35,7 @@ impl GetCoefficient<Z> for PolyOverZ {
     /// let coeff_0 = poly.get_coeff(0).unwrap();
     /// let coeff_1 = poly.get_coeff(1).unwrap();
     /// let coeff_4 = poly.get_coeff(4).unwrap();
-    /// 
+    ///
     /// assert_eq!(Z::ZERO, coeff_0);
     /// assert_eq!(Z::ONE, coeff_1);
     /// assert_eq!(Z::ZERO, coeff_4);
