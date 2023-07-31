@@ -16,7 +16,7 @@ use std::fmt::Display;
 impl GetCoefficient<Z> for PolyOverZ {
     /// Returns the coefficient of a polynomial [`PolyOverZ`] as a [`Z`].
     ///
-    /// If a index is provided which exceeds the highest set coefficient, `0` is returned.
+    /// If an index is provided which exceeds the highest set coefficient, `0` is returned.
     ///
     /// Parameters:
     /// - `index`: the index of the coefficient to get (has to be positive)
@@ -26,7 +26,7 @@ impl GetCoefficient<Z> for PolyOverZ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::PolyOverZ;
+    /// use qfall_math::integer::{Z, PolyOverZ};
     /// use std::str::FromStr;
     /// use qfall_math::traits::*;
     ///
@@ -34,7 +34,11 @@ impl GetCoefficient<Z> for PolyOverZ {
     ///
     /// let coeff_0 = poly.get_coeff(0).unwrap();
     /// let coeff_1 = poly.get_coeff(1).unwrap();
-    /// let coeff_4 = poly.get_coeff(4).unwrap(); // This would only return 0
+    /// let coeff_4 = poly.get_coeff(4).unwrap();
+    ///
+    /// assert_eq!(Z::ZERO, coeff_0);
+    /// assert_eq!(Z::ONE, coeff_1);
+    /// assert_eq!(Z::ZERO, coeff_4);
     /// ```
     ///
     /// # Errors and Failures
@@ -59,7 +63,9 @@ impl PolyOverZ {
     ///
     /// let poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
     ///
-    /// let degree = poly.get_degree(); // This would only return 3
+    /// let degree = poly.get_degree();
+    ///
+    /// assert_eq!(3, degree);
     /// ```
     pub fn get_degree(&self) -> i64 {
         unsafe { fmpz_poly_degree(&self.poly) }
@@ -74,7 +80,7 @@ mod test_get_coeff {
     };
     use std::str::FromStr;
 
-    /// Ensure that 0 is returned if the provided index is not yet set
+    /// Ensure that 0 is returned if the provided index is not yet set.
     #[test]
     fn index_out_of_range() {
         let poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
@@ -84,7 +90,7 @@ mod test_get_coeff {
         assert_eq!(Z::ZERO, zero_coeff)
     }
 
-    /// Tests if negative coefficients are returned correctly
+    /// Tests if negative coefficients are returned correctly.
     #[test]
     fn negative_coeff() {
         let poly = PolyOverZ::from_str("4  0 1 2 -3").unwrap();
@@ -94,7 +100,7 @@ mod test_get_coeff {
         assert_eq!(Z::from(-3), coeff)
     }
 
-    /// Tests if positive coefficients are returned correctly
+    /// Tests if positive coefficients are returned correctly.
     #[test]
     fn positive_coeff() {
         let poly = PolyOverZ::from_str("4  0 1 2 -3").unwrap();
@@ -104,7 +110,7 @@ mod test_get_coeff {
         assert_eq!(Z::from(2), coeff)
     }
 
-    /// Tests if large coefficients are returned correctly
+    /// Tests if large coefficients are returned correctly.
     #[test]
     fn large_coeff() {
         let large_string = format!("2  {} {}", u64::MAX, i64::MIN);
@@ -114,7 +120,7 @@ mod test_get_coeff {
         assert_eq!(Z::from(i64::MIN), poly.get_coeff(1).unwrap());
     }
 
-    /// Tests if large negative coefficients are returned correctly
+    /// Tests if large negative coefficients are returned correctly.
     #[test]
     fn large_coeff_neg() {
         let large_string = format!("2  -{} {}", u64::MAX, i64::MIN);
@@ -126,6 +132,16 @@ mod test_get_coeff {
         );
         assert_eq!(Z::from(i64::MIN), poly.get_coeff(1).unwrap());
     }
+
+    /// Tests if negative index yields an error.
+    #[test]
+    fn negative_index_error() {
+        let poly = PolyOverZ::from_str("4  0 1 2 -3").unwrap();
+
+        let coeff = poly.get_coeff(-1);
+
+        assert!(coeff.is_err())
+    }
 }
 
 #[cfg(test)]
@@ -133,7 +149,7 @@ mod test_get_degree {
     use crate::integer::PolyOverZ;
     use std::str::FromStr;
 
-    /// Ensure that degree is working
+    /// Ensure that degree is working.
     #[test]
     fn degree() {
         let poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
@@ -143,7 +159,7 @@ mod test_get_degree {
         assert_eq!(3, deg);
     }
 
-    /// Ensure that degree is working for constant polynomials
+    /// Ensure that degree is working for constant polynomials.
     #[test]
     fn degree_constant() {
         let poly1 = PolyOverZ::from_str("1  1").unwrap();
@@ -156,7 +172,7 @@ mod test_get_degree {
         assert_eq!(-1, deg2);
     }
 
-    /// Ensure that degree is working for polynomials with leading 0 coefficients
+    /// Ensure that degree is working for polynomials with leading 0 coefficients.
     #[test]
     fn degree_leading_zeros() {
         let poly = PolyOverZ::from_str("4  1 0 0 0").unwrap();
