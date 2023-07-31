@@ -19,8 +19,6 @@ impl<Integer: Into<Z>> SetCoefficient<Integer> for PolynomialRingZq {
     /// of roughly 34 GB. If not careful, be prepared that memory problems can occur, if
     /// the index is very high.
     ///
-    /// All entries which are not directly addressed are automatically treated as zero.
-    ///
     /// Parameters:
     /// - `index`: the index of the coefficient to set (has to be positive)
     /// - `value`: the new value the index should have
@@ -88,22 +86,23 @@ mod test_set_coeff {
         poly_ring.set_coeff(1, 3i16).unwrap();
         poly_ring.set_coeff(1, 3i8).unwrap();
         poly_ring.set_coeff(1, Z::from(3)).unwrap();
+        poly_ring.set_coeff(1, &Z::from(3)).unwrap();
     }
 
-    /// Ensure that coefficients up to 2^15 -1 work.
+    /// Ensure that large coefficients work.
     #[test]
-    fn set_max_coeff() {
+    fn set_coeff_big() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly = PolyOverZ::from_str("3  0 1 1").unwrap();
         let mut poly_ring = PolynomialRingZq::from((&poly, &modulus));
 
-        assert!(poly_ring.set_coeff(i8::MAX, 2).is_ok());
-        assert!(poly_ring.set_coeff(i16::MAX, 2).is_ok());
+        assert!(poly_ring.set_coeff(2, i32::MAX).is_ok());
+        assert!(poly_ring.set_coeff(2, i64::MAX).is_ok());
     }
 
-    /// Ensure that the max of [`u8`] and [`u16`] works as a coefficient.
+    /// Ensure that the max of [`u8`] and [`u16`] works as an index.
     #[test]
-    fn set_unsigned_coeff() {
+    fn set_index_big() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly = PolyOverZ::from_str("3  0 1 1").unwrap();
         let mut poly_ring = PolynomialRingZq::from((&poly, &modulus));
@@ -163,6 +162,7 @@ mod test_set_coeff {
         let poly = PolyOverZ::from_str("3  0 1 1").unwrap();
         let mut poly_ring = PolynomialRingZq::from((&poly, &modulus));
 
+        assert!(poly_ring.set_coeff(-1, 2).is_err());
         assert!(poly_ring.set_coeff(i64::MIN, 2).is_err());
         assert!(poly_ring.set_coeff(i32::MIN, 2).is_err());
         assert!(poly_ring.set_coeff(i16::MIN, 2).is_err());

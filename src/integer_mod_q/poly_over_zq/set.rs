@@ -22,8 +22,6 @@ impl<Integer: Into<Z>> SetCoefficient<Integer> for PolyOverZq {
     /// of roughly 34 GB. If not careful, be prepared that memory problems can occur, if
     /// the index is very high.
     ///
-    /// All entries which are not directly addressed are automatically treated as zero.
-    ///
     /// Parameters:
     /// - `index`: the index of the coefficient to set (has to be positive)
     /// - `value`: the new value the coefficient will be set to.
@@ -122,7 +120,7 @@ mod test_set_coeff_z {
     use crate::{integer::Z, integer_mod_q::PolyOverZq, traits::SetCoefficient};
     use std::str::FromStr;
 
-    /// Ensure that the negative indices return an error
+    /// Ensure that the negative indices return an error.
     #[test]
     fn set_min_negative_coeff() {
         let mut poly = PolyOverZq::from_str("2  1 1 mod 11").unwrap();
@@ -133,25 +131,25 @@ mod test_set_coeff_z {
         assert!(poly.set_coeff(i8::MIN, 2).is_err());
     }
 
-    /// Ensure that coefficients up to 2^15 -1 work
+    /// Ensure that large coefficients work.
     #[test]
-    fn set_max_coeff() {
+    fn set_coeff_big() {
         let mut poly = PolyOverZq::from_str("2  1 1 mod 11").unwrap();
 
-        assert!(poly.set_coeff(i8::MAX, 2).is_ok());
-        assert!(poly.set_coeff(i16::MAX, 2).is_ok());
+        assert!(poly.set_coeff(2, i8::MAX,).is_ok());
+        assert!(poly.set_coeff(2, i16::MAX).is_ok());
     }
 
-    /// Ensure that the max of [`u8`] and [`u16`] works as a coefficient
+    /// Ensure that the max of [`u8`] and [`u16`] works as an index.
     #[test]
-    fn set_unsigned_coeff() {
+    fn set_index_gib() {
         let mut poly = PolyOverZq::from_str("2  1 1 mod 11").unwrap();
 
         assert!(poly.set_coeff(u8::MAX, 2).is_ok());
         assert!(poly.set_coeff(u16::MAX, 2).is_ok());
     }
 
-    /// Ensure that a general case is working
+    /// Ensure that a general case is working.
     #[test]
     fn set_coeff_working() {
         let mut poly = PolyOverZq::from_str("4  0 1 2 3 mod 11").unwrap();
@@ -165,7 +163,7 @@ mod test_set_coeff_z {
         );
     }
 
-    /// Ensure that the correct coefficient is set and all others are set to `0`
+    /// Ensure that the correct coefficient is set and all others are set to `0`.
     #[test]
     fn set_coeff_rest_zero() {
         let mut poly = PolyOverZq::from_str("0 mod 11").unwrap();
@@ -174,7 +172,7 @@ mod test_set_coeff_z {
         assert_eq!(PolyOverZq::from_str("5  0 0 0 0 1 mod 11").unwrap(), poly);
     }
 
-    /// Ensure that setting with a z works
+    /// Ensure that setting with a z works.
     #[test]
     fn set_coeff_z() {
         let mut poly = PolyOverZq::from_str("0 mod 11").unwrap();
