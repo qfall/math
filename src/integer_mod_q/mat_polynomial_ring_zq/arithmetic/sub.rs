@@ -34,9 +34,9 @@ impl Sub for &MatPolynomialRingZq {
     /// use std::str::FromStr;
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-    /// let poly_mat1 = MatPolyOverZ::from_str("[[3  0 1 1, 1  6],[0, 2  1 2]]").unwrap();
+    /// let poly_mat1 = MatPolyOverZ::from_str("[[3  0 1 1, 1  3],[0, 2  1 2]]").unwrap();
     /// let poly_ring_mat1 = MatPolynomialRingZq::from((&poly_mat1, &modulus));
-    /// let poly_mat2 = MatPolyOverZ::from_str("[[3  3 0 1, 1  6],[0, 1  16]]").unwrap();
+    /// let poly_mat2 = MatPolyOverZ::from_str("[[3  3 0 1, 1  7],[0, 1  16]]").unwrap();
     /// let poly_ring_mat2 = MatPolynomialRingZq::from((&poly_mat2, &modulus));
     ///
     /// let poly_ring_mat3: MatPolynomialRingZq = &poly_ring_mat1 - &poly_ring_mat2;
@@ -205,9 +205,9 @@ mod test_sub {
     #[test]
     fn doc_test() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-        let poly_mat1 = MatPolyOverZ::from_str("[[3  0 1 1, 1  6],[0, 2  1 2]]").unwrap();
+        let poly_mat1 = MatPolyOverZ::from_str("[[3  0 1 1, 1  3],[0, 2  1 2]]").unwrap();
         let poly_ring_mat1 = MatPolynomialRingZq::from((&poly_mat1, &modulus));
-        let poly_mat2 = MatPolyOverZ::from_str("[[3  3 0 1, 1  6],[0, 1  16]]").unwrap();
+        let poly_mat2 = MatPolyOverZ::from_str("[[3  3 0 1, 1  7],[0, 1  16]]").unwrap();
         let poly_ring_mat2 = MatPolynomialRingZq::from((&poly_mat2, &modulus));
 
         let poly_ring_mat3: MatPolynomialRingZq = &poly_ring_mat1 - &poly_ring_mat2;
