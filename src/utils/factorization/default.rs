@@ -13,7 +13,7 @@ use flint_sys::fmpz_factor::fmpz_factor_init;
 use std::mem::MaybeUninit;
 
 impl Default for Factorization {
-    /// Returns an instantiation of [`Factorization`] without values.
+    /// Returns an instantiation of [`Factorization`] with `1` as the only factor.
     ///
     /// # Examples:
     /// ```
@@ -39,11 +39,11 @@ impl Default for Factorization {
 mod tests_init {
     use crate::utils::Factorization;
 
-    /// Ensure that [`Default`] initializes [`Factorization`] without numbers.
+    /// Ensure that [`Default`] initializes a [`Factorization`] with `1`.
     #[test]
     fn init_default() {
         let fac = Factorization::default();
 
-        assert_eq!("[]", fac.to_string());
+        assert_eq!("[(1, 1)]", fac.to_string());
     }
 }

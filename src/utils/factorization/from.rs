@@ -72,6 +72,7 @@ impl From<&Factorization> for Vec<(Z, u64)> {
     /// # Examples:
     /// ```
     /// use qfall_math::utils::Factorization;
+    /// use qfall_math::integer::Z;
     ///
     /// let fac = Factorization::from(10);
     ///
