@@ -9,10 +9,6 @@
 //! Implementations to get content of a
 //! [`PolynomialRingZq].
 
-use std::fmt::Display;
-
-use flint_sys::fmpz_poly::{fmpz_poly_degree, fmpz_poly_get_coeff_fmpz};
-
 use super::PolynomialRingZq;
 use crate::{
     error::MathError,
@@ -21,6 +17,8 @@ use crate::{
     traits::GetCoefficient,
     utils::index::evaluate_index,
 };
+use flint_sys::fmpz_poly::{fmpz_poly_degree, fmpz_poly_get_coeff_fmpz};
+use std::fmt::Display;
 
 impl GetCoefficient<Z> for PolynomialRingZq {
     /// Returns the coefficient of a [`PolynomialRingZq`] as a [`Z`].
@@ -46,7 +44,11 @@ impl GetCoefficient<Z> for PolynomialRingZq {
     ///
     /// let coeff_0: Z = poly_ring.get_coeff(0).unwrap();
     /// let coeff_1: Z = poly_ring.get_coeff(1).unwrap();
-    /// let coeff_4: Z = poly_ring.get_coeff(3).unwrap(); // This would only return 0
+    /// let coeff_3: Z = poly_ring.get_coeff(3).unwrap();
+    ///
+    /// assert_eq!(Z::ZERO, coeff_0);
+    /// assert_eq!(Z::ONE, coeff_1);
+    /// assert_eq!(Z::ZERO, coeff_3);
     /// ```
     ///
     /// # Errors and Failures
@@ -74,6 +76,7 @@ impl PolynomialRingZq {
     /// let poly_ring = PolynomialRingZq::from((&poly, &modulus));
     ///
     /// let poly_ring_mod = poly_ring.get_mod();
+    ///
     /// assert_eq!(modulus, poly_ring_mod);
     /// ```
     pub fn get_mod(&self) -> ModulusPolynomialRingZq {
@@ -115,6 +118,7 @@ impl PolynomialRingZq {
     /// let poly_ring = PolynomialRingZq::from((&poly, &modulus));
     ///
     /// let degree = poly_ring.get_degree();
+    ///
     /// assert_eq!(2, degree);
     /// ```
     pub fn get_degree(&self) -> i64 {
@@ -135,10 +139,10 @@ mod test_get_coeff {
     #[test]
     fn index_out_of_range() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-        let poly = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
+        let poly = PolyOverZ::from_str("3  1 1 1").unwrap();
         let poly_ring = PolynomialRingZq::from((&poly, &modulus));
 
-        let zero_coeff = poly_ring.get_coeff(4).unwrap();
+        let zero_coeff = poly_ring.get_coeff(3).unwrap();
 
         assert_eq!(Z::ZERO, zero_coeff)
     }
@@ -236,7 +240,7 @@ mod test_get_degree {
     #[test]
     fn degree() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-        let poly = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
+        let poly = PolyOverZ::from_str("3  0 1 1").unwrap();
         let poly_ring = PolynomialRingZq::from((&poly, &modulus));
 
         let deg = poly_ring.get_degree();

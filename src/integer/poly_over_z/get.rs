@@ -26,7 +26,7 @@ impl GetCoefficient<Z> for PolyOverZ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::PolyOverZ;
+    /// use qfall_math::integer::{Z, PolyOverZ};
     /// use std::str::FromStr;
     /// use qfall_math::traits::*;
     ///
@@ -34,7 +34,11 @@ impl GetCoefficient<Z> for PolyOverZ {
     ///
     /// let coeff_0 = poly.get_coeff(0).unwrap();
     /// let coeff_1 = poly.get_coeff(1).unwrap();
-    /// let coeff_4 = poly.get_coeff(4).unwrap(); // This would only return 0
+    /// let coeff_4 = poly.get_coeff(4).unwrap();
+    /// 
+    /// assert_eq!(Z::ZERO, coeff_0);
+    /// assert_eq!(Z::ONE, coeff_1);
+    /// assert_eq!(Z::ZERO, coeff_4);
     /// ```
     ///
     /// # Errors and Failures
