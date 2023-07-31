@@ -64,6 +64,7 @@ impl PolyOverZ {
     /// let poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
     ///
     /// let degree = poly.get_degree();
+    /// 
     /// assert_eq!(3, degree);
     /// ```
     pub fn get_degree(&self) -> i64 {

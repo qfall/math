@@ -191,7 +191,7 @@ mod test_get_mod {
     };
     use std::str::FromStr;
 
-    /// ensure that the large modulus polynomial is returned correctly.
+    /// Ensure that the large modulus polynomial is returned correctly.
     #[test]
     fn large_positive() {
         let modulus =
@@ -212,7 +212,7 @@ mod test_get_value {
     };
     use std::str::FromStr;
 
-    /// ensure that the getter returns for large entries.
+    /// Ensure that the getter returns for large entries.
     #[test]
     fn large_positive() {
         let large_prime = u64::MAX - 58;
