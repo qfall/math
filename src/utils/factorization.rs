@@ -25,7 +25,7 @@ mod to_string;
 ///     for a factorization of an integer value
 ///
 /// # Implicit Typecasting
-/// Most of our functions take as input values of type [`Integer`].
+/// Most of our functions take as input values of type Integer.
 /// These capture all types that can be turned into a [`Z`](crate::integer::Z) value.
 /// The types are [`Z`](crate::integer::Z), [`Modulus`](crate::integer_mod_q::Modulus), [`i8`],
 /// [`i16`], [`i32`], [`i64`], [`u8`], [`u16`], [`u32`], [`u64`] and the
