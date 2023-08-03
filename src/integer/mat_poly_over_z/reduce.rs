@@ -18,7 +18,7 @@ use crate::{
 use flint_sys::fmpz_poly_mat::fmpz_poly_mat_entry;
 
 impl MatPolyOverZ {
-    /// Reduces a polynomial `self` by another polynomial `modulus`.
+    /// Entrywise reduces a matrix of polynomials by a polynomial `modulus`.
     /// The modulus must have a leading coefficient of `1`, else the function will panic.
     ///
     /// Parameters:

@@ -13,7 +13,7 @@
 use super::{fmpz_poly_helpers::reduce_fmpz_poly_by_poly_over_z, PolyOverZ};
 
 impl PolyOverZ {
-    /// Reduces a polynomial `self` by another polynomial `modulus`.
+    /// Reduces a polynomial by a polynomial `modulus`.
     /// The modulus must have a leading coefficient of `1`, else the function will panic.
     ///
     /// Parameters:
