@@ -117,7 +117,7 @@ mod test_identity {
         }
     }
 
-    /// Tests if function works for a non-square matrix
+    /// Tests if function works for a non-square matrix.
     #[test]
     fn non_square_works() {
         let matrix = MatZq::identity(10, 7, 3);

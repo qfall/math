@@ -21,7 +21,7 @@ impl MatPolynomialRingZq {
     /// - `num_cols`: number of columns the new matrix should have
     /// - `modulus`: the common modulus of the matrix entries
     ///
-    /// Returns a new [`MatPolynomialRingZq`] instance of the provided dimensions..
+    /// Returns a new [`MatPolynomialRingZq`] instance of the provided dimensions.
     ///
     /// # Examples
     /// ```
@@ -164,7 +164,7 @@ mod test_identity {
         }
     }
 
-    /// Tests if function works for a non-square matrix
+    /// Tests if function works for a non-square matrix.
     #[test]
     fn non_square_works() {
         let modulus = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
