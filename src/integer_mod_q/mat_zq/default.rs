@@ -9,7 +9,7 @@
 //! Initialize a [`MatZq`] with common defaults, e.g., zero and identity.
 
 use super::MatZq;
-use crate::{integer::Z, integer_mod_q::Modulus, utils::index::evaluate_indices};
+use crate::{integer_mod_q::Modulus, utils::index::evaluate_indices};
 use flint_sys::fmpz_mod_mat::{fmpz_mod_mat_init, fmpz_mod_mat_one};
 use std::{fmt::Display, mem::MaybeUninit};
 
@@ -33,7 +33,6 @@ impl MatZq {
     ///
     /// # Panics ...
     /// - if the number of rows or columns is negative, zero, or does not fit into an [`i64`].
-    /// - if the provided value is not greater than `1`.
     pub fn new(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
@@ -66,8 +65,7 @@ impl MatZq {
     }
 
     /// Generate a `num_rows` times `num_columns` matrix with `1` on the
-    /// diagonal and `0` anywhere else with a given modulus (if the modulus is `1`
-    /// every entry is `0`).
+    /// diagonal and `0` anywhere else with a given modulus.
     ///
     /// Parameters:
     /// - `rum_rows`: the number of rows of the identity matrix
@@ -94,9 +92,7 @@ impl MatZq {
         modulus: impl Into<Modulus>,
     ) -> Self {
         let mut out = MatZq::new(num_rows, num_cols, modulus);
-        if Z::ONE != Z::from(&out.modulus) {
-            unsafe { fmpz_mod_mat_one(&mut out.matrix) };
-        }
+        unsafe { fmpz_mod_mat_one(&mut out.matrix) };
         out
     }
 }
