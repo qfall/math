@@ -7,7 +7,7 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! This module allows to simulate functionality of matrices over the polynomial ring
-//! `Z[X]/f(x)` by entrywise reducing a [`MatPolyOverZ`] with a [`PolyOverZ`] that
+//! `Z[X]/f(x)` by entrywise reducing a [`MatPolyOverZ`] by a [`PolyOverZ`] that
 //! has a leading coefficient of `1`.
 
 use super::MatPolyOverZ;

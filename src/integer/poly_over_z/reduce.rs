@@ -7,7 +7,7 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! This module allows to simulate functionality of the polynomial ring `Z[X]/f(x)`
-//! by reducing a [`PolyOverZ`] with a [`PolyOverZ`] that
+//! by reducing a [`PolyOverZ`] by a [`PolyOverZ`] that
 //! has a leading coefficient of `1`.
 
 use super::{fmpz_poly_helpers::reduce_fmpz_poly_by_poly_over_z, PolyOverZ};
