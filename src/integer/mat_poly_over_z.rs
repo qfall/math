@@ -21,6 +21,7 @@ mod from;
 mod get;
 mod ownership;
 mod properties;
+mod reduce;
 mod sample;
 mod serialize;
 mod set;
