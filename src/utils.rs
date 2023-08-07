@@ -13,6 +13,9 @@
 
 pub(crate) mod collective_evaluation;
 pub(crate) mod dimensions;
+mod factorization;
 pub mod index;
 pub(crate) mod parse;
 pub(crate) mod sample;
+
+pub use factorization::Factorization;
