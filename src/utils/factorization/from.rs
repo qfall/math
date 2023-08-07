@@ -9,10 +9,10 @@
 //! Implementations for a [`Factorization`] of [`Z`] values.
 
 use super::Factorization;
-use crate::{integer::Z, traits::AsInteger};
+use crate::integer::Z;
 use flint_sys::fmpz_factor::{_fmpz_factor_append, fmpz_factor_get_fmpz};
 
-impl<Integer: AsInteger + Into<Z>> From<Integer> for Factorization {
+impl<Integer: Into<Z>> From<Integer> for Factorization {
     /// Convert an integer into a [`Factorization`].
     ///
     /// Parameters:
@@ -34,15 +34,15 @@ impl<Integer: AsInteger + Into<Z>> From<Integer> for Factorization {
     }
 }
 
-impl<Integer: AsInteger + Into<Z>> From<(Integer, Integer)> for Factorization {
+impl<Integer: Into<Z>> From<(Integer, Integer)> for Factorization {
     /// Convert two integers into a [`Factorization`].
     ///
-    /// Note that the order of the factors is not altered by this method.
+    /// Note that the order and occurrences of the factors are not altered by this method.
     ///
     /// Parameters:
     /// - `factors`: a tuple with two integers we want in the [`Factorization`] object.
     ///
-    /// Returns a new [`Factorization`] with `factor` as the only factor.
+    /// Returns a new [`Factorization`] with `factors` as the only factors.
     ///
     /// # Examples:
     /// ```
@@ -100,6 +100,35 @@ impl From<&Factorization> for Vec<(Z, u64)> {
     }
 }
 
+impl From<&Vec<(Z, u64)>> for Factorization {
+    /// Convert a [`Vec<(Z, u64)>`] into a [`Factorization`].
+    ///
+    /// Note that the order and occurrences of the factors are not altered by this method
+    /// and an empty vector results in a factorization of 1.
+    ///
+    /// Parameters:
+    /// - `factors`: the [`Vec<(Z, u64)>`] we want as a [`Factorization`] object.
+    ///
+    /// Returns a new [`Factorization`] with the factors from [`Vec<(Z, u64)>`].
+    ///
+    /// # Examples:
+    /// ```
+    /// use qfall_math::utils::Factorization;
+    /// use qfall_math::integer::Z;
+    ///
+    /// let vec: Vec<(Z, u64)>  = vec![(Z::from(3), 2), (Z::from(8), 2), (Z::from(4), 1)];
+    /// let fac = Factorization::from(&vec);
+    /// ```
+    fn from(factors: &Vec<(Z, u64)>) -> Self {
+        let mut out = Factorization::default();
+
+        for (factor, exponent) in factors {
+            unsafe { _fmpz_factor_append(&mut out.factors, &factor.value, *exponent) };
+        }
+        out
+    }
+}
+
 #[cfg(test)]
 mod tests_from_one {
     use crate::utils::Factorization;
@@ -126,6 +155,22 @@ mod tests_from_one {
         let fac = Factorization::from(-8);
 
         assert_eq!("[(-8, 1)]", fac.to_string());
+    }
+
+    /// Ensure that a [`Factorization`] is correctly created from value 1.
+    #[test]
+    fn from_one_one() {
+        let fac = Factorization::from(1);
+
+        assert_eq!("[(1, 1)]", fac.to_string());
+    }
+
+    /// Ensure that a [`Factorization`] is correctly created from value 0.
+    #[test]
+    fn from_one_zero() {
+        let fac = Factorization::from(0);
+
+        assert_eq!("[(0, 1)]", fac.to_string());
     }
 }
 
@@ -158,6 +203,14 @@ mod tests_from_two {
         assert_eq!("[(-8, 1), (-3, 1)]", fac.to_string());
     }
 
+    /// Ensure that a [`Factorization`] is correctly created from value 1 and 0.
+    #[test]
+    fn from_two_zero_one() {
+        let fac = Factorization::from((0, 1));
+
+        assert_eq!("[(0, 1), (1, 1)]", fac.to_string());
+    }
+
     /// Ensure that a [`Factorization`] is not refined in from.
     #[test]
     fn from_two_unrefined() {
@@ -168,12 +221,12 @@ mod tests_from_two {
 }
 
 #[cfg(test)]
-mod tests_from_fac {
+mod tests_from_factorization_for_vector {
     use crate::{integer::Z, utils::Factorization};
 
     /// Ensure that a [`Vec`] is correctly created from a [`Factorization`].
     #[test]
-    fn from_fac() {
+    fn from_factorization() {
         let fac = Factorization::from((4, 3));
         let vec = Vec::<(Z, u64)>::from(&fac);
 
@@ -187,7 +240,7 @@ mod tests_from_fac {
     /// Ensure that a [`Vec`] is correctly created from a [`Factorization`]
     /// with big values.
     #[test]
-    fn from_fac_big() {
+    fn from_factorization_big() {
         let fac = Factorization::from((i64::MAX, 3));
         let vec = Vec::<(Z, u64)>::from(&fac);
 
@@ -201,7 +254,7 @@ mod tests_from_fac {
     /// Ensure that a [`Vec`] is correctly created from a [`Factorization`]
     /// with negative values.
     #[test]
-    fn from_fac_negative() {
+    fn from_factorization_negative() {
         let fac = Factorization::from((-i64::MAX, 3));
         let vec = Vec::<(Z, u64)>::from(&fac);
 
@@ -214,7 +267,7 @@ mod tests_from_fac {
 
     /// Ensure that a [`Vec`] is correctly created from a [`Factorization`].
     #[test]
-    fn from_fac_one_entry() {
+    fn from_factorization_one_entry() {
         let fac = Factorization::from(4);
         let vec = Vec::<(Z, u64)>::from(&fac);
 
@@ -225,7 +278,7 @@ mod tests_from_fac {
 
     /// Ensure that a [`Vec`] is correctly created from a refined [`Factorization`].
     #[test]
-    fn from_fac_refined() {
+    fn from_factorization_refined() {
         let mut fac = Factorization::from((-1200, 20));
         fac.refine();
 
@@ -242,8 +295,8 @@ mod tests_from_fac {
 
     /// Ensure that a [`Vec`] is correctly created from a refined [`Factorization`].
     #[test]
-    fn from_fac_one() {
-        let mut fac = Factorization::from(1);
+    fn from_factorization_one() {
+        let mut fac = Factorization::default();
         fac.refine();
 
         let vec = Vec::<(Z, u64)>::from(&fac);
@@ -254,7 +307,7 @@ mod tests_from_fac {
 
     /// Ensure that a [`Vec`] is correctly created from a refined [`Factorization`].
     #[test]
-    fn from_fac_minus_one() {
+    fn from_factorization_minus_one() {
         let mut fac = Factorization::from(-1);
         fac.refine();
 
@@ -264,10 +317,86 @@ mod tests_from_fac {
         assert_eq!(1, vec[0].1);
     }
 
+    /// Ensure that a [`Vec`] is correctly created from a refined [`Factorization`].
+    #[test]
+    fn from_factorization_zero() {
+        let mut fac1 = Factorization::from(0);
+        let mut fac2 = Factorization::from((0, 1));
+        fac1.refine();
+        fac2.refine();
+
+        let vec1 = Vec::<(Z, u64)>::from(&fac1);
+        let vec2 = Vec::<(Z, u64)>::from(&fac2);
+
+        assert!(vec1.is_empty());
+        assert!(vec2.is_empty());
+    }
+
     /// Ensure that the doc test works.
     #[test]
     fn doc_test() {
         let fac = Factorization::from(10);
         let _vec = Vec::<(Z, u64)>::from(&fac);
+    }
+}
+
+#[cfg(test)]
+mod tests_from_vector_for_factorization {
+    use crate::{integer::Z, utils::Factorization};
+
+    /// Ensure that a [`Factorization`] is correctly created from a [`Vec`].
+    #[test]
+    fn from_vector() {
+        let vec: Vec<(Z, u64)> = vec![(Z::from(3), 2), (Z::from(8), 2)];
+        let fac = Factorization::from(&vec);
+
+        assert_eq!("[(3, 2), (8, 2)]", fac.to_string());
+    }
+
+    /// Ensure that a [`Factorization`] is correctly created from a [`Vec`]
+    /// with big values.
+    #[test]
+    fn from_vector_big() {
+        let vec: Vec<(Z, u64)> = vec![(Z::from(i64::MAX), 2), (Z::from(8), 2)];
+        let fac = Factorization::from(&vec);
+
+        assert_eq!(format!("[({}, 2), (8, 2)]", i64::MAX), fac.to_string());
+    }
+
+    /// Ensure that a [`Factorization`] is correctly created from a [`Vec`]
+    /// with negative values.
+    #[test]
+    fn from_vector_negative() {
+        let vec: Vec<(Z, u64)> = vec![(Z::from(-i64::MAX), 2), (Z::from(-8), 2)];
+        let fac = Factorization::from(&vec);
+
+        assert_eq!(format!("[(-{}, 2), (-8, 2)]", i64::MAX), fac.to_string());
+    }
+
+    /// Ensure that a [`Vec`] is correctly created from one entry.
+    #[test]
+    fn from_vector_one_entry() {
+        let vec: Vec<(Z, u64)> = vec![(Z::from(3), 2)];
+        let fac = Factorization::from(&vec);
+
+        assert_eq!("[(3, 2)]", fac.to_string());
+    }
+
+    /// Ensure that a [`Vec`] is correctly created from no entry.
+    #[test]
+    fn from_vector_no_entry() {
+        let vec: Vec<(Z, u64)> = vec![];
+        let fac = Factorization::from(&vec);
+
+        assert_eq!("[(1, 1)]", fac.to_string());
+    }
+
+    /// Ensure that a [`Vec`] is correctly created from no entry.
+    #[test]
+    fn from_vector_zero() {
+        let vec: Vec<(Z, u64)> = vec![(Z::ZERO, 1)];
+        let fac = Factorization::from(&vec);
+
+        assert_eq!("[(0, 1)]", fac.to_string());
     }
 }

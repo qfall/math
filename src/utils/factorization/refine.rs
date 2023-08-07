@@ -87,7 +87,7 @@ mod test_refine {
         );
     }
 
-    /// Ensure that refinement orders the values correctly.
+    /// Ensure that refinement works for value 1.
     #[test]
     fn refine_correct_one() {
         let mut fac = Factorization::from(1);
@@ -97,6 +97,7 @@ mod test_refine {
         assert_eq!("[(1, 1)]", fac.to_string());
     }
 
+    /// Ensure that refinement works for value -1.
     #[test]
     fn refine_correct_minus_one() {
         let mut fac = Factorization::from(-1);
@@ -104,5 +105,15 @@ mod test_refine {
         fac.refine();
 
         assert_eq!("[(-1, 1)]", fac.to_string());
+    }
+
+    /// Ensure that refinement works for value 0.
+    #[test]
+    fn refine_correct_zero() {
+        let mut fac = Factorization::from(0);
+
+        fac.refine();
+
+        assert_eq!("[]", fac.to_string());
     }
 }
