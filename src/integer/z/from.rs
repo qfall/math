@@ -139,7 +139,7 @@ impl Z {
         }
     }
 
-    /// Create a [`Z`] integer from an iterable of [`u8`]s, e.g. a vector of bytes.
+    /// Create a [`Z`] integer from an iterable of [`u8`]s, i.e. a vector of bytes.
     ///
     /// Parameters:
     /// - `bytes`: specifies an iterable of bytes that should be set in the new [`Z`] instance.
@@ -169,6 +169,33 @@ impl Z {
             }
         }
         res
+    }
+
+    /// Create a [`Z`] integer from an iterable of [`bool`]s, i.e. a vector of bits.
+    ///
+    /// Parameters:
+    /// - `bits`: specifies an iterable of bits that should be set in the new [`Z`] instance.
+    /// The first bit should be the least significant bit.
+    ///
+    /// Returns a [`Z`] with the value provided by the bit iterable.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// // instantiate a bit-vector corresponding to "101"
+    /// let bits: Vec<bool> = vec![true, false, true];
+    ///  
+    /// let a: Z = Z::from_bits(&bits);
+    /// assert_eq!(Z::from(5), a);
+    /// ```
+    pub fn from_bits(bits: &[bool]) -> Z {
+        let mut value = Z::default();
+        for (i, bit) in bits.iter().enumerate() {
+            if *bit {
+                unsafe { fmpz_combit(&mut value.value, i as u64) };
+            }
+        }
+        value
     }
 }
 
@@ -297,8 +324,41 @@ impl From<Vec<u8>> for Z {
 }
 
 #[cfg(test)]
+mod test_from_bits {
+    use super::Z;
+
+    /// Checks whether small values are correctly instantiated by `from_bits`
+    /// and different byte representations are valid
+    #[test]
+    fn small_values() {
+        let vec_0 = vec![false];
+        let vec_1 = vec![false, false, false, true];
+        let vec_2 = vec![true, true, true, true, true];
+
+        let res_0 = Z::from_bits(&vec_0);
+        let res_1 = Z::from_bits(&vec_1);
+        let res_2 = Z::from_bits(&vec_2);
+
+        assert_eq!(Z::ZERO, res_0);
+        assert_eq!(Z::from(8), res_1);
+        assert_eq!(Z::from(31), res_2);
+    }
+
+    /// Checks whether large values are correctly instantiated by `from_bits`
+    /// and different byte representations are valid
+    #[test]
+    fn large_values() {
+        let vec = vec![true; 64];
+
+        let res = Z::from_bits(&vec);
+
+        assert_eq!(Z::from(u64::MAX), res);
+    }
+}
+
+#[cfg(test)]
 mod test_from_bytes {
-    use super::*;
+    use super::Z;
 
     /// Checks whether small values are correctly instantiated by `from_bytes`
     /// and different byte representations are valid
