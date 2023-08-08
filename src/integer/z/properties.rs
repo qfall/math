@@ -130,6 +130,39 @@ impl Z {
         unsafe { fmpz_bits(&self.value) }
     }
 
+    /// Computes the [`Vec`] of [`bool`] bits corresponding
+    /// to the bits of the absolute value of `self`.
+    ///
+    /// The first bit is the least significant bit.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// let value = Z::from(4);
+    ///
+    /// let vec_bits = value.to_bits();
+    ///
+    /// assert_eq!(vec![false, false, true], vec_bits);
+    /// ```
+    pub fn to_bits(&self) -> Vec<bool> {
+        // compute absolute value
+        let value = self.clone().abs();
+        // resulting bit-vector
+        let mut bits = vec![];
+        for i in 0..value.bits() {
+            // get i-th bit of value
+            let bit_i = unsafe { fmpz_tstbit(&value.value, i) };
+            // appends i-th bit to vector
+            if bit_i == 0 {
+                bits.push(false);
+            } else {
+                bits.push(true);
+            }
+        }
+
+        bits
+    }
+
     /// Computes `self` mod `modulus` as long as `modulus` is unequal to 0.
     ///
     /// Parameters:
@@ -312,6 +345,48 @@ mod test_modulo {
     }
 }
 
+#[cfg(test)]
+mod test_to_bits {
+    use super::Z;
+
+    /// Ensures that `to_bits` works properly for small and large positive integer values.
+    #[test]
+    fn positive() {
+        let value_0 = Z::from(16);
+        let value_1 = Z::from(u64::MAX);
+
+        let res_0 = value_0.to_bits();
+        let res_1 = value_1.to_bits();
+
+        assert_eq!(vec![false, false, false, false, true], res_0);
+        assert_eq!(vec![true; 64], res_1);
+    }
+
+    /// Ensures that `to_bits` works properly for zero.
+    #[test]
+    fn zero() {
+        let value = Z::ZERO;
+        let cmp: Vec<bool> = vec![];
+
+        let res = value.to_bits();
+
+        assert_eq!(cmp, res);
+    }
+
+    /// Ensures that `to_bits` works properly for small and large negative integer values.
+    #[test]
+    fn negative() {
+        let value_0 = Z::from(-13);
+        let value_1 = Z::from(i64::MIN);
+        let mut cmp = vec![false; 63];
+        cmp.push(true);
+
+        let res_0 = value_0.to_bits();
+        let res_1 = value_1.to_bits();
+
+        assert_eq!(vec![true, false, true, true], res_0);
+        assert_eq!(cmp, res_1);
+    }
 }
 
 #[cfg(test)]
