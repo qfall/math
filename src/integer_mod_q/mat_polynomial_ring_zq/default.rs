@@ -58,7 +58,7 @@ impl MatPolynomialRingZq {
     /// Parameters:
     /// - `rum_rows`: the number of rows of the identity matrix
     /// - `num_columns`: the number of columns of the identity matrix
-    /// - `modulus`: the modulus of the matrix
+    /// - `modulus`: the polynomial mod q which serves as the modulus of the matrix
     ///
     /// Returns a matrix with `1` across the diagonal and `0` anywhere else.
     ///
@@ -150,8 +150,8 @@ mod test_identity {
         let modulus = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
         let matrix = MatPolynomialRingZq::identity(10, 10, &modulus);
 
-        for i in 0..10 {
-            for j in 0..10 {
+        for i in 0..matrix.get_num_rows() {
+            for j in 0..matrix.get_num_columns() {
                 if i != j {
                     assert_eq!(PolyOverZ::default(), matrix.get_entry(i, j).unwrap());
                 } else {
@@ -203,7 +203,7 @@ mod test_identity {
     #[test]
     fn modulus_large() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("3  1 {} 1 mod {}", i64::MAX, u64::MAX))
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 {} 1 mod {}", i64::MAX, u64::MAX))
                 .unwrap();
         let matrix = MatPolynomialRingZq::identity(10, 10, &modulus);
 
