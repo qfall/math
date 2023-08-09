@@ -140,7 +140,7 @@ mod test_identity {
     use crate::{
         integer::PolyOverZ,
         integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
-        traits::GetEntry,
+        traits::{GetEntry, GetNumRows, GetNumColumns},
     };
     use std::str::FromStr;
 
