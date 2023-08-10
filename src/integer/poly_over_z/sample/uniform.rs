@@ -113,10 +113,7 @@ mod test_sample_uniform {
         for degree in degrees {
             let res = PolyOverZ::sample_uniform(degree, 1, 15).unwrap();
 
-            assert_eq!(
-                degree,
-                res.get_degree()
-            );
+            assert_eq!(degree, res.get_degree());
         }
     }
 

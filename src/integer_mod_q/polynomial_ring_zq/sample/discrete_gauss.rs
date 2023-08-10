@@ -6,19 +6,18 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! This module contains algorithms for sampling according to the uniform distribution.
+//! This module contains algorithms for sampling
+//! according to the discrete Gaussian distribution.
 
 use crate::{
     error::MathError,
     integer::{PolyOverZ, Z},
     integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq},
     rational::Q,
-    traits::SetCoefficient,
-    utils::sample::discrete_gauss::sample_z,
 };
 
 impl PolynomialRingZq {
-    /// Initializes a new [`PolynomialRingZq`] with degree `modulus.get_degree() - 1`
+    /// Initializes a new [`PolynomialRingZq`] with maximum degree `modulus.get_degree() - 1`
     /// and with each entry sampled independently according to the
     /// discrete Gaussian distribution, using [`Z::sample_discrete_gauss`].
     ///
@@ -59,16 +58,15 @@ impl PolynomialRingZq {
             modulus.get_degree() > 0,
             "ModulusPolynomial of degree 0 is insufficient to sample over."
         );
-        let n = n.into();
-        let center = center.into();
-        let s = s.into();
-        let mut poly = PolynomialRingZq::from((&PolyOverZ::default(), modulus));
 
-        for index in 0..modulus.get_degree() {
-            let sample = sample_z(&n, &center, &s)?;
-            poly.set_coeff(index, &sample)?;
-        }
-        Ok(poly)
+        let poly_z = PolyOverZ::sample_discrete_gauss(modulus.get_degree() - 1, n, center, s)?;
+        let mut poly_ringzq = PolynomialRingZq {
+            poly: poly_z,
+            modulus: modulus.clone(),
+        };
+        poly_ringzq.reduce();
+
+        Ok(poly_ringzq)
     }
 }
 
@@ -76,9 +74,9 @@ impl PolynomialRingZq {
 mod test_sample_discrete_gauss {
     use crate::{
         integer::Z,
-        integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq},
+        integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq},
         rational::Q,
-        traits::GetCoefficient,
+        traits::{GetCoefficient, SetCoefficient},
     };
     use std::str::FromStr;
 
@@ -142,13 +140,9 @@ mod test_sample_discrete_gauss {
     fn nr_coeffs() {
         let degrees = [1, 3, 7, 15, 32, 120];
         for degree in degrees {
-            let modulus = ModulusPolynomialRingZq::from_str(&format!(
-                "{}  {}1 mod {}",
-                degree + 1,
-                "0 ".repeat(degree),
-                u64::MAX
-            ))
-            .unwrap();
+            let mut modulus = PolyOverZq::from((1, u64::MAX));
+            modulus.set_coeff(degree, 1).unwrap();
+            let modulus = ModulusPolynomialRingZq::from(&modulus);
 
             let res = PolynomialRingZq::sample_discrete_gauss(&modulus, 1024, i64::MAX, 1).unwrap();
 
