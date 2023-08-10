@@ -172,6 +172,7 @@ impl Z {
     }
 
     /// Create a [`Z`] integer from an iterable of [`bool`]s, i.e. a vector of bits.
+    /// This function can only construct positive or zero integers, but not negative ones.
     ///
     /// Parameters:
     /// - `bits`: specifies an iterable of bits that should be set in the new [`Z`] instance.

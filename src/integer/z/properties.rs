@@ -164,6 +164,7 @@ impl Z {
     }
 
     /// Computes `self` mod `modulus` as long as `modulus` is unequal to 0.
+    /// For negative values, the smallest positive representative is returned.
     ///
     /// Parameters:
     /// - `modulus`: specifies a non-zero integer
@@ -197,7 +198,7 @@ mod test_modulo {
     use super::Z;
 
     /// Ensures that `modulo` works properly for small and large positive integers
-    /// and positive moduli
+    /// and positive moduli.
     #[test]
     fn positive_value_positive_modulus() {
         let value_0: i64 = 15;
@@ -224,7 +225,7 @@ mod test_modulo {
     }
 
     /// Ensures that `modulo` works properly for small and large positive integers
-    /// and negative moduli
+    /// and negative moduli.
     #[test]
     fn positive_value_negative_modulus() {
         let value_0: i64 = 15;
@@ -251,7 +252,7 @@ mod test_modulo {
     }
 
     /// Ensures that `modulo` works properly for small and large negative integers
-    /// and positive moduli
+    /// and positive moduli.
     #[test]
     fn negative_value_positive_modulus() {
         let value_0: i64 = -15;
@@ -278,7 +279,7 @@ mod test_modulo {
     }
 
     /// Ensures that `modulo` works properly for small and large negative integers
-    /// and negative moduli
+    /// and negative moduli.
     #[test]
     fn negative_value_negative_modulus() {
         let value_0: i64 = -15;
