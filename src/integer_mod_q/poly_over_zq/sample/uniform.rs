@@ -18,22 +18,22 @@ use crate::{
 use std::fmt::Display;
 
 impl PolyOverZq {
-    /// Generates a [`PolyOverZq`] instance with length `nr_coeffs` and coefficients
-    /// chosen uniform at random in `[0, modulus)`.
+    /// Generates a [`PolyOverZq`] instance with maximum degree `max_degree`
+    /// and coefficients chosen uniform at random in `[0, modulus)`.
     ///
     /// The internally used uniform at random chosen bytes are generated
     /// by [`ThreadRng`](rand::rngs::ThreadRng), which uses ChaCha12 and
     /// is considered cryptographically secure.
     ///
     /// Parameters:
-    /// - `nr_coeffs`: specifies the length of the polynomial,
+    /// - `max_degree`: specifies the length of the polynomial,
     /// i.e. the number of coefficients
     /// - `modulus`: specifies the modulus of the coefficients and thus,
     /// the interval size over which is sampled
     ///
-    /// Returns a fresh [`PolyOverZq`] instance of length `nr_coeffs` with coefficients
+    /// Returns a fresh [`PolyOverZq`] instance of length `max_degree` with coefficients
     /// chosen uniform at random in `[0, modulus)` or a [`MathError`]
-    /// if the `nr_coeffs` was smaller than `1` or the provided `modulus` was chosen too small.
+    /// if the `max_degree` was smaller than `0` or the provided `modulus` was chosen too small.
     ///
     /// # Examples
     /// ```
@@ -46,20 +46,20 @@ impl PolyOverZq {
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
     /// if the given `modulus` isn't bigger than `1`, i.e. the interval size is at most `1`.
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    /// the `nr_coeffs` is negative or it does not fit into an [`i64`].
+    /// the `max_degree` is negative or it does not fit into an [`i64`].
     ///
     /// # Panics ...
     /// - if the provided modulus is not greater than `1`.
     pub fn sample_uniform(
-        nr_coeffs: impl TryInto<i64> + Display + Copy,
+        max_degree: impl TryInto<i64> + Display + Copy,
         modulus: impl Into<Z>,
     ) -> Result<Self, MathError> {
-        let nr_coeffs = evaluate_index(nr_coeffs)?;
+        let max_degree = evaluate_index(max_degree)?;
         let interval_size = modulus.into();
         let modulus = Modulus::from(&interval_size);
         let mut poly_zq = PolyOverZq::from(&modulus);
 
-        for index in 0..nr_coeffs {
+        for index in 0..=max_degree {
             let sample = sample_uniform_rejection(&interval_size)?;
             poly_zq.set_coeff(index, &sample)?;
         }
@@ -103,6 +103,22 @@ mod test_sample_uniform {
         }
     }
 
+    /// Checks whether the number of coefficients is correct.
+    #[test]
+    fn nr_coeffs() {
+        let degrees = [1, 3, 7, 15, 32, 120];
+        for degree in degrees {
+            let res = PolyOverZq::sample_uniform(degree, u64::MAX).unwrap();
+
+            assert_eq!(
+                degree,
+                res.get_degree(),
+                "Could fail with probability 1/{}.",
+                u64::MAX
+            );
+        }
+    }
+
     /// Checks whether providing an invalid interval/ modulus results in an error.
     #[test]
     #[should_panic]
@@ -119,7 +135,7 @@ mod test_sample_uniform {
 
     /// Checks whether providing a length smaller than `1` results in an error.
     #[test]
-    fn invalid_nr_coeffs() {
+    fn invalid_max_degree() {
         let modulus = Z::from(15);
 
         let res_0 = PolyOverZq::sample_uniform(-1, &modulus);
