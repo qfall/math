@@ -19,7 +19,7 @@ use crate::{
 impl PolynomialRingZq {
     /// Initializes a new [`PolynomialRingZq`] with maximum degree `modulus.get_degree() - 1`
     /// and with each entry sampled independently according to the
-    /// discrete Gaussian distribution, using [`Z::sample_discrete_gauss`].
+    /// discrete Gaussian distribution.
     ///
     /// Parameters:
     /// - `modulus`: specifies the [`ModulusPolynomialRingZq`] over which the
@@ -154,7 +154,7 @@ mod test_sample_discrete_gauss {
         }
     }
 
-    /// Checks whether 0 modulus polynomial is insufficient.
+    /// Checks whether 0 degree modulus polynomial is insufficient.
     #[test]
     #[should_panic]
     fn invalid_modulus() {

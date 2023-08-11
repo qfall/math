@@ -19,7 +19,7 @@ use crate::{
 use std::fmt::Display;
 
 impl PolyOverZ {
-    /// Initializes a new [`PolyOverZ`] with maximum degree `modulus.get_degree() - 1`
+    /// Initializes a new [`PolyOverZ`] with maximum degree `max_degree`
     /// and with each entry sampled independently according to the
     /// discrete Gaussian distribution, using [`Z::sample_discrete_gauss`].
     ///
@@ -30,7 +30,7 @@ impl PolyOverZ {
     /// - `s`: specifies the Gaussian parameter, which is proportional
     /// to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
-    /// Returns a fresh [`PolyOverZ`] instance of length `modulus.get_degree() - 1`
+    /// Returns a fresh [`PolyOverZ`] instance of maximum degree `max_degree`
     /// with coefficients chosen independently according the discrete Gaussian distribution or
     /// a [`MathError`] if `n <= 1` or `s <= 0`.
     ///
@@ -111,7 +111,7 @@ mod test_sample_discrete_gauss {
         }
     }
 
-    /// Checks whether 0 modulus polynomial is insufficient.
+    /// Checks whether the maximum degree needs to be at least 0.
     #[test]
     #[should_panic]
     fn invalid_max_degree() {
