@@ -12,7 +12,9 @@ use super::Z;
 use crate::rational::Q;
 use flint_sys::{
     fmpq::{fmpq, fmpq_inv},
-    fmpz::{fmpz, fmpz_abs, fmpz_bits, fmpz_is_one, fmpz_is_prime, fmpz_is_zero},
+    fmpz::{
+        fmpz, fmpz_abs, fmpz_bits, fmpz_is_one, fmpz_is_prime, fmpz_is_zero, fmpz_mod, fmpz_tstbit,
+    },
 };
 
 impl Z {
@@ -126,6 +128,265 @@ impl Z {
     /// ```
     pub fn bits(&self) -> u64 {
         unsafe { fmpz_bits(&self.value) }
+    }
+
+    /// Computes the [`Vec`] of [`bool`] bits corresponding
+    /// to the bits of the absolute value of `self`.
+    ///
+    /// The first bit is the least significant bit.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// let value = Z::from(4);
+    ///
+    /// let vec_bits = value.to_bits();
+    ///
+    /// assert_eq!(vec![false, false, true], vec_bits);
+    /// ```
+    pub fn to_bits(&self) -> Vec<bool> {
+        // compute absolute value
+        let value = self.clone().abs();
+        // resulting bit-vector
+        let mut bits = vec![];
+        for i in 0..value.bits() {
+            // get i-th bit of value
+            let bit_i = unsafe { fmpz_tstbit(&value.value, i) };
+            // appends i-th bit to vector
+            if bit_i == 0 {
+                bits.push(false);
+            } else {
+                bits.push(true);
+            }
+        }
+
+        bits
+    }
+
+    /// Computes `self` mod `modulus` as long as `modulus` is unequal to 0.
+    /// For negative values, the smallest positive representative is returned.
+    ///
+    /// Parameters:
+    /// - `modulus`: specifies a non-zero integer
+    /// over which the positive remainder is computed
+    ///
+    /// Returns `self` mod `modulus` as a [`Z`] instance.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// let value = Z::from(5);
+    ///
+    /// let value_mod_two = value.modulo(2);
+    ///
+    /// assert_eq!(Z::ONE, value_mod_two);
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if `modulus` is 0.
+    pub fn modulo(&self, modulus: impl Into<Z>) -> Self {
+        let modulus = modulus.into();
+        assert!(modulus != Z::ZERO, "Modulus can not be 0.");
+        let mut out = Z::default();
+        unsafe { fmpz_mod(&mut out.value, &self.value, &modulus.value) };
+        out
+    }
+}
+
+#[cfg(test)]
+mod test_modulo {
+    use super::Z;
+
+    /// Ensures that `modulo` works properly for small and large positive integers
+    /// and positive moduli.
+    #[test]
+    fn positive_value_positive_modulus() {
+        let value_0: i64 = 15;
+        let value_1: i64 = i64::MAX;
+        let mod_0: i64 = 2;
+        let mod_1: i64 = 15;
+
+        assert_eq!(
+            Z::from(value_0.rem_euclid(mod_0)),
+            Z::from(value_0).modulo(mod_0)
+        );
+        assert_eq!(
+            Z::from(value_1.rem_euclid(mod_0)),
+            Z::from(value_1).modulo(mod_0)
+        );
+        assert_eq!(
+            Z::from(value_0.rem_euclid(mod_1)),
+            Z::from(value_0).modulo(mod_1)
+        );
+        assert_eq!(
+            Z::from(value_1.rem_euclid(mod_1)),
+            Z::from(value_1).modulo(mod_1)
+        );
+    }
+
+    /// Ensures that `modulo` works properly for small and large positive integers
+    /// and negative moduli.
+    #[test]
+    fn positive_value_negative_modulus() {
+        let value_0: i64 = 15;
+        let value_1: i64 = i64::MAX;
+        let mod_0: i64 = -2;
+        let mod_1: i64 = -15;
+
+        assert_eq!(
+            Z::from(value_0.rem_euclid(mod_0)),
+            Z::from(value_0).modulo(mod_0)
+        );
+        assert_eq!(
+            Z::from(value_1.rem_euclid(mod_0)),
+            Z::from(value_1).modulo(mod_0)
+        );
+        assert_eq!(
+            Z::from(value_0.rem_euclid(mod_1)),
+            Z::from(value_0).modulo(mod_1)
+        );
+        assert_eq!(
+            Z::from(value_1.rem_euclid(mod_1)),
+            Z::from(value_1).modulo(mod_1)
+        );
+    }
+
+    /// Ensures that `modulo` works properly for small and large negative integers
+    /// and positive moduli.
+    #[test]
+    fn negative_value_positive_modulus() {
+        let value_0: i64 = -15;
+        let value_1: i64 = i64::MIN;
+        let mod_0: i64 = 2;
+        let mod_1: i64 = 15;
+
+        assert_eq!(
+            Z::from(value_0.rem_euclid(mod_0)),
+            Z::from(value_0).modulo(mod_0)
+        );
+        assert_eq!(
+            Z::from(value_1.rem_euclid(mod_0)),
+            Z::from(value_1).modulo(mod_0)
+        );
+        assert_eq!(
+            Z::from(value_0.rem_euclid(mod_1)),
+            Z::from(value_0).modulo(mod_1)
+        );
+        assert_eq!(
+            Z::from(value_1.rem_euclid(mod_1)),
+            Z::from(value_1).modulo(mod_1)
+        );
+    }
+
+    /// Ensures that `modulo` works properly for small and large negative integers
+    /// and negative moduli.
+    #[test]
+    fn negative_value_negative_modulus() {
+        let value_0: i64 = -15;
+        let value_1: i64 = i64::MIN;
+        let mod_0: i64 = -2;
+        let mod_1: i64 = -15;
+
+        assert_eq!(
+            Z::from(value_0.rem_euclid(mod_0)),
+            Z::from(value_0).modulo(mod_0)
+        );
+        assert_eq!(
+            Z::from(value_1.rem_euclid(mod_0)),
+            Z::from(value_1).modulo(mod_0)
+        );
+        assert_eq!(
+            Z::from(value_0.rem_euclid(mod_1)),
+            Z::from(value_0).modulo(mod_1)
+        );
+        assert_eq!(
+            Z::from(value_1.rem_euclid(mod_1)),
+            Z::from(value_1).modulo(mod_1)
+        );
+    }
+
+    /// Ensures that the result is equal for the same positive and negative modulus.
+    #[test]
+    fn result_positive_negative_modulus_equal() {
+        let value: i64 = 17;
+        let mod_0: i64 = 3;
+        let mod_1: i64 = -3;
+        let cmp_0 = Z::from(value.rem_euclid(mod_0));
+        let cmp_1 = Z::from(value.rem_euclid(mod_1));
+
+        let res_0 = Z::from(value).modulo(mod_0);
+        let res_1 = Z::from(value).modulo(mod_1);
+
+        // values correct
+        assert_eq!(cmp_0, res_0);
+        assert_eq!(cmp_1, res_1);
+        // values equal for negative and positive modulus
+        assert_eq!(res_0, res_1);
+    }
+
+    /// Ensures that `modulo` is available for several types implementing [`Into<Z>`].
+    #[test]
+    fn availability() {
+        let _ = Z::ONE.modulo(1u8);
+        let _ = Z::ONE.modulo(1u16);
+        let _ = Z::ONE.modulo(1u32);
+        let _ = Z::ONE.modulo(1u64);
+        let _ = Z::ONE.modulo(1i8);
+        let _ = Z::ONE.modulo(1i16);
+        let _ = Z::ONE.modulo(1i32);
+        let _ = Z::ONE.modulo(1i64);
+        let _ = Z::ONE.modulo(Z::ONE);
+    }
+
+    /// Ensures that computing modulo 0 results in a panic.
+    #[test]
+    #[should_panic]
+    fn zero_modulus() {
+        Z::from(15).modulo(0);
+    }
+}
+
+#[cfg(test)]
+mod test_to_bits {
+    use super::Z;
+
+    /// Ensures that `to_bits` works properly for small and large positive integer values.
+    #[test]
+    fn positive() {
+        let value_0 = Z::from(16);
+        let value_1 = Z::from(u64::MAX);
+
+        let res_0 = value_0.to_bits();
+        let res_1 = value_1.to_bits();
+
+        assert_eq!(vec![false, false, false, false, true], res_0);
+        assert_eq!(vec![true; 64], res_1);
+    }
+
+    /// Ensures that `to_bits` works properly for zero.
+    #[test]
+    fn zero() {
+        let value = Z::ZERO;
+        let cmp: Vec<bool> = vec![];
+
+        let res = value.to_bits();
+
+        assert_eq!(cmp, res);
+    }
+
+    /// Ensures that `to_bits` works properly for small and large negative integer values.
+    #[test]
+    fn negative() {
+        let value_0 = Z::from(-13);
+        let value_1 = Z::from(i64::MIN);
+        let mut cmp = vec![false; 63];
+        cmp.push(true);
+
+        let res_0 = value_0.to_bits();
+        let res_1 = value_1.to_bits();
+
+        assert_eq!(vec![true, false, true, true], res_0);
+        assert_eq!(cmp, res_1);
     }
 }
 
