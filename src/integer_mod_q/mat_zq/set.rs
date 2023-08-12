@@ -447,7 +447,7 @@ impl MatZq {
     ///
     /// let mat = MatZq::from_str("[[1,2]] mod 3").unwrap();
     /// let modulus = Modulus::from(2);
-    /// let mat = mat.change_modulus(modulus);
+    /// let mat = mat.change_modulus(&modulus);
     /// ```
     pub fn change_modulus(&self, modulus: &Modulus) -> MatZq {
         MatZq::from((&MatZ::from(self), modulus))
