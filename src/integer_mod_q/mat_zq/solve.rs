@@ -19,14 +19,14 @@ use crate::{
 
 impl MatZq {
     /// Computes a solution for a system of linear equations under a certain modulus.
-    /// It solves `Ax = y` for `x` with `A` being a [MatZq] value.
+    /// It solves `Ax = y` for `x` with `A` being a [`MatZq`] value.
     /// If no solution is found, `None` is returned.
     ///
     /// Note that this function does not compute a solution whenever there is one.
     /// If the matrix has not full rank under a modulus that divides the given one,
     /// `None` may be returned even if the system may be solvable.
-    /// If the matrix has dimensions larger than 50 or the number of columns
-    /// exceeds the number of rows by a factor of 2, this is very unlikely to happen.
+    /// If the number of columns exceeds the number of rows by a factor of 2,
+    /// this is very unlikely to happen.
     ///
     /// Parameters:
     /// - `y`: The syndrome for which a solution has to be computed.
@@ -63,7 +63,7 @@ impl MatZq {
         );
 
         // Append the solution vector to easily perform gaussian elimination.
-        let mut matrix = self.concat_horizontal(y).ok().unwrap();
+        let mut matrix = self.concat_horizontal(y).unwrap();
 
         // Saves the indices of row and column, where we created a 1 entry
         // such that we do not have to go through the matrix afterwards.
@@ -73,25 +73,17 @@ impl MatZq {
             let used_rows: Vec<i64> = indices.iter().map(|(row, _)| *row).collect();
             // Try to solve the system with the current modulus.
             if let Some((row_nr, inv)) =
-                find_invertible_entry_column(&matrix, column_nr, used_rows.clone())
+                find_invertible_entry_column(&matrix, column_nr, &used_rows)
             {
                 // Save the position of `1` for that column.
                 indices.push((row_nr, column_nr));
-                let row = inv * matrix.get_row(row_nr).ok().unwrap();
-                matrix.set_row(row_nr, &row, 0).ok().unwrap();
 
-                // Set all other entries in that column to `0` (gaussian elimination).
-                for row_nr in (0..matrix.get_num_rows()).filter(|x| *x != row_nr) {
-                    let old_row = matrix.get_row(row_nr).ok().unwrap();
-                    let entry: Z = old_row.get_entry(0, column_nr).ok().unwrap();
-                    let new_row = &old_row - entry * &row;
-                    matrix.set_row(row_nr, &new_row, 0).ok().unwrap();
-                }
+                matrix.gauss_row_reduction(row_nr, column_nr, inv);
             // Search for a not invertible entry to split the modulus.
             } else if let Some(row_nr) =
-                find_not_invertible_entry_column(&matrix, column_nr, used_rows)
+                find_not_invertible_entry_column(&matrix, column_nr, &used_rows)
             {
-                let entry: Z = matrix.get_entry(row_nr, column_nr).ok().unwrap();
+                let entry: Z = matrix.get_entry(row_nr, column_nr).unwrap();
 
                 // Factorize the modulus with the found entry, compute solutions
                 // for the system under the split modulus and use the
@@ -104,26 +96,117 @@ impl MatZq {
         // Set the entries of the output vector using the indices vector.
         let mut out = MatZq::new(self.get_num_columns(), 1, &matrix.get_mod());
         for (i, j) in indices.iter() {
-            let entry: Z = matrix
-                .get_entry(*i, matrix.get_num_columns() - 1)
-                .ok()
-                .unwrap();
-            out.set_entry(*j, 0, &entry).ok().unwrap();
+            let entry: Z = matrix.get_entry(*i, -1).unwrap();
+            out.set_entry(*j, 0, &entry).unwrap();
         }
 
         Some(out)
     }
 
-    /// Computes a solution for a system of linear equations under a modulus
-    /// of the form `z^a`.
-    /// It solves `Ax = y` for `x` with `A` being a [MatZq] value.
+    /// Performs a row reduction from gaussian elimination, given an entry of
+    /// the matrix and its inverse.
+    /// Multiplies the given row of a matrix by the given inverse and reduces all
+    /// other rows such that they have zeros in the given column.
+    ///
+    /// Parameters:
+    /// - `row_nr`: The row where the entry is located
+    /// - `column_nr`: The column where the entry is located
+    /// - `inverse`: The inverse of the entry located at (row_nr, column_nr)
+    fn gauss_row_reduction(&mut self, row_nr: i64, column_nr: i64, inverse: Zq) {
+        let row = inverse * self.get_row(row_nr).unwrap();
+        self.set_row(row_nr, &row, 0).unwrap();
+
+        // Set all other entries in that column to `0` (gaussian elimination).
+        for row_nr in (0..self.get_num_rows()).filter(|x| *x != row_nr) {
+            let old_row = self.get_row(row_nr).unwrap();
+            let entry: Z = old_row.get_entry(0, column_nr).unwrap();
+            let new_row = &old_row - entry * &row;
+            self.set_row(row_nr, &new_row, 0).unwrap();
+        }
+    }
+
+    /// Computes a solution for a system of linear equations under a certain modulus.
+    /// It solves `Ax = y` for `x` with `A` being a [`MatZq`] value by first computing a
+    /// factorization of the modulus, given an entry of the matrix that is not co-prime
+    /// to the modulus.
+    /// After that, it computes solutions for the system under the new factors and
+    /// combines these solutions using the Chinese Remainder Theorem.
     /// If no solution is found, `None` is returned.
     ///
     /// Note that this function does not compute a solution whenever there is one.
     /// If the matrix has not full rank under a modulus that divides the given one,
     /// `None` may be returned even if the system may be solvable.
-    /// If the matrix has dimensions larger than 50 or the number of columns
-    /// exceeds the number of rows by a factor of 2, this is very unlikely to happen.
+    /// If the number of columns exceeds the number of rows by a factor of 2,
+    /// this is very unlikely to happen.
+    ///
+    /// Note that this function is a part of `solve_gaussian_elimination` and
+    /// does not check for the correctness of the given parameters.
+    ///
+    /// Parameters:
+    /// - `y`: The syndrome for which a solution has to be computed.
+    /// - `entry`: A [`Z`] value that is not co-prime to the modulus.
+    ///
+    /// Returns a solution for the linear system or `None`, if none could be computed.
+    fn factorization_and_crt(&self, y: &MatZq, entry: Z) -> Option<MatZq> {
+        let modulus = Z::from(self.get_mod());
+        let gcd = modulus.gcd(entry);
+
+        let mut fac = Factorization::from((&gcd, &(modulus / &gcd).get_numerator()));
+        fac.refine();
+        let mut fac_vec = Vec::<(Z, u64)>::from(&fac);
+
+        // Solve the equation under the different moduli.
+        let mut solutions: Vec<MatZq> = vec![];
+        for factor in fac_vec.iter() {
+            // Compute a solution under the modulus z^a.
+            if factor.1 > 1 {
+                solutions.push(
+                    self.change_modulus(&Modulus::from(&factor.0.pow(factor.1).unwrap()))
+                        .solve_hensel(
+                            &y.change_modulus(&Modulus::from(&factor.0.pow(factor.1).unwrap())),
+                            &factor.0,
+                            &factor.1,
+                        )?,
+                );
+            // Compute a solution under the new modulus.
+            } else {
+                solutions.push(
+                    self.change_modulus(&Modulus::from(&factor.0.pow(factor.1).unwrap()))
+                        .solve_gaussian_elimination(
+                            &y.change_modulus(&Modulus::from(&factor.0.pow(factor.1).unwrap())),
+                        )?,
+                );
+            }
+        }
+        // Connect the solutions via the Chinese Remainder Theorem.
+        while solutions.len() > 1 {
+            // Compute Bézout’s identity: a x_1 + b x_2 = 1
+            // by computing xgcd(x_1, x_2).
+            let x_2_exponent = fac_vec.pop()?;
+            let x_1_exponent = fac_vec.pop()?;
+            let x_1 = x_1_exponent.0.pow(x_1_exponent.1).unwrap();
+            let x_2 = x_2_exponent.0.pow(x_2_exponent.1).unwrap();
+            let (_gcd, a, b) = x_1.xgcd(&x_2);
+            let mut s_2 = solutions.pop().unwrap();
+            let mut s_1 = solutions.pop().unwrap();
+            s_2 = s_2.change_modulus(&(Z::from(s_2.get_mod()) * Z::from(s_1.get_mod())).into());
+            s_1 = s_1.change_modulus(&s_2.get_mod());
+            solutions.push(s_2 * a * &x_1 + s_1 * b * &x_2);
+            fac_vec.push((x_1 * x_2, 1));
+        }
+        Some(solutions[0].clone())
+    }
+
+    /// Computes a solution for a system of linear equations under a modulus
+    /// of the form `z^a`with the help of [\[1\]](<../index.html#:~:text=[1]>).
+    /// It solves `Ax = y` for `x` with `A` being a [`MatZq`] value.
+    /// If no solution is found, `None` is returned.
+    ///
+    /// Note that this function does not compute a solution whenever there is one.
+    /// If the matrix has not full rank under a modulus that divides the given one,
+    /// `None` may be returned even if the system may be solvable.
+    /// If the number of columns exceeds the number of rows by a factor of 2,
+    /// this is very unlikely to happen.
     ///
     /// Note that this function is a part of `solve_gaussian_elimination` and
     /// does not check for the correctness of the given parameters.
@@ -137,7 +220,7 @@ impl MatZq {
     fn solve_hensel(&self, y: &MatZq, base: &Z, power: &u64) -> Option<MatZq> {
         // Set `matrix_base` to the given matrix under `base` as the modulus to
         // compute a solution for the system under `base` as modulus.
-        let matrix_base = MatZq::from((&MatZ::from(self), &Modulus::from(base)));
+        let matrix_base = self.change_modulus(&Modulus::from(base));
 
         // Concatenate the matrix with the identity matrix under `base`
         // as its modulus to apply gaussian elimination on it.
@@ -152,6 +235,7 @@ impl MatZq {
         // Saves the indices of row and column, where we created a 1 entry
         // such that we do not have to go through the matrix afterwards.
         let mut indices: Vec<(i64, i64)> = Vec::new();
+        let mut used_rows: Vec<i64> = Vec::new();
         let mut row_count = 0;
 
         // Saves the permutation of the gaussian elimination.
@@ -163,28 +247,12 @@ impl MatZq {
             if !indices.is_empty() && indices[indices.len() - 1].0 >= self.get_num_rows() {
                 break;
             }
-            let used_rows: Vec<i64> = indices.iter().map(|(row, _)| *row).collect();
 
             // Try to solve the system under the current modulus.
-            if let Some((row_nr, inv)) = find_invertible_entry_column(
-                &matrix_identity_base_gauss,
-                column_nr,
-                used_rows.clone(),
-            ) {
-                let row = inv * matrix_identity_base_gauss.get_row(row_nr).ok()?;
-                matrix_identity_base_gauss.set_row(row_nr, &row, 0).ok()?;
-
-                // Set all other entries in that column to `0` (gaussian elimination).
-                for row_nr in
-                    (0..matrix_identity_base_gauss.get_num_rows()).filter(|x| *x != row_nr)
-                {
-                    let old_row = matrix_identity_base_gauss.get_row(row_nr).ok()?;
-                    let entry: Z = old_row.get_entry(0, column_nr).ok()?;
-                    let new_row = &old_row - entry * &row;
-                    matrix_identity_base_gauss
-                        .set_row(row_nr, &new_row, 0)
-                        .ok()?;
-                }
+            if let Some((row_nr, inv)) =
+                find_invertible_entry_column(&matrix_identity_base_gauss, column_nr, &used_rows)
+            {
+                matrix_identity_base_gauss.gauss_row_reduction(row_nr, column_nr, inv);
 
                 if row_count != row_nr {
                     matrix_identity_base_gauss
@@ -196,10 +264,11 @@ impl MatZq {
 
                 // Save the position of `1` for that row.
                 indices.push((row_count, column_nr));
+                used_rows.push(indices[indices.len() - 1].0);
                 row_count += 1;
             // Search for a not invertible entry to divide the modulus.
             } else if let Some(row_nr) =
-                find_not_invertible_entry_column(&matrix_identity_base_gauss, column_nr, used_rows)
+                find_not_invertible_entry_column(&matrix_identity_base_gauss, column_nr, &used_rows)
             {
                 // Factorize the modulus with the found entry, compute solutions
                 // for the system under the split modulus and use the
@@ -207,7 +276,6 @@ impl MatZq {
                 // sub-solutions.
                 let entry: Z = matrix_identity_base_gauss
                     .get_entry(row_nr, column_nr)
-                    .ok()
                     .unwrap();
                 self.factorization_and_crt(y, entry);
             }
@@ -222,21 +290,20 @@ impl MatZq {
 
         // Pick the first columns out of the original matrix that form an invertible matrix.
         // Those columns exist, since the matrix was checked to be full rank.
-        let mut square_matrix = MatZq::new(
+        let mut invertible_matrix = MatZq::new(
             matrix_identity_base_gauss.get_num_rows(),
             matrix_identity_base_gauss.get_num_rows(),
             self.get_mod(),
         );
         for (current_column, (_row_nr, column_nr)) in indices.iter().enumerate() {
-            square_matrix
+            invertible_matrix
                 .set_column(current_column, self, *column_nr)
                 .unwrap();
         }
 
         // The inverse of the previously picked square matrix consists of the last
         // columns of `matrix_identity_base_gauss`, since we concatenated an identity matrix.
-        let matrix_identity_gauss =
-            MatZq::from((&MatZ::from(&matrix_identity_base_gauss), &self.get_mod()));
+        let matrix_identity_gauss = matrix_identity_base_gauss.change_modulus(&self.get_mod());
         let mut matrix_base_inv = MatZq::new(
             matrix_identity_gauss.get_num_rows(),
             matrix_identity_gauss.get_num_rows(),
@@ -252,15 +319,14 @@ impl MatZq {
                 .unwrap();
         }
 
-        // Use the method from "Exact Solution of Linear Equations Using P-Adic Expansions"
-        // <https://link.springer.com/content/pdf/10.1007/BF01459082.pdf/>
+        // Use the method from [\[1\]](<../index.html#:~:text=[1]>)
         // to compute a solution for the original system.
         let mut b_i = y.clone();
         let mut x_i = &matrix_base_inv * &b_i;
         let mut x = x_i.clone();
         for i in 1..*power {
             b_i = MatZq::from((
-                &(unsafe { MatZ::from(&(b_i - &square_matrix * x_i)).div_exact(base) }),
+                &(unsafe { MatZ::from(&(b_i - &invertible_matrix * x_i)).div_exact(base) }),
                 &self.get_mod(),
             ));
             x_i = &matrix_base_inv * &b_i;
@@ -269,106 +335,11 @@ impl MatZq {
 
         let mut out = MatZq::new(self.get_num_columns(), 1, self.get_mod());
         for (current_row_x, (_row_nr, column_nr)) in indices.into_iter().enumerate() {
-            out.set_entry(
-                column_nr,
-                0,
-                GetEntry::<Z>::get_entry(&x, current_row_x, 0).unwrap(),
-            )
-            .unwrap();
+            let entry = GetEntry::<Z>::get_entry(&x, current_row_x, 0).unwrap();
+            out.set_entry(column_nr, 0, entry).unwrap();
         }
 
         Some(out)
-    }
-
-    /// Computes a solution for a system of linear equations under a certain modulus.
-    /// It solves `Ax = y` for `x` with `A` being a [MatZq] value by first computing a
-    /// factorization of the modulus, given an entry of the matrix that is not co-prime
-    /// to the modulus.
-    /// After that, it computes solutions for the system under the new factors and
-    /// combines these solutions using the Chinese Remainder Theorem.
-    /// If no solution is found, `None` is returned.
-    ///
-    /// Note that this function does not compute a solution whenever there is one.
-    /// If the matrix has not full rank under a modulus that divides the given one,
-    /// `None` may be returned even if the system may be solvable.
-    /// If the matrix has dimensions larger than 50 or the number of columns
-    /// exceeds the number of rows by a factor of 2, this is very unlikely to happen.
-    ///
-    /// Note that this function is a part of `solve_gaussian_elimination` and
-    /// does not check for the correctness of the given parameters.
-    ///
-    /// Parameters:
-    /// - `y`: The syndrome for which a solution has to be computed.
-    /// - `entry`: A [`Z`] value that is not co-prime to the modulus.
-    ///
-    /// Returns a solution for the linear system or `None`, if none could be computed.
-    fn factorization_and_crt(&self, y: &MatZq, entry: Z) -> Option<MatZq> {
-        let gcd = Z::from(self.get_mod()).gcd(entry);
-
-        let mut fac =
-            Factorization::from((&gcd, &(Z::from(self.get_mod()) / &gcd).get_numerator()));
-        fac.refine();
-        let mut fac_vec = Vec::<(Z, u64)>::from(&fac);
-
-        // Solve the equation under the different moduli.
-        let mut solutions: Vec<MatZq> = vec![];
-        for factor in fac_vec.iter() {
-            // Compute a solution under the modulus z^a.
-            if factor.1 > 1 {
-                solutions.push(
-                    MatZq::from((
-                        &MatZ::from(self),
-                        &Modulus::from(&factor.0.pow(factor.1).unwrap()),
-                    ))
-                    .solve_hensel(
-                        &MatZq::from((
-                            &MatZ::from(y),
-                            &Modulus::from(&factor.0.pow(factor.1).unwrap()),
-                        )),
-                        &factor.0,
-                        &factor.1,
-                    )?,
-                );
-            // Compute a solution under the new modulus.
-            } else {
-                solutions.push(
-                    MatZq::from((
-                        &MatZ::from(self),
-                        &Modulus::from(&factor.0.pow(factor.1).unwrap()),
-                    ))
-                    .solve_gaussian_elimination(&MatZq::from((
-                        &MatZ::from(y),
-                        &Modulus::from(&factor.0.pow(factor.1).unwrap()),
-                    )))?,
-                );
-            }
-        }
-        // Connect the solutions via the Chinese Remainder Theorem.
-        loop {
-            if solutions.len() > 1 {
-                // Compute Bézout’s identity: a x_1 + b x_2 = 1
-                // by computing xgcd(x_1, x_2).
-                let x_2_exp = fac_vec.pop()?;
-                let x_1_exp = fac_vec.pop()?;
-                let x_1 = x_1_exp.0.pow(x_1_exp.1).unwrap();
-                let x_2 = x_2_exp.0.pow(x_2_exp.1).unwrap();
-
-                let (_gcd, a, b) = x_1.xgcd(&x_2);
-
-                let mut s_2 = solutions.pop().unwrap();
-                let mut s_1 = solutions.pop().unwrap();
-                s_2 = MatZq::from((
-                    &MatZ::from(&s_2),
-                    &(Z::from(s_2.get_mod()) * Z::from(s_1.get_mod())).into(),
-                ));
-                s_1 = MatZq::from((&MatZ::from(&s_1), &s_2.get_mod()));
-
-                solutions.push(s_2 * a * &x_1 + s_1 * b * &x_2);
-                fac_vec.push((x_1 * x_2, 1));
-            } else {
-                return Some(solutions[0].clone());
-            }
-        }
     }
 }
 
@@ -387,7 +358,7 @@ impl MatZq {
 fn find_invertible_entry_column(
     matrix: &MatZq,
     column: i64,
-    used_rows: Vec<i64>,
+    used_rows: &[i64],
 ) -> Option<(i64, Zq)> {
     for i in (0..matrix.get_num_rows()).filter(|x| !used_rows.contains(x)) {
         let entry: Zq = matrix.get_entry(i, column).unwrap();
@@ -409,11 +380,7 @@ fn find_invertible_entry_column(
 ///
 /// Returns the row and the entry of the first not invertible element in that column,
 /// that is not 0, and `None` if there is no such element
-fn find_not_invertible_entry_column(
-    matrix: &MatZq,
-    column: i64,
-    used_rows: Vec<i64>,
-) -> Option<i64> {
+fn find_not_invertible_entry_column(matrix: &MatZq, column: i64, used_rows: &[i64]) -> Option<i64> {
     for i in (0..matrix.get_num_rows()).filter(|x| !used_rows.contains(x)) {
         let entry: Zq = matrix.get_entry(i, column).unwrap();
         if entry != Zq::from((Z::ZERO, entry.get_mod())) {
@@ -657,15 +624,15 @@ mod test_find_invertible_entry_column {
     fn find_correct_entry() {
         let mat = MatZq::from_str("[[7],[5]] mod 8").unwrap();
 
-        let (i, entry) = find_invertible_entry_column(&mat, 0, Vec::new()).unwrap();
+        let (i, entry) = find_invertible_entry_column(&mat, 0, &Vec::new()).unwrap();
         assert_eq!(0, i);
         assert_eq!(Z::from(7), entry.get_value());
 
-        let (i, entry) = find_invertible_entry_column(&mat, 0, [0].to_vec()).unwrap();
+        let (i, entry) = find_invertible_entry_column(&mat, 0, [0].as_ref()).unwrap();
         assert_eq!(1, i);
         assert_eq!(Z::from(5), entry.get_value());
 
-        let invert = find_invertible_entry_column(&mat, 0, [0, 1].to_vec());
+        let invert = find_invertible_entry_column(&mat, 0, [0, 1].as_ref());
         assert!(invert.is_none())
     }
 }
@@ -681,13 +648,13 @@ mod test_find_uninvertible_entry_column {
     fn find_correct_entry() {
         let mat = MatZq::from_str("[[4],[2]] mod 8").unwrap();
 
-        let i = find_not_invertible_entry_column(&mat, 0, Vec::new()).unwrap();
+        let i = find_not_invertible_entry_column(&mat, 0, &Vec::new()).unwrap();
         assert_eq!(0, i);
 
-        let i = find_not_invertible_entry_column(&mat, 0, [0].to_vec()).unwrap();
+        let i = find_not_invertible_entry_column(&mat, 0, [0].as_ref()).unwrap();
         assert_eq!(1, i);
 
-        let invert = find_not_invertible_entry_column(&mat, 0, [0, 1].to_vec());
+        let invert = find_not_invertible_entry_column(&mat, 0, [0, 1].as_ref());
         assert!(invert.is_none())
     }
 }
