@@ -37,15 +37,13 @@ impl MatZq {
     /// ```
     /// use qfall_math::integer::MatZ;
     /// use qfall_math::integer_mod_q::MatZq;
-    /// use qfall_math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
     ///
     /// let m = MatZ::from_str("[[1, 2],[3, -1]]").unwrap();
-    /// let modulus = Modulus::from(17);
     ///
-    /// let a = MatZq::from_mat_z_modulus(&m, &modulus);
+    /// let a = MatZq::from_mat_z_modulus(&m, 17);
     /// ```
-    pub fn from_mat_z_modulus(matrix: &MatZ, modulus: &Modulus) -> Self {
+    pub fn from_mat_z_modulus(matrix: &MatZ, modulus: impl Into<Modulus>) -> Self {
         let mut out = MatZq::new(matrix.get_num_rows(), matrix.get_num_columns(), modulus);
         unsafe {
             fmpz_mat_set(&mut out.matrix.mat[0], &matrix.matrix);
@@ -135,9 +133,9 @@ impl FromStr for MatZq {
     }
 }
 
-impl From<(&MatZ, &Modulus)> for MatZq {
+impl<Mod: Into<Modulus>> From<(&MatZ, Mod)> for MatZq {
     /// Convert [`MatZ`] and [`Modulus`] to [`MatZq`] using [`MatZq::from_mat_z_modulus`].
-    fn from((matrix, modulus): (&MatZ, &Modulus)) -> Self {
+    fn from((matrix, modulus): (&MatZ, Mod)) -> Self {
         MatZq::from_mat_z_modulus(matrix, modulus)
     }
 }
@@ -150,7 +148,7 @@ mod test_from_mat_z_modulus {
         traits::{GetEntry, GetNumColumns, GetNumRows, SetEntry},
     };
 
-    /// Test if the dimensions are taken over correctly
+    /// Test if the dimensions are taken over correctly.
     #[test]
     fn dimensions() {
         let matz = MatZ::new(15, 17);
@@ -165,7 +163,7 @@ mod test_from_mat_z_modulus {
         assert_eq!(17, matzq_2.get_num_columns());
     }
 
-    /// Test if entries are taken over correctly
+    /// Test if entries are taken over correctly.
     #[test]
     fn entries_taken_over_correctly() {
         let mut matz = MatZ::new(2, 2);
@@ -181,6 +179,35 @@ mod test_from_mat_z_modulus {
         assert_eq!(Z::from(u64::MAX - 58), matzq_1.get_entry(0, 0).unwrap());
         assert_eq!(Z::from(u64::MAX - 1), matzq_2.get_entry(0, 1).unwrap());
         assert_eq!(Z::from(u64::MAX - 58), matzq_2.get_entry(0, 0).unwrap());
+    }
+
+    /// Ensures that the function is still available for all values implementing
+    /// `Into<Modulus>`.
+    #[test]
+    fn availability() {
+        let matz = MatZ::new(2, 2);
+
+        let _ = MatZq::from((&matz, 2u8));
+        let _ = MatZq::from((&matz, 2u16));
+        let _ = MatZq::from((&matz, 2u32));
+        let _ = MatZq::from((&matz, 2u64));
+        let _ = MatZq::from((&matz, 2i8));
+        let _ = MatZq::from((&matz, 2i16));
+        let _ = MatZq::from((&matz, 2i32));
+        let _ = MatZq::from((&matz, 2i64));
+        let _ = MatZq::from((&matz, Z::from(2)));
+        let _ = MatZq::from((&matz, Modulus::from(2)));
+
+        let _ = MatZq::from((&matz, &2u8));
+        let _ = MatZq::from((&matz, &2u16));
+        let _ = MatZq::from((&matz, &2u32));
+        let _ = MatZq::from((&matz, &2u64));
+        let _ = MatZq::from((&matz, &2i8));
+        let _ = MatZq::from((&matz, &2i16));
+        let _ = MatZq::from((&matz, &2i32));
+        let _ = MatZq::from((&matz, &2i64));
+        let _ = MatZq::from((&matz, &Z::from(2)));
+        let _ = MatZq::from((&matz, &Modulus::from(2)));
     }
 }
 
