@@ -98,7 +98,7 @@ mod test_from_poly_over_z_modulus_polynomial_ring_zq {
         let _ = PolynomialRingZq::from((&poly, &poly_mod));
         let _ = PolynomialRingZq::from((&poly, poly_mod.clone()));
         let _ = PolynomialRingZq::from((poly.clone(), &poly_mod));
-        let _ = PolynomialRingZq::from((poly.clone(), poly_mod.clone()));
+        let _ = PolynomialRingZq::from((poly.clone(), poly_mod));
 
         let _ = PolynomialRingZq::from((0_i8, &modulus));
         let _ = PolynomialRingZq::from((0_i16, &modulus));
