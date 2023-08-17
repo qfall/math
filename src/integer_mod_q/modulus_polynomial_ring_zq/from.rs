@@ -66,7 +66,7 @@ impl From<PolyOverZq> for ModulusPolynomialRingZq {
 impl From<&ModulusPolynomialRingZq> for ModulusPolynomialRingZq {
     // Only the smart pointer is increased here.
 
-    /// Alias for [`ModulusPolyonomialRingZq::clone`].
+    /// Alias for [`ModulusPolynomialRingZq::clone`].
     fn from(value: &ModulusPolynomialRingZq) -> Self {
         value.clone()
     }
