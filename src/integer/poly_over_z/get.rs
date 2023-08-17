@@ -162,7 +162,7 @@ mod test_get_degree {
     /// Ensure that degree is working for constant polynomials.
     #[test]
     fn degree_constant() {
-        let poly1 = PolyOverZ::from_str("1  1").unwrap();
+        let poly1 = PolyOverZ::from(1);
         let poly2 = PolyOverZ::default();
 
         let deg1 = poly1.get_degree();

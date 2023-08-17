@@ -101,7 +101,7 @@ mod test_sample_discrete_gauss {
     fn nr_coeffs() {
         let degrees = [1, 3, 7, 15, 32, 120];
         for degree in degrees {
-            let res = PolyOverZ::sample_discrete_gauss(degree.clone(), 1024, i64::MAX, 1).unwrap();
+            let res = PolyOverZ::sample_discrete_gauss(degree, 1024, i64::MAX, 1).unwrap();
 
             assert_eq!(
                 res.get_degree(),

@@ -211,7 +211,7 @@ mod test_mul_poly_over_z {
         let mat1 = MatPolyOverZ::from_str("[[2  1 42,1  17],[1  8,2  1 2]]").unwrap();
         let mat2 = mat1.clone();
         let mat3 = MatPolyOverZ::from_str("[[2  2 84,1  34],[1  16,2  2 4]]").unwrap();
-        let scalar = PolyOverZ::from_str("1  2").unwrap();
+        let scalar = PolyOverZ::from(2);
 
         let mat1 = &mat1 * &scalar;
         let mat2 = &scalar * &mat2;
@@ -226,8 +226,8 @@ mod test_mul_poly_over_z {
         let mat1 = MatPolyOverZ::from_str("[[2  1 42,1  17],[1  8,2  1 2]]").unwrap();
         let mat2 = mat1.clone();
         let mat3 = MatPolyOverZ::from_str("[[2  2 84,1  34],[1  16,2  2 4]]").unwrap();
-        let scalar1 = PolyOverZ::from_str("1  2").unwrap();
-        let scalar2 = PolyOverZ::from_str("1  2").unwrap();
+        let scalar1 = PolyOverZ::from(2);
+        let scalar2 = PolyOverZ::from(2);
 
         let mat1 = mat1 * scalar1;
         let mat2 = scalar2 * mat2;
@@ -244,8 +244,8 @@ mod test_mul_poly_over_z {
         let mat3 = mat1.clone();
         let mat4 = mat1.clone();
         let mat5 = MatPolyOverZ::from_str("[[2  2 84,1  34],[1  16,2  2 4]]").unwrap();
-        let scalar1 = PolyOverZ::from_str("1  2").unwrap();
-        let scalar2 = PolyOverZ::from_str("1  2").unwrap();
+        let scalar1 = PolyOverZ::from(2);
+        let scalar2 = PolyOverZ::from(2);
 
         let mat1 = mat1 * &scalar1;
         let mat2 = &scalar2 * mat2;
@@ -265,7 +265,7 @@ mod test_mul_poly_over_z {
         let mat2 = MatPolyOverZ::from_str("[[1  2,1  6,1  5],[1  4,2  17 42,1  3]]").unwrap();
         let mat3 = MatPolyOverZ::from_str("[[1  84],[0],[2  2 4]]").unwrap();
         let mat4 = MatPolyOverZ::from_str("[[1  4,1  12,1  10],[1  8,2  34 84,1  6]]").unwrap();
-        let scalar = PolyOverZ::from_str("1  2").unwrap();
+        let scalar = PolyOverZ::from(2);
 
         assert_eq!(mat3, &scalar * mat1);
         assert_eq!(mat4, scalar * mat2);
@@ -280,8 +280,8 @@ mod test_mul_poly_over_z {
             MatPolyOverZ::from_str(&format!("[[1  3],[1  {}],[1  12]]", 3 * i64::MAX as i128))
                 .unwrap();
         let mat4 = MatPolyOverZ::from_str(&format!("[[1  {}]]", 3 * i64::MAX as i128)).unwrap();
-        let scalar1 = PolyOverZ::from_str("1  3").unwrap();
-        let scalar2 = PolyOverZ::from_str(&format!("1  {}", i64::MAX)).unwrap();
+        let scalar1 = PolyOverZ::from(3);
+        let scalar2 = PolyOverZ::from(i64::MAX);
 
         assert_eq!(mat3, scalar1 * mat1);
         assert_eq!(mat4, scalar2 * mat2);

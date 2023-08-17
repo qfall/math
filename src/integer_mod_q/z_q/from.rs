@@ -36,8 +36,9 @@ impl Zq {
     ///
     /// let answer_a = Zq::from_z_modulus(&value, &modulus);
     /// ```
-    pub fn from_z_modulus(value: &Z, modulus: &Modulus) -> Self {
+    pub fn from_z_modulus(value: &Z, modulus: impl Into<Modulus>) -> Self {
         let mut out = Z::default();
+        let modulus = modulus.into();
 
         unsafe {
             // Applies modulus to parameter and saves the new value into `value_fmpz`.
@@ -51,7 +52,7 @@ impl Zq {
 
         Self {
             value: out,
-            modulus: modulus.clone(),
+            modulus,
         }
     }
 }
@@ -168,7 +169,7 @@ mod test_from_z_modulus {
     #[test]
     fn working_small() {
         let value = Z::from(10);
-        let modulus = Modulus::from(&Z::from(15));
+        let modulus = Modulus::from(15);
 
         let _ = Zq::from_z_modulus(&value, &modulus);
     }
@@ -177,7 +178,7 @@ mod test_from_z_modulus {
     #[test]
     fn working_large() {
         let value = Z::from(u64::MAX - 1);
-        let modulus = Modulus::from(&Z::from(u64::MAX));
+        let modulus = Modulus::from(u64::MAX);
 
         let _ = Zq::from_z_modulus(&value, &modulus);
     }

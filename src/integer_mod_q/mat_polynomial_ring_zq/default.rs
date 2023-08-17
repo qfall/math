@@ -152,13 +152,11 @@ mod test_identity {
 
         for i in 0..matrix.get_num_rows() {
             for j in 0..matrix.get_num_columns() {
+                let entry: PolyOverZ = matrix.get_entry(i, j).unwrap();
                 if i != j {
-                    assert_eq!(PolyOverZ::default(), matrix.get_entry(i, j).unwrap());
+                    assert!(entry.is_zero());
                 } else {
-                    assert_eq!(
-                        PolyOverZ::from_str("1  1").unwrap(),
-                        matrix.get_entry(i, j).unwrap()
-                    )
+                    assert!(entry.is_one())
                 }
             }
         }
@@ -172,13 +170,11 @@ mod test_identity {
 
         for i in 0..10 {
             for j in 0..7 {
+                let entry: PolyOverZ = matrix.get_entry(i, j).unwrap();
                 if i != j {
-                    assert_eq!(PolyOverZ::default(), matrix.get_entry(i, j).unwrap());
+                    assert!(entry.is_zero());
                 } else {
-                    assert_eq!(
-                        PolyOverZ::from_str("1  1").unwrap(),
-                        matrix.get_entry(i, j).unwrap()
-                    )
+                    assert!(entry.is_one())
                 }
             }
         }
@@ -187,13 +183,11 @@ mod test_identity {
 
         for i in 0..7 {
             for j in 0..10 {
+                let entry: PolyOverZ = matrix.get_entry(i, j).unwrap();
                 if i != j {
-                    assert_eq!(PolyOverZ::default(), matrix.get_entry(i, j).unwrap());
+                    assert!(entry.is_zero());
                 } else {
-                    assert_eq!(
-                        PolyOverZ::from_str("1  1").unwrap(),
-                        matrix.get_entry(i, j).unwrap()
-                    )
+                    assert!(entry.is_one())
                 }
             }
         }
@@ -209,13 +203,11 @@ mod test_identity {
 
         for i in 0..10 {
             for j in 0..10 {
+                let entry: PolyOverZ = matrix.get_entry(i, j).unwrap();
                 if i != j {
-                    assert_eq!(PolyOverZ::default(), matrix.get_entry(i, j).unwrap());
+                    assert!(entry.is_zero());
                 } else {
-                    assert_eq!(
-                        PolyOverZ::from_str("1  1").unwrap(),
-                        matrix.get_entry(i, j).unwrap()
-                    )
+                    assert!(entry.is_one())
                 }
             }
         }

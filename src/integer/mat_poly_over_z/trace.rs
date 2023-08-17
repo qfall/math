@@ -92,11 +92,8 @@ mod test_trace {
             PolyOverZ::from_str(&format!("2  {} {}", i64::MAX - 1, i64::MAX)).unwrap(),
             trace1
         );
-        assert_eq!(
-            PolyOverZ::from_str(&format!("1  {}", i64::MIN)).unwrap(),
-            trace2
-        );
-        assert_eq!(PolyOverZ::from_str("1  -1").unwrap(), trace3);
+        assert_eq!(PolyOverZ::from(i64::MIN), trace2);
+        assert_eq!(PolyOverZ::from(-1), trace3);
     }
 
     /// Ensure that a matrix that is not square yields an error.

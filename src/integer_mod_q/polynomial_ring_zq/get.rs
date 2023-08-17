@@ -252,7 +252,7 @@ mod test_get_degree {
     #[test]
     fn degree_constant() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-        let poly = PolyOverZ::from_str("1  1").unwrap();
+        let poly = PolyOverZ::from(1);
         let poly_ring = PolynomialRingZq::from((&poly, &modulus));
 
         let deg = poly_ring.get_degree();

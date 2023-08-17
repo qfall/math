@@ -27,7 +27,7 @@ impl PolyOverZ {
     /// use std::str::FromStr;
     ///
     /// let poly1 = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
-    /// let poly2 = PolyOverZ::from_str("1  42").unwrap();
+    /// let poly2 = PolyOverZ::from(42);
     ///
     /// let dot_prod = poly1.dot_product(&poly2).unwrap();
     /// ```
@@ -108,7 +108,7 @@ mod test_dot_product {
     #[test]
     fn zero_length_works() {
         let poly1 = PolyOverZ::from_str("3  1 2 3").unwrap();
-        let poly2 = PolyOverZ::from_str("0").unwrap();
+        let poly2 = PolyOverZ::from(0);
 
         let cmp = Z::from(0);
         let dot_prod = poly1.dot_product(&poly2).unwrap();

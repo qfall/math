@@ -92,9 +92,9 @@ mod test_partial_eq {
     /// Test equal with small positive and negative constant polynomials.
     #[test]
     fn equal_small() {
-        let small_1 = PolyOverZ::from_str("1  10").unwrap();
-        let small_2 = PolyOverZ::from_str("1  10").unwrap();
-        let negative = PolyOverZ::from_str("1  -1").unwrap();
+        let small_1 = PolyOverZ::from(10);
+        let small_2 = PolyOverZ::from(10);
+        let negative = PolyOverZ::from(-1);
 
         assert!(small_1 == small_2);
         assert!(small_2 == small_1);
@@ -106,9 +106,9 @@ mod test_partial_eq {
     /// Test not equal with small positive and negative constant polynomials.
     #[test]
     fn not_equal_small() {
-        let small_1 = PolyOverZ::from_str("1  10").unwrap();
-        let small_2 = PolyOverZ::from_str("1  10").unwrap();
-        let negative = PolyOverZ::from_str("1  -1").unwrap();
+        let small_1 = PolyOverZ::from(10);
+        let small_2 = PolyOverZ::from(10);
+        let negative = PolyOverZ::from(-1);
 
         assert!(!(small_1 != small_2));
         assert!(!(small_2 != small_1));
@@ -121,12 +121,9 @@ mod test_partial_eq {
     /// (uses FLINT's pointer representation)
     #[test]
     fn equal_large() {
-        let max_str = format!("1  {}", u64::MAX);
-        let min_str = format!("1  {}", i64::MIN);
-
-        let max_1 = PolyOverZ::from_str(&max_str).unwrap();
-        let max_2 = PolyOverZ::from_str(&max_str).unwrap();
-        let min = PolyOverZ::from_str(&min_str).unwrap();
+        let max_1 = PolyOverZ::from(u64::MAX);
+        let max_2 = PolyOverZ::from(u64::MAX);
+        let min = PolyOverZ::from(i64::MIN);
 
         assert!(max_1 == max_2);
         assert!(max_2 == max_1);
@@ -140,12 +137,9 @@ mod test_partial_eq {
     /// (uses FLINT's pointer representation)
     #[test]
     fn not_equal_large() {
-        let max_str = format!("1  {}", u64::MAX);
-        let min_str = format!("1  {}", i64::MIN);
-
-        let max_1 = PolyOverZ::from_str(&max_str).unwrap();
-        let max_2 = PolyOverZ::from_str(&max_str).unwrap();
-        let min = PolyOverZ::from_str(&min_str).unwrap();
+        let max_1 = PolyOverZ::from(u64::MAX);
+        let max_2 = PolyOverZ::from(u64::MAX);
+        let min = PolyOverZ::from(i64::MIN);
 
         assert!(!(max_1 != max_2));
         assert!(!(max_2 != max_1));
@@ -159,14 +153,11 @@ mod test_partial_eq {
     /// and small [`PolyOverZ`] (no pointer representation).
     #[test]
     fn equal_large_small() {
-        let max_str = format!("1  {}", u64::MAX);
-        let min_str = format!("1  {}", i64::MIN);
+        let max = PolyOverZ::from(u64::MAX);
+        let min = PolyOverZ::from(i64::MIN);
 
-        let max = PolyOverZ::from_str(&max_str).unwrap();
-        let min = PolyOverZ::from_str(&min_str).unwrap();
-
-        let small_positive = PolyOverZ::from_str("1  1").unwrap();
-        let small_negative = PolyOverZ::from_str("1  -1").unwrap();
+        let small_positive = PolyOverZ::from(1);
+        let small_negative = PolyOverZ::from(-1);
 
         assert!(!(max == small_negative));
         assert!(!(small_negative == max));
@@ -183,14 +174,11 @@ mod test_partial_eq {
     /// and small [`PolyOverZ`] (no pointer representation).
     #[test]
     fn not_equal_large_small() {
-        let max_str = format!("1  {}", u64::MAX);
-        let min_str = format!("1  {}", i64::MIN);
+        let max = PolyOverZ::from(u64::MAX);
+        let min = PolyOverZ::from(i64::MIN);
 
-        let max = PolyOverZ::from_str(&max_str).unwrap();
-        let min = PolyOverZ::from_str(&min_str).unwrap();
-
-        let small_positive = PolyOverZ::from_str("1  1").unwrap();
-        let small_negative = PolyOverZ::from_str("1  -1").unwrap();
+        let small_positive = PolyOverZ::from(1);
+        let small_negative = PolyOverZ::from(-1);
 
         assert!(max != small_negative);
         assert!(small_negative != max);

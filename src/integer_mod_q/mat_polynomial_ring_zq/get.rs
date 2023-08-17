@@ -847,7 +847,7 @@ mod test_collect_entries {
         );
 
         assert_eq!(entries_2.len(), 2);
-        assert_eq!(PolyOverZ::from_str("1  42").unwrap(), entry3);
+        assert_eq!(PolyOverZ::from(42), entry3);
     }
 
     /// Ensure that the doc-test compiles and works correctly.
