@@ -8,4 +8,5 @@
 
 //! This module contains sampling algorithms for different distributions.
 
+mod discrete_gauss;
 mod uniform;

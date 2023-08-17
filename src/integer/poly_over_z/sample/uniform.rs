@@ -17,7 +17,7 @@ use crate::{
 use std::fmt::Display;
 
 impl PolyOverZ {
-    /// Generates a [`PolyOverZ`] instance with length `nr_coeffs` and coefficients
+    /// Generates a [`PolyOverZ`] instance of maximum degree `max_degree` and coefficients
     /// chosen uniform at random in `[lower_bound, upper_bound)`.
     ///
     /// The internally used uniform at random chosen bytes are generated
@@ -25,16 +25,16 @@ impl PolyOverZ {
     /// is considered cryptographically secure.
     ///
     /// Parameters:
-    /// - `nr_coeffs`: specifies the length of the polynomial,
+    /// - `max_degree`: specifies the length of the polynomial,
     /// i.e. the number of coefficients
     /// - `lower_bound`: specifies the included lower bound of the
     /// interval over which is sampled
     /// - `upper_bound`: specifies the excluded upper bound of the
     /// interval over which is sampled
     ///
-    /// Returns a fresh [`PolyOverZ`] instance of length `nr_coeffs` with coefficients
+    /// Returns a fresh [`PolyOverZ`] instance of length `max_degree` with coefficients
     /// chosen uniform at random in `[lower_bound, upper_bound)` or a [`MathError`]
-    /// if the `nr_coeffs` was smaller than `1` or the provided interval was chosen too small.
+    /// if the `max_degree` was smaller than `0` or the provided interval was chosen too small.
     ///
     /// # Examples
     /// ```
@@ -48,20 +48,20 @@ impl PolyOverZ {
     /// if the given `upper_bound` isn't at least bigger than `lower_bound + 1`,
     /// i.e. the interval size is at most `1`.
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    /// the `nr_coefficients` is negative or it does not fit into an [`i64`].
+    /// the `max_degree` is negative or it does not fit into an [`i64`].
     pub fn sample_uniform(
-        nr_coeffs: impl TryInto<i64> + Display + Copy,
+        max_degree: impl TryInto<i64> + Display,
         lower_bound: impl Into<Z>,
         upper_bound: impl Into<Z>,
     ) -> Result<Self, MathError> {
-        let nr_coeffs = evaluate_index(nr_coeffs)?;
+        let max_degree = evaluate_index(max_degree)?;
         let lower_bound: Z = lower_bound.into();
         let upper_bound: Z = upper_bound.into();
 
         let interval_size = &upper_bound - &lower_bound;
         let mut poly_z = PolyOverZ::default();
 
-        for index in 0..nr_coeffs {
+        for index in 0..=max_degree {
             let sample = sample_uniform_rejection(&interval_size)?;
             poly_z.set_coeff(index, &lower_bound + sample)?;
         }
@@ -106,6 +106,17 @@ mod test_sample_uniform {
         }
     }
 
+    /// Checks whether the number of coefficients is correct.
+    #[test]
+    fn nr_coeffs() {
+        let degrees = [1, 3, 7, 15, 32, 120];
+        for degree in degrees {
+            let res = PolyOverZ::sample_uniform(degree, 1, 15).unwrap();
+
+            assert_eq!(degree, res.get_degree());
+        }
+    }
+
     /// Checks whether providing an invalid interval results in an error.
     #[test]
     fn invalid_interval() {
@@ -125,7 +136,7 @@ mod test_sample_uniform {
 
     /// Checks whether providing a length smaller than `1` results in an error.
     #[test]
-    fn invalid_nr_coeffs() {
+    fn invalid_max_degree() {
         let lower_bound = Z::from(0);
         let upper_bound = Z::from(15);
 

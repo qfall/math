@@ -25,6 +25,7 @@ mod arithmetic;
 mod from;
 mod get;
 mod reduce;
+mod sample;
 mod set;
 
 /// [`PolynomialRingZq`] represents polynomials over the finite field
