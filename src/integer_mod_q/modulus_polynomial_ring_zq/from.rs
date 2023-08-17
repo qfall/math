@@ -52,6 +52,26 @@ impl From<&PolyOverZq> for ModulusPolynomialRingZq {
     }
 }
 
+impl From<PolyOverZq> for ModulusPolynomialRingZq {
+    /// Create a new Modulus object of type [`ModulusPolynomialRingZq`]
+    /// for [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq).
+    ///
+    /// For extensive documentation see [`ModulusPolynomialRingZq::from`]
+    /// (with the reference as parameter).
+    fn from(modulus: PolyOverZq) -> Self {
+        ModulusPolynomialRingZq::from(&modulus)
+    }
+}
+
+impl From<&ModulusPolynomialRingZq> for ModulusPolynomialRingZq {
+    // Only the smart pointer is increased here.
+
+    /// Alias for [`ModulusPolyonomialRingZq::clone`].
+    fn from(value: &ModulusPolynomialRingZq) -> Self {
+        value.clone()
+    }
+}
+
 impl FromStr for ModulusPolynomialRingZq {
     type Err = MathError;
 

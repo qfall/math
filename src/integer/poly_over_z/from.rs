@@ -119,6 +119,13 @@ impl<Integer: Into<Z> + AsInteger> From<Integer> for PolyOverZ {
     }
 }
 
+impl From<&PolyOverZ> for PolyOverZ {
+    /// Alias for [`PolyOverZ::clone`].
+    fn from(value: &PolyOverZ) -> Self {
+        value.clone()
+    }
+}
+
 impl From<&PolyOverZq> for PolyOverZ {
     /// Create a [`PolyOverZ`] from a [`PolyOverZq`].
     ///

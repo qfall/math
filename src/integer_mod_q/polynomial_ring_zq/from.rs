@@ -15,12 +15,14 @@
 use super::PolynomialRingZq;
 use crate::{integer::PolyOverZ, integer_mod_q::ModulusPolynomialRingZq};
 
-impl From<(&PolyOverZ, &ModulusPolynomialRingZq)> for PolynomialRingZq {
+impl<Poly: Into<PolyOverZ>, Mod: Into<ModulusPolynomialRingZq>> From<(Poly, Mod)>
+    for PolynomialRingZq
+{
     /// Create a new polynomial ring element of type [`PolynomialRingZq`].
     ///
     /// Parameters:
-    /// - `value` is a tuple `(polynomial, modulus)`
-    ///   The modulus defines the ring.
+    /// - `(poly, modulus)`: the value of the polynomial ring element, where `poly`
+    /// defines the equivalence class and `modulus` is the corresponding modulus.
     ///
     /// Returns a new element inside the polynomial ring.
     ///
@@ -35,10 +37,10 @@ impl From<(&PolyOverZ, &ModulusPolynomialRingZq)> for PolynomialRingZq {
     /// let poly = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
     /// let poly_ring = PolynomialRingZq::from((&poly, &modulus));
     /// ```
-    fn from(value: (&PolyOverZ, &ModulusPolynomialRingZq)) -> Self {
+    fn from((poly, modulus): (Poly, Mod)) -> Self {
         let mut out = Self {
-            poly: value.0.clone(),
-            modulus: value.1.clone(),
+            poly: poly.into(),
+            modulus: modulus.into(),
         };
         out.reduce();
         out
@@ -49,7 +51,7 @@ impl From<(&PolyOverZ, &ModulusPolynomialRingZq)> for PolynomialRingZq {
 mod test_from_poly_over_z_modulus_polynomial_ring_zq {
     use crate::{
         integer::PolyOverZ,
-        integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq},
+        integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq},
     };
     use std::str::FromStr;
 
@@ -83,5 +85,31 @@ mod test_from_poly_over_z_modulus_polynomial_ring_zq {
         let poly_ring_2 = PolynomialRingZq::from((&poly, &modulus));
 
         assert_eq!(poly_ring_1, poly_ring_2);
+    }
+
+    /// Ensures that the function is still available for all values implementing
+    /// `Into<ModulusPolynomialRingZq>`.
+    #[test]
+    fn availability() {
+        let poly = PolyOverZ::from(2);
+        let poly_mod = PolyOverZq::from_str("2  1 1 mod 17").unwrap();
+        let modulus = ModulusPolynomialRingZq::from(&poly_mod);
+
+        let _ = PolynomialRingZq::from((&poly, &poly_mod));
+        let _ = PolynomialRingZq::from((&poly, poly_mod.clone()));
+        let _ = PolynomialRingZq::from((poly.clone(), &poly_mod));
+        let _ = PolynomialRingZq::from((poly.clone(), poly_mod.clone()));
+
+        let _ = PolynomialRingZq::from((0_i8, &modulus));
+        let _ = PolynomialRingZq::from((0_i16, &modulus));
+        let _ = PolynomialRingZq::from((0_i32, &modulus));
+        let _ = PolynomialRingZq::from((0_i64, &modulus));
+        let _ = PolynomialRingZq::from((0_u8, &modulus));
+        let _ = PolynomialRingZq::from((0_u16, &modulus));
+        let _ = PolynomialRingZq::from((0_u32, &modulus));
+        let _ = PolynomialRingZq::from((0_u64, &modulus));
+
+        let _ = PolynomialRingZq::from((poly.clone(), &modulus));
+        let _ = PolynomialRingZq::from((poly, modulus));
     }
 }
