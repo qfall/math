@@ -158,7 +158,71 @@ fn gaussian_function(x: &Z, c: &Q, s: &Q) -> Q {
 /// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix)
 /// if `center` is not a column vector.
 pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ, MathError> {
+    let basis_gso = MatQ::from(basis).gso();
+    sample_d_precomputed_gso(basis, &basis_gso, n, center, s)
+}
+
+/// SampleD samples a discrete Gaussian from the lattice with `basis` using [`sample_z`] as a subroutine.
+///
+/// We do not check whether `basis` is actually a basis or whether `basis_gso` is
+/// actually the gso of `basis`. Hence, the callee is responsible for making sure that
+/// `basis` provides a suitable basis and `basis_gso` is a corresponding GSO.
+///
+/// Parameters:
+/// - `basis`: specifies a basis for the lattice from which is sampled
+/// - `basis_gso`: specifies the precomputed gso for basis
+/// - `n`: specifies the range from which [`sample_z`] samples
+/// - `center`: specifies the positions of the center with peak probability
+/// - `s`: specifies the Gaussian parameter, which is proportional
+/// to the standard deviation `sigma * sqrt(2 * pi) = s`
+///
+/// Returns a vector with discrete gaussian error based on a lattice point
+/// as in [\[1\]](<index.html#:~:text=[1]>): SampleD.
+///
+/// # Examples
+/// ```compile_fail
+/// use qfall_math::{integer::{MatZ, Z}, rational::{MatQ, Q}};
+/// use qfall_math::utils::sample::discrete_gauss::sample_d;
+/// let basis = MatZ::identity(5, 5);
+/// let n = Z::from(1024);
+/// let center = MatQ::new(5, 1);
+/// let gaussian_parameter = Q::ONE;
+///
+/// let basis_gso = basis.gso();
+///
+/// let sample = sample_d(basis, &basis_gso, &n, &center, &gaussian_parameter).unwrap();
+/// ```
+///
+/// # Errors and Failures
+/// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
+/// if the `n <= 1` or `s <= 0`.
+/// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
+/// if the number of rows of the `basis` and `center` differ.
+/// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix)
+/// if `center` is not a column vector.
+///
+/// # Panics...
+/// - if the number of rows/columns of `basis_gso` and `basis` mismatch.
+pub(crate) fn sample_d_precomputed_gso(
+    basis: &MatZ,
+    basis_gso: &MatQ,
+    n: &Z,
+    center: &MatQ,
+    s: &Q,
+) -> Result<MatZ, MathError> {
     let mut center = center.clone();
+    assert_eq!(
+        basis.get_num_rows(),
+        basis_gso.get_num_rows(),
+        "The provided gso can not be based on the provided base, \
+        as they do not have the same number of rows."
+    );
+    assert_eq!(
+        basis.get_num_columns(),
+        basis_gso.get_num_columns(),
+        "The provided gso can not be based on the provided base, \
+        as they do not have the same number of columns."
+    );
     if center.get_num_rows() != basis.get_num_rows() {
         return Err( MathError::MismatchingMatrixDimension(format!(
             "sample_d requires center and basis to have the same number of columns, but they were {} and {}.",
@@ -179,8 +243,6 @@ pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ
             This function expects this input to be bigger than 0."
         )));
     }
-
-    let basis_gso = MatQ::from(basis).gso();
 
     let mut out = MatZ::new(basis_gso.get_num_rows(), 1);
 
@@ -208,7 +270,6 @@ pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ
 
     Ok(out)
 }
-
 #[cfg(test)]
 mod test_sample_z {
     use super::{sample_z, Q, Z};
@@ -353,7 +414,7 @@ mod test_gaussian_function {
 
 #[cfg(test)]
 mod test_sample_d {
-    use crate::traits::{Concatenate, GetNumColumns, Pow};
+    use crate::traits::{Concatenate, GetNumColumns, GetNumRows, Pow};
     use crate::utils::sample::discrete_gauss::sample_d;
     use crate::{
         integer::{MatZ, Z},
@@ -362,6 +423,8 @@ mod test_sample_d {
     use flint_sys::fmpz_mat::fmpz_mat_hnf;
     use std::str::FromStr;
 
+    use super::sample_d_precomputed_gso;
+
     /// Ensures that the doc-test compiles and runs properly
     #[test]
     fn doc_test() {
@@ -369,8 +432,11 @@ mod test_sample_d {
         let n = Z::from(1024);
         let center = MatQ::new(5, 1);
         let gaussian_parameter = Q::ONE;
+        let basis_gso = MatQ::from(&basis).gso();
 
         let _ = sample_d(&basis, &n, &center, &gaussian_parameter).unwrap();
+        let _ =
+            sample_d_precomputed_gso(&basis, &basis_gso, &n, &center, &gaussian_parameter).unwrap();
     }
 
     /// Ensures that `sample_d` works properly for a non-zero center
@@ -380,8 +446,11 @@ mod test_sample_d {
         let n = Z::from(1024);
         let center = MatQ::identity(5, 1);
         let gaussian_parameter = Q::ONE;
+        let basis_gso = MatQ::from(&basis).gso();
 
         let _ = sample_d(&basis, &n, &center, &gaussian_parameter).unwrap();
+        let _ =
+            sample_d_precomputed_gso(&basis, &basis_gso, &n, &center, &gaussian_parameter).unwrap();
     }
 
     /// Ensures that `sample_d` works properly for a different basis
@@ -391,8 +460,11 @@ mod test_sample_d {
         let n = Z::from(1024);
         let center = MatQ::new(2, 1);
         let gaussian_parameter = Q::ONE;
+        let basis_gso = MatQ::from(&basis).gso();
 
         let _ = sample_d(&basis, &n, &center, &gaussian_parameter).unwrap();
+        let _ =
+            sample_d_precomputed_gso(&basis, &basis_gso, &n, &center, &gaussian_parameter).unwrap();
     }
 
     /// Ensures that `sample_d` outputs a vector that's part of the specified lattice
@@ -406,18 +478,29 @@ mod test_sample_d {
         let n = Z::from(1024);
         let center = MatQ::new(2, 1);
         let gaussian_parameter = Q::ONE;
+        let basis_gso = MatQ::from(&basis).gso();
 
         let sample = sample_d(&basis, &n, &center, &gaussian_parameter).unwrap();
+        let sample_prec =
+            sample_d_precomputed_gso(&basis, &basis_gso, &n, &center, &gaussian_parameter).unwrap();
 
         // check whether hermite normal form of HNF(b) = HNF([b|sample_vector])
         let basis_concat_sample = basis.concat_horizontal(&sample).unwrap();
+        let basis_concat_sample_prec = basis.concat_horizontal(&sample_prec).unwrap();
         let mut hnf_basis = MatZ::new(2, 2);
         unsafe { fmpz_mat_hnf(&mut hnf_basis.matrix, &basis.matrix) };
         let mut hnf_basis_concat_sample = MatZ::new(2, 3);
+        let mut hnf_basis_concat_sample_prec = MatZ::new(2, 3);
         unsafe {
             fmpz_mat_hnf(
                 &mut hnf_basis_concat_sample.matrix,
                 &basis_concat_sample.matrix,
+            )
+        };
+        unsafe {
+            fmpz_mat_hnf(
+                &mut hnf_basis_concat_sample_prec.matrix,
+                &basis_concat_sample_prec.matrix,
             )
         };
         assert_eq!(
@@ -425,14 +508,23 @@ mod test_sample_d {
             hnf_basis_concat_sample.get_column(0).unwrap()
         );
         assert_eq!(
+            hnf_basis.get_column(0).unwrap(),
+            hnf_basis_concat_sample_prec.get_column(0).unwrap()
+        );
+        assert_eq!(
             hnf_basis.get_column(1).unwrap(),
             hnf_basis_concat_sample.get_column(1).unwrap()
         );
-        // check whether last vector is zero, i.e. was linearly dependent and part of lattice
         assert_eq!(
-            MatZ::new(2, 1),
-            hnf_basis_concat_sample.get_column(2).unwrap()
+            hnf_basis.get_column(1).unwrap(),
+            hnf_basis_concat_sample_prec.get_column(1).unwrap()
         );
+        // check whether last vector is zero, i.e. was linearly dependent and part of lattice
+        assert!(hnf_basis_concat_sample.get_column(2).unwrap().is_zero());
+        assert!(hnf_basis_concat_sample_prec
+            .get_column(2)
+            .unwrap()
+            .is_zero());
     }
 
     /// Checks whether `sample_d` returns an error if the gaussian parameter `s <= 0`
@@ -441,10 +533,17 @@ mod test_sample_d {
         let basis = MatZ::identity(5, 5);
         let n = Z::from(1024);
         let center = MatQ::new(5, 1);
+        let basis_gso = MatQ::from(&basis).gso();
 
         assert!(sample_d(&basis, &n, &center, &Q::ZERO).is_err());
         assert!(sample_d(&basis, &n, &center, &Q::MINUS_ONE).is_err());
         assert!(sample_d(&basis, &n, &center, &Q::from(i64::MIN)).is_err());
+
+        assert!(sample_d_precomputed_gso(&basis, &basis_gso, &n, &center, &Q::ZERO).is_err());
+        assert!(sample_d_precomputed_gso(&basis, &basis_gso, &n, &center, &Q::MINUS_ONE).is_err());
+        assert!(
+            sample_d_precomputed_gso(&basis, &basis_gso, &n, &center, &Q::from(i64::MIN)).is_err()
+        );
     }
 
     /// Checks whether `sample_d` returns an error if `n <= 1`
@@ -453,11 +552,44 @@ mod test_sample_d {
         let basis = MatZ::identity(5, 5);
         let center = MatQ::new(5, 1);
         let gaussian_parameter = Q::ONE;
+        let basis_gso = MatQ::from(&basis).gso();
 
         assert!(sample_d(&basis, &Z::ONE, &center, &gaussian_parameter).is_err());
         assert!(sample_d(&basis, &Z::ZERO, &center, &gaussian_parameter).is_err());
         assert!(sample_d(&basis, &Z::MINUS_ONE, &center, &gaussian_parameter).is_err());
         assert!(sample_d(&basis, &Z::from(i64::MIN), &center, &gaussian_parameter).is_err());
+        assert!(sample_d_precomputed_gso(
+            &basis,
+            &basis_gso,
+            &Z::ONE,
+            &center,
+            &gaussian_parameter
+        )
+        .is_err());
+        assert!(sample_d_precomputed_gso(
+            &basis,
+            &basis_gso,
+            &Z::ZERO,
+            &center,
+            &gaussian_parameter
+        )
+        .is_err());
+        assert!(sample_d_precomputed_gso(
+            &basis,
+            &basis_gso,
+            &Z::MINUS_ONE,
+            &center,
+            &gaussian_parameter
+        )
+        .is_err());
+        assert!(sample_d_precomputed_gso(
+            &basis,
+            &basis_gso,
+            &Z::from(i64::MIN),
+            &center,
+            &gaussian_parameter
+        )
+        .is_err());
     }
 
     /// Checks whether `sample_d` returns an error if the basis and center number of rows differs
@@ -467,10 +599,14 @@ mod test_sample_d {
         let n = Z::from(1024);
         let center = MatQ::new(4, 1);
         let gaussian_parameter = Q::ONE;
+        let basis_gso = MatQ::from(&basis).gso();
 
         let res = sample_d(&basis, &n, &center, &gaussian_parameter);
+        let res_prec =
+            sample_d_precomputed_gso(&basis, &basis_gso, &n, &center, &gaussian_parameter);
 
         assert!(res.is_err());
+        assert!(res_prec.is_err());
     }
 
     /// Checks whether `sample_d` returns an error if center isn't a column vector
@@ -480,10 +616,14 @@ mod test_sample_d {
         let n = Z::from(1024);
         let center = MatQ::new(2, 2);
         let gaussian_parameter = Q::ONE;
+        let basis_gso = MatQ::from(&basis).gso();
 
         let res = sample_d(&basis, &n, &center, &gaussian_parameter);
+        let res_prec =
+            sample_d_precomputed_gso(&basis, &basis_gso, &n, &center, &gaussian_parameter);
 
         assert!(res.is_err());
+        assert!(res_prec.is_err());
     }
 
     /// Ensures that the concentration bound holds.
@@ -511,11 +651,41 @@ mod test_sample_d {
 
         for _ in 0..20 {
             let res = sample_d(&basis, &n, &center, &gaussian_parameter).unwrap();
+            let res_prec =
+                sample_d_precomputed_gso(&basis, &orth, &n, &center, &gaussian_parameter).unwrap();
 
             assert!(
                 res.norm_eucl_sqrd().unwrap() <= gaussian_parameter.pow(2).unwrap().round() * &n,
                 "{expl_text}"
             );
+            assert!(
+                res_prec.norm_eucl_sqrd().unwrap()
+                    <= gaussian_parameter.pow(2).unwrap().round() * &n,
+                "{expl_text}"
+            );
         }
+    }
+
+    /// Ensure that an orthogonalized base wit not matching rows panics.
+    #[test]
+    #[should_panic]
+    fn precomputed_gso_mismatching_rows() {
+        let n = Z::from(20);
+        let basis = MatZ::sample_uniform(&n, &n, 0, 5000).unwrap();
+        let center = MatQ::new(&n, 1);
+        let false_gso = MatQ::new(basis.get_num_rows() + 1, basis.get_num_columns());
+
+        let _ = sample_d_precomputed_gso(&basis, &false_gso, &n, &center, &Q::from(5)).unwrap();
+    }
+    /// Ensure that an orthogonalized base wit not matching columns panics.
+    #[test]
+    #[should_panic]
+    fn precomputed_gso_mismatching_columns() {
+        let n = Z::from(20);
+        let basis = MatZ::sample_uniform(&n, &n, 0, 5000).unwrap();
+        let center = MatQ::new(&n, 1);
+        let false_gso = MatQ::new(basis.get_num_rows(), basis.get_num_columns() + 1);
+
+        let _ = sample_d_precomputed_gso(&basis, &false_gso, &n, &center, &Q::from(5)).unwrap();
     }
 }
