@@ -170,7 +170,7 @@ pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ
 ///
 /// Parameters:
 /// - `basis`: specifies a basis for the lattice from which is sampled
-/// - `basis_gso`: specifies the precomputed gso for basis
+/// - `basis_gso`: specifies the precomputed gso for `basis`
 /// - `n`: specifies the range from which [`sample_z`] samples
 /// - `center`: specifies the positions of the center with peak probability
 /// - `s`: specifies the Gaussian parameter, which is proportional
