@@ -95,7 +95,7 @@ mod test_mul {
     #[test]
     fn mul_constant() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();
-        let b: PolyOverZ = PolyOverZ::from_str("1  4").unwrap();
+        let b: PolyOverZ = PolyOverZ::from(4);
         let c: PolyOverZ = a * b;
         assert_eq!(c, PolyOverZ::from_str("3  4 8 -12").unwrap());
     }

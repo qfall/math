@@ -190,7 +190,7 @@ mod test_mul {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly_a = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
         let a = PolynomialRingZq::from((&poly_a, &modulus));
-        let poly_b = PolyOverZ::from_str("1  3").unwrap();
+        let poly_b = PolyOverZ::from(3);
         let b = PolynomialRingZq::from((&poly_b, &modulus));
         let c = &a * b;
         assert_eq!(

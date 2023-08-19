@@ -131,12 +131,12 @@ mod test_set_coeff {
     #[test]
     fn set_reduce() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-        let poly = PolyOverZ::from_str("1  1").unwrap();
+        let poly = PolyOverZ::from(1);
         let mut poly_ring = PolynomialRingZq::from((&poly, &modulus));
 
         poly_ring.set_coeff(3, 1).unwrap();
 
-        let cmp_poly = PolyOverZ::from_str("0").unwrap();
+        let cmp_poly = PolyOverZ::from(0);
         let cmp_poly_ring = PolynomialRingZq::from((&cmp_poly, &modulus));
         assert_eq!(cmp_poly_ring, poly_ring);
     }

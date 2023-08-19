@@ -51,7 +51,7 @@ mod vector;
 ///
 /// // clone object, set and get entry
 /// let mut clone = id_mat.clone();
-/// clone.set_entry(0, 0, PolyOverZ::from_str("1  2").unwrap());
+/// clone.set_entry(0, 0, PolyOverZ::from(2));
 /// assert_eq!(
 ///     clone.get_entry(1, 1).unwrap(),
 ///     PolyOverZ::from_str("1  1").unwrap(),

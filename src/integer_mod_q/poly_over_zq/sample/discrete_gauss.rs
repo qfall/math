@@ -104,7 +104,7 @@ mod test_sample_discrete_gauss {
         let modulus = 128;
 
         for _ in 0..32 {
-            let poly = PolyOverZq::sample_discrete_gauss(3, &modulus, 1024, 15, 1).unwrap();
+            let poly = PolyOverZq::sample_discrete_gauss(3, modulus, 1024, 15, 1).unwrap();
 
             for i in 0..3 {
                 let sample: Z = poly.get_coeff(i).unwrap();
@@ -120,7 +120,7 @@ mod test_sample_discrete_gauss {
         let modulus = u64::MAX;
 
         for _ in 0..256 {
-            let poly = PolyOverZq::sample_discrete_gauss(3, &modulus, 1024, 1, 1).unwrap();
+            let poly = PolyOverZq::sample_discrete_gauss(3, modulus, 1024, 1, 1).unwrap();
 
             for i in 0..3 {
                 let sample: Z = poly.get_coeff(i).unwrap();
@@ -136,8 +136,7 @@ mod test_sample_discrete_gauss {
         let degrees = [1, 3, 7, 15, 32, 120];
         for degree in degrees {
             let res =
-                PolyOverZq::sample_discrete_gauss(degree.clone(), u64::MAX, 1024, i64::MAX, 1)
-                    .unwrap();
+                PolyOverZq::sample_discrete_gauss(degree, u64::MAX, 1024, i64::MAX, 1).unwrap();
 
             assert_eq!(
                 res.get_degree(),

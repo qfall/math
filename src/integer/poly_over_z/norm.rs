@@ -87,7 +87,7 @@ mod test_norm_eucl_sqrd {
     /// with small coefficients is calculated correctly
     #[test]
     fn poly_large_coefficient() {
-        let poly1 = PolyOverZ::from_str(&format!("1  {}", u64::MAX)).unwrap();
+        let poly1 = PolyOverZ::from(u64::MAX);
         let poly2 =
             PolyOverZ::from_str(&format!("3  {} {} {}", u64::MAX, i64::MIN, i64::MAX)).unwrap();
 
@@ -126,7 +126,7 @@ mod test_norm_infty {
     /// with small coefficients is calculated correctly
     #[test]
     fn poly_large_coefficient() {
-        let poly1 = PolyOverZ::from_str(&format!("1  {}", u64::MAX)).unwrap();
+        let poly1 = PolyOverZ::from(u64::MAX);
         let poly2 =
             PolyOverZ::from_str(&format!("3  {} {} {}", u64::MAX, i64::MIN, i64::MAX)).unwrap();
 
