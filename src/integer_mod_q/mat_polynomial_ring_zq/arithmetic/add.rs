@@ -199,7 +199,7 @@ mod test_add {
         );
     }
 
-    /// Testing addition for big [`MatPolynomialRingZq`]
+    /// Testing addition for large [`MatPolynomialRingZq`]
     #[test]
     fn add_large_numbers() {
         let modulus = ModulusPolynomialRingZq::from_str(&format!(

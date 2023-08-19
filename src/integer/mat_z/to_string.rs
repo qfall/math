@@ -87,7 +87,7 @@ mod test_to_string {
 
     /// Tests whether a matrix with positive entries works in a roundtrip
     #[test]
-    fn working_big_dimensions() {
+    fn working_large_dimensions() {
         let cmp1 = MatZ::from_str(&format!("[{}[5, 6, 7]]", "[1, 2, 3],".repeat(99))).unwrap();
         let cmp2 = MatZ::from_str(&format!("[[{}1]]", "1, ".repeat(99))).unwrap();
 

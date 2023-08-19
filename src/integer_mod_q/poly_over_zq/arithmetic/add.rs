@@ -145,7 +145,7 @@ mod test_add {
         assert_eq!(c, PolyOverZq::from_str("2  4 1 mod 7").unwrap());
     }
 
-    /// Testing addition for big [`PolyOverZq`]
+    /// Testing addition for large [`PolyOverZq`]
     #[test]
     fn add_large_numbers() {
         let a: PolyOverZq = PolyOverZq::from_str(&format!(

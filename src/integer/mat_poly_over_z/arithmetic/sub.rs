@@ -161,7 +161,7 @@ mod test_sub {
         );
     }
 
-    /// Testing subtraction for big numbers
+    /// Testing subtraction for large numbers
     #[test]
     fn sub_large_numbers() {
         let a: MatPolyOverZ = MatPolyOverZ::from_str(&format!(

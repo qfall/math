@@ -112,7 +112,7 @@ mod test_to_string {
 
     /// Tests whether a large matrix works in a roundtrip
     #[test]
-    fn working_big_dimensions() {
+    fn working_large_dimensions() {
         let cmp1 =
             MatZq::from_str(&format!("[{}[5, 6, 7]] mod 4", "[1, 2, 3],".repeat(99))).unwrap();
         let cmp2 = MatZq::from_str(&format!("[[{}1]] mod 4", "1, ".repeat(99))).unwrap();

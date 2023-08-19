@@ -68,9 +68,9 @@ mod test_trace {
         assert_eq!(PolyOverZ::default(), trace2);
     }
 
-    /// Test whether `trace` works for big values
+    /// Test whether `trace` works for large values
     #[test]
-    fn trace_big_values() {
+    fn trace_large_values() {
         let mat1 = MatPolyOverZ::from_str(&format!(
             "[[2  -1 {}, 1  5],[3  1 2 3, 1  {}]]",
             i64::MAX,

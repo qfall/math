@@ -395,7 +395,7 @@ mod test_get_entry {
 
     /// Ensure that getting entries works with large numbers.
     #[test]
-    fn big_positive() {
+    fn large_positive() {
         let modulus =
             ModulusPolynomialRingZq::from_str(&format!("5  42 17 1 2 3 mod {LARGE_PRIME}"))
                 .unwrap();

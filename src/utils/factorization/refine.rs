@@ -50,7 +50,7 @@ mod test_refine {
 
     /// Ensure that refinement works correctly.
     #[test]
-    fn refine_correct_big() {
+    fn refine_correct_large() {
         let mut fac = Factorization::from((i64::MAX - 1, 2));
 
         fac.refine();

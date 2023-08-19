@@ -96,7 +96,7 @@ mod test_to_string {
 
     /// Tests whether a large matrix works in a roundtrip
     #[test]
-    fn working_big_dimensions() {
+    fn working_large_dimensions() {
         let cmp1 = MatQ::from_str(&format!("[{}[5, 6, 7]]", "[1/2, 2, 3/8],".repeat(99))).unwrap();
         let cmp2 = MatQ::from_str(&format!("[[{}1]]", "1/4, ".repeat(99))).unwrap();
 

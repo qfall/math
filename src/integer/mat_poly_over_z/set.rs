@@ -404,7 +404,7 @@ mod test_setter {
 
     /// Ensure that setting entries works with large numbers (larger than i64).
     #[test]
-    fn big_positive() {
+    fn large_positive() {
         let mut matrix = MatPolyOverZ::new(5, 10);
         let value = PolyOverZ::from_str(&format!("2  {} 1", u64::MAX)).unwrap();
         matrix.set_entry(4, 7, &value).unwrap();
@@ -416,7 +416,7 @@ mod test_setter {
 
     /// Ensure that setting entries works with referenced large numbers (larger than i64).
     #[test]
-    fn big_positive_ref() {
+    fn large_positive_ref() {
         let mut matrix = MatPolyOverZ::new(5, 10);
         let value1 = PolyOverZ::from_str(&format!("2  {} 1", u64::MAX)).unwrap();
         let value2 = PolyOverZ::from_str("2  8 1").unwrap();
@@ -444,7 +444,7 @@ mod test_setter {
 
     /// Ensure that setting entries works with large negative numbers (larger than i64).
     #[test]
-    fn big_negative() {
+    fn large_negative() {
         let mut matrix = MatPolyOverZ::new(5, 10);
         let value_str = &format!("2  -{} 1", u64::MAX);
         let value = PolyOverZ::from_str(value_str).unwrap();

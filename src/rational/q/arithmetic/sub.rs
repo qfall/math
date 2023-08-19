@@ -187,7 +187,7 @@ mod test_sub_between_z_and_q {
         assert_eq!(c, Q::from((-23, 7)));
     }
 
-    /// Testing subtraction for big numbers
+    /// Testing subtraction for large numbers
     #[test]
     fn sub_large_numbers() {
         let a: Q = Q::from((u64::MAX, 2));

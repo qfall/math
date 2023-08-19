@@ -321,7 +321,7 @@ mod tests_from_str {
 
     /// Ensure that initialization with large numbers (larger than [`i64`]) works.
     #[test]
-    fn big_positive() {
+    fn large_positive() {
         assert!(Zq::from_str(&format!("{} mod {}", u64::MAX, u128::MAX)).is_ok());
     }
 
@@ -333,7 +333,7 @@ mod tests_from_str {
 
     /// Ensure that initialization with large negative numbers (larger than [`i64`]) works.
     #[test]
-    fn big_negative() {
+    fn large_negative() {
         assert!(Zq::from_str(&format!("-{} mod {}", u64::MAX, u128::MAX)).is_ok());
     }
 

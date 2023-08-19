@@ -393,7 +393,7 @@ mod test_setter {
 
     /// Ensure that setting entries works with large numbers (larger than i64).
     #[test]
-    fn big_positive() {
+    fn large_positive() {
         let mut matrix = MatZ::new(5, 10);
         let value = Z::from(u64::MAX);
         matrix.set_entry(1, 1, value).unwrap();
@@ -405,7 +405,7 @@ mod test_setter {
 
     /// Ensure that setting entries works with referenced large numbers (larger than i64).
     #[test]
-    fn big_positive_ref() {
+    fn large_positive_ref() {
         let mut matrix = MatZ::new(5, 10);
         let value1 = Z::from(u64::MAX);
         let value2 = Z::from(8);
@@ -433,7 +433,7 @@ mod test_setter {
 
     /// Ensure that setting entries works with large negative numbers (larger than i64).
     #[test]
-    fn big_negative() {
+    fn large_negative() {
         let mut matrix = MatZ::new(5, 10);
         let value_str = &format!("-{}", u64::MAX);
         matrix

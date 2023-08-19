@@ -113,7 +113,7 @@ mod test_to_string {
 
     /// Tests whether a large matrix works in a roundtrip
     #[test]
-    fn working_big_dimensions() {
+    fn working_large_dimensions() {
         let cmp1 = MatPolyOverZ::from_str(&format!(
             "[{}[3  17 24 42, 1  -17, 1  42]]",
             "[0, 1  42, 2  42 24],".repeat(99)

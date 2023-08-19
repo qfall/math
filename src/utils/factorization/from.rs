@@ -141,9 +141,9 @@ mod tests_from_one {
         assert_eq!("[(8, 1)]", fac.to_string());
     }
 
-    /// Ensure that a [`Factorization`] is correctly created from a big value.
+    /// Ensure that a [`Factorization`] is correctly created from a large value.
     #[test]
-    fn from_one_big() {
+    fn from_one_large() {
         let fac = Factorization::from(i64::MAX);
 
         assert_eq!(format!("[({}, 1)]", i64::MAX), fac.to_string());
@@ -187,9 +187,9 @@ mod tests_from_two {
         assert_eq!("[(8, 1), (3, 1)]", fac.to_string());
     }
 
-    /// Ensure that a [`Factorization`] is correctly created from big values.
+    /// Ensure that a [`Factorization`] is correctly created from large values.
     #[test]
-    fn from_two_big() {
+    fn from_two_large() {
         let fac = Factorization::from((i64::MAX, 3));
 
         assert_eq!(format!("[({}, 1), (3, 1)]", i64::MAX), fac.to_string());
@@ -238,9 +238,9 @@ mod tests_from_factorization_for_vector {
     }
 
     /// Ensure that a [`Vec`] is correctly created from a [`Factorization`]
-    /// with big values.
+    /// with large values.
     #[test]
-    fn from_factorization_big() {
+    fn from_factorization_large() {
         let fac = Factorization::from((i64::MAX, 3));
         let vec = Vec::<(Z, u64)>::from(&fac);
 
@@ -354,9 +354,9 @@ mod tests_from_vector_for_factorization {
     }
 
     /// Ensure that a [`Factorization`] is correctly created from a [`Vec`]
-    /// with big values.
+    /// with large values.
     #[test]
-    fn from_vector_big() {
+    fn from_vector_large() {
         let vec: Vec<(Z, u64)> = vec![(Z::from(i64::MAX), 2), (Z::from(8), 2)];
         let fac = Factorization::from(&vec);
 

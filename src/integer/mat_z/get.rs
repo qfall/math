@@ -305,7 +305,7 @@ mod test_get_entry {
 
     /// Ensure that getting entries works with large numbers (larger than i64).
     #[test]
-    fn big_positive() {
+    fn large_positive() {
         let mut matrix = MatZ::new(5, 10);
         let value = Z::from(u64::MAX);
         matrix.set_entry(1, 1, value).unwrap();
@@ -329,7 +329,7 @@ mod test_get_entry {
 
     /// Ensure that getting entries works with large negative numbers (larger than i64).
     #[test]
-    fn big_negative() {
+    fn large_negative() {
         let mut matrix = MatZ::new(5, 10);
         let value_str = &format!("-{}", u64::MAX);
         matrix

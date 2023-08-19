@@ -465,7 +465,7 @@ mod test_div {
         assert_eq!(c, Q::from((21, 2)));
     }
 
-    /// Testing division for big [`Z`]
+    /// Testing division for large [`Z`]
     #[test]
     fn div_large_numbers() {
         let a: Z = Z::from(i64::MAX as u64 + 1);
@@ -522,7 +522,7 @@ mod test_div_between_z_and_q {
         assert_eq!(c, Q::from((28, 5)));
     }
 
-    /// Testing division for big numbers
+    /// Testing division for large numbers
     #[test]
     fn div_large_numbers() {
         let a: Z = Z::from(u64::MAX);

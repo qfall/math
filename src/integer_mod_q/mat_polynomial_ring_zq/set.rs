@@ -168,7 +168,7 @@ mod test_setter {
 
     /// Ensure that setting entries works with large numbers.
     #[test]
-    fn big_positive() {
+    fn large_positive() {
         let modulus =
             ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {LARGE_PRIME}")).unwrap();
         let poly_mat =
@@ -191,7 +191,7 @@ mod test_setter {
 
     /// Ensure that setting entries works with referenced large numbers.
     #[test]
-    fn big_positive_ref() {
+    fn large_positive_ref() {
         let modulus =
             ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {LARGE_PRIME}")).unwrap();
         let poly_mat = MatPolyOverZ::from_str(&format!(
@@ -217,7 +217,7 @@ mod test_setter {
 
     /// Ensure that setting entries works with large negative numbers.
     #[test]
-    fn big_negative() {
+    fn large_negative() {
         let modulus =
             ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {LARGE_PRIME}")).unwrap();
         let poly_mat = MatPolyOverZ::from_str(&format!(

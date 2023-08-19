@@ -37,7 +37,7 @@ impl Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    /// if the given `upper_bound` isn't at least bigger than `lower_bound + 1`,
+    /// if the given `upper_bound` isn't at least larger than `lower_bound + 1`,
     /// i.e. the interval size is at most `1`.
     pub fn sample_uniform(
         lower_bound: impl Into<Z>,
@@ -79,7 +79,7 @@ impl Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    /// if the given `upper_bound` isn't at least bigger than `lower_bound + 1`,
+    /// if the given `upper_bound` isn't at least larger than `lower_bound + 1`,
     /// i.e. the interval size is at most `1`, or if no prime could be found in the specified interval.
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
     /// if `lower_bound` is negative as primes are always positive.
@@ -107,7 +107,7 @@ impl Z {
                 return Err(MathError::InvalidInterval(format!(
                     "After sampling O({interval_size}) times uniform at random in the interval [{lower_bound}, {upper_bound}[
                         no prime was found. It is very likely, that no prime exists in this interval.
-                        Please choose the interval bigger.")));
+                        Please choose the interval larger.")));
             }
             sample = &lower_bound + sample_uniform_rejection(&interval_size)?;
             steps = steps - 1;

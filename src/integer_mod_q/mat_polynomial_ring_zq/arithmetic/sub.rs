@@ -135,7 +135,7 @@ mod test_sub {
         assert_eq!(cmp_poly_ring_mat, poly_ring_mat3);
     }
 
-    /// Testing subtraction for big numbers.
+    /// Testing subtraction for large numbers.
     #[test]
     fn sub_large_numbers() {
         let modulus =

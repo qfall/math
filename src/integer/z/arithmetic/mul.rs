@@ -272,7 +272,7 @@ mod test_mul {
         assert_eq!(c, Z::from(168));
     }
 
-    /// Testing multiplication for big [`Z`]
+    /// Testing multiplication for large [`Z`]
     #[test]
     fn mul_large_numbers() {
         let a: Z = Z::from(i64::MAX);
@@ -329,7 +329,7 @@ mod test_mul_between_z_and_zq {
         assert_eq!(c, Zq::from((3, 11)));
     }
 
-    /// Testing multiplication for big numbers
+    /// Testing multiplication for large numbers
     #[test]
     fn mul_large_numbers() {
         let a: Z = Z::from(u64::MAX);
@@ -388,7 +388,7 @@ mod test_mul_between_z_and_q {
         assert_eq!(c, Q::from((20, 7)));
     }
 
-    /// Testing multiplication for big numbers
+    /// Testing multiplication for large numbers
     #[test]
     fn mul_large_numbers() {
         let a: Z = Z::from(u64::MAX);

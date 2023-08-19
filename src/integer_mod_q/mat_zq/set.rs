@@ -458,7 +458,7 @@ mod test_setter {
 
     /// Ensure that setting entries works with large numbers (larger than [`i64`]).
     #[test]
-    fn big_positive() {
+    fn large_positive() {
         let mut matrix = MatZq::new(5, 10, u64::MAX);
         let value = Z::from(u64::MAX - 1);
         matrix.set_entry(0, 0, value).unwrap();
@@ -482,7 +482,7 @@ mod test_setter {
 
     /// Ensure that setting entries works with large numbers (larger than [`i64`]).
     #[test]
-    fn big_negative() {
+    fn large_negative() {
         let mut matrix = MatZq::new(5, 10, u64::MAX);
         let value = Z::from(-i64::MAX - 1);
         matrix.set_entry(0, 0, value).unwrap();

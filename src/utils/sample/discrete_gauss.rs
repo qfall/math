@@ -61,13 +61,13 @@ pub(crate) fn sample_z(n: &Z, center: &Q, s: &Q) -> Result<Z, MathError> {
     if n <= &Z::ONE {
         return Err(MathError::InvalidIntegerInput(format!(
             "The value {n} was provided for parameter n of the function sample_z.
-            This function expects this input to be bigger than 1."
+            This function expects this input to be larger than 1."
         )));
     }
     if s <= &Q::ZERO {
         return Err(MathError::InvalidIntegerInput(format!(
             "The value {s} was provided for parameter s of the function sample_z.
-            This function expects this input to be bigger than 0."
+            This function expects this input to be larger than 0."
         )));
     }
 
@@ -240,7 +240,7 @@ pub(crate) fn sample_d_precomputed_gso(
     if s < &Q::ZERO {
         return Err(MathError::InvalidIntegerInput(format!(
             "The value {s} was provided for parameter s of the function sample_z.
-            This function expects this input to be bigger than 0."
+            This function expects this input to be larger than 0."
         )));
     }
 

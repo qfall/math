@@ -66,9 +66,9 @@ mod test_trace {
         assert_eq!(Z::from(0), trace2);
     }
 
-    /// Test whether `trace` works for big values
+    /// Test whether `trace` works for large values
     #[test]
-    fn trace_big_values() {
+    fn trace_large_values() {
         let mat1 = MatZ::from_str(&format!("[[{}, 5],[1, {}]]", i64::MAX, i64::MAX)).unwrap();
         let mat2 = MatZ::from_str(&format!("[[{}]]", i64::MIN)).unwrap();
         let mat3 = MatZ::from_str(&format!("[[{}, 5],[1, {}]]", i64::MIN, i64::MAX)).unwrap();

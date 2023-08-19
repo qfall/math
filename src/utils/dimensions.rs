@@ -16,12 +16,12 @@ use crate::error::MathError;
 /// Parameters:
 /// - `string`: the string of the matrix
 ///
-/// Returns an error if the number of rows or columns is too big
+/// Returns an error if the number of rows or columns is too large
 /// (must fit into [`i64`]) or if the number of entries in rows is unequal.
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix)
-/// if the number of rows or columns is too big (must fit into [`i64`]) or
+/// if the number of rows or columns is too large (must fit into [`i64`]) or
 /// if the number of entries in rows is unequal.
 #[allow(dead_code)]
 pub(crate) fn find_matrix_dimensions<T>(matrix: &Vec<Vec<T>>) -> Result<(i64, i64), MathError> {
@@ -31,7 +31,7 @@ pub(crate) fn find_matrix_dimensions<T>(matrix: &Vec<Vec<T>>) -> Result<(i64, i6
         Ok(num_rows) => num_rows,
         _ => {
             return Err(MathError::InvalidMatrix(
-                "Number of rows is too big (must fit into [`i64`]).".to_owned(),
+                "Number of rows is too large (must fit into [`i64`]).".to_owned(),
             ))
         }
     };
@@ -49,7 +49,7 @@ pub(crate) fn find_matrix_dimensions<T>(matrix: &Vec<Vec<T>>) -> Result<(i64, i6
     match num_cols.try_into() {
         Ok(num_cols) => Ok((num_rows, num_cols)),
         _ => Err(MathError::InvalidMatrix(
-            "Number of columns is too big (must fit into [`i64`]).".to_owned(),
+            "Number of columns is too large (must fit into [`i64`]).".to_owned(),
         )),
     }
 }
@@ -89,9 +89,9 @@ mod test_find_matrix_dimensions {
         assert!(find_matrix_dimensions(&matrix1).is_err());
     }
 
-    // Ensure that dimensions can be detected in big matrices.
+    // Ensure that dimensions can be detected in large matrices.
     #[test]
-    fn big_matrix_works() {
+    fn large_matrix_works() {
         let mut s1 = "[[".to_string();
         s1.push_str(&"1,".repeat(650000));
         s1.push_str("1]]");

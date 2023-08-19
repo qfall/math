@@ -60,7 +60,7 @@ impl FromStr for MatZ {
     /// - `string`: the matrix as a string
     ///
     /// Returns a [`MatZ`] or an error, if the matrix is not formatted in a suitable way,
-    /// the number of rows or columns is too big (must fit into [`i64`]),
+    /// the number of rows or columns is too large (must fit into [`i64`]),
     /// the number of entries in rows is unequal or if the regular expression
     /// inside of the function could not be processed.
     ///

@@ -308,7 +308,7 @@ mod test_get_entry {
 
     /// Ensure that getting entries works with large numerators and denominators (larger than [`i64`]).
     #[test]
-    fn big_positive() {
+    fn large_positive() {
         let mut matrix = MatQ::new(5, 10);
         let value1 = Q::from(u64::MAX);
         let value2 = Q::from((1, u64::MAX));
@@ -340,7 +340,7 @@ mod test_get_entry {
 
     /// Ensure that getting entries works with large negative numerators and denominators (larger than [`i64`]).
     #[test]
-    fn big_negative() {
+    fn large_negative() {
         let mut matrix = MatQ::new(5, 10);
         let value1 = format!("-{}", u64::MAX);
         let value2 = format!("1/-{}", u64::MAX);

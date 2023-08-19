@@ -324,7 +324,7 @@ mod tests_from_str {
     /// Ensure that initialization with large numerators and denominators
     /// (larger than i64) works.
     #[test]
-    fn big_positive() {
+    fn large_positive() {
         let mut s1 = "1".repeat(65);
         s1.push('/');
         s1.push_str(&"1".repeat(65));
@@ -356,7 +356,7 @@ mod tests_from_str {
     /// Ensure that initialization with large negative numerators and
     /// denominators (larger than [`i64`]) works.
     #[test]
-    fn big_negative() {
+    fn large_negative() {
         let mut s1 = "-".to_string();
         s1.push_str(&"1".repeat(65));
         s1.push('/');

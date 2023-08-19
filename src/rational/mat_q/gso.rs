@@ -111,9 +111,9 @@ mod test_gso {
         }
     }
 
-    /// Ensure that gso works with big values
+    /// Ensure that gso works with large values
     #[test]
-    fn gso_big_values() {
+    fn gso_large_values() {
         let mat = MatQ::from_str(&format!(
             "[[1, {}/7, 2],[1, 2/{}, 10],[10, -2, 8]]",
             i64::MAX,

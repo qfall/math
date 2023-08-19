@@ -66,9 +66,9 @@ mod test_trace {
         assert_eq!(Zq::from((0, 2)), trace2);
     }
 
-    /// Test whether `trace` works for big values
+    /// Test whether `trace` works for large values
     #[test]
-    fn trace_big_values() {
+    fn trace_large_values() {
         let mat1 = MatZq::from_str(&format!(
             "[[{}, 5],[1, {}]] mod {}",
             i64::MAX,

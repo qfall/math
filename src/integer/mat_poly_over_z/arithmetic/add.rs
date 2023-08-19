@@ -164,7 +164,7 @@ mod test_add {
         );
     }
 
-    /// Testing addition for big numbers
+    /// Testing addition for large numbers
     #[test]
     fn add_large_numbers() {
         let a: MatPolyOverZ = MatPolyOverZ::from_str(&format!(

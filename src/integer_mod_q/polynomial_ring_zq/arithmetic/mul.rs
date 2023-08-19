@@ -203,7 +203,7 @@ mod test_mul {
         )
     }
 
-    /// Testing multiplication for big [`PolynomialRingZq`]
+    /// Testing multiplication for large [`PolynomialRingZq`]
     #[test]
     fn mul_large_numbers() {
         let modulus = ModulusPolynomialRingZq::from_str(&format!(

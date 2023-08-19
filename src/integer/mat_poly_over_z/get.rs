@@ -309,7 +309,7 @@ mod test_get_entry {
 
     /// Ensure that getting entries works with large polynomials (larger than [`i64`]).
     #[test]
-    fn big_positive() {
+    fn large_positive() {
         let mut matrix = MatPolyOverZ::new(5, 10);
         let value = PolyOverZ::from_str(&format!("2  {} 1", u64::MAX)).unwrap();
         matrix.set_entry(1, 1, value).unwrap();
@@ -333,7 +333,7 @@ mod test_get_entry {
 
     /// Ensure that getting entries works with large negative polynomials (larger than [`i64`]).
     #[test]
-    fn big_negative() {
+    fn large_negative() {
         let mut matrix = MatPolyOverZ::new(5, 10);
         let value = PolyOverZ::from_str(&format!("2  -{} 1", u64::MAX)).unwrap();
         matrix.set_entry(1, 1, value).unwrap();

@@ -45,7 +45,7 @@ impl MatZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    /// if the given `upper_bound` isn't at least bigger than `lower_bound + 1`,
+    /// if the given `upper_bound` isn't at least larger than `lower_bound + 1`,
     /// i.e. the interval size is at most `1`.
     ///
     /// # Panics ...
@@ -108,7 +108,7 @@ mod test_sample_uniform {
     }
 
     /// Checks whether matrices with at least one dimension chosen smaller than `1`
-    /// or too big for an [`i64`] results in an error.
+    /// or too large for an [`i64`] results in an error.
     #[should_panic]
     #[test]
     fn false_size() {

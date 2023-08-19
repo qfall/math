@@ -556,7 +556,7 @@ mod tests_from_str {
 
     /// Ensure that initialization with large numbers (larger than i64) works.
     #[test]
-    fn big_positive() {
+    fn large_positive() {
         assert!(Z::from_str(&"1".repeat(65)).is_ok());
     }
 
@@ -568,7 +568,7 @@ mod tests_from_str {
 
     /// Ensure that initialization with large negative numbers (larger than i64) works.
     #[test]
-    fn big_negative() {
+    fn large_negative() {
         let mut s = "-".to_string();
         s.push_str(&"1".repeat(65));
 

@@ -92,7 +92,7 @@ impl MatQ {
             // compute absolute value of fmpq entry
             let mut abs_entry = Q::default();
             unsafe { fmpq_abs(&mut abs_entry.value, &entry) };
-            // compare maximum to absolute value of entry and keep bigger one
+            // compare maximum to absolute value of entry and keep larger one
             if unsafe { fmpq_cmp(&max.value, &abs_entry.value) } < 0 {
                 max = abs_entry;
             }

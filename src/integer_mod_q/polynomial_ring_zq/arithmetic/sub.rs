@@ -199,7 +199,7 @@ mod test_sub {
         );
     }
 
-    /// Testing subtraction for big [`PolynomialRingZq`]
+    /// Testing subtraction for large [`PolynomialRingZq`]
     #[test]
     fn sub_large_numbers() {
         let modulus = ModulusPolynomialRingZq::from_str(&format!(
