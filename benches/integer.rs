@@ -43,8 +43,8 @@ pub fn mat_z_4_4() -> Result<(), MathError> {
 /// 2. multiply them together resulting in a 1x1 matrix
 /// 3. assert that the result is correct.
 pub fn mat_z_100_100() -> Result<(), MathError> {
-    let mat_a = 10 * MatZ::identity(100, 100);
-    let mut mat_b = MatZ::new(100, 100);
+    let mat_1 = 10 * MatZ::identity(100, 100);
+    let mut mat_2 = MatZ::new(100, 100);
     let mut row_vec_one = MatZ::new(1, 100);
     let mut col_vec_one = MatZ::new(100, 1);
     for i in 0..100 {
@@ -52,14 +52,14 @@ pub fn mat_z_100_100() -> Result<(), MathError> {
         row_vec_one.set_entry(0, i, 1)?;
     }
 
-    // set every entry in mat_b to u64::MAX
+    // set every entry in mat_2 to u64::MAX
     for row in 0..100 {
         for col in 0..100 {
-            mat_b.set_entry(row, col, u64::MAX)?;
+            mat_2.set_entry(row, col, u64::MAX)?;
         }
     }
 
-    let mut result: MatZ = &mat_b * &mat_b * 20 * &mat_a;
+    let mut result: MatZ = &mat_2 * &mat_2 * 20 * &mat_1;
     result = &row_vec_one * &result * &col_vec_one;
 
     assert_eq!(

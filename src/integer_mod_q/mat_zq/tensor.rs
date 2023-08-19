@@ -30,11 +30,11 @@ impl Tensor for MatZq {
     /// use qfall_math::traits::Tensor;
     /// use std::str::FromStr;
     ///
-    /// let mat_a = MatZq::from_str("[[1, 1],[2, 2]] mod 7").unwrap();
-    /// let mat_b = MatZq::from_str("[[1, 2],[3, 4]] mod 7").unwrap();
+    /// let mat_1 = MatZq::from_str("[[1, 1],[2, 2]] mod 7").unwrap();
+    /// let mat_2 = MatZq::from_str("[[1, 2],[3, 4]] mod 7").unwrap();
     ///
-    /// let mat_ab = mat_a.tensor_product(&mat_b);
-    /// let mat_ba = mat_b.tensor_product(&mat_a);
+    /// let mat_ab = mat_1.tensor_product(&mat_2);
+    /// let mat_ba = mat_2.tensor_product(&mat_1);
     ///
     /// let res_ab = "[[1, 2, 1, 2],[3, 4, 3, 4],[2, 4, 2, 4],[6, 1, 6, 1]] mod 7";
     /// let res_ba = "[[1, 1, 2, 2],[2, 2, 4, 4],[3, 3, 4, 4],[6, 6, 1, 1]] mod 7";
@@ -64,11 +64,11 @@ impl MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let mat_a = MatZq::from_str("[[1, 1],[2, 2]] mod 7").unwrap();
-    /// let mat_b = MatZq::from_str("[[1, 2],[3, 4]] mod 7").unwrap();
+    /// let mat_1 = MatZq::from_str("[[1, 1],[2, 2]] mod 7").unwrap();
+    /// let mat_2 = MatZq::from_str("[[1, 2],[3, 4]] mod 7").unwrap();
     ///
-    /// let mat_ab = mat_a.tensor_product_safe(&mat_b).unwrap();
-    /// let mat_ba = mat_b.tensor_product_safe(&mat_a).unwrap();
+    /// let mat_ab = mat_1.tensor_product_safe(&mat_2).unwrap();
+    /// let mat_ba = mat_2.tensor_product_safe(&mat_1).unwrap();
     ///
     /// let res_ab = "[[1, 2, 1, 2],[3, 4, 3, 4],[2, 4, 2, 4],[6, 1, 6, 1]] mod 7";
     /// let res_ba = "[[1, 1, 2, 2],[2, 2, 4, 4],[3, 3, 4, 4],[6, 6, 1, 1]] mod 7";

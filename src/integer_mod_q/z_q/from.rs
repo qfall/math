@@ -34,7 +34,7 @@ impl Zq {
     /// let value = Z::from(42);
     /// let modulus = Modulus::from(100);
     ///
-    /// let answer_a = Zq::from_z_modulus(&value, &modulus);
+    /// let answer_1 = Zq::from_z_modulus(&value, &modulus);
     /// ```
     pub fn from_z_modulus(value: &Z, modulus: impl Into<Modulus>) -> Self {
         let mut out = Z::default();
@@ -73,10 +73,10 @@ impl<IntegerValue: Into<Z>, IntegerModulus: Into<Modulus>> From<(IntegerValue, I
     /// use qfall_math::integer_mod_q::Zq;
     /// use qfall_math::integer::Z;
     ///
-    /// let answer_a = Zq::from((1337 + 42, 1337));
-    /// let answer_b = Zq::from((Z::from(42), 1337));
+    /// let answer_1 = Zq::from((1337 + 42, 1337));
+    /// let answer_2 = Zq::from((Z::from(42), 1337));
     ///
-    /// assert_eq!(answer_a, answer_b);
+    /// assert_eq!(answer_1, answer_2);
     /// ```
     ///
     /// # Panics ...
