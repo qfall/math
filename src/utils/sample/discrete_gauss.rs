@@ -415,6 +415,7 @@ mod test_gaussian_function {
 
 #[cfg(test)]
 mod test_sample_d {
+    use super::sample_d_precomputed_gso;
     use crate::traits::{Concatenate, GetNumColumns, GetNumRows, Pow};
     use crate::utils::sample::discrete_gauss::sample_d;
     use crate::{
@@ -423,7 +424,6 @@ mod test_sample_d {
     };
     use flint_sys::fmpz_mat::fmpz_mat_hnf;
     use std::str::FromStr;
-    use super::sample_d_precomputed_gso;
 
     /// Ensures that the doc-test compiles and runs properly.
     #[test]
