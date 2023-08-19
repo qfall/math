@@ -67,7 +67,7 @@ mod test_to_string {
         let cmp_string = "3  1 2 2 mod 5";
         let cmp = ModulusPolynomialRingZq::from_str(cmp_string).unwrap();
 
-        assert_eq!(cmp_string, cmp.to_string())
+        assert_eq!(cmp_string, cmp.to_string());
     }
 
     /// Test whether a string returned from to_string can be used to construct a [`ModulusPolynomialRingZq`]
@@ -77,6 +77,6 @@ mod test_to_string {
         let cmp = ModulusPolynomialRingZq::from_str(cmp_string).unwrap();
         let string1 = cmp.to_string();
 
-        assert!(ModulusPolynomialRingZq::from_str(&string1).is_ok())
+        assert!(ModulusPolynomialRingZq::from_str(&string1).is_ok());
     }
 }

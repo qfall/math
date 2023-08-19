@@ -239,7 +239,7 @@ mod test_sample_bits_uniform {
         assert_eq!(2, bits_1.len());
         assert!(64 > bits_1[1]);
         assert_eq!(32, bits_2.len());
-        assert!(4 > bits_2[31])
+        assert!(4 > bits_2[31]);
     }
 
     /// Check whether all necessary bits are chosen uniform at random.

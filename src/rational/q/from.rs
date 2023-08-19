@@ -790,7 +790,7 @@ mod test_from_float {
         let value = Q::from(numerator as f64 / denominator as f64);
 
         let cmp = Q::from((numerator, denominator));
-        assert_eq!(cmp, value)
+        assert_eq!(cmp, value);
     }
 
     /// Enure that the from works correctly for positive values
@@ -802,7 +802,7 @@ mod test_from_float {
         let value = Q::from(numerator as f64 / denominator as f64);
 
         let cmp = Q::from((numerator, denominator));
-        assert_eq!(cmp, value)
+        assert_eq!(cmp, value);
     }
 
     /// Ensure that the [`From`] trait is available for [`f64`] constants

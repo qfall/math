@@ -61,7 +61,7 @@ mod test_distance {
         assert_eq!(Q::from((4, 3)), b.distance(&a));
         assert_eq!(Q::from((1, 3)), b.distance(&zero));
         assert_eq!(Q::from((1, 3)), zero.distance(&b));
-        assert_eq!(Q::ZERO, b.distance(&b))
+        assert_eq!(Q::ZERO, b.distance(&b));
     }
 
     /// Checks if distance is correctly computed for large [`Q`] values

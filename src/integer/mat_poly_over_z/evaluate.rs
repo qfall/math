@@ -52,7 +52,7 @@ mod test_evaluate {
 
         let res = poly.evaluate(Z::from(3));
 
-        assert_eq!(MatZ::from_str("[[17],[150]]").unwrap(), res)
+        assert_eq!(MatZ::from_str("[[17],[150]]").unwrap(), res);
     }
 
     /// Tests if evaluate_z_ref with a reference works
@@ -63,7 +63,7 @@ mod test_evaluate {
 
         let res = poly.evaluate(&Z::from(3));
 
-        assert_eq!(MatZ::from_str("[[17],[150]]").unwrap(), res)
+        assert_eq!(MatZ::from_str("[[17],[150]]").unwrap(), res);
     }
 
     /// Tests if evaluate works with negative values
@@ -74,7 +74,7 @@ mod test_evaluate {
 
         let res = poly.evaluate(&Z::from(-5));
 
-        assert_eq!(MatZ::from_str("[[17],[-186]]").unwrap(), res)
+        assert_eq!(MatZ::from_str("[[17],[-186]]").unwrap(), res);
     }
 
     /// Tests if evaluate works with large integers
@@ -86,7 +86,7 @@ mod test_evaluate {
         let res = poly.evaluate(&Z::from_str(&"1".repeat(65)).unwrap());
 
         let res_cmp_str = format!("[[17],[{}8]]", "2".repeat(64));
-        assert_eq!(MatZ::from_str(&res_cmp_str).unwrap(), res)
+        assert_eq!(MatZ::from_str(&res_cmp_str).unwrap(), res);
     }
 
     /// Tests whether evaluation of a large entry in the matrix with a large value works
@@ -97,7 +97,7 @@ mod test_evaluate {
         let res = poly.evaluate(Z::from(u64::MAX));
 
         let res_cmp_str = format!("[[0, 1],[{}, {}]]", u64::MAX, u64::MAX);
-        assert_eq!(MatZ::from_str(&res_cmp_str).unwrap(), res)
+        assert_eq!(MatZ::from_str(&res_cmp_str).unwrap(), res);
     }
 
     /// Test if evaluate works with max of i64, i32, ...

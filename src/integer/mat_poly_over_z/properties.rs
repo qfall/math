@@ -26,7 +26,7 @@ impl MatPolyOverZ {
     ///
     /// let matrix = MatPolyOverZ::from_str("[[1  1, 0],[0, 1  1]]").unwrap();
     ///
-    /// assert!(matrix.is_identity())
+    /// assert!(matrix.is_identity());
     /// ```
     pub fn is_identity(&self) -> bool {
         1 == unsafe { fmpz_poly_mat_is_one(&self.matrix) }
@@ -44,7 +44,7 @@ impl MatPolyOverZ {
     ///
     /// let matrix = MatPolyOverZ::from_str("[[1  1, 0],[0, 1  1]]").unwrap();
     /// let check = matrix.is_square();
-    /// # assert!(check)
+    /// # assert!(check);
     /// ```
     pub fn is_square(&self) -> bool {
         self.get_num_columns() == self.get_num_rows()
@@ -62,7 +62,7 @@ impl MatPolyOverZ {
     ///
     /// let matrix = MatPolyOverZ::from_str("[[0, 0],[0, 0]]").unwrap();
     /// let check = matrix.is_zero();
-    /// # assert!(check)
+    /// # assert!(check);
     /// ```
     pub fn is_zero(&self) -> bool {
         // we have to test squareness manually, since FLINT does not check this

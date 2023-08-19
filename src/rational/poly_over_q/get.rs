@@ -85,7 +85,7 @@ mod test_get_coeff {
 
         let zero_coeff = poly.get_coeff(4).unwrap();
 
-        assert_eq!(Q::ZERO, zero_coeff)
+        assert_eq!(Q::ZERO, zero_coeff);
     }
 
     /// Test if indices smaller than `0` return an error
@@ -103,7 +103,7 @@ mod test_get_coeff {
 
         let coeff = poly.get_coeff(3).unwrap();
 
-        assert_eq!(Q::from((-3, 2)), coeff)
+        assert_eq!(Q::from((-3, 2)), coeff);
     }
 
     /// Tests if positive coefficients are returned correctly
@@ -113,7 +113,7 @@ mod test_get_coeff {
 
         let coeff = poly.get_coeff(2).unwrap();
 
-        assert_eq!(Q::from((2, 3)), coeff)
+        assert_eq!(Q::from((2, 3)), coeff);
     }
 
     /// Tests if large coefficients are returned correctly

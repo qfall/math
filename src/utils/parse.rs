@@ -206,7 +206,7 @@ mod test_matrix_to_string {
     fn working_positive() {
         let cmp = MatZ::from_str("[[2, 1, 3],[5, 6, 7]]").unwrap();
 
-        assert_eq!("[[2, 1, 3],[5, 6, 7]]", matrix_to_string(&cmp))
+        assert_eq!("[[2, 1, 3],[5, 6, 7]]", matrix_to_string(&cmp));
     }
 
     /// Tests whether a matrix with negative entries works in a roundtrip
@@ -241,6 +241,6 @@ mod test_matrix_to_string {
 
         let cmp_string2 = matrix_to_string(&cmp);
 
-        assert!(MatZ::from_str(&cmp_string2).is_ok())
+        assert!(MatZ::from_str(&cmp_string2).is_ok());
     }
 }

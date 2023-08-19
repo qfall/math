@@ -53,7 +53,7 @@ mod test_to_string {
     fn working_large_positive() {
         let cmp = Zq::from_str(&format!("{} mod {}", u64::MAX, u128::MAX)).unwrap();
 
-        assert_eq!(format!("{} mod {}", u64::MAX, u128::MAX), cmp.to_string())
+        assert_eq!(format!("{} mod {}", u64::MAX, u128::MAX), cmp.to_string());
     }
 
     /// Tests whether a large integer works in a roundtrip
@@ -62,7 +62,7 @@ mod test_to_string {
         let cmp = Zq::from_str(&format!("-{} mod {}", u64::MAX, u128::MAX)).unwrap();
         let diff = u128::MAX - u64::MAX as u128;
 
-        assert_eq!(format!("{diff} mod {}", u128::MAX), cmp.to_string())
+        assert_eq!(format!("{diff} mod {}", u128::MAX), cmp.to_string());
     }
 
     /// Tests whether a positive integer works in a roundtrip
@@ -70,7 +70,7 @@ mod test_to_string {
     fn working_positive() {
         let cmp = Zq::from_str("42 mod 60").unwrap();
 
-        assert_eq!("42 mod 60", cmp.to_string())
+        assert_eq!("42 mod 60", cmp.to_string());
     }
 
     /// Tests whether a negative integer works in a roundtrip
@@ -78,7 +78,7 @@ mod test_to_string {
     fn working_negative() {
         let cmp = Zq::from_str("-40 mod 3").unwrap();
 
-        assert_eq!("2 mod 3", cmp.to_string())
+        assert_eq!("2 mod 3", cmp.to_string());
     }
 
     /// Tests whether a integer that is created using a string, returns a
@@ -89,6 +89,6 @@ mod test_to_string {
 
         let cmp_string = cmp.to_string();
 
-        assert!(Zq::from_str(&cmp_string).is_ok())
+        assert!(Zq::from_str(&cmp_string).is_ok());
     }
 }

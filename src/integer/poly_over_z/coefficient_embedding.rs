@@ -40,7 +40,7 @@ impl IntoCoefficientEmbedding<MatZ> for &PolyOverZ {
     /// let poly = PolyOverZ::from_str("3  17 3 -5").unwrap();
     /// let vector = poly.into_coefficient_embedding(4);
     /// let cmp_vector = MatZ::from_str("[[17],[3],[-5],[0]]").unwrap();
-    /// assert_eq!(cmp_vector, vector)
+    /// assert_eq!(cmp_vector, vector);
     /// ```
     ///
     /// # Panics ...
@@ -89,7 +89,7 @@ impl FromCoefficientEmbedding<&MatZ> for PolyOverZ {
     /// let vector = MatZ::from_str("[[17],[3],[-5]]").unwrap();
     /// let poly = PolyOverZ::from_coefficient_embedding(&vector);
     /// let cmp_poly = PolyOverZ::from_str("3  17 3 -5").unwrap();
-    /// assert_eq!(cmp_poly, poly)
+    /// assert_eq!(cmp_poly, poly);
     /// ```
     ///
     /// # Panics ...
@@ -121,7 +121,7 @@ mod test_into_coefficient_embedding {
         let vector = poly.into_coefficient_embedding(3);
 
         let cmp_vector = MatZ::from_str(&format!("[[17],[{}],[{}]]", i64::MAX, i64::MIN)).unwrap();
-        assert_eq!(cmp_vector, vector)
+        assert_eq!(cmp_vector, vector);
     }
 
     /// Ensure that the function panics if the the provided size is too small.
@@ -150,7 +150,7 @@ mod test_from_coefficient_embedding {
         let poly = PolyOverZ::from_coefficient_embedding(&vector);
 
         let cmp_poly = PolyOverZ::from_str(&format!("3  17 {} {}", i64::MAX, i64::MIN)).unwrap();
-        assert_eq!(cmp_poly, poly)
+        assert_eq!(cmp_poly, poly);
     }
 
     /// Ensure that the function panics if the provided matrix is not a column vector.

@@ -162,7 +162,7 @@ mod test_concatenate {
             u64::MAX
         ))
         .unwrap();
-        assert_eq!(cmp_mat, mat_vertical)
+        assert_eq!(cmp_mat, mat_vertical);
     }
 
     /// Ensure that horizontal concatenation works correctly
@@ -184,6 +184,6 @@ mod test_concatenate {
             u64::MAX
         ))
         .unwrap();
-        assert_eq!(cmp_mat, mat_horizontal)
+        assert_eq!(cmp_mat, mat_horizontal);
     }
 }

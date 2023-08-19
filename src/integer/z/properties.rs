@@ -27,7 +27,7 @@ impl Z {
     /// use qfall_math::integer::Z;
     ///
     /// let value = Z::ZERO;
-    /// assert!(value.is_zero())
+    /// assert!(value.is_zero());
     /// ```
     pub fn is_zero(&self) -> bool {
         1 == unsafe { fmpz_is_zero(&self.value) }
@@ -42,7 +42,7 @@ impl Z {
     /// use qfall_math::integer::Z;
     ///
     /// let value = Z::ONE;
-    /// assert!(value.is_one())
+    /// assert!(value.is_one());
     /// ```
     pub fn is_one(&self) -> bool {
         1 == unsafe { fmpz_is_one(&self.value) }
@@ -57,7 +57,7 @@ impl Z {
     /// use qfall_math::integer::Z;
     ///
     /// let value = Z::from(17);
-    /// assert!(value.is_prime())
+    /// assert!(value.is_prime());
     /// ```
     pub fn is_prime(&self) -> bool {
         1 == unsafe { fmpz_is_prime(&self.value) }

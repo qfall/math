@@ -143,6 +143,6 @@ mod test_to_string {
 
         let cmp_string2 = cmp.to_string();
 
-        assert!(MatPolyOverZ::from_str(&cmp_string2).is_ok())
+        assert!(MatPolyOverZ::from_str(&cmp_string2).is_ok());
     }
 }

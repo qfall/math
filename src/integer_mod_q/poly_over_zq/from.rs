@@ -326,7 +326,7 @@ mod test_from_str {
     /// error
     #[test]
     fn modulus_zero_throws_error() {
-        assert!(PolyOverZq::from_str("4  0 1 -2 3 mod 0").is_err())
+        assert!(PolyOverZq::from_str("4  0 1 -2 3 mod 0").is_err());
     }
 
     /// tests whether a falsely formatted string (several modulus) returns

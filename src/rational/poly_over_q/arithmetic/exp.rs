@@ -53,7 +53,7 @@ mod test_exp_series {
         assert_eq!(fac_value, poly.get_coeff(0).unwrap());
         for i in 1..length {
             fac_value = fac_value * Q::from((1, i));
-            assert_eq!(fac_value, poly.get_coeff(i).unwrap())
+            assert_eq!(fac_value, poly.get_coeff(i).unwrap());
         }
     }
 

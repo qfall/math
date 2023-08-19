@@ -57,7 +57,7 @@ mod test_to_string {
         let cmp_string = "5  0 1 2/5 -3/2 1";
         let cmp = PolyOverQ::from_str(cmp_string).unwrap();
 
-        assert_eq!(cmp_string, cmp.to_string())
+        assert_eq!(cmp_string, cmp.to_string());
     }
 
     /// Tests whether a polynomial that is created using a string, returns a
@@ -69,6 +69,6 @@ mod test_to_string {
 
         let cmp_string2 = cmp.to_string();
 
-        assert!(PolyOverQ::from_str(&cmp_string2).is_ok())
+        assert!(PolyOverQ::from_str(&cmp_string2).is_ok());
     }
 }

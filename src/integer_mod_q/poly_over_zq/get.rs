@@ -156,7 +156,7 @@ mod test_get_coeff_zq_modulus {
 
         let zero_coeff: Zq = poly.get_coeff(4).unwrap();
 
-        assert_eq!(modulus, zero_coeff.modulus)
+        assert_eq!(modulus, zero_coeff.modulus);
     }
 
     /// Ensure that the [`Modulus`] is transferred correctly when accessing an index in bounds
@@ -169,7 +169,7 @@ mod test_get_coeff_zq_modulus {
 
         let third_coeff: Zq = poly.get_coeff(3).unwrap();
 
-        assert_eq!(modulus, third_coeff.modulus)
+        assert_eq!(modulus, third_coeff.modulus);
     }
 }
 
@@ -187,7 +187,7 @@ mod test_get_coeff_z {
 
         let zero_coeff = poly.get_coeff(4).unwrap();
 
-        assert_eq!(Z::ZERO, zero_coeff)
+        assert_eq!(Z::ZERO, zero_coeff);
     }
 
     /// Tests if positive coefficients are returned correctly
@@ -199,7 +199,7 @@ mod test_get_coeff_z {
 
         let coeff = poly.get_coeff(2).unwrap();
 
-        assert_eq!(Z::from(2), coeff)
+        assert_eq!(Z::from(2), coeff);
     }
 
     /// Tests if large coefficients are returned correctly

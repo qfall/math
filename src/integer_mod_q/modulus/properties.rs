@@ -22,7 +22,7 @@ impl Modulus {
     /// use qfall_math::integer_mod_q::Modulus;
     ///
     /// let modulus = Modulus::from(17);
-    /// assert!(modulus.is_prime())
+    /// assert!(modulus.is_prime());
     /// ```
     pub fn is_prime(&self) -> bool {
         1 == unsafe { fmpz_is_prime(&self.get_fmpz_mod_ctx_struct().n[0]) }
@@ -37,13 +37,13 @@ mod test_is_prime {
     #[test]
     fn modulus_is_prime() {
         let modulus = Modulus::from(2_i32.pow(16) + 1);
-        assert!(modulus.is_prime())
+        assert!(modulus.is_prime());
     }
 
     /// Ensure that if a [`Modulus`] is instantiated with a non-prime, `false` is returned
     #[test]
     fn modulus_is_not_prime() {
         let modulus = Modulus::from(2_i32.pow(16));
-        assert!(!modulus.is_prime())
+        assert!(!modulus.is_prime());
     }
 }

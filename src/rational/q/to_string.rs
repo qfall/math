@@ -69,7 +69,7 @@ mod test_to_string {
     fn working_large_positive_nom() {
         let cmp = Q::from(u64::MAX);
 
-        assert_eq!(u64::MAX.to_string(), cmp.to_string())
+        assert_eq!(u64::MAX.to_string(), cmp.to_string());
     }
 
     /// Tests whether a large negative rational works in a roundtrip
@@ -77,7 +77,7 @@ mod test_to_string {
     fn working_large_negative_nom() {
         let cmp = Q::from_str(&format!("-{}", u64::MAX)).unwrap();
 
-        assert_eq!(format!("-{}", u64::MAX), cmp.to_string())
+        assert_eq!(format!("-{}", u64::MAX), cmp.to_string());
     }
 
     /// Tests whether a large denominator works in a roundtrip
@@ -85,7 +85,7 @@ mod test_to_string {
     fn working_large_positive_den() {
         let cmp = Q::from_str(&format!("1/{}", u64::MAX)).unwrap();
 
-        assert_eq!(format!("1/{}", u64::MAX), cmp.to_string())
+        assert_eq!(format!("1/{}", u64::MAX), cmp.to_string());
     }
 
     /// Tests whether a large negative denominator works in a roundtrip
@@ -93,7 +93,7 @@ mod test_to_string {
     fn working_large_negative_den() {
         let cmp = Q::from_str(&format!("1/-{}", u64::MAX)).unwrap();
 
-        assert_eq!(format!("-1/{}", u64::MAX), cmp.to_string())
+        assert_eq!(format!("-1/{}", u64::MAX), cmp.to_string());
     }
 
     /// Tests whether a positive rational works in a roundtrip
@@ -101,7 +101,7 @@ mod test_to_string {
     fn working_positive() {
         let cmp = Q::from((42, 235));
 
-        assert_eq!("42/235", cmp.to_string())
+        assert_eq!("42/235", cmp.to_string());
     }
 
     /// Tests whether a negative rational works in a roundtrip
@@ -109,7 +109,7 @@ mod test_to_string {
     fn working_negative() {
         let cmp = Q::from((-42, 235));
 
-        assert_eq!("-42/235", cmp.to_string())
+        assert_eq!("-42/235", cmp.to_string());
     }
 
     /// Tests whether a rational that is created using a string, returns a
@@ -120,6 +120,6 @@ mod test_to_string {
 
         let cmp_string2 = cmp.to_string();
 
-        assert!(Q::from_str(&cmp_string2).is_ok())
+        assert!(Q::from_str(&cmp_string2).is_ok());
     }
 }

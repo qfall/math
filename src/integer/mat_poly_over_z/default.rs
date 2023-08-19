@@ -134,7 +134,7 @@ mod test_identity {
                 if i != j {
                     assert!(matrix.get_entry(i, j).unwrap().is_zero());
                 } else {
-                    assert!(matrix.get_entry(i, j).unwrap().is_one())
+                    assert!(matrix.get_entry(i, j).unwrap().is_one());
                 }
             }
         }
@@ -150,7 +150,7 @@ mod test_identity {
                 if i != j {
                     assert!(matrix.get_entry(i, j).unwrap().is_zero());
                 } else {
-                    assert!(matrix.get_entry(i, j).unwrap().is_one())
+                    assert!(matrix.get_entry(i, j).unwrap().is_one());
                 }
             }
         }
@@ -162,7 +162,7 @@ mod test_identity {
                 if i != j {
                     assert!(matrix.get_entry(i, j).unwrap().is_zero());
                 } else {
-                    assert!(matrix.get_entry(i, j).unwrap().is_one())
+                    assert!(matrix.get_entry(i, j).unwrap().is_one());
                 }
             }
         }

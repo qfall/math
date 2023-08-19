@@ -35,7 +35,7 @@ mod test_serialize {
         let q = Q::from((17, 3));
         let cmp_string = "{\"value\":\"17/3\"}";
 
-        assert_eq!(cmp_string, serde_json::to_string(&q).unwrap())
+        assert_eq!(cmp_string, serde_json::to_string(&q).unwrap());
     }
 
     /// Tests whether the serialization of a negative [`Q`] works.
@@ -44,7 +44,7 @@ mod test_serialize {
         let q = Q::from((-17, 3));
         let cmp_string = "{\"value\":\"-17/3\"}";
 
-        assert_eq!(cmp_string, serde_json::to_string(&q).unwrap())
+        assert_eq!(cmp_string, serde_json::to_string(&q).unwrap());
     }
 
     /// Tests whether the serialization of a positive large [`Q`] works.
@@ -54,7 +54,7 @@ mod test_serialize {
         let q = Q::from_str(&val_str).unwrap();
         let cmp_string = format!("{{\"value\":\"{val_str}\"}}");
 
-        assert_eq!(cmp_string, serde_json::to_string(&q).unwrap())
+        assert_eq!(cmp_string, serde_json::to_string(&q).unwrap());
     }
 
     /// Tests whether the serialization of a negative large [`Q`] works.
@@ -64,7 +64,7 @@ mod test_serialize {
         let q = Q::from_str(&val_str).unwrap();
         let cmp_string = format!("{{\"value\":\"{val_str}\"}}");
 
-        assert_eq!(cmp_string, serde_json::to_string(&q).unwrap())
+        assert_eq!(cmp_string, serde_json::to_string(&q).unwrap());
     }
 }
 
@@ -77,14 +77,14 @@ mod test_deserialize {
     #[test]
     fn deserialize_positive() {
         let q_string = "{\"value\":\"17/3\"}";
-        assert_eq!(Q::from((17, 3)), serde_json::from_str(q_string).unwrap())
+        assert_eq!(Q::from((17, 3)), serde_json::from_str(q_string).unwrap());
     }
 
     /// Tests whether the deserialization of a negative [`Q`] works.
     #[test]
     fn deserialize_negative() {
         let q_string = "{\"value\":\"-17/3\"}";
-        assert_eq!(Q::from((-17, 3)), serde_json::from_str(q_string).unwrap())
+        assert_eq!(Q::from((-17, 3)), serde_json::from_str(q_string).unwrap());
     }
 
     /// Tests whether the deserialization of a positive large [`Q`] works.

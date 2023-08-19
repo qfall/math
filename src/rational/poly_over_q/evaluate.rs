@@ -58,7 +58,7 @@ mod test_evaluate {
 
         let res = poly.evaluate(Q::from((7, 3)));
 
-        assert_eq!(Q::from((5, 3)), res)
+        assert_eq!(Q::from((5, 3)), res);
     }
 
     /// Tests if evaluate works with negative values
@@ -68,7 +68,7 @@ mod test_evaluate {
 
         let res = poly.evaluate(Q::from((-7, 3)));
 
-        assert_eq!(Q::from((1, 3)), res)
+        assert_eq!(Q::from((1, 3)), res);
     }
 
     /// Tests if evaluate works with large rationals
@@ -81,7 +81,7 @@ mod test_evaluate {
 
         let res = poly.evaluate(Q::from_str(&q_str_rev).unwrap());
 
-        assert_eq!(Q::ONE, res)
+        assert_eq!(Q::ONE, res);
     }
 }
 
@@ -99,7 +99,7 @@ mod test_evaluate_z {
 
         let res = poly.evaluate(Z::from(3));
 
-        assert_eq!(Q::from((13, 7)), res)
+        assert_eq!(Q::from((13, 7)), res);
     }
 
     /// Tests if evaluate works with negative values
@@ -109,7 +109,7 @@ mod test_evaluate_z {
 
         let res = poly.evaluate(&Z::from(-5));
 
-        assert_eq!(Q::from((-3, 7)), res)
+        assert_eq!(Q::from((-3, 7)), res);
     }
 
     /// Test if evaluate works with large nominators and denominators
@@ -121,7 +121,7 @@ mod test_evaluate_z {
 
         let res = poly.evaluate(&Z::from(i64::MIN));
 
-        assert_eq!(Q::default(), res)
+        assert_eq!(Q::default(), res);
     }
 
     /// Test if evaluate works with max of [`i64`], [`i32`], ...
@@ -176,7 +176,7 @@ mod test_evaluate_q {
 
         let res = poly.evaluate(&Q::from((7, 3)));
 
-        assert_eq!(Q::from((5, 3)), res)
+        assert_eq!(Q::from((5, 3)), res);
     }
 
     /// Tests if evaluate works with negative values
@@ -186,7 +186,7 @@ mod test_evaluate_q {
 
         let res = poly.evaluate(&Q::from((-7, 3)));
 
-        assert_eq!(Q::from((1, 3)), res)
+        assert_eq!(Q::from((1, 3)), res);
     }
 
     /// Tests if evaluate works with large rationals
@@ -199,6 +199,6 @@ mod test_evaluate_q {
 
         let res = poly.evaluate(&Q::from_str(&q_str_rev).unwrap());
 
-        assert_eq!(Q::ONE, res)
+        assert_eq!(Q::ONE, res);
     }
 }

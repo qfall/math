@@ -22,7 +22,7 @@ impl MatZ {
     /// use qfall_math::integer::MatZ;
     ///
     /// let value = MatZ::identity(2, 2);
-    /// assert!(value.is_identity())
+    /// assert!(value.is_identity());
     /// ```
     pub fn is_identity(&self) -> bool {
         1 == unsafe { fmpz_mat_is_one(&self.matrix) }
@@ -38,7 +38,7 @@ impl MatZ {
     /// use std::str::FromStr;
     ///
     /// let value = MatZ::from_str("[[4, 0],[0, 1]]").unwrap();
-    /// assert!(value.is_square())
+    /// assert!(value.is_square());
     /// ```
     pub fn is_square(&self) -> bool {
         1 == unsafe { fmpz_mat_is_square(&self.matrix) }
@@ -54,7 +54,7 @@ impl MatZ {
     /// use std::str::FromStr;
     ///
     /// let value = MatZ::from_str("[[0, 0],[0, 0]]").unwrap();
-    /// assert!(value.is_zero())
+    /// assert!(value.is_zero());
     /// ```
     pub fn is_zero(&self) -> bool {
         1 == unsafe { fmpz_mat_is_zero(&self.matrix) }

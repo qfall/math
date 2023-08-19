@@ -136,7 +136,7 @@ mod test_clone {
         let a = b.clone();
 
         assert_eq!(GetEntry::<Z>::get_entry(&a, 1, 1).unwrap(), 1.into());
-        assert_eq!(GetEntry::<Z>::get_entry(&a, 1, 0).unwrap(), 0.into())
+        assert_eq!(GetEntry::<Z>::get_entry(&a, 1, 0).unwrap(), 0.into());
     }
 
     /// Check if large modulus is stored separately and therefore cloned deeply

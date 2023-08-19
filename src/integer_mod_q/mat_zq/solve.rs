@@ -145,7 +145,7 @@ mod test_solve {
 
         let x = mat.solve_gaussian_elimination(&y).unwrap();
 
-        assert_eq!(y, mat * x)
+        assert_eq!(y, mat * x);
     }
 
     /// Ensure that a solution is found, even if the matrix contains a
@@ -169,7 +169,7 @@ mod test_solve {
         let y = MatZq::from_str("[[0],[0]] mod 8").unwrap();
         let x = mat.solve_gaussian_elimination(&y).unwrap();
 
-        assert_eq!(MatZq::new(3, 1, mat.get_mod()), x)
+        assert_eq!(MatZq::new(3, 1, mat.get_mod()), x);
     }
 
     /// Ensure that for different moduli the function panics
@@ -223,6 +223,6 @@ mod test_find_invertible_entry_column {
         assert_eq!(Z::from(5), entry.get_value());
 
         let invert = find_invertible_entry_column(&mat, 0, [0, 1].to_vec());
-        assert!(invert.is_none())
+        assert!(invert.is_none());
     }
 }

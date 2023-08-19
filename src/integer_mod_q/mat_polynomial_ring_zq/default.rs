@@ -158,7 +158,7 @@ mod test_identity {
                 if i != j {
                     assert!(entry.is_zero());
                 } else {
-                    assert!(entry.is_one())
+                    assert!(entry.is_one());
                 }
             }
         }
@@ -176,7 +176,7 @@ mod test_identity {
                 if i != j {
                     assert!(entry.is_zero());
                 } else {
-                    assert!(entry.is_one())
+                    assert!(entry.is_one());
                 }
             }
         }
@@ -189,7 +189,7 @@ mod test_identity {
                 if i != j {
                     assert!(entry.is_zero());
                 } else {
-                    assert!(entry.is_one())
+                    assert!(entry.is_one());
                 }
             }
         }
@@ -209,7 +209,7 @@ mod test_identity {
                 if i != j {
                     assert!(entry.is_zero());
                 } else {
-                    assert!(entry.is_one())
+                    assert!(entry.is_one());
                 }
             }
         }

@@ -488,7 +488,7 @@ mod test_get_submatrix {
 
         let sub_mat = mat.get_submatrix(0, 4, 0, 4).unwrap();
 
-        assert_eq!(mat, sub_mat)
+        assert_eq!(mat, sub_mat);
     }
 
     /// Ensures that a single matrix entry can be retrieved.
@@ -499,7 +499,7 @@ mod test_get_submatrix {
         let sub_mat = mat.get_submatrix(0, 0, 0, 0).unwrap();
 
         let cmp_mat = MatZ::identity(1, 1);
-        assert_eq!(cmp_mat, sub_mat)
+        assert_eq!(cmp_mat, sub_mat);
     }
 
     /// Ensures that the dimensions of the submatrix are correct.
@@ -510,7 +510,7 @@ mod test_get_submatrix {
         let sub_mat = mat.get_submatrix(1, 37, 0, 29).unwrap();
 
         assert_eq!(37, sub_mat.get_num_rows());
-        assert_eq!(30, sub_mat.get_num_columns())
+        assert_eq!(30, sub_mat.get_num_columns());
     }
 
     /// Ensures that a submatrix can be correctly retrieved for a matrix with large
@@ -522,7 +522,7 @@ mod test_get_submatrix {
         let sub_mat = mat.get_submatrix(0, 1, 0, 1).unwrap();
 
         let cmp_mat = MatZ::from_str(&format!("[[{}, 2],[1, {}]]", u64::MAX, i64::MIN)).unwrap();
-        assert_eq!(cmp_mat, sub_mat)
+        assert_eq!(cmp_mat, sub_mat);
     }
 
     /// Ensures that an error is returned if coordinates are addressed that are not

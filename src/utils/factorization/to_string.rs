@@ -64,7 +64,7 @@ mod test_to_string {
     fn working_large_positive() {
         let fac = Factorization::from(u64::MAX);
 
-        assert_eq!(format!("[({}, 1)]", u64::MAX), fac.to_string())
+        assert_eq!(format!("[({}, 1)]", u64::MAX), fac.to_string());
     }
 
     /// Tests whether a large negative integer works in a roundtrip.
@@ -72,7 +72,7 @@ mod test_to_string {
     fn working_large_negative() {
         let fac = Factorization::from(i64::MIN);
 
-        assert_eq!(format!("[({}, 1)]", i64::MIN), fac.to_string())
+        assert_eq!(format!("[({}, 1)]", i64::MIN), fac.to_string());
     }
 
     /// Tests whether a positive integer works in a roundtrip.
@@ -80,7 +80,7 @@ mod test_to_string {
     fn working_positive() {
         let fac = Factorization::from(42);
 
-        assert_eq!("[(42, 1)]", fac.to_string())
+        assert_eq!("[(42, 1)]", fac.to_string());
     }
 
     /// Tests whether a negative integer works in a roundtrip.
@@ -90,7 +90,7 @@ mod test_to_string {
 
         println!("{}", fac);
 
-        assert_eq!("[(-42, 1)]", fac.to_string())
+        assert_eq!("[(-42, 1)]", fac.to_string());
     }
 
     /// Tests whether to_string works for more than one entry.
@@ -100,7 +100,7 @@ mod test_to_string {
 
         fac.refine();
 
-        assert_eq!("[(3, 1), (20, 3)]", fac.to_string())
+        assert_eq!("[(3, 1), (20, 3)]", fac.to_string());
     }
 
     /// Tests whether to_string works for refined negative values.
@@ -110,6 +110,6 @@ mod test_to_string {
 
         fac.refine();
 
-        assert_eq!("[(-1, 1), (3, 1), (20, 3)]", fac.to_string())
+        assert_eq!("[(-1, 1), (3, 1), (20, 3)]", fac.to_string());
     }
 }

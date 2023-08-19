@@ -281,7 +281,7 @@ mod test_from_trait {
         let zq_1 = Zq::from((10, 15));
         let zq_2 = Zq::from((Z::from(10), Modulus::from(15)));
 
-        assert_eq!(zq_1, zq_2)
+        assert_eq!(zq_1, zq_2);
     }
 
     /// Test with large value and modulus (FLINT uses pointer representation).
@@ -290,7 +290,7 @@ mod test_from_trait {
         let zq_1 = Zq::from((u64::MAX - 1, u64::MAX));
         let zq_2 = Zq::from((&Z::from(u64::MAX - 1), Modulus::from(u64::MAX)));
 
-        assert_eq!(zq_1, zq_2)
+        assert_eq!(zq_1, zq_2);
     }
 
     /// Test with zero modulus (not valid)

@@ -57,7 +57,7 @@ mod test_to_string {
         let cmp_string = "3  1 2 -3";
         let cmp = PolyOverZ::from_str(cmp_string).unwrap();
 
-        assert_eq!(cmp_string, cmp.to_string())
+        assert_eq!(cmp_string, cmp.to_string());
     }
 
     /// Tests whether a polynomial that is created using a string, returns a
@@ -69,7 +69,7 @@ mod test_to_string {
 
         let cmp_string2 = cmp.to_string();
 
-        assert!(PolyOverZ::from_str(&cmp_string2).is_ok())
+        assert!(PolyOverZ::from_str(&cmp_string2).is_ok());
     }
 
     /// Tests whether large entries are correctly converted using to_string
@@ -80,6 +80,6 @@ mod test_to_string {
 
         let cmp_string2 = cmp.to_string();
 
-        assert!(PolyOverZ::from_str(&cmp_string2).is_ok())
+        assert!(PolyOverZ::from_str(&cmp_string2).is_ok());
     }
 }

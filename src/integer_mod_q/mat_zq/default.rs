@@ -111,7 +111,7 @@ mod test_identity {
                 if i != j {
                     assert_eq!(Z::ZERO, matrix.get_entry(i, j).unwrap());
                 } else {
-                    assert_eq!(Z::ONE, matrix.get_entry(i, j).unwrap())
+                    assert_eq!(Z::ONE, matrix.get_entry(i, j).unwrap());
                 }
             }
         }
@@ -127,7 +127,7 @@ mod test_identity {
                 if i != j {
                     assert_eq!(Z::ZERO, matrix.get_entry(i, j).unwrap());
                 } else {
-                    assert_eq!(Z::ONE, matrix.get_entry(i, j).unwrap())
+                    assert_eq!(Z::ONE, matrix.get_entry(i, j).unwrap());
                 }
             }
         }
@@ -139,7 +139,7 @@ mod test_identity {
                 if i != j {
                     assert_eq!(Z::ZERO, matrix.get_entry(i, j).unwrap());
                 } else {
-                    assert_eq!(Z::ONE, matrix.get_entry(i, j).unwrap())
+                    assert_eq!(Z::ONE, matrix.get_entry(i, j).unwrap());
                 }
             }
         }
@@ -155,7 +155,7 @@ mod test_identity {
                 if i != j {
                     assert_eq!(Z::ZERO, matrix.get_entry(i, j).unwrap());
                 } else {
-                    assert_eq!(Z::ONE, matrix.get_entry(i, j).unwrap())
+                    assert_eq!(Z::ONE, matrix.get_entry(i, j).unwrap());
                 }
             }
         }

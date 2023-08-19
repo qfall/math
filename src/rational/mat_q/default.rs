@@ -127,7 +127,7 @@ mod test_set_one {
                 if i != j {
                     assert_eq!(Q::ZERO, matrix.get_entry(i, j).unwrap());
                 } else {
-                    assert_eq!(Q::ONE, matrix.get_entry(i, j).unwrap())
+                    assert_eq!(Q::ONE, matrix.get_entry(i, j).unwrap());
                 }
             }
         }
@@ -143,7 +143,7 @@ mod test_set_one {
                 if i != j {
                     assert_eq!(Q::ZERO, matrix.get_entry(i, j).unwrap());
                 } else {
-                    assert_eq!(Q::ONE, matrix.get_entry(i, j).unwrap())
+                    assert_eq!(Q::ONE, matrix.get_entry(i, j).unwrap());
                 }
             }
         }
@@ -155,7 +155,7 @@ mod test_set_one {
                 if i != j {
                     assert_eq!(Q::ZERO, matrix.get_entry(i, j).unwrap());
                 } else {
-                    assert_eq!(Q::ONE, matrix.get_entry(i, j).unwrap())
+                    assert_eq!(Q::ONE, matrix.get_entry(i, j).unwrap());
                 }
             }
         }

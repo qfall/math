@@ -193,7 +193,7 @@ mod test_concatenate {
             MatPolyOverZ::from_str("[[4  2 58 1 1, 1  42],[0, 2  1 2],[1  27, 2  10 5]]").unwrap();
         let poly_ring_mat_cmp = MatPolynomialRingZq::from((&poly_mat_cmp, &modulus));
 
-        assert_eq!(poly_ring_mat_cmp, mat_vertical)
+        assert_eq!(poly_ring_mat_cmp, mat_vertical);
     }
 
     /// Ensure that horizontal concatenation works correctly.
@@ -217,6 +217,6 @@ mod test_concatenate {
             MatPolyOverZ::from_str("[[4  2 58 1 1, 1  42, 1  27],[0, 2  1 2, 2  10 5]]").unwrap();
         let poly_ring_mat_cmp = MatPolynomialRingZq::from((&poly_mat_cmp, &modulus));
 
-        assert_eq!(poly_ring_mat_cmp, mat_vertical)
+        assert_eq!(poly_ring_mat_cmp, mat_vertical);
     }
 }

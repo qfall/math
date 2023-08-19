@@ -68,7 +68,7 @@ mod test_to_string {
         let cmp_string = "1".repeat(65);
         let cmp = Modulus::from_str(&cmp_string).unwrap();
 
-        assert_eq!(cmp_string, cmp.to_string())
+        assert_eq!(cmp_string, cmp.to_string());
     }
 
     /// Tests whether a positive modulus works in a roundtrip
@@ -77,7 +77,7 @@ mod test_to_string {
         let cmp_string = "42";
         let cmp = Modulus::from_str(cmp_string).unwrap();
 
-        assert_eq!(cmp_string, cmp.to_string())
+        assert_eq!(cmp_string, cmp.to_string());
     }
 
     /// Tests whether a modulus that is created using a string, returns a
@@ -89,6 +89,6 @@ mod test_to_string {
 
         let cmp_string2 = cmp.to_string();
 
-        assert!(Modulus::from_str(&cmp_string2).is_ok())
+        assert!(Modulus::from_str(&cmp_string2).is_ok());
     }
 }

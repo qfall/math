@@ -46,7 +46,7 @@ impl MatQ {
     /// use std::str::FromStr;
     ///
     /// let value = MatQ::from_str("[[4/7, 0],[5/8, 1/9]]").unwrap();
-    /// assert!(value.is_square())
+    /// assert!(value.is_square());
     /// ```
     pub fn is_square(&self) -> bool {
         1 == unsafe { fmpq_mat_is_square(&self.matrix) }

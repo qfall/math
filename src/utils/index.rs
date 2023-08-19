@@ -185,7 +185,7 @@ mod test_eval_index {
     /// Tests that negative indices are not accepted
     #[test]
     fn is_err_negative() {
-        assert!(evaluate_index(i32::MIN).is_err())
+        assert!(evaluate_index(i32::MIN).is_err());
     }
 
     /// Tests that the function can be called with several types

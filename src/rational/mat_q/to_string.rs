@@ -82,7 +82,7 @@ mod test_to_string {
     fn working_positive() {
         let cmp = MatQ::from_str("[[2, 1, 2/3],[5, 6, 14/7]]").unwrap();
 
-        assert_eq!("[[2, 1, 2/3],[5, 6, 2]]", cmp.to_string())
+        assert_eq!("[[2, 1, 2/3],[5, 6, 2]]", cmp.to_string());
     }
 
     /// Tests whether a matrix with negative nominators and denominators works
@@ -91,7 +91,7 @@ mod test_to_string {
     fn working_negative() {
         let cmp = MatQ::from_str("[[-2, 1, -3/8],[5, 1/-6, -14/7]]").unwrap();
 
-        assert_eq!("[[-2, 1, -3/8],[5, -1/6, -2]]", cmp.to_string())
+        assert_eq!("[[-2, 1, -3/8],[5, -1/6, -2]]", cmp.to_string());
     }
 
     /// Tests whether a large matrix works in a roundtrip
@@ -115,6 +115,6 @@ mod test_to_string {
 
         let cmp_string2 = cmp.to_string();
 
-        assert!(MatQ::from_str(&cmp_string2).is_ok())
+        assert!(MatQ::from_str(&cmp_string2).is_ok());
     }
 }

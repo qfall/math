@@ -50,7 +50,7 @@ impl MatZq {
     /// use std::str::FromStr;
     ///
     /// let value = MatZq::from_str("[[4, 0],[0, 1]] mod 17").unwrap();
-    /// assert!(value.is_square())
+    /// assert!(value.is_square());
     /// ```
     pub fn is_square(&self) -> bool {
         1 == unsafe { fmpz_mod_mat_is_square(&self.matrix) }
@@ -66,7 +66,7 @@ impl MatZq {
     /// use std::str::FromStr;
     ///
     /// let value = MatZq::from_str("[[0, 0],[0, 0]] mod 17").unwrap();
-    /// assert!(value.is_zero())
+    /// assert!(value.is_zero());
     /// ```
     pub fn is_zero(&self) -> bool {
         1 == unsafe { fmpz_mod_mat_is_zero(&self.matrix) }

@@ -64,7 +64,7 @@ mod test_to_string {
         let cmp_string = "3  1 2 2 mod 5";
         let cmp = PolyOverZq::from_str(cmp_string).unwrap();
 
-        assert_eq!(cmp_string, cmp.to_string())
+        assert_eq!(cmp_string, cmp.to_string());
     }
 
     /// Tests whether a polynomial that is created using a string, returns a
@@ -76,7 +76,7 @@ mod test_to_string {
 
         let cmp_string2 = cmp.to_string();
 
-        assert!(PolyOverZq::from_str(&cmp_string2).is_ok())
+        assert!(PolyOverZq::from_str(&cmp_string2).is_ok());
     }
 
     /// Test applied modulus if initialized with negative values
@@ -85,7 +85,7 @@ mod test_to_string {
         let cmp_string = "3  -1 -2 -3 mod 5";
         let cmp = PolyOverZq::from_str(cmp_string).unwrap();
 
-        assert_eq!("3  4 3 2 mod 5", cmp.to_string())
+        assert_eq!("3  4 3 2 mod 5", cmp.to_string());
     }
 
     /// Tests that large entries and large moduli work with to_string()
@@ -94,6 +94,6 @@ mod test_to_string {
         let cmp_string = format!("3  1 2 {} mod 1{}", u64::MAX, u64::MAX);
         let cmp = PolyOverZq::from_str(&cmp_string).unwrap();
 
-        assert_eq!(cmp_string, cmp.to_string())
+        assert_eq!(cmp_string, cmp.to_string());
     }
 }

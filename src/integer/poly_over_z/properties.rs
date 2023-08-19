@@ -22,7 +22,7 @@ impl PolyOverZ {
     /// use std::str::FromStr;
     ///
     /// let value = PolyOverZ::from(1);
-    /// assert!(value.is_one())
+    /// assert!(value.is_one());
     /// ```
     pub fn is_one(&self) -> bool {
         1 == unsafe { fmpz_poly_is_one(&self.poly) }
@@ -38,7 +38,7 @@ impl PolyOverZ {
     /// use std::str::FromStr;
     ///
     /// let value = PolyOverZ::from(0);
-    /// assert!(value.is_zero())
+    /// assert!(value.is_zero());
     /// ```
     pub fn is_zero(&self) -> bool {
         -1 == unsafe { fmpz_poly_degree(&self.poly) }
