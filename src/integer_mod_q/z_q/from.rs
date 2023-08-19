@@ -63,8 +63,8 @@ impl<IntegerValue: Into<Z>, IntegerModulus: Into<Modulus>> From<(IntegerValue, I
     /// Create [`Zq`] from a tuple with the integer and the modulus.
     ///
     /// Parameters:
-    /// - `value_modulus_tuple` is a tuple of integers `(value, modulus)`
-    ///   The first and second element of the tuple may have different integer types.
+    /// - `value`: Defines the value of the residue class
+    /// - `modulus`: Defines the modulus by which `value` is reduced
     ///
     /// Returns the `value` mod `modulus` as a [`Zq`].
     ///
@@ -81,9 +81,9 @@ impl<IntegerValue: Into<Z>, IntegerModulus: Into<Modulus>> From<(IntegerValue, I
     ///
     /// # Panics ...
     /// - if the modulus is not greater than `1`.
-    fn from(value_modulus_tuple: (IntegerValue, IntegerModulus)) -> Self {
-        let value = value_modulus_tuple.0.into();
-        let modulus = value_modulus_tuple.1.into();
+    fn from((value, modulus): (IntegerValue, IntegerModulus)) -> Self {
+        let value = value.into();
+        let modulus = modulus.into();
 
         let mut out = Zq { value, modulus };
         out.reduce();

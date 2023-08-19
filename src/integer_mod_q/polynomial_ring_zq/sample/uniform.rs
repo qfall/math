@@ -39,7 +39,8 @@ impl PolynomialRingZq {
     ///
     /// # Panics ...
     /// - if the provided [`ModulusPolynomialRingZq`] has degree 0 or smaller.
-    pub fn sample_uniform(modulus: &ModulusPolynomialRingZq) -> Self {
+    pub fn sample_uniform(modulus: impl Into<ModulusPolynomialRingZq>) -> Self {
+        let modulus = modulus.into();
         assert!(
             modulus.get_degree() > 0,
             "ModulusPolynomial of degree 0 is insufficient to sample over."
@@ -48,9 +49,11 @@ impl PolynomialRingZq {
         let poly_z =
             PolyOverZ::sample_uniform(modulus.get_degree() - 1, 0, modulus.get_q()).unwrap();
 
+        // we do not have to reduce here, as all entries are already in the correct range
+        // hence directly setting is more efficient
         PolynomialRingZq {
             poly: poly_z,
-            modulus: modulus.clone(),
+            modulus,
         }
     }
 }

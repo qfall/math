@@ -196,8 +196,8 @@ impl<IntegerNumerator: AsInteger, IntegerDenominator: AsInteger>
     /// [`Zq`](crate::integer_mod_q), [`u32`], [`i64`] or references to these types
     ///
     /// Parameters:
-    /// - `num_den_tuple` is a tuple of integers `(numerator, denominator)`
-    ///   The first and second element of the tuple may have different integer types.
+    /// - `num`: The value of the numerator
+    /// - `den`: The value of the denominator
     ///
     /// Returns a [`Q`] or a [`MathError`]
     ///
@@ -214,10 +214,10 @@ impl<IntegerNumerator: AsInteger, IntegerDenominator: AsInteger>
     ///
     /// # Panics ...
     /// - if the denominator is zero.
-    fn from(num_den_tuple: (IntegerNumerator, IntegerDenominator)) -> Self {
+    fn from((num, den): (IntegerNumerator, IntegerDenominator)) -> Self {
         unsafe {
-            let num = num_den_tuple.0.into_fmpz();
-            let den = num_den_tuple.1.into_fmpz();
+            let num = num.into_fmpz();
+            let den = den.into_fmpz();
 
             assert_ne!(den.0, 0, "The denominator can not be zero");
 

@@ -42,13 +42,15 @@ impl MatPolynomialRingZq {
     pub fn new(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
-        modulus: &ModulusPolynomialRingZq,
+        modulus: impl Into<ModulusPolynomialRingZq>,
     ) -> Self {
         let matrix = MatPolyOverZ::new(num_rows, num_cols);
 
+        // Here we do not use the efficient from trait with ownership, as there are no
+        // values that need to be reduced.
         MatPolynomialRingZq {
             matrix,
-            modulus: modulus.clone(),
+            modulus: modulus.into(),
         }
     }
 
@@ -79,10 +81,10 @@ impl MatPolynomialRingZq {
     pub fn identity(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
-        modulus: &ModulusPolynomialRingZq,
+        modulus: impl Into<ModulusPolynomialRingZq>,
     ) -> Self {
         let matrix = MatPolyOverZ::identity(num_rows, num_cols);
-        MatPolynomialRingZq::from((&matrix, modulus))
+        MatPolynomialRingZq::from((matrix, modulus))
     }
 }
 

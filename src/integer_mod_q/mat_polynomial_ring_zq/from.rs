@@ -19,7 +19,8 @@ impl<Mod: Into<ModulusPolynomialRingZq>> From<(&MatPolyOverZ, Mod)> for MatPolyn
     /// Create a new polynomial ring matrix of type [`MatPolynomialRingZq`].
     ///
     /// Parameters:
-    /// - `value` is a tuple of `(matrix, modulus)`
+    /// - `matrix`: The polynomial matrix defining each entry
+    /// - `modulus`: The modulus that is applied to each polynomial
     ///
     /// Returns a new polynomial ring matrix.
     ///
@@ -34,8 +35,38 @@ impl<Mod: Into<ModulusPolynomialRingZq>> From<(&MatPolyOverZ, Mod)> for MatPolyn
     /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
     /// let poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
     /// ```
-    fn from((mat_poly, modulus): (&MatPolyOverZ, Mod)) -> Self {
-        Self::from_poly_over_z_modulus_polynomial_ring_zq(mat_poly, modulus)
+    fn from((matrix, modulus): (&MatPolyOverZ, Mod)) -> Self {
+        Self::from_poly_over_z_modulus_polynomial_ring_zq(matrix, modulus)
+    }
+}
+
+impl<Mod: Into<ModulusPolynomialRingZq>> From<(MatPolyOverZ, Mod)> for MatPolynomialRingZq {
+    /// Create a new polynomial ring matrix of type [`MatPolynomialRingZq`].
+    ///
+    /// Parameters:
+    /// - `matrix`: The polynomial matrix defining each entry
+    /// - `modulus`: The modulus that is applied to each polynomial
+    ///
+    /// Returns a new polynomial ring matrix.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
+    /// let poly_ring_mat = MatPolynomialRingZq::from((poly_mat, &modulus));
+    /// ```
+    fn from((matrix, modulus): (MatPolyOverZ, Mod)) -> Self {
+        let mut out = MatPolynomialRingZq {
+            matrix,
+            modulus: modulus.into(),
+        };
+        out.reduce();
+        out
     }
 }
 

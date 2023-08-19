@@ -138,7 +138,7 @@ impl MatZq {
     /// The lattice specified as `Z^m` for `m = dimension` and its center fixed to `0^m`.
     pub fn sample_d_common(
         dimension: impl TryInto<i64> + Display + Clone,
-        modulus: &Modulus,
+        modulus: impl Into<Modulus>,
         n: impl Into<Z>,
         s: impl Into<Q>,
     ) -> Result<Self, MathError> {
