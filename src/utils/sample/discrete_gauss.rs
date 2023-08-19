@@ -270,6 +270,7 @@ pub(crate) fn sample_d_precomputed_gso(
 
     Ok(out)
 }
+
 #[cfg(test)]
 mod test_sample_z {
     use super::{sample_z, Q, Z};
@@ -346,7 +347,7 @@ mod test_gaussian_function {
     use super::{gaussian_function, Q, Z};
     use crate::traits::Distance;
 
-    /// Ensures that the doc test would run properly
+    /// Ensures that the doc test would run properly.
     #[test]
     fn doc_test() {
         let sample = Z::ONE;
@@ -361,7 +362,7 @@ mod test_gaussian_function {
     }
 
     /// Checks whether the values for small values are computed appropriately
-    /// and with appropriate precision
+    /// and with appropriate precision.
     #[test]
     fn small_values() {
         let sample_0 = Z::ZERO;
@@ -386,7 +387,7 @@ mod test_gaussian_function {
     }
 
     /// Checks whether the values for large values are computed appropriately
-    /// and with appropriate precision
+    /// and with appropriate precision.
     #[test]
     fn large_values() {
         let sample = Z::from(i64::MAX);
@@ -400,7 +401,7 @@ mod test_gaussian_function {
         assert!(cmp.distance(&res) < Q::from((3, 1_000_000_000)));
     }
 
-    /// Checks whether `s = 0` results in a panic
+    /// Checks whether `s = 0` results in a panic.
     #[test]
     #[should_panic]
     fn invalid_s() {
@@ -425,7 +426,7 @@ mod test_sample_d {
 
     use super::sample_d_precomputed_gso;
 
-    /// Ensures that the doc-test compiles and runs properly
+    /// Ensures that the doc-test compiles and runs properly.
     #[test]
     fn doc_test() {
         let basis = MatZ::identity(5, 5);
@@ -439,7 +440,7 @@ mod test_sample_d {
             sample_d_precomputed_gso(&basis, &basis_gso, &n, &center, &gaussian_parameter).unwrap();
     }
 
-    /// Ensures that `sample_d` works properly for a non-zero center
+    /// Ensures that `sample_d` works properly for a non-zero center.
     #[test]
     fn non_zero_center() {
         let basis = MatZ::identity(5, 5);
@@ -453,7 +454,7 @@ mod test_sample_d {
             sample_d_precomputed_gso(&basis, &basis_gso, &n, &center, &gaussian_parameter).unwrap();
     }
 
-    /// Ensures that `sample_d` works properly for a different basis
+    /// Ensures that `sample_d` works properly for a different basis.
     #[test]
     fn non_identity_basis() {
         let basis = MatZ::from_str("[[2,1],[1,2]]").unwrap();
@@ -467,7 +468,7 @@ mod test_sample_d {
             sample_d_precomputed_gso(&basis, &basis_gso, &n, &center, &gaussian_parameter).unwrap();
     }
 
-    /// Ensures that `sample_d` outputs a vector that's part of the specified lattice
+    /// Ensures that `sample_d` outputs a vector that's part of the specified lattice.
     ///
     /// Checks whether the Hermite Normal Form HNF of the basis is equal to the HNF of
     /// the basis concatenated with the sampled vector. If it is part of the lattice, it
@@ -527,7 +528,7 @@ mod test_sample_d {
             .is_zero());
     }
 
-    /// Checks whether `sample_d` returns an error if the gaussian parameter `s <= 0`
+    /// Checks whether `sample_d` returns an error if the gaussian parameter `s <= 0`.
     #[test]
     fn invalid_gaussian_parameter() {
         let basis = MatZ::identity(5, 5);
@@ -546,7 +547,7 @@ mod test_sample_d {
         );
     }
 
-    /// Checks whether `sample_d` returns an error if `n <= 1`
+    /// Checks whether `sample_d` returns an error if `n <= 1`.
     #[test]
     fn invalid_n() {
         let basis = MatZ::identity(5, 5);
@@ -592,7 +593,7 @@ mod test_sample_d {
         .is_err());
     }
 
-    /// Checks whether `sample_d` returns an error if the basis and center number of rows differs
+    /// Checks whether `sample_d` returns an error if the basis and center number of rows differs.
     #[test]
     fn mismatching_matrix_dimensions() {
         let basis = MatZ::identity(3, 5);
@@ -609,7 +610,7 @@ mod test_sample_d {
         assert!(res_prec.is_err());
     }
 
-    /// Checks whether `sample_d` returns an error if center isn't a column vector
+    /// Checks whether `sample_d` returns an error if center isn't a column vector.
     #[test]
     fn center_not_column_vector() {
         let basis = MatZ::identity(2, 2);
