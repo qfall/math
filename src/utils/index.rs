@@ -142,11 +142,11 @@ pub fn evaluate_indices_for_matrix<S: GetNumRows + GetNumColumns>(
         if row_i64 < 0 {
             return Err(MathError::OutOfBounds(
                 format!(
-                    "be larger or equal to ({},{})",
+                    "be larger or equal to ({}, {})",
                     -matrix.get_num_rows(),
                     -matrix.get_num_columns()
                 ),
-                format!("({},{})", row_i64 + matrix.get_num_rows(), column_i64),
+                format!("({}, {})", row_i64 + matrix.get_num_rows(), column_i64),
             ));
         }
     }
@@ -155,11 +155,11 @@ pub fn evaluate_indices_for_matrix<S: GetNumRows + GetNumColumns>(
         if column_i64 < 0 {
             return Err(MathError::OutOfBounds(
                 format!(
-                    "be larger or equal to ({},{})",
+                    "be larger or equal to ({}, {})",
                     -matrix.get_num_rows(),
                     -matrix.get_num_columns()
                 ),
-                format!("({},{})", row_i64, column_i64 + matrix.get_num_columns()),
+                format!("({}, {})", row_i64, column_i64 + matrix.get_num_columns()),
             ));
         }
     }
@@ -167,11 +167,11 @@ pub fn evaluate_indices_for_matrix<S: GetNumRows + GetNumColumns>(
     if matrix.get_num_rows() <= row_i64 || matrix.get_num_columns() <= column_i64 {
         return Err(MathError::OutOfBounds(
             format!(
-                "be smaller than ({},{})",
+                "be smaller than ({}, {})",
                 matrix.get_num_rows(),
                 matrix.get_num_columns()
             ),
-            format!("({row_i64},{column_i64})"),
+            format!("({row_i64}, {column_i64})"),
         ));
     }
     Ok((row_i64, column_i64))

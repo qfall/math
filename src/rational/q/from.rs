@@ -193,7 +193,7 @@ impl<IntegerNumerator: AsInteger, IntegerDenominator: AsInteger>
 {
     /// Create a [`Q`] from two integers.
     /// The integer types can be, for example, [`Z`],
-    /// [`Zq`](crate::integer_mod_q), [`u32`], [`i64`] or references to these types
+    /// [`Zq`](crate::integer_mod_q), [`u32`],[`i64`] or references to these types
     ///
     /// Parameters:
     /// - `num`: The value of the numerator
@@ -283,7 +283,7 @@ impl From<&Q> for f64 {
     /// ```
     /// use qfall_math::rational::Q;
     ///
-    /// let one_half = Q::from((1,2));
+    /// let one_half = Q::from((1, 2));
     /// let float = f64::from(&one_half);
     ///
     /// assert_eq!(0.5, float);

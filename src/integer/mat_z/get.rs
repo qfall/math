@@ -73,7 +73,7 @@ impl GetEntry<Z> for MatZ {
     /// use qfall_math::traits::GetEntry;
     /// use std::str::FromStr;
     ///
-    /// let matrix = MatZ::from_str("[[1,2,3],[4,5,6],[7,8,9]]").unwrap();
+    /// let matrix = MatZ::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]]").unwrap();
     ///
     /// assert_eq!(matrix.get_entry(0, 2).unwrap(), Z::from(3));
     /// assert_eq!(matrix.get_entry(2, 1).unwrap(), Z::from(8));
@@ -198,7 +198,7 @@ impl MatZ {
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
-    /// let mat = MatZ::identity(3,3);
+    /// let mat = MatZ::identity(3, 3);
     ///
     /// let sub_mat_1 = mat.get_submatrix(0, 2, 1, 1).unwrap();
     /// let sub_mat_2 = mat.get_submatrix(0, -1, 1, -2).unwrap();
@@ -263,7 +263,7 @@ impl MatZ {
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
-    /// let mat = MatZ::from_str("[[1,2],[3,4],[5,6]]").unwrap();
+    /// let mat = MatZ::from_str("[[1, 2],[3, 4],[5, 6]]").unwrap();
     ///
     /// let fmpz_entries = mat.collect_entries();
     /// ```
@@ -341,7 +341,7 @@ mod test_get_entry {
         assert_eq!(Z::from_str(value_str).unwrap(), entry);
     }
 
-    /// Ensure that getting entries at (0,0) works.
+    /// Ensure that getting entries at (0, 0) works.
     #[test]
     fn getting_at_zero() {
         let mut matrix = MatZ::new(5, 10);
@@ -374,7 +374,7 @@ mod test_get_entry {
     /// Ensure that negative indices return the correct values.
     #[test]
     fn negative_indexing() {
-        let matrix = MatZ::from_str("[[1,2,3],[4,5,6],[7,8,9]]").unwrap();
+        let matrix = MatZ::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]]").unwrap();
 
         assert_eq!(matrix.get_entry(-1, -1).unwrap(), Z::from(9));
         assert_eq!(matrix.get_entry(-1, -2).unwrap(), Z::from(8));
@@ -427,12 +427,13 @@ mod test_get_vec {
     /// Ensure that getting a row works
     #[test]
     fn get_row_works() {
-        let matrix = MatZ::from_str(&format!("[[0,0,0],[4,{},{}]]", i64::MAX, i64::MIN)).unwrap();
+        let matrix =
+            MatZ::from_str(&format!("[[0, 0, 0],[4, {}, {}]]", i64::MAX, i64::MIN)).unwrap();
         let row1 = matrix.get_row(0).unwrap();
         let row2 = matrix.get_row(1).unwrap();
 
-        let cmp1 = MatZ::from_str("[[0,0,0]]").unwrap();
-        let cmp2 = MatZ::from_str(&format!("[[4,{},{}]]", i64::MAX, i64::MIN)).unwrap();
+        let cmp1 = MatZ::from_str("[[0, 0, 0]]").unwrap();
+        let cmp2 = MatZ::from_str(&format!("[[4, {}, {}]]", i64::MAX, i64::MIN)).unwrap();
 
         assert_eq!(cmp1, row1);
         assert_eq!(cmp2, row2);
@@ -441,8 +442,12 @@ mod test_get_vec {
     /// Ensure that getting a column works
     #[test]
     fn get_column_works() {
-        let matrix =
-            MatZ::from_str(&format!("[[1,0,3],[{},0,5],[{},0,7]]", i64::MAX, i64::MIN)).unwrap();
+        let matrix = MatZ::from_str(&format!(
+            "[[1, 0, 3],[{}, 0, 5],[{}, 0, 7]]",
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
         let column1 = matrix.get_column(0).unwrap();
         let column2 = matrix.get_column(1).unwrap();
         let column3 = matrix.get_column(2).unwrap();
@@ -459,8 +464,12 @@ mod test_get_vec {
     /// Ensure that wrong row and column dimensions yields an error
     #[test]
     fn wrong_dim_error() {
-        let matrix =
-            MatZ::from_str(&format!("[[1,2,3],[{},4,5],[{},6,7]]", i64::MAX, i64::MIN)).unwrap();
+        let matrix = MatZ::from_str(&format!(
+            "[[1, 2, 3],[{}, 4, 5],[{}, 6, 7]]",
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
         let row1 = matrix.get_row(-1);
         let row2 = matrix.get_row(4);
         let column1 = matrix.get_column(-1);
@@ -540,7 +549,7 @@ mod test_get_submatrix {
     /// Ensure that negative indices return the correct submatrix.
     #[test]
     fn negative_indexing() {
-        let matrix = MatZ::from_str("[[1,2,3],[4,5,6],[7,8,9]]").unwrap();
+        let matrix = MatZ::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]]").unwrap();
 
         assert_eq!(matrix, matrix.get_submatrix(0, -1, 0, -1).unwrap());
         assert_eq!(matrix, matrix.get_submatrix(-3, -1, -3, -1).unwrap());
@@ -593,8 +602,9 @@ mod test_collect_entries {
     /// Ensures that all entries from the matrices are actually collected in the vector.
     #[test]
     fn all_entries_collected() {
-        let mat_1 = MatZ::from_str(&format!("[[1,2],[{},{}],[3,4]]", i64::MAX, i64::MIN)).unwrap();
-        let mat_2 = MatZ::from_str("[[-1,2]]").unwrap();
+        let mat_1 =
+            MatZ::from_str(&format!("[[1, 2],[{}, {}],[3, 4]]", i64::MAX, i64::MIN)).unwrap();
+        let mat_2 = MatZ::from_str("[[-1, 2]]").unwrap();
 
         let entries_1 = mat_1.collect_entries();
         let entries_2 = mat_2.collect_entries();

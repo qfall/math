@@ -11,7 +11,7 @@
 use crate::error::MathError;
 
 /// Returns the dimensions of a matrix.
-/// Takes `[[1, 2, 3],[4, 5, 6]]` as input and outputs `(2,3)` accordingly.
+/// Takes `[[1, 2, 3],[4, 5, 6]]` as input and outputs `(2, 3)` accordingly.
 ///
 /// Parameters:
 /// - `string`: the string of the matrix
@@ -96,8 +96,8 @@ mod test_find_matrix_dimensions {
         s1.push_str(&"1,".repeat(650000));
         s1.push_str("1]]");
         let mut s2 = "[".to_string();
-        s2.push_str(&"[1,1],".repeat(650000));
-        s2.push_str("[1,1]]");
+        s2.push_str(&"[1, 1],".repeat(650000));
+        s2.push_str("[1, 1]]");
 
         let m1 = parse_matrix_string(&s1).unwrap();
         let m2 = parse_matrix_string(&s2).unwrap();

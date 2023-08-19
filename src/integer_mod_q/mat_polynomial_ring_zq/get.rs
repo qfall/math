@@ -43,7 +43,7 @@ impl MatPolynomialRingZq {
     /// Returns the [`MatPolyOverZ`] value of the [`MatPolynomialRingZq`] element.
     ///
     /// The representation of each coefficient is returned.
-    /// It is in the range `[0,q[` (`0` inclusive, `q` exclusive).
+    /// It is in the range `[0, q[` (`0` inclusive, `q` exclusive).
     /// Each entry is reduced as much as possible.
     ///
     /// # Examples
@@ -218,7 +218,7 @@ impl MatPolynomialRingZq {
     /// use std::str::FromStr;
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();();
-    /// let mat_poly = MatPolyOverZ::identity(3,3);
+    /// let mat_poly = MatPolyOverZ::identity(3, 3);
     /// let matrix = MatPolynomialRingZq::from((&mat_poly, &modulus));
     ///
     /// let row0 = matrix.get_row(0).unwrap(); // first row
@@ -258,7 +258,7 @@ impl MatPolynomialRingZq {
     /// use std::str::FromStr;
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();();
-    /// let mat_poly = MatPolyOverZ::identity(3,3);
+    /// let mat_poly = MatPolyOverZ::identity(3, 3);
     /// let matrix = MatPolynomialRingZq::from((&mat_poly, &modulus));
     ///
     /// let col0 = matrix.get_column(0).unwrap(); // first column
@@ -306,7 +306,7 @@ impl MatPolynomialRingZq {
     /// use std::str::FromStr;
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();();
-    /// let mat = MatPolyOverZ::identity(3,3);
+    /// let mat = MatPolyOverZ::identity(3, 3);
     /// let poly_ring_mat = MatPolynomialRingZq::from((&mat, &modulus));
     ///
     /// let sub_mat_1 = poly_ring_mat.get_submatrix(0, 2, 1, 1).unwrap();
@@ -577,7 +577,7 @@ mod test_get_vec {
     #[test]
     fn get_row_works() {
         let matrix = MatPolyOverZ::from_str(&format!(
-            "[[0,0,0],[1  42,1  {},1  {}]]",
+            "[[0, 0, 0],[1  42, 1  {}, 1  {}]]",
             i64::MAX,
             i64::MIN
         ))
@@ -589,9 +589,9 @@ mod test_get_vec {
         let row1 = matrix.get_row(0).unwrap();
         let row2 = matrix.get_row(1).unwrap();
 
-        let cmp1 = MatPolyOverZ::from_str("[[0,0,0]]").unwrap();
-        let cmp2 =
-            MatPolyOverZ::from_str(&format!("[[1  42,1  {},1  {}]]", i64::MAX, i64::MIN)).unwrap();
+        let cmp1 = MatPolyOverZ::from_str("[[0, 0, 0]]").unwrap();
+        let cmp2 = MatPolyOverZ::from_str(&format!("[[1  42, 1  {}, 1  {}]]", i64::MAX, i64::MIN))
+            .unwrap();
         let cmp1 = MatPolynomialRingZq::from((&cmp1, &modulus));
         let cmp2 = MatPolynomialRingZq::from((&cmp2, &modulus));
         assert_eq!(cmp1, row1);
@@ -602,7 +602,7 @@ mod test_get_vec {
     #[test]
     fn get_column_works() {
         let matrix = MatPolyOverZ::from_str(&format!(
-            "[[1  42,0,2  17 42],[1  {},0,2  17 42],[1  {},0,2  17 42]]",
+            "[[1  42, 0, 2  17 42],[1  {}, 0, 2  17 42],[1  {}, 0, 2  17 42]]",
             i64::MAX,
             i64::MIN
         ))
@@ -634,7 +634,7 @@ mod test_get_vec {
         let modulus =
             ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
         let matrix = MatPolyOverZ::from_str(&format!(
-            "[[1  17,2  17 42,3  1 1 1],[1  {},1  1,2  2 3],[1  {},1  142,1  1]]",
+            "[[1  17, 2  17 42, 3  1 1 1],[1  {}, 1  1, 2  2 3],[1  {}, 1  142, 1  1]]",
             i64::MAX,
             i64::MIN
         ))

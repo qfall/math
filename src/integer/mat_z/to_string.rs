@@ -28,7 +28,7 @@ impl fmt::Display for MatZ {
     /// use core::fmt;
     /// use std::str::FromStr;
     ///
-    /// let matrix = MatZ::from_str("[[1,2,3],[4,5,6]]").unwrap();
+    /// let matrix = MatZ::from_str("[[1, 2, 3],[4, 5, 6]]").unwrap();
     /// println!("{matrix}");
     /// ```
     ///
@@ -37,7 +37,7 @@ impl fmt::Display for MatZ {
     /// use core::fmt;
     /// use std::str::FromStr;
     ///
-    /// let matrix = MatZ::from_str("[[1,2,3],[4,5,6]]").unwrap();
+    /// let matrix = MatZ::from_str("[[1, 2, 3],[4, 5, 6]]").unwrap();
     /// let matrix_string = matrix.to_string();
     /// ```
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

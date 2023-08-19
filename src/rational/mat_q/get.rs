@@ -72,9 +72,9 @@ impl GetEntry<Q> for MatQ {
     /// use qfall_math::traits::GetEntry;
     /// use std::str::FromStr;
     ///
-    /// let matrix = MatQ::from_str("[[1,2,3/4],[4,5,6],[7,8,9]]").unwrap();
+    /// let matrix = MatQ::from_str("[[1, 2, 3/4],[4, 5, 6],[7, 8, 9]]").unwrap();
     ///
-    /// assert_eq!(matrix.get_entry(0, 2).unwrap(), Q::from((3,4)));
+    /// assert_eq!(matrix.get_entry(0, 2).unwrap(), Q::from((3, 4)));
     /// assert_eq!(matrix.get_entry(2, 1).unwrap(), Q::from(8));
     /// assert_eq!(matrix.get_entry(-1, -2).unwrap(), Q::from(8));
     /// ```
@@ -197,7 +197,7 @@ impl MatQ {
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let mat = MatQ::identity(3,3);
+    /// let mat = MatQ::identity(3, 3);
     ///
     /// let sub_mat_1 = mat.get_submatrix(0, 2, 1, 1).unwrap();
     /// let sub_mat_2 = mat.get_submatrix(0, -1, 1, -2).unwrap();
@@ -262,7 +262,7 @@ impl MatQ {
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let mat = MatQ::from_str("[[1/1,2],[3/1,4],[5/1,6]]").unwrap();
+    /// let mat = MatQ::from_str("[[1/1, 2],[3/1, 4],[5/1, 6]]").unwrap();
     ///
     /// let fmpz_entries = mat.collect_entries();
     /// ```
@@ -358,7 +358,7 @@ mod test_get_entry {
         assert_eq!(Q::from_str(&format!("1/-{}", u64::MAX)).unwrap(), entry2);
     }
 
-    /// Ensure that getting entries at (0,0) works.
+    /// Ensure that getting entries at (0, 0) works.
     #[test]
     fn getting_at_zero() {
         let mut matrix = MatQ::new(5, 10);
@@ -391,7 +391,7 @@ mod test_get_entry {
     /// Ensure that negative indices return the correct values.
     #[test]
     fn negative_indexing() {
-        let matrix = MatQ::from_str("[[1,2,3],[4,5,6],[7,8,9]]").unwrap();
+        let matrix = MatQ::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]]").unwrap();
 
         assert_eq!(matrix.get_entry(-1, -1).unwrap(), Q::from(9));
         assert_eq!(matrix.get_entry(-1, -2).unwrap(), Q::from(8));
@@ -444,7 +444,7 @@ mod test_get_vec {
     #[test]
     fn get_row_works() {
         let matrix = MatQ::from_str(&format!(
-            "[[0,0,0,0,0],[4/3,{},{},1/{},1/{}]]",
+            "[[0, 0, 0, 0, 0],[4/3, {}, {}, 1/{}, 1/{}]]",
             i64::MAX,
             i64::MIN,
             i64::MAX,
@@ -454,9 +454,9 @@ mod test_get_vec {
         let row1 = matrix.get_row(0).unwrap();
         let row2 = matrix.get_row(1).unwrap();
 
-        let cmp1 = MatQ::from_str("[[0,0,0,0,0]]").unwrap();
+        let cmp1 = MatQ::from_str("[[0, 0, 0, 0, 0]]").unwrap();
         let cmp2 = MatQ::from_str(&format!(
-            "[[4/3,{},{},1/{},1/{}]]",
+            "[[4/3, {}, {}, 1/{}, 1/{}]]",
             i64::MAX,
             i64::MIN,
             i64::MAX,
@@ -472,7 +472,7 @@ mod test_get_vec {
     #[test]
     fn get_column_works() {
         let matrix = MatQ::from_str(&format!(
-            "[[1,0,3],[{},0,5],[{},0,7],[1/{},0,9],[1/{},0,11]]",
+            "[[1, 0, 3],[{}, 0, 5],[{}, 0, 7],[1/{}, 0, 9],[1/{}, 0, 11]]",
             i64::MAX,
             i64::MIN,
             i64::MAX,
@@ -502,8 +502,12 @@ mod test_get_vec {
     /// Ensure that wrong row and column dimensions yields an error
     #[test]
     fn wrong_dim_error() {
-        let matrix =
-            MatQ::from_str(&format!("[[1,2,3],[{},4,5],[{},6,7]]", i64::MAX, i64::MIN)).unwrap();
+        let matrix = MatQ::from_str(&format!(
+            "[[1, 2, 3],[{}, 4, 5],[{}, 6, 7]]",
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
         let row1 = matrix.get_row(-1);
         let row2 = matrix.get_row(4);
         let column1 = matrix.get_column(-1);
@@ -639,13 +643,13 @@ mod test_collect_entries {
     #[test]
     fn all_entries_collected() {
         let mat_1 = MatQ::from_str(&format!(
-            "[[1/{},2],[{},{}],[-3/-4,4]]",
+            "[[1/{}, 2],[{}, {}],[-3/-4, 4]]",
             i64::MAX,
             i64::MAX,
             i64::MIN
         ))
         .unwrap();
-        let mat_2 = MatQ::from_str("[[-1/1,2/-4]]").unwrap();
+        let mat_2 = MatQ::from_str("[[-1/1, 2/-4]]").unwrap();
 
         let entries_1 = mat_1.collect_entries();
         let entries_2 = mat_2.collect_entries();

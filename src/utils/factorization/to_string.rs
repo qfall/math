@@ -20,7 +20,7 @@ impl fmt::Display for Factorization {
     /// Allows to convert a factorization of type [`Factorization`] into a [`String`].
     ///
     /// Returns the factorization in form of a [`String`]. For factorization `2^3 * 5 * 7^2`
-    /// the String looks like this `[(2,3),(5,1),(7,2)]`.
+    /// the String looks like this `[(2, 3), (5, 1), (7, 2)]`.
     ///
     /// # Examples
     /// ```

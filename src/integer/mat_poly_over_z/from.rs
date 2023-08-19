@@ -27,7 +27,7 @@ impl FromStr for MatPolyOverZ {
 
     /// Creates a [`MatPolyOverZ`] matrix from a [`String`].
     /// The format of that string looks like <br>
-    /// `[[poly1,poly2,poly3],[poly4,poly5,poly6]]` for a 2x3 matrix
+    /// `[[poly1, poly2, poly3],[poly4, poly5, poly6]]` for a 2x3 matrix
     /// where thirst three polynomials are in the first row and the second three are
     /// in the second row.
     ///
@@ -207,12 +207,12 @@ mod test_from_str {
     /// Ensure that a wrong format causes an error.
     #[test]
     fn wrong_format_error() {
-        let matrix_str1 = "[[1  42,224 42,2  24 42][2  24 42,2  24 42,2  24 42]]";
-        let matrix_str2 = "[[1  42,224 42,2  24 42],2  24 42,2  24 42,2  24 42]]";
-        let matrix_str3 = "[1  42,224 42,2  24 42,2  24 42,2  24 42,2  24 42]";
-        let matrix_str4 = "[[1  42,224 42,2  24 42,2  24 42,2  24 42,2  24 42]";
-        let matrix_str5 = "[ [1  42,224 42,2  242,2  24 42,2  24 42]]";
-        let matrix_str6 = "[[1  42,224 42,2  24 42],[2  24 42,2  24 42,2  24 4]2]";
+        let matrix_str1 = "[[1  42, 224 42, 2  24 42][2  24 42, 2  24 42, 2  24 42]]";
+        let matrix_str2 = "[[1  42, 224 42, 2  24 42], 2  24 42, 2  24 42, 2  24 42]]";
+        let matrix_str3 = "[1  42, 224 42, 2  24 42, 2  24 42, 2  24 42, 2  24 42]";
+        let matrix_str4 = "[[1  42, 224 42, 2  24 42, 2  24 42, 2  24 42, 2  24 42]";
+        let matrix_str5 = "[ [1  42, 224 42, 2  242, 2  24 42, 2  24 42]]";
+        let matrix_str6 = "[[1  42, 224 42, 2  24 42],[2  24 42, 2  24 42, 2  24 4]2]";
         let matrix_str7 = "";
         let matrix_str8 = "[]";
         let matrix_str9 = "[[]]";
@@ -237,7 +237,7 @@ mod test_from_matz {
     /// values. Validate that the correct [`MatPolyOverZ`] is created.
     #[test]
     fn small() {
-        let matz_str = "[[1,2,3],[4,5,6]]";
+        let matz_str = "[[1, 2, 3],[4, 5, 6]]";
         let matz = MatZ::from_str(matz_str).unwrap();
 
         let mat_poly = MatPolyOverZ::from(&matz);

@@ -147,17 +147,17 @@ mod test_concatenate {
     #[test]
     fn vertically_correct() {
         let mat_1 = MatPolyOverZ::from_str(&format!(
-            "[[1  1,1  2,1  {}],[0,1  5,1  {}]]",
+            "[[1  1, 1  2, 1  {}],[0, 1  5, 1  {}]]",
             i64::MIN,
             u64::MAX
         ))
         .unwrap();
-        let mat_2 = MatPolyOverZ::from_str("[[1  -1,1  2,1  -17]]").unwrap();
+        let mat_2 = MatPolyOverZ::from_str("[[1  -1, 1  2, 1  -17]]").unwrap();
 
         let mat_vertical = mat_1.concat_vertical(&mat_2).unwrap();
 
         let cmp_mat = MatPolyOverZ::from_str(&format!(
-            "[[1  1,1  2,1  {}],[0,1  5,1  {}],[1  -1,1  2,1  -17]]",
+            "[[1  1, 1  2, 1  {}],[0, 1  5, 1  {}],[1  -1, 1  2, 1  -17]]",
             i64::MIN,
             u64::MAX
         ))
@@ -169,17 +169,17 @@ mod test_concatenate {
     #[test]
     fn horizontally_correct() {
         let mat_1 = MatPolyOverZ::from_str(&format!(
-            "[[1  1,1  2,1  {}],[0,1  5,1  {}]]",
+            "[[1  1, 1  2, 1  {}],[0, 1  5, 1  {}]]",
             i64::MIN,
             u64::MAX
         ))
         .unwrap();
-        let mat_2 = MatPolyOverZ::from_str("[[1  -1,1  2],[0,1  5]]").unwrap();
+        let mat_2 = MatPolyOverZ::from_str("[[1  -1, 1  2],[0, 1  5]]").unwrap();
 
         let mat_horizontal = mat_1.concat_horizontal(&mat_2).unwrap();
 
         let cmp_mat = MatPolyOverZ::from_str(&format!(
-            "[[1  1,1  2,1  {},1  -1,1  2],[0,1  5,1  {},0,1  5]]",
+            "[[1  1, 1  2, 1  {}, 1  -1, 1  2],[0, 1  5, 1  {}, 0, 1  5]]",
             i64::MIN,
             u64::MAX
         ))

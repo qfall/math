@@ -93,7 +93,7 @@ impl GetEntry<Z> for MatZq {
     /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
     ///
-    /// let matrix = MatZq::from_str("[[1,2,3],[4,5,6],[7,8,9]] mod 10").unwrap();
+    /// let matrix = MatZq::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]] mod 10").unwrap();
     ///
     /// assert_eq!(Z::from(3), matrix.get_entry(0, 2).unwrap());
     /// assert_eq!(Z::from(8), matrix.get_entry(2, 1).unwrap());
@@ -137,7 +137,7 @@ impl GetEntry<Zq> for MatZq {
     /// use qfall_math::traits::GetEntry;
     /// use std::str::FromStr;
     ///
-    /// let matrix = MatZq::from_str("[[1,2,3],[4,5,6],[7,8,9]] mod 10").unwrap();
+    /// let matrix = MatZq::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]] mod 10").unwrap();
     ///
     /// assert_eq!(Zq::from((3, 10)), matrix.get_entry(0, 2).unwrap());
     /// assert_eq!(Zq::from((8, 10)), matrix.get_entry(2, 1).unwrap());
@@ -254,7 +254,7 @@ impl MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let mat = MatZq::identity(3,3, 17);
+    /// let mat = MatZq::identity(3, 3, 17);
     ///
     /// let sub_mat_1 = mat.get_submatrix(0, 2, 1, 1).unwrap();
     /// let sub_mat_2 = mat.get_submatrix(0, -1, 1, -2).unwrap();
@@ -322,7 +322,7 @@ impl MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let mat = MatZq::from_str("[[1,2],[3,4],[5,6]] mod 3").unwrap();
+    /// let mat = MatZq::from_str("[[1, 2],[3, 4],[5, 6]] mod 3").unwrap();
     ///
     /// let fmpz_entries = mat.collect_entries();
     /// ```
@@ -348,7 +348,7 @@ impl MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let mat = MatZq::from_str("[[1,2],[3,4]] mod 3").unwrap();
+    /// let mat = MatZq::from_str("[[1, 2],[3, 4]] mod 3").unwrap();
     ///
     /// let lengths = mat.collect_lengths();
     /// ```
@@ -463,7 +463,7 @@ mod test_get_entry {
     /// Ensure that negative indices return the correct values.
     #[test]
     fn negative_indexing() {
-        let matrix = MatZq::from_str("[[1,2,3],[4,5,6],[7,8,9]] mod 10").unwrap();
+        let matrix = MatZq::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]] mod 10").unwrap();
 
         assert_eq!(
             GetEntry::<Z>::get_entry(&matrix, -1, -1).unwrap(),
@@ -607,7 +607,7 @@ mod test_get_vec {
     #[test]
     fn get_row_works() {
         let matrix = MatZq::from_str(&format!(
-            "[[0,0,0],[4,{},{}]] mod {}",
+            "[[0, 0, 0],[4, {}, {}]] mod {}",
             i64::MAX,
             i64::MIN,
             u64::MAX
@@ -616,9 +616,14 @@ mod test_get_vec {
         let row1 = matrix.get_row(0).unwrap();
         let row2 = matrix.get_row(1).unwrap();
 
-        let cmp1 = MatZq::from_str(&format!("[[0,0,0]] mod {}", u64::MAX)).unwrap();
-        let cmp2 =
-            MatZq::from_str(&format!("[[4,{},{}]] mod {}", i64::MAX, i64::MIN, u64::MAX)).unwrap();
+        let cmp1 = MatZq::from_str(&format!("[[0, 0, 0]] mod {}", u64::MAX)).unwrap();
+        let cmp2 = MatZq::from_str(&format!(
+            "[[4, {}, {}]] mod {}",
+            i64::MAX,
+            i64::MIN,
+            u64::MAX
+        ))
+        .unwrap();
 
         assert_eq!(cmp1, row1);
         assert_eq!(cmp2, row2);
@@ -628,7 +633,7 @@ mod test_get_vec {
     #[test]
     fn get_column_works() {
         let matrix = MatZq::from_str(&format!(
-            "[[1,0,3],[{},0,5],[{},0,7]] mod {}",
+            "[[1, 0, 3],[{}, 0, 5],[{}, 0, 7]] mod {}",
             i64::MAX,
             i64::MIN,
             u64::MAX
@@ -657,7 +662,7 @@ mod test_get_vec {
     #[test]
     fn wrong_dim_error() {
         let matrix = MatZq::from_str(&format!(
-            "[[1,2,3],[{},4,5],[{},6,7]] mod {}",
+            "[[1, 2, 3],[{}, 4, 5],[{}, 6, 7]] mod {}",
             i64::MAX,
             i64::MIN,
             u64::MAX
@@ -809,13 +814,13 @@ mod test_collect_entries {
     #[test]
     fn all_entries_collected() {
         let mat_1 = MatZq::from_str(&format!(
-            "[[1,2],[{},{}],[3,4]] mod {}",
+            "[[1, 2],[{}, {}],[3, 4]] mod {}",
             i64::MAX,
             i64::MIN,
             u64::MAX
         ))
         .unwrap();
-        let mat_2 = MatZq::from_str("[[-1,2]] mod 2").unwrap();
+        let mat_2 = MatZq::from_str("[[-1, 2]] mod 2").unwrap();
 
         let entries_1 = mat_1.collect_entries();
         let entries_2 = mat_2.collect_entries();
@@ -843,13 +848,13 @@ mod test_collect_lengths {
     #[test]
     fn lengths_correctly_computed() {
         let mat_1 = MatZq::from_str(&format!(
-            "[[1,2],[{},{}],[3,4]] mod {}",
+            "[[1, 2],[{}, {}],[3, 4]] mod {}",
             i64::MAX - 2,
             i64::MIN,
             i64::MAX - 1
         ))
         .unwrap();
-        let mat_2 = MatZq::from_str("[[-1,2]] mod 2").unwrap();
+        let mat_2 = MatZq::from_str("[[-1, 2]] mod 2").unwrap();
 
         let lengths_1 = mat_1.collect_lengths();
         let lengths_2 = mat_2.collect_lengths();

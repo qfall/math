@@ -46,7 +46,7 @@ impl SetEntry<&PolyOverZ> for MatPolynomialRingZq {
     /// poly_ring_mat.set_entry(0, 1, &value).unwrap();
     /// poly_ring_mat.set_entry(-1, -1, &value).unwrap();
     ///
-    /// let mat_cmp = MatPolynomialRingZq::from((&MatPolyOverZ::new(2,2), &modulus));
+    /// let mat_cmp = MatPolynomialRingZq::from((&MatPolyOverZ::new(2, 2), &modulus));
     /// assert_eq!(poly_ring_mat, mat_cmp);
     /// ```
     ///
@@ -100,7 +100,7 @@ impl SetEntry<&PolynomialRingZq> for MatPolynomialRingZq {
     /// poly_ring_mat.set_entry(0, 1, &value).unwrap();
     /// poly_ring_mat.set_entry(-1, -1, &value).unwrap();
     ///
-    /// let mat_cmp = MatPolynomialRingZq::from((&MatPolyOverZ::new(2,2), &modulus));
+    /// let mat_cmp = MatPolynomialRingZq::from((&MatPolyOverZ::new(2, 2), &modulus));
     /// assert_eq!(poly_ring_mat, mat_cmp);
     /// ```
     ///

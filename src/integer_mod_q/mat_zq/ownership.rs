@@ -24,7 +24,7 @@ impl Clone for MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let str1 = "[[1,2,3],[4,5,6]] mod 4";
+    /// let str1 = "[[1, 2, 3],[4, 5, 6]] mod 4";
     /// let a = MatZq::from_str(str1).unwrap();
     /// let b = a.clone();
     /// ```
@@ -49,7 +49,7 @@ impl Drop for MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let str1 = "[[1,2,3],[4,5,6]] mod 4";
+    /// let str1 = "[[1, 2, 3],[4, 5, 6]] mod 4";
     /// {
     ///     let a = MatZq::from_str(str1).unwrap();
     /// } // as a's scope ends here, it get's dropped
@@ -59,7 +59,7 @@ impl Drop for MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let str1 = "[[1,2,3],[4,5,6]] mod 4";
+    /// let str1 = "[[1, 2, 3],[4, 5, 6]] mod 4";
     /// let a = MatZq::from_str(str1).unwrap();
     /// drop(a); // explicitly drops a's value
     /// ```

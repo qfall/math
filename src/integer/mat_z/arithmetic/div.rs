@@ -34,7 +34,7 @@ impl Div<&Z> for &MatZ {
     /// use qfall_math::integer::{MatZ, Z};
     /// use std::str::FromStr;
     ///
-    /// let mat = MatZ::from_str("[[3,5],[9,22]]").unwrap();
+    /// let mat = MatZ::from_str("[[3, 5],[9, 22]]").unwrap();
     /// let divisor = Z::from(3);
     ///
     /// let mat_q = &mat / &divisor;
@@ -76,7 +76,7 @@ impl MatZ {
     /// use qfall_math::integer::{MatZ, Z};
     /// use std::str::FromStr;
     ///
-    /// let mut mat = MatZ::from_str("[[3,6],[9,27]]").unwrap();
+    /// let mut mat = MatZ::from_str("[[3, 6],[9, 27]]").unwrap();
     ///
     /// let mat_z = unsafe { mat.div_exact(3) };
     ///
@@ -112,7 +112,7 @@ impl MatZ {
     /// use qfall_math::integer::{MatZ, Z};
     /// use std::str::FromStr;
     ///
-    /// let mat = MatZ::from_str("[[3,6],[9,27]]").unwrap();
+    /// let mat = MatZ::from_str("[[3, 6],[9, 27]]").unwrap();
     ///
     /// let mat_z = unsafe { mat.div_exact_ref(3) };
     ///
@@ -141,7 +141,7 @@ mod test_div_exact {
     /// Tests that division is available for other types.
     #[test]
     fn availability() {
-        let mat = MatZ::from_str("[[6,3],[3,6]]").unwrap();
+        let mat = MatZ::from_str("[[6, 3],[3, 6]]").unwrap();
 
         let _ = unsafe { mat.div_exact_ref(3i64) };
         let _ = unsafe { mat.div_exact_ref(3i32) };
@@ -173,12 +173,12 @@ mod test_div_exact {
     /// Checks if matrix division works correctly.
     #[test]
     fn division_correctness() {
-        let mat = MatZ::from_str("[[6,3],[3,6]]").unwrap();
+        let mat = MatZ::from_str("[[6, 3],[3, 6]]").unwrap();
 
         let mat_divided_1 = unsafe { mat.div_exact_ref(3) };
         let mat_divided_2 = unsafe { mat.div_exact(3) };
 
-        let mat_cmp = MatZ::from_str("[[2,1],[1,2]]").unwrap();
+        let mat_cmp = MatZ::from_str("[[2, 1],[1, 2]]").unwrap();
         assert_eq!(mat_cmp, mat_divided_1);
         assert_eq!(mat_cmp, mat_divided_2);
     }
@@ -186,13 +186,13 @@ mod test_div_exact {
     /// Checks if matrix division works for negative numbers.
     #[test]
     fn negative_correctness() {
-        let mat = MatZ::from_str("[[6,-3],[3,-6]]").unwrap();
+        let mat = MatZ::from_str("[[6, -3],[3, -6]]").unwrap();
 
         let mat_divided_1 = unsafe { mat.div_exact_ref(3) };
         let mat_divided_2 = unsafe { mat.div_exact_ref(-3) };
 
-        let mat_cmp1 = MatZ::from_str("[[2,-1],[1,-2]]").unwrap();
-        let mat_cmp2 = MatZ::from_str("[[-2,1],[-1,2]]").unwrap();
+        let mat_cmp1 = MatZ::from_str("[[2, -1],[1, -2]]").unwrap();
+        let mat_cmp2 = MatZ::from_str("[[-2, 1],[-1, 2]]").unwrap();
         assert_eq!(mat_cmp1, mat_divided_1);
         assert_eq!(mat_cmp2, mat_divided_2);
     }
@@ -201,10 +201,10 @@ mod test_div_exact {
     #[test]
     fn different_dimensions_correctness() {
         let mat1 = MatZ::from_str("[[-3],[0],[12]]").unwrap();
-        let mat2 = MatZ::from_str("[[6,15,18],[3,-9,3]]").unwrap();
+        let mat2 = MatZ::from_str("[[6, 15, 18],[3, -9, 3]]").unwrap();
 
         let mat_cmp1 = MatZ::from_str("[[-1],[0],[4]]").unwrap();
-        let mat_cmp2 = MatZ::from_str("[[2,5,6],[1,-3,1]]").unwrap();
+        let mat_cmp2 = MatZ::from_str("[[2, 5, 6],[1, -3, 1]]").unwrap();
         assert_eq!(mat_cmp1, unsafe { mat1.div_exact_ref(3) });
         assert_eq!(mat_cmp2, unsafe { mat2.div_exact_ref(3) });
         assert_eq!(mat_cmp1, unsafe { mat1.div_exact(3) });
@@ -233,7 +233,7 @@ mod test_div_exact {
     #[test]
     #[should_panic]
     fn div_by_0_error() {
-        let mat = MatZ::from_str("[[6,2],[3,10]]").unwrap();
+        let mat = MatZ::from_str("[[6, 2],[3, 10]]").unwrap();
 
         let _mat = unsafe { mat.div_exact(0) };
     }
@@ -242,7 +242,7 @@ mod test_div_exact {
     #[test]
     #[should_panic]
     fn div_by_0_error_ref() {
-        let mat = MatZ::from_str("[[6,2],[3,10]]").unwrap();
+        let mat = MatZ::from_str("[[6, 2],[3, 10]]").unwrap();
 
         let _mat = unsafe { mat.div_exact_ref(0) };
     }
@@ -256,7 +256,7 @@ mod test_div {
     /// Tests that division is available for other types.
     #[test]
     fn availability() {
-        let mat = MatZ::from_str("[[6,5],[2,6]]").unwrap();
+        let mat = MatZ::from_str("[[6, 5],[2, 6]]").unwrap();
         let divisor = Z::from(3);
 
         let _ = &mat / &divisor;
@@ -268,12 +268,12 @@ mod test_div {
     /// Checks if matrix division works correctly.
     #[test]
     fn division_correctness() {
-        let mat = MatZ::from_str("[[6,5],[2,6]]").unwrap();
+        let mat = MatZ::from_str("[[6, 5],[2, 6]]").unwrap();
         let divisor = Z::from(3);
 
         let mat_q = &mat / &divisor;
 
-        let mat_cmp = MatQ::from_str("[[2,5/3],[2/3,2]]").unwrap();
+        let mat_cmp = MatQ::from_str("[[2, 5/3],[2/3, 2]]").unwrap();
         assert_eq!(mat_cmp, mat_q);
     }
 
@@ -281,11 +281,11 @@ mod test_div {
     #[test]
     fn different_dimensions_correctness() {
         let mat1 = MatZ::from_str("[[4],[0],[12]]").unwrap();
-        let mat2 = MatZ::from_str("[[6,15,18],[3,10,3]]").unwrap();
+        let mat2 = MatZ::from_str("[[6, 15, 18],[3, 10, 3]]").unwrap();
         let divisor = Z::from(3);
 
         let mat_cmp1 = MatQ::from_str("[[4/3],[0],[4]]").unwrap();
-        let mat_cmp2 = MatQ::from_str("[[2,5,6],[1,10/3,1]]").unwrap();
+        let mat_cmp2 = MatQ::from_str("[[2, 5, 6],[1, 10/3, 1]]").unwrap();
         assert_eq!(mat_cmp1, mat1 / &divisor);
         assert_eq!(mat_cmp2, mat2 / divisor);
     }
@@ -312,7 +312,7 @@ mod test_div {
     #[test]
     #[should_panic]
     fn div_by_0_error() {
-        let mat = MatZ::from_str("[[6,2],[3,10]]").unwrap();
+        let mat = MatZ::from_str("[[6, 2],[3, 10]]").unwrap();
         let divisor = Z::ZERO;
 
         let _mat = mat / divisor;
@@ -321,7 +321,7 @@ mod test_div {
     /// Checks if the doctest works.
     #[test]
     fn doctest_correct() {
-        let mat = MatZ::from_str("[[3,5],[9,22]]").unwrap();
+        let mat = MatZ::from_str("[[3, 5],[9, 22]]").unwrap();
         let divisor = Z::from(3);
 
         let mat_q = &mat / &divisor;

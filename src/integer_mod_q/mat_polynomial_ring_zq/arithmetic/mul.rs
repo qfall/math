@@ -165,7 +165,7 @@ mod test_mul {
         let modulus =
             ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {LARGE_PRIME}")).unwrap();
         let poly_mat1 =
-            MatPolyOverZ::from_str(&format!("[[2  3 {},1  15],[1  1,0]]", u64::MAX)).unwrap();
+            MatPolyOverZ::from_str(&format!("[[2  3 {}, 1  15],[1  1, 0]]", u64::MAX)).unwrap();
         let poly_ring_mat1 = MatPolynomialRingZq::from((&poly_mat1, &modulus));
         let poly_mat2 = MatPolyOverZ::from_str(&format!("[[2  1 {}],[0]]", u64::MAX)).unwrap();
         let poly_ring_mat2 = MatPolynomialRingZq::from((&poly_mat2, &modulus));

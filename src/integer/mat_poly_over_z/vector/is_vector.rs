@@ -115,11 +115,12 @@ mod test_is_vector {
     fn non_vectors_detected() {
         let mat_1 = MatPolyOverZ::from_str(&format!("[[0, 1  {}],[1  2, 0]]", i64::MIN)).unwrap();
         let mat_2 =
-            MatPolyOverZ::from_str(&format!("[[1  1, 1  {}, 0],[0,0,0]]", i64::MAX)).unwrap();
+            MatPolyOverZ::from_str(&format!("[[1  1, 1  {}, 0],[0, 0, 0]]", i64::MAX)).unwrap();
         let mat_3 =
-            MatPolyOverZ::from_str(&format!("[[0,1  {}],[1  2,0],[1  4,1  5]]", i64::MIN)).unwrap();
-        let mat_4 = MatPolyOverZ::from_str("[[1  1,0],[1  2,0],[1  4,0]]").unwrap();
-        let mat_5 = MatPolyOverZ::from_str("[[1  1,1  2,1  4],[0,0,0]]").unwrap();
+            MatPolyOverZ::from_str(&format!("[[0, 1  {}],[1  2, 0],[1  4, 1  5]]", i64::MIN))
+                .unwrap();
+        let mat_4 = MatPolyOverZ::from_str("[[1  1, 0],[1  2, 0],[1  4, 0]]").unwrap();
+        let mat_5 = MatPolyOverZ::from_str("[[1  1, 1  2, 1  4],[0, 0, 0]]").unwrap();
 
         assert!(!mat_1.is_column_vector());
         assert!(!mat_1.is_row_vector());
@@ -166,9 +167,9 @@ mod test_is_vector {
     /// don't get recognized as single entry matrices
     #[test]
     fn non_single_entry_detected() {
-        let row = MatPolyOverZ::from_str(&format!("[[0,1  {}]]", i64::MIN)).unwrap();
+        let row = MatPolyOverZ::from_str(&format!("[[0, 1  {}]]", i64::MIN)).unwrap();
         let col = MatPolyOverZ::from_str(&format!("[[0],[1  {}],[1  3]]", i64::MIN)).unwrap();
-        let mat = MatPolyOverZ::from_str("[[1  1,1  2],[1  3,1  4],[1  5,1  6]]").unwrap();
+        let mat = MatPolyOverZ::from_str("[[1  1, 1  2],[1  3, 1  4],[1  5, 1  6]]").unwrap();
 
         assert!(!row.has_single_entry());
         assert!(!col.has_single_entry());

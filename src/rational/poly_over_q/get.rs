@@ -119,7 +119,7 @@ mod test_get_coeff {
     /// Tests if large coefficients are returned correctly
     #[test]
     fn large_coeff() {
-        let q_str = format!("-{}/{}", u64::MAX, i64::MIN,);
+        let q_str = format!("-{}/{}", u64::MAX, i64::MIN);
         let large_string = format!("2  {q_str} {}", u64::MAX);
         let poly = PolyOverQ::from_str(&large_string).unwrap();
 

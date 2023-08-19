@@ -456,7 +456,7 @@ mod test_sample_d {
     /// Ensures that `sample_d` works properly for a different basis.
     #[test]
     fn non_identity_basis() {
-        let basis = MatZ::from_str("[[2,1],[1,2]]").unwrap();
+        let basis = MatZ::from_str("[[2, 1],[1, 2]]").unwrap();
         let n = Z::from(1024);
         let center = MatQ::new(2, 1);
         let gaussian_parameter = Q::ONE;
@@ -474,7 +474,7 @@ mod test_sample_d {
     /// should become a zero vector at the end of the matrix.
     #[test]
     fn point_of_lattice() {
-        let basis = MatZ::from_str("[[7,0],[7,3]]").unwrap();
+        let basis = MatZ::from_str("[[7, 0],[7, 3]]").unwrap();
         let n = Z::from(1024);
         let center = MatQ::new(2, 1);
         let gaussian_parameter = Q::ONE;

@@ -35,7 +35,7 @@ use crate::error::MathError;
 /// use qfall_math::utils::collective_evaluation::evaluate_vec_dimensions_set_row_or_col;
 /// use qfall_math::integer_mod_q::MatZq;
 /// use std::str::FromStr;
-/// let mat1 = MatZq::from_str("[[1,2,3],[4,5,6]]").unwrap();
+/// let mat1 = MatZq::from_str("[[1, 2, 3],[4, 5, 6]]").unwrap();
 /// let mat2 = mat1.clone();
 ///
 /// let _ = evaluate_vec_dimensions_set_row_or_col(

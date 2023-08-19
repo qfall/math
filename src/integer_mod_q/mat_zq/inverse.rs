@@ -26,7 +26,7 @@ impl MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let mut matrix = MatZq::from_str("[[1,2],[3,4]] mod 7").unwrap();
+    /// let mut matrix = MatZq::from_str("[[1, 2],[3, 4]] mod 7").unwrap();
     ///
     /// let matrix_invert = matrix.inverse_prime().unwrap();
     ///
@@ -80,7 +80,7 @@ impl MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let mut matrix = MatZq::from_str("[[1,2],[3,4]] mod 7").unwrap();
+    /// let mut matrix = MatZq::from_str("[[1, 2],[3, 4]] mod 7").unwrap();
     ///
     /// let matrix_gauss = matrix.gaussian_elimination_prime();
     ///
@@ -111,7 +111,7 @@ mod test_inverse {
     /// Test whether `inverse` correctly calculates an inverse matrix.
     #[test]
     fn inverse_works() {
-        let mat = MatZq::from_str("[[5,2],[2,1]] mod 7").unwrap();
+        let mat = MatZq::from_str("[[5, 2],[2, 1]] mod 7").unwrap();
 
         let inv = mat.inverse_prime().unwrap();
 
@@ -122,7 +122,7 @@ mod test_inverse {
     /// Check if the multiplication of inverse and matrix result in an identity matrix.
     #[test]
     fn inverse_correct() {
-        let mat = MatZq::from_str("[[5,2],[2,1]] mod 11").unwrap();
+        let mat = MatZq::from_str("[[5, 2],[2, 1]] mod 11").unwrap();
 
         let inv = mat.inverse_prime().unwrap();
 
@@ -134,20 +134,20 @@ mod test_inverse {
     /// Check if the multiplication of inverse and matrix result in an identity matrix.
     #[test]
     fn inverse_correct_2() {
-        let mat = MatZq::from_str("[[0,2],[2,1]] mod 3").unwrap();
+        let mat = MatZq::from_str("[[0, 2],[2, 1]] mod 3").unwrap();
 
         let inv = mat.inverse_prime().unwrap();
         let diag = mat * inv;
 
-        let cmp = MatZq::from_str("[[1,0],[0,1]] mod 3").unwrap();
+        let cmp = MatZq::from_str("[[1, 0],[0, 1]] mod 3").unwrap();
         assert_eq!(cmp, diag);
     }
 
     /// Ensure that a matrix that is not square yields `None` on inversion.
     #[test]
     fn inv_none_not_squared() {
-        let mat1 = MatZq::from_str("[[1,0,1],[0,1,1]] mod 3").unwrap();
-        let mat2 = MatZq::from_str("[[1,0],[0,1],[1,0]] mod 17").unwrap();
+        let mat1 = MatZq::from_str("[[1, 0, 1],[0, 1, 1]] mod 3").unwrap();
+        let mat2 = MatZq::from_str("[[1, 0],[0, 1],[1, 0]] mod 17").unwrap();
 
         assert!(mat1.inverse_prime().is_none());
         assert!(mat2.inverse_prime().is_none());
@@ -156,7 +156,7 @@ mod test_inverse {
     /// Ensure that a matrix that has a determinant of `0` yields `None` on inversion.
     #[test]
     fn inv_none_det_zero() {
-        let mat = MatZq::from_str("[[2,0],[0,0]] mod 11").unwrap();
+        let mat = MatZq::from_str("[[2, 0],[0, 0]] mod 11").unwrap();
 
         assert!(mat.inverse_prime().is_none());
     }
@@ -165,7 +165,7 @@ mod test_inverse {
     #[test]
     #[should_panic]
     fn not_prime_error() {
-        let mat = MatZq::from_str("[[2,0],[0,2]] mod 10").unwrap();
+        let mat = MatZq::from_str("[[2, 0],[0, 2]] mod 10").unwrap();
 
         let _inv = mat.inverse_prime().unwrap();
     }
@@ -179,9 +179,10 @@ mod test_gauss {
     /// Test whether `gaussian_elimination_prime` works correctly.
     #[test]
     fn gauss_works() {
-        let mat1 = MatZq::from_str("[[5,2,1,0],[2,1,0,1]] mod 7").unwrap();
-        let mat2 = MatZq::from_str("[[1,3,1,9],[1,1,130,1],[3,11,5,35]] mod 131").unwrap();
-        let mat3 = MatZq::from_str("[[5,0,2,1,0],[5,0,2,1,0],[2,0,1,0,1]] mod 7").unwrap();
+        let mat1 = MatZq::from_str("[[5, 2, 1, 0],[2, 1, 0, 1]] mod 7").unwrap();
+        let mat2 = MatZq::from_str("[[1, 3, 1, 9],[1, 1, 130, 1],[3, 11, 5, 35]] mod 131").unwrap();
+        let mat3 =
+            MatZq::from_str("[[5, 0, 2, 1, 0],[5, 0, 2, 1, 0],[2, 0, 1, 0, 1]] mod 7").unwrap();
 
         let gauss_1 = mat1.gaussian_elimination_prime();
         let gauss_2 = mat2.gaussian_elimination_prime();
@@ -206,7 +207,7 @@ mod test_gauss {
     #[test]
     #[should_panic]
     fn gauss_error() {
-        let mat1 = MatZq::from_str("[[5,2,1,0],[2,1,0,1]] mod 10").unwrap();
+        let mat1 = MatZq::from_str("[[5, 2, 1, 0],[2, 1, 0, 1]] mod 10").unwrap();
         let _ = mat1.gaussian_elimination_prime();
     }
 }

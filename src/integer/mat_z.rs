@@ -46,7 +46,7 @@ mod vector;
 /// };
 ///
 /// // instantiate new matrix
-/// let id_mat = MatZ::identity(2,2);
+/// let id_mat = MatZ::identity(2, 2);
 ///
 /// // clone object, set and get entry
 /// let mut clone = id_mat.clone();
@@ -71,7 +71,7 @@ mod vector;
 /// };
 /// use std::str::FromStr;
 ///
-/// let row_vec = MatZ::from_str("[[1,1,1]]").unwrap();
+/// let row_vec = MatZ::from_str("[[1, 1, 1]]").unwrap();
 /// let col_vec = MatZ::from_str("[[1],[-1],[0]]").unwrap();
 ///
 /// // check if matrix instance is vector

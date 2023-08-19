@@ -24,7 +24,7 @@ impl MatQ {
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let matrix = MatQ::from_str("[[1/2,2],[3/7,4]]").unwrap();
+    /// let matrix = MatQ::from_str("[[1/2, 2],[3/7, 4]]").unwrap();
     /// let matrix_invert = matrix.det().unwrap();
     /// ```
     ///
@@ -54,11 +54,11 @@ mod test_determinant {
     /// Test whether the determinant is correctly computed
     #[test]
     fn determinant_works() {
-        let mat1 = MatQ::from_str("[[10,2],[2,1/2]]").unwrap();
-        let mat2 = MatQ::from_str(&format!("[[{},0],[0,1]]", i64::MAX)).unwrap();
+        let mat1 = MatQ::from_str("[[10, 2],[2, 1/2]]").unwrap();
+        let mat2 = MatQ::from_str(&format!("[[{}, 0],[0, 1]]", i64::MAX)).unwrap();
         let mat3 = MatQ::from_str(&format!("[[-1/{}]]", i64::MIN)).unwrap();
-        let mat4 = MatQ::from_str("[[0,0],[0,1]]").unwrap();
-        let mat5 = MatQ::from_str("[[6,0,1],[0,1,0],[1,2,3]]").unwrap();
+        let mat4 = MatQ::from_str("[[0, 0],[0, 1]]").unwrap();
+        let mat5 = MatQ::from_str("[[6, 0, 1],[0, 1, 0],[1, 2, 3]]").unwrap();
 
         let det1 = mat1.det().unwrap();
         let det2 = mat2.det().unwrap();
@@ -83,7 +83,7 @@ mod test_determinant {
     #[test]
     fn not_square_error() {
         let mat1 = MatQ::from_str("[[5/7],[2]]").unwrap();
-        let mat2 = MatQ::from_str("[[2,0],[0,1/8],[8/4,-6]]").unwrap();
+        let mat2 = MatQ::from_str("[[2, 0],[0, 1/8],[8/4, -6]]").unwrap();
 
         assert!(mat1.det().is_err());
         assert!(mat2.det().is_err());

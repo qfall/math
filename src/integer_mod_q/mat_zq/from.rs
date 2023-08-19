@@ -57,8 +57,8 @@ impl FromStr for MatZq {
     type Err = MathError;
 
     /// Creates a [`MatZq`] matrix with entries in [`Zq`](crate::integer_mod_q::Zq) from a [`String`].
-    /// The format of that string looks like this <br> `[[1,2,3],[4,5,6]] mod 4` for a 2x3 matrix
-    /// with entries 1,2,3 in the first row, 4,5,6 in the second row and 4 as modulus.
+    /// The format of that string looks like this <br> `[[1, 2, 3],[4, 5, 6]] mod 4` for a 2x3 matrix
+    /// with entries 1, 2, 3 in the first row, 4, 5, 6 in the second row and 4 as modulus.
     ///
     /// Parameters:
     /// - `string`: the matrix as a string
@@ -73,14 +73,14 @@ impl FromStr for MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let matrix = MatZq::from_str("[[1,2,3],[4,5,6]] mod 4").unwrap();
+    /// let matrix = MatZq::from_str("[[1, 2, 3],[4, 5, 6]] mod 4").unwrap();
     /// ```
     ///
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let str1 = "[[1,2,3],[4,5,6]] mod 4";
+    /// let str1 = "[[1, 2, 3],[4, 5, 6]] mod 4";
     /// let matrix = MatZq::from_str(str1).unwrap();
     /// ```
     ///
@@ -88,7 +88,7 @@ impl FromStr for MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let string = String::from("[[1,2,3],[4,5,6]] mod 4");
+    /// let string = String::from("[[1, 2, 3],[4, 5, 6]] mod 4");
     /// let matrix = MatZq::from_str(&string).unwrap();
     /// ```
     ///
@@ -289,7 +289,7 @@ mod test_from_str {
     /// Ensure that entries can have leading and trailing whitespaces.
     #[test]
     fn whitespaces_in_entries_works() {
-        let matrix_str1 = "[[  1, 2 ,  3  ],[3 ,4,5 ]]  mod  6 ";
+        let matrix_str1 = "[[  1, 2 ,  3  ],[3 , 4, 5 ]]  mod  6 ";
 
         assert_eq!(
             Z::ONE,
@@ -305,7 +305,7 @@ mod test_from_str {
     fn wrong_format_error() {
         let matrix_str1 = "[1, 2, 3],[3, 4, 5]] mod 6";
         let matrix_str2 = "[[1, 2, 3][3, 4, 5]] mod 6";
-        let matrix_str3 = "[[1, 2, 3],3, 4, 5] mod 6";
+        let matrix_str3 = "[[1, 2, 3], 3, 4, 5] mod 6";
         let matrix_str4 = "[1, 2, 3, 4, 5] mod 6";
         let matrix_str5 = "[ [1, 2, 3],[3, 4, 5]] mod 6";
         let matrix_str6 = "[[1, 2, 3],[3, 4, 5]8] mod 6";

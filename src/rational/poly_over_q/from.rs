@@ -277,7 +277,7 @@ mod test_from_rational {
     use crate::{integer::Z, traits::GetCoefficient};
 
     /// Ensure that the [`From`] trait works for large
-    /// borrowed and owned [`Q`], [`Z`] and [`u64`] instances.
+    /// borrowed and owned [`Q`],[`Z`] and [`u64`] instances.
     #[test]
     fn large() {
         let value = Q::from(u64::MAX);

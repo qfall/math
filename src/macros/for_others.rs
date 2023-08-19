@@ -12,7 +12,7 @@
 //!
 //! Example:
 //! [`Z`](crate::integer::Z) implements the [`From`] trait for
-//! [`i8`], [`i16`], ... -> hence it is be beneficial if one
+//! [`i8`],[`i16`], ... -> hence it is be beneficial if one
 //! does not have to first create a [`Z`](crate::integer::Z), but if one can directly
 //! pass the value to other functions taking in a [`Z`](crate::integer::Z). These macros
 //! shall implement the traits for the other types as well.
@@ -172,7 +172,7 @@ macro_rules! implement_for_others {
             type Output = $out_type;
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::lcm`]. Implicitly converts [`" $source_type "`] into [`" $type "`]."]
-            fn lcm(&self,other: $source_type) -> Self::Output {
+            fn lcm(&self, other: $source_type) -> Self::Output {
                 self.lcm(&$type::from(other))
             }
             }

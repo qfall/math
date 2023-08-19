@@ -22,8 +22,8 @@ impl MatQ {
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let mat = MatQ::from_str("[[1/2,1],[2,1/7],[2,1]]").unwrap();
-    /// let cmp = MatQ::from_str("[[1/2,2,2],[1,1/7,1]]").unwrap();
+    /// let mat = MatQ::from_str("[[1/2, 1],[2, 1/7],[2, 1]]").unwrap();
+    /// let cmp = MatQ::from_str("[[1/2, 2, 2],[1, 1/7, 1]]").unwrap();
     ///
     /// assert_eq!(mat.transpose(), cmp);
     /// ```
@@ -43,7 +43,7 @@ mod test_transpose {
     #[test]
     fn row_to_column() {
         let mat = MatQ::from_str("[[1/2],[2],[8/4]]").unwrap();
-        let cmp = MatQ::from_str("[[1/2,2,2]]").unwrap();
+        let cmp = MatQ::from_str("[[1/2, 2, 2]]").unwrap();
 
         assert_eq!(cmp, mat.transpose());
     }
@@ -51,7 +51,7 @@ mod test_transpose {
     /// Checks if a column is correctly converted to a row
     #[test]
     fn column_to_row() {
-        let mat = MatQ::from_str("[[1/2,2,2]]").unwrap();
+        let mat = MatQ::from_str("[[1/2, 2, 2]]").unwrap();
         let cmp = MatQ::from_str("[[1/2],[2],[8/4]]").unwrap();
 
         assert_eq!(cmp, mat.transpose());
@@ -61,7 +61,7 @@ mod test_transpose {
     #[test]
     fn different_entry_values() {
         let mat = MatQ::from_str(&format!(
-            "[[{},{},1/{},1/{},0]]",
+            "[[{}, {}, 1/{}, 1/{}, 0]]",
             i64::MAX,
             i64::MIN,
             i64::MAX,

@@ -53,7 +53,7 @@ impl FromStr for MatZ {
     type Err = MathError;
 
     /// Creates a [`MatZ`] matrix with entries in [`Z`] from a [`String`].
-    /// The format of that string looks like this `[[1,2,3],[4,5,6]]` for a 2x3 matrix
+    /// The format of that string looks like this `[[1, 2, 3],[4, 5, 6]]` for a 2x3 matrix
     /// with entries 1, 2, 3 in the first row and 4, 5, 6 in the second row.
     ///
     /// Parameters:
@@ -201,7 +201,7 @@ mod test_from_str {
     /// Ensure that entries can have leading and trailing whitespaces.
     #[test]
     fn whitespaces_in_entries_works() {
-        let matrix_str = "[[  1, 2 ,  3  ],[3 ,4,5 ]]";
+        let matrix_str = "[[  1, 2 ,  3  ],[3 , 4, 5 ]]";
 
         assert_eq!(
             Z::ONE,
@@ -214,7 +214,7 @@ mod test_from_str {
     fn wrong_format_error() {
         let matrix_string1 = "[1, 2, 3],[3, 4, 5]]";
         let matrix_string2 = "[[1, 2, 3][3, 4, 5]]";
-        let matrix_string3 = "[[1, 2, 3],3, 4, 5]";
+        let matrix_string3 = "[[1, 2, 3], 3, 4, 5]";
         let matrix_string4 = "[1, 2, 3, 4, 5]";
         let matrix_string5 = "[ [1, 2, 3],[3, 4, 5]]";
         let matrix_string6 = "[[1, 2, 3],[3, 4, 5]8]";

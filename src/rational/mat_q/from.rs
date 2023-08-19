@@ -53,8 +53,9 @@ impl FromStr for MatQ {
     type Err = MathError;
 
     /// Creates a [`MatQ`] matrix with entries in [`Q`] from a [`String`].
-    /// The format of that string looks like this <br> `[[1/2,2/3,3/4],[4/5,5/6,6/7]]` for a 2x3 matrix
-    /// with entries 1/2,2/3,3/4 in the first row and 4/5,5/6,6/7 in the second row.
+    /// The format of that string looks like this <br> `[[1/2, 2/3, 3/4],[4/5, 5/6, 6/7]`
+    /// for a 2x3 matrix
+    /// with entries 1/2, 2/3, 3/4 in the first row and 4/5, 5/6, 6/7 in the second row.
     ///
     /// Parameters:
     /// - `string`: the matrix as a string
@@ -69,14 +70,14 @@ impl FromStr for MatQ {
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let matrix = MatQ::from_str("[[1/2,2/3,3/4],[4/5,5/6,6/7]]").unwrap();
+    /// let matrix = MatQ::from_str("[[1/2, 2/3, 3/4],[4/5, 5/6, 6/7]]").unwrap();
     /// ```
     ///
     /// ```
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let str1 = "[[1/2,2/3,3/4],[4/5,5/6,6/7]]";
+    /// let str1 = "[[1/2, 2/3, 3/4],[4/5, 5/6, 6/7]]";
     /// let matrix = MatQ::from_str(str1).unwrap();
     /// ```
     ///
@@ -84,7 +85,7 @@ impl FromStr for MatQ {
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let string = String::from("[[1/2,2/3,3/4],[4/5,5/6,6/7]]");
+    /// let string = String::from("[[1/2, 2/3, 3/4],[4/5, 5/6, 6/7]]");
     /// let matrix = MatQ::from_str(&string).unwrap();
     /// ```
     ///
@@ -176,7 +177,7 @@ mod test_from_str {
     /// Ensure that initialization works.
     #[test]
     fn init_works() {
-        let matrix_str1 = "[[1/2,2/3,3/4],[4/5,5/6,6/7]]";
+        let matrix_str1 = "[[1/2, 2/3, 3/4],[4/5, 5/6, 6/7]]";
 
         assert_eq!(
             Q::from((1, 2)),
@@ -274,7 +275,7 @@ mod test_from_str {
     /// Ensure that entries can have leading and trailing whitespaces.
     #[test]
     fn whitespaces_in_entries_works() {
-        let matrix_str1 = "[[  1/2, 2/3 ,  3/4  ],[3/4 ,4/5,5/6 ]]";
+        let matrix_str1 = "[[  1/2, 2/3 ,  3/4  ],[3/4 , 4/5, 5/6 ]]";
 
         assert_eq!(
             Q::from((1, 2)),
@@ -290,7 +291,7 @@ mod test_from_str {
     fn wrong_format_error() {
         let matrix_str1 = "[1/2, 2, 3],[3, 4/7, 5]]";
         let matrix_str2 = "[[1, 2/9, 3][3, 4, 5/5]]";
-        let matrix_str3 = "[[1, 2, 3/2],3, 4, 5]";
+        let matrix_str3 = "[[1, 2, 3/2], 3, 4, 5]";
         let matrix_str4 = "[1, 2, 3, 4/5, 5]";
         let matrix_str5 = "[ [1, 2/8, 3],[3, 4, 5]]";
         let matrix_str6 = "[[1, 2, 3],[3, 4/9, 5]8]";

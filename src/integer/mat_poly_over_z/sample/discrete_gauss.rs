@@ -121,7 +121,7 @@ mod test_sample_d {
             PolyOverQ::default(),
         ];
 
-        let orthogonal = MatZ::from_str("[[0, 1, 1, 0, 1, 1, 0 ,0, 0]]").unwrap();
+        let orthogonal = MatZ::from_str("[[0, 1, 1, 0, 1, 1, 0 , 0, 0]]").unwrap();
         for _ in 0..10 {
             let sample = MatPolyOverZ::sample_d(&base, 3, 100, &center, 10.5_f64).unwrap();
             let sample_embedded = sample.into_coefficient_embedding_from_matrix(3);

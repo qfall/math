@@ -51,7 +51,7 @@ impl Q {
 
             // Divide x*log_2(e) into an integer part i and the remainder r.
             // 2^(i+r) = 2^i * 2^r
-            // 2^r ~= r+1 for r in [0,1]
+            // 2^r ~= r+1 for r in [0, 1]
             let mut out: Q = base_2_remainder_exponent + 1;
             unsafe { fmpq_mul_2exp(&mut out.value, &out.value, base_2_int_exponent as u64) }
             out

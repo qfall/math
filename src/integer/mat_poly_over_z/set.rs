@@ -157,7 +157,7 @@ impl MatPolyOverZ {
     /// use std::str::FromStr;
     ///
     /// let mut mat1 = MatPolyOverZ::new(2, 2);
-    /// let mat2 = MatPolyOverZ::from_str("[[1  1,0]]").unwrap();
+    /// let mat2 = MatPolyOverZ::from_str("[[1  1, 0]]").unwrap();
     /// mat1.set_row(0, &mat2, 0);
     /// ```
     ///
@@ -455,7 +455,7 @@ mod test_setter {
         assert_eq!(PolyOverZ::from_str(value_str).unwrap(), entry);
     }
 
-    /// Ensure that setting entries at (0,0) works.
+    /// Ensure that setting entries at (0, 0) works.
     #[test]
     fn setting_at_zero() {
         let mut matrix = MatPolyOverZ::new(5, 10);
@@ -504,9 +504,9 @@ mod test_setter {
     /// Ensures that setting columns works fine for small entries
     #[test]
     fn column_small_entries() {
-        let mut m1 = MatPolyOverZ::from_str("[[0,1  2,0],[0,1  5,1  6]]").unwrap();
+        let mut m1 = MatPolyOverZ::from_str("[[0, 1  2, 0],[0, 1  5, 1  6]]").unwrap();
         let m2 = MatPolyOverZ::from_str("[[0],[1  -1]]").unwrap();
-        let cmp = MatPolyOverZ::from_str("[[0,0,0],[0,1  -1,1  6]]").unwrap();
+        let cmp = MatPolyOverZ::from_str("[[0, 0, 0],[0, 1  -1, 1  6]]").unwrap();
 
         let _ = m1.set_column(1, &m2, 0);
 
@@ -517,20 +517,20 @@ mod test_setter {
     #[test]
     fn column_large_entries() {
         let mut m1 = MatPolyOverZ::from_str(&format!(
-            "[[1  {},1  1,1  3,1  4],[1  {},1  4,1  {},1  5],[1  7,1  6,2  8 9, 0]]",
+            "[[1  {}, 1  1, 1  3, 1  4],[1  {}, 1  4, 1  {}, 1  5],[1  7, 1  6, 2  8 9, 0]]",
             i64::MIN,
             i64::MAX,
             u64::MAX
         ))
         .unwrap();
         let m2 = MatPolyOverZ::from_str(&format!(
-            "[[1  1,1  {}],[1  {},0],[1  7,1  -1]]",
+            "[[1  1, 1  {}],[1  {}, 0],[1  7, 1  -1]]",
             i64::MIN,
             i64::MAX
         ))
         .unwrap();
         let cmp = MatPolyOverZ::from_str(&format!(
-            "[[1  {},1  1,1  3,1  4],[0,1  4,1  {},1  5],[1  -1,1  6,2  8 9,0]]",
+            "[[1  {}, 1  1, 1  3, 1  4],[0, 1  4, 1  {}, 1  5],[1  -1, 1  6, 2  8 9, 0]]",
             i64::MIN,
             u64::MAX
         ))
@@ -545,7 +545,7 @@ mod test_setter {
     #[test]
     fn column_swap_same_entry() {
         let mut m1 = MatPolyOverZ::from_str(&format!(
-            "[[1  {},1  1,1  3,1  4],[1  {},1  4,1  {},1  5],[1  7,1  6,2  8 9,0]]",
+            "[[1  {}, 1  1, 1  3, 1  4],[1  {}, 1  4, 1  {}, 1  5],[1  7, 1  6, 2  8 9, 0]]",
             i64::MIN,
             i64::MAX,
             u64::MAX
@@ -584,9 +584,9 @@ mod test_setter {
     /// Ensures that setting rows works fine for small entries
     #[test]
     fn row_small_entries() {
-        let mut m1 = MatPolyOverZ::from_str("[[0,1  2,0],[0,2  5 6,0]]").unwrap();
-        let m2 = MatPolyOverZ::from_str("[[0,1  -1,1  2]]").unwrap();
-        let cmp = MatPolyOverZ::from_str("[[0,1  2,0],[0,1  -1,1  2]]").unwrap();
+        let mut m1 = MatPolyOverZ::from_str("[[0, 1  2, 0],[0, 2  5 6, 0]]").unwrap();
+        let m2 = MatPolyOverZ::from_str("[[0, 1  -1, 1  2]]").unwrap();
+        let cmp = MatPolyOverZ::from_str("[[0, 1  2, 0],[0, 1  -1, 1  2]]").unwrap();
 
         let _ = m1.set_row(1, &m2, 0);
 
@@ -597,20 +597,20 @@ mod test_setter {
     #[test]
     fn row_large_entries() {
         let mut m1 = MatPolyOverZ::from_str(&format!(
-            "[[1  {},1  1,1  3,1  4],[1  {},1  4,1  {},1  5],[1  7,1  6,2  8 9,0]]",
+            "[[1  {}, 1  1, 1  3, 1  4],[1  {}, 1  4, 1  {}, 1  5],[1  7, 1  6, 2  8 9, 0]]",
             i64::MIN,
             i64::MAX,
             u64::MAX
         ))
         .unwrap();
         let m2 = MatPolyOverZ::from_str(&format!(
-            "[[0,0,0,0],[1  {},0,1  {},0]]",
+            "[[0, 0, 0, 0],[1  {}, 0, 1  {}, 0]]",
             i64::MIN,
             i64::MAX
         ))
         .unwrap();
         let cmp = MatPolyOverZ::from_str(&format!(
-            "[[1  {},0,1  {},0],[1  {},1  4,1  {},1  5],[1  7,1  6,2  8 9,0]]",
+            "[[1  {}, 0, 1  {}, 0],[1  {}, 1  4, 1  {}, 1  5],[1  7, 1  6, 2  8 9, 0]]",
             i64::MIN,
             i64::MAX,
             i64::MAX,
@@ -627,7 +627,7 @@ mod test_setter {
     #[test]
     fn row_swap_same_entry() {
         let mut m1 = MatPolyOverZ::from_str(&format!(
-            "[[1  {},1  1,1  3,1  4],[1  {},1  4,1  {},1  5],[1  7,1  6,2  8 9,0]]",
+            "[[1  {}, 1  1, 1  3, 1  4],[1  {}, 1  4, 1  {}, 1  5],[1  7, 1  6, 2  8 9, 0]]",
             i64::MIN,
             i64::MAX,
             u64::MAX
@@ -672,8 +672,8 @@ mod test_swaps {
     /// Ensures that swapping entries works fine for small entries
     #[test]
     fn entries_small_entries() {
-        let mut matrix = MatPolyOverZ::from_str("[[1  1,1  2,1  3],[1  4,2  5 6,0]]").unwrap();
-        let cmp = MatPolyOverZ::from_str("[[1  1,2  5 6,1  3],[1  4,1  2,0]]").unwrap();
+        let mut matrix = MatPolyOverZ::from_str("[[1  1, 1  2, 1  3],[1  4, 2  5 6, 0]]").unwrap();
+        let cmp = MatPolyOverZ::from_str("[[1  1, 2  5 6, 1  3],[1  4, 1  2, 0]]").unwrap();
 
         let _ = matrix.swap_entries(1, 1, 0, 1);
 
@@ -684,14 +684,14 @@ mod test_swaps {
     #[test]
     fn entries_large_entries() {
         let mut matrix = MatPolyOverZ::from_str(&format!(
-            "[[1  {},1  1,1  3,1  4],[1  {},1  4,1  {},1  5],[1  7,1  6,2  8 9,0]]",
+            "[[1  {}, 1  1, 1  3, 1  4],[1  {}, 1  4, 1  {}, 1  5],[1  7, 1  6, 2  8 9, 0]]",
             i64::MIN,
             i64::MAX,
             u64::MAX
         ))
         .unwrap();
         let cmp = MatPolyOverZ::from_str(&format!(
-            "[[1  {},1  1,1  3,1  4],[1  {},1  4,1  {},1  5],[1  7,1  6,2  8 9,0]]",
+            "[[1  {}, 1  1, 1  3, 1  4],[1  {}, 1  4, 1  {}, 1  5],[1  7, 1  6, 2  8 9, 0]]",
             u64::MAX,
             i64::MAX,
             i64::MIN
@@ -707,7 +707,7 @@ mod test_swaps {
     #[test]
     fn entries_swap_same_entry() {
         let mut matrix = MatPolyOverZ::from_str(&format!(
-            "[[1  {},1  1,1  3,1  4],[1  {},1  4,1  {},1  5],[1  7,1  6,2  8 9,0]]",
+            "[[1  {}, 1  1, 1  3, 1  4],[1  {}, 1  4, 1  {}, 1  5],[1  7, 1  6, 2  8 9, 0]]",
             i64::MIN,
             i64::MAX,
             u64::MAX
@@ -744,7 +744,7 @@ mod test_swaps {
     /// Ensures that swapping columns works fine for small entries
     #[test]
     fn columns_small_entries() {
-        let mut matrix = MatPolyOverZ::from_str("[[1  1,1  2,1  3],[1  4,1  5,1  6]]").unwrap();
+        let mut matrix = MatPolyOverZ::from_str("[[1  1, 1  2, 1  3],[1  4, 1  5, 1  6]]").unwrap();
         let cmp_vec_0 = MatPolyOverZ::from_str("[[1  1],[1  4]]").unwrap();
         let cmp_vec_1 = MatPolyOverZ::from_str("[[1  3],[1  6]]").unwrap();
         let cmp_vec_2 = MatPolyOverZ::from_str("[[1  2],[1  5]]").unwrap();
@@ -760,7 +760,7 @@ mod test_swaps {
     #[test]
     fn columns_large_entries() {
         let mut matrix = MatPolyOverZ::from_str(&format!(
-            "[[1  {},1  1,1  3,1  4],[1  {},1  4,1  {},1  5],[1  7,1  6,2  8 7,0]]",
+            "[[1  {}, 1  1, 1  3, 1  4],[1  {}, 1  4, 1  {}, 1  5],[1  7, 1  6, 2  8 7, 0]]",
             i64::MIN,
             i64::MAX,
             u64::MAX
@@ -786,7 +786,7 @@ mod test_swaps {
     #[test]
     fn columns_swap_same_col() {
         let mut matrix = MatPolyOverZ::from_str(&format!(
-            "[[1  {},1  1,1  3,1  4],[1  {},1  4,1  {},1  5],[1  7,1  6,1  8,1  9]]",
+            "[[1  {}, 1  1, 1  3, 1  4],[1  {}, 1  4, 1  {}, 1  5],[1  7, 1  6, 1  8, 1  9]]",
             i64::MIN,
             i64::MAX,
             u64::MAX
@@ -813,9 +813,9 @@ mod test_swaps {
     /// Ensures that swapping rows works fine for small entries
     #[test]
     fn rows_small_entries() {
-        let mut matrix = MatPolyOverZ::from_str("[[1  1,1  2],[1  3,2  4 5]]").unwrap();
-        let cmp_vec_0 = MatPolyOverZ::from_str("[[1  3,2  4 5]]").unwrap();
-        let cmp_vec_1 = MatPolyOverZ::from_str("[[1  1,1  2]]").unwrap();
+        let mut matrix = MatPolyOverZ::from_str("[[1  1, 1  2],[1  3, 2  4 5]]").unwrap();
+        let cmp_vec_0 = MatPolyOverZ::from_str("[[1  3, 2  4 5]]").unwrap();
+        let cmp_vec_1 = MatPolyOverZ::from_str("[[1  1, 1  2]]").unwrap();
 
         let _ = matrix.swap_rows(1, 0);
 
@@ -827,18 +827,18 @@ mod test_swaps {
     #[test]
     fn rows_large_entries() {
         let mut matrix = MatPolyOverZ::from_str(&format!(
-            "[[1  {},1  1,1  3,1  4],[1  7,1  6,1  8,0],[1  {},1  4,1  {},1  5]]",
+            "[[1  {}, 1  1, 1  3, 1  4],[1  7, 1  6, 1  8, 0],[1  {}, 1  4, 1  {}, 1  5]]",
             i64::MIN,
             i64::MAX,
             u64::MAX
         ))
         .unwrap();
         let cmp_vec_0 =
-            MatPolyOverZ::from_str(&format!("[[1  {},1  4,1  {},1  5]]", i64::MAX, u64::MAX))
+            MatPolyOverZ::from_str(&format!("[[1  {}, 1  4, 1  {}, 1  5]]", i64::MAX, u64::MAX))
                 .unwrap();
-        let cmp_vec_1 = MatPolyOverZ::from_str("[[1  7,1  6,1  8,0]]").unwrap();
+        let cmp_vec_1 = MatPolyOverZ::from_str("[[1  7, 1  6, 1  8, 0]]").unwrap();
         let cmp_vec_2 =
-            MatPolyOverZ::from_str(&format!("[[1  {},1  1,1  3,1  4]]", i64::MIN)).unwrap();
+            MatPolyOverZ::from_str(&format!("[[1  {}, 1  1, 1  3, 1  4]]", i64::MIN)).unwrap();
 
         let _ = matrix.swap_rows(0, 2);
 
@@ -851,7 +851,7 @@ mod test_swaps {
     #[test]
     fn rows_swap_same_row() {
         let mut matrix = MatPolyOverZ::from_str(&format!(
-            "[[1  {},1  1,1  3,1  4],[1  {},1  4,1  {},1  5],[1  7,1  6,1  8,1  9]]",
+            "[[1  {}, 1  1, 1  3, 1  4],[1  {}, 1  4, 1  {}, 1  5],[1  7, 1  6, 1  8, 1  9]]",
             i64::MIN,
             i64::MAX,
             u64::MAX
@@ -884,7 +884,7 @@ mod test_reverses {
     /// Ensures that reversing columns works fine for small entries
     #[test]
     fn columns_small_entries() {
-        let mut matrix = MatPolyOverZ::from_str("[[1  1,1  2,2  3 4],[0,1  5,1  6]]").unwrap();
+        let mut matrix = MatPolyOverZ::from_str("[[1  1, 1  2, 2  3 4],[0, 1  5, 1  6]]").unwrap();
         let cmp_vec_0 = MatPolyOverZ::from_str("[[1  1],[0]]").unwrap();
         let cmp_vec_1 = MatPolyOverZ::from_str("[[1  2],[1  5]]").unwrap();
         let cmp_vec_2 = MatPolyOverZ::from_str("[[2  3 4],[1  6]]").unwrap();
@@ -900,7 +900,7 @@ mod test_reverses {
     #[test]
     fn columns_large_entries() {
         let mut matrix = MatPolyOverZ::from_str(&format!(
-            "[[1  {},1  1,1  3,1  4],[1  {},1  4,1  {},1  5],[1  7,1  6,2  8 9,0]]",
+            "[[1  {}, 1  1, 1  3, 1  4],[1  {}, 1  4, 1  {}, 1  5],[1  7, 1  6, 2  8 9, 0]]",
             i64::MIN,
             i64::MAX,
             u64::MAX
@@ -925,9 +925,9 @@ mod test_reverses {
     /// Ensures that reversing rows works fine for small entries
     #[test]
     fn rows_small_entries() {
-        let mut matrix = MatPolyOverZ::from_str("[[1  1,1  2],[2  3 4,0]]").unwrap();
-        let cmp_vec_0 = MatPolyOverZ::from_str("[[1  1,1  2]]").unwrap();
-        let cmp_vec_1 = MatPolyOverZ::from_str("[[2  3 4,0]]").unwrap();
+        let mut matrix = MatPolyOverZ::from_str("[[1  1, 1  2],[2  3 4, 0]]").unwrap();
+        let cmp_vec_0 = MatPolyOverZ::from_str("[[1  1, 1  2]]").unwrap();
+        let cmp_vec_1 = MatPolyOverZ::from_str("[[2  3 4, 0]]").unwrap();
 
         matrix.reverse_rows();
 
@@ -939,17 +939,17 @@ mod test_reverses {
     #[test]
     fn rows_large_entries() {
         let mut matrix = MatPolyOverZ::from_str(&format!(
-            "[[1  {},1  1,1  3,1  4],[1  7,1  6,2  8 9,0],[1  {},1  4,1  {},1  5]]",
+            "[[1  {}, 1  1, 1  3, 1  4],[1  7, 1  6, 2  8 9, 0],[1  {}, 1  4, 1  {}, 1  5]]",
             i64::MIN,
             i64::MAX,
             u64::MAX
         ))
         .unwrap();
         let cmp_vec_0 =
-            MatPolyOverZ::from_str(&format!("[[1  {},1  1,1  3,1  4]]", i64::MIN)).unwrap();
-        let cmp_vec_1 = MatPolyOverZ::from_str("[[1  7,1  6,2  8 9,0]]").unwrap();
+            MatPolyOverZ::from_str(&format!("[[1  {}, 1  1, 1  3, 1  4]]", i64::MIN)).unwrap();
+        let cmp_vec_1 = MatPolyOverZ::from_str("[[1  7, 1  6, 2  8 9, 0]]").unwrap();
         let cmp_vec_2 =
-            MatPolyOverZ::from_str(&format!("[[1  {},1  4,1  {},1  5]]", i64::MAX, u64::MAX))
+            MatPolyOverZ::from_str(&format!("[[1  {}, 1  4, 1  {}, 1  5]]", i64::MAX, u64::MAX))
                 .unwrap();
 
         matrix.reverse_rows();

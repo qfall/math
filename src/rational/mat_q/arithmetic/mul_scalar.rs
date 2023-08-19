@@ -35,7 +35,7 @@ impl Mul<&Z> for &MatQ {
     /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
     ///
-    /// let mat1 = MatQ::from_str("[[2/3,1],[1/2,2]]").unwrap();
+    /// let mat1 = MatQ::from_str("[[2/3, 1],[1/2, 2]]").unwrap();
     /// let integer = Z::from(3);
     ///
     /// let mat2 = &mat1 * &integer;
@@ -73,7 +73,7 @@ impl Mul<&Q> for &MatQ {
     /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
     ///
-    /// let mat1 = MatQ::from_str("[[2/3,1],[1/2,2]]").unwrap();
+    /// let mat1 = MatQ::from_str("[[2/3, 1],[1/2, 2]]").unwrap();
     /// let rational = Q::from(3/7);
     ///
     /// let mat2 = &mat1 * &rational;
@@ -105,9 +105,9 @@ mod test_mul_z {
     /// Checks if matrix multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
-        let mat1 = MatQ::from_str("[[2/3,1],[1/2,2]]").unwrap();
+        let mat1 = MatQ::from_str("[[2/3, 1],[1/2, 2]]").unwrap();
         let mat2 = mat1.clone();
-        let mat3 = MatQ::from_str("[[2,3],[3/2,6]]").unwrap();
+        let mat3 = MatQ::from_str("[[2, 3],[3/2, 6]]").unwrap();
         let integer = Z::from(3);
 
         let mat1 = &mat1 * &integer;
@@ -120,9 +120,9 @@ mod test_mul_z {
     /// Checks if scalar multiplication works fine for both owned
     #[test]
     fn owned_correctness() {
-        let mat1 = MatQ::from_str("[[2/3,1],[1/2,2]]").unwrap();
+        let mat1 = MatQ::from_str("[[2/3, 1],[1/2, 2]]").unwrap();
         let mat2 = mat1.clone();
-        let mat3 = MatQ::from_str("[[2,3],[3/2,6]]").unwrap();
+        let mat3 = MatQ::from_str("[[2, 3],[3/2, 6]]").unwrap();
         let integer1 = Z::from(3);
         let integer2 = Z::from(3);
 
@@ -136,11 +136,11 @@ mod test_mul_z {
     /// Checks if scalar multiplication works fine for half owned/borrowed
     #[test]
     fn half_correctness() {
-        let mat1 = MatQ::from_str("[[2/3,1],[1/2,2]]").unwrap();
+        let mat1 = MatQ::from_str("[[2/3, 1],[1/2, 2]]").unwrap();
         let mat2 = mat1.clone();
         let mat3 = mat1.clone();
         let mat4 = mat1.clone();
-        let mat5 = MatQ::from_str("[[2,3],[3/2,6]]").unwrap();
+        let mat5 = MatQ::from_str("[[2, 3],[3/2, 6]]").unwrap();
         let integer1 = Z::from(3);
         let integer2 = Z::from(3);
 
@@ -160,11 +160,11 @@ mod test_mul_z {
     #[allow(clippy::erasing_op)]
     fn different_types() {
         let mat1 = MatQ::from_str("[[1/2],[0],[4]]").unwrap();
-        let mat2 = MatQ::from_str("[[2,5,6],[1,3,1]]").unwrap();
+        let mat2 = MatQ::from_str("[[2, 5, 6],[1, 3, 1]]").unwrap();
         let mat3 = MatQ::from_str("[[1],[0],[8]]").unwrap();
         let mat4 = MatQ::from_str("[[0],[0],[0]]").unwrap();
         let mat5 = MatQ::from_str("[[-1/2],[0],[-4]]").unwrap();
-        let mat6 = MatQ::from_str("[[6,15,18],[3,9,3]]").unwrap();
+        let mat6 = MatQ::from_str("[[6, 15, 18],[3, 9, 3]]").unwrap();
 
         assert_eq!(mat3, 2u8 * &mat1);
         assert_eq!(mat3, 2i8 * &mat1);
@@ -183,9 +183,9 @@ mod test_mul_z {
     #[test]
     fn different_dimensions_correctness() {
         let mat1 = MatQ::from_str("[[1/2],[0],[4]]").unwrap();
-        let mat2 = MatQ::from_str("[[2,5/8,6],[1,3,1/7]]").unwrap();
+        let mat2 = MatQ::from_str("[[2, 5/8, 6],[1, 3, 1/7]]").unwrap();
         let mat3 = MatQ::from_str("[[3/2],[0],[12]]").unwrap();
-        let mat4 = MatQ::from_str("[[6,15/8,18],[3,9,3/7]]").unwrap();
+        let mat4 = MatQ::from_str("[[6, 15/8, 18],[3, 9, 3/7]]").unwrap();
         let integer = Z::from(3);
 
         assert_eq!(mat3, &integer * mat1);
@@ -222,9 +222,9 @@ mod test_mul_q {
     /// Checks if matrix multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
-        let mat1 = MatQ::from_str("[[2/3,1],[1/2,2]]").unwrap();
+        let mat1 = MatQ::from_str("[[2/3, 1],[1/2, 2]]").unwrap();
         let mat2 = mat1.clone();
-        let mat3 = MatQ::from_str("[[1,3/2],[3/4,3]]").unwrap();
+        let mat3 = MatQ::from_str("[[1, 3/2],[3/4, 3]]").unwrap();
         let rational = Q::from((3, 2));
 
         let mat1 = &mat1 * &rational;
@@ -237,9 +237,9 @@ mod test_mul_q {
     /// Checks if scalar multiplication works fine for both owned
     #[test]
     fn owned_correctness() {
-        let mat1 = MatQ::from_str("[[2/3,1],[1/2,2]]").unwrap();
+        let mat1 = MatQ::from_str("[[2/3, 1],[1/2, 2]]").unwrap();
         let mat2 = mat1.clone();
-        let mat3 = MatQ::from_str("[[1,3/2],[3/4,3]]").unwrap();
+        let mat3 = MatQ::from_str("[[1, 3/2],[3/4, 3]]").unwrap();
         let rational1 = Q::from((3, 2));
         let rational2 = Q::from((3, 2));
 
@@ -253,11 +253,11 @@ mod test_mul_q {
     /// Checks if scalar multiplication works fine for half owned/borrowed
     #[test]
     fn half_correctness() {
-        let mat1 = MatQ::from_str("[[2/3,1],[1/2,2]]").unwrap();
+        let mat1 = MatQ::from_str("[[2/3, 1],[1/2, 2]]").unwrap();
         let mat2 = mat1.clone();
         let mat3 = mat1.clone();
         let mat4 = mat1.clone();
-        let mat5 = MatQ::from_str("[[1,3/2],[3/4,3]]").unwrap();
+        let mat5 = MatQ::from_str("[[1, 3/2],[3/4, 3]]").unwrap();
         let rational1 = Q::from((3, 2));
         let rational2 = Q::from((3, 2));
 
@@ -277,7 +277,7 @@ mod test_mul_q {
     #[allow(clippy::erasing_op)]
     fn different_types() {
         let mat1 = MatQ::from_str("[[1/2],[0],[4]]").unwrap();
-        let mat2 = MatQ::from_str("[[2,5,6],[1,3,1]]").unwrap();
+        let mat2 = MatQ::from_str("[[2, 5, 6],[1, 3, 1]]").unwrap();
         let mat3 = MatQ::from_str("[[5/4],[0],[10]]").unwrap();
         let mat4 = MatQ::from_str("[[-799/8],[0],[-799]]").unwrap();
         let mat5 = MatQ::from_str("[[285/4, 1425/8, 855/4],[285/8, 855/8, 285/8]]").unwrap();
@@ -291,9 +291,9 @@ mod test_mul_q {
     #[test]
     fn different_dimensions_correctness() {
         let mat1 = MatQ::from_str("[[1/2],[0],[4]]").unwrap();
-        let mat2 = MatQ::from_str("[[2,5/8,6],[1,3,1/7]]").unwrap();
+        let mat2 = MatQ::from_str("[[2, 5/8, 6],[1, 3, 1/7]]").unwrap();
         let mat3 = MatQ::from_str("[[3/4],[0],[6]]").unwrap();
-        let mat4 = MatQ::from_str("[[3,15/16,9],[3/2,9/2,3/14]]").unwrap();
+        let mat4 = MatQ::from_str("[[3, 15/16, 9],[3/2, 9/2, 3/14]]").unwrap();
         let rational = Q::from((3, 2));
 
         assert_eq!(mat3, &rational * mat1);

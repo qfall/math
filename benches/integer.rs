@@ -21,8 +21,8 @@ use std::str::FromStr;
 /// 2. multiply them together resulting in a 1x1 matrix
 /// 3. assert that the result is correct.
 pub fn mat_z_4_4() -> Result<(), MathError> {
-    let mat_small_str = "[[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,16]]";
-    let row_vector = MatZ::from_str("[[1,2,3,4]]")?;
+    let mat_small_str = "[[1, 2, 3, 4],[5, 6, 7, 8],[9, 10, 11, 12],[13, 14, 15, 16]]";
+    let row_vector = MatZ::from_str("[[1, 2, 3, 4]]")?;
     let col_vector = MatZ::from_str("[[1],[2],[3],[4]]")?;
     let mat_small = MatZ::from_str(mat_small_str)?;
     let mat_large = MatZ::identity(4, 4) * u64::MAX;

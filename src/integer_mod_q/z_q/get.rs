@@ -16,7 +16,7 @@ use crate::{
 impl Zq {
     /// Returns the [`Z`] value of the [`Zq`] element.
     ///
-    /// The representation in the range `[0,modulus[` (`0` inclusive, `modulus` exclusive)
+    /// The representation in the range `[0, modulus[` (`0` inclusive, `modulus` exclusive)
     /// is returned.
     ///
     /// # Examples

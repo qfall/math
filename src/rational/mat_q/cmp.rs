@@ -24,11 +24,11 @@ impl PartialEq for MatQ {
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let a1 = MatQ::from_str("[[1/2,2],[3/2,4]]").unwrap();
-    /// let a2 = MatQ::from_str("[[2/4,2],[3/2,4]]").unwrap();
+    /// let a1 = MatQ::from_str("[[1/2, 2],[3/2, 4]]").unwrap();
+    /// let a2 = MatQ::from_str("[[2/4, 2],[3/2, 4]]").unwrap();
     /// assert!(a1 == a2);
     ///
-    /// let b = MatQ::from_str("[[1,2],[2,4]]").unwrap();
+    /// let b = MatQ::from_str("[[1, 2],[2, 4]]").unwrap();
     ///
     /// // These are all equivalent and return false.
     /// let compared: bool = (a1 == b);
@@ -59,7 +59,7 @@ mod test_partial_eq {
     /// Ensures that different instantiations do not break the equality between matrices
     #[test]
     fn equality_between_instantiations() {
-        let a = MatQ::from_str("[[0,1/2],[0/2,0]]").unwrap();
+        let a = MatQ::from_str("[[0, 1/2],[0/2, 0]]").unwrap();
         let mut b = MatQ::new(2, 2);
         b.set_entry(0, 1, Q::from((2, 4))).unwrap();
 
@@ -70,7 +70,7 @@ mod test_partial_eq {
     #[test]
     fn equality_for_large_and_small_entries() {
         let mat_str_1 = &format!(
-            "[[{}/{},{}/{}, 1],[-10, 10, 0],[0, 1, -10]]",
+            "[[{}/{}, {}/{}, 1],[-10, 10, 0],[0, 1, -10]]",
             i64::MIN,
             i64::MIN + 1,
             i64::MAX,
@@ -79,7 +79,7 @@ mod test_partial_eq {
 
         // like mat_str_1 but also 2nd row is expanded by 2
         let mat_str_2 = &format!(
-            "[[{}/{},{}/{}, 1],[-20/2, 20/2, 0/2],[0, 1, -10]]",
+            "[[{}/{}, {}/{}, 1],[-20/2, 20/2, 0/2],[0, 1, -10]]",
             i64::MIN,
             i64::MIN + 1,
             i64::MAX,
@@ -97,10 +97,11 @@ mod test_partial_eq {
     /// Checks that different unequal matrices are unequal
     #[test]
     fn not_equal() {
-        let a = MatQ::from_str(&format!("[[{},{}],[-10, 10]]", i64::MIN, i64::MAX)).unwrap();
-        let b = MatQ::from_str(&format!("[[0,{}],[-10, 10]]", i64::MAX)).unwrap();
-        let c = MatQ::from_str(&format!("[[{},{}],[-10, 10],[0,0]]", i64::MIN, i64::MAX)).unwrap();
-        let d = MatQ::from_str(&format!("[[{},{}]]", i64::MIN, i64::MAX)).unwrap();
+        let a = MatQ::from_str(&format!("[[{}, {}],[-10, 10]]", i64::MIN, i64::MAX)).unwrap();
+        let b = MatQ::from_str(&format!("[[0, {}],[-10, 10]]", i64::MAX)).unwrap();
+        let c =
+            MatQ::from_str(&format!("[[{}, {}],[-10, 10],[0, 0]]", i64::MIN, i64::MAX)).unwrap();
+        let d = MatQ::from_str(&format!("[[{}, {}]]", i64::MIN, i64::MAX)).unwrap();
         let e = MatQ::from_str("[[0]]").unwrap();
 
         assert_ne!(&a, &b);

@@ -34,7 +34,7 @@ impl MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let mat = MatZq::from_str("[[2,2,3],[2,5,7]] mod 8").unwrap();
+    /// let mat = MatZq::from_str("[[2, 2, 3],[2, 5, 7]] mod 8").unwrap();
     /// let y = MatZq::from_str("[[3],[5]] mod 8").unwrap();
     /// let x = mat.solve_gaussian_elimination(&y).unwrap();
     ///
@@ -153,7 +153,7 @@ mod test_solve {
     #[test]
     #[ignore] // TODO: remove ignore, once issue is closed
     fn solution_without_invertible_columns() {
-        let mat = MatZq::from_str("[[2,1],[3,1]] mod 6").unwrap();
+        let mat = MatZq::from_str("[[2, 1],[3, 1]] mod 6").unwrap();
         let y = MatZq::from_str("[[5],[2]] mod 6").unwrap();
 
         let x = mat.solve_gaussian_elimination(&y).unwrap();
@@ -165,7 +165,7 @@ mod test_solve {
     /// Ensure that the trivial solution can always be computed
     #[test]
     fn trivial_solution() {
-        let mat = MatZq::from_str("[[2,2,3],[2,5,7]] mod 8").unwrap();
+        let mat = MatZq::from_str("[[2, 2, 3],[2, 5, 7]] mod 8").unwrap();
         let y = MatZq::from_str("[[0],[0]] mod 8").unwrap();
         let x = mat.solve_gaussian_elimination(&y).unwrap();
 
@@ -176,7 +176,7 @@ mod test_solve {
     #[test]
     #[should_panic]
     fn different_moduli() {
-        let mat = MatZq::from_str("[[2,2,3],[2,5,7]] mod 8").unwrap();
+        let mat = MatZq::from_str("[[2, 2, 3],[2, 5, 7]] mod 8").unwrap();
         let y = MatZq::from_str("[[0],[0]] mod 7").unwrap();
         let _ = mat.solve_gaussian_elimination(&y).unwrap();
     }
@@ -185,7 +185,7 @@ mod test_solve {
     #[test]
     #[should_panic]
     fn different_nr_rows() {
-        let mat = MatZq::from_str("[[2,2,3],[2,5,7]] mod 8").unwrap();
+        let mat = MatZq::from_str("[[2, 2, 3],[2, 5, 7]] mod 8").unwrap();
         let y = MatZq::from_str("[[0],[0],[0]] mod 8").unwrap();
         let _ = mat.solve_gaussian_elimination(&y).unwrap();
     }
@@ -194,7 +194,7 @@ mod test_solve {
     #[test]
     #[should_panic]
     fn not_column_vector() {
-        let mat = MatZq::from_str("[[2,2,3],[2,5,7]] mod 8").unwrap();
+        let mat = MatZq::from_str("[[2, 2, 3],[2, 5, 7]] mod 8").unwrap();
         let y = MatZq::from_str("[[0, 1],[0, 1]] mod 8").unwrap();
         let _ = mat.solve_gaussian_elimination(&y).unwrap();
     }

@@ -171,7 +171,7 @@ impl MatZq {
     /// let center = MatQ::new(5, 1);
     /// let basis_gso = MatQ::from(&MatZ::from(&basis)).gso();
     ///
-    /// let sample = MatZq::sample_d_precomputed_gso(&basis,&basis_gso, 1024, &center, 1.25f32).unwrap();
+    /// let sample = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, 1024, &center, 1.25f32).unwrap();
     /// ```
     ///
     /// # Errors and Failures

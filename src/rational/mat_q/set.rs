@@ -54,7 +54,7 @@ impl<Rational: Into<Q>> SetEntry<Rational> for MatQ {
     ///
     /// matrix.set_entry(0, 1, &value).unwrap();
     /// matrix.set_entry(-1, -1, 5).unwrap();
-    /// matrix.set_entry(0, -1, (2,3)).unwrap();
+    /// matrix.set_entry(0, -1, (2, 3)).unwrap();
     ///
     /// assert_eq!("[[0, 5/2, 2/3],[0, 0, 0],[0, 0, 5]]", matrix.to_string());
     /// ```
@@ -161,7 +161,7 @@ impl MatQ {
     /// use std::str::FromStr;
     ///
     /// let mut mat1 = MatQ::new(2, 2);
-    /// let mat2 = MatQ::from_str("[[1,2]]").unwrap();
+    /// let mat2 = MatQ::from_str("[[1, 2]]").unwrap();
     /// mat1.set_row(0, &mat2, 0);
     /// ```
     ///
@@ -480,7 +480,7 @@ mod test_setter {
         assert_eq!(Q::from_str(&format!("1/-{}", u64::MAX)).unwrap(), entry2);
     }
 
-    /// Ensure that setting entries at (0,0) works.
+    /// Ensure that setting entries at (0, 0) works.
     #[test]
     fn getting_at_zero() {
         let mut matrix = MatQ::new(5, 10);
@@ -519,16 +519,16 @@ mod test_setter {
         matrix.set_entry(-1, -2, 8).unwrap();
         matrix.set_entry(-3, -3, 1).unwrap();
 
-        let matrix_cmp = MatQ::from_str("[[1,0,0],[0,0,0],[0,8,9]]").unwrap();
+        let matrix_cmp = MatQ::from_str("[[1, 0, 0],[0, 0, 0],[0, 8, 9]]").unwrap();
         assert_eq!(matrix_cmp, matrix);
     }
 
     /// Ensures that setting columns works fine for small entries
     #[test]
     fn column_small_entries() {
-        let mut m1 = MatQ::from_str("[[1,2,3/-1],[-4/3,5,6]]").unwrap();
+        let mut m1 = MatQ::from_str("[[1, 2, 3/-1],[-4/3, 5, 6]]").unwrap();
         let m2 = MatQ::from_str("[[0],[-1]]").unwrap();
-        let cmp = MatQ::from_str("[[1,0,-3],[4/-3,-1,6]]").unwrap();
+        let cmp = MatQ::from_str("[[1, 0, -3],[4/-3, -1, 6]]").unwrap();
 
         let _ = m1.set_column(1, &m2, 0);
 
@@ -539,15 +539,16 @@ mod test_setter {
     #[test]
     fn column_large_entries() {
         let mut m1 = MatQ::from_str(&format!(
-            "[[{}/1,1,3, 4],[{}/-1,4,-1/{},5],[7,6,8,9]]",
+            "[[{}/1, 1, 3, 4],[{}/-1, 4, -1/{}, 5],[7, 6, 8, 9]]",
             i64::MIN,
             i64::MAX,
             u64::MAX
         ))
         .unwrap();
-        let m2 = MatQ::from_str(&format!("[[1,-2/{}],[{},0],[7,-1]]", i64::MIN, i64::MAX)).unwrap();
+        let m2 =
+            MatQ::from_str(&format!("[[1, -2/{}],[{}, 0],[7, -1]]", i64::MIN, i64::MAX)).unwrap();
         let cmp = MatQ::from_str(&format!(
-            "[[-2/{},1,3, 4],[0,4,-1/{},5],[-1,6,8,9]]",
+            "[[-2/{}, 1, 3, 4],[0, 4, -1/{}, 5],[-1, 6, 8, 9]]",
             i64::MIN,
             u64::MAX
         ))
@@ -562,7 +563,7 @@ mod test_setter {
     #[test]
     fn column_swap_same_entry() {
         let mut m1 = MatQ::from_str(&format!(
-            "[[{}/-3,1,3, 4],[{}/-1,4,-{}/2,5],[7,6,8,9]]",
+            "[[{}/-3, 1, 3, 4],[{}/-1, 4, -{}/2, 5],[7, 6, 8, 9]]",
             i64::MIN,
             i64::MAX,
             u64::MAX
@@ -601,9 +602,9 @@ mod test_setter {
     /// Ensures that setting rows works fine for small entries
     #[test]
     fn row_small_entries() {
-        let mut m1 = MatQ::from_str("[[1,2,3/-1],[-4/3,5,6]]").unwrap();
-        let m2 = MatQ::from_str("[[0,-1/2,2]]").unwrap();
-        let cmp = MatQ::from_str("[[1,2,-3],[0,-1/2,2]]").unwrap();
+        let mut m1 = MatQ::from_str("[[1, 2, 3/-1],[-4/3, 5, 6]]").unwrap();
+        let m2 = MatQ::from_str("[[0, -1/2, 2]]").unwrap();
+        let cmp = MatQ::from_str("[[1, 2, -3],[0, -1/2, 2]]").unwrap();
 
         let _ = m1.set_row(1, &m2, 0);
 
@@ -614,16 +615,20 @@ mod test_setter {
     #[test]
     fn row_large_entries() {
         let mut m1 = MatQ::from_str(&format!(
-            "[[{},1,3,4],[{},4,{},5],[7,6,8,9]]",
+            "[[{}, 1, 3, 4],[{}, 4, {}, 5],[7, 6, 8, 9]]",
             i64::MIN,
             i64::MAX,
             u64::MAX
         ))
         .unwrap();
-        let m2 =
-            MatQ::from_str(&format!("[[0,0,0,0],[1/{},0,{}/3,0]]", i64::MIN, i64::MAX)).unwrap();
+        let m2 = MatQ::from_str(&format!(
+            "[[0, 0, 0, 0],[1/{}, 0, {}/3, 0]]",
+            i64::MIN,
+            i64::MAX
+        ))
+        .unwrap();
         let cmp = MatQ::from_str(&format!(
-            "[[1/{},0,{}/3,0],[{},4,{},5],[7,6,8,9]]",
+            "[[1/{}, 0, {}/3, 0],[{}, 4, {}, 5],[7, 6, 8, 9]]",
             i64::MIN,
             i64::MAX,
             i64::MAX,
@@ -640,7 +645,7 @@ mod test_setter {
     #[test]
     fn row_swap_same_entry() {
         let mut m1 = MatQ::from_str(&format!(
-            "[[{},1,3,4],[-{}/-1,4,{}/-3,5],[7,6,8,9]]",
+            "[[{}, 1, 3, 4],[-{}/-1, 4, {}/-3, 5],[7, 6, 8, 9]]",
             i64::MIN,
             i64::MAX,
             u64::MAX
@@ -685,8 +690,8 @@ mod test_swaps {
     /// Ensures that swapping entries works fine for small entries
     #[test]
     fn entries_small_entries() {
-        let mut matrix = MatQ::from_str("[[1,1/2,3/-5],[-4/3,-5,6]]").unwrap();
-        let cmp = MatQ::from_str("[[1,-5,3/-5],[-4/3,1/2,6]]").unwrap();
+        let mut matrix = MatQ::from_str("[[1, 1/2, 3/-5],[-4/3, -5, 6]]").unwrap();
+        let cmp = MatQ::from_str("[[1, -5, 3/-5],[-4/3, 1/2, 6]]").unwrap();
 
         let _ = matrix.swap_entries(1, 1, 0, 1);
 
@@ -697,14 +702,14 @@ mod test_swaps {
     #[test]
     fn entries_large_entries() {
         let mut matrix = MatQ::from_str(&format!(
-            "[[{}/2,1,3, 4],[{},4,-1/{},5],[7,6,8,9]]",
+            "[[{}/2, 1, 3, 4],[{}, 4, -1/{}, 5],[7, 6, 8, 9]]",
             i64::MIN,
             i64::MAX,
             u64::MAX
         ))
         .unwrap();
         let cmp = MatQ::from_str(&format!(
-            "[[-1/{},1,3, 4],[{},4,{}/2,5],[7,6,8,9]]",
+            "[[-1/{}, 1, 3, 4],[{}, 4, {}/2, 5],[7, 6, 8, 9]]",
             u64::MAX,
             i64::MAX,
             i64::MIN
@@ -720,7 +725,7 @@ mod test_swaps {
     #[test]
     fn entries_swap_same_entry() {
         let mut matrix = MatQ::from_str(&format!(
-            "[[{},1,3, 4],[{},4,{},5],[7,6,8,9]]",
+            "[[{}, 1, 3, 4],[{}, 4, {}, 5],[7, 6, 8, 9]]",
             i64::MIN,
             i64::MAX,
             u64::MAX
@@ -748,7 +753,7 @@ mod test_swaps {
     /// Ensures that swapping columns works fine for small entries
     #[test]
     fn columns_small_entries() {
-        let mut matrix = MatQ::from_str("[[1,2/-1,-3/1],[1/4,5/7,6]]").unwrap();
+        let mut matrix = MatQ::from_str("[[1, 2/-1, -3/1],[1/4, 5/7, 6]]").unwrap();
         let cmp_vec_0 = MatQ::from_str("[[1],[1/4]]").unwrap();
         let cmp_vec_1 = MatQ::from_str("[[-3],[6]]").unwrap();
         let cmp_vec_2 = MatQ::from_str("[[-2],[5/7]]").unwrap();
@@ -764,7 +769,7 @@ mod test_swaps {
     #[test]
     fn columns_large_entries() {
         let mut matrix = MatQ::from_str(&format!(
-            "[[{},1,3,4/-3],[{}/2,4,-1/{},5],[7,6,8/9,9]]",
+            "[[{}, 1, 3, 4/-3],[{}/2, 4, -1/{}, 5],[7, 6, 8/9, 9]]",
             i64::MIN,
             i64::MAX,
             u64::MAX
@@ -787,7 +792,7 @@ mod test_swaps {
     #[test]
     fn columns_swap_same_col() {
         let mut matrix = MatQ::from_str(&format!(
-            "[[{},1,3, 4],[{},4,{},5],[7,6,8,9]]",
+            "[[{}, 1, 3, 4],[{}, 4, {}, 5],[7, 6, 8, 9]]",
             i64::MIN,
             i64::MAX,
             u64::MAX
@@ -814,9 +819,9 @@ mod test_swaps {
     /// Ensures that swapping rows works fine for small entries
     #[test]
     fn rows_small_entries() {
-        let mut matrix = MatQ::from_str("[[1,2/-3],[3,-4/3]]").unwrap();
-        let cmp_vec_0 = MatQ::from_str("[[3,-4/3]]").unwrap();
-        let cmp_vec_1 = MatQ::from_str("[[1,2/-3]]").unwrap();
+        let mut matrix = MatQ::from_str("[[1, 2/-3],[3, -4/3]]").unwrap();
+        let cmp_vec_0 = MatQ::from_str("[[3, -4/3]]").unwrap();
+        let cmp_vec_1 = MatQ::from_str("[[1, 2/-3]]").unwrap();
 
         let _ = matrix.swap_rows(1, 0);
 
@@ -828,16 +833,16 @@ mod test_swaps {
     #[test]
     fn rows_large_entries() {
         let mut matrix = MatQ::from_str(&format!(
-            "[[{},1,3, 4],[7,6/-1,8,9/4],[1/{},4,-2/{},5/3]]",
+            "[[{}, 1, 3, 4],[7, 6/-1, 8, 9/4],[1/{}, 4, -2/{}, 5/3]]",
             i64::MIN,
             i64::MAX,
             u64::MAX
         ))
         .unwrap();
         let cmp_vec_0 =
-            MatQ::from_str(&format!("[[1/{},4,-2/{},5/3]]", i64::MAX, u64::MAX)).unwrap();
-        let cmp_vec_1 = MatQ::from_str("[[7,6/-1,8,9/4]]").unwrap();
-        let cmp_vec_2 = MatQ::from_str(&format!("[[{},1,3, 4]]", i64::MIN)).unwrap();
+            MatQ::from_str(&format!("[[1/{}, 4, -2/{}, 5/3]]", i64::MAX, u64::MAX)).unwrap();
+        let cmp_vec_1 = MatQ::from_str("[[7, 6/-1, 8, 9/4]]").unwrap();
+        let cmp_vec_2 = MatQ::from_str(&format!("[[{}, 1, 3, 4]]", i64::MIN)).unwrap();
 
         let _ = matrix.swap_rows(0, 2);
 
@@ -850,7 +855,7 @@ mod test_swaps {
     #[test]
     fn rows_swap_same_row() {
         let mut matrix = MatQ::from_str(&format!(
-            "[[{},1,3, 4],[{},4,{},5],[7,6,8,9]]",
+            "[[{}, 1, 3, 4],[{}, 4, {}, 5],[7, 6, 8, 9]]",
             i64::MIN,
             i64::MAX,
             u64::MAX
@@ -883,7 +888,7 @@ mod test_reverses {
     /// Ensures that reversing columns works fine for small entries
     #[test]
     fn columns_small_entries() {
-        let mut matrix = MatQ::from_str("[[1,2/-1,-3/1],[4,5/6,6]]").unwrap();
+        let mut matrix = MatQ::from_str("[[1, 2/-1, -3/1],[4, 5/6, 6]]").unwrap();
         let cmp_vec_0 = MatQ::from_str("[[1],[4]]").unwrap();
         let cmp_vec_1 = MatQ::from_str("[[-2],[5/6]]").unwrap();
         let cmp_vec_2 = MatQ::from_str("[[-3],[6]]").unwrap();
@@ -899,7 +904,7 @@ mod test_reverses {
     #[test]
     fn columns_large_entries() {
         let mut matrix = MatQ::from_str(&format!(
-            "[[1/{},1,3, 4],[-1/{},4,{},5],[7,6,8/9,9]]",
+            "[[1/{}, 1, 3, 4],[-1/{}, 4, {}, 5],[7, 6, 8/9, 9]]",
             i64::MIN,
             i64::MAX,
             u64::MAX
@@ -922,9 +927,9 @@ mod test_reverses {
     /// Ensures that reversing rows works fine for small entries
     #[test]
     fn rows_small_entries() {
-        let mut matrix = MatQ::from_str("[[1,2/-1],[-3/1,4]]").unwrap();
-        let cmp_vec_0 = MatQ::from_str("[[1,-2]]").unwrap();
-        let cmp_vec_1 = MatQ::from_str("[[-3,4]]").unwrap();
+        let mut matrix = MatQ::from_str("[[1, 2/-1],[-3/1, 4]]").unwrap();
+        let cmp_vec_0 = MatQ::from_str("[[1, -2]]").unwrap();
+        let cmp_vec_1 = MatQ::from_str("[[-3, 4]]").unwrap();
 
         matrix.reverse_rows();
 
@@ -936,15 +941,16 @@ mod test_reverses {
     #[test]
     fn rows_large_entries() {
         let mut matrix = MatQ::from_str(&format!(
-            "[[{},1,3,4],[7,6,8,9],[{},4,-2/{},5]]",
+            "[[{}, 1, 3, 4],[7, 6, 8, 9],[{}, 4, -2/{}, 5]]",
             i64::MIN,
             i64::MAX,
             u64::MAX
         ))
         .unwrap();
-        let cmp_vec_0 = MatQ::from_str(&format!("[[{},1,3, 4]]", i64::MIN)).unwrap();
-        let cmp_vec_1 = MatQ::from_str("[[7,6,8,9]]").unwrap();
-        let cmp_vec_2 = MatQ::from_str(&format!("[[{},4,-2/{},5]]", i64::MAX, u64::MAX)).unwrap();
+        let cmp_vec_0 = MatQ::from_str(&format!("[[{}, 1, 3, 4]]", i64::MIN)).unwrap();
+        let cmp_vec_1 = MatQ::from_str("[[7, 6, 8, 9]]").unwrap();
+        let cmp_vec_2 =
+            MatQ::from_str(&format!("[[{}, 4, -2/{}, 5]]", i64::MAX, u64::MAX)).unwrap();
 
         matrix.reverse_rows();
 

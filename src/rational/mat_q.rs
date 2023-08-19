@@ -50,7 +50,7 @@ mod vector;
 /// use std::str::FromStr;
 ///
 /// // instantiate new matrix
-/// let id_mat = MatQ::from_str("[[1/2,0/1],[0,1]]").unwrap();
+/// let id_mat = MatQ::from_str("[[1/2, 0/1],[0, 1]]").unwrap();
 ///
 /// // clone object, set and get entry
 /// let mut clone = id_mat.clone();

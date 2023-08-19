@@ -78,7 +78,7 @@ impl MatPolyOverZ {
     ///
     /// let matrix = MatZ::from_str("[[17, 1],[3, 2],[-5, 3],[1, 2]]").unwrap();
     /// let poly = MatPolyOverZ::from_coefficient_embedding_to_matrix(&matrix, 2);
-    /// let cmp_poly = MatPolyOverZ::from_str("[[2  17 3, 2  1 2],[2  -5 1,2  3 2]]").unwrap();
+    /// let cmp_poly = MatPolyOverZ::from_str("[[2  17 3, 2  1 2],[2  -5 1, 2  3 2]]").unwrap();
     /// assert_eq!(cmp_poly, poly);
     /// ```
     ///
@@ -117,7 +117,7 @@ impl MatPolyOverZ {
 
 impl IntoCoefficientEmbedding<MatZ> for &MatPolyOverZ {
     /// Computes the coefficient embedding of the row vector of polynomials
-    /// in a [`MatZ`]. The (i,j) th entry corresponds to the i-th coefficient
+    /// in a [`MatZ`]. The (i, j) th entry corresponds to the i-th coefficient
     /// of the j-th polynomial provided.
     /// It inverts the operation of [`MatPolyOverZ::from_coefficient_embedding`].
     ///
@@ -280,7 +280,7 @@ mod test_from_coefficient_embedding_to_matrix {
         let poly = MatPolyOverZ::from_coefficient_embedding_to_matrix(&matrix, 1);
 
         let cmp_poly = MatPolyOverZ::from_str(&format!(
-            "[[1  17, 0],[1  {},1  -1],[1  {}, 0]]",
+            "[[1  17, 0],[1  {}, 1  -1],[1  {}, 0]]",
             i64::MAX,
             i64::MIN
         ))

@@ -102,7 +102,7 @@ mod test_clone {
     fn entries_stored_separately() {
         let a: MatQ;
         let string = format!(
-            "[[{}/1,{}/2],[{}/3,{}/{}]]",
+            "[[{}/1, {}/2],[{}/3, {}/{}]]",
             u64::MAX,
             i64::MAX,
             i64::MIN,
@@ -152,7 +152,7 @@ mod test_drop {
     /// Creates a matrix with two large entries, drops it and outputs
     /// the points these two entries were stored in
     fn create_and_drop_matq() -> (i64, i64, i64, i64) {
-        let string = format!("[[{}/{},{}/{}]]", u64::MAX, i64::MIN, i64::MAX, 1);
+        let string = format!("[[{}/{}, {}/{}]]", u64::MAX, i64::MIN, i64::MAX, 1);
         let a = MatQ::from_str(&string).unwrap();
 
         let storage_num_0 = a.get_entry(0, 0).unwrap().value.num.0;

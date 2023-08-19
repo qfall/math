@@ -22,7 +22,7 @@ impl MatPolyOverZ {
     /// use std::str::FromStr;
     ///
     /// let mat = MatPolyOverZ::from_str("[[0, 1  42],[3  17 24 42, 1  17]]").unwrap();
-    /// let cmp = MatPolyOverZ::from_str("[[0,3  17 24 42],[1  42,1  17]]").unwrap();
+    /// let cmp = MatPolyOverZ::from_str("[[0, 3  17 24 42],[1  42, 1  17]]").unwrap();
     ///
     /// assert_eq!(mat.transpose(), cmp);
     /// ```
@@ -42,7 +42,7 @@ mod test_transpose {
     #[test]
     fn row_to_column() {
         let mat = MatPolyOverZ::from_str("[[1  42],[2  1 2],[1  17]]").unwrap();
-        let cmp = MatPolyOverZ::from_str("[[1  42,2  1 2,1  17]]").unwrap();
+        let cmp = MatPolyOverZ::from_str("[[1  42, 2  1 2, 1  17]]").unwrap();
 
         assert_eq!(cmp, mat.transpose());
     }
@@ -50,7 +50,7 @@ mod test_transpose {
     /// Checks if a column is correctly converted to a row
     #[test]
     fn column_to_row() {
-        let mat = MatPolyOverZ::from_str("[[1  42,2  1 2,1  17]]").unwrap();
+        let mat = MatPolyOverZ::from_str("[[1  42, 2  1 2, 1  17]]").unwrap();
         let cmp = MatPolyOverZ::from_str("[[1  42],[2  1 2],[1  17]]").unwrap();
 
         assert_eq!(cmp, mat.transpose());
@@ -60,7 +60,7 @@ mod test_transpose {
     #[test]
     fn different_entry_values() {
         let mat =
-            MatPolyOverZ::from_str(&format!("[[1  {},1  {},1  0]]", i64::MAX, i64::MIN)).unwrap();
+            MatPolyOverZ::from_str(&format!("[[1  {}, 1  {}, 1  0]]", i64::MAX, i64::MIN)).unwrap();
         let cmp = MatPolyOverZ::from_str(&format!("[[1  {}],[1  {}],[1  0]]", i64::MAX, i64::MIN))
             .unwrap();
 

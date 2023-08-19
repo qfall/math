@@ -186,8 +186,8 @@ impl<IntegerModQ: Into<Zq>> From<IntegerModQ> for PolyOverZq {
     /// ```
     /// use qfall_math::{integer_mod_q::*, traits::*};
     ///
-    /// let poly = PolyOverZq::from((1,10));
-    /// let poly_2 = PolyOverZq::from(Zq::from((1,10)));
+    /// let poly = PolyOverZq::from((1, 10));
+    /// let poly_2 = PolyOverZq::from(Zq::from((1, 10)));
     ///
     /// let value_cmp: Zq = poly.get_coeff(0).unwrap();
     /// assert_eq!(value_cmp, Zq::from((1, 10)));

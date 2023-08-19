@@ -37,8 +37,8 @@ impl Mul for &MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let a = MatZq::from_str("[[2,1],[1,2]] mod 3").unwrap();
-    /// let b = MatZq::from_str("[[1,0],[0,1]] mod 3").unwrap();
+    /// let a = MatZq::from_str("[[2, 1],[1, 2]] mod 3").unwrap();
+    /// let b = MatZq::from_str("[[1, 0],[0, 1]] mod 3").unwrap();
     ///
     /// let c = &a * &b;
     /// let d = a * b;
@@ -75,7 +75,7 @@ impl Mul<&MatZ> for &MatZq {
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
-    /// let a = MatZq::from_str("[[2,1],[1,2]] mod 3").unwrap();
+    /// let a = MatZq::from_str("[[2, 1],[1, 2]] mod 3").unwrap();
     /// let b = MatZ::identity(2, 2);
     ///
     /// let c = &a * &b;
@@ -122,8 +122,8 @@ impl MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let a = MatZq::from_str("[[2,1],[1,2]] mod 7").unwrap();
-    /// let b = MatZq::from_str("[[1,0],[0,1]] mod 7").unwrap();
+    /// let a = MatZq::from_str("[[2, 1],[1, 2]] mod 7").unwrap();
+    /// let b = MatZq::from_str("[[1, 0],[0, 1]] mod 7").unwrap();
     ///
     /// let c: MatZq = a.mul_safe(&b).unwrap();
     /// ```
@@ -167,10 +167,10 @@ mod test_mul {
     /// Checks if matrix multiplication works fine for squared matrices
     #[test]
     fn square_correctness() {
-        let mat_1 = MatZq::from_str("[[2,1],[1,2]] mod 3").unwrap();
-        let mat_2 = MatZq::from_str("[[1,0],[0,1]] mod 3").unwrap();
-        let mat_3 = MatZq::from_str("[[1,2],[2,1]] mod 3").unwrap();
-        let cmp = MatZq::from_str("[[4,5],[2,4]] mod 3").unwrap();
+        let mat_1 = MatZq::from_str("[[2, 1],[1, 2]] mod 3").unwrap();
+        let mat_2 = MatZq::from_str("[[1, 0],[0, 1]] mod 3").unwrap();
+        let mat_3 = MatZq::from_str("[[1, 2],[2, 1]] mod 3").unwrap();
+        let cmp = MatZq::from_str("[[4, 5],[2, 4]] mod 3").unwrap();
 
         assert_eq!(mat_1, &mat_1 * &mat_2);
         assert_eq!(cmp, &mat_1 * &mat_3);
@@ -179,7 +179,7 @@ mod test_mul {
     /// Checks if matrix multiplication works fine for matrices of different dimensions
     #[test]
     fn different_dimensions_correctness() {
-        let mat = MatZq::from_str("[[2,1],[1,2]] mod 3").unwrap();
+        let mat = MatZq::from_str("[[2, 1],[1, 2]] mod 3").unwrap();
         let vec = MatZq::from_str("[[2],[0]] mod 3").unwrap();
         let cmp = MatZq::from_str("[[1],[2]] mod 3").unwrap();
 
@@ -190,7 +190,7 @@ mod test_mul {
     #[test]
     fn large_entries() {
         let mat =
-            MatZq::from_str(&format!("[[{},1],[0,2]] mod {}", u64::MAX, u64::MAX - 58)).unwrap();
+            MatZq::from_str(&format!("[[{}, 1],[0, 2]] mod {}", u64::MAX, u64::MAX - 58)).unwrap();
         let vec = MatZq::from_str(&format!("[[{}],[0]] mod {}", u64::MAX, u64::MAX - 58)).unwrap();
         let mut cmp = MatZq::new(2, 1, u64::MAX - 58);
         let max: Z = u64::MAX.into();
@@ -203,9 +203,9 @@ mod test_mul {
     /// or mismatch moduli throws an error as expected
     #[test]
     fn errors() {
-        let mat_1 = MatZq::from_str("[[2,1],[1,2]] mod 4").unwrap();
-        let mat_2 = MatZq::from_str("[[1,0],[0,1],[0,0]] mod 4").unwrap();
-        let mat_3 = MatZq::from_str("[[2,1],[1,2]] mod 5").unwrap();
+        let mat_1 = MatZq::from_str("[[2, 1],[1, 2]] mod 4").unwrap();
+        let mat_2 = MatZq::from_str("[[1, 0],[0, 1],[0, 0]] mod 4").unwrap();
+        let mat_3 = MatZq::from_str("[[2, 1],[1, 2]] mod 5").unwrap();
         assert!((mat_1.mul_safe(&mat_2)).is_err());
         assert!((mat_1.mul_safe(&mat_3)).is_err());
     }
@@ -221,10 +221,10 @@ mod test_mul_matz {
     /// Checks if matrix multiplication works fine for squared matrices
     #[test]
     fn square_correctness() {
-        let mat_1 = MatZq::from_str("[[2,1],[1,2]] mod 3").unwrap();
+        let mat_1 = MatZq::from_str("[[2, 1],[1, 2]] mod 3").unwrap();
         let mat_2 = MatZ::identity(2, 2);
-        let mat_3 = MatZ::from_str("[[1,2],[2,1]]").unwrap();
-        let cmp = MatZq::from_str("[[4,5],[2,4]] mod 3").unwrap();
+        let mat_3 = MatZ::from_str("[[1, 2],[2, 1]]").unwrap();
+        let cmp = MatZq::from_str("[[4, 5],[2, 4]] mod 3").unwrap();
 
         assert_eq!(mat_1, &mat_1 * &mat_2);
         assert_eq!(cmp, &mat_1 * &mat_3);
@@ -233,7 +233,7 @@ mod test_mul_matz {
     /// Checks if matrix multiplication works fine for matrices of different dimensions
     #[test]
     fn different_dimensions_correctness() {
-        let mat = MatZq::from_str("[[2,1],[1,2]] mod 3").unwrap();
+        let mat = MatZq::from_str("[[2, 1],[1, 2]] mod 3").unwrap();
         let vec = MatZ::from_str("[[2],[0]]").unwrap();
         let cmp = MatZq::from_str("[[1],[2]] mod 3").unwrap();
 
@@ -245,7 +245,7 @@ mod test_mul_matz {
     #[test]
     fn large_entries() {
         let mat =
-            MatZq::from_str(&format!("[[{},1],[0,2]] mod {}", u64::MAX, u64::MAX - 58)).unwrap();
+            MatZq::from_str(&format!("[[{}, 1],[0, 2]] mod {}", u64::MAX, u64::MAX - 58)).unwrap();
         let vec = MatZ::from_str(&format!("[[{}],[0]]", u64::MAX)).unwrap();
         let mut cmp = MatZq::new(2, 1, u64::MAX - 58);
         let max: Z = u64::MAX.into();
@@ -260,8 +260,8 @@ mod test_mul_matz {
     #[test]
     #[should_panic]
     fn errors() {
-        let mat_1 = MatZq::from_str("[[2,1],[1,2]] mod 4").unwrap();
-        let mat_2 = MatZ::from_str("[[1,0],[0,1],[0,0]]").unwrap();
+        let mat_1 = MatZq::from_str("[[2, 1],[1, 2]] mod 4").unwrap();
+        let mat_2 = MatZ::from_str("[[1, 0],[0, 1],[0, 0]]").unwrap();
         let _ = &mat_1 * &mat_2;
     }
 }

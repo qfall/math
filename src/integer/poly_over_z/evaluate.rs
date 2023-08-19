@@ -119,7 +119,7 @@ mod test_evaluate_z {
         assert_eq!(Z::from_str(&res_cmp_str).unwrap(), res);
     }
 
-    /// Test if evaluate works with max of [`i64`], [`i32`], ...
+    /// Test if evaluate works with max of [`i64`],[`i32`], ...
     #[test]
     fn eval_max() {
         let poly = PolyOverZ::from_str("2  1 2").unwrap();
@@ -137,7 +137,7 @@ mod test_evaluate_z {
         let _: Z = poly.evaluate(u8::MAX);
     }
 
-    /// Test if evaluate works with min of [`i64`], [`i32`], ...
+    /// Test if evaluate works with min of [`i64`],[`i32`], ...
     #[test]
     fn eval_min() {
         let poly = PolyOverZ::from_str("2  1 2").unwrap();
