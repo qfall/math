@@ -150,9 +150,9 @@ impl MatZq {
 
     /// SampleD samples a discrete Gaussian from the lattice with a provided `basis`.
     ///
-    /// We do not check whether basis is actually a basis or whether `basis_gso` is
+    /// We do not check whether `basis` is actually a basis or whether `basis_gso` is
     /// actually the gso of `basis`. Hence, the callee is responsible for making sure
-    /// that basis provides a suitable basis and basis_gso is a corresponding GSO.
+    /// that `basis` provides a suitable basis and `basis_gso` is a corresponding GSO.
     ///
     /// Parameters:
     /// - `basis`: specifies a basis for the lattice from which is sampled

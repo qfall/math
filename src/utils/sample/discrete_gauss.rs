@@ -423,7 +423,6 @@ mod test_sample_d {
     };
     use flint_sys::fmpz_mat::fmpz_mat_hnf;
     use std::str::FromStr;
-
     use super::sample_d_precomputed_gso;
 
     /// Ensures that the doc-test compiles and runs properly.
@@ -667,7 +666,7 @@ mod test_sample_d {
         }
     }
 
-    /// Ensure that an orthogonalized base wit not matching rows panics.
+    /// Ensure that an orthogonalized base with not matching rows panics.
     #[test]
     #[should_panic]
     fn precomputed_gso_mismatching_rows() {
@@ -678,7 +677,7 @@ mod test_sample_d {
 
         let _ = sample_d_precomputed_gso(&basis, &false_gso, &n, &center, &Q::from(5)).unwrap();
     }
-    /// Ensure that an orthogonalized base wit not matching columns panics.
+    /// Ensure that an orthogonalized base with not matching columns panics.
     #[test]
     #[should_panic]
     fn precomputed_gso_mismatching_columns() {
