@@ -35,7 +35,7 @@ pub(crate) fn parse_matrix_string(string: &str) -> Result<Vec<Vec<String>>, Math
     // check if the matrix format is correct
     let entry_str = r"([^\[\],]+)";
     let row_str = format!(r"\[({entry_str},)*({entry_str})\]");
-    let matrix_str = format!(r"^\[({row_str},)*({row_str})\]$");
+    let matrix_str = format!(r"^\[({row_str},\s*)*({row_str})\]$");
     let regex = Regex::new(&matrix_str).expect("The regular expression could not be processed.");
 
     // explanation of this regex:
@@ -51,6 +51,7 @@ pub(crate) fn parse_matrix_string(string: &str) -> Result<Vec<Vec<String>>, Math
     }
 
     // delete `[[` in front and `]]` in the end and split the matrix into rows
+    let string = string.replace("], [", "],[");
     let rows = string[2..string.len() - 2].split("],[");
 
     let mut matrix: Vec<Vec<String>> = Vec::new();
