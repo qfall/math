@@ -24,20 +24,20 @@ impl PartialEq for MatQ {
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let a1 = MatQ::from_str("[[1/2, 2],[3/2, 4]]").unwrap();
-    /// let a2 = MatQ::from_str("[[2/4, 2],[3/2, 4]]").unwrap();
-    /// assert!(a1 == a2);
+    /// let a_1 = MatQ::from_str("[[1/2, 2],[3/2, 4]]").unwrap();
+    /// let a_2 = MatQ::from_str("[[2/4, 2],[3/2, 4]]").unwrap();
+    /// assert!(a_1 == a_2);
     ///
     /// let b = MatQ::from_str("[[1, 2],[2, 4]]").unwrap();
     ///
     /// // These are all equivalent and return false.
-    /// let compared: bool = (a1 == b);
+    /// let compared: bool = (a_1 == b);
     /// # assert!(!compared);
-    /// let compared: bool = (&a1 == &b);
+    /// let compared: bool = (&a_1 == &b);
     /// # assert!(!compared);
-    /// let compared: bool = (a1.eq(&b));
+    /// let compared: bool = (a_1.eq(&b));
     /// # assert!(!compared);
-    /// let compared: bool = (MatQ::eq(&a1, &b));
+    /// let compared: bool = (MatQ::eq(&a_1, &b));
     /// # assert!(!compared);
     /// ```
     fn eq(&self, other: &Self) -> bool {

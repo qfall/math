@@ -33,18 +33,18 @@ mod test_serialize {
     #[test]
     fn serialize_output_positive() {
         let z = Z::from(17);
-        let cmp_string = "{\"value\":\"17\"}";
+        let cmp_str = "{\"value\":\"17\"}";
 
-        assert_eq!(cmp_string, serde_json::to_string(&z).unwrap());
+        assert_eq!(cmp_str, serde_json::to_string(&z).unwrap());
     }
 
     /// Tests whether the serialization of a negative [`Z`] works.
     #[test]
     fn serialize_output_negative() {
         let z = Z::from(-17);
-        let cmp_string = "{\"value\":\"-17\"}";
+        let cmp_str = "{\"value\":\"-17\"}";
 
-        assert_eq!(cmp_string, serde_json::to_string(&z).unwrap());
+        assert_eq!(cmp_str, serde_json::to_string(&z).unwrap());
     }
 
     /// Tests whether the serialization of a positive large [`Z`] works.
@@ -52,9 +52,9 @@ mod test_serialize {
     fn serialize_output_positive_large() {
         let val_str = u64::MAX.to_string();
         let z = Z::from_str(&val_str).unwrap();
-        let cmp_string = format!("{{\"value\":\"{val_str}\"}}");
+        let cmp_str = format!("{{\"value\":\"{val_str}\"}}");
 
-        assert_eq!(cmp_string, serde_json::to_string(&z).unwrap());
+        assert_eq!(cmp_str, serde_json::to_string(&z).unwrap());
     }
 
     /// Tests whether the serialization of a negative large [`Z`] works.
@@ -62,9 +62,9 @@ mod test_serialize {
     fn serialize_output_negative_large() {
         let val_str = format!("-{}", u64::MAX);
         let z = Z::from_str(&val_str).unwrap();
-        let cmp_string = format!("{{\"value\":\"{val_str}\"}}");
+        let cmp_str = format!("{{\"value\":\"{val_str}\"}}");
 
-        assert_eq!(cmp_string, serde_json::to_string(&z).unwrap());
+        assert_eq!(cmp_str, serde_json::to_string(&z).unwrap());
     }
 }
 

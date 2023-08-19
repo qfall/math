@@ -54,21 +54,21 @@ mod test_to_string {
     /// same string, when it is converted back to a string
     #[test]
     fn working_keeps_same_string() {
-        let cmp_string = "5  0 1 2/5 -3/2 1";
-        let cmp = PolyOverQ::from_str(cmp_string).unwrap();
+        let cmp_str = "5  0 1 2/5 -3/2 1";
+        let cmp = PolyOverQ::from_str(cmp_str).unwrap();
 
-        assert_eq!(cmp_string, cmp.to_string());
+        assert_eq!(cmp_str, cmp.to_string());
     }
 
     /// Tests whether a polynomial that is created using a string, returns a
     /// string that can be used to create a polynomial
     #[test]
     fn working_use_result_of_to_string_as_input() {
-        let cmp_string = "5  0 1 2/5 -3/2 1";
-        let cmp = PolyOverQ::from_str(cmp_string).unwrap();
+        let cmp_str = "5  0 1 2/5 -3/2 1";
+        let cmp = PolyOverQ::from_str(cmp_str).unwrap();
 
-        let cmp_string2 = cmp.to_string();
+        let cmp_str_2 = cmp.to_string();
 
-        assert!(PolyOverQ::from_str(&cmp_string2).is_ok());
+        assert!(PolyOverQ::from_str(&cmp_str_2).is_ok());
     }
 }

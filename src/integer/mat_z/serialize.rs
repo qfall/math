@@ -34,9 +34,9 @@ mod test_serialize {
     fn serialize_output_positive() {
         let mat_poly_str = "[[17, 42],[1, 17]]";
         let mat_poly_z = MatZ::from_str(mat_poly_str).unwrap();
-        let cmp_string = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
+        let cmp_str = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
 
-        assert_eq!(cmp_string, serde_json::to_string(&mat_poly_z).unwrap());
+        assert_eq!(cmp_str, serde_json::to_string(&mat_poly_z).unwrap());
     }
 
     /// Tests whether the serialization of a negative [`MatZ`] works.
@@ -44,9 +44,9 @@ mod test_serialize {
     fn serialize_output_negative() {
         let mat_poly_str = "[[-17, -42, 1],[-13, -5, -42]]";
         let mat_poly_z = MatZ::from_str(mat_poly_str).unwrap();
-        let cmp_string = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
+        let cmp_str = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
 
-        assert_eq!(cmp_string, serde_json::to_string(&mat_poly_z).unwrap());
+        assert_eq!(cmp_str, serde_json::to_string(&mat_poly_z).unwrap());
     }
 
     /// Tests whether the serialization of a positive large [`MatZ`] works.
@@ -54,9 +54,9 @@ mod test_serialize {
     fn serialize_output_positive_large() {
         let mat_poly_str = format!("[[3, -17, {}, 1, 2, -13, 5]]", u64::MAX);
         let mat_poly_z = MatZ::from_str(&mat_poly_str).unwrap();
-        let cmp_string = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
+        let cmp_str = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
 
-        assert_eq!(cmp_string, serde_json::to_string(&mat_poly_z).unwrap());
+        assert_eq!(cmp_str, serde_json::to_string(&mat_poly_z).unwrap());
     }
 
     /// Tests whether the serialization of a negative large [`MatZ`] works.
@@ -64,9 +64,9 @@ mod test_serialize {
     fn serialize_output_negative_large() {
         let mat_poly_str = format!("[[3, -17, -{}, 1, 2, -13, 5]]", u64::MAX);
         let mat_poly_z = MatZ::from_str(&mat_poly_str).unwrap();
-        let cmp_string = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
+        let cmp_str = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
 
-        assert_eq!(cmp_string, serde_json::to_string(&mat_poly_z).unwrap());
+        assert_eq!(cmp_str, serde_json::to_string(&mat_poly_z).unwrap());
     }
 }
 
@@ -79,40 +79,40 @@ mod test_deserialize {
     #[test]
     fn deserialize_positive() {
         let mat_poly_str = "[[17, 42],[1, 17]]";
-        let cmp_string = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
+        let cmp_str = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
 
         let mat_poly_z = MatZ::from_str(mat_poly_str).unwrap();
-        assert_eq!(mat_poly_z, serde_json::from_str(&cmp_string).unwrap());
+        assert_eq!(mat_poly_z, serde_json::from_str(&cmp_str).unwrap());
     }
 
     /// Tests whether the deserialization of a negative [`MatZ`] works.
     #[test]
     fn deserialize_negative() {
         let mat_poly_str = "[[-17, -42, 1],[-13, -5, -42]]";
-        let cmp_string = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
+        let cmp_str = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
 
         let mat_poly_z = MatZ::from_str(mat_poly_str).unwrap();
-        assert_eq!(mat_poly_z, serde_json::from_str(&cmp_string).unwrap());
+        assert_eq!(mat_poly_z, serde_json::from_str(&cmp_str).unwrap());
     }
 
     /// Tests whether the deserialization of a positive large [`MatZ`] works.
     #[test]
     fn deserialize_positive_large() {
         let mat_poly_str = format!("[[3, -17, {}, 1, 2, -13, 5]]", u64::MAX);
-        let cmp_string = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
+        let cmp_str = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
 
         let mat_poly_z = MatZ::from_str(&mat_poly_str).unwrap();
-        assert_eq!(mat_poly_z, serde_json::from_str(&cmp_string).unwrap());
+        assert_eq!(mat_poly_z, serde_json::from_str(&cmp_str).unwrap());
     }
 
     /// Tests whether the deserialization of a negative large [`MatZ`] works.
     #[test]
     fn deserialize_negative_large() {
         let mat_poly_str = format!("[[3, -17, -{}, 1, 2, -13, 5]]", u64::MAX);
-        let cmp_string = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
+        let cmp_str = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
 
         let mat_poly_z = MatZ::from_str(&mat_poly_str).unwrap();
-        assert_eq!(mat_poly_z, serde_json::from_str(&cmp_string).unwrap());
+        assert_eq!(mat_poly_z, serde_json::from_str(&cmp_str).unwrap());
     }
 
     /// Tests whether no fields 'matrix' provided yield an error

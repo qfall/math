@@ -43,14 +43,14 @@ mod to_string;
 /// let a = Z::from(1200);
 /// let b = Z::from(20);
 ///
-/// let fac1 = Factorization::from(&a);
-/// let mut fac2 = Factorization::from((&a, &b));
+/// let fac_1 = Factorization::from(&a);
+/// let mut fac_2 = Factorization::from((&a, &b));
 ///
 /// // refinement
-/// fac2.refine();
+/// fac_2.refine();
 ///
 /// // to_string
-/// assert_eq!("[(3, 1), (20, 3)]", &fac2.to_string());
+/// assert_eq!("[(3, 1), (20, 3)]", &fac_2.to_string());
 /// ```
 #[derive(Debug)]
 pub struct Factorization {

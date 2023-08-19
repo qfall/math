@@ -53,11 +53,11 @@ mod test_is_one {
     /// Ensure that is_one returns `true` for the one polynomial.
     #[test]
     fn one_detection() {
-        let constant1 = PolyOverZ::from(1);
-        let constant2 = PolyOverZ::from_str("3  1 0 0").unwrap();
+        let constant_1 = PolyOverZ::from(1);
+        let constant_2 = PolyOverZ::from_str("3  1 0 0").unwrap();
 
-        assert!(constant1.is_one());
-        assert!(constant2.is_one());
+        assert!(constant_1.is_one());
+        assert!(constant_2.is_one());
     }
 
     /// Ensure that is_one returns `false` for other polynomials.
@@ -79,11 +79,11 @@ mod test_is_zero {
     /// Ensure that is_zero returns `true` for the zero polynomial.
     #[test]
     fn zero_detection() {
-        let zero1 = PolyOverZ::from(0);
-        let zero2 = PolyOverZ::from_str("3  0 0 0").unwrap();
+        let zero_1 = PolyOverZ::from(0);
+        let zero_2 = PolyOverZ::from_str("3  0 0 0").unwrap();
 
-        assert!(zero1.is_zero());
-        assert!(zero2.is_zero());
+        assert!(zero_1.is_zero());
+        assert!(zero_2.is_zero());
     }
 
     /// Ensure that is_zero returns `false` for non-zero polynomials.

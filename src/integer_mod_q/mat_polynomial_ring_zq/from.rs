@@ -162,20 +162,20 @@ mod test_from_poly_over_z_modulus_polynomial_ring_zq {
     fn different_dimensions() {
         let modulus =
             ModulusPolynomialRingZq::from_str(&format!("3  1 9 12 mod {LARGE_PRIME}")).unwrap();
-        let poly_mat1 = MatPolyOverZ::from_str("[[2  1 8],[2  1 2]]").unwrap();
-        let poly_mat2 = MatPolyOverZ::from_str("[[2  1 8, 1  42, 0],[0, 2  1 2, 1  17]]").unwrap();
-        let poly_mat3 = MatPolyOverZ::from_str("[[2  1 8]]").unwrap();
+        let poly_mat_1 = MatPolyOverZ::from_str("[[2  1 8],[2  1 2]]").unwrap();
+        let poly_mat_2 = MatPolyOverZ::from_str("[[2  1 8, 1  42, 0],[0, 2  1 2, 1  17]]").unwrap();
+        let poly_mat_3 = MatPolyOverZ::from_str("[[2  1 8]]").unwrap();
 
         let poly_ring_mat_1 =
-            MatPolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_mat1, &modulus);
+            MatPolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_mat_1, &modulus);
         let poly_ring_mat_2 =
-            MatPolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_mat2, &modulus);
+            MatPolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_mat_2, &modulus);
         let poly_ring_mat_3 =
-            MatPolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_mat3, &modulus);
+            MatPolynomialRingZq::from_poly_over_z_modulus_polynomial_ring_zq(&poly_mat_3, &modulus);
 
-        assert_eq!(poly_ring_mat_1.matrix, poly_mat1);
-        assert_eq!(poly_ring_mat_2.matrix, poly_mat2);
-        assert_eq!(poly_ring_mat_3.matrix, poly_mat3);
+        assert_eq!(poly_ring_mat_1.matrix, poly_mat_1);
+        assert_eq!(poly_ring_mat_2.matrix, poly_mat_2);
+        assert_eq!(poly_ring_mat_3.matrix, poly_mat_3);
     }
 
     /// Ensures that the function is still available for all values implementing

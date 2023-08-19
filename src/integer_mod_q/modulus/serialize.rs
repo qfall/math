@@ -33,9 +33,9 @@ mod test_serialize {
     #[test]
     fn serialize_output_positive() {
         let z = Modulus::from(17);
-        let cmp_string = "{\"modulus\":\"17\"}";
+        let cmp_str = "{\"modulus\":\"17\"}";
 
-        assert_eq!(cmp_string, serde_json::to_string(&z).unwrap());
+        assert_eq!(cmp_str, serde_json::to_string(&z).unwrap());
     }
 
     /// Tests whether the serialization of a positive large [`Modulus`] works.
@@ -43,9 +43,9 @@ mod test_serialize {
     fn serialize_output_positive_large() {
         let val_str = u64::MAX.to_string();
         let z = Modulus::from_str(&val_str).unwrap();
-        let cmp_string = format!("{{\"modulus\":\"{val_str}\"}}");
+        let cmp_str = format!("{{\"modulus\":\"{val_str}\"}}");
 
-        assert_eq!(cmp_string, serde_json::to_string(&z).unwrap());
+        assert_eq!(cmp_str, serde_json::to_string(&z).unwrap());
     }
 }
 

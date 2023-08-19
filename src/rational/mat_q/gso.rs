@@ -89,8 +89,8 @@ mod test_gso {
                 assert_eq!(cmp, vec_i.dot_product(&vec_j).unwrap());
             }
         }
-        let vec1 = mat_gso.get_column(0).unwrap();
-        assert_ne!(cmp, vec1.dot_product(&vec1).unwrap());
+        let vec_1 = mat_gso.get_column(0).unwrap();
+        assert_ne!(cmp, vec_1.dot_product(&vec_1).unwrap());
     }
 
     /// Ensure that gso works with more rows than columns
@@ -137,27 +137,27 @@ mod test_gso {
     /// Ensure that gso works on edge cases
     #[test]
     fn gso_edge_cases() {
-        let mat1 = MatQ::from_str("[[1]]").unwrap();
-        let mat2 = MatQ::from_str("[[1, 2/2, 3/7]]").unwrap();
-        let mat3 = MatQ::from_str("[[1],[2/2],[3/7]]").unwrap();
+        let mat_1 = MatQ::from_str("[[1]]").unwrap();
+        let mat_2 = MatQ::from_str("[[1, 2/2, 3/7]]").unwrap();
+        let mat_3 = MatQ::from_str("[[1],[2/2],[3/7]]").unwrap();
 
-        let mat1_gso = mat1.gso();
-        let mat2_gso = mat2.gso();
-        let mat3_gso = mat3.gso();
+        let mat_1_gso = mat_1.gso();
+        let mat_2_gso = mat_2.gso();
+        let mat_3_gso = mat_3.gso();
 
-        assert_eq!(Q::ONE, mat1_gso.get_entry(0, 0).unwrap());
+        assert_eq!(Q::ONE, mat_1_gso.get_entry(0, 0).unwrap());
 
         let cmp = Q::ZERO;
         for i in 0..3 {
             for j in i + 1..3 {
-                let vec_i = mat2_gso.get_column(i).unwrap();
-                let vec_j = mat2_gso.get_column(j).unwrap();
+                let vec_i = mat_2_gso.get_column(i).unwrap();
+                let vec_j = mat_2_gso.get_column(j).unwrap();
                 assert_eq!(cmp, vec_i.dot_product(&vec_j).unwrap());
             }
         }
-        let vec1 = mat2_gso.get_column(0).unwrap();
-        assert_ne!(cmp, vec1.dot_product(&vec1).unwrap());
+        let vec_1 = mat_2_gso.get_column(0).unwrap();
+        assert_ne!(cmp, vec_1.dot_product(&vec_1).unwrap());
 
-        assert_eq!(mat3, mat3_gso);
+        assert_eq!(mat_3, mat_3_gso);
     }
 }

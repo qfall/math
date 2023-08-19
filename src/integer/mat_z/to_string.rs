@@ -88,14 +88,14 @@ mod test_to_string {
     /// Tests whether a matrix with positive entries works in a roundtrip
     #[test]
     fn working_large_dimensions() {
-        let cmp1 = MatZ::from_str(&format!("[{}[5, 6, 7]]", "[1, 2, 3],".repeat(99))).unwrap();
-        let cmp2 = MatZ::from_str(&format!("[[{}1]]", "1, ".repeat(99))).unwrap();
+        let cmp_1 = MatZ::from_str(&format!("[{}[5, 6, 7]]", "[1, 2, 3],".repeat(99))).unwrap();
+        let cmp_2 = MatZ::from_str(&format!("[[{}1]]", "1, ".repeat(99))).unwrap();
 
         assert_eq!(
             format!("[{}[5, 6, 7]]", "[1, 2, 3],".repeat(99)),
-            cmp1.to_string()
+            cmp_1.to_string()
         );
-        assert_eq!(format!("[[{}1]]", "1, ".repeat(99)), cmp2.to_string());
+        assert_eq!(format!("[[{}1]]", "1, ".repeat(99)), cmp_2.to_string());
     }
 
     /// Tests whether a matrix that is created using a string, returns a
@@ -104,8 +104,8 @@ mod test_to_string {
     fn working_use_result_of_to_string_as_input() {
         let cmp = MatZ::from_str("[[-2, 1, 3],[5, -6, 7]]").unwrap();
 
-        let cmp_string2 = cmp.to_string();
+        let cmp_str_2 = cmp.to_string();
 
-        assert!(MatZ::from_str(&cmp_string2).is_ok());
+        assert!(MatZ::from_str(&cmp_str_2).is_ok());
     }
 }

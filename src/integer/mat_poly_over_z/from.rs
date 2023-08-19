@@ -27,7 +27,7 @@ impl FromStr for MatPolyOverZ {
 
     /// Creates a [`MatPolyOverZ`] matrix from a [`String`].
     /// The format of that string looks like <br>
-    /// `[[poly1, poly2, poly3],[poly4, poly5, poly6]]` for a 2x3 matrix
+    /// `[[poly_1, poly_2, poly_3],[poly_4, poly_5, poly_6]]` for a 2x3 matrix
     /// where thirst three polynomials are in the first row and the second three are
     /// in the second row.
     ///
@@ -51,8 +51,8 @@ impl FromStr for MatPolyOverZ {
     /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     ///
-    /// let str1 = "[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]";
-    /// let matrix = MatPolyOverZ::from_str(str1).unwrap();
+    /// let str_1 = "[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]";
+    /// let matrix = MatPolyOverZ::from_str(str_1).unwrap();
     /// ```
     ///
     /// ```
@@ -152,12 +152,12 @@ mod test_from_str {
     #[test]
     fn init_works_large_numbers() {
         let entry = format!("1  {}", u64::MAX);
-        let matrix_string1 =
+        let matrix_str_1 =
             format!("[[{entry}, 2  24 42, 2  24 42],[2  24 42, 2  24 42, 2  24 42]]");
 
         assert_eq!(
             entry,
-            MatPolyOverZ::from_str(&matrix_string1)
+            MatPolyOverZ::from_str(&matrix_str_1)
                 .unwrap()
                 .get_entry(0, 0)
                 .unwrap()
@@ -170,14 +170,14 @@ mod test_from_str {
     #[test]
     fn init_works_small_numbers() {
         let entry = format!("1  -{}", u64::MAX);
-        let matrix_string1 = format!(
+        let matrix_str_1 = format!(
             "[[{}, 2  24 42, 2  24 42],[2  24 42, 2  24 42, 2  24 42]]",
             entry,
         );
 
         assert_eq!(
             entry,
-            MatPolyOverZ::from_str(&matrix_string1)
+            MatPolyOverZ::from_str(&matrix_str_1)
                 .unwrap()
                 .get_entry(0, 0)
                 .unwrap()
@@ -189,14 +189,14 @@ mod test_from_str {
     #[test]
     fn whitespaces_in_entries_works() {
         let entry = format!("1  {}            ", u64::MAX);
-        let matrix_string1 = format!(
+        let matrix_str_1 = format!(
             "[[{},     2  24 42, 2  24 42     ],[  2  24 42, 2  24 42  ,   2  24 42]]",
             entry,
         );
 
         assert_eq!(
             format!("1  {}", u64::MAX),
-            MatPolyOverZ::from_str(&matrix_string1)
+            MatPolyOverZ::from_str(&matrix_str_1)
                 .unwrap()
                 .get_entry(0, 0)
                 .unwrap()
@@ -207,25 +207,25 @@ mod test_from_str {
     /// Ensure that a wrong format causes an error.
     #[test]
     fn wrong_format_error() {
-        let matrix_str1 = "[[1  42, 224 42, 2  24 42][2  24 42, 2  24 42, 2  24 42]]";
-        let matrix_str2 = "[[1  42, 224 42, 2  24 42], 2  24 42, 2  24 42, 2  24 42]]";
-        let matrix_str3 = "[1  42, 224 42, 2  24 42, 2  24 42, 2  24 42, 2  24 42]";
-        let matrix_str4 = "[[1  42, 224 42, 2  24 42, 2  24 42, 2  24 42, 2  24 42]";
-        let matrix_str5 = "[ [1  42, 224 42, 2  242, 2  24 42, 2  24 42]]";
-        let matrix_str6 = "[[1  42, 224 42, 2  24 42],[2  24 42, 2  24 42, 2  24 4]2]";
-        let matrix_str7 = "";
-        let matrix_str8 = "[]";
-        let matrix_str9 = "[[]]";
+        let matrix_str_1 = "[[1  42, 224 42, 2  24 42][2  24 42, 2  24 42, 2  24 42]]";
+        let matrix_str_2 = "[[1  42, 224 42, 2  24 42], 2  24 42, 2  24 42, 2  24 42]]";
+        let matrix_str_3 = "[1  42, 224 42, 2  24 42, 2  24 42, 2  24 42, 2  24 42]";
+        let matrix_str_4 = "[[1  42, 224 42, 2  24 42, 2  24 42, 2  24 42, 2  24 42]";
+        let matrix_str_5 = "[ [1  42, 224 42, 2  242, 2  24 42, 2  24 42]]";
+        let matrix_str_6 = "[[1  42, 224 42, 2  24 42],[2  24 42, 2  24 42, 2  24 4]2]";
+        let matrix_str_7 = "";
+        let matrix_str_8 = "[]";
+        let matrix_str_9 = "[[]]";
 
-        assert!(MatPolyOverZ::from_str(matrix_str1).is_err());
-        assert!(MatPolyOverZ::from_str(matrix_str2).is_err());
-        assert!(MatPolyOverZ::from_str(matrix_str3).is_err());
-        assert!(MatPolyOverZ::from_str(matrix_str4).is_err());
-        assert!(MatPolyOverZ::from_str(matrix_str5).is_err());
-        assert!(MatPolyOverZ::from_str(matrix_str6).is_err());
-        assert!(MatPolyOverZ::from_str(matrix_str7).is_err());
-        assert!(MatPolyOverZ::from_str(matrix_str8).is_err());
-        assert!(MatPolyOverZ::from_str(matrix_str9).is_err());
+        assert!(MatPolyOverZ::from_str(matrix_str_1).is_err());
+        assert!(MatPolyOverZ::from_str(matrix_str_2).is_err());
+        assert!(MatPolyOverZ::from_str(matrix_str_3).is_err());
+        assert!(MatPolyOverZ::from_str(matrix_str_4).is_err());
+        assert!(MatPolyOverZ::from_str(matrix_str_5).is_err());
+        assert!(MatPolyOverZ::from_str(matrix_str_6).is_err());
+        assert!(MatPolyOverZ::from_str(matrix_str_7).is_err());
+        assert!(MatPolyOverZ::from_str(matrix_str_8).is_err());
+        assert!(MatPolyOverZ::from_str(matrix_str_9).is_err());
     }
 }
 

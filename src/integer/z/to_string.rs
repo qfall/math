@@ -141,9 +141,9 @@ mod test_to_string {
     fn working_use_result_of_to_string_as_input() {
         let cmp = Z::from(42);
 
-        let cmp_string2 = cmp.to_string();
+        let cmp_str_2 = cmp.to_string();
 
-        assert!(Z::from_str(&cmp_string2).is_ok());
+        assert!(Z::from_str(&cmp_str_2).is_ok());
     }
 }
 

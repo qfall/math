@@ -87,8 +87,8 @@ mod test_to_string {
     fn working_use_result_of_to_string_as_input() {
         let cmp = Zq::from((42, 10));
 
-        let cmp_string = cmp.to_string();
+        let cmp_str = cmp.to_string();
 
-        assert!(Zq::from_str(&cmp_string).is_ok());
+        assert!(Zq::from_str(&cmp_str).is_ok());
     }
 }

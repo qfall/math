@@ -24,8 +24,8 @@ impl Clone for MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let str1 = "[[1, 2, 3],[4, 5, 6]] mod 4";
-    /// let a = MatZq::from_str(str1).unwrap();
+    /// let str_1 = "[[1, 2, 3],[4, 5, 6]] mod 4";
+    /// let a = MatZq::from_str(str_1).unwrap();
     /// let b = a.clone();
     /// ```
     fn clone(&self) -> Self {
@@ -49,9 +49,9 @@ impl Drop for MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let str1 = "[[1, 2, 3],[4, 5, 6]] mod 4";
+    /// let str_1 = "[[1, 2, 3],[4, 5, 6]] mod 4";
     /// {
-    ///     let a = MatZq::from_str(str1).unwrap();
+    ///     let a = MatZq::from_str(str_1).unwrap();
     /// } // as a's scope ends here, it get's dropped
     /// ```
     ///
@@ -59,8 +59,8 @@ impl Drop for MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let str1 = "[[1, 2, 3],[4, 5, 6]] mod 4";
-    /// let a = MatZq::from_str(str1).unwrap();
+    /// let str_1 = "[[1, 2, 3],[4, 5, 6]] mod 4";
+    /// let a = MatZq::from_str(str_1).unwrap();
     /// drop(a); // explicitly drops a's value
     /// ```
     fn drop(&mut self) {
@@ -81,9 +81,9 @@ mod test_clone {
     #[allow(clippy::redundant_clone)]
     fn keep_alive() {
         let a: MatZq;
-        let str1 = "[[1, 2, 3],[3, 4, 5]] mod 6";
+        let str_1 = "[[1, 2, 3],[3, 4, 5]] mod 6";
         {
-            let b = MatZq::from_str(str1).unwrap();
+            let b = MatZq::from_str(str_1).unwrap();
 
             a = b.clone();
         }

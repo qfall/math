@@ -320,16 +320,16 @@ mod tests_from_factorization_for_vector {
     /// Ensure that a [`Vec`] is correctly created from a refined [`Factorization`].
     #[test]
     fn from_factorization_zero() {
-        let mut fac1 = Factorization::from(0);
-        let mut fac2 = Factorization::from((0, 1));
-        fac1.refine();
-        fac2.refine();
+        let mut fac_1 = Factorization::from(0);
+        let mut fac_2 = Factorization::from((0, 1));
+        fac_1.refine();
+        fac_2.refine();
 
-        let vec1 = Vec::<(Z, u64)>::from(&fac1);
-        let vec2 = Vec::<(Z, u64)>::from(&fac2);
+        let vec_1 = Vec::<(Z, u64)>::from(&fac_1);
+        let vec_2 = Vec::<(Z, u64)>::from(&fac_2);
 
-        assert!(vec1.is_empty());
-        assert!(vec2.is_empty());
+        assert!(vec_1.is_empty());
+        assert!(vec_2.is_empty());
     }
 
     /// Ensure that the doc test works.

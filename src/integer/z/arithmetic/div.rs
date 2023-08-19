@@ -90,15 +90,15 @@ impl Z {
     /// ```
     /// use qfall_math::integer::Z;
     ///
-    /// let a0: Z = Z::from(40);
-    /// let a1: Z = Z::from(42);
+    /// let a_0: Z = Z::from(40);
+    /// let a_1: Z = Z::from(42);
     /// let b: Z = Z::from(20);
     ///
-    /// let c0 = a0.div_exact(&b).unwrap();
-    /// let c1 = a1.div_exact(&b);
+    /// let c_0 = a_0.div_exact(&b).unwrap();
+    /// let c_1 = a_1.div_exact(&b);
     ///
-    /// assert_eq!(Z::from(2), c0);
-    /// assert!(c1.is_none());
+    /// assert_eq!(Z::from(2), c_0);
+    /// assert!(c_1.is_none());
     /// ```
     ///
     /// # Panics ...

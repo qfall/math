@@ -56,39 +56,39 @@ mod test_trace {
     /// Test whether `trace` correctly calculates the trace of a matrix
     #[test]
     fn trace_works() {
-        let mat1 = MatQ::from_str("[[5/2, 2, 0],[2, 1/2, 0],[0, 0, 1/3]]").unwrap();
-        let mat2 = MatQ::from_str("[[-1, 0],[0, 1]]").unwrap();
+        let mat_1 = MatQ::from_str("[[5/2, 2, 0],[2, 1/2, 0],[0, 0, 1/3]]").unwrap();
+        let mat_2 = MatQ::from_str("[[-1, 0],[0, 1]]").unwrap();
 
-        let trace1 = mat1.trace().unwrap();
-        let trace2 = mat2.trace().unwrap();
+        let trace_1 = mat_1.trace().unwrap();
+        let trace_2 = mat_2.trace().unwrap();
 
-        assert_eq!(Q::from((10, 3)), trace1);
-        assert_eq!(Q::ZERO, trace2);
+        assert_eq!(Q::from((10, 3)), trace_1);
+        assert_eq!(Q::ZERO, trace_2);
     }
 
     /// Test whether `trace` works for large values
     #[test]
     fn trace_large_values() {
-        let mat1 = MatQ::from_str(&format!("[[{}, 5],[1, {}]]", i64::MAX, i64::MAX)).unwrap();
-        let mat2 = MatQ::from_str(&format!("[[{}]]", i64::MIN)).unwrap();
-        let mat3 = MatQ::from_str(&format!("[[{}, 5],[1, 1/{}]]", i64::MIN, i64::MAX)).unwrap();
+        let mat_1 = MatQ::from_str(&format!("[[{}, 5],[1, {}]]", i64::MAX, i64::MAX)).unwrap();
+        let mat_2 = MatQ::from_str(&format!("[[{}]]", i64::MIN)).unwrap();
+        let mat_3 = MatQ::from_str(&format!("[[{}, 5],[1, 1/{}]]", i64::MIN, i64::MAX)).unwrap();
 
-        let trace1 = mat1.trace().unwrap();
-        let trace2 = mat2.trace().unwrap();
-        let trace3 = mat3.trace().unwrap();
+        let trace_1 = mat_1.trace().unwrap();
+        let trace_2 = mat_2.trace().unwrap();
+        let trace_3 = mat_3.trace().unwrap();
 
-        assert_eq!(Q::from(2 * i64::MAX as u64), trace1);
-        assert_eq!(Q::from(i64::MIN), trace2);
-        assert_eq!(Q::from(i64::MIN) + Q::from((1, i64::MAX)), trace3);
+        assert_eq!(Q::from(2 * i64::MAX as u64), trace_1);
+        assert_eq!(Q::from(i64::MIN), trace_2);
+        assert_eq!(Q::from(i64::MIN) + Q::from((1, i64::MAX)), trace_3);
     }
 
     /// Ensure that a matrix that is not square yields an error.
     #[test]
     fn trace_error_not_squared() {
-        let mat1 = MatQ::from_str("[[1/2, 0, 1],[0, 1/9, 1]]").unwrap();
-        let mat2 = MatQ::from_str("[[2/8, 0],[0, 1],[1/7, 0]]").unwrap();
+        let mat_1 = MatQ::from_str("[[1/2, 0, 1],[0, 1/9, 1]]").unwrap();
+        let mat_2 = MatQ::from_str("[[2/8, 0],[0, 1],[1/7, 0]]").unwrap();
 
-        assert!(mat1.trace().is_err());
-        assert!(mat2.trace().is_err());
+        assert!(mat_1.trace().is_err());
+        assert!(mat_2.trace().is_err());
     }
 }

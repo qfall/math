@@ -309,65 +309,65 @@ mod tests_from_str {
     /// Ensure that initialization with large numerators and denominators works.
     #[test]
     fn max_int_positive() {
-        let mut s1 = (i64::MAX).to_string();
-        s1.push('/');
-        s1.push_str(&(i64::MAX).to_string());
+        let mut s_1 = (i64::MAX).to_string();
+        s_1.push('/');
+        s_1.push_str(&(i64::MAX).to_string());
 
-        let mut s2 = ("1/").to_string();
-        s2.push_str(&(i64::MAX).to_string());
+        let mut s_2 = ("1/").to_string();
+        s_2.push_str(&(i64::MAX).to_string());
 
         assert!(Q::from_str(&(i64::MAX).to_string()).is_ok());
-        assert!(Q::from_str(&s1).is_ok());
-        assert!(Q::from_str(&s2).is_ok());
+        assert!(Q::from_str(&s_1).is_ok());
+        assert!(Q::from_str(&s_2).is_ok());
     }
 
     /// Ensure that initialization with large numerators and denominators
     /// (larger than i64) works.
     #[test]
     fn large_positive() {
-        let mut s1 = "1".repeat(65);
-        s1.push('/');
-        s1.push_str(&"1".repeat(65));
+        let mut s_1 = "1".repeat(65);
+        s_1.push('/');
+        s_1.push_str(&"1".repeat(65));
 
-        let mut s2 = ("1/").to_string();
-        s2.push_str(&"1".repeat(65));
+        let mut s_2 = ("1/").to_string();
+        s_2.push_str(&"1".repeat(65));
 
         assert!(Q::from_str(&"1".repeat(65)).is_ok());
-        assert!(Q::from_str(&s1).is_ok());
-        assert!(Q::from_str(&s2).is_ok());
+        assert!(Q::from_str(&s_1).is_ok());
+        assert!(Q::from_str(&s_2).is_ok());
     }
 
     /// Ensure that initialization with large negative numerators and
     /// denominators works.
     #[test]
     fn max_int_negative() {
-        let mut s1 = (i64::MIN).to_string();
-        s1.push('/');
-        s1.push_str(&(i64::MIN).to_string());
+        let mut s_1 = (i64::MIN).to_string();
+        s_1.push('/');
+        s_1.push_str(&(i64::MIN).to_string());
 
-        let mut s2 = ("1/").to_string();
-        s2.push_str(&(i64::MIN).to_string());
+        let mut s_2 = ("1/").to_string();
+        s_2.push_str(&(i64::MIN).to_string());
 
         assert!(Q::from_str(&(i64::MIN).to_string()).is_ok());
-        assert!(Q::from_str(&s1).is_ok());
-        assert!(Q::from_str(&s2).is_ok());
+        assert!(Q::from_str(&s_1).is_ok());
+        assert!(Q::from_str(&s_2).is_ok());
     }
 
     /// Ensure that initialization with large negative numerators and
     /// denominators (larger than [`i64`]) works.
     #[test]
     fn large_negative() {
-        let mut s1 = "-".to_string();
-        s1.push_str(&"1".repeat(65));
-        s1.push('/');
-        s1.push_str(&"1".repeat(65));
+        let mut s_1 = "-".to_string();
+        s_1.push_str(&"1".repeat(65));
+        s_1.push('/');
+        s_1.push_str(&"1".repeat(65));
 
-        let mut s2 = ("-1/").to_string();
-        s2.push_str(&"1".repeat(65));
+        let mut s_2 = ("-1/").to_string();
+        s_2.push_str(&"1".repeat(65));
 
         assert!(Q::from_str(&"1".repeat(65)).is_ok());
-        assert!(Q::from_str(&s1).is_ok());
-        assert!(Q::from_str(&s2).is_ok());
+        assert!(Q::from_str(&s_1).is_ok());
+        assert!(Q::from_str(&s_2).is_ok());
     }
 
     /// Ensure that an initialization with two minus works.

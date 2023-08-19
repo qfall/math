@@ -167,10 +167,10 @@ mod test_is_zero {
     #[test]
     fn zero_detection() {
         let zero = MatPolyOverZ::from_str("[[0, 0],[0, 0]]").unwrap();
-        let zero2 = MatPolyOverZ::from_str("[[0, 0],[0, 0],[0, 3  0 0 0]]").unwrap();
+        let zero_2 = MatPolyOverZ::from_str("[[0, 0],[0, 0],[0, 3  0 0 0]]").unwrap();
 
         assert!(zero.is_zero());
-        assert!(zero2.is_zero());
+        assert!(zero_2.is_zero());
     }
 
     /// Ensure that is_zero returns `false` for non-zero matrices.

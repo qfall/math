@@ -65,30 +65,30 @@ mod test_to_string {
     /// Tests whether a large modulus works in a roundtrip
     #[test]
     fn working_large() {
-        let cmp_string = "1".repeat(65);
-        let cmp = Modulus::from_str(&cmp_string).unwrap();
+        let cmp_str = "1".repeat(65);
+        let cmp = Modulus::from_str(&cmp_str).unwrap();
 
-        assert_eq!(cmp_string, cmp.to_string());
+        assert_eq!(cmp_str, cmp.to_string());
     }
 
     /// Tests whether a positive modulus works in a roundtrip
     #[test]
     fn working_positive() {
-        let cmp_string = "42";
-        let cmp = Modulus::from_str(cmp_string).unwrap();
+        let cmp_str = "42";
+        let cmp = Modulus::from_str(cmp_str).unwrap();
 
-        assert_eq!(cmp_string, cmp.to_string());
+        assert_eq!(cmp_str, cmp.to_string());
     }
 
     /// Tests whether a modulus that is created using a string, returns a
     /// string that can be used to create a [`Modulus`]
     #[test]
     fn working_use_result_of_to_string_as_input() {
-        let cmp_string = "42";
-        let cmp = Modulus::from_str(cmp_string).unwrap();
+        let cmp_str = "42";
+        let cmp = Modulus::from_str(cmp_str).unwrap();
 
-        let cmp_string2 = cmp.to_string();
+        let cmp_str_2 = cmp.to_string();
 
-        assert!(Modulus::from_str(&cmp_string2).is_ok());
+        assert!(Modulus::from_str(&cmp_str_2).is_ok());
     }
 }

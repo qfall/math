@@ -98,13 +98,13 @@ mod test_is_zero {
     /// Ensure that is_zero returns `true` for all zero matrices.
     #[test]
     fn zero_detection() {
-        let zero1 = MatZ::from_str("[[0, 0],[0, 0],[0, 0]]").unwrap();
-        let zero2 = MatZ::from_str("[[0, 0, 0, 0],[0, 0, 0, 0]]").unwrap();
-        let zero3 = MatZ::from_str("[[0, 0],[0, 0]]").unwrap();
+        let zero_1 = MatZ::from_str("[[0, 0],[0, 0],[0, 0]]").unwrap();
+        let zero_2 = MatZ::from_str("[[0, 0, 0, 0],[0, 0, 0, 0]]").unwrap();
+        let zero_3 = MatZ::from_str("[[0, 0],[0, 0]]").unwrap();
 
-        assert!(zero1.is_zero());
-        assert!(zero2.is_zero());
-        assert!(zero3.is_zero());
+        assert!(zero_1.is_zero());
+        assert!(zero_2.is_zero());
+        assert!(zero_3.is_zero());
     }
 
     /// Ensure that is_zero returns `false` for non-zero matrices.
@@ -126,11 +126,11 @@ mod test_is_square {
     /// Ensure that is_square returns `true` for square matrices.
     #[test]
     fn square_detection() {
-        let square1 = MatZ::from_str("[[0, 4],[0, 0]]").unwrap();
-        let square2 = MatZ::from_str("[[0, 6, 4],[0, 0, 1],[4, 6, 1]]").unwrap();
+        let square_1 = MatZ::from_str("[[0, 4],[0, 0]]").unwrap();
+        let square_2 = MatZ::from_str("[[0, 6, 4],[0, 0, 1],[4, 6, 1]]").unwrap();
 
-        assert!(square1.is_square());
-        assert!(square2.is_square());
+        assert!(square_1.is_square());
+        assert!(square_2.is_square());
     }
 
     /// Ensure that is_square returns `false` for non-square matrices.

@@ -34,10 +34,10 @@ impl Mul<&Z> for &MatPolyOverZ {
     /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
     ///
-    /// let mat1 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  5 6]]").unwrap();
+    /// let mat_1 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  5 6]]").unwrap();
     /// let integer = Z::from(3);
     ///
-    /// let mat2 = &mat1 * &integer;
+    /// let mat_2 = &mat_1 * &integer;
     /// ```
     fn mul(self, scalar: &Z) -> Self::Output {
         let mut out = MatPolyOverZ::new(self.get_num_rows(), self.get_num_columns());
@@ -72,10 +72,10 @@ impl Mul<&PolyOverZ> for &MatPolyOverZ {
     /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
     ///
-    /// let mat1 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  5 6]]").unwrap();
+    /// let mat_1 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  5 6]]").unwrap();
     /// let integer = Z::from(3);
     ///
-    /// let mat2 = &mat1 * &integer;
+    /// let mat_2 = &mat_1 * &integer;
     /// ```
     fn mul(self, scalar: &PolyOverZ) -> Self::Output {
         let mut out = MatPolyOverZ::new(self.get_num_rows(), self.get_num_columns());
@@ -102,100 +102,102 @@ mod test_mul_z {
     /// Checks if matrix multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
-        let mat1 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  1 2]]").unwrap();
-        let mat2 = mat1.clone();
-        let mat3 = MatPolyOverZ::from_str("[[2  2 84, 1  34],[1  16, 2  2 4]]").unwrap();
+        let mat_1 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  1 2]]").unwrap();
+        let mat_2 = mat_1.clone();
+        let mat_3 = MatPolyOverZ::from_str("[[2  2 84, 1  34],[1  16, 2  2 4]]").unwrap();
         let integer = Z::from(2);
 
-        let mat1 = &mat1 * &integer;
-        let mat2 = &integer * &mat2;
+        let mat_1 = &mat_1 * &integer;
+        let mat_2 = &integer * &mat_2;
 
-        assert_eq!(mat3, mat1);
-        assert_eq!(mat3, mat2);
+        assert_eq!(mat_3, mat_1);
+        assert_eq!(mat_3, mat_2);
     }
 
     /// Checks if scalar multiplication works fine for both owned
     #[test]
     fn owned_correctness() {
-        let mat1 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  1 2]]").unwrap();
-        let mat2 = mat1.clone();
-        let mat3 = MatPolyOverZ::from_str("[[2  2 84, 1  34],[1  16, 2  2 4]]").unwrap();
-        let integer1 = Z::from(2);
-        let integer2 = Z::from(2);
+        let mat_1 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  1 2]]").unwrap();
+        let mat_2 = mat_1.clone();
+        let mat_3 = MatPolyOverZ::from_str("[[2  2 84, 1  34],[1  16, 2  2 4]]").unwrap();
+        let integer_1 = Z::from(2);
+        let integer_2 = Z::from(2);
 
-        let mat1 = mat1 * integer1;
-        let mat2 = integer2 * mat2;
+        let mat_1 = mat_1 * integer_1;
+        let mat_2 = integer_2 * mat_2;
 
-        assert_eq!(mat3, mat1);
-        assert_eq!(mat3, mat2);
+        assert_eq!(mat_3, mat_1);
+        assert_eq!(mat_3, mat_2);
     }
 
     /// Checks if scalar multiplication works fine for half owned/borrowed
     #[test]
     fn half_correctness() {
-        let mat1 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  1 2]]").unwrap();
-        let mat2 = mat1.clone();
-        let mat3 = mat1.clone();
-        let mat4 = mat1.clone();
-        let mat5 = MatPolyOverZ::from_str("[[2  2 84, 1  34],[1  16, 2  2 4]]").unwrap();
-        let integer1 = Z::from(2);
-        let integer2 = Z::from(2);
+        let mat_1 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  1 2]]").unwrap();
+        let mat_2 = mat_1.clone();
+        let mat_3 = mat_1.clone();
+        let mat_4 = mat_1.clone();
+        let mat_5 = MatPolyOverZ::from_str("[[2  2 84, 1  34],[1  16, 2  2 4]]").unwrap();
+        let integer_1 = Z::from(2);
+        let integer_2 = Z::from(2);
 
-        let mat1 = mat1 * &integer1;
-        let mat2 = &integer2 * mat2;
-        let mat3 = &mat3 * integer1;
-        let mat4 = integer2 * &mat4;
+        let mat_1 = mat_1 * &integer_1;
+        let mat_2 = &integer_2 * mat_2;
+        let mat_3 = &mat_3 * integer_1;
+        let mat_4 = integer_2 * &mat_4;
 
-        assert_eq!(mat5, mat1);
-        assert_eq!(mat5, mat2);
-        assert_eq!(mat5, mat3);
-        assert_eq!(mat5, mat4);
+        assert_eq!(mat_5, mat_1);
+        assert_eq!(mat_5, mat_2);
+        assert_eq!(mat_5, mat_3);
+        assert_eq!(mat_5, mat_4);
     }
 
     /// Checks if scalar multiplication works fine for different scalar types
     #[test]
     #[allow(clippy::erasing_op)]
     fn different_types() {
-        let mat1 = MatPolyOverZ::from_str("[[1  42],[0],[2  1 2]]").unwrap();
-        let mat2 = MatPolyOverZ::from_str("[[1  2, 1  6, 1  5],[1  4, 2  17 42, 1  3]]").unwrap();
-        let mat3 = MatPolyOverZ::from_str("[[1  84],[0],[2  2 4]]").unwrap();
-        let mat4 = MatPolyOverZ::from_str("[[0],[0],[0]]").unwrap();
-        let mat5 = MatPolyOverZ::from_str("[[1  -42],[0],[2  -1 -2]]").unwrap();
-        let mat6 = MatPolyOverZ::from_str("[[1  4, 1  12, 1  10],[1  8, 2  34 84, 1  6]]").unwrap();
+        let mat_1 = MatPolyOverZ::from_str("[[1  42],[0],[2  1 2]]").unwrap();
+        let mat_2 = MatPolyOverZ::from_str("[[1  2, 1  6, 1  5],[1  4, 2  17 42, 1  3]]").unwrap();
+        let mat_3 = MatPolyOverZ::from_str("[[1  84],[0],[2  2 4]]").unwrap();
+        let mat_4 = MatPolyOverZ::from_str("[[0],[0],[0]]").unwrap();
+        let mat_5 = MatPolyOverZ::from_str("[[1  -42],[0],[2  -1 -2]]").unwrap();
+        let mat_6 =
+            MatPolyOverZ::from_str("[[1  4, 1  12, 1  10],[1  8, 2  34 84, 1  6]]").unwrap();
 
-        assert_eq!(mat3, 2 * &mat1);
-        assert_eq!(mat4, 0 * &mat1);
-        assert_eq!(mat5, -1 * mat1);
-        assert_eq!(mat6, mat2 * 2);
+        assert_eq!(mat_3, 2 * &mat_1);
+        assert_eq!(mat_4, 0 * &mat_1);
+        assert_eq!(mat_5, -1 * mat_1);
+        assert_eq!(mat_6, mat_2 * 2);
     }
 
     /// Checks if scalar multiplication works fine for matrices of different dimensions
     #[test]
     fn different_dimensions_correctness() {
-        let mat1 = MatPolyOverZ::from_str("[[1  42],[0],[2  1 2]]").unwrap();
-        let mat2 = MatPolyOverZ::from_str("[[1  2, 1  6, 1  5],[1  4, 2  17 42, 1  3]]").unwrap();
-        let mat3 = MatPolyOverZ::from_str("[[1  84],[0],[2  2 4]]").unwrap();
-        let mat4 = MatPolyOverZ::from_str("[[1  4, 1  12, 1  10],[1  8, 2  34 84, 1  6]]").unwrap();
+        let mat_1 = MatPolyOverZ::from_str("[[1  42],[0],[2  1 2]]").unwrap();
+        let mat_2 = MatPolyOverZ::from_str("[[1  2, 1  6, 1  5],[1  4, 2  17 42, 1  3]]").unwrap();
+        let mat_3 = MatPolyOverZ::from_str("[[1  84],[0],[2  2 4]]").unwrap();
+        let mat_4 =
+            MatPolyOverZ::from_str("[[1  4, 1  12, 1  10],[1  8, 2  34 84, 1  6]]").unwrap();
         let integer = Z::from(2);
 
-        assert_eq!(mat3, &integer * mat1);
-        assert_eq!(mat4, integer * mat2);
+        assert_eq!(mat_3, &integer * mat_1);
+        assert_eq!(mat_4, integer * mat_2);
     }
 
     /// Checks if matrix multiplication works fine for large values
     #[test]
     fn large_entries() {
-        let mat1 = MatPolyOverZ::from_str(&format!("[[1  1],[1  {}],[1  4]]", i64::MAX)).unwrap();
-        let mat2 = MatPolyOverZ::from_str("[[1  3]]").unwrap();
-        let mat3 =
+        let mat_1 = MatPolyOverZ::from_str(&format!("[[1  1],[1  {}],[1  4]]", i64::MAX)).unwrap();
+        let mat_2 = MatPolyOverZ::from_str("[[1  3]]").unwrap();
+        let mat_3 =
             MatPolyOverZ::from_str(&format!("[[1  3],[1  {}],[1  12]]", 3 * i64::MAX as i128))
                 .unwrap();
-        let mat4 = MatPolyOverZ::from_str(&format!("[[1  {}]]", 3 * i64::MAX as i128)).unwrap();
-        let integer1 = Z::from(3);
-        let integer2 = Z::from(i64::MAX);
+        let mat_4 = MatPolyOverZ::from_str(&format!("[[1  {}]]", 3 * i64::MAX as i128)).unwrap();
+        let integer_1 = Z::from(3);
+        let integer_2 = Z::from(i64::MAX);
 
-        assert_eq!(mat3, integer1 * mat1);
-        assert_eq!(mat4, integer2 * mat2);
+        assert_eq!(mat_3, integer_1 * mat_1);
+        assert_eq!(mat_4, integer_2 * mat_2);
     }
 }
 
@@ -208,82 +210,83 @@ mod test_mul_poly_over_z {
     /// Checks if matrix multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
-        let mat1 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  1 2]]").unwrap();
-        let mat2 = mat1.clone();
-        let mat3 = MatPolyOverZ::from_str("[[2  2 84, 1  34],[1  16, 2  2 4]]").unwrap();
+        let mat_1 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  1 2]]").unwrap();
+        let mat_2 = mat_1.clone();
+        let mat_3 = MatPolyOverZ::from_str("[[2  2 84, 1  34],[1  16, 2  2 4]]").unwrap();
         let scalar = PolyOverZ::from(2);
 
-        let mat1 = &mat1 * &scalar;
-        let mat2 = &scalar * &mat2;
+        let mat_1 = &mat_1 * &scalar;
+        let mat_2 = &scalar * &mat_2;
 
-        assert_eq!(mat3, mat1);
-        assert_eq!(mat3, mat2);
+        assert_eq!(mat_3, mat_1);
+        assert_eq!(mat_3, mat_2);
     }
 
     /// Checks if scalar multiplication works fine for both owned
     #[test]
     fn owned_correctness() {
-        let mat1 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  1 2]]").unwrap();
-        let mat2 = mat1.clone();
-        let mat3 = MatPolyOverZ::from_str("[[2  2 84, 1  34],[1  16, 2  2 4]]").unwrap();
-        let scalar1 = PolyOverZ::from(2);
-        let scalar2 = PolyOverZ::from(2);
+        let mat_1 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  1 2]]").unwrap();
+        let mat_2 = mat_1.clone();
+        let mat_3 = MatPolyOverZ::from_str("[[2  2 84, 1  34],[1  16, 2  2 4]]").unwrap();
+        let scalar_1 = PolyOverZ::from(2);
+        let scalar_2 = PolyOverZ::from(2);
 
-        let mat1 = mat1 * scalar1;
-        let mat2 = scalar2 * mat2;
+        let mat_1 = mat_1 * scalar_1;
+        let mat_2 = scalar_2 * mat_2;
 
-        assert_eq!(mat3, mat1);
-        assert_eq!(mat3, mat2);
+        assert_eq!(mat_3, mat_1);
+        assert_eq!(mat_3, mat_2);
     }
 
     /// Checks if scalar multiplication works fine for half owned/borrowed
     #[test]
     fn half_correctness() {
-        let mat1 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  1 2]]").unwrap();
-        let mat2 = mat1.clone();
-        let mat3 = mat1.clone();
-        let mat4 = mat1.clone();
-        let mat5 = MatPolyOverZ::from_str("[[2  2 84, 1  34],[1  16, 2  2 4]]").unwrap();
-        let scalar1 = PolyOverZ::from(2);
-        let scalar2 = PolyOverZ::from(2);
+        let mat_1 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  1 2]]").unwrap();
+        let mat_2 = mat_1.clone();
+        let mat_3 = mat_1.clone();
+        let mat_4 = mat_1.clone();
+        let mat_5 = MatPolyOverZ::from_str("[[2  2 84, 1  34],[1  16, 2  2 4]]").unwrap();
+        let scalar_1 = PolyOverZ::from(2);
+        let scalar_2 = PolyOverZ::from(2);
 
-        let mat1 = mat1 * &scalar1;
-        let mat2 = &scalar2 * mat2;
-        let mat3 = &mat3 * scalar1;
-        let mat4 = scalar2 * &mat4;
+        let mat_1 = mat_1 * &scalar_1;
+        let mat_2 = &scalar_2 * mat_2;
+        let mat_3 = &mat_3 * scalar_1;
+        let mat_4 = scalar_2 * &mat_4;
 
-        assert_eq!(mat5, mat1);
-        assert_eq!(mat5, mat2);
-        assert_eq!(mat5, mat3);
-        assert_eq!(mat5, mat4);
+        assert_eq!(mat_5, mat_1);
+        assert_eq!(mat_5, mat_2);
+        assert_eq!(mat_5, mat_3);
+        assert_eq!(mat_5, mat_4);
     }
 
     /// Checks if scalar multiplication works fine for matrices of different dimensions
     #[test]
     fn different_dimensions_correctness() {
-        let mat1 = MatPolyOverZ::from_str("[[1  42],[0],[2  1 2]]").unwrap();
-        let mat2 = MatPolyOverZ::from_str("[[1  2, 1  6, 1  5],[1  4, 2  17 42, 1  3]]").unwrap();
-        let mat3 = MatPolyOverZ::from_str("[[1  84],[0],[2  2 4]]").unwrap();
-        let mat4 = MatPolyOverZ::from_str("[[1  4, 1  12, 1  10],[1  8, 2  34 84, 1  6]]").unwrap();
+        let mat_1 = MatPolyOverZ::from_str("[[1  42],[0],[2  1 2]]").unwrap();
+        let mat_2 = MatPolyOverZ::from_str("[[1  2, 1  6, 1  5],[1  4, 2  17 42, 1  3]]").unwrap();
+        let mat_3 = MatPolyOverZ::from_str("[[1  84],[0],[2  2 4]]").unwrap();
+        let mat_4 =
+            MatPolyOverZ::from_str("[[1  4, 1  12, 1  10],[1  8, 2  34 84, 1  6]]").unwrap();
         let scalar = PolyOverZ::from(2);
 
-        assert_eq!(mat3, &scalar * mat1);
-        assert_eq!(mat4, scalar * mat2);
+        assert_eq!(mat_3, &scalar * mat_1);
+        assert_eq!(mat_4, scalar * mat_2);
     }
 
     /// Checks if matrix multiplication works fine for large values
     #[test]
     fn large_entries() {
-        let mat1 = MatPolyOverZ::from_str(&format!("[[1  1],[1  {}],[1  4]]", i64::MAX)).unwrap();
-        let mat2 = MatPolyOverZ::from_str("[[1  3]]").unwrap();
-        let mat3 =
+        let mat_1 = MatPolyOverZ::from_str(&format!("[[1  1],[1  {}],[1  4]]", i64::MAX)).unwrap();
+        let mat_2 = MatPolyOverZ::from_str("[[1  3]]").unwrap();
+        let mat_3 =
             MatPolyOverZ::from_str(&format!("[[1  3],[1  {}],[1  12]]", 3 * i64::MAX as i128))
                 .unwrap();
-        let mat4 = MatPolyOverZ::from_str(&format!("[[1  {}]]", 3 * i64::MAX as i128)).unwrap();
-        let scalar1 = PolyOverZ::from(3);
-        let scalar2 = PolyOverZ::from(i64::MAX);
+        let mat_4 = MatPolyOverZ::from_str(&format!("[[1  {}]]", 3 * i64::MAX as i128)).unwrap();
+        let scalar_1 = PolyOverZ::from(3);
+        let scalar_2 = PolyOverZ::from(i64::MAX);
 
-        assert_eq!(mat3, scalar1 * mat1);
-        assert_eq!(mat4, scalar2 * mat2);
+        assert_eq!(mat_3, scalar_1 * mat_1);
+        assert_eq!(mat_4, scalar_2 * mat_2);
     }
 }

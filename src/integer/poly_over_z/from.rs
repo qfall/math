@@ -178,10 +178,10 @@ mod test_from_str {
     /// Tests whether the same string yields the same polynomial
     #[test]
     fn same_string() {
-        let string1 = format!("3  1 {} {}", u64::MAX, i64::MIN);
+        let str_1 = format!("3  1 {} {}", u64::MAX, i64::MIN);
 
-        let poly_1 = PolyOverZ::from_str(&string1).unwrap();
-        let poly_2 = PolyOverZ::from_str(&string1).unwrap();
+        let poly_1 = PolyOverZ::from_str(&str_1).unwrap();
+        let poly_2 = PolyOverZ::from_str(&str_1).unwrap();
 
         assert_eq!(poly_1, poly_2);
     }

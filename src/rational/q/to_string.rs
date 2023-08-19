@@ -118,8 +118,8 @@ mod test_to_string {
     fn working_use_result_of_to_string_as_input() {
         let cmp = Q::from((42, 235));
 
-        let cmp_string2 = cmp.to_string();
+        let cmp_str_2 = cmp.to_string();
 
-        assert!(Q::from_str(&cmp_string2).is_ok());
+        assert!(Q::from_str(&cmp_str_2).is_ok());
     }
 }

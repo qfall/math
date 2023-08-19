@@ -48,21 +48,21 @@ mod test_inverse {
     /// Test whether `inverse` correctly calculates an inverse matrix
     #[test]
     fn inverse_works() {
-        let mat1 = MatQ::from_str("[[5/3, 2, 0],[6, 1, 0],[0, 0, 1/2]]").unwrap();
-        let mat2 = MatQ::from_str(&format!("[[{}]]", i64::MAX)).unwrap();
-        let mat3 = MatQ::from_str("[[-1, 0],[0, 1]]").unwrap();
+        let mat_1 = MatQ::from_str("[[5/3, 2, 0],[6, 1, 0],[0, 0, 1/2]]").unwrap();
+        let mat_2 = MatQ::from_str(&format!("[[{}]]", i64::MAX)).unwrap();
+        let mat_3 = MatQ::from_str("[[-1, 0],[0, 1]]").unwrap();
 
-        let cmp_inv1 = MatQ::from_str("[[-3/31, 6/31, 0],[18/31, -5/31, 0],[0, 0, 2]]").unwrap();
-        let cmp_inv2 = MatQ::from_str(&format!("[[1/{}]]", i64::MAX)).unwrap();
-        let cmp_inv3 = MatQ::from_str("[[-1, 0],[0, 1]]").unwrap();
+        let cmp_inv_1 = MatQ::from_str("[[-3/31, 6/31, 0],[18/31, -5/31, 0],[0, 0, 2]]").unwrap();
+        let cmp_inv_2 = MatQ::from_str(&format!("[[1/{}]]", i64::MAX)).unwrap();
+        let cmp_inv_3 = MatQ::from_str("[[-1, 0],[0, 1]]").unwrap();
 
-        let inv1 = mat1.inverse().unwrap();
-        let inv2 = mat2.inverse().unwrap();
-        let inv3 = mat3.inverse().unwrap();
+        let inv_1 = mat_1.inverse().unwrap();
+        let inv_2 = mat_2.inverse().unwrap();
+        let inv_3 = mat_3.inverse().unwrap();
 
-        assert_eq!(cmp_inv1, inv1);
-        assert_eq!(cmp_inv2, inv2);
-        assert_eq!(cmp_inv3, inv3);
+        assert_eq!(cmp_inv_1, inv_1);
+        assert_eq!(cmp_inv_2, inv_2);
+        assert_eq!(cmp_inv_3, inv_3);
     }
 
     /// Check if the multiplication of inverse and matrix result in an identity matrix
@@ -80,11 +80,11 @@ mod test_inverse {
     /// Ensure that a matrix that is not square yields `None` on inversion.
     #[test]
     fn inv_none_not_squared() {
-        let mat1 = MatQ::from_str("[[1, 0, 1],[0, 1, 1]]").unwrap();
-        let mat2 = MatQ::from_str("[[1, 0],[0, 1],[1, 0]]").unwrap();
+        let mat_1 = MatQ::from_str("[[1, 0, 1],[0, 1, 1]]").unwrap();
+        let mat_2 = MatQ::from_str("[[1, 0],[0, 1],[1, 0]]").unwrap();
 
-        assert!(mat1.inverse().is_none());
-        assert!(mat2.inverse().is_none());
+        assert!(mat_1.inverse().is_none());
+        assert!(mat_2.inverse().is_none());
     }
 
     /// Ensure that a matrix that has a determinant of `0` yields `None` on inversion.

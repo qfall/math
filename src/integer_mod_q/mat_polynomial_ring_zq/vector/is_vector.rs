@@ -28,11 +28,11 @@ impl MatPolynomialRingZq {
     /// use std::str::FromStr;
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-    /// let poly_mat1 = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42]]").unwrap();
-    /// let poly_mat2 = MatPolyOverZ::from_str("[[4  -1 0 1 1],[2  1 2]]").unwrap();
+    /// let poly_mat_1 = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42]]").unwrap();
+    /// let poly_mat_2 = MatPolyOverZ::from_str("[[4  -1 0 1 1],[2  1 2]]").unwrap();
     ///
-    /// let row_vec = MatPolynomialRingZq::from((&poly_mat1, &modulus));
-    /// let col_vec = MatPolynomialRingZq::from((&poly_mat2, &modulus));
+    /// let row_vec = MatPolynomialRingZq::from((&poly_mat_1, &modulus));
+    /// let col_vec = MatPolynomialRingZq::from((&poly_mat_2, &modulus));
     ///
     /// assert!(row_vec.is_row_vector());
     /// assert!(!col_vec.is_row_vector());
@@ -51,11 +51,11 @@ impl MatPolynomialRingZq {
     /// use std::str::FromStr;
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-    /// let poly_mat1 = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42]]").unwrap();
-    /// let poly_mat2 = MatPolyOverZ::from_str("[[4  -1 0 1 1],[2  1 2]]").unwrap();
+    /// let poly_mat_1 = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42]]").unwrap();
+    /// let poly_mat_2 = MatPolyOverZ::from_str("[[4  -1 0 1 1],[2  1 2]]").unwrap();
     ///
-    /// let row_vec = MatPolynomialRingZq::from((&poly_mat1, &modulus));
-    /// let col_vec = MatPolynomialRingZq::from((&poly_mat2, &modulus));
+    /// let row_vec = MatPolynomialRingZq::from((&poly_mat_1, &modulus));
+    /// let col_vec = MatPolynomialRingZq::from((&poly_mat_2, &modulus));
     ///
     /// assert!(col_vec.is_column_vector());
     /// assert!(!row_vec.is_column_vector());
@@ -74,11 +74,11 @@ impl MatPolynomialRingZq {
     /// use std::str::FromStr;
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-    /// let poly_mat1 = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42]]").unwrap();
-    /// let poly_mat2 = MatPolyOverZ::from_str("[[4  -1 0 1 1],[2  1 2]]").unwrap();
+    /// let poly_mat_1 = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42]]").unwrap();
+    /// let poly_mat_2 = MatPolyOverZ::from_str("[[4  -1 0 1 1],[2  1 2]]").unwrap();
     ///
-    /// let row_vec = MatPolynomialRingZq::from((&poly_mat1, &modulus));
-    /// let col_vec = MatPolynomialRingZq::from((&poly_mat2, &modulus));
+    /// let row_vec = MatPolynomialRingZq::from((&poly_mat_1, &modulus));
+    /// let col_vec = MatPolynomialRingZq::from((&poly_mat_2, &modulus));
     ///
     /// assert!(row_vec.is_vector());
     /// assert!(col_vec.is_vector());
@@ -127,17 +127,17 @@ mod test_is_vector {
             i64::MAX
         ))
         .unwrap();
-        let poly_mat1 =
+        let poly_mat_1 =
             MatPolyOverZ::from_str(&format!("[[4  1 {} 1 1, 1  42]]", i64::MAX)).unwrap();
-        let poly_mat2 = MatPolyOverZ::from_str(&format!(
+        let poly_mat_2 = MatPolyOverZ::from_str(&format!(
             "[[4  1 {} 1 1],[1  42],[0],[2  {} 2]]",
             i64::MAX,
             i64::MIN
         ))
         .unwrap();
 
-        let row = MatPolynomialRingZq::from((&poly_mat1, &modulus));
-        let col = MatPolynomialRingZq::from((&poly_mat2, &modulus));
+        let row = MatPolynomialRingZq::from((&poly_mat_1, &modulus));
+        let col = MatPolynomialRingZq::from((&poly_mat_2, &modulus));
 
         assert!(row.is_row_vector());
         assert!(!row.is_column_vector());
@@ -157,19 +157,19 @@ mod test_is_vector {
             i64::MAX
         ))
         .unwrap();
-        let poly_mat1 = MatPolyOverZ::from_str(&format!(
+        let poly_mat_1 = MatPolyOverZ::from_str(&format!(
             "[[4  1 {} 1 1, 1  42],[3  1 1 1, 1  17]]",
             i64::MAX
         ))
         .unwrap();
-        let poly_mat2 = MatPolyOverZ::from_str(&format!(
+        let poly_mat_2 = MatPolyOverZ::from_str(&format!(
             "[[4  1 {} 1 1, 0],[1  42, 1  1],[0, 0]]",
             i64::MAX
         ))
         .unwrap();
 
-        let mat_1 = MatPolynomialRingZq::from((&poly_mat1, &modulus));
-        let mat_2 = MatPolynomialRingZq::from((&poly_mat2, &modulus));
+        let mat_1 = MatPolynomialRingZq::from((&poly_mat_1, &modulus));
+        let mat_2 = MatPolynomialRingZq::from((&poly_mat_2, &modulus));
 
         assert!(!mat_1.is_column_vector());
         assert!(!mat_1.is_row_vector());
@@ -188,11 +188,11 @@ mod test_is_vector {
             i64::MAX
         ))
         .unwrap();
-        let poly_mat1 = MatPolyOverZ::from_str("[[1  42]]").unwrap();
-        let poly_mat2 = MatPolyOverZ::from_str(&format!("[[3  1 {} 1]]", i64::MAX)).unwrap();
+        let poly_mat_1 = MatPolyOverZ::from_str("[[1  42]]").unwrap();
+        let poly_mat_2 = MatPolyOverZ::from_str(&format!("[[3  1 {} 1]]", i64::MAX)).unwrap();
 
-        let small = MatPolynomialRingZq::from((&poly_mat1, &modulus));
-        let large = MatPolynomialRingZq::from((&poly_mat2, &modulus));
+        let small = MatPolynomialRingZq::from((&poly_mat_1, &modulus));
+        let large = MatPolynomialRingZq::from((&poly_mat_2, &modulus));
 
         // check whether single entry is correctly detected
         assert!(small.has_single_entry());
@@ -217,23 +217,23 @@ mod test_is_vector {
             i64::MAX
         ))
         .unwrap();
-        let poly_mat1 =
+        let poly_mat_1 =
             MatPolyOverZ::from_str(&format!("[[4  1 {} 1 1, 1  42]]", i64::MAX)).unwrap();
-        let poly_mat2 = MatPolyOverZ::from_str(&format!(
+        let poly_mat_2 = MatPolyOverZ::from_str(&format!(
             "[[4  1 {} 1 1],[1  42],[0],[2  {} 2]]",
             i64::MAX,
             i64::MIN
         ))
         .unwrap();
-        let poly_mat3 = MatPolyOverZ::from_str(&format!(
+        let poly_mat_3 = MatPolyOverZ::from_str(&format!(
             "[[4  1 {} 1 1, 1  42],[3  1 1 1, 1  17]]",
             i64::MAX
         ))
         .unwrap();
 
-        let row = MatPolynomialRingZq::from((&poly_mat1, &modulus));
-        let col = MatPolynomialRingZq::from((&poly_mat2, &modulus));
-        let mat = MatPolynomialRingZq::from((&poly_mat3, &modulus));
+        let row = MatPolynomialRingZq::from((&poly_mat_1, &modulus));
+        let col = MatPolynomialRingZq::from((&poly_mat_2, &modulus));
+        let mat = MatPolynomialRingZq::from((&poly_mat_3, &modulus));
 
         assert!(!row.has_single_entry());
         assert!(!col.has_single_entry());

@@ -243,14 +243,14 @@ mod test_get_degree {
     /// Ensure that degree is working for constant polynomials
     #[test]
     fn degree_constant() {
-        let poly1 = PolyOverZq::from_str("1  1 mod 19").unwrap();
-        let poly2 = PolyOverZq::from_str("0 mod 19").unwrap();
+        let poly_1 = PolyOverZq::from_str("1  1 mod 19").unwrap();
+        let poly_2 = PolyOverZq::from_str("0 mod 19").unwrap();
 
-        let deg1 = poly1.get_degree();
-        let deg2 = poly2.get_degree();
+        let deg_1 = poly_1.get_degree();
+        let deg_2 = poly_2.get_degree();
 
-        assert_eq!(0, deg1);
-        assert_eq!(-1, deg2);
+        assert_eq!(0, deg_1);
+        assert_eq!(-1, deg_2);
     }
 
     /// Ensure that degree is working for polynomials with leading 0 coefficients
@@ -267,8 +267,8 @@ mod test_get_degree {
     /// flint does not reduce the exponent due to computational cost
     #[test]
     fn degree_many_coefficients() {
-        let poly1 = PolyOverZq::from_str("7  1 2 3 4 8 1 3 mod 2").unwrap();
-        let poly2 = PolyOverZq::from_str(&format!(
+        let poly_1 = PolyOverZq::from_str("7  1 2 3 4 8 1 3 mod 2").unwrap();
+        let poly_2 = PolyOverZq::from_str(&format!(
             "7  1 2 3 4 8 {} {} mod {}",
             u64::MAX,
             i64::MAX,
@@ -276,11 +276,11 @@ mod test_get_degree {
         ))
         .unwrap();
 
-        let deg1 = poly1.get_degree();
-        let deg2 = poly2.get_degree();
+        let deg_1 = poly_1.get_degree();
+        let deg_2 = poly_2.get_degree();
 
-        assert_eq!(6, deg1);
-        assert_eq!(6, deg2);
+        assert_eq!(6, deg_1);
+        assert_eq!(6, deg_2);
     }
 }
 

@@ -162,14 +162,14 @@ mod test_get_degree {
     /// Ensure that degree is working for constant polynomials.
     #[test]
     fn degree_constant() {
-        let poly1 = PolyOverZ::from(1);
-        let poly2 = PolyOverZ::default();
+        let poly_1 = PolyOverZ::from(1);
+        let poly_2 = PolyOverZ::default();
 
-        let deg1 = poly1.get_degree();
-        let deg2 = poly2.get_degree();
+        let deg_1 = poly_1.get_degree();
+        let deg_2 = poly_2.get_degree();
 
-        assert_eq!(0, deg1);
-        assert_eq!(-1, deg2);
+        assert_eq!(0, deg_1);
+        assert_eq!(-1, deg_2);
     }
 
     /// Ensure that degree is working for polynomials with leading 0 coefficients.

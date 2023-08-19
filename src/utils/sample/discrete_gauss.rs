@@ -250,15 +250,15 @@ pub(crate) fn sample_d_precomputed_gso(
         // basisvector_i = b_tilde[i]
         let basisvector_orth_i = basis_gso.get_column(i).unwrap();
 
-        // define the center for sample_z as c2 = <c, b_tilde[i]> / <b_tilde[i], b_tilde[i]>;
-        let c2 = center.dot_product(&basisvector_orth_i).unwrap()
+        // define the center for sample_z as c_2 = <c, b_tilde[i]> / <b_tilde[i], b_tilde[i]>;
+        let c_2 = center.dot_product(&basisvector_orth_i).unwrap()
             / basisvector_orth_i.dot_product(&basisvector_orth_i).unwrap();
 
         // Defines the gaussian parameter to be normalized along the basis vector: s2 = s / ||b_tilde[i]||
-        let s2 = s / (basisvector_orth_i.norm_eucl_sqrd().unwrap().sqrt());
+        let s_2 = s / (basisvector_orth_i.norm_eucl_sqrd().unwrap().sqrt());
 
         // sample z ~ D_{Z, s2, c2}
-        let z = sample_z(n, &c2, &s2)?;
+        let z = sample_z(n, &c_2, &s_2)?;
 
         // update the center c = c - z * b[i]
         let basisvector_i = basis.get_column(i).unwrap();

@@ -118,8 +118,8 @@ impl MatQ {
     ///
     /// let matrix = MatQ::from_str("[[1, 2/3, 3],[3, 4, 5/2]]").unwrap();
     ///
-    /// let row0 = matrix.get_row(0).unwrap(); // first row
-    /// let row1 = matrix.get_row(1).unwrap(); // second row
+    /// let row_0 = matrix.get_row(0).unwrap(); // first row
+    /// let row_1 = matrix.get_row(1).unwrap(); // second row
     /// ```
     ///
     /// # Errors and Failures
@@ -154,9 +154,9 @@ impl MatQ {
     ///
     /// let matrix = MatQ::from_str("[[1, 2/3, 3],[3, 4, 5/2]]").unwrap();
     ///
-    /// let col0 = matrix.get_column(0).unwrap(); // first column
-    /// let col1 = matrix.get_column(1).unwrap(); // second column
-    /// let col2 = matrix.get_column(2).unwrap(); // third column
+    /// let col_0 = matrix.get_column(0).unwrap(); // first column
+    /// let col_1 = matrix.get_column(1).unwrap(); // second column
+    /// let col_2 = matrix.get_column(2).unwrap(); // third column
     /// ```
     ///
     /// # Errors and Failures
@@ -176,21 +176,21 @@ impl MatQ {
     }
 
     /// Returns a deep copy of the submatrix defined by the given parameters.
-    /// All entries starting from `(row1, col1)` to `(row2, col2)`(inclusively) are collected in
+    /// All entries starting from `(row_1, col_1)` to `(row_2, col_2)`(inclusively) are collected in
     /// a new matrix.
-    /// Note that `row1 >= row2` and `col1 >= col2` must hold after converting negative indices.
+    /// Note that `row_1 >= row_2` and `col_1 >= col_2` must hold after converting negative indices.
     /// Otherwise the function will panic.
     ///
     /// Parameters:
-    /// `row1`: The starting row of the submatrix
-    /// `row2`: The ending row of the submatrix
-    /// `col1`: The starting column of the submatrix
-    /// `col2`: The ending column of the submatrix
+    /// `row_1`: The starting row of the submatrix
+    /// `row_2`: The ending row of the submatrix
+    /// `col_1`: The starting column of the submatrix
+    /// `col_2`: The ending column of the submatrix
     ///
     /// Negative indices can be used to index from the back, e.g., `-1` for
     /// the last element.
     ///
-    /// Returns the submatrix from `(row1, col1)` to `(row2, col2)`(inclusively).
+    /// Returns the submatrix from `(row_1, col_1)` to `(row_2, col_2)`(inclusively).
     ///
     /// # Examples
     /// ```
@@ -202,9 +202,9 @@ impl MatQ {
     /// let sub_mat_1 = mat.get_submatrix(0, 2, 1, 1).unwrap();
     /// let sub_mat_2 = mat.get_submatrix(0, -1, 1, -2).unwrap();
     ///
-    /// let e2 = MatQ::from_str("[[0],[1],[0]]").unwrap();
-    /// assert_eq!(e2, sub_mat_1);
-    /// assert_eq!(e2, sub_mat_2);
+    /// let e_2 = MatQ::from_str("[[0],[1],[0]]").unwrap();
+    /// assert_eq!(e_2, sub_mat_1);
+    /// assert_eq!(e_2, sub_mat_2);
     /// ```
     ///
     /// # Errors and Failures
@@ -212,32 +212,41 @@ impl MatQ {
     /// if any provided row or column is greater than the matrix.
     ///
     /// # Panics ...
-    /// - if `col1 > col2` or `row1 > row2`.
+    /// - if `col_1 > col_2` or `row_1 > row_2`.
     pub fn get_submatrix(
         &self,
-        row1: impl TryInto<i64> + Display,
-        row2: impl TryInto<i64> + Display,
-        col1: impl TryInto<i64> + Display,
-        col2: impl TryInto<i64> + Display,
+        row_1: impl TryInto<i64> + Display,
+        row_2: impl TryInto<i64> + Display,
+        col_1: impl TryInto<i64> + Display,
+        col_2: impl TryInto<i64> + Display,
     ) -> Result<Self, MathError> {
-        let (row1, col1) = evaluate_indices_for_matrix(self, row1, col1)?;
-        let (row2, col2) = evaluate_indices_for_matrix(self, row2, col2)?;
+        let (row_1, col_1) = evaluate_indices_for_matrix(self, row_1, col_1)?;
+        let (row_2, col_2) = evaluate_indices_for_matrix(self, row_2, col_2)?;
         assert!(
-            row2 >= row1,
-            "The number of rows must be positive, i.e. row2 ({row2}) must be greater or equal row1 ({row1})"
+            row_2 >= row_1,
+            "The number of rows must be positive, i.e. row_2 ({row_2}) must be greater or equal row_1 ({row_1})"
         );
 
         assert!(
-            col2 >= col1,
-            "The number of columns must be positive, i.e. col2 ({col2}) must be greater or equal col1 ({col1})"
+            col_2 >= col_1,
+            "The number of columns must be positive, i.e. col_2 ({col_2}) must be greater or equal col_1 ({col_1})"
         );
 
         // increase both values to have an inclusive capturing of the matrix entries
-        let (row2, col2) = (row2 + 1, col2 + 1);
+        let (row_2, col_2) = (row_2 + 1, col_2 + 1);
 
         let mut window = MaybeUninit::uninit();
         // The memory for the elements of window is shared with self.
-        unsafe { fmpq_mat_window_init(window.as_mut_ptr(), &self.matrix, row1, col1, row2, col2) };
+        unsafe {
+            fmpq_mat_window_init(
+                window.as_mut_ptr(),
+                &self.matrix,
+                row_1,
+                col_1,
+                row_2,
+                col_2,
+            )
+        };
         let mut window_copy = MaybeUninit::uninit();
         unsafe {
             // Deep clone of the content of the window
@@ -294,68 +303,68 @@ mod test_get_entry {
     #[test]
     fn max_int_positive() {
         let mut matrix = MatQ::new(5, 10);
-        let value1 = Q::from(i64::MAX);
-        let value2 = Q::from((1, i64::MAX));
-        matrix.set_entry(0, 0, value1).unwrap();
-        matrix.set_entry(1, 1, value2).unwrap();
+        let value_1 = Q::from(i64::MAX);
+        let value_2 = Q::from((1, i64::MAX));
+        matrix.set_entry(0, 0, value_1).unwrap();
+        matrix.set_entry(1, 1, value_2).unwrap();
 
-        let entry1 = matrix.get_entry(0, 0).unwrap();
-        let entry2 = matrix.get_entry(1, 1).unwrap();
+        let entry_1 = matrix.get_entry(0, 0).unwrap();
+        let entry_2 = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!(Q::from(i64::MAX), entry1);
-        assert_eq!(Q::from((1, i64::MAX)), entry2);
+        assert_eq!(Q::from(i64::MAX), entry_1);
+        assert_eq!(Q::from((1, i64::MAX)), entry_2);
     }
 
     /// Ensure that getting entries works with large numerators and denominators (larger than [`i64`]).
     #[test]
     fn large_positive() {
         let mut matrix = MatQ::new(5, 10);
-        let value1 = Q::from(u64::MAX);
-        let value2 = Q::from((1, u64::MAX));
-        matrix.set_entry(0, 0, value1).unwrap();
-        matrix.set_entry(1, 1, value2).unwrap();
+        let value_1 = Q::from(u64::MAX);
+        let value_2 = Q::from((1, u64::MAX));
+        matrix.set_entry(0, 0, value_1).unwrap();
+        matrix.set_entry(1, 1, value_2).unwrap();
 
-        let entry1 = matrix.get_entry(0, 0).unwrap();
-        let entry2 = matrix.get_entry(1, 1).unwrap();
+        let entry_1 = matrix.get_entry(0, 0).unwrap();
+        let entry_2 = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!(Q::from(u64::MAX), entry1);
-        assert_eq!(Q::from((1, u64::MAX)), entry2);
+        assert_eq!(Q::from(u64::MAX), entry_1);
+        assert_eq!(Q::from((1, u64::MAX)), entry_2);
     }
 
     /// Ensure that getting entries works with large negative numerators and denominators.
     #[test]
     fn max_int_negative() {
         let mut matrix = MatQ::new(5, 10);
-        let value1 = Q::from(i64::MIN);
-        let value2 = Q::from((1, i64::MIN));
-        matrix.set_entry(0, 0, value1).unwrap();
-        matrix.set_entry(1, 1, value2).unwrap();
+        let value_1 = Q::from(i64::MIN);
+        let value_2 = Q::from((1, i64::MIN));
+        matrix.set_entry(0, 0, value_1).unwrap();
+        matrix.set_entry(1, 1, value_2).unwrap();
 
-        let entry1 = matrix.get_entry(0, 0).unwrap();
-        let entry2 = matrix.get_entry(1, 1).unwrap();
+        let entry_1 = matrix.get_entry(0, 0).unwrap();
+        let entry_2 = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!(Q::from(i64::MIN), entry1);
-        assert_eq!(Q::from((1, i64::MIN)), entry2);
+        assert_eq!(Q::from(i64::MIN), entry_1);
+        assert_eq!(Q::from((1, i64::MIN)), entry_2);
     }
 
     /// Ensure that getting entries works with large negative numerators and denominators (larger than [`i64`]).
     #[test]
     fn large_negative() {
         let mut matrix = MatQ::new(5, 10);
-        let value1 = format!("-{}", u64::MAX);
-        let value2 = format!("1/-{}", u64::MAX);
+        let value_1 = format!("-{}", u64::MAX);
+        let value_2 = format!("1/-{}", u64::MAX);
         matrix
-            .set_entry(0, 0, Q::from_str(&value1).unwrap())
+            .set_entry(0, 0, Q::from_str(&value_1).unwrap())
             .unwrap();
         matrix
-            .set_entry(1, 1, Q::from_str(&value2).unwrap())
+            .set_entry(1, 1, Q::from_str(&value_2).unwrap())
             .unwrap();
 
-        let entry1 = matrix.get_entry(0, 0).unwrap();
-        let entry2 = matrix.get_entry(1, 1).unwrap();
+        let entry_1 = matrix.get_entry(0, 0).unwrap();
+        let entry_2 = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!(Q::from_str(&format!("-{}", u64::MAX)).unwrap(), entry1);
-        assert_eq!(Q::from_str(&format!("1/-{}", u64::MAX)).unwrap(), entry2);
+        assert_eq!(Q::from_str(&format!("-{}", u64::MAX)).unwrap(), entry_1);
+        assert_eq!(Q::from_str(&format!("1/-{}", u64::MAX)).unwrap(), entry_2);
     }
 
     /// Ensure that getting entries at (0, 0) works.
@@ -451,11 +460,11 @@ mod test_get_vec {
             i64::MIN
         ))
         .unwrap();
-        let row1 = matrix.get_row(0).unwrap();
-        let row2 = matrix.get_row(1).unwrap();
+        let row_1 = matrix.get_row(0).unwrap();
+        let row_2 = matrix.get_row(1).unwrap();
 
-        let cmp1 = MatQ::from_str("[[0, 0, 0, 0, 0]]").unwrap();
-        let cmp2 = MatQ::from_str(&format!(
+        let cmp_1 = MatQ::from_str("[[0, 0, 0, 0, 0]]").unwrap();
+        let cmp_2 = MatQ::from_str(&format!(
             "[[4/3, {}, {}, 1/{}, 1/{}]]",
             i64::MAX,
             i64::MIN,
@@ -464,8 +473,8 @@ mod test_get_vec {
         ))
         .unwrap();
 
-        assert_eq!(cmp1, row1);
-        assert_eq!(cmp2, row2);
+        assert_eq!(cmp_1, row_1);
+        assert_eq!(cmp_2, row_2);
     }
 
     /// Ensure that getting a column works
@@ -479,11 +488,11 @@ mod test_get_vec {
             i64::MIN
         ))
         .unwrap();
-        let column1 = matrix.get_column(0).unwrap();
-        let column2 = matrix.get_column(1).unwrap();
-        let column3 = matrix.get_column(2).unwrap();
+        let column_1 = matrix.get_column(0).unwrap();
+        let column_2 = matrix.get_column(1).unwrap();
+        let column_3 = matrix.get_column(2).unwrap();
 
-        let cmp1 = MatQ::from_str(&format!(
+        let cmp_1 = MatQ::from_str(&format!(
             "[[1],[{}],[{}],[1/{}],[1/{}]]",
             i64::MAX,
             i64::MIN,
@@ -491,12 +500,12 @@ mod test_get_vec {
             i64::MIN
         ))
         .unwrap();
-        let cmp2 = MatQ::from_str("[[0],[0],[0],[0],[0]]").unwrap();
-        let cmp3 = MatQ::from_str("[[3],[5],[7],[9],[11]]").unwrap();
+        let cmp_2 = MatQ::from_str("[[0],[0],[0],[0],[0]]").unwrap();
+        let cmp_3 = MatQ::from_str("[[3],[5],[7],[9],[11]]").unwrap();
 
-        assert_eq!(cmp1, column1);
-        assert_eq!(cmp2, column2);
-        assert_eq!(cmp3, column3);
+        assert_eq!(cmp_1, column_1);
+        assert_eq!(cmp_2, column_2);
+        assert_eq!(cmp_3, column_3);
     }
 
     /// Ensure that wrong row and column dimensions yields an error
@@ -508,15 +517,15 @@ mod test_get_vec {
             i64::MIN
         ))
         .unwrap();
-        let row1 = matrix.get_row(-1);
-        let row2 = matrix.get_row(4);
-        let column1 = matrix.get_column(-1);
-        let column2 = matrix.get_column(4);
+        let row_1 = matrix.get_row(-1);
+        let row_2 = matrix.get_row(4);
+        let column_1 = matrix.get_column(-1);
+        let column_2 = matrix.get_column(4);
 
-        assert!(row1.is_err());
-        assert!(row2.is_err());
-        assert!(column1.is_err());
-        assert!(column2.is_err());
+        assert!(row_1.is_err());
+        assert!(row_2.is_err());
+        assert!(column_1.is_err());
+        assert!(column_2.is_err());
     }
 }
 

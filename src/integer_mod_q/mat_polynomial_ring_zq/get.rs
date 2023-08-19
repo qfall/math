@@ -221,9 +221,9 @@ impl MatPolynomialRingZq {
     /// let mat_poly = MatPolyOverZ::identity(3, 3);
     /// let matrix = MatPolynomialRingZq::from((&mat_poly, &modulus));
     ///
-    /// let row0 = matrix.get_row(0).unwrap(); // first row
-    /// let row1 = matrix.get_row(1).unwrap(); // second row
-    /// let row2 = matrix.get_row(2).unwrap(); // third row
+    /// let row_0 = matrix.get_row(0).unwrap(); // first row
+    /// let row_1 = matrix.get_row(1).unwrap(); // second row
+    /// let row_2 = matrix.get_row(2).unwrap(); // third row
     /// ```
     ///
     /// # Errors and Failures
@@ -261,9 +261,9 @@ impl MatPolynomialRingZq {
     /// let mat_poly = MatPolyOverZ::identity(3, 3);
     /// let matrix = MatPolynomialRingZq::from((&mat_poly, &modulus));
     ///
-    /// let col0 = matrix.get_column(0).unwrap(); // first column
-    /// let col1 = matrix.get_column(1).unwrap(); // second column
-    /// let col1 = matrix.get_column(2).unwrap(); // third column
+    /// let col_0 = matrix.get_column(0).unwrap(); // first column
+    /// let col_1 = matrix.get_column(1).unwrap(); // second column
+    /// let col_1 = matrix.get_column(2).unwrap(); // third column
     /// ```
     ///
     /// # Errors and Failures
@@ -283,21 +283,21 @@ impl MatPolynomialRingZq {
     }
 
     /// Returns a deep copy of the submatrix defined by the given parameters.
-    /// All entries starting from `(row1, col1)` to `(row2, col2)`(inclusively) are collected in
+    /// All entries starting from `(row_1, col_1)` to `(row_2, col_2)`(inclusively) are collected in
     /// a new matrix.
-    /// Note that `row1 >= row2` and `col1 >= col2` must hold after converting negative indices.
+    /// Note that `row_1 >= row_2` and `col_1 >= col_2` must hold after converting negative indices.
     /// Otherwise the function will panic.
     ///
     /// Parameters:
-    /// `row1`: The starting row of the submatrix
-    /// `row2`: The ending row of the submatrix
-    /// `col1`: The starting column of the submatrix
-    /// `col2`: The ending column of the submatrix
+    /// `row_1`: The starting row of the submatrix
+    /// `row_2`: The ending row of the submatrix
+    /// `col_1`: The starting column of the submatrix
+    /// `col_2`: The ending column of the submatrix
     ///
     /// Negative indices can be used to index from the back, e.g., `-1` for
     /// the last element.
     ///
-    /// Returns the submatrix from `(row1, col1)` to `(row2, col2)`(inclusively).
+    /// Returns the submatrix from `(row_1, col_1)` to `(row_2, col_2)`(inclusively).
     ///
     /// # Examples
     /// ```
@@ -312,10 +312,10 @@ impl MatPolynomialRingZq {
     /// let sub_mat_1 = poly_ring_mat.get_submatrix(0, 2, 1, 1).unwrap();
     /// let sub_mat_2 = poly_ring_mat.get_submatrix(0, -1, 1, -2).unwrap();
     ///
-    /// let e2 = MatPolyOverZ::from_str("[[0],[1  1],[0]]").unwrap();
-    /// let e2 = MatPolynomialRingZq::from((&e2, &modulus));
-    /// assert_eq!(e2, sub_mat_1);
-    /// assert_eq!(e2, sub_mat_2);
+    /// let e_2 = MatPolyOverZ::from_str("[[0],[1  1],[0]]").unwrap();
+    /// let e_2 = MatPolynomialRingZq::from((&e_2, &modulus));
+    /// assert_eq!(e_2, sub_mat_1);
+    /// assert_eq!(e_2, sub_mat_2);
     /// ```
     ///
     /// # Errors and Failures
@@ -323,16 +323,16 @@ impl MatPolynomialRingZq {
     /// if any provided row or column is greater than the matrix.
     ///
     /// # Panics ...
-    /// - if `col1 > col2` or `row1 > row2`.
+    /// - if `col_1 > col_2` or `row_1 > row_2`.
     pub fn get_submatrix(
         &self,
-        row1: impl TryInto<i64> + Display,
-        row2: impl TryInto<i64> + Display,
-        col1: impl TryInto<i64> + Display,
-        col2: impl TryInto<i64> + Display,
+        row_1: impl TryInto<i64> + Display,
+        row_2: impl TryInto<i64> + Display,
+        col_1: impl TryInto<i64> + Display,
+        col_2: impl TryInto<i64> + Display,
     ) -> Result<Self, MathError> {
         Ok(MatPolynomialRingZq {
-            matrix: self.matrix.get_submatrix(row1, row2, col1, col2)?,
+            matrix: self.matrix.get_submatrix(row_1, row_2, col_1, col_2)?,
             modulus: self.get_mod(),
         })
     }
@@ -386,11 +386,11 @@ mod test_get_entry {
         let modulus = ModulusPolynomialRingZq::from_str("2  42 17 mod 89").unwrap();
         let matrix = MatPolynomialRingZq::new(5, 10, &modulus);
 
-        let entry1 = matrix.get_entry(0, 0).unwrap();
-        let entry2 = matrix.get_entry(4, 9).unwrap();
+        let entry_1 = matrix.get_entry(0, 0).unwrap();
+        let entry_2 = matrix.get_entry(4, 9).unwrap();
 
-        assert_eq!(PolyOverZ::default(), entry1);
-        assert_eq!(PolyOverZ::default(), entry2);
+        assert_eq!(PolyOverZ::default(), entry_1);
+        assert_eq!(PolyOverZ::default(), entry_2);
     }
 
     /// Ensure that getting entries works with large numbers.
@@ -586,16 +586,16 @@ mod test_get_vec {
             ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
         let matrix = MatPolynomialRingZq::from((&matrix, &modulus));
 
-        let row1 = matrix.get_row(0).unwrap();
-        let row2 = matrix.get_row(1).unwrap();
+        let row_1 = matrix.get_row(0).unwrap();
+        let row_2 = matrix.get_row(1).unwrap();
 
-        let cmp1 = MatPolyOverZ::from_str("[[0, 0, 0]]").unwrap();
-        let cmp2 = MatPolyOverZ::from_str(&format!("[[1  42, 1  {}, 1  {}]]", i64::MAX, i64::MIN))
+        let cmp_1 = MatPolyOverZ::from_str("[[0, 0, 0]]").unwrap();
+        let cmp_2 = MatPolyOverZ::from_str(&format!("[[1  42, 1  {}, 1  {}]]", i64::MAX, i64::MIN))
             .unwrap();
-        let cmp1 = MatPolynomialRingZq::from((&cmp1, &modulus));
-        let cmp2 = MatPolynomialRingZq::from((&cmp2, &modulus));
-        assert_eq!(cmp1, row1);
-        assert_eq!(cmp2, row2);
+        let cmp_1 = MatPolynomialRingZq::from((&cmp_1, &modulus));
+        let cmp_2 = MatPolynomialRingZq::from((&cmp_2, &modulus));
+        assert_eq!(cmp_1, row_1);
+        assert_eq!(cmp_2, row_2);
     }
 
     /// Ensure that getting a column works.
@@ -611,21 +611,21 @@ mod test_get_vec {
             ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
         let matrix = MatPolynomialRingZq::from((&matrix, &modulus));
 
-        let column1 = matrix.get_column(0).unwrap();
-        let column2 = matrix.get_column(1).unwrap();
-        let column3 = matrix.get_column(2).unwrap();
+        let column_1 = matrix.get_column(0).unwrap();
+        let column_2 = matrix.get_column(1).unwrap();
+        let column_3 = matrix.get_column(2).unwrap();
 
-        let cmp1 =
+        let cmp_1 =
             MatPolyOverZ::from_str(&format!("[[1  42],[1  {}],[1  {}]]", i64::MAX, i64::MIN))
                 .unwrap();
-        let cmp2 = MatPolyOverZ::from_str("[[0],[0],[0]]").unwrap();
-        let cmp3 = MatPolyOverZ::from_str("[[2  17 42],[2  17 42],[2  17 42]]").unwrap();
-        let cmp1 = MatPolynomialRingZq::from((&cmp1, &modulus));
-        let cmp2 = MatPolynomialRingZq::from((&cmp2, &modulus));
-        let cmp3 = MatPolynomialRingZq::from((&cmp3, &modulus));
-        assert_eq!(cmp1, column1);
-        assert_eq!(cmp2, column2);
-        assert_eq!(cmp3, column3);
+        let cmp_2 = MatPolyOverZ::from_str("[[0],[0],[0]]").unwrap();
+        let cmp_3 = MatPolyOverZ::from_str("[[2  17 42],[2  17 42],[2  17 42]]").unwrap();
+        let cmp_1 = MatPolynomialRingZq::from((&cmp_1, &modulus));
+        let cmp_2 = MatPolynomialRingZq::from((&cmp_2, &modulus));
+        let cmp_3 = MatPolynomialRingZq::from((&cmp_3, &modulus));
+        assert_eq!(cmp_1, column_1);
+        assert_eq!(cmp_2, column_2);
+        assert_eq!(cmp_3, column_3);
     }
 
     /// Ensure that wrong row and column dimensions yields an error.
@@ -641,15 +641,15 @@ mod test_get_vec {
         .unwrap();
         let matrix = MatPolynomialRingZq::from((&matrix, &modulus));
 
-        let row1 = matrix.get_row(-1);
-        let row2 = matrix.get_row(4);
-        let column1 = matrix.get_column(-1);
-        let column2 = matrix.get_column(4);
+        let row_1 = matrix.get_row(-1);
+        let row_2 = matrix.get_row(4);
+        let column_1 = matrix.get_column(-1);
+        let column_2 = matrix.get_column(4);
 
-        assert!(row1.is_err());
-        assert!(row2.is_err());
-        assert!(column1.is_err());
-        assert!(column2.is_err());
+        assert!(row_1.is_err());
+        assert!(row_2.is_err());
+        assert!(column_1.is_err());
+        assert!(column_2.is_err());
     }
 }
 
@@ -815,39 +815,39 @@ mod test_collect_entries {
     fn all_entries_collected() {
         let modulus =
             ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {LARGE_PRIME}")).unwrap();
-        let poly_mat1 = MatPolyOverZ::from_str(&format!(
+        let poly_mat_1 = MatPolyOverZ::from_str(&format!(
             "[[4  -1 0 3 1, 1  {}],[2  1 2, 3  {} 1 1]]",
             i64::MAX,
             i64::MIN + 58,
         ))
         .unwrap();
-        let poly_ring_mat1 = MatPolynomialRingZq::from((&poly_mat1, &modulus));
-        let poly_mat2 = MatPolyOverZ::from_str("[[1  42, 2  1 17]]").unwrap();
-        let poly_ring_mat2 = MatPolynomialRingZq::from((&poly_mat2, &modulus));
+        let poly_ring_mat_1 = MatPolynomialRingZq::from((&poly_mat_1, &modulus));
+        let poly_mat_2 = MatPolyOverZ::from_str("[[1  42, 2  1 17]]").unwrap();
+        let poly_ring_mat_2 = MatPolynomialRingZq::from((&poly_mat_2, &modulus));
 
-        let entries_1 = poly_ring_mat1.collect_entries();
-        let entries_2 = poly_ring_mat2.collect_entries();
+        let entries_1 = poly_ring_mat_1.collect_entries();
+        let entries_2 = poly_ring_mat_2.collect_entries();
 
-        let mut entry1 = PolyOverZ::default();
-        let mut entry2 = entry1.clone();
-        let mut entry3 = entry1.clone();
+        let mut entry_1 = PolyOverZ::default();
+        let mut entry_2 = entry_1.clone();
+        let mut entry_3 = entry_1.clone();
 
-        unsafe { fmpz_poly_set(&mut entry1.poly, &entries_1[1]) }
-        unsafe { fmpz_poly_set(&mut entry2.poly, &entries_1[3]) }
-        unsafe { fmpz_poly_set(&mut entry3.poly, &entries_2[0]) }
+        unsafe { fmpz_poly_set(&mut entry_1.poly, &entries_1[1]) }
+        unsafe { fmpz_poly_set(&mut entry_2.poly, &entries_1[3]) }
+        unsafe { fmpz_poly_set(&mut entry_3.poly, &entries_2[0]) }
 
         assert_eq!(entries_1.len(), 4);
         assert_eq!(
             PolyOverZ::from_str(&format!("1  {}", i64::MAX)).unwrap(),
-            entry1
+            entry_1
         );
         assert_eq!(
             PolyOverZ::from_str(&format!("3  {} 1 1", i64::MAX)).unwrap(),
-            entry2
+            entry_2
         );
 
         assert_eq!(entries_2.len(), 2);
-        assert_eq!(PolyOverZ::from(42), entry3);
+        assert_eq!(PolyOverZ::from(42), entry_3);
     }
 
     /// Ensure that the doc-test compiles and works correctly.

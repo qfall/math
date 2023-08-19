@@ -94,15 +94,15 @@ mod test_new {
     fn entry_zero() {
         let matrix = MatPolyOverZ::new(2, 2);
 
-        let entry1 = matrix.get_entry(0, 0).unwrap();
-        let entry2 = matrix.get_entry(0, 1).unwrap();
-        let entry3 = matrix.get_entry(1, 0).unwrap();
-        let entry4 = matrix.get_entry(1, 1).unwrap();
+        let entry_1 = matrix.get_entry(0, 0).unwrap();
+        let entry_2 = matrix.get_entry(0, 1).unwrap();
+        let entry_3 = matrix.get_entry(1, 0).unwrap();
+        let entry_4 = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!("0", entry1.to_string());
-        assert_eq!("0", entry2.to_string());
-        assert_eq!("0", entry3.to_string());
-        assert_eq!("0", entry4.to_string());
+        assert_eq!("0", entry_1.to_string());
+        assert_eq!("0", entry_2.to_string());
+        assert_eq!("0", entry_3.to_string());
+        assert_eq!("0", entry_4.to_string());
     }
 
     /// Ensure that a new zero matrix fails with `0` as `num_cols`.
