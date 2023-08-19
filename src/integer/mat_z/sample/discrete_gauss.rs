@@ -13,7 +13,7 @@ use crate::{
     integer::{MatZ, Z},
     rational::{MatQ, Q},
     traits::{GetNumColumns, GetNumRows, SetEntry},
-    utils::sample::discrete_gauss::{sample_d, sample_z},
+    utils::sample::discrete_gauss::{sample_d, sample_d_precomputed_gso, sample_z},
 };
 use std::fmt::Display;
 
@@ -143,6 +143,61 @@ impl MatZ {
 
         MatZ::sample_d(&basis, n, &center, s)
     }
+
+    /// SampleD samples a discrete Gaussian from the lattice with a provided `basis`.
+    ///
+    /// We do not check whether `basis` is actually a basis or whether `basis_gso` is
+    /// actually the gso of `basis`. Hence, the callee is responsible for making sure
+    /// that `basis` provides a suitable basis and `basis_gso` is a corresponding GSO.
+    ///
+    /// Parameters:
+    /// - `basis`: specifies a basis for the lattice from which is sampled
+    /// - `basis_gso`: specifies the precomputed gso for `basis`
+    /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
+    /// - `center`: specifies the positions of the center with peak probability
+    /// - `s`: specifies the Gaussian parameter, which is proportional
+    /// to the standard deviation `sigma * sqrt(2 * pi) = s`
+    ///
+    /// Returns a lattice vector sampled according to the discrete Gaussian distribution.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{integer::{MatZ, Z}, rational::{MatQ, Q}};
+    /// let basis = MatZ::identity(5, 5);
+    /// let center = MatQ::new(5, 1);
+    /// let basis_gso = MatQ::from(&basis).gso();
+    ///
+    /// let sample = MatZ::sample_d_precomputed_gso(&basis,&basis_gso, 1024, &center, 1.25f32).unwrap();
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
+    /// if the `n <= 1` or `s <= 0`.
+    /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
+    /// if the number of rows of the `basis` and `center` differ.
+    /// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix)
+    /// if `center` is not a column vector.
+    ///
+    /// # Panics ...
+    /// - if the number of rows/columns of `basis_gso` and `basis` mismatch.
+    ///
+    /// This function implements SampleD according to:
+    /// - \[1\] Gentry, Craig and Peikert, Chris and Vaikuntanathan, Vinod (2008).
+    /// Trapdoors for hard lattices and new cryptographic constructions.
+    /// In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
+    /// <https://dl.acm.org/doi/pdf/10.1145/1374376.1374407>
+    pub fn sample_d_precomputed_gso(
+        basis: &MatZ,
+        basis_gso: &MatQ,
+        n: impl Into<Z>,
+        center: &MatQ,
+        s: impl Into<Q>,
+    ) -> Result<Self, MathError> {
+        let n: Z = n.into();
+        let s: Q = s.into();
+
+        sample_d_precomputed_gso(basis, basis_gso, &n, center, &s)
+    }
 }
 
 #[cfg(test)]
@@ -214,6 +269,32 @@ mod test_sample_d {
         let _ = MatZ::sample_d(&basis, 2, &center, &s);
         let _ = MatZ::sample_d(&basis, 2, &center, 1.25f64);
         let _ = MatZ::sample_d(&basis, 2, &center, 15.75f32);
+    }
+
+    /// Checks whether `sample_d_precomputed_gso` is available for all types
+    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
+    /// or [`Into<Q>`], i.e. u8, i16, f32, Z, Q, ...
+    #[test]
+    fn availability_prec_gso() {
+        let basis = MatZ::identity(5, 5);
+        let n = Z::from(1024);
+        let center = MatQ::new(5, 1);
+        let s = Q::ONE;
+        let basis_gso = MatQ::from(&basis);
+
+        let _ = MatZ::sample_d_precomputed_gso(&basis, &basis_gso, 16u16, &center, 1u16);
+        let _ = MatZ::sample_d_precomputed_gso(&basis, &basis_gso, 2u32, &center, 1u8);
+        let _ = MatZ::sample_d_precomputed_gso(&basis, &basis_gso, 2u64, &center, 1u32);
+        let _ = MatZ::sample_d_precomputed_gso(&basis, &basis_gso, 2i8, &center, 1u64);
+        let _ = MatZ::sample_d_precomputed_gso(&basis, &basis_gso, 2i16, &center, 1i64);
+        let _ = MatZ::sample_d_precomputed_gso(&basis, &basis_gso, 2i32, &center, 1i32);
+        let _ = MatZ::sample_d_precomputed_gso(&basis, &basis_gso, 2i64, &center, 1i16);
+        let _ = MatZ::sample_d_precomputed_gso(&basis, &basis_gso, &n, &center, 1i8);
+        let _ = MatZ::sample_d_precomputed_gso(&basis, &basis_gso, 2u8, &center, 1i64);
+        let _ = MatZ::sample_d_precomputed_gso(&basis, &basis_gso, 2, &center, &n);
+        let _ = MatZ::sample_d_precomputed_gso(&basis, &basis_gso, 2, &center, &s);
+        let _ = MatZ::sample_d_precomputed_gso(&basis, &basis_gso, 2, &center, 1.25f64);
+        let _ = MatZ::sample_d_precomputed_gso(&basis, &basis_gso, 2, &center, 15.75f32);
     }
 
     // As `sample_d_common` just calls `MatZ::sample_d` with identity basis
