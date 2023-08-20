@@ -24,7 +24,7 @@ impl MatZq {
     /// The function uses Gaussian elimination together with Factor refinement
     /// to split the modulus and the Chinese remainder theorem and Hensel lifting
     /// to combine solutions under the split modulus.
-    /// For Hensel lifting we use the method from [\[1\]](<../index.html#:~:text=[1]>).
+    /// For Hensel lifting we use the method from [\[1\]](<index.html#:~:text=[1]>).
     ///
     /// Note that this function does not compute a solution whenever there is one.
     /// If the matrix has not full rank under a modulus that divides the given one,
@@ -42,7 +42,7 @@ impl MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let mat = MatZq::from_str("[[2,2,3],[2,5,7]] mod 8").unwrap();
+    /// let mat = MatZq::from_str("[[2, 2, 3],[2, 5, 7]] mod 8").unwrap();
     /// let y = MatZq::from_str("[[3],[5]] mod 8").unwrap();
     /// let x = mat.solve_gaussian_elimination(&y).unwrap();
     ///
@@ -101,7 +101,7 @@ impl MatZq {
         let mut out = MatZq::new(self.get_num_columns(), 1, &matrix.get_mod());
         for (i, j) in indices.iter() {
             let entry: Z = matrix.get_entry(*i, -1).unwrap();
-            out.set_entry(*j, 0, &entry).unwrap();
+            out.set_entry(*j, 0, entry).unwrap();
         }
 
         Some(out)
@@ -124,7 +124,7 @@ impl MatZq {
         for row_nr in (0..self.get_num_rows()).filter(|x| *x != row_nr) {
             let old_row = self.get_row(row_nr).unwrap();
             let entry: Z = old_row.get_entry(0, column_nr).unwrap();
-            if entry != Z::ZERO {
+            if !entry.is_zero() {
                 let new_row = &old_row - entry * &row;
                 self.set_row(row_nr, &new_row, 0).unwrap();
             }
@@ -214,11 +214,11 @@ impl MatZq {
             solutions.push(s_2 * a * &x_1 + s_1 * b * &x_2);
             moduli.push((x_1 * x_2, 1));
         }
-        Some(solutions[0].clone())
+        solutions.pop()
     }
 
     /// Computes a solution for a system of linear equations under a modulus
-    /// of the form `z^a`with the help of [\[1\]](<../index.html#:~:text=[1]>).
+    /// of the form `z^a`with the help of [\[1\]](<index.html#:~:text=[1]>).
     /// It solves `Ax = y` for `x` with `A` being a [`MatZq`] value.
     /// If no solution is found, `None` is returned.
     ///
@@ -341,7 +341,7 @@ impl MatZq {
                 .unwrap();
         }
 
-        // Use the method from [\[1\]](<../index.html#:~:text=[1]>)
+        // Use the method from [\[1\]](<index.html#:~:text=[1]>)
         // to compute a solution for the original system.
         let mut b_i = y.clone();
         let mut x_i = &matrix_base_inv * &b_i;
@@ -426,7 +426,7 @@ mod test_solve_gauss {
     /// Ensure that a solution is found with prime modulus.
     #[test]
     fn solution_prime_modulus() {
-        let mat = MatZq::from_str("[[5,6],[11, 12]] mod 13").unwrap();
+        let mat = MatZq::from_str("[[5, 6],[11, 12]] mod 13").unwrap();
         let y = MatZq::from_str("[[5],[2]] mod 13").unwrap();
 
         let x = mat.solve_gaussian_elimination(&y).unwrap();
@@ -438,7 +438,7 @@ mod test_solve_gauss {
     /// Ensure that a solution is found with prime modulus and more rows than columns.
     #[test]
     fn solution_more_rows_than_columns_prime() {
-        let mat = MatZq::from_str("[[5,6],[11, 12],[11, 12]] mod 13").unwrap();
+        let mat = MatZq::from_str("[[5, 6],[11, 12],[11, 12]] mod 13").unwrap();
         let y = MatZq::from_str("[[5],[2],[2]] mod 13").unwrap();
 
         let x = mat.solve_gaussian_elimination(&y).unwrap();
@@ -450,7 +450,7 @@ mod test_solve_gauss {
     /// Ensure that a solution is found with invertible columns.
     #[test]
     fn solution_invertible_columns() {
-        let mat = MatZq::from_str("[[3,1],[11, 13]] mod 20").unwrap();
+        let mat = MatZq::from_str("[[3, 1],[11, 13]] mod 20").unwrap();
         let y = MatZq::from_str("[[5],[2]] mod 20").unwrap();
 
         let x = mat.solve_gaussian_elimination(&y).unwrap();
@@ -463,7 +463,7 @@ mod test_solve_gauss {
     /// column that is not invertible.
     #[test]
     fn solution_with_one_uninvertible_column() {
-        let mat = MatZq::from_str("[[2,1],[3,1]] mod 210").unwrap();
+        let mat = MatZq::from_str("[[2, 1],[3, 1]] mod 210").unwrap();
         let y = MatZq::from_str("[[5],[2]] mod 210").unwrap();
 
         let x = mat.solve_gaussian_elimination(&y).unwrap();
@@ -476,7 +476,7 @@ mod test_solve_gauss {
     /// column that is invertible.
     #[test]
     fn solution_without_invertible_columns() {
-        let mat = MatZq::from_str("[[2,1],[6,2]] mod 6").unwrap();
+        let mat = MatZq::from_str("[[2, 1],[6, 2]] mod 6").unwrap();
         let y = MatZq::from_str("[[5],[2]] mod 6").unwrap();
 
         let x = mat.solve_gaussian_elimination(&y).unwrap();
@@ -488,7 +488,7 @@ mod test_solve_gauss {
     /// Ensure that a solution is found, even if the modulus is a power of a prime.
     #[test]
     fn solution_prime_power() {
-        let mat = MatZq::from_str("[[2,2,3],[2,5,7]] mod 8").unwrap();
+        let mat = MatZq::from_str("[[2, 2, 3],[2, 5, 7]] mod 8").unwrap();
         let y = MatZq::from_str("[[0],[1]] mod 8").unwrap();
 
         let x = mat.solve_gaussian_elimination(&y).unwrap();
@@ -499,7 +499,7 @@ mod test_solve_gauss {
     /// Ensure that the trivial solution can always be computed.
     #[test]
     fn trivial() {
-        let mat = MatZq::from_str("[[2,2,3],[2,5,7]] mod 8").unwrap();
+        let mat = MatZq::from_str("[[2, 2, 3],[2, 5, 7]] mod 8").unwrap();
         let y = MatZq::from_str("[[0],[0]] mod 8").unwrap();
 
         let x = mat.solve_gaussian_elimination(&y).unwrap();
@@ -510,7 +510,7 @@ mod test_solve_gauss {
     /// Ensure that a solution containing only one vector of the matrix is found.
     #[test]
     fn simple() {
-        let mat = MatZq::from_str("[[2,2,3],[2,5,7]] mod 1048576").unwrap();
+        let mat = MatZq::from_str("[[2, 2, 3],[2, 5, 7]] mod 1048576").unwrap();
         let y = MatZq::from_str("[[0],[1]] mod 1048576").unwrap();
 
         let x = mat.solve_gaussian_elimination(&y).unwrap();
@@ -537,7 +537,7 @@ mod test_solve_gauss {
     #[test]
     #[ignore]
     fn solution_zero_rows() {
-        let mat = MatZq::from_str("[[6,1],[3,1]] mod 36").unwrap();
+        let mat = MatZq::from_str("[[6, 1],[3, 1]] mod 36").unwrap();
         let y = MatZq::from_str("[[6],[3]] mod 36").unwrap();
 
         let x = mat.solve_gaussian_elimination(&y).unwrap();
@@ -551,7 +551,7 @@ mod test_solve_gauss {
     #[test]
     #[ignore]
     fn solution_more_rows() {
-        let mat = MatZq::from_str("[[5,6],[11, 12],[11, 12]] mod 20").unwrap();
+        let mat = MatZq::from_str("[[5, 6],[11, 12],[11, 12]] mod 20").unwrap();
         let y = MatZq::from_str("[[5],[2],[2]] mod 20").unwrap();
 
         let x = mat.solve_gaussian_elimination(&y).unwrap();
@@ -608,7 +608,7 @@ mod test_solve_gauss {
     #[test]
     #[should_panic]
     fn different_moduli() {
-        let mat = MatZq::from_str("[[2,2,3],[2,5,7]] mod 8").unwrap();
+        let mat = MatZq::from_str("[[2, 2, 3],[2, 5, 7]] mod 8").unwrap();
         let y = MatZq::from_str("[[0],[0]] mod 7").unwrap();
         let _ = mat.solve_gaussian_elimination(&y).unwrap();
     }
@@ -617,7 +617,7 @@ mod test_solve_gauss {
     #[test]
     #[should_panic]
     fn different_nr_rows() {
-        let mat = MatZq::from_str("[[2,2,3],[2,5,7]] mod 8").unwrap();
+        let mat = MatZq::from_str("[[2, 2, 3],[2, 5, 7]] mod 8").unwrap();
         let y = MatZq::from_str("[[0],[0],[0]] mod 8").unwrap();
         let _ = mat.solve_gaussian_elimination(&y).unwrap();
     }
@@ -626,7 +626,7 @@ mod test_solve_gauss {
     #[test]
     #[should_panic]
     fn not_column_vector() {
-        let mat = MatZq::from_str("[[2,2,3],[2,5,7]] mod 8").unwrap();
+        let mat = MatZq::from_str("[[2, 2, 3],[2, 5, 7]] mod 8").unwrap();
         let y = MatZq::from_str("[[0, 1],[0, 1]] mod 8").unwrap();
         let _ = mat.solve_gaussian_elimination(&y).unwrap();
     }
