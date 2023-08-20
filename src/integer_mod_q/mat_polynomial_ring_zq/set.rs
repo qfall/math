@@ -59,14 +59,9 @@ impl SetEntry<&PolyOverZ> for MatPolynomialRingZq {
         column: impl TryInto<i64> + Display,
         value: &PolyOverZ,
     ) -> Result<(), MathError> {
-        let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
+        let value = PolynomialRingZq::from((value, self.get_mod()));
 
-        unsafe {
-            let entry = fmpz_poly_mat_entry(&self.matrix.matrix, row_i64, column_i64);
-            fmpz_poly_set(entry, &value.poly)
-        };
-
-        Ok(())
+        self.set_entry(row, column, value)
     }
 }
 
@@ -141,7 +136,9 @@ implement_for_owned!(PolynomialRingZq, MatPolynomialRingZq, SetEntry);
 mod test_setter {
     use crate::{
         integer::{MatPolyOverZ, PolyOverZ},
-        integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq, PolynomialRingZq},
+        integer_mod_q::{
+            MatPolynomialRingZq, ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq,
+        },
         traits::{GetEntry, SetEntry},
     };
     use std::str::FromStr;
@@ -164,6 +161,23 @@ mod test_setter {
         assert_eq!("0", entry_z.to_string());
         assert_eq!("0", entry_zq.poly.to_string());
         assert_eq!("4  1 0 0 1 mod 17", entry_zq.modulus.to_string());
+    }
+
+    /// Ensure that when using a [`PolyOverZ`] the set entry is actually reduced by the
+    /// modulus
+    #[test]
+    fn set_entry_reduced() {
+        let id_mat = MatPolyOverZ::identity(2, 2);
+        let modulus = PolyOverZq::from_str("5  1 0 0 0 1 mod 17").unwrap();
+
+        let mut poly_mat = MatPolynomialRingZq::from((id_mat, modulus));
+
+        poly_mat
+            .set_entry(0, 0, PolyOverZ::from_str("5  -1 0 0 0 16").unwrap())
+            .unwrap();
+
+        let entry: PolyOverZ = poly_mat.get_entry(0, 0).unwrap();
+        assert_eq!(entry, PolyOverZ::from(0));
     }
 
     /// Ensure that setting entries works with large numbers.
