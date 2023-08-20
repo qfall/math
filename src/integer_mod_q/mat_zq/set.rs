@@ -10,8 +10,8 @@
 
 use crate::{
     error::MathError,
-    integer::{MatZ, Z},
-    integer_mod_q::{MatZq, Modulus, Zq},
+    integer::Z,
+    integer_mod_q::{MatZq, Zq},
     macros::for_others::implement_for_owned,
     traits::{GetNumColumns, GetNumRows, SetEntry},
     utils::{
@@ -25,7 +25,7 @@ use flint_sys::{
         fmpz_mat_entry, fmpz_mat_invert_cols, fmpz_mat_invert_rows, fmpz_mat_swap_cols,
         fmpz_mat_swap_rows,
     },
-    fmpz_mod_mat::fmpz_mod_mat_set_entry,
+    fmpz_mod_mat::{_fmpz_mod_mat_reduce, _fmpz_mod_mat_set_mod, fmpz_mod_mat_set_entry},
 };
 use std::{
     fmt::Display,
@@ -434,8 +434,9 @@ impl MatZq {
         unsafe { fmpz_mat_invert_rows(&mut self.matrix.mat[0], null_mut()) }
     }
 
-    /// Returns the given matrix with the provided modulus as its new modulus.
-    /// The matrix is automatically reduced.
+    /// Changes the modulus of the given matrix to the new modulus.
+    /// It takes the representation of each coefficient in [0, q) as the new
+    /// matrix entries and reduces them by the new modulus automatically.
     ///
     /// Parameters:
     /// - `modulus`: The new modulus of the matrix
@@ -445,12 +446,16 @@ impl MatZq {
     /// use qfall_math::integer_mod_q::{MatZq, Modulus};
     /// use std::str::FromStr;
     ///
-    /// let mat = MatZq::from_str("[[1,2]] mod 3").unwrap();
-    /// let modulus = Modulus::from(2);
-    /// let mat = mat.change_modulus(&modulus);
+    /// let mut mat = MatZq::from_str("[[1,2]] mod 3").unwrap();
+    /// mat.change_modulus(2);
     /// ```
-    pub fn change_modulus(&self, modulus: &Modulus) -> MatZq {
-        MatZq::from((&MatZ::from(self), modulus))
+    pub fn change_modulus(&mut self, modulus: impl Into<Z>) {
+        let modulus: Z = modulus.into();
+        self.modulus = modulus.clone().into();
+        unsafe {
+            _fmpz_mod_mat_set_mod(&mut self.matrix, &modulus.value);
+            _fmpz_mod_mat_reduce(&mut self.matrix)
+        }
     }
 }
 
@@ -1097,7 +1102,7 @@ mod test_change_modulus {
         let mut matrix = MatZq::from_str("[[1,2,3],[4,5,6]] mod 7").unwrap();
         let modulus = Modulus::from(8);
 
-        matrix = matrix.change_modulus(&modulus);
+        matrix.change_modulus(&modulus);
 
         assert_eq!("[[1, 2, 3],[4, 5, 6]] mod 8", matrix.to_string());
     }
@@ -1108,7 +1113,7 @@ mod test_change_modulus {
         let mut matrix = MatZq::from_str(&format!("[[1,2,3],[4,5,6]] mod {}", i64::MAX)).unwrap();
         let modulus = Modulus::from(u64::MAX);
 
-        matrix = matrix.change_modulus(&modulus);
+        matrix.change_modulus(&modulus);
 
         assert_eq!(
             format!("[[1, 2, 3],[4, 5, 6]] mod {}", u64::MAX),
@@ -1122,7 +1127,7 @@ mod test_change_modulus {
         let mut matrix = MatZq::from_str("[[1,2,3],[4,5,6]] mod 7").unwrap();
         let modulus = Modulus::from(2);
 
-        matrix = matrix.change_modulus(&modulus);
+        matrix.change_modulus(&modulus);
 
         assert_eq!("[[1, 0, 1],[0, 1, 0]] mod 2", matrix.to_string());
     }
