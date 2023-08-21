@@ -11,9 +11,9 @@
 use crate::{
     error::MathError,
     integer::Z,
-    integer_mod_q::{MatZq, Zq},
+    integer_mod_q::{MatZq, Modulus, Zq},
     macros::for_others::implement_for_owned,
-    traits::{GetNumColumns, GetNumRows, SetEntry},
+    traits::{AsInteger, GetNumColumns, GetNumRows, SetEntry},
     utils::{
         collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
         index::{evaluate_index, evaluate_indices_for_matrix},
@@ -25,7 +25,7 @@ use flint_sys::{
         fmpz_mat_entry, fmpz_mat_invert_cols, fmpz_mat_invert_rows, fmpz_mat_swap_cols,
         fmpz_mat_swap_rows,
     },
-    fmpz_mod_mat::fmpz_mod_mat_set_entry,
+    fmpz_mod_mat::{_fmpz_mod_mat_reduce, _fmpz_mod_mat_set_mod, fmpz_mod_mat_set_entry},
 };
 use std::{
     fmt::Display,
@@ -188,7 +188,7 @@ impl MatZq {
 
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
-                "set_column requires the moduli to be equal, but they {} differs from {}",
+                "set_column requires the moduli to be equal, but {} differs from {}",
                 self.get_mod(),
                 other.get_mod()
             )));
@@ -256,7 +256,7 @@ impl MatZq {
 
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
-                "set_row requires the moduli to be equal, but they {} differs from {}",
+                "set_row requires the moduli to be equal, but {} differs from {}",
                 self.get_mod(),
                 other.get_mod()
             )));
@@ -433,6 +433,29 @@ impl MatZq {
         // Hence, passing in null is justified here.
         unsafe { fmpz_mat_invert_rows(&mut self.matrix.mat[0], null_mut()) }
     }
+
+    /// Changes the modulus of the given matrix to the new modulus.
+    /// It takes the representation of each coefficient in [0, q) as the new
+    /// matrix entries and reduces them by the new modulus automatically.
+    ///
+    /// Parameters:
+    /// - `modulus`: The new modulus of the matrix
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{MatZq, Modulus};
+    /// use std::str::FromStr;
+    ///
+    /// let mut mat = MatZq::from_str("[[1, 2]] mod 3").unwrap();
+    /// mat.change_modulus(2);
+    /// ```
+    pub fn change_modulus(&mut self, modulus: impl Into<Modulus>) {
+        self.modulus = modulus.into();
+        unsafe {
+            _fmpz_mod_mat_set_mod(&mut self.matrix, self.modulus.get_fmpz_ref().unwrap());
+            _fmpz_mod_mat_reduce(&mut self.matrix)
+        }
+    }
 }
 
 #[cfg(test)]
@@ -561,6 +584,7 @@ mod test_setter {
     fn column_small_entries() {
         let mut mat_1 = MatZq::from_str("[[1, 2, 3],[4, 5, 6]] mod 11").unwrap();
         let mat_2 = MatZq::from_str("[[0],[-1]] mod 11").unwrap();
+      
         let cmp = MatZq::from_str("[[1, 0, 3],[4, -1, 6]] mod 11").unwrap();
 
         let _ = mat_1.set_column(1, &mat_2, 0);
@@ -1063,5 +1087,49 @@ mod test_reverses {
         assert_eq!(cmp_vec_2, matrix.get_row(0).unwrap());
         assert_eq!(cmp_vec_1, matrix.get_row(1).unwrap());
         assert_eq!(cmp_vec_0, matrix.get_row(2).unwrap());
+    }
+}
+
+#[cfg(test)]
+mod test_change_modulus {
+    use super::MatZq;
+    use crate::integer_mod_q::Modulus;
+    use std::str::FromStr;
+
+    /// Ensures that the modulus is changed correctly.
+    #[test]
+    fn modulus_correct() {
+        let mut matrix = MatZq::from_str("[[1, 2, 3],[4, 5, 6]] mod 7").unwrap();
+        let modulus = Modulus::from(8);
+
+        matrix.change_modulus(&modulus);
+
+        assert_eq!("[[1, 2, 3],[4, 5, 6]] mod 8", matrix.to_string());
+    }
+
+    /// Ensures that the modulus is changed correctly, if the modulus is big.
+    #[test]
+    fn big_modulus_correct() {
+        let mut matrix =
+            MatZq::from_str(&format!("[[1, 2, 3],[4, 5, 6]] mod {}", i64::MAX)).unwrap();
+        let modulus = Modulus::from(u64::MAX);
+
+        matrix.change_modulus(&modulus);
+
+        assert_eq!(
+            format!("[[1, 2, 3],[4, 5, 6]] mod {}", u64::MAX),
+            matrix.to_string()
+        );
+    }
+
+    /// Ensures that the matrix is reduced correctly.
+    #[test]
+    fn reduced_correct() {
+        let mut matrix = MatZq::from_str("[[1, 2, 3],[4, 5, 6]] mod 7").unwrap();
+        let modulus = Modulus::from(2);
+
+        matrix.change_modulus(&modulus);
+
+        assert_eq!("[[1, 0, 1],[0, 1, 0]] mod 2", matrix.to_string());
     }
 }

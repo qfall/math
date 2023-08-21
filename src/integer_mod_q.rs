@@ -8,6 +8,10 @@
 
 //! This module contains the type [`Zq`] for integers with arbitrary length
 //! modulus `q` and constructions over it.
+//!
+//! - \[1\] John D. Dixon.
+//! "Exact Solution of Linear Equations Using P-Adic Expansions"
+//! <https://link.springer.com/article/10.1007/BF01459082>
 
 mod mat_polynomial_ring_zq;
 mod mat_zq;

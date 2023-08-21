@@ -77,7 +77,7 @@ pub(crate) fn evaluate_vec_dimensions_set_row_or_col(
     }
     if length_vector_0 != length_vector_1 {
         return Err(MathError::MismatchingMatrixDimension(format!(
-            "as {callee} was called on two matrices with different number of columns {length_vector_0} and {length_vector_1}",
+            "as {callee} was called on two matrices with different number of rows/columns {length_vector_0} and {length_vector_1}",
         )));
     }
     Ok(())
