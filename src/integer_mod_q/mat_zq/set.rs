@@ -584,7 +584,7 @@ mod test_setter {
     fn column_small_entries() {
         let mut mat_1 = MatZq::from_str("[[1, 2, 3],[4, 5, 6]] mod 11").unwrap();
         let mat_2 = MatZq::from_str("[[0],[-1]] mod 11").unwrap();
-      
+
         let cmp = MatZq::from_str("[[1, 0, 3],[4, -1, 6]] mod 11").unwrap();
 
         let _ = mat_1.set_column(1, &mat_2, 0);
