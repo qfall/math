@@ -1,4 +1,4 @@
-// Copyright © 2023 Marcel Luca Schmidt
+// Copyright © 2023 Marcel Luca Schmidt and Sven Moog
 //
 // This file is part of qFALL-math.
 //
@@ -11,9 +11,9 @@
 use super::MatZq;
 use crate::{
     error::MathError,
-    integer::Z,
+    integer::{MatZ, Z},
     integer_mod_q::{fmpz_mod_helpers::length, Modulus, Zq},
-    traits::{GetEntry, GetNumColumns, GetNumRows},
+    traits::{GetEntry, GetNumColumns, GetNumRows, SetEntry},
     utils::index::{evaluate_index, evaluate_indices_for_matrix},
 };
 use flint_sys::{
@@ -369,6 +369,50 @@ impl MatZq {
         }
 
         entry_lengths
+    }
+
+    /// Get a [`MatZ`] with the representatives close to zero.
+    ///
+    /// The values in the output matrix are in the range of `[-Modulus/2, Modulus/2]`.
+    /// For even moduli, the positive representative is chosen for the element `Modulus / 2`.
+    ///
+    /// Return a [`MatZ`] representation of the given matrix with
+    /// representatives chosen close to zero.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use std::str::FromStr;
+    ///
+    /// let mat_zq_1 = MatZq::from_str("[[1,2],[3,4]] mod 5").unwrap();
+    /// let mat_zq_2 = MatZq::from_str("[[1,2],[3,4]] mod 4").unwrap();
+    ///
+    /// let mat_z_1 = mat_zq_1.get_closest_to_zero_representative();
+    /// let mat_z_2 = mat_zq_2.get_closest_to_zero_representative();
+    ///
+    /// assert_eq!(mat_z_1.to_string(), "[[1, 2],[-2, -1]]");
+    /// assert_eq!(mat_z_2.to_string(), "[[1, 2],[-1, 0]]");
+    /// ```
+    pub fn get_closest_to_zero_representative(&self) -> MatZ {
+        let modulus: Z = Z::from(&self.modulus);
+        let modulus_half = modulus.div_floor(2);
+
+        let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
+
+        for row in 0..self.get_num_rows() {
+            for column in 0..self.get_num_columns() {
+                let entry: Z = self.get_entry(row, column).unwrap();
+
+                // Not using Zq::distance for performance reasons.
+                if entry > modulus_half {
+                    out.set_entry(row, column, entry - &modulus).unwrap();
+                } else {
+                    out.set_entry(row, column, entry).unwrap();
+                }
+            }
+        }
+
+        out
     }
 }
 
@@ -877,5 +921,44 @@ mod test_collect_lengths {
         assert_eq!(lengths_2.len(), 2);
         assert_eq!(lengths_2[0], Z::ONE);
         assert_eq!(lengths_2[1], Z::ZERO);
+    }
+}
+
+#[cfg(test)]
+mod test_get_closest_to_zero_representative {
+    use super::*;
+    use std::str::FromStr;
+
+    /// Test with a large modulus.
+    #[test]
+    fn large_modulus() {
+        let mat_zq = MatZq::from_str(&format!("[[1,2],[-1,-2]] mod {}", u64::MAX)).unwrap();
+
+        let mat_z = mat_zq.get_closest_to_zero_representative();
+
+        let mat_cmp = MatZ::from_str("[[1,2],[-1,-2]]").unwrap();
+        assert_eq!(mat_z.to_string(), mat_cmp.to_string());
+    }
+
+    /// Test with even modulus.
+    #[test]
+    fn even_modulus() {
+        let mat_zq = MatZq::from_str("[[0,1,2,3,4,5,6,7,8,9,10]] mod 10").unwrap();
+
+        let mat_z = mat_zq.get_closest_to_zero_representative();
+
+        let mat_cmp = MatZ::from_str("[[0,1,2,3,4,5,-4,-3,-2,-1,0]]").unwrap();
+        assert_eq!(mat_z.to_string(), mat_cmp.to_string());
+    }
+
+    /// Test with uneven modulus.
+    #[test]
+    fn uneven_modulus() {
+        let mat_zq = MatZq::from_str("[[0,1,2,3,4,5,6,7,8,9,10,11]] mod 11").unwrap();
+
+        let mat_z = mat_zq.get_closest_to_zero_representative();
+
+        let mat_cmp = MatZ::from_str("[[0,1,2,3,4,5,-5,-4,-3,-2,-1,0]]").unwrap();
+        assert_eq!(mat_z.to_string(), mat_cmp.to_string());
     }
 }
