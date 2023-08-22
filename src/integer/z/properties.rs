@@ -13,7 +13,8 @@ use crate::rational::Q;
 use flint_sys::{
     fmpq::{fmpq, fmpq_inv},
     fmpz::{
-        fmpz, fmpz_abs, fmpz_bits, fmpz_is_one, fmpz_is_prime, fmpz_is_zero, fmpz_mod, fmpz_tstbit,
+        fmpz, fmpz_abs, fmpz_bits, fmpz_is_one, fmpz_is_perfect_power, fmpz_is_prime, fmpz_is_zero,
+        fmpz_mod, fmpz_tstbit,
     },
 };
 
@@ -190,6 +191,201 @@ impl Z {
         let mut out = Z::default();
         unsafe { fmpz_mod(&mut out.value, &self.value, &modulus.value) };
         out
+    }
+
+    /// Computes a pair `(root, exp)` s.t. `root^exp = self`
+    /// if `self` is a perfect power and can be represented via `root.pow(exp)`.
+    ///
+    /// This algorithm tries to find the smallest perfect root,
+    /// but there is no formal guarantee to find it.
+    ///
+    /// Returns a pair `(root, exp)` if `root.pow(exp) = self` exists. Otherwise,
+    /// `None` is returned.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// let value = Z::from(16);
+    ///
+    /// let (root, exp) = value.is_perfect_power().unwrap();
+    ///
+    /// assert_eq!(root, Z::from(2));
+    /// assert_eq!(exp, 4);
+    /// ```
+    pub fn is_perfect_power(&self) -> Option<(Self, i32)> {
+        let mut root = Z::default();
+        let exp = unsafe { fmpz_is_perfect_power(&mut root.value, &self.value) };
+        if root.is_zero() && exp == 0 {
+            return None;
+        }
+        Some((root, exp))
+    }
+}
+
+#[cfg(test)]
+mod test_is_perfect_power {
+    use super::Z;
+    use crate::traits::Pow;
+
+    /// Ensures that positive small values for root 2 are correctly dissembled.
+    #[test]
+    fn positive_small_2() {
+        let x = Z::from(32);
+
+        let (root, exp) = x.is_perfect_power().unwrap();
+
+        assert_eq!(root, Z::from(2));
+        assert_eq!(exp, 5);
+    }
+
+    /// Ensures that positive small values for root 5 are correctly dissembled.
+    #[test]
+    fn positive_small_5() {
+        let x = Z::from(25);
+
+        let (root, exp) = x.is_perfect_power().unwrap();
+
+        assert_eq!(root, Z::from(5));
+        assert_eq!(exp, 2);
+    }
+
+    /// Ensures that positive small values non perfect powers return None.
+    #[test]
+    fn positive_small_non_perfect_power() {
+        let x = Z::from(26);
+
+        let result = x.is_perfect_power();
+
+        assert!(result.is_none());
+    }
+
+    /// Ensures that positive large values for root 2 are correctly dissembled.
+    #[test]
+    fn positive_large_2() {
+        let x = Z::from(i64::MAX as u64 + 1);
+
+        let (root, exp) = x.is_perfect_power().unwrap();
+
+        assert_eq!(root, Z::from(2));
+        assert_eq!(exp, 63);
+    }
+
+    /// Ensures that positive large values for root 5 are correctly dissembled.
+    #[test]
+    fn positive_large_5() {
+        let x = Z::from(5).pow(67).unwrap();
+
+        let (root, exp) = x.is_perfect_power().unwrap();
+
+        assert_eq!(root, Z::from(5));
+        assert_eq!(exp, 67);
+    }
+
+    /// Ensures that positive large values for 25^50 are correctly dissembled.
+    #[test]
+    fn positive_large_25() {
+        let x = Z::from(25).pow(50).unwrap();
+
+        let (root, exp) = x.is_perfect_power().unwrap();
+
+        assert_eq!(root, Z::from(5));
+        assert_eq!(exp, 100);
+    }
+
+    /// Ensures that positive large values non perfect powers return None.
+    #[test]
+    fn positive_large_non_perfect_power() {
+        let x = Z::from(i64::MAX);
+
+        let result = x.is_perfect_power();
+
+        assert!(result.is_none());
+    }
+
+    /// Ensures that zero is correctly dissembled.
+    #[test]
+    fn zero() {
+        let x = Z::ZERO;
+
+        let (root, exp) = x.is_perfect_power().unwrap();
+
+        assert!(root.is_zero());
+        assert!(exp > 0);
+    }
+
+    /// Ensures that negative small values for root -2 are correctly dissembled.
+    #[test]
+    fn negative_small_2() {
+        let x = Z::from(-32);
+
+        let (root, exp) = x.is_perfect_power().unwrap();
+
+        assert_eq!(root, Z::from(-2));
+        assert_eq!(exp, 5);
+    }
+
+    /// Ensures that negative small values for root -5 are correctly dissembled.
+    #[test]
+    fn negative_small_5() {
+        let x = Z::from(-125);
+
+        let (root, exp) = x.is_perfect_power().unwrap();
+
+        assert_eq!(root, Z::from(-5));
+        assert_eq!(exp, 3);
+    }
+
+    /// Ensures that negative small values non perfect powers return None.
+    #[test]
+    fn negative_small_non_perfect_power() {
+        let x = Z::from(-26);
+
+        let result = x.is_perfect_power();
+
+        assert!(result.is_none());
+    }
+
+    /// Ensures that negative large values for root -2 are correctly dissembled.
+    #[test]
+    fn negative_large_2() {
+        let x = Z::from(i64::MIN);
+
+        let (root, exp) = x.is_perfect_power().unwrap();
+
+        assert_eq!(root, Z::from(-2));
+        assert_eq!(exp, 63);
+    }
+
+    /// Ensures that negative large values for root -5 are correctly dissembled.
+    #[test]
+    fn negative_large_5() {
+        let x = Z::from(-5).pow(67).unwrap();
+
+        let (root, exp) = x.is_perfect_power().unwrap();
+
+        assert_eq!(root, Z::from(-5));
+        assert_eq!(exp, 67);
+    }
+
+    /// Ensures that negative large values for root -25 are correctly dissembled.
+    #[test]
+    fn negative_large_25() {
+        let x = Z::from(-25).pow(67).unwrap();
+
+        let (root, exp) = x.is_perfect_power().unwrap();
+
+        assert_eq!(root, Z::from(-25));
+        assert_eq!(exp, 67);
+    }
+
+    /// Ensures that negative large values non perfect powers return None.
+    #[test]
+    fn negative_large_non_perfect_power() {
+        let x = Z::from(i64::MIN + 1);
+
+        let result = x.is_perfect_power();
+
+        assert!(result.is_none());
     }
 }
 
