@@ -196,6 +196,9 @@ impl Z {
     /// Computes a pair `(root, exp)` s.t. `root^exp = self`
     /// if `self` is a perfect power and can be represented via `root.pow(exp)`.
     ///
+    /// This algorithm tries to find the smallest perfect root,
+    /// but there is no formal guarantee to find it.
+    ///
     /// Returns a pair `(root, exp)` if `root.pow(exp) = self` exists. Otherwise,
     /// `None` is returned.
     ///
@@ -278,6 +281,17 @@ mod test_is_perfect_power {
         assert_eq!(exp, 67);
     }
 
+    /// Ensures that positive large values for 25^50 are correctly dissembled.
+    #[test]
+    fn positive_large_25() {
+        let x = Z::from(25).pow(50).unwrap();
+
+        let (root, exp) = x.is_perfect_power().unwrap();
+
+        assert_eq!(root, Z::from(5));
+        assert_eq!(exp, 100);
+    }
+
     /// Ensures that positive large values non perfect powers return None.
     #[test]
     fn positive_large_non_perfect_power() {
@@ -299,7 +313,7 @@ mod test_is_perfect_power {
         assert!(exp > 0);
     }
 
-    /// Ensures that negative small values for root 2 are correctly dissembled.
+    /// Ensures that negative small values for root -2 are correctly dissembled.
     #[test]
     fn negative_small_2() {
         let x = Z::from(-32);
@@ -310,7 +324,7 @@ mod test_is_perfect_power {
         assert_eq!(exp, 5);
     }
 
-    /// Ensures that negative small values for root 5 are correctly dissembled.
+    /// Ensures that negative small values for root -5 are correctly dissembled.
     #[test]
     fn negative_small_5() {
         let x = Z::from(-125);
@@ -331,7 +345,7 @@ mod test_is_perfect_power {
         assert!(result.is_none());
     }
 
-    /// Ensures that negative large values for root 2 are correctly dissembled.
+    /// Ensures that negative large values for root -2 are correctly dissembled.
     #[test]
     fn negative_large_2() {
         let x = Z::from(i64::MIN);
@@ -342,7 +356,7 @@ mod test_is_perfect_power {
         assert_eq!(exp, 63);
     }
 
-    /// Ensures that negative large values for root 5 are correctly dissembled.
+    /// Ensures that negative large values for root -5 are correctly dissembled.
     #[test]
     fn negative_large_5() {
         let x = Z::from(-5).pow(67).unwrap();
@@ -350,6 +364,17 @@ mod test_is_perfect_power {
         let (root, exp) = x.is_perfect_power().unwrap();
 
         assert_eq!(root, Z::from(-5));
+        assert_eq!(exp, 67);
+    }
+
+    /// Ensures that negative large values for root -25 are correctly dissembled.
+    #[test]
+    fn negative_large_25() {
+        let x = Z::from(-25).pow(67).unwrap();
+
+        let (root, exp) = x.is_perfect_power().unwrap();
+
+        assert_eq!(root, Z::from(-25));
         assert_eq!(exp, 67);
     }
 
