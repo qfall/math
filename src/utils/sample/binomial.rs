@@ -20,7 +20,7 @@ use rand_distr::{Binomial, Distribution};
 /// - `p`: specifies the probability of success
 ///
 /// Returns a sample as a [`u64`] chosen from the specified binomial distribution
-/// or a [`MathError`] if `n < 1`, `p <= 0`, `p >= 1`, or `n` does not fit into an [`i64`].
+/// or a [`MathError`] if `n < 1`, `p ∉ (0,1)`, or `n` does not fit into an [`i64`].
 ///
 /// # Examples
 /// ```compile_fail
@@ -36,14 +36,14 @@ use rand_distr::{Binomial, Distribution};
 /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
 /// if `n < 1`.
 /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-/// if `p <= 0` or `p >= 1`.
+/// if `p ∉ (0,1)`.
 /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
 /// if `n` does not fit into an [`i64`].
 pub(crate) fn sample_binomial(n: &Z, p: &Q) -> Result<u64, MathError> {
     if p <= &Q::ZERO || p >= &Q::ONE {
         return Err(MathError::InvalidInterval(format!(
-            "p (the probability of success for binomial sampling) must be chosen between 0 and 1.\
-            Currently it is {p}.\
+            "p (the probability of success for binomial sampling) must be chosen between 0 and 1. \
+            Currently it is {p}. \
             Hence, the interval to sample from is invalid and contains only exactly one number."
         )));
     }
