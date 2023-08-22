@@ -25,7 +25,6 @@ use crate::{
 };
 use rand::RngCore;
 
-#[allow(dead_code)]
 /// Chooses a sample according to the discrete Gaussian distribution out of
 /// `[center - ⌈s * log_2(n)⌉ , center + ⌊s * log_2(n)⌋ ]`.
 ///
@@ -275,7 +274,7 @@ pub(crate) fn sample_d_precomputed_gso(
 mod test_sample_z {
     use super::{sample_z, Q, Z};
 
-    /// Ensures that the doc tests works correctly
+    /// Ensures that the doc tests works correctly.
     #[test]
     fn doc_test() {
         let n = Z::from(1024);
@@ -288,7 +287,7 @@ mod test_sample_z {
         assert!(sample <= Z::from(10));
     }
 
-    /// Checks whether samples are kept in correct interval for a small interval
+    /// Checks whether samples are kept in correct interval for a small interval.
     #[test]
     fn small_interval() {
         let n = Z::from(1024);
@@ -303,7 +302,7 @@ mod test_sample_z {
         }
     }
 
-    /// Checks whether samples are kept in correct interval for a large interval
+    /// Checks whether samples are kept in correct interval for a large interval.
     #[test]
     fn large_interval() {
         let n = Z::from(i64::MAX as u64 + 1);
@@ -318,7 +317,7 @@ mod test_sample_z {
         }
     }
 
-    /// Checks whether `sample_z` returns an error if the gaussian parameter `s <= 0`
+    /// Checks whether `sample_z` returns an error if the gaussian parameter `s <= 0`.
     #[test]
     fn invalid_gaussian_parameter() {
         let n = Z::from(4);
@@ -329,7 +328,7 @@ mod test_sample_z {
         assert!(sample_z(&n, &center, &Q::from(i64::MIN)).is_err());
     }
 
-    /// Checks whether `sample_z` returns an error if `n <= 1`
+    /// Checks whether `sample_z` returns an error if `n <= 1`.
     #[test]
     fn invalid_n() {
         let center = Q::MINUS_ONE;
