@@ -247,8 +247,14 @@ mod test_setter {
         let entry_z: PolyOverZ = poly_ring_mat.get_entry(0, 1).unwrap();
         let entry_zq: PolynomialRingZq = poly_ring_mat.get_entry(0, 1).unwrap();
 
-        assert_eq!(format!("3  1 {} 1", i64::MIN), entry_z.to_string());
-        assert_eq!(format!("3  1 {} 1", i64::MIN), entry_zq.poly.to_string());
+        assert_eq!(
+            format!("3  1 {} 1", LARGE_PRIME - i64::MIN as u64),
+            entry_z.to_string()
+        );
+        assert_eq!(
+            format!("3  1 {} 1", LARGE_PRIME - i64::MIN as u64),
+            entry_zq.poly.to_string()
+        );
         assert_eq!(
             format!("4  1 0 0 1 mod {LARGE_PRIME}"),
             entry_zq.modulus.to_string()
