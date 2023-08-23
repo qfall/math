@@ -184,7 +184,7 @@ mod test_add {
         assert_eq!(c, Zq::from((0, 11)));
     }
 
-    /// Testing addition for big [`Zq`]
+    /// Testing addition for large [`Zq`]
     #[test]
     fn add_large_numbers() {
         let a: Zq = Zq::from((u32::MAX, u32::MAX - 58));
@@ -252,7 +252,7 @@ mod test_add_between_zq_and_z {
         assert_eq!(c, Zq::from((2, 11)));
     }
 
-    /// Testing addition for big numbers
+    /// Testing addition for large numbers
     #[test]
     fn add_large_numbers() {
         let a: Zq = Zq::from((i64::MAX, u64::MAX - 58));

@@ -34,7 +34,7 @@ impl MatPolyOverZ {
     ///
     /// a.reduce_by_poly(&modulus);
     ///
-    /// assert_eq!(MatPolyOverZ::from_str("[[2  0 2,0]]").unwrap(), a);
+    /// assert_eq!(MatPolyOverZ::from_str("[[2  0 2, 0]]").unwrap(), a);
     /// ```
     ///
     /// # Panics ...
@@ -65,7 +65,7 @@ mod test_reduce_by_poly {
 
         a.reduce_by_poly(&modulus);
 
-        assert_eq!(MatPolyOverZ::from_str("[[2  0 2,0]]").unwrap(), a);
+        assert_eq!(MatPolyOverZ::from_str("[[2  0 2, 0]]").unwrap(), a);
     }
 
     /// Ensures that the function panics, if the leading coefficient is not `1`.

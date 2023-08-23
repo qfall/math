@@ -138,7 +138,7 @@ impl MatZq {
     /// The lattice specified as `Z^m` for `m = dimension` and its center fixed to `0^m`.
     pub fn sample_d_common(
         dimension: impl TryInto<i64> + Display + Clone,
-        modulus: &Modulus,
+        modulus: impl Into<Modulus>,
         n: impl Into<Z>,
         s: impl Into<Q>,
     ) -> Result<Self, MathError> {
@@ -171,7 +171,7 @@ impl MatZq {
     /// let center = MatQ::new(5, 1);
     /// let basis_gso = MatQ::from(&MatZ::from(&basis)).gso();
     ///
-    /// let sample = MatZq::sample_d_precomputed_gso(&basis,&basis_gso, 1024, &center, 1.25f32).unwrap();
+    /// let sample = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, 1024, &center, 1.25f32).unwrap();
     /// ```
     ///
     /// # Errors and Failures

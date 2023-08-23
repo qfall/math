@@ -90,15 +90,15 @@ impl Z {
     /// ```
     /// use qfall_math::integer::Z;
     ///
-    /// let a0: Z = Z::from(40);
-    /// let a1: Z = Z::from(42);
+    /// let a_0: Z = Z::from(40);
+    /// let a_1: Z = Z::from(42);
     /// let b: Z = Z::from(20);
     ///
-    /// let c0 = a0.div_exact(&b).unwrap();
-    /// let c1 = a1.div_exact(&b);
+    /// let c_0 = a_0.div_exact(&b).unwrap();
+    /// let c_1 = a_1.div_exact(&b);
     ///
-    /// assert_eq!(Z::from(2), c0);
-    /// assert!(c1.is_none());
+    /// assert_eq!(Z::from(2), c_0);
+    /// assert!(c_1.is_none());
     /// ```
     ///
     /// # Panics ...
@@ -465,7 +465,7 @@ mod test_div {
         assert_eq!(c, Q::from((21, 2)));
     }
 
-    /// Testing division for big [`Z`]
+    /// Testing division for large [`Z`]
     #[test]
     fn div_large_numbers() {
         let a: Z = Z::from(i64::MAX as u64 + 1);
@@ -522,7 +522,7 @@ mod test_div_between_z_and_q {
         assert_eq!(c, Q::from((28, 5)));
     }
 
-    /// Testing division for big numbers
+    /// Testing division for large numbers
     #[test]
     fn div_large_numbers() {
         let a: Z = Z::from(u64::MAX);

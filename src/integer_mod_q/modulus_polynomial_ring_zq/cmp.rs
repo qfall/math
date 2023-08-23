@@ -231,6 +231,6 @@ mod test_partial_eq {
         let first = ModulusPolynomialRingZq::from_str(first_str).unwrap();
         let second = ModulusPolynomialRingZq::from_str(second_str).unwrap();
 
-        assert_ne!(first, second)
+        assert_ne!(first, second);
     }
 }

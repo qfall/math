@@ -43,7 +43,7 @@ mod test_drop {
     fn free_memory() {
         let a = Factorization::from(u64::MAX);
         let a_p = a.factors.p;
-        let _b = Factorization::from(u64::MAX);
+        let _ = Factorization::from(u64::MAX);
         drop(a);
         let c = Factorization::from(u64::MAX);
         drop(c);

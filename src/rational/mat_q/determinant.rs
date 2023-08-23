@@ -24,7 +24,7 @@ impl MatQ {
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let matrix = MatQ::from_str("[[1/2,2],[3/7,4]]").unwrap();
+    /// let matrix = MatQ::from_str("[[1/2, 2],[3/7, 4]]").unwrap();
     /// let matrix_invert = matrix.det().unwrap();
     /// ```
     ///
@@ -54,38 +54,38 @@ mod test_determinant {
     /// Test whether the determinant is correctly computed
     #[test]
     fn determinant_works() {
-        let mat1 = MatQ::from_str("[[10,2],[2,1/2]]").unwrap();
-        let mat2 = MatQ::from_str(&format!("[[{},0],[0,1]]", i64::MAX)).unwrap();
-        let mat3 = MatQ::from_str(&format!("[[-1/{}]]", i64::MIN)).unwrap();
-        let mat4 = MatQ::from_str("[[0,0],[0,1]]").unwrap();
-        let mat5 = MatQ::from_str("[[6,0,1],[0,1,0],[1,2,3]]").unwrap();
+        let mat_1 = MatQ::from_str("[[10, 2],[2, 1/2]]").unwrap();
+        let mat_2 = MatQ::from_str(&format!("[[{}, 0],[0, 1]]", i64::MAX)).unwrap();
+        let mat_3 = MatQ::from_str(&format!("[[-1/{}]]", i64::MIN)).unwrap();
+        let mat_4 = MatQ::from_str("[[0, 0],[0, 1]]").unwrap();
+        let mat_5 = MatQ::from_str("[[6, 0, 1],[0, 1, 0],[1, 2, 3]]").unwrap();
 
-        let det1 = mat1.det().unwrap();
-        let det2 = mat2.det().unwrap();
-        let det3 = mat3.det().unwrap();
-        let det4 = mat4.det().unwrap();
-        let det5 = mat5.det().unwrap();
+        let det_1 = mat_1.det().unwrap();
+        let det_2 = mat_2.det().unwrap();
+        let det_3 = mat_3.det().unwrap();
+        let det_4 = mat_4.det().unwrap();
+        let det_5 = mat_5.det().unwrap();
 
-        let cmp1 = Q::ONE;
-        let cmp2 = Q::from(i64::MAX);
-        let cmp3 = Q::from((-1, i64::MIN));
-        let cmp4 = Q::ZERO;
-        let cmp5 = Q::from(17);
+        let cmp_1 = Q::ONE;
+        let cmp_2 = Q::from(i64::MAX);
+        let cmp_3 = Q::from((-1, i64::MIN));
+        let cmp_4 = Q::ZERO;
+        let cmp_5 = Q::from(17);
 
-        assert_eq!(cmp1, det1);
-        assert_eq!(cmp2, det2);
-        assert_eq!(cmp3, det3);
-        assert_eq!(cmp4, det4);
-        assert_eq!(cmp5, det5);
+        assert_eq!(cmp_1, det_1);
+        assert_eq!(cmp_2, det_2);
+        assert_eq!(cmp_3, det_3);
+        assert_eq!(cmp_4, det_4);
+        assert_eq!(cmp_5, det_5);
     }
 
     /// Ensure that an error is returned if the entered matrix is not square
     #[test]
     fn not_square_error() {
-        let mat1 = MatQ::from_str("[[5/7],[2]]").unwrap();
-        let mat2 = MatQ::from_str("[[2,0],[0,1/8],[8/4,-6]]").unwrap();
+        let mat_1 = MatQ::from_str("[[5/7],[2]]").unwrap();
+        let mat_2 = MatQ::from_str("[[2, 0],[0, 1/8],[8/4, -6]]").unwrap();
 
-        assert!(mat1.det().is_err());
-        assert!(mat2.det().is_err());
+        assert!(mat_1.det().is_err());
+        assert!(mat_2.det().is_err());
     }
 }

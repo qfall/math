@@ -34,9 +34,9 @@ mod test_serialize {
     fn serialize_output_positive() {
         let poly_str = "2  17 42 mod 331";
         let poly_z = ModulusPolynomialRingZq::from_str(poly_str).unwrap();
-        let cmp_string = format!("{{\"poly\":\"{poly_str}\"}}");
+        let cmp_str = format!("{{\"poly\":\"{poly_str}\"}}");
 
-        assert_eq!(cmp_string, serde_json::to_string(&poly_z).unwrap())
+        assert_eq!(cmp_str, serde_json::to_string(&poly_z).unwrap());
     }
 
     /// Tests whether the serialization of a negative [`ModulusPolynomialRingZq`] works.
@@ -44,9 +44,9 @@ mod test_serialize {
     fn serialize_output_negative() {
         let poly_str = "3  -17 -42 1 mod 331";
         let poly_z = ModulusPolynomialRingZq::from_str(poly_str).unwrap();
-        let cmp_string = "{\"poly\":\"3  314 289 1 mod 331\"}";
+        let cmp_str = "{\"poly\":\"3  314 289 1 mod 331\"}";
 
-        assert_eq!(cmp_string, serde_json::to_string(&poly_z).unwrap())
+        assert_eq!(cmp_str, serde_json::to_string(&poly_z).unwrap());
     }
 
     /// Tests whether the serialization of a positive large [`ModulusPolynomialRingZq`] works.
@@ -54,9 +54,9 @@ mod test_serialize {
     fn serialize_output_positive_large() {
         let poly_str = format!("3  1 {} 1 mod {}", u64::MAX, u64::MAX - 58);
         let poly_z = ModulusPolynomialRingZq::from_str(&poly_str).unwrap();
-        let cmp_string = format!("{{\"poly\":\"3  1 58 1 mod {}\"}}", u64::MAX - 58);
+        let cmp_str = format!("{{\"poly\":\"3  1 58 1 mod {}\"}}", u64::MAX - 58);
 
-        assert_eq!(cmp_string, serde_json::to_string(&poly_z).unwrap())
+        assert_eq!(cmp_str, serde_json::to_string(&poly_z).unwrap());
     }
 
     /// Tests whether the serialization of a negative large [`ModulusPolynomialRingZq`] works.
@@ -64,13 +64,13 @@ mod test_serialize {
     fn serialize_output_negative_large() {
         let poly_str = format!("3  1 -{} 1 mod {}", u64::MAX, u64::MAX - 58);
         let poly_z = ModulusPolynomialRingZq::from_str(&poly_str).unwrap();
-        let cmp_string = format!(
+        let cmp_str = format!(
             "{{\"poly\":\"3  1 {} 1 mod {}\"}}",
             u64::MAX - 2 * 58,
             u64::MAX - 58
         );
 
-        assert_eq!(cmp_string, serde_json::to_string(&poly_z).unwrap())
+        assert_eq!(cmp_str, serde_json::to_string(&poly_z).unwrap());
     }
 }
 
@@ -83,40 +83,40 @@ mod test_deserialize {
     #[test]
     fn deserialize_positive() {
         let poly_str = "2  17 42 mod 331";
-        let cmp_string = format!("{{\"poly\":\"{poly_str}\"}}");
+        let cmp_str = format!("{{\"poly\":\"{poly_str}\"}}");
 
         let poly_z = ModulusPolynomialRingZq::from_str(poly_str).unwrap();
-        assert_eq!(poly_z, serde_json::from_str(&cmp_string).unwrap())
+        assert_eq!(poly_z, serde_json::from_str(&cmp_str).unwrap());
     }
 
     /// Tests whether the deserialization of a negative [`ModulusPolynomialRingZq`] works.
     #[test]
     fn deserialize_negative() {
         let poly_str = "3  -17 -42 1 mod 331";
-        let cmp_string = format!("{{\"poly\":\"{poly_str}\"}}");
+        let cmp_str = format!("{{\"poly\":\"{poly_str}\"}}");
 
         let poly_z = ModulusPolynomialRingZq::from_str(poly_str).unwrap();
-        assert_eq!(poly_z, serde_json::from_str(&cmp_string).unwrap())
+        assert_eq!(poly_z, serde_json::from_str(&cmp_str).unwrap());
     }
 
     /// Tests whether the deserialization of a positive large [`ModulusPolynomialRingZq`] works.
     #[test]
     fn deserialize_positive_large() {
         let poly_str = format!("3  -17 {} 1 mod {}", u64::MAX, u64::MAX - 58);
-        let cmp_string = format!("{{\"poly\":\"{poly_str}\"}}");
+        let cmp_str = format!("{{\"poly\":\"{poly_str}\"}}");
 
         let poly_z = ModulusPolynomialRingZq::from_str(&poly_str).unwrap();
-        assert_eq!(poly_z, serde_json::from_str(&cmp_string).unwrap())
+        assert_eq!(poly_z, serde_json::from_str(&cmp_str).unwrap());
     }
 
     /// Tests whether the deserialization of a negative large [`ModulusPolynomialRingZq`] works.
     #[test]
     fn deserialize_negative_large() {
         let poly_str = format!("3  -17 -{} 1 mod {}", u64::MAX, u64::MAX - 58);
-        let cmp_string = format!("{{\"poly\":\"{poly_str}\"}}");
+        let cmp_str = format!("{{\"poly\":\"{poly_str}\"}}");
 
         let poly_z = ModulusPolynomialRingZq::from_str(&poly_str).unwrap();
-        assert_eq!(poly_z, serde_json::from_str(&cmp_string).unwrap())
+        assert_eq!(poly_z, serde_json::from_str(&cmp_str).unwrap());
     }
 
     /// Tests whether deserialization of a non-prime large `q` [`ModulusPolynomialRingZq`] fails.

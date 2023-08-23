@@ -92,7 +92,7 @@ impl MatQ {
             // compute absolute value of fmpq entry
             let mut abs_entry = Q::default();
             unsafe { fmpq_abs(&mut abs_entry.value, &entry) };
-            // compare maximum to absolute value of entry and keep bigger one
+            // compare maximum to absolute value of entry and keep larger one
             if unsafe { fmpq_cmp(&max.value, &abs_entry.value) } < 0 {
                 max = abs_entry;
             }
@@ -112,8 +112,8 @@ mod test_norm_eucl_sqrd {
     #[test]
     fn row_vector_small_entries() {
         let vec_1 = MatQ::from_str("[[1]]").unwrap();
-        let vec_2 = MatQ::from_str("[[1,10/1,-1000/10]]").unwrap();
-        let vec_3 = MatQ::from_str("[[1,10,100, 1000]]").unwrap();
+        let vec_2 = MatQ::from_str("[[1, 10/1, -1000/10]]").unwrap();
+        let vec_3 = MatQ::from_str("[[1, 10, 100, 1000]]").unwrap();
 
         assert_eq!(vec_1.norm_eucl_sqrd().unwrap(), Q::ONE);
         assert_eq!(vec_2.norm_eucl_sqrd().unwrap(), Q::from(10101));
@@ -124,7 +124,7 @@ mod test_norm_eucl_sqrd {
     /// with large entries is calculated correctly
     #[test]
     fn row_vector_large_entries() {
-        let vec = MatQ::from_str(&format!("[[{}/1,{}/-1, 2/1]]", i64::MAX, i64::MIN)).unwrap();
+        let vec = MatQ::from_str(&format!("[[{}/1, {}/-1, 2/1]]", i64::MAX, i64::MIN)).unwrap();
         let max = Q::from(i64::MAX);
         let min = Q::from(i64::MIN);
         let cmp = &min * &min + &max * &max + Q::from(4);
@@ -158,7 +158,7 @@ mod test_norm_eucl_sqrd {
     /// Check whether euclidean norm calculations of non vectors yield an error
     #[test]
     fn non_vector_yield_error() {
-        let mat = MatQ::from_str("[[1,1/1],[10/-1,2]]").unwrap();
+        let mat = MatQ::from_str("[[1, 1/1],[10/-1, 2]]").unwrap();
 
         assert!(mat.norm_eucl_sqrd().is_err());
     }
@@ -174,8 +174,8 @@ mod test_norm_infty {
     #[test]
     fn row_vector_small_entries() {
         let vec_1 = MatQ::from_str("[[1]]").unwrap();
-        let vec_2 = MatQ::from_str("[[1,100/10,1000/-10]]").unwrap();
-        let vec_3 = MatQ::from_str("[[1,-10/-1,-100/1, 1000]]").unwrap();
+        let vec_2 = MatQ::from_str("[[1, 100/10, 1000/-10]]").unwrap();
+        let vec_3 = MatQ::from_str("[[1, -10/-1, -100/1, 1000]]").unwrap();
 
         assert_eq!(vec_1.norm_infty().unwrap(), Q::ONE);
         assert_eq!(vec_2.norm_infty().unwrap(), Q::from(100));
@@ -186,7 +186,7 @@ mod test_norm_infty {
     /// with large entries is calculated correctly
     #[test]
     fn row_vector_large_entries() {
-        let vec = MatQ::from_str(&format!("[[{}/-1,{}/1, 2]]", i64::MAX, i64::MIN)).unwrap();
+        let vec = MatQ::from_str(&format!("[[{}/-1, {}/1, 2]]", i64::MAX, i64::MIN)).unwrap();
         let cmp = -1 * Q::from(i64::MIN);
 
         assert_eq!(vec.norm_infty().unwrap(), cmp);
@@ -216,7 +216,7 @@ mod test_norm_infty {
     /// Check whether infinity norm calculations of non vectors yield an error
     #[test]
     fn non_vector_yield_error() {
-        let mat = MatQ::from_str("[[1,1],[10/1,2]]").unwrap();
+        let mat = MatQ::from_str("[[1, 1],[10/1, 2]]").unwrap();
 
         assert!(mat.norm_infty().is_err());
     }

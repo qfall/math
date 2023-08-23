@@ -145,7 +145,7 @@ mod test_sub {
         assert_eq!(c, PolyOverZq::from_str("0 mod 7").unwrap());
     }
 
-    /// Testing subtraction for big [`PolyOverZq`]
+    /// Testing subtraction for large [`PolyOverZq`]
     #[test]
     fn sub_large_numbers() {
         let a: PolyOverZq = PolyOverZq::from_str(&format!(

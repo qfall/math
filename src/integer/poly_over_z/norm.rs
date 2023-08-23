@@ -74,29 +74,29 @@ mod test_norm_eucl_sqrd {
     /// with small coefficients is calculated correctly
     #[test]
     fn poly_small_coefficient() {
-        let poly1 = PolyOverZ::default();
-        let poly2 = PolyOverZ::from_str("3  1 2 3").unwrap();
-        let poly3 = PolyOverZ::from_str("3  1 20 90").unwrap();
+        let poly_1 = PolyOverZ::default();
+        let poly_2 = PolyOverZ::from_str("3  1 2 3").unwrap();
+        let poly_3 = PolyOverZ::from_str("3  1 20 90").unwrap();
 
-        assert_eq!(poly1.norm_eucl_sqrd(), Z::ZERO);
-        assert_eq!(poly2.norm_eucl_sqrd(), Z::from(14));
-        assert_eq!(poly3.norm_eucl_sqrd(), Z::from(8501));
+        assert_eq!(poly_1.norm_eucl_sqrd(), Z::ZERO);
+        assert_eq!(poly_2.norm_eucl_sqrd(), Z::from(14));
+        assert_eq!(poly_3.norm_eucl_sqrd(), Z::from(8501));
     }
 
     /// Check whether the squared euclidean norm for polynomials
     /// with small coefficients is calculated correctly
     #[test]
     fn poly_large_coefficient() {
-        let poly1 = PolyOverZ::from(u64::MAX);
-        let poly2 =
+        let poly_1 = PolyOverZ::from(u64::MAX);
+        let poly_2 =
             PolyOverZ::from_str(&format!("3  {} {} {}", u64::MAX, i64::MIN, i64::MAX)).unwrap();
 
         assert_eq!(
-            poly1.norm_eucl_sqrd(),
+            poly_1.norm_eucl_sqrd(),
             Z::from(u64::MAX) * Z::from(u64::MAX)
         );
         assert_eq!(
-            poly2.norm_eucl_sqrd(),
+            poly_2.norm_eucl_sqrd(),
             Z::from(u64::MAX) * Z::from(u64::MAX)
                 + Z::from(i64::MAX) * Z::from(i64::MAX)
                 + Z::from(i64::MIN) * Z::from(i64::MIN)
@@ -113,24 +113,24 @@ mod test_norm_infty {
     /// with small coefficients is calculated correctly
     #[test]
     fn poly_small_coefficient() {
-        let poly1 = PolyOverZ::default();
-        let poly2 = PolyOverZ::from_str("3  1 2 3").unwrap();
-        let poly3 = PolyOverZ::from_str("3  1 2010 90").unwrap();
+        let poly_1 = PolyOverZ::default();
+        let poly_2 = PolyOverZ::from_str("3  1 2 3").unwrap();
+        let poly_3 = PolyOverZ::from_str("3  1 2010 90").unwrap();
 
-        assert_eq!(poly1.norm_infty(), Z::ZERO);
-        assert_eq!(poly2.norm_infty(), Z::from(3));
-        assert_eq!(poly3.norm_infty(), Z::from(2010));
+        assert_eq!(poly_1.norm_infty(), Z::ZERO);
+        assert_eq!(poly_2.norm_infty(), Z::from(3));
+        assert_eq!(poly_3.norm_infty(), Z::from(2010));
     }
 
     /// Check whether the infinity norm for polynomials
     /// with small coefficients is calculated correctly
     #[test]
     fn poly_large_coefficient() {
-        let poly1 = PolyOverZ::from(u64::MAX);
-        let poly2 =
+        let poly_1 = PolyOverZ::from(u64::MAX);
+        let poly_2 =
             PolyOverZ::from_str(&format!("3  {} {} {}", u64::MAX, i64::MIN, i64::MAX)).unwrap();
 
-        assert_eq!(poly1.norm_infty(), Z::from(u64::MAX));
-        assert_eq!(poly2.norm_infty(), Z::from(u64::MAX));
+        assert_eq!(poly_1.norm_infty(), Z::from(u64::MAX));
+        assert_eq!(poly_2.norm_infty(), Z::from(u64::MAX));
     }
 }

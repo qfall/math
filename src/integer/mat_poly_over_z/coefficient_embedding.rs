@@ -41,7 +41,7 @@ impl MatPolyOverZ {
     /// let poly = MatPolyOverZ::from_str("[[1  1, 2  1 2],[1  -1, 2  -1 -2]]").unwrap();
     /// let mat = poly.into_coefficient_embedding_from_matrix(2);
     /// let cmp_mat = MatZ::from_str("[[1, 1],[0, 2],[-1, -1],[0, -2]]").unwrap();
-    /// assert_eq!(cmp_mat, mat)
+    /// assert_eq!(cmp_mat, mat);
     /// ```
     ///
     /// # Panics ...
@@ -78,8 +78,8 @@ impl MatPolyOverZ {
     ///
     /// let matrix = MatZ::from_str("[[17, 1],[3, 2],[-5, 3],[1, 2]]").unwrap();
     /// let poly = MatPolyOverZ::from_coefficient_embedding_to_matrix(&matrix, 2);
-    /// let cmp_poly = MatPolyOverZ::from_str("[[2  17 3, 2  1 2],[2  -5 1,2  3 2]]").unwrap();
-    /// assert_eq!(cmp_poly, poly)
+    /// let cmp_poly = MatPolyOverZ::from_str("[[2  17 3, 2  1 2],[2  -5 1, 2  3 2]]").unwrap();
+    /// assert_eq!(cmp_poly, poly);
     /// ```
     ///
     /// # Panics...
@@ -117,7 +117,7 @@ impl MatPolyOverZ {
 
 impl IntoCoefficientEmbedding<MatZ> for &MatPolyOverZ {
     /// Computes the coefficient embedding of the row vector of polynomials
-    /// in a [`MatZ`]. The (i,j) th entry corresponds to the i-th coefficient
+    /// in a [`MatZ`]. The (i, j) th entry corresponds to the i-th coefficient
     /// of the j-th polynomial provided.
     /// It inverts the operation of [`MatPolyOverZ::from_coefficient_embedding`].
     ///
@@ -138,7 +138,7 @@ impl IntoCoefficientEmbedding<MatZ> for &MatPolyOverZ {
     /// let poly = MatPolyOverZ::from_str("[[3  17 3 -5, 4  1 2 3 4]]").unwrap();
     /// let mat = poly.into_coefficient_embedding(4);
     /// let cmp_mat = MatZ::from_str("[[17, 1],[3, 2],[-5, 3],[0, 4]]").unwrap();
-    /// assert_eq!(cmp_mat, mat)
+    /// assert_eq!(cmp_mat, mat);
     /// ```
     ///
     /// # Panics ...
@@ -199,7 +199,7 @@ impl FromCoefficientEmbedding<&MatZ> for MatPolyOverZ {
     /// let matrix = MatZ::from_str("[[17, 1],[3, 2],[-5, 3]]").unwrap();
     /// let poly = MatPolyOverZ::from_coefficient_embedding(&matrix);
     /// let cmp_poly = MatPolyOverZ::from_str("[[3  17 3 -5, 3  1 2 3]]").unwrap();
-    /// assert_eq!(cmp_poly, poly)
+    /// assert_eq!(cmp_poly, poly);
     /// ```
     fn from_coefficient_embedding(embedding: &MatZ) -> Self {
         let mut out = MatPolyOverZ::new(1, embedding.get_num_columns());
@@ -253,7 +253,7 @@ mod test_into_coefficient_embedding_from_matrix {
             .unwrap()
             .concat_vertical(&MatZ::identity(3, 2))
             .unwrap();
-        assert_eq!(cmp_matrix, matrix)
+        assert_eq!(cmp_matrix, matrix);
     }
 
     /// Ensure that the function panics if the the provided size is too small.
@@ -280,12 +280,12 @@ mod test_from_coefficient_embedding_to_matrix {
         let poly = MatPolyOverZ::from_coefficient_embedding_to_matrix(&matrix, 1);
 
         let cmp_poly = MatPolyOverZ::from_str(&format!(
-            "[[1  17, 0],[1  {},1  -1],[1  {}, 0]]",
+            "[[1  17, 0],[1  {}, 1  -1],[1  {}, 0]]",
             i64::MAX,
             i64::MIN
         ))
         .unwrap();
-        assert_eq!(cmp_poly, poly)
+        assert_eq!(cmp_poly, poly);
     }
 
     /// Ensure that the function panics if the provided degree does not divide
@@ -315,7 +315,7 @@ mod test_into_coefficient_embedding {
 
         let basis = standard_basis.into_coefficient_embedding(3);
 
-        assert_eq!(MatZ::identity(3, 2), basis)
+        assert_eq!(MatZ::identity(3, 2), basis);
     }
 
     /// Ensure that the embedding works with large entries.
@@ -328,7 +328,7 @@ mod test_into_coefficient_embedding {
 
         let cmp_matrix =
             MatZ::from_str(&format!("[[17, 1],[{}, 0],[{}, 0]]", i64::MAX, i64::MIN)).unwrap();
-        assert_eq!(cmp_matrix, matrix)
+        assert_eq!(cmp_matrix, matrix);
     }
 
     /// Ensure that the function panics if the the provided size is too small.
@@ -360,6 +360,6 @@ mod test_from_coefficient_embedding {
         let cmp_poly =
             MatPolyOverZ::from_str(&format!("[[3  17 {} {}, 2  0 -1]]", i64::MAX, i64::MIN))
                 .unwrap();
-        assert_eq!(cmp_poly, poly)
+        assert_eq!(cmp_poly, poly);
     }
 }

@@ -35,15 +35,15 @@ impl Mul for &MatPolynomialRingZq {
     /// use std::str::FromStr;
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-    /// let poly_mat1 = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
-    /// let poly_ring_mat1 = MatPolynomialRingZq::from((&poly_mat1, &modulus));
-    /// let poly_mat2 = MatPolyOverZ::from_str("[[3  3 0 1, 1  42],[0, 1  17]]").unwrap();
-    /// let poly_ring_mat2 = MatPolynomialRingZq::from((&poly_mat2, &modulus));
+    /// let poly_mat_1 = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
+    /// let poly_ring_mat_1 = MatPolynomialRingZq::from((&poly_mat_1, &modulus));
+    /// let poly_mat_2 = MatPolyOverZ::from_str("[[3  3 0 1, 1  42],[0, 1  17]]").unwrap();
+    /// let poly_ring_mat_2 = MatPolynomialRingZq::from((&poly_mat_2, &modulus));
     ///
-    /// let poly_ring_mat3: MatPolynomialRingZq = &poly_ring_mat1 * &poly_ring_mat2;
-    /// let poly_ring_mat4: MatPolynomialRingZq = poly_ring_mat1 * poly_ring_mat2;
-    /// let poly_ring_mat5: MatPolynomialRingZq = &poly_ring_mat3 * poly_ring_mat4;
-    /// let poly_ring_mat6: MatPolynomialRingZq = poly_ring_mat3 * &poly_ring_mat5;
+    /// let poly_ring_mat_3: MatPolynomialRingZq = &poly_ring_mat_1 * &poly_ring_mat_2;
+    /// let poly_ring_mat_4: MatPolynomialRingZq = poly_ring_mat_1 * poly_ring_mat_2;
+    /// let poly_ring_mat_5: MatPolynomialRingZq = &poly_ring_mat_3 * poly_ring_mat_4;
+    /// let poly_ring_mat_6: MatPolynomialRingZq = poly_ring_mat_3 * &poly_ring_mat_5;
     /// ```
     ///
     /// # Panics ...
@@ -85,12 +85,12 @@ impl MatPolynomialRingZq {
     /// use std::str::FromStr;
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-    /// let poly_mat1 = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
-    /// let poly_ring_mat1 = MatPolynomialRingZq::from((&poly_mat1, &modulus));
-    /// let poly_mat2 = MatPolyOverZ::from_str("[[3  3 0 1, 1  42],[0, 1  17]]").unwrap();
-    /// let poly_ring_mat2 = MatPolynomialRingZq::from((&poly_mat2, &modulus));
+    /// let poly_mat_1 = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
+    /// let poly_ring_mat_1 = MatPolynomialRingZq::from((&poly_mat_1, &modulus));
+    /// let poly_mat_2 = MatPolyOverZ::from_str("[[3  3 0 1, 1  42],[0, 1  17]]").unwrap();
+    /// let poly_ring_mat_2 = MatPolynomialRingZq::from((&poly_mat_2, &modulus));
     ///
-    /// let poly_ring_mat3: MatPolynomialRingZq = poly_ring_mat1.mul_safe(&poly_ring_mat2).unwrap();
+    /// let poly_ring_mat_3: MatPolynomialRingZq = poly_ring_mat_1.mul_safe(&poly_ring_mat_2).unwrap();
     /// ```
     ///
     /// # Errors and Failures
@@ -129,34 +129,34 @@ mod test_mul {
     #[test]
     fn square_correctness() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-        let poly_mat1 = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
-        let poly_ring_mat1 = MatPolynomialRingZq::from((&poly_mat1, &modulus));
-        let poly_mat2 = MatPolyOverZ::from_str("[[3  3 0 1, 1  42],[0, 1  17]]").unwrap();
-        let poly_ring_mat2 = MatPolynomialRingZq::from((&poly_mat2, &modulus));
+        let poly_mat_1 = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
+        let poly_ring_mat_1 = MatPolynomialRingZq::from((&poly_mat_1, &modulus));
+        let poly_mat_2 = MatPolyOverZ::from_str("[[3  3 0 1, 1  42],[0, 1  17]]").unwrap();
+        let poly_ring_mat_2 = MatPolynomialRingZq::from((&poly_mat_2, &modulus));
 
-        let poly_ring_mat3 = &poly_ring_mat1 * &poly_ring_mat2;
+        let poly_ring_mat_3 = &poly_ring_mat_1 * &poly_ring_mat_2;
 
         let poly_mat_cmp = MatPolyOverZ::from_str("[[3  11 16 1, 3  1 0 8],[0, 0]]").unwrap();
         let poly_ring_mat_cmp = MatPolynomialRingZq::from((&poly_mat_cmp, &modulus));
 
-        assert_eq!(poly_ring_mat_cmp, poly_ring_mat3);
+        assert_eq!(poly_ring_mat_cmp, poly_ring_mat_3);
     }
 
     /// Checks if matrix multiplication works fine for matrices of different dimensions.
     #[test]
     fn different_dimensions_correctness() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-        let poly_mat1 = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
-        let poly_ring_mat1 = MatPolynomialRingZq::from((&poly_mat1, &modulus));
-        let poly_mat2 = MatPolyOverZ::from_str("[[1  42],[1  17]]").unwrap();
-        let poly_ring_mat2 = MatPolynomialRingZq::from((&poly_mat2, &modulus));
+        let poly_mat_1 = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
+        let poly_ring_mat_1 = MatPolynomialRingZq::from((&poly_mat_1, &modulus));
+        let poly_mat_2 = MatPolyOverZ::from_str("[[1  42],[1  17]]").unwrap();
+        let poly_ring_mat_2 = MatPolynomialRingZq::from((&poly_mat_2, &modulus));
 
-        let poly_ring_mat3 = &poly_ring_mat1 * &poly_ring_mat2;
+        let poly_ring_mat_3 = &poly_ring_mat_1 * &poly_ring_mat_2;
 
         let poly_mat_cmp = MatPolyOverZ::from_str("[[3  1 0 8],[0]]").unwrap();
         let poly_ring_mat_cmp = MatPolynomialRingZq::from((&poly_mat_cmp, &modulus));
 
-        assert_eq!(poly_ring_mat_cmp, poly_ring_mat3);
+        assert_eq!(poly_ring_mat_cmp, poly_ring_mat_3);
     }
 
     /// Checks if matrix multiplication works fine for large entries.
@@ -164,13 +164,13 @@ mod test_mul {
     fn large_entries() {
         let modulus =
             ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {LARGE_PRIME}")).unwrap();
-        let poly_mat1 =
-            MatPolyOverZ::from_str(&format!("[[2  3 {},1  15],[1  1,0]]", u64::MAX)).unwrap();
-        let poly_ring_mat1 = MatPolynomialRingZq::from((&poly_mat1, &modulus));
-        let poly_mat2 = MatPolyOverZ::from_str(&format!("[[2  1 {}],[0]]", u64::MAX)).unwrap();
-        let poly_ring_mat2 = MatPolynomialRingZq::from((&poly_mat2, &modulus));
+        let poly_mat_1 =
+            MatPolyOverZ::from_str(&format!("[[2  3 {}, 1  15],[1  1, 0]]", u64::MAX)).unwrap();
+        let poly_ring_mat_1 = MatPolynomialRingZq::from((&poly_mat_1, &modulus));
+        let poly_mat_2 = MatPolyOverZ::from_str(&format!("[[2  1 {}],[0]]", u64::MAX)).unwrap();
+        let poly_ring_mat_2 = MatPolynomialRingZq::from((&poly_mat_2, &modulus));
 
-        let poly_ring_mat3 = &poly_ring_mat1 * &poly_ring_mat2;
+        let poly_ring_mat_3 = &poly_ring_mat_1 * &poly_ring_mat_2;
 
         let poly_mat_cmp = MatPolyOverZ::from_str(&format!(
             "[[3  3 {} {}],[2  1 {}]]",
@@ -181,25 +181,25 @@ mod test_mul {
         .unwrap();
         let poly_ring_mat_cmp = MatPolynomialRingZq::from((&poly_mat_cmp, &modulus));
 
-        assert_eq!(poly_ring_mat_cmp, poly_ring_mat3);
+        assert_eq!(poly_ring_mat_cmp, poly_ring_mat_3);
     }
 
     /// Checks if matrix multiplication with incompatible matrix dimensions
     /// or mismatch moduli throws an error as expected.
     #[test]
     fn errors() {
-        let modulus1 = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-        let modulus2 = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
+        let modulus_1 = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        let modulus_2 = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
 
-        let poly_mat1 = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
-        let poly_ring_mat1 = MatPolynomialRingZq::from((&poly_mat1, &modulus1));
-        let poly_mat2 =
+        let poly_mat_1 = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
+        let poly_ring_mat_1 = MatPolynomialRingZq::from((&poly_mat_1, &modulus_1));
+        let poly_mat_2 =
             MatPolyOverZ::from_str("[[3  3 0 1, 1  42],[0, 1  17],[1  24, 0]]").unwrap();
-        let poly_ring_mat2 = MatPolynomialRingZq::from((&poly_mat2, &modulus1));
-        let poly_mat3 = MatPolyOverZ::from_str("[[3  11 16 1, 3  1 0 8],[0, 0]]").unwrap();
-        let poly_ring_mat3 = MatPolynomialRingZq::from((&poly_mat3, &modulus2));
+        let poly_ring_mat_2 = MatPolynomialRingZq::from((&poly_mat_2, &modulus_1));
+        let poly_mat_3 = MatPolyOverZ::from_str("[[3  11 16 1, 3  1 0 8],[0, 0]]").unwrap();
+        let poly_ring_mat_3 = MatPolynomialRingZq::from((&poly_mat_3, &modulus_2));
 
-        assert!((poly_ring_mat1.mul_safe(&poly_ring_mat2)).is_err());
-        assert!((poly_ring_mat1.mul_safe(&poly_ring_mat3)).is_err());
+        assert!((poly_ring_mat_1.mul_safe(&poly_ring_mat_2)).is_err());
+        assert!((poly_ring_mat_1.mul_safe(&poly_ring_mat_3)).is_err());
     }
 }

@@ -180,7 +180,7 @@ mod test_sqrt {
                 //   p_q and p_z are the maximum possible error of the sqrt for `Q` and `Z` resp.
                 //   |e|<= p_q: actual error
                 //   sqrt(x) = a/b: true square root result without error, approximated by f64::sqrt(x)
-                //   sqrt_precision(x,precision) = root = sqrt(x) + e (true square root result + error)
+                //   sqrt_precision(x, precision) = root = sqrt(x) + e (true square root result + error)
                 //
                 // 2. Calculation:
                 //   p_q = a/b * (b+1) * p_z/(b-p_z) (See derivation at the top of this file).

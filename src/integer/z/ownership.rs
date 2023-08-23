@@ -55,7 +55,7 @@ impl Drop for Z {
         // "Clears the given fmpz_t, releasing any memory associated with it,
         // either back to the stack or the OS, depending on whether the reentrant
         // or non-reentrant version of FLINT is built."
-        // Hence, any memory allocated for values bigger than 2^62 is freed. The left
+        // Hence, any memory allocated for values larger than 2^62 is freed. The left
         // `i64` value is dropped automatically when the variable runs out of scope.
 
         unsafe { fmpz_clear(&mut self.value) }

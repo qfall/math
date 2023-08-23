@@ -25,8 +25,8 @@ impl PartialEq for MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let a = MatZq::from_str("[[1,2],[3,4]] mod 4").unwrap();
-    /// let b = MatZq::from_str("[[1,2],[2,4]] mod 4").unwrap();
+    /// let a = MatZq::from_str("[[1, 2],[3, 4]] mod 4").unwrap();
+    /// let b = MatZq::from_str("[[1, 2],[2, 4]] mod 4").unwrap();
     ///
     /// // These are all equivalent and return false.
     /// let compared: bool = (a == b);
@@ -60,7 +60,7 @@ mod test_partial_eq {
     /// Ensures that different instantiations do not break the equality between matrices
     #[test]
     fn equality_between_instantiations() {
-        let a = MatZq::from_str("[[0,1],[0,0]] mod 4").unwrap();
+        let a = MatZq::from_str("[[0, 1],[0, 0]] mod 4").unwrap();
         let mut b = MatZq::new(2, 2, 4);
         b.set_entry(0, 1, 1).unwrap();
 
@@ -71,13 +71,13 @@ mod test_partial_eq {
     #[test]
     fn equality_for_large_and_small_entries() {
         let mat_str_1 = format!(
-            "[[{},{}, 1],[-10, 10, 0],[0, 1, -10]] mod {}",
+            "[[{}, {}, 1],[-10, 10, 0],[0, 1, -10]] mod {}",
             i64::MAX - 1,
             i64::MAX,
             u64::MAX
         );
         let mat_str_2 = format!(
-            "[[{},{}, 1],[-10, 10, 0],[{}, 1, -10]] mod {}",
+            "[[{}, {}, 1],[-10, 10, 0],[{}, 1, -10]] mod {}",
             i64::MAX - 1,
             i64::MAX,
             u64::MAX,
@@ -95,15 +95,15 @@ mod test_partial_eq {
     #[test]
     fn not_equal_same_modulus() {
         let a =
-            MatZq::from_str(&format!("[[{},{}],[-10, 10]] mod 42", i64::MIN, i64::MAX)).unwrap();
-        let b = MatZq::from_str(&format!("[[0,{}],[-10, 10]] mod 42", i64::MAX)).unwrap();
+            MatZq::from_str(&format!("[[{}, {}],[-10, 10]] mod 42", i64::MIN, i64::MAX)).unwrap();
+        let b = MatZq::from_str(&format!("[[0, {}],[-10, 10]] mod 42", i64::MAX)).unwrap();
         let c = MatZq::from_str(&format!(
-            "[[{},{}],[-10, 10],[0,0]] mod 42",
+            "[[{}, {}],[-10, 10],[0, 0]] mod 42",
             i64::MIN,
             i64::MAX
         ))
         .unwrap();
-        let d = MatZq::from_str(&format!("[[{},{}]] mod 42", i64::MIN, i64::MAX)).unwrap();
+        let d = MatZq::from_str(&format!("[[{}, {}]] mod 42", i64::MIN, i64::MAX)).unwrap();
         let e = MatZq::from_str("[[0]] mod 42").unwrap();
 
         assert_ne!(&a, &b);
@@ -121,8 +121,8 @@ mod test_partial_eq {
     /// Checks that the same matrix with different modulus are unequal
     #[test]
     fn not_equal_different_modulus() {
-        let a = MatZq::from_str("[[0,1],[0,0]] mod 4").unwrap();
-        let b = MatZq::from_str("[[0,1],[0,0]] mod 8").unwrap();
+        let a = MatZq::from_str("[[0, 1],[0, 0]] mod 4").unwrap();
+        let b = MatZq::from_str("[[0, 1],[0, 0]] mod 8").unwrap();
 
         let c = MatZq::from_str(&format!("[[0]] mod {}", u64::MAX)).unwrap();
         let d = MatZq::from_str(&format!("[[0]] mod {}", u64::MAX - 1)).unwrap();

@@ -25,7 +25,7 @@ impl MatZ {
     /// use qfall_math::traits::*;
     /// use std::str::FromStr;
     ///
-    /// let mut matrix = MatZ::from_str("[[1,2],[3,4]]").unwrap();
+    /// let mut matrix = MatZ::from_str("[[1, 2],[3, 4]]").unwrap();
     /// let matrix_invert = matrix.inverse().unwrap();
     /// ```
     pub fn inverse(&self) -> Option<MatQ> {
@@ -52,27 +52,27 @@ mod test_inverse {
     /// Test whether `inverse` correctly calculates an inverse matrix
     #[test]
     fn inverse_works() {
-        let mat1 = MatZ::from_str("[[5,2,0],[2,1,0],[0,0,1]]").unwrap();
-        let mat2 = MatZ::from_str(&format!("[[{}]]", i64::MAX)).unwrap();
-        let mat3 = MatZ::from_str("[[-1,0],[0,1]]").unwrap();
+        let mat_1 = MatZ::from_str("[[5, 2, 0],[2, 1, 0],[0, 0, 1]]").unwrap();
+        let mat_2 = MatZ::from_str(&format!("[[{}]]", i64::MAX)).unwrap();
+        let mat_3 = MatZ::from_str("[[-1, 0],[0, 1]]").unwrap();
 
-        let cmp_inv1 = MatQ::from_str("[[1, -2, 0],[-2, 5, 0],[0, 0, 1]]").unwrap();
-        let cmp_inv2 = MatQ::from_str(&format!("[[1/{}]]", i64::MAX)).unwrap();
-        let cmp_inv3 = MatQ::from_str("[[-1,0],[0,1]]").unwrap();
+        let cmp_inv_1 = MatQ::from_str("[[1, -2, 0],[-2, 5, 0],[0, 0, 1]]").unwrap();
+        let cmp_inv_2 = MatQ::from_str(&format!("[[1/{}]]", i64::MAX)).unwrap();
+        let cmp_inv_3 = MatQ::from_str("[[-1, 0],[0, 1]]").unwrap();
 
-        let inv1 = mat1.inverse().unwrap();
-        let inv2 = mat2.inverse().unwrap();
-        let inv3 = mat3.inverse().unwrap();
+        let inv_1 = mat_1.inverse().unwrap();
+        let inv_2 = mat_2.inverse().unwrap();
+        let inv_3 = mat_3.inverse().unwrap();
 
-        assert_eq!(cmp_inv1, inv1);
-        assert_eq!(cmp_inv2, inv2);
-        assert_eq!(cmp_inv3, inv3);
+        assert_eq!(cmp_inv_1, inv_1);
+        assert_eq!(cmp_inv_2, inv_2);
+        assert_eq!(cmp_inv_3, inv_3);
     }
 
     /// Check if the multiplication of inverse and matrix result in an identity matrix
     #[test]
     fn inverse_correct() {
-        let mat = MatZ::from_str("[[5,2],[2,1]]").unwrap();
+        let mat = MatZ::from_str("[[5, 2],[2, 1]]").unwrap();
         let mat_q = MatQ::from(&mat);
         let cmp = MatQ::identity(2, 2);
 
@@ -85,17 +85,17 @@ mod test_inverse {
     /// Ensure that a matrix that is not square yields `None` on inversion.
     #[test]
     fn inv_none_not_squared() {
-        let mat1 = MatZ::from_str("[[1,0,1],[0,1,1]]").unwrap();
-        let mat2 = MatZ::from_str("[[1,0],[0,1],[1,0]]").unwrap();
+        let mat_1 = MatZ::from_str("[[1, 0, 1],[0, 1, 1]]").unwrap();
+        let mat_2 = MatZ::from_str("[[1, 0],[0, 1],[1, 0]]").unwrap();
 
-        assert!(mat1.inverse().is_none());
-        assert!(mat2.inverse().is_none());
+        assert!(mat_1.inverse().is_none());
+        assert!(mat_2.inverse().is_none());
     }
 
     /// Ensure that a matrix that has a determinant of `0` yields `None` on inversion.
     #[test]
     fn inv_none_det_zero() {
-        let mat = MatZ::from_str("[[2,0],[0,0]]").unwrap();
+        let mat = MatZ::from_str("[[2, 0],[0, 0]]").unwrap();
 
         assert!(mat.inverse().is_none());
     }

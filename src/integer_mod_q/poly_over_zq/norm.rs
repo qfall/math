@@ -83,21 +83,21 @@ mod test_norm_eucl_sqrd {
     /// with small coefficients is calculated correctly
     #[test]
     fn poly_small_coefficient() {
-        let poly1 = PolyOverZq::from_str("0 mod 11").unwrap();
-        let poly2 = PolyOverZq::from_str("3  1 2 3 mod 11").unwrap();
-        let poly3 = PolyOverZq::from_str("3  1 20 194 mod 195").unwrap();
+        let poly_1 = PolyOverZq::from_str("0 mod 11").unwrap();
+        let poly_2 = PolyOverZq::from_str("3  1 2 3 mod 11").unwrap();
+        let poly_3 = PolyOverZq::from_str("3  1 20 194 mod 195").unwrap();
 
-        assert_eq!(poly1.norm_eucl_sqrd(), Z::ZERO);
-        assert_eq!(poly2.norm_eucl_sqrd(), Z::from(14));
-        assert_eq!(poly3.norm_eucl_sqrd(), Z::from(402));
+        assert_eq!(poly_1.norm_eucl_sqrd(), Z::ZERO);
+        assert_eq!(poly_2.norm_eucl_sqrd(), Z::from(14));
+        assert_eq!(poly_3.norm_eucl_sqrd(), Z::from(402));
     }
 
     /// Check whether the squared euclidean norm for polynomials
     /// with small coefficients is calculated correctly
     #[test]
     fn poly_large_coefficient() {
-        let poly1 = PolyOverZq::from_str(&format!("1  {} mod {}", u64::MAX, u128::MAX)).unwrap();
-        let poly2 = PolyOverZq::from_str(&format!(
+        let poly_1 = PolyOverZq::from_str(&format!("1  {} mod {}", u64::MAX, u128::MAX)).unwrap();
+        let poly_2 = PolyOverZq::from_str(&format!(
             "3  {} {} {} mod {}",
             u64::MAX,
             i64::MIN,
@@ -107,11 +107,11 @@ mod test_norm_eucl_sqrd {
         .unwrap();
 
         assert_eq!(
-            poly1.norm_eucl_sqrd(),
+            poly_1.norm_eucl_sqrd(),
             Z::from(u64::MAX) * Z::from(u64::MAX)
         );
         assert_eq!(
-            poly2.norm_eucl_sqrd(),
+            poly_2.norm_eucl_sqrd(),
             Z::from(58) * Z::from(58)
                 + Z::from((u64::MAX - 1) / 2 - 57) * Z::from((u64::MAX - 1) / 2 - 57)
                 + Z::from((u64::MAX - 1) / 2 - 58) * Z::from((u64::MAX - 1) / 2 - 58)
@@ -128,21 +128,21 @@ mod test_norm_infty {
     /// with small coefficients is calculated correctly
     #[test]
     fn poly_small_coefficient() {
-        let poly1 = PolyOverZq::from_str("0 mod 3").unwrap();
-        let poly2 = PolyOverZq::from_str("3  1 2 3 mod 5").unwrap();
-        let poly3 = PolyOverZq::from_str("3  1 2010 90 mod 100").unwrap();
+        let poly_1 = PolyOverZq::from_str("0 mod 3").unwrap();
+        let poly_2 = PolyOverZq::from_str("3  1 2 3 mod 5").unwrap();
+        let poly_3 = PolyOverZq::from_str("3  1 2010 90 mod 100").unwrap();
 
-        assert_eq!(poly1.norm_infty(), Z::ZERO);
-        assert_eq!(poly2.norm_infty(), Z::from(2));
-        assert_eq!(poly3.norm_infty(), Z::from(10));
+        assert_eq!(poly_1.norm_infty(), Z::ZERO);
+        assert_eq!(poly_2.norm_infty(), Z::from(2));
+        assert_eq!(poly_3.norm_infty(), Z::from(10));
     }
 
     /// Check whether the infinity norm for polynomials
     /// with small coefficients is calculated correctly
     #[test]
     fn poly_large_coefficient() {
-        let poly1 = PolyOverZq::from_str(&format!("1  {} mod {}", u64::MAX, u128::MAX)).unwrap();
-        let poly2 = PolyOverZq::from_str(&format!(
+        let poly_1 = PolyOverZq::from_str(&format!("1  {} mod {}", u64::MAX, u128::MAX)).unwrap();
+        let poly_2 = PolyOverZq::from_str(&format!(
             "3  {} {} {} mod {}",
             u64::MAX,
             i64::MIN,
@@ -151,7 +151,7 @@ mod test_norm_infty {
         ))
         .unwrap();
 
-        assert_eq!(poly1.norm_infty(), Z::from(u64::MAX));
-        assert_eq!(poly2.norm_infty(), Z::from((u64::MAX - 1) / 2 - 57));
+        assert_eq!(poly_1.norm_infty(), Z::from(u64::MAX));
+        assert_eq!(poly_2.norm_infty(), Z::from((u64::MAX - 1) / 2 - 57));
     }
 }

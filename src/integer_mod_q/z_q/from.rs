@@ -34,7 +34,7 @@ impl Zq {
     /// let value = Z::from(42);
     /// let modulus = Modulus::from(100);
     ///
-    /// let answer_a = Zq::from_z_modulus(&value, &modulus);
+    /// let value_zq = Zq::from_z_modulus(&value, &modulus);
     /// ```
     pub fn from_z_modulus(value: &Z, modulus: impl Into<Modulus>) -> Self {
         let mut out = Z::default();
@@ -63,8 +63,8 @@ impl<IntegerValue: Into<Z>, IntegerModulus: Into<Modulus>> From<(IntegerValue, I
     /// Create [`Zq`] from a tuple with the integer and the modulus.
     ///
     /// Parameters:
-    /// - `value_modulus_tuple` is a tuple of integers `(value, modulus)`
-    ///   The first and second element of the tuple may have different integer types.
+    /// - `value`: Defines the value of the residue class.
+    /// - `modulus`: Defines the modulus by which `value` is reduced.
     ///
     /// Returns the `value` mod `modulus` as a [`Zq`].
     ///
@@ -73,17 +73,17 @@ impl<IntegerValue: Into<Z>, IntegerModulus: Into<Modulus>> From<(IntegerValue, I
     /// use qfall_math::integer_mod_q::Zq;
     /// use qfall_math::integer::Z;
     ///
-    /// let answer_a = Zq::from((1337 + 42, 1337));
-    /// let answer_b = Zq::from((Z::from(42), 1337));
+    /// let answer_1 = Zq::from((1337 + 42, 1337));
+    /// let answer_2 = Zq::from((Z::from(42), 1337));
     ///
-    /// assert_eq!(answer_a, answer_b);
+    /// assert_eq!(answer_1, answer_2);
     /// ```
     ///
     /// # Panics ...
     /// - if the modulus is not greater than `1`.
-    fn from(value_modulus_tuple: (IntegerValue, IntegerModulus)) -> Self {
-        let value = value_modulus_tuple.0.into();
-        let modulus = value_modulus_tuple.1.into();
+    fn from((value, modulus): (IntegerValue, IntegerModulus)) -> Self {
+        let value = value.into();
+        let modulus = modulus.into();
 
         let mut out = Zq { value, modulus };
         out.reduce();
@@ -281,7 +281,7 @@ mod test_from_trait {
         let zq_1 = Zq::from((10, 15));
         let zq_2 = Zq::from((Z::from(10), Modulus::from(15)));
 
-        assert_eq!(zq_1, zq_2)
+        assert_eq!(zq_1, zq_2);
     }
 
     /// Test with large value and modulus (FLINT uses pointer representation).
@@ -290,7 +290,7 @@ mod test_from_trait {
         let zq_1 = Zq::from((u64::MAX - 1, u64::MAX));
         let zq_2 = Zq::from((&Z::from(u64::MAX - 1), Modulus::from(u64::MAX)));
 
-        assert_eq!(zq_1, zq_2)
+        assert_eq!(zq_1, zq_2);
     }
 
     /// Test with zero modulus (not valid)
@@ -321,7 +321,7 @@ mod tests_from_str {
 
     /// Ensure that initialization with large numbers (larger than [`i64`]) works.
     #[test]
-    fn big_positive() {
+    fn large_positive() {
         assert!(Zq::from_str(&format!("{} mod {}", u64::MAX, u128::MAX)).is_ok());
     }
 
@@ -333,7 +333,7 @@ mod tests_from_str {
 
     /// Ensure that initialization with large negative numbers (larger than [`i64`]) works.
     #[test]
-    fn big_negative() {
+    fn large_negative() {
         assert!(Zq::from_str(&format!("-{} mod {}", u64::MAX, u128::MAX)).is_ok());
     }
 

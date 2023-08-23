@@ -122,7 +122,7 @@ mod test_try_from_poly_zq {
         let cmp_str = "3  0 1 3 mod 65537";
         let poly_zq = PolyOverZq::from_str(&in_str).unwrap();
         let _ = ModulusPolynomialRingZq::try_from(&poly_zq).unwrap();
-        assert_eq!(cmp_str, poly_zq.to_string())
+        assert_eq!(cmp_str, poly_zq.to_string());
     }
 
     /// Ensure that non-primes yields an error
@@ -130,7 +130,7 @@ mod test_try_from_poly_zq {
     fn poly_zq_non_prime() {
         let in_str = format!("4  0 1 3 {} mod {}", u64::MAX, 2_i32.pow(16));
         let poly_zq = PolyOverZq::from_str(&in_str).unwrap();
-        assert!(ModulusPolynomialRingZq::try_from(&poly_zq).is_ok())
+        assert!(ModulusPolynomialRingZq::try_from(&poly_zq).is_ok());
     }
 }
 

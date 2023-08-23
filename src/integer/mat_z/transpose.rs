@@ -22,8 +22,8 @@ impl MatZ {
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
-    /// let mat = MatZ::from_str("[[2,1],[2,1],[2,1]]").unwrap();
-    /// let cmp = MatZ::from_str("[[2,2,2],[1,1,1]]").unwrap();
+    /// let mat = MatZ::from_str("[[2, 1],[2, 1],[2, 1]]").unwrap();
+    /// let cmp = MatZ::from_str("[[2, 2, 2],[1, 1, 1]]").unwrap();
     ///
     /// assert_eq!(mat.transpose(), cmp);
     /// ```
@@ -43,7 +43,7 @@ mod test_transpose {
     #[test]
     fn row_to_column() {
         let mat = MatZ::from_str("[[1],[2],[3]]").unwrap();
-        let cmp = MatZ::from_str("[[1,2,3]]").unwrap();
+        let cmp = MatZ::from_str("[[1, 2, 3]]").unwrap();
 
         assert_eq!(cmp, mat.transpose());
     }
@@ -51,7 +51,7 @@ mod test_transpose {
     /// Checks if a column is correctly converted to a row
     #[test]
     fn column_to_row() {
-        let mat = MatZ::from_str("[[1,2,3]]").unwrap();
+        let mat = MatZ::from_str("[[1, 2, 3]]").unwrap();
         let cmp = MatZ::from_str("[[1],[2],[3]]").unwrap();
 
         assert_eq!(cmp, mat.transpose());
@@ -60,7 +60,7 @@ mod test_transpose {
     /// Checks if large, negative, and zero values are transposed correctly
     #[test]
     fn different_entry_values() {
-        let mat = MatZ::from_str(&format!("[[{},{},0]]", i64::MAX, i64::MIN)).unwrap();
+        let mat = MatZ::from_str(&format!("[[{}, {}, 0]]", i64::MAX, i64::MIN)).unwrap();
         let cmp = MatZ::from_str(&format!("[[{}],[{}],[0]]", i64::MAX, i64::MIN)).unwrap();
 
         assert_eq!(cmp, mat.transpose());

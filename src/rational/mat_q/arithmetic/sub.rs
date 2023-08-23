@@ -137,7 +137,7 @@ mod test_sub {
         assert_eq!(c, MatQ::from_str("[[0, -1, 5/4],[0, 64/63, -10]]").unwrap());
     }
 
-    /// Testing subtraction for big numbers
+    /// Testing subtraction for large numbers
     #[test]
     fn sub_large_numbers() {
         let a: MatQ =

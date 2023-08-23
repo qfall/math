@@ -50,7 +50,7 @@ mod test_refine {
 
     /// Ensure that refinement works correctly.
     #[test]
-    fn refine_correct_big() {
+    fn refine_correct_large() {
         let mut fac = Factorization::from((i64::MAX - 1, 2));
 
         fac.refine();
@@ -74,16 +74,16 @@ mod test_refine {
     /// Ensure that refinement orders the values correctly.
     #[test]
     fn refine_correct_order() {
-        let mut fac1 = Factorization::from((8, 3));
-        let mut fac2 = Factorization::from((i64::MAX - 1, 2));
+        let mut fac_1 = Factorization::from((8, 3));
+        let mut fac_2 = Factorization::from((i64::MAX - 1, 2));
 
-        fac1.refine();
-        fac2.refine();
+        fac_1.refine();
+        fac_2.refine();
 
-        assert_eq!("[(3, 1), (8, 1)]", fac1.to_string());
+        assert_eq!("[(3, 1), (8, 1)]", fac_1.to_string());
         assert_eq!(
             format!("[(2, 2), ({}, 1)]", (i64::MAX - 1) / 2),
-            fac2.to_string()
+            fac_2.to_string()
         );
     }
 

@@ -103,8 +103,8 @@ mod test_norm_eucl_sqrd {
     #[test]
     fn row_vector_small_entries() {
         let vec_1 = MatZ::from_str("[[1]]").unwrap();
-        let vec_2 = MatZ::from_str("[[1,10,100]]").unwrap();
-        let vec_3 = MatZ::from_str("[[1,10,100, 1000]]").unwrap();
+        let vec_2 = MatZ::from_str("[[1, 10, 100]]").unwrap();
+        let vec_3 = MatZ::from_str("[[1, 10, 100, 1000]]").unwrap();
 
         assert_eq!(vec_1.norm_eucl_sqrd().unwrap(), Z::ONE);
         assert_eq!(vec_2.norm_eucl_sqrd().unwrap(), Z::from(10101));
@@ -115,7 +115,7 @@ mod test_norm_eucl_sqrd {
     /// with large entries is calculated correctly
     #[test]
     fn row_vector_large_entries() {
-        let vec = MatZ::from_str(&format!("[[{},{}, 2]]", i64::MAX, i64::MIN)).unwrap();
+        let vec = MatZ::from_str(&format!("[[{}, {}, 2]]", i64::MAX, i64::MIN)).unwrap();
         let max = Z::from(i64::MAX);
         let min = Z::from(i64::MIN);
         let cmp = &min * &min + &max * &max + Z::from(4);
@@ -149,7 +149,7 @@ mod test_norm_eucl_sqrd {
     /// Check whether euclidean norm calculations of non vectors yield an error
     #[test]
     fn non_vector_yield_error() {
-        let mat = MatZ::from_str("[[1,1],[10,2]]").unwrap();
+        let mat = MatZ::from_str("[[1, 1],[10, 2]]").unwrap();
 
         assert!(mat.norm_eucl_sqrd().is_err());
     }
@@ -165,8 +165,8 @@ mod test_norm_infty {
     #[test]
     fn row_vector_small_entries() {
         let vec_1 = MatZ::from_str("[[1]]").unwrap();
-        let vec_2 = MatZ::from_str("[[1,10,100]]").unwrap();
-        let vec_3 = MatZ::from_str("[[1,10,100, 1000]]").unwrap();
+        let vec_2 = MatZ::from_str("[[1, 10, 100]]").unwrap();
+        let vec_3 = MatZ::from_str("[[1, 10, 100, 1000]]").unwrap();
 
         assert_eq!(vec_1.norm_infty().unwrap(), Z::ONE);
         assert_eq!(vec_2.norm_infty().unwrap(), Z::from(100));
@@ -177,7 +177,7 @@ mod test_norm_infty {
     /// with large entries is calculated correctly
     #[test]
     fn row_vector_large_entries() {
-        let vec = MatZ::from_str(&format!("[[{},{}, 2]]", i64::MAX, i64::MIN)).unwrap();
+        let vec = MatZ::from_str(&format!("[[{}, {}, 2]]", i64::MAX, i64::MIN)).unwrap();
         let cmp = Z::from(-1) * Z::from(i64::MIN);
 
         assert_eq!(vec.norm_infty().unwrap(), cmp);
@@ -207,7 +207,7 @@ mod test_norm_infty {
     /// Check whether infinity norm calculations of non vectors yield an error
     #[test]
     fn non_vector_yield_error() {
-        let mat = MatZ::from_str("[[1,1],[10,2]]").unwrap();
+        let mat = MatZ::from_str("[[1, 1],[10, 2]]").unwrap();
 
         assert!(mat.norm_infty().is_err());
     }

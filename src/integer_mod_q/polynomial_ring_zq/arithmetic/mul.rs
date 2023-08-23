@@ -37,10 +37,10 @@ impl Mul for &PolynomialRingZq {
     /// use std::str::FromStr;
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-    /// let poly_a = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
-    /// let a = PolynomialRingZq::from((&poly_a, &modulus));
-    /// let poly_b = PolyOverZ::from_str("4  2 0 3 1").unwrap();
-    /// let b = PolynomialRingZq::from((&poly_b, &modulus));
+    /// let poly_1 = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
+    /// let a = PolynomialRingZq::from((&poly_1, &modulus));
+    /// let poly_2 = PolyOverZ::from_str("4  2 0 3 1").unwrap();
+    /// let b = PolynomialRingZq::from((&poly_2, &modulus));
     ///
     /// let c: PolynomialRingZq = &a * &b;
     /// let d: PolynomialRingZq = a * b;
@@ -72,10 +72,10 @@ impl PolynomialRingZq {
     /// use std::str::FromStr;
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-    /// let poly_a = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
-    /// let a = PolynomialRingZq::from((&poly_a, &modulus));
-    /// let poly_b = PolyOverZ::from_str("4  2 0 3 1").unwrap();
-    /// let b = PolynomialRingZq::from((&poly_b, &modulus));
+    /// let poly_1 = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
+    /// let a = PolynomialRingZq::from((&poly_1, &modulus));
+    /// let poly_2 = PolyOverZ::from_str("4  2 0 3 1").unwrap();
+    /// let b = PolynomialRingZq::from((&poly_2, &modulus));
     ///
     /// let c: PolynomialRingZq = a.mul_safe(&b).unwrap();
     /// ```
@@ -128,10 +128,10 @@ mod test_mul {
     #[test]
     fn mul() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-        let poly_a = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
-        let a = PolynomialRingZq::from((&poly_a, &modulus));
-        let poly_b = PolyOverZ::from_str("4  2 0 3 1").unwrap();
-        let b = PolynomialRingZq::from((&poly_b, &modulus));
+        let poly_1 = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
+        let a = PolynomialRingZq::from((&poly_1, &modulus));
+        let poly_2 = PolyOverZ::from_str("4  2 0 3 1").unwrap();
+        let b = PolynomialRingZq::from((&poly_2, &modulus));
         let c = a * b;
         assert_eq!(
             c,
@@ -143,10 +143,10 @@ mod test_mul {
     #[test]
     fn mul_borrow() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-        let poly_a = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
-        let a = PolynomialRingZq::from((&poly_a, &modulus));
-        let poly_b = PolyOverZ::from_str("4  2 0 3 1").unwrap();
-        let b = PolynomialRingZq::from((&poly_b, &modulus));
+        let poly_1 = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
+        let a = PolynomialRingZq::from((&poly_1, &modulus));
+        let poly_2 = PolyOverZ::from_str("4  2 0 3 1").unwrap();
+        let b = PolynomialRingZq::from((&poly_2, &modulus));
         let c = &a * &b;
         assert_eq!(
             c,
@@ -158,10 +158,10 @@ mod test_mul {
     #[test]
     fn mul_first_borrowed() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-        let poly_a = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
-        let a = PolynomialRingZq::from((&poly_a, &modulus));
-        let poly_b = PolyOverZ::from_str("4  2 0 3 1").unwrap();
-        let b = PolynomialRingZq::from((&poly_b, &modulus));
+        let poly_1 = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
+        let a = PolynomialRingZq::from((&poly_1, &modulus));
+        let poly_2 = PolyOverZ::from_str("4  2 0 3 1").unwrap();
+        let b = PolynomialRingZq::from((&poly_2, &modulus));
         let c = &a * b;
         assert_eq!(
             c,
@@ -173,10 +173,10 @@ mod test_mul {
     #[test]
     fn mul_second_borrowed() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-        let poly_a = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
-        let a = PolynomialRingZq::from((&poly_a, &modulus));
-        let poly_b = PolyOverZ::from_str("4  2 0 3 1").unwrap();
-        let b = PolynomialRingZq::from((&poly_b, &modulus));
+        let poly_1 = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
+        let a = PolynomialRingZq::from((&poly_1, &modulus));
+        let poly_2 = PolyOverZ::from_str("4  2 0 3 1").unwrap();
+        let b = PolynomialRingZq::from((&poly_2, &modulus));
         let c = a * &b;
         assert_eq!(
             c,
@@ -188,10 +188,10 @@ mod test_mul {
     #[test]
     fn mul_constant() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-        let poly_a = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
-        let a = PolynomialRingZq::from((&poly_a, &modulus));
-        let poly_b = PolyOverZ::from(3);
-        let b = PolynomialRingZq::from((&poly_b, &modulus));
+        let poly_1 = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
+        let a = PolynomialRingZq::from((&poly_1, &modulus));
+        let poly_2 = PolyOverZ::from(3);
+        let b = PolynomialRingZq::from((&poly_2, &modulus));
         let c = &a * b;
         assert_eq!(
             c,
@@ -203,7 +203,7 @@ mod test_mul {
         )
     }
 
-    /// Testing multiplication for big [`PolynomialRingZq`]
+    /// Testing multiplication for large [`PolynomialRingZq`]
     #[test]
     fn mul_large_numbers() {
         let modulus = ModulusPolynomialRingZq::from_str(&format!(
@@ -214,11 +214,11 @@ mod test_mul {
         ))
         .unwrap();
 
-        let poly_a = PolyOverZ::from_str(&format!("3  {} 0 {}", u64::MAX, i64::MIN)).unwrap();
-        let a = PolynomialRingZq::from((&poly_a, &modulus));
+        let poly_1 = PolyOverZ::from_str(&format!("3  {} 0 {}", u64::MAX, i64::MIN)).unwrap();
+        let a = PolynomialRingZq::from((&poly_1, &modulus));
 
-        let poly_b = PolyOverZ::from_str(&format!("3  {} 0 {}", i64::MAX, i64::MAX)).unwrap();
-        let b = PolynomialRingZq::from((&poly_b, &modulus));
+        let poly_2 = PolyOverZ::from_str(&format!("3  {} 0 {}", i64::MAX, i64::MAX)).unwrap();
+        let b = PolynomialRingZq::from((&poly_2, &modulus));
 
         let c = a * b;
         assert_eq!(
@@ -244,11 +244,11 @@ mod test_mul {
     #[should_panic]
     fn mul_mismatching_modulus() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-        let poly_a = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
-        let a = PolynomialRingZq::from((&poly_a, &modulus));
+        let poly_1 = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
+        let a = PolynomialRingZq::from((&poly_1, &modulus));
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
-        let poly_b = PolyOverZ::from_str("4  2 0 3 1").unwrap();
-        let b = PolynomialRingZq::from((&poly_b, &modulus));
+        let poly_2 = PolyOverZ::from_str("4  2 0 3 1").unwrap();
+        let b = PolynomialRingZq::from((&poly_2, &modulus));
         let _ = a * b;
     }
 
@@ -256,11 +256,11 @@ mod test_mul {
     #[test]
     fn mul_safe_is_err() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-        let poly_a = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
-        let a = PolynomialRingZq::from((&poly_a, &modulus));
+        let poly_1 = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
+        let a = PolynomialRingZq::from((&poly_1, &modulus));
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
-        let poly_b = PolyOverZ::from_str("4  2 0 3 1").unwrap();
-        let b = PolynomialRingZq::from((&poly_b, &modulus));
+        let poly_2 = PolyOverZ::from_str("4  2 0 3 1").unwrap();
+        let b = PolynomialRingZq::from((&poly_2, &modulus));
 
         assert!(&a.mul_safe(&b).is_err());
     }

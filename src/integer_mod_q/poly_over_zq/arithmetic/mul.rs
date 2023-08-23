@@ -149,7 +149,7 @@ mod test_mul {
         );
     }
 
-    /// Testing multiplication for big [`PolyOverZq`]
+    /// Testing multiplication for large [`PolyOverZq`]
     #[test]
     fn mul_large_numbers() {
         let a: PolyOverZq = PolyOverZq::from_str(&format!(

@@ -73,7 +73,7 @@ impl Mul<&MatZ> for &MatQ {
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let a = MatQ::from_str("[[2/3,1/2],[8/4,7]]").unwrap();
+    /// let a = MatQ::from_str("[[2/3, 1/2],[8/4, 7]]").unwrap();
     /// let b = MatZ::identity(2, 2);
     ///
     /// let c = &a * &b;
@@ -153,10 +153,10 @@ mod test_mul {
     /// Checks if matrix multiplication works fine for squared matrices
     #[test]
     fn square_correctness() {
-        let mat_1 = MatQ::from_str("[[2/3,1/3],[1/3,2/3]]").unwrap();
+        let mat_1 = MatQ::from_str("[[2/3, 1/3],[1/3, 2/3]]").unwrap();
         let mat_2 = MatQ::identity(2, 2);
-        let mat_3 = MatQ::from_str("[[1/7,2/7],[2/7,1/7]]").unwrap();
-        let cmp = MatQ::from_str("[[4/21,5/21],[5/21,4/21]]").unwrap();
+        let mat_3 = MatQ::from_str("[[1/7, 2/7],[2/7, 1/7]]").unwrap();
+        let cmp = MatQ::from_str("[[4/21, 5/21],[5/21, 4/21]]").unwrap();
 
         assert_eq!(mat_1, &mat_1 * &mat_2);
         assert_eq!(cmp, &mat_1 * &mat_3);
@@ -165,7 +165,7 @@ mod test_mul {
     /// Checks if matrix multiplication works fine for matrices of different dimensions
     #[test]
     fn different_dimensions_correctness() {
-        let mat = MatQ::from_str("[[2/3,1/5],[1/5,2/19]]").unwrap();
+        let mat = MatQ::from_str("[[2/3, 1/5],[1/5, 2/19]]").unwrap();
         let vec = MatQ::from_str("[[1/7],[0]]").unwrap();
         let cmp = MatQ::from_str("[[2/21],[1/35]]").unwrap();
 
@@ -175,7 +175,7 @@ mod test_mul {
     /// Checks if matrix multiplication works fine for large entries
     #[test]
     fn large_entries() {
-        let mat = MatQ::from_str(&format!("[[{},1],[0,2]]", i64::MAX)).unwrap();
+        let mat = MatQ::from_str(&format!("[[{}, 1],[0, 2]]", i64::MAX)).unwrap();
         let vec = MatQ::from_str(&format!("[[1/{}],[0]]", i64::MAX)).unwrap();
         let mut cmp = MatQ::new(2, 1);
         let max: Q = Q::from(i64::MAX);
@@ -189,8 +189,8 @@ mod test_mul {
     /// throws an error as expected
     #[test]
     fn incompatible_dimensions() {
-        let mat_1 = MatQ::from_str("[[2,1/9],[1/7,2]]").unwrap();
-        let mat_2 = MatQ::from_str("[[1/6,0],[0,3/8],[0,0]]").unwrap();
+        let mat_1 = MatQ::from_str("[[2, 1/9],[1/7, 2]]").unwrap();
+        let mat_2 = MatQ::from_str("[[1/6, 0],[0, 3/8],[0, 0]]").unwrap();
 
         assert!((mat_1.mul_safe(&mat_2)).is_err());
     }
@@ -207,10 +207,10 @@ mod test_mul_matz {
     /// Checks if matrix multiplication works fine for squared matrices
     #[test]
     fn square_correctness() {
-        let mat_1 = MatQ::from_str("[[2/3,1],[1/2,2]]").unwrap();
+        let mat_1 = MatQ::from_str("[[2/3, 1],[1/2, 2]]").unwrap();
         let mat_2 = MatZ::identity(2, 2);
-        let mat_3 = MatZ::from_str("[[1,2],[2,1]]").unwrap();
-        let cmp = MatQ::from_str("[[8/3,7/3],[9/2,3]]").unwrap();
+        let mat_3 = MatZ::from_str("[[1, 2],[2, 1]]").unwrap();
+        let cmp = MatQ::from_str("[[8/3, 7/3],[9/2, 3]]").unwrap();
 
         assert_eq!(mat_1, &mat_1 * &mat_2);
         assert_eq!(cmp, &mat_1 * &mat_3);
@@ -219,7 +219,7 @@ mod test_mul_matz {
     /// Checks if matrix multiplication works fine for matrices of different dimensions
     #[test]
     fn different_dimensions_correctness() {
-        let mat = MatQ::from_str("[[2/3,1],[1/2,2]]").unwrap();
+        let mat = MatQ::from_str("[[2/3, 1],[1/2, 2]]").unwrap();
         let vec = MatZ::from_str("[[2],[0]]").unwrap();
         let cmp = MatQ::from_str("[[4/3],[1]]").unwrap();
 
@@ -230,7 +230,7 @@ mod test_mul_matz {
     /// Checks if matrix multiplication works fine for large entries
     #[test]
     fn large_entries() {
-        let mat = MatQ::from_str(&format!("[[{},1],[0,2/{}]]", u64::MAX, u64::MAX)).unwrap();
+        let mat = MatQ::from_str(&format!("[[{}, 1],[0, 2/{}]]", u64::MAX, u64::MAX)).unwrap();
         let vec = MatZ::from_str(&format!("[[{}],[0]]", u64::MAX)).unwrap();
         let mut cmp = MatQ::new(2, 1);
         let max: Q = u64::MAX.into();
@@ -245,8 +245,8 @@ mod test_mul_matz {
     #[test]
     #[should_panic]
     fn errors() {
-        let mat_1 = MatQ::from_str("[[2/3,1],[1/2,2]]").unwrap();
-        let mat_2 = MatZ::from_str("[[1,0],[0,1],[0,0]]").unwrap();
+        let mat_1 = MatQ::from_str("[[2/3, 1],[1/2, 2]]").unwrap();
+        let mat_2 = MatZ::from_str("[[1, 0],[0, 1],[0, 0]]").unwrap();
         let _ = &mat_1 * &mat_2;
     }
 }

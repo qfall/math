@@ -91,7 +91,7 @@ mod test_set_coeff {
 
     /// Ensure that large coefficients work.
     #[test]
-    fn set_coeff_big() {
+    fn set_coeff_large() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly = PolyOverZ::from_str("3  0 1 1").unwrap();
         let mut poly_ring = PolynomialRingZq::from((&poly, &modulus));
@@ -102,7 +102,7 @@ mod test_set_coeff {
 
     /// Ensure that the max of [`u8`] and [`u16`] works as an index.
     #[test]
-    fn set_index_big() {
+    fn set_index_large() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly = PolyOverZ::from_str("3  0 1 1").unwrap();
         let mut poly_ring = PolynomialRingZq::from((&poly, &modulus));

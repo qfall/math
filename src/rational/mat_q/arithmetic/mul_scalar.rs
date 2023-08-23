@@ -35,10 +35,10 @@ impl Mul<&Z> for &MatQ {
     /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
     ///
-    /// let mat1 = MatQ::from_str("[[2/3,1],[1/2,2]]").unwrap();
+    /// let mat_1 = MatQ::from_str("[[2/3, 1],[1/2, 2]]").unwrap();
     /// let integer = Z::from(3);
     ///
-    /// let mat2 = &mat1 * &integer;
+    /// let mat_2 = &mat_1 * &integer;
     /// ```
     fn mul(self, scalar: &Z) -> Self::Output {
         let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns());
@@ -73,10 +73,10 @@ impl Mul<&Q> for &MatQ {
     /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
     ///
-    /// let mat1 = MatQ::from_str("[[2/3,1],[1/2,2]]").unwrap();
+    /// let mat_1 = MatQ::from_str("[[2/3, 1],[1/2, 2]]").unwrap();
     /// let rational = Q::from(3/7);
     ///
-    /// let mat2 = &mat1 * &rational;
+    /// let mat_2 = &mat_1 * &rational;
     /// ```
     fn mul(self, scalar: &Q) -> Self::Output {
         let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns());
@@ -105,110 +105,110 @@ mod test_mul_z {
     /// Checks if matrix multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
-        let mat1 = MatQ::from_str("[[2/3,1],[1/2,2]]").unwrap();
-        let mat2 = mat1.clone();
-        let mat3 = MatQ::from_str("[[2,3],[3/2,6]]").unwrap();
+        let mat_1 = MatQ::from_str("[[2/3, 1],[1/2, 2]]").unwrap();
+        let mat_2 = mat_1.clone();
+        let mat_3 = MatQ::from_str("[[2, 3],[3/2, 6]]").unwrap();
         let integer = Z::from(3);
 
-        let mat1 = &mat1 * &integer;
-        let mat2 = &integer * &mat2;
+        let mat_1 = &mat_1 * &integer;
+        let mat_2 = &integer * &mat_2;
 
-        assert_eq!(mat3, mat1);
-        assert_eq!(mat3, mat2);
+        assert_eq!(mat_3, mat_1);
+        assert_eq!(mat_3, mat_2);
     }
 
     /// Checks if scalar multiplication works fine for both owned
     #[test]
     fn owned_correctness() {
-        let mat1 = MatQ::from_str("[[2/3,1],[1/2,2]]").unwrap();
-        let mat2 = mat1.clone();
-        let mat3 = MatQ::from_str("[[2,3],[3/2,6]]").unwrap();
-        let integer1 = Z::from(3);
-        let integer2 = Z::from(3);
+        let mat_1 = MatQ::from_str("[[2/3, 1],[1/2, 2]]").unwrap();
+        let mat_2 = mat_1.clone();
+        let mat_3 = MatQ::from_str("[[2, 3],[3/2, 6]]").unwrap();
+        let integer_1 = Z::from(3);
+        let integer_2 = Z::from(3);
 
-        let mat1 = mat1 * integer1;
-        let mat2 = integer2 * mat2;
+        let mat_1 = mat_1 * integer_1;
+        let mat_2 = integer_2 * mat_2;
 
-        assert_eq!(mat3, mat1);
-        assert_eq!(mat3, mat2);
+        assert_eq!(mat_3, mat_1);
+        assert_eq!(mat_3, mat_2);
     }
 
     /// Checks if scalar multiplication works fine for half owned/borrowed
     #[test]
     fn half_correctness() {
-        let mat1 = MatQ::from_str("[[2/3,1],[1/2,2]]").unwrap();
-        let mat2 = mat1.clone();
-        let mat3 = mat1.clone();
-        let mat4 = mat1.clone();
-        let mat5 = MatQ::from_str("[[2,3],[3/2,6]]").unwrap();
-        let integer1 = Z::from(3);
-        let integer2 = Z::from(3);
+        let mat_1 = MatQ::from_str("[[2/3, 1],[1/2, 2]]").unwrap();
+        let mat_2 = mat_1.clone();
+        let mat_3 = mat_1.clone();
+        let mat_4 = mat_1.clone();
+        let mat_5 = MatQ::from_str("[[2, 3],[3/2, 6]]").unwrap();
+        let integer_1 = Z::from(3);
+        let integer_2 = Z::from(3);
 
-        let mat1 = mat1 * &integer1;
-        let mat2 = &integer2 * mat2;
-        let mat3 = &mat3 * integer1;
-        let mat4 = integer2 * &mat4;
+        let mat_1 = mat_1 * &integer_1;
+        let mat_2 = &integer_2 * mat_2;
+        let mat_3 = &mat_3 * integer_1;
+        let mat_4 = integer_2 * &mat_4;
 
-        assert_eq!(mat5, mat1);
-        assert_eq!(mat5, mat2);
-        assert_eq!(mat5, mat3);
-        assert_eq!(mat5, mat4);
+        assert_eq!(mat_5, mat_1);
+        assert_eq!(mat_5, mat_2);
+        assert_eq!(mat_5, mat_3);
+        assert_eq!(mat_5, mat_4);
     }
 
     /// Checks if scalar multiplication works fine for different scalar types
     #[test]
     #[allow(clippy::erasing_op)]
     fn different_types() {
-        let mat1 = MatQ::from_str("[[1/2],[0],[4]]").unwrap();
-        let mat2 = MatQ::from_str("[[2,5,6],[1,3,1]]").unwrap();
-        let mat3 = MatQ::from_str("[[1],[0],[8]]").unwrap();
-        let mat4 = MatQ::from_str("[[0],[0],[0]]").unwrap();
-        let mat5 = MatQ::from_str("[[-1/2],[0],[-4]]").unwrap();
-        let mat6 = MatQ::from_str("[[6,15,18],[3,9,3]]").unwrap();
+        let mat_1 = MatQ::from_str("[[1/2],[0],[4]]").unwrap();
+        let mat_2 = MatQ::from_str("[[2, 5, 6],[1, 3, 1]]").unwrap();
+        let mat_3 = MatQ::from_str("[[1],[0],[8]]").unwrap();
+        let mat_4 = MatQ::from_str("[[0],[0],[0]]").unwrap();
+        let mat_5 = MatQ::from_str("[[-1/2],[0],[-4]]").unwrap();
+        let mat_6 = MatQ::from_str("[[6, 15, 18],[3, 9, 3]]").unwrap();
 
-        assert_eq!(mat3, 2u8 * &mat1);
-        assert_eq!(mat3, 2i8 * &mat1);
-        assert_eq!(mat3, 2u16 * &mat1);
-        assert_eq!(mat3, 2i16 * &mat1);
-        assert_eq!(mat3, 2u32 * &mat1);
-        assert_eq!(mat3, 2i32 * &mat1);
-        assert_eq!(mat3, 2u64 * &mat1);
-        assert_eq!(mat3, 2i64 * &mat1);
-        assert_eq!(mat4, 0 * &mat1);
-        assert_eq!(mat5, -1 * mat1);
-        assert_eq!(mat6, mat2 * 3);
+        assert_eq!(mat_3, 2u8 * &mat_1);
+        assert_eq!(mat_3, 2i8 * &mat_1);
+        assert_eq!(mat_3, 2u16 * &mat_1);
+        assert_eq!(mat_3, 2i16 * &mat_1);
+        assert_eq!(mat_3, 2u32 * &mat_1);
+        assert_eq!(mat_3, 2i32 * &mat_1);
+        assert_eq!(mat_3, 2u64 * &mat_1);
+        assert_eq!(mat_3, 2i64 * &mat_1);
+        assert_eq!(mat_4, 0 * &mat_1);
+        assert_eq!(mat_5, -1 * mat_1);
+        assert_eq!(mat_6, mat_2 * 3);
     }
 
     /// Checks if scalar multiplication works fine for matrices of different dimensions
     #[test]
     fn different_dimensions_correctness() {
-        let mat1 = MatQ::from_str("[[1/2],[0],[4]]").unwrap();
-        let mat2 = MatQ::from_str("[[2,5/8,6],[1,3,1/7]]").unwrap();
-        let mat3 = MatQ::from_str("[[3/2],[0],[12]]").unwrap();
-        let mat4 = MatQ::from_str("[[6,15/8,18],[3,9,3/7]]").unwrap();
+        let mat_1 = MatQ::from_str("[[1/2],[0],[4]]").unwrap();
+        let mat_2 = MatQ::from_str("[[2, 5/8, 6],[1, 3, 1/7]]").unwrap();
+        let mat_3 = MatQ::from_str("[[3/2],[0],[12]]").unwrap();
+        let mat_4 = MatQ::from_str("[[6, 15/8, 18],[3, 9, 3/7]]").unwrap();
         let integer = Z::from(3);
 
-        assert_eq!(mat3, &integer * mat1);
-        assert_eq!(mat4, integer * mat2);
+        assert_eq!(mat_3, &integer * mat_1);
+        assert_eq!(mat_4, integer * mat_2);
     }
 
     /// Checks if matrix multiplication works fine for large values
     #[test]
     fn large_entries() {
-        let mat1 = MatQ::from_str(&format!("[[1],[{}],[1/{}]]", i64::MAX, i64::MAX)).unwrap();
-        let mat2 = MatQ::from_str("[[3]]").unwrap();
-        let mat3 = MatQ::from_str(&format!(
+        let mat_1 = MatQ::from_str(&format!("[[1],[{}],[1/{}]]", i64::MAX, i64::MAX)).unwrap();
+        let mat_2 = MatQ::from_str("[[3]]").unwrap();
+        let mat_3 = MatQ::from_str(&format!(
             "[[3],[{}],[3/{}]]",
             3 * i64::MAX as i128,
             i64::MAX
         ))
         .unwrap();
-        let mat4 = MatQ::from_str(&format!("[[{}]]", 3 * i64::MAX as i128)).unwrap();
-        let integer1 = Z::from(3);
-        let integer2 = Z::from(i64::MAX);
+        let mat_4 = MatQ::from_str(&format!("[[{}]]", 3 * i64::MAX as i128)).unwrap();
+        let integer_1 = Z::from(3);
+        let integer_2 = Z::from(i64::MAX);
 
-        assert_eq!(mat3, integer1 * mat1);
-        assert_eq!(mat4, integer2 * mat2);
+        assert_eq!(mat_3, integer_1 * mat_1);
+        assert_eq!(mat_4, integer_2 * mat_2);
     }
 }
 
@@ -222,103 +222,103 @@ mod test_mul_q {
     /// Checks if matrix multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
-        let mat1 = MatQ::from_str("[[2/3,1],[1/2,2]]").unwrap();
-        let mat2 = mat1.clone();
-        let mat3 = MatQ::from_str("[[1,3/2],[3/4,3]]").unwrap();
+        let mat_1 = MatQ::from_str("[[2/3, 1],[1/2, 2]]").unwrap();
+        let mat_2 = mat_1.clone();
+        let mat_3 = MatQ::from_str("[[1, 3/2],[3/4, 3]]").unwrap();
         let rational = Q::from((3, 2));
 
-        let mat1 = &mat1 * &rational;
-        let mat2 = &mat2 * &rational;
+        let mat_1 = &mat_1 * &rational;
+        let mat_2 = &mat_2 * &rational;
 
-        assert_eq!(mat3, mat1);
-        assert_eq!(mat3, mat2);
+        assert_eq!(mat_3, mat_1);
+        assert_eq!(mat_3, mat_2);
     }
 
     /// Checks if scalar multiplication works fine for both owned
     #[test]
     fn owned_correctness() {
-        let mat1 = MatQ::from_str("[[2/3,1],[1/2,2]]").unwrap();
-        let mat2 = mat1.clone();
-        let mat3 = MatQ::from_str("[[1,3/2],[3/4,3]]").unwrap();
-        let rational1 = Q::from((3, 2));
-        let rational2 = Q::from((3, 2));
+        let mat_1 = MatQ::from_str("[[2/3, 1],[1/2, 2]]").unwrap();
+        let mat_2 = mat_1.clone();
+        let mat_3 = MatQ::from_str("[[1, 3/2],[3/4, 3]]").unwrap();
+        let rational_1 = Q::from((3, 2));
+        let rational_2 = Q::from((3, 2));
 
-        let mat1 = mat1 * rational1;
-        let mat2 = rational2 * mat2;
+        let mat_1 = mat_1 * rational_1;
+        let mat_2 = rational_2 * mat_2;
 
-        assert_eq!(mat3, mat1);
-        assert_eq!(mat3, mat2);
+        assert_eq!(mat_3, mat_1);
+        assert_eq!(mat_3, mat_2);
     }
 
     /// Checks if scalar multiplication works fine for half owned/borrowed
     #[test]
     fn half_correctness() {
-        let mat1 = MatQ::from_str("[[2/3,1],[1/2,2]]").unwrap();
-        let mat2 = mat1.clone();
-        let mat3 = mat1.clone();
-        let mat4 = mat1.clone();
-        let mat5 = MatQ::from_str("[[1,3/2],[3/4,3]]").unwrap();
-        let rational1 = Q::from((3, 2));
-        let rational2 = Q::from((3, 2));
+        let mat_1 = MatQ::from_str("[[2/3, 1],[1/2, 2]]").unwrap();
+        let mat_2 = mat_1.clone();
+        let mat_3 = mat_1.clone();
+        let mat_4 = mat_1.clone();
+        let mat_5 = MatQ::from_str("[[1, 3/2],[3/4, 3]]").unwrap();
+        let rational_1 = Q::from((3, 2));
+        let rational_2 = Q::from((3, 2));
 
-        let mat1 = mat1 * &rational1;
-        let mat2 = &rational2 * mat2;
-        let mat3 = &mat3 * rational1;
-        let mat4 = rational2 * &mat4;
+        let mat_1 = mat_1 * &rational_1;
+        let mat_2 = &rational_2 * mat_2;
+        let mat_3 = &mat_3 * rational_1;
+        let mat_4 = rational_2 * &mat_4;
 
-        assert_eq!(mat5, mat1);
-        assert_eq!(mat5, mat2);
-        assert_eq!(mat5, mat3);
-        assert_eq!(mat5, mat4);
+        assert_eq!(mat_5, mat_1);
+        assert_eq!(mat_5, mat_2);
+        assert_eq!(mat_5, mat_3);
+        assert_eq!(mat_5, mat_4);
     }
 
     /// Checks if scalar multiplication works fine for different scalar types
     #[test]
     #[allow(clippy::erasing_op)]
     fn different_types() {
-        let mat1 = MatQ::from_str("[[1/2],[0],[4]]").unwrap();
-        let mat2 = MatQ::from_str("[[2,5,6],[1,3,1]]").unwrap();
-        let mat3 = MatQ::from_str("[[5/4],[0],[10]]").unwrap();
-        let mat4 = MatQ::from_str("[[-799/8],[0],[-799]]").unwrap();
-        let mat5 = MatQ::from_str("[[285/4, 1425/8, 855/4],[285/8, 855/8, 285/8]]").unwrap();
+        let mat_1 = MatQ::from_str("[[1/2],[0],[4]]").unwrap();
+        let mat_2 = MatQ::from_str("[[2, 5, 6],[1, 3, 1]]").unwrap();
+        let mat_3 = MatQ::from_str("[[5/4],[0],[10]]").unwrap();
+        let mat_4 = MatQ::from_str("[[-799/8],[0],[-799]]").unwrap();
+        let mat_5 = MatQ::from_str("[[285/4, 1425/8, 855/4],[285/8, 855/8, 285/8]]").unwrap();
 
-        assert_eq!(mat3, 2.5f32 * &mat1);
-        assert_eq!(mat4, -199.75f64 * mat1);
-        assert_eq!(mat5, mat2 * 35.625);
+        assert_eq!(mat_3, 2.5f32 * &mat_1);
+        assert_eq!(mat_4, -199.75f64 * mat_1);
+        assert_eq!(mat_5, mat_2 * 35.625);
     }
 
     /// Checks if scalar multiplication works fine for matrices of different dimensions
     #[test]
     fn different_dimensions_correctness() {
-        let mat1 = MatQ::from_str("[[1/2],[0],[4]]").unwrap();
-        let mat2 = MatQ::from_str("[[2,5/8,6],[1,3,1/7]]").unwrap();
-        let mat3 = MatQ::from_str("[[3/4],[0],[6]]").unwrap();
-        let mat4 = MatQ::from_str("[[3,15/16,9],[3/2,9/2,3/14]]").unwrap();
+        let mat_1 = MatQ::from_str("[[1/2],[0],[4]]").unwrap();
+        let mat_2 = MatQ::from_str("[[2, 5/8, 6],[1, 3, 1/7]]").unwrap();
+        let mat_3 = MatQ::from_str("[[3/4],[0],[6]]").unwrap();
+        let mat_4 = MatQ::from_str("[[3, 15/16, 9],[3/2, 9/2, 3/14]]").unwrap();
         let rational = Q::from((3, 2));
 
-        assert_eq!(mat3, &rational * mat1);
-        assert_eq!(mat4, rational * mat2);
+        assert_eq!(mat_3, &rational * mat_1);
+        assert_eq!(mat_4, rational * mat_2);
     }
 
     /// Checks if matrix multiplication works fine for large values
     #[test]
     fn large_entries() {
-        let mat1 = MatQ::from_str(&format!("[[1],[{}],[1/{}]]", i64::MAX, i64::MAX)).unwrap();
-        let mat2 = MatQ::from_str("[[3]]").unwrap();
-        let mat3 = MatQ::from_str(&format!(
+        let mat_1 = MatQ::from_str(&format!("[[1],[{}],[1/{}]]", i64::MAX, i64::MAX)).unwrap();
+        let mat_2 = MatQ::from_str("[[3]]").unwrap();
+        let mat_3 = MatQ::from_str(&format!(
             "[[3/2],[{}/2],[3/{}]]",
             3 * i64::MAX as i128,
             2 * i64::MAX as i128
         ))
         .unwrap();
-        let mat4 = MatQ::from_str(&format!("[[{}/2]]", 3 * i64::MAX as i128)).unwrap();
-        let mat5 = MatQ::from_str(&format!("[[6/{}]]", i64::MAX)).unwrap();
-        let rational1 = Q::from((3, 2));
-        let rational2 = Q::from((i64::MAX, 2));
-        let rational3 = Q::from((2, i64::MAX));
+        let mat_4 = MatQ::from_str(&format!("[[{}/2]]", 3 * i64::MAX as i128)).unwrap();
+        let mat_5 = MatQ::from_str(&format!("[[6/{}]]", i64::MAX)).unwrap();
+        let rational_1 = Q::from((3, 2));
+        let rational_2 = Q::from((i64::MAX, 2));
+        let rational_3 = Q::from((2, i64::MAX));
 
-        assert_eq!(mat3, rational1 * mat1);
-        assert_eq!(mat4, rational2 * &mat2);
-        assert_eq!(mat5, rational3 * mat2);
+        assert_eq!(mat_3, rational_1 * mat_1);
+        assert_eq!(mat_4, rational_2 * &mat_2);
+        assert_eq!(mat_5, rational_3 * mat_2);
     }
 }

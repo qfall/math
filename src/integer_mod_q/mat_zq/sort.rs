@@ -31,8 +31,8 @@ impl MatZq {
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
-    /// let mat = MatZq::from_str("[[3,2,1]] mod 7").unwrap();
-    /// let cmp = MatZq::from_str("[[1,2,3]] mod 7").unwrap();
+    /// let mat = MatZq::from_str("[[3, 2, 1]] mod 7").unwrap();
+    /// let cmp = MatZq::from_str("[[1, 2, 3]] mod 7").unwrap();
     ///
     /// let sorted = mat.sort_by_column(MatZq::norm_eucl_sqrd).unwrap();
     ///
@@ -43,8 +43,8 @@ impl MatZq {
     /// ```
     /// use qfall_math::{integer_mod_q::MatZq, integer::Z, error::MathError, traits::{GetNumRows, GetEntry}};
     /// use std::str::FromStr;
-    /// let mat = MatZq::from_str("[[3,2,1]] mod 7").unwrap();
-    /// let cmp = MatZq::from_str("[[1,2,3]] mod 7").unwrap();
+    /// let mat = MatZq::from_str("[[3, 2, 1]] mod 7").unwrap();
+    /// let cmp = MatZq::from_str("[[1, 2, 3]] mod 7").unwrap();
     ///
     /// fn custom_cond_func(matrix: &MatZq) -> Result<Z, MathError> {
     ///     let mut sum = Z::ZERO;
@@ -171,8 +171,8 @@ mod test_sort_by_length {
     /// Checks whether sorting by column length acc. to eucl. norm works correct for small entries
     #[test]
     fn column_norm_eucl_sqrd_small_entries() {
-        let mat = MatZq::from_str("[[3,0,2,-1],[2,2,2,2]] mod 7").unwrap();
-        let cmp = MatZq::from_str("[[0,-1,2,3],[2,2,2,2]] mod 7").unwrap();
+        let mat = MatZq::from_str("[[3, 0, 2, -1],[2, 2, 2, 2]] mod 7").unwrap();
+        let cmp = MatZq::from_str("[[0, -1, 2, 3],[2, 2, 2, 2]] mod 7").unwrap();
 
         let res = mat.sort_by_column(MatZq::norm_eucl_sqrd).unwrap();
 
@@ -183,14 +183,14 @@ mod test_sort_by_length {
     #[test]
     fn column_norm_eucl_sqrd_large_entries() {
         let mat = MatZq::from_str(&format!(
-            "[[{},{},5],[1,2,5],[0,0,0]] mod {}",
+            "[[{}, {}, 5],[1, 2, 5],[0, 0, 0]] mod {}",
             i64::MIN,
             i64::MAX,
             u64::MAX
         ))
         .unwrap();
         let cmp = MatZq::from_str(&format!(
-            "[[5,{},{}],[5,1,2],[0,0,0]] mod {}",
+            "[[5, {}, {}],[5, 1, 2],[0, 0, 0]] mod {}",
             i64::MAX,
             i64::MIN,
             u64::MAX
@@ -206,14 +206,14 @@ mod test_sort_by_length {
     #[test]
     fn column_norm_infty_large_entries() {
         let mat = MatZq::from_str(&format!(
-            "[[{},{},5],[1,2,5],[0,0,0]] mod {}",
+            "[[{}, {}, 5],[1, 2, 5],[0, 0, 0]] mod {}",
             i64::MIN,
             i64::MAX,
             u64::MAX
         ))
         .unwrap();
         let cmp = MatZq::from_str(&format!(
-            "[[5,{},{}],[5,1,2],[0,0,0]] mod {}",
+            "[[5, {}, {}],[5, 1, 2],[0, 0, 0]] mod {}",
             i64::MAX,
             i64::MIN,
             u64::MAX
@@ -229,8 +229,8 @@ mod test_sort_by_length {
     /// for matrices with a few more entries
     #[test]
     fn many_columns() {
-        let mat = MatZq::from_str("[[3,4,1,7,2,0,9,-8,6,5]] mod 19").unwrap();
-        let cmp = MatZq::from_str("[[0,1,2,3,4,5,6,7,-8,9]] mod 19").unwrap();
+        let mat = MatZq::from_str("[[3, 4, 1, 7, 2, 0, 9, -8, 6, 5]] mod 19").unwrap();
+        let cmp = MatZq::from_str("[[0, 1, 2, 3, 4, 5, 6, 7, -8, 9]] mod 19").unwrap();
 
         let res = mat.sort_by_column(MatZq::norm_eucl_sqrd).unwrap();
 
@@ -240,7 +240,7 @@ mod test_sort_by_length {
     /// Checks whether an error is returned for sorting by columns if the `cond_func` returns an error
     #[test]
     fn column_error_cond_func() {
-        let mat = MatZq::from_str("[[1,2],[3,4]] mod 7").unwrap();
+        let mat = MatZq::from_str("[[1, 2],[3, 4]] mod 7").unwrap();
 
         let res = mat.sort_by_column(failing_func);
 
@@ -250,8 +250,8 @@ mod test_sort_by_length {
     /// Checks whether sorting by row length acc. to eucl. norm works correct for small entries
     #[test]
     fn row_norm_eucl_sqrd_small_entries() {
-        let mat = MatZq::from_str("[[3,0,2,-1],[2,2,2,2]] mod 7").unwrap();
-        let cmp = MatZq::from_str("[[3,0,2,-1],[2,2,2,2]] mod 7").unwrap();
+        let mat = MatZq::from_str("[[3, 0, 2, -1],[2, 2, 2, 2]] mod 7").unwrap();
+        let cmp = MatZq::from_str("[[3, 0, 2, -1],[2, 2, 2, 2]] mod 7").unwrap();
 
         let res = mat.sort_by_row(MatZq::norm_eucl_sqrd).unwrap();
 
@@ -262,14 +262,14 @@ mod test_sort_by_length {
     #[test]
     fn row_norm_eucl_sqrd_large_entries() {
         let mat = MatZq::from_str(&format!(
-            "[[{},0,5],[{},2,5],[0,0,0]] mod {}",
+            "[[{}, 0, 5],[{}, 2, 5],[0, 0, 0]] mod {}",
             i64::MIN,
             i64::MAX,
             u64::MAX
         ))
         .unwrap();
         let cmp = MatZq::from_str(&format!(
-            "[[0,0,0],[{},0,5],[{},2,5]] mod {}",
+            "[[0, 0, 0],[{}, 0, 5],[{}, 2, 5]] mod {}",
             i64::MAX,
             i64::MIN,
             u64::MAX
@@ -285,14 +285,14 @@ mod test_sort_by_length {
     #[test]
     fn row_norm_infty_large_entries() {
         let mat = MatZq::from_str(&format!(
-            "[[{},0,5],[{},2,5],[0,0,0]] mod {}",
+            "[[{}, 0, 5],[{}, 2, 5],[0, 0, 0]] mod {}",
             i64::MIN,
             i64::MAX,
             u64::MAX
         ))
         .unwrap();
         let cmp = MatZq::from_str(&format!(
-            "[[0,0,0],[{},0,5],[{},2,5]] mod {}",
+            "[[0, 0, 0],[{}, 0, 5],[{}, 2, 5]] mod {}",
             i64::MAX,
             i64::MIN,
             u64::MAX
@@ -319,7 +319,7 @@ mod test_sort_by_length {
     /// Checks whether an error is returned for sorting by rows if the `cond_func` returns an error
     #[test]
     fn row_error_cond_func() {
-        let mat = MatZq::from_str("[[1,2],[3,4]] mod 7").unwrap();
+        let mat = MatZq::from_str("[[1, 2],[3, 4]] mod 7").unwrap();
 
         let res = mat.sort_by_row(failing_func);
 

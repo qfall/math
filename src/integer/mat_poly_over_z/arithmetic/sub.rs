@@ -161,18 +161,18 @@ mod test_sub {
         );
     }
 
-    /// Testing subtraction for big numbers
+    /// Testing subtraction for large numbers
     #[test]
     fn sub_large_numbers() {
         let a: MatPolyOverZ = MatPolyOverZ::from_str(&format!(
-            "[[1  {},2  1 {}],[2  -{} 7, 0]]",
+            "[[1  {}, 2  1 {}],[2  -{} 7, 0]]",
             i64::MAX,
             i64::MIN,
             u64::MAX
         ))
         .unwrap();
         let b: MatPolyOverZ = MatPolyOverZ::from_str(&format!(
-            "[[1  {},2  1 {}],[2  {} 7, 0]]",
+            "[[1  {}, 2  1 {}],[2  {} 7, 0]]",
             i64::MAX,
             i64::MAX,
             i64::MIN
@@ -181,7 +181,7 @@ mod test_sub {
         let c: MatPolyOverZ = a - &b;
         assert_eq!(
             c,
-            MatPolyOverZ::from_str(&format!("[[0,2  0 -{}],[1  -{}, 0]]", u64::MAX, i64::MAX))
+            MatPolyOverZ::from_str(&format!("[[0, 2  0 -{}],[1  -{}, 0]]", u64::MAX, i64::MAX))
                 .unwrap()
         );
     }

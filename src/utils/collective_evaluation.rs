@@ -27,7 +27,7 @@ use crate::error::MathError;
 /// - `length_vector_0`: is used to check whether it equals `length_vector_1`
 /// - `length_vector_1`: is evaluated against `length_vector_0`
 ///
-/// Returns an empty `Ok` if `row0 < self_num_rows`, `row1 < other_num_rows`, and
+/// Returns an empty `Ok` if `row_0 < self_num_rows`, `row_1 < other_num_rows`, and
 /// `self_num_cols == other_num_cols`. Otherwise, a [`MathError`] is returned.
 ///
 /// # Examples
@@ -35,17 +35,17 @@ use crate::error::MathError;
 /// use qfall_math::utils::collective_evaluation::evaluate_vec_dimensions_set_row_or_col;
 /// use qfall_math::integer_mod_q::MatZq;
 /// use std::str::FromStr;
-/// let mat1 = MatZq::from_str("[[1,2,3],[4,5,6]]").unwrap();
-/// let mat2 = mat1.clone();
+/// let mat_1 = MatZq::from_str("[[1, 2, 3],[4, 5, 6]]").unwrap();
+/// let mat_2 = mat_1.clone();
 ///
 /// let _ = evaluate_vec_dimensions_set_row_or_col(
 ///     "set_row",
 ///     0,
 ///     1,
-///     mat1.get_num_rows(),
-///     mat2.get_num_rows(),
-///     mat1.get_num_columns(),
-///     mat2.get_num_columns()
+///     mat_1.get_num_rows(),
+///     mat_2.get_num_rows(),
+///     mat_1.get_num_columns(),
+///     mat_2.get_num_columns()
 /// );
 /// ```
 ///

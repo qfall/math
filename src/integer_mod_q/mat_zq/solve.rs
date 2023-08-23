@@ -504,7 +504,7 @@ mod test_solve_gauss {
 
         let x = mat.solve_gaussian_elimination(&y).unwrap();
 
-        assert_eq!(MatZq::new(3, 1, mat.get_mod()), x)
+        assert_eq!(MatZq::new(3, 1, mat.get_mod()), x);
     }
 
     /// Ensure that a solution containing only one vector of the matrix is found.

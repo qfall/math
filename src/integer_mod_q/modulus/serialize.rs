@@ -33,9 +33,9 @@ mod test_serialize {
     #[test]
     fn serialize_output_positive() {
         let z = Modulus::from(17);
-        let cmp_string = "{\"modulus\":\"17\"}";
+        let cmp_str = "{\"modulus\":\"17\"}";
 
-        assert_eq!(cmp_string, serde_json::to_string(&z).unwrap())
+        assert_eq!(cmp_str, serde_json::to_string(&z).unwrap());
     }
 
     /// Tests whether the serialization of a positive large [`Modulus`] works.
@@ -43,9 +43,9 @@ mod test_serialize {
     fn serialize_output_positive_large() {
         let val_str = u64::MAX.to_string();
         let z = Modulus::from_str(&val_str).unwrap();
-        let cmp_string = format!("{{\"modulus\":\"{val_str}\"}}");
+        let cmp_str = format!("{{\"modulus\":\"{val_str}\"}}");
 
-        assert_eq!(cmp_string, serde_json::to_string(&z).unwrap())
+        assert_eq!(cmp_str, serde_json::to_string(&z).unwrap());
     }
 }
 
@@ -58,7 +58,7 @@ mod test_deserialize {
     #[test]
     fn deserialize_positive() {
         let z_string = "{\"modulus\":\"17\"}";
-        assert_eq!(Modulus::from(17), serde_json::from_str(z_string).unwrap())
+        assert_eq!(Modulus::from(17), serde_json::from_str(z_string).unwrap());
     }
 
     /// Tests whether the deserialization of a negative [`Modulus`] fails.
@@ -67,7 +67,7 @@ mod test_deserialize {
         let z_string = "{\"modulus\":\"-17\"}";
 
         let a: Result<Modulus, serde_json::Error> = serde_json::from_str(z_string);
-        assert!(a.is_err())
+        assert!(a.is_err());
     }
 
     /// Tests whether the deserialization of a positive [`Modulus`] works.
@@ -89,7 +89,7 @@ mod test_deserialize {
         let z_string = format!("{{\"modulus\":\"{val_str}\"}}");
 
         let a: Result<Modulus, serde_json::Error> = serde_json::from_str(&z_string);
-        assert!(a.is_err())
+        assert!(a.is_err());
     }
 
     /// Tests whether no fields 'modulus' provided yield an error

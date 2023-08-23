@@ -44,7 +44,7 @@ impl PolyOverZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    /// if the given `modulus` isn't bigger than `1`, i.e. the interval size is at most `1`.
+    /// if the given `modulus` isn't larger than `1`, i.e. the interval size is at most `1`.
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
     /// the `max_degree` is negative or it does not fit into an [`i64`].
     ///

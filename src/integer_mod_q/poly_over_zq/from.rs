@@ -50,11 +50,12 @@ impl From<&Modulus> for PolyOverZq {
     }
 }
 
-impl From<(&PolyOverZ, &Modulus)> for PolyOverZq {
+impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for PolyOverZq {
     /// Create a [`PolyOverZq`] from a [`PolyOverZ`] and [`Modulus`].
     ///
     /// Parameters:
-    /// - `poly_modulus_tuple` is a tuple `(polynomial, modulus)`
+    /// - `poly`: The coefficients of the polynomial.
+    /// - `modulus`: The modulus by which each entry is reduced.
     ///
     /// # Examples:
     /// ```
@@ -70,12 +71,12 @@ impl From<(&PolyOverZ, &Modulus)> for PolyOverZq {
     /// # let cmp_poly = PolyOverZq::from_str("4  0 1 2 3 mod 100").unwrap();
     /// # assert_eq!(cmp_poly, mod_poly);
     /// ```
-    fn from(poly_modulus_tuple: (&PolyOverZ, &Modulus)) -> Self {
-        let mut res = PolyOverZq::from(poly_modulus_tuple.1);
+    fn from((poly, modulus): (&PolyOverZ, Mod)) -> Self {
+        let mut res = PolyOverZq::from(&modulus.into());
         unsafe {
             fmpz_mod_poly_set_fmpz_poly(
                 &mut res.poly,
-                &poly_modulus_tuple.0.poly,
+                &poly.poly,
                 res.modulus.get_fmpz_mod_ctx_struct(),
             );
         }
@@ -185,8 +186,8 @@ impl<IntegerModQ: Into<Zq>> From<IntegerModQ> for PolyOverZq {
     /// ```
     /// use qfall_math::{integer_mod_q::*, traits::*};
     ///
-    /// let poly = PolyOverZq::from((1,10));
-    /// let poly_2 = PolyOverZq::from(Zq::from((1,10)));
+    /// let poly = PolyOverZq::from((1, 10));
+    /// let poly_2 = PolyOverZq::from(Zq::from((1, 10)));
     ///
     /// let value_cmp: Zq = poly.get_coeff(0).unwrap();
     /// assert_eq!(value_cmp, Zq::from((1, 10)));
@@ -325,7 +326,7 @@ mod test_from_str {
     /// error
     #[test]
     fn modulus_zero_throws_error() {
-        assert!(PolyOverZq::from_str("4  0 1 -2 3 mod 0").is_err())
+        assert!(PolyOverZq::from_str("4  0 1 -2 3 mod 0").is_err());
     }
 
     /// tests whether a falsely formatted string (several modulus) returns

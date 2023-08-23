@@ -29,11 +29,11 @@ impl Tensor for MatPolyOverZ {
     /// use qfall_math::traits::Tensor;
     /// use std::str::FromStr;
     ///
-    /// let mat_a = MatPolyOverZ::from_str("[[1  1, 2  1 1]]").unwrap();
-    /// let mat_b = MatPolyOverZ::from_str("[[1  1, 1  2]]").unwrap();
+    /// let mat_1 = MatPolyOverZ::from_str("[[1  1, 2  1 1]]").unwrap();
+    /// let mat_2 = MatPolyOverZ::from_str("[[1  1, 1  2]]").unwrap();
     ///
-    /// let mat_ab = mat_a.tensor_product(&mat_b);
-    /// let mat_ba = mat_b.tensor_product(&mat_a);
+    /// let mat_ab = mat_1.tensor_product(&mat_2);
+    /// let mat_ba = mat_2.tensor_product(&mat_1);
     ///
     /// let res_ab = "[[1  1, 1  2, 2  1 1, 2  2 2]]";
     /// let res_ba = "[[1  1, 2  1 1, 1  2, 2  2 2]]";

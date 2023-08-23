@@ -60,13 +60,13 @@ pub(crate) fn sample_z(n: &Z, center: &Q, s: &Q) -> Result<Z, MathError> {
     if n <= &Z::ONE {
         return Err(MathError::InvalidIntegerInput(format!(
             "The value {n} was provided for parameter n of the function sample_z.
-            This function expects this input to be bigger than 1."
+            This function expects this input to be larger than 1."
         )));
     }
     if s <= &Q::ZERO {
         return Err(MathError::InvalidIntegerInput(format!(
             "The value {s} was provided for parameter s of the function sample_z.
-            This function expects this input to be bigger than 0."
+            This function expects this input to be larger than 0."
         )));
     }
 
@@ -239,7 +239,7 @@ pub(crate) fn sample_d_precomputed_gso(
     if s < &Q::ZERO {
         return Err(MathError::InvalidIntegerInput(format!(
             "The value {s} was provided for parameter s of the function sample_z.
-            This function expects this input to be bigger than 0."
+            This function expects this input to be larger than 0."
         )));
     }
 
@@ -249,15 +249,15 @@ pub(crate) fn sample_d_precomputed_gso(
         // basisvector_i = b_tilde[i]
         let basisvector_orth_i = basis_gso.get_column(i).unwrap();
 
-        // define the center for sample_z as c2 = <c, b_tilde[i]> / <b_tilde[i], b_tilde[i]>;
-        let c2 = center.dot_product(&basisvector_orth_i).unwrap()
+        // define the center for sample_z as c_2 = <c, b_tilde[i]> / <b_tilde[i], b_tilde[i]>;
+        let c_2 = center.dot_product(&basisvector_orth_i).unwrap()
             / basisvector_orth_i.dot_product(&basisvector_orth_i).unwrap();
 
         // Defines the gaussian parameter to be normalized along the basis vector: s2 = s / ||b_tilde[i]||
-        let s2 = s / (basisvector_orth_i.norm_eucl_sqrd().unwrap().sqrt());
+        let s_2 = s / (basisvector_orth_i.norm_eucl_sqrd().unwrap().sqrt());
 
         // sample z ~ D_{Z, s2, c2}
-        let z = sample_z(n, &c2, &s2)?;
+        let z = sample_z(n, &c_2, &s_2)?;
 
         // update the center c = c - z * b[i]
         let basisvector_i = basis.get_column(i).unwrap();
@@ -455,7 +455,7 @@ mod test_sample_d {
     /// Ensures that `sample_d` works properly for a different basis.
     #[test]
     fn non_identity_basis() {
-        let basis = MatZ::from_str("[[2,1],[1,2]]").unwrap();
+        let basis = MatZ::from_str("[[2, 1],[1, 2]]").unwrap();
         let n = Z::from(1024);
         let center = MatQ::new(2, 1);
         let gaussian_parameter = Q::ONE;
@@ -473,7 +473,7 @@ mod test_sample_d {
     /// should become a zero vector at the end of the matrix.
     #[test]
     fn point_of_lattice() {
-        let basis = MatZ::from_str("[[7,0],[7,3]]").unwrap();
+        let basis = MatZ::from_str("[[7, 0],[7, 3]]").unwrap();
         let n = Z::from(1024);
         let center = MatQ::new(2, 1);
         let gaussian_parameter = Q::ONE;

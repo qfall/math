@@ -193,11 +193,11 @@ impl<IntegerNumerator: AsInteger, IntegerDenominator: AsInteger>
 {
     /// Create a [`Q`] from two integers.
     /// The integer types can be, for example, [`Z`],
-    /// [`Zq`](crate::integer_mod_q), [`u32`], [`i64`] or references to these types
+    /// [`Zq`](crate::integer_mod_q), [`u32`],[`i64`] or references to these types
     ///
     /// Parameters:
-    /// - `num_den_tuple` is a tuple of integers `(numerator, denominator)`
-    ///   The first and second element of the tuple may have different integer types.
+    /// - `num`: The value of the numerator.
+    /// - `den`: The value of the denominator.
     ///
     /// Returns a [`Q`] or a [`MathError`]
     ///
@@ -214,10 +214,10 @@ impl<IntegerNumerator: AsInteger, IntegerDenominator: AsInteger>
     ///
     /// # Panics ...
     /// - if the denominator is zero.
-    fn from(num_den_tuple: (IntegerNumerator, IntegerDenominator)) -> Self {
+    fn from((num, den): (IntegerNumerator, IntegerDenominator)) -> Self {
         unsafe {
-            let num = num_den_tuple.0.into_fmpz();
-            let den = num_den_tuple.1.into_fmpz();
+            let num = num.into_fmpz();
+            let den = den.into_fmpz();
 
             assert_ne!(den.0, 0, "The denominator can not be zero");
 
@@ -283,7 +283,7 @@ impl From<&Q> for f64 {
     /// ```
     /// use qfall_math::rational::Q;
     ///
-    /// let one_half = Q::from((1,2));
+    /// let one_half = Q::from((1, 2));
     /// let float = f64::from(&one_half);
     ///
     /// assert_eq!(0.5, float);
@@ -309,65 +309,65 @@ mod tests_from_str {
     /// Ensure that initialization with large numerators and denominators works.
     #[test]
     fn max_int_positive() {
-        let mut s1 = (i64::MAX).to_string();
-        s1.push('/');
-        s1.push_str(&(i64::MAX).to_string());
+        let mut s_1 = (i64::MAX).to_string();
+        s_1.push('/');
+        s_1.push_str(&(i64::MAX).to_string());
 
-        let mut s2 = ("1/").to_string();
-        s2.push_str(&(i64::MAX).to_string());
+        let mut s_2 = ("1/").to_string();
+        s_2.push_str(&(i64::MAX).to_string());
 
         assert!(Q::from_str(&(i64::MAX).to_string()).is_ok());
-        assert!(Q::from_str(&s1).is_ok());
-        assert!(Q::from_str(&s2).is_ok());
+        assert!(Q::from_str(&s_1).is_ok());
+        assert!(Q::from_str(&s_2).is_ok());
     }
 
     /// Ensure that initialization with large numerators and denominators
     /// (larger than i64) works.
     #[test]
-    fn big_positive() {
-        let mut s1 = "1".repeat(65);
-        s1.push('/');
-        s1.push_str(&"1".repeat(65));
+    fn large_positive() {
+        let mut s_1 = "1".repeat(65);
+        s_1.push('/');
+        s_1.push_str(&"1".repeat(65));
 
-        let mut s2 = ("1/").to_string();
-        s2.push_str(&"1".repeat(65));
+        let mut s_2 = ("1/").to_string();
+        s_2.push_str(&"1".repeat(65));
 
         assert!(Q::from_str(&"1".repeat(65)).is_ok());
-        assert!(Q::from_str(&s1).is_ok());
-        assert!(Q::from_str(&s2).is_ok());
+        assert!(Q::from_str(&s_1).is_ok());
+        assert!(Q::from_str(&s_2).is_ok());
     }
 
     /// Ensure that initialization with large negative numerators and
     /// denominators works.
     #[test]
     fn max_int_negative() {
-        let mut s1 = (i64::MIN).to_string();
-        s1.push('/');
-        s1.push_str(&(i64::MIN).to_string());
+        let mut s_1 = (i64::MIN).to_string();
+        s_1.push('/');
+        s_1.push_str(&(i64::MIN).to_string());
 
-        let mut s2 = ("1/").to_string();
-        s2.push_str(&(i64::MIN).to_string());
+        let mut s_2 = ("1/").to_string();
+        s_2.push_str(&(i64::MIN).to_string());
 
         assert!(Q::from_str(&(i64::MIN).to_string()).is_ok());
-        assert!(Q::from_str(&s1).is_ok());
-        assert!(Q::from_str(&s2).is_ok());
+        assert!(Q::from_str(&s_1).is_ok());
+        assert!(Q::from_str(&s_2).is_ok());
     }
 
     /// Ensure that initialization with large negative numerators and
     /// denominators (larger than [`i64`]) works.
     #[test]
-    fn big_negative() {
-        let mut s1 = "-".to_string();
-        s1.push_str(&"1".repeat(65));
-        s1.push('/');
-        s1.push_str(&"1".repeat(65));
+    fn large_negative() {
+        let mut s_1 = "-".to_string();
+        s_1.push_str(&"1".repeat(65));
+        s_1.push('/');
+        s_1.push_str(&"1".repeat(65));
 
-        let mut s2 = ("-1/").to_string();
-        s2.push_str(&"1".repeat(65));
+        let mut s_2 = ("-1/").to_string();
+        s_2.push_str(&"1".repeat(65));
 
         assert!(Q::from_str(&"1".repeat(65)).is_ok());
-        assert!(Q::from_str(&s1).is_ok());
-        assert!(Q::from_str(&s2).is_ok());
+        assert!(Q::from_str(&s_1).is_ok());
+        assert!(Q::from_str(&s_2).is_ok());
     }
 
     /// Ensure that an initialization with two minus works.
@@ -790,7 +790,7 @@ mod test_from_float {
         let value = Q::from(numerator as f64 / denominator as f64);
 
         let cmp = Q::from((numerator, denominator));
-        assert_eq!(cmp, value)
+        assert_eq!(cmp, value);
     }
 
     /// Enure that the from works correctly for positive values
@@ -802,7 +802,7 @@ mod test_from_float {
         let value = Q::from(numerator as f64 / denominator as f64);
 
         let cmp = Q::from((numerator, denominator));
-        assert_eq!(cmp, value)
+        assert_eq!(cmp, value);
     }
 
     /// Ensure that the [`From`] trait is available for [`f64`] constants

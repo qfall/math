@@ -50,7 +50,7 @@ impl MatZq {
     /// use std::str::FromStr;
     ///
     /// let value = MatZq::from_str("[[4, 0],[0, 1]] mod 17").unwrap();
-    /// assert!(value.is_square())
+    /// assert!(value.is_square());
     /// ```
     pub fn is_square(&self) -> bool {
         1 == unsafe { fmpz_mod_mat_is_square(&self.matrix) }
@@ -66,7 +66,7 @@ impl MatZq {
     /// use std::str::FromStr;
     ///
     /// let value = MatZq::from_str("[[0, 0],[0, 0]] mod 17").unwrap();
-    /// assert!(value.is_zero())
+    /// assert!(value.is_zero());
     /// ```
     pub fn is_zero(&self) -> bool {
         1 == unsafe { fmpz_mod_mat_is_zero(&self.matrix) }
@@ -81,11 +81,11 @@ mod test_is_identity {
     /// Ensure that is_identity returns `true` for identity matrices.
     #[test]
     fn identity_detection() {
-        let ident1 = MatZq::from_str("[[1, 0],[0, 1]] mod 7").unwrap();
-        let ident2 = MatZq::from_str("[[1, 0],[0, 1],[0, 0]] mod 7").unwrap();
+        let ident_1 = MatZq::from_str("[[1, 0],[0, 1]] mod 7").unwrap();
+        let ident_2 = MatZq::from_str("[[1, 0],[0, 1],[0, 0]] mod 7").unwrap();
 
-        assert!(ident1.is_identity());
-        assert!(ident2.is_identity());
+        assert!(ident_1.is_identity());
+        assert!(ident_2.is_identity());
     }
 
     /// Ensure that is_identity returns `false` for non-identity matrices.
@@ -120,11 +120,11 @@ mod test_is_zero {
     /// Ensure that is_zero returns `true` for all zero matrices.
     #[test]
     fn zero_detection() {
-        let zero1 = MatZq::from_str("[[0, 0],[0, 0]] mod 7").unwrap();
-        let zero2 = MatZq::from_str("[[0, 0],[0, 0],[0, 0],[0, 0]] mod 7").unwrap();
+        let zero_1 = MatZq::from_str("[[0, 0],[0, 0]] mod 7").unwrap();
+        let zero_2 = MatZq::from_str("[[0, 0],[0, 0],[0, 0],[0, 0]] mod 7").unwrap();
 
-        assert!(zero1.is_zero());
-        assert!(zero2.is_zero());
+        assert!(zero_1.is_zero());
+        assert!(zero_2.is_zero());
     }
 
     /// Ensure that is_zero returns `false` for non-zero matrices.
@@ -151,11 +151,11 @@ mod test_is_square {
     /// Ensure that is_square returns `true` for square matrices.
     #[test]
     fn square_detection() {
-        let square1 = MatZq::from_str("[[0, 4],[0, 0]] mod 10").unwrap();
-        let square2 = MatZq::from_str("[[0, 6, 4],[0, 0, 1],[4, 6, 1]] mod 7").unwrap();
+        let square_1 = MatZq::from_str("[[0, 4],[0, 0]] mod 10").unwrap();
+        let square_2 = MatZq::from_str("[[0, 6, 4],[0, 0, 1],[4, 6, 1]] mod 7").unwrap();
 
-        assert!(square1.is_square());
-        assert!(square2.is_square());
+        assert!(square_1.is_square());
+        assert!(square_2.is_square());
     }
 
     /// Ensure that is_square returns `false` for non-square matrices.

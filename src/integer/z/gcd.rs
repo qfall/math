@@ -234,7 +234,7 @@ mod test_xgcd {
         let xgcd_neg_2 = neg_2.xgcd(&neg_1);
         let xgcd_neg_eq = neg_2.xgcd(&neg_2);
 
-        // check that `gcd(a,b) == a * x + b * y`
+        // check that `gcd(a, b) == a * x + b * y`
         assert_eq!(
             xgcd_pos_1.0,
             &pos_1 * &xgcd_pos_1.1 + &pos_2 * &xgcd_pos_1.2

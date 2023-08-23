@@ -79,9 +79,9 @@ mod test_clone {
     #[allow(clippy::redundant_clone)]
     fn keep_alive() {
         let a: MatQ;
-        let str1 = "[[1/2, 2/3, 3/4],[3/1, 4/2, 5/4]]";
+        let str_1 = "[[1/2, 2/3, 3/4],[3/1, 4/2, 5/4]]";
         {
-            let b = MatQ::from_str(str1).unwrap();
+            let b = MatQ::from_str(str_1).unwrap();
 
             a = b.clone();
         }
@@ -102,7 +102,7 @@ mod test_clone {
     fn entries_stored_separately() {
         let a: MatQ;
         let string = format!(
-            "[[{}/1,{}/2],[{}/3,{}/{}]]",
+            "[[{}/1, {}/2],[{}/3, {}/{}]]",
             u64::MAX,
             i64::MAX,
             i64::MIN,
@@ -152,7 +152,7 @@ mod test_drop {
     /// Creates a matrix with two large entries, drops it and outputs
     /// the points these two entries were stored in
     fn create_and_drop_matq() -> (i64, i64, i64, i64) {
-        let string = format!("[[{}/{},{}/{}]]", u64::MAX, i64::MIN, i64::MAX, 1);
+        let string = format!("[[{}/{}, {}/{}]]", u64::MAX, i64::MIN, i64::MAX, 1);
         let a = MatQ::from_str(&string).unwrap();
 
         let storage_num_0 = a.get_entry(0, 0).unwrap().value.num.0;

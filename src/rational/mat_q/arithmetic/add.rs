@@ -137,7 +137,7 @@ mod test_add {
         assert_eq!(c, MatQ::from_str("[[1, 4, 3],[6/7, 0, 10/7]]").unwrap());
     }
 
-    /// Testing addition for big numbers
+    /// Testing addition for large numbers
     #[test]
     fn add_large_numbers() {
         let a: MatQ =

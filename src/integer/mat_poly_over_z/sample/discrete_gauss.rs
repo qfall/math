@@ -107,7 +107,7 @@ mod test_sample_d {
             let sample_vec = sample.into_coefficient_embedding(3);
             let orthogonal = MatZ::from_str("[[0],[1],[1]]").unwrap();
 
-            assert_eq!(Z::ZERO, sample_vec.dot_product(&orthogonal).unwrap())
+            assert_eq!(Z::ZERO, sample_vec.dot_product(&orthogonal).unwrap());
         }
     }
 
@@ -121,12 +121,12 @@ mod test_sample_d {
             PolyOverQ::default(),
         ];
 
-        let orthogonal = MatZ::from_str("[[0, 1, 1, 0, 1, 1, 0 ,0, 0]]").unwrap();
+        let orthogonal = MatZ::from_str("[[0, 1, 1, 0, 1, 1, 0 , 0, 0]]").unwrap();
         for _ in 0..10 {
             let sample = MatPolyOverZ::sample_d(&base, 3, 100, &center, 10.5_f64).unwrap();
             let sample_embedded = sample.into_coefficient_embedding_from_matrix(3);
 
-            assert_eq!(MatZ::new(1, 1), &orthogonal * &sample_embedded)
+            assert_eq!(MatZ::new(1, 1), &orthogonal * &sample_embedded);
         }
     }
 

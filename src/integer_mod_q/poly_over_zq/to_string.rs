@@ -61,39 +61,39 @@ mod test_to_string {
     /// same string, when it is converted back to a string
     #[test]
     fn working_keeps_same_string() {
-        let cmp_string = "3  1 2 2 mod 5";
-        let cmp = PolyOverZq::from_str(cmp_string).unwrap();
+        let cmp_str = "3  1 2 2 mod 5";
+        let cmp = PolyOverZq::from_str(cmp_str).unwrap();
 
-        assert_eq!(cmp_string, cmp.to_string())
+        assert_eq!(cmp_str, cmp.to_string());
     }
 
     /// Tests whether a polynomial that is created using a string, returns a
     /// string that can be used to create a polynomial
     #[test]
     fn working_use_result_of_to_string_as_input() {
-        let cmp_string = "3  1 2 2 mod 5";
-        let cmp = PolyOverZq::from_str(cmp_string).unwrap();
+        let cmp_str = "3  1 2 2 mod 5";
+        let cmp = PolyOverZq::from_str(cmp_str).unwrap();
 
-        let cmp_string2 = cmp.to_string();
+        let cmp_str_2 = cmp.to_string();
 
-        assert!(PolyOverZq::from_str(&cmp_string2).is_ok())
+        assert!(PolyOverZq::from_str(&cmp_str_2).is_ok());
     }
 
     /// Test applied modulus if initialized with negative values
     #[test]
     fn initialized_neg() {
-        let cmp_string = "3  -1 -2 -3 mod 5";
-        let cmp = PolyOverZq::from_str(cmp_string).unwrap();
+        let cmp_str = "3  -1 -2 -3 mod 5";
+        let cmp = PolyOverZq::from_str(cmp_str).unwrap();
 
-        assert_eq!("3  4 3 2 mod 5", cmp.to_string())
+        assert_eq!("3  4 3 2 mod 5", cmp.to_string());
     }
 
     /// Tests that large entries and large moduli work with to_string()
     #[test]
     fn large_entries_modulus() {
-        let cmp_string = format!("3  1 2 {} mod 1{}", u64::MAX, u64::MAX);
-        let cmp = PolyOverZq::from_str(&cmp_string).unwrap();
+        let cmp_str = format!("3  1 2 {} mod 1{}", u64::MAX, u64::MAX);
+        let cmp = PolyOverZq::from_str(&cmp_str).unwrap();
 
-        assert_eq!(cmp_string, cmp.to_string())
+        assert_eq!(cmp_str, cmp.to_string());
     }
 }

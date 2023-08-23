@@ -103,11 +103,11 @@ mod test_clone {
     /// additionally check if values are stored at different places in memory
     #[test]
     fn clone_equals_large() {
-        let big = "1".repeat(65);
+        let large = "1".repeat(65);
         let signs = ["", "-"];
 
         for sign in signs {
-            let val = Q::from_str(&format!("{sign}{big}/2")).unwrap();
+            let val = Q::from_str(&format!("{sign}{large}/2")).unwrap();
             let val_clone = val.clone();
 
             assert_eq!(

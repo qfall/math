@@ -24,10 +24,10 @@ impl PartialEq for MatPolyOverZ {
     /// ```
     /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
-    /// let mat_a = "[[0, 1  17, 2  24 42],[2  24 42, 2  24 42, 2  24 42]]";
-    /// let a: MatPolyOverZ = MatPolyOverZ::from_str(mat_a).unwrap();
-    /// let mat_b = "[[1  17, 1  17, 2  24 42],[2  24 42, 2  24 42, 2  24 42]]";
-    /// let b: MatPolyOverZ = MatPolyOverZ::from_str(mat_b).unwrap();
+    /// let mat_1 = "[[0, 1  17, 2  24 42],[2  24 42, 2  24 42, 2  24 42]]";
+    /// let a: MatPolyOverZ = MatPolyOverZ::from_str(mat_1).unwrap();
+    /// let mat_2 = "[[1  17, 1  17, 2  24 42],[2  24 42, 2  24 42, 2  24 42]]";
+    /// let b: MatPolyOverZ = MatPolyOverZ::from_str(mat_2).unwrap();
     ///
     /// // These are all equivalent and return false.
     /// let compared: bool = (a == b);
@@ -65,11 +65,11 @@ mod test_partial_eq {
     #[test]
     #[allow(clippy::op_ref)]
     fn equal_call_methods() {
-        let mat_a = "[[2  24 42],[2  24 42]]";
-        let mat_b = "[[2  24 42],[2  24 42]]";
+        let mat_1 = "[[2  24 42],[2  24 42]]";
+        let mat_2 = "[[2  24 42],[2  24 42]]";
 
-        let one_1 = MatPolyOverZ::from_str(mat_a).unwrap();
-        let one_2 = MatPolyOverZ::from_str(mat_b).unwrap();
+        let one_1 = MatPolyOverZ::from_str(mat_1).unwrap();
+        let one_2 = MatPolyOverZ::from_str(mat_2).unwrap();
 
         assert!(one_1 == one_2);
         assert!(&one_1 == &one_2);
@@ -83,11 +83,11 @@ mod test_partial_eq {
     #[test]
     #[allow(clippy::op_ref)]
     fn not_equal_call_methods() {
-        let mat_a = "[[2  24 42],[2  24 42]]";
-        let mat_b = "[[2  24 42],[3  24 42 17]]";
+        let mat_1 = "[[2  24 42],[2  24 42]]";
+        let mat_2 = "[[2  24 42],[3  24 42 17]]";
 
-        let one = MatPolyOverZ::from_str(mat_a).unwrap();
-        let two = MatPolyOverZ::from_str(mat_b).unwrap();
+        let one = MatPolyOverZ::from_str(mat_1).unwrap();
+        let two = MatPolyOverZ::from_str(mat_2).unwrap();
 
         assert!(one != two);
         assert!(&one != &two);

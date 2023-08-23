@@ -113,24 +113,24 @@ mod test_to_string {
 
     /// Tests whether a large matrix works in a roundtrip
     #[test]
-    fn working_big_dimensions() {
-        let cmp1 = MatPolyOverZ::from_str(&format!(
+    fn working_large_dimensions() {
+        let cmp_1 = MatPolyOverZ::from_str(&format!(
             "[{}[3  17 24 42, 1  -17, 1  42]]",
             "[0, 1  42, 2  42 24],".repeat(99)
         ))
         .unwrap();
-        let cmp2 = MatPolyOverZ::from_str(&format!("[[{}1  42]]", "1  42, ".repeat(99))).unwrap();
+        let cmp_2 = MatPolyOverZ::from_str(&format!("[[{}1  42]]", "1  42, ".repeat(99))).unwrap();
 
         assert_eq!(
             format!(
                 "[{}[3  17 24 42, 1  -17, 1  42]]",
                 "[0, 1  42, 2  42 24],".repeat(99)
             ),
-            cmp1.to_string()
+            cmp_1.to_string()
         );
         assert_eq!(
             format!("[[{}1  42]]", "1  42, ".repeat(99)),
-            cmp2.to_string()
+            cmp_2.to_string()
         );
     }
 
@@ -141,8 +141,8 @@ mod test_to_string {
         let cmp =
             MatPolyOverZ::from_str("[[0, 1  -42, 2  42 24],[3  17 24 42, 1  -17, 1  42]]").unwrap();
 
-        let cmp_string2 = cmp.to_string();
+        let cmp_str_2 = cmp.to_string();
 
-        assert!(MatPolyOverZ::from_str(&cmp_string2).is_ok())
+        assert!(MatPolyOverZ::from_str(&cmp_str_2).is_ok());
     }
 }

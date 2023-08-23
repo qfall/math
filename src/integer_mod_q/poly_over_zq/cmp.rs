@@ -227,7 +227,7 @@ mod test_partial_eq {
         assert!(poly_1 != poly_2);
         assert!(&poly_1 != &poly_2);
         assert!(poly_1.ne(&poly_2));
-        assert!(PolyOverZq::ne(&poly_1, &poly_2))
+        assert!(PolyOverZq::ne(&poly_1, &poly_2));
     }
 
     /// Ensure equal for polynomials of a high degree

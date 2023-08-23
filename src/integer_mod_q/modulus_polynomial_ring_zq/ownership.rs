@@ -98,7 +98,7 @@ mod test_clone {
             "3  {} 0 -{} mod {}",
             u64::MAX,
             u64::MAX,
-            u64::MAX - 58 // closest prime number smaller than u64, but bigger than 2^62
+            u64::MAX - 58 // closest prime number smaller than u64, but larger than 2^62
         ))
         .unwrap();
 

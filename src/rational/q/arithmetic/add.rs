@@ -197,7 +197,7 @@ mod test_add_between_q_and_z {
         assert_eq!(c, Q::from((33, 7)));
     }
 
-    /// Testing addition for big numbers
+    /// Testing addition for large numbers
     #[test]
     fn add_large_numbers() {
         let a: Q = Q::from((u64::MAX, 2));

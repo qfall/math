@@ -133,16 +133,16 @@ mod test_set_coeff_z {
 
     /// Ensure that large coefficients work.
     #[test]
-    fn set_coeff_big() {
+    fn set_coeff_large() {
         let mut poly = PolyOverZq::from_str("2  1 1 mod 11").unwrap();
 
-        assert!(poly.set_coeff(2, i32::MAX,).is_ok());
+        assert!(poly.set_coeff(2, i32::MAX).is_ok());
         assert!(poly.set_coeff(2, i64::MAX).is_ok());
     }
 
     /// Ensure that the max of [`u8`] and [`u16`] works as an index.
     #[test]
-    fn set_index_big() {
+    fn set_index_large() {
         let mut poly = PolyOverZq::from_str("2  1 1 mod 11").unwrap();
 
         assert!(poly.set_coeff(u8::MAX, 2).is_ok());

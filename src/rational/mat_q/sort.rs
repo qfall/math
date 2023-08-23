@@ -31,8 +31,8 @@ impl MatQ {
     /// ```
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
-    /// let mat = MatQ::from_str("[[3,2,1]]").unwrap();
-    /// let cmp = MatQ::from_str("[[1,2,3]]").unwrap();
+    /// let mat = MatQ::from_str("[[3, 2, 1]]").unwrap();
+    /// let cmp = MatQ::from_str("[[1, 2, 3]]").unwrap();
     ///
     /// let sorted = mat.sort_by_column(MatQ::norm_eucl_sqrd).unwrap();
     ///
@@ -43,8 +43,8 @@ impl MatQ {
     /// ```
     /// use qfall_math::{rational::{MatQ, Q}, error::MathError, traits::{GetNumRows, GetEntry}};
     /// use std::str::FromStr;
-    /// let mat = MatQ::from_str("[[3,2,1]]").unwrap();
-    /// let cmp = MatQ::from_str("[[1,2,3]]").unwrap();
+    /// let mat = MatQ::from_str("[[3, 2, 1]]").unwrap();
+    /// let cmp = MatQ::from_str("[[1, 2, 3]]").unwrap();
     ///
     /// fn custom_cond_func(matrix: &MatQ) -> Result<Q, MathError> {
     ///     let mut sum = Q::ZERO;
@@ -169,8 +169,8 @@ mod test_sort_by_length {
     /// Checks whether sorting by column length acc. to eucl. norm works correct for small entries
     #[test]
     fn column_norm_eucl_sqrd_small_entries() {
-        let mat = MatQ::from_str("[[3,0,2,-1],[2,2,2,2]]").unwrap();
-        let cmp = MatQ::from_str("[[0,-1,2,3],[2,2,2,2]]").unwrap();
+        let mat = MatQ::from_str("[[3, 0, 2, -1],[2, 2, 2, 2]]").unwrap();
+        let cmp = MatQ::from_str("[[0, -1, 2, 3],[2, 2, 2, 2]]").unwrap();
 
         let res = mat.sort_by_column(MatQ::norm_eucl_sqrd).unwrap();
 
@@ -180,10 +180,18 @@ mod test_sort_by_length {
     /// Checks whether sorting by column length acc. to eucl. norm works correct for large entries
     #[test]
     fn column_norm_eucl_sqrd_large_entries() {
-        let mat =
-            MatQ::from_str(&format!("[[{},{},5],[1,2,5],[0,0,0]]", i64::MIN, i64::MAX)).unwrap();
-        let cmp =
-            MatQ::from_str(&format!("[[5,{},{}],[5,2,1],[0,0,0]]", i64::MAX, i64::MIN)).unwrap();
+        let mat = MatQ::from_str(&format!(
+            "[[{}, {}, 5],[1, 2, 5],[0, 0, 0]]",
+            i64::MIN,
+            i64::MAX
+        ))
+        .unwrap();
+        let cmp = MatQ::from_str(&format!(
+            "[[5, {}, {}],[5, 2, 1],[0, 0, 0]]",
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
 
         let res = mat.sort_by_column(MatQ::norm_eucl_sqrd).unwrap();
 
@@ -193,10 +201,18 @@ mod test_sort_by_length {
     /// Checks whether sorting by column length acc. to infty norm works correct for large entries
     #[test]
     fn column_norm_infty_large_entries() {
-        let mat =
-            MatQ::from_str(&format!("[[{},{},5],[1,2,5],[0,0,0]]", i64::MIN, i64::MAX)).unwrap();
-        let cmp =
-            MatQ::from_str(&format!("[[5,{},{}],[5,2,1],[0,0,0]]", i64::MAX, i64::MIN)).unwrap();
+        let mat = MatQ::from_str(&format!(
+            "[[{}, {}, 5],[1, 2, 5],[0, 0, 0]]",
+            i64::MIN,
+            i64::MAX
+        ))
+        .unwrap();
+        let cmp = MatQ::from_str(&format!(
+            "[[5, {}, {}],[5, 2, 1],[0, 0, 0]]",
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
 
         let res = mat.sort_by_column(MatQ::norm_infty).unwrap();
 
@@ -207,8 +223,8 @@ mod test_sort_by_length {
     /// for matrices with a few more entries
     #[test]
     fn many_columns() {
-        let mat = MatQ::from_str("[[3,4,1,7,2,0,9,-8,6,5]]").unwrap();
-        let cmp = MatQ::from_str("[[0,1,2,3,4,5,6,7,-8,9]]").unwrap();
+        let mat = MatQ::from_str("[[3, 4, 1, 7, 2, 0, 9, -8, 6, 5]]").unwrap();
+        let cmp = MatQ::from_str("[[0, 1, 2, 3, 4, 5, 6, 7, -8, 9]]").unwrap();
 
         let res = mat.sort_by_column(MatQ::norm_eucl_sqrd).unwrap();
 
@@ -218,7 +234,7 @@ mod test_sort_by_length {
     /// Checks whether an error is returned for sorting by columns if the `cond_func` returns an error
     #[test]
     fn column_error_cond_func() {
-        let mat = MatQ::from_str("[[1,2],[3,4]]").unwrap();
+        let mat = MatQ::from_str("[[1, 2],[3, 4]]").unwrap();
 
         let res = mat.sort_by_column(failing_func);
 
@@ -228,8 +244,8 @@ mod test_sort_by_length {
     /// Checks whether sorting by row length acc. to eucl. norm works correct for small entries
     #[test]
     fn row_norm_eucl_sqrd_small_entries() {
-        let mat = MatQ::from_str("[[3,0,2,-1],[2,2,2,2]]").unwrap();
-        let cmp = MatQ::from_str("[[3,0,2,-1],[2,2,2,2]]").unwrap();
+        let mat = MatQ::from_str("[[3, 0, 2, -1],[2, 2, 2, 2]]").unwrap();
+        let cmp = MatQ::from_str("[[3, 0, 2, -1],[2, 2, 2, 2]]").unwrap();
 
         let res = mat.sort_by_row(MatQ::norm_eucl_sqrd).unwrap();
 
@@ -239,10 +255,18 @@ mod test_sort_by_length {
     /// Checks whether sorting by row length acc. to eucl. norm works correct for large entries
     #[test]
     fn row_norm_eucl_sqrd_large_entries() {
-        let mat =
-            MatQ::from_str(&format!("[[{},0,5],[{},2,5],[0,0,0]]", i64::MIN, i64::MAX)).unwrap();
-        let cmp =
-            MatQ::from_str(&format!("[[0,0,0],[{},2,5],[{},0,5]]", i64::MAX, i64::MIN)).unwrap();
+        let mat = MatQ::from_str(&format!(
+            "[[{}, 0, 5],[{}, 2, 5],[0, 0, 0]]",
+            i64::MIN,
+            i64::MAX
+        ))
+        .unwrap();
+        let cmp = MatQ::from_str(&format!(
+            "[[0, 0, 0],[{}, 2, 5],[{}, 0, 5]]",
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
 
         let res = mat.sort_by_row(MatQ::norm_eucl_sqrd).unwrap();
 
@@ -252,10 +276,18 @@ mod test_sort_by_length {
     /// Checks whether sorting by row length acc. to infty norm works correct for large entries
     #[test]
     fn row_norm_infty_large_entries() {
-        let mat =
-            MatQ::from_str(&format!("[[{},0,5],[{},2,5],[0,0,0]]", i64::MIN, i64::MAX)).unwrap();
-        let cmp =
-            MatQ::from_str(&format!("[[0,0,0],[{},2,5],[{},0,5]]", i64::MAX, i64::MIN)).unwrap();
+        let mat = MatQ::from_str(&format!(
+            "[[{}, 0, 5],[{}, 2, 5],[0, 0, 0]]",
+            i64::MIN,
+            i64::MAX
+        ))
+        .unwrap();
+        let cmp = MatQ::from_str(&format!(
+            "[[0, 0, 0],[{}, 2, 5],[{}, 0, 5]]",
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
 
         let res = mat.sort_by_row(MatQ::norm_infty).unwrap();
 
@@ -277,7 +309,7 @@ mod test_sort_by_length {
     /// Checks whether an error is returned for sorting by rows if the `cond_func` returns an error
     #[test]
     fn row_error_cond_func() {
-        let mat = MatQ::from_str("[[1,2],[3,4]]").unwrap();
+        let mat = MatQ::from_str("[[1, 2],[3, 4]]").unwrap();
 
         let res = mat.sort_by_row(failing_func);
 

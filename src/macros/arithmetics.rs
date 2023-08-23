@@ -12,10 +12,10 @@
 /// [`&*type*`].
 ///
 /// Parameters:
-/// - `trait`: the trait that is implemented (e.g. [`Add`], [`Sub`], ...).
+/// - `trait`: the trait that is implemented (e.g. [`Add`],[`Sub`], ...).
 /// - `trait_function`: the function the trait implements
 /// (e.g. add for [`Add`], ...).
-/// - `type`: the type the trait is implemented for (e.g. [`Z`], [`Q`])
+/// - `type`: the type the trait is implemented for (e.g. [`Z`],[`Q`])
 /// - `other_type`: the type the second part of the computation.
 /// - `output_type`: the type of the result.
 ///
@@ -45,10 +45,10 @@ pub(crate) use arithmetic_trait_borrowed_to_owned;
 /// reverse using the [`*trait*`] for [`&*type*`].
 ///
 /// Parameters:
-/// - `trait`: the trait that is implemented (e.g. [`Add`], [`Sub`], ...).
+/// - `trait`: the trait that is implemented (e.g. [`Add`],[`Sub`], ...).
 /// - `trait_function`: the function the trait implements
 /// (e.g. add for [`Add`], ...).
-/// - `type`: the type the trait is implemented for (e.g. [`Z`], [`Q`], ...).
+/// - `type`: the type the trait is implemented for (e.g. [`Z`],[`Q`], ...).
 /// - `other_type`: the type the second part of the computation.
 /// - `output_type`: the type of the result.
 ///
@@ -91,13 +91,13 @@ pub(crate) use arithmetic_trait_mixed_borrowed_owned;
 /// reverse using the [`*trait*`] for [`&*type*`].
 ///
 /// Parameters:
-/// - `trait`: the trait that is implemented (e.g. [`Add`], [`Sub`], ...).
+/// - `trait`: the trait that is implemented (e.g. [`Add`],[`Sub`], ...).
 /// - `trait_function`: the function the trait implements
 /// (e.g. add for [`Add`], ...).
 /// - `output_type`: one type that is part of the computation and it is the
-/// result type (e.g. [`Z`], [`Q`], ...).
+/// result type (e.g. [`Z`],[`Q`], ...).
 /// - `other_type*`: the other types that is part of the computation
-/// (e.g. [`Z`], [`Q`], ...).
+/// (e.g. [`Z`],[`Q`], ...).
 ///
 /// Returns the owned and borrowed Implementation code for the
 /// [`*trait*`] trait with the signatures:
@@ -130,8 +130,8 @@ macro_rules! arithmetic_between_types {
                 }
             }
 
-            arithmetic_trait_borrowed_to_owned!($trait,$trait_function,$type,$other_type,$output_type);
-            arithmetic_trait_mixed_borrowed_owned!($trait,$trait_function,$type,$other_type,$output_type);
+            arithmetic_trait_borrowed_to_owned!($trait, $trait_function, $type, $other_type, $output_type);
+            arithmetic_trait_mixed_borrowed_owned!($trait, $trait_function, $type, $other_type, $output_type);
 
             #[doc(hidden)]
             impl $trait<&$type> for &$other_type {
@@ -143,8 +143,8 @@ macro_rules! arithmetic_between_types {
                     }
                 }
             }
-            arithmetic_trait_borrowed_to_owned!($trait,$trait_function,$other_type,$type,$output_type);
-            arithmetic_trait_mixed_borrowed_owned!($trait,$trait_function,$other_type,$type,$output_type);
+            arithmetic_trait_borrowed_to_owned!($trait, $trait_function, $other_type, $type, $output_type);
+            arithmetic_trait_mixed_borrowed_owned!($trait, $trait_function, $other_type, $type, $output_type);
 
         )*
     };
@@ -156,10 +156,10 @@ pub(crate) use arithmetic_between_types;
 /// [`&*type*`].
 ///
 /// Parameters:
-/// - `trait`: the trait that is implemented (e.g. [`Add`], [`Sub`], ...).
+/// - `trait`: the trait that is implemented (e.g. [`Add`],[`Sub`], ...).
 /// - `trait_function`: the function the trait implements
 /// (e.g. add for [`Add`], ...).
-/// - `type`: the type the trait is implemented for (e.g. [`Z`], [`Q`])
+/// - `type`: the type the trait is implemented for (e.g. [`Z`],[`Q`])
 /// - `other_type`: the type the second part of the computation.
 /// - `output_type`: the type of the result.
 ///
@@ -189,13 +189,13 @@ pub(crate) use arithmetic_trait_reverse;
 /// reverse using the [`*trait*`] for [`Zq`].
 ///
 /// Parameters:
-/// - `trait`: the trait that is implemented (e.g. [`Add`], [`Sub`], ...).
+/// - `trait`: the trait that is implemented (e.g. [`Add`],[`Sub`], ...).
 /// - `trait_function`: the function the trait implements
 /// (e.g. add for [`Add`], ...).
 /// - `output_type`: one type that is part of the computation and it is the
-/// result type (e.g. [`Z`], [`Q`], ...).
+/// result type (e.g. [`Z`],[`Q`], ...).
 /// - `other_type*`: the other types that is part of the computation
-/// (e.g. [`Z`], [`Q`], ...).
+/// (e.g. [`Z`],[`Q`], ...).
 ///
 /// Returns the owned and borrowed Implementation code for the
 /// [`*trait*`] trait with the signatures:
@@ -223,13 +223,13 @@ macro_rules! arithmetic_between_types_zq {
                 paste::paste! {
                     #[doc = "Documentation at [`Zq::" $trait_function "`]."]
                     fn $trait_function(self, other: &$other_type) -> Self::Output {
-                    self.$trait_function(Zq::from((*other,&self.modulus)))
+                    self.$trait_function(Zq::from((*other, &self.modulus)))
                     }
                 }
             }
 
-            arithmetic_trait_borrowed_to_owned!($trait,$trait_function,Zq,$other_type,$output_type);
-            arithmetic_trait_mixed_borrowed_owned!($trait,$trait_function,Zq,$other_type,$output_type);
+            arithmetic_trait_borrowed_to_owned!($trait, $trait_function, Zq, $other_type, $output_type);
+            arithmetic_trait_mixed_borrowed_owned!($trait, $trait_function, Zq, $other_type, $output_type);
 
             #[doc(hidden)]
             impl $trait<&Zq> for &$other_type {
@@ -237,12 +237,12 @@ macro_rules! arithmetic_between_types_zq {
                 paste::paste! {
                     #[doc = "Documentation at [`Zq::" $trait_function "`]."]
                     fn $trait_function(self, other: &Zq) -> Self::Output {
-                    other.$trait_function(Zq::from((*self,&other.modulus)))
+                    other.$trait_function(Zq::from((*self, &other.modulus)))
                     }
                 }
             }
-            arithmetic_trait_borrowed_to_owned!($trait,$trait_function,$other_type,Zq,$output_type);
-            arithmetic_trait_mixed_borrowed_owned!($trait,$trait_function,$other_type,Zq,$output_type);
+            arithmetic_trait_borrowed_to_owned!($trait, $trait_function, $other_type, Zq, $output_type);
+            arithmetic_trait_mixed_borrowed_owned!($trait, $trait_function, $other_type, Zq, $output_type);
 
         )*
     };

@@ -23,7 +23,7 @@ impl PolyOverQ {
     /// use std::str::FromStr;
     ///
     /// let value = PolyOverQ::from_str("1  1").unwrap();
-    /// assert!(value.is_one())
+    /// assert!(value.is_one());
     /// ```
     pub fn is_one(&self) -> bool {
         1 == unsafe { fmpq_poly_is_one(&self.poly) }

@@ -136,7 +136,7 @@ mod test_add {
         assert_eq!(c, MatZ::from_str("[[2, 4, 6],[6, 0, 10]]").unwrap());
     }
 
-    /// Testing addition for big numbers
+    /// Testing addition for large numbers
     #[test]
     fn add_large_numbers() {
         let a: MatZ =

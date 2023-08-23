@@ -51,7 +51,7 @@ mod test_transpose {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly_mat = MatPolyOverZ::from_str("[[1  42],[2  1 2],[1  17]]").unwrap();
         let poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
-        let cmp = MatPolyOverZ::from_str("[[1  8,2  1 2,1  0]]").unwrap();
+        let cmp = MatPolyOverZ::from_str("[[1  8, 2  1 2, 1  0]]").unwrap();
 
         assert_eq!(cmp, poly_ring_mat.transpose().matrix);
     }
@@ -60,7 +60,7 @@ mod test_transpose {
     #[test]
     fn column_to_row() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-        let poly_mat = MatPolyOverZ::from_str("[[1  42,2  1 2,1  17]]").unwrap();
+        let poly_mat = MatPolyOverZ::from_str("[[1  42, 2  1 2, 1  17]]").unwrap();
         let poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
         let cmp = MatPolyOverZ::from_str("[[1  8],[2  1 2],[1  0]]").unwrap();
 
@@ -72,7 +72,8 @@ mod test_transpose {
     fn different_entry_values() {
         let modulus =
             ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {LARGE_PRIME}")).unwrap();
-        let poly_mat = MatPolyOverZ::from_str(&format!("[[1  {},1  -42,1  0]]", i64::MAX)).unwrap();
+        let poly_mat =
+            MatPolyOverZ::from_str(&format!("[[1  {}, 1  -42, 1  0]]", i64::MAX)).unwrap();
         let poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
         let cmp = MatPolyOverZ::from_str(&format!(
             "[[1  {}],[1  {}],[1  0]]",
