@@ -32,7 +32,7 @@ impl MatZ {
     ///
     /// Returns a new [`MatZ`] instance with entries chosen
     /// according to the binomial distribution or a [`MathError`]
-    /// if `n < 1`, `p <= 0`, `p >= 1`, `n` does not fit into an [`i64`],
+    /// if `n < 1`, `p ∉ (0,1)`, `n` does not fit into an [`i64`],
     /// or the dimensions of the matrix were chosen too small.
     ///
     /// # Examples
@@ -46,7 +46,7 @@ impl MatZ {
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
     /// if `n < 1`.
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    /// if `p <= 0` or `p >= 1`.
+    /// if `p ∉ (0,1)`.
     /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
     /// if `n` does not fit into an [`i64`].
     ///
