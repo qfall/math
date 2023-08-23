@@ -19,8 +19,8 @@ impl<Mod: Into<ModulusPolynomialRingZq>> From<(&MatPolyOverZ, Mod)> for MatPolyn
     /// Create a new polynomial ring matrix of type [`MatPolynomialRingZq`].
     ///
     /// Parameters:
-    /// - `matrix`: The polynomial matrix defining each entry
-    /// - `modulus`: The modulus that is applied to each polynomial
+    /// - `matrix`: The polynomial matrix defining each entry.
+    /// - `modulus`: The modulus that is applied to each polynomial.
     ///
     /// Returns a new polynomial ring matrix.
     ///
@@ -44,8 +44,8 @@ impl<Mod: Into<ModulusPolynomialRingZq>> From<(MatPolyOverZ, Mod)> for MatPolyno
     /// Create a new polynomial ring matrix of type [`MatPolynomialRingZq`].
     ///
     /// Parameters:
-    /// - `matrix`: The polynomial matrix defining each entry
-    /// - `modulus`: The modulus that is applied to each polynomial
+    /// - `matrix`: The polynomial matrix defining each entry.
+    /// - `modulus`: The modulus that is applied to each polynomial.
     ///
     /// Returns a new polynomial ring matrix.
     ///
@@ -74,8 +74,8 @@ impl MatPolynomialRingZq {
     /// Create a new polynomial ring matrix of type [`MatPolynomialRingZq`].
     ///
     /// Parameters:
-    /// - `matrix`: the polynomial matrix
-    /// - `modulus`: the modulus which defines the ring
+    /// - `matrix`: The polynomial matrix defining each entry.
+    /// - `modulus`: The modulus that is applied to each polynomial.
     ///
     /// Returns a new polynomial ring matrix.
     ///

@@ -196,8 +196,8 @@ impl<IntegerNumerator: AsInteger, IntegerDenominator: AsInteger>
     /// [`Zq`](crate::integer_mod_q), [`u32`],[`i64`] or references to these types
     ///
     /// Parameters:
-    /// - `num`: The value of the numerator
-    /// - `den`: The value of the denominator
+    /// - `num`: The value of the numerator.
+    /// - `den`: The value of the denominator.
     ///
     /// Returns a [`Q`] or a [`MathError`]
     ///

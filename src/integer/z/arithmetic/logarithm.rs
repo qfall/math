@@ -162,9 +162,9 @@ impl Z {
 
         let ln_value = self.ln()?;
         let ln_base = base.ln()?;
-        let log_2 = ln_value / ln_base;
+        let log_b = ln_value / ln_base;
 
-        Ok(log_2)
+        Ok(log_b)
     }
 }
 

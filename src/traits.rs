@@ -232,7 +232,7 @@ pub(crate) unsafe trait AsInteger {
     ///
     /// It is intended to be used when a read only [`fmpz`] reference is required
     /// for a Flint function call.
-    /// If the data type does not contain a [`fmpz`],[`into_fmpz`](AsInteger::into_fmpz)
+    /// If the data type does not contain a [`fmpz`], [`into_fmpz`](AsInteger::into_fmpz)
     /// can be used instead.
     fn get_fmpz_ref(&self) -> Option<&fmpz> {
         None

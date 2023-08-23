@@ -34,7 +34,7 @@ impl Zq {
     /// let value = Z::from(42);
     /// let modulus = Modulus::from(100);
     ///
-    /// let answer_1 = Zq::from_z_modulus(&value, &modulus);
+    /// let value_zq = Zq::from_z_modulus(&value, &modulus);
     /// ```
     pub fn from_z_modulus(value: &Z, modulus: impl Into<Modulus>) -> Self {
         let mut out = Z::default();
@@ -63,8 +63,8 @@ impl<IntegerValue: Into<Z>, IntegerModulus: Into<Modulus>> From<(IntegerValue, I
     /// Create [`Zq`] from a tuple with the integer and the modulus.
     ///
     /// Parameters:
-    /// - `value`: Defines the value of the residue class
-    /// - `modulus`: Defines the modulus by which `value` is reduced
+    /// - `value`: Defines the value of the residue class.
+    /// - `modulus`: Defines the modulus by which `value` is reduced.
     ///
     /// Returns the `value` mod `modulus` as a [`Zq`].
     ///
