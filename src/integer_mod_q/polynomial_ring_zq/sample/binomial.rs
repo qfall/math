@@ -31,7 +31,7 @@ impl PolynomialRingZq {
     ///
     /// Returns a fresh [`PolynomialRingZq`] instance of length `modulus.get_degree() - 1`
     /// with coefficients chosen according to the binomial distribution or a [`MathError`]
-    /// if `n < 1`, `p <= 0`, `p >= 1`, `n` does not fit into an [`i64`].
+    /// if `n < 1`, `p ∉ (0,1)`, `n` does not fit into an [`i64`].
     ///
     /// # Examples
     /// ```
@@ -46,7 +46,7 @@ impl PolynomialRingZq {
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
     /// if `n < 1`.
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    /// if `p <= 0` or `p >= 1`.
+    /// if `p ∉ (0,1)`.
     /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
     /// if `n` does not fit into an [`i64`].
     ///
