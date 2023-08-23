@@ -177,7 +177,7 @@ mod test_setter {
             .unwrap();
 
         let entry: PolyOverZ = poly_mat.get_entry(0, 0).unwrap();
-        assert_eq!(entry, PolyOverZ::from(0));
+        assert!(entry.is_zero());
     }
 
     /// Ensure that setting entries works with large numbers.
