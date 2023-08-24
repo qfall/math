@@ -45,22 +45,17 @@ impl MatZq {
                 // The i`th unit vector in the for loop.
                 let mut e_i = MatZq::identity(dimensions, 1, self.get_mod());
 
-                // Use solve for all unit vectors except the last one.
-                for i in 0..dimensions - 1 {
+                // Use solve for all unit vectors.
+                for i in 0..dimensions {
                     if let Some(column_i) = self.solve_gaussian_elimination(&e_i) {
                         inverse.set_column(i, &column_i, 0).unwrap();
                     } else {
                         return None;
                     }
 
-                    e_i.swap_entries(i, 0, i + 1, 0).unwrap();
-                }
-
-                // Use solve for the last unit vector.
-                if let Some(column_i) = self.solve_gaussian_elimination(&e_i) {
-                    inverse.set_column(dimensions - 1, &column_i, 0).unwrap();
-                } else {
-                    return None;
+                    if i != dimensions - 1 {
+                        e_i.swap_entries(i, 0, i + 1, 0).unwrap();
+                    }
                 }
 
                 Some(inverse)
