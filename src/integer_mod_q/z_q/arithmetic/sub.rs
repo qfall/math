@@ -184,7 +184,7 @@ mod test_sub {
         assert_eq!(c, Zq::from((2, 11)));
     }
 
-    /// Testing subtraction for big [`Zq`]
+    /// Testing subtraction for large [`Zq`]
     #[test]
     fn sub_large_numbers() {
         let a: Zq = Zq::from((u32::MAX, u32::MAX - 58));
@@ -252,7 +252,7 @@ mod test_sub_between_z_and_zq {
         assert_eq!(c, Zq::from((6, 11)));
     }
 
-    /// Testing subtraction for big numbers
+    /// Testing subtraction for large numbers
     #[test]
     fn sub_large_numbers() {
         let a: Zq = Zq::from((i64::MAX, u64::MAX - 58));

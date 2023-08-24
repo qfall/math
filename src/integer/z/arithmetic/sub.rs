@@ -86,10 +86,10 @@ impl Sub<&Q> for &Z {
     /// ```
     fn sub(self, other: &Q) -> Self::Output {
         let mut out = Q::default();
-        let mut fmpq1 = fmpq::default();
-        unsafe { fmpq_set_fmpz_frac(&mut fmpq1, &self.value, &fmpz(1)) }
+        let mut fmpq_1 = fmpq::default();
+        unsafe { fmpq_set_fmpz_frac(&mut fmpq_1, &self.value, &fmpz(1)) }
         unsafe {
-            fmpq_sub(&mut out.value, &fmpq1, &other.value);
+            fmpq_sub(&mut out.value, &fmpq_1, &other.value);
         }
         out
     }
@@ -332,7 +332,7 @@ mod test_sub_between_z_and_q {
         assert_eq!(c, Q::from((23, 7)));
     }
 
-    /// Testing subtraction for big numbers
+    /// Testing subtraction for large numbers
     #[test]
     fn sub_large_numbers() {
         let a: Z = Z::from(u64::MAX);
@@ -388,7 +388,7 @@ mod test_sub_between_z_and_zq {
         assert_eq!(c, Zq::from((5, 11)));
     }
 
-    /// Testing subtraction for big numbers
+    /// Testing subtraction for large numbers
     #[test]
     fn sub_large_numbers() {
         let a: Z = Z::from(u64::MAX);

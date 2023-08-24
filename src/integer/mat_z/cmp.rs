@@ -24,8 +24,8 @@ impl PartialEq for MatZ {
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
-    /// let a = MatZ::from_str("[[1,2],[3,4]]").unwrap();
-    /// let b = MatZ::from_str("[[1,2],[2,4]]").unwrap();
+    /// let a = MatZ::from_str("[[1, 2],[3, 4]]").unwrap();
+    /// let b = MatZ::from_str("[[1, 2],[2, 4]]").unwrap();
     ///
     /// // These are all equivalent and return false.
     /// let compared: bool = (a == b);
@@ -56,7 +56,7 @@ mod test_partial_eq {
     /// Ensures that different instantiations do not break the equality between matrices
     #[test]
     fn equality_between_instantiations() {
-        let a = MatZ::from_str("[[0,1],[0,0]]").unwrap();
+        let a = MatZ::from_str("[[0, 1],[0, 0]]").unwrap();
         let mut b = MatZ::new(2, 2);
         b.set_entry(0, 1, 1).unwrap();
 
@@ -67,13 +67,13 @@ mod test_partial_eq {
     #[test]
     fn equality_for_large_and_small_entries() {
         let a = MatZ::from_str(&format!(
-            "[[{},{}, 1],[-10, 10, 0],[0, 1, -10]]",
+            "[[{}, {}, 1],[-10, 10, 0],[0, 1, -10]]",
             i64::MIN,
             i64::MAX
         ))
         .unwrap();
         let b = MatZ::from_str(&format!(
-            "[[{},{}, 1],[-10, 10, 0],[0, 1, -10]]",
+            "[[{}, {}, 1],[-10, 10, 0],[0, 1, -10]]",
             i64::MIN,
             i64::MAX
         ))
@@ -85,10 +85,11 @@ mod test_partial_eq {
     /// Checks that different unequal matrices are unequal
     #[test]
     fn not_equal() {
-        let a = MatZ::from_str(&format!("[[{},{}],[-10, 10]]", i64::MIN, i64::MAX)).unwrap();
-        let b = MatZ::from_str(&format!("[[0,{}],[-10, 10]]", i64::MAX)).unwrap();
-        let c = MatZ::from_str(&format!("[[{},{}],[-10, 10],[0,0]]", i64::MIN, i64::MAX)).unwrap();
-        let d = MatZ::from_str(&format!("[[{},{}]]", i64::MIN, i64::MAX)).unwrap();
+        let a = MatZ::from_str(&format!("[[{}, {}],[-10, 10]]", i64::MIN, i64::MAX)).unwrap();
+        let b = MatZ::from_str(&format!("[[0, {}],[-10, 10]]", i64::MAX)).unwrap();
+        let c =
+            MatZ::from_str(&format!("[[{}, {}],[-10, 10],[0, 0]]", i64::MIN, i64::MAX)).unwrap();
+        let d = MatZ::from_str(&format!("[[{}, {}]]", i64::MIN, i64::MAX)).unwrap();
         let e = MatZ::from_str("[[0]]").unwrap();
 
         assert_ne!(&a, &b);

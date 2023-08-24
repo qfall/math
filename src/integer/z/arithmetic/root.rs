@@ -143,7 +143,7 @@ mod test_sqrt_precision {
 
                 // Reasoning behind the following lines:
                 // v = value, p = 1/(2*precision), r = root, |e|<= p (actual error)
-                // sqrt_precision(v,precision) = r = sqrt(x) + e
+                // sqrt_precision(v, precision) = r = sqrt(x) + e
                 // => r^2 = x + 2*sqrt(x)*e + e^2
                 // => r^2-x = 2*sqrt(x)*e + e^2 = difference <= 2*sqrt(x)*p + p^2
                 let p = Q::from((1, precision)) / Q::from(2);

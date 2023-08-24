@@ -24,7 +24,7 @@ impl MatQ {
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let row_vec = MatQ::from_str("[[1,2,3/2]]").unwrap();
+    /// let row_vec = MatQ::from_str("[[1, 2, 3/2]]").unwrap();
     /// let col_vec = MatQ::from_str("[[1/4],[2],[3]]").unwrap();
     ///
     /// assert!(row_vec.is_row_vector());
@@ -42,7 +42,7 @@ impl MatQ {
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let row_vec = MatQ::from_str("[[1/1,2,3]]").unwrap();
+    /// let row_vec = MatQ::from_str("[[1/1, 2, 3]]").unwrap();
     /// let col_vec = MatQ::from_str("[[1],[2/3],[3]]").unwrap();
     ///
     /// assert!(col_vec.is_column_vector());
@@ -60,7 +60,7 @@ impl MatQ {
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let row_vec = MatQ::from_str("[[1,2/2,3/1]]").unwrap();
+    /// let row_vec = MatQ::from_str("[[1, 2/2, 3/1]]").unwrap();
     /// let col_vec = MatQ::from_str("[[1],[2],[3/2]]").unwrap();
     ///
     /// assert!(row_vec.is_vector());
@@ -96,7 +96,7 @@ mod test_is_vector {
     /// get recognized as (row or column) vectors
     #[test]
     fn vectors_detected() {
-        let row = MatQ::from_str(&format!("[[1/1,{}]]", i64::MIN)).unwrap();
+        let row = MatQ::from_str(&format!("[[1/1, {}]]", i64::MIN)).unwrap();
         let col = MatQ::from_str(&format!("[[1/1],[2/1],[{}/1],[4/1]]", i64::MAX)).unwrap();
 
         assert!(row.is_row_vector());
@@ -112,11 +112,12 @@ mod test_is_vector {
     /// don't get recognized as (row or column) vector
     #[test]
     fn non_vectors_detected() {
-        let mat_1 = MatQ::from_str(&format!("[[1,{}/1],[2,3]]", i64::MIN)).unwrap();
-        let mat_2 = MatQ::from_str(&format!("[[1,{},3/3],[4/1,5/1,6/1]]", i64::MAX)).unwrap();
-        let mat_3 = MatQ::from_str(&format!("[[1/1,{}/1],[2/1,3/1],[4/1,5/1]]", i64::MIN)).unwrap();
-        let mat_4 = MatQ::from_str("[[1/1,0],[2,0],[4,0]]").unwrap();
-        let mat_5 = MatQ::from_str("[[1,2/1,4],[0,0,0]]").unwrap();
+        let mat_1 = MatQ::from_str(&format!("[[1, {}/1],[2, 3]]", i64::MIN)).unwrap();
+        let mat_2 = MatQ::from_str(&format!("[[1, {}, 3/3],[4/1, 5/1, 6/1]]", i64::MAX)).unwrap();
+        let mat_3 =
+            MatQ::from_str(&format!("[[1/1, {}/1],[2/1, 3/1],[4/1, 5/1]]", i64::MIN)).unwrap();
+        let mat_4 = MatQ::from_str("[[1/1, 0],[2, 0],[4, 0]]").unwrap();
+        let mat_5 = MatQ::from_str("[[1, 2/1, 4],[0, 0, 0]]").unwrap();
 
         assert!(!mat_1.is_column_vector());
         assert!(!mat_1.is_row_vector());
@@ -163,9 +164,9 @@ mod test_is_vector {
     /// don't get recognized as single entry matrices
     #[test]
     fn non_single_entry_detected() {
-        let row = MatQ::from_str(&format!("[[1,{}]]", i64::MIN)).unwrap();
+        let row = MatQ::from_str(&format!("[[1, {}]]", i64::MIN)).unwrap();
         let col = MatQ::from_str(&format!("[[1],[{}],[3/1]]", i64::MIN)).unwrap();
-        let mat = MatQ::from_str("[[1/1,2],[3,4],[5,6]]").unwrap();
+        let mat = MatQ::from_str("[[1/1, 2],[3, 4],[5, 6]]").unwrap();
 
         assert!(!row.has_single_entry());
         assert!(!col.has_single_entry());

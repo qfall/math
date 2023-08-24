@@ -34,9 +34,9 @@ mod test_serialize {
     fn serialize_output_positive() {
         let mat_poly_str = "[[17, 42],[1, 17]] mod 57";
         let mat_poly_z = MatZq::from_str(mat_poly_str).unwrap();
-        let cmp_string = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
+        let cmp_str = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
 
-        assert_eq!(cmp_string, serde_json::to_string(&mat_poly_z).unwrap())
+        assert_eq!(cmp_str, serde_json::to_string(&mat_poly_z).unwrap());
     }
 
     /// Tests whether the serialization of a negative [`MatZq`] works.
@@ -44,9 +44,9 @@ mod test_serialize {
     fn serialize_output_negative() {
         let mat_poly_str = "[[-17, -42, 1],[-13, -5, -42]] mod 57";
         let mat_poly_z = MatZq::from_str(mat_poly_str).unwrap();
-        let cmp_string = "{\"matrix\":\"[[40, 15, 1],[44, 52, 15]] mod 57\"}";
+        let cmp_str = "{\"matrix\":\"[[40, 15, 1],[44, 52, 15]] mod 57\"}";
 
-        assert_eq!(cmp_string, serde_json::to_string(&mat_poly_z).unwrap())
+        assert_eq!(cmp_str, serde_json::to_string(&mat_poly_z).unwrap());
     }
 
     /// Tests whether the serialization of a positive large [`MatZq`] works.
@@ -54,9 +54,9 @@ mod test_serialize {
     fn serialize_output_positive_large() {
         let mat_poly_str = format!("[[3, 17, {}, 1, 2, 13, 5]] mod {}", u64::MAX - 1, u64::MAX);
         let mat_poly_z = MatZq::from_str(&mat_poly_str).unwrap();
-        let cmp_string = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
+        let cmp_str = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
 
-        assert_eq!(cmp_string, serde_json::to_string(&mat_poly_z).unwrap())
+        assert_eq!(cmp_str, serde_json::to_string(&mat_poly_z).unwrap());
     }
 
     /// Tests whether the serialization of a negative large [`MatZq`] works.
@@ -69,12 +69,12 @@ mod test_serialize {
             u64::MAX
         );
         let mat_poly_z = MatZq::from_str(&mat_poly_str).unwrap();
-        let cmp_string = format!(
+        let cmp_str = format!(
             "{{\"matrix\":\"[[3, 58, 1, 1, 2, 13, 5]] mod {}\"}}",
             u64::MAX
         );
 
-        assert_eq!(cmp_string, serde_json::to_string(&mat_poly_z).unwrap())
+        assert_eq!(cmp_str, serde_json::to_string(&mat_poly_z).unwrap());
     }
 }
 
@@ -87,20 +87,20 @@ mod test_deserialize {
     #[test]
     fn deserialize_positive() {
         let mat_poly_str = "[[17, 42],[1, 17]] mod 57";
-        let cmp_string = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
+        let cmp_str = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
 
         let mat_poly_z = MatZq::from_str(mat_poly_str).unwrap();
-        assert_eq!(mat_poly_z, serde_json::from_str(&cmp_string).unwrap())
+        assert_eq!(mat_poly_z, serde_json::from_str(&cmp_str).unwrap());
     }
 
     /// Tests whether the deserialization of a negative [`MatZq`] works.
     #[test]
     fn deserialize_negative() {
         let mat_poly_str = "[[-17, -42, 1],[-13, -5, -42]] mod 57";
-        let cmp_string = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
+        let cmp_str = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
 
         let mat_poly_z = MatZq::from_str(mat_poly_str).unwrap();
-        assert_eq!(mat_poly_z, serde_json::from_str(&cmp_string).unwrap())
+        assert_eq!(mat_poly_z, serde_json::from_str(&cmp_str).unwrap());
     }
 
     /// Tests whether the deserialization of a positive large [`MatZq`] works.
@@ -111,10 +111,10 @@ mod test_deserialize {
             u64::MAX - 1,
             u64::MAX
         );
-        let cmp_string = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
+        let cmp_str = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
 
         let mat_poly_z = MatZq::from_str(&mat_poly_str).unwrap();
-        assert_eq!(mat_poly_z, serde_json::from_str(&cmp_string).unwrap())
+        assert_eq!(mat_poly_z, serde_json::from_str(&cmp_str).unwrap());
     }
 
     /// Tests whether the deserialization of a negative large [`MatZq`] works.
@@ -125,10 +125,10 @@ mod test_deserialize {
             u64::MAX - 1,
             u64::MAX
         );
-        let cmp_string = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
+        let cmp_str = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
 
         let mat_poly_z = MatZq::from_str(&mat_poly_str).unwrap();
-        assert_eq!(mat_poly_z, serde_json::from_str(&cmp_string).unwrap())
+        assert_eq!(mat_poly_z, serde_json::from_str(&cmp_str).unwrap());
     }
 
     /// Tests whether no fields 'matrix' provided yield an error

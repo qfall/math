@@ -156,7 +156,7 @@ mod test_from_str {
         let one_1 = PolyOverQ::from_str("2  24/42 1").unwrap();
         let one_2 = PolyOverQ::from_str("3  24/42 1 0").unwrap();
 
-        assert_eq!(one_1, one_2)
+        assert_eq!(one_1, one_2);
     }
 
     /// Ensure that coefficients in the string are reduced
@@ -171,12 +171,12 @@ mod test_from_str {
     /// Tests whether the same string yields the same polynomial
     #[test]
     fn same_string() {
-        let string1 = format!("3  1 2/3 {}/{}", u64::MAX, i64::MIN);
+        let str_1 = format!("3  1 2/3 {}/{}", u64::MAX, i64::MIN);
 
-        let poly_1 = PolyOverQ::from_str(&string1).unwrap();
-        let poly_2 = PolyOverQ::from_str(&string1).unwrap();
+        let poly_1 = PolyOverQ::from_str(&str_1).unwrap();
+        let poly_2 = PolyOverQ::from_str(&str_1).unwrap();
 
-        assert_eq!(poly_1, poly_2)
+        assert_eq!(poly_1, poly_2);
     }
 
     /// Tests whether a correctly formatted string outputs an instantiation of a
@@ -277,7 +277,7 @@ mod test_from_rational {
     use crate::{integer::Z, traits::GetCoefficient};
 
     /// Ensure that the [`From`] trait works for large
-    /// borrowed and owned [`Q`], [`Z`] and [`u64`] instances.
+    /// borrowed and owned [`Q`],[`Z`] and [`u64`] instances.
     #[test]
     fn large() {
         let value = Q::from(u64::MAX);

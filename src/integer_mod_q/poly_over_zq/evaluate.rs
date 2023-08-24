@@ -138,7 +138,7 @@ mod test_evaluate_z {
 
         let res = poly.evaluate(Z::from(3));
 
-        assert_eq!(Zq::from((7, 17)), res)
+        assert_eq!(Zq::from((7, 17)), res);
     }
 
     /// Tests if evaluate with a reference works
@@ -148,7 +148,7 @@ mod test_evaluate_z {
 
         let res = poly.evaluate(&Z::from(3));
 
-        assert_eq!(Zq::from((7, 17)), res)
+        assert_eq!(Zq::from((7, 17)), res);
     }
 
     /// Tests if evaluate works with negative values
@@ -158,7 +158,7 @@ mod test_evaluate_z {
 
         let res = poly.evaluate(&Z::from(-5));
 
-        assert_eq!(Zq::from((8, 17)), res)
+        assert_eq!(Zq::from((8, 17)), res);
     }
 
     /// Tests if evaluate works with large integers
@@ -168,10 +168,10 @@ mod test_evaluate_z {
 
         let res = poly.evaluate(&Z::from(u64::MAX - 1));
 
-        assert_eq!(Zq::from((1, u64::MAX)), res)
+        assert_eq!(Zq::from((1, u64::MAX)), res);
     }
 
-    /// Test if evaluate works with max of [`i64`], [`i32`], ...
+    /// Test if evaluate works with max of [`i64`],[`i32`], ...
     #[test]
     fn eval_max() {
         let poly = PolyOverZq::from_str("2  1 2 mod 17").unwrap();
@@ -189,7 +189,7 @@ mod test_evaluate_z {
         let _ = poly.evaluate(u8::MAX);
     }
 
-    /// Test if evaluate works with min of [`i64`], [`i32`], ...
+    /// Test if evaluate works with min of [`i64`],[`i32`], ...
     #[test]
     fn eval_min() {
         let poly = PolyOverZq::from_str("2  1 2 mod 17").unwrap();

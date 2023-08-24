@@ -104,14 +104,14 @@ mod test_mul {
     fn square_correctness() {
         let mat_1 = MatPolyOverZ::from_str("[[2  0 1, 1  4],[0, 3  1 2 3]]").unwrap();
         let mat_2 = MatPolyOverZ::from_str("[[2  0 1, 1  4],[0, 3  1 2 3]]").unwrap();
-        let res = MatPolyOverZ::from_str("[[3  0 0 1,3  4 12 12],[0,5  1 4 10 12 9]]").unwrap();
+        let res = MatPolyOverZ::from_str("[[3  0 0 1, 3  4 12 12],[0, 5  1 4 10 12 9]]").unwrap();
         assert_eq!(res, &mat_1 * &mat_2);
     }
 
     /// Checks if matrix multiplication works fine for matrices of different dimensions
     #[test]
     fn different_dimensions_correctness() {
-        let mat = MatPolyOverZ::from_str("[[2  1 4,1  7],[1  3,3  12 3 4]]").unwrap();
+        let mat = MatPolyOverZ::from_str("[[2  1 4, 1  7],[1  3, 3  12 3 4]]").unwrap();
         let vec = MatPolyOverZ::from_str("[[1  4],[0]]").unwrap();
         let cmp = MatPolyOverZ::from_str("[[2  4 16],[1  12]]").unwrap();
 
@@ -121,7 +121,8 @@ mod test_mul {
     /// Checks if matrix multiplication works fine for large entries
     #[test]
     fn large_entries() {
-        let mat = MatPolyOverZ::from_str(&format!("[[2  3 {},1  15],[1  1,0]]", u64::MAX)).unwrap();
+        let mat =
+            MatPolyOverZ::from_str(&format!("[[2  3 {}, 1  15],[1  1, 0]]", u64::MAX)).unwrap();
         let vec = MatPolyOverZ::from_str(&format!("[[2  1 {}],[0]]", u64::MAX)).unwrap();
         let cmp = MatPolyOverZ::from_str(&format!(
             "[[3  3 {} {}],[2  1 {}]]",

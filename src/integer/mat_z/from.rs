@@ -53,14 +53,14 @@ impl FromStr for MatZ {
     type Err = MathError;
 
     /// Creates a [`MatZ`] matrix with entries in [`Z`] from a [`String`].
-    /// The format of that string looks like this `[[1,2,3],[4,5,6]]` for a 2x3 matrix
+    /// The format of that string looks like this `[[1, 2, 3],[4, 5, 6]]` for a 2x3 matrix
     /// with entries 1, 2, 3 in the first row and 4, 5, 6 in the second row.
     ///
     /// Parameters:
     /// - `string`: the matrix as a string
     ///
     /// Returns a [`MatZ`] or an error, if the matrix is not formatted in a suitable way,
-    /// the number of rows or columns is too big (must fit into [`i64`]),
+    /// the number of rows or columns is too large (must fit into [`i64`]),
     /// the number of entries in rows is unequal or if the regular expression
     /// inside of the function could not be processed.
     ///
@@ -201,7 +201,7 @@ mod test_from_str {
     /// Ensure that entries can have leading and trailing whitespaces.
     #[test]
     fn whitespaces_in_entries_works() {
-        let matrix_str = "[[  1, 2 ,  3  ],[3 ,4,5 ]]";
+        let matrix_str = "[[  1, 2 ,  3  ],[3 , 4, 5 ]]";
 
         assert_eq!(
             Z::ONE,
@@ -212,24 +212,24 @@ mod test_from_str {
     /// Ensure that a wrong format causes an error.
     #[test]
     fn wrong_format_error() {
-        let matrix_string1 = "[1, 2, 3],[3, 4, 5]]";
-        let matrix_string2 = "[[1, 2, 3][3, 4, 5]]";
-        let matrix_string3 = "[[1, 2, 3],3, 4, 5]";
-        let matrix_string4 = "[1, 2, 3, 4, 5]";
-        let matrix_string5 = "[ [1, 2, 3],[3, 4, 5]]";
-        let matrix_string6 = "[[1, 2, 3],[3, 4, 5]8]";
-        let matrix_string7 = "";
-        let matrix_string8 = "[]";
-        let matrix_string9 = "[[]]";
+        let matrix_str_1 = "[1, 2, 3],[3, 4, 5]]";
+        let matrix_str_2 = "[[1, 2, 3][3, 4, 5]]";
+        let matrix_str_3 = "[[1, 2, 3], 3, 4, 5]";
+        let matrix_str_4 = "[1, 2, 3, 4, 5]";
+        let matrix_str_5 = "[ [1, 2, 3],[3, 4, 5]]";
+        let matrix_str_6 = "[[1, 2, 3],[3, 4, 5]8]";
+        let matrix_str_7 = "";
+        let matrix_str_8 = "[]";
+        let matrix_str_9 = "[[]]";
 
-        assert!(MatZ::from_str(matrix_string1).is_err());
-        assert!(MatZ::from_str(matrix_string2).is_err());
-        assert!(MatZ::from_str(matrix_string3).is_err());
-        assert!(MatZ::from_str(matrix_string4).is_err());
-        assert!(MatZ::from_str(matrix_string5).is_err());
-        assert!(MatZ::from_str(matrix_string6).is_err());
-        assert!(MatZ::from_str(matrix_string7).is_err());
-        assert!(MatZ::from_str(matrix_string8).is_err());
-        assert!(MatZ::from_str(matrix_string9).is_err());
+        assert!(MatZ::from_str(matrix_str_1).is_err());
+        assert!(MatZ::from_str(matrix_str_2).is_err());
+        assert!(MatZ::from_str(matrix_str_3).is_err());
+        assert!(MatZ::from_str(matrix_str_4).is_err());
+        assert!(MatZ::from_str(matrix_str_5).is_err());
+        assert!(MatZ::from_str(matrix_str_6).is_err());
+        assert!(MatZ::from_str(matrix_str_7).is_err());
+        assert!(MatZ::from_str(matrix_str_8).is_err());
+        assert!(MatZ::from_str(matrix_str_9).is_err());
     }
 }

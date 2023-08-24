@@ -26,7 +26,7 @@ impl MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let matrix = MatZq::from_str("[[1,2],[3,4]] mod 5").unwrap();
+    /// let matrix = MatZq::from_str("[[1, 2],[3, 4]] mod 5").unwrap();
     /// let trace = matrix.trace().unwrap();
     /// ```
     ///
@@ -56,51 +56,51 @@ mod test_trace {
     /// Test whether `trace` correctly calculates the trace of a matrix
     #[test]
     fn trace_works() {
-        let mat1 = MatZq::from_str("[[5,2,0],[2,8,0],[0,0,4]] mod 10").unwrap();
-        let mat2 = MatZq::from_str("[[-1,0],[0,1]] mod 2").unwrap();
+        let mat_1 = MatZq::from_str("[[5, 2, 0],[2, 8, 0],[0, 0, 4]] mod 10").unwrap();
+        let mat_2 = MatZq::from_str("[[-1, 0],[0, 1]] mod 2").unwrap();
 
-        let trace1 = mat1.trace().unwrap();
-        let trace2 = mat2.trace().unwrap();
+        let trace_1 = mat_1.trace().unwrap();
+        let trace_2 = mat_2.trace().unwrap();
 
-        assert_eq!(Zq::from((7, 10)), trace1);
-        assert_eq!(Zq::from((0, 2)), trace2);
+        assert_eq!(Zq::from((7, 10)), trace_1);
+        assert_eq!(Zq::from((0, 2)), trace_2);
     }
 
-    /// Test whether `trace` works for big values
+    /// Test whether `trace` works for large values
     #[test]
-    fn trace_big_values() {
-        let mat1 = MatZq::from_str(&format!(
-            "[[{},5],[1,{}]] mod {}",
+    fn trace_large_values() {
+        let mat_1 = MatZq::from_str(&format!(
+            "[[{}, 5],[1, {}]] mod {}",
             i64::MAX,
             i64::MAX,
             u64::MAX
         ))
         .unwrap();
-        let mat2 = MatZq::from_str(&format!("[[{}]] mod {}", i64::MIN, u64::MAX)).unwrap();
-        let mat3 = MatZq::from_str(&format!(
-            "[[{},5],[1,{}]] mod {}",
+        let mat_2 = MatZq::from_str(&format!("[[{}]] mod {}", i64::MIN, u64::MAX)).unwrap();
+        let mat_3 = MatZq::from_str(&format!(
+            "[[{}, 5],[1, {}]] mod {}",
             i64::MIN,
             i64::MAX,
             u64::MAX
         ))
         .unwrap();
 
-        let trace1 = mat1.trace().unwrap();
-        let trace2 = mat2.trace().unwrap();
-        let trace3 = mat3.trace().unwrap();
+        let trace_1 = mat_1.trace().unwrap();
+        let trace_2 = mat_2.trace().unwrap();
+        let trace_3 = mat_3.trace().unwrap();
 
-        assert_eq!(Zq::from((2 * i64::MAX as u64, u64::MAX)), trace1);
-        assert_eq!(Zq::from((i64::MIN, u64::MAX)), trace2);
-        assert_eq!(Zq::from((-1, u64::MAX)), trace3);
+        assert_eq!(Zq::from((2 * i64::MAX as u64, u64::MAX)), trace_1);
+        assert_eq!(Zq::from((i64::MIN, u64::MAX)), trace_2);
+        assert_eq!(Zq::from((-1, u64::MAX)), trace_3);
     }
 
     /// Ensure that a matrix that is not square yields an error.
     #[test]
     fn trace_error_not_squared() {
-        let mat1 = MatZq::from_str("[[1,0,1],[0,1,1]] mod 42").unwrap();
-        let mat2 = MatZq::from_str("[[1,0],[0,1],[1,0]] mod 17").unwrap();
+        let mat_1 = MatZq::from_str("[[1, 0, 1],[0, 1, 1]] mod 42").unwrap();
+        let mat_2 = MatZq::from_str("[[1, 0],[0, 1],[1, 0]] mod 17").unwrap();
 
-        assert!(mat1.trace().is_err());
-        assert!(mat2.trace().is_err());
+        assert!(mat_1.trace().is_err());
+        assert!(mat_2.trace().is_err());
     }
 }

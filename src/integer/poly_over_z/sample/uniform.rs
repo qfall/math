@@ -45,7 +45,7 @@ impl PolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    /// if the given `upper_bound` isn't at least bigger than `lower_bound + 1`,
+    /// if the given `upper_bound` isn't at least larger than `lower_bound + 1`,
     /// i.e. the interval size is at most `1`.
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
     /// the `max_degree` is negative or it does not fit into an [`i64`].

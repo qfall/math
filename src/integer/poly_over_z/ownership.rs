@@ -81,7 +81,7 @@ mod test_clone {
         unsafe {
             assert_ne!((*poly_1.poly.coeffs).0, (*poly_2.poly.coeffs).0);
         }
-        assert_eq!(poly_1.to_string(), poly_2.to_string())
+        assert_eq!(poly_1.to_string(), poly_2.to_string());
     }
 
     /// Check if several instantiations are cloned correctly

@@ -85,7 +85,7 @@ impl MatPolynomialRingZq {
 mod test_sample_d {
     use crate::{
         integer::{MatPolyOverZ, PolyOverZ, Z},
-        integer_mod_q::{MatPolynomialRingZq, MatZq, Modulus, ModulusPolynomialRingZq, Zq},
+        integer_mod_q::{MatPolynomialRingZq, MatZq, ModulusPolynomialRingZq, Zq},
         rational::{PolyOverQ, Q},
         traits::{GetEntry, IntoCoefficientEmbedding},
     };
@@ -102,8 +102,7 @@ mod test_sample_d {
         for _ in 0..10 {
             let sample = MatPolynomialRingZq::sample_d(&base, 3, 100, &center, 20.5_f64).unwrap();
             let sample: PolyOverZ = sample.get_entry(0, 0).unwrap();
-            let sample_vec =
-                MatZq::from((&sample.into_coefficient_embedding(3), &Modulus::from(17)));
+            let sample_vec = MatZq::from((&sample.into_coefficient_embedding(3), 17));
             let orthogonal = MatZq::from_str("[[0],[1],[1]] mod 17").unwrap();
 
             assert_eq!(

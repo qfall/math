@@ -98,10 +98,10 @@ mod test_is_one {
     #[test]
     fn one_detection() {
         let one = PolyOverZq::from_str("1  1 mod 7").unwrap();
-        let one2 = PolyOverZq::from_str("2  1 14 mod 7").unwrap();
+        let one_2 = PolyOverZq::from_str("2  1 14 mod 7").unwrap();
 
         assert!(one.is_one());
-        assert!(one2.is_one());
+        assert!(one_2.is_one());
     }
 
     /// Ensure that is_one returns `false` for other polynomials.
@@ -126,10 +126,10 @@ mod test_is_zero {
     #[test]
     fn zero_detection() {
         let zero = PolyOverZq::from_str("0 mod 7").unwrap();
-        let zero2 = PolyOverZq::from_str("2  7 14 mod 7").unwrap();
+        let zero_2 = PolyOverZq::from_str("2  7 14 mod 7").unwrap();
 
         assert!(zero.is_zero());
-        assert!(zero2.is_zero());
+        assert!(zero_2.is_zero());
     }
 
     /// Ensure that is_zero returns `false` for non-zero polynomials.

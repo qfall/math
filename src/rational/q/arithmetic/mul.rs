@@ -197,7 +197,7 @@ mod test_mul_between_q_and_z {
         assert_eq!(c, Q::from((20, 7)));
     }
 
-    /// Testing multiplication for big numbers
+    /// Testing multiplication for large numbers
     #[test]
     fn mul_large_numbers() {
         let a: Q = Q::from((u64::MAX, 2));

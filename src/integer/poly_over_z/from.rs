@@ -172,18 +172,18 @@ mod test_from_str {
         let one_1 = PolyOverZ::from_str("2  24 1").unwrap();
         let one_2 = PolyOverZ::from_str("3  24 1 0").unwrap();
 
-        assert_eq!(one_1, one_2)
+        assert_eq!(one_1, one_2);
     }
 
     /// Tests whether the same string yields the same polynomial
     #[test]
     fn same_string() {
-        let string1 = format!("3  1 {} {}", u64::MAX, i64::MIN);
+        let str_1 = format!("3  1 {} {}", u64::MAX, i64::MIN);
 
-        let poly_1 = PolyOverZ::from_str(&string1).unwrap();
-        let poly_2 = PolyOverZ::from_str(&string1).unwrap();
+        let poly_1 = PolyOverZ::from_str(&str_1).unwrap();
+        let poly_2 = PolyOverZ::from_str(&str_1).unwrap();
 
-        assert_eq!(poly_1, poly_2)
+        assert_eq!(poly_1, poly_2);
     }
 
     /// Tests whether a correctly formatted string outputs an instantiation of a

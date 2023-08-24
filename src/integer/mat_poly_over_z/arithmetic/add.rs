@@ -164,18 +164,18 @@ mod test_add {
         );
     }
 
-    /// Testing addition for big numbers
+    /// Testing addition for large numbers
     #[test]
     fn add_large_numbers() {
         let a: MatPolyOverZ = MatPolyOverZ::from_str(&format!(
-            "[[1  {},2  1 {}],[2  -{} 7, 0]]",
+            "[[1  {}, 2  1 {}],[2  -{} 7, 0]]",
             i64::MAX,
             i64::MIN,
             u64::MAX
         ))
         .unwrap();
         let b: MatPolyOverZ = MatPolyOverZ::from_str(&format!(
-            "[[1  {},2  1 {}],[2  {} 7, 0]]",
+            "[[1  {}, 2  1 {}],[2  {} 7, 0]]",
             i64::MAX,
             i64::MIN + 1,
             i64::MAX
@@ -185,7 +185,7 @@ mod test_add {
         assert_eq!(
             c,
             MatPolyOverZ::from_str(&format!(
-                "[[1  {},2  2 -{}],[2  -{} 14, 0]]",
+                "[[1  {}, 2  2 -{}],[2  -{} 14, 0]]",
                 u64::MAX - 1,
                 u64::MAX,
                 (u64::MAX - 1) / 2 + 1

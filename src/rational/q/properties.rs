@@ -77,7 +77,7 @@ impl Q {
     /// use qfall_math::rational::Q;
     ///
     /// let value = Q::ONE;
-    /// assert!(value.is_one())
+    /// assert!(value.is_one());
     /// ```
     pub fn is_one(&self) -> bool {
         1 == unsafe { fmpq_is_one(&self.value) }

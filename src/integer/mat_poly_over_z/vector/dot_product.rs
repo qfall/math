@@ -29,10 +29,10 @@ impl MatPolyOverZ {
     /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     ///
-    /// let poly_vec1 = MatPolyOverZ::from_str("[[4  -1 0 1 1],[2  1 2]]").unwrap();
-    /// let poly_vec2 = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42]]").unwrap();
+    /// let poly_vec_1 = MatPolyOverZ::from_str("[[4  -1 0 1 1],[2  1 2]]").unwrap();
+    /// let poly_vec_2 = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42]]").unwrap();
     ///
-    /// let dot_prod = poly_vec1.dot_product(&poly_vec2).unwrap();
+    /// let dot_prod = poly_vec_1.dot_product(&poly_vec_2).unwrap();
     /// ```
     ///
     /// Errors and Failures
@@ -91,11 +91,11 @@ mod test_dot_product {
     /// `self`: row vector, `other`: row vector.
     #[test]
     fn row_with_row() {
-        let poly_vec1 = MatPolyOverZ::from_str("[[2  1 1, 2  1 2]]").unwrap();
-        let poly_vec2 = MatPolyOverZ::from_str("[[2  1 1, 1  19]]").unwrap();
+        let poly_vec_1 = MatPolyOverZ::from_str("[[2  1 1, 2  1 2]]").unwrap();
+        let poly_vec_2 = MatPolyOverZ::from_str("[[2  1 1, 1  19]]").unwrap();
 
         let cmp = PolyOverZ::from_str("3  20 40 1").unwrap();
-        let dot_prod = poly_vec1.dot_product(&poly_vec2).unwrap();
+        let dot_prod = poly_vec_1.dot_product(&poly_vec_2).unwrap();
 
         assert_eq!(dot_prod, cmp);
     }
@@ -104,11 +104,11 @@ mod test_dot_product {
     /// `self`: column vector, `other`: column vector.
     #[test]
     fn column_with_column() {
-        let poly_vec1 = MatPolyOverZ::from_str("[[2  1 1],[2  1 2],[1  42]]").unwrap();
-        let poly_vec2 = MatPolyOverZ::from_str("[[2  1 1],[1  19],[1  3]]").unwrap();
+        let poly_vec_1 = MatPolyOverZ::from_str("[[2  1 1],[2  1 2],[1  42]]").unwrap();
+        let poly_vec_2 = MatPolyOverZ::from_str("[[2  1 1],[1  19],[1  3]]").unwrap();
 
         let cmp = PolyOverZ::from_str("3  146 40 1").unwrap();
-        let dot_prod = poly_vec1.dot_product(&poly_vec2).unwrap();
+        let dot_prod = poly_vec_1.dot_product(&poly_vec_2).unwrap();
 
         assert_eq!(dot_prod, cmp);
     }
@@ -117,11 +117,11 @@ mod test_dot_product {
     /// `self`: row vector, `other`: column vector.
     #[test]
     fn row_with_column() {
-        let poly_vec1 = MatPolyOverZ::from_str("[[2  1 1, 2  1 2]]").unwrap();
-        let poly_vec2 = MatPolyOverZ::from_str("[[2  1 1],[1  19]]").unwrap();
+        let poly_vec_1 = MatPolyOverZ::from_str("[[2  1 1, 2  1 2]]").unwrap();
+        let poly_vec_2 = MatPolyOverZ::from_str("[[2  1 1],[1  19]]").unwrap();
 
         let cmp = PolyOverZ::from_str("3  20 40 1").unwrap();
-        let dot_prod = poly_vec1.dot_product(&poly_vec2).unwrap();
+        let dot_prod = poly_vec_1.dot_product(&poly_vec_2).unwrap();
 
         assert_eq!(dot_prod, cmp);
     }
@@ -130,11 +130,11 @@ mod test_dot_product {
     /// `self`: column vector, `other`: row vector.
     #[test]
     fn column_with_row() {
-        let poly_vec1 = MatPolyOverZ::from_str("[[2  1 1],[2  1 2],[1  42]]").unwrap();
-        let poly_vec2 = MatPolyOverZ::from_str("[[2  1 1, 1  19, 1  3]]").unwrap();
+        let poly_vec_1 = MatPolyOverZ::from_str("[[2  1 1],[2  1 2],[1  42]]").unwrap();
+        let poly_vec_2 = MatPolyOverZ::from_str("[[2  1 1, 1  19, 1  3]]").unwrap();
 
         let cmp = PolyOverZ::from_str("3  146 40 1").unwrap();
-        let dot_prod = poly_vec1.dot_product(&poly_vec2).unwrap();
+        let dot_prod = poly_vec_1.dot_product(&poly_vec_2).unwrap();
 
         assert_eq!(dot_prod, cmp);
     }
@@ -142,13 +142,13 @@ mod test_dot_product {
     /// Check whether the dot product is calculated correctly with large numbers.
     #[test]
     fn large_numbers() {
-        let poly_vec1 = MatPolyOverZ::from_str("[[2  1 1, 1  2, 1  1]]").unwrap();
-        let poly_vec2 =
+        let poly_vec_1 = MatPolyOverZ::from_str("[[2  1 1, 1  2, 1  1]]").unwrap();
+        let poly_vec_2 =
             MatPolyOverZ::from_str(&format!("[[2  1 2, 1  {}, 1  {}]]", i64::MAX, i64::MIN))
                 .unwrap();
 
         let cmp = PolyOverZ::from_str(&format!("3  {} 3 2", i64::MAX)).unwrap();
-        let dot_prod = poly_vec1.dot_product(&poly_vec2).unwrap();
+        let dot_prod = poly_vec_1.dot_product(&poly_vec_2).unwrap();
 
         assert_eq!(dot_prod, cmp);
     }
@@ -171,10 +171,10 @@ mod test_dot_product {
     /// vectors of different lengths yield an error.
     #[test]
     fn different_lengths_yield_error() {
-        let poly_vec1 = MatPolyOverZ::from_str("[[2  1 1],[2  1 2],[1  42]]").unwrap();
-        let poly_vec2 = MatPolyOverZ::from_str("[[2  1 1, 1  19, 1  3, 2  13 90]]").unwrap();
+        let poly_vec_1 = MatPolyOverZ::from_str("[[2  1 1],[2  1 2],[1  42]]").unwrap();
+        let poly_vec_2 = MatPolyOverZ::from_str("[[2  1 1, 1  19, 1  3, 2  13 90]]").unwrap();
 
-        assert!(poly_vec1.dot_product(&poly_vec2).is_err());
-        assert!(poly_vec2.dot_product(&poly_vec1).is_err());
+        assert!(poly_vec_1.dot_product(&poly_vec_2).is_err());
+        assert!(poly_vec_2.dot_product(&poly_vec_1).is_err());
     }
 }

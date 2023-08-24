@@ -43,6 +43,6 @@ mod test_default {
     fn init_zero() {
         let poly_over_zero = PolyOverZ::default();
 
-        assert_eq!(PolyOverZ::default(), poly_over_zero)
+        assert_eq!(PolyOverZ::default(), poly_over_zero);
     }
 }

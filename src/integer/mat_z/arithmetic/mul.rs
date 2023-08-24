@@ -34,7 +34,7 @@ impl Mul for &MatZ {
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
-    /// let a = MatZ::from_str("[[2,1],[1,2]]").unwrap();
+    /// let a = MatZ::from_str("[[2, 1],[1, 2]]").unwrap();
     /// let b = MatZ::identity(2, 2);
     ///
     /// let c = &a * &b;
@@ -63,7 +63,7 @@ impl MatZ {
     /// use qfall_math::integer::MatZ;
     /// use std::str::FromStr;
     ///
-    /// let a = MatZ::from_str("[[2,1],[1,2]]").unwrap();
+    /// let a = MatZ::from_str("[[2, 1],[1, 2]]").unwrap();
     /// let b = MatZ::identity(2, 2);
     ///
     /// let c: MatZ = a.mul_safe(&b).unwrap();
@@ -102,10 +102,10 @@ mod test_mul {
     /// Checks if matrix multiplication works fine for squared matrices
     #[test]
     fn square_correctness() {
-        let mat_1 = MatZ::from_str("[[2,1],[1,2]]").unwrap();
+        let mat_1 = MatZ::from_str("[[2, 1],[1, 2]]").unwrap();
         let mat_2 = MatZ::identity(2, 2);
-        let mat_3 = MatZ::from_str("[[1,2],[2,1]]").unwrap();
-        let cmp = MatZ::from_str("[[4,5],[5,4]]").unwrap();
+        let mat_3 = MatZ::from_str("[[1, 2],[2, 1]]").unwrap();
+        let cmp = MatZ::from_str("[[4, 5],[5, 4]]").unwrap();
 
         assert_eq!(mat_1, &mat_1 * &mat_2);
         assert_eq!(cmp, &mat_1 * &mat_3);
@@ -114,7 +114,7 @@ mod test_mul {
     /// Checks if matrix multiplication works fine for matrices of different dimensions
     #[test]
     fn different_dimensions_correctness() {
-        let mat = MatZ::from_str("[[2,1],[1,2]]").unwrap();
+        let mat = MatZ::from_str("[[2, 1],[1, 2]]").unwrap();
         let vec = MatZ::from_str("[[1],[0]]").unwrap();
         let cmp = MatZ::from_str("[[2],[1]]").unwrap();
 
@@ -124,7 +124,7 @@ mod test_mul {
     /// Checks if matrix multiplication works fine for large entries
     #[test]
     fn large_entries() {
-        let mat = MatZ::from_str(&format!("[[{},1],[0,2]]", i64::MAX)).unwrap();
+        let mat = MatZ::from_str(&format!("[[{}, 1],[0, 2]]", i64::MAX)).unwrap();
         let vec = MatZ::from_str(&format!("[[{}],[0]]", i64::MAX)).unwrap();
         let mut cmp = MatZ::new(2, 1);
         let max: Z = i64::MAX.into();
@@ -137,8 +137,8 @@ mod test_mul {
     /// throws an error as expected
     #[test]
     fn incompatible_dimensions() {
-        let mat_1 = MatZ::from_str("[[2,1],[1,2]]").unwrap();
-        let mat_2 = MatZ::from_str("[[1,0],[0,1],[0,0]]").unwrap();
+        let mat_1 = MatZ::from_str("[[2, 1],[1, 2]]").unwrap();
+        let mat_2 = MatZ::from_str("[[1, 0],[0, 1],[0, 0]]").unwrap();
 
         assert!((mat_1.mul_safe(&mat_2)).is_err());
     }

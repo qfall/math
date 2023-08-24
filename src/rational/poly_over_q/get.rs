@@ -85,7 +85,7 @@ mod test_get_coeff {
 
         let zero_coeff = poly.get_coeff(4).unwrap();
 
-        assert_eq!(Q::ZERO, zero_coeff)
+        assert_eq!(Q::ZERO, zero_coeff);
     }
 
     /// Test if indices smaller than `0` return an error
@@ -103,7 +103,7 @@ mod test_get_coeff {
 
         let coeff = poly.get_coeff(3).unwrap();
 
-        assert_eq!(Q::from((-3, 2)), coeff)
+        assert_eq!(Q::from((-3, 2)), coeff);
     }
 
     /// Tests if positive coefficients are returned correctly
@@ -113,13 +113,13 @@ mod test_get_coeff {
 
         let coeff = poly.get_coeff(2).unwrap();
 
-        assert_eq!(Q::from((2, 3)), coeff)
+        assert_eq!(Q::from((2, 3)), coeff);
     }
 
     /// Tests if large coefficients are returned correctly
     #[test]
     fn large_coeff() {
-        let q_str = format!("-{}/{}", u64::MAX, i64::MIN,);
+        let q_str = format!("-{}/{}", u64::MAX, i64::MIN);
         let large_string = format!("2  {q_str} {}", u64::MAX);
         let poly = PolyOverQ::from_str(&large_string).unwrap();
 
@@ -156,14 +156,14 @@ mod test_get_degree {
     /// Ensure that degree is working for constant polynomials
     #[test]
     fn degree_constant() {
-        let poly1 = PolyOverQ::from_str("1  1/8").unwrap();
-        let poly2 = PolyOverQ::default();
+        let poly_1 = PolyOverQ::from_str("1  1/8").unwrap();
+        let poly_2 = PolyOverQ::default();
 
-        let deg1 = poly1.get_degree();
-        let deg2 = poly2.get_degree();
+        let deg_1 = poly_1.get_degree();
+        let deg_2 = poly_2.get_degree();
 
-        assert_eq!(0, deg1);
-        assert_eq!(-1, deg2);
+        assert_eq!(0, deg_1);
+        assert_eq!(-1, deg_2);
     }
 
     /// Ensure that degree is working for polynomials with leading 0 coefficients

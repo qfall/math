@@ -28,7 +28,7 @@ impl fmt::Display for MatQ {
     /// use core::fmt;
     /// use std::str::FromStr;
     ///
-    /// let matrix = MatQ::from_str("[[1/2,2,3/4],[4,5/3,6]]").unwrap();
+    /// let matrix = MatQ::from_str("[[1/2, 2, 3/4],[4, 5/3, 6]]").unwrap();
     /// println!("{matrix}");
     /// ```
     ///
@@ -37,7 +37,7 @@ impl fmt::Display for MatQ {
     /// use core::fmt;
     /// use std::str::FromStr;
     ///
-    /// let matrix = MatQ::from_str("[[1/2,2,3/4],[4,5/3,6]]").unwrap();
+    /// let matrix = MatQ::from_str("[[1/2, 2, 3/4],[4, 5/3, 6]]").unwrap();
     /// let matrix_string = matrix.to_string();
     /// ```
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -82,7 +82,7 @@ mod test_to_string {
     fn working_positive() {
         let cmp = MatQ::from_str("[[2, 1, 2/3],[5, 6, 14/7]]").unwrap();
 
-        assert_eq!("[[2, 1, 2/3],[5, 6, 2]]", cmp.to_string())
+        assert_eq!("[[2, 1, 2/3],[5, 6, 2]]", cmp.to_string());
     }
 
     /// Tests whether a matrix with negative nominators and denominators works
@@ -91,20 +91,20 @@ mod test_to_string {
     fn working_negative() {
         let cmp = MatQ::from_str("[[-2, 1, -3/8],[5, 1/-6, -14/7]]").unwrap();
 
-        assert_eq!("[[-2, 1, -3/8],[5, -1/6, -2]]", cmp.to_string())
+        assert_eq!("[[-2, 1, -3/8],[5, -1/6, -2]]", cmp.to_string());
     }
 
     /// Tests whether a large matrix works in a roundtrip
     #[test]
-    fn working_big_dimensions() {
-        let cmp1 = MatQ::from_str(&format!("[{}[5, 6, 7]]", "[1/2, 2, 3/8],".repeat(99))).unwrap();
-        let cmp2 = MatQ::from_str(&format!("[[{}1]]", "1/4, ".repeat(99))).unwrap();
+    fn working_large_dimensions() {
+        let cmp_1 = MatQ::from_str(&format!("[{}[5, 6, 7]]", "[1/2, 2, 3/8],".repeat(99))).unwrap();
+        let cmp_2 = MatQ::from_str(&format!("[[{}1]]", "1/4, ".repeat(99))).unwrap();
 
         assert_eq!(
             format!("[{}[5, 6, 7]]", "[1/2, 2, 3/8],".repeat(99)),
-            cmp1.to_string()
+            cmp_1.to_string()
         );
-        assert_eq!(format!("[[{}1]]", "1/4, ".repeat(99)), cmp2.to_string());
+        assert_eq!(format!("[[{}1]]", "1/4, ".repeat(99)), cmp_2.to_string());
     }
 
     /// Tests whether a matrix that is created using a string, returns a
@@ -113,8 +113,8 @@ mod test_to_string {
     fn working_use_result_of_to_string_as_input() {
         let cmp = MatQ::from_str("[[-2/5, 1, 3],[5, 1/-6, 14/7]]").unwrap();
 
-        let cmp_string2 = cmp.to_string();
+        let cmp_str_2 = cmp.to_string();
 
-        assert!(MatQ::from_str(&cmp_string2).is_ok())
+        assert!(MatQ::from_str(&cmp_str_2).is_ok());
     }
 }

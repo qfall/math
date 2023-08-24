@@ -25,7 +25,7 @@ impl MatZq {
     /// use std::str::FromStr;
     ///
     /// let col_vec = MatZq::from_str("[[1],[2],[3]] mod 4").unwrap();
-    /// let row_vec = MatZq::from_str("[[1,2,3]] mod 4").unwrap();
+    /// let row_vec = MatZq::from_str("[[1, 2, 3]] mod 4").unwrap();
     ///
     /// assert!(row_vec.is_row_vector());
     /// assert!(!col_vec.is_row_vector());
@@ -43,7 +43,7 @@ impl MatZq {
     /// use std::str::FromStr;
     ///
     /// let col_vec = MatZq::from_str("[[1],[2],[3]] mod 4").unwrap();
-    /// let row_vec = MatZq::from_str("[[1,2,3]] mod 4").unwrap();
+    /// let row_vec = MatZq::from_str("[[1, 2, 3]] mod 4").unwrap();
     ///
     /// assert!(col_vec.is_column_vector());
     /// assert!(!row_vec.is_column_vector());
@@ -61,7 +61,7 @@ impl MatZq {
     /// use std::str::FromStr;
     ///
     /// let col_vec = MatZq::from_str("[[1],[2],[3]] mod 4").unwrap();
-    /// let row_vec = MatZq::from_str("[[1,2,3]] mod 4").unwrap();
+    /// let row_vec = MatZq::from_str("[[1, 2, 3]] mod 4").unwrap();
     ///
     /// assert!(col_vec.is_vector());
     /// assert!(row_vec.is_vector());
@@ -96,7 +96,7 @@ mod test_is_vector {
     /// get recognized as (row or column) vectors
     #[test]
     fn vectors_detected() {
-        let row = MatZq::from_str(&format!("[[1,{}]] mod {}", i64::MIN, u64::MAX)).unwrap();
+        let row = MatZq::from_str(&format!("[[1, {}]] mod {}", i64::MIN, u64::MAX)).unwrap();
         let col =
             MatZq::from_str(&format!("[[1],[2],[{}],[4]] mod {}", i64::MAX, u64::MAX)).unwrap();
 
@@ -113,13 +113,22 @@ mod test_is_vector {
     /// don't get recognized as (row or column) vector
     #[test]
     fn non_vectors_detected() {
-        let mat_1 = MatZq::from_str(&format!("[[1,{}],[2,3]] mod {}", i64::MIN, u64::MAX)).unwrap();
-        let mat_2 =
-            MatZq::from_str(&format!("[[1,{},3],[4,5,6]] mod {}", i64::MAX, u64::MAX)).unwrap();
-        let mat_3 =
-            MatZq::from_str(&format!("[[1,{}],[2,3],[4,5]] mod {}", i64::MIN, u64::MAX)).unwrap();
-        let mat_4 = MatZq::from_str("[[1,0],[2,0],[4,0]] mod 6").unwrap();
-        let mat_5 = MatZq::from_str("[[1,2,4],[0,0,0]] mod 6").unwrap();
+        let mat_1 =
+            MatZq::from_str(&format!("[[1, {}],[2, 3]] mod {}", i64::MIN, u64::MAX)).unwrap();
+        let mat_2 = MatZq::from_str(&format!(
+            "[[1, {}, 3],[4, 5, 6]] mod {}",
+            i64::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+        let mat_3 = MatZq::from_str(&format!(
+            "[[1, {}],[2, 3],[4, 5]] mod {}",
+            i64::MIN,
+            u64::MAX
+        ))
+        .unwrap();
+        let mat_4 = MatZq::from_str("[[1, 0],[2, 0],[4, 0]] mod 6").unwrap();
+        let mat_5 = MatZq::from_str("[[1, 2, 4],[0, 0, 0]] mod 6").unwrap();
 
         assert!(!mat_1.is_column_vector());
         assert!(!mat_1.is_row_vector());
@@ -166,9 +175,9 @@ mod test_is_vector {
     /// don't get recognized as single entry matrices
     #[test]
     fn non_single_entry_detected() {
-        let row = MatZq::from_str(&format!("[[1,{}]] mod {}", i64::MIN, u64::MAX)).unwrap();
+        let row = MatZq::from_str(&format!("[[1, {}]] mod {}", i64::MIN, u64::MAX)).unwrap();
         let col = MatZq::from_str(&format!("[[1],[{}],[3]] mod {}", i64::MIN, u64::MAX)).unwrap();
-        let mat = MatZq::from_str("[[1,2],[3,4],[5,6]] mod 4").unwrap();
+        let mat = MatZq::from_str("[[1, 2],[3, 4],[5, 6]] mod 4").unwrap();
 
         assert!(!row.has_single_entry());
         assert!(!col.has_single_entry());

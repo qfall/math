@@ -46,7 +46,7 @@ impl SetEntry<&PolyOverZ> for MatPolynomialRingZq {
     /// poly_ring_mat.set_entry(0, 1, &value).unwrap();
     /// poly_ring_mat.set_entry(-1, -1, &value).unwrap();
     ///
-    /// let mat_cmp = MatPolynomialRingZq::from((&MatPolyOverZ::new(2,2), &modulus));
+    /// let mat_cmp = MatPolynomialRingZq::from((&MatPolyOverZ::new(2, 2), &modulus));
     /// assert_eq!(poly_ring_mat, mat_cmp);
     /// ```
     ///
@@ -100,7 +100,7 @@ impl SetEntry<&PolynomialRingZq> for MatPolynomialRingZq {
     /// poly_ring_mat.set_entry(0, 1, &value).unwrap();
     /// poly_ring_mat.set_entry(-1, -1, &value).unwrap();
     ///
-    /// let mat_cmp = MatPolynomialRingZq::from((&MatPolyOverZ::new(2,2), &modulus));
+    /// let mat_cmp = MatPolynomialRingZq::from((&MatPolyOverZ::new(2, 2), &modulus));
     /// assert_eq!(poly_ring_mat, mat_cmp);
     /// ```
     ///
@@ -168,7 +168,7 @@ mod test_setter {
 
     /// Ensure that setting entries works with large numbers.
     #[test]
-    fn big_positive() {
+    fn large_positive() {
         let modulus =
             ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {LARGE_PRIME}")).unwrap();
         let poly_mat =
@@ -191,7 +191,7 @@ mod test_setter {
 
     /// Ensure that setting entries works with referenced large numbers.
     #[test]
-    fn big_positive_ref() {
+    fn large_positive_ref() {
         let modulus =
             ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {LARGE_PRIME}")).unwrap();
         let poly_mat = MatPolyOverZ::from_str(&format!(
@@ -217,7 +217,7 @@ mod test_setter {
 
     /// Ensure that setting entries works with large negative numbers.
     #[test]
-    fn big_negative() {
+    fn large_negative() {
         let modulus =
             ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {LARGE_PRIME}")).unwrap();
         let poly_mat = MatPolyOverZ::from_str(&format!(
@@ -269,11 +269,11 @@ mod test_setter {
     /// Ensure that differing moduli result in an error.
     #[test]
     fn modulus_error() {
-        let modulus1 = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-        let modulus2 = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
+        let modulus_1 = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        let modulus_2 = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
         let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
-        let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus1));
-        let value = PolynomialRingZq::from((&PolyOverZ::default(), &modulus2));
+        let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus_1));
+        let value = PolynomialRingZq::from((&PolyOverZ::default(), &modulus_2));
 
         assert!(poly_ring_mat.set_entry(1, 1, value).is_err());
     }

@@ -58,7 +58,7 @@ mod test_evaluate {
 
         let res = poly.evaluate(Q::from((7, 3)));
 
-        assert_eq!(Q::from((5, 3)), res)
+        assert_eq!(Q::from((5, 3)), res);
     }
 
     /// Tests if evaluate works with negative values
@@ -68,20 +68,20 @@ mod test_evaluate {
 
         let res = poly.evaluate(Q::from((-7, 3)));
 
-        assert_eq!(Q::from((1, 3)), res)
+        assert_eq!(Q::from((1, 3)), res);
     }
 
     /// Tests if evaluate works with large rationals
     #[test]
     fn eval_q_large() {
-        let q_str = format!("{}/{}", u64::MAX, i64::MIN,);
+        let q_str = format!("{}/{}", u64::MAX, i64::MIN);
         let q_str_rev = format!("{}/{}", i64::MIN, u64::MAX);
         let large_string = format!("2  0 {q_str}");
         let poly = PolyOverQ::from_str(&large_string).unwrap();
 
         let res = poly.evaluate(Q::from_str(&q_str_rev).unwrap());
 
-        assert_eq!(Q::ONE, res)
+        assert_eq!(Q::ONE, res);
     }
 }
 
@@ -99,7 +99,7 @@ mod test_evaluate_z {
 
         let res = poly.evaluate(Z::from(3));
 
-        assert_eq!(Q::from((13, 7)), res)
+        assert_eq!(Q::from((13, 7)), res);
     }
 
     /// Tests if evaluate works with negative values
@@ -109,22 +109,22 @@ mod test_evaluate_z {
 
         let res = poly.evaluate(&Z::from(-5));
 
-        assert_eq!(Q::from((-3, 7)), res)
+        assert_eq!(Q::from((-3, 7)), res);
     }
 
     /// Test if evaluate works with large nominators and denominators
     #[test]
     fn eval_large_nom_denom_large_ref_z() {
-        let q_str = format!("{}/{}", u64::MAX, i64::MIN,);
+        let q_str = format!("{}/{}", u64::MAX, i64::MIN);
         let large_string = format!("2  -{} {q_str}", u64::MAX);
         let poly = PolyOverQ::from_str(&large_string).unwrap();
 
         let res = poly.evaluate(&Z::from(i64::MIN));
 
-        assert_eq!(Q::default(), res)
+        assert_eq!(Q::default(), res);
     }
 
-    /// Test if evaluate works with max of [`i64`], [`i32`], ...
+    /// Test if evaluate works with max of [`i64`],[`i32`], ...
     #[test]
     fn eval_max() {
         let poly = PolyOverQ::from_str("2  1/7 2/3").unwrap();
@@ -142,7 +142,7 @@ mod test_evaluate_z {
         let _ = poly.evaluate(u8::MAX);
     }
 
-    /// Test if evaluate works with min of [`i64`], [`i32`], ...
+    /// Test if evaluate works with min of [`i64`],[`i32`], ...
     #[test]
     fn eval_min() {
         let poly = PolyOverQ::from_str("2  1/7 2/3").unwrap();
@@ -176,7 +176,7 @@ mod test_evaluate_q {
 
         let res = poly.evaluate(&Q::from((7, 3)));
 
-        assert_eq!(Q::from((5, 3)), res)
+        assert_eq!(Q::from((5, 3)), res);
     }
 
     /// Tests if evaluate works with negative values
@@ -186,19 +186,19 @@ mod test_evaluate_q {
 
         let res = poly.evaluate(&Q::from((-7, 3)));
 
-        assert_eq!(Q::from((1, 3)), res)
+        assert_eq!(Q::from((1, 3)), res);
     }
 
     /// Tests if evaluate works with large rationals
     #[test]
     fn eval_q_large() {
-        let q_str = format!("{}/{}", u64::MAX, i64::MIN,);
+        let q_str = format!("{}/{}", u64::MAX, i64::MIN);
         let q_str_rev = format!("{}/{}", i64::MIN, u64::MAX);
         let large_string = format!("2  0 {q_str}");
         let poly = PolyOverQ::from_str(&large_string).unwrap();
 
         let res = poly.evaluate(&Q::from_str(&q_str_rev).unwrap());
 
-        assert_eq!(Q::ONE, res)
+        assert_eq!(Q::ONE, res);
     }
 }

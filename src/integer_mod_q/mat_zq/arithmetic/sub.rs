@@ -154,7 +154,7 @@ mod test_sub {
         );
     }
 
-    /// Testing subtraction for big numbers
+    /// Testing subtraction for large numbers
     #[test]
     fn sub_large_numbers() {
         let a: MatZq = MatZq::from_str(&format!(
@@ -202,6 +202,6 @@ mod test_sub {
         let d: MatZq = MatZq::from_str("[[1, 2],[3, 4]] mod 3").unwrap();
         assert!(a.sub_safe(&b).is_err());
         assert!(c.sub_safe(&b).is_err());
-        assert!(a.add_safe(&d).is_err())
+        assert!(a.add_safe(&d).is_err());
     }
 }

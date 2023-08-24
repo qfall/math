@@ -53,7 +53,7 @@ mod vector;
 /// use std::str::FromStr;
 ///
 /// // instantiate new matrix
-/// let id_mat = MatZq::from_str("[[1,0],[0,1]] mod 2").unwrap();
+/// let id_mat = MatZq::from_str("[[1, 0],[0, 1]] mod 2").unwrap();
 ///
 /// // clone object, set and get entry
 /// let mut clone = id_mat.clone();
@@ -72,7 +72,7 @@ mod vector;
 /// };
 /// use std::str::FromStr;
 ///
-/// let row_vec = MatZq::from_str("[[1,1,1]] mod 2").unwrap();
+/// let row_vec = MatZq::from_str("[[1, 1, 1]] mod 2").unwrap();
 /// let col_vec = MatZq::from_str("[[1],[-1],[0]] mod 2").unwrap();
 ///
 /// // check if matrix instance is vector

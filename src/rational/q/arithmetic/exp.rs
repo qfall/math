@@ -51,7 +51,7 @@ impl Q {
 
             // Divide x*log_2(e) into an integer part i and the remainder r.
             // 2^(i+r) = 2^i * 2^r
-            // 2^r ~= r+1 for r in [0,1]
+            // 2^r ~= r+1 for r in [0, 1]
             let mut out: Q = base_2_remainder_exponent + 1;
             unsafe { fmpq_mul_2exp(&mut out.value, &out.value, base_2_int_exponent as u64) }
             out
@@ -88,7 +88,7 @@ mod test_exp {
     /// Ensure that `e^0 = 1`.
     #[test]
     fn zero() {
-        assert_eq!(Q::ONE, Q::ZERO.exp())
+        assert_eq!(Q::ONE, Q::ZERO.exp());
     }
 
     /// Ensure that `e^1 = e`.
@@ -96,7 +96,7 @@ mod test_exp {
     fn one() {
         let e = Q::ONE.exp();
 
-        assert_eq!(e, Q::from(1f64.exp()))
+        assert_eq!(e, Q::from(1f64.exp()));
     }
 
     /// Show the exp behavior for large negative inputs zero e^-745, but values smaller than e^-745 do.
@@ -130,7 +130,7 @@ mod test_exp {
     fn medium_exponent() {
         let a = Q::from(300).exp();
 
-        assert_eq!(a, Q::from(300f64.exp()))
+        assert_eq!(a, Q::from(300f64.exp()));
     }
 
     /// Ensure that the exponential function for large values outputs different results.

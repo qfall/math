@@ -53,14 +53,15 @@ impl FromStr for MatQ {
     type Err = MathError;
 
     /// Creates a [`MatQ`] matrix with entries in [`Q`] from a [`String`].
-    /// The format of that string looks like this <br> `[[1/2,2/3,3/4],[4/5,5/6,6/7]]` for a 2x3 matrix
-    /// with entries 1/2,2/3,3/4 in the first row and 4/5,5/6,6/7 in the second row.
+    /// The format of that string looks like this <br> `[[1/2, 2/3, 3/4],[4/5, 5/6, 6/7]`
+    /// for a 2x3 matrix
+    /// with entries 1/2, 2/3, 3/4 in the first row and 4/5, 5/6, 6/7 in the second row.
     ///
     /// Parameters:
     /// - `string`: the matrix as a string
     ///
     /// Returns a [`MatQ`] or an error, if the matrix is not formatted in a suitable way,
-    /// the number of rows or columns is too big (must fit into [`i64`]),
+    /// the number of rows or columns is too large (must fit into [`i64`]),
     /// the number of entries in rows is unequal or if the regular expression
     /// inside of the function could not be processed.
     ///
@@ -69,22 +70,22 @@ impl FromStr for MatQ {
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let matrix = MatQ::from_str("[[1/2,2/3,3/4],[4/5,5/6,6/7]]").unwrap();
+    /// let matrix = MatQ::from_str("[[1/2, 2/3, 3/4],[4/5, 5/6, 6/7]]").unwrap();
     /// ```
     ///
     /// ```
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let str1 = "[[1/2,2/3,3/4],[4/5,5/6,6/7]]";
-    /// let matrix = MatQ::from_str(str1).unwrap();
+    /// let str_1 = "[[1/2, 2/3, 3/4],[4/5, 5/6, 6/7]]";
+    /// let matrix = MatQ::from_str(str_1).unwrap();
     /// ```
     ///
     /// ```
     /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
-    /// let string = String::from("[[1/2,2/3,3/4],[4/5,5/6,6/7]]");
+    /// let string = String::from("[[1/2, 2/3, 3/4],[4/5, 5/6, 6/7]]");
     /// let matrix = MatQ::from_str(&string).unwrap();
     /// ```
     ///
@@ -176,11 +177,11 @@ mod test_from_str {
     /// Ensure that initialization works.
     #[test]
     fn init_works() {
-        let matrix_str1 = "[[1/2,2/3,3/4],[4/5,5/6,6/7]]";
+        let matrix_str_1 = "[[1/2, 2/3, 3/4],[4/5, 5/6, 6/7]]";
 
         assert_eq!(
             Q::from((1, 2)),
-            MatQ::from_str(matrix_str1)
+            MatQ::from_str(matrix_str_1)
                 .unwrap()
                 .get_entry(0, 0)
                 .unwrap()
@@ -190,12 +191,12 @@ mod test_from_str {
     /// Ensure that initialization works with integers.
     #[test]
     fn init_integer_works() {
-        let matrix_str1 = "[[1, 2, 3],[3, 4, 5]]";
+        let matrix_str_1 = "[[1, 2, 3],[3, 4, 5]]";
 
         assert_eq!(
             Z::ONE,
             Z {
-                value: MatQ::from_str(matrix_str1)
+                value: MatQ::from_str(matrix_str_1)
                     .unwrap()
                     .get_entry(0, 0)
                     .unwrap()
@@ -207,7 +208,7 @@ mod test_from_str {
         assert_eq!(
             Z::ONE,
             Z {
-                value: MatQ::from_str(matrix_str1)
+                value: MatQ::from_str(matrix_str_1)
                     .unwrap()
                     .get_entry(0, 0)
                     .unwrap()
@@ -274,11 +275,11 @@ mod test_from_str {
     /// Ensure that entries can have leading and trailing whitespaces.
     #[test]
     fn whitespaces_in_entries_works() {
-        let matrix_str1 = "[[  1/2, 2/3 ,  3/4  ],[3/4 ,4/5,5/6 ]]";
+        let matrix_str_1 = "[[  1/2, 2/3 ,  3/4  ],[3/4 , 4/5, 5/6 ]]";
 
         assert_eq!(
             Q::from((1, 2)),
-            MatQ::from_str(matrix_str1)
+            MatQ::from_str(matrix_str_1)
                 .unwrap()
                 .get_entry(0, 0)
                 .unwrap()
@@ -288,24 +289,24 @@ mod test_from_str {
     /// Ensure that a wrong format causes an error.
     #[test]
     fn wrong_format_error() {
-        let matrix_str1 = "[1/2, 2, 3],[3, 4/7, 5]]";
-        let matrix_str2 = "[[1, 2/9, 3][3, 4, 5/5]]";
-        let matrix_str3 = "[[1, 2, 3/2],3, 4, 5]";
-        let matrix_str4 = "[1, 2, 3, 4/5, 5]";
-        let matrix_str5 = "[ [1, 2/8, 3],[3, 4, 5]]";
-        let matrix_str6 = "[[1, 2, 3],[3, 4/9, 5]8]";
-        let matrix_str7 = "";
-        let matrix_str8 = "[]";
-        let matrix_str9 = "[[]]";
+        let matrix_str_1 = "[1/2, 2, 3],[3, 4/7, 5]]";
+        let matrix_str_2 = "[[1, 2/9, 3][3, 4, 5/5]]";
+        let matrix_str_3 = "[[1, 2, 3/2], 3, 4, 5]";
+        let matrix_str_4 = "[1, 2, 3, 4/5, 5]";
+        let matrix_str_5 = "[ [1, 2/8, 3],[3, 4, 5]]";
+        let matrix_str_6 = "[[1, 2, 3],[3, 4/9, 5]8]";
+        let matrix_str_7 = "";
+        let matrix_str_8 = "[]";
+        let matrix_str_9 = "[[]]";
 
-        assert!(MatQ::from_str(matrix_str1).is_err());
-        assert!(MatQ::from_str(matrix_str2).is_err());
-        assert!(MatQ::from_str(matrix_str3).is_err());
-        assert!(MatQ::from_str(matrix_str4).is_err());
-        assert!(MatQ::from_str(matrix_str5).is_err());
-        assert!(MatQ::from_str(matrix_str6).is_err());
-        assert!(MatQ::from_str(matrix_str7).is_err());
-        assert!(MatQ::from_str(matrix_str8).is_err());
-        assert!(MatQ::from_str(matrix_str9).is_err());
+        assert!(MatQ::from_str(matrix_str_1).is_err());
+        assert!(MatQ::from_str(matrix_str_2).is_err());
+        assert!(MatQ::from_str(matrix_str_3).is_err());
+        assert!(MatQ::from_str(matrix_str_4).is_err());
+        assert!(MatQ::from_str(matrix_str_5).is_err());
+        assert!(MatQ::from_str(matrix_str_6).is_err());
+        assert!(MatQ::from_str(matrix_str_7).is_err());
+        assert!(MatQ::from_str(matrix_str_8).is_err());
+        assert!(MatQ::from_str(matrix_str_9).is_err());
     }
 }

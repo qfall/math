@@ -82,10 +82,10 @@ mod test_eq {
     fn unequal() {
         let one = Modulus::from(3);
         let two = Modulus::from(2);
-        let big = Modulus::from_str(&"1".repeat(65)).unwrap();
+        let large = Modulus::from_str(&"1".repeat(65)).unwrap();
 
         assert_ne!(one, two);
-        assert_ne!(one, big);
-        assert_ne!(two, big);
+        assert_ne!(one, large);
+        assert_ne!(two, large);
     }
 }

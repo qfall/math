@@ -94,7 +94,7 @@ mod test_sample_uniform {
     }
 
     /// Checks whether matrices with at least one dimension chosen smaller than `1`
-    /// or too big for an [`i64`] results in a panic.
+    /// or too large for an [`i64`] results in a panic.
     #[should_panic]
     #[test]
     fn false_size() {

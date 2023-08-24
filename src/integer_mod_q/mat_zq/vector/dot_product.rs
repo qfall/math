@@ -35,7 +35,7 @@ impl MatZq {
     /// use std::str::FromStr;
     ///
     /// let vec_1 = MatZq::from_str("[[1],[2],[3]] mod 5").unwrap();
-    /// let vec_2 = MatZq::from_str("[[1,3,2]] mod 5").unwrap();
+    /// let vec_2 = MatZq::from_str("[[1, 3, 2]] mod 5").unwrap();
     ///
     /// let dot_prod = vec_1.dot_product(&vec_2).unwrap();
     ///
@@ -103,8 +103,8 @@ mod test_dot_product {
     /// `self`: row vector, `other`: row vector
     #[test]
     fn row_with_row() {
-        let vec_1 = MatZq::from_str("[[1,2,-3]] mod 5").unwrap();
-        let vec_2 = MatZq::from_str("[[1,3,2]] mod 5").unwrap();
+        let vec_1 = MatZq::from_str("[[1, 2, -3]] mod 5").unwrap();
+        let vec_2 = MatZq::from_str("[[1, 3, 2]] mod 5").unwrap();
 
         let dot_prod = vec_1.dot_product(&vec_2).unwrap();
 
@@ -127,7 +127,7 @@ mod test_dot_product {
     /// `self`: row vector, `other`: column vector
     #[test]
     fn row_with_column() {
-        let vec_1 = MatZq::from_str("[[1,2,-3]] mod 5").unwrap();
+        let vec_1 = MatZq::from_str("[[1, 2, -3]] mod 5").unwrap();
         let vec_2 = MatZq::from_str("[[1],[3],[2]] mod 5").unwrap();
 
         let dot_prod = vec_1.dot_product(&vec_2).unwrap();
@@ -140,7 +140,7 @@ mod test_dot_product {
     #[test]
     fn column_with_row() {
         let vec_1 = MatZq::from_str("[[1],[2],[-3]] mod 5").unwrap();
-        let vec_2 = MatZq::from_str("[[1,3,2]] mod 5").unwrap();
+        let vec_2 = MatZq::from_str("[[1, 3, 2]] mod 5").unwrap();
 
         let dot_prod = vec_1.dot_product(&vec_2).unwrap();
 
@@ -150,8 +150,8 @@ mod test_dot_product {
     /// Check whether the dot product is calculated correctly with large numbers
     #[test]
     fn large_numbers() {
-        let vec_1 = MatZq::from_str(&format!("[[1,1,{}]] mod {}", i64::MAX, u128::MAX)).unwrap();
-        let vec_2 = MatZq::from_str(&format!("[[1,{},1]] mod {}", i64::MIN, u128::MAX)).unwrap();
+        let vec_1 = MatZq::from_str(&format!("[[1, 1, {}]] mod {}", i64::MAX, u128::MAX)).unwrap();
+        let vec_2 = MatZq::from_str(&format!("[[1, {}, 1]] mod {}", i64::MIN, u128::MAX)).unwrap();
         let cmp = Z::from(i64::MIN) + Z::from(i64::MAX) + Z::ONE;
         let cmp = Zq::from((&cmp, &Z::from_str(&format!("{}", u128::MAX)).unwrap()));
 
@@ -164,8 +164,8 @@ mod test_dot_product {
     /// non vector instances yield an error
     #[test]
     fn non_vector_yield_error() {
-        let vec = MatZq::from_str("[[1,3,2]] mod 5").unwrap();
-        let mat = MatZq::from_str("[[1,2],[2,3],[-3,4]] mod 5").unwrap();
+        let vec = MatZq::from_str("[[1, 3, 2]] mod 5").unwrap();
+        let mat = MatZq::from_str("[[1, 2],[2, 3],[-3, 4]] mod 5").unwrap();
 
         assert!(vec.dot_product(&mat).is_err());
         assert!(mat.dot_product(&vec).is_err());
@@ -177,8 +177,8 @@ mod test_dot_product {
     /// vectors of different lengths yield an error
     #[test]
     fn different_lengths_yield_error() {
-        let vec_1 = MatZq::from_str("[[1,2,3]] mod 5").unwrap();
-        let vec_2 = MatZq::from_str("[[1,2,3,4]] mod 5").unwrap();
+        let vec_1 = MatZq::from_str("[[1, 2, 3]] mod 5").unwrap();
+        let vec_2 = MatZq::from_str("[[1, 2, 3, 4]] mod 5").unwrap();
 
         assert!(vec_1.dot_product(&vec_2).is_err());
         assert!(vec_2.dot_product(&vec_1).is_err());
@@ -188,8 +188,8 @@ mod test_dot_product {
     /// vectors with different moduli yield an error
     #[test]
     fn different_moduli() {
-        let vec_1 = MatZq::from_str("[[1,2,3]] mod 5").unwrap();
-        let vec_2 = MatZq::from_str("[[1,2,3]] mod 7").unwrap();
+        let vec_1 = MatZq::from_str("[[1, 2, 3]] mod 5").unwrap();
+        let vec_2 = MatZq::from_str("[[1, 2, 3]] mod 7").unwrap();
 
         assert!(vec_1.dot_product(&vec_2).is_err());
     }

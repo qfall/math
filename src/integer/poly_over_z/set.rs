@@ -76,9 +76,9 @@ mod test_set_coeff {
         assert!(poly.set_coeff(i8::MIN, 2).is_err());
     }
 
-    /// Ensure that big coefficients work.
+    /// Ensure that large coefficients work.
     #[test]
-    fn set_coeff_big() {
+    fn set_coeff_large() {
         let mut poly = PolyOverZ::from_str("2  1 1").unwrap();
 
         assert!(poly.set_coeff(2, i32::MAX).is_ok());
@@ -87,7 +87,7 @@ mod test_set_coeff {
 
     /// Ensure that the max of [`u8`] and [`u16`] works as an index.
     #[test]
-    fn set_index_big() {
+    fn set_index_large() {
         let mut poly = PolyOverZ::from_str("2  1 1").unwrap();
 
         assert!(poly.set_coeff(u8::MAX, 2).is_ok());

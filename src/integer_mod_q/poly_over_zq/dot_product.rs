@@ -28,10 +28,10 @@ impl PolyOverZq {
     /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
     ///
-    /// let poly1 = PolyOverZq::from_str("4  1 0 2 1 mod 11").unwrap();
-    /// let poly2 = PolyOverZq::from_str("1  9 mod 11").unwrap();
+    /// let poly_1 = PolyOverZq::from_str("4  1 0 2 1 mod 11").unwrap();
+    /// let poly_2 = PolyOverZq::from_str("1  9 mod 11").unwrap();
     ///
-    /// let dot_prod = poly1.dot_product(&poly2).unwrap();
+    /// let dot_prod = poly_1.dot_product(&poly_2).unwrap();
     /// ```
     ///
     /// # Errors and Failures
@@ -58,18 +58,18 @@ impl PolyOverZq {
         let mut result = Zq::from((Z::default(), self.get_mod()));
         let mut temp = Zq::from((Z::default(), self.get_mod()));
         for i in 0..=smaller_degree {
-            // sets result = result + coefficient1 * coefficient2
+            // sets result = result + coefficient_1 * coefficient_2
             unsafe {
-                let mut coefficient1 = Z::default();
-                let mut coefficient2 = Z::default();
+                let mut coefficient_1 = Z::default();
+                let mut coefficient_2 = Z::default();
                 fmpz_mod_poly_get_coeff_fmpz(
-                    &mut coefficient1.value,
+                    &mut coefficient_1.value,
                     &self.poly,
                     i,
                     self.modulus.get_fmpz_mod_ctx_struct(),
                 );
                 fmpz_mod_poly_get_coeff_fmpz(
-                    &mut coefficient2.value,
+                    &mut coefficient_2.value,
                     &other.poly,
                     i,
                     other.modulus.get_fmpz_mod_ctx_struct(),
@@ -77,8 +77,8 @@ impl PolyOverZq {
 
                 fmpz_mod_mul(
                     &mut temp.value.value,
-                    &coefficient1.value,
-                    &coefficient2.value,
+                    &coefficient_1.value,
+                    &coefficient_2.value,
                     self.modulus.get_fmpz_mod_ctx_struct(),
                 );
 
@@ -103,11 +103,11 @@ mod test_dot_product {
     /// Check whether the dot product is calculated correctly
     #[test]
     fn dot_product_correct() {
-        let poly1 = PolyOverZq::from_str("2  1 1 mod 8").unwrap();
-        let poly2 = PolyOverZq::from_str("2  3 4 mod 8").unwrap();
+        let poly_1 = PolyOverZq::from_str("2  1 1 mod 8").unwrap();
+        let poly_2 = PolyOverZq::from_str("2  3 4 mod 8").unwrap();
 
         let cmp = Zq::from((7, 8));
-        let dot_prod = poly1.dot_product(&poly2).unwrap();
+        let dot_prod = poly_1.dot_product(&poly_2).unwrap();
 
         assert_eq!(dot_prod, cmp);
     }
@@ -115,12 +115,12 @@ mod test_dot_product {
     /// Check whether the dot product is calculated correctly with large numbers.
     #[test]
     fn large_numbers() {
-        let poly1 = PolyOverZq::from_str(&format!("3  6 2 4 mod {}", i64::MAX)).unwrap();
-        let poly2 =
+        let poly_1 = PolyOverZq::from_str(&format!("3  6 2 4 mod {}", i64::MAX)).unwrap();
+        let poly_2 =
             PolyOverZq::from_str(&format!("3  1 2 {} mod {}", i64::MAX / 8, i64::MAX)).unwrap();
 
         let cmp = Zq::from(((10 + 4 * (i64::MAX / 8)), i64::MAX));
-        let dot_prod = poly1.dot_product(&poly2).unwrap();
+        let dot_prod = poly_1.dot_product(&poly_2).unwrap();
 
         assert_eq!(dot_prod, cmp);
     }
@@ -129,11 +129,11 @@ mod test_dot_product {
     /// polynomials of different lengths works.
     #[test]
     fn different_lengths_work() {
-        let poly1 = PolyOverZq::from_str("3  1 2 3 mod 11").unwrap();
-        let poly2 = PolyOverZq::from_str("2  3 4 mod 11").unwrap();
+        let poly_1 = PolyOverZq::from_str("3  1 2 3 mod 11").unwrap();
+        let poly_2 = PolyOverZq::from_str("2  3 4 mod 11").unwrap();
 
         let cmp = Zq::from((0, 11));
-        let dot_prod = poly1.dot_product(&poly2).unwrap();
+        let dot_prod = poly_1.dot_product(&poly_2).unwrap();
 
         assert_eq!(dot_prod, cmp);
     }
@@ -142,11 +142,11 @@ mod test_dot_product {
     /// polynomials with length 0 works.
     #[test]
     fn zero_length_works() {
-        let poly1 = PolyOverZq::from_str("3  1 2 3 mod 15").unwrap();
-        let poly2 = PolyOverZq::from_str("0 mod 15").unwrap();
+        let poly_1 = PolyOverZq::from_str("3  1 2 3 mod 15").unwrap();
+        let poly_2 = PolyOverZq::from_str("0 mod 15").unwrap();
 
         let cmp = Zq::from((0, 15));
-        let dot_prod = poly1.dot_product(&poly2).unwrap();
+        let dot_prod = poly_1.dot_product(&poly_2).unwrap();
 
         assert_eq!(dot_prod, cmp);
     }
@@ -155,10 +155,10 @@ mod test_dot_product {
     /// polynomials with different moduli yields an error.
     #[test]
     fn modulus_error() {
-        let poly1 = PolyOverZq::from_str("3  1 2 3 mod 15").unwrap();
-        let poly2 = PolyOverZq::from_str("2  1 4 mod 14").unwrap();
+        let poly_1 = PolyOverZq::from_str("3  1 2 3 mod 15").unwrap();
+        let poly_2 = PolyOverZq::from_str("2  1 4 mod 14").unwrap();
 
-        let dot_prod = poly1.dot_product(&poly2);
+        let dot_prod = poly_1.dot_product(&poly_2);
 
         assert!(dot_prod.is_err());
     }

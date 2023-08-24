@@ -1,4 +1,4 @@
-// Copyright © 2023 Niklas Siemer
+// Copyright © 2023 Niklas Siemer and Sven Moog
 //
 // This file is part of qFALL-math.
 //
@@ -33,13 +33,16 @@ impl Z {
     /// let b: Z = Z::from(20);
     ///
     /// let c = a.div_floor(&b);
+    /// let d = a.div_floor(20);
     ///
     /// assert_eq!(Z::from(2), c);
+    /// assert_eq!(Z::from(2), d);
     /// ```
     ///
     /// # Panics ...
     /// - if the divisor is `0`.
-    pub fn div_floor(&self, other: &Self) -> Self {
+    pub fn div_floor(&self, other: impl Into<Z>) -> Self {
+        let other: Z = other.into();
         assert!(!other.is_zero(), "Tried to divide {self} by zero.");
         let mut out = Z::default();
         unsafe {
@@ -63,13 +66,16 @@ impl Z {
     /// let b: Z = Z::from(20);
     ///
     /// let c = a.div_ceil(&b);
+    /// let d = a.div_ceil(20);
     ///
     /// assert_eq!(Z::from(3), c);
+    /// assert_eq!(Z::from(3), d);
     /// ```
     ///
     /// # Panics ...
     /// - if the divisor is `0`.
-    pub fn div_ceil(&self, other: &Self) -> Self {
+    pub fn div_ceil(&self, other: impl Into<Z>) -> Self {
+        let other: Z = other.into();
         assert!(!other.is_zero(), "Tried to divide {self} by zero.");
         let mut out = Z::default();
         unsafe {
@@ -90,20 +96,21 @@ impl Z {
     /// ```
     /// use qfall_math::integer::Z;
     ///
-    /// let a0: Z = Z::from(40);
-    /// let a1: Z = Z::from(42);
+    /// let a_0: Z = Z::from(40);
+    /// let a_1: Z = Z::from(42);
     /// let b: Z = Z::from(20);
     ///
-    /// let c0 = a0.div_exact(&b).unwrap();
-    /// let c1 = a1.div_exact(&b);
+    /// let c_0 = a_0.div_exact(&b).unwrap();
+    /// let c_1 = a_1.div_exact(&b);
     ///
-    /// assert_eq!(Z::from(2), c0);
-    /// assert!(c1.is_none());
+    /// assert_eq!(Z::from(2), c_0);
+    /// assert!(c_1.is_none());
     /// ```
     ///
     /// # Panics ...
     /// - if the divisor is `0`.
-    pub fn div_exact(&self, other: &Self) -> Option<Self> {
+    pub fn div_exact(&self, other: impl Into<Z>) -> Option<Self> {
+        let other: Z = other.into();
         assert!(!other.is_zero(), "Tried to divide {self} by zero.");
 
         let mut quotient = Z::default();
@@ -164,6 +171,35 @@ arithmetic_between_types!(Div, div, Z, Q, i64 i32 i16 i8 u64 u32 u16 u8);
 #[cfg(test)]
 mod test_div_floor {
     use super::Z;
+    use crate::integer_mod_q::Modulus;
+
+    /// Tests that `div_floor` is available for other types.
+    #[test]
+    fn availability() {
+        let value = Z::from(100);
+
+        value.div_floor(3_u8);
+        value.div_floor(3_u16);
+        value.div_floor(3_u32);
+        value.div_floor(3_u64);
+        value.div_floor(3_i8);
+        value.div_floor(3_i16);
+        value.div_floor(3_i32);
+        value.div_floor(3_i64);
+        value.div_floor(Z::from(10));
+        value.div_floor(Modulus::from(10));
+
+        value.div_floor(&3_u8);
+        value.div_floor(&3_u16);
+        value.div_floor(&3_u32);
+        value.div_floor(&3_u64);
+        value.div_floor(&3_i8);
+        value.div_floor(&3_i16);
+        value.div_floor(&3_i32);
+        value.div_floor(&3_i64);
+        value.div_floor(&Z::from(10));
+        value.div_floor(&Modulus::from(10));
+    }
 
     /// Checks whether `div_floor` correctly rounds non-exact quotients down
     #[test]
@@ -245,6 +281,35 @@ arithmetic_trait_mixed_borrowed_owned!(Div, div, Z, Q, Q);
 #[cfg(test)]
 mod test_div_ceil {
     use super::Z;
+    use crate::integer_mod_q::Modulus;
+
+    /// Tests that `div_ceil` is available for other types.
+    #[test]
+    fn availability() {
+        let value = Z::from(100);
+
+        value.div_ceil(3_u8);
+        value.div_ceil(3_u16);
+        value.div_ceil(3_u32);
+        value.div_ceil(3_u64);
+        value.div_ceil(3_i8);
+        value.div_ceil(3_i16);
+        value.div_ceil(3_i32);
+        value.div_ceil(3_i64);
+        value.div_ceil(Z::from(10));
+        value.div_ceil(Modulus::from(10));
+
+        value.div_ceil(&3_u8);
+        value.div_ceil(&3_u16);
+        value.div_ceil(&3_u32);
+        value.div_ceil(&3_u64);
+        value.div_ceil(&3_i8);
+        value.div_ceil(&3_i16);
+        value.div_ceil(&3_i32);
+        value.div_ceil(&3_i64);
+        value.div_ceil(&Z::from(10));
+        value.div_ceil(&Modulus::from(10));
+    }
 
     /// Checks whether `div_ceil` correctly rounds non-exact quotients down
     #[test]
@@ -289,6 +354,35 @@ mod test_div_ceil {
 #[cfg(test)]
 mod test_div_exact {
     use super::Z;
+    use crate::integer_mod_q::Modulus;
+
+    /// Tests that `div_exact` is available for other types.
+    #[test]
+    fn availability() {
+        let value = Z::from(100);
+
+        value.div_exact(3_u8);
+        value.div_exact(3_u16);
+        value.div_exact(3_u32);
+        value.div_exact(3_u64);
+        value.div_exact(3_i8);
+        value.div_exact(3_i16);
+        value.div_exact(3_i32);
+        value.div_exact(3_i64);
+        value.div_exact(Z::from(10));
+        value.div_exact(Modulus::from(10));
+
+        value.div_exact(&3_u8);
+        value.div_exact(&3_u16);
+        value.div_exact(&3_u32);
+        value.div_exact(&3_u64);
+        value.div_exact(&3_i8);
+        value.div_exact(&3_i16);
+        value.div_exact(&3_i32);
+        value.div_exact(&3_i64);
+        value.div_exact(&Z::from(10));
+        value.div_exact(&Modulus::from(10));
+    }
 
     /// Checks whether `div_exact` outputs [`None`] if the quotient is not integer
     #[test]
@@ -465,7 +559,7 @@ mod test_div {
         assert_eq!(c, Q::from((21, 2)));
     }
 
-    /// Testing division for big [`Z`]
+    /// Testing division for large [`Z`]
     #[test]
     fn div_large_numbers() {
         let a: Z = Z::from(i64::MAX as u64 + 1);
@@ -522,7 +616,7 @@ mod test_div_between_z_and_q {
         assert_eq!(c, Q::from((28, 5)));
     }
 
-    /// Testing division for big numbers
+    /// Testing division for large numbers
     #[test]
     fn div_large_numbers() {
         let a: Z = Z::from(u64::MAX);

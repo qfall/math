@@ -36,10 +36,10 @@ impl Mul<&Z> for &MatZq {
     /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
     ///
-    /// let mat1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
+    /// let mat_1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
     /// let integer = Z::from(3);
     ///
-    /// let mat2 = &mat1 * &integer;
+    /// let mat_2 = &mat_1 * &integer;
     /// ```
     fn mul(self, scalar: &Z) -> Self::Output {
         let mut out = MatZq::new(self.get_num_rows(), self.get_num_columns(), self.get_mod());
@@ -73,10 +73,10 @@ impl Mul<&Zq> for &MatZq {
     /// use qfall_math::integer_mod_q::{MatZq, Zq};
     /// use std::str::FromStr;
     ///
-    /// let mat1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
+    /// let mat_1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
     /// let integer = Zq::from((2, 61));
     ///
-    /// let mat2 = &mat1 * &integer;
+    /// let mat_2 = &mat_1 * &integer;
     /// ```
     ///
     /// # Panics ...
@@ -106,10 +106,10 @@ impl MatZq {
     /// use qfall_math::integer_mod_q::{MatZq, Zq};
     /// use std::str::FromStr;
     ///
-    /// let mat1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
+    /// let mat_1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
     /// let integer = Zq::from((2, 61));
     ///
-    /// let mat2 = &mat1.mul_scalar_safe(&integer).unwrap();
+    /// let mat_2 = &mat_1.mul_scalar_safe(&integer).unwrap();
     /// ```
     ///
     /// # Errors and Failures
@@ -141,106 +141,106 @@ mod test_mul_z {
     /// Checks if matrix multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
-        let mat1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
-        let mat2 = mat1.clone();
-        let mat3 = MatZq::from_str("[[84, 34],[16, 12]] mod 61").unwrap();
+        let mat_1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
+        let mat_2 = mat_1.clone();
+        let mat_3 = MatZq::from_str("[[84, 34],[16, 12]] mod 61").unwrap();
         let integer = Z::from(2);
 
-        let mat1 = &mat1 * &integer;
-        let mat2 = &integer * &mat2;
+        let mat_1 = &mat_1 * &integer;
+        let mat_2 = &integer * &mat_2;
 
-        assert_eq!(mat3, mat1);
-        assert_eq!(mat3, mat2);
+        assert_eq!(mat_3, mat_1);
+        assert_eq!(mat_3, mat_2);
     }
 
     /// Checks if scalar multiplication works fine for both owned
     #[test]
     fn owned_correctness() {
-        let mat1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
-        let mat2 = mat1.clone();
-        let mat3 = MatZq::from_str("[[84, 34],[16, 12]] mod 61").unwrap();
-        let integer1 = Z::from(2);
-        let integer2 = Z::from(2);
+        let mat_1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
+        let mat_2 = mat_1.clone();
+        let mat_3 = MatZq::from_str("[[84, 34],[16, 12]] mod 61").unwrap();
+        let integer_1 = Z::from(2);
+        let integer_2 = Z::from(2);
 
-        let mat1 = mat1 * integer1;
-        let mat2 = integer2 * mat2;
+        let mat_1 = mat_1 * integer_1;
+        let mat_2 = integer_2 * mat_2;
 
-        assert_eq!(mat3, mat1);
-        assert_eq!(mat3, mat2);
+        assert_eq!(mat_3, mat_1);
+        assert_eq!(mat_3, mat_2);
     }
 
     /// Checks if scalar multiplication works fine for half owned/borrowed
     #[test]
     fn half_correctness() {
-        let mat1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
-        let mat2 = mat1.clone();
-        let mat3 = mat1.clone();
-        let mat4 = mat1.clone();
-        let mat5 = MatZq::from_str("[[84, 34],[16, 12]] mod 61").unwrap();
-        let integer1 = Z::from(2);
-        let integer2 = Z::from(2);
+        let mat_1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
+        let mat_2 = mat_1.clone();
+        let mat_3 = mat_1.clone();
+        let mat_4 = mat_1.clone();
+        let mat_5 = MatZq::from_str("[[84, 34],[16, 12]] mod 61").unwrap();
+        let integer_1 = Z::from(2);
+        let integer_2 = Z::from(2);
 
-        let mat1 = mat1 * &integer1;
-        let mat2 = &integer2 * mat2;
-        let mat3 = &mat3 * integer1;
-        let mat4 = integer2 * &mat4;
+        let mat_1 = mat_1 * &integer_1;
+        let mat_2 = &integer_2 * mat_2;
+        let mat_3 = &mat_3 * integer_1;
+        let mat_4 = integer_2 * &mat_4;
 
-        assert_eq!(mat5, mat1);
-        assert_eq!(mat5, mat2);
-        assert_eq!(mat5, mat3);
-        assert_eq!(mat5, mat4);
+        assert_eq!(mat_5, mat_1);
+        assert_eq!(mat_5, mat_2);
+        assert_eq!(mat_5, mat_3);
+        assert_eq!(mat_5, mat_4);
     }
 
     /// Checks if scalar multiplication works fine for different scalar types
     #[test]
     #[allow(clippy::erasing_op)]
     fn different_types() {
-        let mat1 = MatZq::from_str("[[42],[0],[2]] mod 61").unwrap();
-        let mat2 = MatZq::from_str("[[2, 6, 5],[4, 42, 3]] mod 61").unwrap();
-        let mat3 = MatZq::from_str("[[23],[0],[4]] mod 61").unwrap();
-        let mat4 = MatZq::from_str("[[0],[0],[0]] mod 61").unwrap();
-        let mat5 = MatZq::from_str("[[-42],[0],[-2]] mod 61").unwrap();
-        let mat6 = MatZq::from_str("[[6, 18, 15],[12, 126, 9]] mod 61").unwrap();
+        let mat_1 = MatZq::from_str("[[42],[0],[2]] mod 61").unwrap();
+        let mat_2 = MatZq::from_str("[[2, 6, 5],[4, 42, 3]] mod 61").unwrap();
+        let mat_3 = MatZq::from_str("[[23],[0],[4]] mod 61").unwrap();
+        let mat_4 = MatZq::from_str("[[0],[0],[0]] mod 61").unwrap();
+        let mat_5 = MatZq::from_str("[[-42],[0],[-2]] mod 61").unwrap();
+        let mat_6 = MatZq::from_str("[[6, 18, 15],[12, 126, 9]] mod 61").unwrap();
 
-        assert_eq!(mat3, 2u8 * &mat1);
-        assert_eq!(mat3, 2i8 * &mat1);
-        assert_eq!(mat3, 2u16 * &mat1);
-        assert_eq!(mat3, 2i16 * &mat1);
-        assert_eq!(mat3, 2u32 * &mat1);
-        assert_eq!(mat3, 2i32 * &mat1);
-        assert_eq!(mat3, 2u64 * &mat1);
-        assert_eq!(mat3, 2i64 * &mat1);
-        assert_eq!(mat4, 0 * &mat1);
-        assert_eq!(mat5, -1 * mat1);
-        assert_eq!(mat6, mat2 * 3);
+        assert_eq!(mat_3, 2u8 * &mat_1);
+        assert_eq!(mat_3, 2i8 * &mat_1);
+        assert_eq!(mat_3, 2u16 * &mat_1);
+        assert_eq!(mat_3, 2i16 * &mat_1);
+        assert_eq!(mat_3, 2u32 * &mat_1);
+        assert_eq!(mat_3, 2i32 * &mat_1);
+        assert_eq!(mat_3, 2u64 * &mat_1);
+        assert_eq!(mat_3, 2i64 * &mat_1);
+        assert_eq!(mat_4, 0 * &mat_1);
+        assert_eq!(mat_5, -1 * mat_1);
+        assert_eq!(mat_6, mat_2 * 3);
     }
 
     /// Checks if scalar multiplication works fine for matrices of different dimensions
     #[test]
     fn different_dimensions_correctness() {
-        let mat1 = MatZq::from_str("[[42],[0],[2]] mod 61").unwrap();
-        let mat2 = MatZq::from_str("[[2, 6, 5],[4, 42, 3]] mod 61").unwrap();
-        let mat3 = MatZq::from_str("[[84],[0],[4]] mod 61").unwrap();
-        let mat4 = MatZq::from_str("[[4, 12, 10],[8, 84, 6]] mod 61").unwrap();
+        let mat_1 = MatZq::from_str("[[42],[0],[2]] mod 61").unwrap();
+        let mat_2 = MatZq::from_str("[[2, 6, 5],[4, 42, 3]] mod 61").unwrap();
+        let mat_3 = MatZq::from_str("[[84],[0],[4]] mod 61").unwrap();
+        let mat_4 = MatZq::from_str("[[4, 12, 10],[8, 84, 6]] mod 61").unwrap();
         let integer = Z::from(2);
 
-        assert_eq!(mat3, &integer * mat1);
-        assert_eq!(mat4, integer * mat2);
+        assert_eq!(mat_3, &integer * mat_1);
+        assert_eq!(mat_4, integer * mat_2);
     }
 
     /// Checks if matrix multiplication works fine for large values
     #[test]
     fn large_entries() {
-        let mat1 = MatZq::from_str(&format!("[[1],[{}],[4]] mod {}", i64::MAX, u64::MAX)).unwrap();
-        let mat2 = MatZq::from_str(&format!("[[3]] mod {}", u64::MAX)).unwrap();
-        let mat3 =
+        let mat_1 = MatZq::from_str(&format!("[[1],[{}],[4]] mod {}", i64::MAX, u64::MAX)).unwrap();
+        let mat_2 = MatZq::from_str(&format!("[[3]] mod {}", u64::MAX)).unwrap();
+        let mat_3 =
             MatZq::from_str(&format!("[[3],[{}],[12]] mod {}", i64::MAX - 1, u64::MAX)).unwrap();
-        let mat4 = MatZq::from_str(&format!("[[{}]] mod {}", i64::MAX - 1, u64::MAX)).unwrap();
-        let integer1 = Z::from(3);
-        let integer2 = Z::from(i64::MAX);
+        let mat_4 = MatZq::from_str(&format!("[[{}]] mod {}", i64::MAX - 1, u64::MAX)).unwrap();
+        let integer_1 = Z::from(3);
+        let integer_2 = Z::from(i64::MAX);
 
-        assert_eq!(mat3, integer1 * mat1);
-        assert_eq!(mat4, integer2 * mat2);
+        assert_eq!(mat_3, integer_1 * mat_1);
+        assert_eq!(mat_4, integer_2 * mat_2);
     }
 }
 
@@ -252,102 +252,102 @@ mod test_mul_zq {
     /// Checks if matrix multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
-        let mat1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
-        let mat2 = mat1.clone();
-        let mat3 = MatZq::from_str("[[84, 34],[16, 12]] mod 61").unwrap();
+        let mat_1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
+        let mat_2 = mat_1.clone();
+        let mat_3 = MatZq::from_str("[[84, 34],[16, 12]] mod 61").unwrap();
         let integer = Zq::from((2, 61));
 
-        let mat1 = &mat1 * &integer;
-        let mat2 = &integer * &mat2;
+        let mat_1 = &mat_1 * &integer;
+        let mat_2 = &integer * &mat_2;
 
-        assert_eq!(mat3, mat1);
-        assert_eq!(mat3, mat2);
+        assert_eq!(mat_3, mat_1);
+        assert_eq!(mat_3, mat_2);
     }
 
     /// Checks if scalar multiplication works fine for both owned
     #[test]
     fn owned_correctness() {
-        let mat1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
-        let mat2 = mat1.clone();
-        let mat3 = MatZq::from_str("[[84, 34],[16, 12]] mod 61").unwrap();
-        let integer1 = Zq::from((2, 61));
-        let integer2 = Zq::from((2, 61));
+        let mat_1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
+        let mat_2 = mat_1.clone();
+        let mat_3 = MatZq::from_str("[[84, 34],[16, 12]] mod 61").unwrap();
+        let integer_1 = Zq::from((2, 61));
+        let integer_2 = Zq::from((2, 61));
 
-        let mat1 = mat1 * integer1;
-        let mat2 = integer2 * mat2;
+        let mat_1 = mat_1 * integer_1;
+        let mat_2 = integer_2 * mat_2;
 
-        assert_eq!(mat3, mat1);
-        assert_eq!(mat3, mat2);
+        assert_eq!(mat_3, mat_1);
+        assert_eq!(mat_3, mat_2);
     }
 
     /// Checks if scalar multiplication works fine for half owned/borrowed
     #[test]
     fn half_correctness() {
-        let mat1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
-        let mat2 = mat1.clone();
-        let mat3 = mat1.clone();
-        let mat4 = mat1.clone();
-        let mat5 = MatZq::from_str("[[84, 34],[16, 12]] mod 61").unwrap();
-        let integer1 = Zq::from((2, 61));
-        let integer2 = Zq::from((2, 61));
+        let mat_1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
+        let mat_2 = mat_1.clone();
+        let mat_3 = mat_1.clone();
+        let mat_4 = mat_1.clone();
+        let mat_5 = MatZq::from_str("[[84, 34],[16, 12]] mod 61").unwrap();
+        let integer_1 = Zq::from((2, 61));
+        let integer_2 = Zq::from((2, 61));
 
-        let mat1 = mat1 * &integer1;
-        let mat2 = &integer2 * mat2;
-        let mat3 = &mat3 * integer1;
-        let mat4 = integer2 * &mat4;
+        let mat_1 = mat_1 * &integer_1;
+        let mat_2 = &integer_2 * mat_2;
+        let mat_3 = &mat_3 * integer_1;
+        let mat_4 = integer_2 * &mat_4;
 
-        assert_eq!(mat5, mat1);
-        assert_eq!(mat5, mat2);
-        assert_eq!(mat5, mat3);
-        assert_eq!(mat5, mat4);
+        assert_eq!(mat_5, mat_1);
+        assert_eq!(mat_5, mat_2);
+        assert_eq!(mat_5, mat_3);
+        assert_eq!(mat_5, mat_4);
     }
 
     /// Checks if scalar multiplication works fine for matrices of different dimensions
     #[test]
     fn different_dimensions_correctness() {
-        let mat1 = MatZq::from_str("[[42],[0],[2]] mod 61").unwrap();
-        let mat2 = MatZq::from_str("[[2, 6, 5],[4, 42, 3]] mod 61").unwrap();
-        let mat3 = MatZq::from_str("[[84],[0],[4]] mod 61").unwrap();
-        let mat4 = MatZq::from_str("[[4, 12, 10],[8, 84, 6]] mod 61").unwrap();
+        let mat_1 = MatZq::from_str("[[42],[0],[2]] mod 61").unwrap();
+        let mat_2 = MatZq::from_str("[[2, 6, 5],[4, 42, 3]] mod 61").unwrap();
+        let mat_3 = MatZq::from_str("[[84],[0],[4]] mod 61").unwrap();
+        let mat_4 = MatZq::from_str("[[4, 12, 10],[8, 84, 6]] mod 61").unwrap();
         let integer = Zq::from((2, 61));
 
-        assert_eq!(mat3, &integer * mat1);
-        assert_eq!(mat4, integer * mat2);
+        assert_eq!(mat_3, &integer * mat_1);
+        assert_eq!(mat_4, integer * mat_2);
     }
 
     /// Checks if matrix multiplication works fine for large values
     #[test]
     fn large_entries() {
-        let mat1 = MatZq::from_str(&format!("[[1],[{}],[4]] mod {}", i64::MAX, u64::MAX)).unwrap();
-        let mat2 = MatZq::from_str(&format!("[[3]] mod {}", u64::MAX)).unwrap();
-        let mat3 =
+        let mat_1 = MatZq::from_str(&format!("[[1],[{}],[4]] mod {}", i64::MAX, u64::MAX)).unwrap();
+        let mat_2 = MatZq::from_str(&format!("[[3]] mod {}", u64::MAX)).unwrap();
+        let mat_3 =
             MatZq::from_str(&format!("[[3],[{}],[12]] mod {}", i64::MAX - 1, u64::MAX)).unwrap();
-        let mat4 = MatZq::from_str(&format!("[[{}]] mod {}", i64::MAX - 1, u64::MAX)).unwrap();
-        let integer1 = Zq::from((3, u64::MAX));
-        let integer2 = Zq::from((i64::MAX, u64::MAX));
+        let mat_4 = MatZq::from_str(&format!("[[{}]] mod {}", i64::MAX - 1, u64::MAX)).unwrap();
+        let integer_1 = Zq::from((3, u64::MAX));
+        let integer_2 = Zq::from((i64::MAX, u64::MAX));
 
-        assert_eq!(mat3, integer1 * mat1);
-        assert_eq!(mat4, integer2 * mat2);
+        assert_eq!(mat_3, integer_1 * mat_1);
+        assert_eq!(mat_4, integer_2 * mat_2);
     }
 
     /// Checks if scalar multiplication panics if the moduli mismatch
     #[test]
     #[should_panic]
     fn different_moduli_error() {
-        let mat1 = MatZq::from_str("[[42],[0],[2]] mod 61").unwrap();
+        let mat_1 = MatZq::from_str("[[42],[0],[2]] mod 61").unwrap();
         let integer = Zq::from((2, 3));
 
-        _ = &integer * mat1;
+        _ = &integer * mat_1;
     }
 
     /// Checks if scalar multiplication panics if the moduli mismatch
     #[test]
     fn different_moduli_error_safe() {
-        let mat1 = MatZq::from_str("[[42],[0],[2]] mod 61").unwrap();
+        let mat_1 = MatZq::from_str("[[42],[0],[2]] mod 61").unwrap();
         let integer = Zq::from((2, 3));
 
-        let mat2 = &mat1.mul_scalar_safe(&integer);
+        let mat_2 = &mat_1.mul_scalar_safe(&integer);
 
-        assert!(mat2.is_err());
+        assert!(mat_2.is_err());
     }
 }

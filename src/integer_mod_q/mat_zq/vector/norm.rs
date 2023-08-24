@@ -125,8 +125,8 @@ mod test_norm_eucl_sqrd {
     #[test]
     fn row_vector_small_entries() {
         let vec_1 = MatZq::from_str("[[1]] mod 10").unwrap();
-        let vec_2 = MatZq::from_str("[[1,10,100]] mod 10").unwrap();
-        let vec_3 = MatZq::from_str("[[1,10,100, 1000]] mod 10000").unwrap();
+        let vec_2 = MatZq::from_str("[[1, 10, 100]] mod 10").unwrap();
+        let vec_3 = MatZq::from_str("[[1, 10, 100, 1000]] mod 10000").unwrap();
 
         assert_eq!(vec_1.norm_eucl_sqrd().unwrap(), Z::ONE);
         assert_eq!(vec_2.norm_eucl_sqrd().unwrap(), Z::ONE);
@@ -138,7 +138,7 @@ mod test_norm_eucl_sqrd {
     #[test]
     fn row_vector_large_entries() {
         let vec = MatZq::from_str(&format!(
-            "[[{},{}, 2]] mod {}",
+            "[[{}, {}, 2]] mod {}",
             i64::MAX,
             i64::MIN,
             u64::MAX
@@ -181,7 +181,7 @@ mod test_norm_eucl_sqrd {
     /// Check whether euclidean norm calculations of non vectors yield an error
     #[test]
     fn non_vector_yield_error() {
-        let mat = MatZq::from_str("[[1,1],[10,2]] mod 3").unwrap();
+        let mat = MatZq::from_str("[[1, 1],[10, 2]] mod 3").unwrap();
 
         assert!(mat.norm_eucl_sqrd().is_err());
     }
@@ -197,8 +197,8 @@ mod test_norm_infty {
     #[test]
     fn row_vector_small_entries() {
         let vec_1 = MatZq::from_str("[[6]] mod 10").unwrap();
-        let vec_2 = MatZq::from_str("[[1,10,100]] mod 1000").unwrap();
-        let vec_3 = MatZq::from_str("[[1,10,100, 1000]] mod 1000").unwrap();
+        let vec_2 = MatZq::from_str("[[1, 10, 100]] mod 1000").unwrap();
+        let vec_3 = MatZq::from_str("[[1, 10, 100, 1000]] mod 1000").unwrap();
 
         assert_eq!(vec_1.norm_infty().unwrap(), Z::from(4));
         assert_eq!(vec_2.norm_infty().unwrap(), Z::from(100));
@@ -210,7 +210,7 @@ mod test_norm_infty {
     #[test]
     fn row_vector_large_entries() {
         let vec = MatZq::from_str(&format!(
-            "[[{},{}, 2]] mod {}",
+            "[[{}, {}, 2]] mod {}",
             i64::MAX,
             i64::MIN,
             u64::MAX
@@ -251,7 +251,7 @@ mod test_norm_infty {
     /// Check whether infinity norm calculations of non vectors yield an error
     #[test]
     fn non_vector_yield_error() {
-        let mat = MatZq::from_str("[[1,1],[10,2]] mod 3").unwrap();
+        let mat = MatZq::from_str("[[1, 1],[10, 2]] mod 3").unwrap();
 
         assert!(mat.norm_infty().is_err());
     }

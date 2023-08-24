@@ -49,11 +49,12 @@ impl PolynomialRingZq {
     /// # Panics ...
     /// - if the provided [`ModulusPolynomialRingZq`] has degree 0 or smaller.
     pub fn sample_discrete_gauss(
-        modulus: &ModulusPolynomialRingZq,
+        modulus: impl Into<ModulusPolynomialRingZq>,
         n: impl Into<Z>,
         center: impl Into<Q>,
         s: impl Into<Q>,
     ) -> Result<Self, MathError> {
+        let modulus = modulus.into();
         assert!(
             modulus.get_degree() > 0,
             "ModulusPolynomial of degree 0 is insufficient to sample over."
@@ -62,7 +63,7 @@ impl PolynomialRingZq {
         let poly_z = PolyOverZ::sample_discrete_gauss(modulus.get_degree() - 1, n, center, s)?;
         let mut poly_ringzq = PolynomialRingZq {
             poly: poly_z,
-            modulus: modulus.clone(),
+            modulus,
         };
         poly_ringzq.reduce();
 

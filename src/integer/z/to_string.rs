@@ -108,7 +108,7 @@ mod test_to_string {
     fn working_large_positive() {
         let cmp = Z::from(u64::MAX);
 
-        assert_eq!(u64::MAX.to_string(), cmp.to_string())
+        assert_eq!(u64::MAX.to_string(), cmp.to_string());
     }
 
     /// Tests whether a large negative integer works in a roundtrip
@@ -116,7 +116,7 @@ mod test_to_string {
     fn working_large_negative() {
         let cmp = Z::from_str(&format!("-{}", u64::MAX)).unwrap();
 
-        assert_eq!(format!("-{}", u64::MAX), cmp.to_string())
+        assert_eq!(format!("-{}", u64::MAX), cmp.to_string());
     }
 
     /// Tests whether a positive integer works in a roundtrip
@@ -124,7 +124,7 @@ mod test_to_string {
     fn working_positive() {
         let cmp = Z::from(42);
 
-        assert_eq!("42", cmp.to_string())
+        assert_eq!("42", cmp.to_string());
     }
 
     /// Tests whether a negative integer works in a roundtrip
@@ -132,7 +132,7 @@ mod test_to_string {
     fn working_negative() {
         let cmp = Z::from(-42);
 
-        assert_eq!("-42", cmp.to_string())
+        assert_eq!("-42", cmp.to_string());
     }
 
     /// Tests whether an integer that is created using a string, returns a
@@ -141,9 +141,9 @@ mod test_to_string {
     fn working_use_result_of_to_string_as_input() {
         let cmp = Z::from(42);
 
-        let cmp_string2 = cmp.to_string();
+        let cmp_str_2 = cmp.to_string();
 
-        assert!(Z::from_str(&cmp_string2).is_ok())
+        assert!(Z::from_str(&cmp_str_2).is_ok());
     }
 }
 

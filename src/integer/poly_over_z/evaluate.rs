@@ -84,7 +84,7 @@ mod test_evaluate_z {
 
         let res = poly.evaluate(Z::from(3));
 
-        assert_eq!(Z::from(7), res)
+        assert_eq!(Z::from(7), res);
     }
 
     /// Tests if evaluate with a reference works
@@ -94,7 +94,7 @@ mod test_evaluate_z {
 
         let res = poly.evaluate(&Z::from(3));
 
-        assert_eq!(Z::from(7), res)
+        assert_eq!(Z::from(7), res);
     }
 
     /// Tests if evaluate works with negative values
@@ -104,7 +104,7 @@ mod test_evaluate_z {
 
         let res = poly.evaluate(&Z::from(-5));
 
-        assert_eq!(Z::from(-9), res)
+        assert_eq!(Z::from(-9), res);
     }
 
     /// Tests if evaluate works with large integers
@@ -116,10 +116,10 @@ mod test_evaluate_z {
 
         let mut res_cmp_str = "2".repeat(64);
         res_cmp_str.push('3');
-        assert_eq!(Z::from_str(&res_cmp_str).unwrap(), res)
+        assert_eq!(Z::from_str(&res_cmp_str).unwrap(), res);
     }
 
-    /// Test if evaluate works with max of [`i64`], [`i32`], ...
+    /// Test if evaluate works with max of [`i64`],[`i32`], ...
     #[test]
     fn eval_max() {
         let poly = PolyOverZ::from_str("2  1 2").unwrap();
@@ -137,7 +137,7 @@ mod test_evaluate_z {
         let _: Z = poly.evaluate(u8::MAX);
     }
 
-    /// Test if evaluate works with min of [`i64`], [`i32`], ...
+    /// Test if evaluate works with min of [`i64`],[`i32`], ...
     #[test]
     fn eval_min() {
         let poly = PolyOverZ::from_str("2  1 2").unwrap();

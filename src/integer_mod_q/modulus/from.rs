@@ -226,7 +226,7 @@ mod test_from_fmpz_ref {
     #[test]
     fn working_example() {
         let z = Z::from(100);
-        assert!(Modulus::from_fmpz_ref(&z.value).is_ok())
+        assert!(Modulus::from_fmpz_ref(&z.value).is_ok());
     }
 
     /// Tests whether a large modulus (> 64 bits) is instantiated correctly.
@@ -240,14 +240,14 @@ mod test_from_fmpz_ref {
     #[test]
     fn negative_modulus() {
         let z = &Z::from(-42);
-        assert!(Modulus::from_fmpz_ref(&z.value).is_err())
+        assert!(Modulus::from_fmpz_ref(&z.value).is_err());
     }
 
     /// Tests whether a zero as input value returns an error.
     #[test]
     fn zero_modulus() {
         let z = &Z::ZERO;
-        assert!(Modulus::from_fmpz_ref(&z.value).is_err())
+        assert!(Modulus::from_fmpz_ref(&z.value).is_err());
     }
 }
 
@@ -266,7 +266,7 @@ mod test_from_str {
     /// Tests whether a large value (> 64 bits) is instantiated correctly.
     #[test]
     fn large_value() {
-        assert!(Modulus::from_str(&"1".repeat(65)).is_ok())
+        assert!(Modulus::from_str(&"1".repeat(65)).is_ok());
     }
 
     /// Tests whether a falsely formatted string (wrong whitespaces) returns an
