@@ -25,7 +25,7 @@ impl Mul<&Z> for &MatPolynomialRingZq {
     /// Implements multiplication for a [`MatPolynomialRingZq`] matrix with a [`Z`] integer.
     ///
     /// Parameters:
-    /// - `scalar`: specifies the scalar by which the matrix is multiplied
+    /// - `scalar`: Specifies the scalar by which the matrix is multiplied.
     ///
     /// Returns the product of `self` and `other` as a [`MatPolynomialRingZq`].
     ///
@@ -68,12 +68,12 @@ implement_for_others!(Z, MatPolynomialRingZq, Mul Scalar for i8 i16 i32 i64 u8 u
 
 impl Mul<&PolynomialRingZq> for &MatPolynomialRingZq {
     type Output = MatPolynomialRingZq;
-    /// Implements multiplication for a [`MatPolyOverZ`] matrix with a [`PolyOverZ`].
+    /// Implements multiplication for a [`MatPolynomialRingZq`] matrix with a [`PolynomialRingZq`].
     ///
     /// Parameters:
-    /// - `scalar`: specifies the scalar by which the matrix is multiplied
+    /// - `scalar`: Specifies the scalar by which the matrix is multiplied.
     ///
-    /// Returns the product of `self` and `other` as a [`MatPolyOverZ`].
+    /// Returns the product of `self` and `other` as a [`MatPolynomialRingZq`].
     ///
     /// # Examples
     /// ```
