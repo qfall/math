@@ -32,7 +32,7 @@ impl Mul<&Z> for &MatPolynomialRingZq {
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
-    /// use qfall_math::integer::Z;
+    /// use qfall_math::integer::{MatPolyOverZ, Z};
     /// use std::str::FromStr;
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -77,8 +77,8 @@ impl Mul<&PolynomialRingZq> for &MatPolynomialRingZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
-    /// use qfall_math::integer::{PolyOverZ, Z};
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq, PolynomialRingZq};
+    /// use qfall_math::integer::{MatPolyOverZ, PolyOverZ, Z};
     /// use std::str::FromStr;
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
