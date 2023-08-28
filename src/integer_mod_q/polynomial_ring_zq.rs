@@ -36,7 +36,33 @@ mod set;
 /// - `modulus`: holds the modulus q and f(X)
 ///
 /// # Examples
-#[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Display)]
+/// ```
+/// # use qfall_math::error::MathError;
+/// use qfall_math::integer::PolyOverZ;
+/// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+/// use qfall_math::integer_mod_q::PolyOverZq;
+/// use qfall_math::integer_mod_q::PolynomialRingZq;
+/// use std::str::FromStr;
+///
+/// let poly_mod = PolyOverZq::from_str("3  1 0 1 mod 17").unwrap();
+/// let modulus = ModulusPolynomialRingZq::from(poly_mod);
+///
+/// // instantiation
+/// let a = PolynomialRingZq::from((PolyOverZ::from(5), &modulus));
+/// let b = PolynomialRingZq::from((PolyOverZ::from_str("2  1 5").unwrap(), &modulus));
+/// let _ = a.clone();
+///
+/// // arithmetics
+/// let _ = &a + &b;
+/// let _ = &a * &b;
+///
+/// // to_string incl. (de-)serialization
+/// assert_eq!("1  5 / 3  1 0 1 mod 17", &a.to_string());
+/// let _ = serde_json::to_string(&a).unwrap();
+///
+/// # Ok::<(), MathError>(())
+/// ```
+#[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Display, Clone)]
 #[display(fmt = "{poly} / {modulus}")]
 pub struct PolynomialRingZq {
     pub(crate) poly: PolyOverZ,
