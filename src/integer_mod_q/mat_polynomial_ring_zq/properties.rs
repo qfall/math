@@ -174,7 +174,7 @@ mod test_is_square {
         let modulus = PolyOverZq::from_str("5  1 0 0 0 1 mod 17").unwrap();
         let poly_mat_1 = MatPolyOverZ::from_str("[[1  3, 0],[0, 2  7 1]]").unwrap();
         let poly_mat_2 =
-            MatPolyOverZ::from_str("[[0, 1  1, 2  2 3],[0, 0, 1  15],[0, 0, 0],[0, 0, 0]]")
+            MatPolyOverZ::from_str("[[0, 1  1, 2  2 3],[0, 0, 1  15],[0, 0, 0]]")
                 .unwrap();
 
         let square_1 = MatPolynomialRingZq::from((poly_mat_1, &modulus));
