@@ -33,7 +33,7 @@ mod vector;
 /// modulus of the matrix
 ///
 /// TODO: Add Examples
-#[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Display)]
+#[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Display, Clone)]
 #[display(fmt = "{matrix} / {modulus}")]
 pub struct MatPolynomialRingZq {
     pub(crate) matrix: MatPolyOverZ,

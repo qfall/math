@@ -36,7 +36,7 @@ mod set;
 /// - `modulus`: holds the modulus q and f(X)
 ///
 /// # Examples
-#[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Display)]
+#[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Display, Clone)]
 #[display(fmt = "{poly} / {modulus}")]
 pub struct PolynomialRingZq {
     pub(crate) poly: PolyOverZ,
