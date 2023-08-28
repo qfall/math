@@ -164,7 +164,7 @@ mod test_setter {
     }
 
     /// Ensure that when using a [`PolyOverZ`] the set entry is actually reduced by the
-    /// modulus
+    /// modulus.
     #[test]
     fn set_entry_reduced() {
         let id_mat = MatPolyOverZ::identity(2, 2);
