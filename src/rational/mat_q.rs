@@ -29,6 +29,7 @@ mod properties;
 mod serialize;
 mod set;
 mod sort;
+mod tensor;
 mod to_string;
 mod trace;
 mod transpose;
