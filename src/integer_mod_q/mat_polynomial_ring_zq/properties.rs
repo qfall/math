@@ -13,8 +13,8 @@ use super::MatPolynomialRingZq;
 impl MatPolynomialRingZq {
     /// Checks if a [`MatPolynomialRingZq`] is the identity matrix.
     ///
-    /// Returns true if every diagonal entry of the upper square matrix is
-    /// `1  1` and all other entries are `0`.
+    /// Returns true if every diagonal entry of the  matrix is
+    /// the constant polynomial `1` and all other entries are `0`.
     ///
     /// # Examples
     /// ```
@@ -75,7 +75,7 @@ impl MatPolynomialRingZq {
     /// use std::str::FromStr;
     ///
     /// let modulus = PolyOverZq::from_str("5  1 0 0 0 1 mod 17").unwrap();
-    /// let poly_mat = MatPolyOverZ::from_str("[[0, 0],[0, 0]]").unwrap();
+    /// let poly_mat = MatPolyOverZ::new(2,2);
     ///
     /// let poly_ring_mat = MatPolynomialRingZq::from((poly_mat, modulus));
     /// assert!(poly_ring_mat.is_zero());
@@ -97,10 +97,9 @@ mod test_is_identity {
     #[test]
     fn identity_detection() {
         let modulus = PolyOverZq::from_str("5  1 0 0 0 1 mod 17").unwrap();
-        let poly_mat = MatPolyOverZ::from_str("[[1  1, 0],[0, 1  1],[0, 0]]").unwrap();
 
         let ident_1 = MatPolynomialRingZq::identity(2, 2, &modulus);
-        let ident_2 = MatPolynomialRingZq::from((poly_mat, modulus));
+        let ident_2 = MatPolynomialRingZq::identity(2, 3, modulus);
 
         assert!(ident_1.is_identity());
         assert!(ident_2.is_identity());
@@ -132,10 +131,10 @@ mod test_is_zero {
 
     /// Ensure that is_zero returns `true` for all zero matrices.
     #[test]
-    fn identity_detection() {
+    fn zero_detection() {
         let modulus = PolyOverZq::from_str("5  1 0 0 0 1 mod 17").unwrap();
-        let poly_mat_1 = MatPolyOverZ::from_str("[[0, 0],[0, 0]]").unwrap();
-        let poly_mat_2 = MatPolyOverZ::from_str("[[0, 0],[0, 0],[0, 0],[0, 0]]").unwrap();
+        let poly_mat_1 = MatPolyOverZ::new(2, 2);
+        let poly_mat_2 = MatPolyOverZ::new(4, 2);
 
         let zero_1 = MatPolynomialRingZq::from((poly_mat_1, &modulus));
         let zero_2 = MatPolynomialRingZq::from((poly_mat_2, modulus));
@@ -146,7 +145,7 @@ mod test_is_zero {
 
     /// Ensure that is_zero returns `false` for non-zero matrices.
     #[test]
-    fn identity_rejection() {
+    fn zero_rejection() {
         let modulus = PolyOverZq::from_str(&format!("5  1 0 0 0 1 mod {}", u64::MAX)).unwrap();
         let poly_mat_1 = MatPolyOverZ::from_str("[[0, 0],[0, 1  2]]").unwrap();
         let poly_mat_2 =
@@ -170,12 +169,11 @@ mod test_is_square {
 
     /// Ensure that is_square returns `true` for square matrices.
     #[test]
-    fn identity_detection() {
+    fn square_detection() {
         let modulus = PolyOverZq::from_str("5  1 0 0 0 1 mod 17").unwrap();
         let poly_mat_1 = MatPolyOverZ::from_str("[[1  3, 0],[0, 2  7 1]]").unwrap();
         let poly_mat_2 =
-            MatPolyOverZ::from_str("[[0, 1  1, 2  2 3],[0, 0, 1  15],[0, 0, 0]]")
-                .unwrap();
+            MatPolyOverZ::from_str("[[0, 1  1, 2  2 3],[0, 0, 1  15],[0, 0, 0]]").unwrap();
 
         let square_1 = MatPolynomialRingZq::from((poly_mat_1, &modulus));
         let square_2 = MatPolynomialRingZq::from((poly_mat_2, modulus));
@@ -186,9 +184,9 @@ mod test_is_square {
 
     /// Ensure that is_square returns `false` for non-square matrices.
     #[test]
-    fn identity_rejection() {
+    fn square_rejection() {
         let modulus = PolyOverZq::from_str(&format!("5  1 0 0 0 1 mod {}", u64::MAX)).unwrap();
-        let poly_mat_1 = MatPolyOverZ::from_str("[[0],[0]]").unwrap();
+        let poly_mat_1 = MatPolyOverZ::new(1, 2);
         let poly_mat_2 =
             MatPolyOverZ::from_str(&format!("[[1  1, 0, 1  7],[2  1 {}, 0, 0]]", i64::MAX))
                 .unwrap();
