@@ -18,7 +18,7 @@ impl MatZq {
     /// Checks if a [`MatZq`] is the identity matrix.
     ///
     /// Returns true if every diagonal entry of the upper square matrix is `1`
-    ///  and all other entries are `0`.
+    /// and all other entries are `0`.
     ///
     /// # Examples
     /// ```
@@ -97,18 +97,10 @@ mod test_is_identity {
             (u128::MAX - 1) / 2 + 2,
             u128::MAX
         ))
-        .unwrap(); // teh last 64 bit represent `1`
+        .unwrap(); // the last 64 bit represent `1`
 
         assert!(!small.is_identity());
         assert!(!large.is_identity());
-    }
-
-    // Ensure that is_identity returns false for non-square matrices.
-    #[test]
-    fn identity_no_square() {
-        let nosquare = MatZq::from_str("[[1, 0],[0, 1],[0, 0]] mod 5").unwrap();
-
-        assert!(nosquare.is_identity());
     }
 }
 

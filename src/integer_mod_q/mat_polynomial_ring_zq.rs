@@ -19,6 +19,7 @@ mod concat;
 mod default;
 mod from;
 mod get;
+mod properties;
 mod reduce;
 mod sample;
 mod set;
