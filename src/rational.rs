@@ -8,6 +8,10 @@
 
 //! This module contains the type [`Q`] for rationals with arbitrary length and
 //! constructions over it.
+//! Each struct provides examples regarding usage.
+//! In general you can mix [`Q`]'s with any type of rust integer, whenever the
+//! corresponding method takes as input integers of type [`Into<Q>`],
+//! e.g. the standard rust integers or tuples of standard rust integers.
 
 mod mat_q;
 mod poly_over_q;

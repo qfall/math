@@ -9,6 +9,13 @@
 //! This module contains the type [`Zq`] for integers with arbitrary length
 //! modulus `q` and constructions over it.
 //!
+//! Each struct provides examples regarding usage.
+//! In general you can mix [`Zq`]'s with any type of rust integer, whenever the
+//! corresponding method takes as input integers of type [`Into<Z>`],
+//! e.g. the standard rust integers.
+//! The [`Modulus`] is constructed as an explicit struct and can be shared across several
+//! [`Zq`], [`MatZq`] and [`PolyOverZq`] instances with efficient memory usage.
+//!
 //! - \[1\] John D. Dixon.
 //! "Exact Solution of Linear Equations Using P-Adic Expansions"
 //! <https://link.springer.com/article/10.1007/BF01459082>
