@@ -21,7 +21,46 @@ use std::fmt::Display;
 impl PolyOverZ {
     /// Generates a [`PolyOverZ`] instance of maximum degree `max_degree` and
     /// coefficients chosen according to the binomial distribution
-    /// parameterized by `n` and `p` with offset `offset`.
+    /// parameterized by `n` and `p`.
+    ///
+    /// Parameters:
+    /// - `max_degree`: specifies the length of the polynomial,
+    /// i.e. the number of coefficients
+    /// - `n`: specifies the number of trials
+    /// - `p`: specifies the probability of success
+    ///
+    /// Returns a fresh [`PolyOverZ`] instance with each value sampled
+    /// according to the binomial distribution or a [`MathError`]
+    /// if `n < 1`, `p ∉ (0,1)`, `n` does not fit into an [`i64`],
+    /// or `max_degree` is negative or does not into an [`i64`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::PolyOverZ;
+    ///
+    /// let sample = PolyOverZ::sample_binomial(2, 2, 0.5).unwrap();
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
+    /// if `n < 1`.
+    /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
+    /// if `p ∉ (0,1)`.
+    /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
+    /// if `n` does not fit into an [`i64`].
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
+    /// the `max_degree` is negative or it does not fit into an [`i64`].
+    pub fn sample_binomial(
+        max_degree: impl TryInto<i64> + Display,
+        n: impl Into<Z>,
+        p: impl Into<Q>,
+    ) -> Result<Self, MathError> {
+        Self::sample_binomial_with_offset(max_degree, 0, n, p)
+    }
+
+    /// Generates a [`PolyOverZ`] instance of maximum degree `max_degree` and
+    /// coefficients chosen according to the binomial distribution
+    /// parameterized by `n` and `p` with given `offset`.
     ///
     /// Parameters:
     /// - `max_degree`: specifies the length of the polynomial,
@@ -40,7 +79,7 @@ impl PolyOverZ {
     /// ```
     /// use qfall_math::integer::PolyOverZ;
     ///
-    /// let sample = PolyOverZ::sample_binomial(2, -1, 2, 0.5).unwrap();
+    /// let sample = PolyOverZ::sample_binomial_with_offset(2, -1, 2, 0.5).unwrap();
     /// ```
     ///
     /// # Errors and Failures
@@ -52,7 +91,7 @@ impl PolyOverZ {
     /// if `n` does not fit into an [`i64`].
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
     /// the `max_degree` is negative or it does not fit into an [`i64`].
-    pub fn sample_binomial(
+    pub fn sample_binomial_with_offset(
         max_degree: impl TryInto<i64> + Display,
         offset: impl Into<Z>,
         n: impl Into<Z>,
@@ -87,7 +126,71 @@ mod test_sample_binomial {
     #[test]
     fn boundaries_kept() {
         for _ in 0..8 {
-            let poly = PolyOverZ::sample_binomial(0, -1, 2, 0.5).unwrap();
+            let poly = PolyOverZ::sample_binomial(0, 2, 0.5).unwrap();
+            let sample = poly.get_coeff(0).unwrap();
+            assert!(Z::ZERO <= sample);
+            assert!(sample <= Z::from(2));
+        }
+    }
+
+    /// Checks whether the number of coefficients is correct.
+    #[test]
+    fn nr_coeffs() {
+        let degrees = [1, 3, 7, 15, 32, 120];
+        for degree in degrees {
+            let res = PolyOverZ::sample_binomial(degree, 256, 0.99999).unwrap();
+
+            assert_eq!(
+                degree,
+                res.get_degree(),
+                "This test can fail with probability close to 0."
+            );
+        }
+    }
+
+    /// Checks whether providing a length smaller than `0` results in an error.
+    #[test]
+    fn invalid_max_degree() {
+        let res_0 = PolyOverZ::sample_binomial(-1, 2, 0.5);
+        let res_1 = PolyOverZ::sample_binomial(i64::MIN, 2, 0.5);
+
+        assert!(res_0.is_err());
+        assert!(res_1.is_err());
+    }
+
+    /// Checks whether `sample_binomial` is available for all types
+    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
+    /// and [`Into<Q>`], i.e. u8, u16, i8, i16, f32, f64, ...
+    #[test]
+    fn availability() {
+        let _ = PolyOverZ::sample_binomial(1, 1u16, 7u8);
+        let _ = PolyOverZ::sample_binomial(1, 1u32, 7u16);
+        let _ = PolyOverZ::sample_binomial(1, 1u64, 7u32);
+        let _ = PolyOverZ::sample_binomial(1, 1i8, 7u64);
+        let _ = PolyOverZ::sample_binomial(1, 1i16, 7i8);
+        let _ = PolyOverZ::sample_binomial(1, 1i32, 7i16);
+        let _ = PolyOverZ::sample_binomial(1, 1i64, 7i32);
+        let _ = PolyOverZ::sample_binomial(1, Z::ONE, 7i64);
+        let _ = PolyOverZ::sample_binomial(1, 1u8, 0.5f32);
+        let _ = PolyOverZ::sample_binomial(1, 1u8, 0.5f64);
+        let _ = PolyOverZ::sample_binomial(1, 1, Q::from((1, 2)));
+    }
+}
+
+#[cfg(test)]
+mod test_sample_binomial_with_offset {
+    use super::{PolyOverZ, Q, Z};
+    use crate::traits::GetCoefficient;
+
+    // As all major tests regarding an appropriate binomial distribution,
+    // whether the correct interval is kept, and if the errors are thrown correctly,
+    // are performed in the `utils` module, we omit these tests here.
+
+    /// Checks whether the boundaries of the interval are kept.
+    #[test]
+    fn boundaries_kept() {
+        for _ in 0..8 {
+            let poly = PolyOverZ::sample_binomial_with_offset(0, -1, 2, 0.5).unwrap();
             let sample = poly.get_coeff(0).unwrap();
             assert!(Z::MINUS_ONE <= sample);
             assert!(sample <= Z::ONE);
@@ -99,7 +202,7 @@ mod test_sample_binomial {
     fn nr_coeffs() {
         let degrees = [1, 3, 7, 15, 32, 120];
         for degree in degrees {
-            let res = PolyOverZ::sample_binomial(degree, 1, 2, 0.5).unwrap();
+            let res = PolyOverZ::sample_binomial_with_offset(degree, 1, 2, 0.5).unwrap();
 
             assert_eq!(degree, res.get_degree());
         }
@@ -108,28 +211,28 @@ mod test_sample_binomial {
     /// Checks whether providing a length smaller than `0` results in an error.
     #[test]
     fn invalid_max_degree() {
-        let res_0 = PolyOverZ::sample_binomial(-1, -1, 2, 0.5);
-        let res_1 = PolyOverZ::sample_binomial(i64::MIN, -1, 2, 0.5);
+        let res_0 = PolyOverZ::sample_binomial_with_offset(-1, -1, 2, 0.5);
+        let res_1 = PolyOverZ::sample_binomial_with_offset(i64::MIN, -1, 2, 0.5);
 
         assert!(res_0.is_err());
         assert!(res_1.is_err());
     }
 
-    /// Checks whether `sample_binomial` is available for all types
+    /// Checks whether `sample_binomial_with_offset` is available for all types
     /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
     /// and [`Into<Q>`], i.e. u8, u16, i8, i16, f32, f64, ...
     #[test]
     fn availability() {
-        let _ = PolyOverZ::sample_binomial(1, 0, 1u16, 7u8);
-        let _ = PolyOverZ::sample_binomial(1, 0, 1u32, 7u16);
-        let _ = PolyOverZ::sample_binomial(1, 0, 1u64, 7u32);
-        let _ = PolyOverZ::sample_binomial(1, 0, 1i8, 7u64);
-        let _ = PolyOverZ::sample_binomial(1, 0, 1i16, 7i8);
-        let _ = PolyOverZ::sample_binomial(1, 0, 1i32, 7i16);
-        let _ = PolyOverZ::sample_binomial(1, 0, 1i64, 7i32);
-        let _ = PolyOverZ::sample_binomial(1, 0, Z::ONE, 7i64);
-        let _ = PolyOverZ::sample_binomial(1, 0, 1u8, 0.5f32);
-        let _ = PolyOverZ::sample_binomial(1, 0, 1u8, 0.5f64);
-        let _ = PolyOverZ::sample_binomial(1, 0, 1, Q::from((1, 2)));
+        let _ = PolyOverZ::sample_binomial_with_offset(1, 0, 1u16, 7u8);
+        let _ = PolyOverZ::sample_binomial_with_offset(1, 0, 1u32, 7u16);
+        let _ = PolyOverZ::sample_binomial_with_offset(1, 0, 1u64, 7u32);
+        let _ = PolyOverZ::sample_binomial_with_offset(1, 0, 1i8, 7u64);
+        let _ = PolyOverZ::sample_binomial_with_offset(1, 0, 1i16, 7i8);
+        let _ = PolyOverZ::sample_binomial_with_offset(1, 0, 1i32, 7i16);
+        let _ = PolyOverZ::sample_binomial_with_offset(1, 0, 1i64, 7i32);
+        let _ = PolyOverZ::sample_binomial_with_offset(1, 0, Z::ONE, 7i64);
+        let _ = PolyOverZ::sample_binomial_with_offset(1, 0, 1u8, 0.5f32);
+        let _ = PolyOverZ::sample_binomial_with_offset(1, 0, 1u8, 0.5f64);
+        let _ = PolyOverZ::sample_binomial_with_offset(1, 0, 1, Q::from((1, 2)));
     }
 }
