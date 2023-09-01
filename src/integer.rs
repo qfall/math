@@ -1,4 +1,4 @@
-// Copyright © 2023 Marcel Luca Schmidt
+// Copyright © 2023 Marcel Luca Schmidt, Marvin Beckmann
 //
 // This file is part of qFALL-math.
 //
@@ -8,6 +8,10 @@
 
 //! This module contains the type [`Z`] for integers with arbitrary length and
 //! constructions over it.
+//! Each struct provides examples regarding usage.
+//! In general you can mix [`Z`]'s with any type of rust integer, whenever the
+//! corresponding method takes as input integers of type [`Into<Z>`],
+//! e.g. the standard rust integers.
 
 mod mat_poly_over_z;
 mod mat_z;
