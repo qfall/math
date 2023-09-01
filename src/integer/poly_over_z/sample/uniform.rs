@@ -134,7 +134,7 @@ mod test_sample_uniform {
         assert!(res_2.is_err());
     }
 
-    /// Checks whether providing a length smaller than `1` results in an error.
+    /// Checks whether providing a length smaller than `0` results in an error.
     #[test]
     fn invalid_max_degree() {
         let lower_bound = Z::from(0);
