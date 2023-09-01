@@ -8,7 +8,6 @@
 
 //! This module contains the type [`Zq`] for integers with arbitrary length
 //! modulus `q` and constructions over it.
-//!
 //! Each struct provides examples regarding usage.
 //! In general you can mix [`Zq`]'s with any type of rust integer, whenever the
 //! corresponding method takes as input integers of type [`Into<Z>`],
