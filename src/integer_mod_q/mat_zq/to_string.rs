@@ -18,18 +18,18 @@ use core::fmt;
 
 impl From<&MatZq> for String {
     /// Converts a [`MatZq`] into its [`String`] representation.
-    /// 
+    ///
     /// Parameters:
     /// - `value`: specifies the matrix that will be represented as a [`String`]
-    /// 
+    ///
     /// Returns a [`String`] of the form `[[row_0],[row_1],...[row_n]] mod q`.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     /// let matrix = MatZq::from_str("[[6, 1],[5, 2]] mod 4").unwrap();
-    /// 
+    ///
     /// let string: String = matrix.into();
     /// ```
     fn from(value: &MatZq) -> Self {
@@ -39,18 +39,18 @@ impl From<&MatZq> for String {
 
 impl From<MatZq> for String {
     /// Converts a [`MatZq`] into its [`String`] representation.
-    /// 
+    ///
     /// Parameters:
     /// - `value`: specifies the matrix that will be represented as a [`String`]
-    /// 
+    ///
     /// Returns a [`String`] of the form `[[row_0],[row_1],...[row_n]] mod q`.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     /// let matrix = MatZq::from_str("[[6, 1],[5, 2]] mod 4").unwrap();
-    /// 
+    ///
     /// let string: String = matrix.into();
     /// ```
     fn from(value: MatZq) -> Self {
