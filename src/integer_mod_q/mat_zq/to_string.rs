@@ -16,6 +16,18 @@ use crate::{integer::Z, utils::parse::matrix_to_string};
 use super::MatZq;
 use core::fmt;
 
+impl From<&MatZq> for String {
+    fn from(value: &MatZq) -> Self {
+        value.to_string()
+    }
+}
+
+impl From<MatZq> for String {
+    fn from(value: MatZq) -> Self {
+        value.to_string()
+    }
+}
+
 impl fmt::Display for MatZq {
     /// Allows to convert a matrix of type [`MatZq`] into a [`String`].
     ///
