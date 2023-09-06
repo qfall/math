@@ -46,7 +46,7 @@ impl MatZq {
     /// Errors and Failures
     /// - Returns a [`MathError`] of type [`VectorFunctionCalledOnNonVector`](MathError::VectorFunctionCalledOnNonVector)
     /// if the given [`MatZq`] instance is not a (row or column) vector.
-    /// - Returns a [`MathError`] of type [`MismatchingVectorDimensions`](MathError::MismatchingVectorDimensions)
+    /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     /// if the given vectors have different lengths.
     /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus)
     /// if the provided matrices have different moduli.
@@ -76,7 +76,7 @@ impl MatZq {
         let other_entries = other.collect_entries();
 
         if self_entries.len() != other_entries.len() {
-            return Err(MathError::MismatchingVectorDimensions(format!(
+            return Err(MathError::MismatchingMatrixDimension(format!(
                 "You called the function 'dot_product' for vectors of different lengths: {} and {}",
                 self_entries.len(),
                 other_entries.len()

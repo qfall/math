@@ -124,7 +124,7 @@ impl FromStr for Zq {
     /// if the provided string was not formatted correctly, or
     /// if the provided modulus was not formatted correctly to create a [`Z`].
     /// - Returns a [`MathError`] of type
-    /// [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
+    /// [`InvalidModulus`](MathError::InvalidModulus)
     /// if the provided value is not greater than `1`.
     /// - Returns a [`MathError`] of type
     fn from_str(s: &str) -> Result<Self, Self::Err> {

@@ -47,12 +47,12 @@ impl Modulus {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
+    /// - Returns a [`MathError`] of type [`InvalidModulus`](MathError::InvalidModulus)
     /// if the provided value is not greater than `1`.
     pub(crate) fn from_fmpz_ref(value: &fmpz) -> Result<Self, MathError> {
         if (unsafe { fmpz_cmp_si(value, 1) } <= 0) {
             let z = Z::from(value);
-            return Err(MathError::InvalidIntToModulus(z.to_string()));
+            return Err(MathError::InvalidModulus(z.to_string()));
         }
 
         let mut ctx = MaybeUninit::uninit();
@@ -142,7 +142,7 @@ impl FromStr for Modulus {
     /// provided string was not formatted correctly, e.g. not a correctly
     /// formatted [`Z`].
     /// - Returns a [`MathError`] of type
-    /// [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
+    /// [`InvalidModulus`](MathError::InvalidModulus)
     /// if the provided value is not greater than `1`.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let z = Z::from_str(s)?;

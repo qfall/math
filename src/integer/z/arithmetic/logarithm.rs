@@ -35,18 +35,18 @@ impl Z {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`InvalidBase`](MathError::InvalidBase) if the `base` is not greater than `1`.
+    /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput) if the `base` is not greater than `1`.
     /// - Returns a [`MathError`] of type
-    /// [`NotPositiveNumber`](MathError::NotPositiveNumber) if `self` is not
+    /// [`NonPositive`](MathError::NonPositive) if `self` is not
     ///  greater than `0`.
     pub fn log_ceil(&self, base: impl Into<Z>) -> Result<Z, MathError> {
         let base: Z = base.into();
         if base <= Z::ONE {
-            Err(MathError::InvalidBase(format!(
+            Err(MathError::InvalidIntegerInput(format!(
                 "The base must be greater than 1, but the provided is {base}"
             )))
         } else if self <= &Z::ZERO {
-            Err(MathError::NotPositiveNumber(self.to_string()))
+            Err(MathError::NonPositive(self.to_string()))
         } else {
             Ok(Z::from(unsafe { fmpz_clog(&self.value, &base.value) }))
         }
@@ -75,18 +75,18 @@ impl Z {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`InvalidBase`](MathError::InvalidBase) if the `base` is not greater than `1`.
+    /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput) if the `base` is not greater than `1`.
     /// - Returns a [`MathError`] of type
-    /// [`NotPositiveNumber`](MathError::NotPositiveNumber) if `self` is not
+    /// [`NonPositive`](MathError::NonPositive) if `self` is not
     ///  greater than `0`.
     pub fn log_floor(&self, base: impl Into<Z>) -> Result<Z, MathError> {
         let base: Z = base.into();
         if base <= Z::ONE {
-            Err(MathError::InvalidBase(format!(
+            Err(MathError::InvalidIntegerInput(format!(
                 "The base must be greater than 1, but the provided is {base}"
             )))
         } else if self <= &Z::ZERO {
-            Err(MathError::NotPositiveNumber(self.to_string()))
+            Err(MathError::NonPositive(self.to_string()))
         } else {
             Ok(Z::from(unsafe { fmpz_flog(&self.value, &base.value) }))
         }
@@ -113,11 +113,11 @@ impl Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [`NotPositiveNumber`](MathError::NotPositiveNumber) if `self` is not
+    /// [`NonPositive`](MathError::NonPositive) if `self` is not
     ///  greater than `0`.
     pub fn ln(&self) -> Result<Q, MathError> {
         if self <= &Z::ZERO {
-            Err(MathError::NotPositiveNumber(self.to_string()))
+            Err(MathError::NonPositive(self.to_string()))
         } else {
             Ok(Q::from(unsafe { fmpz_dlog(&self.value) }))
         }
@@ -147,15 +147,15 @@ impl Z {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`InvalidBase`](MathError::InvalidBase)
+    /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
     /// if the `base` is not greater than `1`.
     /// - Returns a [`MathError`] of type
-    /// [`NotPositiveNumber`](MathError::NotPositiveNumber) if `self` is not
+    /// [`NonPositive`](MathError::NonPositive) if `self` is not
     ///  greater than `0`.
     pub fn log(&self, base: impl Into<Z>) -> Result<Q, MathError> {
         let base: Z = base.into();
         if base <= Z::ONE {
-            return Err(MathError::InvalidBase(format!(
+            return Err(MathError::InvalidIntegerInput(format!(
                 "The base must be greater than 1, but the provided is {base}"
             )));
         }

@@ -12,6 +12,22 @@
 //! be easily found and accessed by developers using this crate. Furthermore,
 //! the actual errors are wrapped s.t. all information about the error can be
 //! unwrapped again.
+//!
+//! **For developers:**
+//! - How to add an error to an `enum`? First of all, find a name
+//! that is not too specific for your current case s.t. it could be used in other
+//! contexts afterwards as well. Then, find the spot according to your chosen error
+//! name in a alphanumerically sorted way in the list of supported errors in the doc
+//! comment and inside the `enum` itself.
+//! Afterwards, add the error to the list of implemented error
+//! types in the doc comment of the `enum` with a short description when it is thrown.
+//! Probably use this description for the doc comment above the implementation of
+//! error in the `enum`. Then, add `#[error(<error msg>)]` to define the error message
+//! output once your error is thrown. Below, write down `<error name>(<input>),` to
+//! define the error with its name and possibly several inputs. The input can be of the
+//! form [`String`], but also another error, whose conversion must be declared via
+//! `#[from] OtherError`. It is best to use the existing structure as a guide. For any
+//! further information, check out the here used [`thiserror`]-crate.
 
 use std::ffi::NulError;
 use thiserror::Error;
@@ -20,29 +36,36 @@ use thiserror::Error;
 /// errors occurring in this crate.
 ///
 /// Implemented error types:
-/// -  `ConversionError` is thrown if a conversion between types is not possible
-/// - `DivisionByZeroError` is thrown if it is tried to perform a division by `0`
-/// - `InvalidBase` is thrown if the provided base to call a function is not valid
-/// - `InvalidExponent` is thrown if an invalid exponent is used for a `pow` function
-/// - `InvalidIntegerInput` is thrown if an integer input is provided as parameter that
-/// does not meet the conditions of that function
-/// - `InvalidInterval` is thrown if an invalid interval, e.g. of negative size, is provided
-/// - `InvalidIntToModulus` is thrown if an integer is provided, which is not greater than `1`
-/// - `InvalidStringToCStringInput` is thrown if an invalid string is given to
-/// construct a [`CString`](std::ffi::CString)
-/// - `MismatchingMatrixDimension` is thrown if arithmetic is done with
-/// matrices of mismatching dimensions
-/// - `MismatchingModulus` is thrown if any function is called on two
-/// objects with different modulus where equal modulus is required
-/// - `MismatchingVectorDimensions` is thrown if an operation of two vectors is
-/// called for which their dimensions do not match
-/// - `NotInvertible` is thrown if a matrix is not invertible
-/// - `NotPositiveNumber` is thrown if the function expects a positive number,
-/// but a number smaller than `1` is provided
-/// - `NoSquareMatrix` is thrown if a matrix is not square
-/// - `OutOfBounds` is thrown if a provided index is not in a desired range
-/// - `VectorFunctionCalledOnNonVector` is thrown if a function defined
-/// on vectors was called on a matrix instance that is not a vector
+/// -  [`ConversionError`](MathError::ConversionError) is thrown if a conversion
+/// between types is not possible.
+/// - [`DivisionByZeroError`](MathError::DivisionByZeroError) is thrown if it is
+/// tried to perform a division by `0`.
+/// - [`InvalidExponent`](MathError::InvalidExponent) is thrown if an invalid
+/// exponent is used for a `pow` function.
+/// - [`InvalidIntegerInput`](MathError::InvalidIntegerInput) is thrown if an
+/// integer input is provided as parameter that does not meet the conditions
+/// of that function.
+/// - [`InvalidInterval`](MathError::InvalidInterval) is thrown if an invalid
+/// interval, e.g. of negative size, is provided.
+/// - [`InvalidModulus`](MathError::InvalidModulus) is thrown if an integer is
+/// provided, which is not greater than `1`.
+/// - [`NulError`](MathError::NulError) is thrown if a [`NulError`] is thrown,
+/// which currently only happens if an invalid string is given to construct
+/// a [`CString`](std::ffi::CString).
+/// - [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension) is
+/// thrown if arithmetic is done with matrices of mismatching dimensions.
+/// - [`MismatchingModulus`](MathError::MismatchingModulus) is thrown if any
+/// function is called on two objects with different modulus where equal
+/// modulus is required.
+/// - [`NonPositive`](MathError::NonPositive) is thrown if the function expects
+/// a positive number, but a number smaller than `1` is provided.
+/// - [`NoSquareMatrix`](MathError::NoSquareMatrix) is thrown if a matrix is
+/// not square.
+/// - [`OutOfBounds`](MathError::OutOfBounds) is thrown if a provided index
+/// is not in a desired range.
+/// - [`VectorFunctionCalledOnNonVector`](MathError::VectorFunctionCalledOnNonVector)
+/// is thrown if a function defined on vectors was called on a matrix instance
+/// that is not a vector.
 ///
 /// # Examples
 /// ```
@@ -57,85 +80,69 @@ use thiserror::Error;
 /// ```
 #[derive(Error, Debug)]
 pub enum MathError {
-    /// conversion error
-    #[error("while performing the conversion an error occurred: {0}")]
+    /// Conversion error.
+    #[error("While performing the conversion an error occurred: {0}")]
     ConversionError(String),
 
-    /// division by zero error
-    #[error("the division by zero is not possible {0}")]
+    /// Division by zero error.
+    #[error("The division by zero is not possible {0}")]
     DivisionByZeroError(String),
 
-    /// invalid base to call function
-    #[error("the base is not valid: {0}")]
-    InvalidBase(String),
-
-    /// invalid exponent
+    /// Invalid exponent.
     #[error("Invalid exponent given: {0}")]
     InvalidExponent(String),
 
-    /// invalid integer was input to a specific function
-    #[error("an invalid integer input was given as a parameter: {0}")]
+    /// Invalid integer was input to a specific function.
+    #[error("An invalid integer input was given as a parameter: {0}")]
     InvalidIntegerInput(String),
 
-    /// invalid interval provided
+    /// Invalid interval provided.
     #[error("An invalid interval was given: {0}")]
     InvalidInterval(String),
 
-    /// parse int to modulus error
+    /// Parse int to modulus error.
+    #[error("An invalid value should be parsed as a modulus {0}.")]
+    InvalidModulus(String),
+
+    /// Converts a [`NulError`], which currently only happens if an
+    /// invalid string is given to construct a [`CString`](std::ffi::CString).
     #[error(
-        "invalid integer input to parse to a modulus {0}. \
-        The value must be larger than 1."
+        "A nul error occurred, which usually happends if an invalid \
+        string input is parsed to a CString {0}"
     )]
-    InvalidIntToModulus(String),
+    NulError(#[from] NulError),
 
-    /// parse string to [`CString`](std::ffi::CString) error
-    #[error("invalid string input to parse to CString {0}")]
-    InvalidStringToCStringInput(#[from] NulError),
-
-    /// mismatching matrix dimension error
-    #[error("mismatching matrix dimensions {0}")]
+    /// Mismatching matrix dimension error.
+    #[error("Mismatching matrix dimensions {0}")]
     MismatchingMatrixDimension(String),
 
-    /// mismatching modulus error
-    #[error("mismatching modulus.{0}")]
+    /// Mismatching modulus error.
+    #[error("Mismatching modulus.{0}")]
     MismatchingModulus(String),
 
-    /// mismatching dimensions of vectors
-    #[error("mismatching vector dimensions. {0}")]
-    MismatchingVectorDimensions(String),
+    /// If an integer is not a positive number.
+    #[error(
+        "A function that can only be performed on positive values was \
+        performed on performed on a non-positive value, which is {0}."
+    )]
+    NonPositive(String),
 
-    /// calculate the root of a negative number
-    #[error("can not calculate the root of {0} since it is a negative number")]
-    NegativeRootParameter(String),
-
-    /// invert matrix error
-    #[error("the matrix could not be inverted. {0}")]
-    NotInvertible(String),
-
-    /// if an integer is not a positive number (excluding the `´0`)
-    #[error("invalid integer. The provided value needs to be a positive number and is {0}")]
-    NotPositiveNumber(String),
-
-    /// if a matrix is not square
-    #[error("the matrix is not square {0}")]
+    /// If a matrix is not square.
+    #[error("The matrix is not square {0}")]
     NoSquareMatrix(String),
 
-    /// if a provided index is out of bounds
+    /// If a provided index is out of bounds.
     #[error(
-        "invalid index submitted. The index is out of bounds.
+        "Invalid index submitted. The index is out of bounds.
         The index has to {0}, and the provided value is {1}"
     )]
     OutOfBounds(String, String),
 
-    /// specify a negative or zero precision
-    #[error("the precision must larger than zero. It is {0}")]
-    PrecisionNotPositive(String),
-
-    /// some string to one of our data-types error occurred
+    /// Some string to one of our data-types error occurred.
     #[error("{0}")]
     StringConversionError(#[from] StringConversionError),
 
-    /// if a function defined on vectors is called on a matrix that is not a vector
+    /// If a function defined on vectors is called on a matrix that is not a vector.
     #[error(
         "Function named {0} is only defined for vectors and 
         was called on a matrix of dimension {1}x{2}"
@@ -147,47 +154,50 @@ pub enum MathError {
 /// which holds all [`String`] to data-type conversion errors.
 ///
 /// Implemented error types:
-/// - `InvalidMatrix` is thrown if an invalid string input of a matrix is given
-/// - `InvalidStringToPolyInput` is thrown if an invalid string is given to
-/// construct a polynomial
-/// - `InvalidStringToPolyMissingWhiteSpace` is thrown if an invalid string
-/// is given to construct a polynomial which did not contain two whitespaces
-/// - `InvalidStringToPolyModulusInput` is thrown if an invalid string is given
+/// - [`InvalidMatrix`](StringConversionError::InvalidMatrix) is thrown if an
+/// invalid string input of a matrix is given.
+/// - [`InvalidStringToPolyInput`](StringConversionError::InvalidStringToPolyInput)
+/// is thrown if an invalid string is given to construct a polynomial.
+/// - [`InvalidStringToPolyMissingWhitespace`](StringConversionError::InvalidStringToPolyMissingWhitespace)
+/// is thrown if an invalid string is given to construct a polynomial which
+/// did not contain two whitespaces.
+/// - [`InvalidStringToPolyModulusInput`](StringConversionError::InvalidStringToPolyModulusInput)
+/// is thrown if an invalid string is given
 /// to construct a [`PolyOverZq`](crate::integer_mod_q::PolyOverZq), i.e. it is
 /// not formatted correctly.
-/// - `InvalidStringToQInput` is thrown if an invalid string is given to
-/// construct a [`Q`](crate::rational::Q)
-/// - `InvalidStringToZInput` is thrown if an invalid string is given to
-/// construct a [`Z`](crate::integer::Z)
-/// - `InvalidStringToZqInput` is thrown if an invalid string is given to
-/// construct a [`Zq`](crate::integer_mod_q::Zq)
+/// - [`InvalidStringToQInput`](StringConversionError::InvalidStringToQInput)
+/// is thrown if an invalid string is given to construct a [`Q`](crate::rational::Q).
+/// - [`InvalidStringToZInput`](StringConversionError::InvalidStringToZInput)
+/// is thrown if an invalid string is given to construct a [`Z`](crate::integer::Z).
+/// - [`InvalidStringToZqInput`](StringConversionError::InvalidStringToZqInput)
+/// is thrown if an invalid string is given to construct a [`Zq`](crate::integer_mod_q::Zq).
 #[derive(Error, Debug)]
 pub enum StringConversionError {
-    /// invalid Matrix input error
+    /// Invalid Matrix input error.
     #[error("invalid Matrix. {0}")]
     InvalidMatrix(String),
 
-    /// parse string to poly error
+    /// Parse string to poly error.
     #[error(
-        "invalid string input to parse to polynomial {0}\nThe format must 
+        "Invalid string input to parse to polynomial {0}\nThe format must 
         be '[#number of coefficients]  [0th coefficient] [1st coefficient] ...'. 
         Note that the after the number of coefficients, there are two 
         whitespace."
     )]
     InvalidStringToPolyInput(String),
 
-    /// parse string to poly error with missing whitespace
+    /// Parse string to poly error with missing whitespace.
     #[error(
-        "invalid string input to parse to polynomial {0}
+        "Invalid string input to parse to polynomial {0}
         The string did not contain two whitespace at the start. Please note, 
         that there have to two whitespace between number of coefficients 
         and the first coefficient"
     )]
     InvalidStringToPolyMissingWhitespace(String),
 
-    /// parse string to poly with modulus error
+    /// Parse string to poly with modulus error.
     #[error(
-        "invalid string input to parse to polynomial mod q {0}.
+        "Invalid string input to parse to polynomial mod q {0}.
         The format must \
         be '[#number of coefficients]  [0th coefficient] [1st coefficient] ... \
         mod [modulus]'. 
@@ -196,15 +206,15 @@ pub enum StringConversionError {
     )]
     InvalidStringToPolyModulusInput(String),
 
-    /// parse string to [`Q`](crate::rational::Q) error
-    #[error("invalid string input to parse to Q {0}")]
+    /// Parse string to [`Q`](crate::rational::Q) error
+    #[error("Invalid string input to parse to Q {0}")]
     InvalidStringToQInput(String),
 
-    /// parse string to [`Z`](crate::integer::Z) error
-    #[error("invalid string input to parse to Z {0}")]
+    /// Parse string to [`Z`](crate::integer::Z) error.
+    #[error("Invalid string input to parse to Z {0}")]
     InvalidStringToZInput(String),
 
-    /// parse string to [`Zq`](crate::integer_mod_q::Zq) error
-    #[error("invalid string input to parse to Zq {0}")]
+    /// Parse string to [`Zq`](crate::integer_mod_q::Zq) error.
+    #[error("Invalid string input to parse to Zq {0}")]
     InvalidStringToZqInput(String),
 }
