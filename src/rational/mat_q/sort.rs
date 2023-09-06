@@ -150,7 +150,7 @@ impl MatQ {
 #[cfg(test)]
 mod test_sort_by_length {
     use super::MatQ;
-    use crate::error::MathError;
+    use crate::error::{MathError, StringConversionError};
     use std::str::FromStr;
 
     /// This function should fail in any case a vector is provided to it.
@@ -158,9 +158,11 @@ mod test_sort_by_length {
     /// it should always return an error if used as `cond_func` for these two functions
     fn failing_func(matrix: &MatQ) -> Result<(), MathError> {
         if matrix.is_vector() {
-            Err(MathError::InvalidMatrix(String::from(
-                "Some silly mistake was made - on purpose",
-            )))
+            Err(MathError::StringConversionError(
+                StringConversionError::InvalidMatrix(String::from(
+                    "Some silly mistake was made - on purpose",
+                )),
+            ))
         } else {
             Ok(())
         }

@@ -13,13 +13,13 @@
 //! the actual errors are wrapped s.t. all information about the error can be
 //! unwrapped again.
 
-use std::{ffi::NulError, num::ParseIntError};
+use std::ffi::NulError;
 use thiserror::Error;
 
 /// [`MathError`] defines this crate's error enum, which can hold all sorts of
 /// errors occurring in this crate.
 ///
-/// Possible entries:
+/// Implemented error types:
 /// -  `ConversionError` is thrown if a conversion between types is not possible
 /// - `DivisionByZeroError` is thrown if it is tried to perform a division by `0`
 /// - `InvalidBase` is thrown if the provided base to call a function is not valid
@@ -28,26 +28,8 @@ use thiserror::Error;
 /// does not meet the conditions of that function
 /// - `InvalidInterval` is thrown if an invalid interval, e.g. of negative size, is provided
 /// - `InvalidIntToModulus` is thrown if an integer is provided, which is not greater than `1`
-/// - `InvalidMatrix` is thrown if an invalid string input of a matrix is given
 /// - `InvalidStringToCStringInput` is thrown if an invalid string is given to
 /// construct a [`CString`](std::ffi::CString)
-/// - `InvalidStringToIntInput` is thrown if an invalid string is given to
-/// construct an integer.
-/// - `InvalidStringToMatZqInput` is thrown if an invalid string is given to
-/// construct a Matrix of [`MatZq`](crate::integer_mod_q::MatZq)
-/// - `InvalidStringToPolyInput` is thrown if an invalid string is given to
-/// construct a polynomial
-/// - `InvalidStringToPolyMissingWhiteSpace` is thrown if an invalid string
-/// is given to construct a polynomial which did not contain two whitespaces
-/// - `InvalidStringToPolyModulusInput` is thrown if an invalid string is given
-/// to construct a [`PolyOverZq`](crate::integer_mod_q::PolyOverZq), i.e. it is
-/// not formatted correctly.
-/// - `InvalidStringToQInput` is thrown if an invalid string is given to
-/// construct a [`Q`](crate::rational::Q)
-/// - `InvalidStringToZInput` is thrown if an invalid string is given to
-/// construct a [`Z`](crate::integer::Z)
-/// - `InvalidStringToZqInput` is thrown if an invalid string is given to
-/// construct a [`Zq`](crate::integer_mod_q::Zq)
 /// - `MismatchingMatrixDimension` is thrown if arithmetic is done with
 /// matrices of mismatching dimensions
 /// - `MismatchingModulus` is thrown if any function is called on two
@@ -64,11 +46,12 @@ use thiserror::Error;
 ///
 /// # Examples
 /// ```
-/// use qfall_math::error::MathError;
+/// use qfall_math::{error::MathError, rational::Q};
+/// use std::str::FromStr;
 ///
-/// fn parse_string_to_int() -> Result<(), MathError> {
-///     let text = "abc".to_owned();
-///     let i: i32 = text.parse::<i32>()?;
+/// fn parse_string_to_q() -> Result<(), MathError> {
+///     let text = "2/0";
+///     let q = Q::from_str(text)?;
 ///     return Ok(());
 /// }
 /// ```
@@ -105,21 +88,84 @@ pub enum MathError {
     )]
     InvalidIntToModulus(String),
 
-    /// invalid Matrix input error
-    #[error("invalid Matrix. {0}")]
-    InvalidMatrix(String),
-
     /// parse string to [`CString`](std::ffi::CString) error
     #[error("invalid string input to parse to CString {0}")]
     InvalidStringToCStringInput(#[from] NulError),
 
-    /// parse string to int error
-    #[error("invalid string input to parse to int {0}")]
-    InvalidStringToIntInput(#[from] ParseIntError),
+    /// mismatching matrix dimension error
+    #[error("mismatching matrix dimensions {0}")]
+    MismatchingMatrixDimension(String),
 
-    /// parse string to [`MatZq`](crate::integer_mod_q::MatZq) error
-    #[error("invalid string input to parse to MatZq {0}")]
-    InvalidStringToMatZqInput(String),
+    /// mismatching modulus error
+    #[error("mismatching modulus.{0}")]
+    MismatchingModulus(String),
+
+    /// mismatching dimensions of vectors
+    #[error("mismatching vector dimensions. {0}")]
+    MismatchingVectorDimensions(String),
+
+    /// calculate the root of a negative number
+    #[error("can not calculate the root of {0} since it is a negative number")]
+    NegativeRootParameter(String),
+
+    /// invert matrix error
+    #[error("the matrix could not be inverted. {0}")]
+    NotInvertible(String),
+
+    /// if an integer is not a positive number (excluding the `´0`)
+    #[error("invalid integer. The provided value needs to be a positive number and is {0}")]
+    NotPositiveNumber(String),
+
+    /// if a matrix is not square
+    #[error("the matrix is not square {0}")]
+    NoSquareMatrix(String),
+
+    /// if a provided index is out of bounds
+    #[error(
+        "invalid index submitted. The index is out of bounds.
+        The index has to {0}, and the provided value is {1}"
+    )]
+    OutOfBounds(String, String),
+
+    /// specify a negative or zero precision
+    #[error("the precision must larger than zero. It is {0}")]
+    PrecisionNotPositive(String),
+
+    /// some string to one of our data-types error occurred
+    #[error("{0}")]
+    StringConversionError(#[from] StringConversionError),
+
+    /// if a function defined on vectors is called on a matrix that is not a vector
+    #[error(
+        "Function named {0} is only defined for vectors and 
+        was called on a matrix of dimension {1}x{2}"
+    )]
+    VectorFunctionCalledOnNonVector(String, i64, i64),
+}
+
+/// [`StringConversionError`] defines an error enum,
+/// which holds all [`String`] to data-type conversion errors.
+///
+/// Implemented error types:
+/// - `InvalidMatrix` is thrown if an invalid string input of a matrix is given
+/// - `InvalidStringToPolyInput` is thrown if an invalid string is given to
+/// construct a polynomial
+/// - `InvalidStringToPolyMissingWhiteSpace` is thrown if an invalid string
+/// is given to construct a polynomial which did not contain two whitespaces
+/// - `InvalidStringToPolyModulusInput` is thrown if an invalid string is given
+/// to construct a [`PolyOverZq`](crate::integer_mod_q::PolyOverZq), i.e. it is
+/// not formatted correctly.
+/// - `InvalidStringToQInput` is thrown if an invalid string is given to
+/// construct a [`Q`](crate::rational::Q)
+/// - `InvalidStringToZInput` is thrown if an invalid string is given to
+/// construct a [`Z`](crate::integer::Z)
+/// - `InvalidStringToZqInput` is thrown if an invalid string is given to
+/// construct a [`Zq`](crate::integer_mod_q::Zq)
+#[derive(Error, Debug)]
+pub enum StringConversionError {
+    /// invalid Matrix input error
+    #[error("invalid Matrix. {0}")]
+    InvalidMatrix(String),
 
     /// parse string to poly error
     #[error(
@@ -161,50 +207,4 @@ pub enum MathError {
     /// parse string to [`Zq`](crate::integer_mod_q::Zq) error
     #[error("invalid string input to parse to Zq {0}")]
     InvalidStringToZqInput(String),
-
-    /// mismatching matrix dimension error
-    #[error("mismatching matrix dimensions {0}")]
-    MismatchingMatrixDimension(String),
-
-    /// mismatching modulus error
-    #[error("mismatching modulus.{0}")]
-    MismatchingModulus(String),
-
-    /// mismatching dimensions of vectors
-    #[error("mismatching vector dimensions. {0}")]
-    MismatchingVectorDimensions(String),
-
-    /// calculate the root of a negative number
-    #[error("can not calculate the root of {0} since it is a negative number")]
-    NegativeRootParameter(String),
-
-    /// invert matrix error
-    #[error("the matrix could not be inverted. {0}")]
-    NotInvertible(String),
-
-    /// if an integer is not a positive number (excluding the `´0`)
-    #[error("invalid integer. The provided value needs to be a positive number and is {0}")]
-    NotPositiveNumber(String),
-
-    /// if a matrix is not square
-    #[error("the matrix is not square {0}")]
-    NoSquareMatrix(String),
-
-    /// if a provided index is out of bounds
-    #[error(
-        "invalid index submitted. The index is out of bounds.
-        The index has to {0}, and the provided value is {1}"
-    )]
-    OutOfBounds(String, String),
-
-    /// specify a negative or zero precision
-    #[error("the precision must larger than zero. It is {0}")]
-    PrecisionNotPositive(String),
-
-    /// if a function defined on vectors is called on a matrix that is not a vector
-    #[error(
-        "Function named {0} is only defined for vectors and 
-        was called on a matrix of dimension {1}x{2}"
-    )]
-    VectorFunctionCalledOnNonVector(String, i64, i64),
 }

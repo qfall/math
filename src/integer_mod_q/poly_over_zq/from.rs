@@ -13,7 +13,7 @@
 //! The explicit functions contain the documentation.
 
 use crate::{
-    error::MathError,
+    error::{MathError, StringConversionError},
     integer::PolyOverZ,
     integer_mod_q::{modulus::Modulus, ModulusPolynomialRingZq, PolyOverZq, Zq},
 };
@@ -144,17 +144,11 @@ impl FromStr for PolyOverZq {
     /// ```
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [`InvalidStringToPolyModulusInput`](MathError::InvalidStringToPolyModulusInput)
-    /// if the provided string was not formatted correctly to create a [`Modulus`].
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidStringToPolyMissingWhitespace`](`MathError::InvalidStringToPolyMissingWhitespace`)
-    /// if the provided value did not contain two whitespaces.
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidStringToPolyInput`](MathError::InvalidStringToPolyInput)
+    /// [`StringConversionError`](MathError::StringConversionError)
+    /// if the provided string was not formatted correctly to create a [`Modulus`],
+    /// if the provided value did not contain two whitespaces,
     /// if the provided half of the string was not formatted correctly to
-    /// create a polynomial.
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidStringToZInput`](MathError::InvalidStringToZInput)
+    /// create a polynomial, or
     /// if the provided half of the
     /// string was not formatted correctly to create a [`Z`](crate::integer::Z).
     /// - Returns a [`MathError`] of type
@@ -163,7 +157,11 @@ impl FromStr for PolyOverZq {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (poly_s, modulus) = match s.split_once("mod") {
             Some((poly_s, modulus)) => (poly_s, modulus.trim()),
-            None => return Err(MathError::InvalidStringToPolyModulusInput(s.to_owned())),
+            None => {
+                return Err(MathError::StringConversionError(
+                    StringConversionError::InvalidStringToPolyModulusInput(s.to_owned()),
+                ))
+            }
         };
 
         let poly_over_z = PolyOverZ::from_str(poly_s)?;

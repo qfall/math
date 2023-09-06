@@ -9,7 +9,11 @@
 //! Implementations to create a [`Zq`] value from other types.
 
 use super::Zq;
-use crate::{error::MathError, integer::Z, integer_mod_q::Modulus};
+use crate::{
+    error::{MathError, StringConversionError},
+    integer::Z,
+    integer_mod_q::Modulus,
+};
 use flint_sys::fmpz_mod::fmpz_mod_set_fmpz;
 use std::str::FromStr;
 
@@ -115,24 +119,20 @@ impl FromStr for Zq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
-    /// if the provided string contains a Nul byte.
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidStringToZqInput`](MathError::InvalidStringToZqInput)
-    /// if the provided string was not formatted correctly.
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidStringToZInput`](MathError::InvalidStringToZInput)
-    /// if the provided modulus was not formatted correctly to create a [`Z`]
+    /// [`StringConversionError`](MathError::StringConversionError)
+    /// if the provided string contains a Nul byte,
+    /// if the provided string was not formatted correctly, or
+    /// if the provided modulus was not formatted correctly to create a [`Z`].
     /// - Returns a [`MathError`] of type
     /// [`InvalidIntToModulus`](MathError::InvalidIntToModulus)
     /// if the provided value is not greater than `1`.
     /// - Returns a [`MathError`] of type
-    /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
-    /// if the provided string contains a Nul byte.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let input_split: Vec<&str> = s.split("mod").collect();
         if input_split.len() != 2 {
-            return Err(MathError::InvalidStringToZqInput(s.to_owned()));
+            return Err(MathError::StringConversionError(
+                StringConversionError::InvalidStringToZqInput(s.to_owned()),
+            ));
         }
 
         // instantiate both parts of Zq element

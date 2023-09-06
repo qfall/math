@@ -78,14 +78,10 @@ impl FromStr for MatZ {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix)
-    /// if the matrix is not formatted in a suitable way or
-    /// if the number of entries in rows is unequal.
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
-    /// if an entry contains a Nul byte.
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidStringToZInput`](MathError::InvalidStringToZInput)
+    /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
+    /// if the matrix is not formatted in a suitable way,
+    /// if the number of entries in rows is unequal,
+    /// if an entry contains a Nul byte, or
     /// if an entry is not formatted correctly.
     ///
     /// # Panics ...

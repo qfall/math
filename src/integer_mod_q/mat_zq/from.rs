@@ -15,7 +15,7 @@
 
 use super::MatZq;
 use crate::{
-    error::MathError,
+    error::{MathError, StringConversionError},
     integer::{MatZ, Z},
     integer_mod_q::Modulus,
     traits::{GetNumColumns, GetNumRows, SetEntry},
@@ -93,14 +93,10 @@ impl FromStr for MatZq {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix)
-    /// if the matrix is not formatted in a suitable way or
-    /// if the number of entries in rows is unequal.
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
-    /// if an entry contains a Nul byte.
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidStringToZInput`](MathError::InvalidStringToZInput)
+    /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
+    /// if the matrix is not formatted in a suitable way,
+    /// if the number of entries in rows is unequal,
+    /// if an entry contains a Nul byte, or
     /// if the modulus or an entry is not formatted correctly.
     ///
     /// # Panics ...
@@ -110,9 +106,11 @@ impl FromStr for MatZq {
         let (matrix, modulus) = match string.split_once("mod") {
             Some((matrix, modulus)) => (matrix, modulus),
             None => {
-                return Err(MathError::InvalidStringToMatZqInput(format!(
-                    "The word 'mod' could not be found: {string}"
-                )))
+                return Err(MathError::StringConversionError(
+                    StringConversionError::InvalidMatrix(format!(
+                        "The word 'mod' could not be found: {string}"
+                    )),
+                ))
             }
         };
 
