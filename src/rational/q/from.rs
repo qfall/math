@@ -77,9 +77,7 @@ impl FromStr for Q {
     /// if the provided string has `0` as the denominator.
     fn from_str(s: &str) -> Result<Self, MathError> {
         if s.contains(char::is_whitespace) {
-            return Err(MathError::StringConversionError(
-                StringConversionError::InvalidStringToQInput(s.to_owned()),
-            ));
+            return Err(StringConversionError::InvalidStringToQInput(s.to_owned()))?;
         }
 
         // `fmpq::default()` returns the value `0/0`
@@ -96,9 +94,7 @@ impl FromStr for Q {
         // since value is set to `0`, if an error occurs, we do not need to free
         // the allocated space manually
         if -1 == unsafe { fmpq_set_str(&mut value, c_string.as_ptr(), 10) } {
-            return Err(MathError::StringConversionError(
-                StringConversionError::InvalidStringToQInput(s.to_owned()),
-            ));
+            return Err(StringConversionError::InvalidStringToQInput(s.to_owned()))?;
         };
 
         // canonical form is expected by other functions

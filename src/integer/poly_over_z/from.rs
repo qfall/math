@@ -70,9 +70,9 @@ impl FromStr for PolyOverZ {
         // We only have to check it once, because for every other position it checks
         // whether there is only one space.
         if !s_trimmed.contains("  ") {
-            return Err(MathError::StringConversionError(
-                StringConversionError::InvalidStringToPolyMissingWhitespace(s.to_owned()),
-            ));
+            return Err(StringConversionError::InvalidStringToPolyMissingWhitespace(
+                s.to_owned(),
+            ))?;
         };
 
         let mut res = Self::default();
@@ -81,9 +81,9 @@ impl FromStr for PolyOverZ {
 
         match unsafe { fmpz_poly_set_str(&mut res.poly, c_string.as_ptr()) } {
             0 => Ok(res),
-            _ => Err(MathError::StringConversionError(
-                StringConversionError::InvalidStringToPolyInput(s.to_owned()),
-            )),
+            _ => Err(StringConversionError::InvalidStringToPolyInput(
+                s.to_owned(),
+            ))?,
         }
     }
 }

@@ -45,11 +45,9 @@ pub(crate) fn parse_matrix_string(string: &str) -> Result<Vec<Vec<String>>, Math
     // we differ between the first/several and the last entry in each row (as there is no comma after the last entry)
     // each entry can contain any symbol but `[`, `]` and `,`. It needs to have at least one symbol.
     if !regex.is_match(string) {
-        return Err(MathError::StringConversionError(
-            StringConversionError::InvalidMatrix(
-                "The matrix is not formatted in a suitable way.".to_owned(),
-            ),
-        ));
+        return Err(StringConversionError::InvalidMatrix(
+            "The matrix is not formatted in a suitable way.".to_owned(),
+        ))?;
     }
 
     // delete `[[` in front and `]]` in the end and split the matrix into rows

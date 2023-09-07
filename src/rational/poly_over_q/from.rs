@@ -69,12 +69,12 @@ impl FromStr for PolyOverQ {
                 fmpq_poly_canonicalise(&mut res.poly);
                 Ok(res)
             },
-            _ if !s.contains("  ") => Err(MathError::StringConversionError(
+            _ if !s.contains("  ") => Err(
                 StringConversionError::InvalidStringToPolyMissingWhitespace(s.to_owned()),
-            )),
-            _ => Err(MathError::StringConversionError(
-                StringConversionError::InvalidStringToPolyInput(s.to_owned()),
-            )),
+            )?,
+            _ => Err(StringConversionError::InvalidStringToPolyInput(
+                s.to_owned(),
+            ))?,
         }
     }
 }

@@ -121,9 +121,7 @@ impl Z {
         }
 
         if s.contains(char::is_whitespace) {
-            return Err(MathError::StringConversionError(
-                StringConversionError::InvalidStringToZInput(s.to_owned()),
-            ));
+            return Err(StringConversionError::InvalidStringToZInput(s.to_owned()))?;
         }
 
         // since |value| = |0| < 62 bits, we do not need to free the allocated space manually
@@ -137,9 +135,7 @@ impl Z {
         // For reading more look at the documentation of `.as_ptr()`.
         match unsafe { fmpz_set_str(&mut value, c_string.as_ptr(), base) } {
             0 => Ok(Z { value }),
-            _ => Err(MathError::StringConversionError(
-                StringConversionError::InvalidStringToZInput(s.to_owned()),
-            )),
+            _ => Err(StringConversionError::InvalidStringToZInput(s.to_owned()))?,
         }
     }
 

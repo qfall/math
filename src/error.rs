@@ -171,6 +171,21 @@ pub enum MathError {
 /// is thrown if an invalid string is given to construct a [`Z`](crate::integer::Z).
 /// - [`InvalidStringToZqInput`](StringConversionError::InvalidStringToZqInput)
 /// is thrown if an invalid string is given to construct a [`Zq`](crate::integer_mod_q::Zq).
+///
+/// # Examples
+/// ```
+/// use qfall_math::error::StringConversionError;
+///
+/// fn throws_error() -> Result<(), StringConversionError> {
+///     return Err(
+///         StringConversionError::InvalidMatrix(String::from(
+///             "Some silly mistake was made",
+///         )),
+///     );
+///
+///     Ok(())
+/// }
+/// ```
 #[derive(Error, Debug)]
 pub enum StringConversionError {
     /// Invalid Matrix input error.

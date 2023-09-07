@@ -30,11 +30,9 @@ pub(crate) fn find_matrix_dimensions<T>(matrix: &Vec<Vec<T>>) -> Result<(i64, i6
     let num_rows: i64 = match num_rows.try_into() {
         Ok(num_rows) => num_rows,
         _ => {
-            return Err(MathError::StringConversionError(
-                StringConversionError::InvalidMatrix(
-                    "Number of rows is too large (must fit into [`i64`]).".to_owned(),
-                ),
-            ))
+            return Err(StringConversionError::InvalidMatrix(
+                "Number of rows is too large (must fit into [`i64`]).".to_owned(),
+            ))?
         }
     };
 
@@ -43,20 +41,16 @@ pub(crate) fn find_matrix_dimensions<T>(matrix: &Vec<Vec<T>>) -> Result<(i64, i6
         if num_cols == 0 {
             num_cols = row.len();
         } else if num_cols != row.len() {
-            return Err(MathError::StringConversionError(
-                StringConversionError::InvalidMatrix(
-                    "Number of entries in rows is unequal.".to_owned(),
-                ),
-            ));
+            return Err(StringConversionError::InvalidMatrix(
+                "Number of entries in rows is unequal.".to_owned(),
+            ))?;
         }
     }
     match num_cols.try_into() {
         Ok(num_cols) => Ok((num_rows, num_cols)),
-        _ => Err(MathError::StringConversionError(
-            StringConversionError::InvalidMatrix(
-                "Number of columns is too large (must fit into [`i64`]).".to_owned(),
-            ),
-        )),
+        _ => Err(StringConversionError::InvalidMatrix(
+            "Number of columns is too large (must fit into [`i64`]).".to_owned(),
+        ))?,
     }
 }
 

@@ -106,11 +106,9 @@ impl FromStr for MatZq {
         let (matrix, modulus) = match string.split_once("mod") {
             Some((matrix, modulus)) => (matrix, modulus),
             None => {
-                return Err(MathError::StringConversionError(
-                    StringConversionError::InvalidMatrix(format!(
-                        "The word 'mod' could not be found: {string}"
-                    )),
-                ))
+                return Err(StringConversionError::InvalidMatrix(format!(
+                    "The word 'mod' could not be found: {string}"
+                )))?
             }
         };
 

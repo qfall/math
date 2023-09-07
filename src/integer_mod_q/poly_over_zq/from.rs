@@ -158,9 +158,9 @@ impl FromStr for PolyOverZq {
         let (poly_s, modulus) = match s.split_once("mod") {
             Some((poly_s, modulus)) => (poly_s, modulus.trim()),
             None => {
-                return Err(MathError::StringConversionError(
-                    StringConversionError::InvalidStringToPolyModulusInput(s.to_owned()),
-                ))
+                return Err(StringConversionError::InvalidStringToPolyModulusInput(
+                    s.to_owned(),
+                ))?
             }
         };
 

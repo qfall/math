@@ -158,11 +158,9 @@ mod test_sort_by_length {
     /// it should always return an error if used as `cond_func` for these two functions
     fn failing_func(matrix: &MatQ) -> Result<(), MathError> {
         if matrix.is_vector() {
-            Err(MathError::StringConversionError(
-                StringConversionError::InvalidMatrix(String::from(
-                    "Some silly mistake was made - on purpose",
-                )),
-            ))
+            Err(StringConversionError::InvalidMatrix(String::from(
+                "Some silly mistake was made - on purpose",
+            )))?
         } else {
             Ok(())
         }
