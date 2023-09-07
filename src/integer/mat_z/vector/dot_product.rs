@@ -41,7 +41,7 @@ impl MatZ {
     /// Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
     /// the given [`MatZ`] instance is not a (row or column) vector.
-    /// - Returns a [`MathError`] of type [`MathError::MismatchingVectorDimensions`] if
+    /// - Returns a [`MathError`] of type [`MathError::MismatchingMatrixDimension`] if
     /// the given vectors have different lengths.
     pub fn dot_product(&self, other: &Self) -> Result<Z, MathError> {
         if !self.is_vector() {
@@ -62,7 +62,7 @@ impl MatZ {
         let other_entries = other.collect_entries();
 
         if self_entries.len() != other_entries.len() {
-            return Err(MathError::MismatchingVectorDimensions(format!(
+            return Err(MathError::MismatchingMatrixDimension(format!(
                 "You called the function 'dot_product' for vectors of different lengths: {} and {}",
                 self_entries.len(),
                 other_entries.len()

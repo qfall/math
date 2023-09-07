@@ -13,7 +13,11 @@
 //! The explicit functions contain the documentation.
 
 use super::PolyOverQ;
-use crate::{error::MathError, integer::PolyOverZ, rational::Q};
+use crate::{
+    error::{MathError, StringConversionError},
+    integer::PolyOverZ,
+    rational::Q,
+};
 use flint_sys::fmpq_poly::{
     fmpq_poly_canonicalise, fmpq_poly_set_fmpq, fmpq_poly_set_fmpz_poly, fmpq_poly_set_str,
 };
@@ -43,16 +47,13 @@ impl FromStr for PolyOverQ {
     /// let poly = PolyOverQ::from_str("5  0 1/3 2/10 -3/2 1").unwrap();
     /// ```
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`InvalidStringToPolyInput`](MathError::InvalidStringToPolyInput)
+    /// - Returns a [`MathError`] of type
+    /// [`StringConversionError`](MathError::StringConversionError)
+    /// if the provided string contains a Null Byte,
+    /// if the provided value did not contain two whitespaces, or
     /// if the provided string was not formatted correctly or the number of
     /// coefficients was smaller than the number provided at the start of the
     /// provided string.
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidStringToPolyMissingWhitespace`](`MathError::InvalidStringToPolyMissingWhitespace`)
-    /// if the provided value did not contain two whitespaces.
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
-    /// if the provided string contains a Null Byte.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut res = Self::default();
 
@@ -68,10 +69,12 @@ impl FromStr for PolyOverQ {
                 fmpq_poly_canonicalise(&mut res.poly);
                 Ok(res)
             },
-            _ if !s.contains("  ") => Err(MathError::InvalidStringToPolyMissingWhitespace(
+            _ if !s.contains("  ") => Err(
+                StringConversionError::InvalidStringToPolyMissingWhitespace(s.to_owned()),
+            )?,
+            _ => Err(StringConversionError::InvalidStringToPolyInput(
                 s.to_owned(),
-            )),
-            _ => Err(MathError::InvalidStringToPolyInput(s.to_owned())),
+            ))?,
         }
     }
 }

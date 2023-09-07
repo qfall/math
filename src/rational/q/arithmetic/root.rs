@@ -75,9 +75,9 @@ impl Q {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::PrecisionNotPositive`]
+    /// - Returns a [`MathError`] of type [`MathError::NonPositive`]
     ///   if the precision is not larger than zero.
-    /// - Returns a [`MathError`] of type [`MathError::NegativeRootParameter`]
+    /// - Returns a [`MathError`] of type [`MathError::NonPositive`]
     ///   if the parameter of the square root is negative.
     pub fn sqrt_precision(&self, precision: &Z) -> Result<Q, MathError> {
         let root_numerator = self.get_numerator().sqrt_precision(precision)?;

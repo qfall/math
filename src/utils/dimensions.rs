@@ -8,7 +8,7 @@
 
 //! Implements methods for finding matrix dimensions and enums for detecting vector directions.
 
-use crate::error::MathError;
+use crate::error::{MathError, StringConversionError};
 
 /// Returns the dimensions of a matrix.
 /// Takes `[[1, 2, 3],[4, 5, 6]]` as input and outputs `(2, 3)` accordingly.
@@ -20,7 +20,7 @@ use crate::error::MathError;
 /// (must fit into [`i64`]) or if the number of entries in rows is unequal.
 ///
 /// # Errors and Failures
-/// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix)
+/// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
 /// if the number of rows or columns is too large (must fit into [`i64`]) or
 /// if the number of entries in rows is unequal.
 #[allow(dead_code)]
@@ -30,9 +30,9 @@ pub(crate) fn find_matrix_dimensions<T>(matrix: &Vec<Vec<T>>) -> Result<(i64, i6
     let num_rows: i64 = match num_rows.try_into() {
         Ok(num_rows) => num_rows,
         _ => {
-            return Err(MathError::InvalidMatrix(
+            return Err(StringConversionError::InvalidMatrix(
                 "Number of rows is too large (must fit into [`i64`]).".to_owned(),
-            ))
+            ))?
         }
     };
 
@@ -41,16 +41,16 @@ pub(crate) fn find_matrix_dimensions<T>(matrix: &Vec<Vec<T>>) -> Result<(i64, i6
         if num_cols == 0 {
             num_cols = row.len();
         } else if num_cols != row.len() {
-            return Err(MathError::InvalidMatrix(
+            return Err(StringConversionError::InvalidMatrix(
                 "Number of entries in rows is unequal.".to_owned(),
-            ));
+            ))?;
         }
     }
     match num_cols.try_into() {
         Ok(num_cols) => Ok((num_rows, num_cols)),
-        _ => Err(MathError::InvalidMatrix(
+        _ => Err(StringConversionError::InvalidMatrix(
             "Number of columns is too large (must fit into [`i64`]).".to_owned(),
-        )),
+        ))?,
     }
 }
 

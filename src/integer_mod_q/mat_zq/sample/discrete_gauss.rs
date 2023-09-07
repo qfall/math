@@ -100,7 +100,7 @@ impl MatZq {
     /// if the `n <= 1` or `s <= 0`.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     /// if the number of rows of the `basis` and `center` differ.
-    /// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix)
+    /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
     /// if `center` is not a column vector.
     ///
     /// This function implements SampleD according to:
@@ -179,7 +179,7 @@ impl MatZq {
     /// if the `n <= 1` or `s <= 0`.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     /// if the number of rows of the `basis` and `center` differ.
-    /// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix)
+    /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
     /// if `center` is not a column vector.
     ///
     /// # Panics ...

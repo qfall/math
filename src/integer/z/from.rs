@@ -14,7 +14,9 @@
 
 use super::Z;
 use crate::{
-    error::MathError, integer_mod_q::Modulus, macros::for_others::implement_empty_trait_owned_ref,
+    error::{MathError, StringConversionError},
+    integer_mod_q::Modulus,
+    macros::for_others::implement_empty_trait_owned_ref,
     traits::AsInteger,
 };
 use flint_sys::fmpz::{fmpz, fmpz_combit, fmpz_get_si, fmpz_set, fmpz_set_str};
@@ -107,10 +109,8 @@ impl Z {
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if the
     /// base is not between `2` and `62`.
     /// - Returns a [`MathError`] of type
-    /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
-    /// if the provided string contains a Nul byte.
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidStringToZInput`](MathError::InvalidStringToZInput)
+    /// [`StringConversionError`](MathError::StringConversionError)
+    /// if the provided string contains a Nul byte, or
     /// if the provided string was not formatted correctly.
     pub fn from_str_b(s: &str, base: i32) -> Result<Self, MathError> {
         if !(2..=62).contains(&base) {
@@ -121,7 +121,7 @@ impl Z {
         }
 
         if s.contains(char::is_whitespace) {
-            return Err(MathError::InvalidStringToZInput(s.to_owned()));
+            return Err(StringConversionError::InvalidStringToZInput(s.to_owned()))?;
         }
 
         // since |value| = |0| < 62 bits, we do not need to free the allocated space manually
@@ -135,7 +135,7 @@ impl Z {
         // For reading more look at the documentation of `.as_ptr()`.
         match unsafe { fmpz_set_str(&mut value, c_string.as_ptr(), base) } {
             0 => Ok(Z { value }),
-            _ => Err(MathError::InvalidStringToZInput(s.to_owned())),
+            _ => Err(StringConversionError::InvalidStringToZInput(s.to_owned()))?,
         }
     }
 
@@ -258,10 +258,8 @@ impl FromStr for Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
-    /// if the provided string contains a Nul byte.
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidStringToZInput`](MathError::InvalidStringToZInput)
+    /// [`StringConversionError`](MathError::StringConversionError)
+    /// if the provided string contains a Nul byte, or
     /// if the provided string was not formatted correctly.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Z::from_str_b(s, 10)

@@ -40,7 +40,7 @@ impl MatQ {
     /// Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
     /// the given [`MatQ`] instance is not a (row or column) vector.
-    /// - Returns a [`MathError`] of type [`MathError::MismatchingVectorDimensions`] if
+    /// - Returns a [`MathError`] of type [`MathError::MismatchingMatrixDimension`] if
     /// the given vectors have different lengths.
     pub fn dot_product(&self, other: &Self) -> Result<Q, MathError> {
         if !self.is_vector() {
@@ -61,7 +61,7 @@ impl MatQ {
         let other_entries = other.collect_entries();
 
         if self_entries.len() != other_entries.len() {
-            return Err(MathError::MismatchingVectorDimensions(format!(
+            return Err(MathError::MismatchingMatrixDimension(format!(
                 "You called the function 'dot_product' for vectors of different lengths: {} and {}",
                 self_entries.len(),
                 other_entries.len()

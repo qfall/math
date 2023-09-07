@@ -18,7 +18,7 @@
 
 use super::uniform::sample_uniform_rejection;
 use crate::{
-    error::MathError,
+    error::{MathError, StringConversionError},
     integer::{MatZ, Z},
     rational::{MatQ, Q},
     traits::{GetNumColumns, GetNumRows, Pow},
@@ -154,7 +154,7 @@ fn gaussian_function(x: &Z, c: &Q, s: &Q) -> Q {
 /// if the `n <= 1` or `s <= 0`.
 /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
 /// if the number of rows of the `basis` and `center` differ.
-/// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix)
+/// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
 /// if `center` is not a column vector.
 pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ, MathError> {
     let basis_gso = MatQ::from(basis).gso();
@@ -197,7 +197,7 @@ pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ
 /// if the `n <= 1` or `s <= 0`.
 /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
 /// if the number of rows of the `basis` and `center` differ.
-/// - Returns a [`MathError`] of type [`InvalidMatrix`](MathError::InvalidMatrix)
+/// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
 /// if `center` is not a column vector.
 ///
 /// # Panics...
@@ -230,11 +230,11 @@ pub(crate) fn sample_d_precomputed_gso(
         ));
     }
     if !center.is_column_vector() {
-        return Err(MathError::InvalidMatrix(format!(
+        return Err(StringConversionError::InvalidMatrix(format!(
             "sample_d expects center to be a column vector, but it has dimensions {}x{}.",
             center.get_num_rows(),
             center.get_num_columns()
-        )));
+        )))?;
     }
     if s < &Q::ZERO {
         return Err(MathError::InvalidIntegerInput(format!(

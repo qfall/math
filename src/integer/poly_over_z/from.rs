@@ -14,7 +14,11 @@
 
 use super::PolyOverZ;
 use crate::integer_mod_q::PolyOverZq;
-use crate::{error::MathError, integer::Z, traits::AsInteger};
+use crate::{
+    error::{MathError, StringConversionError},
+    integer::Z,
+    traits::AsInteger,
+};
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_get_fmpz_poly;
 use flint_sys::fmpz_poly::{fmpz_poly_set_fmpz, fmpz_poly_set_str};
 use std::{ffi::CString, str::FromStr};
@@ -44,15 +48,13 @@ impl FromStr for PolyOverZ {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::InvalidStringToPolyInput`]
+    /// - Returns a [`MathError`] of type [`MathError::StringConversionError`]
     /// if the provided string was not formatted correctly or the number of
     /// coefficients was smaller than the number provided at the start of the
-    /// provided string.
-    /// - Returns a [`MathError`] of type
-    /// [`InvalidStringToPolyMissingWhitespace`](MathError::InvalidStringToPolyMissingWhitespace)
+    /// provided string, or
     /// if the provided value did not contain two whitespaces.
     /// - Returns a [`MathError`] of type
-    /// [`InvalidStringToCStringInput`](MathError::InvalidStringToCStringInput)
+    /// [`StringConversionError`](MathError::StringConversionError)
     /// if the provided string contains a Null Byte.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // remove whitespaces at the start and at the end
@@ -68,9 +70,9 @@ impl FromStr for PolyOverZ {
         // We only have to check it once, because for every other position it checks
         // whether there is only one space.
         if !s_trimmed.contains("  ") {
-            return Err(MathError::InvalidStringToPolyMissingWhitespace(
+            return Err(StringConversionError::InvalidStringToPolyMissingWhitespace(
                 s.to_owned(),
-            ));
+            ))?;
         };
 
         let mut res = Self::default();
@@ -79,7 +81,9 @@ impl FromStr for PolyOverZ {
 
         match unsafe { fmpz_poly_set_str(&mut res.poly, c_string.as_ptr()) } {
             0 => Ok(res),
-            _ => Err(MathError::InvalidStringToPolyInput(s.to_owned())),
+            _ => Err(StringConversionError::InvalidStringToPolyInput(
+                s.to_owned(),
+            ))?,
         }
     }
 }
