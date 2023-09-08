@@ -32,7 +32,6 @@ fn sample_prime_naive(lower_bound: &Z, upper_bound: &Z) -> Z {
     sample
 }
 
-#[allow(dead_code)]
 /// Generates a prime [`Modulus`] (i.e. a prime order group) and a `generator` for that group.
 pub fn gen_prime_order_group_plus_generator(security_lvl: u32) -> (Modulus, Zq) {
     let two = Z::from(2);

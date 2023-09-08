@@ -294,8 +294,8 @@ mod test_partial_eq {
 }
 
 /// Test the [`PartialOrd`] trait implementation for [`Q`]
-#[allow(clippy::neg_cmp_op_on_partial_ord)]
 #[cfg(test)]
+#[allow(clippy::neg_cmp_op_on_partial_ord)]
 mod test_partial_ord {
     use super::Q;
 

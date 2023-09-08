@@ -21,7 +21,6 @@ use flint_sys::fmpz::{fmpz, fmpz_combit, fmpz_get_si, fmpz_set, fmpz_set_str};
 use std::{ffi::CString, str::FromStr};
 
 impl Z {
-    #[allow(dead_code)]
     /// Create a new Integer that can grow arbitrary large.
     ///
     /// Parameters:
@@ -60,7 +59,6 @@ impl Z {
         out
     }
 
-    #[allow(dead_code)]
     /// Create a new Integer that can grow arbitrary large.
     ///
     /// Parameters:
@@ -82,6 +80,7 @@ impl Z {
     ///
     /// let a: Z = Z::from_fmpz(value);
     /// ```
+    #[allow(dead_code)]
     pub(crate) unsafe fn from_fmpz(value: fmpz) -> Self {
         Z { value }
     }
@@ -204,9 +203,7 @@ impl Z {
 /// It is used as a workaround to implement the [`From`] trait without colliding
 /// with the default implementation for [`Z`] and also to filter out [`Zq`](crate::integer_mod_q::Zq).
 trait IntoZ {}
-
-implement_empty_trait_owned_ref!(IntoZ for Modulus fmpz u8 u16 u32 u64 i8 i16 i32 i64);
-impl IntoZ for &Z {}
+implement_empty_trait_owned_ref!(IntoZ for Modulus &Z fmpz u8 u16 u32 u64 i8 i16 i32 i64);
 
 impl<Integer: AsInteger + IntoZ> From<Integer> for Z {
     /// Convert an integer to [`Z`].

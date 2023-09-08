@@ -12,7 +12,6 @@
 use crate::{error::MathError, integer::Z, rational::Q};
 use rand_distr::{Binomial, Distribution};
 
-#[allow(dead_code)]
 /// Chooses a sample according to the binomial distribution parameterized by `n` and `p`.
 ///
 /// Parameters:

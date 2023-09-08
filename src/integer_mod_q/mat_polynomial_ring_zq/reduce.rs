@@ -37,7 +37,6 @@ impl MatPolynomialRingZq {
     ///
     /// poly_ring_mat.reduce()
     /// ```
-    #[allow(dead_code)]
     pub(crate) fn reduce(&mut self) {
         for row_num in 0..self.matrix.get_num_rows() {
             for column_num in 0..self.matrix.get_num_columns() {
