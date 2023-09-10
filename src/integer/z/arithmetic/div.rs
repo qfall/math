@@ -175,6 +175,7 @@ mod test_div_floor {
 
     /// Tests that `div_floor` is available for other types.
     #[test]
+    #[allow(clippy::needless_borrow)]
     fn availability() {
         let value = Z::from(100);
 
@@ -189,14 +190,14 @@ mod test_div_floor {
         value.div_floor(Z::from(10));
         value.div_floor(Modulus::from(10));
 
-        value.div_floor(3_u8);
-        value.div_floor(3_u16);
-        value.div_floor(3_u32);
-        value.div_floor(3_u64);
-        value.div_floor(3_i8);
-        value.div_floor(3_i16);
-        value.div_floor(3_i32);
-        value.div_floor(3_i64);
+        value.div_floor(&3_u8);
+        value.div_floor(&3_u16);
+        value.div_floor(&3_u32);
+        value.div_floor(&3_u64);
+        value.div_floor(&3_i8);
+        value.div_floor(&3_i16);
+        value.div_floor(&3_i32);
+        value.div_floor(&3_i64);
         value.div_floor(&Z::from(10));
         value.div_floor(&Modulus::from(10));
     }
@@ -285,6 +286,7 @@ mod test_div_ceil {
 
     /// Tests that `div_ceil` is available for other types.
     #[test]
+    #[allow(clippy::needless_borrow)]
     fn availability() {
         let value = Z::from(100);
 
@@ -299,14 +301,14 @@ mod test_div_ceil {
         value.div_ceil(Z::from(10));
         value.div_ceil(Modulus::from(10));
 
-        value.div_ceil(3_u8);
-        value.div_ceil(3_u16);
-        value.div_ceil(3_u32);
-        value.div_ceil(3_u64);
-        value.div_ceil(3_i8);
-        value.div_ceil(3_i16);
-        value.div_ceil(3_i32);
-        value.div_ceil(3_i64);
+        value.div_ceil(&3_u8);
+        value.div_ceil(&3_u16);
+        value.div_ceil(&3_u32);
+        value.div_ceil(&3_u64);
+        value.div_ceil(&3_i8);
+        value.div_ceil(&3_i16);
+        value.div_ceil(&3_i32);
+        value.div_ceil(&3_i64);
         value.div_ceil(&Z::from(10));
         value.div_ceil(&Modulus::from(10));
     }
@@ -358,6 +360,7 @@ mod test_div_exact {
 
     /// Tests that `div_exact` is available for other types.
     #[test]
+    #[allow(clippy::needless_borrow)]
     fn availability() {
         let value = Z::from(100);
 
@@ -372,14 +375,14 @@ mod test_div_exact {
         value.div_exact(Z::from(10));
         value.div_exact(Modulus::from(10));
 
-        value.div_exact(3_u8);
-        value.div_exact(3_u16);
-        value.div_exact(3_u32);
-        value.div_exact(3_u64);
-        value.div_exact(3_i8);
-        value.div_exact(3_i16);
-        value.div_exact(3_i32);
-        value.div_exact(3_i64);
+        value.div_exact(&3_u8);
+        value.div_exact(&3_u16);
+        value.div_exact(&3_u32);
+        value.div_exact(&3_u64);
+        value.div_exact(&3_i8);
+        value.div_exact(&3_i16);
+        value.div_exact(&3_i32);
+        value.div_exact(&3_i64);
         value.div_exact(&Z::from(10));
         value.div_exact(&Modulus::from(10));
     }
