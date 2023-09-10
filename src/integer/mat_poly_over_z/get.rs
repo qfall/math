@@ -263,7 +263,6 @@ impl MatPolyOverZ {
         })
     }
 
-    #[allow(dead_code)]
     /// Efficiently collects all [`fmpz_poly_struct`]s in a [`MatPolyOverZ`] without cloning them.
     ///
     /// Hence, the values on the returned [`Vec`] are intended for short-term use

@@ -38,7 +38,6 @@ impl MatPolynomialRingZq {
     ///
     /// # Panics ...
     /// - if the number of rows or columns is negative, zero, or does not fit into an [`i64`].
-    #[allow(dead_code)]
     pub fn new(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,

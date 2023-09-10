@@ -175,6 +175,7 @@ mod test_div_floor {
 
     /// Tests that `div_floor` is available for other types.
     #[test]
+    #[allow(clippy::needless_borrow)]
     fn availability() {
         let value = Z::from(100);
 
@@ -285,6 +286,7 @@ mod test_div_ceil {
 
     /// Tests that `div_ceil` is available for other types.
     #[test]
+    #[allow(clippy::needless_borrow)]
     fn availability() {
         let value = Z::from(100);
 
@@ -358,6 +360,7 @@ mod test_div_exact {
 
     /// Tests that `div_exact` is available for other types.
     #[test]
+    #[allow(clippy::needless_borrow)]
     fn availability() {
         let value = Z::from(100);
 
