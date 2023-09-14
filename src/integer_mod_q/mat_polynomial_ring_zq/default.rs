@@ -89,7 +89,11 @@ impl MatPolynomialRingZq {
 
 #[cfg(test)]
 mod test_new {
-    use crate::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq, PolyOverZq};
+    use crate::{
+        integer::PolyOverZ,
+        integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq, PolyOverZq},
+        traits::GetEntry,
+    };
     use std::str::FromStr;
 
     const LARGE_PRIME: u64 = u64::MAX - 58;
@@ -103,7 +107,24 @@ mod test_new {
         let _ = MatPolynomialRingZq::new(2, 2, &modulus);
     }
 
-    // TODO: add a test for zero entries
+    /// Ensure that entries of a new matrix are `0`.
+    #[test]
+    fn entry_zero() {
+        let poly_mod = PolyOverZq::from_str("3  1 0 1 mod 17").unwrap();
+        let modulus = ModulusPolynomialRingZq::from(&poly_mod);
+
+        let matrix = MatPolynomialRingZq::new(2, 2, &modulus);
+
+        let entry_1 = matrix.get_entry(0, 0).unwrap();
+        let entry_2 = matrix.get_entry(0, 1).unwrap();
+        let entry_3 = matrix.get_entry(1, 0).unwrap();
+        let entry_4 = matrix.get_entry(1, 1).unwrap();
+
+        assert_eq!(PolyOverZ::default(), entry_1);
+        assert_eq!(PolyOverZ::default(), entry_2);
+        assert_eq!(PolyOverZ::default(), entry_3);
+        assert_eq!(PolyOverZ::default(), entry_4);
+    }
 
     /// Ensure that a new zero matrix fails with `0` as `num_cols`.
     #[should_panic]

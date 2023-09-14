@@ -13,6 +13,7 @@ use crate::{
     rational::{PolyOverQ, Q},
     traits::{GetCoefficient, Pow},
 };
+use std::cmp::max;
 
 impl PolyOverQ {
     /// Returns the squared Euclidean norm or 2-norm of the given polynomial.
@@ -59,12 +60,7 @@ impl PolyOverQ {
     pub fn norm_infty(&self) -> Q {
         let mut res = Q::ZERO;
         for i in 0..=self.get_degree() {
-            // todo: once ord is on dev use:
-            // res = max(res, self.get_coeff(i).unwrap().abs());
-            // AND todo: use std::cmp::max;
-            if res < self.get_coeff(i).unwrap().abs() {
-                res = self.get_coeff(i).unwrap().abs();
-            }
+            res = max(res, self.get_coeff(i).unwrap().abs());
         }
         res
     }

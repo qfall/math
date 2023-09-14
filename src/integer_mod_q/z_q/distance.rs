@@ -10,6 +10,7 @@
 
 use super::Zq;
 use crate::{error::MathError, integer::Z, traits::Distance};
+use std::cmp::min;
 
 impl Zq {
     /// Computes the absolute distance between two [`Zq`] instances. It returns the minimum
@@ -53,12 +54,7 @@ impl Zq {
         let distance_direct = self.value.distance(&other.value);
         let distance_across_modulus = Z::from(self.modulus.clone()) - &distance_direct;
 
-        if distance_direct < distance_across_modulus {
-            Ok(distance_direct)
-        } else {
-            Ok(distance_across_modulus)
-        }
-        // TODO: use `min` once Ord is implemented for Z
+        Ok(min(distance_direct, distance_across_modulus))
     }
 }
 

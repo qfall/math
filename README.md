@@ -3,9 +3,6 @@
 [![made-with-rust](https://img.shields.io/badge/Made%20with-Rust-1f425f.svg)](https://www.rust-lang.org/)
 [![CI](https://github.com/qfall/math/actions/workflows/push.yml/badge.svg?branch=dev)](https://github.com/qfall/math/actions/workflows/pull_request.yml)
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
-<TODO Badge for Documentation>
-<TODO Badge for Code Coverage>
-<TODO Badge for Website>
 
 This repository is currently being developed by the project group [qFALL - quantum resistant fast lattice library](https://cs.uni-paderborn.de/cuk/lehre/veranstaltungen/ws-2022-23/project-group-qfall) in the winter term 2022 and summer term 2023 by the Codes and Cryptography research group in Paderborn.
 
