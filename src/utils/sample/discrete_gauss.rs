@@ -80,7 +80,6 @@ pub(crate) fn sample_z(n: &Z, center: &Q, s: &Q) -> Result<Z, MathError> {
     // https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=d9f54077d568784c786f7b1d030b00493eb3ae35
     // this eprint version explains in more detail how sample_z works
     let mut rng = rand::thread_rng();
-    // TODO: Change to Q::from_f64 once it works appropriately for large scale
     while gaussian_function(&sample, center, s) <= Q::from((rng.next_u64(), u64::MAX)) {
         sample = &lower_bound + sample_uniform_rejection(&interval_size).unwrap();
     }
