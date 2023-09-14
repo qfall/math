@@ -56,7 +56,6 @@ use rand::RngCore;
 /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
 /// if the `n <= 1` or `s <= 0`.
 pub(crate) fn sample_z(n: &Z, center: &Q, s: &Q) -> Result<Z, MathError> {
-    // TODO: Change this functions signature to use std_deviation/ sigma and not Gaussian parameter
     if n <= &Z::ONE {
         return Err(MathError::InvalidIntegerInput(format!(
             "The value {n} was provided for parameter n of the function sample_z.
@@ -115,7 +114,6 @@ pub(crate) fn sample_z(n: &Z, center: &Q, s: &Q) -> Result<Z, MathError> {
 /// # Panics ...
 /// - if `s = 0`.
 fn gaussian_function(x: &Z, c: &Q, s: &Q) -> Q {
-    // TODO: Change this functions signature to use std_deviation/ sigma and not Gaussian parameter
     let num = Q::MINUS_ONE * Q::PI * (x - c).pow(2).unwrap();
     let den = s.pow(2).unwrap();
     let res: Q = num / den;

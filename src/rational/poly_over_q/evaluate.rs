@@ -43,8 +43,6 @@ impl<Rational: Into<Q>> Evaluate<Rational, Q> for PolyOverQ {
     }
 }
 
-// TODO: add traits for TryInto with other values, once the corresponding functions are
-// implemented.
 #[cfg(test)]
 mod test_evaluate {
     use crate::rational::{PolyOverQ, Q};

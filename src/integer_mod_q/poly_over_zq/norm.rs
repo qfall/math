@@ -14,6 +14,7 @@ use crate::{
     integer_mod_q::{fmpz_mod_helpers::length, PolyOverZq},
     traits::{GetCoefficient, Pow},
 };
+use std::cmp::max;
 
 impl PolyOverZq {
     /// Returns the squared Euclidean norm or 2-norm of the given polynomial.
@@ -63,12 +64,7 @@ impl PolyOverZq {
         for i in 0..=self.get_degree() {
             let coeff: Z = self.get_coeff(i).unwrap();
             let len = length(&coeff.value, &self.modulus.get_fmpz_mod_ctx_struct().n[0]);
-            // todo: once ord is on dev use:
-            // res = max(res, coeff);
-            // AND todo: use std::cmp::max;
-            if res < len {
-                res = len;
-            }
+            res = max(res, len);
         }
         res
     }

@@ -154,31 +154,57 @@ impl From<&Zq> for Zq {
 
 #[cfg(test)]
 mod test_from_z_modulus {
-    // TODO: add more test cases once we have the equal comparison for Zq:
-    // 1. Zq initialized with the same and different Modulus object
-    //    (same modulus value) and the same number should be equal.
-    // 2. assert that the different initialization methods have the same results.
-    // 3. assert that the modulus is applied correctly
+    use std::str::FromStr;
 
     use super::{Modulus, Zq};
     use crate::integer::Z;
 
-    /// Test with small valid value and modulus.
+    /// Tests if from_z_modulus works correctly.
     #[test]
     fn working_small() {
         let value = Z::from(10);
         let modulus = Modulus::from(15);
 
-        let _ = Zq::from_z_modulus(&value, &modulus);
+        assert_eq!(
+            Zq::from_str("10 mod 15").unwrap(),
+            Zq::from_z_modulus(&value, &modulus)
+        );
     }
 
-    /// Test with large value and modulus (FLINT uses pointer representation).
+    /// Tests if from_z_modulus works correctly for large numbers.
     #[test]
     fn working_large() {
         let value = Z::from(u64::MAX - 1);
         let modulus = Modulus::from(u64::MAX);
 
-        let _ = Zq::from_z_modulus(&value, &modulus);
+        assert_eq!(
+            Zq::from_str(&format!("{} mod {}", u64::MAX - 1, u64::MAX)).unwrap(),
+            Zq::from_z_modulus(&value, &modulus)
+        );
+    }
+
+    /// Test with large value and modulus (FLINT uses pointer representation).
+    #[test]
+    fn working_different_moduli() {
+        let value = Z::from(u64::MAX - 1);
+        let modulus_1 = Modulus::from(u64::MAX);
+        let modulus_2 = Modulus::from(u64::MAX);
+
+        let zq_1 = Zq::from_z_modulus(&value, &modulus_1);
+        let zq_2 = Zq::from_z_modulus(&value, &modulus_2);
+
+        assert_eq!(zq_1, zq_2);
+    }
+
+    /// Test with large value and modulus (FLINT uses pointer representation).
+    #[test]
+    fn value_reduced() {
+        let value = Z::from(7);
+        let modulus = Modulus::from(6);
+
+        let zq = Zq::from_z_modulus(&value, &modulus);
+
+        assert!(zq.is_one());
     }
 }
 
