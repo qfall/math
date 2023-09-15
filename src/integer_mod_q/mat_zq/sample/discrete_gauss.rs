@@ -48,15 +48,15 @@ impl MatZq {
     /// # Panics ...
     /// - if the provided number of rows and columns or the modulus are not suited to create a matrix.
     /// For further information see [`MatZq::new`].
+    /// - if the provided `modulus < 2`.
     pub fn sample_discrete_gauss(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
-        modulus: impl Into<Z>,
+        modulus: impl Into<Modulus>,
         n: impl Into<Z>,
         center: impl Into<Q>,
         s: impl Into<Q>,
     ) -> Result<MatZq, MathError> {
-        let modulus: Z = modulus.into();
         let n: Z = n.into();
         let center: Q = center.into();
         let s: Q = s.into();
@@ -136,6 +136,10 @@ impl MatZq {
     ///
     /// Returns a lattice vector sampled according to the discrete Gaussian distribution.
     /// The lattice specified as `Z^m` for `m = dimension` and its center fixed to `0^m`.
+    ///
+    /// # Panics
+    /// - if the provided `dimension` is smaller than 1 or does not fit into an [`i64`].
+    /// - if `modulus < 2`.
     pub fn sample_d_common(
         dimension: impl TryInto<i64> + Display + Clone,
         modulus: impl Into<Modulus>,

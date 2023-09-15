@@ -24,11 +24,11 @@ impl Zq {
     /// SampleZ in [GPV08](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=d9f54077d568784c786f7b1d030b00493eb3ae35).
     ///
     /// Parameters:
+    /// - `modulus`: specifies the modulus of the new [`Zq`] element
     /// - `n`: specifies the range from which is sampled
     /// - `center`: specifies the position of the center with peak probability
     /// - `s`: specifies the Gaussian parameter, which is proportional
     /// to the standard deviation `sigma * sqrt(2 * pi) = s`
-    /// - `modulus`: specifies the modulus of the new [`Zq`] element
     ///
     /// Returns new [`Zq`] sample chosen according to the specified discrete Gaussian
     /// distribution or a [`MathError`] if the modulus is chosen smaller than `2` or the
@@ -38,7 +38,7 @@ impl Zq {
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
     ///
-    /// let sample = Zq::sample_discrete_gauss(128, 0, 1, 17).unwrap();
+    /// let sample = Zq::sample_discrete_gauss(17, 128, 0, 1).unwrap();
     /// ```
     ///
     /// # Errors and Failures
@@ -54,10 +54,10 @@ impl Zq {
     /// In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
     /// <https://dl.acm.org/doi/pdf/10.1145/1374376.1374407>
     pub fn sample_discrete_gauss(
+        modulus: impl Into<Modulus>,
         n: impl Into<Z>,
         center: impl Into<Q>,
         s: impl Into<Q>,
-        modulus: impl Into<Modulus>,
     ) -> Result<Self, MathError> {
         let modulus: Modulus = modulus.into();
         let n: Z = n.into();
@@ -84,26 +84,26 @@ mod test_sample_discrete_gauss {
         let z = Z::from(2);
         let q = Q::from(2);
 
-        let _ = Zq::sample_discrete_gauss(16u16, 7u8, 1u16, 17u64);
-        let _ = Zq::sample_discrete_gauss(2u32, 7u16, 1u8, 17u16);
-        let _ = Zq::sample_discrete_gauss(2u64, 7u32, 1u32, 17u8);
-        let _ = Zq::sample_discrete_gauss(2i8, 7u64, 1u64, 17u32);
-        let _ = Zq::sample_discrete_gauss(2i16, 7i8, 1i64, 17i16);
-        let _ = Zq::sample_discrete_gauss(2i32, 7i16, 1i32, 17i8);
-        let _ = Zq::sample_discrete_gauss(2i64, 7i32, 1i16, 17i64);
-        let _ = Zq::sample_discrete_gauss(z.clone(), 7i64, 1i8, 17i32);
-        let _ = Zq::sample_discrete_gauss(2u8, q.clone(), 1i64, 17);
-        let _ = Zq::sample_discrete_gauss(2, 0i8, z.clone(), z.clone());
-        let _ = Zq::sample_discrete_gauss(2, z.clone(), q.clone(), 17);
-        let _ = Zq::sample_discrete_gauss(2, 1f32, 1f64, 17);
-        let _ = Zq::sample_discrete_gauss(2, 1f64, 1f32, 17);
+        let _ = Zq::sample_discrete_gauss(17u64, 16u16, 7u8, 1u16);
+        let _ = Zq::sample_discrete_gauss(17u16, 2u32, 7u16, 1u8);
+        let _ = Zq::sample_discrete_gauss(17u8, 2u64, 7u32, 1u32);
+        let _ = Zq::sample_discrete_gauss(17u32, 2i8, 7u64, 1u64);
+        let _ = Zq::sample_discrete_gauss(17i16, 2i16, 7i8, 1i64);
+        let _ = Zq::sample_discrete_gauss(17i8, 2i32, 7i16, 1i32);
+        let _ = Zq::sample_discrete_gauss(17i64, 2i64, 7i32, 1i16);
+        let _ = Zq::sample_discrete_gauss(17i32, z.clone(), 7i64, 1i8);
+        let _ = Zq::sample_discrete_gauss(17, 2u8, q.clone(), 1i64);
+        let _ = Zq::sample_discrete_gauss(z.clone(), 2, 0i8, z.clone());
+        let _ = Zq::sample_discrete_gauss(17, 2, z.clone(), q.clone());
+        let _ = Zq::sample_discrete_gauss(17, 2, 1f32, 1f64);
+        let _ = Zq::sample_discrete_gauss(17, 2, 1f64, 1f32);
 
         // With references
-        let _ = Zq::sample_discrete_gauss(2i64, 7i32, 1i16, 17i64);
-        let _ = Zq::sample_discrete_gauss(&z, 7i64, 1i8, 17i32);
-        let _ = Zq::sample_discrete_gauss(2u8, &q, 1i64, 17);
-        let _ = Zq::sample_discrete_gauss(2, 0i8, &z, &z);
-        let _ = Zq::sample_discrete_gauss(2, &z, &q, 17);
+        let _ = Zq::sample_discrete_gauss(17i64, 2i64, 7i32, 1i16);
+        let _ = Zq::sample_discrete_gauss(17i32, &z, 7i64, 1i8);
+        let _ = Zq::sample_discrete_gauss(17, 2u8, &q, 1i64);
+        let _ = Zq::sample_discrete_gauss(&z, 2, 0i8, &z);
+        let _ = Zq::sample_discrete_gauss(17, 2, &z, &q);
     }
 
     /// Roughly checks the collected samples are distributed
@@ -116,7 +116,7 @@ mod test_sample_discrete_gauss {
         let mut counts = [0; 20];
         // count sampled instances
         for _ in 0..200 {
-            let sample = Zq::sample_discrete_gauss(1024, 0, 2, 20).unwrap();
+            let sample = Zq::sample_discrete_gauss(20, 1024, 0, 2).unwrap();
             let sample_int = i64::try_from(&sample.get_value()).unwrap() as usize;
             counts[sample_int] += 1;
         }
