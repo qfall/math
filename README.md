@@ -14,23 +14,14 @@ is to use this library as a building block to build other projects on top of it.
 
 Currently, we are in the development phase and interfaces might change.
 Feel free to check out the current progress, but be aware, that the content will
-change in the upcoming weeks and months. An official release will be published in the second half of 2023.
+change in the upcoming weeks and months. An official release will most likely be published in the second half of 2023.
 
-## Installation
+## Quick-Start
 
-To use this project one needs to have an [installation of Rust](https://www.rust-lang.org/tools/install). Since we are using [flint-sys](https://crates.io/crates/flint-sys)
-which itself uses [gmp](https://gmplib.org/manual/), we are currently restricted to usage on Mac, Linux, and Linux subsystems under Windows. For a subsystem under Windows, one additionally is required to have installed m4 and a C-compiler.
+Please refer to [our website](https://qfall.github.io/) as central information point.
 
-Since our project isn't yet published there is no option to find it in Rust's library collection on [crates.io](https://crates.io/).
-If you want to include this project in your own Rust project, you can
-include a link to our version on the `dev` branch in your `Cargo.toml`.
-
-```text
-qfall-math = { git = "https://github.com/qfall/math", branch="dev" }
-```
-
-Be aware that the external libraries in our project have to be compiled at the first installation,
-which may take about 10-30 minutes (depending on the used hardware and operating system). After the first installation, it should be working fine.
+To install and add our library to your project, please refer to [our tutorial](https://qfall.github.io/book/index.html).
+It provides a step-by-step guide to install the required libraries and gives further insights in the usage of our crates.
 
 ## What does qFALL-math offer?
 
@@ -55,10 +46,10 @@ math
 
 ### Integers
 
-- [`Z`](https://github.com/qfall/math/blob/dev/src/integer/z.rs): Represents $\mathbb Z$
-- [`MatZ`](https://github.com/qfall/math/blob/dev/src/integer/mat_z.rs): Represents matrices of $\mathbb Z$
-- [`PolyOverZ`](https://github.com/qfall/math/blob/dev/src/integer/poly_over_z.rs): Represents polynomials with coefficients over $\mathbb Z$
-- [`MatPolyOverZ`](https://github.com/qfall/math/blob/dev/src/integer/mat_poly_over_z.rs): Represents matrices of polynomials with coefficients over $\mathbb Z$
+- [`Z`](https://github.com/qfall/math/blob/dev/src/integer/z.rs): Represents $\mathbb Z$.
+- [`MatZ`](https://github.com/qfall/math/blob/dev/src/integer/mat_z.rs): Represents matrices of $\mathbb Z$.
+- [`PolyOverZ`](https://github.com/qfall/math/blob/dev/src/integer/poly_over_z.rs): Represents polynomials with coefficients over $\mathbb Z$.
+- [`MatPolyOverZ`](https://github.com/qfall/math/blob/dev/src/integer/mat_poly_over_z.rs): Represents matrices of polynomials with coefficients over $\mathbb Z$.
 
 ```rust
 use qfall_math::integer::Z;
@@ -66,52 +57,53 @@ use qfall_math::integer::Z;
 let a = Z::from(24);
 let b = Z::from(42);
 
-let res_add: Z = a + b;
-let res_sub: Z = a - b;
-let res_mul: Z = a * b;
+let res_add: Z = &a + &b;
+let res_sub: Z = a - 10;
+let res_mul: Z = 3 * b;
 ```
 
 ### Integers mod q
 
-- [`Zq`](https://github.com/qfall/math/blob/dev/src/integer_mod_q/zq.rs): Represents $\mathbb Z_q$
-- [`MatZq`](https://github.com/qfall/math/blob/dev/src/integer_mod_q/mat_zq.rs): Represents matrices of $\mathbb Z_q$
-- [`PolyOverZq`](https://github.com/qfall/math/blob/dev/src/integer_mod_q/poly_over_zq.rs): Represents polynomials with coefficients over $\mathbb Z_q$
-- [`PolynomialRingZq`](https://github.com/qfall/math/blob/dev/src/integer_mod_q/polynomial_ring_zq.rs): Represents quotient rings of $\mathbb Z_q[X]/f(X)$ where $q$ is prime and $f(X)$ is a [`PolyOverZq`](https://github.com/qfall/math/blob/dev/src/integer_mod_q/poly_over_zq.rs).
+- [`Zq`](https://github.com/qfall/math/blob/dev/src/integer_mod_q/zq.rs): Represents $\mathbb Z_q$.
+- [`MatZq`](https://github.com/qfall/math/blob/dev/src/integer_mod_q/mat_zq.rs): Represents matrices of $\mathbb Z_q$.
+- [`PolyOverZq`](https://github.com/qfall/math/blob/dev/src/integer_mod_q/poly_over_zq.rs): Represents polynomials with coefficients over $\mathbb Z_q$.
+- [`PolynomialRingZq`](https://github.com/qfall/math/blob/dev/src/integer_mod_q/polynomial_ring_zq.rs): Represents quotient rings of $\mathbb Z_q[X]/f(X)$ where $q$ is an integer modulus and $f(X)$ is a [`PolyOverZq`](https://github.com/qfall/math/blob/dev/src/integer_mod_q/poly_over_zq.rs).
+- [`MatPolynomialRingZq`](https://github.com/qfall/math/blob/dev/src/integer_mod_q/mat_polynomial_ring_zq.rs): Represents matrices of quotient rings of $\mathbb Z_q[X]/f(X)$ where $q$ is an integer modulus and $f(X)$ is a [`PolyOverZq`](https://github.com/qfall/math/blob/dev/src/integer_mod_q/poly_over_zq.rs).
 
 ```rust
 use qfall_math::integer_mod_q::Zq;
 use qfall_math::integer_mod_q::Modulus;
 
-let modulus = Modulus::try_from(24).unwrap();
-let a = Zq::from((&Z::from(42), &modulus));
-let b = Zq::from((&Z::from(17), &modulus));
+let modulus = Modulus::from(24);
+let a = Zq::from((42, &modulus));
+let b = Zq::from((17, &modulus));
 
-let res_add: Zq = a + b;
-let res_sub: Zq = a - b;
-let res_mul: Zq = a * b;
+let res_add: Zq = &a + &b;
+let res_sub: Zq = a - 10;
+let res_mul: Zq = 3 * b;
 ```
 
 ### Rationals
 
-- [`Q`](https://github.com/qfall/math/blob/dev/src/rational/q.rs): Represents $\mathbb Q$
-- [`MatQ`](https://github.com/qfall/math/blob/dev/src/rational/mat.rs): Represents matrices of $\mathbb Q$
-- [`PolyOverQ`](https://github.com/qfall/math/blob/dev/src/rational/poly_over_q.rs): Represents polynomials with coefficients over $\mathbb Q$
+- [`Q`](https://github.com/qfall/math/blob/dev/src/rational/q.rs): Represents $\mathbb Q$.
+- [`MatQ`](https://github.com/qfall/math/blob/dev/src/rational/mat.rs): Represents matrices of $\mathbb Q$.
+- [`PolyOverQ`](https://github.com/qfall/math/blob/dev/src/rational/poly_over_q.rs): Represents polynomials with coefficients over $\mathbb Q$.
 
 ```rust
 use qfall_math::rational::Q;
 
-let a = Q::try_from((17, 19)).unwrap();
-let b = Q::try_from((42, 24)).unwrap();
+let a = Q::from((17, 19));
+let b = Q::from(0.5);
 
-let res_add: Q = a + b;
-let res_sub: Q = a - b;
-let res_mul: Q = a * b;
+let res_add: Q = &a + &b;
+let res_sub: Q = a - 10.5;
+let res_mul: Q = 3 * b;
 ```
 
 ## External Libraries
 
 This project uses the C-based, optimized math library [FLINT](https://flintlib.org/). To use a C-library in Rust, there has to be an FFI (Foreign Function Interface) which allows to call the methods from [FLINT](https://flintlib.org/) in Rust. This project uses the crate [flint-sys](https://github.com/alex-ozdemir/flint-rs/tree/master/flint-sys) as a binding for [FLINT](https://flintlib.org/).
-Last, but not least, we utilized [serde](https://crates.io/crates/serde) and [serde_json](https://crates.io/crates/serde_json) to (de-)serialize objects to and from JSON. An extensive list can be found in our `Cargo.toml` file.
+Furthermore, we utilized [serde](https://crates.io/crates/serde) and [serde_json](https://crates.io/crates/serde_json) to (de-)serialize objects to and from JSON. Last, but not least, our sampling algorithms heavily rely on the [rand-crate](https://crates.io/crates/rand). An extensive list can be found in our `Cargo.toml` file.
 
 ## License
 
