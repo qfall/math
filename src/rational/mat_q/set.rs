@@ -328,7 +328,7 @@ impl MatQ {
         Ok(())
     }
 
-    /// Swaps the `i`-th column with the `n-i`-th column for all i <= n/2
+    /// Swaps the `i`-th column with the `n-i`-th column for all `i <= n/2`
     /// of the specified matrix with `n` columns.
     ///
     /// # Examples
@@ -345,7 +345,7 @@ impl MatQ {
         unsafe { fmpq_mat_invert_cols(&mut self.matrix, null_mut()) }
     }
 
-    /// Swaps the `i`-th row with the `n-i`-th row for all i <= n/2
+    /// Swaps the `i`-th row with the `n-i`-th row for all `i <= n/2`
     /// of the specified matrix with `n` rows.
     ///
     /// # Examples

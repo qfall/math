@@ -23,7 +23,7 @@ impl Sub for &MatZ {
     /// [`Sub`] is implemented for any combination of [`MatZ`] and borrowed [`MatZ`].
     ///
     /// Parameters:
-    /// - `other`: specifies the value to subtract to `self`
+    /// - `other`: specifies the value to subtract from`self`
     ///
     /// Returns the result of the subtraction as a [`MatZ`].
     ///
@@ -53,7 +53,7 @@ impl MatZ {
     ///
     ///
     /// Parameters:
-    /// - `other`: specifies the value to subtract to `self`
+    /// - `other`: specifies the value to subtract from`self`
     ///
     /// Returns the result of the subtraction as a [`MatZ`] or an
     /// error if the matrix dimensions mismatch.

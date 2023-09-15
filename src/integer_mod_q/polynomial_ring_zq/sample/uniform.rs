@@ -38,7 +38,7 @@ impl PolynomialRingZq {
     /// ```
     ///
     /// # Panics ...
-    /// - if the provided [`ModulusPolynomialRingZq`] has degree 0 or smaller.
+    /// - if the provided [`ModulusPolynomialRingZq`] has degree `0` or smaller.
     pub fn sample_uniform(modulus: impl Into<ModulusPolynomialRingZq>) -> Self {
         let modulus = modulus.into();
         assert!(

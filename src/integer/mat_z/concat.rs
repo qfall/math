@@ -38,7 +38,7 @@ impl Concatenate for &MatZ {
     /// ```
     ///
     /// # Errors and Failures
-    /// Returns a `MathError` of type
+    /// Returns a [`MathError`] of type
     /// [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     /// if the matrices can not be concatenated due to mismatching dimensions
     fn concat_vertical(self, other: Self) -> Result<Self::Output, crate::error::MathError> {
@@ -81,7 +81,7 @@ impl Concatenate for &MatZ {
     /// ```
     ///
     /// # Errors and Failures
-    /// Returns a `MathError` of type
+    /// Returns a [`MathError`] of type
     /// [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     /// if the matrices can not be concatenated due to mismatching dimensions
     fn concat_horizontal(self, other: Self) -> Result<Self::Output, crate::error::MathError> {

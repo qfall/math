@@ -18,7 +18,7 @@ use flint_sys::{
 impl PolyOverZq {
     /// Checks if a [`PolyOverZq`] is irreducible.
     ///
-    /// Returns true if the polynomial is irreducible and `true` otherwise.
+    /// Returns `true` if the polynomial is irreducible and `false` otherwise.
     ///
     /// # Examples
     /// ```

@@ -43,7 +43,7 @@ impl MatPolynomialRingZq {
     /// Returns the [`MatPolyOverZ`] value of the [`MatPolynomialRingZq`] element.
     ///
     /// The representation of each coefficient is returned.
-    /// It is in the range `[0, q[` (`0` inclusive, `q` exclusive).
+    /// It is in the range `[0, q)` (`0` inclusive, `q` exclusive).
     /// Each entry is reduced as much as possible.
     ///
     /// # Examples
@@ -208,7 +208,7 @@ impl MatPolynomialRingZq {
     /// - `row`: specifies the row of the matrix
     ///
     /// Returns a row vector of the matrix at the position of the given
-    /// row or an error, if the number of rows is
+    /// `row` or an error, if the number of rows is
     /// greater than the matrix or negative.
     ///
     /// # Examples
@@ -248,7 +248,7 @@ impl MatPolynomialRingZq {
     /// * `column`: specifies the column of the matrix
     ///
     /// Returns a column vector of the matrix at the position of the given
-    /// column or an error, if the number of columns is
+    /// `column` or an error, if the number of columns is
     /// greater than the matrix or negative.
     ///
     /// # Examples

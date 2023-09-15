@@ -489,7 +489,7 @@ mod test_partial_ord {
         assert!(max_negative >= max_negative);
     }
 
-    /// Compare a number close to zero with zero
+    /// Compare a number close to `0` with `0`
     #[test]
     fn close_to_zero() {
         let small = Q::from((1, u64::MAX));

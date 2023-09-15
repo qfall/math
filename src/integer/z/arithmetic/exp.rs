@@ -15,13 +15,13 @@ use crate::{
 };
 
 impl Z {
-    /// Computes e^self using taylor series approximation of the exponential function.
+    /// Computes `e^self` using taylor series approximation of the exponential function.
     ///
     /// Parameters:
     /// - `length_taylor_polynomial`: the length of the taylor series
     /// approximation of the exponential function
     ///
-    /// Returns e^self.
+    /// Returns `e^self`.
     ///
     /// # Examples
     /// ```

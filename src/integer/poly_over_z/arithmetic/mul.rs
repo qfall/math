@@ -100,7 +100,7 @@ mod test_mul {
         assert_eq!(c, PolyOverZ::from_str("3  4 8 -12").unwrap());
     }
 
-    /// Testing multiplication with zero
+    /// Testing multiplication with `0`
     #[test]
     fn mul_zero() {
         let a: PolyOverZ = PolyOverZ::from_str("3  1 2 -3").unwrap();

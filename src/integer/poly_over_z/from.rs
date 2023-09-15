@@ -55,7 +55,7 @@ impl FromStr for PolyOverZ {
     /// if the provided value did not contain two whitespaces.
     /// - Returns a [`MathError`] of type
     /// [`StringConversionError`](MathError::StringConversionError)
-    /// if the provided string contains a Null Byte.
+    /// if the provided string contains a `Null` Byte.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // remove whitespaces at the start and at the end
         let s_trimmed = s.trim();

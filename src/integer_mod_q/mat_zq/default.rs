@@ -32,7 +32,7 @@ impl MatZq {
     /// ```
     ///
     /// # Panics ...
-    /// - if the number of rows or columns is negative, zero, or does not fit into an [`i64`].
+    /// - if the number of rows or columns is negative, `0`, or does not fit into an [`i64`].
     pub fn new(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,

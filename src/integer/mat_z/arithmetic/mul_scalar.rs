@@ -26,7 +26,7 @@ impl Mul<&Z> for &MatZ {
     /// Parameters:
     /// - `scalar`: specifies the scalar by which the matrix is multiplied
     ///
-    /// Returns the product of `self` and `other` as a [`MatZ`].
+    /// Returns the product of `self` and `scalar` as a [`MatZ`].
     ///
     /// # Examples
     /// ```

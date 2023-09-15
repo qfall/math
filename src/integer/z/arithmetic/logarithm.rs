@@ -132,7 +132,7 @@ impl Z {
     /// Parameters:
     /// - `base`: the base of the logarithm
     ///
-    /// Returns $log_base(self)$ as a [`Q`] instance or a [`MathError`],
+    /// Returns `log_base(self)` as a [`Q`] instance or a [`MathError`],
     /// if at least one of the conditions `base > 1` and `self > 0` isn't met.
     ///
     /// # Examples

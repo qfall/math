@@ -26,7 +26,7 @@ impl Mul<&Z> for &MatPolyOverZ {
     /// Parameters:
     /// - `scalar`: specifies the scalar by which the matrix is multiplied
     ///
-    /// Returns the product of `self` and `other` as a [`MatPolyOverZ`].
+    /// Returns the product of `self` and `scalar` as a [`MatPolyOverZ`].
     ///
     /// # Examples
     /// ```
@@ -64,7 +64,7 @@ impl Mul<&PolyOverZ> for &MatPolyOverZ {
     /// Parameters:
     /// - `scalar`: specifies the scalar by which the matrix is multiplied
     ///
-    /// Returns the product of `self` and `other` as a [`MatPolyOverZ`].
+    /// Returns the product of `self` and `scalar` as a [`MatPolyOverZ`].
     ///
     /// # Examples
     /// ```

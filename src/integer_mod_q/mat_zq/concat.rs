@@ -94,7 +94,7 @@ impl Concatenate for &MatZq {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a `MathError` of type
+    /// - Returns a [`MathError`] of type
     /// [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     /// if the matrices can not be concatenated due to mismatching dimensions.
     /// - Returns a [`MathError`] of type

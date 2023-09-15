@@ -317,7 +317,7 @@ mod test_from_trait {
         assert_eq!(zq_1, zq_2);
     }
 
-    /// Test with zero modulus (not valid)
+    /// Test with `0` modulus (not valid)
     #[test]
     #[should_panic]
     fn modulus_zero() {

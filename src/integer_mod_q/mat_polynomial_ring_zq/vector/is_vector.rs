@@ -118,7 +118,7 @@ mod test_is_vector {
 
     const LARGE_PRIME: u64 = u64::MAX - 58;
 
-    /// Check whether matrices with one row or one column
+    /// Check whether matrices with `1` row or one column
     /// get recognized as (row or column) vectors
     #[test]
     fn vectors_detected() {

@@ -131,7 +131,7 @@ mod test_deserialize {
         assert_eq!(mat_poly_z, serde_json::from_str(&cmp_str).unwrap());
     }
 
-    /// Tests whether no fields 'matrix' provided yield an error
+    /// Tests whether no fields `matrix` provided yield an error
     #[test]
     fn no_field_matrix() {
         let a: Result<MatZq, serde_json::Error> =

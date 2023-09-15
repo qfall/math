@@ -23,7 +23,7 @@ impl Sub for &MatQ {
     /// [`Sub`] is implemented for any combination of [`MatQ`] and borrowed [`MatQ`].
     ///
     /// Parameters:
-    /// - `other`: specifies the value to subtract to `self`
+    /// - `other`: specifies the value to subtract from`self`
     ///
     /// Returns the result of the subtraction as a [`MatQ`].
     ///
@@ -53,7 +53,7 @@ impl MatQ {
     ///
     ///
     /// Parameters:
-    /// - `other`: specifies the value to subtract to `self`
+    /// - `other`: specifies the value to subtract from`self`
     ///
     /// Returns the result of the subtraction as a [`MatQ`] or an
     /// error if the matrix dimensions mismatch.
