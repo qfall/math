@@ -8,7 +8,7 @@
 
 //! This module contains common functions that are used by several crates.
 //!
-//! This can include functions to pre-process inputs, find size of matrices
+//! This can include functions to pre-process inputs
 //! and similar tasks.
 
 pub(crate) mod collective_evaluation;

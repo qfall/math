@@ -92,7 +92,7 @@ mod test_deserialize {
         assert!(a.is_err());
     }
 
-    /// Tests whether no fields 'modulus' provided yield an error
+    /// Tests whether no fields `modulus` provided yield an error
     #[test]
     fn no_field_value() {
         let a: Result<Modulus, serde_json::Error> = serde_json::from_str("{{\"tree\":\"{17}\"}}");

@@ -89,7 +89,7 @@ mod test_is_vector {
     use super::*;
     use std::str::FromStr;
 
-    /// Check whether matrices with one row or one column
+    /// Check whether matrices with `1` row or one column
     /// get recognized as (row or column) vectors
     #[test]
     fn vectors_detected() {

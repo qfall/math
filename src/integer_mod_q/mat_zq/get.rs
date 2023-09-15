@@ -165,7 +165,7 @@ impl MatZq {
     /// - `row`: specifies the row of the matrix
     ///
     /// Returns a row vector of the matrix at the position of the given
-    /// row or an error, if the number of rows is
+    /// `row` or an error, if the number of rows is
     /// greater than the matrix or negative.
     ///
     /// # Examples
@@ -201,7 +201,7 @@ impl MatZq {
     /// * `column`: specifies the column of the matrix
     ///
     /// Returns a column vector of the matrix at the position of the given
-    /// column or an error, if the number of columns is
+    /// `column` or an error, if the number of columns is
     /// greater than the matrix or negative.
     ///
     /// # Examples
@@ -371,13 +371,13 @@ impl MatZq {
         entry_lengths
     }
 
-    /// Get a [`MatZ`] with the representatives close to zero.
+    /// Get a [`MatZ`] with the representatives close to `0`.
     ///
     /// The values in the output matrix are in the range of `[-Modulus/2, Modulus/2]`.
     /// For even moduli, the positive representative is chosen for the element `Modulus / 2`.
     ///
     /// Return a [`MatZ`] representation of the given matrix with
-    /// representatives chosen close to zero.
+    /// representatives chosen close to `0`.
     ///
     /// # Examples
     /// ```
@@ -554,7 +554,7 @@ mod test_get_entry {
         assert_eq!(Z::from(u64::MAX - 1), entry);
     }
 
-    /// Ensure that no memory leak occurs in get_entry with ['Z'](crate::integer::Z).
+    /// Ensure that no memory leak occurs in get_entry with [`Z`](crate::integer::Z).
     #[test]
     fn get_entry_z_memory() {
         let mut matrix = MatZq::new(5, 10, u64::MAX);
@@ -568,7 +568,7 @@ mod test_get_entry {
         assert_eq!(entry, Z::from(u64::MAX - 3));
     }
 
-    /// Ensure that no memory leak occurs in get_entry with ['Zq'](crate::integer_mod_q::Zq).
+    /// Ensure that no memory leak occurs in get_entry with [`Zq`](crate::integer_mod_q::Zq).
     #[test]
     fn get_entry_zq_memory() {
         let mut matrix = MatZq::new(5, 10, u64::MAX);

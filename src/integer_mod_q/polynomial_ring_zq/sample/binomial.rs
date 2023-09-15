@@ -49,7 +49,7 @@ impl PolynomialRingZq {
     /// if `n` does not fit into an [`i64`].
     ///
     /// # Panics ...
-    /// - if the provided [`ModulusPolynomialRingZq`] has degree 0 or smaller.
+    /// - if the provided [`ModulusPolynomialRingZq`] has degree `0` or smaller.
     pub fn sample_binomial(
         modulus: &ModulusPolynomialRingZq,
         n: impl Into<Z>,
@@ -92,7 +92,7 @@ impl PolynomialRingZq {
     /// if `n` does not fit into an [`i64`].
     ///
     /// # Panics ...
-    /// - if the provided [`ModulusPolynomialRingZq`] has degree 0 or smaller.
+    /// - if the provided [`ModulusPolynomialRingZq`] has degree `0` or smaller.
     pub fn sample_binomial_with_offset(
         modulus: &ModulusPolynomialRingZq,
         offset: impl Into<Z>,

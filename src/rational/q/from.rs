@@ -535,7 +535,7 @@ mod test_from_int_int {
         assert_eq!(q_1, q_2);
     }
 
-    /// Test with zero denominator (not valid -> should lead to an error)
+    /// Test with `0` denominator (not valid -> should lead to an error)
     #[test]
     #[should_panic]
     fn divide_by_zero() {
@@ -638,7 +638,7 @@ mod test_try_from_int_int {
         assert_eq!(q_1, q_2);
     }
 
-    /// Test with zero denominator (not valid -> should lead to an error)
+    /// Test with `0` denominator (not valid -> should lead to an error)
     #[test]
     #[should_panic]
     fn divide_by_zero() {

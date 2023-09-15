@@ -260,7 +260,7 @@ mod test_from_matz {
     }
 
     /// Ensure that a 100x100 [`MatPolyOverZ`] can be initialized from [`MatZ`]
-    /// with zero coefficients.
+    /// with `0` coefficients.
     /// Validate that the correct [`MatPolyOverZ`] is created.
     #[test]
     fn zero() {

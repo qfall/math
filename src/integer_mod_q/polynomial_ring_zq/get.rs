@@ -105,7 +105,7 @@ impl PolynomialRingZq {
     }
 
     /// Returns the degree of a [`PolynomialRingZq`] as a [`i64`].
-    /// The zero polynomial has degree '-1'.
+    /// The zero polynomial has degree `-1`.
     ///
     /// # Examples
     /// ```

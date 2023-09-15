@@ -47,7 +47,7 @@ impl PolynomialRingZq {
     /// if `n <= 1` or `s <= 0`.
     ///
     /// # Panics ...
-    /// - if the provided [`ModulusPolynomialRingZq`] has degree 0 or smaller.
+    /// - if the provided [`ModulusPolynomialRingZq`] has degree `0` or smaller.
     pub fn sample_discrete_gauss(
         modulus: impl Into<ModulusPolynomialRingZq>,
         n: impl Into<Z>,

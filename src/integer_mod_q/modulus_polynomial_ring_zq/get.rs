@@ -44,7 +44,7 @@ impl ModulusPolynomialRingZq {
     }
 
     /// Returns the degree of a polynomial [`ModulusPolynomialRingZq`] as a [`i64`].
-    /// The zero polynomial has degree '-1'.
+    /// The zero polynomial has degree `-1`.
     ///
     /// # Examples
     /// ```

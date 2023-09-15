@@ -23,7 +23,7 @@ impl Sub for &MatPolyOverZ {
     /// [`Sub`] is implemented for any combination of [`MatPolyOverZ`] and borrowed [`MatPolyOverZ`].
     ///
     /// Parameters:
-    /// - `other`: specifies the value to subtract to `self`
+    /// - `other`: specifies the value to subtract from`self`
     ///
     /// Returns the result of the subtraction as a [`MatPolyOverZ`].
     ///
@@ -53,7 +53,7 @@ impl MatPolyOverZ {
     ///
     ///
     /// Parameters:
-    /// - `other`: specifies the value to subtract to `self`
+    /// - `other`: specifies the value to subtract from`self`
     ///
     /// Returns the result of the subtraction as a [`MatPolyOverZ`] or an
     /// error if the matrix dimensions mismatch.

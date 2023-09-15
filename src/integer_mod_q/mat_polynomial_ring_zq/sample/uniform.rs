@@ -43,7 +43,7 @@ impl MatPolynomialRingZq {
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
     /// For further information see [`MatPolynomialRingZq::new`].
-    /// - if the provided [`ModulusPolynomialRingZq`] has degree 0.
+    /// - if the provided [`ModulusPolynomialRingZq`] has degree `0`.
     pub fn sample_uniform(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,

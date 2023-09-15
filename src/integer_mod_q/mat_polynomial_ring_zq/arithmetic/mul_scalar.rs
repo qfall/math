@@ -28,7 +28,7 @@ impl Mul<&Z> for &MatPolynomialRingZq {
     /// Parameters:
     /// - `scalar`: Specifies the scalar by which the matrix is multiplied.
     ///
-    /// Returns the product of `self` and `other` as a [`MatPolynomialRingZq`].
+    /// Returns the product of `self` and `scalar` as a [`MatPolynomialRingZq`].
     ///
     /// # Examples
     /// ```
@@ -74,7 +74,7 @@ impl Mul<&PolyOverZ> for &MatPolynomialRingZq {
     /// Parameters:
     /// - `scalar`: Specifies the scalar by which the matrix is multiplied.
     ///
-    /// Returns the product of `self` and `other` as a [`MatPolynomialRingZq`].
+    /// Returns the product of `self` and `scalar` as a [`MatPolynomialRingZq`].
     ///
     /// # Examples
     /// ```
@@ -148,7 +148,7 @@ impl Mul<&PolyOverZq> for &MatPolynomialRingZq {
     /// Parameters:
     /// - `scalar`: Specifies the scalar by which the matrix is multiplied.
     ///
-    /// Returns the product of `self` and `other` as a [`MatPolynomialRingZq`].
+    /// Returns the product of `self` and `scalar` as a [`MatPolynomialRingZq`].
     ///
     /// # Examples
     /// ```
@@ -215,7 +215,7 @@ impl Mul<&PolynomialRingZq> for &MatPolynomialRingZq {
     /// Parameters:
     /// - `scalar`: Specifies the scalar by which the matrix is multiplied.
     ///
-    /// Returns the product of `self` and `other` as a [`MatPolynomialRingZq`].
+    /// Returns the product of `self` and `scalar` as a [`MatPolynomialRingZq`].
     ///
     /// # Examples
     /// ```
@@ -282,7 +282,7 @@ impl MatPolynomialRingZq {
     /// Parameters:
     /// - `scalar`: Specifies the scalar by which the matrix is multiplied.
     ///
-    /// Returns the product of `self` and `other` as a [`MatPolynomialRingZq`].
+    /// Returns the product of `self` and `scalar` as a [`MatPolynomialRingZq`].
     ///
     /// # Examples
     /// ```
@@ -318,7 +318,7 @@ impl MatPolynomialRingZq {
     /// Parameters:
     /// - `scalar`: Specifies the scalar by which the matrix is multiplied.
     ///
-    /// Returns the product of `self` and `other` as a [`MatPolynomialRingZq`].
+    /// Returns the product of `self` and `scalar` as a [`MatPolynomialRingZq`].
     ///
     /// # Examples
     /// ```

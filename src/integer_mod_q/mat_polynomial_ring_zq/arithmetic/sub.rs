@@ -22,7 +22,7 @@ impl Sub for &MatPolynomialRingZq {
     /// and borrowed [`MatPolynomialRingZq`].
     ///
     /// Parameters:
-    /// - `other`: specifies the value to subtract to `self`
+    /// - `other`: specifies the value to subtract from`self`
     ///
     /// Returns the result of the subtraction as a [`MatPolynomialRingZq`].
     ///
@@ -58,7 +58,7 @@ impl MatPolynomialRingZq {
     ///
     ///
     /// Parameters:
-    /// - `other`: specifies the value to subtract to `self`
+    /// - `other`: specifies the value to subtract from`self`
     ///
     /// Returns the result of the subtraction as a [`MatPolynomialRingZq`] or an
     /// error if the matrix dimensions or moduli mismatch.

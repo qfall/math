@@ -111,7 +111,7 @@ impl MatPolyOverZ {
     /// - `row`: specifies the row of the matrix
     ///
     /// Returns a row vector of the matrix at the position of the given
-    /// row or an error, if the number of rows is
+    /// `row` or an error, if the number of rows is
     /// greater than the matrix or negative.
     ///
     /// # Examples
@@ -148,7 +148,7 @@ impl MatPolyOverZ {
     /// * `column`: specifies the column of the matrix
     ///
     /// Returns a column vector of the matrix at the position of the given
-    /// column or an error, if the number of columns is
+    /// `column` or an error, if the number of columns is
     /// greater than the matrix or negative.
     ///
     /// # Examples

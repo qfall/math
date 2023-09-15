@@ -24,7 +24,7 @@ impl Q {
     /// For exponents above 709, a different algorithm is used.
     /// Its error bound is not calculated at this point, but probably below 10%.
     ///
-    /// Returns e^self.
+    /// Returns `e^self`.
     ///
     /// # Examples
     /// ```
@@ -58,13 +58,13 @@ impl Q {
         }
     }
 
-    /// Computes e^self using taylor series approximation of the exponential function.
+    /// Computes `e^self` using taylor series approximation of the exponential function.
     ///
     /// Parameters:
     /// - `length_taylor_polynomial`: the length of the taylor series
     /// approximation of the exponential function
     ///
-    /// Returns e^self.
+    /// Returns `e^self`.
     ///
     /// # Examples
     /// ```

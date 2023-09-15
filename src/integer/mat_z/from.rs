@@ -27,9 +27,9 @@ use std::str::FromStr;
 impl MatZ {
     /// Create a [`MatZ`] from a [`MatZq`].
     ///
-    /// The output matrix entries values will be in the range `[0, Modulus[`.
+    /// The output matrix entries values will be in the range `[0, Modulus)`.
     /// Use [`MatZq::get_closest_to_zero_representative`] if they should be
-    /// close to zero.
+    /// close to `0`.
     ///
     /// Parameters:
     /// - `matrix`: the matrix from which the entries are taken

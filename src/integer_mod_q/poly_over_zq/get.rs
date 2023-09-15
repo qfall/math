@@ -106,7 +106,7 @@ impl GetCoefficient<Z> for PolyOverZq {
 
 impl PolyOverZq {
     /// Returns the degree of a polynomial [`PolyOverZq`] as a [`i64`].
-    /// The zero polynomial has degree '-1'.
+    /// The zero polynomial has degree `-1`.
     ///
     /// # Examples
     /// ```
