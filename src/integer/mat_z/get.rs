@@ -17,9 +17,9 @@ use crate::{
 };
 use flint_sys::{
     fmpz::{fmpz, fmpz_set},
-    fmpz_mat::{fmpz_mat_entry, fmpz_mat_init_set, fmpz_mat_window_clear, fmpz_mat_window_init},
+    fmpz_mat::{fmpz_mat_entry, fmpz_mat_window_init},
 };
-use std::{fmt::Display, mem::MaybeUninit};
+use std::{fmt::Display, mem::MaybeUninit, rc::Rc};
 
 impl GetNumRows for MatZ {
     /// Returns the number of rows of the matrix as a [`i64`].
@@ -104,6 +104,8 @@ impl GetEntry<Z> for MatZ {
 
 impl MatZ {
     /// Outputs the row vector of the specified row.
+    /// The entries are shared with the matrix the method is called on.
+    /// (If you want an independent object you have to clone it).
     ///
     /// Parameters:
     /// - `row`: specifies the row of the matrix
@@ -140,6 +142,8 @@ impl MatZ {
     }
 
     /// Outputs a column vector of the specified column.
+    /// The entries are shared with the matrix the method is called on.
+    /// (If you want an independent object you have to clone it).
     ///
     /// Input parameters:
     /// * `column`: specifies the column of the matrix
@@ -176,7 +180,7 @@ impl MatZ {
         self.get_submatrix(0, self.get_num_rows() - 1, column_i64, column_i64)
     }
 
-    /// Returns a deep copy of the submatrix defined by the given parameters.
+    /// Returns a copy of the submatrix with shared memory for the entries.
     /// All entries starting from `(row_1, col_1)` to `(row_2, col_2)`(inclusively) are collected in
     /// a new matrix.
     /// Note that `row_1 >= row_2` and `col_1 >= col_2` must hold after converting negative indices.
@@ -248,16 +252,9 @@ impl MatZ {
                 col_2,
             )
         };
-        let mut window_copy = MaybeUninit::uninit();
-        unsafe {
-            // Deep clone of the content of the window
-            fmpz_mat_init_set(window_copy.as_mut_ptr(), window.as_ptr());
-            // Clears the matrix window and releases any memory that it uses. Note that
-            // the memory to the underlying matrix that window points to is not freed
-            fmpz_mat_window_clear(window.as_mut_ptr());
-        }
         Ok(MatZ {
-            matrix: unsafe { window_copy.assume_init() },
+            data: Rc::clone(&self.data),
+            matrix: unsafe { window.assume_init() },
         })
     }
 

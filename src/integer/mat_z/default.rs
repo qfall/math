@@ -1,4 +1,4 @@
-// Copyright © 2023 Marcel Luca Schmidt
+// Copyright © 2023 Marcel Luca Schmidt, Marvin Beckmann
 //
 // This file is part of qFALL-math.
 //
@@ -10,8 +10,8 @@
 
 use super::MatZ;
 use crate::utils::index::evaluate_indices;
-use flint_sys::fmpz_mat::{fmpz_mat_init, fmpz_mat_one};
-use std::{fmt::Display, mem::MaybeUninit};
+use flint_sys::fmpz_mat::{fmpz_mat_init, fmpz_mat_one, fmpz_mat_window_init};
+use std::{fmt::Display, mem::MaybeUninit, rc::Rc};
 
 impl MatZ {
     /// Creates a new matrix with `num_rows` rows, `num_cols` columns and
@@ -32,6 +32,7 @@ impl MatZ {
     ///
     /// # Panics ...
     /// - if the number of rows or columns is negative, `0`, or does not fit into an [`i64`].
+
     pub fn new(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
@@ -43,12 +44,16 @@ impl MatZ {
             "A matrix can not contain 0 rows or 0 columns"
         );
 
+        let mut data = MaybeUninit::uninit();
         let mut matrix = MaybeUninit::uninit();
-        unsafe {
-            fmpz_mat_init(matrix.as_mut_ptr(), num_rows_i64, num_cols_i64);
 
-            // Construct MatZ from previously initialized fmpz_mat
+        unsafe {
+            fmpz_mat_init(data.as_mut_ptr(), num_rows_i64, num_cols_i64);
+            let data = data.assume_init();
+            fmpz_mat_window_init(matrix.as_mut_ptr(), &data, 0, 0, data.r, data.c);
+
             MatZ {
+                data: Rc::new(data),
                 matrix: matrix.assume_init(),
             }
         }

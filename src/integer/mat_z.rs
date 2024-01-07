@@ -1,4 +1,4 @@
-// Copyright © 2023 Marcel Luca Schmidt, Niklas Siemer
+// Copyright © 2023 Marcel Luca Schmidt, Niklas Siemer, Marvin Beckmann
 //
 // This file is part of qFALL-math.
 //
@@ -10,6 +10,7 @@
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use flint_sys::fmpz_mat::fmpz_mat_struct;
+use std::rc::Rc;
 
 mod arithmetic;
 mod cmp;
@@ -34,8 +35,11 @@ mod vector;
 /// [`MatZ`] is a matrix with entries of type [`Z`](crate::integer::Z).
 ///
 /// Attributes:
+/// - `data`: holds a reference counter to the underlying matrix object of which the data
+///  is taken.
 /// - `matrix`: holds [FLINT](https://flintlib.org/)'s [struct](fmpz_mat_struct)
-///     of the [`Z`](crate::integer::Z) matrix
+///  of the [`Z`](crate::integer::Z) matrix.
+///  This object points to a window of `data`.
 ///
 /// # Examples
 /// ## Matrix usage
@@ -87,5 +91,6 @@ mod vector;
 /// ```
 #[derive(Debug)]
 pub struct MatZ {
+    pub(crate) data: Rc<fmpz_mat_struct>,
     pub(crate) matrix: fmpz_mat_struct,
 }

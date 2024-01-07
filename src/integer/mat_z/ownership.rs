@@ -1,4 +1,4 @@
-// Copyright © 2023 Niklas Siemer
+// Copyright © 2023 Niklas Siemer, Marvin Beckmann
 //
 // This file is part of qFALL-math.
 //
@@ -11,10 +11,10 @@
 //!
 //! The explicit functions contain the documentation.
 
-use crate::traits::{GetNumColumns, GetNumRows};
-
 use super::MatZ;
-use flint_sys::fmpz_mat::{fmpz_mat_clear, fmpz_mat_set};
+use crate::traits::{GetNumColumns, GetNumRows};
+use flint_sys::fmpz_mat::{fmpz_mat_clear, fmpz_mat_set, fmpz_mat_window_clear};
+use std::rc::Rc;
 
 impl Clone for MatZ {
     /// Clones the given element and returns a deep clone of the [`MatZ`] element.
@@ -60,7 +60,11 @@ impl Drop for MatZ {
     /// drop(a); // explicitly drops a's value
     /// ```
     fn drop(&mut self) {
-        unsafe { fmpz_mat_clear(&mut self.matrix) }
+        unsafe { fmpz_mat_window_clear(&mut self.matrix) }
+        if Rc::strong_count(&self.data) <= 1 {
+            let mut a = *self.data;
+            unsafe { fmpz_mat_clear(&mut a) };
+        }
     }
 }
 
@@ -138,7 +142,7 @@ mod test_drop {
         let str_1 = "[[36893488147419103232, 36893488147419103232]]";
         let a = MatZ::from_str(str_1).unwrap();
 
-        let storage_mat = unsafe { (*a.matrix.entries).0 };
+        let storage_mat = unsafe { (*a.data.entries).0 };
         let storage_0 = a.get_entry(0, 0).unwrap().value.0;
         let storage_1 = a.get_entry(0, 1).unwrap().value.0;
 
