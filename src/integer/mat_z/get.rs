@@ -8,7 +8,7 @@
 
 //! Implementations to get information about a [`MatZ`] matrix.
 
-use super::MatZ;
+use super::{MatZ, MatZSubmatrix};
 use crate::{
     error::MathError,
     integer::Z,
@@ -17,7 +17,7 @@ use crate::{
 };
 use flint_sys::{
     fmpz::{fmpz, fmpz_set},
-    fmpz_mat::{fmpz_mat_entry, fmpz_mat_init_set, fmpz_mat_window_clear, fmpz_mat_window_init},
+    fmpz_mat::{fmpz_mat_entry, fmpz_mat_window_init},
 };
 use std::{fmt::Display, mem::MaybeUninit};
 
@@ -137,6 +137,7 @@ impl MatZ {
         }
 
         self.get_submatrix(row_i64, row_i64, 0, self.get_num_columns() - 1)
+            .map(|value| value.into())
     }
 
     /// Outputs a column vector of the specified column.
@@ -174,6 +175,7 @@ impl MatZ {
         }
 
         self.get_submatrix(0, self.get_num_rows() - 1, column_i64, column_i64)
+            .map(|value| value.into())
     }
 
     /// Returns a deep copy of the submatrix defined by the given parameters.
@@ -220,7 +222,7 @@ impl MatZ {
         row_2: impl TryInto<i64> + Display,
         col_1: impl TryInto<i64> + Display,
         col_2: impl TryInto<i64> + Display,
-    ) -> Result<Self, MathError> {
+    ) -> Result<MatZSubmatrix, MathError> {
         let (row_1, col_1) = evaluate_indices_for_matrix(self, row_1, col_1)?;
         let (row_2, col_2) = evaluate_indices_for_matrix(self, row_2, col_2)?;
         assert!(
@@ -248,17 +250,12 @@ impl MatZ {
                 col_2,
             )
         };
-        let mut window_copy = MaybeUninit::uninit();
-        unsafe {
-            // Deep clone of the content of the window
-            fmpz_mat_init_set(window_copy.as_mut_ptr(), window.as_ptr());
-            // Clears the matrix window and releases any memory that it uses. Note that
-            // the memory to the underlying matrix that window points to is not freed
-            fmpz_mat_window_clear(window.as_mut_ptr());
-        }
-        Ok(MatZ {
-            matrix: unsafe { window_copy.assume_init() },
-        })
+        let submatrix = MatZSubmatrix {
+            matrix: self,
+            window: unsafe { window.assume_init() },
+        };
+
+        Ok(submatrix)
     }
 
     /// Efficiently collects all [`fmpz`]s in a [`MatZ`] without cloning them.
@@ -504,7 +501,7 @@ mod test_get_submatrix {
     fn entire_matrix() {
         let mat = MatZ::identity(5, 5);
 
-        let sub_mat = mat.get_submatrix(0, 4, 0, 4).unwrap();
+        let sub_mat = mat.get_submatrix(0, 4, 0, 4).unwrap().into();
 
         assert_eq!(mat, sub_mat);
     }
@@ -514,7 +511,7 @@ mod test_get_submatrix {
     fn matrix_single_entry() {
         let mat = MatZ::identity(5, 5);
 
-        let sub_mat = mat.get_submatrix(0, 0, 0, 0).unwrap();
+        let sub_mat = mat.get_submatrix(0, 0, 0, 0).unwrap().into();
 
         let cmp_mat = MatZ::identity(1, 1);
         assert_eq!(cmp_mat, sub_mat);
@@ -525,7 +522,7 @@ mod test_get_submatrix {
     fn correct_dimensions() {
         let mat = MatZ::identity(100, 100);
 
-        let sub_mat = mat.get_submatrix(1, 37, 0, 29).unwrap();
+        let sub_mat: MatZ = mat.get_submatrix(1, 37, 0, 29).unwrap().into();
 
         assert_eq!(37, sub_mat.get_num_rows());
         assert_eq!(30, sub_mat.get_num_columns());
@@ -537,7 +534,7 @@ mod test_get_submatrix {
     fn large_entries() {
         let mat = MatZ::from_str(&format!("[[{}, 2, 3],[1, {}, 3]]", u64::MAX, i64::MIN)).unwrap();
 
-        let sub_mat = mat.get_submatrix(0, 1, 0, 1).unwrap();
+        let sub_mat = mat.get_submatrix(0, 1, 0, 1).unwrap().into();
 
         let cmp_mat = MatZ::from_str(&format!("[[{}, 2],[1, {}]]", u64::MAX, i64::MIN)).unwrap();
         assert_eq!(cmp_mat, sub_mat);
@@ -560,11 +557,11 @@ mod test_get_submatrix {
     fn negative_indexing() {
         let matrix = MatZ::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]]").unwrap();
 
-        assert_eq!(matrix, matrix.get_submatrix(0, -1, 0, -1).unwrap());
-        assert_eq!(matrix, matrix.get_submatrix(-3, -1, -3, -1).unwrap());
+        assert_eq!(matrix, matrix.get_submatrix(0, -1, 0, -1).unwrap().into());
+        assert_eq!(matrix, matrix.get_submatrix(-3, -1, -3, -1).unwrap().into());
         assert_eq!(
             matrix.get_row(0).unwrap(),
-            matrix.get_submatrix(0, -3, -3, -1).unwrap()
+            matrix.get_submatrix(0, -3, -3, -1).unwrap().into()
         );
     }
 

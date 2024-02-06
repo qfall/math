@@ -1,4 +1,4 @@
-// Copyright © 2023 Niklas Siemer
+// Copyright © 2023 Niklas Siemer, Marvin Beckmann
 //
 // This file is part of qFALL-math.
 //
@@ -13,8 +13,8 @@
 
 use crate::traits::{GetNumColumns, GetNumRows};
 
-use super::MatZ;
-use flint_sys::fmpz_mat::{fmpz_mat_clear, fmpz_mat_set};
+use super::{MatZ, MatZSubmatrix};
+use flint_sys::fmpz_mat::{fmpz_mat_clear, fmpz_mat_set, fmpz_mat_window_clear};
 
 impl Clone for MatZ {
     /// Clones the given element and returns a deep clone of the [`MatZ`] element.
@@ -61,6 +61,12 @@ impl Drop for MatZ {
     /// ```
     fn drop(&mut self) {
         unsafe { fmpz_mat_clear(&mut self.matrix) }
+    }
+}
+
+impl Drop for MatZSubmatrix<'_> {
+    fn drop(&mut self) {
+        unsafe { fmpz_mat_window_clear(&mut self.window) }
     }
 }
 

@@ -9,18 +9,15 @@
 //! Implementation of the [`Add`] trait for [`MatZ`] values.
 
 use super::super::MatZ;
-use crate::error::MathError;
-use crate::macros::arithmetics::{
-    arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
-};
-use crate::traits::{GetNumColumns, GetNumRows};
-use flint_sys::fmpz_mat::fmpz_mat_add;
+use crate::integer::mat_z::MatZSubmatrix;
+use crate::{error::MathError, traits::AsMatZ};
+use flint_sys::fmpz_mat::{fmpz_mat_add, fmpz_mat_struct};
 use std::ops::Add;
 
-impl Add for &MatZ {
+impl<Other: AsMatZ> Add<Other> for &MatZ {
     type Output = MatZ;
     /// Implements the [`Add`] trait for two [`MatZ`] values.
-    /// [`Add`] is implemented for any combination of [`MatZ`] and borrowed [`MatZ`].
+    /// [`Add`] is implemented for all [`MatZ`]-like objects and borrowed [`MatZ`].
     ///
     /// Parameters:
     /// - `other`: specifies the value to add to `self`
@@ -43,8 +40,44 @@ impl Add for &MatZ {
     ///
     /// # Panics ...
     /// - if the dimensions of both matrices mismatch.
-    fn add(self, other: Self) -> Self::Output {
-        self.add_safe(other).unwrap()
+    fn add(self, rhs: Other) -> Self::Output {
+        unsafe {
+            add_fmpz_mat_struct(
+                self.get_fmpz_mat_struct_ref(),
+                rhs.get_fmpz_mat_struct_ref(),
+            )
+            .unwrap()
+        }
+    }
+}
+
+impl<Other: AsMatZ> Add<Other> for MatZ {
+    type Output = MatZ;
+
+    fn add(self, rhs: Other) -> Self::Output {
+        (&self).add(rhs)
+    }
+}
+
+impl<Other: AsMatZ> Add<Other> for &MatZSubmatrix<'_> {
+    type Output = MatZ;
+
+    fn add(self, rhs: Other) -> Self::Output {
+        unsafe {
+            add_fmpz_mat_struct(
+                self.get_fmpz_mat_struct_ref(),
+                rhs.get_fmpz_mat_struct_ref(),
+            )
+            .unwrap()
+        }
+    }
+}
+
+impl<Other: AsMatZ> Add<Other> for MatZSubmatrix<'_> {
+    type Output = MatZ;
+
+    fn add(self, rhs: Other) -> Self::Output {
+        (&self).add(rhs)
     }
 }
 
@@ -73,27 +106,41 @@ impl MatZ {
     /// [`MathError::MismatchingMatrixDimension`] if the matrix dimensions
     /// mismatch.
     pub fn add_safe(&self, other: &Self) -> Result<MatZ, MathError> {
-        if self.get_num_rows() != other.get_num_rows()
-            || self.get_num_columns() != other.get_num_columns()
-        {
-            return Err(MathError::MismatchingMatrixDimension(format!(
-                "Tried to add a '{}x{}' matrix and a '{}x{}' matrix.",
-                self.get_num_rows(),
-                self.get_num_columns(),
-                other.get_num_rows(),
-                other.get_num_columns()
-            )));
-        }
-        let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
         unsafe {
-            fmpz_mat_add(&mut out.matrix, &self.matrix, &other.matrix);
+            add_fmpz_mat_struct(
+                self.get_fmpz_mat_struct_ref(),
+                other.get_fmpz_mat_struct_ref(),
+            )
         }
-        Ok(out)
     }
 }
 
-arithmetic_trait_borrowed_to_owned!(Add, add, MatZ, MatZ, MatZ);
-arithmetic_trait_mixed_borrowed_owned!(Add, add, MatZ, MatZ, MatZ);
+/// Return a [`MatZ`] representing the entrywise addition of the two matrices.
+/// If the dimensions do not match, then an error is returned.
+///
+/// # Errors
+/// Returns a [`MathError`] of type
+/// [`MathError::MismatchingMatrixDimension`] if the matrix dimensions
+/// mismatch.
+///
+/// # Safety
+/// The caller has to ensure that the [`fmpz_mat_struct`]'s contain data.
+unsafe fn add_fmpz_mat_struct(
+    val1: &fmpz_mat_struct,
+    val2: &fmpz_mat_struct,
+) -> Result<MatZ, MathError> {
+    if val1.r != val2.r || val1.c != val2.c {
+        return Err(MathError::MismatchingMatrixDimension(format!(
+            "Tried to add a '{}x{}' matrix and a '{}x{}' matrix.",
+            val1.r, val2.r, val1.c, val2.c
+        )));
+    }
+    let mut out = MatZ::new(val1.r, val1.c);
+    unsafe {
+        fmpz_mat_add(&mut out.matrix, val1, val2);
+    }
+    Ok(out)
+}
 
 #[cfg(test)]
 mod test_add {
@@ -175,5 +222,22 @@ mod test_add {
         let c: MatZ = MatZ::from_str("[[1, 2, 3]]").unwrap();
         assert!(a.add_safe(&b).is_err());
         assert!(c.add_safe(&b).is_err());
+    }
+
+    // Addition using submatrices
+    #[test]
+    fn add_submatrix() {
+        let a = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();
+        let b = a.get_submatrix(0, 1, 0, 1).unwrap();
+        let c = MatZ::from_str("[[2, 3],[4, 5]]").unwrap();
+
+        let res = MatZ::from_str("[[3, 5],[7, 9]]").unwrap();
+        assert_eq!(res, &b + &c);
+        assert_eq!(res, &c + &b);
+        assert_eq!(res, c + &b);
+
+        let res_ref = MatZ::from_str("[[2, 4],[6, 8]]").unwrap();
+        assert_eq!(res_ref, &b + &b);
+        println!("{a}")
     }
 }

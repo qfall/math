@@ -1,4 +1,4 @@
-// Copyright © 2023 Marcel Luca Schmidt, Niklas Siemer
+// Copyright © 2023 Marcel Luca Schmidt, Niklas Siemer, Marvin Beckmann
 //
 // This file is part of qFALL-math.
 //
@@ -16,6 +16,7 @@ mod cmp;
 mod concat;
 mod default;
 mod determinant;
+mod fmpz_mat_struct_helpers;
 mod from;
 mod get;
 mod inverse;
@@ -88,4 +89,9 @@ mod vector;
 #[derive(Debug)]
 pub struct MatZ {
     pub(crate) matrix: fmpz_mat_struct,
+}
+
+pub struct MatZSubmatrix<'a> {
+    pub matrix: &'a MatZ,
+    pub(crate) window: fmpz_mat_struct,
 }

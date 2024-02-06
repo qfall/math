@@ -13,7 +13,7 @@
 //!
 //! The explicit functions contain the documentation.
 
-use super::MatZ;
+use super::{MatZ, MatZSubmatrix};
 use crate::{
     error::MathError,
     integer::Z,
@@ -107,6 +107,20 @@ impl From<&MatZq> for MatZ {
     /// Convert [`MatZq`] to [`MatZ`] using [`MatZ::from_mat_zq`].
     fn from(matrix: &MatZq) -> Self {
         Self::from_mat_zq(matrix)
+    }
+}
+
+impl From<&MatZSubmatrix<'_>> for MatZ {
+    fn from(value: &MatZSubmatrix) -> Self {
+        let mut out = MatZ::new(value.window.r, value.window.c);
+        unsafe { fmpz_mat_set(&mut out.matrix, &value.window) };
+        out
+    }
+}
+
+impl From<MatZSubmatrix<'_>> for MatZ {
+    fn from(value: MatZSubmatrix) -> Self {
+        (&value).into()
     }
 }
 

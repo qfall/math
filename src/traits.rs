@@ -10,7 +10,7 @@
 //! specific traits for matrices and polynomials.
 
 use crate::error::MathError;
-use flint_sys::fmpz::fmpz;
+use flint_sys::{fmpz::fmpz, fmpz_mat::fmpz_mat_struct};
 use std::fmt::Display;
 
 /// Is implemented by polynomials to evaluate it for a certain input.
@@ -237,6 +237,22 @@ pub(crate) unsafe trait AsInteger {
     fn get_fmpz_ref(&self) -> Option<&fmpz> {
         None
     }
+}
+
+/// This is a trait to abstract matrices over integers.
+///
+/// It is implemented by [`MatZ`](crate::integer::MatZ), [`MatZSubmatrix`](crate::integer::MatZSubmatrix),
+/// The implementations exist for their owned and borrowed variants.
+///
+/// # Safety
+/// Handling [`fmpz_mat_struct`] directly requires thinking about memory issues.
+/// Read the documentation of the functions carefully before you use them.
+pub(crate) unsafe trait AsMatZ {
+    /// Returns a reference to an internal [`fmpz_mat_struct`] that represents the matrix.
+    ///
+    /// It is intended to be used when a read only [`fmpz_mat_struct`] reference is
+    /// required for a Flint function call.
+    fn get_fmpz_mat_struct_ref(&self) -> &fmpz_mat_struct;
 }
 
 pub trait IntoCoefficientEmbedding<T> {

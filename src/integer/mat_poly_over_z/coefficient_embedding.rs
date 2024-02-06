@@ -103,6 +103,7 @@ impl MatPolyOverZ {
                     0,
                     embedding.get_num_columns() - 1,
                 )
+                .map(|value| value.into())
                 .unwrap();
             row_poly_mat.push(MatPolyOverZ::from_coefficient_embedding(&sub_mat_i));
         }
