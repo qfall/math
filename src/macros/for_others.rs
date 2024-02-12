@@ -148,6 +148,45 @@ macro_rules! implement_for_owned {
 
 pub(crate) use implement_for_owned;
 
+macro_rules! implement_for_submatrix_operation {
+    ($trait_to_implement:ident, $trait_function:ident,  $submatrix:ident, $trait_:ident, $output:ident, $operation:ident, $get_struct:ident) => {
+        impl<T: $trait_> $trait_to_implement<T> for $submatrix<'_> {
+            type Output = $output;
+
+            fn $trait_function(self, other: T) -> Self::Output {
+                unsafe { $operation(self.$get_struct(), other.$get_struct()).unwrap() }
+            }
+        }
+
+        impl<T: $trait_> $trait_to_implement<T> for &$submatrix<'_> {
+            type Output = $output;
+
+            fn $trait_function(self, other: T) -> Self::Output {
+                unsafe { $operation(self.$get_struct(), other.$get_struct()).unwrap() }
+            }
+        }
+    };
+}
+
+pub(crate) use implement_for_submatrix_operation;
+
+macro_rules! implement_for_submatrix {
+    // [`Add`] trait
+    (Add, $submatrix:ident, $trait_:ident, $output:ident, $operation:ident, $get_struct:ident) => {
+        implement_for_submatrix_operation!(
+            Add,
+            add,
+            $submatrix,
+            $trait_,
+            $output,
+            $operation,
+            $get_struct
+        );
+    };
+}
+
+pub(crate) use implement_for_submatrix;
+
 /// Implements a trait with an empty implementation for the specified types
 /// and their references.
 /// This macro be used for empty traits or to use just the

@@ -10,6 +10,7 @@
 
 use super::super::MatZ;
 use crate::integer::mat_z::MatZSubmatrix;
+use crate::macros::for_others::{implement_for_submatrix, implement_for_submatrix_operation};
 use crate::{error::MathError, traits::AsMatZ};
 use flint_sys::fmpz_mat::{fmpz_mat_add, fmpz_mat_struct};
 use std::ops::Add;
@@ -59,27 +60,14 @@ impl<Other: AsMatZ> Add<Other> for MatZ {
     }
 }
 
-impl<Other: AsMatZ> Add<Other> for &MatZSubmatrix<'_> {
-    type Output = MatZ;
-
-    fn add(self, rhs: Other) -> Self::Output {
-        unsafe {
-            add_fmpz_mat_struct(
-                self.get_fmpz_mat_struct_ref(),
-                rhs.get_fmpz_mat_struct_ref(),
-            )
-            .unwrap()
-        }
-    }
-}
-
-impl<Other: AsMatZ> Add<Other> for MatZSubmatrix<'_> {
-    type Output = MatZ;
-
-    fn add(self, rhs: Other) -> Self::Output {
-        (&self).add(rhs)
-    }
-}
+implement_for_submatrix!(
+    Add,
+    MatZSubmatrix,
+    AsMatZ,
+    MatZ,
+    add_fmpz_mat_struct,
+    get_fmpz_mat_struct_ref
+);
 
 impl MatZ {
     /// Implements addition for two [`MatZ`] matrices.

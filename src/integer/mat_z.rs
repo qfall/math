@@ -91,6 +91,9 @@ pub struct MatZ {
     pub(crate) matrix: fmpz_mat_struct,
 }
 
+/// Can be used the same way as [`MatZ`] and is created when a submatrix is generated
+/// from a [`MatZ`].
+#[derive(Debug)]
 pub struct MatZSubmatrix<'a> {
     pub matrix: &'a MatZ,
     pub(crate) window: fmpz_mat_struct,
