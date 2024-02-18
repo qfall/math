@@ -15,5 +15,4 @@ pub mod integer;
 pub mod sampling;
 pub mod solve;
 
-// criterion_main! {integer::benches, classic_crypto::benches, sampling::benches, solve::benches}
-criterion_main! {solve::benches}
+criterion_main! {integer::benches, classic_crypto::benches, sampling::benches, solve::benches}
