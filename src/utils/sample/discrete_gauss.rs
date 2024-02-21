@@ -227,7 +227,7 @@ pub(crate) fn sample_d_precomputed_gso(
         ));
     }
     if !center.is_column_vector() {
-        return Err(StringConversionError::InvalidMatrix(format!(
+        Err(StringConversionError::InvalidMatrix(format!(
             "sample_d expects center to be a column vector, but it has dimensions {}x{}.",
             center.get_num_rows(),
             center.get_num_columns()

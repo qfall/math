@@ -40,7 +40,7 @@ pub(crate) fn find_matrix_dimensions<T>(matrix: &Vec<Vec<T>>) -> Result<(i64, i6
         if num_cols == 0 {
             num_cols = row.len();
         } else if num_cols != row.len() {
-            return Err(StringConversionError::InvalidMatrix(
+            Err(StringConversionError::InvalidMatrix(
                 "Number of entries in rows is unequal.".to_owned(),
             ))?;
         }
