@@ -91,3 +91,11 @@ pub struct MatZq {
     // attribute and `modulus` attribute, if they are both initalized from the same value.
     modulus: Modulus,
 }
+
+/// Can be used the same way as [`MatZq`] and is created when a submatrix is generated
+/// from a [`MatZq`].
+#[derive(Debug)]
+pub struct MatZqSubmatrix<'a> {
+    pub matrix: &'a MatZq,
+    pub(crate) window: fmpz_mod_mat_struct,
+}

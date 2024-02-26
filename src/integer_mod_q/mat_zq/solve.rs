@@ -117,15 +117,16 @@ impl MatZq {
     /// - `column_nr`: The column where the entry is located
     /// - `inverse`: The inverse of the entry located at (row_nr, column_nr)
     fn gauss_row_reduction(&mut self, row_nr: i64, column_nr: i64, inverse: Zq) {
-        let row = inverse * self.get_row(row_nr).unwrap();
+        let row = &self.get_row(row_nr).unwrap() * &inverse;
         self.set_row(row_nr, &row, 0).unwrap();
 
         // Set all other entries in that column to `0` (gaussian elimination).
         for row_nr in (0..self.get_num_rows()).filter(|x| *x != row_nr) {
-            let old_row = self.get_row(row_nr).unwrap();
-            let entry: Z = old_row.get_entry(0, column_nr).unwrap();
+            let entry: Z = self.get_entry(row_nr, column_nr).unwrap();
             if !entry.is_zero() {
-                let new_row = &old_row - entry * &row;
+                let old_row = self.get_row_mut(row_nr).unwrap();
+                let new_row = &old_row - &(&entry * &row);
+                drop(old_row);
                 self.set_row(row_nr, &new_row, 0).unwrap();
             }
         }

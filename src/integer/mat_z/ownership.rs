@@ -11,10 +11,9 @@
 //!
 //! The explicit functions contain the documentation.
 
-use crate::traits::{GetNumColumns, GetNumRows};
-
 use super::{MatZ, MatZSubmatrix};
-use flint_sys::fmpz_mat::{fmpz_mat_clear, fmpz_mat_set, fmpz_mat_window_clear};
+use crate::traits::AsMatZ;
+use flint_sys::fmpz_mat::{fmpz_mat_clear, fmpz_mat_set, fmpz_mat_struct, fmpz_mat_window_clear};
 
 impl Clone for MatZ {
     /// Clones the given element and returns a deep clone of the [`MatZ`] element.
@@ -29,12 +28,16 @@ impl Clone for MatZ {
     /// let b = a.clone();
     /// ```
     fn clone(&self) -> Self {
-        let mut mat = MatZ::new(self.get_num_rows(), self.get_num_columns());
-        unsafe {
-            fmpz_mat_set(&mut mat.matrix, &self.matrix);
-        }
-        mat
+        unsafe { clone_fmpz_mat_struct(self.get_fmpz_mat_struct_ref()) }
     }
+}
+
+unsafe fn clone_fmpz_mat_struct(matrix: &fmpz_mat_struct) -> MatZ {
+    let mut mat = MatZ::new(matrix.r, matrix.c);
+    unsafe {
+        fmpz_mat_set(&mut mat.matrix, matrix);
+    }
+    mat
 }
 
 impl Drop for MatZ {

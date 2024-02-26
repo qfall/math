@@ -11,10 +11,12 @@
 //!
 //! The explicit functions contain the documentation.
 
-use super::MatZq;
+use super::{MatZq, MatZqSubmatrix};
 use crate::integer::Z;
 use crate::traits::{GetNumColumns, GetNumRows};
-use flint_sys::fmpz_mod_mat::{fmpz_mod_mat_clear, fmpz_mod_mat_init_set};
+use flint_sys::fmpz_mod_mat::{
+    fmpz_mod_mat_clear, fmpz_mod_mat_init_set, fmpz_mod_mat_window_clear,
+};
 
 impl Clone for MatZq {
     /// Clones the given element and returns a deep clone of the [`MatZq`] element.
@@ -65,6 +67,12 @@ impl Drop for MatZq {
     /// ```
     fn drop(&mut self) {
         unsafe { fmpz_mod_mat_clear(&mut self.matrix) }
+    }
+}
+
+impl Drop for MatZqSubmatrix<'_> {
+    fn drop(&mut self) {
+        unsafe { fmpz_mod_mat_window_clear(&mut self.window) }
     }
 }
 

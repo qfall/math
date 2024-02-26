@@ -8,7 +8,7 @@
 
 //! Implementations to get information about a [`MatZq`] matrix.
 
-use super::MatZq;
+use super::{MatZq, MatZqSubmatrix};
 use crate::{
     error::MathError,
     integer::{MatZ, Z},
@@ -18,10 +18,7 @@ use crate::{
 };
 use flint_sys::{
     fmpz::{fmpz, fmpz_set},
-    fmpz_mod_mat::{
-        fmpz_mod_mat_entry, fmpz_mod_mat_init_set, fmpz_mod_mat_window_clear,
-        fmpz_mod_mat_window_init,
-    },
+    fmpz_mod_mat::{fmpz_mod_mat_entry, fmpz_mod_mat_struct, fmpz_mod_mat_window_init},
 };
 use std::{fmt::Display, mem::MaybeUninit};
 
@@ -56,6 +53,13 @@ impl GetNumRows for MatZq {
     }
 }
 
+impl GetNumRows for MatZqSubmatrix<'_> {
+    /// Returns the number of rows of the matrix as a [`i64`].
+    fn get_num_rows(&self) -> i64 {
+        self.window.mat[0].r
+    }
+}
+
 impl GetNumColumns for MatZq {
     /// Returns the number of columns of the matrix as a [`i64`].
     ///
@@ -69,6 +73,13 @@ impl GetNumColumns for MatZq {
     /// ```
     fn get_num_columns(&self) -> i64 {
         self.matrix.mat[0].c
+    }
+}
+
+impl GetNumColumns for MatZqSubmatrix<'_> {
+    /// Returns the number of columns of the matrix as a [`i64`].
+    fn get_num_columns(&self) -> i64 {
+        self.window.mat[0].c
     }
 }
 
@@ -110,11 +121,61 @@ impl GetEntry<Z> for MatZq {
     ) -> Result<Z, MathError> {
         let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
 
-        let mut out = Z::default();
-        let entry = unsafe { fmpz_mod_mat_entry(&self.matrix, row_i64, column_i64) };
-        unsafe { fmpz_set(&mut out.value, entry) };
-        Ok(out)
+        get_entry_fmpz_mod_mat_struct(&self.matrix, row_i64, column_i64)
     }
+}
+
+impl GetEntry<Z> for MatZqSubmatrix<'_> {
+    /// Outputs the [`Z`] value of a specific matrix entry.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row in which the entry is located
+    /// - `column`: specifies the column in which the entry is located
+    ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
+    /// Returns the [`Z`] value of the matrix at the position of the given
+    /// row and column or an error, if the number of rows or columns is
+    /// greater than the matrix or greater than the matrix.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::traits::GetEntry;
+    /// use qfall_math::integer::Z;
+    /// use std::str::FromStr;
+    ///
+    /// let matrix = MatZq::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]] mod 10").unwrap();
+    ///
+    /// assert_eq!(Z::from(3), matrix.get_entry(0, 2).unwrap());
+    /// assert_eq!(Z::from(8), matrix.get_entry(2, 1).unwrap());
+    /// assert_eq!(Z::from(8), matrix.get_entry(-1, -2).unwrap());
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
+    /// if `row` or `column` are greater than the matrix size.
+    fn get_entry(
+        &self,
+        row: impl TryInto<i64> + Display,
+        column: impl TryInto<i64> + Display,
+    ) -> Result<Z, MathError> {
+        let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
+
+        get_entry_fmpz_mod_mat_struct(&self.window, row_i64, column_i64)
+    }
+}
+
+pub fn get_entry_fmpz_mod_mat_struct(
+    matrix: &fmpz_mod_mat_struct,
+    row: i64,
+    column: i64,
+) -> Result<Z, MathError> {
+    let mut out = Z::default();
+    let entry = unsafe { fmpz_mod_mat_entry(matrix, row, column) };
+    unsafe { fmpz_set(&mut out.value, entry) };
+    Ok(out)
 }
 
 impl GetEntry<Zq> for MatZq {
@@ -182,7 +243,23 @@ impl MatZq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the number of the row is greater than the matrix or negative.
-    pub fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError> {
+    pub fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<MatZqSubmatrix, MathError> {
+        let row_i64 = evaluate_index(row)?;
+
+        if self.get_num_rows() <= row_i64 {
+            return Err(MathError::OutOfBounds(
+                format!("be smaller than {}", self.get_num_rows()),
+                format!("{row_i64}"),
+            ));
+        }
+
+        self.get_submatrix(row_i64, row_i64, 0, self.get_num_columns() - 1)
+    }
+
+    pub fn get_row_mut(
+        &mut self,
+        row: impl TryInto<i64> + Display,
+    ) -> Result<MatZqSubmatrix, MathError> {
         let row_i64 = evaluate_index(row)?;
 
         if self.get_num_rows() <= row_i64 {
@@ -219,7 +296,10 @@ impl MatZq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     /// if the number of the column is greater than the matrix or negative.
-    pub fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError> {
+    pub fn get_column(
+        &self,
+        column: impl TryInto<i64> + Display,
+    ) -> Result<MatZqSubmatrix, MathError> {
         let column_i64 = evaluate_index(column)?;
 
         if self.get_num_columns() <= column_i64 {
@@ -276,7 +356,7 @@ impl MatZq {
         row_2: impl TryInto<i64> + Display,
         col_1: impl TryInto<i64> + Display,
         col_2: impl TryInto<i64> + Display,
-    ) -> Result<Self, MathError> {
+    ) -> Result<MatZqSubmatrix, MathError> {
         let (row_1, col_1) = evaluate_indices_for_matrix(self, row_1, col_1)?;
         let (row_2, col_2) = evaluate_indices_for_matrix(self, row_2, col_2)?;
         assert!(
@@ -304,18 +384,12 @@ impl MatZq {
                 col_2,
             )
         };
-        let mut window_copy = MaybeUninit::uninit();
-        unsafe {
-            // Deep clone of the content of the window
-            fmpz_mod_mat_init_set(window_copy.as_mut_ptr(), window.as_ptr());
-            // Clears the matrix window and releases any memory that it uses. Note that
-            // the memory to the underlying matrix that window points to is not freed
-            fmpz_mod_mat_window_clear(window.as_mut_ptr());
-        }
-        Ok(MatZq {
-            matrix: unsafe { window_copy.assume_init() },
-            modulus: self.get_mod(),
-        })
+        let submatrix = MatZqSubmatrix {
+            matrix: self,
+            window: unsafe { window.assume_init() },
+        };
+
+        Ok(submatrix)
     }
 
     /// Efficiently collects all [`fmpz`]s in a [`MatZq`] without cloning them.

@@ -11,6 +11,7 @@
 use super::super::MatZq;
 use crate::error::MathError;
 use crate::integer::Z;
+use crate::integer_mod_q::mat_zq::MatZqSubmatrix;
 use crate::integer_mod_q::Zq;
 use crate::macros::arithmetics::{
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
@@ -20,6 +21,22 @@ use crate::macros::for_others::implement_for_others;
 use crate::traits::{GetNumColumns, GetNumRows};
 use flint_sys::fmpz_mod_mat::fmpz_mod_mat_scalar_mul_fmpz;
 use std::ops::Mul;
+
+impl Mul<&Zq> for &MatZqSubmatrix<'_> {
+    type Output = MatZq;
+
+    fn mul(self, scalar: &Zq) -> Self::Output {
+        let mut out = MatZq::new(
+            self.get_num_rows(),
+            self.get_num_columns(),
+            self.matrix.get_mod(),
+        );
+        unsafe {
+            fmpz_mod_mat_scalar_mul_fmpz(&mut out.matrix, &self.window, &scalar.value.value);
+        }
+        out
+    }
+}
 
 impl Mul<&Z> for &MatZq {
     type Output = MatZq;

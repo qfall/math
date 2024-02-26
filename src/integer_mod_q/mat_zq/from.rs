@@ -13,7 +13,7 @@
 //!
 //! The explicit functions contain the documentation.
 
-use super::MatZq;
+use super::{MatZq, MatZqSubmatrix};
 use crate::{
     error::{MathError, StringConversionError},
     integer::{MatZ, Z},
@@ -133,6 +133,12 @@ impl<Mod: Into<Modulus>> From<(&MatZ, Mod)> for MatZq {
     /// Convert [`MatZ`] and [`Modulus`] to [`MatZq`] using [`MatZq::from_mat_z_modulus`].
     fn from((matrix, modulus): (&MatZ, Mod)) -> Self {
         MatZq::from_mat_z_modulus(matrix, modulus)
+    }
+}
+
+impl From<&MatZqSubmatrix<'_>> for MatZq {
+    fn from(value: &MatZqSubmatrix<'_>) -> Self {
+        todo!()
     }
 }
 

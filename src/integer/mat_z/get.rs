@@ -12,12 +12,12 @@ use super::{MatZ, MatZSubmatrix};
 use crate::{
     error::MathError,
     integer::Z,
-    traits::{GetEntry, GetNumColumns, GetNumRows},
+    traits::{AsMatZ, GetEntry, GetNumColumns, GetNumRows},
     utils::index::{evaluate_index, evaluate_indices_for_matrix},
 };
 use flint_sys::{
     fmpz::{fmpz, fmpz_set},
-    fmpz_mat::{fmpz_mat_entry, fmpz_mat_window_init},
+    fmpz_mat::{fmpz_mat_entry, fmpz_mat_struct, fmpz_mat_window_init},
 };
 use std::{fmt::Display, mem::MaybeUninit};
 
@@ -37,6 +37,13 @@ impl GetNumRows for MatZ {
     }
 }
 
+impl GetNumRows for MatZSubmatrix<'_> {
+    /// Returns the number of rows of the matrix as a [`i64`].
+    fn get_num_rows(&self) -> i64 {
+        self.window.r
+    }
+}
+
 impl GetNumColumns for MatZ {
     /// Returns the number of columns of the matrix as a [`i64`].
     ///
@@ -50,6 +57,13 @@ impl GetNumColumns for MatZ {
     /// ```
     fn get_num_columns(&self) -> i64 {
         self.matrix.c
+    }
+}
+
+impl GetNumColumns for MatZSubmatrix<'_> {
+    /// Returns the number of columns of the matrix as a [`i64`].
+    fn get_num_columns(&self) -> i64 {
+        self.window.c
     }
 }
 
@@ -89,17 +103,36 @@ impl GetEntry<Z> for MatZ {
         column: impl TryInto<i64> + Display,
     ) -> Result<Z, MathError> {
         let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
-
-        // since `self.matrix` is a correct fmpz matrix and both row and column
-        // are previously checked to be inside of the matrix, no errors
-        // appear inside of `unsafe` and `fmpz_set` can successfully clone the
-        // entry of the matrix. Therefore no memory leaks can appear.
-        let mut copy = fmpz(0);
-        let entry = unsafe { fmpz_mat_entry(&self.matrix, row_i64, column_i64) };
-        unsafe { fmpz_set(&mut copy, entry) };
-
-        Ok(Z { value: copy })
+        unsafe { get_entry_fmpz_mat_struct(self.get_fmpz_mat_struct_ref(), row_i64, column_i64) }
     }
+}
+
+impl GetEntry<Z> for MatZSubmatrix<'_> {
+    /// Outputs the [`Z`] value of a specific matrix entry.
+    fn get_entry(
+        &self,
+        row: impl TryInto<i64> + Display,
+        column: impl TryInto<i64> + Display,
+    ) -> Result<Z, MathError> {
+        let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
+        unsafe { get_entry_fmpz_mat_struct(self.get_fmpz_mat_struct_ref(), row_i64, column_i64) }
+    }
+}
+
+unsafe fn get_entry_fmpz_mat_struct(
+    matrix: &fmpz_mat_struct,
+    row: i64,
+    column: i64,
+) -> Result<Z, MathError> {
+    // since `self.matrix` is a correct fmpz matrix and both row and column
+    // are previously checked to be inside of the matrix, no errors
+    // appear inside of `unsafe` and `fmpz_set` can successfully clone the
+    // entry of the matrix. Therefore no memory leaks can appear.
+    let mut copy = fmpz(0);
+    let entry = unsafe { fmpz_mat_entry(matrix, row, column) };
+    unsafe { fmpz_set(&mut copy, entry) };
+
+    Ok(Z { value: copy })
 }
 
 impl MatZ {

@@ -8,7 +8,7 @@
 
 //! This module contains implementations for comparison of [`MatZq`].
 
-use super::MatZq;
+use super::{MatZq, MatZqSubmatrix};
 use flint_sys::{fmpz::fmpz_equal, fmpz_mat::fmpz_mat_equal};
 
 impl PartialEq for MatZq {
@@ -43,6 +43,24 @@ impl PartialEq for MatZq {
             fmpz_equal(&self.matrix.mod_[0], &other.matrix.mod_[0]) != 0
                 && fmpz_mat_equal(&self.matrix.mat[0], &other.matrix.mat[0]) != 0
         }
+    }
+}
+
+impl PartialEq<MatZq> for MatZqSubmatrix<'_> {
+    fn eq(&self, other: &MatZq) -> bool {
+        todo!()
+    }
+}
+
+impl PartialEq<MatZqSubmatrix<'_>> for MatZq {
+    fn eq(&self, other: &MatZqSubmatrix) -> bool {
+        todo!()
+    }
+}
+
+impl PartialEq for MatZqSubmatrix<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        todo!()
     }
 }
 

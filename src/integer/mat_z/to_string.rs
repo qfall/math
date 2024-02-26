@@ -11,9 +11,8 @@
 //!
 //! This includes the [`Display`](std::fmt::Display) trait.
 
+use super::{MatZ, MatZSubmatrix};
 use crate::utils::parse::matrix_to_string;
-
-use super::MatZ;
 use core::fmt;
 
 impl fmt::Display for MatZ {
@@ -40,6 +39,13 @@ impl fmt::Display for MatZ {
     /// let matrix = MatZ::from_str("[[1, 2, 3],[4, 5, 6]]").unwrap();
     /// let matrix_string = matrix.to_string();
     /// ```
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", matrix_to_string(self))
+    }
+}
+
+impl fmt::Display for MatZSubmatrix<'_> {
+    /// Allows to return a matrix of type [`MatZSubmatrix`] into a [`String`].
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", matrix_to_string(self))
     }
