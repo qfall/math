@@ -107,7 +107,7 @@ pub enum MathError {
     /// Converts a [`NulError`], which currently only happens if an
     /// invalid string is given to construct a [`CString`](std::ffi::CString).
     #[error(
-        "A nul error occurred, which usually happends if an invalid \
+        "A nul error occurred, which usually happens if an invalid \
         string input is parsed to a CString {0}"
     )]
     NulError(#[from] NulError),
