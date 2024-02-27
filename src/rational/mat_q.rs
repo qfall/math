@@ -27,6 +27,7 @@ mod inverse;
 mod ownership;
 mod properties;
 mod rounding;
+mod sample;
 mod serialize;
 mod set;
 mod sort;
