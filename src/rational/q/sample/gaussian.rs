@@ -32,6 +32,10 @@ impl Q {
     ///
     /// let sample = Q::sample_gauss(0, 1).unwrap();
     /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`NonPositive`](MathError::NonPositive)
+    /// if `sigma <= 0`.
     pub fn sample_gauss(center: impl Into<f64>, sigma: impl Into<f64>) -> Result<Q, MathError> {
         let sigma = sigma.into();
         if sigma <= 0.0 {
@@ -50,7 +54,7 @@ impl Q {
 }
 
 #[cfg(test)]
-mod test {
+mod test_sample_gauss {
     use crate::rational::Q;
 
     /// Test correct distribution with a confidence level of 99.7% -> 3 standard
