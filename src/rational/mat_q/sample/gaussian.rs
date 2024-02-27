@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! This module contains sampling algorithms for gaussian distributions over [`Q`].
+//! This module contains sampling algorithms for gaussian distributions over [`MatQ`].
 
 use crate::{
     error::MathError,
@@ -25,7 +25,7 @@ impl MatQ {
     /// - `center`: specifies the position of the center
     /// - `sigma`: specifies the standard deviation
     ///
-    /// Returns new [`Q`] sample chosen according to the specified continuous Gaussian
+    /// Returns new [`MatQ`] sample chosen according to the specified continuous Gaussian
     /// distribution or a [`MathError`] if the specified parameters were not chosen
     /// appropriately, `sigma > 0`.
     ///
