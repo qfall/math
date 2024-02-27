@@ -24,6 +24,7 @@ mod get;
 mod ownership;
 mod properties;
 mod rounding;
+mod sample;
 mod serialize;
 mod to_string;
 

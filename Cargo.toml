@@ -20,6 +20,7 @@ string-builder = "0.2.0"
 thiserror = "1.0"
 lazy_static = "1.4"
 derive_more = "0.99.17"
+probability = "0.20.3"
 
 [profile.bench]
 debug = true
