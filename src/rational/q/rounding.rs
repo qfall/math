@@ -9,7 +9,7 @@
 //! This module includes functionality for rounding instances of [`Q`].
 
 use super::Q;
-use crate::{integer::Z, traits::Distance};
+use crate::{error::MathError, integer::Z, traits::Distance};
 use flint_sys::{
     fmpq::fmpq_simplest_between,
     fmpz::{fmpz_cdiv_q, fmpz_fdiv_q},
@@ -119,6 +119,36 @@ impl Q {
         let mut out = Q::default();
         unsafe { fmpq_simplest_between(&mut out.value, &lower.value, &upper.value) };
         out
+    }
+
+    /// Performs the randomized rounding algorithm
+    /// by sampling from a discrete Gaussian over the integers shifted
+    /// by `self` with gaussian parameter `r`.
+    ///
+    /// Parameters:
+    /// - `n`: the security parameter; also specifies the range from which is sampled
+    /// - `r`: specifies the Gaussian parameter, which is proportional
+    /// to the standard deviation `sigma * sqrt(2 * pi) = s`
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::Q;
+    ///
+    /// let value = Q::from((5, 2));
+    /// let rounded = value.randomized_rounding(3,5).unwrap();
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
+    /// if the `n <= 1` or `s <= 0`.
+    ///
+    /// This function implements randomized rounding according to:
+    /// - Peikert, C. (2010, August).
+    /// An efficient and parallel Gaussian sampler for lattices.
+    /// In: Annual Cryptology Conference (pp. 80-97).
+    /// <https://link.springer.com/chapter/10.1007/978-3-642-14623-7_5>
+    pub fn randomized_rounding(&self, r: impl Into<Q>, n: impl Into<Z>) -> Result<Z, MathError> {
+        Z::sample_discrete_gauss(n, self, r)
     }
 }
 
@@ -242,5 +272,26 @@ mod test_simplify {
         assert_eq!(Q::ONE, Q::ONE.simplify(&precision));
         assert_eq!(Q::MINUS_ONE, Q::MINUS_ONE.simplify(&precision));
         assert_eq!(Q::ZERO, Q::ZERO.simplify(&precision));
+    }
+}
+
+#[cfg(test)]
+mod test_randomized_rounding {
+    use crate::rational::Q;
+
+    /// Ensure that a `n <= 1` throws an error
+    #[test]
+    fn small_n() {
+        let value = Q::from((2, 3));
+        assert!(value.randomized_rounding(3, 1).is_err());
+        assert!(value.randomized_rounding(3, -3).is_err());
+    }
+
+    /// Ensure that a `s <= 0` throws an error
+    #[test]
+    fn negative_r() {
+        let value = Q::from((2, 3));
+        assert!(value.randomized_rounding(0, 5).is_err());
+        assert!(value.randomized_rounding(-1, 5).is_err());
     }
 }
