@@ -16,6 +16,7 @@
 use flint_sys::fmpq_mat::fmpq_mat_struct;
 
 mod arithmetic;
+mod cholesky_decomp;
 mod cmp;
 mod concat;
 mod default;
