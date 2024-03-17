@@ -1,4 +1,4 @@
-// Copyright © 2023 Phil Milewski
+// Copyright © 2023 Phil Milewski, Marvin Beckmann
 //
 // This file is part of qFALL-math.
 //
@@ -66,6 +66,21 @@ impl MatQ {
     /// ```
     pub fn is_zero(&self) -> bool {
         1 == unsafe { fmpq_mat_is_zero(&self.matrix) }
+    }
+
+    /// Checks if a [`MatQ`] is symmetric.
+    ///
+    /// Returns true if we have `a_ij == a_ji` for all i,j.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::MatQ;
+    ///
+    /// let value = MatQ::identity(2,2);
+    /// assert!(value.is_symmetric());
+    /// ```
+    pub fn is_symmetric(&self) -> bool {
+        self == &self.transpose()
     }
 }
 
@@ -140,5 +155,36 @@ mod test_is_square {
 
         assert!(!mat_2x3.is_square());
         assert!(!mat_3x2.is_square());
+    }
+}
+
+#[cfg(test)]
+mod test_is_symmetric {
+    use super::MatQ;
+    use std::str::FromStr;
+
+    /// Ensure that is_symmetric returns `false` for non-symmetric matrices.
+    #[test]
+    fn symmetric_rejection() {
+        let mat_2x3 = MatQ::from_str("[[0, 5/6, 4],[2/7, 0, 1]]").unwrap();
+        let mat_2x2 = MatQ::from_str("[[9, 0],[127/71, 0]]").unwrap();
+
+        assert!(!mat_2x3.is_symmetric());
+        assert!(!mat_2x2.is_symmetric());
+    }
+
+    /// Ensure that is_symmetric returns `true` for symmetric matrices.
+    #[test]
+    fn symmetric_detection() {
+        let mat_2x2 = MatQ::from_str(&format!(
+            "[[{}, 1/{}],[1/{}, {}]]",
+            u64::MIN,
+            u64::MAX,
+            u64::MAX,
+            i64::MAX
+        ))
+        .unwrap();
+
+        assert!(mat_2x2.is_symmetric());
     }
 }
