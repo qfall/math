@@ -128,4 +128,24 @@ mod tes_cholesky_decomposition {
 
         matrix.cholesky_decomposition();
     }
+
+    /// Ensure that the function works with large entries
+    #[test]
+    fn large_entries() {
+        // matrix = [[1,-2^32],[-2^{32},2^64+1]] -> L = [[1,0],[-2^32,1]]
+        let matrix: MatQ = MatQ::from_str(&format!(
+            "[[{},-{}],[-{},{}]]",
+            -1,
+            2_i64.pow(32),
+            2_i64.pow(32),
+            u64::MAX
+        ))
+        .unwrap()
+            + 2 * MatQ::identity(2, 2);
+
+        assert_eq!(
+            matrix,
+            (matrix.cholesky_decomposition() * matrix.cholesky_decomposition().transpose())
+        );
+    }
 }
