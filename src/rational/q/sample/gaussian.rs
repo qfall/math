@@ -36,7 +36,8 @@ impl Q {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`NonPositive`](MathError::NonPositive)
     /// if `sigma <= 0`.
-    pub fn sample_gauss(center: impl Into<f64>, sigma: impl Into<f64>) -> Result<Q, MathError> {
+    pub fn sample_gauss(center: impl Into<Q>, sigma: impl Into<f64>) -> Result<Q, MathError> {
+        let center = center.into();
         let sigma = sigma.into();
         if sigma <= 0.0 {
             return Err(MathError::NonPositive(format!(
@@ -46,10 +47,12 @@ impl Q {
         let mut rng = rand::thread_rng();
         let mut source = source::default(rng.next_u64());
 
-        let sampler = Gaussian::new(center.into(), sigma);
-        let sample = sampler.sample(&mut source);
+        // instead of sampling with a center of c, we with center 0 and add the
+        // center later these are equivalent and this way we can sample in larger ranges
+        let sampler = Gaussian::new(0.0, sigma);
+        let sample = center + Q::from(sampler.sample(&mut source));
 
-        Ok(Q::from(sample))
+        Ok(sample)
     }
 }
 
@@ -62,8 +65,10 @@ mod test_sample_gauss {
     #[test]
     fn in_concentration_bound() {
         let range = 3;
-        for (mu, sigma) in [(0, 1), (10, 20), (-15, 100)] {
-            assert!(Q::from(range * sigma) >= Q::sample_gauss(mu, sigma).unwrap().abs())
+        for (mu, sigma) in [(i64::MAX, 1), (0, 20), (i64::MIN, 100)] {
+            assert!(
+                Q::from(range * sigma) >= (Q::from(mu) - Q::sample_gauss(mu, sigma).unwrap()).abs()
+            )
         }
     }
 
