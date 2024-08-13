@@ -27,7 +27,7 @@ impl MatPolyOverZ {
     /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
     /// - `center`: specifies the positions of the center with peak probability
     /// - `s`: specifies the Gaussian parameter, which is proportional
-    /// to the standard deviation `sigma * sqrt(2 * pi) = s`
+    ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a vector of polynomials sampled according to the
     /// discrete Gaussian distribution.
@@ -49,15 +49,15 @@ impl MatPolyOverZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`VectorFunctionCalledOnNonVector`](MathError::VectorFunctionCalledOnNonVector), if the basis is not a row vector
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    /// if the `n <= 1` or `s <= 0`.
+    ///     if the `n <= 1` or `s <= 0`.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    /// if the number of rows of the `basis` and `center` differ.
+    ///     if the number of rows of the `basis` and `center` differ.
     ///
     /// This function implements SampleD according to:
     /// - \[1\] Gentry, Craig and Peikert, Chris and Vaikuntanathan, Vinod (2008).
-    /// Trapdoors for hard lattices and new cryptographic constructions.
-    /// In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
-    /// <https://dl.acm.org/doi/pdf/10.1145/1374376.1374407>
+    ///     Trapdoors for hard lattices and new cryptographic constructions.
+    ///     In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
+    ///     <https://dl.acm.org/doi/pdf/10.1145/1374376.1374407>
     ///
     /// # Panics ...
     /// - if the polynomials have higher length than the provided upper bound `k`

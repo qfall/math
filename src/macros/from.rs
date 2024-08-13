@@ -17,8 +17,9 @@
 ///   (e.g. [`Z`](crate::integer::Z), [`MatZ`](crate::integer::MatZ)).
 /// - `function`: The function that needs to be called for the conversion
 ///   (e.g. [`Z::from_i64()`])
-/// Returns the Implementation code for the [`From`] Trait with the signature:
-/// ```impl From<*source_type*> for *destination_type*```
+///
+///  Returns the Implementation code for the [`From`] Trait with the signature:
+///     ```impl From<*source_type*> for *destination_type*```
 macro_rules! from_trait {
     ($source_type:ident, $destination_type:ident, $( $function:ident )::*) => {
         impl From<$source_type> for $destination_type {
@@ -55,6 +56,7 @@ pub(crate) use from_trait;
 ///   (e.g. [`Z`](crate::integer::Z), [`MatZ`](crate::integer::MatZ)).
 /// - `function`: The function that needs to be called for the conversion
 ///   (e.g. [`Z::from_i64()`]).
+///
 /// Returns the Implementation code for the function `from_<source_type>`.
 ///
 /// # Examples

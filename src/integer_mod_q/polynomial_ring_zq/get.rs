@@ -53,7 +53,7 @@ impl GetCoefficient<Z> for PolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    /// either the index is negative or it does not fit into an [`i64`].
+    ///     either the index is negative or it does not fit into an [`i64`].
     fn get_coeff(&self, index: impl TryInto<i64> + Display) -> Result<Z, MathError> {
         let index = evaluate_index(index)?;
         let mut out = Z::default();

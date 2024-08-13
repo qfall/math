@@ -31,7 +31,7 @@ mod vector;
 /// Attributes:
 /// - `matrix`: holds the [`MatPolyOverZ`](crate::integer::MatPolyOverZ) matrix
 /// - `modulus` : holds the [`ModulusPolynomialRingZq`](crate::integer_mod_q::ModulusPolynomialRingZq)
-/// modulus of the matrix
+///     modulus of the matrix
 ///
 /// # Examples
 /// ## Matrix usage

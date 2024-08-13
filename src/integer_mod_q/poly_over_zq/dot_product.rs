@@ -36,7 +36,7 @@ impl PolyOverZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [`MathError::MismatchingModulus`] if the moduli mismatch.
+    ///     [`MathError::MismatchingModulus`] if the moduli mismatch.
     pub fn dot_product(&self, other: &Self) -> Result<Zq, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(

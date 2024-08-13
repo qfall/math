@@ -65,14 +65,14 @@ impl FromStr for MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::StringConversionError`],
-    /// if the entries are not formatted correctly,
-    /// if the matrix is not formatted in a suitable way, or
-    /// if the number of entries in rows is unequal.
-    /// For further details see [`PolyOverZ::from_str`].
+    ///     - if the entries are not formatted correctly,
+    ///     - if the matrix is not formatted in a suitable way, or
+    ///     - if the number of entries in rows is unequal.
+    ///       For further details see [`PolyOverZ::from_str`].
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    /// For further information see [`MatPolyOverZ::new`].
+    ///     For further information see [`MatPolyOverZ::new`].
     fn from_str(string: &str) -> Result<Self, MathError> {
         let string_matrix = parse_matrix_string(string)?;
         let (num_rows, num_cols) = find_matrix_dimensions(&string_matrix)?;

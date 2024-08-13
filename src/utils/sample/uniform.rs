@@ -16,7 +16,7 @@ use rand::RngCore;
 ///
 /// Parameters:
 /// - `interval_size`: specifies the size of the interval
-/// over which the samples are drawn
+///     over which the samples are drawn
 ///
 /// Returns a uniform at random chosen [`Z`] instance in `[0, interval_size)`.
 ///
@@ -34,7 +34,7 @@ use rand::RngCore;
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-/// if the interval is chosen smaller than or equal to `1`.
+///     if the interval is chosen smaller than or equal to `1`.
 pub(crate) fn sample_uniform_rejection(interval_size: &Z) -> Result<Z, MathError> {
     if interval_size <= &Z::ONE {
         return Err(MathError::InvalidInterval(format!(

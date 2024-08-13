@@ -37,9 +37,9 @@ impl MatPolyOverZ {
     ///
     /// Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
-    /// the given [`MatPolyOverZ`] instance is not a (row or column) vector.
+    ///     the given [`MatPolyOverZ`] instance is not a (row or column) vector.
     /// - Returns a [`MathError`] of type [`MathError::MismatchingMatrixDimension`] if
-    /// the given vectors have different lengths.
+    ///     the given vectors have different lengths.
     pub fn dot_product(&self, other: &Self) -> Result<PolyOverZ, MathError> {
         if !self.is_vector() {
             return Err(MathError::VectorFunctionCalledOnNonVector(

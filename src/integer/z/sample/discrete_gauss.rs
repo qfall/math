@@ -21,7 +21,7 @@ impl Z {
     /// - `n`: specifies the range from which is sampled
     /// - `center`: specifies the position of the center with peak probability
     /// - `s`: specifies the Gaussian parameter, which is proportional
-    /// to the standard deviation `sigma * sqrt(2 * pi) = s`
+    ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns new [`Z`] sample chosen according to the specified discrete Gaussian
     /// distribution or a [`MathError`] if the specified parameters were not chosen
@@ -36,13 +36,13 @@ impl Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    /// if the `n <= 1` or `s <= 0`.
+    ///     if the `n <= 1` or `s <= 0`.
     ///
     /// This function implements SampleZ according to:
     /// - \[1\] Gentry, Craig and Peikert, Chris and Vaikuntanathan, Vinod (2008).
-    /// Trapdoors for hard lattices and new cryptographic constructions.
-    /// In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
-    /// <https://dl.acm.org/doi/pdf/10.1145/1374376.1374407>
+    ///     Trapdoors for hard lattices and new cryptographic constructions.
+    ///     In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
+    ///     <https://dl.acm.org/doi/pdf/10.1145/1374376.1374407>
     pub fn sample_discrete_gauss(
         n: impl Into<Z>,
         center: impl Into<Q>,
