@@ -85,7 +85,7 @@ mod vector;
 /// assert!(col_vec.is_column_vector());
 /// ```
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Display, Clone)]
-#[display(fmt = "{matrix} / {modulus}")]
+#[display("{matrix} / {modulus}")]
 pub struct MatPolynomialRingZq {
     pub(crate) matrix: MatPolyOverZ,
     pub(crate) modulus: ModulusPolynomialRingZq,
