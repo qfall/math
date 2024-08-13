@@ -20,7 +20,7 @@
 /// Implements a specified trait using implicit conversions to a bridge type.
 ///
 /// - ['Mul'](std::ops::Mul) with signature
-/// `($bridge_type, $type, Mul Scalar for $source_type)`
+///     `($bridge_type, $type, Mul Scalar for $source_type)`
 ///
 /// # Examples
 /// ```compile_fail
@@ -81,11 +81,11 @@ pub(crate) use implement_for_others;
 /// Several traits are already supported:
 ///
 /// - [`Evaluate`](crate::traits::Evaluate) with the signature
-/// `($bridge_type, $output_type, $type, Evaluate)`
+///     `($bridge_type, $output_type, $type, Evaluate)`
 /// - [`SetCoefficient`](crate::traits::SetCoefficient) with the signature
-/// `($bridge_type, $type, SetCoefficient)`
+///     `($bridge_type, $type, SetCoefficient)`
 /// - [`SetEntry`](crate::traits::SetEntry) with the signature
-/// `($bridge_type, $type, SetCoefficient)`
+///     `($bridge_type, $type, SetCoefficient)`
 ///
 /// # Examples
 /// ```compile_fail

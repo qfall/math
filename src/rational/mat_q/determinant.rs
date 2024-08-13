@@ -30,7 +30,7 @@ impl MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    /// if the number of rows and columns is not equal.
+    ///     if the number of rows and columns is not equal.
     pub fn det(&self) -> Result<Q, MathError> {
         if self.get_num_rows() != self.get_num_columns() {
             return Err(MathError::MismatchingMatrixDimension(

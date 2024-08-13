@@ -106,11 +106,11 @@ impl Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if the
-    /// base is not between `2` and `62`.
+    ///     base is not between `2` and `62`.
     /// - Returns a [`MathError`] of type
-    /// [`StringConversionError`](MathError::StringConversionError)
-    /// if the provided string contains a Nul byte, or
-    /// if the provided string was not formatted correctly.
+    ///     [`StringConversionError`](MathError::StringConversionError)
+    ///     - if the provided string contains a Nul byte, or
+    ///     - if the provided string was not formatted correctly.
     pub fn from_str_b(s: &str, base: i32) -> Result<Self, MathError> {
         if !(2..=62).contains(&base) {
             return Err(MathError::OutOfBounds(
@@ -142,8 +142,8 @@ impl Z {
     ///
     /// Parameters:
     /// - `bytes`: specifies an iterable of bytes that should be set in the new [`Z`] instance.
-    /// The first byte should be the least significant byte, i.e. its first bit the
-    /// least significant bit.
+    ///     The first byte should be the least significant byte, i.e. its first bit the
+    ///     least significant bit.
     ///
     /// Returns a [`Z`] with the value provided by the byte iterable.
     ///
@@ -175,7 +175,7 @@ impl Z {
     ///
     /// Parameters:
     /// - `bits`: specifies an iterable of bits that should be set in the new [`Z`] instance.
-    /// The first bit should be the least significant bit.
+    ///     The first bit should be the least significant bit.
     ///
     /// Returns a [`Z`] with the value provided by the bit iterable.
     ///
@@ -255,9 +255,9 @@ impl FromStr for Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [`StringConversionError`](MathError::StringConversionError)
-    /// if the provided string contains a Nul byte, or
-    /// if the provided string was not formatted correctly.
+    ///     [`StringConversionError`](MathError::StringConversionError)
+    ///     - if the provided string contains a Nul byte, or
+    ///     - if the provided string was not formatted correctly.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Z::from_str_b(s, 10)
     }
@@ -288,7 +288,7 @@ impl TryFrom<&Z> for i64 {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
-    /// if the value does not fit into an [`i64`]
+    ///     if the value does not fit into an [`i64`]
     fn try_from(value: &Z) -> Result<Self, Self::Error> {
         // fmpz_get_si returns the i64::MAX or respectively i64::MIN
         // if the value is too large/small to fit into an [`i64`].
@@ -330,7 +330,7 @@ impl TryFrom<Z> for i64 {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
-    /// if the value does not fit into an [`i64`]
+    ///     if the value does not fit into an [`i64`]
     fn try_from(value: Z) -> Result<Self, Self::Error> {
         i64::try_from(&value)
     }
@@ -687,7 +687,7 @@ mod test_from_fmpz_ref {
 mod test_try_from_into_i64 {
     use crate::integer::Z;
 
-    //// ensure that an error is returned, if the value of the [`Z`]
+    /// ensure that an error is returned, if the value of the [`Z`]
     /// does not fit into an [`i64`]
     #[test]
     fn overflow() {

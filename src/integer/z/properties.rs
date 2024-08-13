@@ -169,7 +169,7 @@ impl Z {
     ///
     /// Parameters:
     /// - `modulus`: specifies a non-zero integer
-    /// over which the positive remainder is computed
+    ///     over which the positive remainder is computed
     ///
     /// Returns `self` mod `modulus` as a [`Z`] instance.
     ///

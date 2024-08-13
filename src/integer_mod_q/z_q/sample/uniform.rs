@@ -22,7 +22,7 @@ impl Zq {
     ///
     /// Parameters:
     /// - `modulus`: specifies the [`Modulus`](crate::integer_mod_q::Modulus)
-    /// of the new [`Zq`] instance and thus the size of the interval over which is sampled
+    ///     of the new [`Zq`] instance and thus the size of the interval over which is sampled
     ///
     /// Returns a new [`Zq`] instance with a value chosen
     /// uniformly at random in `[0, modulus)` or a [`MathError`]
@@ -37,7 +37,7 @@ impl Zq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    /// if the given modulus is smaller than or equal to `1`.
+    ///     if the given modulus is smaller than or equal to `1`.
     pub fn sample_uniform(modulus: impl Into<Z>) -> Result<Self, MathError> {
         let modulus: Z = modulus.into();
 

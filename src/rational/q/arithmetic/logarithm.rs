@@ -31,8 +31,8 @@ impl Q {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [`NonPositive`](MathError::NonPositive) if `self` is not
-    ///  greater than `0`.
+    ///     [`NonPositive`](MathError::NonPositive) if `self` is not
+    ///     greater than `0`.
     pub fn ln(&self) -> Result<Self, MathError> {
         if self <= &Q::ZERO {
             Err(MathError::NonPositive(self.to_string()))
@@ -67,10 +67,10 @@ impl Q {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    /// if the `base` is not greater than `1`.
+    ///     if the `base` is not greater than `1`.
     /// - Returns a [`MathError`] of type
-    /// [`NonPositive`](MathError::NonPositive) if `self` is not
-    ///  greater than `0`.
+    ///     [`NonPositive`](MathError::NonPositive) if `self` is not
+    ///     greater than `0`.
     pub fn log(&self, base: impl Into<Z>) -> Result<Q, MathError> {
         let base: Z = base.into();
         if base <= Z::ONE {
@@ -164,9 +164,9 @@ mod test_log {
         let z_0 = Q::from(i64::MAX as u64 + 1);
         let z_1 = Q::from(f64::MAX);
         let z_2 = Q::from(i32::MAX);
-        let cmp_0 = Q::try_from((&63, &1)).unwrap();
+        let cmp_0 = Q::from((&63, &1));
         let cmp_1 = Q::from(f64::MAX.log2());
-        let max_distance = Q::try_from((&1, &1_000_000_000)).unwrap();
+        let max_distance = Q::from((&1, &1_000_000_000));
 
         let res_0 = z_0.log(2).unwrap();
         let res_1 = z_1.log(2).unwrap();

@@ -245,7 +245,7 @@ pub trait IntoCoefficientEmbedding<T> {
     ///
     /// Parameters:
     /// - `size`: determines the length of the object in which the coefficients are
-    /// embedded, e.g. length of the vector
+    ///     embedded, e.g. length of the vector
     fn into_coefficient_embedding(self, size: impl Into<i64>) -> T;
 }
 

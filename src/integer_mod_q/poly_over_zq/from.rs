@@ -127,10 +127,10 @@ impl FromStr for PolyOverZq {
     ///
     /// Parameters:
     /// - `s`: the polynomial of form:
-    /// "`[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴...⌴mod⌴[modulus]`".
-    /// Note that the `[#number of coefficients]` and `[0th coefficient]`
-    /// are divided by two spaces and the string for the polynomial is trimmed,
-    /// i.e. all whitespaces before around the polynomial and the modulus are removed.
+    ///     "`[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴...⌴mod⌴[modulus]`".
+    ///     Note that the `[#number of coefficients]` and `[0th coefficient]`
+    ///     are divided by two spaces and the string for the polynomial is trimmed,
+    ///     i.e. all whitespaces before around the polynomial and the modulus are removed.
     ///
     /// Returns a [`PolyOverZq`] or an error, if the provided string was not
     /// formatted correctly.
@@ -144,16 +144,16 @@ impl FromStr for PolyOverZq {
     /// ```
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [`StringConversionError`](MathError::StringConversionError)
-    /// if the provided string was not formatted correctly to create a [`Modulus`],
-    /// if the provided value did not contain two whitespaces,
-    /// if the provided half of the string was not formatted correctly to
-    /// create a polynomial, or
-    /// if the provided half of the
-    /// string was not formatted correctly to create a [`Z`](crate::integer::Z).
+    ///     [`StringConversionError`](MathError::StringConversionError)
+    ///     if the provided string was not formatted correctly to create a [`Modulus`],
+    ///     if the provided value did not contain two whitespaces,
+    ///     if the provided half of the string was not formatted correctly to
+    ///     create a polynomial, or
+    ///     if the provided half of the
+    ///     string was not formatted correctly to create a [`Z`](crate::integer::Z).
     /// - Returns a [`MathError`] of type
-    /// [`InvalidModulus`](MathError::InvalidModulus)
-    /// if the provided modulus is not greater than `1`.
+    ///     [`InvalidModulus`](MathError::InvalidModulus)
+    ///     if the provided modulus is not greater than `1`.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (poly_s, modulus) = match s.split_once("mod") {
             Some((poly_s, modulus)) => (poly_s, modulus.trim()),

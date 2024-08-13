@@ -15,7 +15,7 @@ use crate::error::MathError;
 /// in a matrix, and check if the corresponding vectors in the matrix are of equal length.
 /// This function checks whether:
 /// - The `index_vector_0` and `index_vector_1` are both referencing a row/column within the matrix,
-/// i.e. it is smaller than the number of rows/columns of the respective matrix entered by the upper bound.
+///     i.e. it is smaller than the number of rows/columns of the respective matrix entered by the upper bound.
 /// - The referenced vectors are of equal length because replacing the vector is not properly defined otherwise
 ///
 /// Parameters:
@@ -51,9 +51,9 @@ use crate::error::MathError;
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-/// if the number of rows is greater than the matrix dimensions or negative.
+///     if the number of rows is greater than the matrix dimensions or negative.
 /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-/// if the number of columns of `self` and `other` differ.
+///     if the number of columns of `self` and `other` differ.
 pub(crate) fn evaluate_vec_dimensions_set_row_or_col(
     callee: &str,
     index_vector_0: i64,

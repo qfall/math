@@ -14,11 +14,12 @@
 /// Input parameters:
 /// - `source_type`: the source identifier (e.g. [`i64`],[`u32`], ...).
 /// - `destination_type`: the destination identifier
-///   (e.g. [`Z`](crate::integer::Z), [`MatZ`](crate::integer::MatZ)).
+///     (e.g. [`Z`](crate::integer::Z), [`MatZ`](crate::integer::MatZ)).
 /// - `function`: The function that needs to be called for the conversion
-///   (e.g. [`Z::from_i64()`])
-/// Returns the Implementation code for the [`From`] Trait with the signature:
-/// ```impl From<*source_type*> for *destination_type*```
+///     (e.g. [`Z::from_i64()`])
+///
+///  Returns the Implementation code for the [`From`] Trait with the signature:
+///     ```impl From<*source_type*> for *destination_type*```
 macro_rules! from_trait {
     ($source_type:ident, $destination_type:ident, $( $function:ident )::*) => {
         impl From<$source_type> for $destination_type {
@@ -52,9 +53,10 @@ pub(crate) use from_trait;
 /// - `source_type`: The source identifier (e.g. [`i64`],[`u32`], ...).
 /// - `bridge_type`: Type used for casting before calling the function.
 /// - `destination_type`: Return type of the generated function
-///   (e.g. [`Z`](crate::integer::Z), [`MatZ`](crate::integer::MatZ)).
+///     (e.g. [`Z`](crate::integer::Z), [`MatZ`](crate::integer::MatZ)).
 /// - `function`: The function that needs to be called for the conversion
-///   (e.g. [`Z::from_i64()`]).
+///     (e.g. [`Z::from_i64()`]).
+///
 /// Returns the Implementation code for the function `from_<source_type>`.
 ///
 /// # Examples

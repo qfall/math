@@ -140,6 +140,7 @@ mod test_div_exact {
 
     /// Tests that division is available for other types.
     #[test]
+    #[allow(clippy::needless_borrows_for_generic_args)]
     fn availability() {
         let mat = MatZ::from_str("[[6, 3],[3, 6]]").unwrap();
 

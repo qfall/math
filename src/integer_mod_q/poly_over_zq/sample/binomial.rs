@@ -26,15 +26,15 @@ impl PolyOverZq {
     ///
     /// Parameters:
     /// - `max_degree`: specifies the length of the polynomial,
-    /// i.e. the number of coefficients
+    ///     i.e. the number of coefficients
     /// - `modulus`: specifies the [`Modulus`] of the new [`PolyOverZq`] instance
     /// - `n`: specifies the number of trials
     /// - `p`: specifies the probability of success
     ///
     /// Returns a fresh [`PolyOverZq`] instance with each value sampled
-    /// according to the binomial distribution or a [`MathError`]
-    /// if `n < 1`, `p ∉ (0,1)`, `n` does not fit into an [`i64`],
-    /// or `max_degree` is negative or does not into an [`i64`].
+    ///     according to the binomial distribution or a [`MathError`]
+    ///     if `n < 1`, `p ∉ (0,1)`, `n` does not fit into an [`i64`],
+    ///     or `max_degree` is negative or does not into an [`i64`].
     ///
     /// # Examples
     /// ```
@@ -45,13 +45,13 @@ impl PolyOverZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    /// if `n < 1`.
+    ///     if `n < 1`.
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    /// if `p ∉ (0,1)`.
+    ///     if `p ∉ (0,1)`.
     /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
-    /// if `n` does not fit into an [`i64`].
+    ///     if `n` does not fit into an [`i64`].
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    /// the `max_degree` is negative or it does not fit into an [`i64`].
+    ///     the `max_degree` is negative or it does not fit into an [`i64`].
     pub fn sample_binomial(
         max_degree: impl TryInto<i64> + Display,
         modulus: impl Into<Modulus>,
@@ -67,9 +67,9 @@ impl PolyOverZq {
     ///
     /// Parameters:
     /// - `max_degree`: specifies the length of the polynomial,
-    /// i.e. the number of coefficients
+    ///     i.e. the number of coefficients
     /// - `offset`: specifies an offset applied to each sample
-    /// collected from the binomial distribution
+    ///     collected from the binomial distribution
     /// - `modulus`: specifies the [`Modulus`] of the new [`PolyOverZq`] instance
     /// - `n`: specifies the number of trials
     /// - `p`: specifies the probability of success
@@ -88,13 +88,13 @@ impl PolyOverZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    /// if `n < 1`.
+    ///     if `n < 1`.
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    /// if `p ∉ (0,1)`.
+    ///     if `p ∉ (0,1)`.
     /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
-    /// if `n` does not fit into an [`i64`].
+    ///     if `n` does not fit into an [`i64`].
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    /// the `max_degree` is negative or it does not fit into an [`i64`].
+    ///     the `max_degree` is negative or it does not fit into an [`i64`].
     pub fn sample_binomial_with_offset(
         max_degree: impl TryInto<i64> + Display,
         offset: impl Into<Z>,

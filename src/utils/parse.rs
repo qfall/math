@@ -30,7 +30,7 @@ use string_builder::Builder;
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
-/// if the matrix is not formatted in a suitable way.
+///     if the matrix is not formatted in a suitable way.
 pub(crate) fn parse_matrix_string(string: &str) -> Result<Vec<Vec<String>>, MathError> {
     // check if the matrix format is correct
     let entry_str = r"([^\[\],]+)";

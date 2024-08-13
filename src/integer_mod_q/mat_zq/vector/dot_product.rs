@@ -45,11 +45,11 @@ impl MatZq {
     ///
     /// Errors and Failures
     /// - Returns a [`MathError`] of type [`VectorFunctionCalledOnNonVector`](MathError::VectorFunctionCalledOnNonVector)
-    /// if the given [`MatZq`] instance is not a (row or column) vector.
+    ///     if the given [`MatZq`] instance is not a (row or column) vector.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    /// if the given vectors have different lengths.
+    ///     if the given vectors have different lengths.
     /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus)
-    /// if the provided matrices have different moduli.
+    ///     if the provided matrices have different moduli.
     pub fn dot_product(&self, other: &Self) -> Result<Zq, MathError> {
         if !self.is_vector() {
             return Err(MathError::VectorFunctionCalledOnNonVector(

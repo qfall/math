@@ -25,7 +25,7 @@ impl MatPolynomialRingZq {
     /// - `num_rows`: specifies the number of rows the new matrix should have
     /// - `num_cols`: specifies the number of columns the new matrix should have
     /// - `modulus`: specifies the [`ModulusPolynomialRingZq`] over which the
-    /// ring of polynomials modulo `modulus.get_q()` is defined
+    ///     ring of polynomials modulo `modulus.get_q()` is defined
     /// - `n`: specifies the number of trials
     /// - `p`: specifies the probability of success
     ///
@@ -45,13 +45,13 @@ impl MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    /// if `n < 1` or `p ∉ (0,1)`.
+    ///     if `n < 1` or `p ∉ (0,1)`.
     /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
-    /// if `n` does not fit into an [`i64`].
+    ///     if `n` does not fit into an [`i64`].
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    /// For further information see [`MatPolynomialRingZq::new`].
+    ///     For further information see [`MatPolynomialRingZq::new`].
     /// - if the provided [`ModulusPolynomialRingZq`] has degree `0` or smaller.
     pub fn sample_binomial(
         num_rows: impl TryInto<i64> + Display,
@@ -70,9 +70,9 @@ impl MatPolynomialRingZq {
     /// - `num_rows`: specifies the number of rows the new matrix should have
     /// - `num_cols`: specifies the number of columns the new matrix should have
     /// - `modulus`: specifies the [`ModulusPolynomialRingZq`] over which the
-    /// ring of polynomials modulo `modulus.get_q()` is defined
+    ///     ring of polynomials modulo `modulus.get_q()` is defined
     /// - `offset`: specifies an offset applied to each sample
-    /// collected from the binomial distribution
+    ///     collected from the binomial distribution
     /// - `n`: specifies the number of trials
     /// - `p`: specifies the probability of success
     ///
@@ -92,13 +92,13 @@ impl MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    /// if `n < 1` or `p ∉ (0,1)`.
+    ///     if `n < 1` or `p ∉ (0,1)`.
     /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
-    /// if `n` does not fit into an [`i64`].
+    ///     if `n` does not fit into an [`i64`].
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    /// For further information see [`MatPolynomialRingZq::new`].
+    ///     For further information see [`MatPolynomialRingZq::new`].
     /// - if the provided [`ModulusPolynomialRingZq`] has degree `0`.
     pub fn sample_binomial_with_offset(
         num_rows: impl TryInto<i64> + Display,
