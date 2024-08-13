@@ -36,7 +36,7 @@ use thiserror::Error;
 /// errors occurring in this crate.
 ///
 /// Implemented error types:
-/// -  [`ConversionError`](MathError::ConversionError) is thrown if a conversion
+/// - [`ConversionError`](MathError::ConversionError) is thrown if a conversion
 ///     between types is not possible.
 /// - [`DivisionByZeroError`](MathError::DivisionByZeroError) is thrown if it is
 ///     tried to perform a division by `0`.

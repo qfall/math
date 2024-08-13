@@ -125,7 +125,7 @@ mod test_try_from_poly_zq {
         assert_eq!(cmp_str, poly_zq.to_string());
     }
 
-    /// Ensure that non-primes yields an error
+    /// Ensure that non-primes work
     #[test]
     fn poly_zq_non_prime() {
         let in_str = format!("4  0 1 3 {} mod {}", u64::MAX, 2_i32.pow(16));
@@ -161,7 +161,7 @@ mod test_from_str {
         .is_ok());
     }
 
-    /// Ensure that non-primes yields an error
+    /// Ensure that non-primes work
     #[test]
     fn poly_zq_non_prime() {
         assert!(ModulusPolynomialRingZq::from_str(&format!(

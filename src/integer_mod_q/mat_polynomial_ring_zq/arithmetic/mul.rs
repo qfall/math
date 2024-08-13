@@ -96,7 +96,7 @@ impl MatPolynomialRingZq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
     ///     [`MathError::MismatchingMatrixDimension`] if the dimensions of `self`
-    ///      and `other` do not match for multiplication.
+    ///     and `other` do not match for multiplication.
     /// - Returns a [`MathError`] of type
     ///     [`MathError::MismatchingModulus`] if the moduli mismatch.
     pub fn mul_safe(&self, other: &Self) -> Result<Self, MathError> {
