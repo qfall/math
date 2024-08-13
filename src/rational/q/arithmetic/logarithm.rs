@@ -164,9 +164,9 @@ mod test_log {
         let z_0 = Q::from(i64::MAX as u64 + 1);
         let z_1 = Q::from(f64::MAX);
         let z_2 = Q::from(i32::MAX);
-        let cmp_0 = Q::try_from((&63, &1)).unwrap();
+        let cmp_0 = Q::from((&63, &1));
         let cmp_1 = Q::from(f64::MAX.log2());
-        let max_distance = Q::try_from((&1, &1_000_000_000)).unwrap();
+        let max_distance = Q::from((&1, &1_000_000_000));
 
         let res_0 = z_0.log(2).unwrap();
         let res_1 = z_1.log(2).unwrap();

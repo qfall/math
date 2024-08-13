@@ -687,7 +687,7 @@ mod test_from_fmpz_ref {
 mod test_try_from_into_i64 {
     use crate::integer::Z;
 
-    //// ensure that an error is returned, if the value of the [`Z`]
+    /// ensure that an error is returned, if the value of the [`Z`]
     /// does not fit into an [`i64`]
     #[test]
     fn overflow() {

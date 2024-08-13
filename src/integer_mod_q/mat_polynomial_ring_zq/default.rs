@@ -102,7 +102,7 @@ mod test_new {
     #[test]
     fn initialization() {
         let poly_mod = PolyOverZq::from_str("3  1 0 1 mod 17").unwrap();
-        let modulus = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
+        let modulus = ModulusPolynomialRingZq::from(&poly_mod);
 
         let _ = MatPolynomialRingZq::new(2, 2, &modulus);
     }
@@ -131,7 +131,7 @@ mod test_new {
     #[test]
     fn error_zero_num_cols() {
         let poly_mod = PolyOverZq::from_str("3  1 0 1 mod 17").unwrap();
-        let modulus = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
+        let modulus = ModulusPolynomialRingZq::from(&poly_mod);
 
         let _ = MatPolynomialRingZq::new(1, 0, &modulus);
     }
@@ -141,7 +141,7 @@ mod test_new {
     #[test]
     fn error_zero_num_rows() {
         let poly_mod = PolyOverZq::from_str("3  1 0 1 mod 17").unwrap();
-        let modulus = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
+        let modulus = ModulusPolynomialRingZq::from(&poly_mod);
 
         let _ = MatPolynomialRingZq::new(0, 1, &modulus);
     }
@@ -151,7 +151,7 @@ mod test_new {
     fn large_modulus() {
         let poly_mod =
             PolyOverZq::from_str(&format!("3  1 {} 1 mod {LARGE_PRIME}", i64::MAX)).unwrap();
-        let modulus = ModulusPolynomialRingZq::try_from(&poly_mod).unwrap();
+        let modulus = ModulusPolynomialRingZq::from(&poly_mod);
 
         let _ = MatPolynomialRingZq::new(2, 2, &modulus);
     }
