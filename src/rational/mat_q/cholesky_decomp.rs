@@ -23,7 +23,7 @@ impl MatQ {
     /// Furthermore, the Cholesky decomposition requires a Hermitian positive-definite
     /// matrix.
     /// This function does not check whether such a matrix is provided and unintentional
-    /// behavior or outputs may occur.
+    /// behaviors or outputs may occur if the provided matrix is not positive-definite.
     ///
     /// Returns the Cholesky decomposition of a Hermitian positive-definite matrix.
     ///
@@ -39,11 +39,11 @@ impl MatQ {
     /// ```
     ///
     /// # Panics ...
-    /// - if `self` is not a square matrix.
+    /// - if `self` is not a symmetric matrix.
     ///
     /// # Note
     /// - the function may behave unintended if the provided matrix is not a
-    /// Hermitian positive-definite matrix.
+    ///     Hermitian positive-definite matrix.
     pub fn cholesky_decomposition(&self) -> MatQ {
         assert!(self.is_symmetric(), "The provided matrix is not symmetric.");
         // TODO: replace manual implementation with faster implementation from
