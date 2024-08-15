@@ -42,7 +42,7 @@ impl MatQ {
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    /// For further information see [`MatQ::new`].
+    ///     For further information see [`MatQ::new`].
     pub fn sample_gauss(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
