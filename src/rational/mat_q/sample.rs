@@ -8,4 +8,4 @@
 
 //! This module contains sampling algorithms for different distributions.
 
-mod gaussian;
+mod gauss;
