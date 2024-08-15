@@ -11,7 +11,7 @@
 use crate::{error::MathError, integer::Z, rational::Q, utils::sample::discrete_gauss::sample_z};
 
 impl Z {
-    /// Chooses a [`Z`] instance chosen according to the discrete Gaussian distribution
+    /// Chooses a [`Z`] instance according to the discrete Gaussian distribution
     /// in `[center - ⌈s * log_2(n)⌉ , center + ⌊s * log_2(n)⌋ ]`.
     ///
     /// This function samples discrete Gaussians according to the definition of
