@@ -38,7 +38,7 @@ impl MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`NonPositive`](MathError::NonPositive)
-    /// if `sigma <= 0`.
+    ///     if `sigma <= 0`.
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
