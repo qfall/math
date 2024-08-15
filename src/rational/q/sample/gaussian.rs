@@ -35,7 +35,7 @@ impl Q {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`NonPositive`](MathError::NonPositive)
-    /// if `sigma <= 0`.
+    ///     if `sigma <= 0`.
     pub fn sample_gauss(center: impl Into<Q>, sigma: impl Into<f64>) -> Result<Q, MathError> {
         let center = center.into();
         let sigma = sigma.into();
