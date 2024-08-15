@@ -27,9 +27,9 @@ impl PolyOverZq {
     ///
     /// Parameters:
     /// - `max_degree`: specifies the length of the polynomial,
-    /// i.e. the number of coefficients
+    ///     i.e. the number of coefficients
     /// - `modulus`: specifies the modulus of the coefficients and thus,
-    /// the interval size over which is sampled
+    ///     the interval size over which is sampled
     ///
     /// Returns a fresh [`PolyOverZq`] instance of length `max_degree` with coefficients
     /// chosen uniform at random in `[0, modulus)` or a [`MathError`]
@@ -44,9 +44,9 @@ impl PolyOverZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    /// if the given `modulus` isn't larger than `1`, i.e. the interval size is at most `1`.
+    ///     if the given `modulus` isn't larger than `1`, i.e. the interval size is at most `1`.
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    /// the `max_degree` is negative or it does not fit into an [`i64`].
+    ///     the `max_degree` is negative or it does not fit into an [`i64`].
     ///
     /// # Panics ...
     /// - if the provided modulus is not greater than `1`.

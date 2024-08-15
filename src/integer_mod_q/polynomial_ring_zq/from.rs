@@ -22,7 +22,7 @@ impl<Poly: Into<PolyOverZ>, Mod: Into<ModulusPolynomialRingZq>> From<(Poly, Mod)
     ///
     /// Parameters:
     /// - `(poly, modulus)`: the value of the polynomial ring element, where `poly`
-    /// defines the equivalence class and `modulus` is the corresponding modulus.
+    ///     defines the equivalence class and `modulus` is the corresponding modulus.
     ///
     /// Returns a new element inside the polynomial ring.
     ///

@@ -98,7 +98,7 @@ impl MatZq {
         }
 
         // Set the entries of the output vector using the indices vector.
-        let mut out = MatZq::new(self.get_num_columns(), 1, &matrix.get_mod());
+        let mut out = MatZq::new(self.get_num_columns(), 1, matrix.get_mod());
         for (i, j) in indices.iter() {
             let entry: Z = matrix.get_entry(*i, -1).unwrap();
             out.set_entry(*j, 0, entry).unwrap();
@@ -197,7 +197,7 @@ impl MatZq {
     ///
     /// # Panics ...
     /// - if the the number of elements in `solutions` is greater than the number
-    /// of elements in `moduli`.
+    ///     of elements in `moduli`.
     fn crt_mat_zq(&self, mut solutions: Vec<MatZq>, mut moduli: Vec<(Z, u64)>) -> Option<MatZq> {
         while solutions.len() > 1 {
             // Compute Bézout’s identity: a x_1 + b x_2 = 1

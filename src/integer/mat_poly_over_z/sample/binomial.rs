@@ -26,7 +26,7 @@ impl MatPolyOverZ {
     /// - `num_rows`: specifies the number of rows the new matrix should have
     /// - `num_cols`: specifies the number of columns the new matrix should have
     /// - `max_degree`: specifies the maximum length of all polynomials in the matrix,
-    /// i.e. the maximum number of coefficients any polynomial in the matrix can have
+    ///     i.e. the maximum number of coefficients any polynomial in the matrix can have
     /// - `n`: specifies the number of trials
     /// - `p`: specifies the probability of success
     ///
@@ -44,13 +44,13 @@ impl MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    /// if `n < 1` or `p ∉ (0,1)`.
+    ///     if `n < 1` or `p ∉ (0,1)`.
     /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
-    /// if `n` does not fit into an [`i64`].
+    ///     if `n` does not fit into an [`i64`].
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    /// For further information see [`MatPolyOverZ::new`].
+    ///     For further information see [`MatPolyOverZ::new`].
     pub fn sample_binomial(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
@@ -68,9 +68,9 @@ impl MatPolyOverZ {
     /// - `num_rows`: specifies the number of rows the new matrix should have
     /// - `num_cols`: specifies the number of columns the new matrix should have
     /// - `max_degree`: specifies the maximum length of all polynomials in the matrix,
-    /// i.e. the maximum number of coefficients any polynomial in the matrix can have
+    ///     i.e. the maximum number of coefficients any polynomial in the matrix can have
     /// - `offset`: specifies an offset applied to each sample
-    /// collected from the binomial distribution
+    ///     collected from the binomial distribution
     /// - `n`: specifies the number of trials
     /// - `p`: specifies the probability of success
     ///
@@ -88,15 +88,15 @@ impl MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    /// if `n < 1` or `p ∉ (0,1)`.
+    ///     if `n < 1` or `p ∉ (0,1)`.
     /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
-    /// if `n` does not fit into an [`i64`].
+    ///     if `n` does not fit into an [`i64`].
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    /// the `max_degree` is negative or it does not fit into an [`i64`].
+    ///     the `max_degree` is negative or it does not fit into an [`i64`].
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    /// For further information see [`MatPolyOverZ::new`].
+    ///     For further information see [`MatPolyOverZ::new`].
     pub fn sample_binomial_with_offset(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,

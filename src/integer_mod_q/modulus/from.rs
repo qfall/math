@@ -48,7 +48,7 @@ impl Modulus {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidModulus`](MathError::InvalidModulus)
-    /// if the provided value is not greater than `1`.
+    ///     if the provided value is not greater than `1`.
     pub(crate) fn from_fmpz_ref(value: &fmpz) -> Result<Self, MathError> {
         if (unsafe { fmpz_cmp_si(value, 1) } <= 0) {
             let z = Z::from(value);
@@ -138,12 +138,12 @@ impl FromStr for Modulus {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [`StringConversionError`](MathError::StringConversionError) if the
-    /// provided string was not formatted correctly, e.g. not a correctly
-    /// formatted [`Z`].
+    ///     [`StringConversionError`](MathError::StringConversionError) if the
+    ///     provided string was not formatted correctly, e.g. not a correctly
+    ///     formatted [`Z`].
     /// - Returns a [`MathError`] of type
-    /// [`InvalidModulus`](MathError::InvalidModulus)
-    /// if the provided value is not greater than `1`.
+    ///     [`InvalidModulus`](MathError::InvalidModulus)
+    ///     if the provided value is not greater than `1`.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let z = Z::from_str(s)?;
 

@@ -30,7 +30,7 @@ use std::fmt::Display;
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-/// either the index is negative or it does not fit into an [`i64`].
+///     either the index is negative or it does not fit into an [`i64`].
 pub fn evaluate_index(index: impl TryInto<i64> + Display) -> Result<i64, MathError> {
     // the index must fit into an [`i64`]
 
@@ -88,7 +88,7 @@ pub fn evaluate_index(index: impl TryInto<i64> + Display) -> Result<i64, MathErr
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-/// either the index is negative or it does not fit into an [`i64`].
+///     either the index is negative or it does not fit into an [`i64`].
 pub fn evaluate_indices(
     index1: impl TryInto<i64> + Display,
     index2: impl TryInto<i64> + Display,
@@ -111,7 +111,7 @@ pub fn evaluate_indices(
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-/// if the number of rows or columns is greater than the matrix or negative.
+///     if the number of rows or columns is greater than the matrix or negative.
 pub fn evaluate_indices_for_matrix<S: GetNumRows + GetNumColumns>(
     matrix: &S,
     row: impl TryInto<i64> + Display,
@@ -199,7 +199,7 @@ mod test_eval_index {
         assert!(evaluate_index(u16::MAX).is_ok());
         assert!(evaluate_index(u32::MAX).is_ok());
 
-        assert!(evaluate_index(&Z::from(10)).is_ok());
+        assert!(evaluate_index(Z::from(10)).is_ok());
     }
 
     /// Ensure that integers which can not be converted to an [`i64`]

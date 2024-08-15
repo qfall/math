@@ -52,7 +52,7 @@ impl SetEntry<&PolyOverZ> for MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    /// if `row` or `column` are greater than the matrix size.
+    ///     if `row` or `column` are greater than the matrix size.
     fn set_entry(
         &mut self,
         row: impl TryInto<i64> + Display,
@@ -101,9 +101,9 @@ impl SetEntry<&PolynomialRingZq> for MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    /// if `row` or `column` are greater than the matrix size.
+    ///     if `row` or `column` are greater than the matrix size.
     /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`]
-    /// if the moduli are different.
+    ///     if the moduli are different.
     fn set_entry(
         &mut self,
         row: impl TryInto<i64> + Display,

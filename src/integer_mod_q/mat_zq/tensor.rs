@@ -44,7 +44,7 @@ impl Tensor for MatZq {
     ///
     /// # Panics ...
     /// - if the moduli of both matrices mismatch.
-    /// Use [`tensor_product_safe`](crate::integer_mod_q::MatZq::tensor_product_safe) to get an error instead.
+    ///     Use [`tensor_product_safe`](crate::integer_mod_q::MatZq::tensor_product_safe) to get an error instead.
     fn tensor_product(&self, other: &Self) -> Self {
         self.tensor_product_safe(other).unwrap()
     }
@@ -78,8 +78,8 @@ impl MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [`MismatchingModulus`](MathError::MismatchingModulus) if the
-    /// moduli of the provided matrices mismatch.
+    ///     [`MismatchingModulus`](MathError::MismatchingModulus) if the
+    ///     moduli of the provided matrices mismatch.
     pub fn tensor_product_safe(&self, other: &Self) -> Result<Self, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(

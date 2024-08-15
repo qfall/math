@@ -14,7 +14,7 @@
 /// Parameters:
 /// - `field_identifier`: the name of the field
 /// - `type`: the type for which [`Serialize`](serde::Serialize) is implemented
-/// (e.g. [`Z`](crate::integer::Z))
+///     (e.g. [`Z`](crate::integer::Z))
 ///
 /// ```impl Serialize for *type*```
 macro_rules! serialize {
@@ -40,7 +40,7 @@ macro_rules! serialize {
 /// Parameters:
 /// - `field_identifier`: the name of the field
 /// - `type`: the type for which [`Deserialize`](serde::Deserialize) is implemented
-/// (e.g. [`Z`](crate::integer::Z))
+///     (e.g. [`Z`](crate::integer::Z))
 ///
 /// ```impl Deserialize for *type*```
 macro_rules! deserialize {

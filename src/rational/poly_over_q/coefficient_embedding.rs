@@ -25,7 +25,7 @@ impl IntoCoefficientEmbedding<MatQ> for &PolyOverQ {
     ///
     /// Parameters:
     /// - `size`: determines the number of rows of the embedding. It has to be larger
-    /// than the degree of the polynomial.
+    ///     than the degree of the polynomial.
     ///
     /// Returns a coefficient embedding as a column vector if `size` is large enough.
     ///
@@ -45,7 +45,7 @@ impl IntoCoefficientEmbedding<MatQ> for &PolyOverQ {
     ///
     /// # Panics ...
     /// - if `size` is not larger than the degree of the polynomial, i.e.
-    /// not all coefficients can be embedded.
+    ///     not all coefficients can be embedded.
     fn into_coefficient_embedding(self, size: impl Into<i64>) -> MatQ {
         let size = size.into();
         let length = self.get_degree() + 1;

@@ -81,11 +81,11 @@ mod rsa_textbook {
     ///
     /// The following steps are made:
     /// 1. Generate two unequal primes `p` and `q` roughly of bit size `security_lvl / 2`
-    /// (s.t. `N` is roughly of bit size `security_lvl`).
+    ///     (s.t. `N` is roughly of bit size `security_lvl`).
     /// 2. Compute `N = p * q`.
     /// 3. Compute Euler's Phi function `phi(N) = (p-1) * (q-1)`.
     /// 4. Choose `pk = 65537 = 0x10000000000000001` statically as public key (common as `enc` is very
-    /// efficient with this key, has sufficient size, and guarantees to have an inverse).
+    ///    efficient with this key, has sufficient size, and guarantees to have an inverse).
     /// 5. Calculate `sk = pk^(-1) mod phi(N)`.
     /// 6. Output `(N, pk, sk)`.
     pub fn gen(security_lvl: u32) -> (Modulus, Z, Z) {
@@ -139,7 +139,7 @@ mod rsa_textbook {
     /// Run textbook RSA encryption with 1024 bit security.
     /// 1. get (N, pk, sk) from a previously generated key pair with `gen(1024)`
     /// 2. run cycle of `dec(sk, enc(pk, msg)) == msg`,
-    /// where `msg` is sampled uniformly at random in `[0, u64::MAX)`
+    ///     where `msg` is sampled uniformly at random in `[0, u64::MAX)`
     pub fn rsa_run_enc_dec() {
         let (modulus, pk, sk) = static_gen();
         let msg = Z::sample_uniform(0, u64::MAX).unwrap();
@@ -197,7 +197,7 @@ mod dh_ke {
     /// Run a Diffie-Hellman key exchange with precomputed public parameters with 1024 bit security.
     /// 1. get (p, g) from previously generated public parameters
     /// 2. run one cycle of `gen_key_pair` and `combine_to_shared_sk` on each end (2 times),
-    /// i.e. one key exchange at both ends and compare the computed shared secrets
+    ///     i.e. one key exchange at both ends and compare the computed shared secrets
     pub fn dh_run() {
         let (modulus, generator) = static_gen_pp();
 
@@ -246,7 +246,7 @@ mod el_gamal_enc {
     /// Encrypts a message `m` according to ElGamal's encryption scheme by outputting
     /// `(c_0, c_1) = (g^r, pk^r * m) mod p`
     pub fn enc(generator: &Zq, pk: &Zq, msg: &Zq) -> (Zq, Zq) {
-        let r = Z::sample_uniform(0, &generator.get_mod()).unwrap();
+        let r = Z::sample_uniform(0, generator.get_mod()).unwrap();
         let c_0 = generator.pow(&r).unwrap();
         let c_1 = pk.pow(&r).unwrap() * msg;
         (c_0, c_1)

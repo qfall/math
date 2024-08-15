@@ -53,7 +53,7 @@ pub(crate) fn find_max_abs(fmpz_vector: &Vec<fmpz>) -> Z {
 ///
 /// Parameters:
 /// - `other`: specifies the [`fmpz`] value whose distance
-/// is calculated to `self`
+///     is calculated to `self`
 ///
 /// Returns the absolute difference, i.e. distance between the two given [`fmpz`]
 /// instances as a new [`fmpz`] instance.

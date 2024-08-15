@@ -18,7 +18,7 @@ impl<Integer: Into<Z>> Distance<Integer> for Z {
     ///
     /// Parameters:
     /// - `other`: specifies one of the [`Z`] values whose distance
-    /// is calculated to `self`
+    ///     is calculated to `self`
     ///
     /// Returns the absolute difference, i.e. distance between the two given [`Z`]
     /// instances as a new [`Z`] instance.

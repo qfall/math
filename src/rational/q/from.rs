@@ -70,11 +70,11 @@ impl FromStr for Q {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [`StringConversionError`](MathError::StringConversionError)
-    /// if the provided string was not formatted correctly.
+    ///     [`StringConversionError`](MathError::StringConversionError)
+    ///     if the provided string was not formatted correctly.
     /// - Returns a [`MathError`] of type
-    /// [`DivisionByZeroError`](MathError::DivisionByZeroError)
-    /// if the provided string has `0` as the denominator.
+    ///     [`DivisionByZeroError`](MathError::DivisionByZeroError)
+    ///     if the provided string has `0` as the denominator.
     fn from_str(s: &str) -> Result<Self, MathError> {
         if s.contains(char::is_whitespace) {
             return Err(StringConversionError::InvalidStringToQInput(s.to_owned()))?;
@@ -607,14 +607,14 @@ mod test_try_from_int_int {
         let numerator = 10;
         let denominator = 15;
 
-        let q_1 = Q::try_from((&(numerator as u8), &(denominator as i8))).unwrap();
-        let q_2 = Q::try_from((&(numerator as u16), &(denominator as i16))).unwrap();
-        let q_3 = Q::try_from((&(numerator as u32), &(denominator))).unwrap();
-        let q_4 = Q::try_from((&(numerator as u64), &(denominator as i64))).unwrap();
-        let q_5 = Q::try_from((&Z::from(numerator), &Z::from(denominator))).unwrap();
+        let q_1 = Q::from((&(numerator as u8), &(denominator as i8)));
+        let q_2 = Q::from((&(numerator as u16), &(denominator as i16)));
+        let q_3 = Q::from((&(numerator as u32), &(denominator)));
+        let q_4 = Q::from((&(numerator as u64), &(denominator as i64)));
+        let q_5 = Q::from((&Z::from(numerator), &Z::from(denominator)));
 
-        let q_6 = Q::try_from((&(numerator as i16), &(denominator as u16))).unwrap();
-        let q_7 = Q::try_from((&(numerator as i16), &(denominator as i16))).unwrap();
+        let q_6 = Q::from((&(numerator as i16), &(denominator as u16)));
+        let q_7 = Q::from((&(numerator as i16), &(denominator as i16)));
 
         assert_eq!(q_1, q_2);
         assert_eq!(q_1, q_3);
@@ -632,8 +632,8 @@ mod test_try_from_int_int {
         let numerator_z = Z::from(numerator);
         let denominator_z = Z::from(denominator);
 
-        let q_1 = Q::try_from((&numerator, &denominator)).unwrap();
-        let q_2 = Q::try_from((&numerator_z, &denominator_z)).unwrap();
+        let q_1 = Q::from((&numerator, &denominator));
+        let q_2 = Q::from((&numerator_z, &denominator_z));
 
         assert_eq!(q_1, q_2);
     }
@@ -645,7 +645,7 @@ mod test_try_from_int_int {
         let numerator = 10;
         let denominator = 0;
 
-        let _ = Q::try_from((&numerator, &denominator));
+        let _ = Q::from((&numerator, &denominator));
     }
 
     /// Test with either negative denominator or numerator
@@ -654,8 +654,8 @@ mod test_try_from_int_int {
         let numerator = 10;
         let denominator = -1;
 
-        let q_1 = Q::try_from((&numerator, &denominator)).unwrap();
-        let q_2 = Q::try_from((&-numerator, &-denominator)).unwrap();
+        let q_1 = Q::from((&numerator, &denominator));
+        let q_2 = Q::from((&-numerator, &-denominator));
 
         assert_eq!(q_1, q_2);
     }
@@ -666,12 +666,12 @@ mod test_try_from_int_int {
         let numerator = 10;
         let denominator = 1;
 
-        let q_1 = Q::try_from((&numerator, &denominator)).unwrap();
-        let q_2 = Q::try_from((&-numerator, &-denominator)).unwrap();
-        let q_3 = Q::try_from((&(numerator * 2), &(denominator * 2))).unwrap();
+        let q_1 = Q::from((&numerator, &denominator));
+        let q_2 = Q::from((&-numerator, &-denominator));
+        let q_3 = Q::from((&(numerator * 2), &(denominator * 2)));
 
-        let q_4_negative = Q::try_from((&-numerator, &denominator)).unwrap();
-        let q_5_negative = Q::try_from((&numerator, &-denominator)).unwrap();
+        let q_4_negative = Q::from((&-numerator, &denominator));
+        let q_5_negative = Q::from((&numerator, &-denominator));
 
         assert_eq!(q_1, q_2);
         assert_eq!(q_1, q_3);
@@ -688,13 +688,12 @@ mod test_try_from_int_int {
         let numerator_z = Z::from(numerator);
         let denominator_z = Z::from(denominator);
 
-        let q_1 = Q::try_from((&numerator, &denominator)).unwrap();
-        let q_2 = Q::try_from((&-numerator, &-denominator)).unwrap();
-        let q_3 = Q::try_from((&numerator_z, &denominator_z)).unwrap();
-        let q_4 =
-            Q::try_from((&(&numerator_z * Z::from(2)), &(&denominator_z * Z::from(2)))).unwrap();
-        let q_5_negative = Q::try_from((&(&numerator_z * Z::from(-1)), &denominator_z)).unwrap();
-        let q_6_negative = Q::try_from((&numerator_z, &(&denominator_z * Z::from(-1)))).unwrap();
+        let q_1 = Q::from((&numerator, &denominator));
+        let q_2 = Q::from((&-numerator, &-denominator));
+        let q_3 = Q::from((&numerator_z, &denominator_z));
+        let q_4 = Q::from((&(&numerator_z * Z::from(2)), &(&denominator_z * Z::from(2))));
+        let q_5_negative = Q::from((&(&numerator_z * Z::from(-1)), &denominator_z));
+        let q_6_negative = Q::from((&numerator_z, &(&denominator_z * Z::from(-1))));
 
         assert_eq!(q_1, q_2);
         assert_eq!(q_1, q_3);
