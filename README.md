@@ -14,7 +14,7 @@ is to use this library as a building block to build other projects on top of it.
 
 Currently, we are in the development phase and interfaces might change.
 Feel free to check out the current progress, but be aware, that the content will
-change in the upcoming weeks and months. An official release will most likely be published in the second half of 2023.
+change in the upcoming weeks and months. An official release will most likely be published in the second half of 2024.
 
 ## Quick-Start
 
