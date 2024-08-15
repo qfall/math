@@ -78,8 +78,8 @@ impl Mul<&MatZ> for &MatQ {
     ///
     /// let c = &a * &b;
     /// let d = a * b;
-    /// let e = &c * d;
-    /// let f = c * &e;
+    /// let e = &MatZ::identity(2, 2); * b;
+    /// let f = MatZ::identity(2, 2); * &b;
     /// ```
     ///
     /// # Panics ...

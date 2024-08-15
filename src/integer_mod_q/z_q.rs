@@ -32,7 +32,7 @@ mod reduce;
 mod sample;
 mod to_string;
 
-/// [`Zq`] represents an integer value in a modulus ring.
+/// [`Zq`] is an arbitrary integer value in a residue class.
 ///
 /// Attributes:
 /// - `value`: holds a [`Z`] value for an integer value

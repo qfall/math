@@ -25,7 +25,7 @@ mod sample;
 mod serialize;
 mod to_string;
 
-/// [`Z`] represents any integer value.
+/// [`Z`] is an arbitrary integer value.
 ///
 /// Attributes:
 /// - `value`: holds [FLINT](https://flintlib.org/)'s [struct](fmpz)

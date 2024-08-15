@@ -18,10 +18,10 @@ change in the upcoming weeks and months. An official release will most likely be
 
 ## Quick-Start
 
-Please refer to [our website](https://qfall.github.io/) as central information point.
+Please refer to [our website](https://qfall.github.io/) as a central information point.
 
 To install and add our library to your project, please refer to [our tutorial](https://qfall.github.io/book/index.html).
-It provides a step-by-step guide to install the required libraries and gives further insights in the usage of our crates.
+It provides a step-by-step guide to install the required libraries and gives further insights into the usage of our crates.
 
 ## What does qFALL-math offer?
 
@@ -31,7 +31,7 @@ Extensive documentation can be generated using
 cargo doc               # suffix with --open to directly open the documentation
 ```
 
-once the project is cloned. Following, find a small overview containing the general types of our library [qFALL-math](https://github.com/qfall/math).
+once the project is cloned. Following, there is a small overview containing the general types of our library [qFALL-math](https://github.com/qfall/math).
 
 ```bash
 math
@@ -125,4 +125,4 @@ Please use the following bibtex entry to cite [qFALL-math](https://github.com/qf
 
 ## Get in Touch
 
-One can contact the members of the project group with our mailing list `pg-qfall(at)lists.upb.de`.
+To contact us, please refer to our mailing list `pg-qfall(at)lists.upb.de`.
