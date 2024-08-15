@@ -24,7 +24,7 @@ impl Q {
     ///
     /// Returns new [`Q`] sample chosen according to the specified continuous Gaussian
     /// distribution or a [`MathError`] if the specified parameters were not chosen
-    /// appropriately, `sigma > 0`.
+    /// appropriately (`sigma > 0`).
     ///
     /// # Examples
     /// ```
@@ -47,8 +47,8 @@ impl Q {
         let mut rng = rand::thread_rng();
         let mut source = source::default(rng.next_u64());
 
-        // instead of sampling with a center of c, we with center 0 and add the
-        // center later these are equivalent and this way we can sample in larger ranges
+        // Instead of sampling with a center of c, we sample with center 0 and add the
+        // center later. These are equivalent and this way we can sample in larger ranges
         let sampler = Gaussian::new(0.0, sigma);
         let sample = center + Q::from(sampler.sample(&mut source));
 
