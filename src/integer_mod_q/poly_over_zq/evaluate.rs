@@ -110,7 +110,7 @@ impl PolyOverZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`]
-    /// if the moduli of the polynomial and the input mismatch.
+    ///     if the moduli of the polynomial and the input mismatch.
     pub fn evaluate_safe(&self, value: &Zq) -> Result<Zq, MathError> {
         if self.modulus != value.modulus {
             return Err(MathError::MismatchingModulus(format!(

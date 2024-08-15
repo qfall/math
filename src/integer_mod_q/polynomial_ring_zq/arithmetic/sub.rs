@@ -81,7 +81,7 @@ impl PolynomialRingZq {
     /// ```
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
-    /// both [`PolynomialRingZq`] mismatch.
+    ///     both [`PolynomialRingZq`] mismatch.
     pub fn sub_safe(&self, other: &Self) -> Result<PolynomialRingZq, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(

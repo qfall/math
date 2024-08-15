@@ -44,7 +44,7 @@ impl<Integer: Into<Z>> SetCoefficient<Integer> for PolyOverZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    /// either the index is negative or it does not fit into an [`i64`].
+    ///     either the index is negative or it does not fit into an [`i64`].
     fn set_coeff(
         &mut self,
         index: impl TryInto<i64> + Display,
@@ -97,10 +97,10 @@ impl SetCoefficient<&Zq> for PolyOverZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    /// either the index is negative or it does not fit into an [`i64`].
+    ///     either the index is negative or it does not fit into an [`i64`].
     /// - Returns a [`MathError`] of type
-    ///  [`MismatchingModulus`](MathError::MismatchingModulus) the moduli of
-    /// the polynomial and the input mismatch
+    ///     [`MismatchingModulus`](MathError::MismatchingModulus) the moduli of
+    ///     the polynomial and the input mismatch
     fn set_coeff(
         &mut self,
         index: impl TryInto<i64> + Display,

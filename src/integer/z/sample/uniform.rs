@@ -20,9 +20,9 @@ impl Z {
     ///
     /// Parameters:
     /// - `lower_bound`: specifies the included lower bound of the
-    /// interval over which is sampled
+    ///     interval over which is sampled
     /// - `upper_bound`: specifies the excluded upper bound of the
-    /// interval over which is sampled
+    ///     interval over which is sampled
     ///
     /// Returns a fresh [`Z`] instance with a
     /// uniform random value in `[lower_bound, upper_bound)` or a [`MathError`]
@@ -37,8 +37,8 @@ impl Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    /// if the given `upper_bound` isn't at least larger than `lower_bound + 1`,
-    /// i.e. the interval size is at most `1`.
+    ///     if the given `upper_bound` isn't at least larger than `lower_bound + 1`,
+    ///     i.e. the interval size is at most `1`.
     pub fn sample_uniform(
         lower_bound: impl Into<Z>,
         upper_bound: impl Into<Z>,
@@ -61,9 +61,9 @@ impl Z {
     ///
     /// Parameters:
     /// - `lower_bound`: specifies the included lower bound of the
-    /// interval over which is sampled
+    ///     interval over which is sampled
     /// - `upper_bound`: specifies the excluded upper bound of the
-    /// interval over which is sampled
+    ///     interval over which is sampled
     ///
     /// Returns a fresh [`Z`] instance with a
     /// uniform random value in `[lower_bound, upper_bound)`. Otherwise, a [`MathError`]
@@ -79,10 +79,10 @@ impl Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    /// if the given `upper_bound` isn't at least larger than `lower_bound + 1`,
-    /// i.e. the interval size is at most `1`, or if no prime could be found in the specified interval.
+    ///     if the given `upper_bound` isn't at least larger than `lower_bound + 1`,
+    ///     i.e. the interval size is at most `1`, or if no prime could be found in the specified interval.
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    /// if `lower_bound` is negative as primes are always positive.
+    ///     if `lower_bound` is negative as primes are always positive.
     pub fn sample_prime_uniform(
         lower_bound: impl Into<Z>,
         upper_bound: impl Into<Z>,

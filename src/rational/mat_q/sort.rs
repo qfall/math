@@ -21,7 +21,7 @@ impl MatQ {
     ///
     /// Parameters:
     /// - `cond_func`: computes values implementing [`Ord`] over the columns of the specified matrix.
-    /// These values are then used to re-order / sort the rows of the matrix.
+    ///     These values are then used to re-order / sort the rows of the matrix.
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// A [`MathError`] is returned if the execution of `cond_func` returned an error.
@@ -87,7 +87,7 @@ impl MatQ {
     ///
     /// Parameters:
     /// - `cond_func`: computes values implementing [`Ord`] over the columns of the specified matrix.
-    /// These values are then used to re-order / sort the columns of the matrix.
+    ///     These values are then used to re-order / sort the columns of the matrix.
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// A [`MathError`] is returned if the execution of `cond_func` returned an error.

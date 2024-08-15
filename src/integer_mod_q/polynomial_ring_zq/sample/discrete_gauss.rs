@@ -23,11 +23,11 @@ impl PolynomialRingZq {
     ///
     /// Parameters:
     /// - `modulus`: specifies the [`ModulusPolynomialRingZq`] over which the
-    /// ring of polynomials modulo `modulus.get_q()` is defined
+    ///     ring of polynomials modulo `modulus.get_q()` is defined
     /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
     /// - `center`: specifies the positions of the center with peak probability
     /// - `s`: specifies the Gaussian parameter, which is proportional
-    /// to the standard deviation `sigma * sqrt(2 * pi) = s`
+    ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a fresh [`PolynomialRingZq`] instance of length `modulus.get_degree() - 1`
     /// with coefficients chosen independently according the discrete Gaussian distribution or
@@ -44,7 +44,7 @@ impl PolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    /// if `n <= 1` or `s <= 0`.
+    ///     if `n <= 1` or `s <= 0`.
     ///
     /// # Panics ...
     /// - if the provided [`ModulusPolynomialRingZq`] has degree `0` or smaller.

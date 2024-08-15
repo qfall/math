@@ -300,7 +300,7 @@ impl MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [`MathError::MismatchingModulus`] if the moduli mismatch.
+    ///     [`MathError::MismatchingModulus`] if the moduli mismatch.
     pub fn mul_scalar_poly_over_zq_safe(&self, scalar: &PolyOverZq) -> Result<Self, MathError> {
         if self.modulus.get_q() != Z::from(&scalar.modulus) {
             return Err(MathError::MismatchingModulus(format!(
@@ -337,7 +337,7 @@ impl MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [`MathError::MismatchingModulus`] if the moduli mismatch.
+    ///     [`MathError::MismatchingModulus`] if the moduli mismatch.
     pub fn mul_scalar_poly_ring_zq_safe(
         &self,
         scalar: &PolynomialRingZq,

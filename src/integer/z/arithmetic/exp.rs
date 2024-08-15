@@ -19,7 +19,7 @@ impl Z {
     ///
     /// Parameters:
     /// - `length_taylor_polynomial`: the length of the taylor series
-    /// approximation of the exponential function
+    ///     approximation of the exponential function
     ///
     /// Returns `e^self`.
     ///

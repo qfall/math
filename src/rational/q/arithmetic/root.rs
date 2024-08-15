@@ -13,7 +13,7 @@
 //! - `a/b` is the "correct" result
 //! - `e_a` and `e_b` are the error of `a` and `b` resp.
 //! - `p` is the maximum error of a sqrt on [`Z`] values
-//!  => `|e_a| <= p` and `|e_b| <= p`
+//!     => `|e_a| <= p` and `|e_b| <= p`
 //!
 //! ```Q::sqrt(x/y) = (a+e_a)/(b+e_b) = a/b + (e_a*b - a*e_b)/(b*(b+e_b))```
 //!

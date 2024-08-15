@@ -70,7 +70,7 @@ impl PolyOverZq {
     /// ```
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
-    /// both [`PolyOverZq`] mismatch.
+    ///     both [`PolyOverZq`] mismatch.
     pub fn add_safe(&self, other: &Self) -> Result<PolyOverZq, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(

@@ -23,7 +23,7 @@ impl PolynomialRingZq {
     ///
     /// Parameters:
     /// - `modulus`: specifies the [`ModulusPolynomialRingZq`] over which the
-    /// ring of polynomials modulo `modulus.get_q()` is defined
+    ///     ring of polynomials modulo `modulus.get_q()` is defined
     ///
     /// Returns a fresh [`PolynomialRingZq`] instance of length `modulus.get_degree() - 1`
     /// with coefficients chosen uniform at random in `[0, modulus.get_q())`.
