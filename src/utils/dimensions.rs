@@ -21,8 +21,8 @@ use crate::error::{MathError, StringConversionError};
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
-/// if the number of rows or columns is too large (must fit into [`i64`]) or
-/// if the number of entries in rows is unequal.
+///     - if the number of rows or columns is too large (must fit into [`i64`]) or
+///     - if the number of entries in rows is unequal.
 pub(crate) fn find_matrix_dimensions<T>(matrix: &Vec<Vec<T>>) -> Result<(i64, i64), MathError> {
     let num_rows = matrix.len();
 
@@ -40,7 +40,7 @@ pub(crate) fn find_matrix_dimensions<T>(matrix: &Vec<Vec<T>>) -> Result<(i64, i6
         if num_cols == 0 {
             num_cols = row.len();
         } else if num_cols != row.len() {
-            return Err(StringConversionError::InvalidMatrix(
+            Err(StringConversionError::InvalidMatrix(
                 "Number of entries in rows is unequal.".to_owned(),
             ))?;
         }

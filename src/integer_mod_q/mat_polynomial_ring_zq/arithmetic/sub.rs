@@ -80,9 +80,9 @@ impl MatPolynomialRingZq {
     /// ```
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
-    /// both [`MatPolynomialRingZq`] mismatch.
+    ///     both [`MatPolynomialRingZq`] mismatch.
     /// - Returns a [`MathError`] of type [`MathError::MismatchingMatrixDimension`]
-    /// if the dimensions of both [`MatPolynomialRingZq`] mismatch.
+    ///     if the dimensions of both [`MatPolynomialRingZq`] mismatch.
     pub fn sub_safe(&self, other: &Self) -> Result<MatPolynomialRingZq, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(

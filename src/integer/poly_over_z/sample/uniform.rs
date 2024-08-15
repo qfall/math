@@ -26,11 +26,11 @@ impl PolyOverZ {
     ///
     /// Parameters:
     /// - `max_degree`: specifies the length of the polynomial,
-    /// i.e. the number of coefficients
+    ///     i.e. the number of coefficients
     /// - `lower_bound`: specifies the included lower bound of the
-    /// interval over which is sampled
+    ///     interval over which is sampled
     /// - `upper_bound`: specifies the excluded upper bound of the
-    /// interval over which is sampled
+    ///     interval over which is sampled
     ///
     /// Returns a fresh [`PolyOverZ`] instance of length `max_degree` with coefficients
     /// chosen uniform at random in `[lower_bound, upper_bound)` or a [`MathError`]
@@ -45,10 +45,10 @@ impl PolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    /// if the given `upper_bound` isn't at least larger than `lower_bound + 1`,
-    /// i.e. the interval size is at most `1`.
+    ///     if the given `upper_bound` isn't at least larger than `lower_bound + 1`,
+    ///     i.e. the interval size is at most `1`.
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    /// the `max_degree` is negative or it does not fit into an [`i64`].
+    ///     the `max_degree` is negative or it does not fit into an [`i64`].
     pub fn sample_uniform(
         max_degree: impl TryInto<i64> + Display,
         lower_bound: impl Into<Z>,

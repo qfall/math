@@ -119,13 +119,13 @@ impl FromStr for Zq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [`StringConversionError`](MathError::StringConversionError)
-    /// if the provided string contains a Nul byte,
-    /// if the provided string was not formatted correctly, or
-    /// if the provided modulus was not formatted correctly to create a [`Z`].
+    ///     [`StringConversionError`](MathError::StringConversionError)
+    ///     - if the provided string contains a Nul byte,
+    ///     - if the provided string was not formatted correctly, or
+    ///     - if the provided modulus was not formatted correctly to create a [`Z`].
     /// - Returns a [`MathError`] of type
-    /// [`InvalidModulus`](MathError::InvalidModulus)
-    /// if the provided value is not greater than `1`.
+    ///     [`InvalidModulus`](MathError::InvalidModulus)
+    ///     if the provided value is not greater than `1`.
     /// - Returns a [`MathError`] of type
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let input_split: Vec<&str> = s.split("mod").collect();

@@ -63,7 +63,7 @@ mod set;
 /// # Ok::<(), MathError>(())
 /// ```
 #[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Display, Clone)]
-#[display(fmt = "{poly} / {modulus}")]
+#[display("{poly} / {modulus}")]
 pub struct PolynomialRingZq {
     pub(crate) poly: PolyOverZ,
     pub(crate) modulus: ModulusPolynomialRingZq,

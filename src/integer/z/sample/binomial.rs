@@ -32,11 +32,11 @@ impl Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    /// if `n < 1`.
+    ///     if `n < 1`.
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    /// if `p ∉ (0,1)`.
+    ///     if `p ∉ (0,1)`.
     /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
-    /// if `n` does not fit into an [`i64`].
+    ///     if `n` does not fit into an [`i64`].
     pub fn sample_binomial(n: impl Into<Z>, p: impl Into<Q>) -> Result<Self, MathError> {
         let n: Z = n.into();
         let p: Q = p.into();

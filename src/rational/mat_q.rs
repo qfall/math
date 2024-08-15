@@ -27,6 +27,7 @@ mod gso;
 mod inverse;
 mod ownership;
 mod properties;
+mod rounding;
 mod serialize;
 mod set;
 mod sort;

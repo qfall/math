@@ -16,8 +16,8 @@
 //! [`Zq`], [`MatZq`] and [`PolyOverZq`] instances with efficient memory usage.
 //!
 //! - \[1\] John D. Dixon.
-//! "Exact Solution of Linear Equations Using P-Adic Expansions"
-//! <https://link.springer.com/article/10.1007/BF01459082>
+//!     "Exact Solution of Linear Equations Using P-Adic Expansions"
+//!     <https://link.springer.com/article/10.1007/BF01459082>
 
 mod mat_polynomial_ring_zq;
 mod mat_zq;

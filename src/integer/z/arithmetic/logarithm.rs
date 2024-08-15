@@ -37,8 +37,8 @@ impl Z {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput) if the `base` is not greater than `1`.
     /// - Returns a [`MathError`] of type
-    /// [`NonPositive`](MathError::NonPositive) if `self` is not
-    ///  greater than `0`.
+    ///     [`NonPositive`](MathError::NonPositive) if `self` is not
+    ///     greater than `0`.
     pub fn log_ceil(&self, base: impl Into<Z>) -> Result<Z, MathError> {
         let base: Z = base.into();
         if base <= Z::ONE {
@@ -77,8 +77,8 @@ impl Z {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput) if the `base` is not greater than `1`.
     /// - Returns a [`MathError`] of type
-    /// [`NonPositive`](MathError::NonPositive) if `self` is not
-    ///  greater than `0`.
+    ///     [`NonPositive`](MathError::NonPositive) if `self` is not
+    ///     greater than `0`.
     pub fn log_floor(&self, base: impl Into<Z>) -> Result<Z, MathError> {
         let base: Z = base.into();
         if base <= Z::ONE {
@@ -113,8 +113,8 @@ impl Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [`NonPositive`](MathError::NonPositive) if `self` is not
-    ///  greater than `0`.
+    ///     [`NonPositive`](MathError::NonPositive) if `self` is not
+    ///     greater than `0`.
     pub fn ln(&self) -> Result<Q, MathError> {
         if self <= &Z::ZERO {
             Err(MathError::NonPositive(self.to_string()))
@@ -148,10 +148,10 @@ impl Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    /// if the `base` is not greater than `1`.
+    ///     if the `base` is not greater than `1`.
     /// - Returns a [`MathError`] of type
-    /// [`NonPositive`](MathError::NonPositive) if `self` is not
-    ///  greater than `0`.
+    ///     [`NonPositive`](MathError::NonPositive) if `self` is not
+    ///     greater than `0`.
     pub fn log(&self, base: impl Into<Z>) -> Result<Q, MathError> {
         let base: Z = base.into();
         if base <= Z::ONE {
@@ -169,6 +169,7 @@ impl Z {
 }
 
 #[cfg(test)]
+#[allow(clippy::needless_borrows_for_generic_args)]
 mod test_log_ceil {
     use crate::integer::Z;
 
@@ -203,10 +204,7 @@ mod test_log_ceil {
         assert_eq!(Z::from(2), Z::from(3).log_ceil(&base).unwrap());
         assert_eq!(Z::from(2), Z::from(4).log_ceil(&base).unwrap());
         assert_eq!(Z::from(64), Z::from(u64::MAX).log_ceil(&base).unwrap());
-        assert_eq!(
-            Z::from(32),
-            Z::from(u64::MAX).log_ceil(&Z::from(4)).unwrap()
-        );
+        assert_eq!(Z::from(32), Z::from(u64::MAX).log_ceil(Z::from(4)).unwrap());
     }
 
     /// Ensures that `log_ceil` is available for all important types
@@ -239,7 +237,7 @@ mod test_log_floor {
         assert!(value.log_floor(&Z::ZERO).is_err());
         assert!(value.log_floor(&Z::ONE).is_err());
         assert!(value.log_floor(&Z::MINUS_ONE).is_err());
-        assert!(value.log_floor(&Z::from(i64::MIN)).is_err());
+        assert!(value.log_floor(Z::from(i64::MIN)).is_err());
     }
 
     /// Ensure that an error is returned if `self` is too small
@@ -264,7 +262,7 @@ mod test_log_floor {
         assert_eq!(Z::from(63), Z::from(u64::MAX).log_floor(&base).unwrap());
         assert_eq!(
             Z::from(31),
-            Z::from(u64::MAX).log_floor(&Z::from(4)).unwrap()
+            Z::from(u64::MAX).log_floor(Z::from(4)).unwrap()
         );
     }
 
@@ -321,7 +319,7 @@ mod test_log {
         assert!(value.log(&Z::ZERO).is_err());
         assert!(value.log(&Z::ONE).is_err());
         assert!(value.log(&Z::MINUS_ONE).is_err());
-        assert!(value.log(&Z::from(i64::MIN)).is_err());
+        assert!(value.log(Z::from(i64::MIN)).is_err());
     }
 
     /// Ensure that an error is returned if `self` is too small

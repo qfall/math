@@ -71,7 +71,7 @@ impl Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if the
-    /// base is not between `2` and `62`.
+    ///     base is not between `2` and `62`.
     pub fn to_string_b(&self, base: i32) -> Result<String, MathError> {
         if !(2..=62).contains(&base) {
             return Err(MathError::OutOfBounds(

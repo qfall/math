@@ -71,9 +71,9 @@ impl Tensor for MatPolyOverZ {
 /// - `row_left`: defines the leftmost row of the set window
 /// - `column_upper`: defines the highest column of the set window
 /// - `scalar`: defines the value with which the part of the tensor product
-/// is calculated
+///     is calculated
 /// - `matrix`: the matrix with which the scalar is multiplied
-/// before setting the entries in `out`
+///     before setting the entries in `out`
 ///
 /// Implicitly sets the entries of the matrix according to the definition
 /// of the tensor product.

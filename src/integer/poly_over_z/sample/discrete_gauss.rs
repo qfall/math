@@ -28,7 +28,7 @@ impl PolyOverZ {
     /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
     /// - `center`: specifies the positions of the center with peak probability
     /// - `s`: specifies the Gaussian parameter, which is proportional
-    /// to the standard deviation `sigma * sqrt(2 * pi) = s`
+    ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a fresh [`PolyOverZ`] instance of maximum degree `max_degree`
     /// with coefficients chosen independently according the discrete Gaussian distribution or
@@ -43,7 +43,7 @@ impl PolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    /// if `n <= 1` or `s <= 0`.
+    ///     if `n <= 1` or `s <= 0`.
     ///
     /// # Panics ...
     /// - if `max_degree` is negative, or does not fit into an [`i64`].

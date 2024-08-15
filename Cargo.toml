@@ -9,7 +9,6 @@ autobenches = false
 [dependencies]
 criterion = { version = "0.5", features = ["html_reports"] }
 flint-sys = "0.7.3"
-fraction = "0.13.1"
 libc = "0.2"
 paste = "1.0"
 rand = "0.8.5"
@@ -20,7 +19,7 @@ serde_json = "1.0"
 string-builder = "0.2.0"
 thiserror = "1.0"
 lazy_static = "1.4"
-derive_more = "0.99.17"
+derive_more = { version = "1", features = ["display"] }
 
 [profile.bench]
 debug = true

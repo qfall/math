@@ -12,9 +12,9 @@
 //! The main references are listed in the following
 //! and will be further referenced in submodules by these numbers:
 //! - \[1\] Gentry, Craig and Peikert, Chris and Vaikuntanathan, Vinod (2008).
-//! Trapdoors for hard lattices and new cryptographic constructions.
-//! In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
-//! <https://citeseerx.ist.psu.edu/document?doi=d9f54077d568784c786f7b1d030b00493eb3ae35>
+//!     Trapdoors for hard lattices and new cryptographic constructions.
+//!     In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
+//!     <https://citeseerx.ist.psu.edu/document?doi=d9f54077d568784c786f7b1d030b00493eb3ae35>
 
 use super::uniform::sample_uniform_rejection;
 use crate::{
@@ -35,7 +35,7 @@ use rand::RngCore;
 /// - `n`: specifies the range from which is sampled
 /// - `center`: specifies the position of the center with peak probability
 /// - `s`: specifies the Gaussian parameter, which is proportional
-/// to the standard deviation `sigma * sqrt(2 * pi) = s`
+///     to the standard deviation `sigma * sqrt(2 * pi) = s`
 ///
 /// Returns a sample chosen according to the specified discrete Gaussian distribution or
 /// a [`MathError`] if the specified parameters were not chosen appropriately,
@@ -54,7 +54,7 @@ use rand::RngCore;
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-/// if the `n <= 1` or `s <= 0`.
+///     if the `n <= 1` or `s <= 0`.
 pub(crate) fn sample_z(n: &Z, center: &Q, s: &Q) -> Result<Z, MathError> {
     if n <= &Z::ONE {
         return Err(MathError::InvalidIntegerInput(format!(
@@ -95,7 +95,7 @@ pub(crate) fn sample_z(n: &Z, center: &Q, s: &Q) -> Result<Z, MathError> {
 /// - `x`: specifies the value/ sample for which the Gaussian function's value is computed
 /// - `c`: specifies the position of the center with peak probability
 /// - `s`: specifies the Gaussian parameter, which is proportional
-/// to the standard deviation `sigma * sqrt(2 * pi) = s`
+///     to the standard deviation `sigma * sqrt(2 * pi) = s`
 ///
 /// Returns the computed value of the Gaussian function for `x`.
 ///
@@ -129,7 +129,7 @@ fn gaussian_function(x: &Z, c: &Q, s: &Q) -> Q {
 /// - `n`: specifies the range from which [`sample_z`] samples
 /// - `center`: specifies the positions of the center with peak probability
 /// - `s`: specifies the Gaussian parameter, which is proportional
-/// to the standard deviation `sigma * sqrt(2 * pi) = s`
+///     to the standard deviation `sigma * sqrt(2 * pi) = s`
 ///
 /// Returns a vector with discrete gaussian error based on a lattice point
 /// as in [\[1\]](<index.html#:~:text=[1]>): SampleD.
@@ -148,11 +148,11 @@ fn gaussian_function(x: &Z, c: &Q, s: &Q) -> Q {
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-/// if the `n <= 1` or `s <= 0`.
+///     if the `n <= 1` or `s <= 0`.
 /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-/// if the number of rows of the `basis` and `center` differ.
+///     if the number of rows of the `basis` and `center` differ.
 /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
-/// if `center` is not a column vector.
+///     if `center` is not a column vector.
 pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ, MathError> {
     let basis_gso = MatQ::from(basis).gso();
     sample_d_precomputed_gso(basis, &basis_gso, n, center, s)
@@ -170,7 +170,7 @@ pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ
 /// - `n`: specifies the range from which [`sample_z`] samples
 /// - `center`: specifies the positions of the center with peak probability
 /// - `s`: specifies the Gaussian parameter, which is proportional
-/// to the standard deviation `sigma * sqrt(2 * pi) = s`
+///     to the standard deviation `sigma * sqrt(2 * pi) = s`
 ///
 /// Returns a vector with discrete gaussian error based on a lattice point
 /// as in [\[1\]](<index.html#:~:text=[1]>): SampleD.
@@ -191,11 +191,11 @@ pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-/// if the `n <= 1` or `s <= 0`.
+///     if the `n <= 1` or `s <= 0`.
 /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-/// if the number of rows of the `basis` and `center` differ.
+///     if the number of rows of the `basis` and `center` differ.
 /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
-/// if `center` is not a column vector.
+///     if `center` is not a column vector.
 ///
 /// # Panics...
 /// - if the number of rows/columns of `basis_gso` and `basis` mismatch.
@@ -227,7 +227,7 @@ pub(crate) fn sample_d_precomputed_gso(
         ));
     }
     if !center.is_column_vector() {
-        return Err(StringConversionError::InvalidMatrix(format!(
+        Err(StringConversionError::InvalidMatrix(format!(
             "sample_d expects center to be a column vector, but it has dimensions {}x{}.",
             center.get_num_rows(),
             center.get_num_columns()

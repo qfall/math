@@ -28,11 +28,11 @@ impl MatPolyOverZ {
     /// - `num_rows`: specifies the number of rows the new matrix should have
     /// - `num_cols`: specifies the number of columns the new matrix should have
     /// - `max_degree`: specifies the maximum length of all polynomials in the matrix,
-    /// i.e. the maximum number of coefficients any polynomial in the matrix can have
+    ///     i.e. the maximum number of coefficients any polynomial in the matrix can have
     /// - `lower_bound`: specifies the included lower bound of the
-    /// interval over which is sampled
+    ///     interval over which is sampled
     /// - `upper_bound`: specifies the excluded upper bound of the
-    /// interval over which is sampled
+    ///     interval over which is sampled
     ///
     /// Returns a new [`MatPolyOverZ`] instance with polynomials as entries,
     /// whose coefficients were chosen uniformly at random in
@@ -49,14 +49,14 @@ impl MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    /// if the given `upper_bound` isn't at least larger than `lower_bound + 1`,
-    /// i.e. the interval size is at most `1`.
+    ///     if the given `upper_bound` isn't at least larger than `lower_bound + 1`,
+    ///     i.e. the interval size is at most `1`.
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    /// the `max_degree` is negative or it does not fit into an [`i64`].
+    ///     the `max_degree` is negative or it does not fit into an [`i64`].
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    /// For further information see [`MatPolyOverZ::new`].
+    ///     For further information see [`MatPolyOverZ::new`].
     pub fn sample_uniform(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
