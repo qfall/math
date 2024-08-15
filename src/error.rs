@@ -15,19 +15,19 @@
 //!
 //! **For developers:**
 //! - How to add an error to an `enum`? First of all, find a name
-//! that is not too specific for your current case s.t. it could be used in other
-//! contexts afterwards as well. Then, find the spot according to your chosen error
-//! name in a alphanumerically sorted way in the list of supported errors in the doc
-//! comment and inside the `enum` itself.
-//! Afterwards, add the error to the list of implemented error
-//! types in the doc comment of the `enum` with a short description when it is thrown.
-//! Probably use this description for the doc comment above the implementation of
-//! error in the `enum`. Then, add `#[error(<error msg>)]` to define the error message
-//! output once your error is thrown. Below, write down `<error name>(<input>),` to
-//! define the error with its name and possibly several inputs. The input can be of the
-//! form [`String`], but also another error, whose conversion must be declared via
-//! `#[from] OtherError`. It is best to use the existing structure as a guide. For any
-//! further information, check out the here used [`thiserror`]-crate.
+//!     that is not too specific for your current case s.t. it could be used in other
+//!     contexts afterwards as well. Then, find the spot according to your chosen error
+//!     name in a alphanumerically sorted way in the list of supported errors in the doc
+//!     comment and inside the `enum` itself.
+//!     Afterwards, add the error to the list of implemented error
+//!     types in the doc comment of the `enum` with a short description when it is thrown.
+//!     Probably use this description for the doc comment above the implementation of
+//!     error in the `enum`. Then, add `#[error(<error msg>)]` to define the error message
+//!     output once your error is thrown. Below, write down `<error name>(<input>),` to
+//!     define the error with its name and possibly some inputs. The input can be of the
+//!     form [`String`], but also another error, whose conversion must be declared via
+//!     `#[from] OtherError`. It is best to use the existing structure as a guide. For any
+//!     further information, check out the here used [`thiserror`]-crate.
 
 use std::ffi::NulError;
 use thiserror::Error;
@@ -36,36 +36,36 @@ use thiserror::Error;
 /// errors occurring in this crate.
 ///
 /// Implemented error types:
-/// -  [`ConversionError`](MathError::ConversionError) is thrown if a conversion
-/// between types is not possible.
+/// - [`ConversionError`](MathError::ConversionError) is thrown if a conversion
+///     between types is not possible.
 /// - [`DivisionByZeroError`](MathError::DivisionByZeroError) is thrown if it is
-/// tried to perform a division by `0`.
+///     tried to perform a division by `0`.
 /// - [`InvalidExponent`](MathError::InvalidExponent) is thrown if an invalid
-/// exponent is used for a `pow` function.
+///     exponent is used for a `pow` function.
 /// - [`InvalidIntegerInput`](MathError::InvalidIntegerInput) is thrown if an
-/// integer input is provided as parameter that does not meet the conditions
-/// of that function.
+///     integer input is provided as parameter that does not meet the conditions
+///     of that function.
 /// - [`InvalidInterval`](MathError::InvalidInterval) is thrown if an invalid
-/// interval, e.g. of negative size, is provided.
+///     interval, e.g. of negative size, is provided.
 /// - [`InvalidModulus`](MathError::InvalidModulus) is thrown if an integer is
-/// provided, which is not greater than `1`.
+///     provided, which is not greater than `1`.
 /// - [`NulError`](MathError::NulError) is thrown if a [`NulError`] is thrown,
-/// which currently only happens if an invalid string is given to construct
-/// a [`CString`](std::ffi::CString).
+///     which currently only happens if an invalid string is given to construct
+///     a [`CString`](std::ffi::CString).
 /// - [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension) is
-/// thrown if arithmetic is done with matrices of mismatching dimensions.
+///     thrown if arithmetic is done with matrices of mismatching dimensions.
 /// - [`MismatchingModulus`](MathError::MismatchingModulus) is thrown if any
-/// function is called on two objects with different modulus where equal
-/// modulus is required.
+///     function is called on two objects with different modulus where equal
+///     modulus is required.
 /// - [`NonPositive`](MathError::NonPositive) is thrown if the function expects
-/// a positive number, but a number smaller than `1` is provided.
+///     a positive number, but a number smaller than `1` is provided.
 /// - [`NoSquareMatrix`](MathError::NoSquareMatrix) is thrown if a matrix is
-/// not square.
+///     not square.
 /// - [`OutOfBounds`](MathError::OutOfBounds) is thrown if a provided index
-/// is not in a desired range.
+///     is not in a desired range.
 /// - [`VectorFunctionCalledOnNonVector`](MathError::VectorFunctionCalledOnNonVector)
-/// is thrown if a function defined on vectors was called on a matrix instance
-/// that is not a vector.
+///     is thrown if a function defined on vectors was called on a matrix instance
+///     that is not a vector.
 ///
 /// # Examples
 /// ```
@@ -155,22 +155,22 @@ pub enum MathError {
 ///
 /// Implemented error types:
 /// - [`InvalidMatrix`](StringConversionError::InvalidMatrix) is thrown if an
-/// invalid string input of a matrix is given.
+///     invalid string input of a matrix is given.
 /// - [`InvalidStringToPolyInput`](StringConversionError::InvalidStringToPolyInput)
-/// is thrown if an invalid string is given to construct a polynomial.
+///     is thrown if an invalid string is given to construct a polynomial.
 /// - [`InvalidStringToPolyMissingWhitespace`](StringConversionError::InvalidStringToPolyMissingWhitespace)
-/// is thrown if an invalid string is given to construct a polynomial which
-/// did not contain two whitespaces.
+///     is thrown if an invalid string is given to construct a polynomial which
+///     did not contain two whitespaces.
 /// - [`InvalidStringToPolyModulusInput`](StringConversionError::InvalidStringToPolyModulusInput)
-/// is thrown if an invalid string is given
-/// to construct a [`PolyOverZq`](crate::integer_mod_q::PolyOverZq), i.e. it is
-/// not formatted correctly.
+///     is thrown if an invalid string is given
+///     to construct a [`PolyOverZq`](crate::integer_mod_q::PolyOverZq), i.e. it is
+///     not formatted correctly.
 /// - [`InvalidStringToQInput`](StringConversionError::InvalidStringToQInput)
-/// is thrown if an invalid string is given to construct a [`Q`](crate::rational::Q).
+///     is thrown if an invalid string is given to construct a [`Q`](crate::rational::Q).
 /// - [`InvalidStringToZInput`](StringConversionError::InvalidStringToZInput)
-/// is thrown if an invalid string is given to construct a [`Z`](crate::integer::Z).
+///     is thrown if an invalid string is given to construct a [`Z`](crate::integer::Z).
 /// - [`InvalidStringToZqInput`](StringConversionError::InvalidStringToZqInput)
-/// is thrown if an invalid string is given to construct a [`Zq`](crate::integer_mod_q::Zq).
+///     is thrown if an invalid string is given to construct a [`Zq`](crate::integer_mod_q::Zq).
 ///
 /// # Examples
 /// ```

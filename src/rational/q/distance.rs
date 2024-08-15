@@ -18,7 +18,7 @@ impl<Rational: Into<Q>> Distance<Rational> for Q {
     ///
     /// Parameters:
     /// - `other`: specifies one of the [`Q`] values whose distance
-    /// is calculated to `self`
+    ///     is calculated to `self`
     ///
     /// Returns the absolute difference, i.e. distance between the two given [`Q`]
     /// instances as a new [`Q`] instance.

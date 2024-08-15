@@ -28,7 +28,7 @@ impl MatZq {
     /// - `num_rows`: specifies the number of rows the new matrix should have
     /// - `num_cols`: specifies the number of columns the new matrix should have
     /// - `modulus`: specifies the modulus of the matrix and defines the interval
-    /// over which is sampled
+    ///     over which is sampled
     ///
     /// Returns a new [`MatZq`] instance with entries chosen
     /// uniformly at random in `[0, modulus)`.
@@ -42,7 +42,7 @@ impl MatZq {
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns or the modulus are not suited to create a matrix.
-    /// For further information see [`MatZq::new`].
+    ///     For further information see [`MatZq::new`].
     pub fn sample_uniform(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,

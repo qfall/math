@@ -61,7 +61,7 @@ impl<Rational: Into<Q>> SetEntry<Rational> for MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    /// if `row` or `column` are greater than the matrix size.
+    ///     if `row` or `column` are greater than the matrix size.
     fn set_entry(
         &mut self,
         row: impl TryInto<i64> + Display,
@@ -91,7 +91,7 @@ impl MatQ {
     /// - `col_0`: specifies the column of `self` that should be modified
     /// - `other`: specifies the matrix providing the column replacing the column in `self`
     /// - `col_1`: specifies the column of `other` providing
-    /// the values replacing the original column in `self`
+    ///     the values replacing the original column in `self`
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of its matrix
@@ -109,9 +109,9 @@ impl MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    /// if the number of columns is greater than the matrix dimensions or negative.
+    ///     if the number of columns is greater than the matrix dimensions or negative.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    /// if the number of rows of `self` and `other` differ.
+    ///     if the number of rows of `self` and `other` differ.
     pub fn set_column(
         &mut self,
         col_0: impl TryInto<i64> + Display,
@@ -149,7 +149,7 @@ impl MatQ {
     /// - `row_0`: specifies the row of `self` that should be modified
     /// - `other`: specifies the matrix providing the row replacing the row in `self`
     /// - `row_1`: specifies the row of `other` providing
-    /// the values replacing the original row in `self`
+    ///     the values replacing the original row in `self`
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of its matrix
@@ -167,9 +167,9 @@ impl MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    /// if the number of rows is greater than the matrix dimensions or negative.
+    ///     if the number of rows is greater than the matrix dimensions or negative.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    /// if the number of columns of `self` and `other` differ.
+    ///     if the number of columns of `self` and `other` differ.
     pub fn set_row(
         &mut self,
         row_0: impl TryInto<i64> + Display,
@@ -226,7 +226,7 @@ impl MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    /// if row or column are greater than the matrix size.
+    ///     if row or column are greater than the matrix size.
     pub fn swap_entries(
         &mut self,
         row_0: impl TryInto<i64> + Display,
@@ -265,7 +265,7 @@ impl MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    /// if one of the given columns is greater than the matrix or negative.
+    ///     if one of the given columns is greater than the matrix or negative.
     pub fn swap_columns(
         &mut self,
         col_0: impl TryInto<i64> + Display,
@@ -306,7 +306,7 @@ impl MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    /// if one of the given rows is greater than the matrix or negative.
+    ///     if one of the given rows is greater than the matrix or negative.
     pub fn swap_rows(
         &mut self,
         row_0: impl TryInto<i64> + Display,

@@ -25,7 +25,7 @@ mod to_string;
 ///
 /// Attributes
 /// - `modulus`: holds the specific content, i.e. the modulus `q` and f(X); it
-/// holds [FLINT](https://flintlib.org/)'s [struct](fq_ctx_struct)
+///     holds [FLINT](https://flintlib.org/)'s [struct](fq_ctx_struct)
 ///
 /// # Examples
 /// ```

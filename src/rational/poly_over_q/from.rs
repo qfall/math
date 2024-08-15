@@ -48,12 +48,12 @@ impl FromStr for PolyOverQ {
     /// ```
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [`StringConversionError`](MathError::StringConversionError)
-    /// if the provided string contains a `Null` Byte,
-    /// if the provided value did not contain two whitespaces, or
-    /// if the provided string was not formatted correctly or the number of
-    /// coefficients was smaller than the number provided at the start of the
-    /// provided string.
+    ///     [`StringConversionError`](MathError::StringConversionError)
+    ///     - if the provided string contains a `Null` Byte,
+    ///     - if the provided value did not contain two whitespaces, or
+    ///     - if the provided string was not formatted correctly or the number of
+    ///         coefficients was smaller than the number provided at the start of the
+    ///         provided string.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut res = Self::default();
 

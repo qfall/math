@@ -18,7 +18,7 @@ impl Zq {
     ///
     /// Parameters:
     /// - `other`: specifies one of the [`Zq`] values whose distance
-    /// is calculated to `self`
+    ///     is calculated to `self`
     ///
     /// Returns the absolute minimum distance between the two given values as a new
     /// [`Z`] instance or a [`MathError`] if the moduli mismatch.
@@ -40,8 +40,8 @@ impl Zq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    /// [`MismatchingModulus`](MathError::MismatchingModulus) if the
-    /// provided moduli differ.
+    ///     [`MismatchingModulus`](MathError::MismatchingModulus) if the
+    ///     provided moduli differ.
     pub fn distance_safe(&self, other: &Zq) -> Result<Z, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
@@ -66,7 +66,7 @@ impl Distance<&Zq> for Zq {
     ///
     /// Parameters:
     /// - `other`: specifies one of the [`Zq`] values whose distance
-    /// is calculated to `self`.
+    ///     is calculated to `self`.
     ///
     /// Returns the absolute minimum distance between the two given values as a new
     /// [`Z`] instance.
@@ -112,7 +112,7 @@ impl<Integer: Into<Z>> Distance<Integer> for Zq {
     ///
     /// Parameters:
     /// - `other`: specifies one of the [`Zq`] values whose distance
-    /// is calculated to `self`. The modulus from `self` will be used.
+    ///     is calculated to `self`. The modulus from `self` will be used.
     ///
     /// Returns the absolute minimum distance between the two given values as a new
     /// [`Z`] instance.

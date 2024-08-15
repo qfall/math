@@ -79,14 +79,14 @@ impl FromStr for MatZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
-    /// if the matrix is not formatted in a suitable way,
-    /// if the number of entries in rows is unequal,
-    /// if an entry contains a Nul byte, or
-    /// if an entry is not formatted correctly.
+    ///     - if the matrix is not formatted in a suitable way,
+    ///     - if the number of entries in rows is unequal,
+    ///     - if an entry contains a Nul byte, or
+    ///     - if an entry is not formatted correctly.
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    /// For further information see [`MatZ::new`].
+    ///     For further information see [`MatZ::new`].
     fn from_str(string: &str) -> Result<Self, MathError> {
         let string_matrix = parse_matrix_string(string)?;
         let (num_rows, num_cols) = find_matrix_dimensions(&string_matrix)?;

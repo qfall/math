@@ -90,7 +90,7 @@ impl Q {
     ///
     /// Parameters:
     /// - `precision`: the precision the new value can differ from `self`.
-    /// Note that the absolute value is relevant, not the sign.
+    ///     Note that the absolute value is relevant, not the sign.
     ///
     /// Returns the simplest [`Q`] within the defined range.
     ///

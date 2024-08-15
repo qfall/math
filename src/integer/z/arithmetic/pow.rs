@@ -35,7 +35,7 @@ impl<Integer: Into<Z>> Pow<Integer> for Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidExponent`](MathError::InvalidExponent)
-    /// if the provided exponent is negative and the base value of `self` is not invertible.
+    ///     if the provided exponent is negative and the base value of `self` is not invertible.
     fn pow(&self, exp: Integer) -> Result<Self::Output, MathError> {
         let exp = exp.into();
         let mut out = Z::ZERO;

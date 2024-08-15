@@ -28,9 +28,9 @@ impl MatZ {
     /// - `num_rows`: specifies the number of rows the new matrix should have
     /// - `num_cols`: specifies the number of columns the new matrix should have
     /// - `lower_bound`: specifies the included lower bound of the
-    /// interval over which is sampled
+    ///     interval over which is sampled
     /// - `upper_bound`: specifies the excluded upper bound of the
-    /// interval over which is sampled
+    ///     interval over which is sampled
     ///
     /// Returns a new [`MatZ`] instance with entries chosen
     /// uniformly at random in `[lower_bound, upper_bound)` or a [`MathError`]
@@ -45,12 +45,12 @@ impl MatZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    /// if the given `upper_bound` isn't at least larger than `lower_bound + 1`,
-    /// i.e. the interval size is at most `1`.
+    ///     if the given `upper_bound` isn't at least larger than `lower_bound + 1`,
+    ///     i.e. the interval size is at most `1`.
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    /// For further information see [`MatZ::new`].
+    ///     For further information see [`MatZ::new`].
     pub fn sample_uniform(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,

@@ -115,8 +115,7 @@ impl Q {
     ///
     ///  # Errors
     /// - Returns a [`MathError`] of type [`MathError::DivisionByZeroError`] if
-    /// the `divisor` is `0`.
-    ///
+    ///     the `divisor` is `0`.
     pub fn div_safe(&self, divisor: &Q) -> Result<Q, MathError> {
         if 0 != unsafe { fmpq_is_zero(&divisor.value) } {
             return Err(MathError::DivisionByZeroError(format!(
