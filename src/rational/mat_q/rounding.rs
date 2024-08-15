@@ -102,7 +102,7 @@ impl MatQ {
     /// Parameters:
     /// - `n`: the security parameter; also specifies the range from which is sampled
     /// - `r`: specifies the Gaussian parameter, which is proportional
-    /// to the standard deviation `sigma * sqrt(2 * pi) = s`
+    ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// # Examples
     /// ```
@@ -115,17 +115,14 @@ impl MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    /// if the `n <= 1` or `s <= 0`.
+    ///     if the `n <= 1` or `s <= 0`.
     ///
     /// This function implements randomized rounding according to:
     /// - \[1\] Peikert, C. (2010, August).
-    /// An efficient and parallel Gaussian sampler for lattices.
-    /// In: Annual Cryptology Conference (pp. 80-97).
-    /// <https://link.springer.com/chapter/10.1007/978-3-642-14623-7_5>
+    ///     An efficient and parallel Gaussian sampler for lattices.
+    ///     In: Annual Cryptology Conference (pp. 80-97).
+    ///     <https://link.springer.com/chapter/10.1007/978-3-642-14623-7_5>
     pub fn randomized_rounding(&self, r: impl Into<Q>, n: impl Into<Z>) -> Result<MatZ, MathError> {
-        // TODO: use the efficient sampling method proposed in \[1\]
-        // it precomputes the values for the ranges as `r` remains the same for all
-        // entries
         let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
         let r = r.into();
         let n = n.into();
