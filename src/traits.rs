@@ -239,7 +239,7 @@ pub(crate) unsafe trait AsInteger {
     }
 }
 
-/// Is implemented by polynomials to receive a matrix representation of their coefficients. 
+/// Is implemented by polynomials to receive a matrix representation of their coefficients.
 pub trait IntoCoefficientEmbedding<T> {
     /// Returns a canonical coefficient embedding of the value,
     /// e.g. a matrix representation of the coefficients of a polynomial.
