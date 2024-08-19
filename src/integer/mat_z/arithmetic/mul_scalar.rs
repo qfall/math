@@ -21,7 +21,7 @@ use std::ops::Mul;
 
 impl Mul<&Z> for &MatZ {
     type Output = MatZ;
-    /// Implements the [`Mul`] trait for a [`MatZ`] matrix with a [`Z`] integer. 
+    /// Implements the [`Mul`] trait for a [`MatZ`] matrix with a [`Z`] integer.
     /// [`Mul`] is implemented for any combination of owned and borrowed values.
     ///
     /// Parameters:
