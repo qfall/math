@@ -21,7 +21,8 @@ use std::ops::Mul;
 
 impl Mul<&Z> for &MatPolyOverZ {
     type Output = MatPolyOverZ;
-    /// Implements multiplication for a [`MatPolyOverZ`] matrix with a [`Z`] integer.
+    /// Implements the [`Mul`] trait for a [`MatPolyOverZ`] matrix with a [`Z`] integer.
+    /// [`Mul`] is implemented for any combination of owned and borrowed values.
     ///
     /// Parameters:
     /// - `scalar`: specifies the scalar by which the matrix is multiplied
@@ -59,7 +60,8 @@ implement_for_others!(Z, MatPolyOverZ, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 
 
 impl Mul<&PolyOverZ> for &MatPolyOverZ {
     type Output = MatPolyOverZ;
-    /// Implements multiplication for a [`MatPolyOverZ`] matrix with a [`PolyOverZ`].
+    /// Implements the [`Mul`] trait for a [`MatPolyOverZ`] matrix with a [`PolyOverZ`].
+    /// [`Mul`] is implemented for any combination of owned and borrowed values.
     ///
     /// Parameters:
     /// - `scalar`: specifies the scalar by which the matrix is multiplied

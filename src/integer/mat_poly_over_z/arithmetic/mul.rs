@@ -21,8 +21,7 @@ impl Mul for &MatPolyOverZ {
     type Output = MatPolyOverZ;
 
     /// Implements the [`Mul`] trait for two [`MatPolyOverZ`] values.
-    ///
-    /// [`Mul`] is implemented for any combination of owned and borrowed [`MatPolyOverZ`].
+    /// [`Mul`] is implemented for any combination of [`MatPolyOverZ`] and borrowed [`MatPolyOverZ`].
     ///
     /// Parameters:
     /// - `other`: specifies the value to multiply with `self`

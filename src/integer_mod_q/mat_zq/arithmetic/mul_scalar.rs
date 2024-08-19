@@ -23,7 +23,8 @@ use std::ops::Mul;
 
 impl Mul<&Z> for &MatZq {
     type Output = MatZq;
-    /// Implements multiplication for a [`MatZq`] matrix with a [`Z`] integer.
+    /// Implements the [`Mul`] trait for a [`MatZq`] matrix with a [`Z`] integer.
+    /// [`Mul`] is implemented for any combination of owned and borrowed values.
     ///
     /// Parameters:
     /// - `scalar`: specifies the scalar by which the matrix is multiplied
@@ -61,7 +62,8 @@ implement_for_others!(Z, MatZq, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
 
 impl Mul<&Zq> for &MatZq {
     type Output = MatZq;
-    /// Implements multiplication for a [`MatZq`] matrix with a [`Zq`].
+    /// Implements the [`Mul`] trait for a [`MatZq`] matrix with a [`Zq`].
+    /// [`Mul`] is implemented for any combination of owned and borrowed values.
     ///
     /// Parameters:
     /// - `scalar`: specifies the scalar by which the matrix is multiplied

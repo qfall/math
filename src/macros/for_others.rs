@@ -24,7 +24,7 @@
 ///
 /// # Examples
 /// ```compile_fail
-/// implement_for_others!(Z, i8 i16 i32 i64 u8 u16 u32 u64, Mul Scalar for MatZ);
+/// implement_for_others!(Z, MatZ, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
 /// ```
 macro_rules! implement_for_others {
     // [`Mul`] trait scalar

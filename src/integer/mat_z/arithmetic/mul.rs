@@ -21,8 +21,7 @@ impl Mul for &MatZ {
     type Output = MatZ;
 
     /// Implements the [`Mul`] trait for two [`MatZ`] values.
-    ///
-    /// [`Mul`] is implemented for any combination of owned and borrowed [`MatZ`].
+    /// [`Mul`] is implemented for any combination of [`MatZ`] and borrowed [`MatZ`].
     ///
     /// Parameters:
     /// - `other`: specifies the value to multiply with `self`
