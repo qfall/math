@@ -9,7 +9,7 @@
 //! This module contains all options to convert a polynomial of type
 //! [`ModulusPolynomialRingZq] into a [`String`].
 //!
-//! This includes the [`Display`](std::fmt::Display) trait.
+//! This includes the [`Display`] trait.
 
 use super::ModulusPolynomialRingZq;
 use crate::integer::{PolyOverZ, Z};

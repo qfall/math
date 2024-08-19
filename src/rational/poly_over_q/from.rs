@@ -27,7 +27,7 @@ impl FromStr for PolyOverQ {
     type Err = MathError;
 
     /// Create a new polynomial with arbitrarily many coefficients of type
-    /// [`Q`](crate::rational::Q).
+    /// [`Q`].
     ///
     /// Parameters:
     /// - `s`: the polynomial of form: "`[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴...`"

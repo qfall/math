@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementations to concatenate two [`MatZq`](crate::integer_mod_q::MatZq).
+//! Implementations to concatenate two [`MatZq`].
 
 use super::MatZq;
 use crate::{

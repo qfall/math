@@ -348,7 +348,7 @@ impl MatZq {
     }
 
     /// Computes the lengths of a given vector of [`Z`] values
-    /// considering the [`Modulus`](crate::integer_mod_q::Modulus) of `self`.
+    /// considering the [`Modulus`] of `self`.
     ///
     /// # Examples
     /// ```compile_fail

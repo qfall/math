@@ -150,7 +150,7 @@ pub(crate) use implement_for_owned;
 
 /// Implements a trait with an empty implementation for the specified types
 /// and their references.
-/// This macro be used for empty traits or to use just the
+/// This macro can be used for empty traits or to use just the
 /// default implementation of a trait.
 ///
 /// # Examples
