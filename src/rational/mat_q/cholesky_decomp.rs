@@ -16,14 +16,12 @@ use crate::{
 };
 
 impl MatQ {
-    /// This function performs the Cholesky decomposition and produces a matrix `L`
-    /// such that `self = L * L^T`.
+    /// This function performs the Cholesky decomposition (the Cholesky algorithm) and
+    /// produces a matrix `L` such that `self = L * L^T`.
     /// This function relies on the precision of `Q::sqrt` and will not provide
     /// perfect results in all cases.
     /// Furthermore, the Cholesky decomposition requires a Hermitian positive-definite
     /// matrix.
-    /// This function does not check whether such a matrix is provided and unintentional
-    /// behaviors or outputs may occur if the provided matrix is not positive-definite.
     ///
     /// Returns the Cholesky decomposition of a Hermitian positive-definite matrix.
     ///
@@ -39,11 +37,8 @@ impl MatQ {
     /// ```
     ///
     /// # Panics ...
-    /// - if `self` is not a symmetric matrix.
-    ///
-    /// # Note
-    /// - the function may behave unintended if the provided matrix is not a
-    ///     Hermitian positive-definite matrix.
+    /// - if `self` is not a symmetric matrix,
+    /// - if `self` has eigenvalues smaller than `0`.
     pub fn cholesky_decomposition(&self) -> MatQ {
         assert!(self.is_symmetric(), "The provided matrix is not symmetric.");
         // TODO: replace manual implementation with faster implementation from
@@ -65,6 +60,8 @@ impl MatQ {
                     .concat_vertical(&a.get_column(0).unwrap())
                     .unwrap(),
             } * (1 / (a_ii.sqrt()));
+            // in the previous line: sqrt panics if `a_ii` is negative, i.e. if an
+            // eigenvalue is negative.
 
             // produce L matrix recursively
             let mut l_i = MatQ::identity(n, n);
@@ -73,10 +70,10 @@ impl MatQ {
 
             // update matrix A recursively
             if i < n - 1 {
-                let b = a.get_submatrix(1, n - i - 1, 1, n - i - 1).unwrap();
+                let b = a.get_submatrix(1, -1, 1, -1).unwrap();
                 let b_minus = (1 / a_ii)
-                    * a.get_submatrix(1, n - i - 1, 0, 0).unwrap()
-                    * a.get_submatrix(0, 0, 1, n - i - 1).unwrap();
+                    * a.get_submatrix(1, -1, 0, 0).unwrap()
+                    * a.get_submatrix(0, 0, 1, -1).unwrap();
                 a = b - b_minus;
             }
         }
@@ -85,7 +82,7 @@ impl MatQ {
 }
 
 #[cfg(test)]
-mod tes_cholesky_decomposition {
+mod test_cholesky_decomposition {
     use crate::{
         rational::{MatQ, Q},
         traits::SetEntry,
@@ -110,7 +107,7 @@ mod tes_cholesky_decomposition {
         matrix.cholesky_decomposition();
     }
 
-    /// Ensure that the function panics if a non-positive-definite matrix is provided
+    /// Ensure that the function panics if a matrix with negative eigenvalues is provided
     #[test]
     #[should_panic]
     fn non_positive_definite() {
