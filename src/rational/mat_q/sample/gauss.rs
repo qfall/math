@@ -30,7 +30,7 @@ impl MatQ {
     /// ```
     /// use qfall_math::rational::MatQ;
     ///
-    /// let sample = MatQ::sample_gauss(5, 5, 0, 1).unwrap();
+    /// let sample = MatQ::sample_gauss(&MatQ::new(5, 5), 1).unwrap();
     /// ```
     ///
     /// # Errors and Failures
