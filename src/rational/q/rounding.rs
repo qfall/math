@@ -128,7 +128,7 @@ impl Q {
     /// Parameters:
     /// - `n`: the security parameter; also specifies the range from which is sampled
     /// - `r`: specifies the Gaussian parameter, which is proportional
-    ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
+    ///     to the standard deviation `sigma * sqrt(2 * pi) = r`
     ///
     /// # Examples
     /// ```
@@ -140,7 +140,7 @@ impl Q {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if the `n <= 1` or `s <= 0`.
+    ///     if the `n <= 1` or `r <= 0`.
     ///
     /// This function implements randomized rounding according to:
     /// - Peikert, C. (2010, August).
@@ -287,7 +287,7 @@ mod test_randomized_rounding {
         assert!(value.randomized_rounding(3, -3).is_err());
     }
 
-    /// Ensure that a `s <= 0` throws an error
+    /// Ensure that a `r <= 0` throws an error
     #[test]
     fn negative_r() {
         let value = Q::from((2, 3));
