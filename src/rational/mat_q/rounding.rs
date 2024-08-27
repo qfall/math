@@ -10,7 +10,9 @@
 
 use super::MatQ;
 use crate::{
-    integer::MatZ,
+    error::MathError,
+    integer::{MatZ, Z},
+    rational::Q,
     traits::{GetEntry, GetNumColumns, GetNumRows, SetEntry},
 };
 
@@ -92,6 +94,46 @@ impl MatQ {
         }
         out
     }
+
+    /// Performs the randomized rounding algorithm entrywise
+    /// by sampling from a discrete Gaussian over the integers shifted
+    /// by `self` with gaussian parameter `r`.
+    ///
+    /// Parameters:
+    /// - `n`: the security parameter; also specifies the range from which is sampled
+    /// - `r`: specifies the Gaussian parameter, which is proportional
+    ///     to the standard deviation `sigma * sqrt(2 * pi) = r`
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::MatQ;
+    /// use std::str::FromStr;
+    ///
+    /// let value = MatQ::from_str("[[5/2, 1]]").unwrap();
+    /// let rounded = value.randomized_rounding(3,5).unwrap();
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
+    ///     if the `n <= 1` or `r <= 0`.
+    ///
+    /// This function implements randomized rounding according to:
+    /// - \[1\] Peikert, C. (2010, August).
+    ///     An efficient and parallel Gaussian sampler for lattices.
+    ///     In: Annual Cryptology Conference (pp. 80-97).
+    ///     <https://link.springer.com/chapter/10.1007/978-3-642-14623-7_5>
+    pub fn randomized_rounding(&self, r: impl Into<Q>, n: impl Into<Z>) -> Result<MatZ, MathError> {
+        let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
+        let r = r.into();
+        let n = n.into();
+        for i in 0..out.get_num_rows() {
+            for j in 0..out.get_num_columns() {
+                let entry = self.get_entry(i, j).unwrap().randomized_rounding(&r, &n)?;
+                out.set_entry(i, j, entry).unwrap();
+            }
+        }
+        Ok(out)
+    }
 }
 
 #[cfg(test)]
@@ -163,5 +205,27 @@ mod test_round {
         let cmp = MatZ::from_str(&format!("[[0, {}]]", (-i64::MAX - 1) / 2 + 1)).unwrap();
 
         assert_eq!(cmp, value.round());
+    }
+}
+
+#[cfg(test)]
+mod test_randomized_rounding {
+    use crate::rational::MatQ;
+    use std::str::FromStr;
+
+    /// Ensure that a `n <= 1` throws an error
+    #[test]
+    fn small_n() {
+        let value = MatQ::from_str("[[5/2, 1]]").unwrap();
+        assert!(value.randomized_rounding(3, 1).is_err());
+        assert!(value.randomized_rounding(3, -3).is_err());
+    }
+
+    /// Ensure that a `r <= 0` throws an error
+    #[test]
+    fn negative_r() {
+        let value = MatQ::from_str("[[5/2, 1]]").unwrap();
+        assert!(value.randomized_rounding(0, 5).is_err());
+        assert!(value.randomized_rounding(-1, 5).is_err());
     }
 }
