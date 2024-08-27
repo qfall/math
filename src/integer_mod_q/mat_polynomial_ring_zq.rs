@@ -30,7 +30,7 @@ mod vector;
 ///
 /// Attributes:
 /// - `matrix`: holds the [`MatPolyOverZ`] matrix
-/// - `modulus` : holds the [`ModulusPolynomialRingZq`] modulus of the matrix
+/// - `modulus`: holds the [`ModulusPolynomialRingZq`] modulus of the matrix
 ///
 /// # Examples
 /// ## Matrix usage
