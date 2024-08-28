@@ -55,37 +55,6 @@ impl<Integer: Into<Z>> Evaluate<Integer, Zq> for PolyOverZq {
     }
 }
 
-impl Evaluate<&Zq, Zq> for PolyOverZq {
-    /// Evaluates a [`PolyOverZq`] on a given input of [`Zq`]. Note that the
-    /// [`Zq`] in this case is only a reference. Note that this function will panic if
-    /// the modulus of the input and the polynomial mismatch.
-    /// Use [`PolyOverZq::evaluate_safe`] if a panic has to be avoided.
-    ///
-    /// Parameters:
-    /// - `value`: the value with which to evaluate the polynomial.
-    ///
-    /// Returns the evaluation of the polynomial as a [`Zq`].
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::traits::*;
-    /// use qfall_math::integer_mod_q::Zq;
-    /// use qfall_math::integer_mod_q::PolyOverZq;
-    /// use std::str::FromStr;
-    ///
-    /// let poly = PolyOverZq::from_str("5  0 1 2 -3 1 mod 17").unwrap();
-    /// let value = Zq::from((3, 17));
-    /// let res = poly.evaluate(&value);
-    /// ```
-    ///
-    /// # Panics ...
-    /// - if the moduli of the polynomial and the input mismatch.
-    fn evaluate(&self, value: &Zq) -> Zq {
-        self.evaluate_safe(value)
-            .expect("The moduli of the provided inputs mismatch")
-    }
-}
-
 impl PolyOverZq {
     /// Evaluates a [`PolyOverZq`] on a given input of [`Zq`]. Note that the
     /// [`Zq`] in this case is only a reference.
@@ -119,6 +88,37 @@ impl PolyOverZq {
             )));
         }
         Ok(self.evaluate(&value.value))
+    }
+}
+
+impl Evaluate<&Zq, Zq> for PolyOverZq {
+    /// Evaluates a [`PolyOverZq`] on a given input of [`Zq`]. Note that the
+    /// [`Zq`] in this case is only a reference. Note that this function will panic if
+    /// the modulus of the input and the polynomial mismatch.
+    /// Use [`PolyOverZq::evaluate_safe`] if a panic has to be avoided.
+    ///
+    /// Parameters:
+    /// - `value`: the value with which to evaluate the polynomial.
+    ///
+    /// Returns the evaluation of the polynomial as a [`Zq`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::traits::*;
+    /// use qfall_math::integer_mod_q::Zq;
+    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use std::str::FromStr;
+    ///
+    /// let poly = PolyOverZq::from_str("5  0 1 2 -3 1 mod 17").unwrap();
+    /// let value = Zq::from((3, 17));
+    /// let res = poly.evaluate(&value);
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the moduli of the polynomial and the input mismatch.
+    fn evaluate(&self, value: &Zq) -> Zq {
+        self.evaluate_safe(value)
+            .expect("The moduli of the provided inputs mismatch")
     }
 }
 

@@ -87,7 +87,7 @@ impl FromStr for PolyOverZ {
     }
 }
 
-impl<Integer: Into<Z> + AsInteger> From<Integer> for PolyOverZ {
+impl<Integer: AsInteger + Into<Z>> From<Integer> for PolyOverZ {
     /// Create a constant [`PolyOverZ`] with a specified integer constant.
     ///
     /// # Parameters:

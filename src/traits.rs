@@ -208,7 +208,8 @@ pub trait Xgcd<T = Self> {
 
 /// This is a trait to abstract Integers.
 ///
-/// It is implemented by [`Z`](crate::integer::Z), [`Zq`](crate::integer_mod_q::Zq),
+/// It is implemented by [`Z`](crate::integer::Z), [`Zq`](crate::integer_mod_q::Zq), 
+/// [`Modulus`](crate::integer_mod_q::Modulus),
 /// and rust's 8, 16, 32, and 64 bit signed and unsigned integers.
 /// The implementations exist for their owned and borrowed variants.
 ///
