@@ -162,7 +162,7 @@ impl MatZ {
     /// use std::str::FromStr;
     ///
     /// let convolution_matrix = MatQ::from_str("[[100,1],[1,65]]").unwrap();
-    /// let sample = MatZ::sample_d_common_non_spherical(16, convolution_matrix, 8).unwrap();
+    /// let sample = MatZ::sample_d_common_non_spherical(16, &convolution_matrix, 8).unwrap();
     /// ```
     ///
     /// # Errors and Failures
