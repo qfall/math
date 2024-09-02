@@ -26,8 +26,7 @@ use std::{ffi::CString, str::FromStr};
 impl FromStr for PolyOverZ {
     type Err = MathError;
 
-    /// Create a new polynomial with arbitrarily many coefficients of type
-    /// [`Z`](crate::integer::Z).
+    /// Create a new polynomial with arbitrarily many coefficients of type [`Z`].
     ///
     /// Parameters:
     /// - `s`: the polynomial of form: `"[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴..."`.
@@ -88,7 +87,7 @@ impl FromStr for PolyOverZ {
     }
 }
 
-impl<Integer: Into<Z> + AsInteger> From<Integer> for PolyOverZ {
+impl<Integer: AsInteger + Into<Z>> From<Integer> for PolyOverZ {
     /// Create a constant [`PolyOverZ`] with a specified integer constant.
     ///
     /// # Parameters:

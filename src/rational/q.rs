@@ -28,7 +28,7 @@ mod sample;
 mod serialize;
 mod to_string;
 
-/// [`Q`] represents any rational value.
+/// [`Q`] is any rational value.
 ///
 /// Attributes:
 /// - `value`: holds [FLINT](https://flintlib.org/)'s [struct](fmpq)

@@ -23,7 +23,6 @@ impl Mul for &MatQ {
     type Output = MatQ;
 
     /// Implements the [`Mul`] trait for two [`MatQ`] values.
-    ///
     /// [`Mul`] is implemented for any combination of owned and borrowed [`MatQ`].
     ///
     /// Parameters:
@@ -59,8 +58,7 @@ impl Mul<&MatZ> for &MatQ {
     type Output = MatQ;
 
     /// Implements the [`Mul`] trait for [`MatQ`] and [`MatZ`].
-    ///
-    /// [`Mul`] is implemented for any combination of owned and borrowed [`MatQ`] and [`MatZ`].
+    /// [`Mul`] is implemented for any combination of owned and borrowed values.
     ///
     /// Parameters:
     /// - `other`: specifies the value to multiply with `self`
@@ -78,8 +76,8 @@ impl Mul<&MatZ> for &MatQ {
     ///
     /// let c = &a * &b;
     /// let d = a * b;
-    /// let e = &c * d;
-    /// let f = c * &e;
+    /// let e = &MatZ::identity(2, 2) * c;
+    /// let f = MatZ::identity(2, 2) * &e;
     /// ```
     ///
     /// # Panics ...

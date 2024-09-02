@@ -9,7 +9,7 @@
 //! This module implements macros which are used to explicitly implement
 //! the [`Serialize`](serde::Serialize) and [`Deserialize`](serde::Deserialize) trait for data types.
 
-/// Implements the [`Serialize`](serde::Serialize) for [`*type*`].
+/// Implements the [`Serialize`](serde::Serialize) for `*type*`.
 ///
 /// Parameters:
 /// - `field_identifier`: the name of the field
@@ -35,7 +35,7 @@ macro_rules! serialize {
     };
 }
 
-/// Implements the [`Deserialize`](serde::Deserialize) for [`*type*`].
+/// Implements the [`Deserialize`](serde::Deserialize) for `*type*`.
 ///
 /// Parameters:
 /// - `field_identifier`: the name of the field

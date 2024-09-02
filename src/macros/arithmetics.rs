@@ -8,18 +8,20 @@
 
 //! This module implements macros which are used to implement arithmetic traits for data types.
 
-/// Implements the [`*trait*`] for [`*type*`] using the [`*trait*`] for
-/// [`&*type*`].
+/// Implements the `*trait*` for `*type*`, using the `*trait*` for
+/// `&*type*`.
 ///
 /// Parameters:
-/// - `trait`: the trait that is implemented (e.g. [`Add`],[`Sub`], ...).
+/// - `trait`: the trait that is implemented
+///     (e.g. [`Add`](std::ops::Add),[`Sub`](std::ops::Sub), ...).
 /// - `trait_function`: the function the trait implements
-///     (e.g. add for [`Add`], ...).
-/// - `type`: the type the trait is implemented for (e.g. [`Z`],[`Q`])
+///     (e.g. add for [`Add`](std::ops::Add), ...).
+/// - `type`: the type the trait is implemented for
+///     (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q))
 /// - `other_type`: the type the second part of the computation.
 /// - `output_type`: the type of the result.
 ///
-/// Returns the owned Implementation code for the [`*trait*`]
+/// Returns the owned Implementation code for the `*trait*`
 /// trait with the signature:
 ///
 /// ```impl *trait<*other_type*>* for *type*```
@@ -41,19 +43,21 @@ macro_rules! arithmetic_trait_borrowed_to_owned {
 
 pub(crate) use arithmetic_trait_borrowed_to_owned;
 
-/// Implements the [`*trait*`] for owned [`*type*`] on borrowed [`*type*`] and
-/// reverse using the [`*trait*`] for [`&*type*`].
+/// Implements the `*trait*` for owned `*type*` on borrowed `*type*` and
+/// reverse, using the `*trait*` for `&*type*`.
 ///
 /// Parameters:
-/// - `trait`: the trait that is implemented (e.g. [`Add`],[`Sub`], ...).
+/// - `trait`: the trait that is implemented
+///     (e.g. [`Add`](std::ops::Add),[`Sub`](std::ops::Sub), ...).
 /// - `trait_function`: the function the trait implements
-///     (e.g. add for [`Add`], ...).
-/// - `type`: the type the trait is implemented for (e.g. [`Z`],[`Q`], ...).
+///     (e.g. add for [`Add`](std::ops::Add), ...).
+/// - `type`: the type the trait is implemented for
+///     (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q), ...).
 /// - `other_type`: the type the second part of the computation.
 /// - `output_type`: the type of the result.
 ///
 /// Returns the mixed owned and borrowed Implementation code for the
-/// [`*trait*`] trait with the signatures:
+/// `*trait*` trait with the signatures:
 ///
 /// ```impl *trait*<&*other_type*> for *type*```
 ///
@@ -87,20 +91,21 @@ macro_rules! arithmetic_trait_mixed_borrowed_owned {
 
 pub(crate) use arithmetic_trait_mixed_borrowed_owned;
 
-/// Implements the [`*trait*`] for owned [`*type*`] on borrowed [`*type*`] and
-/// reverse using the [`*trait*`] for [`&*type*`].
+/// Implements the `*trait*` for owned `*type*` on borrowed `*type*` and
+/// reverse using the `*trait*` for `&*type*`.
 ///
 /// Parameters:
-/// - `trait`: the trait that is implemented (e.g. [`Add`],[`Sub`], ...).
+/// - `trait`: the trait that is implemented
+///     (e.g. [`Add`](std::ops::Add),[`Sub`](std::ops::Sub), ...).
 /// - `trait_function`: the function the trait implements
-///     (e.g. add for [`Add`], ...).
+///     (e.g. add for [`Add`](std::ops::Add), ...).
 /// - `output_type`: one type that is part of the computation and it is the
-///     result type (e.g. [`Z`],[`Q`], ...).
+///     result type (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q), ...).
 /// - `other_type*`: the other types that is part of the computation
-///     (e.g. [`Z`],[`Q`], ...).
+///     (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q), ...).
 ///
 /// Returns the owned and borrowed Implementation code for the
-/// [`*trait*`] trait with the signatures:
+/// `*trait*` trait with the signatures:
 /// ```impl *trait*<&*other_type*> for &*output_type*```
 ///
 /// ```impl *trait*<*other_type*> for *output_type*```
@@ -152,18 +157,20 @@ macro_rules! arithmetic_between_types {
 
 pub(crate) use arithmetic_between_types;
 
-/// Implements the [`*trait*`] for [`*type*`] using the [`*trait*`] for
-/// [`&*type*`].
+/// Implements the `*trait*` for `*type*` using the `*trait*` for
+/// `&*type*`.
 ///
 /// Parameters:
-/// - `trait`: the trait that is implemented (e.g. [`Add`],[`Sub`], ...).
+/// - `trait`: the trait that is implemented
+///     (e.g. [`Add`](std::ops::Add),[`Sub`](std::ops::Sub), ...).
 /// - `trait_function`: the function the trait implements
-///     (e.g. add for [`Add`], ...).
-/// - `type`: the type the trait is implemented for (e.g. [`Z`],[`Q`])
+///     (e.g. add for [`Add`](std::ops::Add), ...).
+/// - `type`: the type the trait is implemented for
+///     (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q))
 /// - `other_type`: the type the second part of the computation.
 /// - `output_type`: the type of the result.
 ///
-/// Returns the owned Implementation code for the [`*trait*`]
+/// Returns the owned Implementation code for the `*trait*`
 /// trait with the signature:
 ///
 /// ```impl *trait<*other_type*>* for *type*```
@@ -185,20 +192,21 @@ macro_rules! arithmetic_trait_reverse {
 
 pub(crate) use arithmetic_trait_reverse;
 
-/// Implements the [`*trait*`] for owned [`Zq`] on borrowed [`*type*`] and
-/// reverse using the [`*trait*`] for [`Zq`].
+/// Implements the `*trait*` for owned [`Zq`](crate::integer_mod_q::Zq) on borrowed `*type*` and
+/// reverse using the `*trait*` for [`Zq`](crate::integer_mod_q::Zq).
 ///
 /// Parameters:
-/// - `trait`: the trait that is implemented (e.g. [`Add`],[`Sub`], ...).
+/// - `trait`: the trait that is implemented
+///     (e.g. [`Add`](std::ops::Add),[`Sub`](std::ops::Sub), ...).
 /// - `trait_function`: the function the trait implements
-///     (e.g. add for [`Add`], ...).
+///     (e.g. add for [`Add`](std::ops::Add), ...).
 /// - `output_type`: one type that is part of the computation and it is the
-///     result type (e.g. [`Z`],[`Q`], ...).
+///     result type (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q), ...).
 /// - `other_type*`: the other types that is part of the computation
-///     (e.g. [`Z`],[`Q`], ...).
+///     (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q), ...).
 ///
 /// Returns the owned and borrowed Implementation code for the
-/// [`*trait*`] trait with the signatures:
+/// `*trait*` trait with the signatures:
 /// ```impl *trait*<&*other_type*> for &[`Zq`]```
 ///
 /// ```impl *trait*<*other_type*> for [`Zq`]```

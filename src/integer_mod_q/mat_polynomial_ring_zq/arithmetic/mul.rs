@@ -19,7 +19,6 @@ impl Mul for &MatPolynomialRingZq {
     type Output = MatPolynomialRingZq;
 
     /// Implements the [`Mul`] trait for two [`MatPolynomialRingZq`] values.
-    ///
     /// [`Mul`] is implemented for any combination of owned and borrowed [`MatPolynomialRingZq`].
     ///
     /// Parameters:

@@ -203,7 +203,8 @@ impl Z {
 /// It is used as a workaround to implement the [`From`] trait without colliding
 /// with the default implementation for [`Z`] and also to filter out [`Zq`](crate::integer_mod_q::Zq).
 trait IntoZ {}
-implement_empty_trait_owned_ref!(IntoZ for Modulus &Z fmpz u8 u16 u32 u64 i8 i16 i32 i64);
+impl IntoZ for &Z {}
+implement_empty_trait_owned_ref!(IntoZ for Modulus fmpz u8 u16 u32 u64 i8 i16 i32 i64);
 
 impl<Integer: AsInteger + IntoZ> From<Integer> for Z {
     /// Convert an integer to [`Z`].

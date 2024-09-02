@@ -13,7 +13,7 @@ use crate::error::MathError;
 use flint_sys::fmpz::fmpz;
 use std::fmt::Display;
 
-/// Is implemented by polynomials to evaluate it for a certain input.
+/// Is implemented by polynomials to evaluate them for a certain input.
 pub trait Evaluate<T, U> {
     /// Evaluates the object, e.g. polynomial or a matrix of polynomials,
     /// for a given input value.
@@ -25,7 +25,7 @@ pub trait Evaluate<T, U> {
     fn evaluate(&self, value: T) -> U;
 }
 
-/// Is implemented by polynomials get a coefficient.
+/// Is implemented by polynomials to get a coefficient.
 pub trait GetCoefficient<T> {
     /// Returns a coefficient of the given object, e.g. a polynomial,
     /// for a given index.
@@ -37,7 +37,7 @@ pub trait GetCoefficient<T> {
     fn get_coeff(&self, index: impl TryInto<i64> + Display) -> Result<T, MathError>;
 }
 
-/// Is implemented by polynomials to set individual coefficients.
+/// Is implemented by polynomials to set a coefficient.
 pub trait SetCoefficient<T> {
     /// Sets coefficient of the object, e.g. polynomial,
     /// for a given input value and a index.
@@ -108,7 +108,7 @@ pub trait Tensor {
     fn tensor_product(&self, other: &Self) -> Self;
 }
 
-/// Is implemented by matrices to concatenate two matrices.
+/// Is implemented by matrices to concatenate them.
 pub trait Concatenate {
     type Output;
 
@@ -135,7 +135,7 @@ pub trait Concatenate {
     fn concat_horizontal(self, other: Self) -> Result<Self::Output, MathError>;
 }
 
-/// Is implemented for [`Z`](crate::integer::Z).
+/// Is implemented by basic types to calculate distances.
 pub trait Distance<T = Self> {
     type Output;
 
@@ -149,7 +149,7 @@ pub trait Distance<T = Self> {
     fn distance(&self, other: T) -> Self::Output;
 }
 
-/// Is implemented for [`Z`](crate::integer::Z).
+/// Is implemented by [`Z`](crate::integer::Z) instances to compute the `lcm`.
 pub trait Lcm<T = Self> {
     type Output;
 
@@ -163,7 +163,7 @@ pub trait Lcm<T = Self> {
     fn lcm(&self, other: T) -> Self::Output;
 }
 
-/// Is implemented by [`Zq`](crate::integer_mod_q::Zq) powered by [`Z`](crate::integer::Z).
+/// Is implemented by basic types to raise a value to the power of another.
 pub trait Pow<T> {
     type Output;
 
@@ -209,6 +209,7 @@ pub trait Xgcd<T = Self> {
 /// This is a trait to abstract Integers.
 ///
 /// It is implemented by [`Z`](crate::integer::Z), [`Zq`](crate::integer_mod_q::Zq),
+/// [`Modulus`](crate::integer_mod_q::Modulus),
 /// and rust's 8, 16, 32, and 64 bit signed and unsigned integers.
 /// The implementations exist for their owned and borrowed variants.
 ///
@@ -239,6 +240,7 @@ pub(crate) unsafe trait AsInteger {
     }
 }
 
+/// Is implemented by polynomials to receive a matrix representation of their coefficients.
 pub trait IntoCoefficientEmbedding<T> {
     /// Returns a canonical coefficient embedding of the value,
     /// e.g. a matrix representation of the coefficients of a polynomial.
@@ -249,6 +251,7 @@ pub trait IntoCoefficientEmbedding<T> {
     fn into_coefficient_embedding(self, size: impl Into<i64>) -> T;
 }
 
+/// Is implemented by polynomials to reverse the coefficient embedding.
 pub trait FromCoefficientEmbedding<T> {
     /// Reverses the coefficient embedding, e.g. takes as input a vector and
     /// returns a polynomial.

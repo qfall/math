@@ -23,7 +23,8 @@ use std::ops::Mul;
 
 impl Mul<&Z> for &MatPolynomialRingZq {
     type Output = MatPolynomialRingZq;
-    /// Implements multiplication for a [`MatPolynomialRingZq`] matrix with a [`Z`] integer.
+    /// Implements the [`Mul`] trait for a [`MatPolynomialRingZq`] matrix with a [`Z`] integer.
+    /// [`Mul`] is implemented for any combination of owned and borrowed values.
     ///
     /// Parameters:
     /// - `scalar`: Specifies the scalar by which the matrix is multiplied.
@@ -69,7 +70,8 @@ implement_for_others!(Z, MatPolynomialRingZq, Mul Scalar for i8 i16 i32 i64 u8 u
 
 impl Mul<&PolyOverZ> for &MatPolynomialRingZq {
     type Output = MatPolynomialRingZq;
-    /// Implements multiplication for a [`MatPolynomialRingZq`] matrix with a [`PolyOverZ`].
+    /// Implements the [`Mul`] trait for a [`MatPolynomialRingZq`] matrix with a [`PolyOverZ`].
+    /// [`Mul`] is implemented for any combination of owned and borrowed values.
     ///
     /// Parameters:
     /// - `scalar`: Specifies the scalar by which the matrix is multiplied.
@@ -143,7 +145,8 @@ arithmetic_trait_mixed_borrowed_owned!(
 
 impl Mul<&PolyOverZq> for &MatPolynomialRingZq {
     type Output = MatPolynomialRingZq;
-    /// Implements multiplication for a [`MatPolynomialRingZq`] matrix with a [`PolyOverZq`].
+    /// Implements the [`Mul`] trait for a [`MatPolynomialRingZq`] matrix with a [`PolyOverZq`].
+    /// [`Mul`] is implemented for any combination of owned and borrowed values.
     ///
     /// Parameters:
     /// - `scalar`: Specifies the scalar by which the matrix is multiplied.
@@ -210,7 +213,8 @@ arithmetic_trait_mixed_borrowed_owned!(
 
 impl Mul<&PolynomialRingZq> for &MatPolynomialRingZq {
     type Output = MatPolynomialRingZq;
-    /// Implements multiplication for a [`MatPolynomialRingZq`] matrix with a [`PolynomialRingZq`].
+    /// Implements the [`Mul`] trait for a [`MatPolynomialRingZq`] matrix with a [`PolynomialRingZq`].
+    /// [`Mul`] is implemented for any combination of owned and borrowed values.
     ///
     /// Parameters:
     /// - `scalar`: Specifies the scalar by which the matrix is multiplied.

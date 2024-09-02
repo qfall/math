@@ -68,7 +68,7 @@ impl Modulus {
 /// A trait that filters for which types the `From for Modulus` should be implemented.
 /// It is used as a workaround to implement the [`From`] trait without colliding
 /// with the default implementation for [`Modulus`] and also to filter out
-/// [`Zq`](crate::integer_mod_q::Zq) and [`&Modulus`].
+/// [`Zq`](crate::integer_mod_q::Zq) and &[`Modulus`].
 trait IntoModulus {}
 implement_empty_trait_owned_ref!(IntoModulus for Z fmpz u8 u16 u32 u64 i8 i16 i32 i64);
 

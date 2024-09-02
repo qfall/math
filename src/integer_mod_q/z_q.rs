@@ -12,7 +12,7 @@
 //! from the [FLINT](https://flintlib.org/) library.
 //! FLINT uses a `fmpz_mod_ctx_struct` to store functions and data used for
 //! optimizing modulo operations.
-//! This struct is wrapped in [`Modulus`](super::Modulus) for easy use.
+//! This struct is wrapped in [`Modulus`] for easy use.
 //!
 //! For **DEVELOPERS**: Many functions assume that the [`Zq`] instances are reduced.
 //! To avoid unnecessary checks and reductions, always return canonical/reduced
@@ -32,7 +32,7 @@ mod reduce;
 mod sample;
 mod to_string;
 
-/// [`Zq`] represents an integer value in a modulus ring.
+/// [`Zq`] is an arbitrary integer value in a residue class.
 ///
 /// Attributes:
 /// - `value`: holds a [`Z`] value for an integer value

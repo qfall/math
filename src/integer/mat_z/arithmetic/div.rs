@@ -21,7 +21,8 @@ use std::ops::Div;
 
 impl Div<&Z> for &MatZ {
     type Output = MatQ;
-    /// Implements division for a [`MatZ`] matrix by a [`Z`] integer.
+    /// Implements the [`Div`] trait for a [`MatZ`] matrix by a [`Z`] integer.
+    /// [`Div`] is implemented for any combination of owned and borrowed values.
     ///
     /// Parameters:
     /// - `divisor`: specifies the divisor by which the matrix is divided

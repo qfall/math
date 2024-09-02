@@ -122,8 +122,7 @@ impl From<&ModulusPolynomialRingZq> for PolyOverZq {
 impl FromStr for PolyOverZq {
     type Err = MathError;
 
-    /// Creating a polynomial with arbitrarily many coefficients of type
-    /// [`Zq`](crate::integer_mod_q::Zq).
+    /// Creating a polynomial with arbitrarily many coefficients of type [`Zq`].
     ///
     /// Parameters:
     /// - `s`: the polynomial of form:
