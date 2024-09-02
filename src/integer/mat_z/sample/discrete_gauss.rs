@@ -434,7 +434,6 @@ mod test_sample_d_common_non_spherical {
 
     /// Checks whether the function returns an error if `n` or `r` is too small.
     #[test]
-    #[should_panic]
     fn too_small_parameters() {
         let convolution_matrix = MatQ::from_str("[[100, 1],[1, 65]]").unwrap();
 
