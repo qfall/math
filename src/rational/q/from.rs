@@ -25,122 +25,7 @@ use flint_sys::{
 };
 use std::{ffi::CString, str::FromStr};
 
-impl FromStr for Q {
-    type Err = MathError;
-
-    /// Create a [`Q`] rational from a [`String`]
-    /// In the string should be two decimal numbers separated by `/`.
-    /// Optionally, before one or both of them can be a `-`.
-    /// The format of that string looks like this `-12/53`.
-    ///
-    /// If the number is an integer, the string can be in the format of one.
-    /// The format of that string looks like this `-12`.
-    /// It is automatically transformed to `-12/1`.
-    ///
-    /// Parameters:
-    /// - `s`: the rational value
-    ///
-    /// Returns a [`Q`] or an error, if the provided string was not formatted
-    /// correctly.
-    ///
-    /// # Examples
-    /// ```
-    /// use std::str::FromStr;
-    /// use qfall_math::rational::Q;
-    ///  
-    /// let a: Q = "100/3".parse().unwrap();
-    /// let b: Q = Q::from_str("100/3").unwrap();
-    /// ```
-    ///
-    /// ```
-    /// use std::str::FromStr;
-    /// use qfall_math::rational::Q;
-    ///  
-    /// let q: Q = Q::from_str("-10/3").unwrap();
-    /// let b: Q = Q::from_str("10/-3").unwrap();
-    /// ```
-    ///
-    /// ```
-    /// use std::str::FromStr;
-    /// use qfall_math::rational::Q;
-    ///  
-    /// let q: Q = Q::from_str("-10").unwrap();
-    /// let b: Q = Q::from_str("10").unwrap();
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type
-    ///     [`StringConversionError`](MathError::StringConversionError)
-    ///     if the provided string was not formatted correctly.
-    /// - Returns a [`MathError`] of type
-    ///     [`DivisionByZeroError`](MathError::DivisionByZeroError)
-    ///     if the provided string has `0` as the denominator.
-    fn from_str(s: &str) -> Result<Self, MathError> {
-        if s.contains(char::is_whitespace) {
-            return Err(StringConversionError::InvalidStringToQInput(s.to_owned()))?;
-        }
-
-        // `fmpq::default()` returns the value `0/0`
-        let mut value = fmpq::default();
-
-        let c_string = CString::new(s)?;
-
-        // -1 is returned if the string is an invalid input.
-        //
-        // Given the documentation `c_string.as_ptr()` is freed once c_string is deallocated
-        // 'The pointer will be valid for as long as `self` is'
-        // For reading more look at the documentation of `.as_ptr()`.
-        //
-        // since value is set to `0`, if an error occurs, we do not need to free
-        // the allocated space manually
-        if -1 == unsafe { fmpq_set_str(&mut value, c_string.as_ptr(), 10) } {
-            return Err(StringConversionError::InvalidStringToQInput(s.to_owned()))?;
-        };
-
-        // canonical form is expected by other functions
-        unsafe { fmpq_canonicalise(&mut value) };
-
-        // if `value.den` is set to `0`, `value.num` is not necessarily `0` as well.
-        // hence we do need to free the allocated space of the numerator
-        // manually by using `fmpq_clear`
-        match unsafe { fmpz_is_zero(&value.den) } {
-            0 => Ok(Q { value }),
-            _ => {
-                unsafe {
-                    fmpq_clear(&mut value);
-                }
-                Err(MathError::DivisionByZeroError(s.to_owned()))
-            }
-        }
-    }
-}
-
 impl Q {
-    /// Create a new Integer that can grow arbitrary large.
-    ///
-    /// Parameters:
-    /// - `value`: the initial value the integer should have
-    ///
-    /// Returns the new integer.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer::Z;
-    /// use qfall_math::rational::Q;
-    ///
-    /// let m = Z::from(17);
-    ///
-    /// let a: Q = Q::from_int(m);
-    /// let b: Q = Q::from_int(17);
-    /// ```
-    pub fn from_int(value: impl Into<Z>) -> Self {
-        let value = value.into();
-        // this efficient implementation depends on Q::default instantiating 1 as denominator
-        let mut out = Q::default();
-        unsafe { fmpz_set(&mut out.value.num, &value.value) }
-        out
-    }
-
     /// Create a new rational number of type [`Q`] from a [`f64`].
     /// This function works with the exact float it received as input.
     /// Many numbers like `0.1` are not exactly representable as floats and
@@ -246,7 +131,11 @@ impl<Integer: Into<Z>> From<Integer> for Q {
     /// let b: Q = Q::from(Z::from(17));
     /// ```
     fn from(value: Integer) -> Self {
-        Q::from_int(value)
+        let value = value.into();
+        // this efficient implementation depends on Q::default instantiating 1 as denominator
+        let mut out = Q::default();
+        unsafe { fmpz_set(&mut out.value.num, &value.value) }
+        out
     }
 }
 
@@ -298,6 +187,96 @@ impl From<&Q> for Q {
     /// It makes the use of generic [`Into<Q>`] types easier.
     fn from(value: &Q) -> Self {
         value.clone()
+    }
+}
+
+impl FromStr for Q {
+    type Err = MathError;
+
+    /// Create a [`Q`] rational from a [`String`]
+    /// In the string should be two decimal numbers separated by `/`.
+    /// Optionally, before one or both of them can be a `-`.
+    /// The format of that string looks like this `-12/53`.
+    ///
+    /// If the number is an integer, the string can be in the format of one.
+    /// The format of that string looks like this `-12`.
+    /// It is automatically transformed to `-12/1`.
+    ///
+    /// Parameters:
+    /// - `s`: the rational value
+    ///
+    /// Returns a [`Q`] or an error, if the provided string was not formatted
+    /// correctly.
+    ///
+    /// # Examples
+    /// ```
+    /// use std::str::FromStr;
+    /// use qfall_math::rational::Q;
+    ///  
+    /// let a: Q = "100/3".parse().unwrap();
+    /// let b: Q = Q::from_str("100/3").unwrap();
+    /// ```
+    ///
+    /// ```
+    /// use std::str::FromStr;
+    /// use qfall_math::rational::Q;
+    ///  
+    /// let q: Q = Q::from_str("-10/3").unwrap();
+    /// let b: Q = Q::from_str("10/-3").unwrap();
+    /// ```
+    ///
+    /// ```
+    /// use std::str::FromStr;
+    /// use qfall_math::rational::Q;
+    ///  
+    /// let q: Q = Q::from_str("-10").unwrap();
+    /// let b: Q = Q::from_str("10").unwrap();
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type
+    ///     [`StringConversionError`](MathError::StringConversionError)
+    ///     if the provided string was not formatted correctly.
+    /// - Returns a [`MathError`] of type
+    ///     [`DivisionByZeroError`](MathError::DivisionByZeroError)
+    ///     if the provided string has `0` as the denominator.
+    fn from_str(s: &str) -> Result<Self, MathError> {
+        if s.contains(char::is_whitespace) {
+            return Err(StringConversionError::InvalidStringToQInput(s.to_owned()))?;
+        }
+
+        // `fmpq::default()` returns the value `0/0`
+        let mut value = fmpq::default();
+
+        let c_string = CString::new(s)?;
+
+        // -1 is returned if the string is an invalid input.
+        //
+        // Given the documentation `c_string.as_ptr()` is freed once c_string is deallocated
+        // 'The pointer will be valid for as long as `self` is'
+        // For reading more look at the documentation of `.as_ptr()`.
+        //
+        // since value is set to `0`, if an error occurs, we do not need to free
+        // the allocated space manually
+        if -1 == unsafe { fmpq_set_str(&mut value, c_string.as_ptr(), 10) } {
+            return Err(StringConversionError::InvalidStringToQInput(s.to_owned()))?;
+        };
+
+        // canonical form is expected by other functions
+        unsafe { fmpq_canonicalise(&mut value) };
+
+        // if `value.den` is set to `0`, `value.num` is not necessarily `0` as well.
+        // hence we do need to free the allocated space of the numerator
+        // manually by using `fmpq_clear`
+        match unsafe { fmpz_is_zero(&value.den) } {
+            0 => Ok(Q { value }),
+            _ => {
+                unsafe {
+                    fmpq_clear(&mut value);
+                }
+                Err(MathError::DivisionByZeroError(s.to_owned()))
+            }
+        }
     }
 }
 
@@ -706,17 +685,6 @@ mod test_try_from_int_int {
 mod test_from_z {
     use super::Q;
     use crate::integer::Z;
-
-    /// Ensure that the `from_int` function is available and works correctly for
-    /// small and large instances of [`Z`] and structs implementing [`Into<Z>`].
-    #[test]
-    fn large_small_numbers() {
-        let z_1 = Z::from(u64::MAX);
-        let z_2 = Z::from(17);
-
-        assert_eq!(Q::from(u64::MAX), Q::from_int(z_1));
-        assert_eq!(Q::from(17), Q::from_int(z_2));
-    }
 
     /// Ensure that the [`From`] trait is available and works correctly for
     /// small and large instances of [`Z`].

@@ -14,52 +14,7 @@ use crate::{
     integer::Z,
     integer_mod_q::Modulus,
 };
-use flint_sys::fmpz_mod::fmpz_mod_set_fmpz;
 use std::str::FromStr;
-
-impl Zq {
-    /// Create [`Zq`] from a [`Z`] values and a [`Modulus`].
-    ///
-    /// As the [`Modulus`] object counts its references and
-    /// its value itself is not cloned when a [`Modulus`] struct is cloned,
-    /// we clone the wrapping [`Modulus`] object every time.
-    ///
-    /// Parameters:
-    /// - `value` defines the value of the new [`Zq`].
-    /// - `modulus` is the modulus used by [`Zq`].
-    ///
-    /// Returns the new `value` mod `modulus` as a [`Zq`].
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer::Z;
-    /// use qfall_math::integer_mod_q::{Modulus, Zq};
-    ///
-    /// let value = Z::from(42);
-    /// let modulus = Modulus::from(100);
-    ///
-    /// let value_zq = Zq::from_z_modulus(&value, &modulus);
-    /// ```
-    pub fn from_z_modulus(value: &Z, modulus: impl Into<Modulus>) -> Self {
-        let mut out = Z::default();
-        let modulus = modulus.into();
-
-        unsafe {
-            // Applies modulus to parameter and saves the new value into `value_fmpz`.
-            // => No problem when the `value` parameter is later dropped.
-            fmpz_mod_set_fmpz(
-                &mut out.value,
-                &value.value,
-                modulus.get_fmpz_mod_ctx_struct(),
-            );
-        };
-
-        Self {
-            value: out,
-            modulus,
-        }
-    }
-}
 
 impl<IntegerValue: Into<Z>, IntegerModulus: Into<Modulus>> From<(IntegerValue, IntegerModulus)>
     for Zq
@@ -149,62 +104,6 @@ impl From<&Zq> for Zq {
     /// It makes the use of generic `Into<Zq>` types easier.
     fn from(value: &Zq) -> Self {
         value.clone()
-    }
-}
-
-#[cfg(test)]
-mod test_from_z_modulus {
-    use std::str::FromStr;
-
-    use super::{Modulus, Zq};
-    use crate::integer::Z;
-
-    /// Tests if from_z_modulus works correctly.
-    #[test]
-    fn working_small() {
-        let value = Z::from(10);
-        let modulus = Modulus::from(15);
-
-        assert_eq!(
-            Zq::from_str("10 mod 15").unwrap(),
-            Zq::from_z_modulus(&value, &modulus)
-        );
-    }
-
-    /// Tests if from_z_modulus works correctly for large numbers.
-    #[test]
-    fn working_large() {
-        let value = Z::from(u64::MAX - 1);
-        let modulus = Modulus::from(u64::MAX);
-
-        assert_eq!(
-            Zq::from_str(&format!("{} mod {}", u64::MAX - 1, u64::MAX)).unwrap(),
-            Zq::from_z_modulus(&value, &modulus)
-        );
-    }
-
-    /// Test with large value and modulus (FLINT uses pointer representation).
-    #[test]
-    fn working_different_moduli() {
-        let value = Z::from(u64::MAX - 1);
-        let modulus_1 = Modulus::from(u64::MAX);
-        let modulus_2 = Modulus::from(u64::MAX);
-
-        let zq_1 = Zq::from_z_modulus(&value, &modulus_1);
-        let zq_2 = Zq::from_z_modulus(&value, &modulus_2);
-
-        assert_eq!(zq_1, zq_2);
-    }
-
-    /// Test with large value and modulus (FLINT uses pointer representation).
-    #[test]
-    fn value_reduced() {
-        let value = Z::from(7);
-        let modulus = Modulus::from(6);
-
-        let zq = Zq::from_z_modulus(&value, &modulus);
-
-        assert!(zq.is_one());
     }
 }
 
