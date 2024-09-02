@@ -144,7 +144,7 @@ impl MatZ {
         MatZ::sample_d(&basis, n, &center, s)
     }
 
-    /// Samples a (possibly) non-spherical discrete Gaussian distribution using
+    /// Samples a (possibly) non-spherical discrete Gaussian using
     /// the standard basis and center `0`.
     ///
     /// Parameters:
@@ -387,7 +387,6 @@ mod test_sample_d_common_non_spherical {
     fn availability() {
         let convolution_matrix = MatQ::from_str("[[100,1],[1,65]]").unwrap();
 
-        let _ = MatZ::sample_d_common_non_spherical(16, &convolution_matrix, 8).unwrap();
         let _ = MatZ::sample_d_common_non_spherical(16, &convolution_matrix, 8).unwrap();
 
         let _ = MatZ::sample_d_common_non_spherical(16u16, &convolution_matrix, 8_u16).unwrap();
