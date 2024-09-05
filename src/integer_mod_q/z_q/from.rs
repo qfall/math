@@ -7,6 +7,8 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! Implementations to create a [`Zq`] value from other types.
+//!
+//! The explicit functions contain the documentation.
 
 use super::Zq;
 use crate::{

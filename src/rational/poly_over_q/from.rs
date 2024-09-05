@@ -7,8 +7,6 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! Implementations to create a [`PolyOverQ`] value from other types.
-//! For each reasonable type, an explicit function with the format
-//! `from_<type_name>` and the [`From`] trait should be implemented.
 //!
 //! The explicit functions contain the documentation.
 
@@ -79,7 +77,7 @@ impl FromStr for PolyOverQ {
     }
 }
 
-impl PolyOverQ {
+impl From<&PolyOverZ> for PolyOverQ {
     /// Create a [`PolyOverQ`] from a [`PolyOverZ`].
     ///
     /// Parameters:
@@ -93,23 +91,15 @@ impl PolyOverQ {
     ///
     /// let poly = PolyOverZ::from_str("4  0 1 102 3").unwrap();
     ///
-    /// let poly_q = PolyOverQ::from_poly_over_z(&poly);
+    /// let poly_q = PolyOverQ::from(&poly);
     ///
     /// # let cmp_poly = PolyOverQ::from_str("4  0 1 102 3").unwrap();
     /// # assert_eq!(cmp_poly, poly_q);
     /// ```
-    pub fn from_poly_over_z(poly: &PolyOverZ) -> Self {
+    fn from(poly: &PolyOverZ) -> Self {
         let mut out = Self::default();
         unsafe { fmpq_poly_set_fmpz_poly(&mut out.poly, &poly.poly) };
         out
-    }
-}
-
-impl From<&PolyOverZ> for PolyOverQ {
-    /// Converts a polynomial of type [`PolyOverZ`] to a [`PolyOverQ`] using
-    /// [`PolyOverQ::from_poly_over_z`].
-    fn from(poly: &PolyOverZ) -> Self {
-        Self::from_poly_over_z(poly)
     }
 }
 

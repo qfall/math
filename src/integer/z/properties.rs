@@ -117,6 +117,7 @@ impl Z {
     ///
     /// The number of bits needs to fit into an [`u64`],
     /// i.e. the size should not exceed `2^(2^64)`.
+    /// Otherwise, the result is undefined.
     ///
     /// # Examples
     /// ```

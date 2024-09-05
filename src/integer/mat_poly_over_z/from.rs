@@ -7,9 +7,6 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! Implementations to create a [`MatPolyOverZ`] value from other types.
-//! For each reasonable type, an explicit function with the format
-//! `from_<type_name>` and the [`From`] trait should be implemented.
-//! Furthermore, an instantiation of a zero matrix is implemented.
 //!
 //! The explicit functions contain the documentation.
 

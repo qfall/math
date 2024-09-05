@@ -7,8 +7,6 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! Implementations to create a [`PolynomialRingZq`] value from other types.
-//! For each reasonable type, an explicit function with the format
-//! `from_<type_name>` and the [`From`] trait should be implemented.
 //!
 //! The explicit functions contain the documentation.
 
@@ -21,8 +19,8 @@ impl<Poly: Into<PolyOverZ>, Mod: Into<ModulusPolynomialRingZq>> From<(Poly, Mod)
     /// Create a new polynomial ring element of type [`PolynomialRingZq`].
     ///
     /// Parameters:
-    /// - `(poly, modulus)`: the value of the polynomial ring element, where `poly`
-    ///     defines the equivalence class and `modulus` is the corresponding modulus.
+    /// - `poly`: The coefficients of the polynomial.
+    /// - `modulus`: The modulus that is applied to the polynomial ring element.
     ///
     /// Returns a new element inside the polynomial ring.
     ///
