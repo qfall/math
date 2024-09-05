@@ -103,7 +103,7 @@ impl From<&MatZ> for MatQ {
     ///
     /// let m = MatZ::from_str("[[1, 2],[3, -1]]").unwrap();
     ///
-    /// let a = MatQ::from_mat_z(&m);
+    /// let a = MatQ::from(&m);
     /// ```
     fn from(matrix: &MatZ) -> Self {
         let mut out = MatQ::new(matrix.get_num_rows(), matrix.get_num_columns());

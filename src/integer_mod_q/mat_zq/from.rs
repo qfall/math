@@ -114,7 +114,7 @@ impl<Mod: Into<Modulus>> From<(&MatZ, Mod)> for MatZq {
     ///
     /// let m = MatZ::from_str("[[1, 2],[3, -1]]").unwrap();
     ///
-    /// let a = MatZq::from_mat_z_modulus(&m, 17);
+    /// let a = MatZq::from((&m, 17));
     /// ```
     fn from((matrix, modulus): (&MatZ, Mod)) -> Self {
         let mut out = MatZq::new(matrix.get_num_rows(), matrix.get_num_columns(), modulus);
