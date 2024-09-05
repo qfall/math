@@ -17,41 +17,10 @@ use super::MatZ;
 use crate::{
     error::MathError,
     integer::Z,
-    integer_mod_q::MatZq,
-    traits::{GetNumColumns, GetNumRows, SetEntry},
+    traits::SetEntry,
     utils::{dimensions::find_matrix_dimensions, parse::parse_matrix_string},
 };
-use flint_sys::fmpz_mat::fmpz_mat_set;
 use std::str::FromStr;
-
-impl MatZ {
-    /// Create a [`MatZ`] from a [`MatZq`].
-    ///
-    /// The output matrix entries values will be in the range `[0, Modulus)`.
-    /// Use [`MatZq::get_closest_to_zero_representative`] if they should be
-    /// close to `0`.
-    ///
-    /// Parameters:
-    /// - `matrix`: the matrix from which the entries are taken
-    ///
-    /// Returns the new matrix.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer::MatZ;
-    /// use qfall_math::integer_mod_q::MatZq;
-    /// use std::str::FromStr;
-    ///
-    /// let m = MatZq::from_str("[[1, 2],[3, -1]] mod 5").unwrap();
-    ///
-    /// let a = MatZ::from_mat_zq(&m);
-    /// ```
-    pub fn from_mat_zq(matrix: &MatZq) -> Self {
-        let mut out = MatZ::new(matrix.get_num_rows(), matrix.get_num_columns());
-        unsafe { fmpz_mat_set(&mut out.matrix, &matrix.matrix.mat[0]) };
-        out
-    }
-}
 
 impl FromStr for MatZ {
     type Err = MathError;
@@ -100,52 +69,6 @@ impl FromStr for MatZ {
             }
         }
         Ok(matrix)
-    }
-}
-
-impl From<&MatZq> for MatZ {
-    /// Convert [`MatZq`] to [`MatZ`] using [`MatZ::from_mat_zq`].
-    fn from(matrix: &MatZq) -> Self {
-        Self::from_mat_zq(matrix)
-    }
-}
-
-#[cfg(test)]
-mod test_from_mat_zq {
-    use crate::{
-        integer::{MatZ, Z},
-        integer_mod_q::MatZq,
-        traits::{GetEntry, GetNumColumns, GetNumRows, SetEntry},
-    };
-
-    /// Test if the dimensions are taken over correctly
-    #[test]
-    fn dimensions() {
-        let matzq = MatZq::new(15, 17, 13);
-
-        let matz_1 = MatZ::from(&matzq);
-        let matz_2 = MatZ::from_mat_zq(&matzq);
-
-        assert_eq!(15, matz_1.get_num_rows());
-        assert_eq!(17, matz_1.get_num_columns());
-        assert_eq!(15, matz_2.get_num_rows());
-        assert_eq!(17, matz_2.get_num_columns());
-    }
-
-    /// Test if entries are taken over correctly
-    #[test]
-    fn entries_taken_over_correctly() {
-        let mut matzq = MatZq::new(2, 2, u64::MAX);
-        matzq.set_entry(0, 0, u64::MAX - 58).unwrap();
-        matzq.set_entry(0, 1, -1).unwrap();
-
-        let matz_1 = MatZ::from(&matzq);
-        let matz_2 = MatZ::from_mat_zq(&matzq);
-
-        assert_eq!(Z::from(u64::MAX - 1), matz_1.get_entry(0, 1).unwrap());
-        assert_eq!(Z::from(u64::MAX - 58), matz_1.get_entry(0, 0).unwrap());
-        assert_eq!(Z::from(u64::MAX - 1), matz_2.get_entry(0, 1).unwrap());
-        assert_eq!(Z::from(u64::MAX - 58), matz_2.get_entry(0, 0).unwrap());
     }
 }
 
