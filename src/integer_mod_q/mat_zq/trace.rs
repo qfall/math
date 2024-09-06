@@ -31,9 +31,8 @@ impl MatZq {
     /// ```
     ///
     /// # Errors and Failures
-    /// Returns a [`MathError`] of type
-    /// [`NoSquareMatrix`](MathError::NoSquareMatrix)
-    /// if the matrix is not a square matrix
+    /// - Returns a [`MathError`] of type [`NoSquareMatrix`](MathError::NoSquareMatrix)
+    ///     if the matrix is not a square matrix
     pub fn trace(&self) -> Result<Zq, MathError> {
         // check if matrix is square
         if self.get_num_rows() != self.get_num_columns() {

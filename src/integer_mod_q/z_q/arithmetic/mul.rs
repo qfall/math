@@ -73,8 +73,8 @@ impl Zq {
     /// let c: Zq = a.mul_safe(&b).unwrap();
     /// ```
     /// # Errors
-    /// Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
-    /// both [`Zq`] mismatch.
+    /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
+    ///     both [`Zq`] mismatch.
     pub fn mul_safe(&self, other: &Self) -> Result<Zq, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(

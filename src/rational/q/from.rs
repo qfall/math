@@ -234,7 +234,8 @@ impl FromStr for Q {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
     ///     [`StringConversionError`](MathError::StringConversionError)
-    ///     if the provided string was not formatted correctly.
+    ///     if the provided string was not formatted correctly, or 
+    ///     if the provided string contains a `Null` Byte.
     /// - Returns a [`MathError`] of type
     ///     [`DivisionByZeroError`](MathError::DivisionByZeroError)
     ///     if the provided string has `0` as the denominator.

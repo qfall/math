@@ -69,11 +69,11 @@ impl MatZq {
     /// let c: MatZq = a.add_safe(&b).unwrap();
     /// ```
     /// # Errors and Failures
-    /// Returns a [`MathError`] of type
-    /// [`MathError::MismatchingMatrixDimension`] if the matrix dimensions
-    /// mismatch.
-    /// Returns a [`MathError`] of type
-    /// [`MathError::MismatchingModulus`] if the moduli mismatch.
+    /// - Returns a [`MathError`] of type
+    ///     [`MathError::MismatchingMatrixDimension`] if the matrix dimensions
+    ///     mismatch.
+    /// - Returns a [`MathError`] of type
+    ///     [`MathError::MismatchingModulus`] if the moduli mismatch.
     pub fn add_safe(&self, other: &Self) -> Result<MatZq, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(

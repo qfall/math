@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementations to check certain properties of [`PolyOverZq`]
+//! Implementations to check certain properties of [`PolyOverZq`].
 //! This includes checks such as reducibility.
 
 use super::PolyOverZq;

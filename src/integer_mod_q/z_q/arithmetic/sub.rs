@@ -73,8 +73,8 @@ impl Zq {
     /// let c: Zq = a.sub_safe(&b).unwrap();
     /// ```
     /// # Errors
-    /// Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
-    /// both [`Zq`] mismatch.
+    /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
+    ///     both [`Zq`] mismatch.
     pub fn sub_safe(&self, other: &Self) -> Result<Zq, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
