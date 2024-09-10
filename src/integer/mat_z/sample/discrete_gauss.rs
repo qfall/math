@@ -12,7 +12,7 @@ use crate::{
     error::MathError,
     integer::{MatZ, Z},
     rational::{MatQ, Q},
-    traits::{GetNumColumns, GetNumRows, Pow, SetEntry},
+    traits::{GetNumColumns, GetNumRows, SetEntry},
     utils::sample::discrete_gauss::{sample_d, sample_d_precomputed_gso, sample_z},
 };
 use std::fmt::Display;
@@ -149,8 +149,11 @@ impl MatZ {
     ///
     /// Parameters:
     /// - `n`: specifies the range from which [`MatQ::randomized_rounding`] samples
-    /// - `sigma`: specifies the positive definite Gaussian convolution matrix
-    ///     with which the final output is sampled.
+    /// - `sigma_`: specifies the positive definite Gaussian convolution matrix
+    ///     with which the *intermediate* continuous Gaussian is sampled before
+    ///     the randomized rounding is applied. Here `sigma_ = sqrt(sigma^2 - r^2*I)`
+    ///     where sigma is the target convolution matrix. The root can be computed using
+    ///     the [`MatQ::cholesky_decomposition`].
     /// - `r`: specifies the rounding parameter for [`MatQ::randomized_rounding`].
     ///
     /// Returns a lattice vector sampled according to the discrete Gaussian distribution.
@@ -158,11 +161,16 @@ impl MatZ {
     /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
-    /// use qfall_math::rational::MatQ;
+    /// use qfall_math::rational::{Q, MatQ};
     /// use std::str::FromStr;
+    /// use crate::qfall_math::traits::Pow;
     ///
-    /// let convolution_matrix = MatQ::from_str("[[100,1],[1,65]]").unwrap();
-    /// let sample = MatZ::sample_d_common_non_spherical(16, &convolution_matrix, 8).unwrap();
+    /// let convolution_matrix = MatQ::from_str("[[100,1],[1,17]]").unwrap();
+    /// let r = Q::from(4);
+    ///
+    /// let sigma_ = convolution_matrix - r.pow(2).unwrap() * MatQ::identity(2, 2);
+    ///
+    /// let sample = MatZ::sample_d_common_non_spherical(16, &sigma_.cholesky_decomposition(), r).unwrap();
     /// ```
     ///
     /// # Errors and Failures
@@ -170,10 +178,7 @@ impl MatZ {
     ///     if the `n <= 1` or `r <= 0`.
     ///
     /// # Panics ...
-    /// - if `sigma` - `r^2 * I` does not define a positive definite Gaussian convolution
-    ///     matrix, i.e.
-    ///     - if it is not a symmetric matrix,
-    ///     - if it has eigenvalues smaller than `0`.
+    /// - if `sigma_` is not a square matrix.
     ///
     /// This function implements SampleD according to Algorithm 1. in \[2\].
     /// - \[2\] Peikert, Chris.
@@ -183,24 +188,19 @@ impl MatZ {
     ///     <https://link.springer.com/chapter/10.1007/978-3-642-14623-7_5>
     pub fn sample_d_common_non_spherical(
         n: impl Into<Z>,
-        sigma: &MatQ,
+        sigma_: &MatQ,
         r: impl Into<Q>,
     ) -> Result<Self, MathError> {
+        assert!(sigma_.is_square());
         let r = r.into();
-
-        // compute cholesky decomposition of `sigma`(subtracted by rounding parameter
-        // to accomodate for the randomized rounding that happens later).
-        let sigma_1 = r.pow(2)? * MatQ::identity(sigma.get_num_rows(), sigma.get_num_columns());
-        let sigma_2 = sigma - sigma_1;
-        let b_2 = sigma_2.cholesky_decomposition();
 
         // sample a continuous Gaussian centered around `0` in every dimension with
         // gaussian parameter `1`.
-        let d_1 = MatQ::sample_gauss_same_center(b_2.get_num_columns(), 1, 0, 1)?;
+        let d_1 = MatQ::sample_gauss_same_center(sigma_.get_num_columns(), 1, 0, 1)?;
 
         // compute a continuous Gaussian centered around `0` in every dimension with
         // convolution matrix `b_2` (the cholesky decomposition we computed)
-        let x_2 = b_2 * d_1;
+        let x_2 = sigma_ * d_1;
 
         // perform randomized rounding
         x_2.randomized_rounding(r, n)
@@ -371,13 +371,12 @@ mod test_sample_d {
 
 #[cfg(test)]
 mod test_sample_d_common_non_spherical {
-    use std::str::FromStr;
-
     use crate::{
         integer::{MatZ, Z},
         rational::{MatQ, Q},
-        traits::GetNumRows,
+        traits::{GetNumRows, Pow},
     };
+    use std::str::FromStr;
 
     /// Checks whether `sample_d_common_non_spherical` is available for all types
     /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
@@ -385,7 +384,10 @@ mod test_sample_d_common_non_spherical {
     /// or [`Into<MatQ>`], i.e. MatQ, MatZ
     #[test]
     fn availability() {
+        let r = Q::from(8);
         let convolution_matrix = MatQ::from_str("[[100,1],[1,65]]").unwrap();
+        let convolution_matrix = (convolution_matrix - r.pow(2).unwrap() * MatQ::identity(2, 2))
+            .cholesky_decomposition();
 
         let _ = MatZ::sample_d_common_non_spherical(16, &convolution_matrix, 8).unwrap();
 
@@ -407,27 +409,20 @@ mod test_sample_d_common_non_spherical {
     #[test]
     #[should_panic]
     fn no_convolution_matrix_1() {
+        let r = Q::from(4);
         let convolution_matrix = MatQ::from_str("[[-1,1],[1,1]]").unwrap();
+        let convolution_matrix = (convolution_matrix - r.pow(2).unwrap() * MatQ::identity(2, 2))
+            .cholesky_decomposition();
 
-        let _ = MatZ::sample_d_common_non_spherical(16, &convolution_matrix, 8).unwrap();
+        let _ = MatZ::sample_d_common_non_spherical(16, &convolution_matrix, r).unwrap();
     }
 
-    /// Checks whether the function panics if a positive-definite matrix is provided, but
-    /// `r` is chosen large enough such that `sigma - r^2*I` is not positive-definite
+    /// Checks whether the function panics if a non-square matrix is provided.
     /// anymore
     #[test]
     #[should_panic]
-    fn no_convolution_matrix_2() {
-        let convolution_matrix = MatQ::from_str("[[100,1],[1,64]]").unwrap();
-
-        let _ = MatZ::sample_d_common_non_spherical(16, &convolution_matrix, 8).unwrap();
-    }
-
-    /// Checks whether the function panics if a non-symmetric matrix is provided
-    #[test]
-    #[should_panic]
-    fn not_symmetric() {
-        let convolution_matrix = MatQ::from_str("[[100],[1]]").unwrap();
+    fn not_square() {
+        let convolution_matrix = MatQ::from_str("[[100,1,1],[1,64,2]]").unwrap();
 
         let _ = MatZ::sample_d_common_non_spherical(16, &convolution_matrix, 8).unwrap();
     }
