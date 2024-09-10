@@ -150,7 +150,7 @@ impl Add<&PolyOverZ> for &Z {
     /// [`Add`] is implemented for any combination of owned and borrowed values.
     ///
     /// Parameters:
-    ///  - `other`: specifies the value to add to `self`
+    ///  - `other`: specifies the polynomial to add to `self`
     ///
     /// Returns the sum of both as a [`PolyOverZ`].
     ///
