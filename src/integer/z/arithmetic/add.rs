@@ -490,6 +490,19 @@ mod test_add_between_z_and_poly_over_z {
         assert_eq!(c, PolyOverZ::from_str("4  10 1 2 3").unwrap());
     }
 
+    /// Testing addition for large numbers
+    #[test]
+    fn add_large_numbers() {
+        let a: Z = Z::from(i64::MAX);
+        let b: PolyOverZ =
+            PolyOverZ::from_str(&format!("3  {} {} {}", i64::MAX, u64::MAX, i32::MAX)).unwrap();
+        let c: PolyOverZ = a + b;
+        assert_eq!(
+            c,
+            PolyOverZ::from_str(&format!("3  {} {} {}", u64::MAX - 1, u64::MAX, i32::MAX)).unwrap()
+        );
+    }
+
     /// Testing addition for an empty polynomial
     #[test]
     fn add_zero_polynomial() {
