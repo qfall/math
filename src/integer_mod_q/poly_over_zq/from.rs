@@ -146,7 +146,7 @@ impl FromStr for PolyOverZq {
     /// - Returns a [`MathError`] of type
     ///     [`StringConversionError`](MathError::StringConversionError)
     ///     - if the provided first half of the string was not formatted correctly to
-    ///         create a polynomial,
+    ///         create a [`PolyOverZ`],
     ///     - if the provided second half of the
     ///         string was not formatted correctly to create a [`Modulus`],
     ///     - if the number of coefficients was smaller than the number provided
