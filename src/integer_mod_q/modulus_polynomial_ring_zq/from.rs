@@ -93,7 +93,7 @@ impl FromStr for ModulusPolynomialRingZq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::StringConversionError`]
     ///     - if the string was not formatted correctly, e.g. not a correctly
-    ///         formatted [`PolyOverZq`]. 
+    ///         formatted [`PolyOverZq`].
     ///     - For further information see [`PolyOverZq::from_str`].
     /// - Returns a [`MathError`] of type
     ///     [`InvalidModulus`](MathError::InvalidModulus)

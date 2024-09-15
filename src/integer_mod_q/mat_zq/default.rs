@@ -30,7 +30,7 @@ impl MatZq {
     ///
     /// let matrix = MatZq::new(5, 10, 7);
     /// ```
-    /// 
+    ///
     /// # Panics ...
     /// - if the number of rows or columns is negative, `0`, or does not fit into an [`i64`].
     /// - if `modulus` is smaller than `2`.

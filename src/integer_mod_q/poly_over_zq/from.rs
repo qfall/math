@@ -69,7 +69,7 @@ impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for PolyOverZq {
     /// # let cmp_poly = PolyOverZq::from_str("4  0 1 2 3 mod 100").unwrap();
     /// # assert_eq!(cmp_poly, mod_poly);
     /// ```
-    /// 
+    ///
     /// # Panics ...
     /// - if `modulus` is smaller than `2`.
     fn from((poly, modulus): (&PolyOverZ, Mod)) -> Self {

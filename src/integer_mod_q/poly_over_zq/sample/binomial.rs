@@ -95,7 +95,7 @@ impl PolyOverZq {
     ///     if `n` does not fit into an [`i64`].
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
     ///     the `max_degree` is negative or it does not fit into an [`i64`].
-    /// 
+    ///
     /// # Panics ...
     /// - if `modulus` is smaller than `2`.
     pub fn sample_binomial_with_offset(
