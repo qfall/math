@@ -27,11 +27,11 @@ use flint_sys::{
 use std::{fmt::Display, mem::MaybeUninit};
 
 impl MatZq {
-    /// Creates a [`MatZ`] where each entry is the representative of the 
+    /// Creates a [`MatZ`] where each entry is the representative of the
     /// equivalence class of each entry from a [`MatZq`].
     ///
     /// The values in the output matrix are in the range of `[0, Modulus)`.
-    /// Use [`MatZq::get_closest_to_zero_representative`] if they should be 
+    /// Use [`MatZq::get_closest_to_zero_representative`] if they should be
     /// in the range `[-Modulus/2, Modulus/2]`.
     ///
     /// Returns the matrix as a [`MatZ`].
@@ -45,7 +45,7 @@ impl MatZq {
     /// let mat_zq = MatZq::from_str("[[1, 2],[3, -1]] mod 5").unwrap();
     ///
     /// let mat_z = mat_zq.get_mat();
-    /// 
+    ///
     /// assert_eq!(mat_z.to_string(), "[[1, 2],[3, 4]]");
     /// ```
     pub fn get_mat(&self) -> MatZ {
