@@ -2,7 +2,7 @@ name: Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 env:
   CARGO_TERM_COLOR: always
@@ -12,11 +12,11 @@ jobs:
   full_pipeline:
     name: Full Pipeline
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup dtolnay/rust-toolchain 
+      - name: Setup dtolnay/rust-toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
@@ -57,7 +57,7 @@ jobs:
       - name: Calculate test coverage
         run: cargo tarpaulin --out Html
       - name: Archive code coverage results
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ env.PROJECT_NAME }}-code_coverage_report-v${{ env.PROJECT_VERSION }}
           path: tarpaulin-report.html
@@ -66,8 +66,8 @@ jobs:
       - name: Clippy
         run: cargo clippy -- -D warnings
       - name: Format
-        run:  cargo fmt --all -- --check
-      
+        run: cargo fmt --all -- --check
+
       # Cargo check for security issues
       - name: Install cargo-audit
         uses: baptiste0928/cargo-install@v2
@@ -81,10 +81,9 @@ jobs:
         uses: dtolnay/install@cargo-outdated
       - name: Outdated dependencies
         run: cargo outdated --root-deps-only --exit-code 1
-      
+
       - name: Archive release build
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ env.PROJECT_NAME }}-release_build-v${{ env.PROJECT_VERSION }}
           path: target/release/${{ env.PROJECT_NAME }}
-
