@@ -49,7 +49,7 @@ impl PolyOverZq {
     ///     the `max_degree` is negative or it does not fit into an [`i64`].
     ///
     /// # Panics ...
-    /// - if the provided modulus is not greater than `1`.
+    /// - if `modulus` is smaller than `2`.
     pub fn sample_uniform(
         max_degree: impl TryInto<i64> + Display + Copy,
         modulus: impl Into<Z>,

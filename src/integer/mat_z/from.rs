@@ -77,8 +77,10 @@ impl FromStr for MatZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
     ///     - if the matrix is not formatted in a suitable way,
-    ///     - if the number of entries in rows is unequal,
+    ///     - if the number of rows or columns is too large (must fit into i64),
+    ///     - if the number of entries in rows is unequal, or
     ///     - if an entry is not formatted correctly.
+    ///     - For further information see [`Z::from_str`].
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.

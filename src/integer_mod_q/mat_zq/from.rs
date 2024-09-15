@@ -63,13 +63,15 @@ impl FromStr for MatZq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
     ///     - if the matrix is not formatted in a suitable way,
-    ///     - if the number of entries in rows is unequal,
-    ///     - if an entry contains a Nul byte, or
+    ///     - if the number of rows or columns is too large (must fit into i64),
+    ///     - if the number of entries in rows is unequal, or
     ///     - if the modulus or an entry is not formatted correctly.
+    ///     - For further information see [`Z::from_str`].
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns or the modulus are not suited to create a matrix.
     ///     For further information see [`MatZq::new`].
+    /// - if the modulus is smaller than `2`.
     fn from_str(string: &str) -> Result<Self, MathError> {
         let (matrix, modulus) = match string.split_once("mod") {
             Some((matrix, modulus)) => (matrix, modulus),

@@ -449,6 +449,9 @@ impl MatZq {
     /// let mut mat = MatZq::from_str("[[1, 2]] mod 3").unwrap();
     /// mat.change_modulus(2);
     /// ```
+    /// 
+    /// # Panics ...
+    /// - if `modulus` is smaller than `2`.
     pub fn change_modulus(&mut self, modulus: impl Into<Modulus>) {
         self.modulus = modulus.into();
         unsafe {

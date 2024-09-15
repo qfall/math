@@ -91,13 +91,19 @@ impl FromStr for ModulusPolynomialRingZq {
     /// let poly_mod = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
     /// ```
     /// # Errors and Failures
-    /// - Returns a [`MathError`]. For further details see Errors and Failures of [`PolyOverZq::from_str`]
+    /// - Returns a [`MathError`] of type [`MathError::StringConversionError`]
+    ///     - if the string was not formatted correctly, e.g. not a correctly
+    ///         formatted [`PolyOverZq`]. 
+    ///     - For further information see [`PolyOverZq::from_str`].
+    /// - Returns a [`MathError`] of type
+    ///     [`InvalidModulus`](MathError::InvalidModulus)
+    ///     if `modulus` is smaller than `2`.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Ok(Self::from(&PolyOverZq::from_str(s)?))
     }
 }
 
-/// most tests with specific values are covered in [`PolyOverZq`](crate::integer_mod_q::PolyOverZq)
+/// Most tests with specific values are covered in [`PolyOverZq`](crate::integer_mod_q::PolyOverZq)
 /// since the format is reused, we omit some tests
 #[cfg(test)]
 mod test_try_from_poly_zq {

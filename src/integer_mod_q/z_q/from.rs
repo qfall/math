@@ -41,7 +41,7 @@ impl<IntegerValue: Into<Z>, IntegerModulus: Into<Modulus>> From<(IntegerValue, I
     /// ```
     ///
     /// # Panics ...
-    /// - if the modulus is not greater than `1`.
+    /// - if `modulus` is smaller than `2`.
     fn from((value, modulus): (IntegerValue, IntegerModulus)) -> Self {
         let value = value.into();
         let modulus = modulus.into();
@@ -77,7 +77,7 @@ impl FromStr for Zq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
     ///     [`StringConversionError`](MathError::StringConversionError)
-    ///     - if the provided string contains a Nul byte,
+    ///     - if the provided string contains a `Null` byte,
     ///     - if the provided string was not formatted correctly, or
     ///     - if the provided modulus was not formatted correctly to create a [`Z`].
     /// - Returns a [`MathError`] of type

@@ -62,10 +62,11 @@ impl FromStr for MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::StringConversionError`],
-    ///     - if the entries are not formatted correctly,
-    ///     - if the matrix is not formatted in a suitable way, or
-    ///     - if the number of entries in rows is unequal.
-    ///     - For further details see [`PolyOverZ::from_str`].
+    ///     - if the matrix is not formatted in a suitable way,
+    ///     - if the number of rows or columns is too large (must fit into i64),
+    ///     - if the number of entries in rows is unequal, or
+    ///     - if an entry is not formatted correctly.
+    ///     - For further information see [`PolyOverZ::from_str`].
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.

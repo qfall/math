@@ -46,7 +46,7 @@ impl Zq {
     ///     if `n <= 1` or `s <= 0`.
     ///
     /// # Panics ...
-    /// - if the modulus is not greater than `1`.
+    /// - if `modulus` is smaller than `2`.
     ///
     /// This function implements SampleZ according to:
     /// - \[1\] Gentry, Craig and Peikert, Chris and Vaikuntanathan, Vinod (2008).

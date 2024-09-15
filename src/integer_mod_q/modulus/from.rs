@@ -136,8 +136,8 @@ impl FromStr for Modulus {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`StringConversionError`](MathError::StringConversionError) if the
-    ///     provided string was not formatted correctly, e.g. not a correctly
+    ///     [`StringConversionError`](MathError::StringConversionError)
+    ///     if the provided string was not formatted correctly, e.g. not a correctly
     ///     formatted [`Z`].
     /// - Returns a [`MathError`] of type
     ///     [`InvalidModulus`](MathError::InvalidModulus)
