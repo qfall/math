@@ -83,7 +83,7 @@ jobs:
         run: cargo outdated --root-deps-only --exit-code 1
 
       - name: Archive release build
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ env.PROJECT_NAME }}-release_build-v${{ env.PROJECT_VERSION }}
           path: target/release/${{ env.PROJECT_NAME }}
