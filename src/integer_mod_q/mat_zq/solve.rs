@@ -11,7 +11,7 @@
 
 use super::MatZq;
 use crate::{
-    integer::{MatZ, Z},
+    integer::Z,
     integer_mod_q::Zq,
     traits::{Concatenate, Gcd, GetEntry, GetNumColumns, GetNumRows, Pow, SetEntry, Xgcd},
     utils::Factorization,
@@ -348,7 +348,7 @@ impl MatZq {
         let mut x = x_i.clone();
         for i in 1..*power {
             b_i = MatZq::from((
-                &(unsafe { MatZ::from(&(b_i - &invertible_matrix * x_i)).div_exact(base) }),
+                &(unsafe { (b_i - &invertible_matrix * x_i).get_mat().div_exact(base) }),
                 &self.get_mod(),
             ));
             x_i = &matrix_base_inv * &b_i;

@@ -10,7 +10,7 @@
 
 use super::MatZq;
 use crate::{
-    integer::{MatZ, Z},
+    integer::Z,
     traits::{Concatenate, Gcd, GetNumRows},
 };
 use flint_sys::fmpz_mod_mat::fmpz_mod_mat_rref;
@@ -34,7 +34,7 @@ impl MatZq {
     /// ```
     pub fn inverse(&self) -> Option<MatZq> {
         // Check if the matrix is square and compute the determinant.
-        if let Ok(det) = MatZ::from(self).det() {
+        if let Ok(det) = self.get_mat().det() {
             // Check whether the square matrix is invertible or not.
             if det.gcd(self.get_mod()) != Z::ONE {
                 None
@@ -93,7 +93,7 @@ impl MatZq {
         );
 
         // Check if the matrix is square and compute the determinant.
-        if let Ok(det) = MatZ::from(self).det() {
+        if let Ok(det) = self.get_mat().det() {
             if det == Z::ZERO {
                 None
             } else {

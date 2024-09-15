@@ -18,6 +18,7 @@ use crate::{
 };
 use flint_sys::{
     fmpz::{fmpz, fmpz_set},
+    fmpz_mat::fmpz_mat_set,
     fmpz_mod_mat::{
         fmpz_mod_mat_entry, fmpz_mod_mat_init_set, fmpz_mod_mat_window_clear,
         fmpz_mod_mat_window_init,
@@ -26,6 +27,77 @@ use flint_sys::{
 use std::{fmt::Display, mem::MaybeUninit};
 
 impl MatZq {
+    /// Creates a [`MatZ`] where each entry is the representative of the
+    /// equivalence class of each entry from a [`MatZq`].
+    ///
+    /// The values in the output matrix are in the range of `[0, Modulus)`.
+    /// Use [`MatZq::get_closest_to_zero_representative`] if they should be
+    /// in the range `[-Modulus/2, Modulus/2]`.
+    ///
+    /// Returns the matrix as a [`MatZ`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use std::str::FromStr;
+    ///
+    /// let mat_zq = MatZq::from_str("[[1, 2],[3, -1]] mod 5").unwrap();
+    ///
+    /// let mat_z = mat_zq.get_mat();
+    ///
+    /// assert_eq!(mat_z.to_string(), "[[1, 2],[3, 4]]");
+    /// ```
+    pub fn get_mat(&self) -> MatZ {
+        let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
+        unsafe { fmpz_mat_set(&mut out.matrix, &self.matrix.mat[0]) };
+        out
+    }
+
+    /// Get a [`MatZ`] with the representatives close to `0`.
+    ///
+    /// The values in the output matrix are in the range of `[-Modulus/2, Modulus/2]`.
+    /// For even moduli, the positive representative is chosen for the element `Modulus / 2`.
+    ///
+    /// Return a [`MatZ`] representation of the given matrix with
+    /// representatives chosen close to `0`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use std::str::FromStr;
+    ///
+    /// let mat_zq_1 = MatZq::from_str("[[1,2],[3,4]] mod 5").unwrap();
+    /// let mat_zq_2 = MatZq::from_str("[[1,2],[3,4]] mod 4").unwrap();
+    ///
+    /// let mat_z_1 = mat_zq_1.get_closest_to_zero_representative();
+    /// let mat_z_2 = mat_zq_2.get_closest_to_zero_representative();
+    ///
+    /// assert_eq!(mat_z_1.to_string(), "[[1, 2],[-2, -1]]");
+    /// assert_eq!(mat_z_2.to_string(), "[[1, 2],[-1, 0]]");
+    /// ```
+    pub fn get_closest_to_zero_representative(&self) -> MatZ {
+        let modulus: Z = Z::from(&self.modulus);
+        let modulus_half = modulus.div_floor(2);
+
+        let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
+
+        for row in 0..self.get_num_rows() {
+            for column in 0..self.get_num_columns() {
+                let entry: Z = self.get_entry(row, column).unwrap();
+
+                // Not using Zq::distance for performance reasons.
+                if entry > modulus_half {
+                    out.set_entry(row, column, entry - &modulus).unwrap();
+                } else {
+                    out.set_entry(row, column, entry).unwrap();
+                }
+            }
+        }
+
+        out
+    }
+
     /// Returns the modulus of the matrix as a [`Modulus`].
     ///
     /// # Examples
@@ -38,127 +110,7 @@ impl MatZq {
     pub fn get_mod(&self) -> Modulus {
         self.modulus.clone()
     }
-}
 
-impl GetNumRows for MatZq {
-    /// Returns the number of rows of the matrix as a [`i64`].
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer_mod_q::MatZq;
-    /// use qfall_math::traits::*;
-    ///
-    /// let matrix = MatZq::new(5, 6, 7);
-    /// let rows = matrix.get_num_rows();
-    /// ```
-    fn get_num_rows(&self) -> i64 {
-        self.matrix.mat[0].r
-    }
-}
-
-impl GetNumColumns for MatZq {
-    /// Returns the number of columns of the matrix as a [`i64`].
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer_mod_q::MatZq;
-    /// use qfall_math::traits::*;
-    ///
-    /// let matrix = MatZq::new(5, 6, 7);
-    /// let rows = matrix.get_num_columns();
-    /// ```
-    fn get_num_columns(&self) -> i64 {
-        self.matrix.mat[0].c
-    }
-}
-
-impl GetEntry<Z> for MatZq {
-    /// Outputs the [`Z`] value of a specific matrix entry.
-    ///
-    /// Parameters:
-    /// - `row`: specifies the row in which the entry is located
-    /// - `column`: specifies the column in which the entry is located
-    ///
-    /// Negative indices can be used to index from the back, e.g., `-1` for
-    /// the last element.
-    ///
-    /// Returns the [`Z`] value of the matrix at the position of the given
-    /// row and column or an error, if the number of rows or columns is
-    /// greater than the matrix or greater than the matrix.
-    ///
-    /// # Examples
-    /// ```rust
-    /// use qfall_math::integer_mod_q::MatZq;
-    /// use qfall_math::traits::GetEntry;
-    /// use qfall_math::integer::Z;
-    /// use std::str::FromStr;
-    ///
-    /// let matrix = MatZq::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]] mod 10").unwrap();
-    ///
-    /// assert_eq!(Z::from(3), matrix.get_entry(0, 2).unwrap());
-    /// assert_eq!(Z::from(8), matrix.get_entry(2, 1).unwrap());
-    /// assert_eq!(Z::from(8), matrix.get_entry(-1, -2).unwrap());
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if `row` or `column` are greater than the matrix size.
-    fn get_entry(
-        &self,
-        row: impl TryInto<i64> + Display,
-        column: impl TryInto<i64> + Display,
-    ) -> Result<Z, MathError> {
-        let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
-
-        let mut out = Z::default();
-        let entry = unsafe { fmpz_mod_mat_entry(&self.matrix, row_i64, column_i64) };
-        unsafe { fmpz_set(&mut out.value, entry) };
-        Ok(out)
-    }
-}
-
-impl GetEntry<Zq> for MatZq {
-    /// Outputs the [`Zq`] value of a specific matrix entry.
-    ///
-    /// Parameters:
-    /// - `row`: specifies the row in which the entry is located
-    /// - `column`: specifies the column in which the entry is located
-    ///
-    /// Negative indices can be used to index from the back, e.g., `-1` for
-    /// the last element.
-    ///
-    /// Returns the [`Zq`] value of the matrix at the position of the given
-    /// row and column or an error, if the number of rows or columns is
-    /// greater than the matrix.
-    ///
-    /// # Examples
-    /// ```rust
-    /// use qfall_math::integer_mod_q::{MatZq, Zq};
-    /// use qfall_math::traits::GetEntry;
-    /// use std::str::FromStr;
-    ///
-    /// let matrix = MatZq::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]] mod 10").unwrap();
-    ///
-    /// assert_eq!(Zq::from((3, 10)), matrix.get_entry(0, 2).unwrap());
-    /// assert_eq!(Zq::from((8, 10)), matrix.get_entry(2, 1).unwrap());
-    /// assert_eq!(Zq::from((8, 10)), matrix.get_entry(-1, -2).unwrap());
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if `row` or `column` are greater than the matrix size.
-    fn get_entry(
-        &self,
-        row: impl TryInto<i64> + Display,
-        column: impl TryInto<i64> + Display,
-    ) -> Result<Zq, MathError> {
-        let value: Z = self.get_entry(row, column)?;
-
-        Ok(Zq::from((value, &self.modulus)))
-    }
-}
-
-impl MatZq {
     /// Outputs the row vector of the specified row.
     ///
     /// Parameters:
@@ -280,14 +232,14 @@ impl MatZq {
         let (row_1, col_1) = evaluate_indices_for_matrix(self, row_1, col_1)?;
         let (row_2, col_2) = evaluate_indices_for_matrix(self, row_2, col_2)?;
         assert!(
-            row_2 >= row_1,
-            "The number of rows must be positive, i.e. row_2 ({row_2}) must be greater or equal row_1 ({row_1})"
-        );
+                row_2 >= row_1,
+                "The number of rows must be positive, i.e. row_2 ({row_2}) must be greater or equal row_1 ({row_1})"
+            );
 
         assert!(
-            col_2 >= col_1,
-            "The number of columns must be positive, i.e. col_2 ({col_2}) must be greater or equal col_1 ({col_1})"
-        );
+                col_2 >= col_1,
+                "The number of columns must be positive, i.e. col_2 ({col_2}) must be greater or equal col_1 ({col_1})"
+            );
 
         // increase both values to have an inclusive capturing of the matrix entries
         let (row_2, col_2) = (row_2 + 1, col_2 + 1);
@@ -370,49 +322,123 @@ impl MatZq {
 
         entry_lengths
     }
+}
 
-    /// Get a [`MatZ`] with the representatives close to `0`.
-    ///
-    /// The values in the output matrix are in the range of `[-Modulus/2, Modulus/2]`.
-    /// For even moduli, the positive representative is chosen for the element `Modulus / 2`.
-    ///
-    /// Return a [`MatZ`] representation of the given matrix with
-    /// representatives chosen close to `0`.
+impl GetNumRows for MatZq {
+    /// Returns the number of rows of the matrix as a [`i64`].
     ///
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::traits::*;
+    ///
+    /// let matrix = MatZq::new(5, 6, 7);
+    /// let rows = matrix.get_num_rows();
+    /// ```
+    fn get_num_rows(&self) -> i64 {
+        self.matrix.mat[0].r
+    }
+}
+
+impl GetNumColumns for MatZq {
+    /// Returns the number of columns of the matrix as a [`i64`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::traits::*;
+    ///
+    /// let matrix = MatZq::new(5, 6, 7);
+    /// let rows = matrix.get_num_columns();
+    /// ```
+    fn get_num_columns(&self) -> i64 {
+        self.matrix.mat[0].c
+    }
+}
+
+impl GetEntry<Z> for MatZq {
+    /// Outputs the [`Z`] value of a specific matrix entry.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row in which the entry is located
+    /// - `column`: specifies the column in which the entry is located
+    ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
+    /// Returns the [`Z`] value of the matrix at the position of the given
+    /// row and column or an error, if the number of rows or columns is
+    /// greater than the matrix or greater than the matrix.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::traits::GetEntry;
+    /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
     ///
-    /// let mat_zq_1 = MatZq::from_str("[[1,2],[3,4]] mod 5").unwrap();
-    /// let mat_zq_2 = MatZq::from_str("[[1,2],[3,4]] mod 4").unwrap();
+    /// let matrix = MatZq::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]] mod 10").unwrap();
     ///
-    /// let mat_z_1 = mat_zq_1.get_closest_to_zero_representative();
-    /// let mat_z_2 = mat_zq_2.get_closest_to_zero_representative();
-    ///
-    /// assert_eq!(mat_z_1.to_string(), "[[1, 2],[-2, -1]]");
-    /// assert_eq!(mat_z_2.to_string(), "[[1, 2],[-1, 0]]");
+    /// assert_eq!(Z::from(3), matrix.get_entry(0, 2).unwrap());
+    /// assert_eq!(Z::from(8), matrix.get_entry(2, 1).unwrap());
+    /// assert_eq!(Z::from(8), matrix.get_entry(-1, -2).unwrap());
     /// ```
-    pub fn get_closest_to_zero_representative(&self) -> MatZ {
-        let modulus: Z = Z::from(&self.modulus);
-        let modulus_half = modulus.div_floor(2);
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
+    ///     if `row` or `column` are greater than the matrix size.
+    fn get_entry(
+        &self,
+        row: impl TryInto<i64> + Display,
+        column: impl TryInto<i64> + Display,
+    ) -> Result<Z, MathError> {
+        let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
 
-        let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
+        let mut out = Z::default();
+        let entry = unsafe { fmpz_mod_mat_entry(&self.matrix, row_i64, column_i64) };
+        unsafe { fmpz_set(&mut out.value, entry) };
+        Ok(out)
+    }
+}
 
-        for row in 0..self.get_num_rows() {
-            for column in 0..self.get_num_columns() {
-                let entry: Z = self.get_entry(row, column).unwrap();
+impl GetEntry<Zq> for MatZq {
+    /// Outputs the [`Zq`] value of a specific matrix entry.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row in which the entry is located
+    /// - `column`: specifies the column in which the entry is located
+    ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
+    /// Returns the [`Zq`] value of the matrix at the position of the given
+    /// row and column or an error, if the number of rows or columns is
+    /// greater than the matrix.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use qfall_math::integer_mod_q::{MatZq, Zq};
+    /// use qfall_math::traits::GetEntry;
+    /// use std::str::FromStr;
+    ///
+    /// let matrix = MatZq::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]] mod 10").unwrap();
+    ///
+    /// assert_eq!(Zq::from((3, 10)), matrix.get_entry(0, 2).unwrap());
+    /// assert_eq!(Zq::from((8, 10)), matrix.get_entry(2, 1).unwrap());
+    /// assert_eq!(Zq::from((8, 10)), matrix.get_entry(-1, -2).unwrap());
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
+    ///     if `row` or `column` are greater than the matrix size.
+    fn get_entry(
+        &self,
+        row: impl TryInto<i64> + Display,
+        column: impl TryInto<i64> + Display,
+    ) -> Result<Zq, MathError> {
+        let value: Z = self.get_entry(row, column)?;
 
-                // Not using Zq::distance for performance reasons.
-                if entry > modulus_half {
-                    out.set_entry(row, column, entry - &modulus).unwrap();
-                } else {
-                    out.set_entry(row, column, entry).unwrap();
-                }
-            }
-        }
-
-        out
+        Ok(Zq::from((value, &self.modulus)))
     }
 }
 
@@ -613,6 +639,39 @@ mod test_get_num {
         let matrix = MatZq::new(5, 10, 7);
 
         assert_eq!(matrix.get_num_columns(), 10);
+    }
+}
+
+#[cfg(test)]
+mod test_get_mat {
+    use crate::{
+        integer::Z,
+        integer_mod_q::MatZq,
+        traits::{GetEntry, GetNumColumns, GetNumRows, SetEntry},
+    };
+
+    /// Test if the dimensions are taken over correctly
+    #[test]
+    fn dimensions() {
+        let matzq = MatZq::new(15, 17, 13);
+
+        let matz_1 = matzq.get_mat();
+
+        assert_eq!(15, matz_1.get_num_rows());
+        assert_eq!(17, matz_1.get_num_columns());
+    }
+
+    /// Test if entries are taken over correctly
+    #[test]
+    fn entries_taken_over_correctly() {
+        let mut matzq = MatZq::new(2, 2, u64::MAX);
+        matzq.set_entry(0, 0, u64::MAX - 58).unwrap();
+        matzq.set_entry(0, 1, -1).unwrap();
+
+        let matz_1 = matzq.get_mat();
+
+        assert_eq!(Z::from(u64::MAX - 1), matz_1.get_entry(0, 1).unwrap());
+        assert_eq!(Z::from(u64::MAX - 58), matz_1.get_entry(0, 0).unwrap());
     }
 }
 

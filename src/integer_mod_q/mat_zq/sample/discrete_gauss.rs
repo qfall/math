@@ -10,7 +10,7 @@
 
 use crate::{
     error::MathError,
-    integer::{MatZ, Z},
+    integer::Z,
     integer_mod_q::{MatZq, Modulus},
     rational::{MatQ, Q},
     traits::{GetNumColumns, GetNumRows, SetEntry},
@@ -117,7 +117,7 @@ impl MatZq {
         let n: Z = n.into();
         let s: Q = s.into();
 
-        let sample = sample_d(&MatZ::from(basis), &n, center, &s)?;
+        let sample = sample_d(&basis.get_mat(), &n, center, &s)?;
 
         Ok(MatZq::from_mat_z_modulus(&sample, basis.get_mod()))
     }
@@ -173,7 +173,7 @@ impl MatZq {
     /// use qfall_math::{integer::MatZ, integer_mod_q::MatZq, rational::MatQ};
     /// let basis = MatZq::identity(5, 5, 17);
     /// let center = MatQ::new(5, 1);
-    /// let basis_gso = MatQ::from(&MatZ::from(&basis)).gso();
+    /// let basis_gso = MatQ::from(&basis.get_mat()).gso();
     ///
     /// let sample = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, 1024, &center, 1.25f32).unwrap();
     /// ```
@@ -204,7 +204,7 @@ impl MatZq {
         let n: Z = n.into();
         let s: Q = s.into();
 
-        let sample = sample_d_precomputed_gso(&MatZ::from(basis), basis_gso, &n, center, &s)?;
+        let sample = sample_d_precomputed_gso(&basis.get_mat(), basis_gso, &n, center, &s)?;
 
         Ok(MatZq::from_mat_z_modulus(&sample, basis.get_mod()))
     }
@@ -250,7 +250,7 @@ mod test_sample_discrete_gauss {
 #[cfg(test)]
 mod test_sample_d {
     use crate::{
-        integer::{MatZ, Z},
+        integer::Z,
         integer_mod_q::{MatZq, Modulus},
         rational::{MatQ, Q},
     };
@@ -292,7 +292,7 @@ mod test_sample_d {
         let n = Z::from(1024);
         let center = MatQ::new(5, 1);
         let s = Q::ONE;
-        let basis_gso = MatQ::from(&MatZ::from(&basis));
+        let basis_gso = MatQ::from(&basis.get_mat());
 
         let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, 16u16, &center, 1u16);
         let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, 2u32, &center, 1u8);
