@@ -27,11 +27,12 @@ use flint_sys::{
 use std::{fmt::Display, mem::MaybeUninit};
 
 impl MatZq {
-    /// Create a [`MatZ`] from a [`MatZq`].
+    /// Creates a [`MatZ`] where each entry is the representative of the 
+    /// equivalence class of each entry from a [`MatZq`].
     ///
-    /// The output matrix entries values will be in the range `[0, Modulus)`.
-    /// Use [`MatZq::get_closest_to_zero_representative`] if they should be
-    /// close to `0`.
+    /// The values in the output matrix are in the range of `[0, Modulus)`.
+    /// Use [`MatZq::get_closest_to_zero_representative`] if they should be 
+    /// in the range `[-Modulus/2, Modulus/2]`.
     ///
     /// Returns the matrix as a [`MatZ`].
     ///
@@ -41,13 +42,59 @@ impl MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// use std::str::FromStr;
     ///
-    /// let m = MatZq::from_str("[[1, 2],[3, -1]] mod 5").unwrap();
+    /// let mat_zq = MatZq::from_str("[[1, 2],[3, -1]] mod 5").unwrap();
     ///
-    /// let a = m.get_mat();
+    /// let mat_z = mat_zq.get_mat();
+    /// 
+    /// assert_eq!(mat_z.to_string(), "[[1, 2],[3, 4]]");
     /// ```
     pub fn get_mat(&self) -> MatZ {
         let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
         unsafe { fmpz_mat_set(&mut out.matrix, &self.matrix.mat[0]) };
+        out
+    }
+
+    /// Get a [`MatZ`] with the representatives close to `0`.
+    ///
+    /// The values in the output matrix are in the range of `[-Modulus/2, Modulus/2]`.
+    /// For even moduli, the positive representative is chosen for the element `Modulus / 2`.
+    ///
+    /// Return a [`MatZ`] representation of the given matrix with
+    /// representatives chosen close to `0`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use std::str::FromStr;
+    ///
+    /// let mat_zq_1 = MatZq::from_str("[[1,2],[3,4]] mod 5").unwrap();
+    /// let mat_zq_2 = MatZq::from_str("[[1,2],[3,4]] mod 4").unwrap();
+    ///
+    /// let mat_z_1 = mat_zq_1.get_closest_to_zero_representative();
+    /// let mat_z_2 = mat_zq_2.get_closest_to_zero_representative();
+    ///
+    /// assert_eq!(mat_z_1.to_string(), "[[1, 2],[-2, -1]]");
+    /// assert_eq!(mat_z_2.to_string(), "[[1, 2],[-1, 0]]");
+    /// ```
+    pub fn get_closest_to_zero_representative(&self) -> MatZ {
+        let modulus: Z = Z::from(&self.modulus);
+        let modulus_half = modulus.div_floor(2);
+
+        let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
+
+        for row in 0..self.get_num_rows() {
+            for column in 0..self.get_num_columns() {
+                let entry: Z = self.get_entry(row, column).unwrap();
+
+                // Not using Zq::distance for performance reasons.
+                if entry > modulus_half {
+                    out.set_entry(row, column, entry - &modulus).unwrap();
+                } else {
+                    out.set_entry(row, column, entry).unwrap();
+                }
+            }
+        }
+
         out
     }
 
@@ -274,50 +321,6 @@ impl MatZq {
         }
 
         entry_lengths
-    }
-
-    /// Get a [`MatZ`] with the representatives close to `0`.
-    ///
-    /// The values in the output matrix are in the range of `[-Modulus/2, Modulus/2]`.
-    /// For even moduli, the positive representative is chosen for the element `Modulus / 2`.
-    ///
-    /// Return a [`MatZ`] representation of the given matrix with
-    /// representatives chosen close to `0`.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer_mod_q::MatZq;
-    /// use std::str::FromStr;
-    ///
-    /// let mat_zq_1 = MatZq::from_str("[[1,2],[3,4]] mod 5").unwrap();
-    /// let mat_zq_2 = MatZq::from_str("[[1,2],[3,4]] mod 4").unwrap();
-    ///
-    /// let mat_z_1 = mat_zq_1.get_closest_to_zero_representative();
-    /// let mat_z_2 = mat_zq_2.get_closest_to_zero_representative();
-    ///
-    /// assert_eq!(mat_z_1.to_string(), "[[1, 2],[-2, -1]]");
-    /// assert_eq!(mat_z_2.to_string(), "[[1, 2],[-1, 0]]");
-    /// ```
-    pub fn get_closest_to_zero_representative(&self) -> MatZ {
-        let modulus: Z = Z::from(&self.modulus);
-        let modulus_half = modulus.div_floor(2);
-
-        let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
-
-        for row in 0..self.get_num_rows() {
-            for column in 0..self.get_num_columns() {
-                let entry: Z = self.get_entry(row, column).unwrap();
-
-                // Not using Zq::distance for performance reasons.
-                if entry > modulus_half {
-                    out.set_entry(row, column, entry - &modulus).unwrap();
-                } else {
-                    out.set_entry(row, column, entry).unwrap();
-                }
-            }
-        }
-
-        out
     }
 }
 
