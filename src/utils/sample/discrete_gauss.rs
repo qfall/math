@@ -89,7 +89,7 @@ pub(crate) fn sample_z(n: &Z, center: &Q, s: &Q) -> Result<Z, MathError> {
 
 /// Computes the value of the Gaussian function for `x`.
 ///
-/// **WARNING:** This functions assumes `s != 0`.
+/// **Warning**: This functions assumes `s != 0`.
 ///
 /// Parameters:
 /// - `x`: specifies the value/ sample for which the Gaussian function's value is computed
