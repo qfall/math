@@ -67,7 +67,7 @@ impl FromStr for MatQ {
     ///     - if the number of rows or columns is too large (must fit into i64),
     ///     - if the number of entries in rows is unequal, or
     ///     - if an entry is not formatted correctly.
-    ///     - For further information see [`Q::from_str`].
+    ///         For further information see [`Q::from_str`].
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.

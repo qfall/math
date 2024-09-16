@@ -78,7 +78,8 @@ impl FromStr for ModulusPolynomialRingZq {
     /// converts the provided string into a [`PolyOverZq`] and then into the Modulus object.
     ///
     /// Parameters:
-    /// - `s`: has to be a valid string to create a [`PolyOverZq`] see [`PolyOverZq::from_str`]
+    /// - `s`: has to be a valid string to create a [`PolyOverZq`].
+    ///     For further information see [`PolyOverZq::from_str`].
     ///
     /// Returns a [`ModulusPolynomialRingZq`] or an error, if the provided string was not
     /// formatted correctly.
@@ -94,7 +95,7 @@ impl FromStr for ModulusPolynomialRingZq {
     /// - Returns a [`MathError`] of type [`MathError::StringConversionError`]
     ///     - if the string was not formatted correctly, e.g. not a correctly
     ///         formatted [`PolyOverZq`].
-    ///     - For further information see [`PolyOverZq::from_str`].
+    ///         For further information see [`PolyOverZq::from_str`].
     /// - Returns a [`MathError`] of type
     ///     [`InvalidModulus`](MathError::InvalidModulus)
     ///     if `modulus` is smaller than `2`.

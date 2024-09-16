@@ -66,7 +66,7 @@ impl FromStr for MatZq {
     ///     - if the number of rows or columns is too large (must fit into i64),
     ///     - if the number of entries in rows is unequal, or
     ///     - if the modulus or an entry is not formatted correctly.
-    ///     - For further information see [`Z::from_str`].
+    ///         For further information see [`Z::from_str`].
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns or the modulus are not suited to create a matrix.
