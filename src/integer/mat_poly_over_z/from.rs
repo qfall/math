@@ -23,13 +23,16 @@ impl FromStr for MatPolyOverZ {
     type Err = MathError;
 
     /// Creates a [`MatPolyOverZ`] matrix from a [`String`].
-    /// The format of that string looks like <br>
-    /// `[[poly_1, poly_2, poly_3],[poly_4, poly_5, poly_6]]` for a 2x3 matrix
-    /// where thirst three polynomials are in the first row and the second three are
-    /// in the second row.
+    /// 
+    /// **Warning**: Each entry is parsed as a [`PolyOverZ`] object. 
+    /// If an entry string starts with a correctly formatted [`PolyOverZ`] object,
+    /// the rest of this entry string is ignored. This means that the entry input 
+    /// string `"4  0 1 2 3"` is the same as `"4  0 1 2 3 4 5 6 7"`.
     ///
     /// Parameters:
-    /// - `string`: the matrix as a string
+    /// - `string`: the matrix of form: `"[[poly_1, poly_2, poly_3],[poly_4, poly_5, poly_6]]"` 
+    ///     for a 2x3 matrix where first three polynomials are in the first row 
+    ///     and the second three are in the second row.
     ///
     /// Returns a [`MatPolyOverZ`] or an error, if the matrix is not formatted in a suitable way,
     /// the number of rows or columns is too large (must fit into [`i64`]),
@@ -88,7 +91,7 @@ impl FromStr for MatPolyOverZ {
 }
 
 impl From<&MatZ> for MatPolyOverZ {
-    /// Initialize a [`MatPolyOverZ`] with constant polynomials defined by a [`MatZ`].
+    /// Creates a [`MatPolyOverZ`] with constant polynomials defined by a [`MatZ`].
     ///
     /// # Parameters
     /// - `matrix`: A matrix with constant integers.

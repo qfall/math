@@ -124,13 +124,18 @@ impl FromStr for PolyOverZq {
     type Err = MathError;
 
     /// Creating a polynomial with arbitrarily many coefficients of type [`Zq`].
+    /// 
+    /// **Warning**: If the input string starts with a correctly formatted [`PolyOverZ`] object,
+    /// the rest of the string until the `"mod"` is ignored. This means that the input string
+    /// `"4  0 1 2 3 mod 13"` is the same as `"4  0 1 2 3 4 5 6 7 mod 13"`.
     ///
     /// Parameters:
     /// - `s`: the polynomial of form:
-    ///     "`[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴...⌴mod⌴[modulus]`".
-    ///     Note that the `[#number of coefficients]` and `[0th coefficient]`
-    ///     are divided by two spaces and the string for the polynomial is trimmed,
-    ///     i.e. all whitespaces before around the polynomial and the modulus are removed.
+    ///     `"[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴...⌴mod⌴[modulus]"`.
+    /// 
+    /// Note that the `[#number of coefficients]` and `[0th coefficient]`
+    /// are divided by two spaces and the string for the polynomial is trimmed,
+    /// i.e. all whitespaces before around the polynomial and the modulus are removed.
     ///
     /// Returns a [`PolyOverZq`] or an error, if the provided string was not
     /// formatted correctly.

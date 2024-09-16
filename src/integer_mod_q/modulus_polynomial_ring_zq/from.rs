@@ -73,9 +73,14 @@ impl From<&ModulusPolynomialRingZq> for ModulusPolynomialRingZq {
 impl FromStr for ModulusPolynomialRingZq {
     type Err = MathError;
 
-    /// Creating a Modulus object of type [`ModulusPolynomialRingZq`]
+    /// Creates a Modulus object of type [`ModulusPolynomialRingZq`]
     /// for [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq). This first
     /// converts the provided string into a [`PolyOverZq`] and then into the Modulus object.
+    /// 
+    /// **Warning**: If the input string starts with a correctly formatted 
+    /// [`PolyOverZ`](crate::integer::PolyOverZ) object, the rest of the string 
+    /// until the `"mod"` is ignored. This means that the input string
+    /// `"4  0 1 2 3 mod 13"` is the same as `"4  0 1 2 3 4 5 6 7 mod 13"`.
     ///
     /// Parameters:
     /// - `s`: has to be a valid string to create a [`PolyOverZq`].

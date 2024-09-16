@@ -24,7 +24,12 @@ use std::{ffi::CString, str::FromStr};
 impl FromStr for PolyOverZ {
     type Err = MathError;
 
-    /// Create a new polynomial with arbitrarily many coefficients of type [`Z`].
+    /// Creates a new polynomial with arbitrarily many coefficients of type [`Z`] 
+    /// from a [`String`].
+    /// 
+    /// **Warning**: If the input string starts with a correctly formatted [`PolyOverZ`] object,
+    /// the rest of the string is ignored. This means that the input string
+    /// `"4  0 1 2 3"` is the same as `"4  0 1 2 3 4 5 6 7"`.
     ///
     /// Parameters:
     /// - `s`: the polynomial of form: `"[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴..."`.
