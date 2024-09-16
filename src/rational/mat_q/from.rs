@@ -7,9 +7,6 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! Implementations to create a [`MatQ`] value from other types.
-//! For each reasonable type, an explicit function with the format
-//! `from_<type_name>` and the [`From`] trait should be implemented.
-//! Furthermore, an instantiation of a zero matrix is implemented.
 //!
 //! The explicit functions contain the documentation.
 
@@ -23,31 +20,6 @@ use crate::{
 };
 use flint_sys::fmpq_mat::fmpq_mat_set_fmpz_mat;
 use std::str::FromStr;
-
-impl MatQ {
-    /// Create a [`MatQ`] from a [`MatZ`].
-    ///
-    /// Parameters:
-    /// - `matrix`: the matrix from which the entries are taken
-    ///
-    /// Returns the new matrix.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer::MatZ;
-    /// use qfall_math::rational::MatQ;
-    /// use std::str::FromStr;
-    ///
-    /// let m = MatZ::from_str("[[1, 2],[3, -1]]").unwrap();
-    ///
-    /// let a = MatQ::from_mat_z(&m);
-    /// ```
-    pub fn from_mat_z(matrix: &MatZ) -> Self {
-        let mut out = MatQ::new(matrix.get_num_rows(), matrix.get_num_columns());
-        unsafe { fmpq_mat_set_fmpz_mat(&mut out.matrix, &matrix.matrix) };
-        out
-    }
-}
 
 impl FromStr for MatQ {
     type Err = MathError;
@@ -92,9 +64,10 @@ impl FromStr for MatQ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
     ///     - if the matrix is not formatted in a suitable way,
-    ///     - if the number of entries in rows is unequal,
-    ///     - if an entry contains a Nul byte, or
+    ///     - if the number of rows or columns is too large (must fit into i64),
+    ///     - if the number of entries in rows is unequal, or
     ///     - if an entry is not formatted correctly.
+    ///         For further information see [`Q::from_str`].
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
@@ -116,9 +89,27 @@ impl FromStr for MatQ {
 }
 
 impl From<&MatZ> for MatQ {
-    /// Convert [`MatZ`] to [`MatQ`] using [`MatQ::from_mat_z`].
+    /// Create a [`MatQ`] from a [`MatZ`].
+    ///
+    /// Parameters:
+    /// - `matrix`: the matrix from which the entries are taken
+    ///
+    /// Returns the new matrix.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::rational::MatQ;
+    /// use std::str::FromStr;
+    ///
+    /// let m = MatZ::from_str("[[1, 2],[3, -1]]").unwrap();
+    ///
+    /// let a = MatQ::from(&m);
+    /// ```
     fn from(matrix: &MatZ) -> Self {
-        Self::from_mat_z(matrix)
+        let mut out = MatQ::new(matrix.get_num_rows(), matrix.get_num_columns());
+        unsafe { fmpq_mat_set_fmpz_mat(&mut out.matrix, &matrix.matrix) };
+        out
     }
 }
 
@@ -136,12 +127,9 @@ mod test_from_mat_zq {
         let matz = MatZ::new(15, 17);
 
         let matq_1 = MatQ::from(&matz);
-        let matq_2 = MatQ::from_mat_z(&matz);
 
         assert_eq!(15, matq_1.get_num_rows());
         assert_eq!(17, matq_1.get_num_columns());
-        assert_eq!(15, matq_2.get_num_rows());
-        assert_eq!(17, matq_2.get_num_columns());
     }
 
     /// Test if entries are taken over correctly
@@ -152,12 +140,9 @@ mod test_from_mat_zq {
         matz.set_entry(0, 1, i64::MIN).unwrap();
 
         let matq_1 = MatQ::from(&matz);
-        let matq_2 = MatQ::from_mat_z(&matz);
 
         assert_eq!(Q::from(i64::MIN), matq_1.get_entry(0, 1).unwrap());
         assert_eq!(Q::from(u64::MAX - 58), matq_1.get_entry(0, 0).unwrap());
-        assert_eq!(Q::from(i64::MIN), matq_2.get_entry(0, 1).unwrap());
-        assert_eq!(Q::from(u64::MAX - 58), matq_2.get_entry(0, 0).unwrap());
     }
 }
 

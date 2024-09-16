@@ -46,7 +46,7 @@ impl Zq {
     ///     if `n` does not fit into an [`i64`].
     ///
     /// # Panics ...
-    /// - if the modulus is not greater than `1`.
+    /// - if `modulus` is smaller than `2`.
     pub fn sample_binomial(
         modulus: impl Into<Modulus>,
         n: impl Into<Z>,

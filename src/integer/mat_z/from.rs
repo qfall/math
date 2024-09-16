@@ -7,9 +7,6 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! Implementations to create a [`MatZ`] matrix from other types.
-//! For each reasonable type, an explicit function with the format
-//! `from_<type_name>` and the [`From`] trait should be implemented.
-//! Furthermore, an instantiation of a zero matrix is implemented.
 //!
 //! The explicit functions contain the documentation.
 
@@ -49,9 +46,10 @@ impl FromStr for MatZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
     ///     - if the matrix is not formatted in a suitable way,
-    ///     - if the number of entries in rows is unequal,
-    ///     - if an entry contains a Nul byte, or
+    ///     - if the number of rows or columns is too large (must fit into i64),
+    ///     - if the number of entries in rows is unequal, or
     ///     - if an entry is not formatted correctly.
+    ///         For further information see [`Z::from_str`].
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.

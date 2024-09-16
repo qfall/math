@@ -70,9 +70,9 @@ impl MatPolyOverZ {
 
     /// ```
     /// # Errors
-    /// Returns a [`MathError`] of type
-    /// [`MathError::MismatchingMatrixDimension`] if the matrix dimensions
-    /// mismatch.
+    /// - Returns a [`MathError`] of type
+    ///     [`MathError::MismatchingMatrixDimension`] if the matrix dimensions
+    ///     mismatch.
     pub fn sub_safe(&self, other: &Self) -> Result<MatPolyOverZ, MathError> {
         if self.get_num_rows() != other.get_num_rows()
             || self.get_num_columns() != other.get_num_columns()

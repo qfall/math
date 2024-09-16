@@ -7,8 +7,6 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! Implementations to create a [`ModulusPolynomialRingZq`] value from other types.
-//! For each reasonable type, an explicit function with the format
-//! `from_<type_name>` and the [`From`] trait should be implemented.
 //!
 //! The explicit functions contain the documentation.
 
@@ -80,7 +78,8 @@ impl FromStr for ModulusPolynomialRingZq {
     /// converts the provided string into a [`PolyOverZq`] and then into the Modulus object.
     ///
     /// Parameters:
-    /// - `s`: has to be a valid string to create a [`PolyOverZq`] see [`PolyOverZq::from_str`]
+    /// - `s`: has to be a valid string to create a [`PolyOverZq`].
+    ///     For further information see [`PolyOverZq::from_str`].
     ///
     /// Returns a [`ModulusPolynomialRingZq`] or an error, if the provided string was not
     /// formatted correctly.
@@ -93,13 +92,19 @@ impl FromStr for ModulusPolynomialRingZq {
     /// let poly_mod = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
     /// ```
     /// # Errors and Failures
-    /// - Returns a [`MathError`]. For further details see Errors and Failures of [`PolyOverZq::from_str`]
+    /// - Returns a [`MathError`] of type [`MathError::StringConversionError`]
+    ///     - if the string was not formatted correctly, e.g. not a correctly
+    ///         formatted [`PolyOverZq`].
+    ///         For further information see [`PolyOverZq::from_str`].
+    /// - Returns a [`MathError`] of type
+    ///     [`InvalidModulus`](MathError::InvalidModulus)
+    ///     if `modulus` is smaller than `2`.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Ok(Self::from(&PolyOverZq::from_str(s)?))
     }
 }
 
-/// most tests with specific values are covered in [`PolyOverZq`](crate::integer_mod_q::PolyOverZq)
+/// Most tests with specific values are covered in [`PolyOverZq`](crate::integer_mod_q::PolyOverZq)
 /// since the format is reused, we omit some tests
 #[cfg(test)]
 mod test_try_from_poly_zq {

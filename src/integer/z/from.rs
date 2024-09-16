@@ -7,8 +7,6 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! Implementations to create a [`Z`] value from other types.
-//! For each reasonable type, an explicit function with the format
-//! `from_<type_name>` and the [`From`] trait should be implemented.
 //!
 //! The explicit functions contain the documentation.
 
@@ -109,7 +107,7 @@ impl Z {
     ///     base is not between `2` and `62`.
     /// - Returns a [`MathError`] of type
     ///     [`StringConversionError`](MathError::StringConversionError)
-    ///     - if the provided string contains a Nul byte, or
+    ///     - if the provided string contains a `Null` byte, or
     ///     - if the provided string was not formatted correctly.
     pub fn from_str_b(s: &str, base: i32) -> Result<Self, MathError> {
         if !(2..=62).contains(&base) {
@@ -257,7 +255,7 @@ impl FromStr for Z {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
     ///     [`StringConversionError`](MathError::StringConversionError)
-    ///     - if the provided string contains a Nul byte, or
+    ///     - if the provided string contains a `Null` byte, or
     ///     - if the provided string was not formatted correctly.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Z::from_str_b(s, 10)

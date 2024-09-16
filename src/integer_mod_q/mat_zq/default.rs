@@ -33,6 +33,7 @@ impl MatZq {
     ///
     /// # Panics ...
     /// - if the number of rows or columns is negative, `0`, or does not fit into an [`i64`].
+    /// - if `modulus` is smaller than `2`.
     pub fn new(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
@@ -221,5 +222,12 @@ mod test_new {
     #[test]
     fn negative_modulus_error() {
         let _ = MatZq::new(2, 2, -3);
+    }
+
+    /// Ensure that a negative modulus yields an error.
+    #[should_panic]
+    #[test]
+    fn one_modulus_error() {
+        let _ = MatZq::new(2, 2, 1);
     }
 }

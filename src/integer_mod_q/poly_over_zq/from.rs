@@ -7,8 +7,6 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! Implementations to create a [`PolyOverZq`] value from other types.
-//! For each reasonable type, an explicit function with the format
-//! `from_<type_name>` and the [`From`] trait should be implemented.
 //!
 //! The explicit functions contain the documentation.
 
@@ -71,6 +69,9 @@ impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for PolyOverZq {
     /// # let cmp_poly = PolyOverZq::from_str("4  0 1 2 3 mod 100").unwrap();
     /// # assert_eq!(cmp_poly, mod_poly);
     /// ```
+    ///
+    /// # Panics ...
+    /// - if `modulus` is smaller than `2`.
     fn from((poly, modulus): (&PolyOverZ, Mod)) -> Self {
         let mut res = PolyOverZq::from(&modulus.into());
         unsafe {
@@ -144,15 +145,16 @@ impl FromStr for PolyOverZq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
     ///     [`StringConversionError`](MathError::StringConversionError)
-    ///     if the provided string was not formatted correctly to create a [`Modulus`],
-    ///     if the provided value did not contain two whitespaces,
-    ///     if the provided half of the string was not formatted correctly to
-    ///     create a polynomial, or
-    ///     if the provided half of the
-    ///     string was not formatted correctly to create a [`Z`](crate::integer::Z).
+    ///     - if the provided first half of the string was not formatted correctly to
+    ///         create a [`PolyOverZ`],
+    ///     - if the provided second half of the
+    ///         string was not formatted correctly to create a [`Modulus`],
+    ///     - if the number of coefficients was smaller than the number provided
+    ///         at the start of the provided string, or
+    ///     - if the provided value did not contain two whitespaces.
     /// - Returns a [`MathError`] of type
     ///     [`InvalidModulus`](MathError::InvalidModulus)
-    ///     if the provided modulus is not greater than `1`.
+    ///     if `modulus` is smaller than `2`.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (poly_s, modulus) = match s.split_once("mod") {
             Some((poly_s, modulus)) => (poly_s, modulus.trim()),

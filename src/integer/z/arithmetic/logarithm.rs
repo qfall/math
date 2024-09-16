@@ -150,7 +150,8 @@ impl Z {
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
     ///     if the `base` is not greater than `1`.
     /// - Returns a [`MathError`] of type
-    ///     [`NonPositive`](MathError::NonPositive) if `self` is not
+    ///     [`NonPositive`](MathError::NonPositive)
+    ///     if `self` is not
     ///     greater than `0`.
     pub fn log(&self, base: impl Into<Z>) -> Result<Q, MathError> {
         let base: Z = base.into();

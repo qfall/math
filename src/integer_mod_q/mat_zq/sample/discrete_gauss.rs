@@ -119,7 +119,7 @@ impl MatZq {
 
         let sample = sample_d(&basis.get_mat(), &n, center, &s)?;
 
-        Ok(MatZq::from_mat_z_modulus(&sample, basis.get_mod()))
+        Ok(MatZq::from((&sample, basis.get_mod())))
     }
 
     /// Runs [`MatZq::sample_d`] with identity basis and center vector `0`.
@@ -206,7 +206,7 @@ impl MatZq {
 
         let sample = sample_d_precomputed_gso(&basis.get_mat(), basis_gso, &n, center, &s)?;
 
-        Ok(MatZq::from_mat_z_modulus(&sample, basis.get_mod()))
+        Ok(MatZq::from((&sample, basis.get_mod())))
     }
 }
 

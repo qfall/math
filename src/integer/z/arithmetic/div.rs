@@ -168,6 +168,43 @@ arithmetic_trait_borrowed_to_owned!(Div, div, Z, Z, Q);
 arithmetic_trait_mixed_borrowed_owned!(Div, div, Z, Z, Q);
 arithmetic_between_types!(Div, div, Z, Q, i64 i32 i16 i8 u64 u32 u16 u8);
 
+impl Div<&Q> for &Z {
+    type Output = Q;
+
+    /// Implements the [`Div`] trait for [`Z`] and [`Q`] values.
+    /// [`Div`] is implemented for any combination of owned and borrowed values.
+    ///
+    /// Parameters:
+    ///  - `other`: specifies the value to divide `self` by
+    ///
+    /// Returns the ratio of both numbers as a [`Q`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::Q;
+    /// use qfall_math::integer::Z;
+    /// use std::str::FromStr;
+    ///
+    /// let a: Z = Z::from(-42);
+    /// let b: Q = Q::from((42, 19));
+    ///
+    /// let c: Q = &a / &b;
+    /// let d: Q = a / b;
+    /// let e: Q = &Z::from(42) / d;
+    /// let f: Q = Z::from(42) / &e;
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the divisor is `0`.
+    fn div(self, other: &Q) -> Self::Output {
+        assert!(!other.is_zero(), "Tried to divide {self} by zero.");
+        Q::from(self.clone()) / other
+    }
+}
+
+arithmetic_trait_borrowed_to_owned!(Div, div, Z, Q, Q);
+arithmetic_trait_mixed_borrowed_owned!(Div, div, Z, Q, Q);
+
 #[cfg(test)]
 mod test_div_floor {
     use super::Z;
@@ -241,43 +278,6 @@ mod test_div_floor {
         let _ = a.div_floor(&Z::ZERO);
     }
 }
-
-impl Div<&Q> for &Z {
-    type Output = Q;
-
-    /// Implements the [`Div`] trait for [`Z`] and [`Q`] values.
-    /// [`Div`] is implemented for any combination of owned and borrowed values.
-    ///
-    /// Parameters:
-    ///  - `other`: specifies the value to divide `self` by
-    ///
-    /// Returns the ratio of both numbers as a [`Q`].
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::rational::Q;
-    /// use qfall_math::integer::Z;
-    /// use std::str::FromStr;
-    ///
-    /// let a: Z = Z::from(-42);
-    /// let b: Q = Q::from((42, 19));
-    ///
-    /// let c: Q = &a / &b;
-    /// let d: Q = a / b;
-    /// let e: Q = &Z::from(42) / d;
-    /// let f: Q = Z::from(42) / &e;
-    /// ```
-    ///
-    /// # Panics ...
-    /// - if the divisor is `0`.
-    fn div(self, other: &Q) -> Self::Output {
-        assert!(!other.is_zero(), "Tried to divide {self} by zero.");
-        Q::from(self.clone()) / other
-    }
-}
-
-arithmetic_trait_borrowed_to_owned!(Div, div, Z, Q, Q);
-arithmetic_trait_mixed_borrowed_owned!(Div, div, Z, Q, Q);
 
 #[cfg(test)]
 mod test_div_ceil {

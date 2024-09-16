@@ -7,8 +7,6 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! Implementations to create a [`PolyOverQ`] value from other types.
-//! For each reasonable type, an explicit function with the format
-//! `from_<type_name>` and the [`From`] trait should be implemented.
 //!
 //! The explicit functions contain the documentation.
 
@@ -49,11 +47,11 @@ impl FromStr for PolyOverQ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
     ///     [`StringConversionError`](MathError::StringConversionError)
-    ///     - if the provided string contains a `Null` Byte,
+    ///     - if the provided string was not formatted correctly,
+    ///     - if the number of coefficients was smaller than the number provided
+    ///         at the start of the provided string,
     ///     - if the provided value did not contain two whitespaces, or
-    ///     - if the provided string was not formatted correctly or the number of
-    ///         coefficients was smaller than the number provided at the start of the
-    ///         provided string.
+    ///     - if the provided string contains a `Null` Byte.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut res = Self::default();
 
@@ -79,7 +77,7 @@ impl FromStr for PolyOverQ {
     }
 }
 
-impl PolyOverQ {
+impl From<&PolyOverZ> for PolyOverQ {
     /// Create a [`PolyOverQ`] from a [`PolyOverZ`].
     ///
     /// Parameters:
@@ -93,23 +91,15 @@ impl PolyOverQ {
     ///
     /// let poly = PolyOverZ::from_str("4  0 1 102 3").unwrap();
     ///
-    /// let poly_q = PolyOverQ::from_poly_over_z(&poly);
+    /// let poly_q = PolyOverQ::from(&poly);
     ///
     /// # let cmp_poly = PolyOverQ::from_str("4  0 1 102 3").unwrap();
     /// # assert_eq!(cmp_poly, poly_q);
     /// ```
-    pub fn from_poly_over_z(poly: &PolyOverZ) -> Self {
+    fn from(poly: &PolyOverZ) -> Self {
         let mut out = Self::default();
         unsafe { fmpq_poly_set_fmpz_poly(&mut out.poly, &poly.poly) };
         out
-    }
-}
-
-impl From<&PolyOverZ> for PolyOverQ {
-    /// Converts a polynomial of type [`PolyOverZ`] to a [`PolyOverQ`] using
-    /// [`PolyOverQ::from_poly_over_z`].
-    fn from(poly: &PolyOverZ) -> Self {
-        Self::from_poly_over_z(poly)
     }
 }
 

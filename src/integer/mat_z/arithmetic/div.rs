@@ -19,45 +19,6 @@ use flint_sys::fmpq_mat::fmpq_mat_set_fmpz_mat_div_fmpz;
 use flint_sys::fmpz_mat::fmpz_mat_scalar_divexact_fmpz;
 use std::ops::Div;
 
-impl Div<&Z> for &MatZ {
-    type Output = MatQ;
-    /// Implements the [`Div`] trait for a [`MatZ`] matrix by a [`Z`] integer.
-    /// [`Div`] is implemented for any combination of owned and borrowed values.
-    ///
-    /// Parameters:
-    /// - `divisor`: specifies the divisor by which the matrix is divided
-    ///
-    /// Returns the quotient of `self` divided by `divisor` as a [`MatQ`]
-    /// or panics if the divisor is `0`.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer::{MatZ, Z};
-    /// use std::str::FromStr;
-    ///
-    /// let mat = MatZ::from_str("[[3, 5],[9, 22]]").unwrap();
-    /// let divisor = Z::from(3);
-    ///
-    /// let mat_q = &mat / &divisor;
-    ///
-    /// assert_eq!("[[1, 5/3],[3, 22/3]]", mat_q.to_string());
-    /// ```
-    ///
-    /// # Panics ...
-    /// - if the divisor is `0`.
-    fn div(self, divisor: &Z) -> Self::Output {
-        assert!(!divisor.is_zero(), "Tried to divide {self} by zero.");
-        let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns());
-        unsafe {
-            fmpq_mat_set_fmpz_mat_div_fmpz(&mut out.matrix, &self.matrix, &divisor.value);
-        }
-        out
-    }
-}
-
-arithmetic_trait_borrowed_to_owned!(Div, div, MatZ, Z, MatQ);
-arithmetic_trait_mixed_borrowed_owned!(Div, div, MatZ, Z, MatQ);
-
 impl MatZ {
     /// Implements division for a [`MatZ`] matrix by a [`Z`] integer.
     ///
@@ -132,6 +93,45 @@ impl MatZ {
         out
     }
 }
+
+impl Div<&Z> for &MatZ {
+    type Output = MatQ;
+    /// Implements the [`Div`] trait for a [`MatZ`] matrix by a [`Z`] integer.
+    /// [`Div`] is also implemented for borrowed values.
+    ///
+    /// Parameters:
+    /// - `divisor`: specifies the divisor by which the matrix is divided
+    ///
+    /// Returns the quotient of `self` divided by `divisor` as a [`MatQ`]
+    /// or panics if the divisor is `0`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::{MatZ, Z};
+    /// use std::str::FromStr;
+    ///
+    /// let mat = MatZ::from_str("[[3, 5],[9, 22]]").unwrap();
+    /// let divisor = Z::from(3);
+    ///
+    /// let mat_q = &mat / &divisor;
+    ///
+    /// assert_eq!("[[1, 5/3],[3, 22/3]]", mat_q.to_string());
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the divisor is `0`.
+    fn div(self, divisor: &Z) -> Self::Output {
+        assert!(!divisor.is_zero(), "Tried to divide {self} by zero.");
+        let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns());
+        unsafe {
+            fmpq_mat_set_fmpz_mat_div_fmpz(&mut out.matrix, &self.matrix, &divisor.value);
+        }
+        out
+    }
+}
+
+arithmetic_trait_borrowed_to_owned!(Div, div, MatZ, Z, MatQ);
+arithmetic_trait_mixed_borrowed_owned!(Div, div, MatZ, Z, MatQ);
 
 #[cfg(test)]
 mod test_div_exact {

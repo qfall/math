@@ -7,9 +7,6 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! Implementations to create a [`MatZq`] value from other types.
-//! For each reasonable type, an explicit function with the format
-//! `from_<type_name>` and the [`From`] trait should be implemented.
-//! Furthermore, an instantiation of a zero matrix is implemented.
 //!
 //! The explicit functions contain the documentation.
 
@@ -23,35 +20,6 @@ use crate::{
 };
 use flint_sys::{fmpz_mat::fmpz_mat_set, fmpz_mod_mat::_fmpz_mod_mat_reduce};
 use std::str::FromStr;
-
-impl MatZq {
-    /// Create a [`MatZq`] from a [`MatZ`] and a [`Modulus`].
-    ///
-    /// Parameters:
-    /// - `matrix`: the matrix from which the entries are taken
-    /// - `modulus`: the modulus of the matrix
-    ///
-    /// Returns the new matrix.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer::MatZ;
-    /// use qfall_math::integer_mod_q::MatZq;
-    /// use std::str::FromStr;
-    ///
-    /// let m = MatZ::from_str("[[1, 2],[3, -1]]").unwrap();
-    ///
-    /// let a = MatZq::from_mat_z_modulus(&m, 17);
-    /// ```
-    pub fn from_mat_z_modulus(matrix: &MatZ, modulus: impl Into<Modulus>) -> Self {
-        let mut out = MatZq::new(matrix.get_num_rows(), matrix.get_num_columns(), modulus);
-        unsafe {
-            fmpz_mat_set(&mut out.matrix.mat[0], &matrix.matrix);
-            _fmpz_mod_mat_reduce(&mut out.matrix);
-        }
-        out
-    }
-}
 
 impl FromStr for MatZq {
     type Err = MathError;
@@ -95,13 +63,15 @@ impl FromStr for MatZq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
     ///     - if the matrix is not formatted in a suitable way,
-    ///     - if the number of entries in rows is unequal,
-    ///     - if an entry contains a Nul byte, or
+    ///     - if the number of rows or columns is too large (must fit into i64),
+    ///     - if the number of entries in rows is unequal, or
     ///     - if the modulus or an entry is not formatted correctly.
+    ///         For further information see [`Z::from_str`].
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns or the modulus are not suited to create a matrix.
     ///     For further information see [`MatZq::new`].
+    /// - if the modulus is smaller than `2`.
     fn from_str(string: &str) -> Result<Self, MathError> {
         let (matrix, modulus) = match string.split_once("mod") {
             Some((matrix, modulus)) => (matrix, modulus),
@@ -130,9 +100,31 @@ impl FromStr for MatZq {
 }
 
 impl<Mod: Into<Modulus>> From<(&MatZ, Mod)> for MatZq {
-    /// Convert [`MatZ`] and [`Modulus`] to [`MatZq`] using [`MatZq::from_mat_z_modulus`].
+    /// Create a [`MatZq`] from a [`MatZ`] and a [`Modulus`].
+    ///
+    /// Parameters:
+    /// - `matrix`: the matrix from which the entries are taken
+    /// - `modulus`: the modulus of the matrix
+    ///
+    /// Returns the new matrix.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use std::str::FromStr;
+    ///
+    /// let m = MatZ::from_str("[[1, 2],[3, -1]]").unwrap();
+    ///
+    /// let a = MatZq::from((&m, 17));
+    /// ```
     fn from((matrix, modulus): (&MatZ, Mod)) -> Self {
-        MatZq::from_mat_z_modulus(matrix, modulus)
+        let mut out = MatZq::new(matrix.get_num_rows(), matrix.get_num_columns(), modulus);
+        unsafe {
+            fmpz_mat_set(&mut out.matrix.mat[0], &matrix.matrix);
+            _fmpz_mod_mat_reduce(&mut out.matrix);
+        }
+        out
     }
 }
 
@@ -151,12 +143,9 @@ mod test_from_mat_z_modulus {
         let modulus = Modulus::from(17);
 
         let matzq_1 = MatZq::from((&matz, &modulus));
-        let matzq_2 = MatZq::from_mat_z_modulus(&matz, &modulus);
 
         assert_eq!(15, matzq_1.get_num_rows());
         assert_eq!(17, matzq_1.get_num_columns());
-        assert_eq!(15, matzq_2.get_num_rows());
-        assert_eq!(17, matzq_2.get_num_columns());
     }
 
     /// Test if entries are taken over correctly.
@@ -169,12 +158,9 @@ mod test_from_mat_z_modulus {
         matz.set_entry(0, 1, -1).unwrap();
 
         let matzq_1 = MatZq::from((&matz, &modulus));
-        let matzq_2 = MatZq::from_mat_z_modulus(&matz, &modulus);
 
         assert_eq!(Z::from(u64::MAX - 1), matzq_1.get_entry(0, 1).unwrap());
         assert_eq!(Z::from(u64::MAX - 58), matzq_1.get_entry(0, 0).unwrap());
-        assert_eq!(Z::from(u64::MAX - 1), matzq_2.get_entry(0, 1).unwrap());
-        assert_eq!(Z::from(u64::MAX - 58), matzq_2.get_entry(0, 0).unwrap());
     }
 
     /// Ensures that the function is still available for all values implementing

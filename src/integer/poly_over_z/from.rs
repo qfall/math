@@ -7,8 +7,6 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! Implementations to create a [`PolyOverZ`] value from other types.
-//! For each reasonable type, an explicit function with the format
-//! `from_<type_name>` and the [`From`] trait should be implemented.
 //!
 //! The explicit functions contain the documentation.
 
@@ -48,13 +46,11 @@ impl FromStr for PolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::StringConversionError`]
-    ///     if the provided string was not formatted correctly or the number of
-    ///     coefficients was smaller than the number provided at the start of the
-    ///     provided string, or
-    ///     if the provided value did not contain two whitespaces.
-    /// - Returns a [`MathError`] of type
-    ///     [`StringConversionError`](MathError::StringConversionError)
-    ///     if the provided string contains a `Null` Byte.
+    ///     - if the provided string was not formatted correctly,
+    ///     - if the number of coefficients was smaller than the number provided
+    ///         at the start of the provided string,
+    ///     - if the provided value did not contain two whitespaces, or
+    ///     - if the provided string contains a `Null` Byte.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // remove whitespaces at the start and at the end
         let s_trimmed = s.trim();

@@ -69,9 +69,9 @@ impl MatZ {
     /// let c: MatZ = a.add_safe(&b).unwrap();
     /// ```
     /// # Errors
-    /// Returns a [`MathError`] of type
-    /// [`MathError::MismatchingMatrixDimension`] if the matrix dimensions
-    /// mismatch.
+    /// - Returns a [`MathError`] of type
+    ///     [`MathError::MismatchingMatrixDimension`] if the matrix dimensions
+    ///     mismatch.
     pub fn add_safe(&self, other: &Self) -> Result<MatZ, MathError> {
         if self.get_num_rows() != other.get_num_rows()
             || self.get_num_columns() != other.get_num_columns()
