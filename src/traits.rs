@@ -19,7 +19,7 @@ pub trait Evaluate<T, U> {
     /// for a given input value.
     ///
     /// Parameters:
-    /// - `value`:the value with which to evaluate the object.
+    /// - `value`: the value with which to evaluate the object.
     ///
     /// Returns the evaluation of the object.
     fn evaluate(&self, value: T) -> U;
@@ -31,7 +31,7 @@ pub trait GetCoefficient<T> {
     /// for a given index.
     ///
     /// Parameters:
-    /// - `index`:the index of the coefficient
+    /// - `index`: the index of the coefficient
     ///
     /// Returns the coefficient of the polynomial.
     fn get_coeff(&self, index: impl TryInto<i64> + Display) -> Result<T, MathError>;
@@ -43,8 +43,8 @@ pub trait SetCoefficient<T> {
     /// for a given input value and a index.
     ///
     /// Parameters:
-    /// - `index`:the coefficient to be set.
-    /// - `value`:the value the coefficient is set to.
+    /// - `index`: the coefficient to be set.
+    /// - `value`: the value the coefficient is set to.
     fn set_coeff(&mut self, index: impl TryInto<i64> + Display, value: T) -> Result<(), MathError>;
 }
 
