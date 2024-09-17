@@ -52,8 +52,8 @@ impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for PolyOverZq {
     /// Creates a [`PolyOverZq`] from a [`PolyOverZ`] and [`Modulus`].
     ///
     /// Parameters:
-    /// - `poly`:the coefficients of the polynomial.
-    /// - `modulus`:the modulus by which each entry is reduced.
+    /// - `poly`: the coefficients of the polynomial.
+    /// - `modulus`: the modulus by which each entry is reduced.
     ///
     /// # Examples:
     /// ```

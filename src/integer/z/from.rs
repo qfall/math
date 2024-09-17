@@ -209,7 +209,7 @@ impl<Integer: AsInteger + IntoZ> From<Integer> for Z {
     /// Converts an integer to [`Z`].
     ///
     /// # Parameters:
-    /// `value`:must be a rust integer, [`Modulus`], or a reference of these types.
+    /// `value`: must be a rust integer, [`Modulus`], or a reference of these types.
     ///
     /// Returns a [`Z`] with the value specified in the parameter.
     ///

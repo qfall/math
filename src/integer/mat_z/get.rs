@@ -183,10 +183,10 @@ impl MatZ {
     /// Otherwise the function will panic.
     ///
     /// Parameters:
-    /// `row_1`:the starting row of the submatrix
-    /// `row_2`:the ending row of the submatrix
-    /// `col_1`:the starting column of the submatrix
-    /// `col_2`:the ending column of the submatrix
+    /// `row_1`: the starting row of the submatrix
+    /// `row_2`: the ending row of the submatrix
+    /// `col_1`: the starting column of the submatrix
+    /// `col_2`: the ending column of the submatrix
     ///
     /// Negative indices can be used to index from the back, e.g., `-1` for
     /// the last element.
