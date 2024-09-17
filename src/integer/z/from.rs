@@ -92,7 +92,7 @@ impl Z {
     /// - `s`: the integer value as a string
     /// - `base`: the base in which the integer is represented
     ///
-    /// Returns a [`Z`] or an error, if the provided string was not formatted
+    /// Returns a [`Z`] or an error if the provided string was not formatted
     /// correctly, the provided string contains a `Null` byte or the base is out of bounds.
     ///
     /// # Examples:
@@ -240,7 +240,7 @@ impl FromStr for Z {
     /// Parameters:
     /// - `s`: the integer value of form: `"12"` for the number 12 and `"-12"` for -12.
     ///
-    /// Returns a [`Z`] or an error, if the provided string was not formatted
+    /// Returns a [`Z`] or an error if the provided string was not formatted
     /// correctly, or the provided string contains a `Null` byte.
     ///
     /// # Examples:
@@ -271,7 +271,7 @@ impl TryFrom<&Z> for i64 {
     /// Parameters:
     /// - `value`: the value that will be converted into an [`i64`]
     ///
-    /// Returns the value as an [`i64`] or an error, if it does not fit
+    /// Returns the value as an [`i64`] or an error if it does not fit
     /// into an [`i64`].
     ///
     /// # Examples
@@ -313,7 +313,7 @@ impl TryFrom<Z> for i64 {
     /// Parameters:
     /// - `value`: the value that will be converted into an [`i64`]
     ///
-    /// Returns the value as an [`i64`] or an error, if it does not fit
+    /// Returns the value as an [`i64`] or an error if it does not fit
     /// into an [`i64`]
     ///
     /// # Examples

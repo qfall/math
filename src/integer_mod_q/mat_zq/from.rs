@@ -30,7 +30,7 @@ impl FromStr for MatZq {
     /// - `string`: the matrix of form: `"[[1, 2, 3],[4, 5, 6]] mod 4"` for a 2x3 matrix
     ///     with entries 1, 2, 3 in the first row, 4, 5, 6 in the second row and 4 as modulus.
     ///
-    /// Returns a [`MatZq`] or an error, if the matrix is not formatted in a suitable way,
+    /// Returns a [`MatZq`] or an error if the matrix is not formatted in a suitable way,
     /// the number of rows or columns is too large (must fit into [`i64`]),
     /// the number of entries in rows is unequal or if the modulus or an entry is not formatted correctly.
     ///

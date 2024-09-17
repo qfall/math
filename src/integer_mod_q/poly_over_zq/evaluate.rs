@@ -62,7 +62,7 @@ impl PolyOverZq {
     /// Parameters:
     /// - `value`: the value with which to evaluate the polynomial.
     ///
-    /// Returns the evaluation of the polynomial as a [`Zq`] or an error,
+    /// Returns the evaluation of the polynomial as a [`Zq`] or an error
     /// if the moduli mismatch.
     ///
     /// # Examples
