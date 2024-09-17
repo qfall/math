@@ -32,7 +32,7 @@ impl FromStr for MatQ {
     ///     for a 2x3 matrix with entries 1/2, 2/3, 3/4 in the first row
     ///     and 4/5, 5/6, 6/7 in the second row.
     ///
-    /// Returns a [`MatQ`] or an error, if the matrix is not formatted in a suitable way,
+    /// Returns a [`MatQ`] or an error if the matrix is not formatted in a suitable way,
     /// the number of rows or columns is too large (must fit into [`i64`]),
     /// the number of entries in rows is unequal or an entry is not formatted correctly.
     ///

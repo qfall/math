@@ -63,7 +63,7 @@ impl GetEntry<Q> for MatQ {
     /// the last element.
     ///
     /// Returns the [`Q`] value of the matrix at the position of the given
-    /// row and column or an error, if the number of rows or columns is
+    /// row and column or an error if the number of rows or columns is
     /// greater than the matrix.
     ///
     /// # Examples
@@ -108,7 +108,7 @@ impl MatQ {
     /// - `row`: specifies the row of the matrix
     ///
     /// Returns a row vector of the matrix at the position of the given
-    /// `row` or an error, if the number of rows is
+    /// `row` or an error if the number of rows is
     /// greater than the matrix or negative.
     ///
     /// # Examples
@@ -144,7 +144,7 @@ impl MatQ {
     /// * `column`: specifies the column of the matrix
     ///
     /// Returns a column vector of the matrix at the position of the given
-    /// `column` or an error, if the number of columns is
+    /// `column` or an error if the number of columns is
     /// greater than the matrix or negative.
     ///
     /// # Examples
@@ -191,7 +191,7 @@ impl MatQ {
     /// the last element.
     ///
     /// Returns the submatrix from `(row_1, col_1)` to `(row_2, col_2)`(inclusively)
-    /// or an error, if the number of rows or columns is greater than the matrix.
+    /// or an error if the number of rows or columns is greater than the matrix.
     ///
     /// # Examples
     /// ```

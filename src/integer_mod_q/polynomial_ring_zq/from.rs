@@ -58,7 +58,7 @@ impl FromStr for PolynomialRingZq {
     /// Creates a polynomial ring element of type [`PolynomialRingZq`].
     ///
     /// **Warning**: If the polynomials start with a correctly formatted
-    /// [`PolyOverZ`](crate::integer::PolyOverZ) object, the rest of the string
+    /// [`PolyOverZ`] object, the rest of the string
     /// until the `"/"` (for the first polynomial)  or `"mod"` (for the second polynomial)
     /// is ignored. This means that the input string `"4  0 1 2 3 / 2  1 1 mod 13"`
     /// is the same as `"4  0 1 2 3 4 5 6 7 / 2  1 1 mod 13"`.
@@ -72,7 +72,7 @@ impl FromStr for PolynomialRingZq {
     ///     are divided by two spaces and the strings for the polynomials are trimmed,
     ///     i.e. all whitespaces around the polynomials and the modulus are removed.
     ///
-    /// Returns a [`PolynomialRingZq`] or an error, if the provided string was not
+    /// Returns a [`PolynomialRingZq`] or an error if the provided string was not
     /// formatted correctly, the numbers of coefficients were smaller than the numbers
     /// provided at the start of the provided string, or the modulus was smaller than `2`.
     ///
@@ -100,7 +100,7 @@ impl FromStr for PolynomialRingZq {
         let (poly_s, modulus) = match s.split_once("/") {
             Some((poly_s, modulus)) => (poly_s, modulus),
             None => {
-                return Err(StringConversionError::InvalidStringToPolynomialRingZqInput(
+                return Err(StringConversionError::InvalidStringToPolyRingZqInput(
                     s.to_owned(),
                 ))?
             }

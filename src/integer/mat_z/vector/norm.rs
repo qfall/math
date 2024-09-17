@@ -19,7 +19,7 @@ use flint_sys::fmpz::fmpz_addmul;
 
 impl MatZ {
     /// Returns the squared Euclidean norm or 2-norm of the given (row or column) vector
-    /// or an error, if the given [`MatZ`] instance is not a (row or column) vector.
+    /// or an error if the given [`MatZ`] instance is not a (row or column) vector.
     ///
     /// # Examples
     /// ```
@@ -59,7 +59,7 @@ impl MatZ {
     }
 
     /// Returns the infinity norm or ∞-norm of the given (row or column) vector
-    /// or an error, if the given [`MatZ`] instance is not a (row or column) vector.
+    /// or an error if the given [`MatZ`] instance is not a (row or column) vector.
     ///
     /// # Examples
     /// ```

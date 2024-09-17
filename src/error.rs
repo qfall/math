@@ -235,7 +235,7 @@ pub enum StringConversionError {
         Note that after the number of coefficients, there are two \
         whitespaces."
     )]
-    InvalidStringToPolynomialRingZqInput(String),
+    InvalidStringToPolyRingZqInput(String),
 
     /// Parse string to [`Q`](crate::rational::Q) error
     #[error("Invalid string input to parse to Q {0}")]

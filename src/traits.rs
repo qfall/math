@@ -69,7 +69,7 @@ pub trait GetEntry<T> {
     /// - `column`: specifies the column in which the entry is located.
     ///
     /// Returns the value of the matrix at the position of the given
-    /// row and column or an error, if the number of rows or columns is
+    /// row and column or an error if the number of rows or columns is
     /// greater than the matrix or negative.
     fn get_entry(
         &self,

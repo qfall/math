@@ -61,7 +61,7 @@ impl FromStr for Zq {
     /// - `s`: the integer and modulus value of form: `"12 mod 25"` for the number 12
     ///     under the modulus 25.
     ///
-    /// Returns a [`Zq`] or an error, if the provided string was not formatted
+    /// Returns a [`Zq`] or an error if the provided string was not formatted
     /// correctly.
     ///
     /// # Examples:
