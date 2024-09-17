@@ -87,7 +87,7 @@ impl FromStr for ModulusPolynomialRingZq {
     ///     For further information see [`PolyOverZq::from_str`].
     ///
     /// Returns a [`ModulusPolynomialRingZq`] or an error, if the provided string was not
-    /// formatted correctly.
+    /// formatted correctly or the modulus was smaller than `2`.
     ///
     /// # Examples
     /// ```

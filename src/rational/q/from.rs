@@ -202,7 +202,7 @@ impl FromStr for Q {
     /// - `s`: the rational value
     ///
     /// Returns a [`Q`] or an error, if the provided string was not formatted
-    /// correctly.
+    /// correctly, contained a `Null` byte, or the denominator was `0`.
     ///
     /// # Examples
     /// ```

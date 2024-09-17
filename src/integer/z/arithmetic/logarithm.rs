@@ -98,7 +98,8 @@ impl Z {
     ///
     /// **Warning**: It assumes that the return value does not overflow an [`f64`].
     ///
-    /// Returns the double precision approximation of the natural logarithm of `self`.
+    /// Returns the double precision approximation of the natural logarithm of `self`
+    /// or a [`MathError`], if `self` is not greater than `0`.
     ///
     /// # Examples
     /// ```

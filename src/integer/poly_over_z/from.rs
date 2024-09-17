@@ -39,7 +39,9 @@ impl FromStr for PolyOverZ {
     /// before and after are removed.
     ///
     /// Returns a [`PolyOverZ`] or an error, if the provided string was not formatted
-    /// correctly.
+    /// correctly, the number of coefficients was smaller than the number provided
+    /// at the start of the provided string, the provided value did not contain two whitespaces,
+    /// or the provided string contains a `Null` Byte.
     ///
     /// # Examples
     /// ```

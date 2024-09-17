@@ -31,7 +31,7 @@ impl MatZ {
     ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a matrix with each entry sampled independently from the
-    /// specified discrete Gaussian distribution.
+    /// specified discrete Gaussian distribution or an error, if the `n <= 1` or `s <= 0`.
     ///
     /// # Examples
     /// ```
@@ -81,7 +81,9 @@ impl MatZ {
     /// - `s`: specifies the Gaussian parameter, which is proportional
     ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
-    /// Returns a lattice vector sampled according to the discrete Gaussian distribution.
+    /// Returns a lattice vector sampled according to the discrete Gaussian distribution
+    /// or an error, if the `n <= 1` or `s <= 0`, the number of rows of the `basis` and `center` differ, 
+    /// or if `center` is not a column vector.
     ///
     /// # Examples
     /// ```
@@ -158,7 +160,9 @@ impl MatZ {
     /// - `s`: specifies the Gaussian parameter, which is proportional
     ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
-    /// Returns a lattice vector sampled according to the discrete Gaussian distribution.
+    /// Returns a lattice vector sampled according to the discrete Gaussian distribution
+    /// or an error, if the `n <= 1` or `s <= 0`, the number of rows of the `basis` and `center` differ,
+    /// or if `center` is not a column vector.
     ///
     /// # Examples
     /// ```
