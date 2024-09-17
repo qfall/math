@@ -30,7 +30,7 @@ impl Q {
     /// will therefore not be instantiated as `1/10`.
     ///
     /// Input parameters:
-    /// - `value` : The value the rational number will have, provided as a [`f64`]
+    /// - `value`:the value the rational number will have, provided as a [`f64`]
     ///
     /// Returns a [`Q`].
     ///
@@ -142,7 +142,7 @@ impl From<f64> for Q {
     /// will not be instantiated as `1/10`.
     ///
     /// Input parameters:
-    /// - `value` : The value the rational number will have, provided as a [`f64`]
+    /// - `value`:the value the rational number will have, provided as a [`f64`]
     ///
     /// Returns a [`Q`].
     ///
