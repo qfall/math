@@ -43,7 +43,7 @@ pub trait SetCoefficient<T> {
     /// for a given input value and a index.
     ///
     /// Parameters:
-    /// - `index` : The coefficient to be set.
+    /// - `index`:the coefficient to be set.
     /// - `value`:the value the coefficient is set to.
     fn set_coeff(&mut self, index: impl TryInto<i64> + Display, value: T) -> Result<(), MathError>;
 }
@@ -217,7 +217,7 @@ pub trait Xgcd<T = Self> {
 /// Handling [`fmpz`] directly requires thinking about memory issues.
 /// Read the documentation of the functions carefully before you use them.
 pub(crate) unsafe trait AsInteger {
-    /// Return a [`fmpz`] representing the value.
+    /// Returns an [`fmpz`] representing the value.
     /// Data about the original object might not be contained in the return value.
     /// For example, [`Zq`](crate::integer_mod_q::Zq)'s return value does not
     /// contain Information about the modulus.
@@ -229,11 +229,11 @@ pub(crate) unsafe trait AsInteger {
     unsafe fn into_fmpz(self) -> fmpz;
 
     /// Returns a reference to an internal [`fmpz`] that represents the value.
-    /// If the data type does not contain a [`fmpz`] completely [`None`] is returned.
+    /// If the data type does not contain an [`fmpz`] completely [`None`] is returned.
     ///
     /// It is intended to be used when a read only [`fmpz`] reference is required
     /// for a Flint function call.
-    /// If the data type does not contain a [`fmpz`], [`into_fmpz`](AsInteger::into_fmpz)
+    /// If the data type does not contain an [`fmpz`], [`into_fmpz`](AsInteger::into_fmpz)
     /// can be used instead.
     fn get_fmpz_ref(&self) -> Option<&fmpz> {
         None

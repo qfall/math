@@ -28,8 +28,8 @@ impl FromStr for MatQ {
     /// Creates a [`MatQ`] matrix with entries in [`Q`] from a [`String`].
     ///
     /// Parameters:
-    /// - `string`: the matrix of form: `"[[1/2, 2/3, 3/4],[4/5, 5/6, 6/7]"` 
-    ///     for a 2x3 matrix with entries 1/2, 2/3, 3/4 in the first row 
+    /// - `string`: the matrix of form: `"[[1/2, 2/3, 3/4],[4/5, 5/6, 6/7]"`
+    ///     for a 2x3 matrix with entries 1/2, 2/3, 3/4 in the first row
     ///     and 4/5, 5/6, 6/7 in the second row.
     ///
     /// Returns a [`MatQ`] or an error, if the matrix is not formatted in a suitable way,

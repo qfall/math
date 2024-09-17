@@ -59,7 +59,7 @@ impl MatZq {
     /// The values in the output matrix are in the range of `[-Modulus/2, Modulus/2]`.
     /// For even moduli, the positive representative is chosen for the element `Modulus / 2`.
     ///
-    /// Return a [`MatZ`] representation of the given matrix with
+    /// Returns an [`MatZ`] representation of the given matrix with
     /// representatives chosen close to `0`.
     ///
     /// # Examples
