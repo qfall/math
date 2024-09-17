@@ -35,7 +35,7 @@ impl Z {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput) if the `base` is not greater than `1`.
+    /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput) if the `base` is smaller than `2`.
     /// - Returns a [`MathError`] of type
     ///     [`NonPositive`](MathError::NonPositive) if `self` is not
     ///     greater than `0`.
@@ -148,7 +148,7 @@ impl Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if the `base` is not greater than `1`.
+    ///     if the `base` is smaller than `2`.
     /// - Returns a [`MathError`] of type
     ///     [`NonPositive`](MathError::NonPositive)
     ///     if `self` is not

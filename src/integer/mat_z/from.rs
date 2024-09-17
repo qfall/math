@@ -23,11 +23,11 @@ impl FromStr for MatZ {
     type Err = MathError;
 
     /// Creates a [`MatZ`] matrix with entries in [`Z`] from a [`String`].
-    /// The format of that string looks like this `[[1, 2, 3],[4, 5, 6]]` for a 2x3 matrix
-    /// with entries 1, 2, 3 in the first row and 4, 5, 6 in the second row.
     ///
     /// Parameters:
-    /// - `string`: the matrix as a string
+    /// - `string`: the matrix of form: `"[[1, 2, 3],[4, 5, 6]]"`
+    ///     for a 2x3 matrix with entries 1, 2, 3 in the first row and 4, 5, 6
+    ///     in the second row.
     ///
     /// Returns a [`MatZ`] or an error, if the matrix is not formatted in a suitable way,
     /// the number of rows or columns is too large (must fit into [`i64`]),

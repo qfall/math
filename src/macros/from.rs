@@ -15,7 +15,7 @@
 /// - `source_type`: the source identifier (e.g. [`f64`],[`u32`], ...).
 /// - `destination_type`: the destination identifier
 ///     (e.g. [`Q`](crate::rational::Q), [`MatZ`](crate::integer::MatZ)).
-/// - `function`: The function that needs to be called for the conversion
+/// - `function`:the function that needs to be called for the conversion
 ///     (e.g. [`Q::from_f64()`](crate::rational::Q::from_f64))
 ///
 ///  Returns the Implementation code for the [`From`] Trait with the signature:
@@ -50,11 +50,11 @@ pub(crate) use from_trait;
 /// The macro is supposed to be used inside of an `impl` block for the destination type.
 ///
 /// Input parameters:
-/// - `source_type`: The source identifier (e.g. [`f64`],[`u32`], ...).
-/// - `bridge_type`: Type used for casting before calling the function.
-/// - `destination_type`: Return type of the generated function
+/// - `source_type`:the source identifier (e.g. [`f64`],[`u32`], ...).
+/// - `bridge_type`:type used for casting before calling the function.
+/// - `destination_type`: return type of the generated function
 ///     (e.g. [`Q`](crate::rational::Q), [`MatZ`](crate::integer::MatZ)).
-/// - `function`: The function that needs to be called for the conversion
+/// - `function`:the function that needs to be called for the conversion
 ///     (e.g. [`Q::from_f64()`](crate::rational::Q::from_f64)).
 ///
 /// Returns the Implementation code for the function `from_<source_type>`.

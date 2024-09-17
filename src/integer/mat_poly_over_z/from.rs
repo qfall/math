@@ -24,15 +24,15 @@ impl FromStr for MatPolyOverZ {
     type Err = MathError;
 
     /// Creates a [`MatPolyOverZ`] matrix from a [`String`].
-    /// 
-    /// **Warning**: Each entry is parsed as a [`PolyOverZ`] object. 
+    ///
+    /// **Warning**: Each entry is parsed as a [`PolyOverZ`] object.
     /// If an entry string starts with a correctly formatted [`PolyOverZ`] object,
-    /// the rest of this entry string is ignored. This means that the entry input 
+    /// the rest of this entry string is ignored. This means that the entry input
     /// string `"4  0 1 2 3"` is the same as `"4  0 1 2 3 4 5 6 7"`.
     ///
     /// Parameters:
-    /// - `string`: the matrix of form: `"[[poly_1, poly_2, poly_3],[poly_4, poly_5, poly_6]]"` 
-    ///     for a 2x3 matrix where first three polynomials are in the first row 
+    /// - `string`: the matrix of form: `"[[poly_1, poly_2, poly_3],[poly_4, poly_5, poly_6]]"`
+    ///     for a 2x3 matrix where first three polynomials are in the first row
     ///     and the second three are in the second row.
     ///
     /// Returns a [`MatPolyOverZ`] or an error, if the matrix is not formatted in a suitable way,
@@ -95,7 +95,7 @@ impl From<&MatZ> for MatPolyOverZ {
     /// Creates a [`MatPolyOverZ`] with constant polynomials defined by a [`MatZ`].
     ///
     /// # Parameters
-    /// - `matrix`: A matrix with constant integers.
+    /// - `matrix`:a matrix with constant integers.
     ///
     /// Returns a matrix of polynomial that all have the first coefficient
     /// set to the value in the matrix.

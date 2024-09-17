@@ -21,7 +21,7 @@ use std::str::FromStr;
 impl<IntegerValue: Into<Z>, IntegerModulus: Into<Modulus>> From<(IntegerValue, IntegerModulus)>
     for Zq
 {
-    /// Create [`Zq`] from a tuple with the integer and the modulus.
+    /// Creates a [`Zq`] from a tuple with the integer and the modulus.
     ///
     /// Parameters:
     /// - `value`: Defines the value of the residue class.
@@ -55,12 +55,11 @@ impl<IntegerValue: Into<Z>, IntegerModulus: Into<Modulus>> From<(IntegerValue, I
 impl FromStr for Zq {
     type Err = MathError;
 
-    /// Create a [`Zq`] integer from a [`String`]
-    /// The format of that string looks like this `12 mod 25` for the number 12
-    /// under the modulus 25
+    /// Creates a [`Zq`] integer from a [`String`].
     ///
     /// Parameters:
-    /// - `s`: the integer and modulus value
+    /// - `s`:the integer and modulus value of form: `"12 mod 25"` for the number 12
+    ///     under the modulus 25.
     ///
     /// Returns a [`Zq`] or an error, if the provided string was not formatted
     /// correctly.
@@ -82,7 +81,7 @@ impl FromStr for Zq {
     ///     - if the provided modulus was not formatted correctly to create a [`Z`].
     /// - Returns a [`MathError`] of type
     ///     [`InvalidModulus`](MathError::InvalidModulus)
-    ///     if the provided value is not greater than `1`.
+    ///     if the provided value is smaller than `2`.
     /// - Returns a [`MathError`] of type
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let input_split: Vec<&str> = s.split("mod").collect();
@@ -102,7 +101,7 @@ impl FromStr for Zq {
 }
 
 impl From<&Zq> for Zq {
-    /// An alias for clone.
+    /// An alias for [`Zq::clone`].
     /// It makes the use of generic `Into<Zq>` types easier.
     fn from(value: &Zq) -> Self {
         value.clone()
