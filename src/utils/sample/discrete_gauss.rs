@@ -132,7 +132,9 @@ fn gaussian_function(x: &Z, c: &Q, s: &Q) -> Q {
 ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
 ///
 /// Returns a vector with discrete gaussian error based on a lattice point
-/// as in [\[1\]](<index.html#:~:text=[1]>): SampleD.
+/// as in [\[1\]](<index.html#:~:text=[1]>): SampleD or a [`MathError`], if the
+/// `n <= 1` or `s <= 0`, the number of rows of the `basis` and `center` differ,
+/// or `center` is not a column vector.
 ///
 /// # Examples
 /// ```compile_fail
@@ -173,7 +175,9 @@ pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ
 ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
 ///
 /// Returns a vector with discrete gaussian error based on a lattice point
-/// as in [\[1\]](<index.html#:~:text=[1]>): SampleD.
+/// as in [\[1\]](<index.html#:~:text=[1]>): SampleD or a [`MathError`], if the
+/// `n <= 1` or `s <= 0`, the number of rows of the `basis` and `center` differ,
+/// or `center` is not a column vector.
 ///
 /// # Examples
 /// ```compile_fail
