@@ -21,7 +21,7 @@ use flint_sys::fmpz_mod_poly::{
 use std::{mem::MaybeUninit, str::FromStr};
 
 impl From<&Modulus> for PolyOverZq {
-    /// Create a zero polynomial with a given [`Modulus`].
+    /// Creates a zero polynomial with a given [`Modulus`].
     ///
     /// Parameters:
     /// - `modulus` of the new [`PolyOverZq`]
@@ -49,11 +49,11 @@ impl From<&Modulus> for PolyOverZq {
 }
 
 impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for PolyOverZq {
-    /// Create a [`PolyOverZq`] from a [`PolyOverZ`] and [`Modulus`].
+    /// Creates a [`PolyOverZq`] from a [`PolyOverZ`] and [`Modulus`].
     ///
     /// Parameters:
-    /// - `poly`: The coefficients of the polynomial.
-    /// - `modulus`: The modulus by which each entry is reduced.
+    /// - `poly`:the coefficients of the polynomial.
+    /// - `modulus`:the modulus by which each entry is reduced.
     ///
     /// # Examples:
     /// ```
@@ -86,10 +86,10 @@ impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for PolyOverZq {
 }
 
 impl From<&ModulusPolynomialRingZq> for PolyOverZq {
-    /// Create a [`PolyOverZ`] from a [`ModulusPolynomialRingZq`].
+    /// Creates a [`PolyOverZ`] from a [`ModulusPolynomialRingZq`].
     ///
     /// Parameters:
-    /// - `modulus`: the context polynomial from which the coefficients are copied
+    /// - `modulus`: the context polynomial from which the coefficients are copied.
     ///
     /// # Examples
     ///
@@ -123,8 +123,8 @@ impl From<&ModulusPolynomialRingZq> for PolyOverZq {
 impl FromStr for PolyOverZq {
     type Err = MathError;
 
-    /// Creating a polynomial with arbitrarily many coefficients of type [`Zq`].
-    /// 
+    /// Creates a polynomial with arbitrarily many coefficients of type [`Zq`].
+    ///
     /// **Warning**: If the input string starts with a correctly formatted [`PolyOverZ`] object,
     /// the rest of the string until the `"mod"` is ignored. This means that the input string
     /// `"4  0 1 2 3 mod 13"` is the same as `"4  0 1 2 3 4 5 6 7 mod 13"`.
@@ -132,7 +132,7 @@ impl FromStr for PolyOverZq {
     /// Parameters:
     /// - `s`: the polynomial of form:
     ///     `"[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴...⌴mod⌴[modulus]"`.
-    /// 
+    ///
     /// Note that the `[#number of coefficients]` and `[0th coefficient]`
     /// are divided by two spaces and the string for the polynomial is trimmed,
     /// i.e. all whitespaces before around the polynomial and the modulus are removed.
@@ -178,7 +178,7 @@ impl FromStr for PolyOverZq {
 }
 
 impl<IntegerModQ: Into<Zq>> From<IntegerModQ> for PolyOverZq {
-    /// Create a constant [`PolyOverZq`] with a specified constant.
+    /// Creates a constant [`PolyOverZq`] with a specified constant.
     ///
     /// # Parameters:
     /// - `value`: the constant value the polynomial will have.

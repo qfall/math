@@ -21,7 +21,7 @@ use flint_sys::fmpz::{fmpz, fmpz_combit, fmpz_get_si, fmpz_set, fmpz_set_str};
 use std::{ffi::CString, str::FromStr};
 
 impl Z {
-    /// Create a new Integer that can grow arbitrary large.
+    /// Creates an Integer that can grow arbitrary large.
     ///
     /// Parameters:
     /// - `value`: the initial value the integer should have
@@ -59,7 +59,7 @@ impl Z {
         out
     }
 
-    /// Create a new Integer that can grow arbitrary large.
+    /// Creates an Integer that can grow arbitrary large.
     ///
     /// Parameters:
     /// - `value`: the initial value the integer should have
@@ -85,7 +85,8 @@ impl Z {
         Z { value }
     }
 
-    /// Create a [`Z`] integer from a [`String`]. This function takes a base in which the number is represented between `2` and `62`
+    /// Creates a [`Z`] integer from a [`String`]. This function takes a
+    /// base between `2` and `62` in which the number is represented.
     ///
     /// Parameters:
     /// - `s`: the integer value as a string
@@ -136,7 +137,7 @@ impl Z {
         }
     }
 
-    /// Create a [`Z`] integer from an iterable of [`u8`]s, i.e. a vector of bytes.
+    /// Creates a [`Z`] integer from an iterable of [`u8`]s, i.e. a vector of bytes.
     ///
     /// Parameters:
     /// - `bytes`: specifies an iterable of bytes that should be set in the new [`Z`] instance.
@@ -168,7 +169,7 @@ impl Z {
         res
     }
 
-    /// Create a [`Z`] integer from an iterable of [`bool`]s, i.e. a vector of bits.
+    /// Creates a [`Z`] integer from an iterable of [`bool`]s, i.e. a vector of bits.
     /// This function can only construct positive or zero integers, but not negative ones.
     ///
     /// Parameters:
@@ -205,12 +206,12 @@ impl IntoZ for &Z {}
 implement_empty_trait_owned_ref!(IntoZ for Modulus fmpz u8 u16 u32 u64 i8 i16 i32 i64);
 
 impl<Integer: AsInteger + IntoZ> From<Integer> for Z {
-    /// Convert an integer to [`Z`].
+    /// Converts an integer to [`Z`].
     ///
     /// # Parameters:
-    /// `value` must be a rust integer, [`Modulus`], or a reference of these types.
+    /// `value` : must be a rust integer, [`Modulus`], or a reference of these types.
     ///
-    /// Returns a new [`Z`] with the value specified in the parameter.
+    /// Returns a [`Z`] with the value specified in the parameter.
     ///
     /// # Examples:
     /// ```
@@ -234,11 +235,10 @@ impl<Integer: AsInteger + IntoZ> From<Integer> for Z {
 impl FromStr for Z {
     type Err = MathError;
 
-    /// Create a [`Z`] integer from a [`String`]
-    /// The format of that string looks like this `(-)12` for the number 12 or -12
+    /// Creates a [`Z`] integer from a [`String`].
     ///
     /// Parameters:
-    /// - `s`: the integer value
+    /// - `s`: the integer value of form: `"12"` for the number 12 and `"-12"` for -12.
     ///
     /// Returns a [`Z`] or an error, if the provided string was not formatted
     /// correctly.
@@ -272,7 +272,7 @@ impl TryFrom<&Z> for i64 {
     /// - `value`: the value that will be converted into an [`i64`]
     ///
     /// Returns the value as an [`i64`] or an error, if it does not fit
-    /// into an [`i64`]
+    /// into an [`i64`].
     ///
     /// # Examples
     /// ```
