@@ -46,11 +46,11 @@ impl fmt::Display for MatZ {
 }
 
 impl MatZ {
-    fn flint_fprint(&self, file: *mut FILE) {
+    pub unsafe fn flint_fprint(&self, file: *mut FILE) {
         unsafe { fmpz_mat_fprint(file, &self.matrix) };
     }
 
-    fn flint_fread(file: *mut FILE) -> Self {
+    pub unsafe fn flint_fread(file: *mut FILE) -> Self {
         let mut matrix = MaybeUninit::uninit();
         unsafe {
             fmpz_mat_init(matrix.as_mut_ptr(), 0, 0);
