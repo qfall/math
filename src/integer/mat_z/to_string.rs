@@ -45,6 +45,25 @@ impl fmt::Display for MatZ {
     }
 }
 
+impl MatZ {
+    fn flint_fprint(&self, file: *mut FILE) {
+        unsafe { fmpz_mat_fprint(file, &self.matrix) };
+    }
+
+    fn flint_fread(file: *mut FILE) -> Self {
+        let mut matrix = MaybeUninit::uninit();
+        unsafe {
+            fmpz_mat_init(matrix.as_mut_ptr(), 0, 0);
+            fmpz_mat_fread(file, matrix.as_mut_ptr());
+
+            // Construct MatZ from previously initialized fmpz_mat
+            MatZ {
+                matrix: matrix.assume_init(),
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod test_to_string {
     use crate::integer::MatZ;
