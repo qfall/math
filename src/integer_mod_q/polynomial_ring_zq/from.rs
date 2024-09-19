@@ -105,8 +105,6 @@ impl FromStr for PolynomialRingZq {
                 ))?
             }
         };
-        println!("polynom: {}", poly_s);
-        print!("polymod: {}", modulus);
 
         let poly_over_z = PolyOverZ::from_str(poly_s)?;
         let modulus = ModulusPolynomialRingZq::from_str(modulus)?;
