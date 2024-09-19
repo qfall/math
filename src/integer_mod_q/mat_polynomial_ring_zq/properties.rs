@@ -13,7 +13,7 @@ use super::MatPolynomialRingZq;
 impl MatPolynomialRingZq {
     /// Checks if a [`MatPolynomialRingZq`] is the identity matrix.
     ///
-    /// Returns true if every diagonal entry of the  matrix is
+    /// Returns `true` if every diagonal entry of the  matrix is
     /// the constant polynomial `1` and all other entries are `0`.
     ///
     /// # Examples
@@ -46,7 +46,7 @@ impl MatPolynomialRingZq {
 
     /// Checks if a [`MatPolynomialRingZq`] is a square matrix.
     ///
-    /// Returns true if the number of rows and columns is identical.
+    /// Returns `true` if the number of rows and columns is identical.
     ///
     /// # Examples
     /// ```
@@ -66,7 +66,7 @@ impl MatPolynomialRingZq {
 
     /// Checks if every entry of a [`MatPolynomialRingZq`] is `0`.
     ///
-    /// Returns true if every entry is `0`.
+    /// Returns `true` if every entry is `0`.
     ///
     /// # Examples
     /// ```

@@ -31,7 +31,7 @@ impl Zq {
 
     /// Checks if a [`Zq`] is `0`.
     ///
-    /// Returns true if the value is `0`.
+    /// Returns `true` if the value is `0`.
     ///
     /// # Examples
     /// ```
@@ -46,7 +46,7 @@ impl Zq {
 
     /// Checks if a [`Zq`] is `1`.
     ///
-    /// Returns true if the value is `1`.
+    /// Returns `true` if the value is `1`.
     ///
     /// # Examples
     /// ```

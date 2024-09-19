@@ -37,7 +37,7 @@ impl PolyOverZq {
 
     /// Checks if a [`PolyOverZq`] is the constant polynomial with coefficient `1`.
     ///
-    /// Returns `true` if the first coefficient is `1` and is the only coefficient.
+    /// Returns `true` if there is only one coefficient, which is `1`.
     ///
     /// # Examples
     /// ```
@@ -76,7 +76,7 @@ mod test_is_irreducible {
     /// Ensure that a irreducible [`PolyOverZq`] returns `true`.
     #[test]
     fn poly_is_irreducible() {
-        // 9X^2 + 12X + 10 is irreducible over Z17
+        // 9X^2 + 12X + 10 is irreducible over 17
         let poly_irr = PolyOverZq::from_str("3  10 12 9 mod 17").unwrap();
         assert!(poly_irr.is_irreducible());
     }

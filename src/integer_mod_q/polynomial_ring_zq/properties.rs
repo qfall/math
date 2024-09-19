@@ -36,7 +36,7 @@ impl PolynomialRingZq {
 
     /// Checks if a [`PolynomialRingZq`] is the constant polynomial with coefficient `1`.
     ///
-    /// returns `true` if there is only one coefficient, which is `1`.
+    /// Returns `true` if there is only one coefficient, which is `1`.
     ///
     /// # Examples
     /// ```

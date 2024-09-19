@@ -15,7 +15,7 @@ use super::PolyOverQ;
 impl PolyOverQ {
     /// Checks if a [`PolyOverQ`] is the constant polynomial with coefficient `1`.
     ///
-    /// Returns true if the first coefficient is `1` and is the only coefficient.
+    /// Returns `true` if there is only one coefficient, which is `1`.
     ///
     /// # Examples
     /// ```
@@ -31,7 +31,7 @@ impl PolyOverQ {
 
     /// Checks if every entry of a [`PolyOverQ`] is `0`.
     ///
-    /// Returns true if [`PolyOverQ`] has no coefficients.
+    /// Returns `true` if [`PolyOverQ`] has no coefficients.
     ///
     /// # Examples
     /// ```

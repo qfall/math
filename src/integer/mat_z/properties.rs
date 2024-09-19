@@ -14,7 +14,7 @@ use flint_sys::fmpz_mat::{fmpz_mat_is_one, fmpz_mat_is_square, fmpz_mat_is_zero}
 impl MatZ {
     /// Checks if a [`MatZ`] is the identity matrix.
     ///
-    /// Returns true if every diagonal entry of the matrix is `1`
+    /// Returns `true` if every diagonal entry of the matrix is `1`
     /// and every other entry is `0`.
     ///
     /// # Examples
@@ -46,7 +46,7 @@ impl MatZ {
 
     /// Checks if every entry of a [`MatZ`] is `0`.
     ///
-    /// Returns true if every entry of the matrix is `0`.
+    /// Returns `true` if every entry of the matrix is `0`.
     ///
     /// # Examples
     /// ```

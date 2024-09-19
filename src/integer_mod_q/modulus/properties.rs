@@ -15,7 +15,7 @@ use flint_sys::fmpz::fmpz_is_prime;
 impl Modulus {
     /// Checks if a [`Modulus`] is prime.
     ///
-    /// Returns true if the modulus is prime.
+    /// Returns `true` if the modulus is prime.
     ///
     /// ```
     /// use std::str::FromStr;

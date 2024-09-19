@@ -21,7 +21,7 @@ use flint_sys::{
 impl Z {
     /// Checks if a [`Z`] is `0`.
     ///
-    /// Returns true if the value is `0`.
+    /// Returns `true` if the value is `0`.
     ///
     /// # Examples
     /// ```
@@ -36,7 +36,7 @@ impl Z {
 
     /// Checks if a [`Z`] is `1`.
     ///
-    /// Returns true if the value is `1`.
+    /// Returns `true` if the value is `1`.
     ///
     /// # Examples
     /// ```
@@ -51,7 +51,7 @@ impl Z {
 
     /// Checks if a [`Z`] is prime.
     ///
-    /// Returns true if the value is prime.
+    /// Returns `true` if the value is prime.
     ///
     /// # Examples
     /// ```
