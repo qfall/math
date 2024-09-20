@@ -88,6 +88,11 @@ impl Q {
     /// Returns the smallest rational with the smallest denominator in the range
     /// `\[self - |precision|, self + |precision|\]`.
     ///
+    /// This function allows to free memory in exchange for the specified loss of
+    /// precision (see Example 3). Be aware that this loss of precision is propagated by
+    /// arithmetic operations and can be significantly increased depending on the
+    /// performed operations.
+    ///
     /// Parameters:
     /// - `precision`: the precision the new value can differ from `self`.
     ///     Note that the absolute value is relevant, not the sign.
@@ -109,13 +114,28 @@ impl Q {
     /// use qfall_math::rational::Q;
     ///
     /// let value = Q::from((3, 2));
-    /// let precision = Q::from((1, 2));
     ///
-    /// assert_eq!(Q::ONE, value.simplify(&precision));
+    /// assert_eq!(Q::ONE, value.simplify(0.5));
     /// ```
-    pub fn simplify(&self, precision: &Q) -> Self {
-        let lower = self - precision;
-        let upper = self + precision;
+    ///
+    /// ## Simplify with reasonable precision loss
+    /// This example uses [`Q::INV_MAX32`], i.e. a loss of precision of at most `1 / 2^31 - 2` behind the decimal point.
+    /// If you require higher precision, [`Q::INV_MAX62`] is available.
+    /// ```
+    /// use qfall_math::rational::Q;
+    /// let value = Q::PI;
+    ///
+    /// let simplified = value.simplify(Q::INV_MAX32);
+    ///
+    /// assert_ne!(&Q::PI, &simplified);
+    /// assert!(&simplified >= &(Q::PI - Q::INV_MAX32));
+    /// assert!(&simplified <= &(Q::PI + Q::INV_MAX32));
+    /// ```
+    pub fn simplify(&self, precision: impl Into<Q>) -> Self {
+        let precision = precision.into();
+
+        let lower = self - &precision;
+        let upper = self + &precision;
         let mut out = Q::default();
         unsafe { fmpq_simplest_between(&mut out.value, &lower.value, &upper.value) };
         out
@@ -241,7 +261,7 @@ mod test_simplify {
         let simplified_1 = Q::from((4, 5));
         let simplified_2 = Q::from((-4, 5));
         assert_eq!(simplified_1, value_1.simplify(&precision));
-        assert_eq!(simplified_2, value_2.simplify(&precision));
+        assert_eq!(simplified_2, value_2.simplify(precision));
     }
 
     /// Ensure that large values with pointer representations are reduced
@@ -271,7 +291,7 @@ mod test_simplify {
 
         assert_eq!(Q::ONE, Q::ONE.simplify(&precision));
         assert_eq!(Q::MINUS_ONE, Q::MINUS_ONE.simplify(&precision));
-        assert_eq!(Q::ZERO, Q::ZERO.simplify(&precision));
+        assert_eq!(Q::ZERO, Q::ZERO.simplify(precision));
     }
 }
 
