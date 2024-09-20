@@ -11,7 +11,7 @@
 use super::Q;
 use crate::{error::MathError, integer::Z, traits::Distance};
 use flint_sys::{
-    fmpq::fmpq_simplest_between,
+    fmpq::{fmpq_sgn, fmpq_simplest_between},
     fmpz::{fmpz_cdiv_q, fmpz_fdiv_q},
 };
 
@@ -93,6 +93,8 @@ impl Q {
     /// arithmetic operations and can be significantly increased depending on the
     /// performed operations.
     ///
+    /// This function ensures that there is no sign change.
+    ///
     /// Parameters:
     /// - `precision`: the precision the new value can differ from `self`.
     ///     Note that the absolute value is relevant, not the sign.
@@ -138,6 +140,11 @@ impl Q {
         let upper = self + &precision;
         let mut out = Q::default();
         unsafe { fmpq_simplest_between(&mut out.value, &lower.value, &upper.value) };
+
+        if unsafe { fmpq_sgn(&self.value) != fmpq_sgn(&out.value) } {
+            return Q::MINUS_ONE * out;
+        }
+
         out
     }
 
@@ -292,6 +299,13 @@ mod test_simplify {
         assert_eq!(Q::ONE, Q::ONE.simplify(&precision));
         assert_eq!(Q::MINUS_ONE, Q::MINUS_ONE.simplify(&precision));
         assert_eq!(Q::ZERO, Q::ZERO.simplify(precision));
+    }
+
+    /// Ensure that no sign change can occurr.
+    #[test]
+    fn no_change_of_sign() {
+        assert!(Q::ZERO < Q::ONE.simplify(2));
+        assert!(Q::ZERO > Q::MINUS_ONE.simplify(2));
     }
 }
 
