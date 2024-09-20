@@ -111,6 +111,51 @@ impl Q {
             den: fmpz(842468587426513207),
         },
     };
+
+    /// Returns an instantiation of [`Q`] with value `2^62 - 1`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::Q;
+    ///  
+    /// let a: Q = Q::MAX62;
+    /// ```
+    pub const MAX62: Q = Q {
+        value: fmpq {
+            num: fmpz(i64::pow(2, 62) - 1),
+            den: fmpz(1),
+        },
+    };
+
+    /// Returns an instantiation of [`Q`] with value `1 / (2^62 - 1)`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::Q;
+    ///  
+    /// let a: Q = Q::INV_MAX62;
+    /// ```
+    pub const INV_MAX62: Q = Q {
+        value: fmpq {
+            num: fmpz(1),
+            den: fmpz(i64::pow(2, 62) - 1),
+        },
+    };
+
+    /// Returns an instantiation of [`Q`] with value `1 / (2^32 - 1)`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::Q;
+    ///  
+    /// let a: Q = Q::INV_MAX32;
+    /// ```
+    pub const INV_MAX32: Q = Q {
+        value: fmpq {
+            num: fmpz(1),
+            den: fmpz(i64::pow(2, 32) - 1),
+        },
+    };
 }
 
 #[cfg(test)]
@@ -139,5 +184,23 @@ mod tests_init {
     #[test]
     fn init_minus_one() {
         assert_eq!(Q::from(-1), Q::MINUS_ONE);
+    }
+
+    /// Ensure that `MAX62` initializes [`Q`] with `2^62 - 1`.
+    #[test]
+    fn init_max62() {
+        assert_eq!(Q::from(i64::pow(2, 62) - 1), Q::MAX62);
+    }
+
+    /// Ensure that `INV_MAX62` initializes [`Q`] with `1 / (2^62 - 1)`.
+    #[test]
+    fn init_inv_max62() {
+        assert_eq!(Q::from((1, i64::pow(2, 62) - 1)), Q::INV_MAX62);
+    }
+
+    /// Ensure that `INV_MAX32` initializes [`Q`] with `1 / (2^32 - 1)`.
+    #[test]
+    fn init_inv_max32() {
+        assert_eq!(Q::from((1, i64::pow(2, 32) - 1)), Q::INV_MAX32);
     }
 }
