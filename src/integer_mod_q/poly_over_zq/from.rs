@@ -239,14 +239,14 @@ impl From<&ModulusPolynomialRingZq> for PolyOverZq {
     }
 }
 
+implement_for_owned!(ModulusPolynomialRingZq, PolyOverZq, From);
+
 impl From<&PolyOverZq> for PolyOverZq {
     /// Alias for [`PolyOverZq::clone`].
     fn from(value: &PolyOverZq) -> Self {
         value.clone()
     }
 }
-
-implement_for_owned!(ModulusPolynomialRingZq, PolyOverZq, From);
 
 impl FromStr for PolyOverZq {
     type Err = MathError;
