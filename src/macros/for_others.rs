@@ -110,6 +110,21 @@ macro_rules! implement_for_owned {
         }
     };
 
+    // [`From`] trait
+    ($source_type:ident, $type:ident, From) => {
+        #[doc(hidden)]
+        impl From<$source_type> for $type {
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::evaluate`]."]
+            fn from(
+                value: $source_type
+            ) -> Self {
+                Self::from(&value)
+            }
+            }
+        }
+    };
+
     // [`SetCoefficient`] trait
     ($source_type:ident, $type:ident, SetCoefficient) => {
         #[doc(hidden)]

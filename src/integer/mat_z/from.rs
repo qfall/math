@@ -70,6 +70,13 @@ impl FromStr for MatZ {
     }
 }
 
+impl From<&MatZ> for MatZ {
+    /// Alias for [`MatZ::clone`].
+    fn from(value: &MatZ) -> Self {
+        value.clone()
+    }
+}
+
 #[cfg(test)]
 mod test_from_str {
     use crate::{

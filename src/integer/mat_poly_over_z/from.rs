@@ -12,10 +12,7 @@
 
 use super::MatPolyOverZ;
 use crate::{
-    error::MathError,
-    integer::{MatZ, PolyOverZ},
-    traits::*,
-    utils::{dimensions::find_matrix_dimensions, parse::parse_matrix_string},
+    error::MathError, integer::{MatZ, PolyOverZ}, macros::for_others::implement_for_owned, traits::*, utils::{dimensions::find_matrix_dimensions, parse::parse_matrix_string}
 };
 use std::str::FromStr;
 
@@ -120,6 +117,15 @@ impl From<&MatZ> for MatPolyOverZ {
         }
 
         out
+    }
+}
+
+implement_for_owned!(MatZ, MatPolyOverZ, From);
+
+impl From<&MatPolyOverZ> for MatPolyOverZ {
+    /// Alias for [`MatPolyOverZ::clone`].
+    fn from(value: &MatPolyOverZ) -> Self {
+        value.clone()
     }
 }
 
@@ -268,5 +274,13 @@ mod test_from_matz {
 
         let mat_poly_cmp = MatPolyOverZ::new(100, 100);
         assert_eq!(mat_poly, mat_poly_cmp);
+    }
+
+    /// Ensure that the conversion works for owned values.
+    #[test]
+    fn availability() {
+        let m = MatZ::from_str("[[1, 2],[3, -1]]").unwrap();
+
+        let _ = MatPolyOverZ::from(m);
     }
 }

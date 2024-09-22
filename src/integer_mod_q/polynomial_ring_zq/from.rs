@@ -48,8 +48,8 @@ impl<Poly: Into<PolyOverZ>, Mod: Into<ModulusPolynomialRingZq>> From<(Poly, Mod)
 #[cfg(test)]
 mod test_from_poly_over_z_modulus_polynomial_ring_zq {
     use crate::{
-        integer::PolyOverZ,
-        integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq},
+        integer::{PolyOverZ, Z},
+        integer_mod_q::{Modulus, ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq},
     };
     use std::str::FromStr;
 
@@ -89,14 +89,16 @@ mod test_from_poly_over_z_modulus_polynomial_ring_zq {
     /// `Into<ModulusPolynomialRingZq>`.
     #[test]
     fn availability() {
+        let z = Z::from(2);
+        let q = Modulus::from(17);
         let poly = PolyOverZ::from(2);
-        let poly_mod = PolyOverZq::from_str("2  1 1 mod 17").unwrap();
-        let modulus = ModulusPolynomialRingZq::from(&poly_mod);
+        let poly_zq = PolyOverZq::from_str("2  1 1 mod 17").unwrap();
+        let modulus = ModulusPolynomialRingZq::from(&poly_zq);
 
-        let _ = PolynomialRingZq::from((&poly, &poly_mod));
-        let _ = PolynomialRingZq::from((&poly, poly_mod.clone()));
-        let _ = PolynomialRingZq::from((poly.clone(), &poly_mod));
-        let _ = PolynomialRingZq::from((poly.clone(), poly_mod));
+        let _ = PolynomialRingZq::from((&poly, &poly_zq));
+        let _ = PolynomialRingZq::from((&poly, poly_zq.clone()));
+        let _ = PolynomialRingZq::from((poly.clone(), &poly_zq));
+        let _ = PolynomialRingZq::from((poly.clone(), poly_zq));
 
         let _ = PolynomialRingZq::from((0_i8, &modulus));
         let _ = PolynomialRingZq::from((0_i16, &modulus));
@@ -106,6 +108,10 @@ mod test_from_poly_over_z_modulus_polynomial_ring_zq {
         let _ = PolynomialRingZq::from((0_u16, &modulus));
         let _ = PolynomialRingZq::from((0_u32, &modulus));
         let _ = PolynomialRingZq::from((0_u64, &modulus));
+        let _ = PolynomialRingZq::from((&z, &modulus));
+        let _ = PolynomialRingZq::from((z, &modulus));
+        let _ = PolynomialRingZq::from((&q, &modulus));
+        let _ = PolynomialRingZq::from((q, &modulus));
 
         let _ = PolynomialRingZq::from((poly.clone(), &modulus));
         let _ = PolynomialRingZq::from((poly, modulus));
