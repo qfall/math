@@ -11,10 +11,32 @@
 //!
 //! This includes the [`Display`](std::fmt::Display) trait.
 
-use crate::utils::parse::matrix_to_string;
-
 use super::MatPolyOverZ;
+use crate::{macros::for_others::implement_for_owned, utils::parse::matrix_to_string};
 use core::fmt;
+
+impl From<&MatPolyOverZ> for String {
+    /// Converts a [`MatPolyOverZ`] into its [`String`] representation.
+    ///
+    /// Parameters:
+    /// - `value`: specifies the matrix that will be represented as a [`String`]
+    ///
+    /// Returns a [`String`] of the form `"[[row_0],[row_1],...[row_n]]"`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use std::str::FromStr;
+    /// let matrix = MatPolyOverZ::from_str("[[1  17, 1  5],[2  1 7, 1  2]]").unwrap();
+    ///
+    /// let string: String = matrix.into();
+    /// ```
+    fn from(value: &MatPolyOverZ) -> Self {
+        value.to_string()
+    }
+}
+
+implement_for_owned!(MatPolyOverZ, String, From);
 
 impl fmt::Display for MatPolyOverZ {
     /// Allows to convert a matrix of type [`MatPolyOverZ`] into a [`String`].
@@ -144,5 +166,16 @@ mod test_to_string {
         let cmp_str_2 = cmp.to_string();
 
         assert!(MatPolyOverZ::from_str(&cmp_str_2).is_ok());
+    }
+
+    /// Ensures that the `Into<String>` trait works properly
+    #[test]
+    fn into_works_properly() {
+        let cmp = "[[1  17, 1  5],[2  1 7, 1  2]]";
+        let matrix = MatPolyOverZ::from_str(cmp).unwrap();
+        let string: String = matrix.clone().into();
+        let borrowed_string: String = (&matrix).into();
+        assert_eq!(cmp, string);
+        assert_eq!(cmp, borrowed_string);
     }
 }

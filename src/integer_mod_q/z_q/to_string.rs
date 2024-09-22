@@ -12,7 +12,31 @@
 //! This includes the [`Display`](std::fmt::Display) trait.
 
 use super::Zq;
+use crate::macros::for_others::implement_for_owned;
 use core::fmt;
+
+impl From<&Zq> for String {
+    /// Converts a [`Zq`] into its [`String`] representation.
+    ///
+    /// Parameters:
+    /// - `value`: specifies the matrix that will be represented as a [`String`]
+    ///
+    /// Returns a [`String`] of the form `"x mod q"`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::Zq;
+    /// use std::str::FromStr;
+    /// let matrix = Zq::from_str("3 mod 5").unwrap();
+    ///
+    /// let string: String = matrix.into();
+    /// ```
+    fn from(value: &Zq) -> Self {
+        value.to_string()
+    }
+}
+
+implement_for_owned!(Zq, String, From);
 
 impl fmt::Display for Zq {
     /// Allows to convert an integer of type [`Zq`] into a [`String`].
@@ -90,5 +114,16 @@ mod test_to_string {
         let cmp_str = cmp.to_string();
 
         assert!(Zq::from_str(&cmp_str).is_ok());
+    }
+
+    /// Ensures that the `Into<String>` trait works properly
+    #[test]
+    fn into_works_properly() {
+        let cmp = "6 mod 11";
+        let matrix = Zq::from_str(cmp).unwrap();
+        let string: String = matrix.clone().into();
+        let borrowed_string: String = (&matrix).into();
+        assert_eq!(cmp, string);
+        assert_eq!(cmp, borrowed_string);
     }
 }

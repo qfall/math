@@ -1,4 +1,4 @@
-// Copyright © 2023 Marvin Beckmann
+// Copyright © 2023 Marcel Luca Schmidt, Marvin Beckmann
 //
 // This file is part of qFALL-math.
 //
@@ -12,9 +12,33 @@
 //! This includes the [`Display`](std::fmt::Display) trait.
 
 use super::Modulus;
+use crate::macros::for_others::implement_for_owned;
 use core::fmt;
 use flint_sys::fmpz::fmpz_get_str;
 use std::{ffi::CStr, ptr::null_mut};
+
+impl From<&Modulus> for String {
+    /// Converts a [`Modulus`] into its [`String`] representation.
+    ///
+    /// Parameters:
+    /// - `value`: specifies the matrix that will be represented as a [`String`]
+    ///
+    /// Returns a [`String`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::Modulus;
+    /// use std::str::FromStr;
+    /// let matrix = Modulus::from_str("6").unwrap();
+    ///
+    /// let string: String = matrix.into();
+    /// ```
+    fn from(value: &Modulus) -> Self {
+        value.to_string()
+    }
+}
+
+implement_for_owned!(Modulus, String, From);
 
 impl fmt::Display for Modulus {
     /// Allows to convert a modulus of type [`Modulus`] into a [`String`].
@@ -90,5 +114,16 @@ mod test_to_string {
         let cmp_str_2 = cmp.to_string();
 
         assert!(Modulus::from_str(&cmp_str_2).is_ok());
+    }
+
+    /// Ensures that the `Into<String>` trait works properly
+    #[test]
+    fn into_works_properly() {
+        let cmp = "6";
+        let matrix = Modulus::from_str(cmp).unwrap();
+        let string: String = matrix.clone().into();
+        let borrowed_string: String = (&matrix).into();
+        assert_eq!(cmp, string);
+        assert_eq!(cmp, borrowed_string);
     }
 }

@@ -11,10 +11,32 @@
 //!
 //! This includes the [`Display`](std::fmt::Display) trait.
 
-use crate::{integer::Z, utils::parse::matrix_to_string};
-
 use super::MatZq;
+use crate::{integer::Z, macros::for_others::implement_for_owned, utils::parse::matrix_to_string};
 use core::fmt;
+
+impl From<&MatZq> for String {
+    /// Converts a [`MatZq`] into its [`String`] representation.
+    ///
+    /// Parameters:
+    /// - `value`: specifies the matrix that will be represented as a [`String`]
+    ///
+    /// Returns a [`String`] of the form `"[[row_0],[row_1],...[row_n]] mod q"`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use std::str::FromStr;
+    /// let matrix = MatZq::from_str("[[6, 1],[5, 2]] mod 4").unwrap();
+    ///
+    /// let string: String = matrix.into();
+    /// ```
+    fn from(value: &MatZq) -> Self {
+        value.to_string()
+    }
+}
+
+implement_for_owned!(MatZq, String, From);
 
 impl fmt::Display for MatZq {
     /// Allows to convert a matrix of type [`MatZq`] into a [`String`].
@@ -136,5 +158,16 @@ mod test_to_string {
         let cmp_str_2 = cmp.to_string();
 
         assert!(MatZq::from_str(&cmp_str_2).is_ok());
+    }
+
+    /// Ensures that the `Into<String>` trait works properly
+    #[test]
+    fn into_works_properly() {
+        let cmp = "[[6, 1, 3],[5, 2, 7]] mod 8";
+        let matrix = MatZq::from_str(cmp).unwrap();
+        let string: String = matrix.clone().into();
+        let borrowed_string: String = (&matrix).into();
+        assert_eq!(cmp, string);
+        assert_eq!(cmp, borrowed_string);
     }
 }

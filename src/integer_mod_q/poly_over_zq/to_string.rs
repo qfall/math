@@ -1,4 +1,4 @@
-// Copyright © 2023 Marvin Beckmann
+// Copyright © 2023 Marcel Luca Schmidt, Marvin Beckmann
 //
 // This file is part of qFALL-math.
 //
@@ -12,9 +12,32 @@
 //! This includes the [`Display`](std::fmt::Display) trait.
 
 use super::PolyOverZq;
-use crate::integer::PolyOverZ;
+use crate::{integer::PolyOverZ, macros::for_others::implement_for_owned};
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_get_fmpz_poly;
 use std::fmt;
+
+impl From<&PolyOverZq> for String {
+    /// Converts a [`PolyOverZq`] into its [`String`] representation.
+    ///
+    /// Parameters:
+    /// - `value`: specifies the matrix that will be represented as a [`String`]
+    ///
+    /// Returns a [`String`] of the form `"[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴...⌴mod⌴[modulus]"`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use std::str::FromStr;
+    /// let matrix = PolyOverZq::from_str("2  2 1 mod 3").unwrap();
+    ///
+    /// let string: String = matrix.into();
+    /// ```
+    fn from(value: &PolyOverZq) -> Self {
+        value.to_string()
+    }
+}
+
+implement_for_owned!(PolyOverZq, String, From);
 
 impl fmt::Display for PolyOverZq {
     /// Allows to convert a [`PolyOverZq`] into a [`String`].
@@ -95,5 +118,16 @@ mod test_to_string {
         let cmp = PolyOverZq::from_str(&cmp_str).unwrap();
 
         assert_eq!(cmp_str, cmp.to_string());
+    }
+
+    /// Ensures that the `Into<String>` trait works properly
+    #[test]
+    fn into_works_properly() {
+        let cmp = "2  2 1 mod 3";
+        let matrix = PolyOverZq::from_str(cmp).unwrap();
+        let string: String = matrix.clone().into();
+        let borrowed_string: String = (&matrix).into();
+        assert_eq!(cmp, string);
+        assert_eq!(cmp, borrowed_string);
     }
 }

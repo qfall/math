@@ -1,4 +1,4 @@
-// Copyright © 2023 Marvin Beckmann
+// Copyright © 2023 Marcel Luca Schmidt, Marvin Beckmann
 //
 // This file is part of qFALL-math.
 //
@@ -12,9 +12,35 @@
 //! This includes the [`Display`] trait.
 
 use super::ModulusPolynomialRingZq;
-use crate::integer::{PolyOverZ, Z};
+use crate::{
+    integer::{PolyOverZ, Z},
+    macros::for_others::implement_for_owned,
+};
 use flint_sys::{fmpz::fmpz_set, fmpz_mod_poly::fmpz_mod_poly_get_fmpz_poly};
 use std::fmt::Display;
+
+impl From<&ModulusPolynomialRingZq> for String {
+    /// Converts a [`ModulusPolynomialRingZq`] into its [`String`] representation.
+    ///
+    /// Parameters:
+    /// - `value`: specifies the matrix that will be represented as a [`String`]
+    ///
+    /// Returns a [`String`] of the form `"[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴...⌴mod⌴[modulus]"`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use std::str::FromStr;
+    /// let matrix = ModulusPolynomialRingZq::from_str("2  2 1 mod 3").unwrap();
+    ///
+    /// let string: String = matrix.into();
+    /// ```
+    fn from(value: &ModulusPolynomialRingZq) -> Self {
+        value.to_string()
+    }
+}
+
+implement_for_owned!(ModulusPolynomialRingZq, String, From);
 
 impl Display for ModulusPolynomialRingZq {
     /// Allows to convert a [`ModulusPolynomialRingZq`] into a [`String`].
@@ -78,5 +104,16 @@ mod test_to_string {
         let str_1 = cmp.to_string();
 
         assert!(ModulusPolynomialRingZq::from_str(&str_1).is_ok());
+    }
+
+    /// Ensures that the `Into<String>` trait works properly
+    #[test]
+    fn into_works_properly() {
+        let cmp = "2  2 1 mod 3";
+        let matrix = ModulusPolynomialRingZq::from_str(cmp).unwrap();
+        let string: String = matrix.clone().into();
+        let borrowed_string: String = (&matrix).into();
+        assert_eq!(cmp, string);
+        assert_eq!(cmp, borrowed_string);
     }
 }
