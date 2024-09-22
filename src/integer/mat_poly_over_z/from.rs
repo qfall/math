@@ -12,7 +12,11 @@
 
 use super::MatPolyOverZ;
 use crate::{
-    error::MathError, integer::{MatZ, PolyOverZ}, macros::for_others::implement_for_owned, traits::*, utils::{dimensions::find_matrix_dimensions, parse::parse_matrix_string}
+    error::MathError,
+    integer::{MatZ, PolyOverZ},
+    macros::for_others::implement_for_owned,
+    traits::*,
+    utils::{dimensions::find_matrix_dimensions, parse::parse_matrix_string},
 };
 use std::str::FromStr;
 

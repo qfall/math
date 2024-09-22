@@ -479,7 +479,8 @@ mod test_from_z_modulus {
 
         let mod_poly = PolyOverZq::from((&z, &modulus));
 
-        let cmp_poly = PolyOverZq::from_str(&format!("1  {} mod {}", u64::MAX-1, u64::MAX)).unwrap();
+        let cmp_poly =
+            PolyOverZq::from_str(&format!("1  {} mod {}", u64::MAX - 1, u64::MAX)).unwrap();
         assert_eq!(cmp_poly, mod_poly);
     }
 
