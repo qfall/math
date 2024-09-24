@@ -12,7 +12,7 @@
 use super::MatQ;
 use crate::{
     rational::Q,
-    traits::{Concatenate, GetEntry, GetNumColumns, GetNumRows, SetEntry},
+    traits::{Concatenate, GetEntry, GetNumColumns, GetNumRows, Pow, SetEntry},
 };
 
 impl MatQ {
@@ -44,6 +44,8 @@ impl MatQ {
 
         let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns());
 
+        let precision = Q::from(2).pow(16).unwrap();
+
         for i in 0..self.get_num_rows() {
             for j in 0..(i + 1) {
                 let mut s = Q::ZERO;
@@ -51,13 +53,20 @@ impl MatQ {
                     s = s + out.get_entry(i, k).unwrap() * out.get_entry(j, k).unwrap();
                 }
                 if i == j {
-                    out.set_entry(i, j, (self.get_entry(i, i).unwrap() - s).sqrt())
-                        .unwrap();
+                    out.set_entry(
+                        i,
+                        j,
+                        (self.get_entry(i, i).unwrap() - s)
+                            .sqrt()
+                            .simplify(&precision),
+                    )
+                    .unwrap();
                 } else {
                     out.set_entry(
                         i,
                         j,
-                        (self.get_entry(i, j).unwrap() - s) / out.get_entry(j, j).unwrap(),
+                        (self.get_entry(i, j).unwrap() - s)
+                            / out.get_entry(j, j).unwrap().simplify(&precision),
                     )
                     .unwrap();
                 }
