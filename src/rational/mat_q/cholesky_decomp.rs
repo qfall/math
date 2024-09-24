@@ -12,7 +12,7 @@
 use super::MatQ;
 use crate::{
     rational::Q,
-    traits::{Concatenate, GetEntry, GetNumColumns},
+    traits::{Concatenate, GetEntry, GetNumColumns, GetNumRows, SetEntry},
 };
 
 impl MatQ {
@@ -41,43 +41,67 @@ impl MatQ {
     /// - if `self` has eigenvalues smaller than `0`.
     pub fn cholesky_decomposition(&self) -> MatQ {
         assert!(self.is_symmetric(), "The provided matrix is not symmetric.");
-        // TODO: replace manual implementation with faster implementation from
-        // FLINT directly, once that is accessible through the FFI
-        let n = self.get_num_columns();
 
-        let mut a = self.clone();
-        let mut l = MatQ::identity(n, n);
+        let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns());
 
-        for i in 0..n {
-            // get first entry and ith column
-            let a_ii = a.get_entry(0, 0).unwrap();
-            assert!(a_ii > Q::ZERO, "The matrix is not positive-definite.");
-            let column_a_i = match i {
-                0 => a.get_column(0).unwrap(),
-                _ => MatQ::new(i, 1)
-                    .get_column(0)
-                    .unwrap()
-                    .concat_vertical(&a.get_column(0).unwrap())
-                    .unwrap(),
-            } * (1 / (a_ii.sqrt()));
-            // in the previous line: sqrt panics if `a_ii` is negative, i.e. if an
-            // eigenvalue is negative.
-
-            // produce L matrix recursively
-            let mut l_i = MatQ::identity(n, n);
-            l_i.set_column(i, &column_a_i, 0).unwrap();
-            l = l * l_i;
-
-            // update matrix A recursively
-            if i < n - 1 {
-                let b = a.get_submatrix(1, -1, 1, -1).unwrap();
-                let b_minus = (1 / a_ii)
-                    * a.get_submatrix(1, -1, 0, 0).unwrap()
-                    * a.get_submatrix(0, 0, 1, -1).unwrap();
-                a = b - b_minus;
+        for i in 0..self.get_num_rows() {
+            for j in 0..(i + 1) {
+                let mut s = Q::ZERO;
+                for k in 0..j {
+                    s = s + out.get_entry(i, k).unwrap() * out.get_entry(j, k).unwrap();
+                }
+                if i == j {
+                    out.set_entry(i, j, (self.get_entry(i, i).unwrap() - s).sqrt())
+                        .unwrap();
+                } else {
+                    out.set_entry(
+                        i,
+                        j,
+                        (self.get_entry(i, j).unwrap() - s) / out.get_entry(j, j).unwrap(),
+                    )
+                    .unwrap();
+                }
             }
         }
-        l
+        return out;
+
+        // // TODO: replace manual implementation with faster implementation from
+        // // FLINT directly, once that is accessible through the FFI
+        // let n = self.get_num_columns();
+
+        // let mut a = self.clone();
+        // let mut l = MatQ::identity(n, n);
+
+        // for i in 0..n {
+        //     // get first entry and ith column
+        //     let a_ii = a.get_entry(0, 0).unwrap();
+        //     assert!(a_ii > Q::ZERO, "The matrix is not positive-definite.");
+        //     let column_a_i = match i {
+        //         0 => a.get_column(0).unwrap(),
+        //         _ => MatQ::new(i, 1)
+        //             .get_column(0)
+        //             .unwrap()
+        //             .concat_vertical(&a.get_column(0).unwrap())
+        //             .unwrap(),
+        //     } * (1 / (a_ii.sqrt()));
+        //     // in the previous line: sqrt panics if `a_ii` is negative, i.e. if an
+        //     // eigenvalue is negative.
+
+        //     // produce L matrix recursively
+        //     let mut l_i = MatQ::identity(n, n);
+        //     l_i.set_column(i, &column_a_i, 0).unwrap();
+        //     l = l * l_i;
+
+        //     // update matrix A recursively
+        //     if i < n - 1 {
+        //         let b = a.get_submatrix(1, -1, 1, -1).unwrap();
+        //         let b_minus = (1 / a_ii)
+        //             * a.get_submatrix(1, -1, 0, 0).unwrap()
+        //             * a.get_submatrix(0, 0, 1, -1).unwrap();
+        //         a = b - b_minus;
+        //     }
+        // }
+        // l
     }
 }
 
