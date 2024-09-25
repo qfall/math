@@ -78,7 +78,7 @@ impl MatQ {
         l
     }
 
-    /// This function implements the cholesky decomposition according to FLINTs
+    /// This function implements the Cholesky decomposition according to FLINTs
     /// implementation. As FLINTs algorithm is not (yet) accessible through flint-sys,
     /// this implementation follows the implementation of the algorithm from FLINT.
     /// This, however, also means that we will work with less precision as we will work
