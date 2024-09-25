@@ -42,8 +42,6 @@ impl MatQ {
     pub fn cholesky_decomposition(&self) -> MatQ {
         assert!(self.is_symmetric(), "The provided matrix is not symmetric.");
 
-        let precision = Q::from(2).pow(16).unwrap();
-
         // TODO: replace manual implementation with faster implementation from
         // FLINT directly, once that is accessible through the FFI
         let n = self.get_num_columns();
@@ -63,7 +61,7 @@ impl MatQ {
                     .unwrap()
                     .concat_vertical(&a.get_column(0).unwrap())
                     .unwrap(),
-            } * one_over_sqrt.simplify(&precision);
+            } * f64::from(&one_over_sqrt);
             // in the previous line: sqrt panics if `a_ii` is negative, i.e. if an
             // eigenvalue is negative.
 
@@ -76,7 +74,7 @@ impl MatQ {
             if i < n - 1 {
                 let b = a.get_submatrix(1, -1, 1, -1).unwrap();
                 let one_over_aii: Q = 1 / a_ii;
-                let b_minus = one_over_aii.simplify(&precision)
+                let b_minus = f64::from(&one_over_aii)
                     * a.get_submatrix(1, -1, 0, 0).unwrap()
                     * a.get_submatrix(0, 0, 1, -1).unwrap();
                 a = b - b_minus;
