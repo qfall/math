@@ -12,13 +12,13 @@
 use super::MatQ;
 use crate::{
     rational::Q,
-    traits::{Concatenate, GetEntry, GetNumColumns},
+    traits::{Concatenate, GetEntry, GetNumColumns, GetNumRows, SetEntry},
 };
 
 impl MatQ {
     /// This function performs the Cholesky decomposition (the Cholesky algorithm) and
     /// produces a matrix `L` such that `self = L * L^T`.
-    /// This function relies on the precision of `Q::sqrt` and will not provide
+    /// This function relies on the precision of [`Q::sqrt`] and will not provide
     /// perfect results in all cases.
     /// Furthermore, the Cholesky decomposition requires a Hermitian positive-definite
     /// matrix.
@@ -41,8 +41,6 @@ impl MatQ {
     /// - if `self` has eigenvalues smaller than `0`.
     pub fn cholesky_decomposition(&self) -> MatQ {
         assert!(self.is_symmetric(), "The provided matrix is not symmetric.");
-        // TODO: replace manual implementation with faster implementation from
-        // FLINT directly, once that is accessible through the FFI
         let n = self.get_num_columns();
 
         let mut a = self.clone();
@@ -78,6 +76,65 @@ impl MatQ {
             }
         }
         l
+    }
+
+    /// This function implements the cholesky decomposition according to FLINTs
+    /// implementation. As FLINTs algorithm is not (yet) accessible through flint-sys,
+    /// this implementation follows the implementation of the algorithm from FLINT.
+    /// This, however, also means that we will work with less precision as we will work
+    /// with conversions to [`f64`] and not use [`Q`].
+    /// In turn, this makes the function much more efficient, but *not* applicable to
+    /// large numbers.
+    ///
+    /// This function relies on the precision of [`f64::sqrt`] and will not provide
+    /// perfect results in all cases.
+    /// Furthermore, the Cholesky decomposition requires a Hermitian positive-definite
+    /// matrix.
+    ///
+    /// Returns the Cholesky decomposition of a Hermitian positive-definite matrix.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::MatQ;
+    /// use std::str::FromStr;
+    ///
+    /// let matrix = MatQ::from_str("[[4, 12, -16],[12,37,-43],[-16,-43,98]]").unwrap();
+    ///
+    /// let l = matrix.cholesky_decomposition_flint();
+    /// assert_eq!(matrix, &l * l.transpose());
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if `self` is not a symmetric matrix,
+    /// - if `self` has eigenvalues smaller than `0`.
+    pub fn cholesky_decomposition_flint(&self) -> MatQ {
+        assert!(self.is_symmetric(), "The provided matrix is not symmetric.");
+
+        let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns());
+
+        // This code snippet originates from [`fmpz_mat_chol_d`] (FLINT)
+        for i in 0..self.get_num_rows() {
+            for j in 0..(i + 1) {
+                let mut s: f64 = 0.0;
+                for k in 0..j {
+                    let r_ik = f64::from(&out.get_entry(i, k).unwrap());
+                    let r_jk = f64::from(&out.get_entry(j, k).unwrap());
+                    s += r_ik * r_jk
+                }
+                if i == j {
+                    let a_ii = f64::from(&self.get_entry(i, i).unwrap());
+                    assert!(a_ii > s, "The provided matrix is not positive definite.");
+
+                    out.set_entry(i, j, (a_ii - s).sqrt()).unwrap();
+                } else {
+                    let a_ij = f64::from(&self.get_entry(i, j).unwrap());
+                    let r_jj = f64::from(&out.get_entry(j, j).unwrap());
+
+                    out.set_entry(i, j, (a_ij - s) / r_jj).unwrap();
+                }
+            }
+        }
+        out
     }
 }
 
@@ -144,5 +201,51 @@ mod test_cholesky_decomposition {
             matrix,
             (matrix.cholesky_decomposition() * matrix.cholesky_decomposition().transpose())
         );
+    }
+}
+
+#[cfg(test)]
+mod test_cholesky_decomposition_flint {
+    use crate::{
+        rational::{MatQ, Q},
+        traits::SetEntry,
+    };
+    use std::str::FromStr;
+
+    /// Ensure that a basic example (from Wikipedia) works.
+    #[test]
+    fn valid_input() {
+        let matrix = MatQ::from_str("[[4, 12, -16],[12,37,-43],[-16,-43,98]]").unwrap();
+
+        let l = MatQ::from_str("[[2, 0, 0],[6, 1, 0],[-8, 5, 3]]").unwrap();
+        assert_eq!(l, matrix.cholesky_decomposition_flint());
+    }
+
+    /// Ensure that the function panics if a non-square matrix is provided
+    #[test]
+    #[should_panic]
+    fn non_square() {
+        let matrix = MatQ::new(3, 2);
+
+        matrix.cholesky_decomposition_flint();
+    }
+
+    /// Ensure that the function panics if a matrix with negative eigenvalues is provided
+    #[test]
+    #[should_panic]
+    fn non_positive_definite() {
+        let matrix: MatQ = -1 * MatQ::identity(2, 2);
+
+        matrix.cholesky_decomposition_flint();
+    }
+
+    /// Ensure that the function panics if a non-symmetric matrix is provided
+    #[test]
+    #[should_panic]
+    fn non_symmetric() {
+        let mut matrix: MatQ = MatQ::identity(2, 2);
+        matrix.set_entry(1, 0, Q::MINUS_ONE).unwrap();
+
+        matrix.cholesky_decomposition_flint();
     }
 }
