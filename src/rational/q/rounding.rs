@@ -256,7 +256,7 @@ mod test_round {
 
 #[cfg(test)]
 mod test_simplify {
-    use crate::rational::Q;
+    use crate::{integer::Z, rational::Q, traits::Distance};
 
     /// Ensure that negative precision works as expected
     #[test]
@@ -289,6 +289,23 @@ mod test_simplify {
         let simplified = value.simplify(&precision);
         assert!(&value - &precision <= simplified && simplified <= &value + &precision);
         assert!(Q::from((i64::MAX - 2, i64::MAX)) <= simplified && simplified <= 1.into());
+    }
+
+    /// Ensure max_bits of denominator are not bigger than 1/2 * precision
+    #[test]
+    fn max_bits_denominator() {
+        let value = Q::PI;
+        let precisions = [Q::INV_MAX8, Q::INV_MAX16, Q::INV_MAX32];
+
+        for precision in precisions {
+            let inv_precision = precision.inverse().unwrap().get_numerator();
+            let inv_precision = inv_precision.div_ceil(2);
+
+            let simplified = value.simplify(&precision);
+            let denominator = simplified.get_denominator();
+
+            assert!(denominator.distance(Z::ZERO) < inv_precision);
+        }
     }
 
     /// Ensure that a value which can not be simplified is not changed
