@@ -156,6 +156,36 @@ impl Q {
             den: fmpz(i64::pow(2, 32) - 1),
         },
     };
+
+    /// Returns an instantiation of [`Q`] with value `1 / (2^16 - 1)`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::Q;
+    ///  
+    /// let a: Q = Q::INV_MAX16;
+    /// ```
+    pub const INV_MAX16: Q = Q {
+        value: fmpq {
+            num: fmpz(1),
+            den: fmpz(i64::pow(2, 16) - 1),
+        },
+    };
+
+    /// Returns an instantiation of [`Q`] with value `1 / (2^8 - 1)`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::Q;
+    ///  
+    /// let a: Q = Q::INV_MAX8;
+    /// ```
+    pub const INV_MAX8: Q = Q {
+        value: fmpq {
+            num: fmpz(1),
+            den: fmpz(i64::pow(2, 8) - 1),
+        },
+    };
 }
 
 #[cfg(test)]
@@ -202,5 +232,17 @@ mod tests_init {
     #[test]
     fn init_inv_max32() {
         assert_eq!(Q::from((1, i64::pow(2, 32) - 1)), Q::INV_MAX32);
+    }
+
+    /// Ensure that `INV_MAX16` initializes [`Q`] with `1 / (2^16 - 1)`.
+    #[test]
+    fn init_inv_max16() {
+        assert_eq!(Q::from((1, i64::pow(2, 16) - 1)), Q::INV_MAX16);
+    }
+
+    /// Ensure that `INV_MAX8` initializes [`Q`] with `1 / (2^8 - 1)`.
+    #[test]
+    fn init_inv_max8() {
+        assert_eq!(Q::from((1, i64::pow(2, 8) - 1)), Q::INV_MAX8);
     }
 }
