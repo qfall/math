@@ -30,7 +30,8 @@ impl MatPolyOverZ {
     ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a vector of polynomials sampled according to the
-    /// discrete Gaussian distribution.
+    /// discrete Gaussian distribution or an error if the basis is not a row vector,
+    /// `n <= 1` or `s <= 0`, or the number of rows of the `basis` and `center` differ.
     ///
     /// # Example
     /// ```
@@ -49,7 +50,7 @@ impl MatPolyOverZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`VectorFunctionCalledOnNonVector`](MathError::VectorFunctionCalledOnNonVector), if the basis is not a row vector
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if the `n <= 1` or `s <= 0`.
+    ///     if `n <= 1` or `s <= 0`.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     ///     if the number of rows of the `basis` and `center` differ.
     ///

@@ -33,7 +33,7 @@ impl MatZq {
     /// this is very unlikely to happen.
     ///
     /// Parameters:
-    /// - `y`: The syndrome for which a solution has to be computed.
+    /// - `y`: the syndrome for which a solution has to be computed.
     ///
     /// Returns a solution for the linear system or `None`, if none could be computed.
     ///
@@ -113,9 +113,9 @@ impl MatZq {
     /// other rows such that they have zeros in the given column.
     ///
     /// Parameters:
-    /// - `row_nr`: The row where the entry is located
-    /// - `column_nr`: The column where the entry is located
-    /// - `inverse`: The inverse of the entry located at (row_nr, column_nr)
+    /// - `row_nr`: the row where the entry is located
+    /// - `column_nr`: the column where the entry is located
+    /// - `inverse`: the inverse of the entry located at (row_nr, column_nr)
     fn gauss_row_reduction(&mut self, row_nr: i64, column_nr: i64, inverse: Zq) {
         let row = inverse * self.get_row(row_nr).unwrap();
         self.set_row(row_nr, &row, 0).unwrap();
@@ -149,8 +149,8 @@ impl MatZq {
     /// does not check for the correctness of the given parameters.
     ///
     /// Parameters:
-    /// - `y`: The syndrome for which a solution has to be computed.
-    /// - `entry`: A [`Z`] value that is not co-prime to the modulus.
+    /// - `y`: the syndrome for which a solution has to be computed.
+    /// - `entry`: a [`Z`] value that is not co-prime to the modulus.
     ///
     /// Returns a solution for the linear system or `None`, if none could be computed.
     fn factorization_and_crt(&self, y: &MatZq, entry: Z) -> Option<MatZq> {
@@ -190,8 +190,8 @@ impl MatZq {
     /// parameters.
     ///
     /// Parameters:
-    /// - `solutions`: The solutions under the co-prime moduli.
-    /// - `moduli`: The moduli of the solutions in the form `z^a`.
+    /// - `solutions`: the solutions under the co-prime moduli.
+    /// - `moduli`: the moduli of the solutions in the form `z^a`.
     ///
     /// Returns a solution for the linear system or `None`, if none could be computed.
     ///
@@ -218,7 +218,7 @@ impl MatZq {
     }
 
     /// Computes a solution for a system of linear equations under a modulus
-    /// of the form `z^a`with the help of [\[1\]](<index.html#:~:text=[1]>).
+    /// of the form `z^a` with the help of [\[1\]](<index.html#:~:text=[1]>).
     /// It solves `Ax = y` for `x` with `A` being a [`MatZq`] value.
     /// If no solution is found, `None` is returned.
     ///
@@ -232,9 +232,9 @@ impl MatZq {
     /// does not check for the correctness of the given parameters.
     ///
     /// Parameters:
-    /// - `y`: The syndrome for which a solution has to be computed.
-    /// - `base`: The base of the modulus.
-    /// - `power`: The power of the modulus.
+    /// - `y`: the syndrome for which a solution has to be computed.
+    /// - `base`: the base of the modulus.
+    /// - `power`: the power of the modulus.
     ///
     /// Returns a solution for the linear system or `None`, if none could be computed.
     fn solve_hensel(&self, y: &MatZq, base: &Z, power: &u64) -> Option<MatZq> {
@@ -371,9 +371,9 @@ impl MatZq {
 /// The rows specified in `used_rows` will be ignored.
 ///
 /// Parameters:
-/// - `matrix`: The matrix in which entries are searched for
-/// - `column`: The column for which we are trying to find an invertible element
-/// - `used_rows`: The rows which are not scanned for invertible elements
+/// - `matrix`: the matrix in which entries are searched for
+/// - `column`: the column for which we are trying to find an invertible element
+/// - `used_rows`: the rows which are not scanned for invertible elements
 ///
 /// Returns the row and the entry of the first invertible element in that column, and
 /// `None` if there is no such element
@@ -396,9 +396,9 @@ fn find_invertible_entry_column(
 /// The rows specified in `used_rows` will be ignored.
 ///
 /// Parameters:
-/// - `matrix`: The matrix in which entries are searched for
-/// - `column`: The column for which we are trying to find an invertible element
-/// - `used_rows`: The rows which are not scanned for invertible elements
+/// - `matrix`: the matrix in which entries are searched for
+/// - `column`: the column for which we are trying to find an invertible element
+/// - `used_rows`: the rows which are not scanned for invertible elements
 ///
 /// Returns the row and the entry of the first not invertible element in that column,
 /// that is not 0, and `None` if there is no such element

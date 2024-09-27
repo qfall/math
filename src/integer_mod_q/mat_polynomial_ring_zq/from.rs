@@ -14,13 +14,14 @@ use super::MatPolynomialRingZq;
 use crate::{integer::MatPolyOverZ, integer_mod_q::ModulusPolynomialRingZq};
 
 impl<Mod: Into<ModulusPolynomialRingZq>> From<(&MatPolyOverZ, Mod)> for MatPolynomialRingZq {
-    /// Create a new polynomial ring matrix of type [`MatPolynomialRingZq`].
+    /// Creates a polynomial ring matrix of type [`MatPolynomialRingZq`] from
+    /// a [`MatPolyOverZ`] and a [`ModulusPolynomialRingZq`].
     ///
     /// Parameters:
-    /// - `matrix`: The polynomial matrix defining each entry.
-    /// - `modulus`: The modulus that is applied to each polynomial.
+    /// - `matrix`: the polynomial matrix defining each entry.
+    /// - `modulus`: the modulus that is applied to each polynomial.
     ///
-    /// Returns a new polynomial ring matrix.
+    /// Returns a [`ModulusPolynomialRingZq`].
     ///
     /// # Examples
     /// ```
@@ -44,13 +45,14 @@ impl<Mod: Into<ModulusPolynomialRingZq>> From<(&MatPolyOverZ, Mod)> for MatPolyn
 }
 
 impl<Mod: Into<ModulusPolynomialRingZq>> From<(MatPolyOverZ, Mod)> for MatPolynomialRingZq {
-    /// Create a new polynomial ring matrix of type [`MatPolynomialRingZq`].
+    /// Creates a polynomial ring matrix of type [`MatPolynomialRingZq`] from
+    /// a [`MatPolyOverZ`] and a [`ModulusPolynomialRingZq`].
     ///
     /// Parameters:
-    /// - `matrix`: The polynomial matrix defining each entry.
-    /// - `modulus`: The modulus that is applied to each polynomial.
+    /// - `matrix`: the polynomial matrix defining each entry.
+    /// - `modulus`: the modulus that is applied to each polynomial.
     ///
-    /// Returns a new polynomial ring matrix.
+    /// Returns a [`ModulusPolynomialRingZq`].
     ///
     /// # Examples
     /// ```

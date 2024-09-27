@@ -17,7 +17,7 @@ impl Tensor for MatQ {
     /// Computes the tensor product of `self` with `other`.
     ///
     /// Parameters:
-    /// - `other`: The value with which the tensor product is computed.
+    /// - `other`: the value with which the tensor product is computed.
     ///
     /// Returns the tensor product of `self` with `other`.
     ///

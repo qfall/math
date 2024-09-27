@@ -108,7 +108,8 @@ impl MatQ {
     /// Parameters:
     /// - `other`: specifies the value to multiply with `self`
     ///
-    /// Returns the product of `self` and `other` as a [`MatQ`].
+    /// Returns the product of `self` and `other` as a [`MatQ`] or
+    /// an error, if the dimensions of `self` and `other` do not match for multiplication.
     ///
     /// # Examples
     /// ```

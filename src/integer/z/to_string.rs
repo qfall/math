@@ -1,4 +1,4 @@
-// Copyright © 2023 Marvin Beckmann
+// Copyright © 2023 Marcel Luca Schmidt, Marvin Beckmann
 //
 // This file is part of qFALL-math.
 //
@@ -11,12 +11,34 @@
 //!
 //! This includes the [`Display`](std::fmt::Display) trait.
 
-use crate::error::MathError;
-
 use super::Z;
+use crate::{error::MathError, macros::for_others::implement_for_owned};
 use core::fmt;
 use flint_sys::fmpz::{fmpz_bits, fmpz_get_str, fmpz_tstbit};
 use std::{ffi::CStr, ptr::null_mut, string::FromUtf8Error};
+
+impl From<&Z> for String {
+    /// Converts a [`Z`] into its [`String`] representation.
+    ///
+    /// Parameters:
+    /// - `value`: specifies the matrix that will be represented as a [`String`]
+    ///
+    /// Returns a [`String`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// use std::str::FromStr;
+    /// let matrix = Z::from_str("6").unwrap();
+    ///
+    /// let string: String = matrix.into();
+    /// ```
+    fn from(value: &Z) -> Self {
+        value.to_string()
+    }
+}
+
+implement_for_owned!(Z, String, From);
 
 impl fmt::Display for Z {
     /// Allows to convert an integer of type [`Z`] into a [`String`].
@@ -54,7 +76,7 @@ impl Z {
     ///     the base of the returned [`String`].
     ///
     /// Returns the integer in form of a [`String`] with regards to the base `b`
-    /// and an error if the base is out of bounds.
+    /// or an error, if the base is out of bounds.
     ///
     /// # Examples
     /// ```
@@ -211,6 +233,19 @@ mod test_to_string {
         let cmp_str_2 = cmp.to_string();
 
         assert!(Z::from_str(&cmp_str_2).is_ok());
+    }
+
+    /// Ensures that the `Into<String>` trait works properly
+    #[test]
+    fn into_works_properly() {
+        let cmp = "6";
+        let matrix = Z::from_str(cmp).unwrap();
+
+        let string: String = matrix.clone().into();
+        let borrowed_string: String = (&matrix).into();
+
+        assert_eq!(cmp, string);
+        assert_eq!(cmp, borrowed_string);
     }
 }
 

@@ -96,10 +96,9 @@ pub(crate) use implement_for_others;
 macro_rules! implement_for_owned {
     // [`Evaluate`] trait
     ($source_type:ident, $output_type:ident, $type:ident, Evaluate) => {
-        #[doc(hidden)]
         impl Evaluate<$source_type, $output_type> for $type {
             paste::paste! {
-                #[doc = "Documentation can be found at [`" $type "::evaluate`]."]
+                #[doc = "Documentation can be found at [`" $type "::evaluate`] for &[`" $source_type "`]."]
             fn evaluate(
                 &self,
                 value: $source_type
@@ -110,12 +109,25 @@ macro_rules! implement_for_owned {
         }
     };
 
+    // [`From`] trait
+    ($source_type:ident, $type:ident, From) => {
+        impl From<$source_type> for $type {
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::from`] for &[`" $source_type "`]."]
+            fn from(
+                value: $source_type
+            ) -> Self {
+                Self::from(&value)
+            }
+            }
+        }
+    };
+
     // [`SetCoefficient`] trait
     ($source_type:ident, $type:ident, SetCoefficient) => {
-        #[doc(hidden)]
         impl SetCoefficient<$source_type> for $type {
             paste::paste! {
-                #[doc = "Documentation can be found at [`" $type "::set_coeff`]."]
+                #[doc = "Documentation can be found at [`" $type "::set_coeff`] for &[`" $source_type "`]."]
             fn set_coeff(
                 &mut self,
                 index: impl TryInto<i64> + Display,
@@ -129,10 +141,9 @@ macro_rules! implement_for_owned {
 
     // [`SetEntry`] trait
     ($source_type:ident, $type:ident, SetEntry) => {
-        #[doc(hidden)]
         impl SetEntry<$source_type> for $type {
             paste::paste! {
-                #[doc = "Documentation can be found at [`" $type "::set_entry`]."]
+                #[doc = "Documentation can be found at [`" $type "::set_entry`] for &[`" $source_type "`]."]
             fn set_entry(
                 &mut self,
                 row: impl TryInto<i64> + Display,

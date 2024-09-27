@@ -10,13 +10,13 @@
 
 use crate::error::{MathError, StringConversionError};
 
-/// Returns the dimensions of a matrix.
+/// Calculates the dimensions of a matrix.
 /// Takes `[[1, 2, 3],[4, 5, 6]]` as input and outputs `(2, 3)` accordingly.
 ///
 /// Parameters:
-/// - `string`: the string of the matrix
+/// - `string`: the string of the matrix.
 ///
-/// Returns an error if the number of rows or columns is too large
+/// Returns the dimensions of the matrix or an error if the number of rows or columns is too large
 /// (must fit into [`i64`]) or if the number of entries in rows is unequal.
 ///
 /// # Errors and Failures

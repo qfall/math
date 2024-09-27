@@ -19,7 +19,8 @@ use crate::{
 use flint_sys::fmpz::fmpz_addmul;
 
 impl MatZq {
-    /// Returns the squared Euclidean norm or 2-norm of the given (row or column) vector.
+    /// Returns the squared Euclidean norm or 2-norm of the given (row or column) vector
+    /// or an error if the given matrix is not a vector.
     ///
     /// Each length of an entry is defined as the shortest distance
     /// to the next zero instance in the ring.
@@ -65,7 +66,8 @@ impl MatZq {
         Ok(result)
     }
 
-    /// Returns the infinity norm or ∞-norm of the given (row or column) vector.
+    /// Returns the infinity norm or ∞-norm of the given (row or column) vector
+    /// or an error if the given matrix is not a vector.
     ///
     /// Each length of an entry is defined as the shortest distance
     /// to the next zero instance in the ring.
