@@ -24,7 +24,12 @@ use std::{ffi::CString, str::FromStr};
 impl FromStr for PolyOverZ {
     type Err = MathError;
 
-    /// Create a new polynomial with arbitrarily many coefficients of type [`Z`].
+    /// Creates a polynomial with arbitrarily many coefficients of type [`Z`]
+    /// from a [`String`].
+    ///
+    /// **Warning**: If the input string starts with a correctly formatted [`PolyOverZ`] object,
+    /// the rest of the string is ignored. This means that the input string
+    /// `"4  0 1 2 3"` is the same as `"4  0 1 2 3 4 5 6 7"`.
     ///
     /// Parameters:
     /// - `s`: the polynomial of form: `"[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴..."`.
@@ -33,8 +38,9 @@ impl FromStr for PolyOverZ {
     /// are divided by two spaces and the input string is trimmed, i.e. all whitespaces
     /// before and after are removed.
     ///
-    /// Returns a [`PolyOverZ`] or an error, if the provided string was not formatted
-    /// correctly.
+    /// Returns a [`PolyOverZ`] or an error if the provided string was not formatted
+    /// correctly, the number of coefficients was smaller than the number provided
+    /// at the start of the provided string, or the provided string contains a `Null` Byte.
     ///
     /// # Examples
     /// ```
@@ -84,7 +90,7 @@ impl FromStr for PolyOverZ {
 }
 
 impl<Integer: AsInteger + Into<Z>> From<Integer> for PolyOverZ {
-    /// Create a constant [`PolyOverZ`] with a specified integer constant.
+    /// Creates a constant [`PolyOverZ`] with a specified integer constant.
     ///
     /// # Parameters:
     /// `value`: an integer like [`Z`], rust Integers or a reference to these values.
@@ -126,12 +132,12 @@ impl From<&PolyOverZ> for PolyOverZ {
 }
 
 impl From<&PolyOverZq> for PolyOverZ {
-    /// Create a [`PolyOverZ`] from a [`PolyOverZq`].
+    /// Creates a [`PolyOverZ`] from a [`PolyOverZq`].
     ///
     /// Parameters:
-    /// - `poly`: the polynomial from which the coefficients are copied
+    /// - `poly`: the polynomial from which the coefficients are copied.
     ///
-    /// Returns representative polynomial (all reduced coefficients)
+    /// Returns the representative polynomial (all reduced coefficients)
     /// of the [`PolyOverZq`] as a [`PolyOverZ`].
     ///
     /// # Examples

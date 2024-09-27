@@ -439,7 +439,7 @@ impl MatZq {
     /// matrix entries and reduces them by the new modulus automatically.
     ///
     /// Parameters:
-    /// - `modulus`: The new modulus of the matrix
+    /// - `modulus`: the new modulus of the matrix
     ///
     /// # Examples
     /// ```

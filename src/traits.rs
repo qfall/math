@@ -19,7 +19,7 @@ pub trait Evaluate<T, U> {
     /// for a given input value.
     ///
     /// Parameters:
-    /// - `value`: The value with which to evaluate the object.
+    /// - `value`: the value with which to evaluate the object.
     ///
     /// Returns the evaluation of the object.
     fn evaluate(&self, value: T) -> U;
@@ -31,7 +31,7 @@ pub trait GetCoefficient<T> {
     /// for a given index.
     ///
     /// Parameters:
-    /// - `index`: The index of the coefficient
+    /// - `index`: the index of the coefficient
     ///
     /// Returns the coefficient of the polynomial.
     fn get_coeff(&self, index: impl TryInto<i64> + Display) -> Result<T, MathError>;
@@ -43,8 +43,8 @@ pub trait SetCoefficient<T> {
     /// for a given input value and a index.
     ///
     /// Parameters:
-    /// - `index` : The coefficient to be set.
-    /// - `value`: The value the coefficient is set to.
+    /// - `index`: the coefficient to be set.
+    /// - `value`: the value the coefficient is set to.
     fn set_coeff(&mut self, index: impl TryInto<i64> + Display, value: T) -> Result<(), MathError>;
 }
 
@@ -69,7 +69,7 @@ pub trait GetEntry<T> {
     /// - `column`: specifies the column in which the entry is located.
     ///
     /// Returns the value of the matrix at the position of the given
-    /// row and column or an error, if the number of rows or columns is
+    /// row and column or an error if the number of rows or columns is
     /// greater than the matrix or negative.
     fn get_entry(
         &self,
@@ -217,7 +217,7 @@ pub trait Xgcd<T = Self> {
 /// Handling [`fmpz`] directly requires thinking about memory issues.
 /// Read the documentation of the functions carefully before you use them.
 pub(crate) unsafe trait AsInteger {
-    /// Return a [`fmpz`] representing the value.
+    /// Returns an [`fmpz`] representing the value.
     /// Data about the original object might not be contained in the return value.
     /// For example, [`Zq`](crate::integer_mod_q::Zq)'s return value does not
     /// contain Information about the modulus.
@@ -229,11 +229,11 @@ pub(crate) unsafe trait AsInteger {
     unsafe fn into_fmpz(self) -> fmpz;
 
     /// Returns a reference to an internal [`fmpz`] that represents the value.
-    /// If the data type does not contain a [`fmpz`] completely [`None`] is returned.
+    /// If the data type does not contain an [`fmpz`] completely [`None`] is returned.
     ///
     /// It is intended to be used when a read only [`fmpz`] reference is required
     /// for a Flint function call.
-    /// If the data type does not contain a [`fmpz`], [`into_fmpz`](AsInteger::into_fmpz)
+    /// If the data type does not contain an [`fmpz`], [`into_fmpz`](AsInteger::into_fmpz)
     /// can be used instead.
     fn get_fmpz_ref(&self) -> Option<&fmpz> {
         None

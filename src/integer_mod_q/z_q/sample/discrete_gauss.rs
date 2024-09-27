@@ -31,8 +31,8 @@ impl Zq {
     ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns new [`Zq`] sample chosen according to the specified discrete Gaussian
-    /// distribution or a [`MathError`] if the modulus is chosen smaller than `2` or the
-    /// specified parameters were not chosen appropriately, i.e. `n > 1` and `s > 0`.
+    /// distribution or a [`MathError`] if the specified parameters were not chosen
+    /// appropriately, i.e. `n > 1` and `s > 0`.
     ///
     /// # Examples
     /// ```

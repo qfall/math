@@ -18,7 +18,8 @@ use rand::RngCore;
 /// - `interval_size`: specifies the size of the interval
 ///     over which the samples are drawn
 ///
-/// Returns a uniform at random chosen [`Z`] instance in `[0, interval_size)`.
+/// Returns a uniform at random chosen [`Z`] instance in `[0, interval_size)` or a [`MathError`],
+/// if the interval size is chosen smaller than or equal to `1`.
 ///
 /// # Examples
 /// ```compile_fail

@@ -27,8 +27,8 @@ impl Modulus {
     /// - `value`: the initial value the modulus should have.
     ///   It must be larger than one.
     ///
-    /// Returns the new [`Modulus`] or an error, if the
-    /// provided value was not greater than `1`.
+    /// Returns a [`Modulus`] or an error if the
+    /// provided value is smaller than `2`.
     ///
     /// # Safety
     /// Since the parameter is a reference, it still has to be
@@ -46,7 +46,7 @@ impl Modulus {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidModulus`](MathError::InvalidModulus)
-    ///     if the provided value is not greater than `1`.
+    ///     if the provided value is smaller than `2`.
     pub(crate) fn from_fmpz_ref(value: &fmpz) -> Result<Self, MathError> {
         if (unsafe { fmpz_cmp_si(value, 1) } <= 0) {
             let z = Z::from(value);
@@ -71,14 +71,14 @@ trait IntoModulus {}
 implement_empty_trait_owned_ref!(IntoModulus for Z fmpz u8 u16 u32 u64 i8 i16 i32 i64);
 
 impl<Integer: AsInteger + IntoModulus> From<Integer> for Modulus {
-    /// Create a [`Modulus`] from a positive integer.
+    /// Creates a [`Modulus`] from a positive integer.
     ///
     /// Parameters:
     /// - `value`: the initial value the modulus should have.
     ///   It must be larger than one.
     ///
-    /// Returns the new [`Modulus`] or an panics, if the
-    /// provided value was not greater than `1`.
+    /// Returns a [`Modulus`] or an panics, if the
+    /// provided value is smaller than `2`.
     ///
     /// # Examples
     /// ```
@@ -91,7 +91,7 @@ impl<Integer: AsInteger + IntoModulus> From<Integer> for Modulus {
     /// ```
     ///
     /// # Panics ...
-    /// - if the provided value is not greater than `1`.
+    /// - if the provided value is smaller than `2`.
     fn from(value: Integer) -> Self {
         match value.get_fmpz_ref() {
             Some(val) => Modulus::from_fmpz_ref(val).unwrap(),
@@ -118,10 +118,10 @@ impl From<&Modulus> for Modulus {
 impl FromStr for Modulus {
     type Err = MathError;
 
-    /// Create a [`Modulus`] from a string with a decimal number.
+    /// Creates a [`Modulus`] from a [`String`].
     ///
     /// Parameters:
-    /// - `s`: the modulus of form: "[0-9]+" and not all zeros
+    /// - `s`: the modulus of form: `"[0-9]+"` and not all zeros.
     ///
     /// Returns a [`Modulus`] or an [`MathError`], if the provided string is not
     /// a valid modulus.
@@ -141,7 +141,7 @@ impl FromStr for Modulus {
     ///     formatted [`Z`].
     /// - Returns a [`MathError`] of type
     ///     [`InvalidModulus`](MathError::InvalidModulus)
-    ///     if the provided value is not greater than `1`.
+    ///     if the provided value is smaller than `2`.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let z = Z::from_str(s)?;
 

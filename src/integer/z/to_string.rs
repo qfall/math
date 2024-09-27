@@ -49,7 +49,7 @@ impl Z {
     /// Allows to convert an integer of type [`Z`] into a [`String`]
     /// with a configurable base between 2 and 62.
     ///
-    /// Returns the integer in form of a [`String`] and an error
+    /// Returns the integer in form of a [`String`] and an error,
     /// if the base is out of bounds.
     ///
     /// # Examples
