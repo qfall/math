@@ -130,7 +130,7 @@ impl Q {
     /// - `r`: specifies the Gaussian parameter, which is proportional
     ///     to the standard deviation `sigma * sqrt(2 * pi) = r`
     ///
-    /// Returns the rounded value as an [`Z`] or an error if the `n <= 1` or `r <= 0`.
+    /// Returns the rounded value as an [`Z`] or an error if `n <= 1` or `r <= 0`.
     ///
     /// # Examples
     /// ```
@@ -142,7 +142,7 @@ impl Q {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if the `n <= 1` or `r <= 0`.
+    ///     if `n <= 1` or `r <= 0`.
     ///
     /// This function implements randomized rounding according to:
     /// - Peikert, C. (2010, August).

@@ -54,7 +54,7 @@ use rand::RngCore;
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-///     if the `n <= 1` or `s <= 0`.
+///     if `n <= 1` or `s <= 0`.
 pub(crate) fn sample_z(n: &Z, center: &Q, s: &Q) -> Result<Z, MathError> {
     if n <= &Z::ONE {
         return Err(MathError::InvalidIntegerInput(format!(
@@ -150,7 +150,7 @@ fn gaussian_function(x: &Z, c: &Q, s: &Q) -> Q {
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-///     if the `n <= 1` or `s <= 0`.
+///     if `n <= 1` or `s <= 0`.
 /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
 ///     if the number of rows of the `basis` and `center` differ.
 /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
@@ -195,7 +195,7 @@ pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-///     if the `n <= 1` or `s <= 0`.
+///     if `n <= 1` or `s <= 0`.
 /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
 ///     if the number of rows of the `basis` and `center` differ.
 /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
