@@ -246,4 +246,12 @@ mod test_from_str {
             poly.unwrap()
         );
     }
+
+    /// Ensure that a string resulting from to_string, can be used in from_str
+    #[test]
+    fn roundtrip() {
+        let poly = PolynomialRingZq::from_str("2  1 1 / 4  1 1 -2 3 mod 42").unwrap();
+        let poly2 = PolynomialRingZq::from_str(&poly.to_string()).unwrap();
+        assert_eq!(poly, poly2);
+    }
 }
