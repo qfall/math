@@ -47,10 +47,14 @@ impl fmt::Display for Z {
 
 impl Z {
     /// Allows to convert an integer of type [`Z`] into a [`String`]
-    /// with a configurable base between 2 and 62.
+    /// with a configurable base `b` between `2` and `62`.
     ///
-    /// Returns the integer in form of a [`String`] and an error
-    /// if the base is out of bounds.
+    /// Parameters:
+    /// - `b`: specifies the any base between `2` and `62` which specifies
+    ///     the base of the returned [`String`].
+    ///
+    /// Returns the integer in form of a [`String`] with regards to the base `b`
+    /// and an error if the base is out of bounds.
     ///
     /// # Examples
     /// ```
