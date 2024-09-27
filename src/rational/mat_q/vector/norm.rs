@@ -18,8 +18,7 @@ use crate::{
 use flint_sys::fmpq::{fmpq_abs, fmpq_addmul, fmpq_cmp};
 
 impl MatQ {
-    /// Returns the squared Euclidean norm or 2-norm of the given (row or column) vector
-    /// or an error, if the given [`MatQ`] instance is not a (row or column) vector.
+    /// Returns the squared Euclidean norm or 2-norm of the given (row or column) vector.
     ///
     /// # Examples
     /// ```

@@ -101,8 +101,7 @@ impl MatZq {
     /// Parameters:
     /// - `scalar`: specifies the scalar by which the matrix is multiplied
     ///
-    /// Returns the product of `self` and `scalar` as a [`MatZq`] or
-    /// an error if the moduli mismatch.
+    /// Returns the product of `self` and `scalar` as a [`MatZq`].
     ///
     /// # Examples
     /// ```

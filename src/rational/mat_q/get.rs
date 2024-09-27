@@ -64,7 +64,7 @@ impl GetEntry<Q> for MatQ {
     ///
     /// Returns the [`Q`] value of the matrix at the position of the given
     /// row and column or an error, if the number of rows or columns is
-    /// greater than the matrix.
+    /// greater than the matrix or greater than the matrix.
     ///
     /// # Examples
     /// ```
@@ -190,8 +190,7 @@ impl MatQ {
     /// Negative indices can be used to index from the back, e.g., `-1` for
     /// the last element.
     ///
-    /// Returns the submatrix from `(row_1, col_1)` to `(row_2, col_2)`(inclusively)
-    /// or an error, if the number of rows or columns is greater than the matrix.
+    /// Returns the submatrix from `(row_1, col_1)` to `(row_2, col_2)`(inclusively).
     ///
     /// # Examples
     /// ```

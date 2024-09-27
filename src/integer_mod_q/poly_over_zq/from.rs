@@ -266,8 +266,7 @@ impl FromStr for PolyOverZq {
     /// i.e. all whitespaces before around the polynomial and the modulus are removed.
     ///
     /// Returns a [`PolyOverZq`] or an error, if the provided string was not
-    /// formatted correctly, the number of coefficients was smaller than the number provided
-    /// at the start of the provided string, or the modulus was smaller than `2`.
+    /// formatted correctly.
     ///
     /// # Examples
     /// ```

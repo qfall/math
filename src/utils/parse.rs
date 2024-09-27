@@ -25,7 +25,7 @@ use string_builder::Builder;
 /// Parameters:
 /// - `string`: a matrix as a string
 ///
-/// Returns the matrix in form of a two dimensional vector with the entries
+/// Returns the Matrix in form of a two dimensional vector with the entries
 /// stored as strings or an error, if the matrix is not formatted correctly.
 ///
 /// # Errors and Failures

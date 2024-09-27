@@ -35,8 +35,7 @@ impl FromStr for PolyOverQ {
     /// before and after are removed.
     ///
     /// Returns a [`PolyOverQ`] or an error, if the provided string was not formatted
-    /// correctly, the number of coefficients was smaller than the number provided at the
-    /// start of the provided string, or the provided string contains a `Null` Byte.
+    /// correctly.
     ///
     /// # Examples
     /// ```

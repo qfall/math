@@ -286,8 +286,7 @@ impl MatPolynomialRingZq {
     /// Parameters:
     /// - `scalar`: Specifies the scalar by which the matrix is multiplied.
     ///
-    /// Returns the product of `self` and `scalar` as a [`MatPolynomialRingZq`]
-    /// or an error if the moduli mismatch.
+    /// Returns the product of `self` and `scalar` as a [`MatPolynomialRingZq`].
     ///
     /// # Examples
     /// ```
@@ -323,8 +322,7 @@ impl MatPolynomialRingZq {
     /// Parameters:
     /// - `scalar`: Specifies the scalar by which the matrix is multiplied.
     ///
-    /// Returns the product of `self` and `scalar` as a [`MatPolynomialRingZq`]
-    /// or an error if the moduli mismatch.
+    /// Returns the product of `self` and `scalar` as a [`MatPolynomialRingZq`].
     ///
     /// # Examples
     /// ```

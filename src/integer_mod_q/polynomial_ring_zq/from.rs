@@ -73,8 +73,7 @@ impl FromStr for PolynomialRingZq {
     ///     i.e. all whitespaces around the polynomials and the modulus are removed.
     ///
     /// Returns a [`PolynomialRingZq`] or an error, if the provided string was not
-    /// formatted correctly, the numbers of coefficients were smaller than the numbers
-    /// provided at the start of the provided string, or the modulus was smaller than `2`.
+    /// formatted correctly.
     ///
     /// # Examples
     /// ```

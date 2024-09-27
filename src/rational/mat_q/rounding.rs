@@ -103,8 +103,6 @@ impl MatQ {
     /// - `n`: the security parameter; also specifies the range from which is sampled
     /// - `r`: specifies the Gaussian parameter, which is proportional
     ///     to the standard deviation `sigma * sqrt(2 * pi) = r`
-    /// 
-    /// Returns the rounded matrix as a [`MatZ`] or an error if `n <= 1` or `r <= 0`.
     ///
     /// # Examples
     /// ```

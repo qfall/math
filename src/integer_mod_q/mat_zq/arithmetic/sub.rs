@@ -56,7 +56,7 @@ impl MatZq {
     /// - `other`: specifies the value to subtract from`self`
     ///
     /// Returns the result of the subtraction as a [`MatZq`] or an
-    /// error if the matrix dimensions or moduli mismatch.
+    /// error if the matrix dimensions mismatch.
     ///
     /// # Examples
     /// ```

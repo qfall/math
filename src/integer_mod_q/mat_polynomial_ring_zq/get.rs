@@ -297,8 +297,7 @@ impl MatPolynomialRingZq {
     /// Negative indices can be used to index from the back, e.g., `-1` for
     /// the last element.
     ///
-    /// Returns the submatrix from `(row_1, col_1)` to `(row_2, col_2)`(inclusively)
-    /// or an error, if any provided row or column is greater than the matrix.
+    /// Returns the submatrix from `(row_1, col_1)` to `(row_2, col_2)`(inclusively).
     ///
     /// # Examples
     /// ```

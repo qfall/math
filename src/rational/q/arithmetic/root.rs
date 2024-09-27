@@ -60,9 +60,6 @@ impl Q {
     /// Parameters:
     /// - `precision` specifies the upper limit of the error.
     ///   The precision must larger than zero.
-    /// 
-    /// Returns the square root of the value as a [`Q`] instance or a [`MathError`],
-    /// if the precision is not larger than zero, or the parameter of the square root is negative.
     ///
     /// # Examples
     /// ```
