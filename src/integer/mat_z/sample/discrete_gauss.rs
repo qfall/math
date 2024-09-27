@@ -144,14 +144,14 @@ impl MatZ {
         MatZ::sample_d(&basis, n, &center, s)
     }
 
-    /// Samples a (possibly) non-spherical discrete Gaussian using
-    /// the standard basis and center `0`.
+    /// Samples a non-spherical discrete Gaussian depending on your choice of
+    /// `sigma_sqrt` using the standard basis and center `0`.
     ///
     /// Parameters:
     /// - `n`: specifies the range from which [`MatQ::randomized_rounding`] samples
-    /// - `sigma_`: specifies the positive definite Gaussian convolution matrix
+    /// - `sigma_sqrt`: specifies the positive definite Gaussian convolution matrix
     ///     with which the *intermediate* continuous Gaussian is sampled before
-    ///     the randomized rounding is applied. Here `sigma_ = sqrt(sigma^2 - r^2*I)`
+    ///     the randomized rounding is applied. Here `sigma_sqrt = sqrt(sigma^2 - r^2*I)`
     ///     where sigma is the target convolution matrix. The root can be computed using
     ///     the [`MatQ::cholesky_decomposition`].
     /// - `r`: specifies the rounding parameter for [`MatQ::randomized_rounding`].
@@ -168,17 +168,16 @@ impl MatZ {
     /// let convolution_matrix = MatQ::from_str("[[100,1],[1,17]]").unwrap();
     /// let r = Q::from(4);
     ///
-    /// let sigma_ = convolution_matrix - r.pow(2).unwrap() * MatQ::identity(2, 2);
+    /// let sigma_sqrt = convolution_matrix - r.pow(2).unwrap() * MatQ::identity(2, 2);
     ///
-    /// let sample = MatZ::sample_d_common_non_spherical(16, &sigma_.cholesky_decomposition(), r).unwrap();
+    /// let sample = MatZ::sample_d_common_non_spherical(16, &sigma_sqrt.cholesky_decomposition(), r).unwrap();
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
     ///     if the `n <= 1` or `r <= 0`.
-    ///
-    /// # Panics ...
-    /// - if `sigma_` is not a square matrix.
+    /// - Returns a [`MathError`] of type [`NoSquareMatrix`](MathError::NoSquareMatrix)
+    ///     if the matrix is not symmetric.
     ///
     /// This function implements SampleD according to Algorithm 1. in \[2\].
     /// - \[2\] Peikert, Chris.
@@ -188,19 +187,21 @@ impl MatZ {
     ///     <https://link.springer.com/chapter/10.1007/978-3-642-14623-7_5>
     pub fn sample_d_common_non_spherical(
         n: impl Into<Z>,
-        sigma_: &MatQ,
+        sigma_sqrt: &MatQ,
         r: impl Into<Q>,
     ) -> Result<Self, MathError> {
-        assert!(sigma_.is_square());
+        if !sigma_sqrt.is_square() {
+            return Err(MathError::NoSquareMatrix("The covariance matrix has to be square, otherwise no discrete Gaussian can be defined.".to_string()));
+        }
         let r = r.into();
 
         // sample a continuous Gaussian centered around `0` in every dimension with
         // gaussian parameter `1`.
-        let d_1 = MatQ::sample_gauss_same_center(sigma_.get_num_columns(), 1, 0, 1)?;
+        let d_1 = MatQ::sample_gauss_same_center(sigma_sqrt.get_num_columns(), 1, 0, 1)?;
 
         // compute a continuous Gaussian centered around `0` in every dimension with
         // convolution matrix `b_2` (the cholesky decomposition we computed)
-        let x_2 = sigma_ * d_1;
+        let x_2 = sigma_sqrt * d_1;
 
         // perform randomized rounding
         x_2.randomized_rounding(r, n)
@@ -405,26 +406,13 @@ mod test_sample_d_common_non_spherical {
         let _ = MatZ::sample_d_common_non_spherical(16, &convolution_matrix, 8f64).unwrap();
     }
 
-    /// Checks whether the function panics if a non positive-definite matrix is provided.
-    #[test]
-    #[should_panic]
-    fn no_convolution_matrix_1() {
-        let r = Q::from(4);
-        let convolution_matrix = MatQ::from_str("[[-1,1],[1,1]]").unwrap();
-        let convolution_matrix = (convolution_matrix - r.pow(2).unwrap() * MatQ::identity(2, 2))
-            .cholesky_decomposition();
-
-        let _ = MatZ::sample_d_common_non_spherical(16, &convolution_matrix, r).unwrap();
-    }
-
     /// Checks whether the function panics if a non-square matrix is provided.
     /// anymore
     #[test]
-    #[should_panic]
     fn not_square() {
         let convolution_matrix = MatQ::from_str("[[100,1,1],[1,64,2]]").unwrap();
 
-        let _ = MatZ::sample_d_common_non_spherical(16, &convolution_matrix, 8).unwrap();
+        assert!(MatZ::sample_d_common_non_spherical(16, &convolution_matrix, 8).is_err());
     }
 
     /// Checks whether the function returns an error if `n` or `r` is too small.
