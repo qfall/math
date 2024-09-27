@@ -61,7 +61,7 @@ impl MatPolynomialRingZq {
     /// - `other`: specifies the polynomial to add to `self`
     ///
     /// Returns the sum of both polynomials as a [`MatPolynomialRingZq`] or an error if the moduli
-    /// mismatch, or the dimensions of the matrices mismatch.
+    /// mismatch, or the dimensions of the matrices mismatch. 
     ///
     /// # Examples
     /// ```

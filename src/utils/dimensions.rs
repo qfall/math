@@ -16,7 +16,7 @@ use crate::error::{MathError, StringConversionError};
 /// Parameters:
 /// - `string`: the string of the matrix.
 ///
-/// Returns the dimensions of the matrix or an error if the number of rows or columns is too large
+/// Returns the dimensions of the matrix, or an error if the number of rows or columns is too large
 /// (must fit into [`i64`]) or if the number of entries in rows is unequal.
 ///
 /// # Errors and Failures
