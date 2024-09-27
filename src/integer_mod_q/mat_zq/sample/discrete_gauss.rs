@@ -32,7 +32,7 @@ impl MatZq {
     ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a matrix with each entry sampled independently from the
-    /// specified discrete Gaussian distribution or an error if `n <= 1` or `s <= 0`.
+    /// specified discrete Gaussian distribution or an error if the `n <= 1` or `s <= 0`.
     ///
     /// # Examples
     /// ```
@@ -43,7 +43,7 @@ impl MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if `n <= 1` or `s <= 0`.
+    ///     if the `n <= 1` or `s <= 0`.
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns or the modulus are not suited to create a matrix.
@@ -85,7 +85,7 @@ impl MatZq {
     ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a lattice vector sampled according to the discrete Gaussian distribution
-    /// or an error if `n <= 1` or `s <= 0`, the number of rows of the `basis` and `center` differ,
+    /// or an error if the `n <= 1` or `s <= 0`, the number of rows of the `basis` and `center` differ,
     /// or if `center` is not a column vector.
     ///
     /// # Examples
@@ -99,7 +99,7 @@ impl MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if `n <= 1` or `s <= 0`.
+    ///     if the `n <= 1` or `s <= 0`.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     ///     if the number of rows of the `basis` and `center` differ.
     /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
@@ -169,7 +169,7 @@ impl MatZq {
     ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a lattice vector sampled according to the discrete Gaussian distribution
-    /// or an error if `n <= 1` or `s <= 0`, the number of rows of the `basis` and `center` differ,
+    /// or an error if the `n <= 1` or `s <= 0`, the number of rows of the `basis` and `center` differ,
     /// or if `center` is not a column vector.
     ///
     /// # Examples
@@ -184,7 +184,7 @@ impl MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if `n <= 1` or `s <= 0`.
+    ///     if the `n <= 1` or `s <= 0`.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     ///     if the number of rows of the `basis` and `center` differ.
     /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)

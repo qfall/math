@@ -117,7 +117,7 @@ impl MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if `n <= 1` or `r <= 0`.
+    ///     if the `n <= 1` or `r <= 0`.
     ///
     /// This function implements randomized rounding according to:
     /// - \[1\] Peikert, C. (2010, August).

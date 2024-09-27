@@ -18,7 +18,7 @@ impl Q {
     /// **Warning**: It assumes that the return value does not overflow an [`f64`].
     ///
     /// Returns the double precision approximation of the natural logarithm of `self`
-    /// as a [`Q`] instance or a [`MathError`], if `self` is smaller than `1`.
+    /// as a [`Q`] instance or a [`MathError`], if `self` is not greater than `0`.
     ///
     /// # Examples
     /// ```
