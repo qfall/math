@@ -18,8 +18,8 @@ impl<Mod: Into<ModulusPolynomialRingZq>> From<(&MatPolyOverZ, Mod)> for MatPolyn
     /// a [`MatPolyOverZ`] and a [`ModulusPolynomialRingZq`].
     ///
     /// Parameters:
-    /// - `matrix`: the polynomial matrix defining each entry.
-    /// - `modulus`: the modulus that is applied to each polynomial.
+    /// - `matrix`:the polynomial matrix defining each entry.
+    /// - `modulus`:the modulus that is applied to each polynomial.
     ///
     /// Returns a [`ModulusPolynomialRingZq`].
     ///
@@ -49,8 +49,8 @@ impl<Mod: Into<ModulusPolynomialRingZq>> From<(MatPolyOverZ, Mod)> for MatPolyno
     /// a [`MatPolyOverZ`] and a [`ModulusPolynomialRingZq`].
     ///
     /// Parameters:
-    /// - `matrix`: the polynomial matrix defining each entry.
-    /// - `modulus`: the modulus that is applied to each polynomial.
+    /// - `matrix`:the polynomial matrix defining each entry.
+    /// - `modulus`:the modulus that is applied to each polynomial.
     ///
     /// Returns a [`ModulusPolynomialRingZq`].
     ///

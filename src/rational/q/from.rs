@@ -30,7 +30,7 @@ impl Q {
     /// will therefore not be instantiated as `1/10`.
     ///
     /// Input parameters:
-    /// - `value`: the value the rational number will have, provided as a [`f64`]
+    /// - `value`:the value the rational number will have, provided as a [`f64`]
     ///
     /// Returns a [`Q`].
     ///
@@ -77,8 +77,8 @@ impl<IntegerNumerator: AsInteger, IntegerDenominator: AsInteger>
     /// Creates a [`Q`] from two integers.
     ///
     /// Parameters:
-    /// - `num`: the value of the numerator.
-    /// - `den`: the value of the denominator.
+    /// - `num`:the value of the numerator.
+    /// - `den`:the value of the denominator.
     ///
     /// Returns a [`Q`].
     ///
@@ -142,7 +142,7 @@ impl From<f64> for Q {
     /// will not be instantiated as `1/10`.
     ///
     /// Input parameters:
-    /// - `value`: the value the rational number will have, provided as a [`f64`]
+    /// - `value`:the value the rational number will have, provided as a [`f64`]
     ///
     /// Returns a [`Q`].
     ///
