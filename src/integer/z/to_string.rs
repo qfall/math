@@ -15,7 +15,7 @@ use crate::error::MathError;
 
 use super::Z;
 use core::fmt;
-use flint_sys::fmpz::fmpz_get_str;
+use flint_sys::fmpz::{fmpz_bits, fmpz_get_str, fmpz_tstbit};
 use std::{ffi::CStr, ptr::null_mut};
 
 impl fmt::Display for Z {
@@ -96,6 +96,45 @@ impl Z {
 
         Ok(return_str)
     }
+
+    /// Outputs the integer as a [`Vec`] of bytes.
+    /// The inverse function to [`Z::to_bytes`] is [`Z::from_bytes`] for positive numbers including `0`.
+    ///
+    /// WARNING: The bits are returned as they are stored in the memory. For negative numbers,
+    /// this means that `-1` is output as `[255]`.
+    /// For these values, [`Z::from_bytes`] is not inverse to [`Z::to_bytes`],
+    /// as this function can only instantiate positive values.
+    ///
+    /// Returns a [`Vec<u8>`] of bytes representing the integer as it is stored in memory.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// let integer = Z::from(257);
+    ///
+    /// let byte_string = integer.to_bytes();
+    ///
+    /// assert_eq!(vec![1, 1], byte_string);
+    /// ```
+    pub fn to_bytes(&self) -> Vec<u8> {
+        let num_bits = unsafe { fmpz_bits(&self.value) } as usize;
+        let num_bytes = num_bits.div_ceil(8);
+        let mut bytes = vec![0u8; num_bytes];
+
+        for (byte, item) in bytes.iter_mut().enumerate() {
+            for bit_of_byte in (0..8usize).rev() {
+                let bit_index = (byte * u8::BITS as usize + bit_of_byte) as u64;
+                let bit_at_index = unsafe { fmpz_tstbit(&self.value, bit_index) };
+
+                *item *= 2;
+                if bit_at_index == 1 {
+                    *item += 1;
+                }
+            }
+        }
+
+        bytes
+    }
 }
 
 #[cfg(test)]
@@ -172,5 +211,44 @@ mod test_to_string_b {
 
         assert_eq!(cmp_str_1, value_1.to_string_b(2).unwrap());
         assert_eq!(cmp_str_2, value_2.to_string_b(2).unwrap());
+    }
+}
+#[cfg(test)]
+mod test_to_bytes {
+    use super::Z;
+
+    /// Ensures that [`Z::to_bytes`] is inverse to [`Z::from_bytes`] for positive values.
+    #[test]
+    fn inverse_to_from_bytes() {
+        let bytes: Vec<u8> = vec![0, 255, 128, 77, 31, 52];
+
+        let integer = Z::from_bytes(&bytes);
+        let cmp_bytes = integer.to_bytes();
+
+        assert_eq!(bytes, cmp_bytes);
+    }
+
+    /// Ensures that [`Z::ZERO`] results in an empty vector of bytes.
+    #[test]
+    fn zero() {
+        let integer = Z::ZERO;
+        let cmp_bytes: Vec<u8> = vec![];
+
+        let bytes = integer.to_bytes();
+
+        assert_eq!(cmp_bytes, bytes);
+    }
+
+    /// Ensure that negative values are represented as they are stored in memory.
+    #[test]
+    fn negative() {
+        let integer = Z::MINUS_ONE;
+        let cmp_bytes: Vec<u8> = vec![255];
+
+        let bytes = integer.to_bytes();
+        let integer = Z::from_bytes(&bytes);
+
+        println!("{}", integer.to_string());
+        assert_eq!(cmp_bytes, bytes);
     }
 }
