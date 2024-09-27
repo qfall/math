@@ -26,11 +26,12 @@ impl FromStr for MatQ {
     type Err = MathError;
 
     /// Creates a [`MatQ`] matrix with entries in [`Q`] from a [`String`].
+    /// The format of that string looks like this <br> `[[1/2, 2/3, 3/4],[4/5, 5/6, 6/7]`
+    /// for a 2x3 matrix
+    /// with entries 1/2, 2/3, 3/4 in the first row and 4/5, 5/6, 6/7 in the second row.
     ///
     /// Parameters:
-    /// - `string`: the matrix of form: `"[[1/2, 2/3, 3/4],[4/5, 5/6, 6/7]"` 
-    ///     for a 2x3 matrix with entries 1/2, 2/3, 3/4 in the first row 
-    ///     and 4/5, 5/6, 6/7 in the second row.
+    /// - `string`: the matrix as a string
     ///
     /// Returns a [`MatQ`] or an error, if the matrix is not formatted in a suitable way,
     /// the number of rows or columns is too large (must fit into [`i64`]),
@@ -89,7 +90,7 @@ impl FromStr for MatQ {
 }
 
 impl From<&MatZ> for MatQ {
-    /// Creates a [`MatQ`] from a [`MatZ`].
+    /// Create a [`MatQ`] from a [`MatZ`].
     ///
     /// Parameters:
     /// - `matrix`: the matrix from which the entries are taken

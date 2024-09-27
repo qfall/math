@@ -25,7 +25,8 @@ use std::{ffi::CString, str::FromStr};
 impl FromStr for PolyOverQ {
     type Err = MathError;
 
-    /// Creates a polynomial with arbitrarily many coefficients of type [`Q`].
+    /// Create a new polynomial with arbitrarily many coefficients of type
+    /// [`Q`].
     ///
     /// Parameters:
     /// - `s`: the polynomial of form: "`[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴...`"
@@ -78,7 +79,7 @@ impl FromStr for PolyOverQ {
 }
 
 impl From<&PolyOverZ> for PolyOverQ {
-    /// Creates a [`PolyOverQ`] from a [`PolyOverZ`].
+    /// Create a [`PolyOverQ`] from a [`PolyOverZ`].
     ///
     /// Parameters:
     /// - `poly`: the polynomial from which the coefficients are copied
@@ -106,7 +107,7 @@ impl From<&PolyOverZ> for PolyOverQ {
 implement_for_owned!(PolyOverZ, PolyOverQ, From);
 
 impl<Rational: Into<Q>> From<Rational> for PolyOverQ {
-    /// Creates a constant [`PolyOverQ`] with a specified rational constant.
+    /// Create a constant [`PolyOverQ`] with a specified rational constant.
     ///
     /// # Parameters:
     /// - `value`: the constant value the polynomial will have. It has to be a rational

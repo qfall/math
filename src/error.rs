@@ -48,7 +48,7 @@ use thiserror::Error;
 /// - [`InvalidInterval`](MathError::InvalidInterval) is thrown if an invalid
 ///     interval, e.g. of negative size, is provided.
 /// - [`InvalidModulus`](MathError::InvalidModulus) is thrown if an integer is
-///     provided, which is smaller than `2`.
+///     provided, which is not greater than `1`.
 /// - [`NulError`](MathError::NulError) is thrown if a [`NulError`] is thrown,
 ///     which currently only happens if an invalid string is given to construct
 ///     a [`CString`](std::ffi::CString).
@@ -165,10 +165,6 @@ pub enum MathError {
 ///     is thrown if an invalid string is given
 ///     to construct a [`PolyOverZq`](crate::integer_mod_q::PolyOverZq), i.e. it is
 ///     not formatted correctly.
-/// - [`InvalidStringToPolyRingZqInput`](StringConversionError::InvalidStringToPolyRingZqInput)
-///     is thrown if an invalid string is given
-///     to construct a [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq), i.e. it is
-///     not formatted correctly.
 /// - [`InvalidStringToQInput`](StringConversionError::InvalidStringToQInput)
 ///     is thrown if an invalid string is given to construct a [`Q`](crate::rational::Q).
 /// - [`InvalidStringToZInput`](StringConversionError::InvalidStringToZInput)
@@ -220,22 +216,10 @@ pub enum StringConversionError {
         The format must \
         be '[#number of coefficients]  [0th coefficient] [1st coefficient] ... \
         mod [modulus]'. 
-        Note that after the number of coefficients, there are two \
+        Note that the after the number of coefficients, there are two \
         whitespaces."
     )]
     InvalidStringToPolyModulusInput(String),
-
-    /// Parse string to [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq) error.
-    #[error(
-        "Invalid string input to parse to polynomial / polynomial mod q {0}.
-        The format must \
-        be `[#number of coefficients of element]⌴⌴[0th coefficient]⌴ \
-        [1st coefficient]⌴...⌴/⌴[#number of coefficients of polynomial modulus] \
-        ⌴⌴[0th coefficient]⌴[1st coefficient]⌴...⌴mod⌴[q]`. 
-        Note that after the number of coefficients, there are two \
-        whitespaces."
-    )]
-    InvalidStringToPolynomialRingZqInput(String),
 
     /// Parse string to [`Q`](crate::rational::Q) error
     #[error("Invalid string input to parse to Q {0}")]

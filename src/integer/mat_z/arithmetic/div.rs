@@ -25,7 +25,8 @@ impl MatZ {
     /// Parameters:
     /// - `divisor`: specifies the divisor by which the matrix is divided
     ///
-    /// Returns the quotient of `self` divided by `divisor` as a [`MatZ`].
+    /// Returns the quotient of `self` divided by `divisor` as a [`MatZ`]
+    /// or panics if the divisor is `0`.
     ///
     /// # Safety
     /// The divisor MUST exactly divide each element in the matrix.
@@ -60,7 +61,8 @@ impl MatZ {
     /// Parameters:
     /// - `divisor`: specifies the divisor by which the matrix is divided
     ///
-    /// Returns the quotient of `self` divided by `divisor` as a [`MatZ`].
+    /// Returns the quotient of `self` divided by `divisor` as a [`MatZ`]
+    /// or panics if the divisor is `0`.
     ///
     /// # Safety
     /// The divisor MUST exactly divide each element in the matrix.
@@ -100,7 +102,8 @@ impl Div<&Z> for &MatZ {
     /// Parameters:
     /// - `divisor`: specifies the divisor by which the matrix is divided
     ///
-    /// Returns the quotient of `self` divided by `divisor` as a [`MatQ`].
+    /// Returns the quotient of `self` divided by `divisor` as a [`MatQ`]
+    /// or panics if the divisor is `0`.
     ///
     /// # Examples
     /// ```

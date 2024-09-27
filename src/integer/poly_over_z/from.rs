@@ -25,9 +25,9 @@ use std::{ffi::CString, str::FromStr};
 impl FromStr for PolyOverZ {
     type Err = MathError;
 
-    /// Creates a polynomial with arbitrarily many coefficients of type [`Z`]
+    /// Creates a new polynomial with arbitrarily many coefficients of type [`Z`] 
     /// from a [`String`].
-    ///
+    /// 
     /// **Warning**: If the input string starts with a correctly formatted [`PolyOverZ`] object,
     /// the rest of the string is ignored. This means that the input string
     /// `"4  0 1 2 3"` is the same as `"4  0 1 2 3 4 5 6 7"`.
@@ -90,7 +90,7 @@ impl FromStr for PolyOverZ {
 }
 
 impl<Integer: AsInteger + Into<Z>> From<Integer> for PolyOverZ {
-    /// Creates a constant [`PolyOverZ`] with a specified integer constant.
+    /// Create a constant [`PolyOverZ`] with a specified integer constant.
     ///
     /// # Parameters:
     /// `value`: an integer like [`Z`], rust Integers or a reference to these values.
@@ -132,12 +132,12 @@ impl From<&PolyOverZ> for PolyOverZ {
 }
 
 impl From<&PolyOverZq> for PolyOverZ {
-    /// Creates a [`PolyOverZ`] from a [`PolyOverZq`].
+    /// Create a [`PolyOverZ`] from a [`PolyOverZq`].
     ///
     /// Parameters:
-    /// - `poly`: the polynomial from which the coefficients are copied.
+    /// - `poly`: the polynomial from which the coefficients are copied
     ///
-    /// Returns the representative polynomial (all reduced coefficients)
+    /// Returns representative polynomial (all reduced coefficients)
     /// of the [`PolyOverZq`] as a [`PolyOverZ`].
     ///
     /// # Examples

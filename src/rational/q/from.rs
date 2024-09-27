@@ -24,7 +24,7 @@ use flint_sys::{
 use std::{ffi::CString, str::FromStr};
 
 impl Q {
-    /// Creates a rational number of type [`Q`] from a [`f64`].
+    /// Create a new rational number of type [`Q`] from a [`f64`].
     /// This function works with the exact float it received as input.
     /// Many numbers like `0.1` are not exactly representable as floats and
     /// will therefore not be instantiated as `1/10`.
@@ -74,13 +74,15 @@ impl Q {
 impl<IntegerNumerator: AsInteger, IntegerDenominator: AsInteger>
     From<(IntegerNumerator, IntegerDenominator)> for Q
 {
-    /// Creates a [`Q`] from two integers.
+    /// Create a [`Q`] from two integers.
+    /// The integer types can be, for example, [`Z`],
+    /// [`Zq`](crate::integer_mod_q), [`u32`],[`i64`] or references to these types
     ///
     /// Parameters:
-    /// - `num`:the value of the numerator.
-    /// - `den`:the value of the denominator.
+    /// - `num`: The value of the numerator.
+    /// - `den`: The value of the denominator.
     ///
-    /// Returns a [`Q`].
+    /// Returns a [`Q`] or a [`MathError`]
     ///
     /// # Examples
     /// ```rust
@@ -111,12 +113,12 @@ impl<IntegerNumerator: AsInteger, IntegerDenominator: AsInteger>
 }
 
 impl<Integer: Into<Z>> From<Integer> for Q {
-    /// Creates a [`Q`] from an integer.
+    /// Create a new Integer that can grow arbitrary large.
     ///
     /// Parameters:
-    /// - `value`: the initial value the [`Q`] should have.
+    /// - `value`: the initial value the integer should have
     ///
-    /// Returns a [`Q`].
+    /// Returns the new integer.
     ///
     /// # Examples
     /// ```
@@ -179,7 +181,7 @@ impl From<&Q> for f64 {
 }
 
 impl From<&Q> for Q {
-    /// An alias for [`Q::clone`].
+    /// An alias for clone.
     /// It makes the use of generic [`Into<Q>`] types easier.
     fn from(value: &Q) -> Self {
         value.clone()
@@ -189,7 +191,7 @@ impl From<&Q> for Q {
 impl FromStr for Q {
     type Err = MathError;
 
-    /// Creates a [`Q`] rational from a [`String`]
+    /// Create a [`Q`] rational from a [`String`]
     /// In the string should be two decimal numbers separated by `/`.
     /// Optionally, before one or both of them can be a `-`.
     /// The format of that string looks like this `-12/53`.
