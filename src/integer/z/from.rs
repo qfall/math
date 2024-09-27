@@ -69,7 +69,7 @@ impl Z {
     /// # Safety
     /// This function takes ownership. The caller has to ensure that the [`fmpz`]
     /// is not dropped somewhere else. This means that calling this function
-    /// with an [`fmpz`] that is wrapped in a different data type is not allowed.
+    /// with a [`fmpz`] that is wrapped in a different data type is not allowed.
     ///
     /// # Examples
     /// ```compile_fail
@@ -209,7 +209,7 @@ impl<Integer: AsInteger + IntoZ> From<Integer> for Z {
     /// Converts an integer to [`Z`].
     ///
     /// # Parameters:
-    /// `value`:must be a rust integer, [`Modulus`], or a reference of these types.
+    /// `value` : must be a rust integer, [`Modulus`], or a reference of these types.
     ///
     /// Returns a [`Z`] with the value specified in the parameter.
     ///
