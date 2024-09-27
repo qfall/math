@@ -125,10 +125,10 @@ mod test_to_string {
     fn into_works_properly() {
         let cmp = "2  2 1 mod 3";
         let matrix = PolyOverZq::from_str(cmp).unwrap();
-        
+
         let string: String = matrix.clone().into();
         let borrowed_string: String = (&matrix).into();
-        
+
         assert_eq!(cmp, string);
         assert_eq!(cmp, borrowed_string);
     }
