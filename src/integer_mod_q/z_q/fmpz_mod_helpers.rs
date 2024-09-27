@@ -20,7 +20,7 @@ const ZERO_FMPZ: fmpz = fmpz(0);
 /// Computes the shortest distance of `self` to the next zero instance
 /// regarding the `modulus`.
 ///
-/// **Warning**: This function assumes `value` to be reduced,
+/// WARNING: This function assumes `value` to be reduced,
 /// i.e. `0 <= value < modulus`.
 ///
 /// # Examples
