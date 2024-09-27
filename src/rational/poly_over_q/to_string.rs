@@ -1,4 +1,4 @@
-// Copyright © 2023 Marvin Beckmann
+// Copyright © 2023 Marcel Luca Schmidt, Marvin Beckmann
 //
 // This file is part of qFALL-math.
 //
@@ -12,9 +12,33 @@
 //! This includes the [`Display`](std::fmt::Display) trait.
 
 use super::PolyOverQ;
+use crate::macros::for_others::implement_for_owned;
 use core::fmt;
 use flint_sys::fmpq_poly::fmpq_poly_get_str;
 use std::ffi::CStr;
+
+impl From<&PolyOverQ> for String {
+    /// Converts a [`PolyOverQ`] into its [`String`] representation.
+    ///
+    /// Parameters:
+    /// - `value`: specifies the matrix that will be represented as a [`String`]
+    ///
+    /// Returns a [`String`] of the form `"[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴..."`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::PolyOverQ;
+    /// use std::str::FromStr;
+    /// let matrix = PolyOverQ::from_str("2  6/7 1").unwrap();
+    ///
+    /// let string: String = matrix.into();
+    /// ```
+    fn from(value: &PolyOverQ) -> Self {
+        value.to_string()
+    }
+}
+
+implement_for_owned!(PolyOverQ, String, From);
 
 impl fmt::Display for PolyOverQ {
     /// Allows to convert a polynomial of type [`PolyOverQ`] into a [`String`].
@@ -70,5 +94,18 @@ mod test_to_string {
         let cmp_str_2 = cmp.to_string();
 
         assert!(PolyOverQ::from_str(&cmp_str_2).is_ok());
+    }
+
+    /// Ensures that the `Into<String>` trait works properly
+    #[test]
+    fn into_works_properly() {
+        let cmp = "2  6/7 2";
+        let matrix = PolyOverQ::from_str(cmp).unwrap();
+
+        let string: String = matrix.clone().into();
+        let borrowed_string: String = (&matrix).into();
+
+        assert_eq!(cmp, string);
+        assert_eq!(cmp, borrowed_string);
     }
 }

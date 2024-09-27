@@ -218,7 +218,7 @@ impl MatZq {
     }
 
     /// Computes a solution for a system of linear equations under a modulus
-    /// of the form `z^a`with the help of [\[1\]](<index.html#:~:text=[1]>).
+    /// of the form `z^a` with the help of [\[1\]](<index.html#:~:text=[1]>).
     /// It solves `Ax = y` for `x` with `A` being a [`MatZq`] value.
     /// If no solution is found, `None` is returned.
     ///
