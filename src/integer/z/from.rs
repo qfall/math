@@ -137,6 +137,8 @@ impl Z {
     }
 
     /// Create a [`Z`] integer from an iterable of [`u8`]s, i.e. a vector of bytes.
+    /// This function can only construct positive or zero integers, but not negative ones.
+    /// The inverse function to [`Z::from_bytes`] is [`Z::to_bytes`] for positive numbers including `0`.
     ///
     /// Parameters:
     /// - `bytes`: specifies an iterable of bytes that should be set in the new [`Z`] instance.
@@ -194,6 +196,29 @@ impl Z {
             }
         }
         value
+    }
+
+    /// Create a [`Z`] integer from a [`str`], i.e. its UTF8-Encoding.
+    /// This function can only construct positive or zero integers, but not negative ones.
+    ///
+    /// The inverse of this function is [`Z::to_utf8`].
+    ///
+    /// Parameters:
+    /// - `message`: specifies the message that is transformed via its UTF8-Encoding
+    ///   to a new [`Z`] instance.
+    ///
+    /// Returns a [`Z`] with corresponding value to the message's UTF8-Encoding.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// let message = "hello!";
+    ///  
+    /// let value = Z::from_utf8(&message);
+    /// assert_eq!(Z::from(36762444129640u64), value);
+    /// ```
+    pub fn from_utf8(message: &str) -> Z {
+        Z::from_bytes(message.as_bytes())
     }
 }
 
@@ -431,6 +456,37 @@ mod test_from_bytes {
         assert_eq!(Z::from(257), res_0);
         assert_eq!(Z::from(257), res_1);
         assert_eq!(Z::from(257), res_2);
+    }
+}
+
+#[cfg(test)]
+/// Test the implementation of [`Z::from_utf8`] briefly.
+/// This module omits tests that were already provided for [`Z::from_bytes`].
+mod test_from_utf8 {
+    use super::Z;
+
+    /// Ensures that a wide range of (special) characters are correctly transformed.
+    #[test]
+    fn characters() {
+        let message = "flag{text#1234567890! a_zA-Z$€?/:;,.<>+*}";
+
+        let value = Z::from_utf8(message);
+
+        // easy trick s.t. we don't have to initialize huge [`Z`] value
+        // while this test should still fail if the value changes
+        let value_zq = value.modulo(65537);
+
+        assert_eq!(Z::from(58285), value_zq);
+    }
+
+    /// Ensure that the empty string results in a zero value.
+    #[test]
+    fn empty_string() {
+        let message = "";
+
+        let value = Z::from_utf8(message);
+
+        assert_eq!(Z::ZERO, value);
     }
 }
 
