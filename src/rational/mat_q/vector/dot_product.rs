@@ -19,7 +19,7 @@ impl MatQ {
     /// Parameters:
     /// - `other`: specifies the other vector the dot product is calculated over
     ///
-    /// Returns the resulting `dot_product` as a [`Q`] or an error
+    /// Returns the resulting `dot_product` as a [`Q`] or an error,
     /// if the given [`MatQ`] instances aren't vectors or have different
     /// numbers of entries.
     ///

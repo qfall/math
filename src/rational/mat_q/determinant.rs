@@ -17,7 +17,7 @@ use crate::{
 use flint_sys::fmpq_mat::fmpq_mat_det;
 
 impl MatQ {
-    /// Returns the determinant of the matrix or an error if
+    /// Returns the determinant of the matrix or an error, if
     /// the number of rows and columns is not equal.
     ///
     /// # Examples

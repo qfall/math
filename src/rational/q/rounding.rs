@@ -130,7 +130,7 @@ impl Q {
     /// - `r`: specifies the Gaussian parameter, which is proportional
     ///     to the standard deviation `sigma * sqrt(2 * pi) = r`
     ///
-    /// Returns the rounded value as an [`Z`] or an error if the `n <= 1` or `r <= 0`.
+    /// Returns the rounded value as an [`Z`] or an error, if the `n <= 1` or `r <= 0`.
     ///
     /// # Examples
     /// ```

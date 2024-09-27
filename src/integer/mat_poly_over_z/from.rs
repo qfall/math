@@ -35,7 +35,7 @@ impl FromStr for MatPolyOverZ {
     ///     for a 2x3 matrix where first three polynomials are in the first row
     ///     and the second three are in the second row.
     ///
-    /// Returns a [`MatPolyOverZ`] or an error if the matrix is not formatted in a suitable way,
+    /// Returns a [`MatPolyOverZ`] or an error, if the matrix is not formatted in a suitable way,
     /// the number of rows or columns is too large (must fit into [`i64`]),
     /// the number of entries in rows is unequal, or if an entry is not formatted correctly.
     ///

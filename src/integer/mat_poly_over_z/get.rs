@@ -67,7 +67,7 @@ impl GetEntry<PolyOverZ> for MatPolyOverZ {
     /// the last element.
     ///
     /// Returns the [`PolyOverZ`] value of the matrix at the position of the given
-    /// row and column or an error if the number of rows or columns is
+    /// row and column or an error, if the number of rows or columns is
     /// greater than the matrix.
     ///
     /// # Examples
@@ -111,7 +111,7 @@ impl MatPolyOverZ {
     /// - `row`: specifies the row of the matrix
     ///
     /// Returns a row vector of the matrix at the position of the given
-    /// `row` or an error if the number of rows is
+    /// `row` or an error, if the number of rows is
     /// greater than the matrix or negative.
     ///
     /// # Examples
@@ -148,7 +148,7 @@ impl MatPolyOverZ {
     /// * `column`: specifies the column of the matrix
     ///
     /// Returns a column vector of the matrix at the position of the given
-    /// `column` or an error if the number of columns is
+    /// `column` or an error, if the number of columns is
     /// greater than the matrix or negative.
     ///
     /// # Examples
@@ -194,7 +194,7 @@ impl MatPolyOverZ {
     /// the last element.
     ///
     /// Returns the submatrix from `(row_1, col_1)` to `(row_2, col_2)`(inclusively)
-    /// or an error if any provided row or column is greater than the matrix.
+    /// or an error, if any provided row or column is greater than the matrix.
     ///
     /// # Examples
     /// ```

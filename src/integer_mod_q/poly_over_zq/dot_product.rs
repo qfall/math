@@ -19,7 +19,7 @@ impl PolyOverZq {
     /// Parameters:
     /// - `other`: specifies the other polynomial the dot product is calculated over
     ///
-    /// Returns the resulting `dot_product` as a [`PolyOverZq`] or an error
+    /// Returns the resulting `dot_product` as a [`PolyOverZq`] or an error,
     /// if the moduli mismatch.
     ///
     /// # Examples

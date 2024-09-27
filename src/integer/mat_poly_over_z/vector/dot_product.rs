@@ -20,7 +20,7 @@ impl MatPolyOverZ {
     /// Parameters:
     /// - `other`: specifies the other vector the dot product is calculated over
     ///
-    /// Returns the resulting `dot_product` as a [`PolyOverZ`] or an error
+    /// Returns the resulting `dot_product` as a [`PolyOverZ`] or an error,
     /// if the given [`MatPolyOverZ`] instances aren't vectors or have different
     /// numbers of entries.
     ///

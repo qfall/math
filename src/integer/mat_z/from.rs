@@ -29,7 +29,7 @@ impl FromStr for MatZ {
     ///     for a 2x3 matrix with entries 1, 2, 3 in the first row and 4, 5, 6
     ///     in the second row.
     ///
-    /// Returns a [`MatZ`] or an error if the matrix is not formatted in a suitable way,
+    /// Returns a [`MatZ`] or an error, if the matrix is not formatted in a suitable way,
     /// the number of rows or columns is too large (must fit into [`i64`]),
     /// the number of entries in rows is unequal or if an entry is not formatted correctly.
     ///

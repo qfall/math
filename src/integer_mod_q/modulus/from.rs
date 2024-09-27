@@ -27,7 +27,7 @@ impl Modulus {
     /// - `value`: the initial value the modulus should have.
     ///   It must be larger than one.
     ///
-    /// Returns a [`Modulus`] or an error if the
+    /// Returns a [`Modulus`] or an error, if the
     /// provided value is smaller than `2`.
     ///
     /// # Safety

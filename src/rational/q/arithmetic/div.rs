@@ -100,7 +100,7 @@ impl Q {
     /// Parameters:
     /// - `divisor`: specifies the value `self` is divided by.
     ///
-    /// Returns the result ot the division as a [`Q`] or an error if division by zero occurs.
+    /// Returns the result ot the division as a [`Q`] or an error, if division by zero occurs.
     ///
     /// # Examples
     /// ```

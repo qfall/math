@@ -18,7 +18,7 @@ use std::fmt::Display;
 /// Parameters:
 /// - `index`: the index that has to be converted into an [`i64`].
 ///
-/// Returns an [`i64`] representation of the index or an error if the
+/// Returns an [`i64`] representation of the index or an error, if the
 /// index does not fulfill all conditions.
 ///
 /// # Examples
@@ -76,7 +76,7 @@ pub fn evaluate_index(index: impl TryInto<i64> + Display) -> Result<i64, MathErr
 /// - `index1`: the first index that has to be converted into an [`i64`].
 /// - `index2`: the second index that has to be converted into an [`i64`].
 ///
-/// Returns an [`i64`] representation of index1 and index2 or an error if the
+/// Returns an [`i64`] representation of index1 and index2 or an error, if the
 /// indices do not fulfill all conditions.
 ///
 /// # Examples
