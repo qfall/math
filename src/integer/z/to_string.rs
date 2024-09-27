@@ -16,7 +16,7 @@ use crate::error::MathError;
 use super::Z;
 use core::fmt;
 use flint_sys::fmpz::{fmpz_bits, fmpz_get_str, fmpz_tstbit};
-use std::{ffi::CStr, ptr::null_mut};
+use std::{ffi::CStr, ptr::null_mut, string::FromUtf8Error};
 
 impl fmt::Display for Z {
     /// Allows to convert an integer of type [`Z`] into a [`String`].
@@ -135,6 +135,30 @@ impl Z {
 
         bytes
     }
+
+    /// Enables conversion to a UTF8-Encoded [`String`] for [`Z`] values.
+    /// The inverse to this function is [`Z::from_utf8`] for valid UTF8-Encodings.
+    ///
+    /// WARNING: Not every byte-sequence forms a valid UTF8-character.
+    /// If this is the case, a [`FromUtf8Error`] will be returned.
+    ///
+    /// Returns the corresponding UTF8-encoded [`String`] or a
+    /// [`FromUtf8Error`] if the byte sequence contains an invalid UTF8-character.
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`FromUtf8Error`] if the integer's byte sequence contains
+    ///     invalid UTF8-characters.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// let integer = Z::from(10);
+    ///
+    /// let text: String = integer.to_utf8().unwrap();
+    /// ```
+    pub fn to_utf8(&self) -> Result<String, FromUtf8Error> {
+        String::from_utf8(self.to_bytes())
+    }
 }
 
 #[cfg(test)]
@@ -213,6 +237,7 @@ mod test_to_string_b {
         assert_eq!(cmp_str_2, value_2.to_string_b(2).unwrap());
     }
 }
+
 #[cfg(test)]
 mod test_to_bytes {
     use super::Z;
@@ -250,5 +275,33 @@ mod test_to_bytes {
 
         println!("{}", integer.to_string());
         assert_eq!(cmp_bytes, bytes);
+    }
+}
+
+#[cfg(test)]
+mod test_to_utf8 {
+    use super::Z;
+
+    /// Ensures that [`Z::to_utf8`] is inverse to [`Z::from_utf8`] for valid UTF8-Encodings.
+    #[test]
+    fn inverse_to_from_utf8() {
+        let cmp_text = "Some valid string formatted in UTF8!";
+
+        let integer = Z::from_utf8(&cmp_text);
+        let text = integer.to_utf8().unwrap();
+
+        assert_eq!(cmp_text, text);
+    }
+
+    /// Ensures that [`Z::to_utf8`] outputs an error
+    /// if the integer contains an invalid UTF8-Encoding.
+    #[test]
+    fn invalid_encoding() {
+        let invalid_sequence = [128];
+
+        let integer = Z::from_bytes(&invalid_sequence);
+        let text = integer.to_utf8();
+
+        assert!(text.is_err());
     }
 }
