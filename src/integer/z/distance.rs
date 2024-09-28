@@ -29,7 +29,6 @@ impl<Integer: Into<Z>> Distance<Integer> for Z {
     /// use qfall_math::traits::*;
     ///
     /// let a = Z::from(-1);
-    /// let b = Z::from(10);
     ///
     /// let distance_0 = a.distance(5);
     /// let distance_1 = a.distance(10);
