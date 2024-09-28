@@ -18,11 +18,10 @@ impl<Integer: Into<Z>> Distance<Integer> for Z {
     /// implements [`Into<Z>`].
     ///
     /// Parameters:
-    /// - `other`: specifies one of the [`Z`] values whose distance
-    ///     is calculated to `self`
+    /// - `other`: specifies the [`Z`] value whose distance is calculated to `self`
     ///
-    /// Returns the absolute difference, i.e. distance between the two given [`Z`]
-    /// instances as a new [`Z`] instance.
+    /// Returns the absolute difference, i.e. distance between the [`Z`] instance
+    /// and the value that implements [`Into<Z>`] as a new [`Z`] instance.
     ///
     /// # Examples
     /// ```
