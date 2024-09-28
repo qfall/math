@@ -109,6 +109,8 @@ impl<Integer: Into<Z>> Distance<Integer> for Zq {
     type Output = Z;
 
     /// Computes the absolute distance between `self` and `other`.
+    /// For that, the representative of the ['Zq'] value is chosen from
+    /// the range `[0, q)` (`0` inclusive, `q` exclusive).
     ///
     /// Parameters:
     /// - `other`: specifies one of the [`Zq`] values whose distance

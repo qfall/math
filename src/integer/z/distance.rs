@@ -1,4 +1,4 @@
-// Copyright © 2023 Niklas Siemer
+// Copyright © 2023 Marcel Luca Schmidt, Niklas Siemer
 //
 // This file is part of qFALL-math.
 //
@@ -9,7 +9,7 @@
 //! This module contains the implementation of the [`Distance`] trait for [`Z`].
 
 use super::Z;
-use crate::traits::Distance;
+use crate::{integer_mod_q::Zq, traits::Distance};
 
 impl<Integer: Into<Z>> Distance<Integer> for Z {
     type Output = Z;
@@ -44,9 +44,83 @@ impl<Integer: Into<Z>> Distance<Integer> for Z {
     }
 }
 
+impl Distance<&Zq> for Z {
+    type Output = Z;
+
+    /// Computes the absolute distance between `self` and `other`.
+    /// For that, the representative of the ['Zq'] value is chosen from
+    /// the range `[0, q)` (`0` inclusive, `q` exclusive).
+    ///
+    /// Parameters:
+    /// - `other`: specifies the [`Zq`] value whose distance
+    ///     is calculated to `self`.
+    ///
+    /// Returns the absolute minimum distance between the two given values as a new
+    /// [`Z`] instance.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{
+    ///     integer::Z,
+    ///     integer_mod_q::Zq,
+    ///     traits::*,
+    /// };
+    ///
+    /// let a = Z::from(-1);
+    /// let b = Zq::from((2, 13));
+    /// let c = Zq::from((-1, 13));
+    ///
+    /// let distance_0 = a.distance(&b);
+    /// let distance_1 = a.distance(&c);
+    ///
+    /// # assert_eq!(Z::from(3), distance_0);
+    /// # assert_eq!(Z::from(13), distance_1);
+    /// ```
+    fn distance(&self, other: &Zq) -> Self::Output {
+        self.distance(&other.value)
+    }
+}
+
+impl Distance<Zq> for Z {
+    type Output = Z;
+
+    /// Computes the absolute distance between `self` and `other`.
+    /// For that, the representative of the ['Zq'] value is chosen from
+    /// the range `[0, q)` (`0` inclusive, `q` exclusive).
+    ///
+    /// Parameters:
+    /// - `other`: specifies the [`Zq`] value whose distance
+    ///     is calculated to `self`.
+    ///
+    /// Returns the absolute minimum distance between the two given values as a new
+    /// [`Z`] instance.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{
+    ///     integer::Z,
+    ///     integer_mod_q::Zq,
+    ///     traits::*,
+    /// };
+    ///
+    /// let a = Z::from(-1);
+    /// let b = Zq::from((2, 13));
+    /// let c = Zq::from((-1, 13));
+    ///
+    /// let distance_0 = a.distance(b);
+    /// let distance_1 = a.distance(c);
+    ///
+    /// # assert_eq!(Z::from(3), distance_0);
+    /// # assert_eq!(Z::from(13), distance_1);
+    /// ```
+    fn distance(&self, other: Zq) -> Self::Output {
+        self.distance(other.value)
+    }
+}
+
 #[cfg(test)]
 mod test_distance {
-    use crate::integer_mod_q::Modulus;
+    use crate::integer_mod_q::{Modulus, Zq};
 
     use super::{Distance, Z};
 
@@ -89,6 +163,7 @@ mod test_distance {
     fn availability() {
         let a = Z::ZERO;
         let modulus = Modulus::from(2);
+        let zq = Zq::from((2, 13));
 
         let u_0 = a.distance(0_u8);
         let u_1 = a.distance(15_u16);
@@ -99,6 +174,8 @@ mod test_distance {
         let i_2 = a.distance(35_i32);
         let i_3 = a.distance(i64::MIN);
         let dist_mod = a.distance(modulus);
+        let dist_zq_0 = a.distance(&zq);
+        let dist_zq_1 = a.distance(zq);
 
         assert_eq!(Z::ZERO, u_0);
         assert_eq!(Z::from(15), u_1);
@@ -109,5 +186,7 @@ mod test_distance {
         assert_eq!(Z::from(35), i_2);
         assert_eq!(Z::from(i64::MIN).abs(), i_3);
         assert_eq!(Z::from(2), dist_mod);
+        assert_eq!(Z::from(2), dist_zq_0);
+        assert_eq!(Z::from(2), dist_zq_1);
     }
 }
