@@ -51,15 +51,16 @@ impl<Mod: Into<Modulus>> From<Mod> for PolyOverZq {
 }
 
 impl From<&Zq> for PolyOverZq {
-    /// Creates a constant [`PolyOverZq`] with a specified constant.
+    /// Creates a constant [`PolyOverZq`], i.e. the polynomial `x mod q`,
+    /// where `x` is the value of the given [`Zq`] value and `q` its modulus.
     ///
-    /// # Parameters:
+    /// Parameters:
     /// - `value`: the constant value the polynomial will have.
     ///   It has to be a [`Zq`], or a value that can be converted into [`Zq`].
     ///   
-    /// Returns a new constant polynomial with the specified value and modulus.
+    /// Returns a new constant [`PolyOverZq`] with the specified `value` and `modulus` of the [`Zq`] value.
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
     /// use qfall_math::{integer_mod_q::*, traits::*};
     ///
@@ -71,10 +72,6 @@ impl From<&Zq> for PolyOverZq {
     /// assert_eq!(poly.get_degree(), 0);
     /// assert_eq!(poly, poly_2);
     /// ```
-    ///
-    /// # Panics ...
-    /// - if the provided value can not be converted into a [`Zq`].
-    ///   For example, if the modulus is not larger than one.
     fn from(value: &Zq) -> Self {
         let mut res = PolyOverZq::from(&value.modulus);
         unsafe {
@@ -135,16 +132,15 @@ impl<Mod: Into<Modulus>> From<(PolyOverZ, Mod)> for PolyOverZq {
     /// - `poly`: the coefficients of the polynomial.
     /// - `modulus`: the modulus by which each entry is reduced.
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::{PolyOverZq, Modulus};
+    /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;
     ///
     /// let poly = PolyOverZ::from_str("4  0 1 102 3").unwrap();
-    /// let modulus = Modulus::from(100);
     ///
-    /// let mod_poly = PolyOverZq::from((poly, &modulus));
+    /// let mod_poly = PolyOverZq::from((poly, 100));
     ///
     /// # let cmp_poly = PolyOverZq::from_str("4  0 1 2 3 mod 100").unwrap();
     /// # assert_eq!(cmp_poly, mod_poly);
@@ -166,24 +162,21 @@ impl<Mod: Into<Modulus>> From<(PolyOverZ, Mod)> for PolyOverZq {
 }
 
 impl<Integer: Into<Z>, Mod: Into<Modulus>> From<(Integer, Mod)> for PolyOverZq {
-    /// Creates a [`PolyOverZq`] from a [`PolyOverZ`] and [`Modulus`].
+    /// Creates a [`PolyOverZq`] from any values that implement [`Into<Z>`] and [`Into<Modulus>`],
+    /// where the second value must be bigger than `1`.
     ///
     /// Parameters:
-    /// - `poly`: the coefficients of the polynomial.
+    /// - `z`: the single, constant coefficient of the polynomial.
     /// - `modulus`: the modulus by which each entry is reduced.
     ///
     /// # Examples:
     /// ```
-    /// use qfall_math::integer_mod_q::{PolyOverZq, Modulus};
-    /// use qfall_math::integer::PolyOverZ;
-    /// use std::str::FromStr;
+    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// # use std::str::FromStr;
     ///
-    /// let poly = PolyOverZ::from_str("4  0 1 102 3").unwrap();
-    /// let modulus = Modulus::from(100);
+    /// let mod_poly = PolyOverZq::from((5, 42));
     ///
-    /// let mod_poly = PolyOverZq::from((&poly, &modulus));
-    ///
-    /// # let cmp_poly = PolyOverZq::from_str("4  0 1 2 3 mod 100").unwrap();
+    /// # let cmp_poly = PolyOverZq::from_str("5 mod 42").unwrap();
     /// # assert_eq!(cmp_poly, mod_poly);
     /// ```
     ///
