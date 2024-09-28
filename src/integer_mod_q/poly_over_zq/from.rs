@@ -27,7 +27,7 @@ impl<Mod: Into<Modulus>> From<Mod> for PolyOverZq {
     ///
     /// Parameters:
     /// - `modulus`: of the new [`PolyOverZq`]
-    /// 
+    ///
     /// Returns a new constant [`PolyOverZq`] with the specified [`Modulus`].
     ///
     /// # Examples
@@ -40,7 +40,7 @@ impl<Mod: Into<Modulus>> From<Mod> for PolyOverZq {
     /// let poly_cmp = PolyOverZq::from_str("0 mod 100").unwrap();
     /// assert_eq!(poly, poly_cmp);
     /// ```
-    /// 
+    ///
     /// # Panics ...
     /// - if `modulus` is smaller than `2`.
     fn from(modulus: Mod) -> Self {
@@ -96,8 +96,8 @@ impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for PolyOverZq {
     /// Parameters:
     /// - `poly`: the coefficients of the polynomial.
     /// - `modulus`: the modulus by which each entry is reduced.
-    /// 
-    /// Returns a new [`PolyOverZq`] with the coefficients from the 
+    ///
+    /// Returns a new [`PolyOverZq`] with the coefficients from the
     /// [`PolyOverZ`] instance under the specified [`Modulus`] value.
     ///
     /// # Examples
@@ -136,8 +136,8 @@ impl<Mod: Into<Modulus>> From<(PolyOverZ, Mod)> for PolyOverZq {
     /// Parameters:
     /// - `poly`: the coefficients of the polynomial.
     /// - `modulus`: the modulus by which each entry is reduced.
-    /// 
-    /// Returns a new [`PolyOverZq`] with the coefficients from the 
+    ///
+    /// Returns a new [`PolyOverZq`] with the coefficients from the
     /// [`PolyOverZ`] instance under the specified [`Modulus`] value.
     ///
     /// # Examples
@@ -176,7 +176,7 @@ impl<Integer: Into<Z>, Mod: Into<Modulus>> From<(Integer, Mod)> for PolyOverZq {
     /// Parameters:
     /// - `z`: the single, constant coefficient of the polynomial.
     /// - `modulus`: the modulus by which each entry is reduced.
-    /// 
+    ///
     /// Returns a new constant [`PolyOverZq`] with the specified `z` and `modulus` value.
     ///
     /// # Examples
@@ -186,7 +186,7 @@ impl<Integer: Into<Z>, Mod: Into<Modulus>> From<(Integer, Mod)> for PolyOverZq {
     ///
     /// let mod_poly = PolyOverZq::from((5, 42));
     ///
-    /// # let cmp_poly = PolyOverZq::from_str("5 mod 42").unwrap();
+    /// # let cmp_poly = PolyOverZq::from_str("1  5 mod 42").unwrap();
     /// # assert_eq!(cmp_poly, mod_poly);
     /// ```
     ///

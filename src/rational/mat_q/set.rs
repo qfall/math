@@ -30,7 +30,7 @@ use std::{
 };
 
 impl<Rational: Into<Q>> SetEntry<Rational> for MatQ {
-    /// Sets the value of a specific matrix entry according to a given `value` 
+    /// Sets the value of a specific matrix entry according to a given `value`
     /// that implements [`Into<Q>`].
     ///
     /// Parameters:
