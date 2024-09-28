@@ -93,7 +93,7 @@ impl From<&MatZ> for MatQ {
     /// Parameters:
     /// - `matrix`: the matrix from which the entries are taken
     ///
-    /// Returns the new matrix.
+    /// Returns a new [`MatQ`] matrix with entries from the [`MatZ`] instance.
     ///
     /// # Examples
     /// ```

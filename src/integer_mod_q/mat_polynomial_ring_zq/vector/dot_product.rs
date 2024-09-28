@@ -40,7 +40,7 @@ impl MatPolynomialRingZq {
     /// let dot_prod = poly_ring_vec_1.dot_product(&poly_ring_vec_2).unwrap();
     /// ```
     ///
-    /// Errors and Failures
+    /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
     ///     the given [`MatPolynomialRingZq`] instance is not a (row or column) vector.
     /// - Returns a [`MathError`] of type [`MathError::MismatchingMatrixDimension`] if

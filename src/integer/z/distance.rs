@@ -14,7 +14,8 @@ use crate::traits::Distance;
 impl<Integer: Into<Z>> Distance<Integer> for Z {
     type Output = Z;
 
-    /// Computes the absolute distance between two [`Z`] instances.
+    /// Computes the absolute distance between a [`Z`] instance and a value that 
+    /// implements [`Into<Z>`].
     ///
     /// Parameters:
     /// - `other`: specifies one of the [`Z`] values whose distance

@@ -15,7 +15,7 @@ use std::mem::MaybeUninit;
 impl Default for Factorization {
     /// Returns an instantiation of [`Factorization`] with `1` as the only factor.
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
     /// use std::default::Default;
     /// use qfall_math::utils::Factorization;

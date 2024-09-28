@@ -38,7 +38,7 @@ impl MatZ {
     /// assert_eq!(Z::from(13), dot_prod);
     /// ```
     ///
-    /// Errors and Failures
+    /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
     ///     the given [`MatZ`] instance is not a (row or column) vector.
     /// - Returns a [`MathError`] of type [`MathError::MismatchingMatrixDimension`] if

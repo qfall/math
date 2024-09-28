@@ -26,7 +26,7 @@ impl Z {
     /// Parameters:
     /// - `value`: the initial value the integer should have
     ///
-    /// Returns the new integer.
+    /// Returns a new [`Z`] from the [`fmpz`] instance.
     ///
     /// # Safety
     /// Since the parameter is a reference, it still has to be
@@ -64,7 +64,7 @@ impl Z {
     /// Parameters:
     /// - `value`: the initial value the integer should have
     ///
-    /// Returns the new integer.
+    /// Returns a new [`Z`] from the [`fmpz`] instance.
     ///
     /// # Safety
     /// This function takes ownership. The caller has to ensure that the [`fmpz`]
@@ -95,7 +95,7 @@ impl Z {
     /// Returns a [`Z`] or an error if the provided string was not formatted
     /// correctly, the provided string contains a `Null` byte or the base is out of bounds.
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     ///  
@@ -208,12 +208,12 @@ implement_empty_trait_owned_ref!(IntoZ for Modulus fmpz u8 u16 u32 u64 i8 i16 i3
 impl<Integer: AsInteger + IntoZ> From<Integer> for Z {
     /// Converts an integer to [`Z`].
     ///
-    /// # Parameters:
+    /// Parameters:
     /// `value`: must be a rust integer, [`Modulus`], or a reference of these types.
     ///
     /// Returns a [`Z`] with the value specified in the parameter.
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     ///
@@ -243,7 +243,7 @@ impl FromStr for Z {
     /// Returns a [`Z`] or an error if the provided string was not formatted
     /// correctly, or the provided string contains a `Null` byte.
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
     /// use std::str::FromStr;
     /// use qfall_math::integer::Z;

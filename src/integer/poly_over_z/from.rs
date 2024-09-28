@@ -93,12 +93,12 @@ impl FromStr for PolyOverZ {
 impl<Integer: AsInteger + Into<Z>> From<Integer> for PolyOverZ {
     /// Creates a constant [`PolyOverZ`] with a specified integer constant.
     ///
-    /// # Parameters:
+    /// Parameters:
     /// `value`: an integer like [`Z`], rust Integers or a reference to these values.
     ///
     /// Returns a new constant polynomial with the specified value.
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
     /// use qfall_math::{integer::*, traits::*};
     ///

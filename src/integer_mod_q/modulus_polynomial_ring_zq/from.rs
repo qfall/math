@@ -22,7 +22,8 @@ impl From<&PolyOverZq> for ModulusPolynomialRingZq {
     /// Parameters:
     /// - `modulus_poly`: the polynomial which is used as the modulus.
     ///
-    /// Returns the new modulus object.
+    /// Returns a new [`ModulusPolynomialRingZq`] object with the coefficients
+    /// and modulus from the [`PolyOverZq`] instance.
     ///
     /// # Examples
     /// ```

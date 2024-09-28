@@ -64,7 +64,7 @@ impl FromStr for Zq {
     /// Returns a [`Zq`] or an error if the provided string was not formatted
     /// correctly.
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
     /// use std::str::FromStr;
     /// use qfall_math::integer_mod_q::Zq;

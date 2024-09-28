@@ -109,13 +109,13 @@ implement_for_owned!(PolyOverZ, PolyOverQ, From);
 impl<Rational: Into<Q>> From<Rational> for PolyOverQ {
     /// Creates a constant [`PolyOverQ`] with a specified rational constant.
     ///
-    /// # Parameters:
+    /// Parameters:
     /// - `value`: the constant value the polynomial will have. It has to be a rational
     ///   number like [`Q`], an integer or a tuple of integers `(numerator, denominator)`.
     ///
     /// Returns a new constant polynomial with the specified value.
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
     /// use qfall_math::{rational::*, traits::GetCoefficient};
     ///

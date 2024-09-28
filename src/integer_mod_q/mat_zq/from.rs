@@ -98,7 +98,7 @@ impl FromStr for MatZq {
 }
 
 impl<Mod: Into<Modulus>> From<(&MatZ, Mod)> for MatZq {
-    /// Creates a [`MatZq`] from a [`MatZ`] and a [`Modulus`].
+    /// Creates a [`MatZq`] from a [`MatZ`] and a value that implements [`Into<Modulus>`].
     ///
     /// Parameters:
     /// - `matrix`: the matrix from which the entries are taken
@@ -127,13 +127,13 @@ impl<Mod: Into<Modulus>> From<(&MatZ, Mod)> for MatZq {
 }
 
 impl<Mod: Into<Modulus>> From<(MatZ, Mod)> for MatZq {
-    /// Creates a [`MatZq`] from a [`MatZ`] and a [`Modulus`].
+    /// Creates a [`MatZq`] from a [`MatZ`] and a value that implements [`Into<Modulus>`].
     ///
     /// Parameters:
     /// - `matrix`: the matrix from which the entries are taken
     /// - `modulus`: the modulus of the matrix
     ///
-    /// Returns the new matrix.
+    /// Returns a new [`MatZq`] matrix with entries from the [`MatZ`] instance modulo `modulus`.
     ///
     /// # Examples
     /// ```

@@ -93,7 +93,7 @@ impl FromStr for MatPolyOverZ {
 impl From<&MatZ> for MatPolyOverZ {
     /// Creates a [`MatPolyOverZ`] with constant polynomials defined by a [`MatZ`].
     ///
-    /// # Parameters
+    /// Parameters
     /// - `matrix`: a matrix with constant integers.
     ///
     /// Returns a matrix of polynomial that all have the first coefficient

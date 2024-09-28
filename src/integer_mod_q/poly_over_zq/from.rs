@@ -27,18 +27,22 @@ impl<Mod: Into<Modulus>> From<Mod> for PolyOverZq {
     ///
     /// Parameters:
     /// - `modulus`: of the new [`PolyOverZq`]
+    /// 
+    /// Returns a new constant [`PolyOverZq`] with the specified [`Modulus`].
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::{PolyOverZq, Modulus};
+    /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
     ///
-    /// let modulus = Modulus::from(100);
-    /// let poly = PolyOverZq::from(&modulus);
+    /// let poly = PolyOverZq::from(100);
     ///
     /// let poly_cmp = PolyOverZq::from_str("0 mod 100").unwrap();
     /// assert_eq!(poly, poly_cmp);
     /// ```
+    /// 
+    /// # Panics ...
+    /// - if `modulus` is smaller than `2`.
     fn from(modulus: Mod) -> Self {
         let modulus = modulus.into();
         let mut poly = MaybeUninit::uninit();
@@ -64,13 +68,11 @@ impl From<&Zq> for PolyOverZq {
     /// ```
     /// use qfall_math::{integer_mod_q::*, traits::*};
     ///
-    /// let poly = PolyOverZq::from((1, 10));
-    /// let poly_2 = PolyOverZq::from(Zq::from((1, 10)));
+    /// let poly = PolyOverZq::from(&Zq::from((1, 10)));
     ///
-    /// let value_cmp: Zq = poly.get_coeff(0).unwrap();
-    /// assert_eq!(value_cmp, Zq::from((1, 10)));
+    /// let poly_cmp = PolyOverZq::from((1, 10));
+    /// assert_eq!(poly, poly_cmp);
     /// assert_eq!(poly.get_degree(), 0);
-    /// assert_eq!(poly, poly_2);
     /// ```
     fn from(value: &Zq) -> Self {
         let mut res = PolyOverZq::from(&value.modulus);
@@ -89,13 +91,16 @@ impl From<&Zq> for PolyOverZq {
 implement_for_owned!(Zq, PolyOverZq, From);
 
 impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for PolyOverZq {
-    /// Creates a [`PolyOverZq`] from a [`PolyOverZ`] and [`Modulus`].
+    /// Creates a [`PolyOverZq`] from a [`PolyOverZ`] and a value that implements [`Into<Modulus>`].
     ///
     /// Parameters:
     /// - `poly`: the coefficients of the polynomial.
     /// - `modulus`: the modulus by which each entry is reduced.
+    /// 
+    /// Returns a new [`PolyOverZq`] with the coefficients from the 
+    /// [`PolyOverZ`] instance under the specified [`Modulus`] value.
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::{PolyOverZq, Modulus};
     /// use qfall_math::integer::PolyOverZ;
@@ -126,11 +131,14 @@ impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for PolyOverZq {
 }
 
 impl<Mod: Into<Modulus>> From<(PolyOverZ, Mod)> for PolyOverZq {
-    /// Creates a [`PolyOverZq`] from a [`PolyOverZ`] and [`Modulus`].
+    /// Creates a [`PolyOverZq`] from a [`PolyOverZ`] and a value that implements [`Into<Modulus>`].
     ///
     /// Parameters:
     /// - `poly`: the coefficients of the polynomial.
     /// - `modulus`: the modulus by which each entry is reduced.
+    /// 
+    /// Returns a new [`PolyOverZq`] with the coefficients from the 
+    /// [`PolyOverZ`] instance under the specified [`Modulus`] value.
     ///
     /// # Examples
     /// ```
@@ -163,16 +171,18 @@ impl<Mod: Into<Modulus>> From<(PolyOverZ, Mod)> for PolyOverZq {
 
 impl<Integer: Into<Z>, Mod: Into<Modulus>> From<(Integer, Mod)> for PolyOverZq {
     /// Creates a [`PolyOverZq`] from any values that implement [`Into<Z>`] and [`Into<Modulus>`],
-    /// where the second value must be bigger than `1`.
+    /// where the second value must be larger than `1`.
     ///
     /// Parameters:
     /// - `z`: the single, constant coefficient of the polynomial.
     /// - `modulus`: the modulus by which each entry is reduced.
+    /// 
+    /// Returns a new constant [`PolyOverZq`] with the specified `z` and `modulus` value.
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::PolyOverZq;
-    /// # use std::str::FromStr;
+    /// use std::str::FromStr;
     ///
     /// let mod_poly = PolyOverZq::from((5, 42));
     ///
@@ -198,14 +208,14 @@ impl<Integer: Into<Z>, Mod: Into<Modulus>> From<(Integer, Mod)> for PolyOverZq {
 }
 
 impl From<&ModulusPolynomialRingZq> for PolyOverZq {
-    /// Creates a [`PolyOverZ`] from a [`ModulusPolynomialRingZq`].
+    /// Creates a [`PolyOverZq`] from a [`ModulusPolynomialRingZq`].
     ///
     /// Parameters:
     /// - `modulus`: the context polynomial from which the coefficients are copied.
     ///
     /// # Examples
     ///
-    /// Returns the context [`PolyOverZq`] representing the modulus object.
+    /// Returns a new [`PolyOverZq`] representing the modulus object.
     ///
     /// ```
     /// use qfall_math::integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq};

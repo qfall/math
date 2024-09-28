@@ -31,7 +31,7 @@ impl Q {
     /// which is less than `2 * a/b * 10^-9`.
     /// The actual result may be more accurate.
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     ///

@@ -111,7 +111,7 @@ impl<IntegerNumerator: AsInteger, IntegerDenominator: AsInteger>
 }
 
 impl<Integer: Into<Z>> From<Integer> for Q {
-    /// Creates a [`Q`] from an integer.
+    /// Creates a [`Q`] from a value that implements [`Into<Z>`].
     ///
     /// Parameters:
     /// - `value`: the initial value the [`Q`] should have.
