@@ -120,9 +120,8 @@ impl Distance<Zq> for Z {
 
 #[cfg(test)]
 mod test_distance {
-    use crate::integer_mod_q::{Modulus, Zq};
-
     use super::{Distance, Z};
+    use crate::integer_mod_q::{Modulus, Zq};
 
     /// Checks if distance is correctly computed for small [`Z`] values
     /// and whether distance(a, b) == distance(b, a), distance(a, a) == 0
