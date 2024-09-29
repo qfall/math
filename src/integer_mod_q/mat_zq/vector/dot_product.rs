@@ -43,7 +43,7 @@ impl MatZq {
     /// assert_eq!(Zq::from((3, 5)), dot_prod);
     /// ```
     ///
-    /// Errors and Failures
+    /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`VectorFunctionCalledOnNonVector`](MathError::VectorFunctionCalledOnNonVector)
     ///     if the given [`MatZq`] instance is not a (row or column) vector.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)

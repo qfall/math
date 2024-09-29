@@ -98,7 +98,7 @@ impl FromStr for MatZq {
 }
 
 impl<Mod: Into<Modulus>> From<(&MatZ, Mod)> for MatZq {
-    /// Creates a [`MatZq`] from a [`MatZ`] and a [`Modulus`].
+    /// Creates a [`MatZq`] from a [`MatZ`] and a value that implements [`Into<Modulus>`].
     ///
     /// Parameters:
     /// - `matrix`: the matrix from which the entries are taken
@@ -123,6 +123,37 @@ impl<Mod: Into<Modulus>> From<(&MatZ, Mod)> for MatZq {
             _fmpz_mod_mat_reduce(&mut out.matrix);
         }
         out
+    }
+}
+
+impl<Mod: Into<Modulus>> From<(MatZ, Mod)> for MatZq {
+    /// Creates a [`MatZq`] from a [`MatZ`] and a value that implements [`Into<Modulus>`].
+    ///
+    /// Parameters:
+    /// - `matrix`: the matrix from which the entries are taken
+    /// - `modulus`: the modulus of the matrix
+    ///
+    /// Returns a new [`MatZq`] matrix with entries from the [`MatZ`] instance modulo `modulus`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use std::str::FromStr;
+    ///
+    /// let m = MatZ::from_str("[[1, 2],[3, -1]]").unwrap();
+    ///
+    /// let a = MatZq::from((m, 17));
+    /// ```
+    fn from((matrix, modulus): (MatZ, Mod)) -> Self {
+        MatZq::from((&matrix, modulus))
+    }
+}
+
+impl From<&MatZq> for MatZq {
+    /// Alias for [`MatZq::clone`].
+    fn from(value: &MatZq) -> Self {
+        value.clone()
     }
 }
 
@@ -188,6 +219,8 @@ mod test_from_mat_z_modulus {
         let _ = MatZq::from((&matz, &2i64));
         let _ = MatZq::from((&matz, &Z::from(2)));
         let _ = MatZq::from((&matz, &Modulus::from(2)));
+
+        let _ = MatZq::from((matz, Modulus::from(2)));
     }
 }
 

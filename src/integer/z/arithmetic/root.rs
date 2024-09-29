@@ -20,7 +20,7 @@ impl Z {
     ///
     /// Returns the square root with a precision of ±10⁻⁹.
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     ///

@@ -14,7 +14,8 @@ use crate::traits::Distance;
 impl<Rational: Into<Q>> Distance<Rational> for Q {
     type Output = Q;
 
-    /// Computes the absolute distance between two [`Q`] instances.
+    /// Computes the absolute distance between a [`Q`] instance and a value that
+    /// implements [`Into<Q>`].
     ///
     /// Parameters:
     /// - `other`: specifies one of the [`Q`] values whose distance

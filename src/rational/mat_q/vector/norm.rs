@@ -34,7 +34,7 @@ impl MatQ {
     /// assert_eq!(Q::from(14), sqrd_2_norm);
     /// ```
     ///
-    /// Errors and Failures
+    /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
     ///     the given [`MatQ`] instance is not a (row or column) vector.
     pub fn norm_eucl_sqrd(&self) -> Result<Q, MathError> {
@@ -73,7 +73,7 @@ impl MatQ {
     /// assert_eq!(Q::from(3), infty_norm);
     /// ```
     ///
-    /// Errors and Failures
+    /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
     ///     the given [`MatQ`] instance is not a (row or column) vector.
     pub fn norm_infty(&self) -> Result<Q, MathError> {

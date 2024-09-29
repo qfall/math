@@ -18,7 +18,7 @@ use crate::{
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_evaluate_fmpz;
 
 impl<Integer: Into<Z>> Evaluate<Integer, Zq> for PolyOverZq {
-    /// Evaluates a [`PolyOverZq`] on a given input of [`Z`].
+    /// Evaluates a [`PolyOverZq`] on a given input that implements [`Into<Z>`].
     ///
     /// Parameters:
     /// - `value`: the value with which to evaluate the polynomial.

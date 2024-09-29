@@ -14,14 +14,14 @@ use crate::traits::Distance;
 impl<Integer: Into<Z>> Distance<Integer> for Z {
     type Output = Z;
 
-    /// Computes the absolute distance between two [`Z`] instances.
+    /// Computes the absolute distance between a [`Z`] instance and a value that
+    /// implements [`Into<Z>`].
     ///
     /// Parameters:
-    /// - `other`: specifies one of the [`Z`] values whose distance
-    ///     is calculated to `self`
+    /// - `other`: specifies the [`Z`] value whose distance is calculated to `self`
     ///
-    /// Returns the absolute difference, i.e. distance between the two given [`Z`]
-    /// instances as a new [`Z`] instance.
+    /// Returns the absolute difference, i.e. distance between the [`Z`] instance
+    /// and the value that implements [`Into<Z>`] as a new [`Z`] instance.
     ///
     /// # Examples
     /// ```
@@ -29,7 +29,6 @@ impl<Integer: Into<Z>> Distance<Integer> for Z {
     /// use qfall_math::traits::*;
     ///
     /// let a = Z::from(-1);
-    /// let b = Z::from(10);
     ///
     /// let distance_0 = a.distance(5);
     /// let distance_1 = a.distance(10);

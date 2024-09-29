@@ -14,6 +14,7 @@ use super::PolyOverQ;
 use crate::{
     error::{MathError, StringConversionError},
     integer::PolyOverZ,
+    macros::for_others::implement_for_owned,
     rational::Q,
 };
 use flint_sys::fmpq_poly::{
@@ -103,16 +104,18 @@ impl From<&PolyOverZ> for PolyOverQ {
     }
 }
 
+implement_for_owned!(PolyOverZ, PolyOverQ, From);
+
 impl<Rational: Into<Q>> From<Rational> for PolyOverQ {
     /// Creates a constant [`PolyOverQ`] with a specified rational constant.
     ///
-    /// # Parameters:
+    /// Parameters:
     /// - `value`: the constant value the polynomial will have. It has to be a rational
     ///   number like [`Q`], an integer or a tuple of integers `(numerator, denominator)`.
     ///
     /// Returns a new constant polynomial with the specified value.
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
     /// use qfall_math::{rational::*, traits::GetCoefficient};
     ///
@@ -135,6 +138,13 @@ impl<Rational: Into<Q>> From<Rational> for PolyOverQ {
             fmpq_poly_set_fmpq(&mut out.poly, &value.value);
         }
         out
+    }
+}
+
+impl From<&PolyOverQ> for PolyOverQ {
+    /// Alias for [`PolyOverQ::clone`].
+    fn from(value: &PolyOverQ) -> Self {
+        value.clone()
     }
 }
 
@@ -261,6 +271,14 @@ mod test_from_poly_over_z {
 
         let cmp_poly = PolyOverQ::from_str(&format!("4  0 1 102 {}", u64::MAX)).unwrap();
         assert_eq!(cmp_poly, poly_q);
+    }
+
+    /// Ensure that the conversion works for owned values
+    #[test]
+    fn availability() {
+        let poly = PolyOverZ::from_str("4  0 1 -102 -3").unwrap();
+
+        let _ = PolyOverQ::from(poly);
     }
 }
 

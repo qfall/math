@@ -12,6 +12,7 @@
 
 use super::PolyOverZ;
 use crate::integer_mod_q::PolyOverZq;
+use crate::macros::for_others::implement_for_owned;
 use crate::{
     error::{MathError, StringConversionError},
     integer::Z,
@@ -92,12 +93,12 @@ impl FromStr for PolyOverZ {
 impl<Integer: AsInteger + Into<Z>> From<Integer> for PolyOverZ {
     /// Creates a constant [`PolyOverZ`] with a specified integer constant.
     ///
-    /// # Parameters:
+    /// Parameters:
     /// `value`: an integer like [`Z`], rust Integers or a reference to these values.
     ///
     /// Returns a new constant polynomial with the specified value.
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
     /// use qfall_math::{integer::*, traits::*};
     ///
@@ -165,6 +166,8 @@ impl From<&PolyOverZq> for PolyOverZ {
         out
     }
 }
+
+implement_for_owned!(PolyOverZq, PolyOverZ, From);
 
 #[cfg(test)]
 mod test_from_str {
@@ -237,7 +240,7 @@ mod test_from_poly_over_zq {
     use crate::{integer::PolyOverZ, integer_mod_q::PolyOverZq};
     use std::str::FromStr;
 
-    /// ensure that the conversion works with positive large entries
+    /// Ensure that the conversion works with positive large entries
     #[test]
     fn large_positive() {
         let poly = PolyOverZq::from_str(&format!("4  0 1 102 {} mod {}", u64::MAX - 58, u64::MAX))
@@ -247,6 +250,15 @@ mod test_from_poly_over_zq {
 
         let cmp_poly = PolyOverZ::from_str(&format!("4  0 1 102 {}", u64::MAX - 58)).unwrap();
         assert_eq!(cmp_poly, poly_z);
+    }
+
+    /// Ensure that the conversion works for owned values
+    #[test]
+    fn availability() {
+        let poly = PolyOverZq::from_str(&format!("4  0 1 102 {} mod {}", u64::MAX - 58, u64::MAX))
+            .unwrap();
+
+        let _ = PolyOverZ::from(poly);
     }
 }
 

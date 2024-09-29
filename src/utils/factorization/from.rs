@@ -20,7 +20,7 @@ impl<Integer: Into<Z>> From<Integer> for Factorization {
     ///
     /// Returns a new [`Factorization`] with `factor` as the only factor.
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
     /// use qfall_math::utils::Factorization;
     ///
@@ -44,7 +44,7 @@ impl<Integer: Into<Z>> From<(Integer, Integer)> for Factorization {
     ///
     /// Returns a new [`Factorization`] with `factors` as the only factors.
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
     /// use qfall_math::utils::Factorization;
     ///
@@ -69,7 +69,7 @@ impl From<&Factorization> for Vec<(Z, u64)> {
     /// Returns a new [`Vec<(Z, u64)>`] with the factors from [`Factorization`]
     /// represented as tuples with bases as [`Z`] and exponents as [`u64`] values.
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
     /// use qfall_math::utils::Factorization;
     /// use qfall_math::integer::Z;
@@ -111,7 +111,7 @@ impl From<&Vec<(Z, u64)>> for Factorization {
     ///
     /// Returns a new [`Factorization`] with the factors from [`Vec<(Z, u64)>`].
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
     /// use qfall_math::utils::Factorization;
     /// use qfall_math::integer::Z;
