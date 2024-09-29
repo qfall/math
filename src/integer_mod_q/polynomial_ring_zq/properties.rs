@@ -99,9 +99,11 @@ mod test_is_one {
     fn one_detection() {
         let one = PolynomialRingZq::from_str("1  1 / 4  1 10 12 9 mod 7").unwrap();
         let one_2 = PolynomialRingZq::from_str("2  1 14 / 4  1 10 12 9 mod 7").unwrap();
+        let one_3 = PolynomialRingZq::from_str("3  11 4 10 / 3  5 2 5 mod 11").unwrap();
 
         assert!(one.is_one());
         assert!(one_2.is_one());
+        assert!(one_3.is_one());
     }
 
     /// Ensure that is_one returns `false` for other polynomials.
@@ -112,7 +114,7 @@ mod test_is_one {
             "1  {} / 4  1 10 12 9 mod {}",
             (u128::MAX - 1) / 2 + 2,
             u128::MAX
-        )) //2^127 + 1 the last memory entry is `1`
+        )) // 2^127 + 1 the last memory entry is `1`
         .unwrap();
 
         assert!(!small.is_one());
@@ -130,9 +132,11 @@ mod test_is_zero {
     fn zero_detection() {
         let zero = PolynomialRingZq::from_str("0 / 2  1 1 mod 7").unwrap();
         let zero_2 = PolynomialRingZq::from_str("2  7 14 / 2  1 1  mod 7").unwrap();
+        let zero_3 = PolynomialRingZq::from_str("3  3 3 6 / 3  1 1 2 mod 11").unwrap();
 
         assert!(zero.is_zero());
         assert!(zero_2.is_zero());
+        assert!(zero_3.is_zero());
     }
 
     /// Ensure that is_zero returns `false` for non-zero polynomials.
@@ -143,7 +147,7 @@ mod test_is_zero {
             "1  {} / 2  1 1 mod {}",
             (u128::MAX - 1) / 2 + 1,
             u128::MAX
-        )) //last 126 bits are 0
+        )) // last 126 bits are 0
         .unwrap();
 
         assert!(!small.is_zero());
