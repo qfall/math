@@ -199,9 +199,8 @@ impl Z {
         value
     }
 
-    /// Create a [`Z`] integer from a [`str`], i.e. its UTF8-Encoding.
+    /// Create a [`Z`] integer from a [`String`], i.e. its UTF8-Encoding.
     /// This function can only construct positive or zero integers, but not negative ones.
-    ///
     /// The inverse of this function is [`Z::to_utf8`].
     ///
     /// Parameters:
@@ -472,7 +471,7 @@ mod test_from_utf8 {
 
         let value = Z::from_utf8(message);
 
-        // easy trick s.t. we don't have to initialize huge [`Z`] value
+        // easy trick s.t. we don't have to initialize a huge [`Z`] value
         // while this test should still fail if the value changes
         let value_zq = value.modulo(65537);
 

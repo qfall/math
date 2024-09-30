@@ -72,7 +72,7 @@ impl Z {
     /// with a configurable base `b` between `2` and `62`.
     ///
     /// Parameters:
-    /// - `b`: specifies the any base between `2` and `62` which specifies
+    /// - `b`: specifies any base between `2` and `62` which specifies
     ///     the base of the returned [`String`].
     ///
     /// Returns the integer in form of a [`String`] with regards to the base `b`
@@ -126,7 +126,7 @@ impl Z {
     /// Outputs the integer as a [`Vec`] of bytes.
     /// The inverse function to [`Z::to_bytes`] is [`Z::from_bytes`] for positive numbers including `0`.
     ///
-    /// WARNING: The bits are returned as they are stored in the memory. For negative numbers,
+    /// **Warning**: The bits are returned as they are stored in the memory. For negative numbers,
     /// this means that `-1` is output as `[255]`.
     /// For these values, [`Z::from_bytes`] is not inverse to [`Z::to_bytes`],
     /// as this function can only instantiate positive values.
@@ -136,6 +136,7 @@ impl Z {
     /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
+    ///
     /// let integer = Z::from(257);
     ///
     /// let byte_string = integer.to_bytes();
@@ -165,15 +166,11 @@ impl Z {
     /// Enables conversion to a UTF8-Encoded [`String`] for [`Z`] values.
     /// The inverse to this function is [`Z::from_utf8`] for valid UTF8-Encodings.
     ///
-    /// WARNING: Not every byte-sequence forms a valid UTF8-character.
+    /// **Warning**: Not every byte-sequence forms a valid UTF8-character.
     /// If this is the case, a [`FromUtf8Error`] will be returned.
     ///
     /// Returns the corresponding UTF8-encoded [`String`] or a
     /// [`FromUtf8Error`] if the byte sequence contains an invalid UTF8-character.
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`FromUtf8Error`] if the integer's byte sequence contains
-    ///     invalid UTF8-characters.
     ///
     /// # Examples
     /// ```
@@ -182,6 +179,10 @@ impl Z {
     ///
     /// let text: String = integer.to_utf8().unwrap();
     /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`FromUtf8Error`] if the integer's byte sequence contains
+    ///     invalid UTF8-characters.
     pub fn to_utf8(&self) -> Result<String, FromUtf8Error> {
         String::from_utf8(self.to_bytes())
     }
@@ -312,7 +313,7 @@ mod test_to_bytes {
         let bytes = integer.to_bytes();
         let integer = Z::from_bytes(&bytes);
 
-        println!("{}", integer.to_string());
+        println!("{}", integer);
         assert_eq!(cmp_bytes, bytes);
     }
 }
@@ -326,7 +327,7 @@ mod test_to_utf8 {
     fn inverse_to_from_utf8() {
         let cmp_text = "Some valid string formatted in UTF8!";
 
-        let integer = Z::from_utf8(&cmp_text);
+        let integer = Z::from_utf8(cmp_text);
         let text = integer.to_utf8().unwrap();
 
         assert_eq!(cmp_text, text);
