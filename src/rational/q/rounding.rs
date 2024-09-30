@@ -298,7 +298,7 @@ mod test_simplify {
         let precisions = [Q::INV_MAX8, Q::INV_MAX16, Q::INV_MAX32];
 
         for precision in precisions {
-            let inv_precision = precision.inverse().unwrap().get_numerator();
+            let inv_precision = precision.get_denominator();
             let inv_precision = inv_precision.div_ceil(2);
 
             let simplified = value.simplify(&precision);
