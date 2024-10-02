@@ -20,7 +20,7 @@ impl MatPolyOverZ {
     /// Parameters:
     /// - `other`: specifies the other vector the dot product is calculated over
     ///
-    /// Returns the resulting `dot_product` as a [`PolyOverZ`] or an error,
+    /// Returns the resulting `dot_product` as a [`PolyOverZ`] or an error
     /// if the given [`MatPolyOverZ`] instances aren't vectors or have different
     /// numbers of entries.
     ///
@@ -35,7 +35,7 @@ impl MatPolyOverZ {
     /// let dot_prod = poly_vec_1.dot_product(&poly_vec_2).unwrap();
     /// ```
     ///
-    /// Errors and Failures
+    /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
     ///     the given [`MatPolyOverZ`] instance is not a (row or column) vector.
     /// - Returns a [`MathError`] of type [`MathError::MismatchingMatrixDimension`] if

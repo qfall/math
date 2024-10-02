@@ -104,6 +104,8 @@ impl MatQ {
     /// - `r`: specifies the Gaussian parameter, which is proportional
     ///     to the standard deviation `sigma * sqrt(2 * pi) = r`
     ///
+    /// Returns the rounded matrix as a [`MatZ`] or an error if `n <= 1` or `r <= 0`.
+    ///
     /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
@@ -115,7 +117,7 @@ impl MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if the `n <= 1` or `r <= 0`.
+    ///     if `n <= 1` or `r <= 0`.
     ///
     /// This function implements randomized rounding according to:
     /// - \[1\] Peikert, C. (2010, August).

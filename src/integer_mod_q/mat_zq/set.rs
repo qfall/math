@@ -33,7 +33,8 @@ use std::{
 };
 
 impl<Integer: Into<Z>> SetEntry<Integer> for MatZq {
-    /// Sets the value of a specific matrix entry according to a given `value` of type [`Z`].
+    /// Sets the value of a specific matrix entry according to a given `value`
+    /// that implements [`Into<Z>`].
     ///
     /// Parameters:
     /// - `row`: specifies the row in which the entry is located
@@ -439,7 +440,7 @@ impl MatZq {
     /// matrix entries and reduces them by the new modulus automatically.
     ///
     /// Parameters:
-    /// - `modulus`: The new modulus of the matrix
+    /// - `modulus`: the new modulus of the matrix
     ///
     /// # Examples
     /// ```

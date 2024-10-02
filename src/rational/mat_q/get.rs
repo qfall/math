@@ -63,8 +63,8 @@ impl GetEntry<Q> for MatQ {
     /// the last element.
     ///
     /// Returns the [`Q`] value of the matrix at the position of the given
-    /// row and column or an error, if the number of rows or columns is
-    /// greater than the matrix or greater than the matrix.
+    /// row and column or an error if the number of rows or columns is
+    /// greater than the matrix.
     ///
     /// # Examples
     /// ```
@@ -108,7 +108,7 @@ impl MatQ {
     /// - `row`: specifies the row of the matrix
     ///
     /// Returns a row vector of the matrix at the position of the given
-    /// `row` or an error, if the number of rows is
+    /// `row` or an error if the number of rows is
     /// greater than the matrix or negative.
     ///
     /// # Examples
@@ -144,7 +144,7 @@ impl MatQ {
     /// * `column`: specifies the column of the matrix
     ///
     /// Returns a column vector of the matrix at the position of the given
-    /// `column` or an error, if the number of columns is
+    /// `column` or an error if the number of columns is
     /// greater than the matrix or negative.
     ///
     /// # Examples
@@ -182,15 +182,16 @@ impl MatQ {
     /// Otherwise the function will panic.
     ///
     /// Parameters:
-    /// `row_1`: The starting row of the submatrix
-    /// `row_2`: The ending row of the submatrix
-    /// `col_1`: The starting column of the submatrix
-    /// `col_2`: The ending column of the submatrix
+    /// `row_1`: the starting row of the submatrix
+    /// `row_2`: the ending row of the submatrix
+    /// `col_1`: the starting column of the submatrix
+    /// `col_2`: the ending column of the submatrix
     ///
     /// Negative indices can be used to index from the back, e.g., `-1` for
     /// the last element.
     ///
-    /// Returns the submatrix from `(row_1, col_1)` to `(row_2, col_2)`(inclusively).
+    /// Returns the submatrix from `(row_1, col_1)` to `(row_2, col_2)`(inclusively)
+    /// or an error if the number of rows or columns is greater than the matrix.
     ///
     /// # Examples
     /// ```

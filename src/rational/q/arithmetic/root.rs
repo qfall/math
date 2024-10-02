@@ -31,7 +31,7 @@ impl Q {
     /// which is less than `2 * a/b * 10^-9`.
     /// The actual result may be more accurate.
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
     /// use qfall_math::rational::Q;
     ///
@@ -60,6 +60,9 @@ impl Q {
     /// Parameters:
     /// - `precision` specifies the upper limit of the error.
     ///   The precision must larger than zero.
+    ///
+    /// Returns the square root of the value as a [`Q`] instance or a [`MathError`],
+    /// if the precision is not larger than zero, or the parameter of the square root is negative.
     ///
     /// # Examples
     /// ```

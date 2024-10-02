@@ -55,7 +55,8 @@ impl MatZ {
     /// Parameters:
     /// - `other`: specifies the value to multiply with `self`
     ///
-    /// Returns the product of `self` and `other` as a [`MatZ`].
+    /// Returns the product of `self` and `other` as a [`MatZ`] or
+    /// an error, if the dimensions of `self` and `other` do not match for multiplication.
     ///
     /// # Examples
     /// ```

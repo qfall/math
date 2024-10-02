@@ -12,6 +12,7 @@
 
 use super::PolyOverZ;
 use crate::integer_mod_q::PolyOverZq;
+use crate::macros::for_others::implement_for_owned;
 use crate::{
     error::{MathError, StringConversionError},
     integer::Z,
@@ -24,7 +25,12 @@ use std::{ffi::CString, str::FromStr};
 impl FromStr for PolyOverZ {
     type Err = MathError;
 
-    /// Create a new polynomial with arbitrarily many coefficients of type [`Z`].
+    /// Creates a polynomial with arbitrarily many coefficients of type [`Z`]
+    /// from a [`String`].
+    ///
+    /// **Warning**: If the input string starts with a correctly formatted [`PolyOverZ`] object,
+    /// the rest of the string is ignored. This means that the input string
+    /// `"4  0 1 2 3"` is the same as `"4  0 1 2 3 4 5 6 7"`.
     ///
     /// Parameters:
     /// - `s`: the polynomial of form: `"[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴..."`.
@@ -33,8 +39,9 @@ impl FromStr for PolyOverZ {
     /// are divided by two spaces and the input string is trimmed, i.e. all whitespaces
     /// before and after are removed.
     ///
-    /// Returns a [`PolyOverZ`] or an error, if the provided string was not formatted
-    /// correctly.
+    /// Returns a [`PolyOverZ`] or an error if the provided string was not formatted
+    /// correctly, the number of coefficients was smaller than the number provided
+    /// at the start of the provided string, or the provided string contains a `Null` Byte.
     ///
     /// # Examples
     /// ```
@@ -84,14 +91,14 @@ impl FromStr for PolyOverZ {
 }
 
 impl<Integer: AsInteger + Into<Z>> From<Integer> for PolyOverZ {
-    /// Create a constant [`PolyOverZ`] with a specified integer constant.
+    /// Creates a constant [`PolyOverZ`] with a specified integer constant.
     ///
-    /// # Parameters:
+    /// Parameters:
     /// `value`: an integer like [`Z`], rust Integers or a reference to these values.
     ///
     /// Returns a new constant polynomial with the specified value.
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
     /// use qfall_math::{integer::*, traits::*};
     ///
@@ -126,12 +133,12 @@ impl From<&PolyOverZ> for PolyOverZ {
 }
 
 impl From<&PolyOverZq> for PolyOverZ {
-    /// Create a [`PolyOverZ`] from a [`PolyOverZq`].
+    /// Creates a [`PolyOverZ`] from a [`PolyOverZq`].
     ///
     /// Parameters:
-    /// - `poly`: the polynomial from which the coefficients are copied
+    /// - `poly`: the polynomial from which the coefficients are copied.
     ///
-    /// Returns representative polynomial (all reduced coefficients)
+    /// Returns the representative polynomial (all reduced coefficients)
     /// of the [`PolyOverZq`] as a [`PolyOverZ`].
     ///
     /// # Examples
@@ -159,6 +166,8 @@ impl From<&PolyOverZq> for PolyOverZ {
         out
     }
 }
+
+implement_for_owned!(PolyOverZq, PolyOverZ, From);
 
 #[cfg(test)]
 mod test_from_str {
@@ -231,7 +240,7 @@ mod test_from_poly_over_zq {
     use crate::{integer::PolyOverZ, integer_mod_q::PolyOverZq};
     use std::str::FromStr;
 
-    /// ensure that the conversion works with positive large entries
+    /// Ensure that the conversion works with positive large entries
     #[test]
     fn large_positive() {
         let poly = PolyOverZq::from_str(&format!("4  0 1 102 {} mod {}", u64::MAX - 58, u64::MAX))
@@ -241,6 +250,15 @@ mod test_from_poly_over_zq {
 
         let cmp_poly = PolyOverZ::from_str(&format!("4  0 1 102 {}", u64::MAX - 58)).unwrap();
         assert_eq!(cmp_poly, poly_z);
+    }
+
+    /// Ensure that the conversion works for owned values
+    #[test]
+    fn availability() {
+        let poly = PolyOverZq::from_str(&format!("4  0 1 102 {} mod {}", u64::MAX - 58, u64::MAX))
+            .unwrap();
+
+        let _ = PolyOverZ::from(poly);
     }
 }
 

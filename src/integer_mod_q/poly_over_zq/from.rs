@@ -1,4 +1,4 @@
-// Copyright © 2023 Marvin Beckmann and Sven Moog
+// Copyright © 2023 Marcel Luca Schmidt, Marvin Beckmann and Sven Moog
 //
 // This file is part of qFALL-math.
 //
@@ -12,33 +12,39 @@
 
 use crate::{
     error::{MathError, StringConversionError},
-    integer::PolyOverZ,
+    integer::{PolyOverZ, Z},
     integer_mod_q::{modulus::Modulus, ModulusPolynomialRingZq, PolyOverZq, Zq},
+    macros::for_others::implement_for_owned,
 };
 use flint_sys::fmpz_mod_poly::{
-    fmpz_mod_poly_init, fmpz_mod_poly_set, fmpz_mod_poly_set_fmpz_poly,
+    fmpz_mod_poly_init, fmpz_mod_poly_set, fmpz_mod_poly_set_coeff_fmpz,
+    fmpz_mod_poly_set_fmpz_poly,
 };
 use std::{mem::MaybeUninit, str::FromStr};
 
-impl From<&Modulus> for PolyOverZq {
-    /// Create a zero polynomial with a given [`Modulus`].
+impl<Mod: Into<Modulus>> From<Mod> for PolyOverZq {
+    /// Creates a zero polynomial with a given [`Modulus`].
     ///
     /// Parameters:
-    /// - `modulus` of the new [`PolyOverZq`]
+    /// - `modulus`: of the new [`PolyOverZq`]
     ///
-    /// # Examples:
+    /// Returns a new constant [`PolyOverZq`] with the specified [`Modulus`].
+    ///
+    /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::{PolyOverZq, Modulus};
+    /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
     ///
-    /// let modulus = Modulus::from(100);
-    /// let poly = PolyOverZq::from(&modulus);
+    /// let poly = PolyOverZq::from(100);
     ///
     /// let poly_cmp = PolyOverZq::from_str("0 mod 100").unwrap();
     /// assert_eq!(poly, poly_cmp);
     /// ```
-    fn from(modulus: &Modulus) -> Self {
-        let modulus = modulus.clone();
+    ///
+    /// # Panics ...
+    /// - if `modulus` is smaller than `2`.
+    fn from(modulus: Mod) -> Self {
+        let modulus = modulus.into();
         let mut poly = MaybeUninit::uninit();
         unsafe {
             fmpz_mod_poly_init(poly.as_mut_ptr(), modulus.get_fmpz_mod_ctx_struct());
@@ -48,14 +54,53 @@ impl From<&Modulus> for PolyOverZq {
     }
 }
 
-impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for PolyOverZq {
-    /// Create a [`PolyOverZq`] from a [`PolyOverZ`] and [`Modulus`].
+impl From<&Zq> for PolyOverZq {
+    /// Creates a constant [`PolyOverZq`], i.e. the polynomial `x mod q`,
+    /// where `x` is the value of the given [`Zq`] value and `q` its modulus.
     ///
     /// Parameters:
-    /// - `poly`: The coefficients of the polynomial.
-    /// - `modulus`: The modulus by which each entry is reduced.
+    /// - `value`: the constant value the polynomial will have.
+    ///   It has to be a [`Zq`], or a value that can be converted into [`Zq`].
+    ///   
+    /// Returns a new constant [`PolyOverZq`] with the specified `value` and `modulus` of the [`Zq`] value.
     ///
-    /// # Examples:
+    /// # Examples
+    /// ```
+    /// use qfall_math::{integer_mod_q::*, traits::*};
+    ///
+    /// let poly = PolyOverZq::from(&Zq::from((1, 10)));
+    ///
+    /// let poly_cmp = PolyOverZq::from((1, 10));
+    /// assert_eq!(poly, poly_cmp);
+    /// assert_eq!(poly.get_degree(), 0);
+    /// ```
+    fn from(value: &Zq) -> Self {
+        let mut res = PolyOverZq::from(&value.modulus);
+        unsafe {
+            fmpz_mod_poly_set_coeff_fmpz(
+                &mut res.poly,
+                0,
+                &value.value.value,
+                value.modulus.get_fmpz_mod_ctx_struct(),
+            );
+        };
+        res
+    }
+}
+
+implement_for_owned!(Zq, PolyOverZq, From);
+
+impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for PolyOverZq {
+    /// Creates a [`PolyOverZq`] from a [`PolyOverZ`] and a value that implements [`Into<Modulus>`].
+    ///
+    /// Parameters:
+    /// - `poly`: the coefficients of the polynomial.
+    /// - `modulus`: the modulus by which each entry is reduced.
+    ///
+    /// Returns a new [`PolyOverZq`] with the coefficients from the
+    /// [`PolyOverZ`] instance under the specified [`Modulus`] value.
+    ///
+    /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::{PolyOverZq, Modulus};
     /// use qfall_math::integer::PolyOverZ;
@@ -73,7 +118,7 @@ impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for PolyOverZq {
     /// # Panics ...
     /// - if `modulus` is smaller than `2`.
     fn from((poly, modulus): (&PolyOverZ, Mod)) -> Self {
-        let mut res = PolyOverZq::from(&modulus.into());
+        let mut res = PolyOverZq::from(modulus);
         unsafe {
             fmpz_mod_poly_set_fmpz_poly(
                 &mut res.poly,
@@ -85,15 +130,92 @@ impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for PolyOverZq {
     }
 }
 
-impl From<&ModulusPolynomialRingZq> for PolyOverZq {
-    /// Create a [`PolyOverZ`] from a [`ModulusPolynomialRingZq`].
+impl<Mod: Into<Modulus>> From<(PolyOverZ, Mod)> for PolyOverZq {
+    /// Creates a [`PolyOverZq`] from a [`PolyOverZ`] and a value that implements [`Into<Modulus>`].
     ///
     /// Parameters:
-    /// - `modulus`: the context polynomial from which the coefficients are copied
+    /// - `poly`: the coefficients of the polynomial.
+    /// - `modulus`: the modulus by which each entry is reduced.
+    ///
+    /// Returns a new [`PolyOverZq`] with the coefficients from the
+    /// [`PolyOverZ`] instance under the specified [`Modulus`] value.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use qfall_math::integer::PolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let poly = PolyOverZ::from_str("4  0 1 102 3").unwrap();
+    ///
+    /// let mod_poly = PolyOverZq::from((poly, 100));
+    ///
+    /// # let cmp_poly = PolyOverZq::from_str("4  0 1 2 3 mod 100").unwrap();
+    /// # assert_eq!(cmp_poly, mod_poly);
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if `modulus` is smaller than `2`.
+    fn from((poly, modulus): (PolyOverZ, Mod)) -> Self {
+        let mut res = PolyOverZq::from(modulus);
+        unsafe {
+            fmpz_mod_poly_set_fmpz_poly(
+                &mut res.poly,
+                &poly.poly,
+                res.modulus.get_fmpz_mod_ctx_struct(),
+            );
+        }
+        res
+    }
+}
+
+impl<Integer: Into<Z>, Mod: Into<Modulus>> From<(Integer, Mod)> for PolyOverZq {
+    /// Creates a [`PolyOverZq`] from any values that implement [`Into<Z>`] and [`Into<Modulus>`],
+    /// where the second value must be larger than `1`.
+    ///
+    /// Parameters:
+    /// - `z`: the single, constant coefficient of the polynomial.
+    /// - `modulus`: the modulus by which each entry is reduced.
+    ///
+    /// Returns a new constant [`PolyOverZq`] with the specified `z` and `modulus` value.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use std::str::FromStr;
+    ///
+    /// let mod_poly = PolyOverZq::from((5, 42));
+    ///
+    /// # let cmp_poly = PolyOverZq::from_str("1  5 mod 42").unwrap();
+    /// # assert_eq!(cmp_poly, mod_poly);
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if `modulus` is smaller than `2`.
+    fn from((z, modulus): (Integer, Mod)) -> Self {
+        let z: Z = z.into();
+        let mut res = PolyOverZq::from(modulus);
+        unsafe {
+            fmpz_mod_poly_set_coeff_fmpz(
+                &mut res.poly,
+                0,
+                &z.value,
+                res.modulus.get_fmpz_mod_ctx_struct(),
+            );
+        }
+        res
+    }
+}
+
+impl From<&ModulusPolynomialRingZq> for PolyOverZq {
+    /// Creates a [`PolyOverZq`] from a [`ModulusPolynomialRingZq`].
+    ///
+    /// Parameters:
+    /// - `modulus`: the context polynomial from which the coefficients are copied.
     ///
     /// # Examples
     ///
-    /// Returns the context [`PolyOverZq`] representing the modulus object.
+    /// Returns a new [`PolyOverZq`] representing the modulus object.
     ///
     /// ```
     /// use qfall_math::integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq};
@@ -120,20 +242,35 @@ impl From<&ModulusPolynomialRingZq> for PolyOverZq {
     }
 }
 
+implement_for_owned!(ModulusPolynomialRingZq, PolyOverZq, From);
+
+impl From<&PolyOverZq> for PolyOverZq {
+    /// Alias for [`PolyOverZq::clone`].
+    fn from(value: &PolyOverZq) -> Self {
+        value.clone()
+    }
+}
+
 impl FromStr for PolyOverZq {
     type Err = MathError;
 
-    /// Creating a polynomial with arbitrarily many coefficients of type [`Zq`].
+    /// Creates a polynomial with arbitrarily many coefficients of type [`Zq`].
+    ///
+    /// **Warning**: If the input string starts with a correctly formatted [`PolyOverZ`] object,
+    /// the rest of the string until the `"mod"` is ignored. This means that the input string
+    /// `"4  0 1 2 3 mod 13"` is the same as `"4  0 1 2 3 4 5 6 7 mod 13"`.
     ///
     /// Parameters:
     /// - `s`: the polynomial of form:
-    ///     "`[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴...⌴mod⌴[modulus]`".
-    ///     Note that the `[#number of coefficients]` and `[0th coefficient]`
-    ///     are divided by two spaces and the string for the polynomial is trimmed,
-    ///     i.e. all whitespaces before around the polynomial and the modulus are removed.
+    ///     `"[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴...⌴mod⌴[modulus]"`.
     ///
-    /// Returns a [`PolyOverZq`] or an error, if the provided string was not
-    /// formatted correctly.
+    /// Note that the `[#number of coefficients]` and `[0th coefficient]`
+    /// are divided by two spaces and the string for the polynomial is trimmed,
+    /// i.e. all whitespaces before around the polynomial and the modulus are removed.
+    ///
+    /// Returns a [`PolyOverZq`] or an error if the provided string was not
+    /// formatted correctly, the number of coefficients was smaller than the number provided
+    /// at the start of the provided string, or the modulus was smaller than `2`.
     ///
     /// # Examples
     /// ```
@@ -172,36 +309,43 @@ impl FromStr for PolyOverZq {
     }
 }
 
-impl<IntegerModQ: Into<Zq>> From<IntegerModQ> for PolyOverZq {
-    /// Create a constant [`PolyOverZq`] with a specified constant.
-    ///
-    /// # Parameters:
-    /// - `value`: the constant value the polynomial will have.
-    ///   It has to be a [`Zq`], or a value that can be converted into [`Zq`].
-    ///   
-    /// Returns a new constant polynomial with the specified value and modulus.
-    ///
-    /// # Examples:
-    /// ```
-    /// use qfall_math::{integer_mod_q::*, traits::*};
-    ///
-    /// let poly = PolyOverZq::from((1, 10));
-    /// let poly_2 = PolyOverZq::from(Zq::from((1, 10)));
-    ///
-    /// let value_cmp: Zq = poly.get_coeff(0).unwrap();
-    /// assert_eq!(value_cmp, Zq::from((1, 10)));
-    /// assert_eq!(poly.get_degree(), 0);
-    /// assert_eq!(poly, poly_2);
-    /// ```
-    ///
-    /// # Panics ...
-    /// - if the provided value can not be converted into a [`Zq`].
-    ///   For example, if the modulus is not larger than one.
-    fn from(value: IntegerModQ) -> Self {
-        let value: Zq = value.into();
-        let poly_z = PolyOverZ::from(value.value);
+#[cfg(test)]
+mod test_availability {
+    use super::*;
+    use crate::{integer::Z, integer_mod_q::Zq};
 
-        PolyOverZq::from((&poly_z, &value.modulus))
+    /// Ensure that the submatrix function can be called with several types.
+    #[test]
+    fn availability() {
+        let z = Z::from(3);
+        let modulus = Modulus::from(2);
+        let zq = Zq::from((1, 2));
+        let poly = PolyOverZ::from_str("2  1 1").unwrap();
+        let poly_mod = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+
+        let _ = PolyOverZq::from(3);
+        let _ = PolyOverZq::from(&z);
+        let _ = PolyOverZq::from(z.clone());
+        let _ = PolyOverZq::from(&modulus);
+        let _ = PolyOverZq::from(modulus.clone());
+
+        let _ = PolyOverZq::from(&zq);
+        let _ = PolyOverZq::from(zq.clone());
+
+        let _ = PolyOverZq::from((1, 2));
+        let _ = PolyOverZq::from((&z, 2));
+        let _ = PolyOverZq::from((z.clone(), 2));
+        let _ = PolyOverZq::from((&modulus, 2));
+        let _ = PolyOverZq::from((modulus.clone(), 2));
+        let _ = PolyOverZq::from((&poly, 2));
+        let _ = PolyOverZq::from((poly.clone(), 2));
+        let _ = PolyOverZq::from((1, &z));
+        let _ = PolyOverZq::from((1, z.clone()));
+        let _ = PolyOverZq::from((1, &modulus));
+        let _ = PolyOverZq::from((1, modulus));
+
+        let _ = PolyOverZq::from(&poly_mod);
+        let _ = PolyOverZq::from(poly_mod);
     }
 }
 
@@ -312,6 +456,52 @@ mod test_from_poly_z_modulus {
         let mod_poly = PolyOverZq::from((&poly, &modulus));
 
         let cmp_poly = PolyOverZq::from_str("4  0 1 -2 3 mod 100").unwrap();
+        assert_eq!(cmp_poly, mod_poly);
+    }
+}
+
+#[cfg(test)]
+mod test_from_z_modulus {
+    use super::PolyOverZq;
+    use crate::{integer::Z, integer_mod_q::Modulus};
+    use std::str::FromStr;
+
+    /// Test conversion of a [`Z`] with small coefficients and small
+    /// [`Modulus`] into a [`PolyOverZq`].
+    #[test]
+    fn working_small() {
+        let z = Z::from(42);
+        let modulus = Modulus::from(100);
+
+        let mod_poly = PolyOverZq::from((&z, &modulus));
+
+        let cmp_poly = PolyOverZq::from_str("1  42 mod 100").unwrap();
+        assert_eq!(cmp_poly, mod_poly);
+    }
+
+    /// Test conversion of a [`PolyOverZ`] with large coefficients and large
+    /// [`Modulus`] into a [`PolyOverZq`].
+    #[test]
+    fn working_large() {
+        let z = Z::from(u64::MAX - 1);
+        let modulus = Modulus::from(u64::MAX);
+
+        let mod_poly = PolyOverZq::from((&z, &modulus));
+
+        let cmp_poly =
+            PolyOverZq::from_str(&format!("1  {} mod {}", u64::MAX - 1, u64::MAX)).unwrap();
+        assert_eq!(cmp_poly, mod_poly);
+    }
+
+    /// Test that the coefficients are reduced properly after the conversion.
+    #[test]
+    fn reduce() {
+        let z = Z::from(101);
+        let modulus = Modulus::from(100);
+
+        let mod_poly = PolyOverZq::from((&z, &modulus));
+
+        let cmp_poly = PolyOverZq::from_str("1  1 mod 100").unwrap();
         assert_eq!(cmp_poly, mod_poly);
     }
 }

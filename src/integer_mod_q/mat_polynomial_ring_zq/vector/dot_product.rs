@@ -21,7 +21,7 @@ impl MatPolynomialRingZq {
     /// Parameters:
     /// - `other`: specifies the other vector the dot product is calculated over
     ///
-    /// Returns the resulting `dot_product` as a [`PolynomialRingZq`] or an error,
+    /// Returns the resulting `dot_product` as a [`PolynomialRingZq`] or an error
     /// if the given [`MatPolynomialRingZq`] instances aren't vectors or have different
     /// numbers of entries.
     ///
@@ -40,7 +40,7 @@ impl MatPolynomialRingZq {
     /// let dot_prod = poly_ring_vec_1.dot_product(&poly_ring_vec_2).unwrap();
     /// ```
     ///
-    /// Errors and Failures
+    /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
     ///     the given [`MatPolynomialRingZq`] instance is not a (row or column) vector.
     /// - Returns a [`MathError`] of type [`MathError::MismatchingMatrixDimension`] if

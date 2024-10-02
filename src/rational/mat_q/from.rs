@@ -14,6 +14,7 @@ use super::MatQ;
 use crate::{
     error::MathError,
     integer::MatZ,
+    macros::for_others::implement_for_owned,
     rational::Q,
     traits::{GetNumColumns, GetNumRows, SetEntry},
     utils::{dimensions::find_matrix_dimensions, parse::parse_matrix_string},
@@ -25,17 +26,15 @@ impl FromStr for MatQ {
     type Err = MathError;
 
     /// Creates a [`MatQ`] matrix with entries in [`Q`] from a [`String`].
-    /// The format of that string looks like this <br> `[[1/2, 2/3, 3/4],[4/5, 5/6, 6/7]`
-    /// for a 2x3 matrix
-    /// with entries 1/2, 2/3, 3/4 in the first row and 4/5, 5/6, 6/7 in the second row.
     ///
     /// Parameters:
-    /// - `string`: the matrix as a string
+    /// - `string`: the matrix of form: `"[[1/2, 2/3, 3/4],[4/5, 5/6, 6/7]"`
+    ///     for a 2x3 matrix with entries 1/2, 2/3, 3/4 in the first row
+    ///     and 4/5, 5/6, 6/7 in the second row.
     ///
-    /// Returns a [`MatQ`] or an error, if the matrix is not formatted in a suitable way,
+    /// Returns a [`MatQ`] or an error if the matrix is not formatted in a suitable way,
     /// the number of rows or columns is too large (must fit into [`i64`]),
-    /// the number of entries in rows is unequal or if the regular expression
-    /// inside of the function could not be processed.
+    /// the number of entries in rows is unequal or an entry is not formatted correctly.
     ///
     /// # Examples
     /// ```
@@ -89,12 +88,12 @@ impl FromStr for MatQ {
 }
 
 impl From<&MatZ> for MatQ {
-    /// Create a [`MatQ`] from a [`MatZ`].
+    /// Creates a [`MatQ`] from a [`MatZ`].
     ///
     /// Parameters:
     /// - `matrix`: the matrix from which the entries are taken
     ///
-    /// Returns the new matrix.
+    /// Returns a new [`MatQ`] matrix with entries from the [`MatZ`] instance.
     ///
     /// # Examples
     /// ```
@@ -113,6 +112,15 @@ impl From<&MatZ> for MatQ {
     }
 }
 
+implement_for_owned!(MatZ, MatQ, From);
+
+impl From<&MatQ> for MatQ {
+    /// Alias for [`MatQ::clone`].
+    fn from(value: &MatQ) -> Self {
+        value.clone()
+    }
+}
+
 #[cfg(test)]
 mod test_from_mat_zq {
     use crate::{
@@ -120,6 +128,7 @@ mod test_from_mat_zq {
         rational::{MatQ, Q},
         traits::{GetEntry, GetNumColumns, GetNumRows, SetEntry},
     };
+    use std::str::FromStr;
 
     /// Test if the dimensions are taken over correctly
     #[test]
@@ -143,6 +152,14 @@ mod test_from_mat_zq {
 
         assert_eq!(Q::from(i64::MIN), matq_1.get_entry(0, 1).unwrap());
         assert_eq!(Q::from(u64::MAX - 58), matq_1.get_entry(0, 0).unwrap());
+    }
+
+    /// Ensure that the conversion works for owned values
+    #[test]
+    fn availability() {
+        let m = MatZ::from_str("[[1, 2],[3, -1]]").unwrap();
+
+        let _ = MatQ::from(m);
     }
 }
 

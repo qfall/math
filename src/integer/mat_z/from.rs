@@ -23,16 +23,15 @@ impl FromStr for MatZ {
     type Err = MathError;
 
     /// Creates a [`MatZ`] matrix with entries in [`Z`] from a [`String`].
-    /// The format of that string looks like this `[[1, 2, 3],[4, 5, 6]]` for a 2x3 matrix
-    /// with entries 1, 2, 3 in the first row and 4, 5, 6 in the second row.
     ///
     /// Parameters:
-    /// - `string`: the matrix as a string
+    /// - `string`: the matrix of form: `"[[1, 2, 3],[4, 5, 6]]"`
+    ///     for a 2x3 matrix with entries 1, 2, 3 in the first row and 4, 5, 6
+    ///     in the second row.
     ///
-    /// Returns a [`MatZ`] or an error, if the matrix is not formatted in a suitable way,
+    /// Returns a [`MatZ`] or an error if the matrix is not formatted in a suitable way,
     /// the number of rows or columns is too large (must fit into [`i64`]),
-    /// the number of entries in rows is unequal or if the regular expression
-    /// inside of the function could not be processed.
+    /// the number of entries in rows is unequal or if an entry is not formatted correctly.
     ///
     /// # Examples
     /// ```
@@ -67,6 +66,13 @@ impl FromStr for MatZ {
             }
         }
         Ok(matrix)
+    }
+}
+
+impl From<&MatZ> for MatZ {
+    /// Alias for [`MatZ::clone`].
+    fn from(value: &MatZ) -> Self {
+        value.clone()
     }
 }
 

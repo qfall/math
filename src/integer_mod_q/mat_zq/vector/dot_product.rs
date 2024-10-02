@@ -25,7 +25,7 @@ impl MatZq {
     /// Parameters:
     /// - `other`: specifies the other vector the dot product is calculated over
     ///
-    /// Returns the resulting dot product as a [`Zq`] or an error,
+    /// Returns the resulting dot product as a [`Zq`] or an error
     /// if the given [`MatZq`] instances aren't vectors, have different
     /// numbers of entries, or mismatching moduli.
     ///
@@ -43,7 +43,7 @@ impl MatZq {
     /// assert_eq!(Zq::from((3, 5)), dot_prod);
     /// ```
     ///
-    /// Errors and Failures
+    /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`VectorFunctionCalledOnNonVector`](MathError::VectorFunctionCalledOnNonVector)
     ///     if the given [`MatZq`] instance is not a (row or column) vector.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)

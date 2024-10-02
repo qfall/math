@@ -113,7 +113,8 @@ impl MatZq {
     /// Parameters:
     /// - `other`: specifies the value to multiply with `self`
     ///
-    /// Returns the product of `self` and `other` as a [`MatZq`].
+    /// Returns the product of `self` and `other` as a [`MatZq`] or an error if the dimensions of `self`
+    /// and `other` do not match for multiplication or the moduli mismatch.
     ///
     /// # Examples
     /// ```

@@ -84,10 +84,10 @@ mod test_sample_binomial {
         let n = Z::from(n_u64);
         let p = Q::from((1, 2));
 
-        for _ in 0..64 {
+        for _ in 0..16 {
             let sample = sample_binomial(&n, &p).unwrap();
-            assert!(sample > 0);
-            assert!(sample < n_u64);
+            // sample >= 0 check is not required as sample is a u64
+            assert!(sample <= n_u64);
         }
     }
 

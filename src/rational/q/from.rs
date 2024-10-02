@@ -24,13 +24,13 @@ use flint_sys::{
 use std::{ffi::CString, str::FromStr};
 
 impl Q {
-    /// Create a new rational number of type [`Q`] from a [`f64`].
+    /// Creates a rational number of type [`Q`] from a [`f64`].
     /// This function works with the exact float it received as input.
     /// Many numbers like `0.1` are not exactly representable as floats and
     /// will therefore not be instantiated as `1/10`.
     ///
     /// Input parameters:
-    /// - `value` : The value the rational number will have, provided as a [`f64`]
+    /// - `value`: the value the rational number will have, provided as a [`f64`]
     ///
     /// Returns a [`Q`].
     ///
@@ -74,15 +74,13 @@ impl Q {
 impl<IntegerNumerator: AsInteger, IntegerDenominator: AsInteger>
     From<(IntegerNumerator, IntegerDenominator)> for Q
 {
-    /// Create a [`Q`] from two integers.
-    /// The integer types can be, for example, [`Z`],
-    /// [`Zq`](crate::integer_mod_q), [`u32`],[`i64`] or references to these types
+    /// Creates a [`Q`] from two integers.
     ///
     /// Parameters:
-    /// - `num`: The value of the numerator.
-    /// - `den`: The value of the denominator.
+    /// - `num`: the value of the numerator.
+    /// - `den`: the value of the denominator.
     ///
-    /// Returns a [`Q`] or a [`MathError`]
+    /// Returns a [`Q`].
     ///
     /// # Examples
     /// ```rust
@@ -113,12 +111,12 @@ impl<IntegerNumerator: AsInteger, IntegerDenominator: AsInteger>
 }
 
 impl<Integer: Into<Z>> From<Integer> for Q {
-    /// Create a new Integer that can grow arbitrary large.
+    /// Creates a [`Q`] from a value that implements [`Into<Z>`].
     ///
     /// Parameters:
-    /// - `value`: the initial value the integer should have
+    /// - `value`: the initial value the [`Q`] should have.
     ///
-    /// Returns the new integer.
+    /// Returns a [`Q`].
     ///
     /// # Examples
     /// ```
@@ -144,7 +142,7 @@ impl From<f64> for Q {
     /// will not be instantiated as `1/10`.
     ///
     /// Input parameters:
-    /// - `value` : The value the rational number will have, provided as a [`f64`]
+    /// - `value`: the value the rational number will have, provided as a [`f64`]
     ///
     /// Returns a [`Q`].
     ///
@@ -181,7 +179,7 @@ impl From<&Q> for f64 {
 }
 
 impl From<&Q> for Q {
-    /// An alias for clone.
+    /// An alias for [`Q::clone`].
     /// It makes the use of generic [`Into<Q>`] types easier.
     fn from(value: &Q) -> Self {
         value.clone()
@@ -191,7 +189,7 @@ impl From<&Q> for Q {
 impl FromStr for Q {
     type Err = MathError;
 
-    /// Create a [`Q`] rational from a [`String`]
+    /// Creates a [`Q`] rational from a [`String`]
     /// In the string should be two decimal numbers separated by `/`.
     /// Optionally, before one or both of them can be a `-`.
     /// The format of that string looks like this `-12/53`.
@@ -203,8 +201,8 @@ impl FromStr for Q {
     /// Parameters:
     /// - `s`: the rational value
     ///
-    /// Returns a [`Q`] or an error, if the provided string was not formatted
-    /// correctly.
+    /// Returns a [`Q`] or an error if the provided string was not formatted
+    /// correctly, contained a `Null` byte, or the denominator was `0`.
     ///
     /// # Examples
     /// ```

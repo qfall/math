@@ -21,12 +21,12 @@ use flint_sys::fmpz::{fmpz, fmpz_combit, fmpz_get_si, fmpz_set, fmpz_set_str};
 use std::{ffi::CString, str::FromStr};
 
 impl Z {
-    /// Create a new Integer that can grow arbitrary large.
+    /// Creates an Integer that can grow arbitrary large.
     ///
     /// Parameters:
     /// - `value`: the initial value the integer should have
     ///
-    /// Returns the new integer.
+    /// Returns a new [`Z`] from the [`fmpz`] instance.
     ///
     /// # Safety
     /// Since the parameter is a reference, it still has to be
@@ -59,17 +59,17 @@ impl Z {
         out
     }
 
-    /// Create a new Integer that can grow arbitrary large.
+    /// Creates an Integer that can grow arbitrary large.
     ///
     /// Parameters:
     /// - `value`: the initial value the integer should have
     ///
-    /// Returns the new integer.
+    /// Returns a new [`Z`] from the [`fmpz`] instance.
     ///
     /// # Safety
     /// This function takes ownership. The caller has to ensure that the [`fmpz`]
     /// is not dropped somewhere else. This means that calling this function
-    /// with a [`fmpz`] that is wrapped in a different data type is not allowed.
+    /// with an [`fmpz`] that is wrapped in a different data type is not allowed.
     ///
     /// # Examples
     /// ```compile_fail
@@ -85,16 +85,17 @@ impl Z {
         Z { value }
     }
 
-    /// Create a [`Z`] integer from a [`String`]. This function takes a base in which the number is represented between `2` and `62`
+    /// Creates a [`Z`] integer from a [`String`]. This function takes a
+    /// base between `2` and `62` in which the number is represented.
     ///
     /// Parameters:
     /// - `s`: the integer value as a string
     /// - `base`: the base in which the integer is represented
     ///
-    /// Returns a [`Z`] or an error, if the provided string was not formatted
-    /// correctly or the base is out bounds.
+    /// Returns a [`Z`] or an error if the provided string was not formatted
+    /// correctly, the provided string contains a `Null` byte or the base is out of bounds.
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     ///  
@@ -136,7 +137,9 @@ impl Z {
         }
     }
 
-    /// Create a [`Z`] integer from an iterable of [`u8`]s, i.e. a vector of bytes.
+    /// Creates a [`Z`] integer from an iterable of [`u8`]s, i.e. a vector of bytes.
+    /// This function can only construct positive or zero integers, but not negative ones.
+    /// The inverse function to [`Z::from_bytes`] is [`Z::to_bytes`] for positive numbers including `0`.
     ///
     /// Parameters:
     /// - `bytes`: specifies an iterable of bytes that should be set in the new [`Z`] instance.
@@ -168,7 +171,7 @@ impl Z {
         res
     }
 
-    /// Create a [`Z`] integer from an iterable of [`bool`]s, i.e. a vector of bits.
+    /// Creates a [`Z`] integer from an iterable of [`bool`]s, i.e. a vector of bits.
     /// This function can only construct positive or zero integers, but not negative ones.
     ///
     /// Parameters:
@@ -195,6 +198,28 @@ impl Z {
         }
         value
     }
+
+    /// Create a [`Z`] integer from a [`String`], i.e. its UTF8-Encoding.
+    /// This function can only construct positive or zero integers, but not negative ones.
+    /// The inverse of this function is [`Z::to_utf8`].
+    ///
+    /// Parameters:
+    /// - `message`: specifies the message that is transformed via its UTF8-Encoding
+    ///   to a new [`Z`] instance.
+    ///
+    /// Returns a [`Z`] with corresponding value to the message's UTF8-Encoding.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// let message = "hello!";
+    ///  
+    /// let value = Z::from_utf8(&message);
+    /// assert_eq!(Z::from(36762444129640u64), value);
+    /// ```
+    pub fn from_utf8(message: &str) -> Z {
+        Z::from_bytes(message.as_bytes())
+    }
 }
 
 /// A trait that indicates for which types the `From for Z` should be implemented.
@@ -205,14 +230,14 @@ impl IntoZ for &Z {}
 implement_empty_trait_owned_ref!(IntoZ for Modulus fmpz u8 u16 u32 u64 i8 i16 i32 i64);
 
 impl<Integer: AsInteger + IntoZ> From<Integer> for Z {
-    /// Convert an integer to [`Z`].
+    /// Converts an integer to [`Z`].
     ///
-    /// # Parameters:
-    /// `value` must be a rust integer, [`Modulus`], or a reference of these types.
+    /// Parameters:
+    /// `value`: must be a rust integer, [`Modulus`], or a reference of these types.
     ///
-    /// Returns a new [`Z`] with the value specified in the parameter.
+    /// Returns a [`Z`] with the value specified in the parameter.
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     ///
@@ -234,16 +259,15 @@ impl<Integer: AsInteger + IntoZ> From<Integer> for Z {
 impl FromStr for Z {
     type Err = MathError;
 
-    /// Create a [`Z`] integer from a [`String`]
-    /// The format of that string looks like this `(-)12` for the number 12 or -12
+    /// Creates a [`Z`] integer from a [`String`].
     ///
     /// Parameters:
-    /// - `s`: the integer value
+    /// - `s`: the integer value of form: `"12"` for the number 12 and `"-12"` for -12.
     ///
-    /// Returns a [`Z`] or an error, if the provided string was not formatted
-    /// correctly.
+    /// Returns a [`Z`] or an error if the provided string was not formatted
+    /// correctly, or the provided string contains a `Null` byte.
     ///
-    /// # Examples:
+    /// # Examples
     /// ```
     /// use std::str::FromStr;
     /// use qfall_math::integer::Z;
@@ -271,8 +295,8 @@ impl TryFrom<&Z> for i64 {
     /// Parameters:
     /// - `value`: the value that will be converted into an [`i64`]
     ///
-    /// Returns the value as an [`i64`] or an error, if it does not fit
-    /// into an [`i64`]
+    /// Returns the value as an [`i64`] or an error if it does not fit
+    /// into an [`i64`].
     ///
     /// # Examples
     /// ```
@@ -313,7 +337,7 @@ impl TryFrom<Z> for i64 {
     /// Parameters:
     /// - `value`: the value that will be converted into an [`i64`]
     ///
-    /// Returns the value as an [`i64`] or an error, if it does not fit
+    /// Returns the value as an [`i64`] or an error if it does not fit
     /// into an [`i64`]
     ///
     /// # Examples
@@ -431,6 +455,37 @@ mod test_from_bytes {
         assert_eq!(Z::from(257), res_0);
         assert_eq!(Z::from(257), res_1);
         assert_eq!(Z::from(257), res_2);
+    }
+}
+
+#[cfg(test)]
+/// Test the implementation of [`Z::from_utf8`] briefly.
+/// This module omits tests that were already provided for [`Z::from_bytes`].
+mod test_from_utf8 {
+    use super::Z;
+
+    /// Ensures that a wide range of (special) characters are correctly transformed.
+    #[test]
+    fn characters() {
+        let message = "flag{text#1234567890! a_zA-Z$€?/:;,.<>+*}";
+
+        let value = Z::from_utf8(message);
+
+        // easy trick s.t. we don't have to initialize a huge [`Z`] value
+        // while this test should still fail if the value changes
+        let value_zq = value.modulo(65537);
+
+        assert_eq!(Z::from(58285), value_zq);
+    }
+
+    /// Ensure that the empty string results in a zero value.
+    #[test]
+    fn empty_string() {
+        let message = "";
+
+        let value = Z::from_utf8(message);
+
+        assert_eq!(Z::ZERO, value);
     }
 }
 

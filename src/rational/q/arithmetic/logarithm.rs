@@ -17,7 +17,8 @@ impl Q {
     ///
     /// **Warning**: It assumes that the return value does not overflow an [`f64`].
     ///
-    /// Returns the double precision approximation of the natural logarithm of `self`.
+    /// Returns the double precision approximation of the natural logarithm of `self`
+    /// as a [`Q`] instance or a [`MathError`], if `self` is smaller than `1`.
     ///
     /// # Examples
     /// ```
@@ -67,7 +68,7 @@ impl Q {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if the `base` is not greater than `1`.
+    ///     if the `base` is smaller than `2`.
     /// - Returns a [`MathError`] of type
     ///     [`NonPositive`](MathError::NonPositive) if `self` is not
     ///     greater than `0`.

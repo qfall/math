@@ -19,7 +19,8 @@ use crate::{
 use flint_sys::fmpz::fmpz_addmul;
 
 impl MatZq {
-    /// Returns the squared Euclidean norm or 2-norm of the given (row or column) vector.
+    /// Returns the squared Euclidean norm or 2-norm of the given (row or column) vector
+    /// or an error if the given matrix is not a vector.
     ///
     /// Each length of an entry is defined as the shortest distance
     /// to the next zero instance in the ring.
@@ -40,7 +41,7 @@ impl MatZq {
     /// assert_eq!(Z::from(6), sqrd_2_norm);
     /// ```
     ///
-    /// Errors and Failures
+    /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
     ///     the given [`MatZq`] instance is not a (row or column) vector.
     pub fn norm_eucl_sqrd(&self) -> Result<Z, MathError> {
@@ -65,7 +66,8 @@ impl MatZq {
         Ok(result)
     }
 
-    /// Returns the infinity norm or ∞-norm of the given (row or column) vector.
+    /// Returns the infinity norm or ∞-norm of the given (row or column) vector
+    /// or an error if the given matrix is not a vector.
     ///
     /// Each length of an entry is defined as the shortest distance
     /// to the next zero instance in the ring.
@@ -86,7 +88,7 @@ impl MatZq {
     /// assert_eq!(Z::ONE, infty_norm);
     /// ```
     ///
-    /// Errors and Failures
+    /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
     ///     the given [`MatZq`] instance is not a (row or column) vector.
     pub fn norm_infty(&self) -> Result<Z, MathError> {

@@ -19,7 +19,8 @@ impl<Integer: Into<Z>> Pow<Integer> for Q {
     /// Parameters:
     /// - `exp`: specifies the exponent to which the value is raised
     ///
-    /// Returns the value of `self` powered by `exp` as a new [`Q`] instance.
+    /// Returns the value of `self` powered by `exp` as a new [`Q`] instance
+    /// or a [`MathError`], if the exponent is negative and the base value of `self` is not invertible.
     ///
     /// # Examples
     /// ```

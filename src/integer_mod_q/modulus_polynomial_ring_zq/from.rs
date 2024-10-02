@@ -11,18 +11,19 @@
 //! The explicit functions contain the documentation.
 
 use super::ModulusPolynomialRingZq;
-use crate::{error::MathError, integer_mod_q::PolyOverZq};
+use crate::{error::MathError, integer_mod_q::PolyOverZq, macros::for_others::implement_for_owned};
 use flint_sys::fq::fq_ctx_init_modulus;
 use std::{ffi::CString, mem::MaybeUninit, rc::Rc, str::FromStr};
 
 impl From<&PolyOverZq> for ModulusPolynomialRingZq {
-    /// Create a new Modulus object of type [`ModulusPolynomialRingZq`]
+    /// Creates a Modulus object of type [`ModulusPolynomialRingZq`]
     /// for [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq)
     ///
     /// Parameters:
-    /// - `modulus_poly`: the polynomial which is used as the modulus
+    /// - `modulus_poly`: the polynomial which is used as the modulus.
     ///
-    /// Returns the new modulus object.
+    /// Returns a new [`ModulusPolynomialRingZq`] object with the coefficients
+    /// and modulus from the [`PolyOverZq`] instance.
     ///
     /// # Examples
     /// ```
@@ -50,16 +51,7 @@ impl From<&PolyOverZq> for ModulusPolynomialRingZq {
     }
 }
 
-impl From<PolyOverZq> for ModulusPolynomialRingZq {
-    /// Create a new Modulus object of type [`ModulusPolynomialRingZq`]
-    /// for [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq).
-    ///
-    /// For extensive documentation see [`ModulusPolynomialRingZq::from`]
-    /// (with the reference as parameter).
-    fn from(modulus: PolyOverZq) -> Self {
-        ModulusPolynomialRingZq::from(&modulus)
-    }
-}
+implement_for_owned!(PolyOverZq, ModulusPolynomialRingZq, From);
 
 impl From<&ModulusPolynomialRingZq> for ModulusPolynomialRingZq {
     // Only the smart pointer is increased here.
@@ -73,16 +65,21 @@ impl From<&ModulusPolynomialRingZq> for ModulusPolynomialRingZq {
 impl FromStr for ModulusPolynomialRingZq {
     type Err = MathError;
 
-    /// Creating a Modulus object of type [`ModulusPolynomialRingZq`]
+    /// Creates a Modulus object of type [`ModulusPolynomialRingZq`]
     /// for [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq). This first
     /// converts the provided string into a [`PolyOverZq`] and then into the Modulus object.
+    ///
+    /// **Warning**: If the input string starts with a correctly formatted
+    /// [`PolyOverZ`](crate::integer::PolyOverZ) object, the rest of the string
+    /// until the `"mod"` is ignored. This means that the input string
+    /// `"4  0 1 2 3 mod 13"` is the same as `"4  0 1 2 3 4 5 6 7 mod 13"`.
     ///
     /// Parameters:
     /// - `s`: has to be a valid string to create a [`PolyOverZq`].
     ///     For further information see [`PolyOverZq::from_str`].
     ///
-    /// Returns a [`ModulusPolynomialRingZq`] or an error, if the provided string was not
-    /// formatted correctly.
+    /// Returns a [`ModulusPolynomialRingZq`] or an error if the provided string was not
+    /// formatted correctly or the modulus was smaller than `2`.
     ///
     /// # Examples
     /// ```
@@ -135,6 +132,15 @@ mod test_try_from_poly_zq {
     fn poly_zq_non_prime() {
         let in_str = format!("4  0 1 3 {} mod {}", u64::MAX, 2_i32.pow(16));
         PolyOverZq::from_str(&in_str).unwrap();
+    }
+
+    /// Ensure that the conversion works for owned values
+    #[test]
+    fn availability() {
+        let poly = PolyOverZq::from_str(&format!("4  0 1 102 {} mod {}", u64::MAX - 58, u64::MAX))
+            .unwrap();
+
+        let _ = ModulusPolynomialRingZq::from(poly);
     }
 }
 

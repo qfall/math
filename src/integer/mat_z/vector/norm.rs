@@ -18,7 +18,8 @@ use crate::{
 use flint_sys::fmpz::fmpz_addmul;
 
 impl MatZ {
-    /// Returns the squared Euclidean norm or 2-norm of the given (row or column) vector.
+    /// Returns the squared Euclidean norm or 2-norm of the given (row or column) vector
+    /// or an error if the given [`MatZ`] instance is not a (row or column) vector.
     ///
     /// # Examples
     /// ```
@@ -33,7 +34,7 @@ impl MatZ {
     /// assert_eq!(Z::from(14), sqrd_2_norm);
     /// ```
     ///
-    /// Errors and Failures
+    /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
     ///     the given [`MatZ`] instance is not a (row or column) vector.
     pub fn norm_eucl_sqrd(&self) -> Result<Z, MathError> {
@@ -57,7 +58,8 @@ impl MatZ {
         Ok(result)
     }
 
-    /// Returns the infinity norm or ∞-norm of the given (row or column) vector.
+    /// Returns the infinity norm or ∞-norm of the given (row or column) vector
+    /// or an error if the given [`MatZ`] instance is not a (row or column) vector.
     ///
     /// # Examples
     /// ```
@@ -72,7 +74,7 @@ impl MatZ {
     /// assert_eq!(Z::from(3), infty_norm);
     /// ```
     ///
-    /// Errors and Failures
+    /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
     ///     the given [`MatZ`] instance is not a (row or column) vector.
     pub fn norm_infty(&self) -> Result<Z, MathError> {
