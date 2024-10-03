@@ -55,7 +55,7 @@ impl Q {
 
     /// Checks if a [`Q`] is `0`.
     ///
-    /// Returns true if the value is `0`.
+    /// Returns `true` if the value is `0`.
     ///
     /// # Examples
     /// ```
@@ -70,7 +70,7 @@ impl Q {
 
     /// Checks if a [`Q`] is `1`.
     ///
-    /// Returns true if the value is `1`.
+    /// Returns `true` if the value is `1`.
     ///
     /// # Examples
     /// ```

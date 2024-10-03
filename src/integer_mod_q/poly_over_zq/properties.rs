@@ -37,7 +37,7 @@ impl PolyOverZq {
 
     /// Checks if a [`PolyOverZq`] is the constant polynomial with coefficient `1`.
     ///
-    /// Returns `true` if the first coefficient is `1` and is the only coefficient.
+    /// Returns `true` if there is only one coefficient, which is `1`.
     ///
     /// # Examples
     /// ```
@@ -76,7 +76,7 @@ mod test_is_irreducible {
     /// Ensure that a irreducible [`PolyOverZq`] returns `true`.
     #[test]
     fn poly_is_irreducible() {
-        // 9X^2 + 12X + 10 is irreducible over Z17
+        // 9X^2 + 12X + 10 is irreducible over 17
         let poly_irr = PolyOverZq::from_str("3  10 12 9 mod 17").unwrap();
         assert!(poly_irr.is_irreducible());
     }
@@ -109,7 +109,7 @@ mod test_is_one {
     fn one_rejection() {
         let small = PolyOverZq::from_str("4  1 0 0 1 mod 7").unwrap();
         let large =
-            PolyOverZq::from_str(&format!("1  {} mod {}", (u128::MAX - 1) / 2 + 2, u128::MAX)) //2^127 + 1 the last memory entry is `1`
+            PolyOverZq::from_str(&format!("1  {} mod {}", (u128::MAX - 1) / 2 + 2, u128::MAX)) // 2^127 + 1 the last memory entry is `1`
                 .unwrap();
 
         assert!(!small.is_one());
@@ -137,7 +137,7 @@ mod test_is_zero {
     fn zero_rejection() {
         let small = PolyOverZq::from_str("4  0 0 0 1 mod 7").unwrap();
         let large =
-            PolyOverZq::from_str(&format!("1  {} mod {}", (u128::MAX - 1) / 2 + 1, u128::MAX)) //last 126 bits are 0
+            PolyOverZq::from_str(&format!("1  {} mod {}", (u128::MAX - 1) / 2 + 1, u128::MAX)) // last 126 bits are 0
                 .unwrap();
 
         assert!(!small.is_zero());

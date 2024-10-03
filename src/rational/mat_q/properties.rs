@@ -14,7 +14,7 @@ use flint_sys::fmpq_mat::{fmpq_mat_is_one, fmpq_mat_is_square, fmpq_mat_is_zero}
 impl MatQ {
     /// Checks if a [`MatQ`] is the identity matrix.
     ///
-    /// Returns true if every diagonal entry of the upper square matrix is `1`
+    /// Returns `true` if every diagonal entry of the upper square matrix is `1`
     /// and all other entries are `0`.
     ///
     /// # Examples
@@ -38,7 +38,7 @@ impl MatQ {
 
     /// Checks if a [`MatQ`] is a square matrix.
     ///
-    /// Returns true if the number of rows and columns is identical.
+    /// Returns `true` if the number of rows and columns is identical.
     ///
     /// # Examples
     /// ```
@@ -54,7 +54,7 @@ impl MatQ {
 
     /// Checks if every entry of a [`MatQ`] is `0`.
     ///
-    /// Returns true if every entry is `0`.
+    /// Returns `true` if every entry is `0`.
     ///
     /// # Examples
     /// ```
@@ -70,7 +70,7 @@ impl MatQ {
 
     /// Checks if a [`MatQ`] is symmetric.
     ///
-    /// Returns true if we have `a_ij == a_ji` for all i,j.
+    /// Returns `true` if we have `a_ij == a_ji` for all i,j.
     ///
     /// # Examples
     /// ```

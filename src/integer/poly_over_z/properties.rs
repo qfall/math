@@ -14,7 +14,7 @@ use flint_sys::fmpz_poly::{fmpz_poly_degree, fmpz_poly_is_one};
 impl PolyOverZ {
     /// Checks if a [`PolyOverZ`] is the constant polynomial with coefficient `1`.
     ///
-    /// Returns true if there is only one coefficient, which is `1`.
+    /// Returns `true` if there is only one coefficient, which is `1`.
     ///
     /// # Examples
     /// ```
@@ -30,7 +30,7 @@ impl PolyOverZ {
 
     /// Checks if every entry of a [`PolyOverZ`] is `0`.
     ///
-    /// Returns true if [`PolyOverZ`] has no coefficients.
+    /// Returns `true` if [`PolyOverZ`] has no coefficients.
     ///
     /// # Examples
     /// ```

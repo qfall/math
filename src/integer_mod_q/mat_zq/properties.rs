@@ -17,7 +17,7 @@ use flint_sys::{
 impl MatZq {
     /// Checks if a [`MatZq`] is the identity matrix.
     ///
-    /// Returns true if every diagonal entry of the upper square matrix is `1`
+    /// Returns `true` if every diagonal entry of the upper square matrix is `1`
     /// and all other entries are `0`.
     ///
     /// # Examples
@@ -42,7 +42,7 @@ impl MatZq {
 
     /// Checks if a [`MatZq`] is a square matrix.
     ///
-    /// Returns true if the number of rows and columns is identical.
+    /// Returns `true` if the number of rows and columns is identical.
     ///
     /// # Examples
     /// ```
@@ -58,7 +58,7 @@ impl MatZq {
 
     /// Checks if every entry of a [`MatZq`] is `0`.
     ///
-    /// Returns true if every entry is `0`.
+    /// Returns `true` if every entry is `0`.
     ///
     /// # Examples
     /// ```
