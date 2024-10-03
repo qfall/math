@@ -6,19 +6,57 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementations to get content of a
-//! [`PolynomialRingZq].
+//! Implementations to get content of a [`PolynomialRingZq].
 
 use super::PolynomialRingZq;
 use crate::{
     error::MathError,
     integer::{PolyOverZ, Z},
-    integer_mod_q::ModulusPolynomialRingZq,
+    integer_mod_q::{ModulusPolynomialRingZq, Zq},
     traits::GetCoefficient,
     utils::index::evaluate_index,
 };
 use flint_sys::fmpz_poly::{fmpz_poly_degree, fmpz_poly_get_coeff_fmpz};
 use std::fmt::Display;
+
+impl GetCoefficient<Zq> for PolynomialRingZq {
+    /// Returns the coefficient of a [`PolynomialRingZq`] as a [`Zq`].
+    ///
+    /// If an index is provided which exceeds the highest set coefficient, `0` is returned.
+    ///
+    /// Parameters:
+    /// - `index`: the index of the coefficient to get (has to be positive)
+    ///
+    /// Returns the coefficient as a [`Zq`], or a [`MathError`] if the provided index
+    /// is negative and therefore invalid, or it does not fit into an [`i64`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::traits::*;
+    /// use qfall_math::integer_mod_q::{PolynomialRingZq, Zq};
+    /// use std::str::FromStr;
+    ///
+    /// let poly_ring = PolynomialRingZq::from_str("3  0 1 1 / 4  1 0 0 1 mod 17").unwrap();
+    ///
+    /// let coeff_0: Zq = poly_ring.get_coeff(0).unwrap();
+    /// let coeff_1: Zq = poly_ring.get_coeff(1).unwrap();
+    /// let coeff_3: Zq = poly_ring.get_coeff(3).unwrap();
+    ///
+    /// assert_eq!(Zq::from((0, 17)), coeff_0);
+    /// assert_eq!(Zq::from((1, 17)), coeff_1);
+    /// assert_eq!(Zq::from((0, 17)), coeff_3);
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
+    ///     either the index is negative or it does not fit into an [`i64`].
+    fn get_coeff(&self, index: impl TryInto<i64> + Display) -> Result<Zq, MathError> {
+        let index = evaluate_index(index)?;
+        let mut out_z = Z::default();
+        unsafe { fmpz_poly_get_coeff_fmpz(&mut out_z.value, &self.poly.poly, index) }
+        Ok(Zq::from((out_z, &self.modulus.get_q())))
+    }
+}
 
 impl GetCoefficient<Z> for PolynomialRingZq {
     /// Returns the coefficient of a [`PolynomialRingZq`] as a [`Z`].
@@ -130,7 +168,7 @@ impl PolynomialRingZq {
 mod test_get_coeff {
     use crate::{
         integer::{PolyOverZ, Z},
-        integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq},
+        integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq, Zq},
         traits::GetCoefficient,
     };
     use std::str::FromStr;
@@ -142,9 +180,11 @@ mod test_get_coeff {
         let poly = PolyOverZ::from_str("3  1 1 1").unwrap();
         let poly_ring = PolynomialRingZq::from((&poly, &modulus));
 
-        let zero_coeff = poly_ring.get_coeff(3).unwrap();
+        let zero_coeff_z = poly_ring.get_coeff(3).unwrap();
+        let zero_coeff_zq = poly_ring.get_coeff(3).unwrap();
 
-        assert_eq!(Z::ZERO, zero_coeff);
+        assert_eq!(Z::ZERO, zero_coeff_z);
+        assert_eq!(Zq::from((0, 17)), zero_coeff_zq);
     }
 
     /// Tests if coefficients are returned correctly.
@@ -154,9 +194,11 @@ mod test_get_coeff {
         let poly = PolyOverZ::from_str("3  1 0 3").unwrap();
         let poly_ring = PolynomialRingZq::from((&poly, &modulus));
 
-        let coeff = poly_ring.get_coeff(2).unwrap();
+        let coeff_z = poly_ring.get_coeff(2).unwrap();
+        let coeff_zq = poly_ring.get_coeff(2).unwrap();
 
-        assert_eq!(Z::from(3), coeff);
+        assert_eq!(Z::from(3), coeff_z);
+        assert_eq!(Zq::from((3, 17)), coeff_zq);
     }
 
     /// Tests if large coefficients are returned correctly.
@@ -168,18 +210,32 @@ mod test_get_coeff {
         let poly_ring = PolynomialRingZq::from((&poly, &modulus));
 
         assert_eq!(Z::from(i64::MAX), poly_ring.get_coeff(1).unwrap());
+        assert_eq!(
+            Zq::from((i64::MAX, u64::MAX)),
+            poly_ring.get_coeff(1).unwrap()
+        );
     }
 
-    /// Tests if negative index yields an error.
+    /// Tests if negative index yields an error in get_coeff with [`Z`].
     #[test]
-    fn negative_index_error() {
+    #[should_panic]
+    fn negative_index_error_z() {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly = PolyOverZ::from_str("3  1 0 3").unwrap();
         let poly_ring = PolynomialRingZq::from((&poly, &modulus));
 
-        let coeff = poly_ring.get_coeff(-1);
+        let _: Z = poly_ring.get_coeff(-1).unwrap();
+    }
 
-        assert!(coeff.is_err());
+    /// Tests if negative index yields an error in get_coeff with [`Zq`].
+    #[test]
+    #[should_panic]
+    fn negative_index_error_zq() {
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        let poly = PolyOverZ::from_str("3  1 0 3").unwrap();
+        let poly_ring = PolynomialRingZq::from((&poly, &modulus));
+
+        let _: Zq = poly_ring.get_coeff(-1).unwrap();
     }
 }
 
