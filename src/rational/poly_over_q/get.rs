@@ -16,13 +16,13 @@ use std::fmt::Display;
 impl GetCoefficient<Q> for PolyOverQ {
     /// Returns the coefficient of a polynomial [`PolyOverQ`] as a [`Q`].
     ///
-    /// If a index is provided which exceeds the highest set coefficient, `0` is returned.
+    /// If an index is provided which exceeds the highest set coefficient, `0` is returned.
     ///
     /// Parameters:
     /// - `index`: the index of the coefficient to get (has to be positive)
     ///
-    /// Returns the coefficient as a [`Q`] or a [`MathError`] if the provided index
-    /// is negative and therefore invalid or it does not fit into an [`i64`].
+    /// Returns the coefficient as a [`Q`], or a [`MathError`] if the provided index
+    /// is negative and therefore invalid, or it does not fit into an [`i64`].
     ///
     /// # Examples
     /// ```

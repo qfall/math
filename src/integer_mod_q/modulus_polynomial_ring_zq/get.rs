@@ -171,7 +171,11 @@ impl ModulusPolynomialRingZq {
 
 #[cfg(test)]
 mod test_get_coeff_z {
-    use crate::{integer::Z, integer_mod_q::{ModulusPolynomialRingZq, Zq}, traits::GetCoefficient};
+    use crate::{
+        integer::Z,
+        integer_mod_q::{ModulusPolynomialRingZq, Zq},
+        traits::GetCoefficient,
+    };
     use std::str::FromStr;
 
     /// Ensure that `0` is returned if the provided index is not yet set.
@@ -206,7 +210,10 @@ mod test_get_coeff_z {
                 .unwrap();
 
         assert_eq!(Z::from(u64::MAX - 1), poly.get_coeff(1).unwrap());
-        assert_eq!(Zq::from((u64::MAX - 1, u64::MAX)), poly.get_coeff(1).unwrap());
+        assert_eq!(
+            Zq::from((u64::MAX - 1, u64::MAX)),
+            poly.get_coeff(1).unwrap()
+        );
     }
 
     /// Tests if negative index yields an error in get_coeff with [`Z`].
