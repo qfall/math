@@ -14,10 +14,14 @@ use super::MatZ;
 use crate::{
     error::MathError,
     integer::Z,
-    traits::SetEntry,
-    utils::{dimensions::find_matrix_dimensions, parse::parse_matrix_string},
+    traits::{GetNumColumns, GetNumRows, SetEntry},
+    utils::{
+        dimensions::find_matrix_dimensions,
+        index::evaluate_indices,
+        parse::{matrix_from_utf8_fill_bytes, parse_matrix_string},
+    },
 };
-use std::str::FromStr;
+use std::{fmt::Display, str::FromStr};
 
 impl FromStr for MatZ {
     type Err = MathError;
@@ -73,6 +77,56 @@ impl From<&MatZ> for MatZ {
     /// Alias for [`MatZ::clone`].
     fn from(value: &MatZ) -> Self {
         value.clone()
+    }
+}
+
+impl MatZ {
+    /// Create a [`MatZ`] from a [`String`], i.e. its UTF8-Encoding.
+    /// This function can only construct positive or zero integers, but not negative ones.
+    /// The inverse of this function is [`Z::to_utf8`].
+    ///
+    /// Parameters:
+    /// - `message`: specifies the message that is transformed via its UTF8-Encoding
+    ///   to a new [`MatZ`] instance.
+    /// - `num_rows`: number of rows the new matrix should have
+    /// - `num_cols`: number of columns the new matrix should have
+    ///
+    /// Returns a [`MatZ`] with corresponding entries to the message's UTF8-Encoding.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatZ;
+    /// let message = "hello!";
+    ///  
+    /// let value = MatZ::from_utf8(&message, 2, 1);
+    /// ```
+    pub fn from_utf8(
+        message: &str,
+        num_rows: impl TryInto<i64> + Display,
+        num_cols: impl TryInto<i64> + Display,
+    ) -> Self {
+        let (num_rows_i64, num_cols_i64) = evaluate_indices(num_rows, num_cols).unwrap();
+        let mut mat = MatZ::new(num_rows_i64, num_cols_i64);
+        let num_columns = mat.get_num_columns() as usize;
+        let nr_entries = mat.get_num_rows() as usize * num_columns;
+
+        // This error can't be triggered as no modulus is provided.
+        let (byte_vector, nr_bytes_per_entry) =
+            matrix_from_utf8_fill_bytes(message, nr_entries, None).unwrap();
+
+        // Fill rows going from left to right, entry by entry
+        for row in 0..mat.get_num_rows() as usize {
+            let offset_row = row * num_columns * nr_bytes_per_entry;
+            for col in 0..num_columns {
+                let entry_value = Z::from_bytes(
+                    &byte_vector[offset_row + nr_bytes_per_entry * col
+                        ..offset_row + nr_bytes_per_entry * (col + 1)],
+                );
+                mat.set_entry(row, col, entry_value).unwrap();
+            }
+        }
+
+        mat
     }
 }
 
@@ -158,5 +212,53 @@ mod test_from_str {
         assert!(MatZ::from_str(matrix_str_7).is_err());
         assert!(MatZ::from_str(matrix_str_8).is_err());
         assert!(MatZ::from_str(matrix_str_9).is_err());
+    }
+}
+
+#[cfg(test)]
+/// Test the implementation of [`MatZ::from_utf8`] briefly.
+/// This module omits tests that were already provided for [`Z::from_bytes`]
+/// and [`crate::utils::parse::matrix_from_utf8_fill_bytes`].
+mod test_from_utf8 {
+    use std::str::FromStr;
+
+    use super::{MatZ, Z};
+    use crate::traits::GetEntry;
+
+    /// Ensures that a wide range of (special) characters are correctly transformed correctly.
+    #[test]
+    fn characters() {
+        let message = "flag{text#1234567890! a_zA-Z$€?/:;,.<>+*}";
+
+        let matrix = MatZ::from_utf8(message, 1, 1);
+        let value = matrix.get_entry(0, 0).unwrap();
+
+        // easy trick s.t. we don't have to initialize a huge [`Z`] value
+        // while this test should still fail if the value changes
+        let value_zq = value.modulo(65537);
+
+        assert_eq!(Z::from(58285), value_zq);
+    }
+
+    /// Ensure that the empty string results in a zero value.
+    #[test]
+    fn empty_string() {
+        let message = "";
+
+        let matrix = MatZ::from_utf8(message, 1, 1);
+        let value = matrix.get_entry(0, 0).unwrap();
+
+        assert_eq!(Z::ZERO, value);
+    }
+
+    /// Ensures correct conversion of bytes and their order.
+    #[test]
+    fn conversion_and_order() {
+        let message = "{10_chars}";
+        let cmp_matrix = MatZ::from_str("[[12667, 24368],[26723, 29281],[32115, 12336]]").unwrap();
+
+        let matrix = MatZ::from_utf8(message, 3, 2);
+
+        assert_eq!(cmp_matrix, matrix);
     }
 }
