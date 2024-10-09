@@ -108,6 +108,42 @@ impl From<&Zq> for Zq {
     }
 }
 
+impl Zq {
+    /// Create a [`Zq`] integer from a [`String`], i.e. its UTF8-Encoding.
+    /// The inverse of this function is [`Zq::to_utf8`].
+    ///
+    /// Parameters:
+    /// - `message`: specifies the message that is transformed via its UTF8-Encoding
+    ///   to a new [`Zq`] instance.
+    /// - `modulus`: Defines the modulus by which `value` is reduced.
+    ///
+    /// Returns value defined by `message` mod `modulus` as [`Zq`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::Zq;
+    /// let message = "hello!";
+    ///  
+    /// let value = Zq::from_utf8(&message, i64::MAX).unwrap();
+    /// assert_eq!(Zq::from((36762444129640u64, i64::MAX)), value);
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if `modulus` is smaller than `2`.
+    pub fn from_utf8(message: &str, modulus: impl Into<Modulus>) -> Result<Zq, MathError> {
+        let modulus: Modulus = modulus.into();
+        let modulus_as_z: Z = (&modulus).into();
+        let value = Z::from_utf8(message);
+
+        if modulus_as_z > value {
+            return Ok(Zq::from((value, &modulus)));
+        }
+        Err(MathError::ConversionError(
+            "The provided modulus is smaller than the UTF8-Encoding of your message.".to_owned(),
+        ))
+    }
+}
+
 #[cfg(test)]
 mod test_from_trait {
     use crate::{
@@ -292,5 +328,33 @@ mod tests_from_str {
         assert!(Zq::from_str("3 5").is_err());
         assert!(Zq::from_str("3%5").is_err());
         assert!(Zq::from_str("3/5 mod 3").is_err());
+    }
+}
+
+#[cfg(test)]
+/// Test the implementation of [`Zq::from_utf8`] briefly.
+/// This module omits tests that were already provided for [`crate::integer::Z::from_utf8`].
+mod test_from_utf8 {
+    use super::Zq;
+
+    /// Ensures that values that are larger than the modulus result in an error.
+    #[test]
+    fn not_enough_memory() {
+        let message = "some_long message with too many bytes";
+        let modulus = u32::MAX;
+
+        let value = Zq::from_utf8(message, modulus);
+
+        assert!(value.is_err());
+    }
+
+    /// Ensures that using a modulus smaller than `2` results in a panic.
+    #[test]
+    #[should_panic]
+    fn modulus_too_small() {
+        let message = "something";
+        let modulus = 1;
+
+        let _ = Zq::from_utf8(message, modulus);
     }
 }
