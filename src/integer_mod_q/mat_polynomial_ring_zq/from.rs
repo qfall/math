@@ -49,6 +49,13 @@ impl<Matrix: Into<MatPolyOverZ>, Mod: Into<ModulusPolynomialRingZq>> From<(Matri
     }
 }
 
+impl From<&MatPolynomialRingZq> for MatPolynomialRingZq {
+    /// Alias for [`MatPolynomialRingZq::clone`].
+    fn from(value: &MatPolynomialRingZq) -> Self {
+        value.clone()
+    }
+}
+
 #[cfg(test)]
 mod test_from {
     use crate::{
