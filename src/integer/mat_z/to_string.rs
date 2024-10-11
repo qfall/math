@@ -78,7 +78,7 @@ impl MatZ {
     ///
     /// **Warning**: Not every byte-sequence forms a valid UTF8-Encoding.
     /// In these cases, an error is returned. Please check the format of your message again.
-    /// The matrix entries are evaluated row by row, i.e. in the order of the output of [`MatZ::to_string`].
+    /// The matrix entries are evaluated row by row, i.e. in the order of the output of `mat_z.to_string()`.
     ///
     /// Returns the corresponding UTF8-encoded [`String`] or a
     /// [`FromUtf8Error`] if the byte sequence contains an invalid UTF8-character.
