@@ -83,6 +83,8 @@ impl From<&MatZ> for MatZ {
 impl MatZ {
     /// Create a [`MatZ`] from a [`String`], i.e. its UTF8-Encoding.
     /// This function can only construct positive or zero integers, but not negative ones.
+    /// If the number of bytes and number of entries does not line up, we pad the message
+    /// with `'0'`s.
     /// The inverse of this function is [`Z::to_utf8`].
     ///
     /// Parameters:
@@ -100,6 +102,10 @@ impl MatZ {
     ///  
     /// let value = MatZ::from_utf8(&message, 2, 1);
     /// ```
+    ///
+    /// # Panics ...
+    /// - if the provided number of rows and columns are not suited to create a matrix.
+    ///     For further information see [`MatZ::new`].
     pub fn from_utf8(
         message: &str,
         num_rows: impl TryInto<i64> + Display,
@@ -220,10 +226,9 @@ mod test_from_str {
 /// This module omits tests that were already provided for [`Z::from_bytes`]
 /// and [`crate::utils::parse::matrix_from_utf8_fill_bytes`].
 mod test_from_utf8 {
-    use std::str::FromStr;
-
     use super::{MatZ, Z};
     use crate::traits::GetEntry;
+    use std::str::FromStr;
 
     /// Ensures that a wide range of (special) characters are correctly transformed correctly.
     #[test]

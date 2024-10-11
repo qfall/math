@@ -76,8 +76,9 @@ impl MatZ {
     /// Enables conversion to a UTF8-Encoded [`String`] for [`MatZ`] values.
     /// The inverse to this function is [`MatZ::from_utf8`] for valid UTF8-Encodings.
     ///
-    /// **Warning**: Not every byte-sequence forms a valid UTF8-character.
-    /// If this is the case, a [`FromUtf8Error`] will be returned.
+    /// **Warning**: Not every byte-sequence forms a valid UTF8-Encoding.
+    /// In these cases, an error is returned. Please check the format of your message again.
+    /// The matrix entries are evaluated row by row, i.e. in the order of the output of [`MatZ::to_string`].
     ///
     /// Returns the corresponding UTF8-encoded [`String`] or a
     /// [`FromUtf8Error`] if the byte sequence contains an invalid UTF8-character.

@@ -133,11 +133,16 @@ pub(crate) fn matrix_to_string<S: Display, T: GetEntry<S> + GetNumRows + GetNumC
 /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
 ///     if the UTF8-Encoding is not guaranteed to provide enough free memory
 ///     to fit into the matrix.
+///
+/// # Panics ...
+/// - if `nr_entries` is smaller than or equal to `0`.
 pub(crate) fn matrix_from_utf8_fill_bytes(
     message: &str,
     nr_entries: usize,
     modulus: Option<&Modulus>,
 ) -> Result<(Vec<u8>, usize), MathError> {
+    assert!(nr_entries > 0);
+
     let msg_bytes = message.as_bytes();
 
     let bytes_per_entry = msg_bytes.len() as f64 / nr_entries as f64;
@@ -305,9 +310,8 @@ mod test_matrix_to_string {
 
 #[cfg(test)]
 mod test_matrix_from_utf8_fill_bytes {
-    use crate::integer_mod_q::Modulus;
-
     use super::matrix_from_utf8_fill_bytes;
+    use crate::integer_mod_q::Modulus;
 
     /// A static test to ensure the UTF8-Decoding works properly and the correct padding is applied.
     #[test]
@@ -431,5 +435,29 @@ mod test_matrix_from_utf8_fill_bytes {
         let byte_vector = matrix_from_utf8_fill_bytes(message, matrix_size, Some(&modulus));
 
         assert!(byte_vector.is_err());
+    }
+
+    /// Ensures that an empty message results in an empty byte-vector.
+    #[test]
+    fn empty_string() {
+        let message = "";
+        let matrix_size = 2;
+        let cmp_vec: Vec<u8> = vec![];
+
+        let (byte_vector, nr_bytes_per_entry) =
+            matrix_from_utf8_fill_bytes(message, matrix_size, None).unwrap();
+
+        assert_eq!(cmp_vec, byte_vector);
+        assert_eq!(0, nr_bytes_per_entry);
+    }
+
+    /// Ensures that matrices with
+    #[test]
+    #[should_panic]
+    fn matrix_size_zero() {
+        let message = "abc";
+        let matrix_size = 0;
+
+        let _ = matrix_from_utf8_fill_bytes(message, matrix_size, None).unwrap();
     }
 }
