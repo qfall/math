@@ -17,10 +17,11 @@ use crate::{
 };
 use flint_sys::{
     fmpz::fmpz_set,
+    fmpz_mod::fmpz_mod_ctx_init,
     fmpz_mod_poly::fmpz_mod_poly_get_coeff_fmpz,
     fq::{fq_ctx_degree, fq_ctx_struct},
 };
-use std::{fmt::Display, rc::Rc};
+use std::{fmt::Display, mem::MaybeUninit, rc::Rc};
 
 impl GetCoefficient<Zq> for ModulusPolynomialRingZq {
     /// Returns the coefficient of a polynomial [`ModulusPolynomialRingZq`] as a [`Zq`].
@@ -56,6 +57,7 @@ impl GetCoefficient<Zq> for ModulusPolynomialRingZq {
     fn get_coeff(&self, index: impl TryInto<i64> + Display) -> Result<Zq, MathError> {
         let index = evaluate_index(index)?;
         let mut out_z = Z::default();
+        let mut ctx = MaybeUninit::uninit();
 
         unsafe {
             fmpz_mod_poly_get_coeff_fmpz(
@@ -63,14 +65,16 @@ impl GetCoefficient<Zq> for ModulusPolynomialRingZq {
                 &self.modulus.modulus[0],
                 index,
                 &self.get_fq_ctx_struct().ctxp[0],
-            )
+            );
+
+            fmpz_mod_ctx_init(ctx.as_mut_ptr(), &self.get_fq_ctx_struct().ctxp[0].n[0]);
+
+            let modulus = Modulus {
+                modulus: Rc::new(ctx.assume_init()),
+            };
+
+            Ok(Zq::from((out_z, modulus)))
         }
-
-        let modulus = Modulus {
-            modulus: Rc::new(self.get_fq_ctx_struct().ctxp[0]),
-        };
-
-        Ok(Zq::from((out_z, modulus)))
     }
 }
 
