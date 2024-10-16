@@ -55,18 +55,10 @@ impl GetCoefficient<Zq> for ModulusPolynomialRingZq {
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
     ///     either the index is negative or it does not fit into an [`i64`].
     fn get_coeff(&self, index: impl TryInto<i64> + Display) -> Result<Zq, MathError> {
-        let index = evaluate_index(index)?;
-        let mut out_z = Z::default();
+        let out_z: Z = self.get_coeff(index)?;
+
         let mut ctx = MaybeUninit::uninit();
-
         unsafe {
-            fmpz_mod_poly_get_coeff_fmpz(
-                &mut out_z.value,
-                &self.modulus.modulus[0],
-                index,
-                &self.get_fq_ctx_struct().ctxp[0],
-            );
-
             fmpz_mod_ctx_init(ctx.as_mut_ptr(), &self.get_fq_ctx_struct().ctxp[0].n[0]);
 
             let modulus = Modulus {
