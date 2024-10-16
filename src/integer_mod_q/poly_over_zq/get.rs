@@ -22,13 +22,13 @@ use std::fmt::Display;
 impl GetCoefficient<Zq> for PolyOverZq {
     /// Returns the coefficient of a polynomial [`PolyOverZq`] as a [`Zq`].
     ///
-    /// If a index is provided which exceeds the highest set coefficient, `0` is returned.
+    /// If an index is provided which exceeds the highest set coefficient, `0` is returned.
     ///
     /// Parameters:
     /// - `index`: the index of the coefficient to get (has to be positive)
     ///
-    /// Returns the coefficient as a [`Zq`] or a [`MathError`] if the provided index
-    /// is negative and therefore invalid or it does not fit into an [`i64`].
+    /// Returns the coefficient as a [`Zq`], or a [`MathError`] if the provided index
+    /// is negative and therefore invalid, or it does not fit into an [`i64`].
     ///
     /// # Examples
     /// ```
@@ -60,13 +60,13 @@ impl GetCoefficient<Zq> for PolyOverZq {
 impl GetCoefficient<Z> for PolyOverZq {
     /// Returns the coefficient of a polynomial [`PolyOverZq`] as a [`Z`].
     ///
-    /// If a index is provided which exceeds the highest set coefficient, `0` is returned.
+    /// If an index is provided which exceeds the highest set coefficient, `0` is returned.
     ///
     /// Parameters:
     /// - `index`: the index of the coefficient to get (has to be positive)
     ///
-    /// Returns the coefficient as a [`Z`] or a [`MathError`] if the provided index
-    /// is negative and therefore invalid or it does not fit into an [`i64`].
+    /// Returns the coefficient as a [`Z`], or a [`MathError`] if the provided index
+    /// is negative and therefore invalid, or it does not fit into an [`i64`].
     ///
     /// # Examples
     /// ```
@@ -136,8 +136,8 @@ impl PolyOverZq {
     }
 }
 
-// we omit the tests for the value of the [`Zq`], and focus on the [`Modulus`] being set correctly
-// since get_coefficient for [`Z`] is called, where we will check the value itself
+// We omit the tests for the value of the [`Zq`], and focus on the [`Modulus`] being set correctly
+// since get_coefficient for [`Z`] is called, where we will check the value itself.
 #[cfg(test)]
 mod test_get_coeff_zq_modulus {
     use crate::{
@@ -146,7 +146,7 @@ mod test_get_coeff_zq_modulus {
     };
     use std::str::FromStr;
 
-    /// Ensure that the [`Modulus`] is transferred correctly when accessing an index out of bounds
+    /// Ensure that the [`Modulus`] is transferred correctly when accessing an index out of bounds.
     #[test]
     fn index_out_of_range_modulus() {
         let modulus_str = format!("17{}", u64::MAX);
@@ -159,7 +159,7 @@ mod test_get_coeff_zq_modulus {
         assert_eq!(modulus, zero_coeff.modulus);
     }
 
-    /// Ensure that the [`Modulus`] is transferred correctly when accessing an index in bounds
+    /// Ensure that the [`Modulus`] is transferred correctly when accessing an index in bounds.
     #[test]
     fn index_in_range_modulus() {
         let modulus_str = format!("17{}", u64::MAX);
@@ -178,7 +178,7 @@ mod test_get_coeff_z {
     use crate::{integer::Z, integer_mod_q::PolyOverZq, traits::GetCoefficient};
     use std::str::FromStr;
 
-    /// Ensure that `0` is returned if the provided index is not yet set
+    /// Ensure that `0` is returned if the provided index is not yet set.
     #[test]
     fn index_out_of_range() {
         let modulus_str = format!("17{}", u64::MAX);
@@ -190,7 +190,7 @@ mod test_get_coeff_z {
         assert_eq!(Z::ZERO, zero_coeff);
     }
 
-    /// Tests if positive coefficients are returned correctly
+    /// Tests if positive coefficients are returned correctly.
     #[test]
     fn positive_coeff() {
         let modulus_str = format!("17{}", u64::MAX);
@@ -202,7 +202,7 @@ mod test_get_coeff_z {
         assert_eq!(Z::from(2), coeff);
     }
 
-    /// Tests if large coefficients are returned correctly
+    /// Tests if large coefficients are returned correctly.
     #[test]
     fn large_coeff() {
         let modulus_str = format!("17{}", u64::MAX);
@@ -213,7 +213,7 @@ mod test_get_coeff_z {
         assert_eq!(Z::from(i64::MAX), poly.get_coeff(1).unwrap());
     }
 
-    /// Tests if large negative coefficients are returned correctly
+    /// Tests if large negative coefficients are returned correctly.
     #[test]
     fn large_modulus_applied_negative_large_coefficient() {
         let modulus_str = format!("{}", u64::MAX);
@@ -230,7 +230,7 @@ mod test_get_degree {
     use crate::integer_mod_q::PolyOverZq;
     use std::str::FromStr;
 
-    /// Ensure that degree is working
+    /// Ensure that degree is working.
     #[test]
     fn degree() {
         let poly = PolyOverZq::from_str("4  0 1 2 3 mod 7").unwrap();
@@ -240,7 +240,7 @@ mod test_get_degree {
         assert_eq!(3, deg);
     }
 
-    /// Ensure that degree is working for constant polynomials
+    /// Ensure that degree is working for constant polynomials.
     #[test]
     fn degree_constant() {
         let poly_1 = PolyOverZq::from_str("1  1 mod 19").unwrap();
@@ -253,7 +253,7 @@ mod test_get_degree {
         assert_eq!(-1, deg_2);
     }
 
-    /// Ensure that degree is working for polynomials with leading 0 coefficients
+    /// Ensure that degree is working for polynomials with leading 0 coefficients.
     #[test]
     fn degree_leading_zeros() {
         let poly = PolyOverZq::from_str("4  1 0 0 0 mod 199").unwrap();
@@ -264,7 +264,7 @@ mod test_get_degree {
     }
 
     /// Ensure that degree is working for polynomials with many coefficients
-    /// flint does not reduce the exponent due to computational cost
+    /// flint does not reduce the exponent due to computational cost.
     #[test]
     fn degree_many_coefficients() {
         let poly_1 = PolyOverZq::from_str("7  1 2 3 4 8 1 3 mod 2").unwrap();
