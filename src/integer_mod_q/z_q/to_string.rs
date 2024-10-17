@@ -14,6 +14,7 @@
 use super::Zq;
 use crate::macros::for_others::implement_for_owned;
 use core::fmt;
+use std::string::FromUtf8Error;
 
 impl From<&Zq> for String {
     /// Converts a [`Zq`] into its [`String`] representation.
@@ -64,6 +65,32 @@ impl fmt::Display for Zq {
     /// ```
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{} mod {}", self.value, self.modulus)
+    }
+}
+
+impl Zq {
+    /// Enables conversion to a UTF8-Encoded [`String`] for [`Zq`] values.
+    /// The inverse to this function is [`Zq::from_utf8`] for valid UTF8-Encodings.
+    ///
+    /// **Warning**: Not every byte-sequence forms a valid UTF8-character.
+    /// If this is the case, a [`FromUtf8Error`] will be returned.
+    ///
+    /// Returns the corresponding UTF8-encoded [`String`] or a
+    /// [`FromUtf8Error`] if the byte sequence contains an invalid UTF8-character.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::Zq;
+    /// let value = Zq::from((10, 63));
+    ///
+    /// let text: String = value.to_utf8().unwrap();
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`FromUtf8Error`] if the integer's byte sequence contains
+    ///     invalid UTF8-characters.
+    pub fn to_utf8(&self) -> Result<String, FromUtf8Error> {
+        String::from_utf8(self.get_value().to_bytes())
     }
 }
 
@@ -127,5 +154,22 @@ mod test_to_string {
 
         assert_eq!(cmp, string);
         assert_eq!(cmp, borrowed_string);
+    }
+}
+
+#[cfg(test)]
+/// This module omits tests performed in [`crate::integer::Z::to_utf8`].
+mod test_to_utf8 {
+    use super::Zq;
+
+    /// Ensures that [`Zq::to_utf8`] is inverse to [`Zq::from_utf8`] for valid UTF8-Encodings.
+    #[test]
+    fn inverse_to_from_utf8() {
+        let cmp_text = "Test!";
+
+        let value = Zq::from_utf8(cmp_text, u64::MAX).unwrap();
+        let text = value.to_utf8().unwrap();
+
+        assert_eq!(cmp_text, text);
     }
 }
