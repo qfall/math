@@ -117,7 +117,8 @@ impl Zq {
     ///   to a new [`Zq`] instance.
     /// - `modulus`: Defines the modulus by which `value` is reduced.
     ///
-    /// Returns value defined by `message` mod `modulus` as [`Zq`].
+    /// Returns value defined by `message` mod `modulus` as [`Zq`] or a [`MathError`] 
+    /// if the provided modulus is smaller than the UTF8-Encoding of the message.
     ///
     /// # Examples
     /// ```
@@ -127,6 +128,10 @@ impl Zq {
     /// let value = Zq::from_utf8(&message, i64::MAX).unwrap();
     /// assert_eq!(Zq::from((36762444129640u64, i64::MAX)), value);
     /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`ConversionError`](MathError::ConversionError) if the provided modulus 
+    ///     is smaller than the UTF8-Encoding of the message.
     ///
     /// # Panics ...
     /// - if `modulus` is smaller than `2`.
