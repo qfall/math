@@ -117,7 +117,7 @@ impl Zq {
     ///   to a new [`Zq`] instance.
     /// - `modulus`: Defines the modulus by which `value` is reduced.
     ///
-    /// Returns value defined by `message` mod `modulus` as [`Zq`] or a [`MathError`] 
+    /// Returns value defined by `message` mod `modulus` as [`Zq`] or a [`MathError`]
     /// if the provided modulus is smaller than the UTF8-Encoding of the message.
     ///
     /// # Examples
@@ -130,7 +130,7 @@ impl Zq {
     /// ```
     ///
     /// # Errors and Failures
-    /// - Returns a [`ConversionError`](MathError::ConversionError) if the provided modulus 
+    /// - Returns a [`ConversionError`](MathError::ConversionError) if the provided modulus
     ///     is smaller than the UTF8-Encoding of the message.
     ///
     /// # Panics ...
