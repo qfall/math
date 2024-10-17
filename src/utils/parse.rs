@@ -10,6 +10,8 @@
 
 use crate::{
     error::{MathError, StringConversionError},
+    integer::Z,
+    integer_mod_q::Modulus,
     traits::{GetEntry, GetNumColumns, GetNumRows},
 };
 use regex::Regex;
@@ -112,6 +114,66 @@ pub(crate) fn matrix_to_string<S: Display, T: GetEntry<S> + GetNumRows + GetNumC
     builder
         .string()
         .expect("Matrix string contains invalid bytes.")
+}
+
+/// Adds `0`-padding to the UTF8-Encoding of the `message` until every entry of
+/// the matrix has the same number of bytes assigned to it.
+///
+/// Parameters:
+/// - `message`: a [`String`] whose UTF8-Encoding should be encoded in a matrix.
+/// - `nr_entries`: the number of entries in the matrix, i.e. `nr_rows * nr_columns`.
+/// - `modulus`: optional argument if a [`Modulus`] is involved
+///
+/// Returns a padded byte [`Vec<u8>`] with the same number of bytes assigned to
+/// every entry of the matrix and the number of bytes per entry as [`usize`]
+/// or an error if the number of bytes is not guaranteed
+/// to fit into the assigned matrix due to restrictions by a modulus.
+///
+/// # Errors and Failures
+/// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
+///     if the UTF8-Encoding is not guaranteed to provide enough free memory
+///     to fit into the matrix.
+///
+/// # Panics ...
+/// - if `nr_entries` is smaller than or equal to `0`.
+pub(crate) fn matrix_from_utf8_fill_bytes(
+    message: &str,
+    nr_entries: usize,
+    modulus: Option<&Modulus>,
+) -> Result<(Vec<u8>, usize), MathError> {
+    assert!(nr_entries > 0);
+
+    let msg_bytes = message.as_bytes();
+
+    let bytes_per_entry = msg_bytes.len() as f64 / nr_entries as f64;
+    // Rounding is applied for the case if there was a small loss in precision
+    let num_bytes_to_fill =
+        ((bytes_per_entry.ceil() - bytes_per_entry) * nr_entries as f64).round() as usize;
+
+    if modulus.is_some() {
+        let modulus_value: Z = modulus.unwrap().into();
+        let min_nr_bytes_per_entry = modulus_value.to_bytes().len() - 1;
+
+        let total_nr_msg_bytes_incl_padding = msg_bytes.len() + num_bytes_to_fill;
+        let nr_bytes_available_in_matrix = nr_entries * min_nr_bytes_per_entry;
+
+        if nr_bytes_available_in_matrix < total_nr_msg_bytes_incl_padding {
+            Err(MathError::ConversionError(
+                "The matrix does not provide enough memory space to store this message.".to_owned(),
+            ))?;
+        }
+    }
+
+    let mut bytes: Vec<u8> = vec![];
+    for msg_byte in msg_bytes {
+        bytes.push(*msg_byte);
+    }
+    for _i in 0..num_bytes_to_fill {
+        // 48 encodes `0`
+        bytes.push(48u8);
+    }
+
+    Ok((bytes, bytes_per_entry.ceil() as usize))
 }
 
 #[cfg(test)]
@@ -243,5 +305,159 @@ mod test_matrix_to_string {
         let cmp_str_2 = matrix_to_string(&cmp);
 
         assert!(MatZ::from_str(&cmp_str_2).is_ok());
+    }
+}
+
+#[cfg(test)]
+mod test_matrix_from_utf8_fill_bytes {
+    use super::matrix_from_utf8_fill_bytes;
+    use crate::integer_mod_q::Modulus;
+
+    /// A static test to ensure the UTF8-Decoding works properly and the correct padding is applied.
+    #[test]
+    fn static_padding_no_modulus() {
+        let message = "five5";
+        let matrix_size = 8;
+
+        let (byte_vector, _) = matrix_from_utf8_fill_bytes(message, matrix_size, None).unwrap();
+
+        assert_eq!(vec![102, 105, 118, 101, 53, 48, 48, 48], byte_vector);
+    }
+
+    /// Ensures that a correct number of bytes is added s.t. every entry
+    /// in the matrix has the same number of bytes allocated.
+    /// Furthermore, it tests whether the `0`-padding was applied.
+    #[test]
+    fn padding_no_modulus() {
+        let messages = ["abc", "12345", "flag{12345}"];
+        let matrix_sizes: [usize; 3] = [6, 12, 15];
+
+        for message in messages {
+            for matrix_size in matrix_sizes {
+                let (byte_vector, nr_bytes_per_entry) =
+                    matrix_from_utf8_fill_bytes(message, matrix_size, None).unwrap();
+
+                assert_eq!(byte_vector.len() / matrix_size, nr_bytes_per_entry);
+                assert_eq!(
+                    0.0f32,
+                    (byte_vector.len() as f32 / matrix_size as f32).fract()
+                );
+                assert_eq!(48u8, byte_vector[byte_vector.len() - 1]);
+            }
+        }
+    }
+
+    /// Ensures that a no bytes are added if it isn't necessary, i.e.
+    /// if every entry is naturally allocated the same number of bytes.
+    #[test]
+    fn no_padding_no_modulus() {
+        let messages = ["abcdef", "123456", "flag{123456}"];
+        let matrix_sizes: [usize; 2] = [3, 6];
+
+        for message in messages {
+            for matrix_size in matrix_sizes {
+                let (byte_vector, nr_bytes_per_entry) =
+                    matrix_from_utf8_fill_bytes(message, matrix_size, None).unwrap();
+
+                assert_eq!(byte_vector.len() / matrix_size, nr_bytes_per_entry);
+                assert_eq!(
+                    0.0f32,
+                    (byte_vector.len() as f32 / matrix_size as f32).fract()
+                );
+                assert_ne!(48u8, byte_vector[byte_vector.len() - 1]);
+            }
+        }
+    }
+
+    /// Ensures that a correct number of bytes is added s.t. every entry
+    /// in the matrix has the same number of bytes allocated and no modulus is applied.
+    /// Furthermore, it tests whether the `0`-padding was applied.
+    #[test]
+    fn padding_with_modulus() {
+        let messages = ["abc", "12345", "flag{12345}"];
+        let matrix_sizes: [usize; 3] = [6, 12, 15];
+        // Modulus needs to be at least 2^32, which gives space for
+        // 2 bytes in each field, i.e. 12 bytes / 6 entries.
+        let modulus = Modulus::from(u64::pow(2, 16));
+
+        for message in messages {
+            for matrix_size in matrix_sizes {
+                let (byte_vector, nr_bytes_per_entry) =
+                    matrix_from_utf8_fill_bytes(message, matrix_size, Some(&modulus)).unwrap();
+
+                assert_eq!(byte_vector.len() / matrix_size, nr_bytes_per_entry);
+                assert_eq!(
+                    0.0f32,
+                    (byte_vector.len() as f32 / matrix_size as f32).fract()
+                );
+                assert_eq!(48u8, byte_vector[byte_vector.len() - 1]);
+            }
+        }
+    }
+
+    /// Ensures that a no bytes are added if it isn't necessary, i.e.
+    /// if every entry is naturally allocated the same number of bytes.
+    #[test]
+    fn no_padding_with_modulus() {
+        let messages = ["abcd", "1234", "flag{12}"];
+        let matrix_sizes: [usize; 2] = [2, 4];
+        // Modulus needs to be at least 2^32, which gives space for
+        // 4 bytes in each field, i.e. 8 bytes / 2 entries.
+        let modulus = Modulus::from(u64::pow(2, 32));
+
+        for message in messages {
+            for matrix_size in matrix_sizes {
+                let (byte_vector, nr_bytes_per_entry) =
+                    matrix_from_utf8_fill_bytes(message, matrix_size, Some(&modulus)).unwrap();
+
+                assert_eq!(byte_vector.len() / matrix_size, nr_bytes_per_entry);
+                assert_eq!(
+                    0.0f32,
+                    (byte_vector.len() as f32 / matrix_size as f32).fract()
+                );
+                assert_ne!(48u8, byte_vector[byte_vector.len() - 1]);
+            }
+        }
+    }
+
+    /// Ensures that matrices that potentially couldn't provide enough memory
+    /// to store all bytes of the message due to limitations from the [`Modulus`],
+    /// return an error.
+    #[test]
+    fn matrix_space_not_large_enough() {
+        let message = "flag{1}";
+        let matrix_size = 2;
+        // Message has 7 bytes + 1 byte padding = 8 bytes
+        // 8 bytes / 2 (matrix_size) = 4 bytes per entry
+        // Modulus is 2^(32) - 1, i.e. by 1 too small to guarantee storing 4 full bytes per entry
+        let modulus = Modulus::from(u32::MAX);
+
+        let byte_vector = matrix_from_utf8_fill_bytes(message, matrix_size, Some(&modulus));
+
+        assert!(byte_vector.is_err());
+    }
+
+    /// Ensures that an empty message results in an empty byte-vector.
+    #[test]
+    fn empty_string() {
+        let message = "";
+        let matrix_size = 2;
+        let cmp_vec: Vec<u8> = vec![];
+
+        let (byte_vector, nr_bytes_per_entry) =
+            matrix_from_utf8_fill_bytes(message, matrix_size, None).unwrap();
+
+        assert_eq!(cmp_vec, byte_vector);
+        assert_eq!(0, nr_bytes_per_entry);
+    }
+
+    /// Ensures that matrices with
+    #[test]
+    #[should_panic]
+    fn matrix_size_zero() {
+        let message = "abc";
+        let matrix_size = 0;
+
+        let _ = matrix_from_utf8_fill_bytes(message, matrix_size, None).unwrap();
     }
 }
