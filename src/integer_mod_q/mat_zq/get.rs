@@ -30,9 +30,9 @@ impl MatZq {
     /// Creates a [`MatZ`] where each entry is the representative of the
     /// equivalence class of each entry from a [`MatZq`].
     ///
-    /// The values in the output matrix are in the range of `[0, Modulus)`.
+    /// The values in the output matrix are in the range of `[0, modulus)`.
     /// Use [`MatZq::get_closest_to_zero_representative`] if they should be
-    /// in the range `[-Modulus/2, Modulus/2]`.
+    /// in the range `[-modulus/2, modulus/2]`.
     ///
     /// Returns the matrix as a [`MatZ`].
     ///
@@ -54,10 +54,10 @@ impl MatZq {
         out
     }
 
-    /// Get a [`MatZ`] with the representatives close to `0`.
+    /// Creates a [`MatZ`] with the representatives close to `0`.
     ///
-    /// The values in the output matrix are in the range of `[-Modulus/2, Modulus/2]`.
-    /// For even moduli, the positive representative is chosen for the element `Modulus / 2`.
+    /// The values in the output matrix are in the range of `[-modulus/2, modulus/2]`.
+    /// For even moduli, the positive representative is chosen for the element `modulus / 2`.
     ///
     /// Returns an [`MatZ`] representation of the given matrix with
     /// representatives chosen close to `0`.
