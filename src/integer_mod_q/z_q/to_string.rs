@@ -20,7 +20,7 @@ impl From<&Zq> for String {
     /// Converts a [`Zq`] into its [`String`] representation.
     ///
     /// Parameters:
-    /// - `value`: specifies the matrix that will be represented as a [`String`]
+    /// - `value`: specifies the integer and modulus that will be represented as a [`String`]
     ///
     /// Returns a [`String`] of the form `"x mod q"`.
     ///

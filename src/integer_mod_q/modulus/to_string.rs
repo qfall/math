@@ -21,7 +21,7 @@ impl From<&Modulus> for String {
     /// Converts a [`Modulus`] into its [`String`] representation.
     ///
     /// Parameters:
-    /// - `value`: specifies the matrix that will be represented as a [`String`]
+    /// - `value`: specifies the modulus that will be represented as a [`String`]
     ///
     /// Returns a [`String`].
     ///

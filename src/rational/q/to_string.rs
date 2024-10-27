@@ -21,7 +21,7 @@ impl From<&Q> for String {
     /// Converts a [`Q`] into its [`String`] representation.
     ///
     /// Parameters:
-    /// - `value`: specifies the matrix that will be represented as a [`String`]
+    /// - `value`: specifies the rational that will be represented as a [`String`]
     ///
     /// Returns a [`String`] of the form `"x/y"`.
     ///

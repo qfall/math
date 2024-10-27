@@ -21,7 +21,7 @@ impl From<&PolyOverQ> for String {
     /// Converts a [`PolyOverQ`] into its [`String`] representation.
     ///
     /// Parameters:
-    /// - `value`: specifies the matrix that will be represented as a [`String`]
+    /// - `value`: specifies the polynomial that will be represented as a [`String`]
     ///
     /// Returns a [`String`] of the form `"[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴..."`.
     ///

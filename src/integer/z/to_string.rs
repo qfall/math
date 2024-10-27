@@ -21,7 +21,7 @@ impl From<&Z> for String {
     /// Converts a [`Z`] into its [`String`] representation.
     ///
     /// Parameters:
-    /// - `value`: specifies the matrix that will be represented as a [`String`]
+    /// - `value`: specifies the integer that will be represented as a [`String`]
     ///
     /// Returns a [`String`].
     ///
