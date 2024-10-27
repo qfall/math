@@ -29,9 +29,9 @@ impl From<&Z> for String {
     /// ```
     /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
-    /// let matrix = Z::from_str("6").unwrap();
+    /// let z = Z::from_str("6").unwrap();
     ///
-    /// let string: String = matrix.into();
+    /// let string: String = z.into();
     /// ```
     fn from(value: &Z) -> Self {
         value.to_string()
@@ -240,10 +240,10 @@ mod test_to_string {
     #[test]
     fn into_works_properly() {
         let cmp = "6";
-        let matrix = Z::from_str(cmp).unwrap();
+        let integer = Z::from_str(cmp).unwrap();
 
-        let string: String = matrix.clone().into();
-        let borrowed_string: String = (&matrix).into();
+        let string: String = integer.clone().into();
+        let borrowed_string: String = (&integer).into();
 
         assert_eq!(cmp, string);
         assert_eq!(cmp, borrowed_string);

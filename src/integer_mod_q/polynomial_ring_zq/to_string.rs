@@ -21,15 +21,17 @@ impl From<&PolynomialRingZq> for String {
     /// Parameters:
     /// - `value`: specifies the polynomial that will be represented as a [`String`]
     ///
-    /// Returns a [`String`] of the form `"[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴...⌴mod⌴[modulus]"`.
+    /// Returns a [`String`] of the form `"`[#number of coefficients of element]⌴⌴[0th coefficient]⌴
+    ///     [1st coefficient]⌴...⌴/⌴[#number of coefficients of polynomial modulus]⌴⌴
+    ///     [0th coefficient]⌴[1st coefficient]⌴...⌴mod⌴[q]`"`.
     ///
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::PolynomialRingZq;
     /// use std::str::FromStr;
-    /// let matrix = PolynomialRingZq::from_str("2  2 1 / 3  2 2 2 mod 3").unwrap();
+    /// let poly = PolynomialRingZq::from_str("2  2 1 / 3  2 2 2 mod 3").unwrap();
     ///
-    /// let string: String = matrix.into();
+    /// let string: String = poly.into();
     /// ```
     fn from(value: &PolynomialRingZq) -> Self {
         value.to_string()
@@ -87,10 +89,10 @@ mod test_to_string {
     #[test]
     fn into_works_properly() {
         let cmp = "2  2 1 / 3  1 1 1 mod 3";
-        let matrix = PolynomialRingZq::from_str(cmp).unwrap();
+        let poly = PolynomialRingZq::from_str(cmp).unwrap();
 
-        let string: String = matrix.clone().into();
-        let borrowed_string: String = (&matrix).into();
+        let string: String = poly.clone().into();
+        let borrowed_string: String = (&poly).into();
 
         assert_eq!(cmp, string);
         assert_eq!(cmp, borrowed_string);

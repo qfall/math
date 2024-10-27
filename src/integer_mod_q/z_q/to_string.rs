@@ -28,9 +28,9 @@ impl From<&Zq> for String {
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
     /// use std::str::FromStr;
-    /// let matrix = Zq::from_str("3 mod 5").unwrap();
+    /// let zq = Zq::from_str("3 mod 5").unwrap();
     ///
-    /// let string: String = matrix.into();
+    /// let string: String = zq.into();
     /// ```
     fn from(value: &Zq) -> Self {
         value.to_string()
@@ -147,10 +147,10 @@ mod test_to_string {
     #[test]
     fn into_works_properly() {
         let cmp = "6 mod 11";
-        let matrix = Zq::from_str(cmp).unwrap();
+        let zq = Zq::from_str(cmp).unwrap();
 
-        let string: String = matrix.clone().into();
-        let borrowed_string: String = (&matrix).into();
+        let string: String = zq.clone().into();
+        let borrowed_string: String = (&zq).into();
 
         assert_eq!(cmp, string);
         assert_eq!(cmp, borrowed_string);
