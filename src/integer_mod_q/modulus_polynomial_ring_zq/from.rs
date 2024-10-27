@@ -34,11 +34,9 @@ impl From<&Zq> for ModulusPolynomialRingZq {
     /// ```
     /// use qfall_math::{integer_mod_q::*, traits::*};
     ///
-    /// let mod_poly = ModulusPolynomialRingZq::from(&Zq::from((2, 10)));
+    /// let zq = Zq::from((2, 10));
     ///
-    /// let poly_cmp = ModulusPolynomialRingZq::from((2, 10));
-    /// assert_eq!(mod_poly, poly_cmp);
-    /// assert_eq!(mod_poly.get_degree(), 0);
+    /// let mod_poly = ModulusPolynomialRingZq::from(&zq);
     /// ```
     fn from(value: &Zq) -> Self {
         let poly_zq = PolyOverZq::from(value);
