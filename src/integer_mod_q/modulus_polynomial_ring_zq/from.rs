@@ -331,12 +331,13 @@ mod test_try_from_poly_z {
     use crate::{integer::PolyOverZ, integer_mod_q::ModulusPolynomialRingZq};
     use std::str::FromStr;
 
-    /// Ensure that non-primes work
+    /// Ensure that primes and non-primes work as modulus
     #[test]
-    fn poly_z_non_prime() {
+    fn poly_z_primes() {
         let poly_z = PolyOverZ::from_str("2  2 2").unwrap();
 
-        let _ = ModulusPolynomialRingZq::from((poly_z, 10));
+        let _ = ModulusPolynomialRingZq::from((&poly_z, 10));
+        let _ = ModulusPolynomialRingZq::from((poly_z, 11));
     }
 
     /// Ensure that the function panics if the modulus polynomial is 0
@@ -364,10 +365,11 @@ mod test_try_from_poly_z {
 mod test_try_from_integer_mod {
     use crate::integer_mod_q::ModulusPolynomialRingZq;
 
-    /// Ensure that non-primes work
+    /// Ensure that primes and non-primes work as modulus
     #[test]
-    fn mod_non_prime() {
+    fn mod_primes() {
         let _ = ModulusPolynomialRingZq::from((5, 10));
+        let _ = ModulusPolynomialRingZq::from((5, 11));
     }
 
     /// Ensure that the function panics if the modulus polynomial is 0
@@ -411,12 +413,14 @@ mod test_try_from_poly_zq {
         assert_eq!(cmp_str, poly_zq.to_string());
     }
 
-    /// Ensure that non-primes work
+    /// Ensure that primes and non-primes work as modulus
     #[test]
-    fn poly_zq_non_prime() {
-        let poly_zq = PolyOverZq::from_str("2  1 1 mod 10").unwrap();
+    fn poly_zq_primes() {
+        let poly_zq_1 = PolyOverZq::from_str("2  1 1 mod 10").unwrap();
+        let poly_zq_2 = PolyOverZq::from_str("2  1 1 mod 11").unwrap();
 
-        let _ = ModulusPolynomialRingZq::from(poly_zq);
+        let _ = ModulusPolynomialRingZq::from(poly_zq_1);
+        let _ = ModulusPolynomialRingZq::from(poly_zq_2);
     }
 
     /// Ensure that the function panics if the modulus polynomial is 0
@@ -466,14 +470,10 @@ mod test_from_str {
         .is_ok());
     }
 
-    /// Ensure that non-primes work
+    /// Ensure that primes and non-primes work as modulus
     #[test]
-    fn poly_zq_non_prime() {
-        assert!(ModulusPolynomialRingZq::from_str(&format!(
-            "4  0 1 3 {} mod {}",
-            u64::MAX,
-            2_i32.pow(16)
-        ))
-        .is_ok())
+    fn poly_zq_primes() {
+        assert!(ModulusPolynomialRingZq::from_str("4  0 1 3 2 mod 10").is_ok());
+        assert!(ModulusPolynomialRingZq::from_str("4  0 1 3 2 mod 11").is_ok());
     }
 }
