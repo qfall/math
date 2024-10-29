@@ -73,7 +73,7 @@ impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for ModulusPolynomialRingZq {
     ///
     /// # Panics ...
     /// - if `modulus` is smaller than `2`, or
-    /// - if the modulus polynomial is `0` or `1`.
+    /// - if the modulus polynomial is `0`.
     fn from((poly, modulus): (&PolyOverZ, Mod)) -> Self {
         let poly_zq = PolyOverZq::from((poly, modulus));
 
@@ -109,7 +109,7 @@ impl<Mod: Into<Modulus>> From<(PolyOverZ, Mod)> for ModulusPolynomialRingZq {
     ///
     /// # Panics ...
     /// - if `modulus` is smaller than `2`, or
-    /// - if the modulus polynomial is `0` or `1`.
+    /// - if the modulus polynomial is `0`.
     fn from((poly, modulus): (PolyOverZ, Mod)) -> Self {
         let poly_zq = PolyOverZq::from((poly, modulus));
 
@@ -142,7 +142,7 @@ impl<Integer: Into<Z>, Mod: Into<Modulus>> From<(Integer, Mod)> for ModulusPolyn
     ///
     /// # Panics ...
     /// - if `modulus` is smaller than `2`, or
-    /// - if the modulus polynomial is `0` or `1`.
+    /// - if the modulus polynomial is `0`.
     fn from((z, modulus): (Integer, Mod)) -> Self {
         let poly_zq = PolyOverZq::from((z, modulus));
 
@@ -174,7 +174,7 @@ impl From<&PolyOverZq> for ModulusPolynomialRingZq {
     ///
     /// # Panics ...
     /// - if `modulus` is smaller than `2`, or
-    /// - if the modulus polynomial is `0` or `1`.
+    /// - if the modulus polynomial is `0`.
     fn from(poly: &PolyOverZq) -> Self {
         check_poly_mod(poly).unwrap();
 
@@ -245,7 +245,7 @@ impl FromStr for ModulusPolynomialRingZq {
     /// - Returns a [`MathError`] of type
     ///     [`InvalidModulus`](MathError::InvalidModulus)
     ///     - if `modulus` is smaller than `2`, or
-    ///     - if the modulus polynomial is `0` or `1`.
+    ///     - if the modulus polynomial is `0`.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let poly_zq = PolyOverZq::from_str(s)?;
 
@@ -275,11 +275,9 @@ impl FromStr for ModulusPolynomialRingZq {
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type
 ///     [`InvalidModulus`](MathError::InvalidModulus)
-///     if the modulus polynomial is `0` or `1`.
+///     if the modulus polynomial is `0`.
 pub(crate) fn check_poly_mod(poly_zq: &PolyOverZq) -> Result<(), MathError> {
-    if poly_zq == &PolyOverZq::from((1, &poly_zq.modulus))
-        || poly_zq == &PolyOverZq::from((0, &poly_zq.modulus))
-    {
+    if poly_zq == &PolyOverZq::from((0, &poly_zq.modulus)) {
         return Err(MathError::InvalidModulus(poly_zq.to_string()));
     }
 
@@ -348,15 +346,6 @@ mod test_try_from_poly_z {
 
         let _ = ModulusPolynomialRingZq::from((poly, 17));
     }
-
-    /// Ensure that the function panics if the modulus polynomial is 1
-    #[test]
-    #[should_panic]
-    fn panic_1() {
-        let poly = PolyOverZ::from(1);
-
-        let _ = ModulusPolynomialRingZq::from((poly, 17));
-    }
 }
 
 /// Most tests with specific values are covered in [`PolyOverZq`](crate::integer_mod_q::PolyOverZq)
@@ -377,13 +366,6 @@ mod test_try_from_integer_mod {
     #[should_panic]
     fn panic_0() {
         let _ = ModulusPolynomialRingZq::from((0, 17));
-    }
-
-    /// Ensure that the function panics if the modulus polynomial is 1
-    #[test]
-    #[should_panic]
-    fn panic_1() {
-        let _ = ModulusPolynomialRingZq::from((1, 17));
     }
 }
 
@@ -428,15 +410,6 @@ mod test_try_from_poly_zq {
     #[should_panic]
     fn panic_0() {
         let poly = PolyOverZq::from((0, 17));
-
-        let _ = ModulusPolynomialRingZq::from(poly);
-    }
-
-    /// Ensure that the function panics if the modulus polynomial is 1
-    #[test]
-    #[should_panic]
-    fn panic_1() {
-        let poly = PolyOverZq::from((1, 17));
 
         let _ = ModulusPolynomialRingZq::from(poly);
     }
