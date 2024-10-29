@@ -22,9 +22,6 @@ use flint_sys::{
     fmpq::fmpq_add_fmpz,
     fmpz::{fmpz, fmpz_add},
     fmpz_mod::fmpz_mod_add_fmpz,
-    fmpz_poly::{
-        fmpz_poly_get_coeff_fmpz, fmpz_poly_set, fmpz_poly_set_coeff_fmpz, fmpz_poly_struct,
-    },
 };
 use std::ops::Add;
 
@@ -169,20 +166,17 @@ impl Add<&PolyOverZ> for &Z {
     /// let f: PolyOverZ = Z::from(42) + &e;
     /// ```
     fn add(self, other: &PolyOverZ) -> Self::Output {
-        let mut added = fmpz(0);
-        let mut coeffs = fmpz(0);
-        let mut out = fmpz_poly_struct {
-            coeffs: &mut coeffs,
-            alloc: 0,
-            length: 0,
-        };
-        unsafe {
-            fmpz_poly_set(&mut out, &other.poly);
-            fmpz_poly_get_coeff_fmpz(&mut added, &other.poly, 0);
-            fmpz_add(&mut added, &self.value, &added);
-            fmpz_poly_set_coeff_fmpz(&mut out, 0, &added);
+        // check if the first coefficient of the polynomial is initiated and
+        // can be addressed
+        if other.is_zero() {
+            PolyOverZ::from(self)
+        } else {
+            let out = other.clone();
+            unsafe {
+                fmpz_add(out.poly.coeffs, &self.value, out.poly.coeffs);
+            }
+            out
         }
-        PolyOverZ { poly: out }
     }
 }
 
@@ -503,12 +497,17 @@ mod test_add_between_z_and_poly_over_z {
         );
     }
 
-    /// Testing addition for an empty polynomial
+    /// Testing addition for an empty polynomial and a zero [`Z`]
     #[test]
-    fn add_zero_polynomial() {
+    fn add_zero() {
         let a: Z = Z::from(15);
         let b: PolyOverZ = PolyOverZ::default();
         let c: PolyOverZ = a + b;
         assert_eq!(c, PolyOverZ::from_str("1  15").unwrap());
+
+        let d: Z = Z::ZERO;
+        let e: PolyOverZ = PolyOverZ::from_str("1  15").unwrap();
+        let f: PolyOverZ = d + e;
+        assert_eq!(f, PolyOverZ::from_str("1  15").unwrap());
     }
 }
