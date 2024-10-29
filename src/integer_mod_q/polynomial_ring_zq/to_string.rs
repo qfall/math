@@ -21,9 +21,9 @@ impl From<&PolynomialRingZq> for String {
     /// Parameters:
     /// - `value`: specifies the polynomial that will be represented as a [`String`]
     ///
-    /// Returns a [`String`] of the form `"`[#number of coefficients of element]⌴⌴[0th coefficient]⌴
+    /// Returns a [`String`] of the form `"[#number of coefficients of element]⌴⌴[0th coefficient]⌴
     ///     [1st coefficient]⌴...⌴/⌴[#number of coefficients of polynomial modulus]⌴⌴
-    ///     [0th coefficient]⌴[1st coefficient]⌴...⌴mod⌴[q]`"`.
+    ///     [0th coefficient]⌴[1st coefficient]⌴...⌴mod⌴[q]"`.
     ///
     /// # Examples
     /// ```
