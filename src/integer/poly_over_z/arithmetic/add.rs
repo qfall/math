@@ -9,10 +9,11 @@
 //! Implementation of the [`Add`] trait for [`PolyOverZ`] values.
 
 use super::super::PolyOverZ;
+use crate::integer::Z;
 use crate::macros::arithmetics::{
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
 };
-use flint_sys::fmpz_poly::fmpz_poly_add;
+use flint_sys::{fmpz::fmpz_add, fmpz_poly::fmpz_poly_add};
 use std::ops::Add;
 
 impl Add for &PolyOverZ {
@@ -49,6 +50,48 @@ impl Add for &PolyOverZ {
 
 arithmetic_trait_borrowed_to_owned!(Add, add, PolyOverZ, PolyOverZ, PolyOverZ);
 arithmetic_trait_mixed_borrowed_owned!(Add, add, PolyOverZ, PolyOverZ, PolyOverZ);
+
+impl Add<&Z> for &PolyOverZ {
+    type Output = PolyOverZ;
+    /// Implements the [`Add`] trait for [`PolyOverZ`] and [`Z`] values.
+    /// [`Add`] is implemented for any combination of owned and borrowed values.
+    ///
+    /// Parameters:
+    ///  - `other`: specifies the [`Z`] to add to `self`
+    ///
+    /// Returns the sum of both as a [`PolyOverZ`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::PolyOverZ;
+    /// use qfall_math::integer::Z;
+    /// use std::str::FromStr;
+    ///
+    /// let b: PolyOverZ = PolyOverZ::from_str("4  5 1 2 3").unwrap();
+    /// let a: Z = Z::from(42);
+    ///
+    /// let c: PolyOverZ = &a + &b;
+    /// let d: PolyOverZ = a + b;
+    /// let e: PolyOverZ = d + &Z::from(42);
+    /// let f: PolyOverZ = &e + Z::from(42);
+    /// ```
+    fn add(self, other: &Z) -> Self::Output {
+        // check if the first coefficient of the polynomial is initiated and
+        // can be addressed
+        if self.is_zero() {
+            PolyOverZ::from(other)
+        } else {
+            let out = self.clone();
+            unsafe {
+                fmpz_add(out.poly.coeffs, &other.value, out.poly.coeffs);
+            }
+            out
+        }
+    }
+}
+
+arithmetic_trait_borrowed_to_owned!(Add, add, PolyOverZ, Z, PolyOverZ);
+arithmetic_trait_mixed_borrowed_owned!(Add, add, PolyOverZ, Z, PolyOverZ);
 
 #[cfg(test)]
 mod test_add {
@@ -112,5 +155,75 @@ mod test_add {
             PolyOverZ::from_str(&format!("3  {} -1 {}", u64::from(u32::MAX) * 2, i32::MAX))
                 .unwrap()
         );
+    }
+}
+
+#[cfg(test)]
+mod test_add_between_z_and_poly_over_z {
+    use crate::integer::PolyOverZ;
+    use crate::integer::Z;
+    use std::str::FromStr;
+
+    /// Testing addition for [`Z`] and [`PolyOverZ`]
+    #[test]
+    fn add() {
+        let a: PolyOverZ = PolyOverZ::from_str("4  1 1 2 3").unwrap();
+        let b: Z = Z::from(9);
+        let c: PolyOverZ = a + b;
+        assert_eq!(c, PolyOverZ::from_str("4  10 1 2 3").unwrap());
+    }
+
+    /// Testing addition for both borrowed [`Z`] and [`PolyOverZ`]
+    #[test]
+    fn add_borrow() {
+        let a: PolyOverZ = PolyOverZ::from_str("4  1 1 2 3").unwrap();
+        let b: Z = Z::from(9);
+        let c: PolyOverZ = &a + &b;
+        assert_eq!(c, PolyOverZ::from_str("4  10 1 2 3").unwrap());
+    }
+
+    /// Testing addition for borrowed [`Z`] and [`PolyOverZ`]
+    #[test]
+    fn add_first_borrowed() {
+        let a: PolyOverZ = PolyOverZ::from_str("4  1 1 2 3").unwrap();
+        let b: Z = Z::from(9);
+        let c: PolyOverZ = &a + b;
+        assert_eq!(c, PolyOverZ::from_str("4  10 1 2 3").unwrap());
+    }
+
+    /// Testing addition for [`Z`] and borrowed [`PolyOverZ`]
+    #[test]
+    fn add_second_borrowed() {
+        let a: PolyOverZ = PolyOverZ::from_str("4  1 1 2 3").unwrap();
+        let b: Z = Z::from(9);
+        let c: PolyOverZ = a + &b;
+        assert_eq!(c, PolyOverZ::from_str("4  10 1 2 3").unwrap());
+    }
+
+    /// Testing addition for large numbers
+    #[test]
+    fn add_large_numbers() {
+        let a: PolyOverZ =
+            PolyOverZ::from_str(&format!("3  {} {} {}", i64::MAX, u64::MAX, i32::MAX)).unwrap();
+        let b: Z = Z::from(i64::MAX);
+        let c: PolyOverZ = a + b;
+        assert_eq!(
+            c,
+            PolyOverZ::from_str(&format!("3  {} {} {}", u64::MAX - 1, u64::MAX, i32::MAX)).unwrap()
+        );
+    }
+
+    /// Testing addition for an empty polynomial and a zero [`Z`]
+    #[test]
+    fn add_zero() {
+        let a: PolyOverZ = PolyOverZ::default();
+        let b: Z = Z::from(15);
+        let c: PolyOverZ = a + b;
+        assert_eq!(c, PolyOverZ::from_str("1  15").unwrap());
+
+        let d: PolyOverZ = PolyOverZ::from_str("1  15").unwrap();
+        let e: Z = Z::ZERO;
+        let f: PolyOverZ = d + e;
+        assert_eq!(f, PolyOverZ::from_str("1  15").unwrap());
     }
 }
