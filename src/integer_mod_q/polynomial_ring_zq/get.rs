@@ -121,7 +121,10 @@ impl PolynomialRingZq {
         self.modulus.clone()
     }
 
-    /// Returns the representative polynomial of the [`PolynomialRingZq`] element.
+    /// Returns a representative polynomial of the [`PolynomialRingZq`] element.
+    ///
+    /// The representation of the coefficients is in the range `[0, modulus)` and
+    /// the representation of the polynomial is in the range `[0, modulus_polynomial)`.
     ///
     /// # Examples
     /// ```
@@ -133,12 +136,12 @@ impl PolynomialRingZq {
     /// let poly = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
     /// let poly_ring = PolynomialRingZq::from((&poly, &modulus));
     ///
-    /// let poly_z = poly_ring.get_poly();
+    /// let poly_z = poly_ring.get_representative_0_modulus();
     ///
     /// let cmp_poly = PolyOverZ::from_str("3  15 0 1").unwrap();
     /// assert_eq!(cmp_poly, poly_z);
     /// ```
-    pub fn get_poly(&self) -> PolyOverZ {
+    pub fn get_representative_0_modulus(&self) -> PolyOverZ {
         self.poly.clone()
     }
 
@@ -277,7 +280,7 @@ mod test_get_value {
         let poly = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
         let poly_ring = PolynomialRingZq::from((&poly, &modulus));
 
-        let poly_z = poly_ring.get_poly();
+        let poly_z = poly_ring.get_representative_0_modulus();
 
         let cmp_poly = PolyOverZ::from_str(&format!("3  {} 0 1", u64::MAX - 60)).unwrap();
         assert_eq!(cmp_poly, poly_z);
