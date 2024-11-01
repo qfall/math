@@ -34,7 +34,7 @@ impl MatZq {
     /// ```
     pub fn inverse(&self) -> Option<MatZq> {
         // Check if the matrix is square and compute the determinant.
-        if let Ok(det) = self.get_mat().det() {
+        if let Ok(det) = self.get_representative_0_modulus().det() {
             // Check whether the square matrix is invertible or not.
             if det.gcd(self.get_mod()) != Z::ONE {
                 None
@@ -93,7 +93,7 @@ impl MatZq {
         );
 
         // Check if the matrix is square and compute the determinant.
-        if let Ok(det) = self.get_mat().det() {
+        if let Ok(det) = self.get_representative_0_modulus().det() {
             if det == Z::ZERO {
                 None
             } else {

@@ -16,8 +16,8 @@ use crate::{
 impl Zq {
     /// Returns the [`Z`] value of the [`Zq`] element.
     ///
-    /// The representation in the range `[0, modulus[` (`0` inclusive, `modulus` exclusive)
-    /// is returned. Use [`Zq::get_closest_to_zero_representative`] if they should be
+    /// The representation in the range `[0, modulus)` is returned.
+    /// Use [`Zq::get_representative_around_0`] if they should be
     /// in the range `[-modulus/2, modulus/2]`.
     ///
     /// # Examples
@@ -26,11 +26,11 @@ impl Zq {
     /// use qfall_math::integer::Z;
     /// let zq_value = Zq::from((4, 7));
     ///
-    /// let z_value = zq_value.get_value();
+    /// let z_value = zq_value.get_representative_0_modulus();
     ///
     /// assert_eq!(Z::from(4), z_value);
     /// ```
-    pub fn get_value(&self) -> Z {
+    pub fn get_representative_0_modulus(&self) -> Z {
         self.value.clone()
     }
 
@@ -38,6 +38,8 @@ impl Zq {
     ///
     /// The output value is in the range of `[-modulus/2, modulus/2]`.
     /// For even moduli, the positive representative is chosen for the element `modulus / 2`.
+    /// Use [`Zq::get_representative_0_modulus`] if they should be
+    /// in the range `[0, modulus)`.
     ///
     /// # Examples
     /// ```
@@ -45,11 +47,11 @@ impl Zq {
     /// use qfall_math::integer::Z;
     /// let zq_value = Zq::from((5, 7));
     ///
-    /// let z_value = zq_value.get_closest_to_zero_representative();
+    /// let z_value = zq_value.get_representative_around_0();
     ///
     /// assert_eq!(Z::from(2), z_value);
     /// ```
-    pub fn get_closest_to_zero_representative(&self) -> Z {
+    pub fn get_representative_around_0(&self) -> Z {
         let mod_z = Z::from(&self.modulus);
         if self.value < mod_z.div_ceil(2) {
             self.value.clone()
@@ -77,30 +79,30 @@ impl Zq {
 }
 
 #[cfg(test)]
-mod test_get_value {
+mod test_get_representative_0_modulus {
     use super::{Zq, Z};
 
-    /// Check whether `get_value` outputs the correct value for small values
+    /// Check whether `get_representative_0_modulus` outputs the correct value for small values
     #[test]
     fn get_small() {
         let value_0 = Zq::from((2, 20));
         let value_1 = Zq::from((-2, 20));
 
-        let res_0 = value_0.get_value();
-        let res_1 = value_1.get_value();
+        let res_0 = value_0.get_representative_0_modulus();
+        let res_1 = value_1.get_representative_0_modulus();
 
         assert_eq!(res_0, Z::from(2));
         assert_eq!(res_1, Z::from(18));
     }
 
-    /// Check whether `get_value` outputs the correct value for large values
+    /// Check whether `get_representative_0_modulus` outputs the correct value for large values
     #[test]
     fn get_large() {
         let value_0 = Zq::from((i64::MAX, u64::MAX));
         let value_1 = Zq::from((i64::MIN, u64::MAX));
 
-        let res_0 = value_0.get_value();
-        let res_1 = value_1.get_value();
+        let res_0 = value_0.get_representative_0_modulus();
+        let res_1 = value_1.get_representative_0_modulus();
 
         assert_eq!(res_0, Z::from(i64::MAX));
         assert_eq!(res_1, Z::from(i64::MAX));
@@ -108,43 +110,43 @@ mod test_get_value {
 }
 
 #[cfg(test)]
-mod test_get_closest_to_zero_representative {
+mod test_get_representative_around_0 {
     use super::{Zq, Z};
 
-    /// Check whether `get_closest_to_zero_representative` outputs the correct value for small values
+    /// Check whether `get_representative_around_0` outputs the correct value for small values
     #[test]
     fn get_small() {
         let value_0 = Zq::from((2, 20));
         let value_1 = Zq::from((-2, 20));
 
-        let res_0 = value_0.get_closest_to_zero_representative();
-        let res_1 = value_1.get_closest_to_zero_representative();
+        let res_0 = value_0.get_representative_around_0();
+        let res_1 = value_1.get_representative_around_0();
 
         assert_eq!(res_0, Z::from(2));
         assert_eq!(res_1, Z::from(2));
     }
 
-    /// Check whether `get_closest_to_zero_representative` outputs the correct value for large values
+    /// Check whether `get_representative_around_0` outputs the correct value for large values
     #[test]
     fn get_large() {
         let value_0 = Zq::from((i64::MAX, u64::MAX));
         let value_1 = Zq::from((u64::MAX - 1, u64::MAX));
 
-        let res_0 = value_0.get_closest_to_zero_representative();
-        let res_1 = value_1.get_closest_to_zero_representative();
+        let res_0 = value_0.get_representative_around_0();
+        let res_1 = value_1.get_representative_around_0();
 
         assert_eq!(res_0, Z::from(i64::MAX));
         assert_eq!(res_1, Z::from(1));
     }
 
-    /// Check whether `get_closest_to_zero_representative` outputs the correct value for special cases
+    /// Check whether `get_representative_around_0` outputs the correct value for special cases
     #[test]
     fn get_special() {
         let value_0 = Zq::from((10, 20));
         let value_1 = Zq::from((0, 20));
 
-        let res_0 = value_0.get_closest_to_zero_representative();
-        let res_1 = value_1.get_closest_to_zero_representative();
+        let res_0 = value_0.get_representative_around_0();
+        let res_1 = value_1.get_representative_around_0();
 
         assert_eq!(res_0, Z::from(10));
         assert_eq!(res_1, Z::from(0));
