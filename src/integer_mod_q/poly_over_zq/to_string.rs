@@ -20,17 +20,17 @@ impl From<&PolyOverZq> for String {
     /// Converts a [`PolyOverZq`] into its [`String`] representation.
     ///
     /// Parameters:
-    /// - `value`: specifies the matrix that will be represented as a [`String`]
+    /// - `value`: specifies the polynommial that will be represented as a [`String`]
     ///
-    /// Returns a [`String`] of the form `"[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴...⌴mod⌴[modulus]"`.
+    /// Returns a [`String`] of the form `"[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴...⌴mod⌴[q]"`.
     ///
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
-    /// let matrix = PolyOverZq::from_str("2  2 1 mod 3").unwrap();
+    /// let poly = PolyOverZq::from_str("2  2 1 mod 3").unwrap();
     ///
-    /// let string: String = matrix.into();
+    /// let string: String = poly.into();
     /// ```
     fn from(value: &PolyOverZq) -> Self {
         value.to_string()
@@ -124,10 +124,10 @@ mod test_to_string {
     #[test]
     fn into_works_properly() {
         let cmp = "2  2 1 mod 3";
-        let matrix = PolyOverZq::from_str(cmp).unwrap();
+        let poly = PolyOverZq::from_str(cmp).unwrap();
 
-        let string: String = matrix.clone().into();
-        let borrowed_string: String = (&matrix).into();
+        let string: String = poly.clone().into();
+        let borrowed_string: String = (&poly).into();
 
         assert_eq!(cmp, string);
         assert_eq!(cmp, borrowed_string);

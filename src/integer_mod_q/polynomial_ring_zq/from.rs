@@ -65,9 +65,9 @@ impl FromStr for PolynomialRingZq {
     ///
     /// Parameters:
     /// - `s`: the polynomial ring element of form:
-    ///     "`[#number of coefficients of element]⌴⌴[0th coefficient]⌴
+    ///     `"[#number of coefficients of element]⌴⌴[0th coefficient]⌴
     ///     [1st coefficient]⌴...⌴/⌴[#number of coefficients of polynomial modulus]⌴⌴
-    ///     [0th coefficient]⌴[1st coefficient]⌴...⌴mod⌴[q]`".
+    ///     [0th coefficient]⌴[1st coefficient]⌴...⌴mod⌴[q]"`.
     ///     Note that the `[#number of coefficients]` and `[0th coefficient]`
     ///     are divided by two spaces and the strings for the polynomials are trimmed,
     ///     i.e. all whitespaces around the polynomials and the modulus are removed.

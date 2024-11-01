@@ -21,7 +21,7 @@ impl From<&Q> for String {
     /// Converts a [`Q`] into its [`String`] representation.
     ///
     /// Parameters:
-    /// - `value`: specifies the matrix that will be represented as a [`String`]
+    /// - `value`: specifies the rational that will be represented as a [`String`]
     ///
     /// Returns a [`String`] of the form `"x/y"`.
     ///
@@ -29,9 +29,9 @@ impl From<&Q> for String {
     /// ```
     /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
-    /// let matrix = Q::from_str("6/7").unwrap();
+    /// let rational = Q::from_str("6/7").unwrap();
     ///
-    /// let string: String = matrix.into();
+    /// let string: String = rational.into();
     /// ```
     fn from(value: &Q) -> Self {
         value.to_string()
@@ -151,10 +151,10 @@ mod test_to_string {
     #[test]
     fn into_works_properly() {
         let cmp = "6/7";
-        let matrix = Q::from_str(cmp).unwrap();
+        let rational = Q::from_str(cmp).unwrap();
 
-        let string: String = matrix.clone().into();
-        let borrowed_string: String = (&matrix).into();
+        let string: String = rational.clone().into();
+        let borrowed_string: String = (&rational).into();
 
         assert_eq!(cmp, string);
         assert_eq!(cmp, borrowed_string);

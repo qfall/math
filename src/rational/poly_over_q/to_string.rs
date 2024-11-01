@@ -21,7 +21,7 @@ impl From<&PolyOverQ> for String {
     /// Converts a [`PolyOverQ`] into its [`String`] representation.
     ///
     /// Parameters:
-    /// - `value`: specifies the matrix that will be represented as a [`String`]
+    /// - `value`: specifies the polynomial that will be represented as a [`String`]
     ///
     /// Returns a [`String`] of the form `"[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴..."`.
     ///
@@ -29,9 +29,9 @@ impl From<&PolyOverQ> for String {
     /// ```
     /// use qfall_math::rational::PolyOverQ;
     /// use std::str::FromStr;
-    /// let matrix = PolyOverQ::from_str("2  6/7 1").unwrap();
+    /// let poly = PolyOverQ::from_str("2  6/7 1").unwrap();
     ///
-    /// let string: String = matrix.into();
+    /// let string: String = poly.into();
     /// ```
     fn from(value: &PolyOverQ) -> Self {
         value.to_string()
@@ -100,10 +100,10 @@ mod test_to_string {
     #[test]
     fn into_works_properly() {
         let cmp = "2  6/7 2";
-        let matrix = PolyOverQ::from_str(cmp).unwrap();
+        let poly = PolyOverQ::from_str(cmp).unwrap();
 
-        let string: String = matrix.clone().into();
-        let borrowed_string: String = (&matrix).into();
+        let string: String = poly.clone().into();
+        let borrowed_string: String = (&poly).into();
 
         assert_eq!(cmp, string);
         assert_eq!(cmp, borrowed_string);

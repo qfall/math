@@ -28,6 +28,7 @@ mod properties;
 mod reduce;
 mod sample;
 mod set;
+mod to_string;
 
 /// [`PolynomialRingZq`] represents polynomials over the finite field
 /// [`PolyOverZq`](crate::integer_mod_q::PolyOverZq)/f(X) where f(X) is a polynomial over [`Zq`](super::Zq).

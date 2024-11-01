@@ -21,7 +21,7 @@ impl From<&Modulus> for String {
     /// Converts a [`Modulus`] into its [`String`] representation.
     ///
     /// Parameters:
-    /// - `value`: specifies the matrix that will be represented as a [`String`]
+    /// - `value`: specifies the modulus that will be represented as a [`String`]
     ///
     /// Returns a [`String`].
     ///
@@ -29,9 +29,9 @@ impl From<&Modulus> for String {
     /// ```
     /// use qfall_math::integer_mod_q::Modulus;
     /// use std::str::FromStr;
-    /// let matrix = Modulus::from_str("6").unwrap();
+    /// let modulus = Modulus::from_str("6").unwrap();
     ///
-    /// let string: String = matrix.into();
+    /// let string: String = modulus.into();
     /// ```
     fn from(value: &Modulus) -> Self {
         value.to_string()
@@ -120,10 +120,10 @@ mod test_to_string {
     #[test]
     fn into_works_properly() {
         let cmp = "6";
-        let matrix = Modulus::from_str(cmp).unwrap();
+        let modulus = Modulus::from_str(cmp).unwrap();
 
-        let string: String = matrix.clone().into();
-        let borrowed_string: String = (&matrix).into();
+        let string: String = modulus.clone().into();
+        let borrowed_string: String = (&modulus).into();
 
         assert_eq!(cmp, string);
         assert_eq!(cmp, borrowed_string);

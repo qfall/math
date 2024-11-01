@@ -21,7 +21,7 @@ impl From<&PolyOverZ> for String {
     /// Converts a [`PolyOverZ`] into its [`String`] representation.
     ///
     /// Parameters:
-    /// - `value`: specifies the matrix that will be represented as a [`String`]
+    /// - `value`: specifies the polynomial that will be represented as a [`String`]
     ///
     /// Returns a [`String`] of the form `"[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴..."`.
     ///
@@ -29,9 +29,9 @@ impl From<&PolyOverZ> for String {
     /// ```
     /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;
-    /// let matrix = PolyOverZ::from_str("2  6 1").unwrap();
+    /// let poly = PolyOverZ::from_str("2  6 1").unwrap();
     ///
-    /// let string: String = matrix.into();
+    /// let string: String = poly.into();
     /// ```
     fn from(value: &PolyOverZ) -> Self {
         value.to_string()
@@ -111,10 +111,10 @@ mod test_to_string {
     #[test]
     fn into_works_properly() {
         let cmp = "2  6 1";
-        let matrix = PolyOverZ::from_str(cmp).unwrap();
+        let poly = PolyOverZ::from_str(cmp).unwrap();
 
-        let string: String = matrix.clone().into();
-        let borrowed_string: String = (&matrix).into();
+        let string: String = poly.clone().into();
+        let borrowed_string: String = (&poly).into();
 
         assert_eq!(cmp, string);
         assert_eq!(cmp, borrowed_string);
