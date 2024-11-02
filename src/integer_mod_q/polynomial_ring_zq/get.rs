@@ -264,7 +264,7 @@ mod test_get_mod {
 }
 
 #[cfg(test)]
-mod test_get_value {
+mod test_get_representative_0_modulus {
     use crate::{
         integer::PolyOverZ,
         integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq},
