@@ -117,7 +117,8 @@ mod test_sample_discrete_gauss {
         // count sampled instances
         for _ in 0..200 {
             let sample = Zq::sample_discrete_gauss(20, 1024, 0, 2).unwrap();
-            let sample_int = i64::try_from(&sample.get_value()).unwrap() as usize;
+            let sample_int =
+                i64::try_from(&sample.get_representative_0_modulus()).unwrap() as usize;
             counts[sample_int] += 1;
         }
 

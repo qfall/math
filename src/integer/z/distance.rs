@@ -1,4 +1,4 @@
-// Copyright © 2023 Niklas Siemer
+// Copyright © 2023 Marcel Luca Schmidt, Niklas Siemer
 //
 // This file is part of qFALL-math.
 //
@@ -45,9 +45,8 @@ impl<Integer: Into<Z>> Distance<Integer> for Z {
 
 #[cfg(test)]
 mod test_distance {
-    use crate::integer_mod_q::Modulus;
-
     use super::{Distance, Z};
+    use crate::integer_mod_q::Modulus;
 
     /// Checks if distance is correctly computed for small [`Z`] values
     /// and whether distance(a, b) == distance(b, a), distance(a, a) == 0

@@ -348,7 +348,11 @@ impl MatZq {
         let mut x = x_i.clone();
         for i in 1..*power {
             b_i = MatZq::from((
-                &(unsafe { (b_i - &invertible_matrix * x_i).get_mat().div_exact(base) }),
+                &(unsafe {
+                    (b_i - &invertible_matrix * x_i)
+                        .get_representative_0_modulus()
+                        .div_exact(base)
+                }),
                 &self.get_mod(),
             ));
             x_i = &matrix_base_inv * &b_i;
@@ -648,11 +652,11 @@ mod test_find_invertible_entry_column {
 
         let (i, entry) = find_invertible_entry_column(&mat, 0, &Vec::new()).unwrap();
         assert_eq!(0, i);
-        assert_eq!(Z::from(7), entry.get_value());
+        assert_eq!(Z::from(7), entry.get_representative_0_modulus());
 
         let (i, entry) = find_invertible_entry_column(&mat, 0, [0].as_ref()).unwrap();
         assert_eq!(1, i);
-        assert_eq!(Z::from(5), entry.get_value());
+        assert_eq!(Z::from(5), entry.get_representative_0_modulus());
 
         let invert = find_invertible_entry_column(&mat, 0, [0, 1].as_ref());
         assert!(invert.is_none())
