@@ -242,7 +242,7 @@ mod test_get_degree {
         let degrees = [0, 1, 3, 7, 15, 32, 120];
         for degree in degrees {
             let modulus_ring = ModulusPolynomialRingZq::from_str(&format!(
-                "{}  {}1 mod 17",
+                "{}  {}2 mod 17",
                 degree + 1,
                 "0 ".repeat(degree)
             ))
@@ -255,7 +255,7 @@ mod test_get_degree {
     /// Ensure that degree is working for polynomials with leading 0 coefficients.
     #[test]
     fn degree_leading_zeros() {
-        let poly = ModulusPolynomialRingZq::from_str("4  1 0 0 0 mod 199").unwrap();
+        let poly = ModulusPolynomialRingZq::from_str("4  2 0 0 0 mod 199").unwrap();
 
         let deg = poly.get_degree();
 

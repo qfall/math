@@ -113,7 +113,7 @@ mod test_partial_eq {
     fn equal_small() {
         let small_1 = ModulusPolynomialRingZq::from_str("1  10 mod 17").unwrap();
         let small_2 = ModulusPolynomialRingZq::from_str("1  10 mod 17").unwrap();
-        let negative = ModulusPolynomialRingZq::from_str("1  -1 mod 17").unwrap();
+        let negative = ModulusPolynomialRingZq::from_str("1  -2 mod 17").unwrap();
 
         assert!(small_1 == small_2);
         assert!(small_2 == small_1);
@@ -184,8 +184,8 @@ mod test_partial_eq {
         let max = ModulusPolynomialRingZq::from_str(&max_str).unwrap();
         let min = ModulusPolynomialRingZq::from_str(&min_str).unwrap();
 
-        let small_positive = ModulusPolynomialRingZq::from_str("1  1 mod 17").unwrap();
-        let small_negative = ModulusPolynomialRingZq::from_str("1  -1 mod 17").unwrap();
+        let small_positive = ModulusPolynomialRingZq::from_str("1  2 mod 17").unwrap();
+        let small_negative = ModulusPolynomialRingZq::from_str("1  -2 mod 17").unwrap();
 
         assert!(!(max == small_negative));
         assert!(!(small_negative == max));
@@ -208,8 +208,8 @@ mod test_partial_eq {
         let max = ModulusPolynomialRingZq::from_str(&max_str).unwrap();
         let min = ModulusPolynomialRingZq::from_str(&min_str).unwrap();
 
-        let small_positive = ModulusPolynomialRingZq::from_str("1  1 mod 17").unwrap();
-        let small_negative = ModulusPolynomialRingZq::from_str("1  -1 mod 17").unwrap();
+        let small_positive = ModulusPolynomialRingZq::from_str("1  2 mod 17").unwrap();
+        let small_negative = ModulusPolynomialRingZq::from_str("1  -2 mod 17").unwrap();
 
         assert!(max != small_negative);
         assert!(small_negative != max);
@@ -225,8 +225,8 @@ mod test_partial_eq {
     /// Test not equal for the same polynomial but with a different modulus
     #[test]
     fn different_modulus() {
-        let first_str = "1  1 mod 17";
-        let second_str = "1  1 mod 19";
+        let first_str = "1  2 mod 17";
+        let second_str = "1  2 mod 19";
 
         let first = ModulusPolynomialRingZq::from_str(first_str).unwrap();
         let second = ModulusPolynomialRingZq::from_str(second_str).unwrap();

@@ -60,7 +60,6 @@ impl From<&Zq> for PolyOverZq {
     ///
     /// Parameters:
     /// - `value`: the constant value the polynomial will have.
-    ///   It has to be a [`Zq`], or a value that can be converted into [`Zq`].
     ///   
     /// Returns a new constant [`PolyOverZq`] with the specified `value` and `modulus` of the [`Zq`] value.
     ///
@@ -111,8 +110,8 @@ impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for PolyOverZq {
     ///
     /// let mod_poly = PolyOverZq::from((&poly, &modulus));
     ///
-    /// # let cmp_poly = PolyOverZq::from_str("4  0 1 2 3 mod 100").unwrap();
-    /// # assert_eq!(cmp_poly, mod_poly);
+    /// # let poly_cmp = PolyOverZq::from_str("4  0 1 2 3 mod 100").unwrap();
+    /// # assert_eq!(poly_cmp, mod_poly);
     /// ```
     ///
     /// # Panics ...
@@ -150,8 +149,8 @@ impl<Mod: Into<Modulus>> From<(PolyOverZ, Mod)> for PolyOverZq {
     ///
     /// let mod_poly = PolyOverZq::from((poly, 100));
     ///
-    /// # let cmp_poly = PolyOverZq::from_str("4  0 1 2 3 mod 100").unwrap();
-    /// # assert_eq!(cmp_poly, mod_poly);
+    /// # let poly_cmp = PolyOverZq::from_str("4  0 1 2 3 mod 100").unwrap();
+    /// # assert_eq!(poly_cmp, mod_poly);
     /// ```
     ///
     /// # Panics ...
@@ -186,8 +185,8 @@ impl<Integer: Into<Z>, Mod: Into<Modulus>> From<(Integer, Mod)> for PolyOverZq {
     ///
     /// let mod_poly = PolyOverZq::from((5, 42));
     ///
-    /// # let cmp_poly = PolyOverZq::from_str("1  5 mod 42").unwrap();
-    /// # assert_eq!(cmp_poly, mod_poly);
+    /// # let poly_cmp = PolyOverZq::from_str("1  5 mod 42").unwrap();
+    /// # assert_eq!(poly_cmp, mod_poly);
     /// ```
     ///
     /// # Panics ...
@@ -225,8 +224,8 @@ impl From<&ModulusPolynomialRingZq> for PolyOverZq {
     ///
     /// let poly_zq = PolyOverZq::from(&modulus);
     ///
-    /// let cmp_poly = PolyOverZq::from_str("4  1 0 0 1 mod 17").unwrap();
-    /// assert_eq!(cmp_poly, poly_zq);
+    /// let poly_cmp = PolyOverZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// assert_eq!(poly_cmp, poly_zq);
     /// ```
     fn from(modulus: &ModulusPolynomialRingZq) -> Self {
         let modulus_q = Modulus::from(&modulus.get_q());
@@ -314,7 +313,7 @@ mod test_availability {
     use super::*;
     use crate::{integer::Z, integer_mod_q::Zq};
 
-    /// Ensure that the submatrix function can be called with several types.
+    /// Ensure that the from function can be called with several types.
     #[test]
     fn availability() {
         let z = Z::from(3);
