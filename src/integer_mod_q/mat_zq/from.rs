@@ -30,6 +30,9 @@ impl FromStr for MatZq {
     /// - `string`: the matrix of form: `"[[1, 2, 3],[4, 5, 6]] mod 4"` for a 2x3 matrix
     ///     with entries 1, 2, 3 in the first row, 4, 5, 6 in the second row and 4 as modulus.
     ///
+    /// Note that the strings for entries and the modulus are trimmed,
+    /// i.e. all whitespaces around all values are ignored.
+    ///
     /// Returns a [`MatZq`] or an error if the matrix is not formatted in a suitable way,
     /// the number of rows or columns is too large (must fit into [`i64`]),
     /// the number of entries in rows is unequal or if the modulus or an entry is not formatted correctly.
@@ -62,9 +65,10 @@ impl FromStr for MatZq {
     /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
     ///     - if the matrix is not formatted in a suitable way,
     ///     - if the number of rows or columns is too large (must fit into i64),
-    ///     - if the number of entries in rows is unequal, or
+    ///     - if the number of entries in rows is unequal,
+    ///     - if the delimiter `mod` could not be found, or
     ///     - if the modulus or an entry is not formatted correctly.
-    ///     - For further information see [`Z::from_str`].
+    ///         For further information see [`Z::from_str`].
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns or the modulus are not suited to create a matrix.

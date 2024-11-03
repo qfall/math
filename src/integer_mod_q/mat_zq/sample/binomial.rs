@@ -99,7 +99,7 @@ impl MatZq {
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
     ///     For further information see [`MatZq::new`].
-    /// - - if `modulus` is smaller than `2`.
+    /// - if `modulus` is smaller than `2`.
     pub fn sample_binomial_with_offset(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,

@@ -221,6 +221,10 @@ impl FromStr for ModulusPolynomialRingZq {
     /// - `s`: has to be a valid string to create a [`PolyOverZq`].
     ///     For further information see [`PolyOverZq::from_str`].
     ///
+    /// Note that the `[#number of coefficients]` and `[0th coefficient]`
+    /// are divided by two spaces and the string for the polynomial is trimmed,
+    /// i.e. all whitespaces before around the polynomial and the modulus are ignored.
+    ///
     /// Returns a [`ModulusPolynomialRingZq`] or an error if the provided string was not
     /// formatted correctly or the modulus was smaller than `2`.
     ///
@@ -239,8 +243,9 @@ impl FromStr for ModulusPolynomialRingZq {
     ///     - if the provided second half of the
     ///         string was not formatted correctly to create a [`Modulus`],
     ///     - if the number of coefficients was smaller than the number provided
-    ///         at the start of the provided string, or
-    ///     - if the provided value did not contain two whitespaces.
+    ///         at the start of the provided string,
+    ///     - if the provided value did not contain two whitespaces, or
+    ///     - if the delimiter `mod` could not be found.
     ///     - For further information see [`PolyOverZq::from_str`].
     /// - Returns a [`MathError`] of type
     ///     [`InvalidModulus`](MathError::InvalidModulus)

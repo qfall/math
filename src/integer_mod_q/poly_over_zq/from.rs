@@ -265,7 +265,7 @@ impl FromStr for PolyOverZq {
     ///
     /// Note that the `[#number of coefficients]` and `[0th coefficient]`
     /// are divided by two spaces and the string for the polynomial is trimmed,
-    /// i.e. all whitespaces before around the polynomial and the modulus are removed.
+    /// i.e. all whitespaces before around the polynomial and the modulus are ignored.
     ///
     /// Returns a [`PolyOverZq`] or an error if the provided string was not
     /// formatted correctly, the number of coefficients was smaller than the number provided
@@ -286,8 +286,9 @@ impl FromStr for PolyOverZq {
     ///     - if the provided second half of the
     ///         string was not formatted correctly to create a [`Modulus`],
     ///     - if the number of coefficients was smaller than the number provided
-    ///         at the start of the provided string, or
-    ///     - if the provided value did not contain two whitespaces.
+    ///         at the start of the provided string,
+    ///     - if the provided value did not contain two whitespaces, or
+    ///     - if the delimiter `mod` could not be found.
     /// - Returns a [`MathError`] of type
     ///     [`InvalidModulus`](MathError::InvalidModulus)
     ///     if `modulus` is smaller than `2`.
