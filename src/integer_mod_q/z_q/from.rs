@@ -200,6 +200,27 @@ mod test_from_mod {
 
         assert_eq!(zq, Zq::from_str(&format!("0 mod {}", u64::MAX)).unwrap());
     }
+
+    /// Ensure that mod 0 results in a panic.
+    #[test]
+    #[should_panic]
+    fn modulus_0() {
+        let _ = Zq::from(0);
+    }
+
+    /// Ensure that mod 1 results in a panic.
+    #[test]
+    #[should_panic]
+    fn modulus_1() {
+        let _ = Zq::from(1);
+    }
+
+    /// Ensure that a negative modulus results in a panic.
+    #[test]
+    #[should_panic]
+    fn modulus_negative() {
+        let _ = Zq::from(-1);
+    }
 }
 
 #[cfg(test)]
