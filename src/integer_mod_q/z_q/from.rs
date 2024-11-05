@@ -18,6 +18,37 @@ use crate::{
 };
 use std::str::FromStr;
 
+impl<Mod: Into<Modulus>> From<Mod> for Zq {
+    /// Creates a zero integer with a given [`Modulus`].
+    ///
+    /// Parameters:
+    /// - `modulus`: of the new [`Zq`]
+    ///
+    /// Returns a new constant [`Zq`] with the specified [`Modulus`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::Zq;
+    /// use std::str::FromStr;
+    ///
+    /// let zq = Zq::from(100);
+    ///
+    /// let zq_cmp = Zq::from_str("0 mod 100").unwrap();
+    /// assert_eq!(zq, zq_cmp);
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if `modulus` is smaller than `2`.
+    fn from(modulus: Mod) -> Self {
+        let value = Z::default();
+        let modulus = modulus.into();
+
+        let mut out = Zq { value, modulus };
+        out.reduce();
+        out
+    }
+}
+
 impl<IntegerValue: Into<Z>, IntegerModulus: Into<Modulus>> From<(IntegerValue, IntegerModulus)>
     for Zq
 {
@@ -146,6 +177,28 @@ impl Zq {
         Err(MathError::ConversionError(
             "The provided modulus is smaller than the UTF8-Encoding of your message.".to_owned(),
         ))
+    }
+}
+
+#[cfg(test)]
+mod test_from_mod {
+    use crate::integer_mod_q::Zq;
+    use std::str::FromStr;
+
+    /// Ensure that the resulting value is zero and the modulus is correctly instantiated.
+    #[test]
+    fn modulus_zero() {
+        let zq = Zq::from(100);
+
+        assert_eq!(zq, Zq::from_str("0 mod 100").unwrap());
+    }
+
+    /// Ensure that initializing large moduli works.
+    #[test]
+    fn modulus_large() {
+        let zq = Zq::from(u64::MAX);
+
+        assert_eq!(zq, Zq::from_str(&format!("0 mod {}", u64::MAX)).unwrap());
     }
 }
 
