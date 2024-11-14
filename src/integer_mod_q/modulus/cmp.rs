@@ -13,7 +13,6 @@
 
 use super::Modulus;
 use crate::integer::Z;
-use flint_sys::fmpz::fmpz_cmp;
 use std::cmp::Ordering;
 
 impl PartialEq for Modulus {
@@ -113,7 +112,7 @@ impl Ord for Modulus {
     fn cmp(&self, other: &Self) -> Ordering {
         let z_1: Z = self.into();
         let z_2: Z = other.into();
-        unsafe { fmpz_cmp(&z_1.value, &z_2.value).cmp(&0) }
+        z_1.cmp(&z_2)
     }
 }
 
@@ -178,6 +177,22 @@ mod test_partial_ord {
         assert!(b > a);
         assert!(b >= a);
         assert!(a >= a);
+    }
+
+    /// Tests comparisons between large [`Modulus`] values.
+    #[test]
+    fn order_large() {
+        let a = Modulus::from(i64::MAX);
+        let b = Modulus::from(u64::MAX);
+
+        assert!(a < b);
+        assert!(a <= b);
+        assert!(a <= a);
+        assert!(b <= b);
+        assert!(b > a);
+        assert!(b >= a);
+        assert!(a >= a);
+        assert!(b >= b);
     }
 }
 
