@@ -37,7 +37,7 @@ impl FromStr for PolyOverZ {
     ///
     /// Note that the `[#number of coefficients]` and `[0th coefficient]`
     /// are divided by two spaces and the input string is trimmed, i.e. all whitespaces
-    /// before and after are removed.
+    /// before and after are ignored.
     ///
     /// Returns a [`PolyOverZ`] or an error if the provided string was not formatted
     /// correctly, the number of coefficients was smaller than the number provided

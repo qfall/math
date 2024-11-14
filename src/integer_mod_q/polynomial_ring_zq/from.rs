@@ -68,9 +68,10 @@ impl FromStr for PolynomialRingZq {
     ///     `"[#number of coefficients of element]⌴⌴[0th coefficient]⌴
     ///     [1st coefficient]⌴...⌴/⌴[#number of coefficients of polynomial modulus]⌴⌴
     ///     [0th coefficient]⌴[1st coefficient]⌴...⌴mod⌴[q]"`.
-    ///     Note that the `[#number of coefficients]` and `[0th coefficient]`
-    ///     are divided by two spaces and the strings for the polynomials are trimmed,
-    ///     i.e. all whitespaces around the polynomials and the modulus are removed.
+    ///
+    /// Note that the `[#number of coefficients]` and `[0th coefficient]`
+    /// are divided by two spaces and the strings for the polynomials are trimmed,
+    /// i.e. all whitespaces around the polynomials and the modulus are ignored.
     ///
     /// Returns a [`PolynomialRingZq`] or an error if the provided string was not
     /// formatted correctly, the numbers of coefficients were smaller than the numbers
@@ -91,8 +92,9 @@ impl FromStr for PolynomialRingZq {
     ///     - if the provided second half of the
     ///         string was not formatted correctly to create a [`ModulusPolynomialRingZq`],
     ///     - if the numbers of coefficients were smaller than the numbers provided
-    ///         at the start of the provided string, or
-    ///     - if the provided values did not contain two whitespaces.
+    ///         at the start of the provided string,
+    ///     - if the provided values did not contain two whitespaces, or
+    ///     - if the delimiter `/` and `mod` could not be found.
     /// - Returns a [`MathError`] of type
     ///     [`InvalidModulus`](MathError::InvalidModulus)
     ///     if the integer modulus `q` is smaller than `2`.

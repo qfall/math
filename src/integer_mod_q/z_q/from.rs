@@ -27,6 +27,9 @@ impl<IntegerValue: Into<Z>, IntegerModulus: Into<Modulus>> From<(IntegerValue, I
     /// - `value`: Defines the value of the residue class.
     /// - `modulus`: Defines the modulus by which `value` is reduced.
     ///
+    /// Note that the strings for integer and modulus are trimmed,
+    /// i.e. all whitespaces around all values are ignored.
+    ///
     /// Returns the `value` mod `modulus` as a [`Zq`].
     ///
     /// # Examples
@@ -77,8 +80,9 @@ impl FromStr for Zq {
     /// - Returns a [`MathError`] of type
     ///     [`StringConversionError`](MathError::StringConversionError)
     ///     - if the provided string contains a `Null` byte,
-    ///     - if the provided string was not formatted correctly, or
-    ///     - if the provided modulus was not formatted correctly to create a [`Z`].
+    ///     - if the provided string was not formatted correctly,
+    ///     - if the provided modulus was not formatted correctly to create a [`Z`], or
+    ///     - if the delimiter `mod` could not be found.
     /// - Returns a [`MathError`] of type
     ///     [`InvalidModulus`](MathError::InvalidModulus)
     ///     if the provided value is smaller than `2`.
