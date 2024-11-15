@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementation to set entries of a [`MatPolynomialRingZq`] matrix.
+//! Implementation to set elements of a [`MatPolynomialRingZq`] matrix.
 
 use super::MatPolynomialRingZq;
 use crate::integer_mod_q::PolynomialRingZq;
@@ -131,6 +131,100 @@ impl SetEntry<&PolynomialRingZq> for MatPolynomialRingZq {
 
 implement_for_owned!(PolyOverZ, MatPolynomialRingZq, SetEntry);
 implement_for_owned!(PolynomialRingZq, MatPolynomialRingZq, SetEntry);
+
+impl MatPolynomialRingZq {
+    /// Sets a column of the given matrix to the provided column of `other`.
+    ///
+    /// Parameters:
+    /// - `col_0`: specifies the column of `self` that should be modified
+    /// - `other`: specifies the matrix providing the column replacing the column in `self`
+    /// - `col_1`: specifies the column of `other` providing
+    ///     the values replacing the original column in `self`
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of its matrix
+    /// or if the number of rows differs.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
+    /// use std::str::FromStr;
+    ///
+    /// let mut mat_1 = MatPolynomialRingZq::from_str("[[0, 0, 0],[0, 0, 0]] / 2  1 1 mod 6").unwrap();
+    /// let mat_2 = MatPolynomialRingZq::from_str("[[1  2, 0, 1  3],[1  3, 1  4, 1  5]] / 2  1 1 mod 6").unwrap();
+    /// mat_1.set_column(1, &mat_2, 0);
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    ///     if the number of columns is greater than the matrix dimensions or negative.
+    /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
+    ///     if the number of rows of `self` and `other` differ.
+    /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus)
+    ///     if the moduli of `self` and `other` mismatch.
+    pub fn set_column(
+        &mut self,
+        col_0: impl TryInto<i64> + Display,
+        other: &Self,
+        col_1: impl TryInto<i64> + Display,
+    ) -> Result<(), MathError> {
+        if self.modulus != other.modulus {
+            return Err(MathError::MismatchingModulus(format!(
+                "set_column requires the moduli to be equal, but {} differs from {}",
+                self.get_mod(),
+                other.get_mod()
+            )));
+        }
+
+        self.matrix.set_column(col_0, &other.matrix, col_1)
+    }
+
+    /// Sets a row of the given matrix to the provided row of `other`.
+    ///
+    /// Parameters:
+    /// - `row_0`: specifies the row of `self` that should be modified
+    /// - `other`: specifies the matrix providing the row replacing the row in `self`
+    /// - `row_1`: specifies the row of `other` providing
+    ///     the values replacing the original row in `self`
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of its matrix
+    /// or if the number of columns differs.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
+    /// use std::str::FromStr;
+    ///
+    /// let mut mat_1 = MatPolynomialRingZq::from_str("[[0, 0, 0],[0, 0, 0]] / 2  1 1 mod 6").unwrap();
+    /// let mat_2 = MatPolynomialRingZq::from_str("[[1  2, 0, 1  3],[1  3, 1  4, 1  5]] / 2  1 1 mod 6").unwrap();
+    /// mat_1.set_row(1, &mat_2, 0);
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    ///     if the number of rows is greater than the matrix dimensions or negative.
+    /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
+    ///     if the number of columns of `self` and `other` differ.
+    /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus)
+    ///     if the moduli of `self` and `other` mismatch.
+    pub fn set_row(
+        &mut self,
+        row_0: impl TryInto<i64> + Display,
+        other: &Self,
+        row_1: impl TryInto<i64> + Display,
+    ) -> Result<(), MathError> {
+        if self.modulus != other.modulus {
+            return Err(MathError::MismatchingModulus(format!(
+                "set_row requires the moduli to be equal, but {} differs from {}",
+                self.get_mod(),
+                other.get_mod()
+            )));
+        }
+
+        self.matrix.set_row(row_0, &other.matrix, row_1)
+    }
+}
 
 #[cfg(test)]
 mod test_setter {
@@ -296,5 +390,209 @@ mod test_setter {
         let value = PolynomialRingZq::from((&PolyOverZ::default(), &modulus_2));
 
         assert!(poly_ring_mat.set_entry(1, 1, value).is_err());
+    }
+
+    /// Ensures that setting columns works fine for small entries.
+    #[test]
+    fn column_small_entries() {
+        let mut mat_1 =
+            MatPolynomialRingZq::from_str("[[0, 1  2, 0],[0, 1  5, 1  6]] / 2  1 1 mod 6").unwrap();
+        let mat_2 = MatPolynomialRingZq::from_str("[[0],[1  -1]] / 2  1 1 mod 6").unwrap();
+        let cmp =
+            MatPolynomialRingZq::from_str("[[0, 0, 0],[0, 1  -1, 1  6]] / 2  1 1 mod 6").unwrap();
+
+        let _ = mat_1.set_column(1, &mat_2, 0);
+
+        assert_eq!(cmp, mat_1);
+    }
+
+    /// Ensures that setting columns works fine for large entries.
+    #[test]
+    fn column_large_entries() {
+        let mut mat_1 = MatPolynomialRingZq::from_str(&format!(
+            "[[1  {}, 1  1, 1  3, 1  4],[1  {}, 1  4, 1  {}, 1  5],[1  7, 1  6, 2  8 9, 0]] / 2  1 1 mod {}",
+            i64::MIN,
+            i64::MAX,
+            u64::MAX-1,
+            u64::MAX
+        ))
+        .unwrap();
+        let mat_2 = MatPolynomialRingZq::from_str(&format!(
+            "[[1  1, 1  {}],[1  {}, 0],[1  7, 1  -1]] / 2  1 1 mod {}",
+            i64::MIN,
+            i64::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+        let cmp = MatPolynomialRingZq::from_str(&format!(
+            "[[1  {}, 1  1, 1  3, 1  4],[0, 1  4, 1  {}, 1  5],[1  -1, 1  6, 2  8 9, 0]] / 2  1 1 mod {}",
+            i64::MIN,
+            u64::MAX-1,
+            u64::MAX
+        ))
+        .unwrap();
+
+        let _ = mat_1.set_column(0, &mat_2, 1);
+
+        assert_eq!(cmp, mat_1);
+    }
+
+    /// Ensures that setting the column to itself does not change anything.
+    #[test]
+    fn column_swap_same_entry() {
+        let mut mat_1 = MatPolynomialRingZq::from_str(&format!(
+            "[[1  {}, 1  1, 1  3, 1  4],[1  {}, 1  4, 1  {}, 1  5],[1  7, 1  6, 2  8 9, 0]] / 2  1 1 mod {}",
+            i64::MIN,
+            i64::MAX,
+            u64::MAX-1,
+            u64::MAX
+        ))
+        .unwrap();
+        let cmp = mat_1.clone();
+
+        let _ = mat_1.set_column(0, &cmp, 0);
+        let _ = mat_1.set_column(1, &cmp, 1);
+
+        assert_eq!(cmp, mat_1);
+    }
+
+    /// Ensures that `set_column` returns an error if one of the specified columns is out of bounds.
+    #[test]
+    fn column_out_of_bounds() {
+        let mut mat_1 =
+            MatPolynomialRingZq::from_str("[[0, 0],[0, 0],[0, 0],[0, 0],[0, 0]] / 2  1 1 mod 6")
+                .unwrap();
+        let mat_2 = mat_1.clone();
+
+        assert!(mat_1.set_column(-1, &mat_2, 0).is_err());
+        assert!(mat_1.set_column(2, &mat_2, 0).is_err());
+        assert!(mat_1.set_column(1, &mat_2, -1).is_err());
+        assert!(mat_1.set_column(1, &mat_2, 2).is_err());
+    }
+
+    /// Ensures that mismatching row dimensions result in an error.
+    #[test]
+    fn column_mismatching_columns() {
+        let mut mat_1 =
+            MatPolynomialRingZq::from_str("[[0, 0],[0, 0],[0, 0],[0, 0],[0, 0]] / 2  1 1 mod 6")
+                .unwrap();
+        let mat_2 = MatPolynomialRingZq::from_str("[[0, 0],[0, 0]] / 2  1 1 mod 6").unwrap();
+
+        assert!(mat_1.set_column(0, &mat_2, 0).is_err());
+        assert!(mat_1.set_column(1, &mat_2, 1).is_err());
+    }
+
+    /// Ensures that mismatching moduli result in an error.
+    #[test]
+    fn column_mismatching_moduli() {
+        let mut mat_1 =
+            MatPolynomialRingZq::from_str("[[0, 0],[0, 0],[0, 0]] / 2  1 1 mod 6").unwrap();
+        let mat_2 = MatPolynomialRingZq::from_str("[[0, 0],[0, 0],[0, 0]] / 2  1 1 mod 7").unwrap();
+
+        assert!(mat_1.set_column(0, &mat_2, 0).is_err());
+        assert!(mat_1.set_column(1, &mat_2, 1).is_err());
+    }
+
+    /// Ensures that setting rows works fine for small entries.
+    #[test]
+    fn row_small_entries() {
+        let mut mat_1 =
+            MatPolynomialRingZq::from_str("[[0, 1  2, 0],[0, 2  5 6, 0]] / 2  1 1 mod 6").unwrap();
+        let mat_2 = MatPolynomialRingZq::from_str("[[0, 1  -1, 1  2]] / 2  1 1 mod 6").unwrap();
+        let cmp = MatPolynomialRingZq::from_str("[[0, 1  2, 0],[0, 1  -1, 1  2]] / 2  1 1 mod 6")
+            .unwrap();
+
+        let _ = mat_1.set_row(1, &mat_2, 0);
+
+        assert_eq!(cmp, mat_1);
+    }
+
+    /// Ensures that setting rows works fine for large entries.
+    #[test]
+    fn row_large_entries() {
+        let mut mat_1 = MatPolynomialRingZq::from_str(&format!(
+            "[[1  {}, 1  1, 1  3, 1  4],[1  {}, 1  4, 1  {}, 1  5],[1  7, 1  6, 2  8 9, 0]] / 2  1 1 mod {}",
+            i64::MIN,
+            i64::MAX,
+            u64::MAX-1,
+            u64::MAX
+        ))
+        .unwrap();
+        let mat_2 = MatPolynomialRingZq::from_str(&format!(
+            "[[0, 0, 0, 0],[1  {}, 0, 1  {}, 0]] / 2  1 1 mod {}",
+            i64::MIN,
+            i64::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+        let cmp = MatPolynomialRingZq::from_str(&format!(
+            "[[1  {}, 0, 1  {}, 0],[1  {}, 1  4, 1  {}, 1  5],[1  7, 1  6, 2  8 9, 0]] / 2  1 1 mod {}",
+            i64::MIN,
+            i64::MAX,
+            i64::MAX,
+            u64::MAX-1,
+            u64::MAX
+        ))
+        .unwrap();
+
+        let _ = mat_1.set_row(0, &mat_2, 1);
+
+        assert_eq!(cmp, mat_1);
+    }
+
+    /// Ensures that setting the rows to itself does not change anything.
+    #[test]
+    fn row_swap_same_entry() {
+        let mut mat_1 = MatPolynomialRingZq::from_str(&format!(
+            "[[1  {}, 1  1, 1  3, 1  4],[1  {}, 1  4, 1  {}, 1  5],[1  7, 1  6, 2  8 9, 0]] / 2  1 1 mod {}",
+            i64::MIN,
+            i64::MAX,
+            u64::MAX-1,
+            u64::MAX
+        ))
+        .unwrap();
+        let cmp = mat_1.clone();
+
+        let _ = mat_1.set_row(0, &cmp, 0);
+        let _ = mat_1.set_row(1, &cmp, 1);
+
+        assert_eq!(cmp, mat_1);
+    }
+
+    /// Ensures that `set_row` returns an error if one of the specified rows is out of bounds.
+    #[test]
+    fn row_out_of_bounds() {
+        let mut mat_1 =
+            MatPolynomialRingZq::from_str("[[0, 0],[0, 0],[0, 0],[0, 0],[0, 0]] / 2  1 1 mod 6")
+                .unwrap();
+        let mat_2 = mat_1.clone();
+
+        assert!(mat_1.set_row(-1, &mat_2, 0).is_err());
+        assert!(mat_1.set_row(5, &mat_2, 0).is_err());
+        assert!(mat_1.set_row(2, &mat_2, -1).is_err());
+        assert!(mat_1.set_row(2, &mat_2, 5).is_err());
+    }
+
+    /// Ensures that mismatching column dimensions result in an error.
+    #[test]
+    fn row_mismatching_columns() {
+        let mut mat_1 =
+            MatPolynomialRingZq::from_str("[[0, 0],[0, 0],[0, 0]] / 2  1 1 mod 6").unwrap();
+        let mat_2 = MatPolynomialRingZq::from_str("[[0, 0, 0],[0, 0, 0],[0, 0, 0]] / 2  1 1 mod 6")
+            .unwrap();
+
+        assert!(mat_1.set_row(0, &mat_2, 0).is_err());
+        assert!(mat_1.set_row(1, &mat_2, 1).is_err());
+    }
+
+    /// Ensures that mismatching moduli result in an error.
+    #[test]
+    fn row_mismatching_moduli() {
+        let mut mat_1 =
+            MatPolynomialRingZq::from_str("[[0, 0],[0, 0],[0, 0]] / 2  1 1 mod 6").unwrap();
+        let mat_2 = MatPolynomialRingZq::from_str("[[0, 0],[0, 0],[0, 0]] / 2  1 1 mod 7").unwrap();
+
+        assert!(mat_1.set_row(0, &mat_2, 0).is_err());
+        assert!(mat_1.set_row(1, &mat_2, 1).is_err());
     }
 }
