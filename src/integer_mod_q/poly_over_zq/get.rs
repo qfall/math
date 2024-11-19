@@ -11,12 +11,14 @@
 use super::PolyOverZq;
 use crate::{
     error::MathError,
-    integer::Z,
+    integer::{PolyOverZ, Z},
     integer_mod_q::{Modulus, Zq},
     traits::GetCoefficient,
     utils::index::evaluate_index,
 };
-use flint_sys::fmpz_mod_poly::{fmpz_mod_poly_degree, fmpz_mod_poly_get_coeff_fmpz};
+use flint_sys::fmpz_mod_poly::{
+    fmpz_mod_poly_degree, fmpz_mod_poly_get_coeff_fmpz, fmpz_mod_poly_get_fmpz_poly,
+};
 use std::fmt::Display;
 
 impl GetCoefficient<Zq> for PolyOverZq {
@@ -133,6 +135,35 @@ impl PolyOverZq {
     /// ```
     pub fn get_mod(&self) -> Modulus {
         self.modulus.clone()
+    }
+
+    /// Returns a representative polynomial of the [`PolyOverZq`] element.
+    ///
+    /// The representation of the coefficients is in the range `[0, modulus)`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::PolyOverZ;
+    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use std::str::FromStr;
+    ///
+    /// let poly_zq = PolyOverZq::from_str("4  -3 0 31 1 mod 17").unwrap();
+    ///
+    /// let poly_z = poly_zq.get_representative_0_modulus();
+    ///
+    /// let cmp_poly = PolyOverZ::from_str("4  14 0 14 1").unwrap();
+    /// assert_eq!(cmp_poly, poly_z);
+    /// ```
+    pub fn get_representative_0_modulus(&self) -> PolyOverZ {
+        let mut out = PolyOverZ::default();
+        unsafe {
+            fmpz_mod_poly_get_fmpz_poly(
+                &mut out.poly,
+                &self.poly,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
+        out
     }
 }
 
@@ -303,5 +334,23 @@ mod test_mod {
         let poly = PolyOverZq::from_str(&format!("2  1 2 mod {}", u64::MAX)).unwrap();
 
         assert_eq!(poly.get_mod(), Modulus::from(u64::MAX));
+    }
+}
+
+#[cfg(test)]
+mod test_get_representative_0_modulus {
+    use crate::{integer::PolyOverZ, integer_mod_q::PolyOverZq};
+    use std::str::FromStr;
+
+    /// Ensure that the getter works for large entries.
+    #[test]
+    fn large_positive() {
+        let large_prime = u64::MAX - 58;
+        let poly_zq = PolyOverZq::from_str(&format!("4  -1 0 0 1 mod {large_prime}")).unwrap();
+
+        let poly_z = poly_zq.get_representative_0_modulus();
+
+        let cmp_poly = PolyOverZ::from_str(&format!("4  {} 0 0 1", u64::MAX - 59)).unwrap();
+        assert_eq!(cmp_poly, poly_z);
     }
 }

@@ -271,7 +271,7 @@ mod test_get_representative_0_modulus {
     };
     use std::str::FromStr;
 
-    /// Ensure that the getter returns for large entries.
+    /// Ensure that the getter works for large entries.
     #[test]
     fn large_positive() {
         let large_prime = u64::MAX - 58;
