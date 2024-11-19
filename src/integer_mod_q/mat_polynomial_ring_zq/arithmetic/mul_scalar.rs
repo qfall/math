@@ -315,7 +315,7 @@ impl MatPolynomialRingZq {
             )));
         }
 
-        Ok(self * scalar)
+        Ok(self * scalar.get_representative_0_modulus())
     }
 
     /// Implements multiplication for a [`MatPolynomialRingZq`] matrix with a [`PolynomialRingZq`].
