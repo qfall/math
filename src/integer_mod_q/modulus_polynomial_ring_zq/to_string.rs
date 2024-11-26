@@ -7,7 +7,7 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! This module contains all options to convert a polynomial of type
-//! [`ModulusPolynomialRingZq] into a [`String`].
+//! [`ModulusPolynomialRingZq`] into a [`String`].
 //!
 //! This includes the [`Display`] trait.
 
