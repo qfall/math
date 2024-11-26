@@ -51,7 +51,7 @@ use crate::error::MathError;
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-///     if the number of rows is greater than the matrix dimensions or negative.
+///     if the provided row index is not defined within the margins of the matrix.
 /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
 ///     if the number of columns of `self` and `other` differ.
 pub(crate) fn evaluate_vec_dimensions_set_row_or_col(
