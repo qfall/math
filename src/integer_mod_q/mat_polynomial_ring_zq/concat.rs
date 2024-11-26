@@ -45,7 +45,10 @@ impl Concatenate for &MatPolynomialRingZq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
     ///     [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the matrices can not be concatenated due to mismatching dimensions
+    ///     if the matrices can not be concatenated due to mismatching dimensions.
+    /// - Returns a [`MathError`] of type
+    ///     [`MismatchingModulus`](MathError::MismatchingModulus)
+    ///     if the matrices can not be concatenated due to mismatching moduli.
     fn concat_vertical(self, other: Self) -> Result<Self::Output, crate::error::MathError> {
         if self.get_num_columns() != other.get_num_columns() {
             return Err(MathError::MismatchingMatrixDimension(format!(
@@ -56,6 +59,15 @@ impl Concatenate for &MatPolynomialRingZq {
                 other.get_num_columns()
             )));
         }
+
+        if self.modulus != other.modulus {
+            return Err(MathError::MismatchingModulus(format!(
+                "Tried to concatenate matrices with different moduli {} and {}.",
+                self.get_mod(),
+                other.get_mod(),
+            )));
+        }
+
         let mut matrix = MatPolyOverZ::new(
             self.get_num_rows() + other.get_num_rows(),
             self.get_num_columns(),
@@ -99,7 +111,10 @@ impl Concatenate for &MatPolynomialRingZq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
     ///     [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the matrices can not be concatenated due to mismatching dimensions
+    ///     if the matrices can not be concatenated due to mismatching dimensions.
+    /// - Returns a [`MathError`] of type
+    ///     [`MismatchingModulus`](MathError::MismatchingModulus)
+    ///     if the matrices can not be concatenated due to mismatching moduli.
     fn concat_horizontal(self, other: Self) -> Result<Self::Output, crate::error::MathError> {
         if self.get_num_rows() != other.get_num_rows() {
             return Err(MathError::MismatchingMatrixDimension(format!(
@@ -110,6 +125,15 @@ impl Concatenate for &MatPolynomialRingZq {
                 other.get_num_columns()
             )));
         }
+
+        if self.modulus != other.modulus {
+            return Err(MathError::MismatchingModulus(format!(
+                "Tried to concatenate matrices with different moduli {} and {}.",
+                self.get_mod(),
+                other.get_mod(),
+            )));
+        }
+
         let mut matrix = MatPolyOverZ::new(
             self.get_num_rows(),
             self.get_num_columns() + other.get_num_columns(),
@@ -173,6 +197,20 @@ mod test_concatenate {
 
         assert_eq!(11, mat_vert.get_num_columns());
         assert_eq!(17, mat_vert.get_num_rows());
+    }
+
+    /// Ensure that concatenation of matrices with mismatching moduli results in
+    /// in an error.
+    #[test]
+    fn mismatching_moduli() {
+        let mat_1 = MatPolynomialRingZq::from_str("[[0, 0],[0, 0]] / 2  1 1 mod 6").unwrap();
+        let mat_2 = MatPolynomialRingZq::from_str("[[0, 0],[0, 0]] / 2  1 1 mod 7").unwrap();
+
+        let mat_hor = mat_1.concat_horizontal(&mat_2);
+        let mat_vert = mat_1.concat_vertical(&mat_2);
+
+        assert!(mat_hor.is_err());
+        assert!(mat_vert.is_err());
     }
 
     /// Ensure that vertical concatenation works correctly.
