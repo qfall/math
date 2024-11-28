@@ -107,7 +107,7 @@ impl MatZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if the number of columns is greater than the matrix dimensions or negative.
+    ///     if the provided column index is not defined within the margins of the matrix.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     ///     if the number of rows of `self` and `other` differ.
     pub fn set_column(
@@ -165,7 +165,7 @@ impl MatZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if the number of rows is greater than the matrix dimensions or negative.
+    ///     if the provided row index is not defined within the margins of the matrix.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     ///     if the number of columns of `self` and `other` differ.
     pub fn set_row(
@@ -495,7 +495,7 @@ mod test_setter {
         let mat_2 = MatZ::from_str("[[0],[-1]]").unwrap();
         let cmp = MatZ::from_str("[[1, 0, 3],[4, -1, 6]]").unwrap();
 
-        let _ = mat_1.set_column(1, &mat_2, 0);
+        mat_1.set_column(1, &mat_2, 0).unwrap();
 
         assert_eq!(cmp, mat_1);
     }
@@ -519,7 +519,7 @@ mod test_setter {
         ))
         .unwrap();
 
-        let _ = mat_1.set_column(0, &mat_2, 1);
+        mat_1.set_column(0, &mat_2, 1).unwrap();
 
         assert_eq!(cmp, mat_1);
     }
@@ -536,8 +536,8 @@ mod test_setter {
         .unwrap();
         let cmp = mat_1.clone();
 
-        let _ = mat_1.set_column(0, &cmp, 0);
-        let _ = mat_1.set_column(1, &cmp, 1);
+        mat_1.set_column(0, &cmp, 0).unwrap();
+        mat_1.set_column(1, &cmp, 1).unwrap();
 
         assert_eq!(cmp, mat_1);
     }
