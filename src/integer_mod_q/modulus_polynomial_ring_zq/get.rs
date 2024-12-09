@@ -176,14 +176,14 @@ impl ModulusPolynomialRingZq {
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  -3 0 31 1 mod 17").unwrap();
     ///
-    /// let poly_z = modulus.get_representative_0_modulus();
+    /// let poly_z = modulus.get_representative_least_nonnegative_residue();
     ///
     /// let cmp_poly = PolyOverZ::from_str("4  14 0 14 1").unwrap();
     /// assert_eq!(cmp_poly, poly_z);
     /// ```
-    pub fn get_representative_0_modulus(&self) -> PolyOverZ {
+    pub fn get_representative_least_nonnegative_residue(&self) -> PolyOverZ {
         let poly_zq = PolyOverZq::from(self);
-        poly_zq.get_representative_0_modulus()
+        poly_zq.get_representative_least_nonnegative_residue()
     }
 }
 
@@ -325,7 +325,7 @@ mod test_get_q {
 }
 
 #[cfg(test)]
-mod test_get_representative_0_modulus {
+mod test_get_representative_least_nonnegative_residue {
     use crate::{
         integer::PolyOverZ,
         integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq},
@@ -341,7 +341,7 @@ mod test_get_representative_0_modulus {
         let poly = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
         let poly_ring = PolynomialRingZq::from((&poly, &modulus));
 
-        let poly_z = poly_ring.get_representative_0_modulus();
+        let poly_z = poly_ring.get_representative_least_nonnegative_residue();
 
         let cmp_poly = PolyOverZ::from_str(&format!("3  {} 0 1", u64::MAX - 60)).unwrap();
         assert_eq!(cmp_poly, poly_z);

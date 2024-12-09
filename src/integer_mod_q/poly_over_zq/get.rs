@@ -149,12 +149,12 @@ impl PolyOverZq {
     ///
     /// let poly_zq = PolyOverZq::from_str("4  -3 0 31 1 mod 17").unwrap();
     ///
-    /// let poly_z = poly_zq.get_representative_0_modulus();
+    /// let poly_z = poly_zq.get_representative_least_nonnegative_residue();
     ///
     /// let cmp_poly = PolyOverZ::from_str("4  14 0 14 1").unwrap();
     /// assert_eq!(cmp_poly, poly_z);
     /// ```
-    pub fn get_representative_0_modulus(&self) -> PolyOverZ {
+    pub fn get_representative_least_nonnegative_residue(&self) -> PolyOverZ {
         let mut out = PolyOverZ::default();
         unsafe {
             fmpz_mod_poly_get_fmpz_poly(
@@ -338,7 +338,7 @@ mod test_mod {
 }
 
 #[cfg(test)]
-mod test_get_representative_0_modulus {
+mod test_get_representative_least_nonnegative_residue {
     use crate::{integer::PolyOverZ, integer_mod_q::PolyOverZq};
     use std::str::FromStr;
 
@@ -348,7 +348,7 @@ mod test_get_representative_0_modulus {
         let large_prime = u64::MAX - 58;
         let poly_zq = PolyOverZq::from_str(&format!("4  -1 0 0 1 mod {large_prime}")).unwrap();
 
-        let poly_z = poly_zq.get_representative_0_modulus();
+        let poly_z = poly_zq.get_representative_least_nonnegative_residue();
 
         let cmp_poly = PolyOverZ::from_str(&format!("4  {} 0 0 1", u64::MAX - 59)).unwrap();
         assert_eq!(cmp_poly, poly_z);

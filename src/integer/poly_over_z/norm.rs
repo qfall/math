@@ -39,6 +39,7 @@ impl PolyOverZ {
         }
         res
     }
+
     /// Returns the infinity norm or the maximal absolute value of a
     /// coefficient of the given polynomial.
     ///

@@ -31,7 +31,7 @@ impl MatZq {
     /// equivalence class of each entry from a [`MatZq`].
     ///
     /// The values in the output matrix are in the range of `[0, modulus)`.
-    /// Use [`MatZq::get_representative_around_0`] if they should be
+    /// Use [`MatZq::get_representative_least_absolute_residue`] if they should be
     /// in the range `[-modulus/2, modulus/2]`.
     ///
     /// Returns the matrix as a [`MatZ`].
@@ -44,11 +44,11 @@ impl MatZq {
     ///
     /// let mat_zq = MatZq::from_str("[[1, 2],[3, -1]] mod 5").unwrap();
     ///
-    /// let mat_z = mat_zq.get_representative_0_modulus();
+    /// let mat_z = mat_zq.get_representative_least_nonnegative_residue();
     ///
     /// assert_eq!(mat_z.to_string(), "[[1, 2],[3, 4]]");
     /// ```
-    pub fn get_representative_0_modulus(&self) -> MatZ {
+    pub fn get_representative_least_nonnegative_residue(&self) -> MatZ {
         let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
         unsafe { fmpz_mat_set(&mut out.matrix, &self.matrix.mat[0]) };
         out
@@ -60,7 +60,7 @@ impl MatZq {
     ///
     /// The values in the output matrix are in the range of `[-modulus/2, modulus/2]`.
     /// For even moduli, the positive representative is chosen for the element `modulus / 2`.
-    /// Use [`MatZq::get_representative_0_modulus`] if they should be
+    /// Use [`MatZq::get_representative_least_nonnegative_residue`] if they should be
     /// in the range `[0, modulus)`.
     ///
     /// Returns an [`MatZ`] representation of the given matrix with
@@ -74,13 +74,13 @@ impl MatZq {
     /// let mat_zq_1 = MatZq::from_str("[[1,2],[3,4]] mod 5").unwrap();
     /// let mat_zq_2 = MatZq::from_str("[[1,2],[3,4]] mod 4").unwrap();
     ///
-    /// let mat_z_1 = mat_zq_1.get_representative_around_0();
-    /// let mat_z_2 = mat_zq_2.get_representative_around_0();
+    /// let mat_z_1 = mat_zq_1.get_representative_least_absolute_residue();
+    /// let mat_z_2 = mat_zq_2.get_representative_least_absolute_residue();
     ///
     /// assert_eq!(mat_z_1.to_string(), "[[1, 2],[-2, -1]]");
     /// assert_eq!(mat_z_2.to_string(), "[[1, 2],[-1, 0]]");
     /// ```
-    pub fn get_representative_around_0(&self) -> MatZ {
+    pub fn get_representative_least_absolute_residue(&self) -> MatZ {
         let modulus: Z = Z::from(&self.modulus);
         let modulus_half = modulus.div_floor(2);
 
@@ -648,7 +648,7 @@ mod test_get_num {
 }
 
 #[cfg(test)]
-mod test_get_representative_0_modulus {
+mod test_get_representative_least_nonnegative_residue {
     use crate::{
         integer::Z,
         integer_mod_q::MatZq,
@@ -660,7 +660,7 @@ mod test_get_representative_0_modulus {
     fn dimensions() {
         let matzq = MatZq::new(15, 17, 13);
 
-        let matz_1 = matzq.get_representative_0_modulus();
+        let matz_1 = matzq.get_representative_least_nonnegative_residue();
 
         assert_eq!(15, matz_1.get_num_rows());
         assert_eq!(17, matz_1.get_num_columns());
@@ -673,7 +673,7 @@ mod test_get_representative_0_modulus {
         matzq.set_entry(0, 0, u64::MAX - 58).unwrap();
         matzq.set_entry(0, 1, -1).unwrap();
 
-        let matz_1 = matzq.get_representative_0_modulus();
+        let matz_1 = matzq.get_representative_least_nonnegative_residue();
 
         assert_eq!(Z::from(u64::MAX - 1), matz_1.get_entry(0, 1).unwrap());
         assert_eq!(Z::from(u64::MAX - 58), matz_1.get_entry(0, 0).unwrap());
@@ -989,7 +989,7 @@ mod test_collect_lengths {
 }
 
 #[cfg(test)]
-mod test_get_representative_around_0 {
+mod test_get_representative_least_absolute_residue {
     use super::*;
     use std::str::FromStr;
 
@@ -998,7 +998,7 @@ mod test_get_representative_around_0 {
     fn large_modulus() {
         let mat_zq = MatZq::from_str(&format!("[[1,2],[-1,-2]] mod {}", u64::MAX)).unwrap();
 
-        let mat_z = mat_zq.get_representative_around_0();
+        let mat_z = mat_zq.get_representative_least_absolute_residue();
 
         let mat_cmp = MatZ::from_str("[[1,2],[-1,-2]]").unwrap();
         assert_eq!(mat_z.to_string(), mat_cmp.to_string());
@@ -1009,7 +1009,7 @@ mod test_get_representative_around_0 {
     fn even_modulus() {
         let mat_zq = MatZq::from_str("[[0,1,2,3,4,5,6,7,8,9,10]] mod 10").unwrap();
 
-        let mat_z = mat_zq.get_representative_around_0();
+        let mat_z = mat_zq.get_representative_least_absolute_residue();
 
         let mat_cmp = MatZ::from_str("[[0,1,2,3,4,5,-4,-3,-2,-1,0]]").unwrap();
         assert_eq!(mat_z.to_string(), mat_cmp.to_string());
@@ -1020,7 +1020,7 @@ mod test_get_representative_around_0 {
     fn uneven_modulus() {
         let mat_zq = MatZq::from_str("[[0,1,2,3,4,5,6,7,8,9,10,11]] mod 11").unwrap();
 
-        let mat_z = mat_zq.get_representative_around_0();
+        let mat_z = mat_zq.get_representative_least_absolute_residue();
 
         let mat_cmp = MatZ::from_str("[[0,1,2,3,4,5,-5,-4,-3,-2,-1,0]]").unwrap();
         assert_eq!(mat_z.to_string(), mat_cmp.to_string());
