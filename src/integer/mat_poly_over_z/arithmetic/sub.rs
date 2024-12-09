@@ -67,7 +67,6 @@ impl MatPolyOverZ {
     /// let b: MatPolyOverZ = MatPolyOverZ::from_str("[[1  -42, 0, 2  24 42],[3  1 12 4, 1  -1, 1  17]]").unwrap();
     ///
     /// let c: MatPolyOverZ = a.sub_safe(&b).unwrap();
-
     /// ```
     /// # Errors
     /// - Returns a [`MathError`] of type

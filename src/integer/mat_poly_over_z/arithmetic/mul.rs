@@ -35,7 +35,6 @@ impl Mul for &MatPolyOverZ {
     ///
     /// let a: MatPolyOverZ = MatPolyOverZ::from_str("[[0, 1  42, 2  42 24],[3  17 24 42, 1  17, 1  42]]").unwrap();
     /// let b: MatPolyOverZ = MatPolyOverZ::from_str("[[1  -42, 2  24 42],[1  -1, 1  17],[0, 2  1 42]]").unwrap();
-
     ///
     /// let c = &a * &b;
     /// let d = a * b;

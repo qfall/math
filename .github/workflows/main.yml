@@ -57,7 +57,7 @@ jobs:
       - name: Calculate test coverage
         run: cargo tarpaulin --out Html
       - name: Archive code coverage results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PROJECT_NAME }}-code_coverage_report-v${{ env.PROJECT_VERSION }}
           path: tarpaulin-report.html
@@ -83,7 +83,7 @@ jobs:
         run: cargo outdated --root-deps-only --exit-code 1
 
       - name: Archive release build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PROJECT_NAME }}-release_build-v${{ env.PROJECT_VERSION }}
           path: target/release/${{ env.PROJECT_NAME }}

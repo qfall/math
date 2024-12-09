@@ -62,7 +62,7 @@ jobs:
       - name: Calculate test coverage
         run: cargo tarpaulin --out Html
       - name: Archive code coverage results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PROJECT_NAME }}-code_coverage_report-v${{ env.PROJECT_VERSION }}
           path: tarpaulin-report.html
