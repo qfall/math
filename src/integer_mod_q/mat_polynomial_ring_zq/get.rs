@@ -56,12 +56,12 @@ impl MatPolynomialRingZq {
     /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
     /// let poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
     ///
-    /// let matrix = poly_ring_mat.get_representative_0_modulus();
+    /// let matrix = poly_ring_mat.get_representative_least_nonnegative_residue();
     ///
     /// let cmp_poly_mat = MatPolyOverZ::from_str("[[3  15 0 1, 1  8],[0, 2  1 2]]").unwrap();
     /// assert_eq!(cmp_poly_mat, matrix);
     /// ```
-    pub fn get_representative_0_modulus(&self) -> MatPolyOverZ {
+    pub fn get_representative_least_nonnegative_residue(&self) -> MatPolyOverZ {
         self.matrix.clone()
     }
 }
@@ -538,7 +538,7 @@ mod test_mod {
 }
 
 #[cfg(test)]
-mod test_get_representative_0_modulus {
+mod test_get_representative_least_nonnegative_residue {
     use crate::{
         integer::MatPolyOverZ,
         integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
@@ -549,7 +549,7 @@ mod test_get_representative_0_modulus {
 
     /// Ensure that the getter for a large modulus and large entries works.
     #[test]
-    fn get_representative_0_modulus_large_entry_and_modulus() {
+    fn get_representative_least_nonnegative_residue_large_entry_and_modulus() {
         let modulus =
             ModulusPolynomialRingZq::from_str(&format!("5  42 0 0 0 1 mod {LARGE_PRIME}")).unwrap();
         let poly_mat = MatPolyOverZ::from_str("[[4  1 0 0 1, 1  42],[0, 1  -1]]").unwrap();
@@ -561,7 +561,7 @@ mod test_get_representative_0_modulus {
                 LARGE_PRIME - 1
             ))
             .unwrap(),
-            matrix.get_representative_0_modulus()
+            matrix.get_representative_least_nonnegative_residue()
         )
     }
 }
