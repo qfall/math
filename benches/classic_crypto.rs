@@ -50,9 +50,20 @@ pub fn gen_prime_order_group_plus_generator(security_lvl: u32) -> (Modulus, Zq) 
 
     // choose generator s.t. `g^2 != 1 mod p` and `g^q != 1 mod p`
     let mut generator = Zq::sample_uniform(&modulus).unwrap();
-    while generator.pow(&two).unwrap().get_representative_0_modulus() == Z::ONE
-        || generator.pow(&q).unwrap().get_representative_0_modulus() == Z::ONE
-        || generator.clone().get_representative_0_modulus() == Z::ZERO
+    while generator
+        .pow(&two)
+        .unwrap()
+        .get_representative_least_nonnegative_residue()
+        == Z::ONE
+        || generator
+            .pow(&q)
+            .unwrap()
+            .get_representative_least_nonnegative_residue()
+            == Z::ONE
+        || generator
+            .clone()
+            .get_representative_least_nonnegative_residue()
+            == Z::ZERO
     {
         generator = Zq::sample_uniform(&modulus).unwrap();
     }
@@ -108,7 +119,7 @@ mod rsa_textbook {
         let sk = Zq::from((&pk, &phi_mod))
             .inverse()
             .expect("There must an inverse of this element as pk is prime.")
-            .get_representative_0_modulus();
+            .get_representative_least_nonnegative_residue();
 
         (modulus, pk, sk)
     }
@@ -133,7 +144,10 @@ mod rsa_textbook {
     ///
     /// `rsa_textbook.dec(N, sk, cipher) = cipher^sk mod N`
     pub fn dec(sk: &Z, cipher: &Zq) -> Z {
-        cipher.pow(sk).unwrap().get_representative_0_modulus()
+        cipher
+            .pow(sk)
+            .unwrap()
+            .get_representative_least_nonnegative_residue()
     }
 
     /// Run textbook RSA encryption with 1024 bit security.

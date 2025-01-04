@@ -350,7 +350,7 @@ impl MatZq {
             b_i = MatZq::from((
                 &(unsafe {
                     (b_i - &invertible_matrix * x_i)
-                        .get_representative_0_modulus()
+                        .get_representative_least_nonnegative_residue()
                         .div_exact(base)
                 }),
                 &self.get_mod(),
@@ -652,11 +652,17 @@ mod test_find_invertible_entry_column {
 
         let (i, entry) = find_invertible_entry_column(&mat, 0, &Vec::new()).unwrap();
         assert_eq!(0, i);
-        assert_eq!(Z::from(7), entry.get_representative_0_modulus());
+        assert_eq!(
+            Z::from(7),
+            entry.get_representative_least_nonnegative_residue()
+        );
 
         let (i, entry) = find_invertible_entry_column(&mat, 0, [0].as_ref()).unwrap();
         assert_eq!(1, i);
-        assert_eq!(Z::from(5), entry.get_representative_0_modulus());
+        assert_eq!(
+            Z::from(5),
+            entry.get_representative_least_nonnegative_residue()
+        );
 
         let invert = find_invertible_entry_column(&mat, 0, [0, 1].as_ref());
         assert!(invert.is_none())
