@@ -16,6 +16,7 @@ use std::rc::Rc;
 mod cmp;
 mod from;
 mod get;
+mod norm;
 mod ownership;
 mod serialize;
 mod to_string;
