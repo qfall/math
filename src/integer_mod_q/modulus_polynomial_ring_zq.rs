@@ -14,6 +14,7 @@ use flint_sys::fq::fq_ctx_struct;
 use std::rc::Rc;
 
 mod cmp;
+mod coefficient_embedding;
 mod from;
 mod get;
 mod ownership;
