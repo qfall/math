@@ -91,12 +91,12 @@ mod test_clone {
         assert_eq!(a.get_num_rows(), 2);
         assert_eq!(a.get_num_columns(), 3);
 
-        assert_eq!(GetEntry::<Z>::get_entry(&a, 0, 0).unwrap(), 1.into());
-        assert_eq!(GetEntry::<Z>::get_entry(&a, 0, 1).unwrap(), 2.into());
-        assert_eq!(GetEntry::<Z>::get_entry(&a, 0, 2).unwrap(), 3.into());
-        assert_eq!(GetEntry::<Z>::get_entry(&a, 1, 0).unwrap(), 3.into());
-        assert_eq!(GetEntry::<Z>::get_entry(&a, 1, 1).unwrap(), 4.into());
-        assert_eq!(GetEntry::<Z>::get_entry(&a, 1, 2).unwrap(), 5.into());
+        assert_eq!(GetEntry::<Z>::get_entry(&a, 0, 0).unwrap(), 1);
+        assert_eq!(GetEntry::<Z>::get_entry(&a, 0, 1).unwrap(), 2);
+        assert_eq!(GetEntry::<Z>::get_entry(&a, 0, 2).unwrap(), 3);
+        assert_eq!(GetEntry::<Z>::get_entry(&a, 1, 0).unwrap(), 3);
+        assert_eq!(GetEntry::<Z>::get_entry(&a, 1, 1).unwrap(), 4);
+        assert_eq!(GetEntry::<Z>::get_entry(&a, 1, 2).unwrap(), 5);
     }
 
     /// check whether the cloned entries are stored separately
@@ -135,8 +135,8 @@ mod test_clone {
 
         let a = b.clone();
 
-        assert_eq!(GetEntry::<Z>::get_entry(&a, 1, 1).unwrap(), 1.into());
-        assert_eq!(GetEntry::<Z>::get_entry(&a, 1, 0).unwrap(), 0.into());
+        assert_eq!(GetEntry::<Z>::get_entry(&a, 1, 1).unwrap(), 1);
+        assert_eq!(GetEntry::<Z>::get_entry(&a, 1, 0).unwrap(), 0);
     }
 
     /// Check if large modulus is stored separately and therefore cloned deeply

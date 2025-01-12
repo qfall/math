@@ -44,7 +44,7 @@ impl Q {
     /// assert_eq!(Q::from((1, 4)), inverse);
     /// ```
     pub fn inverse(&self) -> Option<Q> {
-        if self == &Q::ZERO {
+        if self == 0 {
             return None;
         }
 

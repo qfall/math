@@ -39,7 +39,7 @@ impl<Integer: Into<Z>> Pow<Integer> for Q {
     ///     if the provided exponent is negative and the base value of `self` is not invertible.
     fn pow(&self, exp: Integer) -> Result<Self::Output, MathError> {
         let exp = exp.into();
-        if self == &Q::ZERO && exp < Z::ZERO {
+        if self == 0 && exp < Z::ZERO {
             return Err(MathError::InvalidExponent(format!(
                 "A negative exponent {exp} was used for a zero value. There's no inverse for zero values."
             )));

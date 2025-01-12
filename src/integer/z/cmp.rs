@@ -1,4 +1,4 @@
-// Copyright © 2023 Sven Moog
+// Copyright © 2023 Sven Moog, Marcel Luca Schmidt
 //
 // This file is part of qFALL-math.
 //
@@ -10,11 +10,16 @@
 //! This uses the traits from [`std::cmp`].
 
 use super::Z;
-use flint_sys::fmpz::{fmpz_cmp, fmpz_equal};
+use crate::{
+    macros::{cmp::eq_mixed_borrowed_owned, for_others::implement_for_others},
+    rational::Q,
+};
+use flint_sys::fmpz::{fmpz, fmpz_cmp, fmpz_equal};
 use std::cmp::Ordering;
 
 impl PartialEq for Z {
     /// Checks if two integers are equal. Used by the `==` and `!=` operators.
+    /// [`PartialEq`] is implemented for any combination of owned and borrowed values.
     ///
     /// Parameters:
     /// - `other`: the other value that is used to compare the elements
@@ -42,9 +47,48 @@ impl PartialEq for Z {
     }
 }
 
+eq_mixed_borrowed_owned!(Z, Z);
+
 // With the [`Eq`] trait, `a == a` is always true.
 // This is not guaranteed by the [`PartialEq`] trait.
 impl Eq for Z {}
+
+impl PartialEq<Q> for Z {
+    /// Checks if an integer and a rational are equal. Used by the `==` and `!=` operators.
+    /// [`PartialEq`] is implemented for any combination of owned and borrowed values.
+    ///
+    /// Parameters:
+    /// - `other`: the other value that is used to compare the elements
+    ///
+    /// Returns `true` if the elements are equal, otherwise `false`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::rational::Q;
+    /// let a: Z = Z::from(42);
+    /// let b: Q = Q::from(42);
+    ///
+    /// // These are all equivalent and return true.
+    /// let compared: bool = (a == b);
+    /// # assert!(compared);
+    /// let compared: bool = (&a == &b);
+    /// # assert!(compared);
+    /// let compared: bool = (a.eq(&b));
+    /// # assert!(compared);
+    /// let compared: bool = (Z::eq(&a, &b));
+    /// # assert!(compared);
+    /// ```
+    fn eq(&self, other: &Q) -> bool {
+        unsafe {
+            (1 == fmpz_equal(&other.value.den, &fmpz(1)))
+                && (1 == fmpz_equal(&other.value.num, &self.value))
+        }
+    }
+}
+
+eq_mixed_borrowed_owned!(Z, Q);
+implement_for_others!(Z, Z, PartialEq for fmpz i8 i16 i32 i64 u8 u16 u32 u64);
 
 impl PartialOrd for Z {
     /// Compares two [`Z`] values. Used by the `<`, `<=`, `>`, and `>=` operators.
@@ -113,7 +157,7 @@ impl Ord for Z {
 
 /// Test that the [`PartialEq`] trait is correctly implemented.
 #[cfg(test)]
-mod test_partial_eq {
+mod test_partial_eq_z {
     // Test case structure:
     // 1. Different ways to use equal and not equal.
     // 2. Test different combinations of equal and not equal with different
@@ -121,6 +165,18 @@ mod test_partial_eq {
     //    Not equal test are inverted equal tests.
 
     use super::Z;
+
+    // Ensure that the function can be called between owned and borrowed values
+    #[test]
+    #[allow(clippy::op_ref)]
+    fn availability() {
+        let z = Z::ONE;
+
+        assert!(z == z);
+        assert!(z == &z);
+        assert!(&z == z);
+        assert!(&z == &z);
+    }
 
     /// Demonstrate the different ways to use equal.
     /// We assume that they behave the same in the other tests.
@@ -216,6 +272,63 @@ mod test_partial_eq {
         assert!(small_negative != min);
         assert!(min != small_positive);
         assert!(small_positive != min);
+    }
+}
+
+/// Test that the [`PartialEq`] trait is correctly implemented.
+#[cfg(test)]
+mod test_partial_eq_z_q {
+    use super::Z;
+    use crate::rational::Q;
+
+    // Ensure that the function can be called with several types
+    #[test]
+    #[allow(clippy::op_ref)]
+    fn availability() {
+        let q = Q::from((1, 1));
+        let z = Z::from(1);
+
+        assert!(z == q);
+        assert!(z == z.value);
+        assert!(z == 1i8);
+        assert!(z == 1u8);
+        assert!(z == 1i16);
+        assert!(z == 1u16);
+        assert!(z == 1i32);
+        assert!(z == 1u32);
+        assert!(z == 1i64);
+        assert!(z == 1u64);
+
+        assert!(z.value == z);
+        assert!(1i8 == z);
+        assert!(1u8 == z);
+        assert!(1i16 == z);
+        assert!(1u16 == z);
+        assert!(1i32 == z);
+        assert!(1u32 == z);
+        assert!(1i64 == z);
+        assert!(1u64 == z);
+
+        assert!(&z == q);
+        assert!(z == &q);
+        assert!(&z == &q);
+
+        assert!(&z == 1i8);
+        assert!(z == &1i8);
+        assert!(&z == &1i8);
+        assert!(&1i8 == z);
+        assert!(1i8 == &q);
+        assert!(&1i8 == &q);
+    }
+
+    // Ensure that large values are compared correctly
+    #[test]
+    fn equal_large() {
+        let q = Q::from((u64::MAX, 1));
+        let z = Z::from(u64::MAX);
+
+        assert!(z == q);
+        assert!(z != q + 1);
     }
 }
 

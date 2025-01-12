@@ -21,6 +21,8 @@
 ///
 /// - ['Mul'](std::ops::Mul) with signature
 ///     `($bridge_type, $type, Mul Scalar for $source_type)`
+/// - ['PartialEq'](std::cmp::PartialEq) with signature
+///     `($bridge_type, $type, PartialEq for $source_type)`
 ///
 /// # Examples
 /// ```compile_fail
@@ -71,6 +73,30 @@ macro_rules! implement_for_others {
                 }
             }
         })*
+    };
+
+    // [`PartialEq`] trait
+    ($bridge_type:ident, $type:ident, PartialEq for $($source_type:ident)*) => {
+        $(#[doc(hidden)] impl PartialEq<$source_type> for $type {
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::partialEq`]."]
+                fn eq(&self, other: &$source_type) -> bool {
+                    self.eq(&$bridge_type::from(other))
+                }
+            }
+        }
+
+        #[doc(hidden)] impl PartialEq<$type> for $source_type {
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::partialEq`]."]
+                fn eq(&self, other: &$type) -> bool {
+                    other.eq(&$bridge_type::from(self))
+                }
+            }
+        }
+
+        eq_mixed_borrowed_owned!($source_type, $type);
+        eq_mixed_borrowed_owned!($type, $source_type);)*
     };
 }
 

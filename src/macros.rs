@@ -10,6 +10,7 @@
 //! various traits fast without repetition.
 
 pub(crate) mod arithmetics;
+pub(crate) mod cmp;
 pub(crate) mod for_others;
 pub(crate) mod from;
 pub(crate) mod serialize;

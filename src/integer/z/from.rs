@@ -317,7 +317,7 @@ impl TryFrom<&Z> for i64 {
         // if the value is too large/small to fit into an [`i64`].
         // Hence we are required to manually check if the value is actually correct
         let value_i64 = unsafe { fmpz_get_si(&value.value) };
-        if &Z::from(value_i64) == value {
+        if value_i64 == value {
             Ok(value_i64)
         } else {
             Err(MathError::ConversionError(format!(

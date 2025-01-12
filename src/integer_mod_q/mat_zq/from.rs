@@ -192,8 +192,14 @@ mod test_from_mat_z_modulus {
 
         let matzq_1 = MatZq::from((&matz, &modulus));
 
-        assert_eq!(Z::from(u64::MAX - 1), matzq_1.get_entry(0, 1).unwrap());
-        assert_eq!(Z::from(u64::MAX - 58), matzq_1.get_entry(0, 0).unwrap());
+        assert_eq!(
+            u64::MAX - 1,
+            GetEntry::<Z>::get_entry(&matzq_1, 0, 1).unwrap()
+        );
+        assert_eq!(
+            u64::MAX - 58,
+            GetEntry::<Z>::get_entry(&matzq_1, 0, 0).unwrap()
+        );
     }
 
     /// Ensures that the function is still available for all values implementing
@@ -239,11 +245,8 @@ mod test_from_str {
         let matrix_str_1 = "[[1, 2, 3],[3, 4, 5]] mod 6";
 
         assert_eq!(
-            Z::ONE,
-            MatZq::from_str(matrix_str_1)
-                .unwrap()
-                .get_entry(0, 0)
-                .unwrap()
+            1,
+            GetEntry::<Z>::get_entry(&MatZq::from_str(matrix_str_1).unwrap(), 0, 0).unwrap()
         );
     }
 
@@ -253,11 +256,8 @@ mod test_from_str {
         let matrix_str_1 = "[[1, 2, 3],[3, 4, 5]] mod 3";
 
         assert_eq!(
-            Z::ONE,
-            MatZq::from_str(matrix_str_1)
-                .unwrap()
-                .get_entry(1, 1)
-                .unwrap()
+            1,
+            GetEntry::<Z>::get_entry(&MatZq::from_str(matrix_str_1).unwrap(), 1, 1).unwrap()
         );
     }
 
@@ -267,11 +267,8 @@ mod test_from_str {
         let matrix_string = format!("[[{}, 2, 3],[3, 4, 5]] mod {}", u64::MAX - 1, u64::MAX);
 
         assert_eq!(
-            Z::from(u64::MAX - 1),
-            MatZq::from_str(&matrix_string)
-                .unwrap()
-                .get_entry(0, 0)
-                .unwrap()
+            u64::MAX - 1,
+            GetEntry::<Z>::get_entry(&MatZq::from_str(&matrix_string).unwrap(), 0, 0).unwrap()
         );
     }
 
@@ -281,11 +278,8 @@ mod test_from_str {
         let matrix_string = format!("[[-{}, 2, 3],[3, 4, 5]] mod {}", u64::MAX - 1, u64::MAX);
 
         assert_eq!(
-            Z::ONE,
-            MatZq::from_str(&matrix_string)
-                .unwrap()
-                .get_entry(0, 0)
-                .unwrap()
+            1,
+            GetEntry::<Z>::get_entry(&MatZq::from_str(&matrix_string).unwrap(), 0, 0).unwrap()
         );
     }
 
@@ -295,11 +289,8 @@ mod test_from_str {
         let matrix_string = format!("[[1, 2, 3],[3, 4, 5]] mod {}", u64::MAX);
 
         assert_eq!(
-            Z::ONE,
-            MatZq::from_str(&matrix_string)
-                .unwrap()
-                .get_entry(0, 0)
-                .unwrap()
+            1,
+            GetEntry::<Z>::get_entry(&MatZq::from_str(&matrix_string).unwrap(), 0, 0).unwrap()
         );
     }
 
@@ -309,11 +300,8 @@ mod test_from_str {
         let matrix_str_1 = "[[  1, 2 ,  3  ],[3 , 4, 5 ]]  mod  6 ";
 
         assert_eq!(
-            Z::ONE,
-            MatZq::from_str(matrix_str_1)
-                .unwrap()
-                .get_entry(0, 0)
-                .unwrap()
+            1,
+            GetEntry::<Z>::get_entry(&MatZq::from_str(matrix_str_1).unwrap(), 0, 0).unwrap()
         );
     }
 

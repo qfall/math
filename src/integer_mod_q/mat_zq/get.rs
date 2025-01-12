@@ -384,9 +384,9 @@ impl GetEntry<Z> for MatZq {
     ///
     /// let matrix = MatZq::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]] mod 10").unwrap();
     ///
-    /// assert_eq!(Z::from(3), matrix.get_entry(0, 2).unwrap());
-    /// assert_eq!(Z::from(8), matrix.get_entry(2, 1).unwrap());
-    /// assert_eq!(Z::from(8), matrix.get_entry(-1, -2).unwrap());
+    /// assert_eq!(3, GetEntry::<Z>::get_entry(&matrix, 0, 2).unwrap());
+    /// assert_eq!(8, GetEntry::<Z>::get_entry(&matrix, 2, 1).unwrap());
+    /// assert_eq!(8, GetEntry::<Z>::get_entry(&matrix, -1, -2).unwrap());
     /// ```
     ///
     /// # Errors and Failures
@@ -462,11 +462,11 @@ mod test_get_entry {
     fn get_edges() {
         let matrix = MatZq::new(5, 10, u64::MAX);
 
-        let entry_1 = matrix.get_entry(0, 0).unwrap();
-        let entry_2 = matrix.get_entry(4, 9).unwrap();
+        let entry_1 = GetEntry::<Z>::get_entry(&matrix, 0, 0).unwrap();
+        let entry_2 = GetEntry::<Z>::get_entry(&matrix, 4, 9).unwrap();
 
-        assert_eq!(Z::default(), entry_1);
-        assert_eq!(Z::default(), entry_2);
+        assert_eq!(0, entry_1);
+        assert_eq!(0, entry_2);
     }
 
     /// Ensure that getting entries works with large numbers.
@@ -476,9 +476,9 @@ mod test_get_entry {
         let value = Z::from(i64::MAX);
         matrix.set_entry(0, 0, value).unwrap();
 
-        let entry = matrix.get_entry(0, 0).unwrap();
+        let entry: Z = matrix.get_entry(0, 0).unwrap();
 
-        assert_eq!(Z::from(i64::MAX), entry);
+        assert_eq!(i64::MAX, entry);
     }
 
     /// Ensure that getting entries works with large numbers (larger than [`i64`]).
@@ -488,9 +488,9 @@ mod test_get_entry {
         let value = Z::from(u64::MAX - 1);
         matrix.set_entry(0, 0, value).unwrap();
 
-        let entry = matrix.get_entry(0, 0).unwrap();
+        let entry: Z = matrix.get_entry(0, 0).unwrap();
 
-        assert_eq!(Z::from(u64::MAX - 1), entry);
+        assert_eq!(u64::MAX - 1, entry);
     }
 
     /// Ensure that getting entries works with large numbers.
@@ -500,9 +500,9 @@ mod test_get_entry {
         let value = Z::from(-i64::MAX);
         matrix.set_entry(0, 0, value).unwrap();
 
-        let entry = matrix.get_entry(0, 0).unwrap();
+        let entry: Z = matrix.get_entry(0, 0).unwrap();
 
-        assert_eq!(Z::from((u64::MAX as i128 - i64::MAX as i128) as u64), entry);
+        assert_eq!((u64::MAX as i128 - i64::MAX as i128) as u64, entry);
     }
 
     /// Ensure that getting entries works with large numbers (larger than [`i64`]).
@@ -512,12 +512,9 @@ mod test_get_entry {
         let value = Z::from(-i64::MAX - 1);
         matrix.set_entry(0, 0, value).unwrap();
 
-        let entry = matrix.get_entry(0, 0).unwrap();
+        let entry: Z = matrix.get_entry(0, 0).unwrap();
 
-        assert_eq!(
-            Z::from((u64::MAX as i128 - i64::MAX as i128) as u64 - 1),
-            entry
-        );
+        assert_eq!((u64::MAX as i128 - i64::MAX as i128) as u64 - 1, entry);
     }
 
     /// Ensure that a wrong number of rows yields an Error.
@@ -579,10 +576,10 @@ mod test_get_entry {
         let mut matrix = MatZq::new(5, 10, u64::MAX);
         let value = Zq::from((u64::MAX - 1, u64::MAX));
         matrix.set_entry(1, 1, value).unwrap();
-        let entry = matrix.get_entry(1, 1).unwrap();
+        let entry: Z = matrix.get_entry(1, 1).unwrap();
         matrix.set_entry(1, 1, Z::ONE).unwrap();
 
-        assert_eq!(Z::from(u64::MAX - 1), entry);
+        assert_eq!(u64::MAX - 1, entry);
     }
 
     /// Ensure that no memory leak occurs in get_entry with [`Z`](crate::integer::Z).

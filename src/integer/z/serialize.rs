@@ -77,14 +77,14 @@ mod test_deserialize {
     #[test]
     fn deserialize_positive() {
         let z_string = "{\"value\":\"17\"}";
-        assert_eq!(Z::from(17), serde_json::from_str(z_string).unwrap());
+        assert_eq!(Z::from(17), serde_json::from_str::<Z>(z_string).unwrap());
     }
 
     /// Tests whether the deserialization of a negative [`Z`] works.
     #[test]
     fn deserialize_negative() {
         let z_string = "{\"value\":\"-17\"}";
-        assert_eq!(Z::from(-17), serde_json::from_str(z_string).unwrap());
+        assert_eq!(Z::from(-17), serde_json::from_str::<Z>(z_string).unwrap());
     }
 
     /// Tests whether the deserialization of a positive large [`Z`] works.
@@ -95,7 +95,7 @@ mod test_deserialize {
 
         assert_eq!(
             Z::from_str(&val_str).unwrap(),
-            serde_json::from_str(&z_string).unwrap()
+            serde_json::from_str::<Z>(&z_string).unwrap()
         )
     }
 
@@ -107,7 +107,7 @@ mod test_deserialize {
 
         assert_eq!(
             Z::from_str(&val_str).unwrap(),
-            serde_json::from_str(&z_string).unwrap()
+            serde_json::from_str::<Z>(&z_string).unwrap()
         )
     }
 
