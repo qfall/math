@@ -112,9 +112,10 @@ impl MatQ {
 
         let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns());
 
-        // This code snippet originates from [`fmpz_mat_chol_d`] (FLINT)
+        // This code snippet originates from [flint](https://github.com/flintlib/flint/blob/main/src/fmpz_mat/chol_d.c)
+        // it is not part of [flint-sys] as it requires a specific data-type `d_mat_t`
         for i in 0..self.get_num_rows() {
-            for j in 0..(i + 1) {
+            for j in 0..=i {
                 let mut s: f64 = 0.0;
                 for k in 0..j {
                     let r_ik = f64::from(&out.get_entry(i, k).unwrap());
@@ -123,6 +124,8 @@ impl MatQ {
                 }
                 if i == j {
                     let a_ii = f64::from(&self.get_entry(i, i).unwrap());
+                    // Find this requirement in https://en.wikipedia.org/wiki/Cholesky_decomposition#The_Cholesky_algorithm
+                    // a_ii > 0 as `self` needs to be positive definite
                     assert!(a_ii > s, "The provided matrix is not positive definite.");
 
                     out.set_entry(i, j, (a_ii - s).sqrt()).unwrap();
