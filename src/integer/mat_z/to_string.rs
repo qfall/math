@@ -74,6 +74,8 @@ impl fmt::Display for MatZ {
 
 impl MatZ {
     /// Enables conversion to a UTF8-Encoded [`String`] for [`MatZ`] values.
+    /// Every entry is padded with `00`s s.t. all entries contain the same number of bytes.
+    /// Afterwards, they are appended column-by-column and converted.
     /// The inverse to this function is [`MatZ::from_utf8`] for valid UTF8-Encodings.
     ///
     /// **Warning**: Not every byte-sequence forms a valid UTF8-Encoding.
@@ -98,18 +100,38 @@ impl MatZ {
     /// - Returns a [`FromUtf8Error`] if the integer's byte sequence contains
     ///     invalid UTF8-characters.
     pub fn to_utf8(&self) -> Result<String, FromUtf8Error> {
-        let mut byte_vector: Vec<u8> = vec![];
+        let mut byte_vectors: Vec<Vec<u8>> = vec![];
+        let mut max_length = 0;
 
         // Fill byte vector
         for row in 0..self.get_num_rows() as usize {
             for col in 0..self.get_num_columns() as usize {
                 let entry_value = self.get_entry(row, col).unwrap();
-                let mut entry_bytes = entry_value.to_bytes();
-                byte_vector.append(&mut entry_bytes);
+                let entry_bytes = entry_value.to_bytes();
+
+                // Find maximum length of bytes in one entry of the matrix
+                if max_length < entry_bytes.len() {
+                    max_length = entry_bytes.len();
+                }
+
+                byte_vectors.push(entry_bytes);
             }
         }
 
-        String::from_utf8(byte_vector)
+        // Pad every entry to the same length with `0`s
+        // to ensure any matrix given a string provides the same matrix
+        // and append them in the same iteration
+        let mut bytes = vec![];
+        for mut byte_vector in byte_vectors {
+            for _ in 0..max_length - byte_vector.len() {
+                // 0 encodes a control character �, which can be followed by anything
+                // Hence, this might change the encoding of any trailing sequences
+                byte_vector.push(0u8);
+            }
+            bytes.append(&mut byte_vector);
+        }
+
+        String::from_utf8(bytes)
     }
 }
 
@@ -198,7 +220,7 @@ mod test_to_utf8 {
 
     /// Ensures that [`MatZ::to_utf8`] is inverse to [`MatZ::from_utf8`].
     #[test]
-    fn inverse_to_from_utf8() {
+    fn inverse_of_from_utf8() {
         let message = "some_random_string_1-9A-Z!?-_;:#";
 
         let matrix = MatZ::from_utf8(message, 4, 4);
@@ -206,6 +228,22 @@ mod test_to_utf8 {
         let string = matrix.to_utf8().unwrap();
 
         assert_eq!(message, string);
+    }
+
+    /// Ensures that [`MatZ::from_utf8`] is inverse to [`MatZ::to_utf8`].
+    #[test]
+    fn inverse_to_from_utf8() {
+        let matrix_cmp_w_padding = MatZ::from_str("[[104, 101, 108],[28524, 48, 48]]").unwrap();
+        let matrix_cmp_wo_padding = MatZ::from_str("[[104, 101],[108, 108],[111, 33]]").unwrap();
+
+        let string_w_padding = matrix_cmp_w_padding.to_utf8().unwrap();
+        let string_wo_padding = matrix_cmp_wo_padding.to_utf8().unwrap();
+
+        let matrix_w_padding = MatZ::from_utf8(&string_w_padding, 2, 3);
+        let matrix_wo_padding = MatZ::from_utf8(&string_wo_padding, 3, 2);
+        
+        assert_eq!(matrix_cmp_w_padding, matrix_w_padding);
+        assert_eq!(matrix_cmp_wo_padding, matrix_wo_padding);
     }
 
     /// Ensures that [`MatZ::to_utf8`] is inverse to [`MatZ::from_utf8`]
