@@ -123,11 +123,10 @@ impl MatZ {
         // and append them in the same iteration
         let mut bytes = vec![];
         for mut byte_vector in byte_vectors {
-            for _ in 0..max_length - byte_vector.len() {
-                // 0 encodes a control character �, which can be followed by anything
-                // Hence, this might change the encoding of any trailing sequences
-                byte_vector.push(0u8);
-            }
+            // 0 encodes a control character �, which can be followed by anything
+            // Hence, this might change the encoding of any trailing sequences
+            byte_vector.resize(max_length, 0u8);
+
             bytes.append(&mut byte_vector);
         }
 
@@ -241,7 +240,7 @@ mod test_to_utf8 {
 
         let matrix_w_padding = MatZ::from_utf8(&string_w_padding, 2, 3);
         let matrix_wo_padding = MatZ::from_utf8(&string_wo_padding, 3, 2);
-        
+
         assert_eq!(matrix_cmp_w_padding, matrix_w_padding);
         assert_eq!(matrix_cmp_wo_padding, matrix_wo_padding);
     }
