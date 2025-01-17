@@ -160,6 +160,8 @@ pub(crate) use arithmetic_between_types;
 /// Implements the `*trait*` for `*type*` using the `*trait*` for
 /// `&*type*`.
 ///
+/// **Warning**: Only works for commutative operations.
+///
 /// Parameters:
 /// - `trait`: the trait that is implemented
 ///     (e.g. [`Add`](std::ops::Add),[`Sub`](std::ops::Sub), ...).

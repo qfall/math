@@ -13,7 +13,6 @@ use crate::error::MathError;
 use crate::integer::MatZ;
 use crate::macros::arithmetics::{
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
-    arithmetic_trait_reverse,
 };
 use crate::traits::{GetNumColumns, GetNumRows};
 use flint_sys::fmpz_mat::fmpz_mat_mul;
@@ -78,8 +77,8 @@ impl Mul<&MatZ> for &MatZq {
     ///
     /// let c = &a * &b;
     /// let d = a * b;
-    /// let e = &MatZ::identity(2, 2) * d;
-    /// let f = MatZ::identity(2, 2) * &e;
+    /// let e = d * &MatZ::identity(2, 2);
+    /// let f = &e * MatZ::identity(2, 2);
     /// ```
     ///
     /// # Panics ...
@@ -100,12 +99,8 @@ impl Mul<&MatZ> for &MatZq {
     }
 }
 
-arithmetic_trait_reverse!(Mul, mul, MatZ, MatZq, MatZq);
-
 arithmetic_trait_borrowed_to_owned!(Mul, mul, MatZq, MatZ, MatZq);
-arithmetic_trait_borrowed_to_owned!(Mul, mul, MatZ, MatZq, MatZq);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatZq, MatZ, MatZq);
-arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatZ, MatZq, MatZq);
 
 impl MatZq {
     /// Implements multiplication for two [`MatZq`] values.
@@ -237,7 +232,6 @@ mod test_mul_matz {
         let cmp = MatZq::from_str("[[1],[2]] mod 3").unwrap();
 
         assert_eq!(cmp, &mat * &vec);
-        assert_eq!(cmp, &vec * &mat);
     }
 
     /// Checks if matrix multiplication works fine for large entries
@@ -251,7 +245,6 @@ mod test_mul_matz {
         cmp.set_entry(0, 0, &(&max * &max)).unwrap();
 
         assert_eq!(cmp, &mat * &vec);
-        assert_eq!(cmp, vec * mat);
     }
 
     /// Checks if matrix multiplication with incompatible matrix dimensions
