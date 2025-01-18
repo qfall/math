@@ -94,7 +94,7 @@ pub struct MatZ {
 unsafe_getter!(MatZ, matrix, fmpz_mat_struct);
 
 #[cfg(test)]
-mod test_get_value {
+mod test_get_matrix {
     use super::MatZ;
     use crate::{integer::Z, traits::GetEntry};
     use flint_sys::{
@@ -103,7 +103,7 @@ mod test_get_value {
     };
     use std::str::FromStr;
 
-    /// Checks availability of the getter for [`MatZ::get_matrix`]
+    /// Checks availability of the getter for [`MatZ::matrix`]
     /// and its ability to be modified.
     #[test]
     #[allow(unused_mut)]

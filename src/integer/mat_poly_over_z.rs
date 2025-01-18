@@ -84,13 +84,13 @@ pub struct MatPolyOverZ {
 unsafe_getter!(MatPolyOverZ, matrix, fmpz_poly_mat_struct);
 
 #[cfg(test)]
-mod test_get_value {
+mod test_get_matrix {
     use super::MatPolyOverZ;
     use crate::{integer::PolyOverZ, traits::GetEntry};
     use flint_sys::{fmpz_poly::fmpz_poly_set, fmpz_poly_mat::fmpz_poly_mat_entry};
     use std::str::FromStr;
 
-    /// Checks availability of the getter for [`MatPolyOverZ::get_matrix`]
+    /// Checks availability of the getter for [`MatPolyOverZ::matrix`]
     /// and its ability to be modified.
     #[test]
     #[allow(unused_mut)]

@@ -66,7 +66,7 @@ pub struct PolyOverZ {
 unsafe_getter!(PolyOverZ, poly, fmpz_poly_struct);
 
 #[cfg(test)]
-mod test_get_value {
+mod test_get_poly {
     use super::PolyOverZ;
     use flint_sys::{fmpz::fmpz, fmpz_poly::fmpz_poly_set_fmpz};
 
@@ -75,12 +75,12 @@ mod test_get_value {
     #[test]
     #[allow(unused_mut)]
     fn availability_and_modification() {
-        let mut a = PolyOverZ::from(1);
+        let mut poly = PolyOverZ::from(1);
 
-        let mut x = unsafe { a.get_poly() };
+        let mut fmpz_poly = unsafe { poly.get_poly() };
 
-        unsafe { fmpz_poly_set_fmpz(x, &fmpz(2)) };
+        unsafe { fmpz_poly_set_fmpz(fmpz_poly, &fmpz(2)) };
 
-        assert_eq!(PolyOverZ::from(2), a);
+        assert_eq!(PolyOverZ::from(2), poly);
     }
 }
