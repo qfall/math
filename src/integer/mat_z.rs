@@ -9,6 +9,7 @@
 //! `MatZ` is a type of matrix with integer entries of arbitrary length.
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
+use crate::macros::unsafe_passthrough::unsafe_getter;
 use flint_sys::fmpz_mat::fmpz_mat_struct;
 
 mod arithmetic;
@@ -88,4 +89,34 @@ mod vector;
 #[derive(Debug)]
 pub struct MatZ {
     pub(crate) matrix: fmpz_mat_struct,
+}
+
+unsafe_getter!(MatZ, matrix, fmpz_mat_struct);
+
+#[cfg(test)]
+mod test_get_value {
+    use super::MatZ;
+    use crate::{integer::Z, traits::GetEntry};
+    use flint_sys::{
+        fmpz::{fmpz, fmpz_set},
+        fmpz_mat::fmpz_mat_entry,
+    };
+    use std::str::FromStr;
+
+    /// Checks availability of the getter for [`MatZ::get_matrix`]
+    /// and its ability to be modified.
+    #[test]
+    #[allow(unused_mut)]
+    fn availability_and_modification() {
+        let mut mat = MatZ::from_str("[[1]]").unwrap();
+
+        let mut fmpz_mat = unsafe { mat.get_matrix() };
+
+        unsafe {
+            let entry = fmpz_mat_entry(fmpz_mat, 0, 0);
+            fmpz_set(entry, &fmpz(2))
+        };
+
+        assert_eq!(Z::from(2), mat.get_entry(0, 0).unwrap());
+    }
 }

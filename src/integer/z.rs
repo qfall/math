@@ -9,6 +9,7 @@
 //! `Z` is a type for integers with arbitrary length.
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
+use crate::macros::unsafe_passthrough::unsafe_getter;
 use flint_sys::fmpz::fmpz;
 
 mod arithmetic;
@@ -68,4 +69,25 @@ mod to_string;
 #[derive(Debug)]
 pub struct Z {
     pub(crate) value: fmpz,
+}
+
+unsafe_getter!(Z, value, fmpz);
+
+#[cfg(test)]
+mod test_get_value {
+    use super::Z;
+
+    /// Checks availability of the getter for [`Z::value`]
+    /// and its ability to be modified.
+    #[test]
+    #[allow(unused_mut)]
+    fn availability_and_modification() {
+        let mut integer = Z::from(1);
+
+        let mut fmpz_int = unsafe { integer.get_value() };
+
+        fmpz_int.0 = 2;
+
+        assert_eq!(Z::from(2), integer);
+    }
 }
