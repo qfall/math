@@ -26,6 +26,12 @@ macro_rules! unsafe_getter {
                 ///
                 /// **WARNING:** The returned struct is part of [`flint_sys`].
                 /// Any changes to this object are unsafe and may introduce memory leaks.
+                ///
+                /// # Safety
+                /// Any [`flint_sys`] struct and function is part of a FFI to the C-library `FLINT`.
+                /// As `FLINT` is a C-library, it does not provide all memory safety features
+                /// that Rust and our Wrapper provides.
+                /// Thus, using functions of [`flint_sys`] can introduce memory leaks.
                 pub unsafe fn [<get_ $attribute_name>](&mut self) -> &mut $attribute_type {
                     &mut self.$attribute_name
                 }
