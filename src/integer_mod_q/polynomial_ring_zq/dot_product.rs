@@ -14,6 +14,8 @@ use crate::{error::MathError, integer::Z};
 
 impl PolynomialRingZq {
     /// Returns the dot product of two polynomials of type [`PolynomialRingZq`].
+    /// The dot product for polynomials is obtained by treating the coefficients
+    /// of the polynomials as vectors and then applying the standard dot product operation.
     ///
     /// Parameters:
     /// - `other`: specifies the other polynomial the dot product is calculated over
