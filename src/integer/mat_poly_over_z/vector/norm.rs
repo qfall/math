@@ -19,9 +19,10 @@ use crate::{
 impl MatPolyOverZ {
     /// Returns the squared Euclidean norm or 2-norm of the given (row or column) vector
     /// or an error if the given [`MatPolyOverZ`] instance is not a (row or column) vector.
-    ///
-    /// For more information about the squared Euclidean norm on ['PolyOverZ'](crate::integer::poly_over_z::PolyOverZ)
-    /// see [`PolyOverZ::norm_eucl_sqrd`](crate::integer::poly_over_z::PolyOverZ::norm_eucl_sqrd).
+    /// The squared Euclidean norm for a polynomial vector is obtained by
+    /// computing the sum of the squared Euclidean norms of the individual polynomials.
+    /// The squared Euclidean norm for a polynomial is obtained by treating the coefficients
+    /// of the polynomial as a vector and then applying the standard squared Euclidean norm.
     ///
     /// # Examples
     /// ```
@@ -60,9 +61,10 @@ impl MatPolyOverZ {
 
     /// Returns the infinity norm or ∞-norm of the given (row or column) vector
     /// or an error if the given [`MatPolyOverZ`] instance is not a (row or column) vector.
-    ///
-    /// For more information about the infinity norm on ['PolyOverZ'](crate::integer::poly_over_z::PolyOverZ)
-    /// see [`PolyOverZ::norm_infty`](crate::integer::poly_over_z::PolyOverZ::norm_infty).
+    /// The infinity norm for a polynomial vector is obtained by
+    /// computing the sum of the infinity norms of the individual polynomials.
+    /// The infinity norm for a polynomial is obtained by treating the coefficients
+    /// of the polynomial as a vector and then applying the standard infinity norm.
     ///
     /// # Examples
     /// ```
