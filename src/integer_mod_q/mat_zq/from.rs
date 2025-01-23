@@ -259,7 +259,12 @@ mod test_from_str {
     /// Ensure that initialization with positive numbers that are larger than [`i64`] works.
     #[test]
     fn init_works_large_numbers() {
-        let matrix_string = &MatZq::from_str(&format!("[[{}, 2, 3],[3, 4, 5]] mod {}", u64::MAX - 1, u64::MAX)).unwrap();
+        let matrix_string = &MatZq::from_str(&format!(
+            "[[{}, 2, 3],[3, 4, 5]] mod {}",
+            u64::MAX - 1,
+            u64::MAX
+        ))
+        .unwrap();
 
         let entry: Z = matrix_string.get_entry(0, 0).unwrap();
 
@@ -269,7 +274,12 @@ mod test_from_str {
     /// Ensure that initialization with negative numbers that are larger than [`i64`] works.
     #[test]
     fn init_works_small_numbers() {
-        let matrix_string = &MatZq::from_str(&format!("[[-{}, 2, 3],[3, 4, 5]] mod {}", u64::MAX - 1, u64::MAX)).unwrap();
+        let matrix_string = &MatZq::from_str(&format!(
+            "[[-{}, 2, 3],[3, 4, 5]] mod {}",
+            u64::MAX - 1,
+            u64::MAX
+        ))
+        .unwrap();
 
         let entry: Z = matrix_string.get_entry(0, 0).unwrap();
 
@@ -279,7 +289,8 @@ mod test_from_str {
     /// Ensure that initialization with moduli that are larger than [`i64`] works.
     #[test]
     fn init_works_large_modulus() {
-        let matrix_string = &MatZq::from_str(&format!("[[1, 2, 3],[3, 4, 5]] mod {}", u64::MAX)).unwrap();
+        let matrix_string =
+            &MatZq::from_str(&format!("[[1, 2, 3],[3, 4, 5]] mod {}", u64::MAX)).unwrap();
 
         let entry: Z = matrix_string.get_entry(0, 0).unwrap();
 
