@@ -347,7 +347,7 @@ mod test_matrix_from_utf8_fill_bytes {
         }
     }
 
-    /// Ensures that a no bytes are added if it isn't necessary, i.e.
+    /// Ensures that no bytes are added if it isn't necessary, i.e.
     /// if every entry is naturally allocated the same number of bytes.
     #[test]
     fn no_padding_no_modulus() {
@@ -451,7 +451,7 @@ mod test_matrix_from_utf8_fill_bytes {
         assert_eq!(0, nr_bytes_per_entry);
     }
 
-    /// Ensures that matrices with
+    /// Ensures that matrices with matrix_size 0 panic.
     #[test]
     #[should_panic]
     fn matrix_size_zero() {

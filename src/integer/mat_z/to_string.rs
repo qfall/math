@@ -75,7 +75,7 @@ impl fmt::Display for MatZ {
 impl MatZ {
     /// Enables conversion to a UTF8-Encoded [`String`] for [`MatZ`] values.
     /// Every entry is padded with `00`s s.t. all entries contain the same number of bytes.
-    /// Afterwards, they are appended column-by-column and converted.
+    /// Afterwards, they are appended row-by-row and converted.
     /// The inverse to this function is [`MatZ::from_utf8`] for valid UTF8-Encodings.
     ///
     /// **Warning**: Not every byte-sequence forms a valid UTF8-Encoding.

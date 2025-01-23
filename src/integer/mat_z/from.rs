@@ -230,7 +230,7 @@ mod test_from_utf8 {
     use crate::traits::GetEntry;
     use std::str::FromStr;
 
-    /// Ensures that a wide range of (special) characters are correctly transformed correctly.
+    /// Ensures that a wide range of (special) characters are transformed correctly.
     #[test]
     fn characters() {
         let message = "flag{text#1234567890! a_zA-Z$€?/:;,.<>+*}";
