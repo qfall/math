@@ -227,14 +227,11 @@ mod test_get_coeff_z {
             ModulusPolynomialRingZq::from_str(&format!("2  1 {} mod {}", u64::MAX - 1, u64::MAX))
                 .unwrap();
 
-        assert_eq!(
-            u64::MAX - 1,
-            GetCoefficient::<Z>::get_coeff(&poly, 1).unwrap()
-        );
-        assert_eq!(
-            Zq::from((u64::MAX - 1, u64::MAX)),
-            poly.get_coeff(1).unwrap()
-        );
+        let coefficient_1: Z = poly.get_coeff(1).unwrap();
+        let coefficient_2: Zq = poly.get_coeff(1).unwrap();
+
+        assert_eq!(u64::MAX - 1, coefficient_1);
+        assert_eq!(Zq::from((u64::MAX - 1, u64::MAX)), coefficient_2);
     }
 
     /// Tests if negative index yields an error in get_coeff with [`Z`].

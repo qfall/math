@@ -82,7 +82,7 @@ mod test_evaluate_z {
     fn eval_z() {
         let poly = PolyOverZ::from_str("2  1 2").unwrap();
 
-        let res: Z = poly.evaluate(3);
+        let res: Z = poly.evaluate(Z::from(3));
 
         assert_eq!(7, res);
     }
@@ -92,7 +92,7 @@ mod test_evaluate_z {
     fn eval_z_ref() {
         let poly = PolyOverZ::from_str("2  1 2").unwrap();
 
-        let res: Z = poly.evaluate(3);
+        let res: Z = poly.evaluate(&Z::from(3));
 
         assert_eq!(7, res);
     }

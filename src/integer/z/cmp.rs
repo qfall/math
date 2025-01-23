@@ -19,7 +19,6 @@ use std::cmp::Ordering;
 
 impl PartialEq for Z {
     /// Checks if two integers are equal. Used by the `==` and `!=` operators.
-    /// [`PartialEq`] is implemented for any combination of owned and borrowed values.
     ///
     /// Parameters:
     /// - `other`: the other value that is used to compare the elements

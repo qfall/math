@@ -109,10 +109,11 @@ mod test_identity {
 
         for i in 0..10 {
             for j in 0..10 {
+                let entry: Z = matrix.get_entry(i, j).unwrap();
                 if i != j {
-                    assert_eq!(0, GetEntry::<Z>::get_entry(&matrix, i, j).unwrap());
+                    assert_eq!(0, entry);
                 } else {
-                    assert_eq!(1, GetEntry::<Z>::get_entry(&matrix, i, j).unwrap());
+                    assert_eq!(1, entry);
                 }
             }
         }
@@ -125,10 +126,11 @@ mod test_identity {
 
         for i in 0..10 {
             for j in 0..7 {
+                let entry: Z = matrix.get_entry(i, j).unwrap();
                 if i != j {
-                    assert_eq!(0, GetEntry::<Z>::get_entry(&matrix, i, j).unwrap());
+                    assert_eq!(0, entry);
                 } else {
-                    assert_eq!(1, GetEntry::<Z>::get_entry(&matrix, i, j).unwrap());
+                    assert_eq!(1, entry);
                 }
             }
         }
@@ -137,10 +139,11 @@ mod test_identity {
 
         for i in 0..7 {
             for j in 0..10 {
+                let entry: Z = matrix.get_entry(i, j).unwrap();
                 if i != j {
-                    assert_eq!(0, GetEntry::<Z>::get_entry(&matrix, i, j).unwrap());
+                    assert_eq!(0, entry);
                 } else {
-                    assert_eq!(1, GetEntry::<Z>::get_entry(&matrix, i, j).unwrap());
+                    assert_eq!(1, entry);
                 }
             }
         }
@@ -153,10 +156,11 @@ mod test_identity {
 
         for i in 0..10 {
             for j in 0..10 {
+                let entry: Z = matrix.get_entry(i, j).unwrap();
                 if i != j {
-                    assert_eq!(0, GetEntry::<Z>::get_entry(&matrix, i, j).unwrap());
+                    assert_eq!(0, entry);
                 } else {
-                    assert_eq!(1, GetEntry::<Z>::get_entry(&matrix, i, j).unwrap());
+                    assert_eq!(1, entry);
                 }
             }
         }

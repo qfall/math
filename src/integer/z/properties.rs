@@ -96,7 +96,7 @@ impl Z {
     /// assert_eq!(Q::from((1, 4)), inverse);
     /// ```
     pub fn inverse(&self) -> Option<Q> {
-        if self == 0 {
+        if self == Z::ZERO {
             return None;
         }
 

@@ -240,8 +240,11 @@ mod test_get_coeff_z {
         let large_string = format!("2  {} {} mod {modulus_str}", u64::MAX, i64::MAX);
         let poly = PolyOverZq::from_str(&large_string).unwrap();
 
-        assert_eq!(u64::MAX, GetCoefficient::<Z>::get_coeff(&poly, 0).unwrap());
-        assert_eq!(i64::MAX, GetCoefficient::<Z>::get_coeff(&poly, 1).unwrap());
+        let coefficint_1: Z = poly.get_coeff(0).unwrap();
+        let coefficint_2: Z = poly.get_coeff(1).unwrap();
+
+        assert_eq!(u64::MAX, coefficint_1);
+        assert_eq!(i64::MAX, coefficint_2);
     }
 
     /// Tests if large negative coefficients are returned correctly.
@@ -251,8 +254,11 @@ mod test_get_coeff_z {
         let large_string = format!("2  -{} {} mod {modulus_str}", u64::MAX, i64::MAX);
         let poly = PolyOverZq::from_str(&large_string).unwrap();
 
-        assert_eq!(0, GetCoefficient::<Z>::get_coeff(&poly, 0).unwrap());
-        assert_eq!(i64::MAX, GetCoefficient::<Z>::get_coeff(&poly, 1).unwrap());
+        let coefficint_1: Z = poly.get_coeff(0).unwrap();
+        let coefficint_2: Z = poly.get_coeff(1).unwrap();
+
+        assert_eq!(0, coefficint_1);
+        assert_eq!(i64::MAX, coefficint_2);
     }
 }
 

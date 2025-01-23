@@ -212,14 +212,11 @@ mod test_get_coeff {
         let poly = PolyOverZ::from_str(&format!("3  0 {} 1", i64::MAX)).unwrap();
         let poly_ring = PolynomialRingZq::from((&poly, &modulus));
 
-        assert_eq!(
-            i64::MAX,
-            GetCoefficient::<Z>::get_coeff(&poly_ring, 1).unwrap()
-        );
-        assert_eq!(
-            Zq::from((i64::MAX, u64::MAX)),
-            poly_ring.get_coeff(1).unwrap()
-        );
+        let coefficient_1: Z = poly_ring.get_coeff(1).unwrap();
+        let coefficient_2: Zq = poly_ring.get_coeff(1).unwrap();
+
+        assert_eq!(i64::MAX, coefficient_1);
+        assert_eq!(Zq::from((i64::MAX, u64::MAX)), coefficient_2);
     }
 
     /// Tests if negative index yields an error in get_coeff with [`Z`].

@@ -192,14 +192,11 @@ mod test_from_mat_z_modulus {
 
         let matzq_1 = MatZq::from((&matz, &modulus));
 
-        assert_eq!(
-            u64::MAX - 1,
-            GetEntry::<Z>::get_entry(&matzq_1, 0, 1).unwrap()
-        );
-        assert_eq!(
-            u64::MAX - 58,
-            GetEntry::<Z>::get_entry(&matzq_1, 0, 0).unwrap()
-        );
+        let entry_1: Z = matzq_1.get_entry(0, 1).unwrap();
+        let entry_2: Z = matzq_1.get_entry(0, 0).unwrap();
+
+        assert_eq!(u64::MAX - 1, entry_1);
+        assert_eq!(u64::MAX - 58, entry_2);
     }
 
     /// Ensures that the function is still available for all values implementing
@@ -242,67 +239,61 @@ mod test_from_str {
     /// Ensure that initialization works.
     #[test]
     fn init_works() {
-        let matrix_str_1 = "[[1, 2, 3],[3, 4, 5]] mod 6";
+        let matrix_str_1 = &MatZq::from_str("[[1, 2, 3],[3, 4, 5]] mod 6").unwrap();
 
-        assert_eq!(
-            1,
-            GetEntry::<Z>::get_entry(&MatZq::from_str(matrix_str_1).unwrap(), 0, 0).unwrap()
-        );
+        let entry: Z = matrix_str_1.get_entry(0, 0).unwrap();
+
+        assert_eq!(1, entry);
     }
 
     /// Ensure that entries are correctly reduced.
     #[test]
     fn reduce_works() {
-        let matrix_str_1 = "[[1, 2, 3],[3, 4, 5]] mod 3";
+        let matrix_str_1 = &MatZq::from_str("[[1, 2, 3],[3, 4, 5]] mod 3").unwrap();
 
-        assert_eq!(
-            1,
-            GetEntry::<Z>::get_entry(&MatZq::from_str(matrix_str_1).unwrap(), 1, 1).unwrap()
-        );
+        let entry: Z = matrix_str_1.get_entry(1, 1).unwrap();
+
+        assert_eq!(1, entry);
     }
 
     /// Ensure that initialization with positive numbers that are larger than [`i64`] works.
     #[test]
     fn init_works_large_numbers() {
-        let matrix_string = format!("[[{}, 2, 3],[3, 4, 5]] mod {}", u64::MAX - 1, u64::MAX);
+        let matrix_string = &MatZq::from_str(&format!("[[{}, 2, 3],[3, 4, 5]] mod {}", u64::MAX - 1, u64::MAX)).unwrap();
 
-        assert_eq!(
-            u64::MAX - 1,
-            GetEntry::<Z>::get_entry(&MatZq::from_str(&matrix_string).unwrap(), 0, 0).unwrap()
-        );
+        let entry: Z = matrix_string.get_entry(0, 0).unwrap();
+
+        assert_eq!(u64::MAX - 1, entry);
     }
 
     /// Ensure that initialization with negative numbers that are larger than [`i64`] works.
     #[test]
     fn init_works_small_numbers() {
-        let matrix_string = format!("[[-{}, 2, 3],[3, 4, 5]] mod {}", u64::MAX - 1, u64::MAX);
+        let matrix_string = &MatZq::from_str(&format!("[[-{}, 2, 3],[3, 4, 5]] mod {}", u64::MAX - 1, u64::MAX)).unwrap();
 
-        assert_eq!(
-            1,
-            GetEntry::<Z>::get_entry(&MatZq::from_str(&matrix_string).unwrap(), 0, 0).unwrap()
-        );
+        let entry: Z = matrix_string.get_entry(0, 0).unwrap();
+
+        assert_eq!(1, entry);
     }
 
     /// Ensure that initialization with moduli that are larger than [`i64`] works.
     #[test]
     fn init_works_large_modulus() {
-        let matrix_string = format!("[[1, 2, 3],[3, 4, 5]] mod {}", u64::MAX);
+        let matrix_string = &MatZq::from_str(&format!("[[1, 2, 3],[3, 4, 5]] mod {}", u64::MAX)).unwrap();
 
-        assert_eq!(
-            1,
-            GetEntry::<Z>::get_entry(&MatZq::from_str(&matrix_string).unwrap(), 0, 0).unwrap()
-        );
+        let entry: Z = matrix_string.get_entry(0, 0).unwrap();
+
+        assert_eq!(1, entry);
     }
 
     /// Ensure that entries can have leading and trailing whitespaces.
     #[test]
     fn whitespaces_in_entries_works() {
-        let matrix_str_1 = "[[  1, 2 ,  3  ],[3 , 4, 5 ]]  mod  6 ";
+        let matrix_str_1 = &MatZq::from_str("[[  1, 2 ,  3  ],[3 , 4, 5 ]]  mod  6 ").unwrap();
 
-        assert_eq!(
-            1,
-            GetEntry::<Z>::get_entry(&MatZq::from_str(matrix_str_1).unwrap(), 0, 0).unwrap()
-        );
+        let entry: Z = matrix_str_1.get_entry(0, 0).unwrap();
+
+        assert_eq!(1, entry);
     }
 
     /// Ensure that a wrong format causes an error.

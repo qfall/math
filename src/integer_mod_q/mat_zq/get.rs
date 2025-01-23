@@ -384,9 +384,13 @@ impl GetEntry<Z> for MatZq {
     ///
     /// let matrix = MatZq::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]] mod 10").unwrap();
     ///
-    /// assert_eq!(3, GetEntry::<Z>::get_entry(&matrix, 0, 2).unwrap());
-    /// assert_eq!(8, GetEntry::<Z>::get_entry(&matrix, 2, 1).unwrap());
-    /// assert_eq!(8, GetEntry::<Z>::get_entry(&matrix, -1, -2).unwrap());
+    /// let entry_1 :Z = matrix.get_entry(0, 2).unwrap();
+    /// let entry_2 :Z = matrix.get_entry(2, 1).unwrap();
+    /// let entry_3 :Z = matrix.get_entry(-1, -2).unwrap();
+    ///
+    /// assert_eq!(3, entry_1);
+    /// assert_eq!(8, entry_2);
+    /// assert_eq!(8, entry_3);
     /// ```
     ///
     /// # Errors and Failures
@@ -462,8 +466,8 @@ mod test_get_entry {
     fn get_edges() {
         let matrix = MatZq::new(5, 10, u64::MAX);
 
-        let entry_1 = GetEntry::<Z>::get_entry(&matrix, 0, 0).unwrap();
-        let entry_2 = GetEntry::<Z>::get_entry(&matrix, 4, 9).unwrap();
+        let entry_1: Z = matrix.get_entry(0, 0).unwrap();
+        let entry_2: Z = matrix.get_entry(4, 9).unwrap();
 
         assert_eq!(0, entry_1);
         assert_eq!(0, entry_2);
@@ -544,30 +548,19 @@ mod test_get_entry {
     fn negative_indexing() {
         let matrix = MatZq::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]] mod 10").unwrap();
 
-        assert_eq!(
-            GetEntry::<Z>::get_entry(&matrix, -1, -1).unwrap(),
-            Z::from(9)
-        );
-        assert_eq!(
-            GetEntry::<Z>::get_entry(&matrix, -1, -2).unwrap(),
-            Z::from(8)
-        );
-        assert_eq!(
-            GetEntry::<Z>::get_entry(&matrix, -3, -3).unwrap(),
-            Z::from(1)
-        );
-        assert_eq!(
-            GetEntry::<Zq>::get_entry(&matrix, -1, -1).unwrap(),
-            Zq::from((9, 10))
-        );
-        assert_eq!(
-            GetEntry::<Zq>::get_entry(&matrix, -1, -2).unwrap(),
-            Zq::from((8, 10))
-        );
-        assert_eq!(
-            GetEntry::<Zq>::get_entry(&matrix, -3, -3).unwrap(),
-            Zq::from((1, 10))
-        );
+        let entry_1: Z = matrix.get_entry(-1, -1).unwrap();
+        let entry_2: Z = matrix.get_entry(-1, -2).unwrap();
+        let entry_3: Z = matrix.get_entry(-3, -3).unwrap();
+        let entry_4: Zq = matrix.get_entry(-1, -1).unwrap();
+        let entry_5: Zq = matrix.get_entry(-1, -2).unwrap();
+        let entry_6: Zq = matrix.get_entry(-3, -3).unwrap();
+
+        assert_eq!(9, entry_1);
+        assert_eq!(8, entry_2);
+        assert_eq!(1, entry_3);
+        assert_eq!(Zq::from((9, 10)), entry_4);
+        assert_eq!(Zq::from((8, 10)), entry_5);
+        assert_eq!(Zq::from((1, 10)), entry_6);
     }
 
     /// Ensure that the entry is a deep copy and not just a clone of the reference.
