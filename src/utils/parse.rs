@@ -119,6 +119,11 @@ pub(crate) fn matrix_to_string<S: Display, T: GetEntry<S> + GetNumRows + GetNumC
 /// Adds `0`-padding to the UTF8-Encoding of the `message` until every entry of
 /// the matrix has the same number of bytes assigned to it.
 ///
+/// **WARNING:** For use with modulus, this implementation is very restrictive.
+/// It requires the modulus to be larger than or equal to the next byte-order size,
+/// i.e. `(2^8)^i`. Then, the largest entry may be at most `(2^8)^(i-1)` defines the
+/// maximum entry that is allowed.
+///
 /// Parameters:
 /// - `message`: a [`String`] whose UTF8-Encoding should be encoded in a matrix.
 /// - `nr_entries`: the number of entries in the matrix, i.e. `nr_rows * nr_columns`.
@@ -459,5 +464,19 @@ mod test_matrix_from_utf8_fill_bytes {
         let matrix_size = 0;
 
         let _ = matrix_from_utf8_fill_bytes(message, matrix_size, None).unwrap();
+    }
+
+    /// Ensure that the conversion error is triggered if necessary.
+    /// This test is for the current version of this function, which is very restrictive.
+    /// This test could work (and not trigger the error).
+    #[test]
+    fn trigger_conversion_error() {
+        let message = "A";
+        let nr_entries = 4;
+        let modulus = Modulus::from(255);
+
+        let res = matrix_from_utf8_fill_bytes(&message, nr_entries, Some(&modulus));
+
+        assert!(res.is_err());
     }
 }
