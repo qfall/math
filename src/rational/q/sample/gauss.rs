@@ -44,7 +44,7 @@ impl Q {
                 "The sigma has to be positive and not zero, but the provided value is {sigma}."
             )));
         }
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
         let mut source = source::default(rng.next_u64());
 
         // Instead of sampling with a center of c, we sample with center 0 and add the
