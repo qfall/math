@@ -10,7 +10,7 @@
 //! uniform random distribution.
 
 use crate::{error::MathError, integer::Z};
-use rand::RngCore;
+use rand::TryRngCore;
 
 /// Computes a uniform at random chosen [`Z`] sample in `[0, interval_size)`.
 ///
@@ -71,7 +71,7 @@ pub(crate) fn sample_uniform_rejection(interval_size: &Z) -> Result<Z, MathError
 /// assert_eq!(2, byte_vector.len());
 /// ```
 fn sample_bits_uniform(nr_bits: usize) -> Vec<u8> {
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
 
     // sample ⌈ nr_bits / 8 ⌉ bytes
     let mut byte_vector;

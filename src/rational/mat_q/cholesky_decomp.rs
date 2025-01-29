@@ -109,35 +109,51 @@ impl MatQ {
     /// - if `self` has eigenvalues smaller than `0`.
     pub fn cholesky_decomposition_flint(&self) -> MatQ {
         assert!(self.is_symmetric(), "The provided matrix is not symmetric.");
+        let mat_dimension = self.get_num_rows() as usize;
 
-        let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns());
+        let mut out = vec![vec![0.0; mat_dimension]; mat_dimension];
+        let mut mat = vec![vec![0.0; mat_dimension]; mat_dimension];
+
+        // extract `self` into a vector of vectors of `f64` values
+        // to avoid memory allocation and freeing during runtime
+        for (i, row) in mat.iter_mut().enumerate().take(mat_dimension) {
+            for (j, entry) in row.iter_mut().enumerate().take(mat_dimension) {
+                *entry = f64::from(&self.get_entry(i, j).unwrap());
+            }
+        }
 
         // This code snippet originates from [flint](https://github.com/flintlib/flint/blob/main/src/fmpz_mat/chol_d.c)
         // it is not part of [flint-sys] as it requires a specific data-type `d_mat_t`
-        for i in 0..self.get_num_rows() {
+        for i in 0..mat_dimension {
             for j in 0..=i {
                 let mut s: f64 = 0.0;
                 for k in 0..j {
-                    let r_ik = f64::from(&out.get_entry(i, k).unwrap());
-                    let r_jk = f64::from(&out.get_entry(j, k).unwrap());
-                    s += r_ik * r_jk
+                    s += out[i][k] * out[j][k]
                 }
                 if i == j {
-                    let a_ii = f64::from(&self.get_entry(i, i).unwrap());
                     // Find this requirement in https://en.wikipedia.org/wiki/Cholesky_decomposition#The_Cholesky_algorithm
                     // a_ii > 0 as `self` needs to be positive definite
-                    assert!(a_ii > s, "The provided matrix is not positive definite.");
+                    assert!(
+                        mat[i][i] > s,
+                        "The provided matrix is not positive definite."
+                    );
 
-                    out.set_entry(i, j, (a_ii - s).sqrt()).unwrap();
+                    out[i][j] = (mat[i][i] - s).sqrt();
                 } else {
-                    let a_ij = f64::from(&self.get_entry(i, j).unwrap());
-                    let r_jj = f64::from(&out.get_entry(j, j).unwrap());
-
-                    out.set_entry(i, j, (a_ij - s) / r_jj).unwrap();
+                    out[i][j] = (mat[i][j] - s) / out[j][j];
                 }
             }
         }
-        out
+
+        // Assemble Cholesky decomposition as MatQ
+        let mut res = MatQ::new(mat_dimension, mat_dimension);
+        for (i, row) in out.iter().enumerate().take(mat_dimension) {
+            for (j, entry) in row.iter().enumerate().take(mat_dimension) {
+                res.set_entry(i, j, *entry).unwrap();
+            }
+        }
+
+        res
     }
 }
 

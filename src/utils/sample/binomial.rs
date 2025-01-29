@@ -56,7 +56,7 @@ pub(crate) fn sample_binomial(n: &Z, p: &Q) -> Result<u64, MathError> {
     let p = f64::from(p);
 
     let distr = Binomial::new(n, p).unwrap();
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
 
     let sample = distr.sample(&mut rng);
 
