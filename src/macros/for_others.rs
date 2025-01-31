@@ -94,10 +94,7 @@ macro_rules! implement_for_others {
                     other.eq(&$bridge_type::from(self))
                 }
             }
-        }
-
-        eq_mixed_borrowed_owned!($source_type, $type);
-        eq_mixed_borrowed_owned!($type, $source_type);)*
+        })*
     };
 }
 

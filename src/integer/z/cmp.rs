@@ -10,10 +10,7 @@
 //! This uses the traits from [`std::cmp`].
 
 use super::Z;
-use crate::{
-    macros::{cmp::eq_mixed_borrowed_owned, for_others::implement_for_others},
-    rational::Q,
-};
+use crate::{macros::for_others::implement_for_others, rational::Q};
 use flint_sys::fmpz::{fmpz, fmpz_cmp, fmpz_equal};
 use std::cmp::Ordering;
 
@@ -45,8 +42,6 @@ impl PartialEq for Z {
         unsafe { 1 == fmpz_equal(&self.value, &other.value) }
     }
 }
-
-eq_mixed_borrowed_owned!(Z, Z);
 
 // With the [`Eq`] trait, `a == a` is always true.
 // This is not guaranteed by the [`PartialEq`] trait.
@@ -86,7 +81,6 @@ impl PartialEq<Q> for Z {
     }
 }
 
-eq_mixed_borrowed_owned!(Z, Q);
 implement_for_others!(Z, Z, PartialEq for fmpz i8 i16 i32 i64 u8 u16 u32 u64);
 
 impl PartialOrd for Z {
@@ -172,8 +166,6 @@ mod test_partial_eq_z {
         let z = Z::ONE;
 
         assert!(z == z);
-        assert!(z == &z);
-        assert!(&z == z);
         assert!(&z == &z);
     }
 
@@ -308,15 +300,8 @@ mod test_partial_eq_z_q {
         assert!(1i64 == z);
         assert!(1u64 == z);
 
-        assert!(&z == q);
-        assert!(z == &q);
         assert!(&z == &q);
-
-        assert!(&z == 1i8);
-        assert!(z == &1i8);
         assert!(&z == &1i8);
-        assert!(&1i8 == z);
-        assert!(1i8 == &q);
         assert!(&1i8 == &q);
     }
 
