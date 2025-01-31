@@ -22,7 +22,6 @@ use derive_more::Display;
 use serde::{Deserialize, Serialize};
 
 mod arithmetic;
-mod dot_product;
 mod from;
 mod get;
 mod properties;
