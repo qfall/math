@@ -61,8 +61,8 @@ impl MatPolyOverZ {
 
     /// Returns the infinity norm or ∞-norm of the given (row or column) vector
     /// or an error if the given [`MatPolyOverZ`] instance is not a (row or column) vector.
-    /// The infinity norm for a polynomial vector is obtained by
-    /// computing the sum of the infinity norms of the individual polynomials.
+    /// The infinity norm for a polynomial vector is obtained by computing the
+    /// infinity norm on the vector consisting of the infinity norms of the individual polynomials.
     /// The infinity norm for a polynomial is obtained by treating the coefficients
     /// of the polynomial as a vector and then applying the standard infinity norm.
     ///
