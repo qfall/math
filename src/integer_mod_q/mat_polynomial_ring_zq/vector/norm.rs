@@ -20,9 +20,10 @@ use crate::{
 impl MatPolynomialRingZq {
     /// Returns the squared Euclidean norm or 2-norm of the given (row or column) vector
     /// or an error if the given [`MatPolynomialRingZq`] instance is not a (row or column) vector.
-    ///
-    /// For more information about the squared Euclidean norm on ['PolynomialRingZq'](crate::integer_mod_q::polynomial_ring_zq::PolynomialRingZq)
-    /// see [`PolynomialRingZq::norm_eucl_sqrd`](crate::integer_mod_q::polynomial_ring_zq::PolynomialRingZq::norm_eucl_sqrd).
+    /// The squared Euclidean norm for a polynomial vector is obtained by
+    /// computing the sum of the squared Euclidean norms of the individual polynomials.
+    /// The squared Euclidean norm for a polynomial is obtained by treating the coefficients
+    /// of the polynomial as a vector and then applying the standard squared Euclidean norm.
     ///
     /// # Examples
     /// ```
@@ -63,9 +64,10 @@ impl MatPolynomialRingZq {
 
     /// Returns the infinity norm or ∞-norm of the given (row or column) vector
     /// or an error if the given [`MatPolynomialRingZq`] instance is not a (row or column) vector.
-    ///
-    /// For more information about the squared Euclidean norm on ['PolynomialRingZq'](crate::integer_mod_q::polynomial_ring_zq::PolynomialRingZq)
-    /// see [`PolynomialRingZq::norm_infty`](crate::integer_mod_q::polynomial_ring_zq::PolynomialRingZq::norm_infty).
+    /// The infinity norm for a polynomial vector is obtained by computing the 
+    /// infinity norm on the vector consisting of the infinity norms of the individual polynomials.
+    /// The infinity norm for a polynomial is obtained by treating the coefficients
+    /// of the polynomial as a vector and then applying the standard infinity norm.
     ///
     /// # Examples
     /// ```
