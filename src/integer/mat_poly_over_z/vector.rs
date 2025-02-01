@@ -11,3 +11,4 @@
 
 mod dot_product;
 mod is_vector;
+mod norm;
