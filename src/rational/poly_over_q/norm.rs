@@ -17,6 +17,8 @@ use std::cmp::max;
 
 impl PolyOverQ {
     /// Returns the squared Euclidean norm or 2-norm of the given polynomial.
+    /// The squared Euclidean norm for a polynomial is obtained by treating the coefficients
+    /// of the polynomial as a vector and then applying the standard squared Euclidean norm.
     ///
     /// # Examples
     /// ```
@@ -44,6 +46,8 @@ impl PolyOverQ {
 impl PolyOverQ {
     /// Returns the infinity norm or the maximal absolute value of a
     /// coefficient of the given polynomial.
+    /// The infinity norm for a polynomial is obtained by treating the coefficients
+    /// of the polynomial as a vector and then applying the standard infinity norm.
     ///
     /// # Examples
     /// ```
