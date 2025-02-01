@@ -19,6 +19,11 @@ use std::cmp::max;
 
 impl PolynomialRingZq {
     /// Returns the squared Euclidean norm or 2-norm of the given polynomial.
+    /// The squared Euclidean norm for a polynomial is obtained by treating the coefficients
+    /// of the polynomial as a vector and then applying the standard squared Euclidean norm.
+    ///
+    /// Each length of an entry in this vector is defined as the shortest distance
+    /// to the next zero representative modulo q.
     ///
     /// # Examples
     /// ```
@@ -46,6 +51,11 @@ impl PolynomialRingZq {
 
     /// Returns the infinity norm or the maximal absolute value of a
     /// coefficient of the given polynomial.
+    /// The infinity norm for a polynomial is obtained by treating the coefficients
+    /// of the polynomial as a vector and then applying the standard infinity norm.
+    ///
+    /// Each length of an entry in this vector is defined as the shortest distance
+    /// to the next zero representative modulo q.
     ///
     /// # Examples
     /// ```
