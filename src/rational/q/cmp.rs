@@ -19,7 +19,6 @@ use std::cmp::Ordering;
 
 impl PartialEq for Q {
     /// Checks if two rationals are equal. Used by the `==` and `!=` operators.
-    /// [`PartialEq`] is implemented for any combination of owned and borrowed values.
     ///
     /// Parameters:
     /// - `other`: the other value that is used to compare the elements
@@ -55,7 +54,6 @@ impl Eq for Q {}
 
 impl PartialEq<Z> for Q {
     /// Checks if an integer and a rational are equal. Used by the `==` and `!=` operators.
-    /// [`PartialEq`] is implemented for any combination of owned and borrowed values.
     ///
     /// Parameters:
     /// - `other`: the other value that is used to compare the elements
