@@ -77,14 +77,20 @@ mod test_deserialize {
     #[test]
     fn deserialize_positive() {
         let q_string = "{\"value\":\"17/3\"}";
-        assert_eq!(Q::from((17, 3)), serde_json::from_str(q_string).unwrap());
+        assert_eq!(
+            Q::from((17, 3)),
+            serde_json::from_str::<Q>(q_string).unwrap()
+        );
     }
 
     /// Tests whether the deserialization of a negative [`Q`] works.
     #[test]
     fn deserialize_negative() {
         let q_string = "{\"value\":\"-17/3\"}";
-        assert_eq!(Q::from((-17, 3)), serde_json::from_str(q_string).unwrap());
+        assert_eq!(
+            Q::from((-17, 3)),
+            serde_json::from_str::<Q>(q_string).unwrap()
+        );
     }
 
     /// Tests whether the deserialization of a positive large [`Q`] works.
@@ -95,7 +101,7 @@ mod test_deserialize {
 
         assert_eq!(
             Q::from_str(&val_str).unwrap(),
-            serde_json::from_str(&z_string).unwrap()
+            serde_json::from_str::<Q>(&z_string).unwrap()
         )
     }
 
@@ -107,7 +113,7 @@ mod test_deserialize {
 
         assert_eq!(
             Q::from_str(&val_str).unwrap(),
-            serde_json::from_str(&z_string).unwrap()
+            serde_json::from_str::<Q>(&z_string).unwrap()
         )
     }
 

@@ -201,10 +201,10 @@ mod test_get_coeff_z {
     fn index_out_of_range() {
         let poly = ModulusPolynomialRingZq::from_str("4  0 1 2 3 mod 17").unwrap();
 
-        let zero_coeff_1 = poly.get_coeff(4).unwrap();
+        let zero_coeff_1: Z = poly.get_coeff(4).unwrap();
         let zero_coeff_2 = poly.get_coeff(4).unwrap();
 
-        assert_eq!(Z::ZERO, zero_coeff_1);
+        assert_eq!(0, zero_coeff_1);
         assert_eq!(Zq::from((0, 17)), zero_coeff_2);
     }
 
@@ -213,10 +213,10 @@ mod test_get_coeff_z {
     fn positive_coeff() {
         let poly = ModulusPolynomialRingZq::from_str("4  0 1 2 3 mod 17").unwrap();
 
-        let coeff_1 = poly.get_coeff(2).unwrap();
+        let coeff_1: Z = poly.get_coeff(2).unwrap();
         let coeff_2 = poly.get_coeff(2).unwrap();
 
-        assert_eq!(Z::from(2), coeff_1);
+        assert_eq!(2, coeff_1);
         assert_eq!(Zq::from((2, 17)), coeff_2);
     }
 
@@ -227,11 +227,11 @@ mod test_get_coeff_z {
             ModulusPolynomialRingZq::from_str(&format!("2  1 {} mod {}", u64::MAX - 1, u64::MAX))
                 .unwrap();
 
-        assert_eq!(Z::from(u64::MAX - 1), poly.get_coeff(1).unwrap());
-        assert_eq!(
-            Zq::from((u64::MAX - 1, u64::MAX)),
-            poly.get_coeff(1).unwrap()
-        );
+        let coefficient_1: Z = poly.get_coeff(1).unwrap();
+        let coefficient_2: Zq = poly.get_coeff(1).unwrap();
+
+        assert_eq!(u64::MAX - 1, coefficient_1);
+        assert_eq!(Zq::from((u64::MAX - 1, u64::MAX)), coefficient_2);
     }
 
     /// Tests if negative index yields an error in get_coeff with [`Z`].

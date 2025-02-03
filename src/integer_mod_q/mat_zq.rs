@@ -58,7 +58,8 @@ mod vector;
 /// // clone object, set and get entry
 /// let mut clone = id_mat.clone();
 /// clone.set_entry(0, 0, 2);
-/// assert_eq!(GetEntry::<Z>::get_entry(&clone, 1, 1).unwrap(), Z::ONE);
+/// let entry:Z = clone.get_entry(1, 1).unwrap();
+/// assert_eq!(entry, Z::ONE);
 ///
 /// // to_string incl. (de-)serialization
 /// assert_eq!("[[1, 0],[0, 1]] mod 2", &id_mat.to_string());

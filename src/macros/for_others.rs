@@ -21,10 +21,13 @@
 ///
 /// - ['Mul'](std::ops::Mul) with signature
 ///     `($bridge_type, $type, Mul Scalar for $source_type)`
+/// - ['PartialEq'](std::cmp::PartialEq) with signature
+///     `($bridge_type, $type, PartialEq for $source_type)`
 ///
 /// # Examples
 /// ```compile_fail
 /// implement_for_others!(Z, MatZ, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
+/// implement_for_others!(Z, Q, PartialEq for fmpz i8 i16 i32 i64 u8 u16 u32 u64);
 /// ```
 macro_rules! implement_for_others {
     // [`Mul`] trait scalar
@@ -68,6 +71,27 @@ macro_rules! implement_for_others {
                 #[doc = "Documentation can be found at [`" $type "::mul`]."]
                 fn mul(self, matrix: $type) -> Self::Output {
                     matrix.mul($bridge_type::from(self))
+                }
+            }
+        })*
+    };
+
+    // [`PartialEq`] trait
+    ($bridge_type:ident, $type:ident, PartialEq for $($source_type:ident)*) => {
+        $(#[doc(hidden)] impl PartialEq<$source_type> for $type {
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::partialEq`]."]
+                fn eq(&self, other: &$source_type) -> bool {
+                    self.eq(&$bridge_type::from(other))
+                }
+            }
+        }
+
+        #[doc(hidden)] impl PartialEq<$type> for $source_type {
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::partialEq`]."]
+                fn eq(&self, other: &$type) -> bool {
+                    other.eq(&$bridge_type::from(self))
                 }
             }
         })*
