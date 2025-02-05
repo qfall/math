@@ -95,7 +95,9 @@ impl FromCoefficientEmbedding<&MatQ> for PolyOverQ {
     /// # Panics ...
     /// - if the provided embedding is not a column vector.
     fn from_coefficient_embedding(embedding: &MatQ) -> Self {
-        assert!(embedding.is_column_vector());
+        assert!(embedding.is_column_vector(),
+        "This is no valid embedding, since the matrix is no column vector."
+    );
         let mut out = PolyOverQ::default();
         for i in 0..embedding.get_num_rows() {
             out.set_coeff(i, embedding.get_entry(i, 0).unwrap())

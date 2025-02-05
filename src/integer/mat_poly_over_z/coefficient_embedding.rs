@@ -146,7 +146,9 @@ impl IntoCoefficientEmbedding<MatZ> for &MatPolyOverZ {
     ///     not all coefficients can be embedded.
     /// - if `self` is not a row vector
     fn into_coefficient_embedding(self, size: impl Into<i64>) -> MatZ {
-        assert!(self.is_row_vector());
+        assert!(self.is_row_vector(),
+        "This is no valid input, since the matrix is no row vector."
+    );
         let size = size.into();
 
         let mut poly: Vec<PolyOverZ> = Vec::new();
