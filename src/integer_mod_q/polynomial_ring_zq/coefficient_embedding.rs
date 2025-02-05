@@ -40,9 +40,9 @@ impl IntoCoefficientEmbedding<(MatZq, ModulusPolynomialRingZq)> for &PolynomialR
     /// };
     ///
     /// let poly = PolynomialRingZq::from_str("2  1 -2 / 3  17 3 5 mod 19").unwrap();
-    /// let vector = poly.into_coefficient_embedding(3);
+    /// let embedding = poly.into_coefficient_embedding(3);
     /// let cmp_vector = MatZq::from_str("[[1],[-2],[0]] mod 19").unwrap();
-    /// assert_eq!((cmp_vector, poly.get_mod()), vector);
+    /// assert_eq!((cmp_vector, poly.get_mod()), embedding);
     /// ```
     ///
     /// # Panics ...
@@ -130,10 +130,10 @@ mod test_into_coefficient_embedding {
     #[test]
     fn test_example() {
         let poly = PolynomialRingZq::from_str("2  1 -2 / 3  17 3 5 mod 19").unwrap();
-        let vector = poly.into_coefficient_embedding(3);
+        let embedding = poly.into_coefficient_embedding(3);
 
         let cmp_vector = MatZq::from_str("[[1],[-2],[0]] mod 19").unwrap();
-        assert_eq!((cmp_vector, poly.get_mod()), vector);
+        assert_eq!((cmp_vector, poly.get_mod()), embedding);
     }
 
     /// Ensure that the embedding works with large entries.
@@ -147,7 +147,7 @@ mod test_into_coefficient_embedding {
         ))
         .unwrap();
 
-        let vector = poly.into_coefficient_embedding(3);
+        let embedding = poly.into_coefficient_embedding(3);
 
         let cmp_vector = MatZq::from_str(&format!(
             "[[17],[{}],[{}]] mod {}",
@@ -156,17 +156,17 @@ mod test_into_coefficient_embedding {
             u64::MAX
         ))
         .unwrap();
-        assert_eq!((cmp_vector, poly.modulus), vector);
+        assert_eq!((cmp_vector, poly.modulus), embedding);
     }
 
     /// Ensure that the doc test works.
     #[test]
     fn test_zero() {
         let poly = PolynomialRingZq::from_str("0 / 3  17 3 5 mod 19").unwrap();
-        let vector = poly.into_coefficient_embedding(0);
+        let embedding = poly.into_coefficient_embedding(0);
 
         let cmp_vector = MatZq::from_str("[[0],[0],[0]] mod 19").unwrap();
-        assert_eq!((cmp_vector, poly.get_mod()), vector);
+        assert_eq!((cmp_vector, poly.get_mod()), embedding);
     }
 
     /// Ensure that the function panics if the the provided size is too small.
