@@ -15,6 +15,7 @@ use flint_sys::fmpz_poly::fmpz_poly_struct;
 mod arithmetic;
 mod cmp;
 mod coefficient_embedding;
+mod cyclotomic;
 mod default;
 mod dot_product;
 mod evaluate;
