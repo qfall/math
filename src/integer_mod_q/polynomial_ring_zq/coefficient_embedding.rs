@@ -159,13 +159,13 @@ mod test_into_coefficient_embedding {
         assert_eq!((cmp_vector, poly.modulus), embedding);
     }
 
-    /// Ensure that the doc test works.
+    /// Ensure that zero is embedded correctly.
     #[test]
     fn test_zero() {
         let poly = PolynomialRingZq::from_str("0 / 3  17 3 5 mod 19").unwrap();
-        let embedding = poly.into_coefficient_embedding(0);
+        let embedding = poly.into_coefficient_embedding(1);
 
-        let cmp_vector = MatZq::from_str("[[0],[0],[0]] mod 19").unwrap();
+        let cmp_vector = MatZq::from_str("[[0]] mod 19").unwrap();
         assert_eq!((cmp_vector, poly.get_mod()), embedding);
     }
 
