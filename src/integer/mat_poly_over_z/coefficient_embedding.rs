@@ -259,7 +259,7 @@ mod test_into_coefficient_embedding_from_matrix {
         assert_eq!(cmp_matrix, matrix);
     }
 
-    /// Ensure that the function panics if the the provided size is too small.
+    /// Ensure that the function panics ifs the provided size is too small.
     #[test]
     #[should_panic]
     fn size_too_small() {
