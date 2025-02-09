@@ -224,6 +224,125 @@ impl MatPolynomialRingZq {
 
         self.matrix.set_row(row_0, &other.matrix, row_1)
     }
+
+    /// Swaps two entries of the specified matrix.
+    ///
+    /// Parameters:
+    /// - `row_0`: specifies the row, in which the first entry is located
+    /// - `col_0`: specifies the column, in which the first entry is located
+    /// - `row_1`: specifies the row, in which the second entry is located
+    /// - `col_1`: specifies the column, in which the second entry is located
+    ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if one of the specified entries is not part of the matrix.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    ///
+    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from((3, 17)));
+    /// matrix.swap_entries(0, 0, 2, 1);
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    ///     if row or column are greater than the matrix size.
+    pub fn swap_entries(
+        &mut self,
+        row_0: impl TryInto<i64> + Display,
+        col_0: impl TryInto<i64> + Display,
+        row_1: impl TryInto<i64> + Display,
+        col_1: impl TryInto<i64> + Display,
+    ) -> Result<(), MathError> {
+        self.matrix.swap_entries(row_0, col_0, row_1, col_1)
+    }
+
+    /// Swaps two columns of the specified matrix.
+    ///
+    /// Parameters:
+    /// - `col_0`: specifies the first column which is swapped with the second one
+    /// - `col_1`: specifies the second column which is swapped with the first one
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of the matrix.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    ///
+    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from((3, 17)));
+    /// matrix.swap_columns(0, 2);
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
+    ///     if one of the given columns is greater than the matrix or negative.
+    pub fn swap_columns(
+        &mut self,
+        col_0: impl TryInto<i64> + Display,
+        col_1: impl TryInto<i64> + Display,
+    ) -> Result<(), MathError> {
+        self.matrix.swap_columns(col_0, col_1)
+    }
+
+    /// Swaps two rows of the specified matrix.
+    ///
+    /// Parameters:
+    /// - `row_0`: specifies the first row which is swapped with the second one
+    /// - `row_1`: specifies the second row which is swapped with the first one
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of the matrix.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    ///
+    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from((3, 17)));
+    /// matrix.swap_rows(0, 2);
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
+    ///     if one of the given rows is greater than the matrix or negative.
+    pub fn swap_rows(
+        &mut self,
+        row_0: impl TryInto<i64> + Display,
+        row_1: impl TryInto<i64> + Display,
+    ) -> Result<(), MathError> {
+        self.matrix.swap_rows(row_0, row_1)
+    }
+
+    /// Swaps the `i`-th column with the `n-i`-th column for all `i <= n/2`
+    /// of the specified matrix with `n` columns.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    ///
+    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from((3, 17)));
+    /// matrix.reverse_columns();
+    /// ```
+    pub fn reverse_columns(&mut self) {
+        self.matrix.reverse_columns()
+    }
+
+    /// Swaps the `i`-th row with the `n-i`-th row for all `i <= n/2`
+    /// of the specified matrix with `n` rows.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    ///
+    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from((3, 17)));
+    /// matrix.reverse_rows();
+    /// ```
+    pub fn reverse_rows(&mut self) {
+        self.matrix.reverse_rows()
+    }
 }
 
 #[cfg(test)]
@@ -594,5 +713,154 @@ mod test_setter {
 
         assert!(mat_1.set_row(0, &mat_2, 0).is_err());
         assert!(mat_1.set_row(1, &mat_2, 1).is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_swaps {
+    use super::MatPolynomialRingZq;
+    use crate::integer_mod_q::ModulusPolynomialRingZq;
+    use std::str::FromStr;
+
+    /// Since swapping functions only call the existing tested functions for [`MatPolyOverZ`](crate::integer::MatPolyOverZ),
+    /// we omit some tests that are already covered.
+
+    /// Ensures that swapping entries works
+    #[test]
+    fn entries_swapping() {
+        let mut matrix = MatPolynomialRingZq::from_str(
+            "[[1  1, 1  2, 1  3],[1  4, 2  5 6, 0]] / 3  1 2 3 mod 17",
+        )
+        .unwrap();
+        let cmp = MatPolynomialRingZq::from_str(
+            "[[1  1, 2  5 6, 1  3],[1  4, 1  2, 0]] / 3  1 2 3 mod 17",
+        )
+        .unwrap();
+
+        let _ = matrix.swap_entries(1, 1, 0, 1);
+
+        assert_eq!(cmp, matrix);
+    }
+
+    /// Ensures that `swap_entries` returns an error if one of the specified entries is out of bounds
+    #[test]
+    fn entries_out_of_bounds() {
+        let mut matrix = MatPolynomialRingZq::new(5, 2, ModulusPolynomialRingZq::from((3, 17)));
+
+        assert!(matrix.swap_entries(-6, 0, 0, 0).is_err());
+        assert!(matrix.swap_entries(0, -3, 0, 0).is_err());
+        assert!(matrix.swap_entries(0, 0, 5, 0).is_err());
+        assert!(matrix.swap_entries(0, 5, 0, 0).is_err());
+    }
+
+    /// Ensure that `swap_entries` can properly handle negative indexing.
+    #[test]
+    fn entries_negative_indexing() {
+        let modulus = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
+        let mut matrix = MatPolynomialRingZq::identity(2, 2, modulus);
+
+        matrix.swap_entries(-2, -2, -2, -1).unwrap();
+        assert_eq!(
+            "[[0, 1  1],[0, 1  1]] / 3  1 0 1 mod 17",
+            matrix.to_string()
+        );
+    }
+
+    /// Ensures that swapping columns works fine for small entries
+    #[test]
+    fn columns_swapping() {
+        let mut matrix = MatPolynomialRingZq::from_str(
+            "[[1  1, 1  2, 1  3],[1  4, 1  5, 1  6]] / 3  1 2 3 mod 17",
+        )
+        .unwrap();
+        let cmp_vec_0 = MatPolynomialRingZq::from_str("[[1  1],[1  4]] / 3  1 2 3 mod 17").unwrap();
+        let cmp_vec_1 = MatPolynomialRingZq::from_str("[[1  3],[1  6]] / 3  1 2 3 mod 17").unwrap();
+        let cmp_vec_2 = MatPolynomialRingZq::from_str("[[1  2],[1  5]] / 3  1 2 3 mod 17").unwrap();
+
+        let _ = matrix.swap_columns(1, 2);
+
+        assert_eq!(cmp_vec_0, matrix.get_column(0).unwrap());
+        assert_eq!(cmp_vec_1, matrix.get_column(1).unwrap());
+        assert_eq!(cmp_vec_2, matrix.get_column(2).unwrap());
+    }
+
+    /// Ensures that `swap_columns` returns an error if one of the specified columns is out of bounds
+    #[test]
+    fn column_out_of_bounds() {
+        let mut matrix = MatPolynomialRingZq::new(5, 2, ModulusPolynomialRingZq::from((3, 17)));
+
+        assert!(matrix.swap_columns(-1, 0).is_err());
+        assert!(matrix.swap_columns(0, -1).is_err());
+        assert!(matrix.swap_columns(5, 0).is_err());
+        assert!(matrix.swap_columns(0, 5).is_err());
+    }
+
+    /// Ensures that swapping rows works
+    #[test]
+    fn rows_swapping() {
+        let mut matrix =
+            MatPolynomialRingZq::from_str("[[1  1, 1  2],[1  3, 2  4 5]] / 3  1 2 3 mod 17")
+                .unwrap();
+        let cmp_vec_0 =
+            MatPolynomialRingZq::from_str("[[1  3, 2  4 5]] / 3  1 2 3 mod 17").unwrap();
+        let cmp_vec_1 = MatPolynomialRingZq::from_str("[[1  1, 1  2]] / 3  1 2 3 mod 17").unwrap();
+
+        let _ = matrix.swap_rows(1, 0);
+
+        assert_eq!(cmp_vec_0, matrix.get_row(0).unwrap());
+        assert_eq!(cmp_vec_1, matrix.get_row(1).unwrap());
+    }
+
+    /// Ensures that `swap_rows` returns an error if one of the specified rows is out of bounds
+    #[test]
+    fn row_out_of_bounds() {
+        let mut matrix = MatPolynomialRingZq::new(2, 4, ModulusPolynomialRingZq::from((3, 17)));
+
+        assert!(matrix.swap_rows(-1, 0).is_err());
+        assert!(matrix.swap_rows(0, -1).is_err());
+        assert!(matrix.swap_rows(4, 0).is_err());
+        assert!(matrix.swap_rows(0, 4).is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_reverses {
+    use super::MatPolynomialRingZq;
+    use std::str::FromStr;
+
+    /// Since reversing functions only call the existing tested functions for [`MatPolyOverZ`](crate::integer::MatPolyOverZ),
+    /// we omit some tests that are already covered.
+
+    /// Ensures that reversing columns works fine for small entries
+    #[test]
+    fn columns_reversing() {
+        let mut matrix = MatPolynomialRingZq::from_str(
+            "[[1  1, 1  2, 2  3 4],[0, 1  5, 1  6]] / 3  1 2 3 mod 17",
+        )
+        .unwrap();
+        let cmp_vec_0 = MatPolynomialRingZq::from_str("[[1  1],[0]] / 3  1 2 3 mod 17").unwrap();
+        let cmp_vec_1 = MatPolynomialRingZq::from_str("[[1  2],[1  5]] / 3  1 2 3 mod 17").unwrap();
+        let cmp_vec_2 =
+            MatPolynomialRingZq::from_str("[[2  3 4],[1  6]] / 3  1 2 3 mod 17").unwrap();
+
+        matrix.reverse_columns();
+
+        assert_eq!(cmp_vec_2, matrix.get_column(0).unwrap());
+        assert_eq!(cmp_vec_1, matrix.get_column(1).unwrap());
+        assert_eq!(cmp_vec_0, matrix.get_column(2).unwrap());
+    }
+
+    /// Ensures that reversing rows works fine for small entries
+    #[test]
+    fn rows_reversing() {
+        let mut matrix =
+            MatPolynomialRingZq::from_str("[[1  1, 1  2],[2  3 4, 0]] / 3  1 2 3 mod 17").unwrap();
+        let cmp_vec_0 = MatPolynomialRingZq::from_str("[[1  1, 1  2]] / 3  1 2 3 mod 17").unwrap();
+        let cmp_vec_1 = MatPolynomialRingZq::from_str("[[2  3 4, 0]] / 3  1 2 3 mod 17").unwrap();
+
+        matrix.reverse_rows();
+
+        assert_eq!(cmp_vec_1, matrix.get_row(0).unwrap());
+        assert_eq!(cmp_vec_0, matrix.get_row(1).unwrap());
     }
 }
