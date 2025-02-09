@@ -71,6 +71,21 @@ impl MatZq {
     pub fn is_zero(&self) -> bool {
         1 == unsafe { fmpz_mod_mat_is_zero(&self.matrix) }
     }
+
+    /// Checks if a [`MatZq`] is symmetric.
+    ///
+    /// Returns `true` if we have `a_ij == a_ji` for all i,j.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::MatZq;
+    ///
+    /// let value = MatZq::identity(2,2,3);
+    /// assert!(value.is_symmetric());
+    /// ```
+    pub fn is_symmetric(&self) -> bool {
+        self == &self.transpose()
+    }
 }
 
 #[cfg(test)]
@@ -163,5 +178,36 @@ mod test_is_square {
 
         assert!(!small.is_square());
         assert!(!large.is_square());
+    }
+}
+
+#[cfg(test)]
+mod test_is_symmetric {
+    use super::MatZq;
+    use std::str::FromStr;
+
+    /// Ensure that is_symmetric returns `false` for non-symmetric matrices.
+    #[test]
+    fn symmetric_rejection() {
+        let mat_2x3 = MatZq::from_str("[[0, 5, 4],[2, 0, 1]] mod 17").unwrap();
+        let mat_2x2 = MatZq::from_str("[[9, 0],[127, 0]] mod 17").unwrap();
+
+        assert!(!mat_2x3.is_symmetric());
+        assert!(!mat_2x2.is_symmetric());
+    }
+
+    /// Ensure that is_symmetric returns `true` for symmetric matrices.
+    #[test]
+    fn symmetric_detection() {
+        let mat_2x2 = MatZq::from_str(&format!(
+            "[[2, {}],[{}, {}]] mod {}",
+            i64::MAX,
+            i64::MAX,
+            u64::MIN,
+            u64::MAX
+        ))
+        .unwrap();
+
+        assert!(mat_2x2.is_symmetric());
     }
 }
