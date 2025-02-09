@@ -224,8 +224,11 @@ mod test_is_symmetric {
     /// Ensure that is_symmetric returns `false` for non-symmetric matrices.
     #[test]
     fn symmetric_rejection() {
-        let mat_2x3 = MatPolynomialRingZq::from_str("[[0, 1  6, 2  1 4],[1  2, 0, 2  1 1]] / 2  1 2 mod 17").unwrap();
-        let mat_2x2 = MatPolynomialRingZq::from_str("[[1  9, 0],[2  1 71, 0]] / 3  1 2 1 mod 17").unwrap();
+        let mat_2x3 =
+            MatPolynomialRingZq::from_str("[[0, 1  6, 2  1 4],[1  2, 0, 2  1 1]] / 2  1 2 mod 17")
+                .unwrap();
+        let mat_2x2 =
+            MatPolynomialRingZq::from_str("[[1  9, 0],[2  1 71, 0]] / 3  1 2 1 mod 17").unwrap();
 
         assert!(!mat_2x3.is_symmetric());
         assert!(!mat_2x2.is_symmetric());
