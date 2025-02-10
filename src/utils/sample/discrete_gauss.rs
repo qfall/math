@@ -71,7 +71,8 @@ pub(crate) fn sample_z(n: &Z, center: &Q, s: &Q) -> Result<Z, MathError> {
 
     let lower_bound = (center - s * n.log(2).unwrap()).ceil();
     let upper_bound = (center + s * n.log(2).unwrap()).floor();
-    let interval_size = &upper_bound - &lower_bound;
+    // interval [lower_bound, upper_bound] has upper_bound - lower_bound + 1 elements in it
+    let interval_size = &upper_bound - &lower_bound + Z::ONE;
 
     // sample x in [c - s * log_2(n), c + s * log_2(n)]
     let mut sample = &lower_bound + sample_uniform_rejection(&interval_size).unwrap();
