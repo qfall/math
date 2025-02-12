@@ -12,7 +12,7 @@
 use super::MatPolyOverZ;
 use crate::{
     integer::Z,
-    traits::{GetNumColumns, GetNumRows},
+    traits::{GetEntry, GetNumColumns, GetNumRows},
 };
 use flint_sys::fmpz_poly_mat::{fmpz_poly_mat_is_one, fmpz_poly_mat_is_zero, fmpz_poly_mat_rank};
 
@@ -71,6 +71,31 @@ impl MatPolyOverZ {
         // we have to test squareness manually, since FLINT does not check this
         // directly with their method
         unsafe { 0 != fmpz_poly_mat_is_zero(&self.matrix) }
+    }
+
+    /// Checks if a [`MatPolyOverZ`] is symmetric.
+    ///
+    /// Returns `true` if we have `a_ij == a_ji` for all i,j.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatPolyOverZ;
+    ///
+    /// let value = MatPolyOverZ::identity(2,2);
+    /// assert!(value.is_symmetric());
+    /// ```
+    pub fn is_symmetric(&self) -> bool {
+        if !self.is_square() {
+            return false;
+        }
+        for row in 0..self.get_num_rows() {
+            for column in 0..row {
+                if self.get_entry(row, column).unwrap() != self.get_entry(column, row).unwrap() {
+                    return false;
+                }
+            }
+        }
+        true
     }
 
     /// Returns the rank of the matrix.
@@ -201,6 +226,37 @@ mod test_is_zero {
 
         assert!(!small.is_zero());
         assert!(!large.is_zero());
+    }
+}
+
+#[cfg(test)]
+mod test_is_symmetric {
+    use super::MatPolyOverZ;
+    use std::str::FromStr;
+
+    /// Ensure that is_symmetric returns `false` for non-symmetric matrices.
+    #[test]
+    fn symmetric_rejection() {
+        let mat_2x3 = MatPolyOverZ::from_str("[[0, 1  6, 2  1 4],[1  2, 0, 2  1 1]]").unwrap();
+        let mat_2x2 = MatPolyOverZ::from_str("[[1  9, 0],[2  1 71, 0]]").unwrap();
+
+        assert!(!mat_2x3.is_symmetric());
+        assert!(!mat_2x2.is_symmetric());
+    }
+
+    /// Ensure that is_symmetric returns `true` for symmetric matrices.
+    #[test]
+    fn symmetric_detection() {
+        let mat_2x2 = MatPolyOverZ::from_str(&format!(
+            "[[2  1 {}, 2  3 {}],[2  3 {}, 3  1 {} 8]]",
+            u64::MIN,
+            u64::MAX,
+            u64::MAX,
+            i64::MAX
+        ))
+        .unwrap();
+
+        assert!(mat_2x2.is_symmetric());
     }
 }
 
