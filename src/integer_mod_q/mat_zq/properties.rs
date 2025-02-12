@@ -9,6 +9,10 @@
 //! This module includes functionality about properties of [`MatZq`] instances.
 
 use super::MatZq;
+use crate::{
+    integer::Z,
+    traits::{GetEntry, GetNumRows},
+};
 use flint_sys::{
     fmpz_mat::fmpz_mat_is_one,
     fmpz_mod_mat::{fmpz_mod_mat_is_square, fmpz_mod_mat_is_zero},
@@ -84,7 +88,19 @@ impl MatZq {
     /// assert!(value.is_symmetric());
     /// ```
     pub fn is_symmetric(&self) -> bool {
-        self == &self.transpose()
+        if !self.is_square() {
+            return false;
+        }
+        for row in 0..self.get_num_rows() {
+            for column in 0..row {
+                if GetEntry::<Z>::get_entry(self, row, column).unwrap()
+                    != GetEntry::<Z>::get_entry(self, column, row).unwrap()
+                {
+                    return false;
+                }
+            }
+        }
+        true
     }
 }
 

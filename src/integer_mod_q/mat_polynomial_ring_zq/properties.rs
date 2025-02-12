@@ -9,6 +9,10 @@
 //! This module includes functionality about properties of [`MatPolynomialRingZq`] instances.
 
 use super::MatPolynomialRingZq;
+use crate::{
+    integer::PolyOverZ,
+    traits::{GetEntry, GetNumRows},
+};
 
 impl MatPolynomialRingZq {
     /// Checks if a [`MatPolynomialRingZq`] is the identity matrix.
@@ -98,7 +102,19 @@ impl MatPolynomialRingZq {
     /// assert!(value.is_symmetric());
     /// ```
     pub fn is_symmetric(&self) -> bool {
-        self == &self.transpose()
+        if !self.is_square() {
+            return false;
+        }
+        for row in 0..self.get_num_rows() {
+            for column in 0..row {
+                if GetEntry::<PolyOverZ>::get_entry(self, row, column).unwrap()
+                    != GetEntry::<PolyOverZ>::get_entry(self, column, row).unwrap()
+                {
+                    return false;
+                }
+            }
+        }
+        true
     }
 }
 

@@ -9,7 +9,10 @@
 //! This module includes functionality about properties of [`MatZ`] instances.
 
 use super::MatZ;
-use crate::integer::Z;
+use crate::{
+    integer::Z,
+    traits::{GetEntry, GetNumRows},
+};
 use flint_sys::fmpz_mat::{fmpz_mat_is_one, fmpz_mat_is_square, fmpz_mat_is_zero, fmpz_mat_rank};
 
 impl MatZ {
@@ -73,7 +76,17 @@ impl MatZ {
     /// assert!(value.is_symmetric());
     /// ```
     pub fn is_symmetric(&self) -> bool {
-        self == &self.transpose()
+        if !self.is_square() {
+            return false;
+        }
+        for row in 0..self.get_num_rows() {
+            for column in 0..row {
+                if self.get_entry(row, column).unwrap() != self.get_entry(column, row).unwrap() {
+                    return false;
+                }
+            }
+        }
+        true
     }
 
     /// Returns the rank of the matrix.
