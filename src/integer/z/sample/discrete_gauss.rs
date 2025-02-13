@@ -8,7 +8,10 @@
 
 //! This module contains algorithms for sampling according to the discrete Gaussian distribution.
 
-use crate::{error::MathError, integer::Z, rational::Q, utils::sample::discrete_gauss::sample_z};
+use crate::{
+    error::MathError, integer::Z, rational::Q,
+    utils::sample::discrete_gauss::DiscreteGaussianIntegerSampler,
+};
 
 impl Z {
     /// Chooses a [`Z`] instance according to the discrete Gaussian distribution
@@ -36,7 +39,7 @@ impl Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if `n <= 1` or `s <= 0`.
+    ///     if `n <= 1` or `s <= 0` or `s * log_2(n) < 1`.
     ///
     /// This function implements SampleZ according to:
     /// - \[1\] Gentry, Craig and Peikert, Chris and Vaikuntanathan, Vinod (2008).
@@ -52,7 +55,9 @@ impl Z {
         let center: Q = center.into();
         let s: Q = s.into();
 
-        sample_z(&n, &center, &s)
+        let mut dgis = DiscreteGaussianIntegerSampler::init(&n, &center, &s)?;
+
+        Ok(dgis.sample_z())
     }
 }
 
