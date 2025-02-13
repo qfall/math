@@ -113,7 +113,8 @@ impl DiscreteGaussianIntegerSampler {
         let lower_bound = (center - s * n.log(2).unwrap()).ceil();
         let upper_bound = (center + s * n.log(2).unwrap()).floor();
         // interval [lower_bound, upper_bound] has upper_bound - lower_bound + 1 elements in it
-        let interval_size = &upper_bound - &lower_bound + Z::ONE;
+        // as uniform sampling samples from [0, interval_size), we require interval_size + 1
+        let interval_size = &upper_bound - &lower_bound + Z::from(2);
 
         Ok(Self {
             center: center.clone(),
