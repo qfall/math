@@ -20,7 +20,7 @@ static MODULUS: u64 = 4611686018427387847; // 2^62 - 57 is the largest prime bel
 impl Hash for Z {
     /// Ensure that the [`flint_sys::fmpz::fmpz`] value is below the
     /// threshold of being a pointer to the memory using modulus.
-    /// 
+    ///
     /// Otherwise, this function uses the hash of [`i64`].
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         let modulo_value = self.modulo(MODULUS).value.0;
