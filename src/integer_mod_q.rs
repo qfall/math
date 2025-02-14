@@ -23,6 +23,7 @@ mod mat_polynomial_ring_zq;
 mod mat_zq;
 mod modulus;
 mod modulus_polynomial_ring_zq;
+mod ntt_basis_polynomial_ring_zq;
 mod poly_over_zq;
 mod polynomial_ring_zq;
 mod z_q;
