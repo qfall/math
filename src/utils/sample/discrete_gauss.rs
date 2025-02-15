@@ -63,7 +63,7 @@ impl DiscreteGaussianIntegerSampler {
     ///   to the standard deviation `sigma * sqrt(2 * pi) = s`,
     /// - `lower_bound` as `⌈center - s * log_2(n)⌉`,
     /// - `interval_size` as `⌊center + s * log_2(n)⌋ - ⌈center - s * log_2(n)⌉`, and
-    /// - `table` as an empty [`HashMap`] to store evaluations of the Gaussian function in.
+    /// - `table` as an empty [`HashMap`] to store evaluations of the Gaussian function.
     ///
     /// Parameters:
     /// - `n`: specifies the range from which is sampled
