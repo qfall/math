@@ -12,18 +12,10 @@
 use super::Z;
 use std::hash::Hash;
 
-// The modulus is chosen as large as possible, i.e. slighly below 2^62.
-// Furthermore, to ensure that multiplicative actions result in changes with
-// high probability, optimizing when it is prime, i.e. behaves like a field.
-static MODULUS: u64 = 4611686018427387847; // 2^62 - 57 is the largest prime below 2^62
-
 impl Hash for Z {
-    /// Ensure that the [`flint_sys::fmpz::fmpz`] value is below the
-    /// threshold of being a pointer to the memory using modulus.
-    ///
-    /// Otherwise, this function uses the hash of [`i64`].
+    /// This function uses the hash of [`String`] with the decimal representation of `self`.
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        let modulo_value = self.modulo(MODULUS).value.0;
-        modulo_value.hash(state);
+        let string = self.to_string();
+        string.hash(state);
     }
 }

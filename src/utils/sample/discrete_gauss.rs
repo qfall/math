@@ -28,7 +28,8 @@ use std::collections::HashMap;
 
 /// Enables for discrete Gaussian sampling out of
 /// `[⌈center - s * log_2(n)⌉ , ⌊center + s * log_2(n)⌋ ]`.
-/// This struct computes the Gauss function lazily and saves it in a [`HashMap`].
+/// This struct evaluates the Gauss function lazily (i.e. only if required)
+/// and saves it in a [`HashMap`].
 ///
 /// Attributes:
 /// - `n`: specifies the range from which is sampled
@@ -58,16 +59,16 @@ pub(crate) struct DiscreteGaussianIntegerSampler {
 
 impl DiscreteGaussianIntegerSampler {
     /// Initializes the [`DiscreteGaussianIntegerSampler`] with
-    /// - `center` as the peak of the Gaussian function,
+    /// - `center` as the center of the discrete Gaussian to sample from,
     /// - `s` defining the Gaussian parameter, which is proportional
     ///   to the standard deviation `sigma * sqrt(2 * pi) = s`,
     /// - `lower_bound` as `⌈center - s * log_2(n)⌉`,
-    /// - `interval_size` as `⌊center + s * log_2(n)⌋ - ⌈center - s * log_2(n)⌉`, and
+    /// - `interval_size` as `⌊center + s * log_2(n)⌋ - ⌈center - s * log_2(n)⌉ + 1`, and
     /// - `table` as an empty [`HashMap`] to store evaluations of the Gaussian function.
     ///
     /// Parameters:
     /// - `n`: specifies the range from which is sampled
-    /// - `center`: specifies the position of the center with peak probability
+    /// - `center`: as the center of the discrete Gaussian to sample from
     /// - `s`: specifies the Gaussian parameter, which is proportional
     ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
@@ -113,8 +114,7 @@ impl DiscreteGaussianIntegerSampler {
         let lower_bound = (center - s * n.log(2).unwrap()).ceil();
         let upper_bound = (center + s * n.log(2).unwrap()).floor();
         // interval [lower_bound, upper_bound] has upper_bound - lower_bound + 1 elements in it
-        // as uniform sampling samples from [0, interval_size), we require interval_size + 1
-        let interval_size = &upper_bound - &lower_bound + Z::from(2);
+        let interval_size = &upper_bound - &lower_bound + Z::ONE;
 
         Ok(Self {
             center: center.clone(),
@@ -151,21 +151,17 @@ impl DiscreteGaussianIntegerSampler {
 
             // grab value of Gauss function for sample if it exists
             let evaluated_gauss_function = self.table.get(&sample);
-            if evaluated_gauss_function.is_some() {
-                // if the function was evaluated for this value before, sample between [0,1]
-                // and accept with the value of the Gauss function
-                let evaluated_gauss_function = evaluated_gauss_function.unwrap();
-                if evaluated_gauss_function >= &(rng.next_u64() as f64 / u64::MAX as f64) {
-                    return sample;
-                }
-            } else {
-                // if the function wasn't evaluated for this value before, compute the value and
-                // sample between [0,1] and accept with the value of the Gauss function
-                let evaluated_gauss_function = gaussian_function(&sample, &self.center, &self.s);
-                self.table.insert(sample.clone(), evaluated_gauss_function);
-                if evaluated_gauss_function >= (rng.next_u64() as f64 / u64::MAX as f64) {
-                    return sample;
-                }
+            let evaluated_gauss_function = match evaluated_gauss_function {
+                Some(x) => x,
+                None => &{
+                    let evaluated_gauss_function =
+                        gaussian_function(&sample, &self.center, &self.s);
+                    self.table.insert(sample.clone(), evaluated_gauss_function);
+                    evaluated_gauss_function
+                },
+            };
+            if evaluated_gauss_function >= &(rng.next_u64() as f64 / u64::MAX as f64) {
+                return sample;
             }
         }
     }
