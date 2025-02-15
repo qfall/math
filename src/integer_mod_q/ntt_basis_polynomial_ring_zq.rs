@@ -10,8 +10,13 @@
 //! [`PolynomialRingZq`]. If it is set for the matrix, then the multiplication of polynomials
 //! is performed using the NTT transform, and otherwise the multiplication is kept as it is.
 
-use super::{MatZq, Modulus, Zq};
-use crate::traits::{Pow, SetEntry};
+use itertools::{Either, Itertools};
+
+use super::{MatZq, Modulus, PolyOverZq, Zq};
+use crate::{
+    integer::Z,
+    traits::{GetCoefficient, GetEntry, GetNumRows, Pow, SetCoefficient, SetEntry},
+};
 
 /// [`NTTBasisPolynomialRingZq`] is an object, that given a polynomial
 /// `X^n - 1 mod q` computes two transformation matrices.
@@ -24,11 +29,91 @@ use crate::traits::{Pow, SetEntry};
 /// - `ntt_matrix_inv`: the inverse of the previous conversion matrix
 #[derive(Debug)]
 pub struct NTTBasisPolynomialRingZq {
-    pub ntt_matrix: MatZq,
-    pub ntt_matrix_inv: MatZq,
+    pub n: i64,
+    pub n_inv: Zq,
+    pub roots_of_unity: Vec<Zq>,
+    pub roots_of_unity_inv: Vec<Zq>,
+    pub modulus: Modulus,
+}
+
+fn recursive_fft(
+    coefficients: Vec<&Zq>,
+    roots_of_unity: &Vec<Zq>,
+    depth: usize,
+    modulus: &Modulus,
+) -> Vec<Zq> {
+    if coefficients.len() == 1 {
+        return vec![coefficients[0].clone()];
+    }
+    // separate into even and uneven coefficients
+    let (even, mut uneven): (Vec<&Zq>, Vec<&Zq>) =
+        coefficients
+            .iter()
+            .enumerate()
+            .partition_map(|(index, value)| {
+                if index % 2 == 0 {
+                    Either::Left(value)
+                } else {
+                    Either::Right(value)
+                }
+            });
+    // pad if the number of elements is uneven
+    let padding = Zq::from((Z::ZERO, modulus));
+    if even.len() != uneven.len() {
+        uneven.push(&padding);
+    }
+    // recursively perform fft
+    let even = recursive_fft(even, roots_of_unity, depth * 2, modulus);
+    let uneven = recursive_fft(uneven, roots_of_unity, depth * 2, modulus);
+    let mut out = vec![Zq::from((Z::ZERO, modulus)); even.len() + uneven.len()];
+
+    // compute final entries
+    let mut twindle_factor = Zq::from((Z::ONE, modulus));
+    for i in 0..even.len() {
+        let t = &twindle_factor * &uneven[i];
+        out[i] = &even[i] + &t;
+        out[i + even.len()] = &even[i] - &t;
+        twindle_factor = twindle_factor * &roots_of_unity[depth];
+    }
+    out
 }
 
 impl NTTBasisPolynomialRingZq {
+    pub fn ntt(&self, poly: &PolyOverZq) -> MatZq {
+        let mut out = MatZq::new(self.n, 1, &self.modulus);
+
+        let poly_coeffs: Vec<Zq> = (0..self.n).map(|i| poly.get_coeff(i).unwrap()).collect();
+        let borrowed_coeffs: Vec<&Zq> = poly_coeffs.iter().collect();
+
+        let res = recursive_fft(borrowed_coeffs, &self.roots_of_unity, 1, &self.modulus);
+        for i in 0..self.n {
+            out.set_entry(i, 0, &res[i as usize]).unwrap()
+        }
+
+        out
+    }
+
+    pub fn intt(&self, vector: &MatZq) -> PolyOverZq {
+        assert!(vector.is_column_vector());
+        assert!(vector.get_num_rows() == self.n);
+
+        let coeffs: Vec<Zq> = (0..self.n)
+            .map(|i| vector.get_entry(i, 0).unwrap())
+            .collect();
+        let borrowed_coeffs: Vec<&Zq> = coeffs.iter().collect();
+
+        let res = recursive_fft(borrowed_coeffs, &self.roots_of_unity_inv, 1, &self.modulus);
+
+        // call fft, but with the powers of the inverse of the root of unity
+        // and at last, multiply each new entry with `n_inv`
+        let mut out = PolyOverZq::from(&self.modulus);
+        for i in 0..self.n {
+            out.set_coeff(i, &self.n_inv * &res[i as usize]).unwrap()
+        }
+
+        out
+    }
+
     /// Given a cyclotomic polynomial `X^n - 1 mod q` with `n`-th root of unity `root_of_unity`, it computes the
     /// ntt matrix transform and its inverse operation.
     ///
@@ -36,33 +121,20 @@ impl NTTBasisPolynomialRingZq {
     /// - `n`: the degree of the polynomial
     /// - `root_of_unity`: the `n`-th root of unity
     /// - `q`: the modulus of the cyclotomic polynomial
-    pub fn init(n: i64, root_of_unity: &Zq, q: &Modulus) -> Self {
+    pub fn init(n: i64, root_of_unity: &Zq, modulus: &Modulus) -> Self {
         // construct ntt matrix matrix based on root of unity
-        let mut ntt_matrix = MatZq::new(n, n, q);
         let roots: Vec<Zq> = (0..n).map(|i| root_of_unity.pow(i).unwrap()).collect();
 
-        for row in 0..n {
-            for column in 0..n {
-                let entry = roots[row as usize].pow(column).unwrap();
-                ntt_matrix.set_entry(row, column, entry).unwrap()
-            }
-        }
-
-        // construct inverse of the ntt matrix
-        let mut ntt_matrix_inv = MatZq::new(n, n, q);
-        let n_inv = Zq::from((n, q)).inverse().unwrap();
+        let n_inv = Zq::from((n, modulus)).inverse().unwrap();
         let root_of_unity_inv = root_of_unity.inverse().unwrap();
-        let roots: Vec<Zq> = (0..n).map(|i| root_of_unity_inv.pow(i).unwrap()).collect();
-        for row in 0..n {
-            for column in 0..n {
-                let entry = &n_inv * roots[row as usize].pow(column).unwrap();
-                ntt_matrix_inv.set_entry(row, column, entry).unwrap()
-            }
-        }
+        let roots_inv: Vec<Zq> = (0..n).map(|i| root_of_unity_inv.pow(i).unwrap()).collect();
 
         Self {
-            ntt_matrix,
-            ntt_matrix_inv,
+            n,
+            n_inv,
+            roots_of_unity: roots,
+            roots_of_unity_inv: roots_inv,
+            modulus: modulus.clone(),
         }
     }
 }
@@ -71,28 +143,12 @@ impl NTTBasisPolynomialRingZq {
 mod test_ntt_basis_transformation {
     use super::NTTBasisPolynomialRingZq;
     use crate::{
-        integer::PolyOverZ,
         integer_mod_q::{
             MatZq, Modulus, ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq, Zq,
         },
-        traits::{FromCoefficientEmbedding, GetEntry, IntoCoefficientEmbedding, SetEntry},
+        traits::{GetEntry, SetEntry},
     };
     use std::str::FromStr;
-
-    /// This parameters and matrix are taken from: https://eprint.iacr.org/2024/585.pdf Example 3.4
-    #[test]
-    fn example_34_matrix() {
-        let modulus = Modulus::from(7681);
-        let root_of_unity = Zq::from((3383, &modulus));
-
-        let ntt_basis = NTTBasisPolynomialRingZq::init(4, &root_of_unity, &modulus);
-
-        let cmp_matrix_ntt = MatZq::from_str("[[1, 1, 1, 1],[1, 3383, 7680, 4298],[1, 7680, 1, 7680],[1, 4298, 7680, 3383]] mod 7681").unwrap();
-        let cmp_matrix_ntt_inv = MatZq::from_str("[[5761, 5761, 5761, 5761],[5761, 4915, 1920, 2766],[5761, 1920, 5761, 1920],[5761, 2766, 1920, 4915]] mod 7681").unwrap();
-        assert_eq!(cmp_matrix_ntt, ntt_basis.ntt_matrix);
-        assert_eq!(cmp_matrix_ntt_inv, ntt_basis.ntt_matrix_inv);
-        assert!((ntt_basis.ntt_matrix_inv * ntt_basis.ntt_matrix).is_identity())
-    }
 
     /// This example is taken from: https://eprint.iacr.org/2024/585.pdf Example 3.4
     #[test]
@@ -103,11 +159,7 @@ mod test_ntt_basis_transformation {
 
         let ntt_basis = NTTBasisPolynomialRingZq::init(4, &root_of_unity, &modulus);
 
-        let g = g_poly.into_coefficient_embedding(4);
-        let cmp_g = MatZq::from_str("[[1],[2],[3],[4]] mod 7681").unwrap();
-        assert_eq!(cmp_g, g);
-
-        let ghat = ntt_basis.ntt_matrix * g;
+        let ghat = ntt_basis.ntt(&g_poly);
         let cmp_ghat = MatZq::from_str("[[10],[913],[7679],[6764]] mod 7681").unwrap();
         assert_eq!(cmp_ghat, ghat);
     }
@@ -120,17 +172,14 @@ mod test_ntt_basis_transformation {
         let modulus = Modulus::from(7681);
         // todo: after the cyclotomic polynomial instantiation is added, replace the instantiation of this polynomial
         let poly_mod = ModulusPolynomialRingZq::from_str("5  -1 0 0 0 1 mod 7681").unwrap();
-        let g_poly = PolyOverZ::from_str("4  1 2 3 4").unwrap();
-        let h_poly = PolyOverZ::from_str("4  5 6 7 8").unwrap();
+        let g_poly = PolyOverZq::from_str("4  1 2 3 4 mod 7681").unwrap();
+        let h_poly = PolyOverZq::from_str("4  5 6 7 8 mod 7681").unwrap();
         let root_of_unity = Zq::from((3383, &modulus));
 
         let ntt_basis = NTTBasisPolynomialRingZq::init(4, &root_of_unity, &modulus);
 
-        let g = g_poly.into_coefficient_embedding(4);
-        let h = h_poly.into_coefficient_embedding(4);
-
-        let ghat = &ntt_basis.ntt_matrix * g;
-        let hhat = &ntt_basis.ntt_matrix * h;
+        let ghat = ntt_basis.ntt(&g_poly);
+        let hhat = ntt_basis.ntt(&h_poly);
 
         // simulate entrywise mutliplication
         // todo: after we have entrywise multiplication for vectors, remove this
@@ -141,9 +190,8 @@ mod test_ntt_basis_transformation {
             ghat_hhat.set_entry(i, 0, ghat_i * hhat_i).unwrap();
         }
 
-        let g_h = ntt_basis.ntt_matrix_inv * ghat_hhat;
+        let g_h_poly = ntt_basis.intt(&ghat_hhat);
 
-        let g_h_poly = PolyOverZq::from_coefficient_embedding(&g_h);
         // todo: after we can instantiate Polynomialringzq also with polyzq, change this here
         let g_h_poly_ring = PolynomialRingZq::from((
             g_h_poly.get_representative_least_nonnegative_residue(),
@@ -152,8 +200,14 @@ mod test_ntt_basis_transformation {
 
         // Ensure that multiplication using the NTT transform and multiplication using
         // FLINTs multiplication algorithms yield the same result.
-        let g_poly_ring = PolynomialRingZq::from((g_poly, &poly_mod));
-        let h_poly_ring = PolynomialRingZq::from((h_poly, &poly_mod));
+        let g_poly_ring = PolynomialRingZq::from((
+            g_poly.get_representative_least_nonnegative_residue(),
+            &poly_mod,
+        ));
+        let h_poly_ring = PolynomialRingZq::from((
+            h_poly.get_representative_least_nonnegative_residue(),
+            &poly_mod,
+        ));
         assert_eq!(g_poly_ring * h_poly_ring, g_h_poly_ring)
     }
 }
