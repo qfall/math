@@ -20,6 +20,8 @@ impl Hash for Z {
     /// Calculates the value of `self` mod 2^62 - 57 and then uses
     /// the inbuilt hash function for [`i64`].
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        // We use Hash of i64 instead of String or Vec<u8> as it
+        // significantly reduces the runtime of this function.
         let modulo_value = self.modulo(MODULUS).value.0;
         modulo_value.hash(state);
     }
