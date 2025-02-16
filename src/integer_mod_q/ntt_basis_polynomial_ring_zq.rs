@@ -10,8 +10,6 @@
 //! [`PolynomialRingZq`]. If it is set for the matrix, then the multiplication of polynomials
 //! is performed using the NTT transform, and otherwise the multiplication is kept as it is.
 
-use itertools::{Either, Itertools};
-
 use super::{MatZq, Modulus, PolyOverZq, Zq};
 use crate::{
     integer::Z,
@@ -31,16 +29,17 @@ use crate::{
 pub struct NTTBasisPolynomialRingZq {
     pub n: i64,
     pub n_inv: Zq,
-    pub root_of_unity: Zq,
-    pub root_of_unity_inv: Zq,
+    pub roots_of_unity: Vec<Zq>,
+    pub roots_of_unity_inv: Vec<Zq>,
     pub modulus: Modulus,
     pub convolution_type: ConvolutionType,
 }
 
 fn recursive_fft(
     coefficients: Vec<&Zq>,
-    root_of_unity: &Zq,
+    roots: &Vec<Zq>,
     modulus: &Modulus,
+    stride: usize,
     convolution_type: &ConvolutionType,
 ) -> Vec<Zq> {
     if coefficients.len() == 1 {
@@ -56,30 +55,37 @@ fn recursive_fft(
         uneven.push(&padding);
     }
     // recursively perform fft
-    let omega_sqrd = root_of_unity * root_of_unity;
-    let even = recursive_fft(even, &omega_sqrd, modulus, convolution_type);
-    let uneven = recursive_fft(uneven, &omega_sqrd, modulus, convolution_type);
+    let even = recursive_fft(even, roots, modulus, 2 * stride, convolution_type);
+    let uneven = recursive_fft(uneven, roots, modulus, 2 * stride, convolution_type);
     let mut out = vec![Zq::from((Z::ZERO, modulus)); even.len() + uneven.len()];
 
     // compute final entries
-    let (mut twindle, twindle_increase) = match convolution_type {
-        ConvolutionType::Cyclic => (Zq::from((1, modulus)), root_of_unity.clone()),
-        ConvolutionType::Negacyclic => (root_of_unity.clone(), root_of_unity.pow(2).unwrap()),
-    };
     for i in 0..even.len() {
-        let t = &twindle * &uneven[i];
+        let t = match convolution_type {
+            ConvolutionType::Cyclic => &roots[i * stride] * &uneven[i],
+            ConvolutionType::Negacyclic => &roots[(2 * i + 1) * stride] * &uneven[i],
+        };
         out[i] = &even[i] + &t;
         out[i + even.len()] = &even[i] - &t;
-        twindle = twindle * &twindle_increase
     }
+    // match convolution_type {
+    //     ConvolutionType::Negacyclic => {
+    //         for i in even.len()..(2 * even.len()) {
+    //             out[i] = -1 * &out[i]
+    //         }
+    //         out
+    //     }
+    //     ConvolutionType::Cyclic => out,
+    // }
     out
 }
 
 fn recursive_fft_nc_intt(
     coefficients: Vec<&Zq>,
-    root_of_unity: &Zq,
-    root_of_unity_inv: &Zq,
+    roots_of_unity: &Vec<Zq>,
+    roots_of_unity_inv: &Vec<Zq>,
     modulus: &Modulus,
+    stride: usize,
 ) -> Vec<Zq> {
     if coefficients.len() == 1 {
         return vec![coefficients[0].clone()];
@@ -94,26 +100,28 @@ fn recursive_fft_nc_intt(
         uneven.push(&padding);
     }
     // recursively perform fft
-    let root_unity_sqrd = root_of_unity * root_of_unity;
-    let root_unity_inv_sqrd = root_of_unity_inv * root_of_unity_inv;
-    let even = recursive_fft_nc_intt(even, &root_unity_sqrd, &root_unity_inv_sqrd, modulus);
-    let uneven = recursive_fft_nc_intt(uneven, &root_unity_sqrd, &root_unity_inv_sqrd, modulus);
+    let even = recursive_fft_nc_intt(
+        even,
+        roots_of_unity,
+        roots_of_unity_inv,
+        modulus,
+        stride * 2,
+    );
+    let uneven = recursive_fft_nc_intt(
+        uneven,
+        roots_of_unity,
+        roots_of_unity_inv,
+        modulus,
+        stride * 2,
+    );
     let mut out = vec![Zq::from((Z::ZERO, modulus)); even.len() + uneven.len()];
 
     // compute final entries
-    let mut twindle = Zq::from((1, modulus));
-    let mut twindle_inv = Zq::from((1, modulus));
-    let mut twindle_shift = &twindle * root_of_unity.pow(even.len() as u32).unwrap();
-    let mut twindle_inv_shift = &twindle_inv * root_of_unity_inv.pow(even.len() as u32).unwrap();
     for i in 0..even.len() {
-        out[i] = &twindle * &even[i] + &twindle_inv * &uneven[i];
-        out[i + even.len()] = -1 * &twindle_shift * &even[i] - &twindle_inv_shift * &uneven[i];
-
-        // update the twindles for the next iteration
-        twindle = twindle * root_of_unity;
-        twindle_inv = twindle_inv * root_of_unity_inv;
-        twindle_shift = twindle_shift * root_of_unity;
-        twindle_inv_shift = twindle_inv_shift * root_of_unity_inv;
+        out[i] =
+            &roots_of_unity[stride * i] * &even[i] + &roots_of_unity_inv[stride * i] * &uneven[i];
+        out[i + even.len()] = -1 * &roots_of_unity[stride * (i + even.len())] * &even[i]
+            - &roots_of_unity_inv[stride * (i + even.len())] * &uneven[i]
     }
     out
 }
@@ -127,8 +135,9 @@ impl NTTBasisPolynomialRingZq {
 
         let res = recursive_fft(
             borrowed_coeffs,
-            &self.root_of_unity,
+            &self.roots_of_unity,
             &self.modulus,
+            1,
             &self.convolution_type,
         );
         for i in 0..self.n {
@@ -150,15 +159,17 @@ impl NTTBasisPolynomialRingZq {
         let res = match self.convolution_type {
             ConvolutionType::Cyclic => recursive_fft(
                 borrowed_coeffs,
-                &self.root_of_unity_inv,
+                &self.roots_of_unity_inv,
                 &self.modulus,
+                1,
                 &self.convolution_type,
             ),
             ConvolutionType::Negacyclic => recursive_fft_nc_intt(
                 borrowed_coeffs,
-                &self.root_of_unity,
-                &self.root_of_unity_inv,
+                &self.roots_of_unity,
+                &self.roots_of_unity_inv,
                 &self.modulus,
+                1,
             ),
         };
 
@@ -189,11 +200,25 @@ impl NTTBasisPolynomialRingZq {
         let n_inv = Zq::from((n, modulus)).inverse().unwrap();
         let root_of_unity_inv = root_of_unity.inverse().unwrap();
 
+        let roots_of_unity = match convolution_type {
+            ConvolutionType::Cyclic => (0..n).map(|i| root_of_unity.pow(i).unwrap()).collect(),
+            ConvolutionType::Negacyclic => (0..(2 * n))
+                .map(|i| root_of_unity.pow(i).unwrap())
+                .collect(),
+        };
+
+        let roots_of_unity_inv = match convolution_type {
+            ConvolutionType::Cyclic => (0..n).map(|i| root_of_unity_inv.pow(i).unwrap()).collect(),
+            ConvolutionType::Negacyclic => (0..(2 * n))
+                .map(|i| root_of_unity_inv.pow(i).unwrap())
+                .collect(),
+        };
+
         Self {
             n,
             n_inv,
-            root_of_unity: root_of_unity.clone(),
-            root_of_unity_inv,
+            roots_of_unity,
+            roots_of_unity_inv,
             modulus: modulus.clone(),
             convolution_type: convolution_type.clone(),
         }
