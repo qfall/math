@@ -24,6 +24,7 @@ use crate::{
     traits::{GetNumColumns, GetNumRows, Pow},
 };
 use rand::RngCore;
+use serde::Serialize;
 use std::collections::HashMap;
 
 /// Enables for discrete Gaussian sampling out of
@@ -49,6 +50,7 @@ use std::collections::HashMap;
 ///
 /// let sample = dgis.sample_z();
 /// ```
+#[derive(Debug, Serialize, Clone)]
 pub(crate) struct DiscreteGaussianIntegerSampler {
     center: Q,
     s: Q,
