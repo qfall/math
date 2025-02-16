@@ -16,7 +16,7 @@
 //! Therefore, the DEVELOPER has to call the [`PolynomialRingZq::reduce`], whenever
 //! a computation may exceed the modulus, because it is not reduced automatically
 
-use super::ModulusPolynomialRingZq;
+use super::{MatZq, ModulusPolynomialRingZq, PolyOverZq};
 use crate::integer::PolyOverZ;
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
@@ -69,4 +69,29 @@ mod to_string;
 pub struct PolynomialRingZq {
     pub(crate) poly: PolyOverZ,
     pub(crate) modulus: ModulusPolynomialRingZq,
+}
+
+impl PolynomialRingZq {
+    pub fn ntt(&self) -> Option<MatZq> {
+        if let Some(ntt_basis) = self.modulus.ntt_basis.as_ref() {
+            let value = PolyOverZq::from((
+                &self.get_representative_least_nonnegative_residue(),
+                self.get_mod().get_q(),
+            ));
+            Some(ntt_basis.ntt(&value))
+        } else {
+            None
+        }
+    }
+
+    pub fn intt(vector: &MatZq, modulus: &ModulusPolynomialRingZq) -> Option<Self> {
+        modulus.ntt_basis.as_ref().as_ref().map(|basis| {
+            PolynomialRingZq::from((
+                &basis
+                    .intt(vector)
+                    .get_representative_least_nonnegative_residue(),
+                modulus,
+            ))
+        })
+    }
 }

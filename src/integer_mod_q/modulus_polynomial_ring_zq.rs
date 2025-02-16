@@ -13,10 +13,13 @@
 use flint_sys::fq::fq_ctx_struct;
 use std::rc::Rc;
 
+use super::ntt_basis_polynomial_ring_zq::NTTBasisPolynomialRingZq;
+
 mod cmp;
 mod from;
 mod get;
 mod norm;
+mod ntt_basis;
 mod ownership;
 mod serialize;
 mod to_string;
@@ -41,4 +44,5 @@ mod to_string;
 #[derive(Debug)]
 pub struct ModulusPolynomialRingZq {
     modulus: Rc<fq_ctx_struct>,
+    pub(crate) ntt_basis: Rc<Option<NTTBasisPolynomialRingZq>>,
 }
