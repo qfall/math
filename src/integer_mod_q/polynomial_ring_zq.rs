@@ -72,6 +72,7 @@ pub struct PolynomialRingZq {
 }
 
 impl PolynomialRingZq {
+    /// todo
     pub fn ntt(&self) -> Option<MatZq> {
         if let Some(ntt_basis) = self.modulus.ntt_basis.as_ref() {
             let value = PolyOverZq::from((
@@ -84,6 +85,7 @@ impl PolynomialRingZq {
         }
     }
 
+    /// todo
     pub fn intt(vector: &MatZq, modulus: &ModulusPolynomialRingZq) -> Option<Self> {
         modulus.ntt_basis.as_ref().as_ref().map(|basis| {
             PolynomialRingZq::from((

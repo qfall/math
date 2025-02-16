@@ -17,14 +17,13 @@ use crate::{
 };
 
 /// [`NTTBasisPolynomialRingZq`] is an object, that given a polynomial
-/// `X^n - 1 mod q` computes two transformation matrices.
-/// With these matrices, one can utilize efficient matrix multiplication O(n log n) instead of
+/// `X^n - 1 mod q` or `X^n + 1 mod q` computes two transformation functions.
+/// With these functions, one can utilize efficient matrix multiplication O(n log n) instead of
 /// O(n^2) in the trivial polynomial multiplication for [`PolynomialRingZq`] objects.
-/// This implementation currently only supports cyclotomic polynomials, where there is an `n`-th root of unity.
+/// This implementation currently only supports cyclotomic polynomials, where there is an `n`/2n-th root of unity.
 ///
 /// Attributes:
-/// - `ntt_matrix`: describes the conversion matrix to transform a polynomial in coefficient representation into ntt format
-/// - `ntt_matrix_inv`: the inverse of the previous conversion matrix
+/// - todo
 #[derive(Debug)]
 pub struct NTTBasisPolynomialRingZq {
     pub n: i64,
@@ -35,6 +34,7 @@ pub struct NTTBasisPolynomialRingZq {
     pub convolution_type: ConvolutionType,
 }
 
+/// todo
 fn recursive_fft(
     coefficients: Vec<&Zq>,
     roots: &Vec<Zq>,
@@ -68,18 +68,11 @@ fn recursive_fft(
         out[i] = &even[i] + &t;
         out[i + even.len()] = &even[i] - &t;
     }
-    // match convolution_type {
-    //     ConvolutionType::Negacyclic => {
-    //         for i in even.len()..(2 * even.len()) {
-    //             out[i] = -1 * &out[i]
-    //         }
-    //         out
-    //     }
-    //     ConvolutionType::Cyclic => out,
-    // }
     out
 }
 
+/// todo
+/// potentially incorporate in the other function if there is a nice way to do it.
 fn recursive_fft_nc_intt(
     coefficients: Vec<&Zq>,
     roots_of_unity: &Vec<Zq>,
@@ -127,6 +120,7 @@ fn recursive_fft_nc_intt(
 }
 
 impl NTTBasisPolynomialRingZq {
+    /// todo
     pub fn ntt(&self, poly: &PolyOverZq) -> MatZq {
         let mut out = MatZq::new(self.n, 1, &self.modulus);
 
@@ -147,6 +141,7 @@ impl NTTBasisPolynomialRingZq {
         out
     }
 
+    /// todo
     pub fn intt(&self, vector: &MatZq) -> PolyOverZq {
         assert!(vector.is_column_vector());
         assert!(vector.get_num_rows() == self.n);
@@ -190,6 +185,12 @@ impl NTTBasisPolynomialRingZq {
     /// - `n`: the degree of the polynomial
     /// - `root_of_unity`: the `n`-th root of unity
     /// - `q`: the modulus of the cyclotomic polynomial
+    /// - `convolution_type`: defines whether convolution is cyclic or negacyclic
+    ///
+    /// # Examples
+    /// ```
+    /// todo
+    /// ```
     pub fn init(
         n: i64,
         root_of_unity: &Zq,
@@ -225,6 +226,7 @@ impl NTTBasisPolynomialRingZq {
     }
 }
 
+/// todo
 #[derive(Debug, Clone)]
 pub enum ConvolutionType {
     Cyclic,

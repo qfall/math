@@ -21,7 +21,6 @@ thiserror = "2.0"
 lazy_static = "1.4"
 probability = "0.20.3"
 derive_more = { version = "1", features = ["display"] }
-itertools = "0.14.0"
 
 [profile.bench]
 debug = true

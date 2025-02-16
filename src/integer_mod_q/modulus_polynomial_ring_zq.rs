@@ -10,10 +10,9 @@
 //! [`PolynomialRingZq`](super::PolynomialRingZq).
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
+use super::ntt_basis_polynomial_ring_zq::NTTBasisPolynomialRingZq;
 use flint_sys::fq::fq_ctx_struct;
 use std::rc::Rc;
-
-use super::ntt_basis_polynomial_ring_zq::NTTBasisPolynomialRingZq;
 
 mod cmp;
 mod from;
