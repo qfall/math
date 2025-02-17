@@ -83,4 +83,37 @@ mod test_setting_ntt {
         let p3 = PolynomialRingZq::intt(&p3_ntt, &polynomial_modulus).unwrap();
         assert_eq!(p3, p1 * p2)
     }
+
+    /// Ensure that the entrywise multiplication and the intuitive multiplication yields
+    /// the same results for the parameters from Hawk1024.
+    #[test]
+    fn test_hawk1024_params() {
+        let n = 1024;
+        let modulus = 12289;
+
+        let mut mod_poly = PolyOverZq::from(modulus);
+        mod_poly.set_coeff(0, 1).unwrap();
+        mod_poly.set_coeff(n, 1).unwrap();
+
+        let mut polynomial_modulus = ModulusPolynomialRingZq::from(&mod_poly);
+        unsafe {
+            polynomial_modulus.set_ntt_unchecked(&Zq::from((1945, modulus)));
+        };
+
+        let p1 = PolynomialRingZq::sample_uniform(&polynomial_modulus);
+        let p2 = PolynomialRingZq::sample_uniform(&polynomial_modulus);
+
+        let p1_ntt: MatZq = p1.ntt().unwrap();
+        let p2_ntt: MatZq = p2.ntt().unwrap();
+
+        let mut p3_ntt = MatZq::new(n, 1, modulus);
+        for i in 0..1024 {
+            let p1_i: Zq = p1_ntt.get_entry(i, 0).unwrap();
+            let p2_i: Zq = p2_ntt.get_entry(i, 0).unwrap();
+            p3_ntt.set_entry(i, 0, p1_i * p2_i).unwrap();
+        }
+
+        let p3 = PolynomialRingZq::intt(&p3_ntt, &polynomial_modulus).unwrap();
+        assert_eq!(p3, p1 * p2)
+    }
 }
