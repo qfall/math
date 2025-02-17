@@ -104,7 +104,7 @@ impl FromCoefficientEmbedding<(&MatZq, &ModulusPolynomialRingZq, i64)> for MatPo
     ///
     /// let matrix = MatZq::from_str("[[17, 1],[3, 2],[-5, 3],[1, 2]] mod 19").unwrap();
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 2 3 4 mod 19").unwrap();
-    /// let mat = MatPolynomialRingZq::from_coefficient_embedding((&matrix, &modulus), 1);
+    /// let mat = MatPolynomialRingZq::from_coefficient_embedding((&matrix, &modulus, 1));
     /// let cmp_mat = MatPolynomialRingZq::from_str("[[2  17 3, 2  1 2],[2  -5 1, 2  3 2]] / 4  1 2 3 4 mod 19").unwrap();
     /// assert_eq!(cmp_mat, mat);
     /// ```
