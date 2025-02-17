@@ -16,7 +16,7 @@ use crate::{
 use std::cmp::max;
 
 impl PolyOverZ {
-    /// Returns the squared Euclidean norm or 2-norm of the given polynomial.
+    /// Returns the squared Euclidean norm or squared 2-norm of the given polynomial.
     ///
     /// # Examples
     /// ```

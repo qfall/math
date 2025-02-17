@@ -1,4 +1,4 @@
-// Copyright © 2024 Marcel Luca Schmidt
+// Copyright © 2025 Marcel Luca Schmidt
 //
 // This file is part of qFALL-math.
 //
@@ -18,7 +18,7 @@ use crate::{
 use std::cmp::max;
 
 impl PolynomialRingZq {
-    /// Returns the squared Euclidean norm or 2-norm of the given polynomial.
+    /// Returns the squared Euclidean norm or squared 2-norm of the given polynomial.
     /// The squared Euclidean norm for a polynomial is obtained by treating the coefficients
     /// of the polynomial as a vector and then applying the standard squared Euclidean norm.
     ///
