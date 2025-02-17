@@ -1,4 +1,4 @@
-// Copyright © 2023 Phil Milewski
+// Copyright © 2025 Marcel Luca Schmidt
 //
 // This file is part of qFALL-math.
 //
@@ -9,14 +9,15 @@
 //! This module includes functionality to compute several norms
 //! defined on polynomials.
 
+use super::PolynomialRingZq;
 use crate::{
     integer::Z,
-    integer_mod_q::{fmpz_mod_helpers::length, PolyOverZq},
+    integer_mod_q::fmpz_mod_helpers::length,
     traits::{GetCoefficient, Pow},
 };
 use std::cmp::max;
 
-impl PolyOverZq {
+impl PolynomialRingZq {
     /// Returns the squared Euclidean norm or squared 2-norm of the given polynomial.
     /// The squared Euclidean norm for a polynomial is obtained by treating the coefficients
     /// of the polynomial as a vector and then applying the standard squared Euclidean norm.
@@ -26,10 +27,10 @@ impl PolyOverZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::{integer::Z, integer_mod_q::PolyOverZq};
+    /// use qfall_math::{integer::Z, integer_mod_q::PolynomialRingZq};
     /// use std::str::FromStr;
     ///
-    /// let poly = PolyOverZq::from_str("3  1 2 3 mod 11").unwrap();
+    /// let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 11").unwrap();
     ///
     /// let sqrd_2_norm = poly.norm_eucl_sqrd();
     ///
@@ -41,7 +42,7 @@ impl PolyOverZq {
         for i in 0..=self.get_degree() {
             let coeff: Z = self.get_coeff(i).unwrap();
             res = res
-                + length(&coeff.value, &self.modulus.get_fmpz_mod_ctx_struct().n[0])
+                + length(&coeff.value, &self.modulus.get_fq_ctx_struct().ctxp[0].n[0])
                     .pow(2)
                     .unwrap();
         }
@@ -58,10 +59,10 @@ impl PolyOverZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::{integer::Z, integer_mod_q::PolyOverZq};
+    /// use qfall_math::{integer::Z, integer_mod_q::PolynomialRingZq};
     /// use std::str::FromStr;
     ///
-    /// let poly = PolyOverZq::from_str("3  1 2 4 mod 7").unwrap();
+    /// let poly = PolynomialRingZq::from_str("3  1 2 4 / 4  1 2 3 4 mod 7").unwrap();
     ///
     /// let infty_norm = poly.norm_infty();
     ///
@@ -73,7 +74,7 @@ impl PolyOverZq {
 
         for i in 0..=self.get_degree() {
             let coeff: Z = self.get_coeff(i).unwrap();
-            let len = length(&coeff.value, &self.modulus.get_fmpz_mod_ctx_struct().n[0]);
+            let len = length(&coeff.value, &self.modulus.get_fq_ctx_struct().ctxp[0].n[0]);
             res = max(res, len);
         }
         res
@@ -82,16 +83,17 @@ impl PolyOverZq {
 
 #[cfg(test)]
 mod test_norm_eucl_sqrd {
-    use super::{PolyOverZq, Z};
+    use super::Z;
+    use crate::integer_mod_q::PolynomialRingZq;
     use std::str::FromStr;
 
     /// Check whether the squared euclidean norm for polynomials
     /// with small coefficients is calculated correctly
     #[test]
     fn poly_small_coefficient() {
-        let poly_1 = PolyOverZq::from_str("0 mod 11").unwrap();
-        let poly_2 = PolyOverZq::from_str("3  1 2 3 mod 11").unwrap();
-        let poly_3 = PolyOverZq::from_str("3  1 20 194 mod 195").unwrap();
+        let poly_1 = PolynomialRingZq::from_str("0 / 2  1 2 mod 11").unwrap();
+        let poly_2 = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 11").unwrap();
+        let poly_3 = PolynomialRingZq::from_str("3  1 20 194 / 4  1 2 3 4 mod 195").unwrap();
 
         assert_eq!(poly_1.norm_eucl_sqrd(), Z::ZERO);
         assert_eq!(poly_2.norm_eucl_sqrd(), Z::from(14));
@@ -102,9 +104,11 @@ mod test_norm_eucl_sqrd {
     /// with small coefficients is calculated correctly
     #[test]
     fn poly_large_coefficient() {
-        let poly_1 = PolyOverZq::from_str(&format!("1  {} mod {}", u64::MAX, u128::MAX)).unwrap();
-        let poly_2 = PolyOverZq::from_str(&format!(
-            "3  {} {} {} mod {}",
+        let poly_1 =
+            PolynomialRingZq::from_str(&format!("1  {} / 2  1 2 mod {}", u64::MAX, u128::MAX))
+                .unwrap();
+        let poly_2 = PolynomialRingZq::from_str(&format!(
+            "3  {} {} {} / 4  1 2 3 4 mod {}",
             u64::MAX,
             i64::MIN,
             i64::MAX,
@@ -127,29 +131,32 @@ mod test_norm_eucl_sqrd {
 
 #[cfg(test)]
 mod test_norm_infty {
-    use super::{PolyOverZq, Z};
+    use super::Z;
+    use crate::integer_mod_q::PolynomialRingZq;
     use std::str::FromStr;
 
     /// Check whether the infinity norm for polynomials
     /// with small coefficients is calculated correctly
     #[test]
     fn poly_small_coefficient() {
-        let poly_1 = PolyOverZq::from_str("0 mod 3").unwrap();
-        let poly_2 = PolyOverZq::from_str("3  1 2 3 mod 5").unwrap();
-        let poly_3 = PolyOverZq::from_str("3  1 2010 90 mod 100").unwrap();
+        let poly_1 = PolynomialRingZq::from_str("0 / 2  1 2 mod 11").unwrap();
+        let poly_2 = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 5").unwrap();
+        let poly_3 = PolynomialRingZq::from_str("3  1 20 194 / 4  1 2 3 4 mod 195").unwrap();
 
         assert_eq!(poly_1.norm_infty(), Z::ZERO);
         assert_eq!(poly_2.norm_infty(), Z::from(2));
-        assert_eq!(poly_3.norm_infty(), Z::from(10));
+        assert_eq!(poly_3.norm_infty(), Z::from(20));
     }
 
     /// Check whether the infinity norm for polynomials
     /// with small coefficients is calculated correctly
     #[test]
     fn poly_large_coefficient() {
-        let poly_1 = PolyOverZq::from_str(&format!("1  {} mod {}", u64::MAX, u128::MAX)).unwrap();
-        let poly_2 = PolyOverZq::from_str(&format!(
-            "3  {} {} {} mod {}",
+        let poly_1 =
+            PolynomialRingZq::from_str(&format!("1  {} / 2  1 2 mod {}", u64::MAX, u128::MAX))
+                .unwrap();
+        let poly_2 = PolynomialRingZq::from_str(&format!(
+            "3  {} {} {} / 4  1 2 3 4 mod {}",
             u64::MAX,
             i64::MIN,
             i64::MAX,
