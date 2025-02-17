@@ -30,45 +30,39 @@ pub fn get_dilithium_setup() -> ModulusPolynomialRingZq {
     polynomial_modulus
 }
 
-fn dilithium_params_with_ntt() {
-    let modulus = get_dilithium_setup();
-
-    let p1 = PolynomialRingZq::sample_uniform(&modulus);
-    let p2 = PolynomialRingZq::sample_uniform(&modulus);
-
-    let p1_ntt: MatZq = p1.ntt().unwrap();
-    let p2_ntt: MatZq = p2.ntt().unwrap();
-
-    let mut p3_ntt = MatZq::new(p1.get_degree() + 1, 1, p1_ntt.get_mod());
-    for i in 0..256 {
-        let p1_i: Zq = p1_ntt.get_entry(i, 0).unwrap();
-        let p2_i: Zq = p2_ntt.get_entry(i, 0).unwrap();
-        p3_ntt.set_entry(i, 0, p1_i * p2_i).unwrap();
-    }
-
-    let _ = PolynomialRingZq::intt(&p3_ntt, &modulus).unwrap();
-}
-
-fn dilithium_params_without_ntt() {
-    let modulus = get_dilithium_setup();
-
-    let p1 = PolynomialRingZq::sample_uniform(&modulus);
-    let p2 = PolynomialRingZq::sample_uniform(&modulus);
-
-    let _ = p1 * p2;
-}
-
 /// benchmark
 pub fn bench_ntt_dilithium_params_with_ntt(c: &mut Criterion) {
+    let modulus = get_dilithium_setup();
+
+    let p1 = PolynomialRingZq::sample_uniform(&modulus);
+    let p2 = PolynomialRingZq::sample_uniform(&modulus);
+
     c.bench_function("PolynomialRingZq Multiplication with NTT", |b| {
-        b.iter(dilithium_params_with_ntt)
+        b.iter(|| {
+            let p1_ntt: MatZq = p1.ntt().unwrap();
+            let p2_ntt: MatZq = p2.ntt().unwrap();
+
+            let mut p3_ntt = MatZq::new(p1.get_degree() + 1, 1, p1_ntt.get_mod());
+            for i in 0..256 {
+                let p1_i: Zq = p1_ntt.get_entry(i, 0).unwrap();
+                let p2_i: Zq = p2_ntt.get_entry(i, 0).unwrap();
+                p3_ntt.set_entry(i, 0, p1_i * p2_i).unwrap();
+            }
+
+            let _ = PolynomialRingZq::intt(&p3_ntt, &modulus).unwrap();
+        })
     });
 }
 
 /// benchmark
 pub fn bench_ntt_dilithium_params_without_ntt(c: &mut Criterion) {
+    let modulus = get_dilithium_setup();
+
+    let p1 = PolynomialRingZq::sample_uniform(&modulus);
+    let p2 = PolynomialRingZq::sample_uniform(&modulus);
+
     c.bench_function("PolynomialRingZq Multiplication without NTT", |b| {
-        b.iter(dilithium_params_without_ntt)
+        b.iter(|| &p1 * &p2)
     });
 }
 
