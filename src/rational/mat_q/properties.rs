@@ -9,6 +9,7 @@
 //! This module includes functionality about properties of [`MatQ`] instances.
 
 use super::MatQ;
+use crate::traits::{GetEntry, GetNumRows};
 use flint_sys::fmpq_mat::{fmpq_mat_is_one, fmpq_mat_is_square, fmpq_mat_is_zero};
 
 impl MatQ {
@@ -80,7 +81,17 @@ impl MatQ {
     /// assert!(value.is_symmetric());
     /// ```
     pub fn is_symmetric(&self) -> bool {
-        self == &self.transpose()
+        if !self.is_square() {
+            return false;
+        }
+        for row in 0..self.get_num_rows() {
+            for column in 0..row {
+                if self.get_entry(row, column).unwrap() != self.get_entry(column, row).unwrap() {
+                    return false;
+                }
+            }
+        }
+        true
     }
 }
 

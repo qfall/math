@@ -18,9 +18,7 @@ use flint_sys::fmpz::fmpz_addmul;
 
 impl MatZq {
     /// Returns the dot product of two vectors of type [`MatZq`].
-    ///
-    /// The orientation of the input vectors (row vs. column) is ignored.
-    /// As a result, it can be chosen arbitrarily.
+    /// Note that the dimensions of the two vectors are irrelevant for the dot product.
     ///
     /// Parameters:
     /// - `other`: specifies the other vector the dot product is calculated over

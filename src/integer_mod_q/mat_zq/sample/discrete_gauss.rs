@@ -14,7 +14,9 @@ use crate::{
     integer_mod_q::{MatZq, Modulus},
     rational::{MatQ, Q},
     traits::{GetNumColumns, GetNumRows, SetEntry},
-    utils::sample::discrete_gauss::{sample_d, sample_d_precomputed_gso, sample_z},
+    utils::sample::discrete_gauss::{
+        sample_d, sample_d_precomputed_gso, DiscreteGaussianIntegerSampler,
+    },
 };
 use std::fmt::Display;
 
@@ -43,7 +45,7 @@ impl MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if `n <= 1` or `s <= 0`.
+    ///     if `n <= 1` or `s <= 0` or `s * log_2(n) < 1` or `s * log_2(n) < 1`.
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns or the modulus are not suited to create a matrix.
@@ -62,9 +64,11 @@ impl MatZq {
         let s: Q = s.into();
         let mut out = Self::new(num_rows, num_cols, modulus);
 
+        let mut dgis = DiscreteGaussianIntegerSampler::init(&n, &center, &s)?;
+
         for row in 0..out.get_num_rows() {
             for col in 0..out.get_num_columns() {
-                let sample = sample_z(&n, &center, &s)?;
+                let sample = dgis.sample_z();
                 out.set_entry(row, col, sample).unwrap();
             }
         }
@@ -119,7 +123,12 @@ impl MatZq {
         let n: Z = n.into();
         let s: Q = s.into();
 
-        let sample = sample_d(&basis.get_representative_0_modulus(), &n, center, &s)?;
+        let sample = sample_d(
+            &basis.get_representative_least_nonnegative_residue(),
+            &n,
+            center,
+            &s,
+        )?;
 
         Ok(MatZq::from((&sample, basis.get_mod())))
     }
@@ -177,7 +186,7 @@ impl MatZq {
     /// use qfall_math::{integer::MatZ, integer_mod_q::MatZq, rational::MatQ};
     /// let basis = MatZq::identity(5, 5, 17);
     /// let center = MatQ::new(5, 1);
-    /// let basis_gso = MatQ::from(&basis.get_representative_0_modulus()).gso();
+    /// let basis_gso = MatQ::from(&basis.get_representative_least_nonnegative_residue()).gso();
     ///
     /// let sample = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, 1024, &center, 1.25f32).unwrap();
     /// ```
@@ -209,7 +218,7 @@ impl MatZq {
         let s: Q = s.into();
 
         let sample = sample_d_precomputed_gso(
-            &basis.get_representative_0_modulus(),
+            &basis.get_representative_least_nonnegative_residue(),
             basis_gso,
             &n,
             center,
@@ -302,7 +311,7 @@ mod test_sample_d {
         let n = Z::from(1024);
         let center = MatQ::new(5, 1);
         let s = Q::ONE;
-        let basis_gso = MatQ::from(&basis.get_representative_0_modulus());
+        let basis_gso = MatQ::from(&basis.get_representative_least_nonnegative_residue());
 
         let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, 16u16, &center, 1u16);
         let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, 2u32, &center, 1u8);

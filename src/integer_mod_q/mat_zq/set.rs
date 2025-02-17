@@ -478,7 +478,7 @@ mod test_setter {
         let value = Z::from(i64::MAX);
         matrix.set_entry(0, 0, value).unwrap();
 
-        let entry = matrix.get_entry(0, 0).unwrap();
+        let entry: Z = matrix.get_entry(0, 0).unwrap();
 
         assert_eq!(Z::from(i64::MAX), entry);
     }
@@ -490,9 +490,9 @@ mod test_setter {
         let value = Z::from(u64::MAX - 1);
         matrix.set_entry(0, 0, value).unwrap();
 
-        let entry = matrix.get_entry(0, 0).unwrap();
+        let entry: Z = matrix.get_entry(0, 0).unwrap();
 
-        assert_eq!(Z::from(u64::MAX - 1), entry);
+        assert_eq!(u64::MAX - 1, entry);
     }
 
     /// Ensure that setting entries works with large numbers.
@@ -502,9 +502,9 @@ mod test_setter {
         let value = Z::from(-i64::MAX);
         matrix.set_entry(0, 0, value).unwrap();
 
-        let entry = matrix.get_entry(0, 0).unwrap();
+        let entry: Z = matrix.get_entry(0, 0).unwrap();
 
-        assert_eq!(Z::from((u64::MAX as i128 - i64::MAX as i128) as u64), entry);
+        assert_eq!((u64::MAX as i128 - i64::MAX as i128) as u64, entry);
     }
 
     /// Ensure that setting entries works with large numbers (larger than [`i64`]).
@@ -514,12 +514,9 @@ mod test_setter {
         let value = Z::from(-i64::MAX - 1);
         matrix.set_entry(0, 0, value).unwrap();
 
-        let entry = matrix.get_entry(0, 0).unwrap();
+        let entry: Z = matrix.get_entry(0, 0).unwrap();
 
-        assert_eq!(
-            Z::from((u64::MAX as i128 - i64::MAX as i128) as u64 - 1),
-            entry
-        );
+        assert_eq!((u64::MAX as i128 - i64::MAX as i128) as u64 - 1, entry);
     }
 
     /// Ensure that a wrong number of rows yields an Error.

@@ -31,7 +31,7 @@ impl MatZq {
     /// equivalence class of each entry from a [`MatZq`].
     ///
     /// The values in the output matrix are in the range of `[0, modulus)`.
-    /// Use [`MatZq::get_representative_around_0`] if they should be
+    /// Use [`MatZq::get_representative_least_absolute_residue`] if they should be
     /// in the range `[-modulus/2, modulus/2]`.
     ///
     /// Returns the matrix as a [`MatZ`].
@@ -44,11 +44,11 @@ impl MatZq {
     ///
     /// let mat_zq = MatZq::from_str("[[1, 2],[3, -1]] mod 5").unwrap();
     ///
-    /// let mat_z = mat_zq.get_representative_0_modulus();
+    /// let mat_z = mat_zq.get_representative_least_nonnegative_residue();
     ///
     /// assert_eq!(mat_z.to_string(), "[[1, 2],[3, 4]]");
     /// ```
-    pub fn get_representative_0_modulus(&self) -> MatZ {
+    pub fn get_representative_least_nonnegative_residue(&self) -> MatZ {
         let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
         unsafe { fmpz_mat_set(&mut out.matrix, &self.matrix.mat[0]) };
         out
@@ -60,7 +60,7 @@ impl MatZq {
     ///
     /// The values in the output matrix are in the range of `[-modulus/2, modulus/2]`.
     /// For even moduli, the positive representative is chosen for the element `modulus / 2`.
-    /// Use [`MatZq::get_representative_0_modulus`] if they should be
+    /// Use [`MatZq::get_representative_least_nonnegative_residue`] if they should be
     /// in the range `[0, modulus)`.
     ///
     /// Returns an [`MatZ`] representation of the given matrix with
@@ -74,13 +74,13 @@ impl MatZq {
     /// let mat_zq_1 = MatZq::from_str("[[1,2],[3,4]] mod 5").unwrap();
     /// let mat_zq_2 = MatZq::from_str("[[1,2],[3,4]] mod 4").unwrap();
     ///
-    /// let mat_z_1 = mat_zq_1.get_representative_around_0();
-    /// let mat_z_2 = mat_zq_2.get_representative_around_0();
+    /// let mat_z_1 = mat_zq_1.get_representative_least_absolute_residue();
+    /// let mat_z_2 = mat_zq_2.get_representative_least_absolute_residue();
     ///
     /// assert_eq!(mat_z_1.to_string(), "[[1, 2],[-2, -1]]");
     /// assert_eq!(mat_z_2.to_string(), "[[1, 2],[-1, 0]]");
     /// ```
-    pub fn get_representative_around_0(&self) -> MatZ {
+    pub fn get_representative_least_absolute_residue(&self) -> MatZ {
         let modulus: Z = Z::from(&self.modulus);
         let modulus_half = modulus.div_floor(2);
 
@@ -384,9 +384,13 @@ impl GetEntry<Z> for MatZq {
     ///
     /// let matrix = MatZq::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]] mod 10").unwrap();
     ///
-    /// assert_eq!(Z::from(3), matrix.get_entry(0, 2).unwrap());
-    /// assert_eq!(Z::from(8), matrix.get_entry(2, 1).unwrap());
-    /// assert_eq!(Z::from(8), matrix.get_entry(-1, -2).unwrap());
+    /// let entry_1 :Z = matrix.get_entry(0, 2).unwrap();
+    /// let entry_2 :Z = matrix.get_entry(2, 1).unwrap();
+    /// let entry_3 :Z = matrix.get_entry(-1, -2).unwrap();
+    ///
+    /// assert_eq!(3, entry_1);
+    /// assert_eq!(8, entry_2);
+    /// assert_eq!(8, entry_3);
     /// ```
     ///
     /// # Errors and Failures
@@ -462,11 +466,11 @@ mod test_get_entry {
     fn get_edges() {
         let matrix = MatZq::new(5, 10, u64::MAX);
 
-        let entry_1 = matrix.get_entry(0, 0).unwrap();
-        let entry_2 = matrix.get_entry(4, 9).unwrap();
+        let entry_1: Z = matrix.get_entry(0, 0).unwrap();
+        let entry_2: Z = matrix.get_entry(4, 9).unwrap();
 
-        assert_eq!(Z::default(), entry_1);
-        assert_eq!(Z::default(), entry_2);
+        assert_eq!(0, entry_1);
+        assert_eq!(0, entry_2);
     }
 
     /// Ensure that getting entries works with large numbers.
@@ -476,9 +480,9 @@ mod test_get_entry {
         let value = Z::from(i64::MAX);
         matrix.set_entry(0, 0, value).unwrap();
 
-        let entry = matrix.get_entry(0, 0).unwrap();
+        let entry: Z = matrix.get_entry(0, 0).unwrap();
 
-        assert_eq!(Z::from(i64::MAX), entry);
+        assert_eq!(i64::MAX, entry);
     }
 
     /// Ensure that getting entries works with large numbers (larger than [`i64`]).
@@ -488,9 +492,9 @@ mod test_get_entry {
         let value = Z::from(u64::MAX - 1);
         matrix.set_entry(0, 0, value).unwrap();
 
-        let entry = matrix.get_entry(0, 0).unwrap();
+        let entry: Z = matrix.get_entry(0, 0).unwrap();
 
-        assert_eq!(Z::from(u64::MAX - 1), entry);
+        assert_eq!(u64::MAX - 1, entry);
     }
 
     /// Ensure that getting entries works with large numbers.
@@ -500,9 +504,9 @@ mod test_get_entry {
         let value = Z::from(-i64::MAX);
         matrix.set_entry(0, 0, value).unwrap();
 
-        let entry = matrix.get_entry(0, 0).unwrap();
+        let entry: Z = matrix.get_entry(0, 0).unwrap();
 
-        assert_eq!(Z::from((u64::MAX as i128 - i64::MAX as i128) as u64), entry);
+        assert_eq!((u64::MAX as i128 - i64::MAX as i128) as u64, entry);
     }
 
     /// Ensure that getting entries works with large numbers (larger than [`i64`]).
@@ -512,12 +516,9 @@ mod test_get_entry {
         let value = Z::from(-i64::MAX - 1);
         matrix.set_entry(0, 0, value).unwrap();
 
-        let entry = matrix.get_entry(0, 0).unwrap();
+        let entry: Z = matrix.get_entry(0, 0).unwrap();
 
-        assert_eq!(
-            Z::from((u64::MAX as i128 - i64::MAX as i128) as u64 - 1),
-            entry
-        );
+        assert_eq!((u64::MAX as i128 - i64::MAX as i128) as u64 - 1, entry);
     }
 
     /// Ensure that a wrong number of rows yields an Error.
@@ -547,30 +548,19 @@ mod test_get_entry {
     fn negative_indexing() {
         let matrix = MatZq::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]] mod 10").unwrap();
 
-        assert_eq!(
-            GetEntry::<Z>::get_entry(&matrix, -1, -1).unwrap(),
-            Z::from(9)
-        );
-        assert_eq!(
-            GetEntry::<Z>::get_entry(&matrix, -1, -2).unwrap(),
-            Z::from(8)
-        );
-        assert_eq!(
-            GetEntry::<Z>::get_entry(&matrix, -3, -3).unwrap(),
-            Z::from(1)
-        );
-        assert_eq!(
-            GetEntry::<Zq>::get_entry(&matrix, -1, -1).unwrap(),
-            Zq::from((9, 10))
-        );
-        assert_eq!(
-            GetEntry::<Zq>::get_entry(&matrix, -1, -2).unwrap(),
-            Zq::from((8, 10))
-        );
-        assert_eq!(
-            GetEntry::<Zq>::get_entry(&matrix, -3, -3).unwrap(),
-            Zq::from((1, 10))
-        );
+        let entry_1: Z = matrix.get_entry(-1, -1).unwrap();
+        let entry_2: Z = matrix.get_entry(-1, -2).unwrap();
+        let entry_3: Z = matrix.get_entry(-3, -3).unwrap();
+        let entry_4: Zq = matrix.get_entry(-1, -1).unwrap();
+        let entry_5: Zq = matrix.get_entry(-1, -2).unwrap();
+        let entry_6: Zq = matrix.get_entry(-3, -3).unwrap();
+
+        assert_eq!(9, entry_1);
+        assert_eq!(8, entry_2);
+        assert_eq!(1, entry_3);
+        assert_eq!(Zq::from((9, 10)), entry_4);
+        assert_eq!(Zq::from((8, 10)), entry_5);
+        assert_eq!(Zq::from((1, 10)), entry_6);
     }
 
     /// Ensure that the entry is a deep copy and not just a clone of the reference.
@@ -579,10 +569,10 @@ mod test_get_entry {
         let mut matrix = MatZq::new(5, 10, u64::MAX);
         let value = Zq::from((u64::MAX - 1, u64::MAX));
         matrix.set_entry(1, 1, value).unwrap();
-        let entry = matrix.get_entry(1, 1).unwrap();
+        let entry: Z = matrix.get_entry(1, 1).unwrap();
         matrix.set_entry(1, 1, Z::ONE).unwrap();
 
-        assert_eq!(Z::from(u64::MAX - 1), entry);
+        assert_eq!(u64::MAX - 1, entry);
     }
 
     /// Ensure that no memory leak occurs in get_entry with [`Z`](crate::integer::Z).
@@ -648,7 +638,7 @@ mod test_get_num {
 }
 
 #[cfg(test)]
-mod test_get_representative_0_modulus {
+mod test_get_representative_least_nonnegative_residue {
     use crate::{
         integer::Z,
         integer_mod_q::MatZq,
@@ -660,7 +650,7 @@ mod test_get_representative_0_modulus {
     fn dimensions() {
         let matzq = MatZq::new(15, 17, 13);
 
-        let matz_1 = matzq.get_representative_0_modulus();
+        let matz_1 = matzq.get_representative_least_nonnegative_residue();
 
         assert_eq!(15, matz_1.get_num_rows());
         assert_eq!(17, matz_1.get_num_columns());
@@ -673,7 +663,7 @@ mod test_get_representative_0_modulus {
         matzq.set_entry(0, 0, u64::MAX - 58).unwrap();
         matzq.set_entry(0, 1, -1).unwrap();
 
-        let matz_1 = matzq.get_representative_0_modulus();
+        let matz_1 = matzq.get_representative_least_nonnegative_residue();
 
         assert_eq!(Z::from(u64::MAX - 1), matz_1.get_entry(0, 1).unwrap());
         assert_eq!(Z::from(u64::MAX - 58), matz_1.get_entry(0, 0).unwrap());
@@ -989,7 +979,7 @@ mod test_collect_lengths {
 }
 
 #[cfg(test)]
-mod test_get_representative_around_0 {
+mod test_get_representative_least_absolute_residue {
     use super::*;
     use std::str::FromStr;
 
@@ -998,7 +988,7 @@ mod test_get_representative_around_0 {
     fn large_modulus() {
         let mat_zq = MatZq::from_str(&format!("[[1,2],[-1,-2]] mod {}", u64::MAX)).unwrap();
 
-        let mat_z = mat_zq.get_representative_around_0();
+        let mat_z = mat_zq.get_representative_least_absolute_residue();
 
         let mat_cmp = MatZ::from_str("[[1,2],[-1,-2]]").unwrap();
         assert_eq!(mat_z.to_string(), mat_cmp.to_string());
@@ -1009,7 +999,7 @@ mod test_get_representative_around_0 {
     fn even_modulus() {
         let mat_zq = MatZq::from_str("[[0,1,2,3,4,5,6,7,8,9,10]] mod 10").unwrap();
 
-        let mat_z = mat_zq.get_representative_around_0();
+        let mat_z = mat_zq.get_representative_least_absolute_residue();
 
         let mat_cmp = MatZ::from_str("[[0,1,2,3,4,5,-4,-3,-2,-1,0]]").unwrap();
         assert_eq!(mat_z.to_string(), mat_cmp.to_string());
@@ -1020,7 +1010,7 @@ mod test_get_representative_around_0 {
     fn uneven_modulus() {
         let mat_zq = MatZq::from_str("[[0,1,2,3,4,5,6,7,8,9,10,11]] mod 11").unwrap();
 
-        let mat_z = mat_zq.get_representative_around_0();
+        let mat_z = mat_zq.get_representative_least_absolute_residue();
 
         let mat_cmp = MatZ::from_str("[[0,1,2,3,4,5,-5,-4,-3,-2,-1,0]]").unwrap();
         assert_eq!(mat_z.to_string(), mat_cmp.to_string());

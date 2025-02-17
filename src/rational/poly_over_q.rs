@@ -28,6 +28,8 @@ mod get;
 mod norm;
 mod ownership;
 mod properties;
+mod rounding;
+mod sample;
 mod serialize;
 mod set;
 mod to_string;

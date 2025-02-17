@@ -10,8 +10,11 @@
 //! This includes checks such as squareness.
 
 use super::MatPolyOverZ;
-use crate::traits::{GetNumColumns, GetNumRows};
-use flint_sys::fmpz_poly_mat::{fmpz_poly_mat_is_one, fmpz_poly_mat_is_zero};
+use crate::{
+    integer::Z,
+    traits::{GetEntry, GetNumColumns, GetNumRows},
+};
+use flint_sys::fmpz_poly_mat::{fmpz_poly_mat_is_one, fmpz_poly_mat_is_zero, fmpz_poly_mat_rank};
 
 impl MatPolyOverZ {
     /// Checks if a [`MatPolyOverZ`] is a identity matrix, i.e.
@@ -68,6 +71,46 @@ impl MatPolyOverZ {
         // we have to test squareness manually, since FLINT does not check this
         // directly with their method
         unsafe { 0 != fmpz_poly_mat_is_zero(&self.matrix) }
+    }
+
+    /// Checks if a [`MatPolyOverZ`] is symmetric.
+    ///
+    /// Returns `true` if we have `a_ij == a_ji` for all i,j.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatPolyOverZ;
+    ///
+    /// let value = MatPolyOverZ::identity(2,2);
+    /// assert!(value.is_symmetric());
+    /// ```
+    pub fn is_symmetric(&self) -> bool {
+        if !self.is_square() {
+            return false;
+        }
+        for row in 0..self.get_num_rows() {
+            for column in 0..row {
+                if self.get_entry(row, column).unwrap() != self.get_entry(column, row).unwrap() {
+                    return false;
+                }
+            }
+        }
+        true
+    }
+
+    /// Returns the rank of the matrix.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let matrix = MatPolyOverZ::from_str("[[1  1, 0, 0],[0, 0, 1  1]]").unwrap();
+    ///
+    /// let rank = matrix.rank();
+    /// ```
+    pub fn rank(&self) -> Z {
+        Z::from(unsafe { fmpz_poly_mat_rank(&self.matrix) })
     }
 }
 
@@ -183,5 +226,72 @@ mod test_is_zero {
 
         assert!(!small.is_zero());
         assert!(!large.is_zero());
+    }
+}
+
+#[cfg(test)]
+mod test_is_symmetric {
+    use super::MatPolyOverZ;
+    use std::str::FromStr;
+
+    /// Ensure that is_symmetric returns `false` for non-symmetric matrices.
+    #[test]
+    fn symmetric_rejection() {
+        let mat_2x3 = MatPolyOverZ::from_str("[[0, 1  6, 2  1 4],[1  2, 0, 2  1 1]]").unwrap();
+        let mat_2x2 = MatPolyOverZ::from_str("[[1  9, 0],[2  1 71, 0]]").unwrap();
+
+        assert!(!mat_2x3.is_symmetric());
+        assert!(!mat_2x2.is_symmetric());
+    }
+
+    /// Ensure that is_symmetric returns `true` for symmetric matrices.
+    #[test]
+    fn symmetric_detection() {
+        let mat_2x2 = MatPolyOverZ::from_str(&format!(
+            "[[2  1 {}, 2  3 {}],[2  3 {}, 3  1 {} 8]]",
+            u64::MIN,
+            u64::MAX,
+            u64::MAX,
+            i64::MAX
+        ))
+        .unwrap();
+
+        assert!(mat_2x2.is_symmetric());
+    }
+}
+
+#[cfg(test)]
+mod test_rank {
+    use crate::integer::{MatPolyOverZ, Z};
+    use std::str::FromStr;
+
+    /// Test whether the rank is correctly computed
+    #[test]
+    fn rank_works() {
+        let mat_1 = MatPolyOverZ::from_str("[[1  5, 1  2],[1  2, 1  1]]").unwrap();
+        let mat_2 = MatPolyOverZ::from_str(&format!(
+            "[[2  {} 3, 0, 0, 0],[0, 0, 1  5, 1  7]]",
+            i64::MIN
+        ))
+        .unwrap();
+        let mat_3 = MatPolyOverZ::from_str("[[0],[0]]").unwrap();
+        let mat_4 = MatPolyOverZ::from_str("[[0, 0],[0, 1  1]]").unwrap();
+        let mat_5 = MatPolyOverZ::from_str("[[0, 1  1],[0, 1  5]]").unwrap();
+        let mat_6 =
+            MatPolyOverZ::from_str("[[1  6, 0, 1  1],[0, 1  1, 0],[2  1 5, 1  2, 0]]").unwrap();
+
+        let rank_1 = mat_1.rank();
+        let rank_2 = mat_2.rank();
+        let rank_3 = mat_3.rank();
+        let rank_4 = mat_4.rank();
+        let rank_5 = mat_5.rank();
+        let rank_6 = mat_6.rank();
+
+        assert_eq!(Z::from(2), rank_1);
+        assert_eq!(Z::from(2), rank_2);
+        assert_eq!(Z::ZERO, rank_3);
+        assert_eq!(Z::ONE, rank_4);
+        assert_eq!(Z::ONE, rank_5);
+        assert_eq!(Z::from(3), rank_6);
     }
 }

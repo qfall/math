@@ -26,7 +26,8 @@ impl MatZ {
     /// use std::str::FromStr;
     ///
     /// let matrix = MatZ::from_str("[[1, 2],[3, 4]]").unwrap();
-    /// let matrix_invert = matrix.det().unwrap();
+    ///
+    /// let determinant = matrix.det().unwrap();
     /// ```
     ///
     /// # Errors and Failures

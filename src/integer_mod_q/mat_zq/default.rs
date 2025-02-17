@@ -109,10 +109,11 @@ mod test_identity {
 
         for i in 0..10 {
             for j in 0..10 {
+                let entry: Z = matrix.get_entry(i, j).unwrap();
                 if i != j {
-                    assert_eq!(Z::ZERO, matrix.get_entry(i, j).unwrap());
+                    assert_eq!(0, entry);
                 } else {
-                    assert_eq!(Z::ONE, matrix.get_entry(i, j).unwrap());
+                    assert_eq!(1, entry);
                 }
             }
         }
@@ -125,10 +126,11 @@ mod test_identity {
 
         for i in 0..10 {
             for j in 0..7 {
+                let entry: Z = matrix.get_entry(i, j).unwrap();
                 if i != j {
-                    assert_eq!(Z::ZERO, matrix.get_entry(i, j).unwrap());
+                    assert_eq!(0, entry);
                 } else {
-                    assert_eq!(Z::ONE, matrix.get_entry(i, j).unwrap());
+                    assert_eq!(1, entry);
                 }
             }
         }
@@ -137,10 +139,11 @@ mod test_identity {
 
         for i in 0..7 {
             for j in 0..10 {
+                let entry: Z = matrix.get_entry(i, j).unwrap();
                 if i != j {
-                    assert_eq!(Z::ZERO, matrix.get_entry(i, j).unwrap());
+                    assert_eq!(0, entry);
                 } else {
-                    assert_eq!(Z::ONE, matrix.get_entry(i, j).unwrap());
+                    assert_eq!(1, entry);
                 }
             }
         }
@@ -153,10 +156,11 @@ mod test_identity {
 
         for i in 0..10 {
             for j in 0..10 {
+                let entry: Z = matrix.get_entry(i, j).unwrap();
                 if i != j {
-                    assert_eq!(Z::ZERO, matrix.get_entry(i, j).unwrap());
+                    assert_eq!(0, entry);
                 } else {
-                    assert_eq!(Z::ONE, matrix.get_entry(i, j).unwrap());
+                    assert_eq!(1, entry);
                 }
             }
         }
@@ -185,15 +189,15 @@ mod test_new {
     fn entry_zero() {
         let matrix = MatZq::new(2, 2, 3);
 
-        let entry_1 = matrix.get_entry(0, 0).unwrap();
-        let entry_2 = matrix.get_entry(0, 1).unwrap();
-        let entry_3 = matrix.get_entry(1, 0).unwrap();
-        let entry_4 = matrix.get_entry(1, 1).unwrap();
+        let entry_1: Z = matrix.get_entry(0, 0).unwrap();
+        let entry_2: Z = matrix.get_entry(0, 1).unwrap();
+        let entry_3: Z = matrix.get_entry(1, 0).unwrap();
+        let entry_4: Z = matrix.get_entry(1, 1).unwrap();
 
-        assert_eq!(Z::ZERO, entry_1);
-        assert_eq!(Z::ZERO, entry_2);
-        assert_eq!(Z::ZERO, entry_3);
-        assert_eq!(Z::ZERO, entry_4);
+        assert_eq!(0, entry_1);
+        assert_eq!(0, entry_2);
+        assert_eq!(0, entry_3);
+        assert_eq!(0, entry_4);
     }
 
     /// Ensure that a new zero matrix fails with `0` as `num_cols`.

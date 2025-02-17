@@ -315,7 +315,7 @@ impl MatPolynomialRingZq {
             )));
         }
 
-        Ok(self * PolyOverZ::from(scalar))
+        Ok(self * scalar.get_representative_least_nonnegative_residue())
     }
 
     /// Implements multiplication for a [`MatPolynomialRingZq`] matrix with a [`PolynomialRingZq`].

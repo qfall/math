@@ -14,7 +14,7 @@ use crate::{
     integer::{PolyOverZ, Z},
     rational::Q,
     traits::SetCoefficient,
-    utils::{index::evaluate_index, sample::discrete_gauss::sample_z},
+    utils::{index::evaluate_index, sample::discrete_gauss::DiscreteGaussianIntegerSampler},
 };
 use std::fmt::Display;
 
@@ -43,7 +43,7 @@ impl PolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if `n <= 1` or `s <= 0`.
+    ///     if `n <= 1` or `s <= 0` or `s * log_2(n) < 1`.
     ///
     /// # Panics ...
     /// - if `max_degree` is negative, or does not fit into an [`i64`].
@@ -60,8 +60,10 @@ impl PolyOverZ {
         let s = s.into();
         let mut poly = PolyOverZ::default();
 
+        let mut dgis = DiscreteGaussianIntegerSampler::init(&n, &center, &s)?;
+
         for index in 0..=max_degree {
-            let sample = sample_z(&n, &center, &s)?;
+            let sample = dgis.sample_z();
             poly.set_coeff(index, &sample)?;
         }
         Ok(poly)

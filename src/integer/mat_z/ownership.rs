@@ -86,12 +86,12 @@ mod test_clone {
         assert_eq!(a.get_num_rows(), 2);
         assert_eq!(a.get_num_columns(), 3);
 
-        assert_eq!(a.get_entry(0, 0).unwrap(), 1.into());
-        assert_eq!(a.get_entry(0, 1).unwrap(), 2.into());
-        assert_eq!(a.get_entry(0, 2).unwrap(), 3.into());
-        assert_eq!(a.get_entry(1, 0).unwrap(), 3.into());
-        assert_eq!(a.get_entry(1, 1).unwrap(), 4.into());
-        assert_eq!(a.get_entry(1, 2).unwrap(), 5.into());
+        assert_eq!(a.get_entry(0, 0).unwrap(), 1);
+        assert_eq!(a.get_entry(0, 1).unwrap(), 2);
+        assert_eq!(a.get_entry(0, 2).unwrap(), 3);
+        assert_eq!(a.get_entry(1, 0).unwrap(), 3);
+        assert_eq!(a.get_entry(1, 1).unwrap(), 4);
+        assert_eq!(a.get_entry(1, 2).unwrap(), 5);
     }
 
     /// Check whether the cloned entries are stored separately

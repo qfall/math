@@ -136,12 +136,12 @@ impl PolynomialRingZq {
     /// let poly = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
     /// let poly_ring = PolynomialRingZq::from((&poly, &modulus));
     ///
-    /// let poly_z = poly_ring.get_representative_0_modulus();
+    /// let poly_z = poly_ring.get_representative_least_nonnegative_residue();
     ///
     /// let cmp_poly = PolyOverZ::from_str("3  15 0 1").unwrap();
     /// assert_eq!(cmp_poly, poly_z);
     /// ```
-    pub fn get_representative_0_modulus(&self) -> PolyOverZ {
+    pub fn get_representative_least_nonnegative_residue(&self) -> PolyOverZ {
         self.poly.clone()
     }
 
@@ -183,10 +183,10 @@ mod test_get_coeff {
         let poly = PolyOverZ::from_str("3  1 1 1").unwrap();
         let poly_ring = PolynomialRingZq::from((&poly, &modulus));
 
-        let zero_coeff_z = poly_ring.get_coeff(3).unwrap();
+        let zero_coeff_z: Z = poly_ring.get_coeff(3).unwrap();
         let zero_coeff_zq = poly_ring.get_coeff(3).unwrap();
 
-        assert_eq!(Z::ZERO, zero_coeff_z);
+        assert_eq!(0, zero_coeff_z);
         assert_eq!(Zq::from((0, 17)), zero_coeff_zq);
     }
 
@@ -197,10 +197,10 @@ mod test_get_coeff {
         let poly = PolyOverZ::from_str("3  1 0 3").unwrap();
         let poly_ring = PolynomialRingZq::from((&poly, &modulus));
 
-        let coeff_z = poly_ring.get_coeff(2).unwrap();
+        let coeff_z: Z = poly_ring.get_coeff(2).unwrap();
         let coeff_zq = poly_ring.get_coeff(2).unwrap();
 
-        assert_eq!(Z::from(3), coeff_z);
+        assert_eq!(3, coeff_z);
         assert_eq!(Zq::from((3, 17)), coeff_zq);
     }
 
@@ -212,11 +212,11 @@ mod test_get_coeff {
         let poly = PolyOverZ::from_str(&format!("3  0 {} 1", i64::MAX)).unwrap();
         let poly_ring = PolynomialRingZq::from((&poly, &modulus));
 
-        assert_eq!(Z::from(i64::MAX), poly_ring.get_coeff(1).unwrap());
-        assert_eq!(
-            Zq::from((i64::MAX, u64::MAX)),
-            poly_ring.get_coeff(1).unwrap()
-        );
+        let coefficient_1: Z = poly_ring.get_coeff(1).unwrap();
+        let coefficient_2: Zq = poly_ring.get_coeff(1).unwrap();
+
+        assert_eq!(i64::MAX, coefficient_1);
+        assert_eq!(Zq::from((i64::MAX, u64::MAX)), coefficient_2);
     }
 
     /// Tests if negative index yields an error in get_coeff with [`Z`].
@@ -264,14 +264,14 @@ mod test_get_mod {
 }
 
 #[cfg(test)]
-mod test_get_representative_0_modulus {
+mod test_get_representative_least_nonnegative_residue {
     use crate::{
         integer::PolyOverZ,
         integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq},
     };
     use std::str::FromStr;
 
-    /// Ensure that the getter returns for large entries.
+    /// Ensure that the getter works for large entries.
     #[test]
     fn large_positive() {
         let large_prime = u64::MAX - 58;
@@ -280,7 +280,7 @@ mod test_get_representative_0_modulus {
         let poly = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
         let poly_ring = PolynomialRingZq::from((&poly, &modulus));
 
-        let poly_z = poly_ring.get_representative_0_modulus();
+        let poly_z = poly_ring.get_representative_least_nonnegative_residue();
 
         let cmp_poly = PolyOverZ::from_str(&format!("3  {} 0 1", u64::MAX - 60)).unwrap();
         assert_eq!(cmp_poly, poly_z);

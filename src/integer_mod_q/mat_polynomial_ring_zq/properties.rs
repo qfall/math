@@ -9,6 +9,10 @@
 //! This module includes functionality about properties of [`MatPolynomialRingZq`] instances.
 
 use super::MatPolynomialRingZq;
+use crate::{
+    integer::PolyOverZ,
+    traits::{GetEntry, GetNumRows},
+};
 
 impl MatPolynomialRingZq {
     /// Checks if a [`MatPolynomialRingZq`] is the identity matrix.
@@ -82,6 +86,35 @@ impl MatPolynomialRingZq {
     /// ```
     pub fn is_zero(&self) -> bool {
         self.matrix.is_zero()
+    }
+
+    /// Checks if a [`MatPolynomialRingZq`] is symmetric.
+    ///
+    /// Returns `true` if we have `a_ij == a_ji` for all i,j.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("2  2 1 mod 17").unwrap();
+    /// let value = MatPolynomialRingZq::identity(2,2, modulus);
+    /// assert!(value.is_symmetric());
+    /// ```
+    pub fn is_symmetric(&self) -> bool {
+        if !self.is_square() {
+            return false;
+        }
+        for row in 0..self.get_num_rows() {
+            for column in 0..row {
+                if GetEntry::<PolyOverZ>::get_entry(self, row, column).unwrap()
+                    != GetEntry::<PolyOverZ>::get_entry(self, column, row).unwrap()
+                {
+                    return false;
+                }
+            }
+        }
+        true
     }
 }
 
@@ -196,5 +229,40 @@ mod test_is_square {
 
         assert!(!small.is_square());
         assert!(!large.is_square());
+    }
+}
+
+#[cfg(test)]
+mod test_is_symmetric {
+    use super::MatPolynomialRingZq;
+    use std::str::FromStr;
+
+    /// Ensure that is_symmetric returns `false` for non-symmetric matrices.
+    #[test]
+    fn symmetric_rejection() {
+        let mat_2x3 =
+            MatPolynomialRingZq::from_str("[[0, 1  6, 2  1 4],[1  2, 0, 2  1 1]] / 2  1 2 mod 17")
+                .unwrap();
+        let mat_2x2 =
+            MatPolynomialRingZq::from_str("[[1  9, 0],[2  1 71, 0]] / 3  1 2 1 mod 17").unwrap();
+
+        assert!(!mat_2x3.is_symmetric());
+        assert!(!mat_2x2.is_symmetric());
+    }
+
+    /// Ensure that is_symmetric returns `true` for symmetric matrices.
+    #[test]
+    fn symmetric_detection() {
+        let mat_2x2 = MatPolynomialRingZq::from_str(&format!(
+            "[[2  1 {}, 2  3 {}],[2  3 {}, 3  1 {} 8]] / 2  1 2 mod {}",
+            u64::MIN,
+            i64::MAX,
+            i64::MAX,
+            i64::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+
+        assert!(mat_2x2.is_symmetric());
     }
 }
