@@ -11,10 +11,8 @@
 //! is performed using the NTT transform, and otherwise the multiplication is kept as it is.
 
 use super::{MatZq, Modulus, PolyOverZq, Zq};
-use crate::{
-    integer::Z,
-    traits::{GetCoefficient, GetEntry, GetNumRows, Pow, SetCoefficient, SetEntry},
-};
+use crate::traits::{GetCoefficient, GetEntry, GetNumRows, Pow, SetCoefficient, SetEntry};
+use flint_sys::fmpz_mod::fmpz_mod_neg;
 
 /// [`NTTBasisPolynomialRingZq`] is an object, that given a polynomial
 /// `X^n - 1 mod q` or `X^n + 1 mod q` computes two transformation functions.
@@ -38,7 +36,6 @@ pub struct NTTBasisPolynomialRingZq {
 fn recursive_fft(
     coefficients: Vec<&Zq>,
     roots: &Vec<Zq>,
-    modulus: &Modulus,
     stride: usize,
     convolution_type: &ConvolutionType,
 ) -> Vec<Zq> {
@@ -47,28 +44,28 @@ fn recursive_fft(
     }
     // separate into even and uneven coefficients
     let even: Vec<&Zq> = coefficients.iter().step_by(2).copied().collect();
-    let mut uneven: Vec<&Zq> = coefficients.iter().skip(1).step_by(2).copied().collect();
+    let uneven: Vec<&Zq> = coefficients.iter().skip(1).step_by(2).copied().collect();
 
-    // pad if the number of elements is uneven
-    let padding = Zq::from((Z::ZERO, modulus));
-    if even.len() != uneven.len() {
-        uneven.push(&padding);
-    }
     // recursively perform fft
-    let even = recursive_fft(even, roots, modulus, 2 * stride, convolution_type);
-    let uneven = recursive_fft(uneven, roots, modulus, 2 * stride, convolution_type);
-    let mut out = vec![Zq::from((Z::ZERO, modulus)); even.len() + uneven.len()];
+    let even = recursive_fft(even, roots, 2 * stride, convolution_type);
+    let uneven = recursive_fft(uneven, roots, 2 * stride, convolution_type);
+    // use fixed size for the vectors
+    let mut out_lower = Vec::with_capacity(even.len() + uneven.len());
+    let mut out_upper = Vec::with_capacity(uneven.len());
 
     // compute final entries
     for i in 0..even.len() {
         let t = match convolution_type {
-            ConvolutionType::Cyclic => &roots[i * stride] * &uneven[i],
-            ConvolutionType::Negacyclic => &roots[(2 * i + 1) * stride] * &uneven[i],
+            ConvolutionType::Cyclic => unsafe { roots[i * stride].mul_unsafe(&uneven[i]) },
+            ConvolutionType::Negacyclic => unsafe {
+                roots[(2 * i + 1) * stride].mul_unsafe(&uneven[i])
+            },
         };
-        out[i] = &even[i] + &t;
-        out[i + even.len()] = &even[i] - &t;
+        out_lower.push(unsafe { even[i].add_unsafe(&t) });
+        out_upper.push(unsafe { even[i].sub_unsafe(&t) });
     }
-    out
+    out_lower.append(&mut out_upper);
+    out_lower
 }
 
 /// todo
@@ -77,7 +74,6 @@ fn recursive_fft_nc_intt(
     coefficients: Vec<&Zq>,
     roots_of_unity: &Vec<Zq>,
     roots_of_unity_inv: &Vec<Zq>,
-    modulus: &Modulus,
     stride: usize,
 ) -> Vec<Zq> {
     if coefficients.len() == 1 {
@@ -85,38 +81,35 @@ fn recursive_fft_nc_intt(
     }
     // separate into even and uneven coefficients
     let even: Vec<&Zq> = coefficients.iter().step_by(2).copied().collect();
-    let mut uneven: Vec<&Zq> = coefficients.iter().skip(1).step_by(2).copied().collect();
+    let uneven: Vec<&Zq> = coefficients.iter().skip(1).step_by(2).copied().collect();
 
-    // pad if the number of elements is uneven
-    let padding = Zq::from((Z::ZERO, modulus));
-    if even.len() != uneven.len() {
-        uneven.push(&padding);
-    }
     // recursively perform fft
-    let even = recursive_fft_nc_intt(
-        even,
-        roots_of_unity,
-        roots_of_unity_inv,
-        modulus,
-        stride * 2,
-    );
-    let uneven = recursive_fft_nc_intt(
-        uneven,
-        roots_of_unity,
-        roots_of_unity_inv,
-        modulus,
-        stride * 2,
-    );
-    let mut out = vec![Zq::from((Z::ZERO, modulus)); even.len() + uneven.len()];
+    let even = recursive_fft_nc_intt(even, roots_of_unity, roots_of_unity_inv, stride * 2);
+    let uneven = recursive_fft_nc_intt(uneven, roots_of_unity, roots_of_unity_inv, stride * 2);
+    // use fixed size for the vectors
+    let mut out_lower = Vec::with_capacity(even.len() + uneven.len());
+    let mut out_upper = Vec::with_capacity(uneven.len());
 
     // compute final entries
     for i in 0..even.len() {
-        out[i] =
-            &roots_of_unity[stride * i] * &even[i] + &roots_of_unity_inv[stride * i] * &uneven[i];
-        out[i + even.len()] = -1 * &roots_of_unity[stride * (i + even.len())] * &even[i]
-            - &roots_of_unity_inv[stride * (i + even.len())] * &uneven[i]
+        out_lower.push(unsafe {
+            (roots_of_unity[stride * i].mul_unsafe(&even[i]))
+                .add_unsafe(&roots_of_unity_inv[stride * i].mul_unsafe(&uneven[i]))
+        });
+        out_upper.push(unsafe {
+            (roots_of_unity[stride * (i + even.len())].mul_unsafe(&even[i]))
+                .add_unsafe(&roots_of_unity_inv[stride * (i + even.len())].mul_unsafe(&uneven[i]))
+        });
+        unsafe {
+            fmpz_mod_neg(
+                &mut out_upper[i].value.value,
+                &out_upper[i].value.value,
+                out_upper[i].get_mod().get_fmpz_mod_ctx_struct(),
+            );
+        }
     }
-    out
+    out_lower.append(&mut out_upper);
+    out_lower
 }
 
 impl NTTBasisPolynomialRingZq {
@@ -125,12 +118,12 @@ impl NTTBasisPolynomialRingZq {
         let mut out = MatZq::new(self.n, 1, &self.modulus);
 
         let poly_coeffs: Vec<Zq> = (0..self.n).map(|i| poly.get_coeff(i).unwrap()).collect();
+        // todo: pad coefficients if it is not dividable by 2
         let borrowed_coeffs: Vec<&Zq> = poly_coeffs.iter().collect();
 
         let res = recursive_fft(
             borrowed_coeffs,
             &self.roots_of_unity,
-            &self.modulus,
             1,
             &self.convolution_type,
         );
@@ -146,6 +139,7 @@ impl NTTBasisPolynomialRingZq {
         assert!(vector.is_column_vector());
         assert!(vector.get_num_rows() == self.n);
 
+        // todo: pad coefficients if it is not dividable by 2
         let coeffs: Vec<Zq> = (0..self.n)
             .map(|i| vector.get_entry(i, 0).unwrap())
             .collect();
@@ -155,7 +149,6 @@ impl NTTBasisPolynomialRingZq {
             ConvolutionType::Cyclic => recursive_fft(
                 borrowed_coeffs,
                 &self.roots_of_unity_inv,
-                &self.modulus,
                 1,
                 &self.convolution_type,
             ),
@@ -163,7 +156,6 @@ impl NTTBasisPolynomialRingZq {
                 borrowed_coeffs,
                 &self.roots_of_unity,
                 &self.roots_of_unity_inv,
-                &self.modulus,
                 1,
             ),
         };
