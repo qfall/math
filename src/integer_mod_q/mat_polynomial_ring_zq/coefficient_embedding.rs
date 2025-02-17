@@ -39,7 +39,7 @@ impl IntoCoefficientEmbedding<(MatZq, ModulusPolynomialRingZq)> for &MatPolynomi
     /// use std::str::FromStr;
     /// use qfall_math::{
     ///     integer_mod_q::{MatZq, MatPolynomialRingZq},
-    ///     traits::FromCoefficientEmbedding,
+    ///     traits::IntoCoefficientEmbedding,
     /// };
     ///
     /// let poly = MatPolynomialRingZq::from_str("[[1  1, 2  1 2],[1  -1, 2  -1 -2]] / 3  1 2 3 mod 17").unwrap();
