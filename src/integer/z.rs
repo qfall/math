@@ -18,6 +18,7 @@ mod distance;
 pub(crate) mod fmpz_helpers;
 mod from;
 mod gcd;
+mod hash;
 mod lcm;
 mod ownership;
 mod properties;
