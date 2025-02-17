@@ -15,6 +15,8 @@ use flint_sys::fmpz_mod_poly::fmpz_mod_poly_get_coeff_fmpz;
 
 impl PolyOverZq {
     /// Returns the dot product of two polynomials of type [`PolyOverZq`].
+    /// The dot product for polynomials is obtained by treating the coefficients
+    /// of the polynomials as vectors and then applying the standard dot product operation.
     ///
     /// Parameters:
     /// - `other`: specifies the other polynomial the dot product is calculated over

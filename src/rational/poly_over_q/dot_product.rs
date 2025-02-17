@@ -15,6 +15,8 @@ use flint_sys::fmpq_poly::fmpq_poly_get_coeff_fmpq;
 
 impl PolyOverQ {
     /// Returns the dot product of two polynomials of type [`PolyOverQ`].
+    /// The dot product for polynomials is obtained by treating the coefficients
+    /// of the polynomials as vectors and then applying the standard dot product operation.
     ///
     /// Parameters:
     /// - `other`: specifies the other polynomial the dot product is calculated over
