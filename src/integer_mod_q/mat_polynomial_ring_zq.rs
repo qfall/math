@@ -23,6 +23,7 @@ mod properties;
 mod reduce;
 mod sample;
 mod set;
+mod tensor;
 mod to_string;
 mod transpose;
 mod vector;
