@@ -315,7 +315,7 @@ mod test_from_coefficient_embedding {
         assert_eq!(cmp_poly, poly);
     }
 
-    /// Ensure that the function panics if the provided degree does not divide
+    /// Ensure that the function panics if the provided degree +1 does not divide
     /// the number of rows of the embedding.
     #[test]
     #[should_panic]
@@ -330,7 +330,7 @@ mod test_from_coefficient_embedding {
         let modulus =
             ModulusPolynomialRingZq::from_str(&format!("4  1 2 3 4 mod {}", u64::MAX)).unwrap();
 
-        let _ = MatPolynomialRingZq::from_coefficient_embedding((&matrix, &modulus, 2));
+        let _ = MatPolynomialRingZq::from_coefficient_embedding((&matrix, &modulus, 1));
     }
 
     /// Ensure that the function panics if the moduli mismatch.
