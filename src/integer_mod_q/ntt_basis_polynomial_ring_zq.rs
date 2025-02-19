@@ -28,8 +28,10 @@ use crate::{
 pub struct NTTBasisPolynomialRingZq {
     pub n: i64,
     pub n_inv: Zq,
-    pub roots_of_unity: Vec<Zq>,
-    pub roots_of_unity_inv: Vec<Zq>,
+    pub powers_of_omega: Vec<Zq>,
+    pub powers_of_omega_inv: Vec<Zq>,
+    pub powers_of_psi: Vec<Zq>,
+    pub powers_of_psi_inv: Vec<Zq>,
     pub modulus: Modulus,
     pub convolution_type: ConvolutionType,
 }
@@ -57,7 +59,7 @@ fn bit_reverse_permutation<T>(a: &mut Vec<T>) {
     }
 }
 
-fn iterative_ntt(coefficients: &Vec<Zq>, root_of_unity: &Zq) -> Vec<Zq> {
+fn iterative_ntt(coefficients: &Vec<Zq>, powers_of_omega: &Vec<Zq>) -> Vec<Zq> {
     let n = coefficients.len();
     let nr_iterations: i64 = Z::from(n as u64).log_ceil(2).unwrap().try_into().unwrap();
 
@@ -65,22 +67,15 @@ fn iterative_ntt(coefficients: &Vec<Zq>, root_of_unity: &Zq) -> Vec<Zq> {
     let mut res = coefficients.clone();
     bit_reverse_permutation(&mut res);
 
-    // compute the powers of the root of unity for each iteration step
-    // reverse for iteration from front to start
-    let powers: Vec<Zq> = (0..nr_iterations)
-        .rev()
-        .map(|i| root_of_unity.pow(2_u64.pow(i as u32)).unwrap())
-        .collect();
-
-    let mut power_pointer = 0;
+    let mut power_pointer: i64 = nr_iterations - 1 as i64;
     let mut stride = 1;
     // iterate through all layers
     while stride < n {
         for start in (0..n).step_by(2 * stride) {
             // each pair of butterfly operations
             for i in start..(start + stride) {
-                // compute power of the current level
-                let current_pwer: Zq = powers[power_pointer].pow((i - start) as u64).unwrap();
+                let current_pwer =
+                    &powers_of_omega[2_usize.pow(power_pointer as u32) * (i - start)];
 
                 // CT butterfly
                 let t = current_pwer * &res[i + stride];
@@ -89,22 +84,15 @@ fn iterative_ntt(coefficients: &Vec<Zq>, root_of_unity: &Zq) -> Vec<Zq> {
             }
         }
         stride = 2 * stride;
-        power_pointer += 1;
+        power_pointer -= 1;
     }
     res
 }
 
-fn iterative_intt(coefficients: &Vec<Zq>, root_of_unity_inv: &Zq, n_inv: &Zq) -> Vec<Zq> {
+fn iterative_intt(coefficients: &Vec<Zq>, powers_of_omega_inv: &Vec<Zq>, n_inv: &Zq) -> Vec<Zq> {
     let n = coefficients.len();
-    let nr_iterations: i64 = Z::from(n as u64).log_ceil(2).unwrap().try_into().unwrap();
 
     let mut res = coefficients.clone();
-
-    // compute the powers of the root of unity for each iteration step
-    // reverse for iteration from front to start
-    let powers: Vec<Zq> = (0..nr_iterations)
-        .map(|i| root_of_unity_inv.pow(2_u64.pow(i as u32)).unwrap())
-        .collect();
 
     let mut power_pointer = 0;
     let mut stride = n / 2;
@@ -114,7 +102,8 @@ fn iterative_intt(coefficients: &Vec<Zq>, root_of_unity_inv: &Zq, n_inv: &Zq) ->
             // each pair of butterfly operations
             for i in start..(start + stride) {
                 // compute power of the current level
-                let current_pwer: Zq = powers[power_pointer].pow((i - start) as u64).unwrap();
+                let current_pwer =
+                    &powers_of_omega_inv[2_usize.pow(power_pointer as u32) * (i - start)];
 
                 // CT butterfly
                 let a = res[i].clone();
@@ -146,16 +135,11 @@ impl NTTBasisPolynomialRingZq {
         // Negacyclic: perform preprocessing
         if self.convolution_type == ConvolutionType::Negacyclic {
             for i in 0..poly_coeffs.len() {
-                poly_coeffs[i] = &poly_coeffs[i] * &self.roots_of_unity[i]
+                poly_coeffs[i] = &poly_coeffs[i] * &self.powers_of_psi[i]
             }
         }
 
-        let root = match self.convolution_type {
-            ConvolutionType::Cyclic => &self.roots_of_unity[1],
-            ConvolutionType::Negacyclic => &self.roots_of_unity[2],
-        };
-
-        let res = iterative_ntt(&poly_coeffs, root);
+        let res = iterative_ntt(&poly_coeffs, &self.powers_of_omega);
 
         for i in 0..self.n {
             out.set_entry(i, 0, &res[i as usize]).unwrap()
@@ -174,17 +158,12 @@ impl NTTBasisPolynomialRingZq {
             .map(|i| vector.get_entry(i, 0).unwrap())
             .collect();
 
-        let root = match self.convolution_type {
-            ConvolutionType::Cyclic => &self.roots_of_unity_inv[1],
-            ConvolutionType::Negacyclic => &self.roots_of_unity_inv[2],
-        };
-
-        let mut res = iterative_intt(&coefficients, root, &self.n_inv);
+        let mut res = iterative_intt(&coefficients, &self.powers_of_omega_inv, &self.n_inv);
 
         // Negacyclic: perform postprocessing
         if self.convolution_type == ConvolutionType::Negacyclic {
             for i in 0..res.len() {
-                res[i] = &res[i] * &self.roots_of_unity_inv[i]
+                res[i] = &res[i] * &self.powers_of_psi_inv[i]
             }
         }
 
@@ -203,7 +182,7 @@ impl NTTBasisPolynomialRingZq {
     ///
     /// Parameters:
     /// - `n`: the degree of the polynomial
-    /// - `root_of_unity`: the `n`-th root of unity
+    /// - `root_of_unity`: the `n`-th or `2n`-th root of unity
     /// - `q`: the modulus of the cyclotomic polynomial
     /// - `convolution_type`: defines whether convolution is cyclic or negacyclic
     ///
@@ -221,26 +200,38 @@ impl NTTBasisPolynomialRingZq {
         let n_inv = Zq::from((n, modulus)).inverse().unwrap();
         let root_of_unity_inv = root_of_unity.inverse().unwrap();
 
-        let roots_of_unity = match convolution_type {
-            ConvolutionType::Cyclic => (0..n).map(|i| root_of_unity.pow(i).unwrap()).collect(),
-            ConvolutionType::Negacyclic => (0..(2 * n))
-                .map(|i| root_of_unity.pow(i).unwrap())
-                .collect(),
+        let (psi, psi_inv, omega, omega_inv) = match convolution_type {
+            ConvolutionType::Cyclic => (None, None, root_of_unity.clone(), root_of_unity_inv),
+            ConvolutionType::Negacyclic => (
+                Some(root_of_unity),
+                Some(&root_of_unity_inv),
+                root_of_unity.pow(2).unwrap(),
+                root_of_unity.pow(-2).unwrap(),
+            ),
         };
 
-        let roots_of_unity_inv = match convolution_type {
-            ConvolutionType::Cyclic => (0..n).map(|i| root_of_unity_inv.pow(i).unwrap()).collect(),
-            ConvolutionType::Negacyclic => (0..(2 * n))
-                .map(|i| root_of_unity_inv.pow(i).unwrap())
-                .collect(),
+        let powers_of_omega = (0..n).map(|i| omega.pow(i).unwrap()).collect();
+        let powers_of_omega_inv = (0..n).map(|i| omega_inv.pow(i).unwrap()).collect();
+
+        let powers_of_psi = match convolution_type {
+            ConvolutionType::Cyclic => Vec::new(),
+            ConvolutionType::Negacyclic => (0..n).map(|i| psi.unwrap().pow(i).unwrap()).collect(),
+        };
+        let powers_of_psi_inv = match convolution_type {
+            ConvolutionType::Cyclic => Vec::new(),
+            ConvolutionType::Negacyclic => {
+                (0..n).map(|i| psi_inv.unwrap().pow(i).unwrap()).collect()
+            }
         };
 
         Self {
             n,
             n_inv,
-            roots_of_unity,
-            roots_of_unity_inv,
-            modulus: modulus.clone(),
+            powers_of_omega,
+            powers_of_omega_inv,
+            powers_of_psi,
+            powers_of_psi_inv,
+            modulus: root_of_unity.get_mod(),
             convolution_type: convolution_type.clone(),
         }
     }
