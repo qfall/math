@@ -61,13 +61,13 @@ fn bit_reverse_permutation<T>(a: &mut Vec<T>) {
 
 fn iterative_ntt(coefficients: &Vec<Zq>, powers_of_omega: &Vec<Zq>) -> Vec<Zq> {
     let n = coefficients.len();
-    let nr_iterations: i64 = Z::from(n as u64).log_ceil(2).unwrap().try_into().unwrap();
+    let nr_iterations = n.ilog2() as i64;
 
     // compute the bit reversed order of the coefficients
     let mut res = coefficients.clone();
     bit_reverse_permutation(&mut res);
 
-    let mut power_pointer: i64 = nr_iterations - 1 as i64;
+    let mut power_pointer: i64 = (nr_iterations - 1).into();
     let mut stride = 1;
     // iterate through all layers
     while stride < n {
@@ -78,9 +78,9 @@ fn iterative_ntt(coefficients: &Vec<Zq>, powers_of_omega: &Vec<Zq>) -> Vec<Zq> {
                     &powers_of_omega[2_usize.pow(power_pointer as u32) * (i - start)];
 
                 // CT butterfly
-                let t = current_pwer * &res[i + stride];
-                res[i + stride] = &res[i] - &t;
-                res[i] = &res[i] + &t;
+                let t = unsafe { current_pwer.mul_unsafe(&res[i + stride]) };
+                res[i + stride] = unsafe { res[i].sub_unsafe(&t) };
+                res[i] = unsafe { res[i].add_unsafe(&t) };
             }
         }
         stride = 2 * stride;
@@ -102,14 +102,14 @@ fn iterative_intt(coefficients: &Vec<Zq>, powers_of_omega_inv: &Vec<Zq>, n_inv: 
             // each pair of butterfly operations
             for i in start..(start + stride) {
                 // compute power of the current level
-                let current_pwer =
+                let current_power =
                     &powers_of_omega_inv[2_usize.pow(power_pointer as u32) * (i - start)];
 
                 // CT butterfly
                 let a = res[i].clone();
                 let b = res[i + stride].clone();
-                res[i] = &a + &b;
-                res[i + stride] = (a - b) * current_pwer;
+                res[i] = unsafe { a.add_unsafe(&b) };
+                res[i + stride] = unsafe { (a.sub_unsafe(&b)).mul_unsafe(current_power) };
             }
         }
         stride = stride / 2;
@@ -135,7 +135,7 @@ impl NTTBasisPolynomialRingZq {
         // Negacyclic: perform preprocessing
         if self.convolution_type == ConvolutionType::Negacyclic {
             for i in 0..poly_coeffs.len() {
-                poly_coeffs[i] = &poly_coeffs[i] * &self.powers_of_psi[i]
+                poly_coeffs[i] = unsafe { poly_coeffs[i].mul_unsafe(&self.powers_of_psi[i]) }
             }
         }
 
@@ -163,7 +163,7 @@ impl NTTBasisPolynomialRingZq {
         // Negacyclic: perform postprocessing
         if self.convolution_type == ConvolutionType::Negacyclic {
             for i in 0..res.len() {
-                res[i] = &res[i] * &self.powers_of_psi_inv[i]
+                res[i] = unsafe { res[i].mul_unsafe(&self.powers_of_psi_inv[i]) }
             }
         }
 
