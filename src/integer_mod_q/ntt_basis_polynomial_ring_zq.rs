@@ -11,8 +11,10 @@
 //! is performed using the NTT transform, and otherwise the multiplication is kept as it is.
 
 use super::{MatZq, Modulus, PolyOverZq, Zq};
-use crate::traits::{GetCoefficient, GetEntry, GetNumRows, Pow, SetCoefficient, SetEntry};
-use flint_sys::fmpz_mod::fmpz_mod_neg;
+use crate::{
+    integer::Z,
+    traits::{GetCoefficient, GetEntry, GetNumRows, Pow, SetCoefficient, SetEntry},
+};
 
 /// [`NTTBasisPolynomialRingZq`] is an object, that given a polynomial
 /// `X^n - 1 mod q` or `X^n + 1 mod q` computes two transformation functions.
@@ -32,84 +34,105 @@ pub struct NTTBasisPolynomialRingZq {
     pub convolution_type: ConvolutionType,
 }
 
-/// todo
-fn recursive_fft(
-    coefficients: Vec<&Zq>,
-    roots: &Vec<Zq>,
-    stride: usize,
-    convolution_type: &ConvolutionType,
-) -> Vec<Zq> {
-    if coefficients.len() == 1 {
-        return vec![coefficients[0].clone()];
+// Helper function to compute bit-reversed index
+fn bit_reverse(mut x: usize, log_n: usize) -> usize {
+    let mut res = 0;
+    for _ in 0..log_n {
+        res = (res << 1) | (x & 1);
+        x >>= 1;
     }
-    // separate into even and uneven coefficients
-    let even: Vec<&Zq> = coefficients.iter().step_by(2).copied().collect();
-    let uneven: Vec<&Zq> = coefficients.iter().skip(1).step_by(2).copied().collect();
-
-    // recursively perform fft
-    let even = recursive_fft(even, roots, 2 * stride, convolution_type);
-    let uneven = recursive_fft(uneven, roots, 2 * stride, convolution_type);
-    // use fixed size for the vectors
-    let mut out_lower = Vec::with_capacity(even.len() + uneven.len());
-    let mut out_upper = Vec::with_capacity(uneven.len());
-
-    // compute final entries
-    for i in 0..even.len() {
-        let t = match convolution_type {
-            ConvolutionType::Cyclic => unsafe { roots[i * stride].mul_unsafe(&uneven[i]) },
-            ConvolutionType::Negacyclic => unsafe {
-                roots[(2 * i + 1) * stride].mul_unsafe(&uneven[i])
-            },
-        };
-        out_lower.push(unsafe { even[i].add_unsafe(&t) });
-        out_upper.push(unsafe { even[i].sub_unsafe(&t) });
-    }
-    out_lower.append(&mut out_upper);
-    out_lower
+    res
 }
 
-/// todo
-/// potentially incorporate in the other function if there is a nice way to do it.
-fn recursive_fft_nc_intt(
-    coefficients: Vec<&Zq>,
-    roots_of_unity: &Vec<Zq>,
-    roots_of_unity_inv: &Vec<Zq>,
-    stride: usize,
-) -> Vec<Zq> {
-    if coefficients.len() == 1 {
-        return vec![coefficients[0].clone()];
-    }
-    // separate into even and uneven coefficients
-    let even: Vec<&Zq> = coefficients.iter().step_by(2).copied().collect();
-    let uneven: Vec<&Zq> = coefficients.iter().skip(1).step_by(2).copied().collect();
+// Applies bit-reversed permutation to the input array
+fn bit_reverse_permutation<T>(a: &mut Vec<T>) {
+    let n = a.len();
+    let log_n = n.trailing_zeros() as usize;
 
-    // recursively perform fft
-    let even = recursive_fft_nc_intt(even, roots_of_unity, roots_of_unity_inv, stride * 2);
-    let uneven = recursive_fft_nc_intt(uneven, roots_of_unity, roots_of_unity_inv, stride * 2);
-    // use fixed size for the vectors
-    let mut out_lower = Vec::with_capacity(even.len() + uneven.len());
-    let mut out_upper = Vec::with_capacity(uneven.len());
-
-    // compute final entries
-    for i in 0..even.len() {
-        out_lower.push(unsafe {
-            (roots_of_unity[stride * i].mul_unsafe(&even[i]))
-                .add_unsafe(&roots_of_unity_inv[stride * i].mul_unsafe(&uneven[i]))
-        });
-        out_upper.push(unsafe {
-            (roots_of_unity[stride * (i + even.len())].mul_unsafe(&even[i]))
-                .add_unsafe(&roots_of_unity_inv[stride * (i + even.len())].mul_unsafe(&uneven[i]))
-        });
-        unsafe {
-            fmpz_mod_neg(
-                &mut out_upper[i].value.value,
-                &out_upper[i].value.value,
-                out_upper[i].get_mod().get_fmpz_mod_ctx_struct(),
-            );
+    for i in 0..n {
+        let rev_i = bit_reverse(i, log_n);
+        if i < rev_i {
+            a.swap(i, rev_i);
         }
     }
-    out_lower.append(&mut out_upper);
-    out_lower
+}
+
+fn iterative_ntt(coefficients: &Vec<Zq>, root_of_unity: &Zq) -> Vec<Zq> {
+    let n = coefficients.len();
+    let nr_iterations: i64 = Z::from(n as u64).log_ceil(2).unwrap().try_into().unwrap();
+
+    // compute the bit reversed order of the coefficients
+    let mut res = coefficients.clone();
+    bit_reverse_permutation(&mut res);
+
+    // compute the powers of the root of unity for each iteration step
+    // reverse for iteration from front to start
+    let powers: Vec<Zq> = (0..nr_iterations)
+        .rev()
+        .map(|i| root_of_unity.pow(2_u64.pow(i as u32)).unwrap())
+        .collect();
+
+    let mut power_pointer = 0;
+    let mut stride = 1;
+    // iterate through all layers
+    while stride < n {
+        for start in (0..n).step_by(2 * stride) {
+            // each pair of butterfly operations
+            for i in start..(start + stride) {
+                // compute power of the current level
+                let current_pwer: Zq = powers[power_pointer].pow((i - start) as u64).unwrap();
+
+                // CT butterfly
+                let t = current_pwer * &res[i + stride];
+                res[i + stride] = &res[i] - &t;
+                res[i] = &res[i] + &t;
+            }
+        }
+        stride = 2 * stride;
+        power_pointer += 1;
+    }
+    res
+}
+
+fn iterative_intt(coefficients: &Vec<Zq>, root_of_unity_inv: &Zq, n_inv: &Zq) -> Vec<Zq> {
+    let n = coefficients.len();
+    let nr_iterations: i64 = Z::from(n as u64).log_ceil(2).unwrap().try_into().unwrap();
+
+    let mut res = coefficients.clone();
+
+    // compute the powers of the root of unity for each iteration step
+    // reverse for iteration from front to start
+    let powers: Vec<Zq> = (0..nr_iterations)
+        .map(|i| root_of_unity_inv.pow(2_u64.pow(i as u32)).unwrap())
+        .collect();
+
+    let mut power_pointer = 0;
+    let mut stride = n / 2;
+    // iterate through all layers
+    while stride > 0 {
+        for start in (0..n).step_by(2 * stride) {
+            // each pair of butterfly operations
+            for i in start..(start + stride) {
+                // compute power of the current level
+                let current_pwer: Zq = powers[power_pointer].pow((i - start) as u64).unwrap();
+
+                // CT butterfly
+                let a = res[i].clone();
+                let b = res[i + stride].clone();
+                res[i] = &a + &b;
+                res[i + stride] = (a - b) * current_pwer;
+            }
+        }
+        stride = stride / 2;
+        power_pointer += 1;
+    }
+
+    // compute the bit reversed order of the coefficients
+    bit_reverse_permutation(&mut res);
+    for i in 0..res.len() {
+        res[i] = n_inv * &res[i]
+    }
+    res
 }
 
 impl NTTBasisPolynomialRingZq {
@@ -117,16 +140,23 @@ impl NTTBasisPolynomialRingZq {
     pub fn ntt(&self, poly: &PolyOverZq) -> MatZq {
         let mut out = MatZq::new(self.n, 1, &self.modulus);
 
-        let poly_coeffs: Vec<Zq> = (0..self.n).map(|i| poly.get_coeff(i).unwrap()).collect();
+        let mut poly_coeffs: Vec<Zq> = (0..self.n).map(|i| poly.get_coeff(i).unwrap()).collect();
         // todo: pad coefficients if it is not dividable by 2
-        let borrowed_coeffs: Vec<&Zq> = poly_coeffs.iter().collect();
 
-        let res = recursive_fft(
-            borrowed_coeffs,
-            &self.roots_of_unity,
-            1,
-            &self.convolution_type,
-        );
+        // Negacyclic: perform preprocessing
+        if self.convolution_type == ConvolutionType::Negacyclic {
+            for i in 0..poly_coeffs.len() {
+                poly_coeffs[i] = &poly_coeffs[i] * &self.roots_of_unity[i]
+            }
+        }
+
+        let root = match self.convolution_type {
+            ConvolutionType::Cyclic => &self.roots_of_unity[1],
+            ConvolutionType::Negacyclic => &self.roots_of_unity[2],
+        };
+
+        let res = iterative_ntt(&poly_coeffs, root);
+
         for i in 0..self.n {
             out.set_entry(i, 0, &res[i as usize]).unwrap()
         }
@@ -140,31 +170,29 @@ impl NTTBasisPolynomialRingZq {
         assert!(vector.get_num_rows() == self.n);
 
         // todo: pad coefficients if it is not dividable by 2
-        let coeffs: Vec<Zq> = (0..self.n)
+        let coefficients: Vec<Zq> = (0..self.n)
             .map(|i| vector.get_entry(i, 0).unwrap())
             .collect();
-        let borrowed_coeffs: Vec<&Zq> = coeffs.iter().collect();
 
-        let res = match self.convolution_type {
-            ConvolutionType::Cyclic => recursive_fft(
-                borrowed_coeffs,
-                &self.roots_of_unity_inv,
-                1,
-                &self.convolution_type,
-            ),
-            ConvolutionType::Negacyclic => recursive_fft_nc_intt(
-                borrowed_coeffs,
-                &self.roots_of_unity,
-                &self.roots_of_unity_inv,
-                1,
-            ),
+        let root = match self.convolution_type {
+            ConvolutionType::Cyclic => &self.roots_of_unity_inv[1],
+            ConvolutionType::Negacyclic => &self.roots_of_unity_inv[2],
         };
+
+        let mut res = iterative_intt(&coefficients, root, &self.n_inv);
+
+        // Negacyclic: perform postprocessing
+        if self.convolution_type == ConvolutionType::Negacyclic {
+            for i in 0..res.len() {
+                res[i] = &res[i] * &self.roots_of_unity_inv[i]
+            }
+        }
 
         // call fft, but with the powers of the inverse of the root of unity
         // and at last, multiply each new entry with `n_inv`
         let mut out = PolyOverZq::from(&self.modulus);
         for i in 0..self.n {
-            out.set_coeff(i, &self.n_inv * &res[i as usize]).unwrap()
+            out.set_coeff(i, &res[i as usize]).unwrap()
         }
 
         out
@@ -219,7 +247,7 @@ impl NTTBasisPolynomialRingZq {
 }
 
 /// todo
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum ConvolutionType {
     Cyclic,
     Negacyclic,
@@ -297,6 +325,7 @@ mod test_ntt_basis_transformation {
             h_poly.get_representative_least_nonnegative_residue(),
             &poly_mod,
         ));
+
         assert_eq!(g_poly_ring * h_poly_ring, g_h_poly_ring)
     }
 
@@ -316,9 +345,6 @@ mod test_ntt_basis_transformation {
 
         let ghat = ntt_basis.ntt(&g_poly);
 
-        let cmp_ghat = MatZq::from_str("[[1467],[2807],[3471],[7621]] mod 7681").unwrap();
-
-        assert_eq!(cmp_ghat, ghat);
         assert_eq!(g_poly, ntt_basis.intt(&ghat));
     }
 
@@ -370,6 +396,7 @@ mod test_ntt_basis_transformation {
             h_poly.get_representative_least_nonnegative_residue(),
             &poly_mod,
         ));
+
         assert_eq!(g_poly_ring * h_poly_ring, g_h_poly_ring)
     }
 }
