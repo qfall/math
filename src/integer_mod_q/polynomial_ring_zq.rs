@@ -96,4 +96,16 @@ impl PolynomialRingZq {
             ))
         })
     }
+
+    pub fn mul_ntt(&self, other: &Self) -> Self {
+        let ntt1 = self.ntt().unwrap();
+        let ntt2 = other.ntt().unwrap();
+
+        let mut ntt3 = Vec::with_capacity(ntt1.capacity());
+        for i in 0..ntt1.len() {
+            unsafe { ntt3.push(ntt1[i].mul_unsafe(&ntt2[i])) };
+        }
+
+        PolynomialRingZq::intt(&ntt3, &self.get_mod()).unwrap()
+    }
 }

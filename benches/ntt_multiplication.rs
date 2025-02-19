@@ -54,19 +54,7 @@ pub fn bench_ntt_dilithium_params_with_ntt(c: &mut Criterion) {
 
     c.bench_function(
         "PolynomialRingZq Multiplication with NTT (Dilithium)",
-        |b| {
-            b.iter(|| {
-                let p1_ntt: Vec<Zq> = p1.ntt().unwrap();
-                let p2_ntt: Vec<Zq> = p2.ntt().unwrap();
-
-                let mut p3_ntt = Vec::new();
-                for i in 0..256 {
-                    p3_ntt.push(&p1_ntt[i] * &p2_ntt[i])
-                }
-
-                let _ = PolynomialRingZq::intt(&p3_ntt, &modulus).unwrap();
-            })
-        },
+        |b| b.iter(|| p1.mul_ntt(&p2)),
     );
 }
 
@@ -91,17 +79,7 @@ pub fn bench_ntt_hawk1024_params_with_ntt(c: &mut Criterion) {
     let p2 = PolynomialRingZq::sample_uniform(&modulus);
 
     c.bench_function("PolynomialRingZq Multiplication with NTT (HAWK1024)", |b| {
-        b.iter(|| {
-            let p1_ntt: Vec<Zq> = p1.ntt().unwrap();
-            let p2_ntt: Vec<Zq> = p2.ntt().unwrap();
-
-            let mut p3_ntt = Vec::new();
-            for i in 0..1024 {
-                p3_ntt.push(&p1_ntt[i] * &p2_ntt[i])
-            }
-
-            let _ = PolynomialRingZq::intt(&p3_ntt, &modulus).unwrap();
-        })
+        b.iter(|| p1.mul_ntt(&p2))
     });
 }
 

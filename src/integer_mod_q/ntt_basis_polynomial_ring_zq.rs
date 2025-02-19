@@ -117,7 +117,7 @@ fn iterative_intt(coefficients: &Vec<Zq>, powers_of_omega_inv: &Vec<Zq>, n_inv: 
     // compute the bit reversed order of the coefficients
     bit_reverse_permutation(&mut res);
     for i in 0..res.len() {
-        res[i] = n_inv * &res[i]
+        res[i] = unsafe { n_inv.mul_unsafe(&res[i]) }
     }
     res
 }
