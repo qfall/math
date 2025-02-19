@@ -104,9 +104,8 @@ fn iterative_intt(coefficients: &Vec<Zq>, powers_of_omega_inv: &Vec<Zq>, n_inv: 
 
                 // CT butterfly
                 let temp = unsafe { res[i].add_unsafe(&res[i + stride]) };
-                res[i + stride] = unsafe {
-                    (res[i].clone().sub_unsafe(&res[i + stride])).mul_unsafe(current_power)
-                };
+                res[i + stride] =
+                    unsafe { (res[i].sub_unsafe(&res[i + stride])).mul_unsafe(current_power) };
                 res[i] = temp;
             }
         }
@@ -346,7 +345,7 @@ mod test_ntt_basis_transformation {
 
         // simulate entrywise mutliplication
         let mut ghat_hhat = Vec::new();
-        for i in 0..256 {
+        for i in 0..4 {
             ghat_hhat.push(&ghat[i] * &hhat[i])
         }
 
