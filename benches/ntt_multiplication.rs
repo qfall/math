@@ -11,7 +11,7 @@
 
 use criterion::*;
 use qfall_math::{
-    integer_mod_q::{MatZq, ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq, Zq},
+    integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq, Zq},
     traits::*,
 };
 
@@ -56,14 +56,12 @@ pub fn bench_ntt_dilithium_params_with_ntt(c: &mut Criterion) {
         "PolynomialRingZq Multiplication with NTT (Dilithium)",
         |b| {
             b.iter(|| {
-                let p1_ntt: MatZq = p1.ntt().unwrap();
-                let p2_ntt: MatZq = p2.ntt().unwrap();
+                let p1_ntt: Vec<Zq> = p1.ntt().unwrap();
+                let p2_ntt: Vec<Zq> = p2.ntt().unwrap();
 
-                let mut p3_ntt = MatZq::new(p1.get_degree() + 1, 1, p1_ntt.get_mod());
+                let mut p3_ntt = Vec::new();
                 for i in 0..256 {
-                    let p1_i: Zq = p1_ntt.get_entry(i, 0).unwrap();
-                    let p2_i: Zq = p2_ntt.get_entry(i, 0).unwrap();
-                    p3_ntt.set_entry(i, 0, p1_i * p2_i).unwrap();
+                    p3_ntt.push(&p1_ntt[i] * &p2_ntt[i])
                 }
 
                 let _ = PolynomialRingZq::intt(&p3_ntt, &modulus).unwrap();
@@ -94,14 +92,12 @@ pub fn bench_ntt_hawk1024_params_with_ntt(c: &mut Criterion) {
 
     c.bench_function("PolynomialRingZq Multiplication with NTT (HAWK1024)", |b| {
         b.iter(|| {
-            let p1_ntt: MatZq = p1.ntt().unwrap();
-            let p2_ntt: MatZq = p2.ntt().unwrap();
+            let p1_ntt: Vec<Zq> = p1.ntt().unwrap();
+            let p2_ntt: Vec<Zq> = p2.ntt().unwrap();
 
-            let mut p3_ntt = MatZq::new(p1.get_degree() + 1, 1, p1_ntt.get_mod());
-            for i in 0..256 {
-                let p1_i: Zq = p1_ntt.get_entry(i, 0).unwrap();
-                let p2_i: Zq = p2_ntt.get_entry(i, 0).unwrap();
-                p3_ntt.set_entry(i, 0, p1_i * p2_i).unwrap();
+            let mut p3_ntt = Vec::new();
+            for i in 0..1024 {
+                p3_ntt.push(&p1_ntt[i] * &p2_ntt[i])
             }
 
             let _ = PolynomialRingZq::intt(&p3_ntt, &modulus).unwrap();

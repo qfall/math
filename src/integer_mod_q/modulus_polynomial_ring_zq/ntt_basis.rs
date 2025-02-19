@@ -47,8 +47,8 @@ impl ModulusPolynomialRingZq {
 #[cfg(test)]
 mod test_setting_ntt {
     use crate::{
-        integer_mod_q::{MatZq, ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq, Zq},
-        traits::{GetEntry, SetCoefficient, SetEntry},
+        integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq, Zq},
+        traits::SetCoefficient,
     };
 
     /// Ensure that the entrywise multiplication and the intuitive multiplication yields
@@ -70,14 +70,12 @@ mod test_setting_ntt {
         let p1 = PolynomialRingZq::sample_uniform(&polynomial_modulus);
         let p2 = PolynomialRingZq::sample_uniform(&polynomial_modulus);
 
-        let p1_ntt: MatZq = p1.ntt().unwrap();
-        let p2_ntt: MatZq = p2.ntt().unwrap();
+        let p1_ntt: Vec<Zq> = p1.ntt().unwrap();
+        let p2_ntt: Vec<Zq> = p2.ntt().unwrap();
 
-        let mut p3_ntt = MatZq::new(n, 1, modulus);
+        let mut p3_ntt = Vec::new();
         for i in 0..256 {
-            let p1_i: Zq = p1_ntt.get_entry(i, 0).unwrap();
-            let p2_i: Zq = p2_ntt.get_entry(i, 0).unwrap();
-            p3_ntt.set_entry(i, 0, p1_i * p2_i).unwrap();
+            p3_ntt.push(&p1_ntt[i] * &p2_ntt[i])
         }
 
         let p3 = PolynomialRingZq::intt(&p3_ntt, &polynomial_modulus).unwrap();
@@ -103,14 +101,12 @@ mod test_setting_ntt {
         let p1 = PolynomialRingZq::sample_uniform(&polynomial_modulus);
         let p2 = PolynomialRingZq::sample_uniform(&polynomial_modulus);
 
-        let p1_ntt: MatZq = p1.ntt().unwrap();
-        let p2_ntt: MatZq = p2.ntt().unwrap();
+        let p1_ntt: Vec<Zq> = p1.ntt().unwrap();
+        let p2_ntt: Vec<Zq> = p2.ntt().unwrap();
 
-        let mut p3_ntt = MatZq::new(n, 1, modulus);
+        let mut p3_ntt = Vec::new();
         for i in 0..1024 {
-            let p1_i: Zq = p1_ntt.get_entry(i, 0).unwrap();
-            let p2_i: Zq = p2_ntt.get_entry(i, 0).unwrap();
-            p3_ntt.set_entry(i, 0, p1_i * p2_i).unwrap();
+            p3_ntt.push(&p1_ntt[i] * &p2_ntt[i])
         }
 
         let p3 = PolynomialRingZq::intt(&p3_ntt, &polynomial_modulus).unwrap();

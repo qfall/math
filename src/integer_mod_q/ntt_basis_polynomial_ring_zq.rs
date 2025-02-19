@@ -10,11 +10,8 @@
 //! [`PolynomialRingZq`]. If it is set for the matrix, then the multiplication of polynomials
 //! is performed using the NTT transform, and otherwise the multiplication is kept as it is.
 
-use super::{MatZq, Modulus, PolyOverZq, Zq};
-use crate::{
-    integer::Z,
-    traits::{GetCoefficient, GetEntry, GetNumRows, Pow, SetCoefficient, SetEntry},
-};
+use super::{Modulus, PolyOverZq, Zq};
+use crate::traits::{GetCoefficient, Pow, SetCoefficient};
 
 /// [`NTTBasisPolynomialRingZq`] is an object, that given a polynomial
 /// `X^n - 1 mod q` or `X^n + 1 mod q` computes two transformation functions.
@@ -106,10 +103,11 @@ fn iterative_intt(coefficients: &Vec<Zq>, powers_of_omega_inv: &Vec<Zq>, n_inv: 
                     &powers_of_omega_inv[2_usize.pow(power_pointer as u32) * (i - start)];
 
                 // CT butterfly
-                let a = res[i].clone();
-                let b = res[i + stride].clone();
-                res[i] = unsafe { a.add_unsafe(&b) };
-                res[i + stride] = unsafe { (a.sub_unsafe(&b)).mul_unsafe(current_power) };
+                let temp = unsafe { res[i].add_unsafe(&res[i + stride]) };
+                res[i + stride] = unsafe {
+                    (res[i].clone().sub_unsafe(&res[i + stride])).mul_unsafe(current_power)
+                };
+                res[i] = temp;
             }
         }
         stride = stride / 2;
@@ -126,9 +124,7 @@ fn iterative_intt(coefficients: &Vec<Zq>, powers_of_omega_inv: &Vec<Zq>, n_inv: 
 
 impl NTTBasisPolynomialRingZq {
     /// todo
-    pub fn ntt(&self, poly: &PolyOverZq) -> MatZq {
-        let mut out = MatZq::new(self.n, 1, &self.modulus);
-
+    pub fn ntt(&self, poly: &PolyOverZq) -> Vec<Zq> {
         let mut poly_coeffs: Vec<Zq> = (0..self.n).map(|i| poly.get_coeff(i).unwrap()).collect();
         // todo: pad coefficients if it is not dividable by 2
 
@@ -139,26 +135,14 @@ impl NTTBasisPolynomialRingZq {
             }
         }
 
-        let res = iterative_ntt(&poly_coeffs, &self.powers_of_omega);
-
-        for i in 0..self.n {
-            out.set_entry(i, 0, &res[i as usize]).unwrap()
-        }
-
-        out
+        iterative_ntt(&poly_coeffs, &self.powers_of_omega)
     }
 
     /// todo
-    pub fn intt(&self, vector: &MatZq) -> PolyOverZq {
-        assert!(vector.is_column_vector());
-        assert!(vector.get_num_rows() == self.n);
-
+    pub fn intt(&self, vector: &Vec<Zq>) -> PolyOverZq {
         // todo: pad coefficients if it is not dividable by 2
-        let coefficients: Vec<Zq> = (0..self.n)
-            .map(|i| vector.get_entry(i, 0).unwrap())
-            .collect();
 
-        let mut res = iterative_intt(&coefficients, &self.powers_of_omega_inv, &self.n_inv);
+        let mut res = iterative_intt(&vector, &self.powers_of_omega_inv, &self.n_inv);
 
         // Negacyclic: perform postprocessing
         if self.convolution_type == ConvolutionType::Negacyclic {
@@ -247,12 +231,9 @@ pub enum ConvolutionType {
 #[cfg(test)]
 mod test_ntt_basis_transformation {
     use super::NTTBasisPolynomialRingZq;
-    use crate::{
-        integer_mod_q::{
-            ntt_basis_polynomial_ring_zq::ConvolutionType, MatZq, Modulus, ModulusPolynomialRingZq,
-            PolyOverZq, PolynomialRingZq, Zq,
-        },
-        traits::{GetEntry, SetEntry},
+    use crate::integer_mod_q::{
+        ntt_basis_polynomial_ring_zq::ConvolutionType, Modulus, ModulusPolynomialRingZq,
+        PolyOverZq, PolynomialRingZq, Zq,
     };
     use std::str::FromStr;
 
@@ -267,7 +248,12 @@ mod test_ntt_basis_transformation {
             NTTBasisPolynomialRingZq::init(4, &root_of_unity, &modulus, &ConvolutionType::Cyclic);
 
         let ghat = ntt_basis.ntt(&g_poly);
-        let cmp_ghat = MatZq::from_str("[[10],[913],[7679],[6764]] mod 7681").unwrap();
+        let cmp_ghat = vec![
+            Zq::from((10, &modulus)),
+            Zq::from((913, &modulus)),
+            Zq::from((7679, &modulus)),
+            Zq::from((6764, &modulus)),
+        ];
         assert_eq!(cmp_ghat, ghat);
     }
 
@@ -291,11 +277,9 @@ mod test_ntt_basis_transformation {
 
         // simulate entrywise mutliplication
         // todo: after we have entrywise multiplication for vectors, remove this
-        let mut ghat_hhat = MatZq::new(4, 1, &modulus);
+        let mut ghat_hhat = Vec::new();
         for i in 0..4 {
-            let ghat_i: Zq = ghat.get_entry(i, 0).unwrap();
-            let hhat_i: Zq = hhat.get_entry(i, 0).unwrap();
-            ghat_hhat.set_entry(i, 0, ghat_i * hhat_i).unwrap();
+            ghat_hhat.push(&ghat[i] * &hhat[i]);
         }
 
         let g_h_poly = ntt_basis.intt(&ghat_hhat);
@@ -361,12 +345,9 @@ mod test_ntt_basis_transformation {
         let hhat = ntt_basis.ntt(&h_poly);
 
         // simulate entrywise mutliplication
-        // todo: after we have entrywise multiplication for vectors, remove this
-        let mut ghat_hhat = MatZq::new(4, 1, &modulus);
-        for i in 0..4 {
-            let ghat_i: Zq = ghat.get_entry(i, 0).unwrap();
-            let hhat_i: Zq = hhat.get_entry(i, 0).unwrap();
-            ghat_hhat.set_entry(i, 0, ghat_i * hhat_i).unwrap();
+        let mut ghat_hhat = Vec::new();
+        for i in 0..256 {
+            ghat_hhat.push(&ghat[i] * &hhat[i])
         }
 
         let g_h_poly = ntt_basis.intt(&ghat_hhat);
