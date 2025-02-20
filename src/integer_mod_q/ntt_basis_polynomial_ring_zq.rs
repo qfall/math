@@ -11,7 +11,7 @@
 //! is performed using the NTT transform, and otherwise the multiplication is kept as it is.
 
 use super::{Modulus, PolyOverZq, Zq};
-use crate::traits::{GetCoefficient, Pow, SetCoefficient};
+use crate::traits::Pow;
 
 /// [`NTTBasisPolynomialRingZq`] is an object, that given a polynomial
 /// `X^n - 1 mod q` or `X^n + 1 mod q` computes two transformation functions.
@@ -56,15 +56,15 @@ fn bit_reverse_permutation<T>(a: &mut Vec<T>) {
     }
 }
 
-fn iterative_ntt(coefficients: &Vec<Zq>, powers_of_omega: &Vec<Zq>) -> Vec<Zq> {
+fn iterative_ntt(coefficients: Vec<Zq>, powers_of_omega: &[Zq]) -> Vec<Zq> {
     let n = coefficients.len();
     let nr_iterations = n.ilog2() as i64;
 
     // compute the bit reversed order of the coefficients
-    let mut res = coefficients.clone();
+    let mut res = coefficients;
     bit_reverse_permutation(&mut res);
 
-    let mut power_pointer: i64 = (nr_iterations - 1).into();
+    let mut power_pointer: i64 = nr_iterations - 1;
     let mut stride = 1;
     // iterate through all layers
     while stride < n {
@@ -80,16 +80,16 @@ fn iterative_ntt(coefficients: &Vec<Zq>, powers_of_omega: &Vec<Zq>) -> Vec<Zq> {
                 res[i] = unsafe { res[i].add_unsafe(&t) };
             }
         }
-        stride = 2 * stride;
+        stride *= 2;
         power_pointer -= 1;
     }
     res
 }
 
-fn iterative_intt(coefficients: &Vec<Zq>, powers_of_omega_inv: &Vec<Zq>, n_inv: &Zq) -> Vec<Zq> {
+fn iterative_intt(coefficients: Vec<Zq>, powers_of_omega_inv: &Vec<Zq>, n_inv: &Zq) -> Vec<Zq> {
     let n = coefficients.len();
 
-    let mut res = coefficients.clone();
+    let mut res = coefficients;
 
     let mut power_pointer = 0;
     let mut stride = n / 2;
@@ -109,7 +109,7 @@ fn iterative_intt(coefficients: &Vec<Zq>, powers_of_omega_inv: &Vec<Zq>, n_inv: 
                 res[i] = temp;
             }
         }
-        stride = stride / 2;
+        stride /= 2;
         power_pointer += 1;
     }
 
@@ -124,7 +124,11 @@ fn iterative_intt(coefficients: &Vec<Zq>, powers_of_omega_inv: &Vec<Zq>, n_inv: 
 impl NTTBasisPolynomialRingZq {
     /// todo
     pub fn ntt(&self, poly: &PolyOverZq) -> Vec<Zq> {
-        let mut poly_coeffs: Vec<Zq> = (0..self.n).map(|i| poly.get_coeff(i).unwrap()).collect();
+        // we use the unsafe getter, because we know that all indices are in the range
+        // and no error can occur here
+        let mut poly_coeffs: Vec<Zq> = (0..self.n)
+            .map(|i| unsafe { poly.get_coeff_unsafe(i) })
+            .collect();
         // todo: pad coefficients if it is not dividable by 2
 
         // Negacyclic: perform preprocessing
@@ -134,14 +138,14 @@ impl NTTBasisPolynomialRingZq {
             }
         }
 
-        iterative_ntt(&poly_coeffs, &self.powers_of_omega)
+        iterative_ntt(poly_coeffs, &self.powers_of_omega)
     }
 
     /// todo
-    pub fn intt(&self, vector: &Vec<Zq>) -> PolyOverZq {
+    pub fn intt(&self, vector: Vec<Zq>) -> PolyOverZq {
         // todo: pad coefficients if it is not dividable by 2
 
-        let mut res = iterative_intt(&vector, &self.powers_of_omega_inv, &self.n_inv);
+        let mut res = iterative_intt(vector, &self.powers_of_omega_inv, &self.n_inv);
 
         // Negacyclic: perform postprocessing
         if self.convolution_type == ConvolutionType::Negacyclic {
@@ -150,11 +154,13 @@ impl NTTBasisPolynomialRingZq {
             }
         }
 
-        // call fft, but with the powers of the inverse of the root of unity
-        // and at last, multiply each new entry with `n_inv`
-        let mut out = PolyOverZq::from(&self.modulus);
-        for i in 0..self.n {
-            out.set_coeff(i, &res[i as usize]).unwrap()
+        let mut out = PolyOverZq::from(self.modulus.clone());
+        for (i, x) in res.iter().enumerate() {
+            unsafe {
+                // we know that the entry is reduced, and that it only addresses correct
+                // entries
+                out.set_coefficient_unsafe(i as i64, &x.value)
+            }
         }
 
         out
@@ -281,7 +287,7 @@ mod test_ntt_basis_transformation {
             ghat_hhat.push(&ghat[i] * &hhat[i]);
         }
 
-        let g_h_poly = ntt_basis.intt(&ghat_hhat);
+        let g_h_poly = ntt_basis.intt(ghat_hhat);
 
         // todo: after we can instantiate Polynomialringzq also with polyzq, change this here
         let g_h_poly_ring = PolynomialRingZq::from((
@@ -319,7 +325,7 @@ mod test_ntt_basis_transformation {
 
         let ghat = ntt_basis.ntt(&g_poly);
 
-        assert_eq!(g_poly, ntt_basis.intt(&ghat));
+        assert_eq!(g_poly, ntt_basis.intt(ghat));
     }
 
     /// This example is taken from: https://eprint.iacr.org/2024/585.pdf Example 3.12
@@ -349,7 +355,7 @@ mod test_ntt_basis_transformation {
             ghat_hhat.push(&ghat[i] * &hhat[i])
         }
 
-        let g_h_poly = ntt_basis.intt(&ghat_hhat);
+        let g_h_poly = ntt_basis.intt(ghat_hhat);
 
         // todo: after we can instantiate Polynomialringzq also with polyzq, change this here
         let g_h_poly_ring = PolynomialRingZq::from((

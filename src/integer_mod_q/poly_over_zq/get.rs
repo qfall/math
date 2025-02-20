@@ -55,7 +55,32 @@ impl GetCoefficient<Zq> for PolyOverZq {
     ///     either the index is negative or it does not fit into an [`i64`].
     fn get_coeff(&self, index: impl TryInto<i64> + Display) -> Result<Zq, MathError> {
         let out_z: Z = self.get_coeff(index)?;
-        Ok(Zq::from((out_z, &self.modulus)))
+        // as we know that the entry is already reduced we can directly det the values
+        // instead of putting it through the from function to save some runtime
+        Ok(Zq {
+            value: out_z,
+            modulus: self.modulus.clone(),
+        })
+    }
+}
+
+impl PolyOverZq {
+    pub(crate) unsafe fn get_coeff_unsafe(&self, index: i64) -> Zq {
+        let mut z = Z::default();
+        unsafe {
+            fmpz_mod_poly_get_coeff_fmpz(
+                &mut z.value,
+                &self.poly,
+                index,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        }
+        // as we know that the entry is already reduced we can directly det the values
+        // instead of putting it through the from function to save some runtime
+        Zq {
+            value: z,
+            modulus: self.modulus.clone(),
+        }
     }
 }
 

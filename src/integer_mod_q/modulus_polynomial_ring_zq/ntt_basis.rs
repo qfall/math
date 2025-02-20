@@ -78,7 +78,7 @@ mod test_setting_ntt {
             p3_ntt.push(&p1_ntt[i] * &p2_ntt[i])
         }
 
-        let p3 = PolynomialRingZq::intt(&p3_ntt, &polynomial_modulus).unwrap();
+        let p3 = PolynomialRingZq::intt(p3_ntt, &polynomial_modulus).unwrap();
         assert_eq!(p3, p1 * p2)
     }
 
@@ -109,7 +109,7 @@ mod test_setting_ntt {
             p3_ntt.push(&p1_ntt[i] * &p2_ntt[i])
         }
 
-        let p3 = PolynomialRingZq::intt(&p3_ntt, &polynomial_modulus).unwrap();
+        let p3 = PolynomialRingZq::intt(p3_ntt, &polynomial_modulus).unwrap();
         assert_eq!(p3, p1 * p2)
     }
 }

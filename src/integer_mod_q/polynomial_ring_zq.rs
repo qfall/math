@@ -86,15 +86,17 @@ impl PolynomialRingZq {
     }
 
     /// todo
-    pub fn intt(vector: &Vec<Zq>, modulus: &ModulusPolynomialRingZq) -> Option<Self> {
-        modulus.ntt_basis.as_ref().as_ref().map(|basis| {
-            PolynomialRingZq::from((
-                &basis
+    pub fn intt(vector: Vec<Zq>, modulus: &ModulusPolynomialRingZq) -> Option<Self> {
+        modulus
+            .ntt_basis
+            .as_ref()
+            .as_ref()
+            .map(|basis| PolynomialRingZq {
+                poly: basis
                     .intt(vector)
                     .get_representative_least_nonnegative_residue(),
-                modulus,
-            ))
-        })
+                modulus: modulus.clone(),
+            })
     }
 
     pub fn mul_ntt(&self, other: &Self) -> Self {
@@ -106,6 +108,6 @@ impl PolynomialRingZq {
             unsafe { ntt3.push(ntt1[i].mul_unsafe(&ntt2[i])) };
         }
 
-        PolynomialRingZq::intt(&ntt3, &self.get_mod()).unwrap()
+        PolynomialRingZq::intt(ntt3, &self.get_mod()).unwrap()
     }
 }
