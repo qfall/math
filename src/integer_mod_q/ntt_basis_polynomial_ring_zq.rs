@@ -10,6 +10,8 @@
 //! [`PolynomialRingZq`]. If it is set for the matrix, then the multiplication of polynomials
 //! is performed using the NTT transform, and otherwise the multiplication is kept as it is.
 
+use flint_sys::fmpz_mod::fmpz_mod_neg;
+
 use super::{Modulus, PolyOverZq, Zq};
 use crate::traits::Pow;
 
@@ -77,7 +79,7 @@ fn iterative_ntt(coefficients: Vec<Zq>, powers_of_omega: &[Zq]) -> Vec<Zq> {
                 // CT butterfly
                 let t = unsafe { current_pwer.mul_unsafe(&res[i + stride]) };
                 res[i + stride] = unsafe { res[i].sub_unsafe(&t) };
-                res[i] = unsafe { res[i].add_unsafe(&t) };
+                unsafe { res[i].add_mut_unsafe(&t) };
             }
         }
         stride *= 2;
@@ -116,7 +118,7 @@ fn iterative_intt(coefficients: Vec<Zq>, powers_of_omega_inv: &Vec<Zq>, n_inv: &
     // compute the bit reversed order of the coefficients
     bit_reverse_permutation(&mut res);
     for i in 0..res.len() {
-        res[i] = unsafe { n_inv.mul_unsafe(&res[i]) }
+        unsafe { res[i].mul_mut_unsafe(n_inv) };
     }
     res
 }
@@ -134,7 +136,7 @@ impl NTTBasisPolynomialRingZq {
         // Negacyclic: perform preprocessing
         if self.convolution_type == ConvolutionType::Negacyclic {
             for i in 0..poly_coeffs.len() {
-                poly_coeffs[i] = unsafe { poly_coeffs[i].mul_unsafe(&self.powers_of_psi[i]) }
+                unsafe { poly_coeffs[i].mul_mut_unsafe(&self.powers_of_psi[i]) };
             }
         }
 
@@ -150,7 +152,7 @@ impl NTTBasisPolynomialRingZq {
         // Negacyclic: perform postprocessing
         if self.convolution_type == ConvolutionType::Negacyclic {
             for i in 0..res.len() {
-                res[i] = unsafe { res[i].mul_unsafe(&self.powers_of_psi_inv[i]) }
+                unsafe { res[i].mul_mut_unsafe(&self.powers_of_psi_inv[i]) };
             }
         }
 

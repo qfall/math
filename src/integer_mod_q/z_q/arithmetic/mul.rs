@@ -19,7 +19,7 @@ use crate::{
 };
 use flint_sys::{
     fmpz::fmpz,
-    fmpz_mod::{fmpz_mod_mul, fmpz_mod_mul_fmpz},
+    fmpz_mod::{fmpz_mod_add, fmpz_mod_mul, fmpz_mod_mul_fmpz, fmpz_mod_sub},
 };
 use std::ops::Mul;
 
@@ -103,6 +103,39 @@ impl Zq {
         Self {
             value: out_z,
             modulus: self.modulus.clone(),
+        }
+    }
+
+    pub(crate) unsafe fn mul_mut_unsafe(&mut self, other: &Self) {
+        unsafe {
+            fmpz_mod_mul(
+                &mut self.value.value,
+                &self.value.value,
+                &other.value.value,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            );
+        }
+    }
+
+    pub(crate) unsafe fn add_mut_unsafe(&mut self, other: &Self) {
+        unsafe {
+            fmpz_mod_add(
+                &mut self.value.value,
+                &self.value.value,
+                &other.value.value,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            );
+        }
+    }
+
+    pub(crate) unsafe fn sub_mut_unsafe(&mut self, other: &Self) {
+        unsafe {
+            fmpz_mod_sub(
+                &mut self.value.value,
+                &self.value.value,
+                &other.value.value,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            );
         }
     }
 }
