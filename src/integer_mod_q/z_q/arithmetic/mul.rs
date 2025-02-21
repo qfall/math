@@ -19,7 +19,7 @@ use crate::{
 };
 use flint_sys::{
     fmpz::fmpz,
-    fmpz_mod::{fmpz_mod_add, fmpz_mod_mul, fmpz_mod_mul_fmpz, fmpz_mod_sub},
+    fmpz_mod::{fmpz_mod_mul, fmpz_mod_mul_fmpz},
 };
 use std::ops::Mul;
 

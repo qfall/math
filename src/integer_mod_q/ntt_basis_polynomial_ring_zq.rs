@@ -14,8 +14,9 @@ use super::{Modulus, PolyOverZq, Zq};
 use crate::{integer::Z, traits::Pow};
 use flint_sys::{
     fmpz::fmpz_swap,
-    fmpz_mod::{fmpz_mod_add, fmpz_mod_mul, fmpz_mod_sub, fmpz_mod_sub_fmpz},
+    fmpz_mod::{fmpz_mod_add, fmpz_mod_ctx, fmpz_mod_mul, fmpz_mod_sub, fmpz_mod_sub_fmpz},
 };
+use rayon::{iter::ParallelIterator, slice::ParallelSliceMut};
 
 /// [`NTTBasisPolynomialRingZq`] is an object, that given a polynomial
 /// `X^n - 1 mod q` or `X^n + 1 mod q` computes two transformation functions.
@@ -60,6 +61,45 @@ fn bit_reverse_permutation<T>(a: &mut Vec<T>) {
     }
 }
 
+unsafe fn ntt_stride_steps(
+    chunk: &mut [&mut Z],
+    stride: usize,
+    power_pointer: i64,
+    modulus_pointer: &fmpz_mod_ctx,
+    powers_of_omega_pointers: &[&Z],
+) {
+    for i in 0..stride {
+        // compute power of the current level
+        let current_power = powers_of_omega_pointers[2_usize.pow(power_pointer as u32) * (i)];
+
+        // CT butterfly
+        // by using Z, we can manage not to initialize additional modulus objects in this part
+        // and save runtime
+        let mut temp = Z::default();
+
+        unsafe {
+            fmpz_mod_mul(
+                &mut temp.value,
+                &current_power.value,
+                &chunk[i + stride].value,
+                modulus_pointer,
+            );
+            fmpz_mod_sub(
+                &mut chunk[i + stride].value,
+                &chunk[i].value,
+                &temp.value,
+                modulus_pointer,
+            );
+            fmpz_mod_add(
+                &mut chunk[i].value,
+                &chunk[i].value,
+                &temp.value,
+                modulus_pointer,
+            )
+        }
+    }
+}
+
 fn iterative_ntt(coefficients: Vec<Zq>, powers_of_omega: &[Zq]) -> Vec<Zq> {
     let n = coefficients.len();
     let nr_iterations = n.ilog2() as i64;
@@ -67,40 +107,37 @@ fn iterative_ntt(coefficients: Vec<Zq>, powers_of_omega: &[Zq]) -> Vec<Zq> {
     // compute the bit reversed order of the coefficients
     let mut res = coefficients;
     bit_reverse_permutation(&mut res);
+    let modulus_pointer = powers_of_omega[0].modulus.get_fmpz_mod_ctx_struct();
+    let mut res_z: Vec<&mut Z> = res.iter_mut().map(|x| &mut x.value).collect();
+    let powers_of_omega_pointers: Vec<&Z> = powers_of_omega.iter().map(|x| &x.value).collect();
 
     let mut power_pointer: i64 = nr_iterations - 1;
     let mut stride = 1;
     // iterate through all layers
     while stride < n {
-        for start in (0..n).step_by(2 * stride) {
-            // each pair of butterfly operations
-            for i in start..(start + stride) {
-                let current_pwer =
-                    &powers_of_omega[2_usize.pow(power_pointer as u32) * (i - start)];
-
-                // CT butterfly
-                let mut temp = Z::default();
-                unsafe {
-                    fmpz_mod_mul(
-                        &mut temp.value,
-                        &current_pwer.value.value,
-                        &res[i + stride].value.value,
-                        res[0].modulus.get_fmpz_mod_ctx_struct(),
-                    );
-                    fmpz_mod_sub(
-                        &mut res[i + stride].value.value,
-                        &res[i].value.value,
-                        &temp.value,
-                        res[0].modulus.get_fmpz_mod_ctx_struct(),
-                    );
-                    fmpz_mod_add(
-                        &mut res[i].value.value,
-                        &res[i].value.value,
-                        &temp.value,
-                        res[0].modulus.get_fmpz_mod_ctx_struct(),
-                    )
-                }
-            }
+        // split into strides and perform action for each respective stride
+        // !!! currently the multi-threading is turned off, because it is plainly slower... !!!
+        if stride >= n {
+            // multi-threading
+            res_z.par_chunks_mut(2 * stride).for_each(|chunk| unsafe {
+                ntt_stride_steps(
+                    chunk,
+                    stride,
+                    power_pointer,
+                    modulus_pointer,
+                    &powers_of_omega_pointers,
+                )
+            });
+        } else {
+            res_z.chunks_mut(2 * stride).for_each(|chunk| unsafe {
+                ntt_stride_steps(
+                    chunk,
+                    stride,
+                    power_pointer,
+                    modulus_pointer,
+                    &powers_of_omega_pointers,
+                )
+            });
         }
         stride *= 2;
         power_pointer -= 1;
@@ -108,48 +145,81 @@ fn iterative_ntt(coefficients: Vec<Zq>, powers_of_omega: &[Zq]) -> Vec<Zq> {
     res
 }
 
+unsafe fn intt_stride_steps(
+    chunk: &mut [&mut Z],
+    stride: usize,
+    power_pointer: usize,
+    modulus_pointer: &fmpz_mod_ctx,
+    powers_of_omega_inv_pointers: &[&Z],
+) {
+    for i in 0..stride {
+        // compute power of the current level
+        let current_power = powers_of_omega_inv_pointers[2_usize.pow(power_pointer as u32) * (i)];
+
+        // CT butterfly
+        // by using Z, we can manage not to initialize additional modulus objects in this part
+        // and save runtime
+        let mut temp = Z::default();
+        unsafe {
+            fmpz_mod_add(
+                &mut temp.value,
+                &chunk[i].value,
+                &chunk[i + stride].value,
+                modulus_pointer,
+            );
+            fmpz_mod_sub_fmpz(
+                &mut chunk[i + stride].value,
+                &mut chunk[i].value,
+                &mut chunk[i + stride].value,
+                modulus_pointer,
+            );
+            fmpz_mod_mul(
+                &mut chunk[i + stride].value,
+                &chunk[i + stride].value,
+                &current_power.value,
+                modulus_pointer,
+            );
+            fmpz_swap(&mut chunk[i].value, &mut temp.value)
+        };
+    }
+}
+
 fn iterative_intt(coefficients: Vec<Zq>, powers_of_omega_inv: &Vec<Zq>, n_inv: &Zq) -> Vec<Zq> {
     let n = coefficients.len();
 
     let mut res = coefficients;
+    let modulus_pointer = n_inv.modulus.get_fmpz_mod_ctx_struct();
+    let mut res_z: Vec<&mut Z> = res.iter_mut().map(|x| &mut x.value).collect();
+    let powers_of_omega_inv_pointers: Vec<&Z> =
+        powers_of_omega_inv.iter().map(|x| &x.value).collect();
 
     let mut power_pointer = 0;
     let mut stride = n / 2;
     // iterate through all layers
     while stride > 0 {
-        for start in (0..n).step_by(2 * stride) {
-            // each pair of butterfly operations
-            for i in start..(start + stride) {
-                // compute power of the current level
-                let current_power =
-                    &powers_of_omega_inv[2_usize.pow(power_pointer as u32) * (i - start)];
-
-                // CT butterfly
-                // by using Z, we can manage not to initialize additional modulus objects in this part
-                // and save runtime
-                let mut temp = Z::default();
-                unsafe {
-                    fmpz_mod_add(
-                        &mut temp.value,
-                        &res[i].value.value,
-                        &res[i + stride].value.value,
-                        res[0].modulus.get_fmpz_mod_ctx_struct(),
-                    );
-                    fmpz_mod_sub_fmpz(
-                        &mut res[i + stride].value.value,
-                        &res[i].value.value,
-                        &res[i + stride].value.value,
-                        res[0].modulus.get_fmpz_mod_ctx_struct(),
-                    );
-                    fmpz_mod_mul(
-                        &mut res[i + stride].value.value,
-                        &mut res[i + stride].value.value,
-                        &current_power.value.value,
-                        res[0].modulus.get_fmpz_mod_ctx_struct(),
-                    );
-                    fmpz_swap(&mut res[i].value.value, &mut temp.value)
-                };
-            }
+        // split into strides and perform action for each respective stride
+        // !!! currently the multi-threading is turned off, because it is plainly slower... !!!
+        if stride >= n {
+            // multi-threading
+            res_z.par_chunks_mut(2 * stride).for_each(|chunk| unsafe {
+                intt_stride_steps(
+                    chunk,
+                    stride,
+                    power_pointer,
+                    modulus_pointer,
+                    &powers_of_omega_inv_pointers,
+                );
+            });
+        } else {
+            res_z.chunks_mut(2 * stride).for_each(|chunk| unsafe {
+                intt_stride_steps(
+                    chunk,
+                    stride,
+                    power_pointer,
+                    modulus_pointer,
+                    &powers_of_omega_inv_pointers,
+                );
+            });
         }
 
         stride /= 2;
