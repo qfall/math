@@ -10,10 +10,12 @@
 //! [`PolynomialRingZq`]. If it is set for the matrix, then the multiplication of polynomials
 //! is performed using the NTT transform, and otherwise the multiplication is kept as it is.
 
-use flint_sys::fmpz_mod::fmpz_mod_neg;
-
 use super::{Modulus, PolyOverZq, Zq};
-use crate::traits::Pow;
+use crate::{integer::Z, traits::Pow};
+use flint_sys::{
+    fmpz::fmpz_swap,
+    fmpz_mod::{fmpz_mod_add, fmpz_mod_mul, fmpz_mod_sub, fmpz_mod_sub_fmpz},
+};
 
 /// [`NTTBasisPolynomialRingZq`] is an object, that given a polynomial
 /// `X^n - 1 mod q` or `X^n + 1 mod q` computes two transformation functions.
@@ -77,9 +79,27 @@ fn iterative_ntt(coefficients: Vec<Zq>, powers_of_omega: &[Zq]) -> Vec<Zq> {
                     &powers_of_omega[2_usize.pow(power_pointer as u32) * (i - start)];
 
                 // CT butterfly
-                let t = unsafe { current_pwer.mul_unsafe(&res[i + stride]) };
-                res[i + stride] = unsafe { res[i].sub_unsafe(&t) };
-                unsafe { res[i].add_mut_unsafe(&t) };
+                let mut temp = Z::default();
+                unsafe {
+                    fmpz_mod_mul(
+                        &mut temp.value,
+                        &current_pwer.value.value,
+                        &res[i + stride].value.value,
+                        res[0].modulus.get_fmpz_mod_ctx_struct(),
+                    );
+                    fmpz_mod_sub(
+                        &mut res[i + stride].value.value,
+                        &res[i].value.value,
+                        &temp.value,
+                        res[0].modulus.get_fmpz_mod_ctx_struct(),
+                    );
+                    fmpz_mod_add(
+                        &mut res[i].value.value,
+                        &res[i].value.value,
+                        &temp.value,
+                        res[0].modulus.get_fmpz_mod_ctx_struct(),
+                    )
+                }
             }
         }
         stride *= 2;
@@ -105,12 +125,33 @@ fn iterative_intt(coefficients: Vec<Zq>, powers_of_omega_inv: &Vec<Zq>, n_inv: &
                     &powers_of_omega_inv[2_usize.pow(power_pointer as u32) * (i - start)];
 
                 // CT butterfly
-                let temp = unsafe { res[i].add_unsafe(&res[i + stride]) };
-                res[i + stride] =
-                    unsafe { (res[i].sub_unsafe(&res[i + stride])).mul_unsafe(current_power) };
-                res[i] = temp;
+                // by using Z, we can manage not to initialize additional modulus objects in this part
+                // and save runtime
+                let mut temp = Z::default();
+                unsafe {
+                    fmpz_mod_add(
+                        &mut temp.value,
+                        &res[i].value.value,
+                        &res[i + stride].value.value,
+                        res[0].modulus.get_fmpz_mod_ctx_struct(),
+                    );
+                    fmpz_mod_sub_fmpz(
+                        &mut res[i + stride].value.value,
+                        &res[i].value.value,
+                        &res[i + stride].value.value,
+                        res[0].modulus.get_fmpz_mod_ctx_struct(),
+                    );
+                    fmpz_mod_mul(
+                        &mut res[i + stride].value.value,
+                        &mut res[i + stride].value.value,
+                        &current_power.value.value,
+                        res[0].modulus.get_fmpz_mod_ctx_struct(),
+                    );
+                    fmpz_swap(&mut res[i].value.value, &mut temp.value)
+                };
             }
         }
+
         stride /= 2;
         power_pointer += 1;
     }

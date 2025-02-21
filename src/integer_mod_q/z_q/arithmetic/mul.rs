@@ -116,28 +116,6 @@ impl Zq {
             );
         }
     }
-
-    pub(crate) unsafe fn add_mut_unsafe(&mut self, other: &Self) {
-        unsafe {
-            fmpz_mod_add(
-                &mut self.value.value,
-                &self.value.value,
-                &other.value.value,
-                self.modulus.get_fmpz_mod_ctx_struct(),
-            );
-        }
-    }
-
-    pub(crate) unsafe fn sub_mut_unsafe(&mut self, other: &Self) {
-        unsafe {
-            fmpz_mod_sub(
-                &mut self.value.value,
-                &self.value.value,
-                &other.value.value,
-                self.modulus.get_fmpz_mod_ctx_struct(),
-            );
-        }
-    }
 }
 
 arithmetic_trait_borrowed_to_owned!(Mul, mul, Zq, Zq, Zq);
