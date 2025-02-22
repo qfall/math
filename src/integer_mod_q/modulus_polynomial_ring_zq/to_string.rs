@@ -64,15 +64,15 @@ impl Display for ModulusPolynomialRingZq {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         // get the value of the modulus
         let mut modulus = Z::default();
-        unsafe { fmpz_set(&mut modulus.value, &self.get_fq_ctx_struct().ctxp[0].n[0]) };
+        unsafe { fmpz_set(&mut modulus.value, &self.get_fq_ctx().ctxp[0].n[0]) };
 
         // get the value of the polynomial
         let mut poly = PolyOverZ::default();
         unsafe {
             fmpz_mod_poly_get_fmpz_poly(
                 &mut poly.poly,
-                &self.get_fq_ctx_struct().modulus[0],
-                &self.get_fq_ctx_struct().ctxp[0],
+                &self.get_fq_ctx().modulus[0],
+                &self.get_fq_ctx().ctxp[0],
             )
         };
 

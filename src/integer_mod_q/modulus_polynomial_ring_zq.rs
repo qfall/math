@@ -20,6 +20,7 @@ mod norm;
 mod ownership;
 mod serialize;
 mod to_string;
+mod unsafe_functions;
 
 /// [`ModulusPolynomialRingZq`] represents the modulus object for
 /// [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq)
