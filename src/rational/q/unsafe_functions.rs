@@ -16,7 +16,7 @@ use flint_sys::fmpq::fmpq;
 unsafe_getter!(Q, value, fmpq);
 
 #[cfg(test)]
-mod test_get_value {
+mod test_get_fmpq {
     use super::Q;
     use flint_sys::fmpz::fmpz;
 

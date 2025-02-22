@@ -16,7 +16,7 @@ use flint_sys::fmpq_poly::fmpq_poly_struct;
 unsafe_getter!(PolyOverQ, poly, fmpq_poly_struct);
 
 #[cfg(test)]
-mod test_get_poly {
+mod test_get_fmpq_poly_struct {
     use super::PolyOverQ;
     use crate::rational::Q;
     use flint_sys::fmpq_poly::fmpq_poly_set_coeff_fmpq;

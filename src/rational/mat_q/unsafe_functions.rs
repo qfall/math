@@ -16,7 +16,7 @@ use flint_sys::fmpq_mat::fmpq_mat_struct;
 unsafe_getter!(MatQ, matrix, fmpq_mat_struct);
 
 #[cfg(test)]
-mod test_get_matrix {
+mod test_get_fmpq_mat_struct {
     use super::MatQ;
     use crate::{rational::Q, traits::GetEntry};
     use flint_sys::{fmpq::fmpq_set, fmpq_mat::fmpq_mat_entry};

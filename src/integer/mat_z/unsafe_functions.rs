@@ -16,7 +16,7 @@ use flint_sys::fmpz_mat::fmpz_mat_struct;
 unsafe_getter!(MatZ, matrix, fmpz_mat_struct);
 
 #[cfg(test)]
-mod test_get_matrix {
+mod test_get_fmpz_mat_struct {
     use super::MatZ;
     use crate::{integer::Z, traits::GetEntry};
     use flint_sys::{

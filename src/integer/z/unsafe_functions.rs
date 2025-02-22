@@ -15,7 +15,7 @@ use flint_sys::fmpz::fmpz;
 unsafe_getter!(Z, value, fmpz);
 
 #[cfg(test)]
-mod test_get_value {
+mod test_get_fmpz {
     use super::Z;
 
     /// Checks availability of the getter for [`Z::value`]

@@ -16,7 +16,7 @@ use flint_sys::fmpz_poly::fmpz_poly_struct;
 unsafe_getter!(PolyOverZ, poly, fmpz_poly_struct);
 
 #[cfg(test)]
-mod test_get_poly {
+mod test_get_fmpz_poly_struct {
     use super::PolyOverZ;
     use flint_sys::{fmpz::fmpz, fmpz_poly::fmpz_poly_set_fmpz};
 

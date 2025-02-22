@@ -16,7 +16,7 @@ use flint_sys::fmpz_poly_mat::fmpz_poly_mat_struct;
 unsafe_getter!(MatPolyOverZ, matrix, fmpz_poly_mat_struct);
 
 #[cfg(test)]
-mod test_get_matrix {
+mod test_get_fmpz_poly_mat_struct {
     use super::MatPolyOverZ;
     use crate::{integer::PolyOverZ, traits::GetEntry};
     use flint_sys::{fmpz_poly::fmpz_poly_set, fmpz_poly_mat::fmpz_poly_mat_entry};
