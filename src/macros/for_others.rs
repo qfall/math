@@ -208,13 +208,13 @@ pub(crate) use implement_empty_trait_owned_ref;
 ///
 /// Parameters:
 /// - `trait`: the trait that is implemented
-///     (e.g. [`Add`](std::ops::Add),[`Sub`](std::ops::Sub), ...).
+///     (e.g. [`PartialEq`],[`PartialOrd`], ...).
 /// - `trait_function`: the function the trait implements
-///     (e.g. add for [`Add`](std::ops::Add), ...).
+///     (e.g. eq for [`PartialEq`], ...).
 /// - `type`: the type the trait is implemented for
 ///     (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q))
 /// - `other_type`: the type the second part of the computation.
-/// - `output_type`: the type of the result.
+/// - `output_type`: the type of the result (e.g. bool for [`PartialEq`], ...).
 ///
 /// Returns the owned Implementation code for the `*trait*`
 /// trait with the signature:
