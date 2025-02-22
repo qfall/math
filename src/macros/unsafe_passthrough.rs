@@ -22,15 +22,21 @@ macro_rules! unsafe_getter {
     ($struct:ident, $attribute_name:meta, $attribute_type:ident) => {
         impl $struct {
             paste::paste! {
-                /// Returns a mutable reference to the field `" $attribute_name "` of type [`" $attribute_type "`].
+                #[doc = "Returns a mutable reference to the field `" $attribute_name "` of type [`" $attribute_type "`]."]
                 ///
                 /// **WARNING:** The returned struct is part of [`flint_sys`].
                 /// Any changes to this object are unsafe and may introduce memory leaks.
                 ///
+                /// This function is a passthrough to enable users of this library to use [`flint_sys`]
+                /// and with that [FLINT](https://flintlib.org/) functions that might not be covered in our library yet.
+                /// If this is the case, please consider contributing to this open-source project
+                /// by opening a Pull Request at [qfall_math](https://github.com/qfall/math)
+                /// to provide this feature in the future.
+                ///
                 /// # Safety
                 /// Any [`flint_sys`] struct and function is part of a FFI to the C-library `FLINT`.
                 /// As `FLINT` is a C-library, it does not provide all memory safety features
-                /// that Rust and our Wrapper provides.
+                /// that Rust and our Wrapper provide.
                 /// Thus, using functions of [`flint_sys`] can introduce memory leaks.
                 pub unsafe fn [<get_ $attribute_name>](&mut self) -> &mut $attribute_type {
                     &mut self.$attribute_name

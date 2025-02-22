@@ -15,7 +15,6 @@
 //! canonical/reduced values. The end-user should be unable to obtain a
 //! non-reduced value.
 
-use crate::macros::unsafe_passthrough::unsafe_getter;
 use flint_sys::fmpq_poly::fmpq_poly_struct;
 
 mod arithmetic;
@@ -34,6 +33,7 @@ mod sample;
 mod serialize;
 mod set;
 mod to_string;
+mod unsafe_functions;
 
 /// [`PolyOverQ`] is a type of polynomial with arbitrarily many coefficients of type
 /// [`Q`](crate::rational::Q).
@@ -61,28 +61,4 @@ mod to_string;
 #[derive(Debug)]
 pub struct PolyOverQ {
     pub(crate) poly: fmpq_poly_struct,
-}
-
-unsafe_getter!(PolyOverQ, poly, fmpq_poly_struct);
-
-#[cfg(test)]
-mod test_get_poly {
-    use super::PolyOverQ;
-    use crate::rational::Q;
-    use flint_sys::fmpq_poly::fmpq_poly_set_coeff_fmpq;
-
-    /// Checks availability of the getter for [`PolyOverQ::poly`]
-    /// and its ability to be modified.
-    #[test]
-    #[allow(unused_mut)]
-    fn availability_and_modification() {
-        let mut poly = PolyOverQ::from(1);
-        let mut value = Q::from(2);
-
-        let mut fmpq_poly = unsafe { poly.get_poly() };
-
-        unsafe { fmpq_poly_set_coeff_fmpq(fmpq_poly, 0, value.get_value()) };
-
-        assert_eq!(PolyOverQ::from(2), poly);
-    }
 }

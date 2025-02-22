@@ -10,7 +10,6 @@
 //! [`Z`](crate::integer::Z)
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
-use crate::macros::unsafe_passthrough::unsafe_getter;
 use flint_sys::fmpz_poly::fmpz_poly_struct;
 
 mod arithmetic;
@@ -30,6 +29,7 @@ mod sample;
 mod serialize;
 mod set;
 mod to_string;
+mod unsafe_functions;
 
 /// [`PolyOverZ`] is a type of polynomial with arbitrarily many coefficients of type
 /// [`Z`](crate::integer::Z).
@@ -61,26 +61,4 @@ mod to_string;
 #[derive(Debug)]
 pub struct PolyOverZ {
     pub(crate) poly: fmpz_poly_struct,
-}
-
-unsafe_getter!(PolyOverZ, poly, fmpz_poly_struct);
-
-#[cfg(test)]
-mod test_get_poly {
-    use super::PolyOverZ;
-    use flint_sys::{fmpz::fmpz, fmpz_poly::fmpz_poly_set_fmpz};
-
-    /// Checks availability of the getter for [`PolyOverZ::poly`]
-    /// and its ability to be modified.
-    #[test]
-    #[allow(unused_mut)]
-    fn availability_and_modification() {
-        let mut poly = PolyOverZ::from(1);
-
-        let mut fmpz_poly = unsafe { poly.get_poly() };
-
-        unsafe { fmpz_poly_set_fmpz(fmpz_poly, &fmpz(2)) };
-
-        assert_eq!(PolyOverZ::from(2), poly);
-    }
 }

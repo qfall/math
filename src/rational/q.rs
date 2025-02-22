@@ -13,7 +13,6 @@
 //! To avoid unnecessary checks and reductions, always return canonical/reduced
 //! values. The end-user should be unable to obtain a non-reduced value.
 
-use crate::macros::unsafe_passthrough::unsafe_getter;
 use flint_sys::fmpq::fmpq;
 
 mod arithmetic;
@@ -28,6 +27,7 @@ mod rounding;
 mod sample;
 mod serialize;
 mod to_string;
+mod unsafe_functions;
 
 /// [`Q`] is any rational value.
 ///
@@ -74,26 +74,4 @@ mod to_string;
 #[derive(Debug)]
 pub struct Q {
     pub(crate) value: fmpq,
-}
-
-unsafe_getter!(Q, value, fmpq);
-
-#[cfg(test)]
-mod test_get_value {
-    use super::Q;
-    use flint_sys::fmpz::fmpz;
-
-    /// Checks availability of the getter for [`Q::value`]
-    /// and its ability to be modified.
-    #[test]
-    #[allow(unused_mut)]
-    fn availability_and_modification() {
-        let mut rational = Q::from(1);
-
-        let mut fmpq_rat = unsafe { rational.get_value() };
-
-        fmpq_rat.num = fmpz(2);
-
-        assert_eq!(Q::from(2), rational);
-    }
 }
