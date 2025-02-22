@@ -192,7 +192,7 @@ impl MatZq {
     /// use qfall_math::integer_mod_q::MatZq;
     /// let message = "hello!";
     ///  
-    /// let matrix = MatZq::from_utf8(&message, 2, 1, 257).unwrap();
+    /// let matrix = MatZq::from_utf8(&message, 3, 2, 257).unwrap();
     /// ```
     ///
     /// # Panics ...
