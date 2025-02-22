@@ -25,7 +25,7 @@ mod test_get_value {
     fn availability_and_modification() {
         let mut integer = Z::from(1);
 
-        let mut fmpz_int = unsafe { integer.get_value() };
+        let mut fmpz_int = unsafe { integer.get_fmpz() };
 
         fmpz_int.0 = 2;
 

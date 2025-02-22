@@ -27,7 +27,7 @@ mod test_get_value {
     fn availability_and_modification() {
         let mut rational = Q::from(1);
 
-        let mut fmpq_rat = unsafe { rational.get_value() };
+        let mut fmpq_rat = unsafe { rational.get_fmpq() };
 
         fmpq_rat.num = fmpz(2);
 

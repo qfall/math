@@ -30,11 +30,11 @@ mod test_get_matrix {
         let mut mat = MatQ::from_str("[[1]]").unwrap();
         let mut value = Q::from(2);
 
-        let mut fmpq_mat = unsafe { mat.get_matrix() };
+        let mut fmpq_mat = unsafe { mat.get_fmpq_mat_struct() };
 
         unsafe {
             let entry = fmpq_mat_entry(fmpq_mat, 0, 0);
-            fmpq_set(entry, value.get_value())
+            fmpq_set(entry, value.get_fmpq())
         };
 
         assert_eq!(value, mat.get_entry(0, 0).unwrap());

@@ -30,11 +30,11 @@ mod test_get_matrix {
         let mut mat = MatPolyOverZ::from_str("[[1  1]]").unwrap();
         let mut poly = PolyOverZ::from(2);
 
-        let mut fmpz_poly_mat = unsafe { mat.get_matrix() };
+        let mut fmpz_poly_mat = unsafe { mat.get_fmpz_poly_mat_struct() };
 
         unsafe {
             let entry = fmpz_poly_mat_entry(fmpz_poly_mat, 0, 0);
-            fmpz_poly_set(entry, poly.get_poly())
+            fmpz_poly_set(entry, poly.get_fmpz_poly_struct())
         };
 
         assert_eq!(poly, mat.get_entry(0, 0).unwrap());

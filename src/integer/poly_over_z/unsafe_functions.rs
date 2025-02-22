@@ -27,7 +27,7 @@ mod test_get_poly {
     fn availability_and_modification() {
         let mut poly = PolyOverZ::from(1);
 
-        let mut fmpz_poly = unsafe { poly.get_poly() };
+        let mut fmpz_poly = unsafe { poly.get_fmpz_poly_struct() };
 
         unsafe { fmpz_poly_set_fmpz(fmpz_poly, &fmpz(2)) };
 

@@ -38,7 +38,7 @@ macro_rules! unsafe_getter {
                 /// As `FLINT` is a C-library, it does not provide all memory safety features
                 /// that Rust and our Wrapper provide.
                 /// Thus, using functions of [`flint_sys`] can introduce memory leaks.
-                pub unsafe fn [<get_ $attribute_name>](&mut self) -> &mut $attribute_type {
+                pub unsafe fn [<get_ $attribute_type>](&mut self) -> &mut $attribute_type {
                     &mut self.$attribute_name
                 }
             }

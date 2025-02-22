@@ -32,7 +32,7 @@ mod test_get_matrix {
     fn availability_and_modification() {
         let mut mat = MatZ::from_str("[[1]]").unwrap();
 
-        let mut fmpz_mat = unsafe { mat.get_matrix() };
+        let mut fmpz_mat = unsafe { mat.get_fmpz_mat_struct() };
 
         unsafe {
             let entry = fmpz_mat_entry(fmpz_mat, 0, 0);

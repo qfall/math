@@ -29,9 +29,9 @@ mod test_get_poly {
         let mut poly = PolyOverQ::from(1);
         let mut value = Q::from(2);
 
-        let mut fmpq_poly = unsafe { poly.get_poly() };
+        let mut fmpq_poly = unsafe { poly.get_fmpq_poly_struct() };
 
-        unsafe { fmpq_poly_set_coeff_fmpq(fmpq_poly, 0, value.get_value()) };
+        unsafe { fmpq_poly_set_coeff_fmpq(fmpq_poly, 0, value.get_fmpq()) };
 
         assert_eq!(PolyOverQ::from(2), poly);
     }
