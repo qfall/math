@@ -10,6 +10,7 @@
 
 use criterion::criterion_main;
 
+pub mod basis_reductions;
 pub mod cholesky_decomposition;
 pub mod classic_crypto;
 pub mod integer;
@@ -23,5 +24,6 @@ criterion_main! {
     sampling::benches,
     solve::benches,
     cholesky_decomposition::benches,
-    sample_z::benches
+    sample_z::benches,
+    basis_reductions::benches,
 }
