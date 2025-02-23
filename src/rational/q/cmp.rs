@@ -453,7 +453,7 @@ mod test_partial_eq_q_other {
         let q = Q::from((u64::MAX, 1));
         let z = Z::from(u64::MAX);
         let modulus1 = Modulus::from(u64::MAX);
-        let modulus2 = Modulus::from(u64::MAX-1);
+        let modulus2 = Modulus::from(u64::MAX - 1);
 
         assert!(q == z);
         assert!(q == modulus1);
