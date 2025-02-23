@@ -13,6 +13,7 @@ use super::super::MatZ;
 use crate::{
     error::MathError,
     integer::{fmpz_helpers::find_max_abs, Z},
+    rational::Q,
     traits::{GetNumColumns, GetNumRows},
 };
 use flint_sys::fmpz::fmpz_addmul;
@@ -56,6 +57,29 @@ impl MatZ {
         }
 
         Ok(result)
+    }
+
+    /// Returns the Euclidean norm or 2-norm of the given (row or column) vector
+    /// or an error if the given [`MatZ`] instance is not a (row or column) vector.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{integer::MatZ, rational::Q};
+    /// use std::str::FromStr;
+    ///
+    /// let vec = MatZ::from_str("[[2],[2],[2],[2]]").unwrap();
+    ///
+    /// let eucl_norm = vec.norm_eucl().unwrap();
+    ///
+    /// // sqrt(4 * 2^2) = 4
+    /// assert_eq!(Q::from(4), eucl_norm);
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
+    ///     the given [`MatZ`] instance is not a (row or column) vector.
+    pub fn norm_eucl(&self) -> Result<Q, MathError> {
+        Ok(self.norm_eucl_sqrd()?.sqrt())
     }
 
     /// Returns the infinity norm or ∞-norm of the given (row or column) vector
