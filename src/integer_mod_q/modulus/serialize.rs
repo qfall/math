@@ -58,7 +58,10 @@ mod test_deserialize {
     #[test]
     fn deserialize_positive() {
         let z_string = "{\"modulus\":\"17\"}";
-        assert_eq!(Modulus::from(17), serde_json::from_str::<Modulus>(z_string).unwrap());
+        assert_eq!(
+            Modulus::from(17),
+            serde_json::from_str::<Modulus>(z_string).unwrap()
+        );
     }
 
     /// Tests whether the deserialization of a negative [`Modulus`] fails.

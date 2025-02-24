@@ -455,7 +455,7 @@ mod test_partial_eq_q_other {
         let q = Q::from((u64::MAX, 1));
         let z = Z::from(u64::MAX);
         let modulus1 = Modulus::from(u64::MAX);
-        let modulus2 = Modulus::from(u64::MAX-1);
+        let modulus2 = Modulus::from(u64::MAX - 1);
 
         assert!(q == z);
         assert!(q == modulus1);
@@ -674,8 +674,8 @@ mod test_partial_ord {
 /// Test that the [`PartialOrd`] trait is correctly implemented.
 #[cfg(test)]
 mod test_partial_ord_q_other {
-    use crate::{integer::Z, integer_mod_q::Modulus};
     use super::Q;
+    use crate::{integer::Z, integer_mod_q::Modulus};
 
     // Ensure that the function can be called with several types
     #[test]

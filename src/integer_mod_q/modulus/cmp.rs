@@ -327,8 +327,8 @@ mod test_partial_ord {
 /// Test that the [`PartialOrd`] trait is correctly implemented.
 #[cfg(test)]
 mod test_partial_ord_modulus_other {
-    use crate::integer::Z;
     use super::Modulus;
+    use crate::integer::Z;
 
     // Ensure that the function can be called with several types
     #[test]
