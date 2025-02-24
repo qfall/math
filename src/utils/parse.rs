@@ -475,7 +475,7 @@ mod test_matrix_from_utf8_fill_bytes {
         let nr_entries = 4;
         let modulus = Modulus::from(255);
 
-        let res = matrix_from_utf8_fill_bytes(&message, nr_entries, Some(&modulus));
+        let res = matrix_from_utf8_fill_bytes(message, nr_entries, Some(&modulus));
 
         assert!(res.is_err());
     }

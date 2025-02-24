@@ -133,7 +133,7 @@ mod test_sample_binomial {
             let matrix = MatZ::sample_binomial(1, 1, 2, 0.5).unwrap();
             let sample = matrix.get_entry(0, 0).unwrap();
             assert!(Z::ZERO <= sample);
-            assert!(sample <= Z::from(2));
+            assert!(sample <= 2);
         }
     }
 

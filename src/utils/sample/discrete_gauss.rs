@@ -372,8 +372,8 @@ mod test_discrete_gaussian_integer_sampler {
 
         let sample = dgis.sample_z();
 
-        assert!(Z::from(-10) <= sample);
-        assert!(sample <= Z::from(10));
+        assert!(-10 <= sample);
+        assert!(sample <= 10);
     }
 
     /// Checks whether samples are kept in correct interval for a small interval.
@@ -389,8 +389,8 @@ mod test_discrete_gaussian_integer_sampler {
         for _ in 0..64 {
             let sample = dgis.sample_z();
 
-            assert!(Z::from(10) <= sample);
-            assert!(sample <= Z::from(20));
+            assert!(10 <= sample);
+            assert!(sample <= 20);
         }
     }
 
@@ -407,8 +407,8 @@ mod test_discrete_gaussian_integer_sampler {
         for _ in 0..256 {
             let sample = dgis.sample_z();
 
-            assert!(Z::from(-64) <= sample);
-            assert!(sample <= Z::from(62));
+            assert!(-64 <= sample);
+            assert!(sample <= 62);
         }
     }
 

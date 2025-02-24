@@ -129,7 +129,7 @@ mod test_sample_binomial {
             let poly = PolyOverZ::sample_binomial(0, 2, 0.5).unwrap();
             let sample = poly.get_coeff(0).unwrap();
             assert!(Z::ZERO <= sample);
-            assert!(sample <= Z::from(2));
+            assert!(sample <= 2);
         }
     }
 
