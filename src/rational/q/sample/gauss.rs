@@ -67,7 +67,7 @@ mod test_sample_gauss {
         let range = 3;
         for (mu, sigma) in [(i64::MAX, 1), (0, 20), (i64::MIN, 100)] {
             assert!(
-                Q::from(range * sigma) >= (Q::from(mu) - Q::sample_gauss(mu, sigma).unwrap()).abs()
+                range * sigma >= (Q::from(mu) - Q::sample_gauss(mu, sigma).unwrap()).abs()
             )
         }
     }

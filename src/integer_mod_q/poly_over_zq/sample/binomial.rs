@@ -136,8 +136,8 @@ mod test_sample_binomial {
     fn boundaries_kept() {
         for _ in 0..8 {
             let poly = PolyOverZq::sample_binomial(0, 7, 2, 0.5).unwrap();
-            let sample = poly.get_coeff(0).unwrap();
-            assert!(Z::ZERO <= sample || sample <= Z::from(2));
+            let sample: Z = poly.get_coeff(0).unwrap();
+            assert!(Z::ZERO <= sample || sample <= 2);
         }
     }
 
@@ -199,7 +199,7 @@ mod test_sample_binomial_with_offset {
     fn boundaries_kept() {
         for _ in 0..8 {
             let poly = PolyOverZq::sample_binomial_with_offset(0, -1, 7, 2, 0.5).unwrap();
-            let sample = poly.get_coeff(0).unwrap();
+            let sample: Z = poly.get_coeff(0).unwrap();
             assert!(Z::MINUS_ONE <= sample || sample <= Z::ONE);
         }
     }

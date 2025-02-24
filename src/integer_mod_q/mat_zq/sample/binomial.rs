@@ -138,8 +138,8 @@ mod test_sample_binomial {
     fn boundaries_kept() {
         for _ in 0..8 {
             let matrix = MatZq::sample_binomial(1, 1, 7, 2, 0.5).unwrap();
-            let sample = matrix.get_entry(0, 0).unwrap();
-            assert!(Z::ZERO <= sample || sample <= Z::from(2));
+            let sample: Z = matrix.get_entry(0, 0).unwrap();
+            assert!(Z::ZERO <= sample || sample <= 2);
         }
     }
 
@@ -204,7 +204,7 @@ mod test_sample_binomial_with_offset {
     fn boundaries_kept() {
         for _ in 0..8 {
             let matrix = MatZq::sample_binomial_with_offset(1, 1, -1, 7, 2, 0.5).unwrap();
-            let sample = matrix.get_entry(0, 0).unwrap();
+            let sample: Z = matrix.get_entry(0, 0).unwrap();
             assert!(Z::MINUS_ONE <= sample || sample <= Z::ONE);
         }
     }
