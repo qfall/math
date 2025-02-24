@@ -115,7 +115,7 @@ macro_rules! implement_for_others {
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::partialEq`]."]
                 fn partial_cmp(&self, other: &$type) -> Option<Ordering> {
-                    other.partial_cmp(&$bridge_type::from(self))
+                    $bridge_type::from(self).partial_cmp(other)
                 }
             }
         })*
