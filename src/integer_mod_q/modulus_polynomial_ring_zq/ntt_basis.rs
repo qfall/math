@@ -15,9 +15,12 @@
 //! The explicit functions contain the documentation.
 
 use super::ModulusPolynomialRingZq;
-use crate::integer_mod_q::{
-    ntt_basis_polynomial_ring_zq::{ConvolutionType, NTTBasisPolynomialRingZq},
-    Modulus, Zq,
+use crate::{
+    integer::Z,
+    integer_mod_q::{
+        ntt_basis_polynomial_ring_zq::{ConvolutionType, NTTBasisPolynomialRingZq},
+        Modulus,
+    },
 };
 use std::rc::Rc;
 
@@ -31,14 +34,14 @@ impl ModulusPolynomialRingZq {
     /// root, under the associated polynomial. For negacyclic polynomials, this means
     /// that the root must be a 2nth root of unity and for cyclic polynomials this means
     /// that it must be an nth root.
-    pub unsafe fn set_ntt_unchecked(&mut self, root_of_unity: &Zq) {
+    pub unsafe fn set_ntt_unchecked(&mut self, root_of_unity: impl Into<Z>) {
         let n = self.get_degree();
 
         let ntt_basis = NTTBasisPolynomialRingZq::init(
-            n,
+            n as usize,
             root_of_unity,
             &Modulus::from(self.get_q()),
-            &ConvolutionType::Negacyclic,
+            ConvolutionType::Negacyclic,
         );
         self.ntt_basis = Rc::new(Some(ntt_basis))
     }
@@ -64,7 +67,7 @@ mod test_setting_ntt {
 
         let mut polynomial_modulus = ModulusPolynomialRingZq::from(&mod_poly);
         unsafe {
-            polynomial_modulus.set_ntt_unchecked(&Zq::from((1753, modulus)));
+            polynomial_modulus.set_ntt_unchecked(1753);
         };
 
         let p1 = PolynomialRingZq::sample_uniform(&polynomial_modulus);
@@ -95,7 +98,7 @@ mod test_setting_ntt {
 
         let mut polynomial_modulus = ModulusPolynomialRingZq::from(&mod_poly);
         unsafe {
-            polynomial_modulus.set_ntt_unchecked(&Zq::from((1945, modulus)));
+            polynomial_modulus.set_ntt_unchecked(1945);
         };
 
         let p1 = PolynomialRingZq::sample_uniform(&polynomial_modulus);

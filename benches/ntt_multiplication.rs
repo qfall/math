@@ -7,11 +7,11 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! Contains benchmarks for multiplication with standard FLINT and multiplication using
-//! the NTT transform.
+//! the NTT .
 
 use criterion::*;
 use qfall_math::{
-    integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq, Zq},
+    integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq},
     traits::*,
 };
 
@@ -25,7 +25,7 @@ pub fn get_dilithium_setup() -> ModulusPolynomialRingZq {
 
     let mut polynomial_modulus = ModulusPolynomialRingZq::from(&mod_poly);
     unsafe {
-        polynomial_modulus.set_ntt_unchecked(&Zq::from((1753, modulus)));
+        polynomial_modulus.set_ntt_unchecked(1753);
     };
     polynomial_modulus
 }
@@ -40,12 +40,13 @@ pub fn get_hawk1024_setup() -> ModulusPolynomialRingZq {
 
     let mut polynomial_modulus = ModulusPolynomialRingZq::from(&mod_poly);
     unsafe {
-        polynomial_modulus.set_ntt_unchecked(&Zq::from((1945, modulus)));
+        polynomial_modulus.set_ntt_unchecked(1945);
     };
     polynomial_modulus
 }
 
-/// benchmark
+/// benchmark multiplication in typical dilithium parameter set with NTT
+/// `n=256`, `q = 2^23 - 2^13 + 1` and `zeta = 1753`
 pub fn bench_ntt_dilithium_params_with_ntt(c: &mut Criterion) {
     let modulus = get_dilithium_setup();
 
@@ -58,7 +59,8 @@ pub fn bench_ntt_dilithium_params_with_ntt(c: &mut Criterion) {
     );
 }
 
-/// benchmark
+/// benchmark multiplication in typical dilithium parameter set without NTT
+/// `n=1024`, `q = 2^23 - 2^13 + 1` and `zeta = 1735`
 pub fn bench_ntt_dilithium_params_without_ntt(c: &mut Criterion) {
     let modulus = get_dilithium_setup();
 
@@ -71,7 +73,8 @@ pub fn bench_ntt_dilithium_params_without_ntt(c: &mut Criterion) {
     );
 }
 
-/// benchmark
+/// benchmark multiplication in typical HAWK1024 parameter set with NTT
+/// `n=256`, `q = 12289` and `zeta = 1945`
 pub fn bench_ntt_hawk1024_params_with_ntt(c: &mut Criterion) {
     let modulus = get_hawk1024_setup();
 
@@ -83,7 +86,8 @@ pub fn bench_ntt_hawk1024_params_with_ntt(c: &mut Criterion) {
     });
 }
 
-/// benchmark
+/// benchmark multiplication in typical HAWK1024 parameter set without NTT
+/// `n=256`, `q = 12289` and `zeta = 1945`
 pub fn bench_ntt_hawk1024_params_without_ntt(c: &mut Criterion) {
     let modulus = get_hawk1024_setup();
 

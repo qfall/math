@@ -177,6 +177,33 @@ pub fn evaluate_indices_for_matrix<S: GetNumRows + GetNumColumns>(
     Ok((row_i64, column_i64))
 }
 
+/// Helper function to compute bit-reversed index
+fn bit_reverse(mut x: usize, log_n: usize) -> usize {
+    let mut res = 0;
+    for _ in 0..log_n {
+        res = (res << 1) | (x & 1);
+        x >>= 1;
+    }
+    res
+}
+
+/// Applies bit-reversed permutation to the input array
+/// Computes the Bit-Reversed order (BO) of an array.
+///
+/// This means that a vector of the form
+/// `[0,1,2,3]` will be reordered to `[0,2,1,3]`.
+pub(crate) fn bit_reverse_permutation<T>(a: &mut Vec<T>) {
+    let n = a.len();
+    let log_n = n.trailing_zeros() as usize;
+
+    for i in 0..n {
+        let rev_i = bit_reverse(i, log_n);
+        if i < rev_i {
+            a.swap(i, rev_i);
+        }
+    }
+}
+
 #[cfg(test)]
 mod test_eval_index {
     use super::evaluate_index;
@@ -270,5 +297,29 @@ mod test_eval_indices {
 
         assert!(evaluate_indices_for_matrix(&matrix, u64::MAX, 0).is_err());
         assert!(evaluate_indices_for_matrix(&matrix, 0, u64::MAX).is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_bit_reversed_order {
+    use super::bit_reverse_permutation;
+
+    /// ensure that the order is as expected in bit-reverse
+    #[test]
+    fn correct_new_order() {
+        let mut vec = (0..16).collect();
+        bit_reverse_permutation(&mut vec);
+        let cmp_vec = vec![0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15];
+        assert_eq!(cmp_vec, vec);
+    }
+
+    /// ensure that the function is self-inverse
+    #[test]
+    fn self_inverse() {
+        let vec: Vec<usize> = (0..12332).collect();
+        let mut vec_perm = vec.clone();
+        bit_reverse_permutation(&mut vec_perm);
+        bit_reverse_permutation(&mut vec_perm);
+        assert_eq!(vec, vec_perm);
     }
 }

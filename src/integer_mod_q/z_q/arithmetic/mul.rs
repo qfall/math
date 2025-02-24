@@ -105,17 +105,6 @@ impl Zq {
             modulus: self.modulus.clone(),
         }
     }
-
-    pub(crate) unsafe fn mul_mut_unsafe(&mut self, other: &Self) {
-        unsafe {
-            fmpz_mod_mul(
-                &mut self.value.value,
-                &self.value.value,
-                &other.value.value,
-                self.modulus.get_fmpz_mod_ctx_struct(),
-            );
-        }
-    }
 }
 
 arithmetic_trait_borrowed_to_owned!(Mul, mul, Zq, Zq, Zq);

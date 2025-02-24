@@ -32,6 +32,7 @@ pub use mat_polynomial_ring_zq::MatPolynomialRingZq;
 pub use mat_zq::MatZq;
 pub use modulus::Modulus;
 pub use modulus_polynomial_ring_zq::ModulusPolynomialRingZq;
+pub use ntt_basis_polynomial_ring_zq::{ConvolutionType, NTTBasisPolynomialRingZq};
 pub use poly_over_zq::PolyOverZq;
 pub use polynomial_ring_zq::PolynomialRingZq;
 pub(crate) use z_q::fmpz_mod_helpers;
