@@ -11,7 +11,8 @@
 use super::Z;
 use crate::traits::AsInteger;
 use flint_sys::fmpz::{
-    fmpz, fmpz_abs, fmpz_cmpabs, fmpz_init_set, fmpz_init_set_si, fmpz_init_set_ui, fmpz_sub, fmpz_swap
+    fmpz, fmpz_abs, fmpz_cmpabs, fmpz_init_set, fmpz_init_set_si, fmpz_init_set_ui, fmpz_sub,
+    fmpz_swap,
 };
 
 /// Efficiently finds maximum absolute value and returns
