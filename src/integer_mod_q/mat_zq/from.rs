@@ -450,4 +450,14 @@ mod test_from_utf8 {
 
         assert_eq!(cmp_matrix, matrix);
     }
+
+    /// Ensures that if the modulus was chosen too small, that the function returns an error.
+    #[test]
+    fn modulus_too_small() {
+        let message = "1";
+
+        let matrix = MatZq::from_utf8(message, 1, 1, 3);
+
+        assert!(matrix.is_err());
+    }
 }
