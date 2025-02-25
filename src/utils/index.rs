@@ -204,7 +204,7 @@ fn bit_reverse(mut x: usize, log_n: usize) -> usize {
 /// let cmp_vec = vec![0, 2, 1, 3];
 /// assert_eq!(cmp_vec, vec);
 /// ```
-pub fn bit_reverse_permutation<T>(a: &mut Vec<T>) {
+pub fn bit_reverse_permutation<T>(a: &mut [T]) {
     let n = a.len();
     let log_n = n.trailing_zeros() as usize;
 
@@ -319,7 +319,7 @@ mod test_bit_reversed_order {
     /// ensure that the order is as expected in bit-reverse
     #[test]
     fn correct_new_order() {
-        let mut vec = (0..16).collect();
+        let mut vec: Vec<i64> = (0..16).collect();
         bit_reverse_permutation(&mut vec);
         let cmp_vec = vec![0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15];
         assert_eq!(cmp_vec, vec);

@@ -108,11 +108,11 @@ impl NTTBasisPolynomialRingZq {
 
         // Negacyclic: perform preprocessing
         if self.convolution_type == ConvolutionType::Negacyclic {
-            for i in 0..poly_coeffs.len() {
+            for (i, x) in poly_coeffs.iter_mut().enumerate() {
                 unsafe {
                     fmpz_mod_mul(
-                        &mut poly_coeffs[i].value.value,
-                        &poly_coeffs[i].value.value,
+                        &mut x.value.value,
+                        &x.value.value,
                         &self.powers_of_psi[i].value.value,
                         self.modulus.get_fmpz_mod_ctx_struct(),
                     );

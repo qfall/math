@@ -102,11 +102,11 @@ impl NTTBasisPolynomialRingZq {
 
         // Negacyclic: perform postprocessing
         if self.convolution_type == ConvolutionType::Negacyclic {
-            for i in 0..res.len() {
+            for (i, x) in res.iter_mut().enumerate() {
                 unsafe {
                     fmpz_mod_mul(
-                        &mut res[i].value.value,
-                        &res[i].value.value,
+                        &mut x.value.value,
+                        &x.value.value,
                         &self.powers_of_psi_inv[i].value.value,
                         self.modulus.get_fmpz_mod_ctx_struct(),
                     )
@@ -158,8 +158,8 @@ unsafe fn intt_stride_steps(
             );
             fmpz_mod_sub_fmpz(
                 &mut chunk[i + stride].value,
-                &mut chunk[i].value,
-                &mut chunk[i + stride].value,
+                &chunk[i].value,
+                &chunk[i + stride].value,
                 modulus_pointer,
             );
             fmpz_mod_mul(
@@ -181,7 +181,7 @@ unsafe fn intt_stride_steps(
 ///
 /// The algorithm possesses the option to be multi-threaded, but benchmarking has shown,
 /// that it makes the algorithm less efficient, so we turned it off.
-fn iterative_intt(coefficients: Vec<Zq>, powers_of_omega_inv: &Vec<Zq>, n_inv: &Zq) -> Vec<Zq> {
+fn iterative_intt(coefficients: Vec<Zq>, powers_of_omega_inv: &[Zq], n_inv: &Zq) -> Vec<Zq> {
     let n = coefficients.len();
 
     let mut res = coefficients;
@@ -224,11 +224,11 @@ fn iterative_intt(coefficients: Vec<Zq>, powers_of_omega_inv: &Vec<Zq>, n_inv: &
 
     // compute the bit reversed order of the coefficients
     bit_reverse_permutation(&mut res);
-    for i in 0..res.len() {
+    for x in res.iter_mut() {
         unsafe {
             fmpz_mod_mul(
-                &mut res[i].value.value,
-                &res[i].value.value,
+                &mut x.value.value,
+                &x.value.value,
                 &n_inv.value.value,
                 n_inv.modulus.get_fmpz_mod_ctx_struct(),
             )

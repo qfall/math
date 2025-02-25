@@ -81,7 +81,7 @@ impl ModulusPolynomialRingZq {
         let ntt_basis = NTTBasisPolynomialRingZq::init(
             n as usize,
             root_of_unity,
-            &Modulus::from(self.get_q()),
+            Modulus::from(self.get_q()),
             convolution_type,
         );
         self.ntt_basis = Rc::new(Some(ntt_basis))
