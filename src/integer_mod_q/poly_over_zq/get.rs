@@ -85,9 +85,9 @@ impl PolyOverZq {
     ///
     /// let poly = PolyOverZq::from_str("4  0 1 2 3 mod 17").unwrap();
     ///
-    /// let coeff_0: Z = poly.get_coeff_uncheked(0).unwrap();
-    /// let coeff_1: Z = poly.get_coeff_uncheked(0).unwrap();
-    /// let coeff_4: Z = poly.get_coeff_uncheked(0).unwrap();
+    /// let coeff_0: Z = poly.get_coeff_unchecked(0);
+    /// let coeff_1: Z = poly.get_coeff_unchecked(1);
+    /// let coeff_4: Z = poly.get_coeff_unchecked(4);
     ///
     /// assert_eq!(Z::ZERO, coeff_0);
     /// assert_eq!(Z::ONE, coeff_1);

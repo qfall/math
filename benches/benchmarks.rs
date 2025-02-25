@@ -18,6 +18,6 @@ pub mod sampling;
 pub mod solve;
 
 criterion_main! {
-    // integer::benches, classic_crypto::benches, sampling::benches, solve::benches, cholesky_decomposition::benches
+    integer::benches, classic_crypto::benches, sampling::benches, solve::benches, cholesky_decomposition::benches,
     ntt_multiplication::benches
 }

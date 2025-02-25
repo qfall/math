@@ -24,9 +24,9 @@ pub fn get_dilithium_setup() -> ModulusPolynomialRingZq {
     mod_poly.set_coeff(n, 1).unwrap();
 
     let mut polynomial_modulus = ModulusPolynomialRingZq::from(&mod_poly);
-    unsafe {
-        polynomial_modulus.set_ntt_unchecked(1753);
-    };
+
+    polynomial_modulus.set_ntt_unchecked(1753);
+
     polynomial_modulus
 }
 
@@ -39,9 +39,9 @@ pub fn get_hawk1024_setup() -> ModulusPolynomialRingZq {
     mod_poly.set_coeff(n, 1).unwrap();
 
     let mut polynomial_modulus = ModulusPolynomialRingZq::from(&mod_poly);
-    unsafe {
-        polynomial_modulus.set_ntt_unchecked(1945);
-    };
+
+    polynomial_modulus.set_ntt_unchecked(1945);
+
     polynomial_modulus
 }
 

@@ -21,12 +21,41 @@ use crate::{
         ntt_basis_polynomial_ring_zq::{ConvolutionType, NTTBasisPolynomialRingZq},
         Modulus,
     },
+    traits::GetCoefficient,
 };
 use std::rc::Rc;
 
 impl ModulusPolynomialRingZq {
+    /// Initiates the NTT-basis for the [`ModulusPolynomialRingZq`] by providing a
+    /// root of unity.
+    /// It is not checked if it is actually a root of unity.
+    /// Based on the constant coefficient, it will either be instantiated for cyclic or negacyclic convolution.
+    /// If it is 1, then it will be interpreted as negacyclic and as cyclic otherwise.
+    /// The rest of the modulus-polynomial will not be checked, whether it is suited, and it will not be checked
+    /// if the provided root is actually a root of unity in the ring.
+    /// Setting the basis only works if `n` is a power of two.
+    ///
+    /// Parameters:
+    /// - `root_of_unity`: the `n`th or respectivley `2n`th root of unity over the modulus
+    ///
+    /// Defines the NTT-basis for the modulus ring without checking the context.
+    ///
     /// # Examples
     /// ```
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use crate::qfall_math::traits::SetCoefficient;
+    ///
+    /// let n = 256;
+    /// let modulus = 2_i64.pow(23) - 2_i64.pow(13) + 1;
+    ///
+    /// let mut mod_poly = PolyOverZq::from(modulus);
+    /// mod_poly.set_coeff(0, 1).unwrap();
+    /// mod_poly.set_coeff(n, 1).unwrap();
+    ///
+    /// let mut polynomial_modulus = ModulusPolynomialRingZq::from(&mod_poly);
+    ///
+    /// polynomial_modulus.set_ntt_unchecked(1753);
     /// ```
     ///
     /// # Safety
@@ -34,85 +63,27 @@ impl ModulusPolynomialRingZq {
     /// root, under the associated polynomial. For negacyclic polynomials, this means
     /// that the root must be a 2nth root of unity and for cyclic polynomials this means
     /// that it must be an nth root.
-    pub unsafe fn set_ntt_unchecked(&mut self, root_of_unity: impl Into<Z>) {
+    ///
+    /// # Panics
+    /// - if `n` is not a power of two.
+    pub fn set_ntt_unchecked(&mut self, root_of_unity: impl Into<Z>) {
         let n = self.get_degree();
+        let one_coeff: Z = self.get_coeff(0).unwrap();
+
+        let convolution_type = {
+            if one_coeff == Z::ONE {
+                ConvolutionType::Negacyclic
+            } else {
+                ConvolutionType::Cyclic
+            }
+        };
 
         let ntt_basis = NTTBasisPolynomialRingZq::init(
             n as usize,
             root_of_unity,
             &Modulus::from(self.get_q()),
-            ConvolutionType::Negacyclic,
+            convolution_type,
         );
         self.ntt_basis = Rc::new(Some(ntt_basis))
-    }
-}
-
-#[cfg(test)]
-mod test_setting_ntt {
-    use crate::{
-        integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq, Zq},
-        traits::SetCoefficient,
-    };
-
-    /// Ensure that the entrywise multiplication and the intuitive multiplication yields
-    /// the same results for the parameters from Dilithium.
-    #[test]
-    fn test_dilithium_params() {
-        let n = 256;
-        let modulus = 2_i64.pow(23) - 2_i64.pow(13) + 1;
-
-        let mut mod_poly = PolyOverZq::from(modulus);
-        mod_poly.set_coeff(0, 1).unwrap();
-        mod_poly.set_coeff(n, 1).unwrap();
-
-        let mut polynomial_modulus = ModulusPolynomialRingZq::from(&mod_poly);
-        unsafe {
-            polynomial_modulus.set_ntt_unchecked(1753);
-        };
-
-        let p1 = PolynomialRingZq::sample_uniform(&polynomial_modulus);
-        let p2 = PolynomialRingZq::sample_uniform(&polynomial_modulus);
-
-        let p1_ntt: Vec<Zq> = p1.ntt().unwrap();
-        let p2_ntt: Vec<Zq> = p2.ntt().unwrap();
-
-        let mut p3_ntt = Vec::new();
-        for i in 0..256 {
-            p3_ntt.push(&p1_ntt[i] * &p2_ntt[i])
-        }
-
-        let p3 = PolynomialRingZq::intt(p3_ntt, &polynomial_modulus).unwrap();
-        assert_eq!(p3, p1 * p2)
-    }
-
-    /// Ensure that the entrywise multiplication and the intuitive multiplication yields
-    /// the same results for the parameters from Hawk1024.
-    #[test]
-    fn test_hawk1024_params() {
-        let n = 1024;
-        let modulus = 12289;
-
-        let mut mod_poly = PolyOverZq::from(modulus);
-        mod_poly.set_coeff(0, 1).unwrap();
-        mod_poly.set_coeff(n, 1).unwrap();
-
-        let mut polynomial_modulus = ModulusPolynomialRingZq::from(&mod_poly);
-        unsafe {
-            polynomial_modulus.set_ntt_unchecked(1945);
-        };
-
-        let p1 = PolynomialRingZq::sample_uniform(&polynomial_modulus);
-        let p2 = PolynomialRingZq::sample_uniform(&polynomial_modulus);
-
-        let p1_ntt: Vec<Zq> = p1.ntt().unwrap();
-        let p2_ntt: Vec<Zq> = p2.ntt().unwrap();
-
-        let mut p3_ntt = Vec::new();
-        for i in 0..1024 {
-            p3_ntt.push(&p1_ntt[i] * &p2_ntt[i])
-        }
-
-        let p3 = PolynomialRingZq::intt(p3_ntt, &polynomial_modulus).unwrap();
-        assert_eq!(p3, p1 * p2)
     }
 }

@@ -7,7 +7,7 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! [`NTTBasisPolynomialRingZq`] serves as an optional context object for
-//! [`PolynomialRingZq`]. If it is set for the matrix, then the multiplication of polynomials
+//! [`PolynomialRingZq`](super::PolynomialRingZq). If it is set for the matrix, then the multiplication of polynomials
 //! is performed using the NTT, and otherwise the multiplication is kept as it is.
 
 use super::{Modulus, Zq};
@@ -20,7 +20,7 @@ mod ntt;
 /// [`NTTBasisPolynomialRingZq`] is an object, that given a polynomial
 /// `X^n - 1 mod q` or `X^n + 1 mod q` computes two transformation functions.
 /// With these functions, one can utilize efficient matrix multiplication O(n log n) instead of
-/// O(n^2) in the trivial polynomial multiplication for [`PolynomialRingZq`] objects.
+/// O(n^2) in the trivial polynomial multiplication for [`PolynomialRingZq`](super::PolynomialRingZq) objects.
 ///
 /// Currently this implementation *only* supports `n` that are a power of two.
 ///
@@ -39,7 +39,7 @@ mod ntt;
 /// - `convolution_type`: tells subsequet algorithms if the convolution is positively or negatively wrapped
 ///
 /// # Examples
-/// This example is taken from: https://eprint.iacr.org/2024/585.pdf Example 3.8
+/// This example is taken from: <https://eprint.iacr.org/2024/585.pdf> Example 3.8
 /// ```
 /// use qfall_math::integer_mod_q::*;
 /// use std::str::FromStr;
@@ -81,7 +81,7 @@ mod ntt;
 /// assert_eq!(g_poly_ring * h_poly_ring, g_h_poly_ring)
 /// ```
 ///
-/// This example is taken from: https://eprint.iacr.org/2024/585.pdf Example 3.12
+/// This example is taken from: <https://eprint.iacr.org/2024/585.pdf> Example 3.12
 /// ```
 /// use qfall_math::integer_mod_q::*;
 /// use std::str::FromStr;

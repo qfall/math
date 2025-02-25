@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! This file contains functionality to instantiate and test cyclotomic polynomials over [`PolzOverZ`]
+//! This file contains functionality to instantiate and test cyclotomic polynomials over [`PolyOverZ`]
 
 use super::PolyOverZ;
 use flint_sys::fmpz_poly::{fmpz_poly_cyclotomic, fmpz_poly_is_cyclotomic};
@@ -32,7 +32,7 @@ impl PolyOverZ {
     /// If `m` is dividible by 2, then the polynomial takes on the value of the cyclotomic polynomial of
     /// degree m/2 over `-X`.
     /// More explanations about the details can be found here:
-    /// https://flintlib.org/doc/fmpz_poly.html#c._fmpz_poly_cyclotomic.
+    /// <https://flintlib.org/doc/fmpz_poly.html#c._fmpz_poly_cyclotomic>.
     ///
     /// Parameters:
     /// - `m`: The identifier of the cyclotomic polynomial.
