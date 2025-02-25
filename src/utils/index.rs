@@ -199,7 +199,7 @@ fn bit_reverse(mut x: usize, log_n: usize) -> usize {
 /// ```
 /// use qfall_math::utils::index::bit_reverse_permutation;
 ///
-/// let mut vec = (0..4).collect();
+/// let mut vec: Vec<usize> = (0..4).collect();
 /// bit_reverse_permutation(&mut vec);
 /// let cmp_vec = vec![0, 2, 1, 3];
 /// assert_eq!(cmp_vec, vec);
