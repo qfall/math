@@ -9,5 +9,5 @@
 //! This module includes core functionality to sample according to random distributions.
 
 pub(crate) mod binomial;
-pub(crate) mod discrete_gauss;
+pub mod discrete_gauss;
 pub(crate) mod uniform;

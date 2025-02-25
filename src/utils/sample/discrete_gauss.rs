@@ -1,4 +1,4 @@
-// Copyright © 2023 Niklas Siemer
+// Copyright © 2025 Niklas Siemer
 //
 // This file is part of qFALL-math.
 //
@@ -32,6 +32,11 @@ use std::collections::HashMap;
 /// This struct evaluates the Gauss function lazily (i.e. only if required)
 /// and saves it in a [`HashMap`].
 ///
+/// **WARNING:** If the attributes are not set using [`DiscreteGaussianIntegerSampler::init`],
+/// we can't guarantee sampling from the correct discrete Gaussian distribution.
+/// Altering any value will invalidate the [`HashMap`] in `table` and might invalidate
+/// other attributes, too.
+///
 /// Attributes:
 /// - `n`: specifies the range from which is sampled
 /// - `center`: specifies the position of the center with peak probability
@@ -39,9 +44,9 @@ use std::collections::HashMap;
 ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
 ///
 /// # Examples
-/// ```compile_fail
+/// ```
 /// use qfall_math::{integer::Z, rational::Q};
-/// use qfall_math::utils::sample::discrete_gauss::sample_z;
+/// use qfall_math::utils::sample::discrete_gauss::DiscreteGaussianIntegerSampler;
 /// let n = Z::from(1024);
 /// let center = Q::ZERO;
 /// let gaussian_parameter = Q::ONE;
@@ -51,12 +56,12 @@ use std::collections::HashMap;
 /// let sample = dgis.sample_z();
 /// ```
 #[derive(Debug, Serialize, Clone)]
-pub(crate) struct DiscreteGaussianIntegerSampler {
-    center: Q,
-    s: Q,
-    lower_bound: Z,
-    interval_size: Z,
-    table: HashMap<Z, f64>,
+pub struct DiscreteGaussianIntegerSampler {
+    pub center: Q,
+    pub s: Q,
+    pub lower_bound: Z,
+    pub interval_size: Z,
+    pub table: HashMap<Z, f64>,
 }
 
 impl DiscreteGaussianIntegerSampler {
@@ -79,9 +84,9 @@ impl DiscreteGaussianIntegerSampler {
     /// i.e. `n > 1` or `s > 0` or `s * log_2(n) < 1`.
     ///
     /// # Examples
-    /// ```compile_fail
+    /// ```
     /// use qfall_math::{integer::Z, rational::Q};
-    /// use qfall_math::utils::sample::discrete_gauss::sample_z;
+    /// use qfall_math::utils::sample::discrete_gauss::DiscreteGaussianIntegerSampler;
     /// let n = Z::from(1024);
     /// let center = Q::ZERO;
     /// let gaussian_parameter = Q::ONE;
@@ -92,7 +97,7 @@ impl DiscreteGaussianIntegerSampler {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
     ///     if `n <= 1` or `s <= 0` or `s * log_2(n) < 1`.
-    pub(crate) fn init(n: &Z, center: &Q, s: &Q) -> Result<Self, MathError> {
+    pub fn init(n: &Z, center: &Q, s: &Q) -> Result<Self, MathError> {
         if n <= &Z::ONE {
             return Err(MathError::InvalidIntegerInput(format!(
                 "The value {n} was provided for parameter n of the function sample_z.
@@ -134,9 +139,9 @@ impl DiscreteGaussianIntegerSampler {
     /// SampleZ as in [\[1\]](<index.html#:~:text=[1]>).
     ///
     /// # Examples
-    /// ```compile_fail
+    /// ```
     /// use qfall_math::{integer::Z, rational::Q};
-    /// use qfall_math::utils::sample::discrete_gauss::sample_z;
+    /// use qfall_math::utils::sample::discrete_gauss::DiscreteGaussianIntegerSampler;
     /// let n = Z::from(1024);
     /// let center = Q::ZERO;
     /// let gaussian_parameter = Q::ONE;
@@ -145,7 +150,7 @@ impl DiscreteGaussianIntegerSampler {
     ///
     /// let sample = dgis.sample_z();
     /// ```
-    pub(crate) fn sample_z(&mut self) -> Z {
+    pub fn sample_z(&mut self) -> Z {
         let mut rng = rand::rng();
         loop {
             // sample x in [c - s * log_2(n), c + s * log_2(n)]
@@ -182,7 +187,7 @@ impl DiscreteGaussianIntegerSampler {
 /// Returns the computed value of the Gaussian function for `x`.
 ///
 /// # Examples
-/// ```compile_fail
+/// ```
 /// use qfall_math::{integer::Z, rational::Q};
 /// use qfall_math::utils::sample::discrete_gauss::gaussian_function;
 /// let sample = Z::ONE;
@@ -195,7 +200,7 @@ impl DiscreteGaussianIntegerSampler {
 /// # Panics ...
 /// - if `s = 0`.
 /// - if `-π * (x - c)^2 / s^2` is larger than [`f64::MAX`]
-fn gaussian_function(x: &Z, c: &Q, s: &Q) -> f64 {
+pub fn gaussian_function(x: &Z, c: &Q, s: &Q) -> f64 {
     let num = Q::MINUS_ONE * Q::PI * (x - c).pow(2).unwrap();
     let den = s.pow(2).unwrap();
     let res = f64::from(&(num / den));
