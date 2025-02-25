@@ -27,6 +27,8 @@ impl IntoCoefficientEmbedding<(MatZq, ModulusPolynomialRingZq)> for &MatPolynomi
     /// coefficients of degree 0, and the last one their coefficients
     /// of degree `size - 1`.
     /// It inverts the operation of [`MatPolynomialRingZq::from_coefficient_embedding`].
+    /// 
+    /// The representation of the polynomials in the embedding is in the range `[0, modulus_polynomial)`.
     ///
     /// Parameters:
     /// - `size`: determines the number of rows each polynomial is embedded in.
