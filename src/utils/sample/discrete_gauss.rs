@@ -39,9 +39,9 @@ use std::collections::HashMap;
 ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
 ///
 /// # Examples
-/// ```compile_fail
+/// ```
 /// use qfall_math::{integer::Z, rational::Q};
-/// use qfall_math::utils::sample::discrete_gauss::sample_z;
+/// use qfall_math::utils::sample::discrete_gauss::DiscreteGaussianIntegerSampler;
 /// let n = Z::from(1024);
 /// let center = Q::ZERO;
 /// let gaussian_parameter = Q::ONE;
@@ -79,9 +79,9 @@ impl DiscreteGaussianIntegerSampler {
     /// i.e. `n > 1` or `s > 0` or `s * log_2(n) < 1`.
     ///
     /// # Examples
-    /// ```compile_fail
+    /// ```
     /// use qfall_math::{integer::Z, rational::Q};
-    /// use qfall_math::utils::sample::discrete_gauss::sample_z;
+    /// use qfall_math::utils::sample::discrete_gauss::DiscreteGaussianIntegerSampler;
     /// let n = Z::from(1024);
     /// let center = Q::ZERO;
     /// let gaussian_parameter = Q::ONE;
@@ -134,9 +134,9 @@ impl DiscreteGaussianIntegerSampler {
     /// SampleZ as in [\[1\]](<index.html#:~:text=[1]>).
     ///
     /// # Examples
-    /// ```compile_fail
+    /// ```
     /// use qfall_math::{integer::Z, rational::Q};
-    /// use qfall_math::utils::sample::discrete_gauss::sample_z;
+    /// use qfall_math::utils::sample::discrete_gauss::DiscreteGaussianIntegerSampler;
     /// let n = Z::from(1024);
     /// let center = Q::ZERO;
     /// let gaussian_parameter = Q::ONE;
@@ -182,7 +182,7 @@ impl DiscreteGaussianIntegerSampler {
 /// Returns the computed value of the Gaussian function for `x`.
 ///
 /// # Examples
-/// ```compile_fail
+/// ```
 /// use qfall_math::{integer::Z, rational::Q};
 /// use qfall_math::utils::sample::discrete_gauss::gaussian_function;
 /// let sample = Z::ONE;
