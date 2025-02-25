@@ -117,8 +117,7 @@ impl MatZ {
         let nr_entries = mat.get_num_rows() as usize * num_columns;
 
         // This error can't be triggered as no modulus is provided.
-        let (byte_vector, nr_bytes_per_entry) =
-            matrix_from_utf8_fill_bytes(message, nr_entries, None).unwrap();
+        let (byte_vector, nr_bytes_per_entry) = matrix_from_utf8_fill_bytes(message, nr_entries);
 
         // Fill rows going from left to right, entry by entry
         for row in 0..mat.get_num_rows() as usize {

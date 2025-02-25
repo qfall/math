@@ -166,16 +166,17 @@ impl From<&MatZq> for MatZq {
 }
 
 impl MatZq {
-    /// Create a [`MatZ`] from a [`String`], i.e. its UTF8-Encoding.
+    /// Create a [`MatZq`] from a [`String`], i.e. its UTF8-Encoding.
     /// This function can only construct positive or zero integers, but not negative ones.
     /// If the number of bytes and number of entries does not line up, we pad the message
     /// with `'0'`s.
     /// The inverse of this function is [`MatZq::to_utf8`].
     ///
-    /// **WARNING:** This implementation is very restrictive.
-    /// It requires the modulus to be larger than or equal to the next byte-order size,
-    /// i.e. `(2^8)^i`. Then, the largest entry may be at most `(2^8)^(i-1)` defines the
-    /// maximum entry that is allowed.
+    /// **WARNING:** This implementation requires the `modulus` to be larger than
+    /// any single entry in the matrix. This function will denote the same number of bytes
+    /// to every entry and sequentially move through your `message` to encode them.
+    /// If a decimal presentation of these bytes is ever larger than the specified `modulus`,
+    /// the function will return an error.
     ///
     /// Parameters:
     /// - `message`: specifies the message that is transformed via its UTF8-Encoding
@@ -183,9 +184,12 @@ impl MatZq {
     /// - `num_rows`: number of rows the new matrix should have
     /// - `num_cols`: number of columns the new matrix should have
     /// - `modulus`: specifies the modulus of the matrix, it is required to be larger
-    ///     than or equal to the next byte-order size than the largest entry
+    ///     than any entry of the matrix
     ///
-    /// Returns a [`MatZq`] with corresponding entries to the message's UTF8-Encoding.
+    /// Returns a [`MatZq`] with corresponding entries to the message's UTF8-Encoding or
+    /// a [`ConversionError`](MathError::ConversionError) if the modulus isn't larger than
+    /// every single entry of the matrix after distributing the (potentially padded) UTF8-Bytes
+    /// equally over the matrix.
     ///
     /// # Examples
     /// ```
@@ -194,6 +198,11 @@ impl MatZq {
     ///  
     /// let matrix = MatZq::from_utf8(&message, 3, 2, 257).unwrap();
     /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
+    ///     if the modulus isn't larger than the largest entry of the matrix after equally
+    ///     distributing the (potentially padded) UTF8-Conversion over the matrix.
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
@@ -208,11 +217,9 @@ impl MatZq {
         let mut mat = MatZq::new(num_rows_i64, num_cols_i64, modulus);
         let num_columns = mat.get_num_columns() as usize;
         let nr_entries = mat.get_num_rows() as usize * num_columns;
-        let modulus = mat.get_mod();
+        let modulus_as_z = Z::from(mat.get_mod());
 
-        // This error can't be triggered as no modulus is provided.
-        let (byte_vector, nr_bytes_per_entry) =
-            matrix_from_utf8_fill_bytes(message, nr_entries, Some(&modulus))?;
+        let (byte_vector, nr_bytes_per_entry) = matrix_from_utf8_fill_bytes(message, nr_entries);
 
         // Fill rows going from left to right, entry by entry
         for row in 0..mat.get_num_rows() as usize {
@@ -222,7 +229,14 @@ impl MatZq {
                     &byte_vector[offset_row + nr_bytes_per_entry * col
                         ..offset_row + nr_bytes_per_entry * (col + 1)],
                 );
-                mat.set_entry(row, col, entry_value).unwrap();
+                if modulus_as_z > entry_value {
+                    mat.set_entry(row, col, entry_value).unwrap();
+                } else {
+                    return Err(MathError::ConversionError(
+                        "The provided modulus is smaller than the UTF8-Encoding of your message."
+                            .to_owned(),
+                    ));
+                }
             }
         }
 
