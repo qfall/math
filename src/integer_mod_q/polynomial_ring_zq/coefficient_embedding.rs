@@ -24,6 +24,8 @@ impl IntoCoefficientEmbedding<(MatZq, ModulusPolynomialRingZq)> for &PolynomialR
     /// of the vector corresponds to the i-th coefficient, and a
     /// [`ModulusPolynomialRingZq`].
     /// It inverts the operation of [`PolynomialRingZq::from_coefficient_embedding`].
+    /// 
+    /// The representation of the polynomials in the embedding is in the range `[0, modulus_polynomial)`.
     ///
     /// Parameters:
     /// - `size`: determines the number of rows of the embedding. It has to be larger
