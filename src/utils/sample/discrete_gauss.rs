@@ -32,6 +32,11 @@ use std::collections::HashMap;
 /// This struct evaluates the Gauss function lazily (i.e. only if required)
 /// and saves it in a [`HashMap`].
 ///
+/// **WARNING:** If the attributes are not set using [`DiscreteGaussianIntegerSampler::init`],
+/// we can't guarantee sampling from the correct discrete Gaussian distribution.
+/// Altering any value will invalidate the [`HashMap`] in `table` and might invalidate
+/// other attributes, too.
+///
 /// Attributes:
 /// - `n`: specifies the range from which is sampled
 /// - `center`: specifies the position of the center with peak probability
