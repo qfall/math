@@ -10,7 +10,7 @@
 
 use super::Q;
 use crate::integer::Z;
-use flint_sys::fmpz::fmpz_set;
+use flint_sys::fmpz::fmpz_init_set;
 
 impl Q {
     /// Returns the denominator
@@ -28,7 +28,7 @@ impl Q {
     /// ```
     pub fn get_denominator(&self) -> Z {
         let mut result = Z::default();
-        unsafe { fmpz_set(&mut result.value, &self.value.den) };
+        unsafe { fmpz_init_set(&mut result.value, &self.value.den) };
         result
     }
 
@@ -47,7 +47,7 @@ impl Q {
     /// ```
     pub fn get_numerator(&self) -> Z {
         let mut result = Z::default();
-        unsafe { fmpz_set(&mut result.value, &self.value.num) };
+        unsafe { fmpz_init_set(&mut result.value, &self.value.num) };
         result
     }
 }
