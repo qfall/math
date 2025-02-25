@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! This module contains implementations to perform the NTT-transform for [`PolyOverZq`]
+//! This module contains implementations to perform the NTT for [`PolyOverZq`]
 //! in the respective polynomialring
 //!
 //! The explicit functions contain the documentation.
@@ -20,13 +20,15 @@ use crate::{
 use flint_sys::fmpz_mod::{fmpz_mod_add, fmpz_mod_ctx, fmpz_mod_mul, fmpz_mod_sub};
 
 impl NTTBasisPolynomialRingZq {
-    /// For a given polynomial viewed in the polynomial ring defined by the `self`, it computes the NTT-transform.
+    /// For a given polynomial viewed in the polynomial ring defined by the `self`, it computes the NTT.
     ///
     /// It computes the iterative Cooley-Tukey transformation algorithm to compute the transform.
     /// Polynomials of degree smaller than `n-1` are with `0` coefficients.
     ///
     /// Parameters:
-    /// - `poly`: The polynomial for which it is desired to compute the NTT-form
+    /// - `poly`: The polynomial for which it is desired to compute the NTT
+    ///
+    /// Returns the NTT of a polynomial in the context of the polynomial ring.
     ///
     /// # Examples
     /// ```
@@ -92,7 +94,10 @@ impl NTTBasisPolynomialRingZq {
         // we use the unsafe getter, because we know that all indices are in the range
         // and no error can occur here
         let mut poly_coeffs: Vec<Zq> = (0..self.n)
-            .map(|i| unsafe { poly.get_coeff_unsafe(i) })
+            .map(|i| Zq {
+                value: poly.get_coeff_unchecked(i),
+                modulus: self.modulus.clone(),
+            })
             .collect();
         for _ in poly_coeffs.len()..(self.n as usize) {
             poly_coeffs.push(Zq {

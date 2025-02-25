@@ -82,15 +82,6 @@ impl Zq {
             If the modulus should be ignored please convert into a Z beforehand."
             )));
         }
-        unsafe { Ok(self.add_unsafe(other)) }
-    }
-
-    /// This function behaves exactly as [`Zq::add_safe`] with the exception that the modulus is not compared between the two types.
-    ///
-    /// # Safety
-    /// As an developer make sure that this function is only used if the modulus has been
-    /// tested before.
-    pub(crate) unsafe fn add_unsafe(&self, other: &Self) -> Self {
         let mut out_z = Z::ZERO;
         unsafe {
             fmpz_mod_add(
@@ -101,10 +92,10 @@ impl Zq {
             );
         }
 
-        Self {
+        Ok(Self {
             value: out_z,
             modulus: self.modulus.clone(),
-        }
+        })
     }
 }
 

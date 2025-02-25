@@ -65,7 +65,35 @@ impl GetCoefficient<Zq> for PolyOverZq {
 }
 
 impl PolyOverZq {
-    pub(crate) unsafe fn get_coeff_unsafe(&self, index: i64) -> Zq {
+    /// This is an unchecked version of the other getters.
+    /// It only returns a clone of the contained `fmpz` value as a `Z` value.
+    /// This is considerably more efficient than the other getters, but it also does not check if the coefficient
+    /// of the polynomial is set.
+    /// Therefore, if a value outside of the range is chosen, it will be `0`.
+    ///
+    /// The entry is reduced as `self` is reduced.
+    ///
+    /// Parameters:
+    /// - `index`: the index for which the coefficient will be returned.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::traits::*;
+    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use qfall_math::integer::Z;
+    /// use std::str::FromStr;
+    ///
+    /// let poly = PolyOverZq::from_str("4  0 1 2 3 mod 17").unwrap();
+    ///
+    /// let coeff_0: Z = poly.get_coeff_uncheked(0).unwrap();
+    /// let coeff_1: Z = poly.get_coeff_uncheked(0).unwrap();
+    /// let coeff_4: Z = poly.get_coeff_uncheked(0).unwrap();
+    ///
+    /// assert_eq!(Z::ZERO, coeff_0);
+    /// assert_eq!(Z::ONE, coeff_1);
+    /// assert_eq!(Z::ZERO, coeff_4);
+    /// ```
+    pub fn get_coeff_unchecked(&self, index: i64) -> Z {
         let mut z = Z::default();
         unsafe {
             fmpz_mod_poly_get_coeff_fmpz(
@@ -75,12 +103,7 @@ impl PolyOverZq {
                 self.modulus.get_fmpz_mod_ctx_struct(),
             )
         }
-        // as we know that the entry is already reduced we can directly det the values
-        // instead of putting it through the from function to save some runtime
-        Zq {
-            value: z,
-            modulus: self.modulus.clone(),
-        }
+        z
     }
 }
 

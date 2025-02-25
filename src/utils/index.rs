@@ -190,9 +190,21 @@ fn bit_reverse(mut x: usize, log_n: usize) -> usize {
 /// Applies bit-reversed permutation to the input array
 /// Computes the Bit-Reversed order (BO) of an array.
 ///
-/// This means that a vector of the form
-/// `[0,1,2,3]` will be reordered to `[0,2,1,3]`.
-pub(crate) fn bit_reverse_permutation<T>(a: &mut Vec<T>) {
+/// Parameters:
+/// - `a`: the array whos order should be changed to bit-reversed order
+///
+/// Returns an array in BO order
+///
+/// # Examples
+/// ```
+/// use qfall_math::utils::index::bit_reverse_permutation;
+///
+/// let mut vec = (0..4).collect();
+/// bit_reverse_permutation(&mut vec);
+/// let cmp_vec = vec![0, 2, 1, 3];
+/// assert_eq!(cmp_vec, vec);
+/// ```
+pub fn bit_reverse_permutation<T>(a: &mut Vec<T>) {
     let n = a.len();
     let log_n = n.trailing_zeros() as usize;
 

@@ -65,19 +65,6 @@ impl<Integer: Into<Z>> SetCoefficient<Integer> for PolyOverZq {
     }
 }
 
-impl PolyOverZq {
-    pub(crate) unsafe fn set_coefficient_unsafe(&mut self, index: i64, value: &Z) {
-        unsafe {
-            fmpz_mod_poly_set_coeff_fmpz(
-                &mut self.poly,
-                index,
-                &value.value,
-                self.modulus.get_fmpz_mod_ctx_struct(),
-            );
-        }
-    }
-}
-
 impl SetCoefficient<&Zq> for PolyOverZq {
     /// Sets the coefficient of a polynomial [`PolyOverZq`].
     /// We advise to use small coefficients, since already 2^32 coefficients take space

@@ -20,15 +20,18 @@ use crate::{
 use flint_sys::{
     fmpz::fmpz_swap,
     fmpz_mod::{fmpz_mod_add, fmpz_mod_ctx, fmpz_mod_mul, fmpz_mod_sub_fmpz},
+    fmpz_mod_poly::fmpz_mod_poly_set_coeff_fmpz,
 };
 
 impl NTTBasisPolynomialRingZq {
-    /// For a given polynomial viewed in the polynomial ring defined by the `self`, it computes the inverse NTT-transform.
+    /// For a given polynomial viewed in the polynomial ring defined by the `self`, it computes the inverse NTT.
     ///
     /// It computes the iterative Gentleman-Sande transformation algorithm to compute the transform.
     ///
     /// Parameters:
-    /// - `vector`: The coefficients of the polynomial when viewed in NTT-form.
+    /// - `vector`: The coefficients of the polynomial when viewed in NTT.
+    ///
+    /// Returns the inverse of the NTT from a vector and returns it as a polynomial.
     ///
     /// # Examples
     /// ```
@@ -114,9 +117,12 @@ impl NTTBasisPolynomialRingZq {
         let mut out = PolyOverZq::from(self.modulus.clone());
         for (i, x) in res.iter().enumerate() {
             unsafe {
-                // we know that the entry is reduced, and that it only addresses correct
-                // entries
-                out.set_coefficient_unsafe(i as i64, &x.value)
+                fmpz_mod_poly_set_coeff_fmpz(
+                    &mut out.poly,
+                    i as i64,
+                    &x.value.value,
+                    self.modulus.get_fmpz_mod_ctx_struct(),
+                );
             }
         }
 
