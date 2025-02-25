@@ -87,14 +87,14 @@ impl NTTBasisPolynomialRingZq {
     ///     "An algorithm for the machine calculation of complex Fourier series."
     ///     Mathematics of computation 19.90 (1965): 297-301.
     pub fn ntt(&self, poly: &PolyOverZq) -> Vec<Zq> {
-        assert!(poly.get_degree() <= self.n);
+        assert!(poly.get_degree() < self.n);
         assert_eq!(poly.get_mod(), self.modulus);
         // we use the unsafe getter, because we know that all indices are in the range
         // and no error can occur here
         let mut poly_coeffs: Vec<Zq> = (0..self.n)
             .map(|i| unsafe { poly.get_coeff_unsafe(i) })
             .collect();
-        for _ in poly.get_degree()..(self.n - 1) {
+        for _ in poly_coeffs.len()..(self.n as usize) {
             poly_coeffs.push(Zq {
                 value: Z::default(),
                 modulus: self.modulus.clone(),
@@ -212,4 +212,73 @@ fn iterative_ntt(coefficients: Vec<Zq>, powers_of_omega: &[Zq]) -> Vec<Zq> {
         power_pointer -= 1;
     }
     res
+}
+
+#[cfg(test)]
+mod test_ntt {
+    use crate::integer_mod_q::{
+        ConvolutionType, Modulus, NTTBasisPolynomialRingZq, PolyOverZq, Zq,
+    };
+    use std::str::FromStr;
+
+    /// This example is taken from: https://eprint.iacr.org/2024/585.pdf Example 3.4
+    #[test]
+    fn example_34_multiplication_with_ntt() {
+        let g_poly = PolyOverZq::from_str("4  1 2 3 4 mod 7681").unwrap();
+        let modulus = Modulus::from(7681);
+
+        let ntt_basis = NTTBasisPolynomialRingZq::init(4, 3383, &modulus, ConvolutionType::Cyclic);
+
+        let ghat = ntt_basis.ntt(&g_poly);
+        let cmp_ghat = vec![
+            Zq::from((10, &modulus)),
+            Zq::from((913, &modulus)),
+            Zq::from((7679, &modulus)),
+            Zq::from((6764, &modulus)),
+        ];
+        assert_eq!(cmp_ghat, ghat);
+    }
+
+    /// Ensure that NTT panics, if the degree of the polynomial is too high, i.e. not reduced.
+    #[test]
+    #[should_panic]
+    fn degree_too_high() {
+        let g_poly = PolyOverZq::from_str("5  1 2 3 4 5 mod 7681").unwrap();
+        let modulus = Modulus::from(7681);
+
+        let ntt_basis = NTTBasisPolynomialRingZq::init(4, 3383, &modulus, ConvolutionType::Cyclic);
+
+        let _ = ntt_basis.ntt(&g_poly);
+    }
+
+    /// Ensure that NTT panics, if the modulus of the polynomial is different
+    #[test]
+    #[should_panic]
+    fn different_modulus() {
+        let g_poly = PolyOverZq::from_str("4  1 2 3 4 mod 7681").unwrap();
+        let modulus = Modulus::from(7682);
+
+        let ntt_basis = NTTBasisPolynomialRingZq::init(4, 3383, &modulus, ConvolutionType::Cyclic);
+
+        let _ = ntt_basis.ntt(&g_poly);
+    }
+
+    /// Ensure that NTT works for smaller degree polynomials
+    #[test]
+    fn small_degree() {
+        let g_poly = PolyOverZq::from_str("2  1 2 mod 7681").unwrap();
+        let modulus = Modulus::from(7681);
+
+        let ntt_basis =
+            NTTBasisPolynomialRingZq::init(4, 1925, &modulus, ConvolutionType::Negacyclic);
+
+        let ghat = ntt_basis.ntt(&g_poly);
+        let cmp_ghat = vec![
+            Zq::from((3851, &modulus)),
+            Zq::from((5256, &modulus)),
+            Zq::from((3832, &modulus)),
+            Zq::from((2427, &modulus)),
+        ];
+        assert_eq!(cmp_ghat, ghat);
+    }
 }

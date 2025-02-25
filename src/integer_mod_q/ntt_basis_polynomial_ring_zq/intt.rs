@@ -230,3 +230,47 @@ fn iterative_intt(coefficients: Vec<Zq>, powers_of_omega_inv: &Vec<Zq>, n_inv: &
     }
     res
 }
+
+#[cfg(test)]
+mod test_intt {
+    use crate::integer_mod_q::{ConvolutionType, Modulus, NTTBasisPolynomialRingZq, Zq};
+
+    /// Ensure that INTT panics, if the degree of the polynomial is too low compared to the number of provided entries.
+    #[test]
+    #[should_panic]
+    fn degree_too_high() {
+        let modulus = Modulus::from(7681);
+
+        let ntt_basis =
+            NTTBasisPolynomialRingZq::init(4, 1925, &modulus, ConvolutionType::Negacyclic);
+
+        let ghat_ntt = vec![
+            Zq::from((1467, &modulus)),
+            Zq::from((2807, &modulus)),
+            Zq::from((3471, &modulus)),
+            Zq::from((7621, &modulus)),
+            Zq::from((1, &modulus)),
+        ];
+
+        let _ = ntt_basis.intt(ghat_ntt);
+    }
+
+    /// Ensure that INTT panics, if the modulus of the polynomial is different
+    #[test]
+    #[should_panic]
+    fn different_modulus() {
+        let modulus = Modulus::from(7681);
+
+        let ntt_basis =
+            NTTBasisPolynomialRingZq::init(4, 1925, &modulus, ConvolutionType::Negacyclic);
+
+        let ghat_ntt = vec![
+            Zq::from((1467, 5000)),
+            Zq::from((2807, &modulus)),
+            Zq::from((3471, &modulus)),
+            Zq::from((7621, &modulus)),
+        ];
+
+        let _ = ntt_basis.intt(ghat_ntt);
+    }
+}

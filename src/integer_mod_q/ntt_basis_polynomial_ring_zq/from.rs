@@ -116,3 +116,107 @@ pub enum ConvolutionType {
     Cyclic,
     Negacyclic,
 }
+
+#[cfg(test)]
+mod test_init {
+    use super::ConvolutionType;
+    use crate::{
+        integer::Z,
+        integer_mod_q::{Modulus, NTTBasisPolynomialRingZq, Zq},
+    };
+
+    /// Our algorithm only supports complete splits as of right now, so other inputs should be prohibited for now.
+    #[test]
+    #[should_panic]
+    fn n_not_power_2() {
+        let _ = NTTBasisPolynomialRingZq::init(12315, 1, 2, ConvolutionType::Cyclic);
+    }
+
+    /// Ensure that the algorithm sets the set of values as expected
+    #[test]
+    fn set_values_correctly_cyclic() {
+        let ntt_basis = NTTBasisPolynomialRingZq::init(4, 3383, 7681, ConvolutionType::Cyclic);
+
+        assert_eq!(ConvolutionType::Cyclic, ntt_basis.convolution_type);
+        assert_eq!(Modulus::from(7681), ntt_basis.modulus);
+        assert_eq!(4, ntt_basis.n);
+        assert_eq!(
+            Z::from(5761),
+            ntt_basis
+                .n_inv
+                .get_representative_least_nonnegative_residue()
+        );
+        assert!(ntt_basis.powers_of_psi.is_empty());
+        assert!(ntt_basis.powers_of_psi_inv.is_empty());
+        assert_eq!(
+            vec![
+                Zq::from((1, 7681)),
+                Zq::from((3383, 7681)),
+                Zq::from((7680, 7681)),
+                Zq::from((4298, 7681))
+            ],
+            ntt_basis.powers_of_omega
+        );
+        assert_eq!(
+            vec![
+                Zq::from((1, 7681)),
+                Zq::from((4298, 7681)),
+                Zq::from((7680, 7681)),
+                Zq::from((3383, 7681))
+            ],
+            ntt_basis.powers_of_omega_inv
+        );
+    }
+
+    /// Ensure that the algorithm sets the set of values as expected
+    #[test]
+    fn set_values_correctly_negacyclic() {
+        let ntt_basis = NTTBasisPolynomialRingZq::init(4, 1925, 7681, ConvolutionType::Negacyclic);
+
+        assert_eq!(ConvolutionType::Negacyclic, ntt_basis.convolution_type);
+        assert_eq!(Modulus::from(7681), ntt_basis.modulus);
+        assert_eq!(4, ntt_basis.n);
+        assert_eq!(
+            Z::from(5761),
+            ntt_basis
+                .n_inv
+                .get_representative_least_nonnegative_residue()
+        );
+        assert_eq!(
+            vec![
+                Zq::from((1, 7681)),
+                Zq::from((1925, 7681)),
+                Zq::from((3383, 7681)),
+                Zq::from((6468, 7681))
+            ],
+            ntt_basis.powers_of_psi
+        );
+        assert_eq!(
+            vec![
+                Zq::from((1, 7681)),
+                Zq::from((1213, 7681)),
+                Zq::from((4298, 7681)),
+                Zq::from((5756, 7681))
+            ],
+            ntt_basis.powers_of_psi_inv
+        );
+        assert_eq!(
+            vec![
+                Zq::from((1, 7681)),
+                Zq::from((3383, 7681)),
+                Zq::from((7680, 7681)),
+                Zq::from((4298, 7681))
+            ],
+            ntt_basis.powers_of_omega
+        );
+        assert_eq!(
+            vec![
+                Zq::from((1, 7681)),
+                Zq::from((4298, 7681)),
+                Zq::from((7680, 7681)),
+                Zq::from((3383, 7681))
+            ],
+            ntt_basis.powers_of_omega_inv
+        );
+    }
+}
