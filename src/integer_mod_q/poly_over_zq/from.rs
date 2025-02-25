@@ -233,7 +233,7 @@ impl From<&ModulusPolynomialRingZq> for PolyOverZq {
         unsafe {
             fmpz_mod_poly_set(
                 &mut out.poly,
-                &modulus.get_fq_ctx_struct().modulus[0],
+                &modulus.get_fq_ctx().modulus[0],
                 out.modulus.get_fmpz_mod_ctx_struct(),
             )
         };

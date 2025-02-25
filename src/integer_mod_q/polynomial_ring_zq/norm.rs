@@ -42,7 +42,7 @@ impl PolynomialRingZq {
         for i in 0..=self.get_degree() {
             let coeff: Z = self.get_coeff(i).unwrap();
             res = res
-                + length(&coeff.value, &self.modulus.get_fq_ctx_struct().ctxp[0].n[0])
+                + length(&coeff.value, &self.modulus.get_fq_ctx().ctxp[0].n[0])
                     .pow(2)
                     .unwrap();
         }
@@ -74,7 +74,7 @@ impl PolynomialRingZq {
 
         for i in 0..=self.get_degree() {
             let coeff: Z = self.get_coeff(i).unwrap();
-            let len = length(&coeff.value, &self.modulus.get_fq_ctx_struct().ctxp[0].n[0]);
+            let len = length(&coeff.value, &self.modulus.get_fq_ctx().ctxp[0].n[0]);
             res = max(res, len);
         }
         res

@@ -42,7 +42,7 @@ impl MatPolynomialRingZq {
             for column_num in 0..self.matrix.get_num_columns() {
                 unsafe {
                     let entry = fmpz_poly_mat_entry(&self.matrix.matrix, row_num, column_num);
-                    fq_reduce(entry, self.modulus.get_fq_ctx_struct())
+                    fq_reduce(entry, self.modulus.get_fq_ctx())
                 };
             }
         }

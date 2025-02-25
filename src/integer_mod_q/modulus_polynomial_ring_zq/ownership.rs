@@ -105,16 +105,13 @@ mod test_clone {
         let b = a.clone();
 
         assert_eq!(
-            unsafe { *a.get_fq_ctx_struct().a }.0,
-            unsafe { *b.get_fq_ctx_struct().a }.0,
+            unsafe { *a.get_fq_ctx().a }.0,
+            unsafe { *b.get_fq_ctx().a }.0,
         );
+        assert_eq!(a.get_fq_ctx().ctxp[0].n[0].0, b.get_fq_ctx().ctxp[0].n[0].0,);
         assert_eq!(
-            a.get_fq_ctx_struct().ctxp[0].n[0].0,
-            b.get_fq_ctx_struct().ctxp[0].n[0].0,
-        );
-        assert_eq!(
-            unsafe { *a.get_fq_ctx_struct().modulus[0].coeffs.offset(0) }.0,
-            unsafe { *b.get_fq_ctx_struct().modulus[0].coeffs.offset(0) }.0,
+            unsafe { *a.get_fq_ctx().modulus[0].coeffs.offset(0) }.0,
+            unsafe { *b.get_fq_ctx().modulus[0].coeffs.offset(0) }.0,
         );
     }
 }
@@ -161,9 +158,9 @@ mod test_drop {
         )
         .unwrap();
         (
-            unsafe { *a.get_fq_ctx_struct().a }.0,
-            a.get_fq_ctx_struct().ctxp[0].n[0].0,
-            unsafe { *a.get_fq_ctx_struct().modulus[0].coeffs.offset(0) }.0,
+            unsafe { *a.get_fq_ctx().a }.0,
+            a.get_fq_ctx().ctxp[0].n[0].0,
+            unsafe { *a.get_fq_ctx().modulus[0].coeffs.offset(0) }.0,
         )
     }
 
