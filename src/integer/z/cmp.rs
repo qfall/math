@@ -10,7 +10,7 @@
 //! This uses the traits from [`std::cmp`].
 
 use super::Z;
-use crate::{macros::for_others::implement_for_others, rational::Q};
+use crate::macros::for_others::implement_for_others;
 use flint_sys::fmpz::{fmpz, fmpz_cmp, fmpz_equal};
 use std::cmp::Ordering;
 
@@ -46,39 +46,6 @@ impl PartialEq for Z {
 // With the [`Eq`] trait, `a == a` is always true.
 // This is not guaranteed by the [`PartialEq`] trait.
 impl Eq for Z {}
-
-impl PartialEq<Q> for Z {
-    /// Checks if an integer and a rational are equal. Used by the `==` and `!=` operators.
-    ///
-    /// Parameters:
-    /// - `other`: the other value that is used to compare the elements
-    ///
-    /// Returns `true` if the elements are equal, otherwise `false`.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer::Z;
-    /// use qfall_math::rational::Q;
-    /// let a: Z = Z::from(42);
-    /// let b: Q = Q::from(42);
-    ///
-    /// // These are all equivalent and return true.
-    /// let compared: bool = (a == b);
-    /// # assert!(compared);
-    /// let compared: bool = (&a == &b);
-    /// # assert!(compared);
-    /// let compared: bool = (a.eq(&b));
-    /// # assert!(compared);
-    /// let compared: bool = (Z::eq(&a, &b));
-    /// # assert!(compared);
-    /// ```
-    fn eq(&self, other: &Q) -> bool {
-        unsafe {
-            (1 == fmpz_equal(&other.value.den, &fmpz(1)))
-                && (1 == fmpz_equal(&other.value.num, &self.value))
-        }
-    }
-}
 
 implement_for_others!(Z, Z, PartialEq for fmpz i8 i16 i32 i64 u8 u16 u32 u64);
 
@@ -267,51 +234,37 @@ mod test_partial_eq_z {
 
 /// Test that the [`PartialEq`] trait is correctly implemented.
 #[cfg(test)]
-mod test_partial_eq_z_q {
+mod test_partial_eq_z_other {
     use super::Z;
-    use crate::rational::Q;
 
     // Ensure that the function can be called with several types
     #[test]
     #[allow(clippy::op_ref)]
     fn availability() {
-        let q = Q::from((1, 1));
-        let z = Z::from(1);
+        let z = Z::from(2);
 
-        assert!(z == q);
         assert!(z == z.value);
-        assert!(z == 1i8);
-        assert!(z == 1u8);
-        assert!(z == 1i16);
-        assert!(z == 1u16);
-        assert!(z == 1i32);
-        assert!(z == 1u32);
-        assert!(z == 1i64);
-        assert!(z == 1u64);
+        assert!(z == 2i8);
+        assert!(z == 2u8);
+        assert!(z == 2i16);
+        assert!(z == 2u16);
+        assert!(z == 2i32);
+        assert!(z == 2u32);
+        assert!(z == 2i64);
+        assert!(z == 2u64);
 
         assert!(z.value == z);
-        assert!(1i8 == z);
-        assert!(1u8 == z);
-        assert!(1i16 == z);
-        assert!(1u16 == z);
-        assert!(1i32 == z);
-        assert!(1u32 == z);
-        assert!(1i64 == z);
-        assert!(1u64 == z);
+        assert!(2i8 == z);
+        assert!(2u8 == z);
+        assert!(2i16 == z);
+        assert!(2u16 == z);
+        assert!(2i32 == z);
+        assert!(2u32 == z);
+        assert!(2i64 == z);
+        assert!(2u64 == z);
 
-        assert!(&z == &q);
-        assert!(&z == &1i8);
-        assert!(&1i8 == &q);
-    }
-
-    // Ensure that large values are compared correctly
-    #[test]
-    fn equal_large() {
-        let q = Q::from((u64::MAX, 1));
-        let z = Z::from(u64::MAX);
-
-        assert!(z == q);
-        assert!(z != q + 1);
+        assert!(&z == &2i8);
+        assert!(&2i8 == &z);
     }
 }
 

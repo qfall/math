@@ -157,8 +157,7 @@ macro_rules! arithmetic_between_types {
 
 pub(crate) use arithmetic_between_types;
 
-/// Implements the `*trait*` for `*type*` using the `*trait*` for
-/// `&*type*`.
+/// Implements the `*trait*` for `*type*` using an implementation for `*other_type*`.
 ///
 /// **Warning**: Only works for commutative operations.
 ///
