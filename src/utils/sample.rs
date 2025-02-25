@@ -11,5 +11,3 @@
 pub(crate) mod binomial;
 pub mod discrete_gauss;
 pub(crate) mod uniform;
-
-pub use discrete_gauss::{DiscreteGaussianIntegerSampler, gaussian_function};
