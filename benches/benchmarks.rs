@@ -14,10 +14,16 @@ pub mod cholesky_decomposition;
 pub mod classic_crypto;
 pub mod integer;
 pub mod ntt_multiplication;
+pub mod sample_z;
 pub mod sampling;
 pub mod solve;
 
 criterion_main! {
-    integer::benches, classic_crypto::benches, sampling::benches, solve::benches, cholesky_decomposition::benches,
+    integer::benches,
+    classic_crypto::benches,
+    sampling::benches,
+    solve::benches,
+    cholesky_decomposition::benches,
+    sample_z::benches,
     ntt_multiplication::benches
 }

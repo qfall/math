@@ -163,7 +163,7 @@ impl Z {
         for (i, byte) in bytes.iter().enumerate() {
             for j in 0..u8::BITS {
                 // if j-th bit of `byte` is `1`, then set `i*8 + j`-th bit in fmpz to `1`
-                if (byte >> j & 1) % 2 == 1 {
+                if ((byte >> j) & 1) % 2 == 1 {
                     unsafe { fmpz_combit(&mut res.value, (i as u32 * u8::BITS + j) as u64) };
                 }
             }
