@@ -274,7 +274,7 @@ impl MatQ {
     ///
     /// let mat = MatQ::from_str("[[1/1, 2],[3/1, 4],[5/1, 6]]").unwrap();
     ///
-    /// let fmpz_entries = mat.collect_entries();
+    /// let fmpq_entries = mat.collect_entries();
     /// ```
     pub(crate) fn collect_entries(&self) -> Vec<fmpq> {
         let mut entries: Vec<fmpq> = vec![];
@@ -284,6 +284,40 @@ impl MatQ {
                 // efficiently get entry without cloning the entry itself
                 let entry = unsafe { *fmpq_mat_entry(&self.matrix, row, col) };
                 entries.push(entry);
+            }
+        }
+
+        entries
+    }
+
+    /// Returns a copy of all entries of `self` as [`f64`] values in [`Vec`]tors s.t.
+    /// the resulting vector can be used as `entries_f64[i][j]` to
+    /// access the entry in row `i` and column `j`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::MatQ;
+    /// use std::str::FromStr;
+    ///
+    /// let mat = MatQ::from_str("[[1/1, 2],[3/1, 4],[5/1, 6]]").unwrap();
+    ///
+    /// let entries_f64 = mat.collect_entries_f64();
+    ///
+    /// assert_eq!(entries_f64[0][1], 2.0);
+    /// ```
+    pub fn collect_entries_f64(&self) -> Vec<Vec<f64>> {
+        let num_rows = self.get_num_rows() as usize;
+        let num_cols = self.get_num_columns() as usize;
+
+        let mut entries: Vec<Vec<f64>> = vec![vec![]; num_rows];
+
+        for (i, row) in entries.iter_mut().enumerate() {
+            for j in 0..num_cols {
+                // efficiently get entry without cloning the entry itself
+                let entry = unsafe {
+                    flint_sys::fmpq::fmpq_get_d(fmpq_mat_entry(&self.matrix, i as i64, j as i64))
+                };
+                row.push(entry);
             }
         }
 
@@ -683,5 +717,29 @@ mod test_collect_entries {
         assert_eq!(entries_2[0].den.0, 1);
         assert_eq!(entries_2[1].num.0, -1);
         assert_eq!(entries_2[1].den.0, 2);
+    }
+
+    #[test]
+    fn all_entries_collected_f64() {
+        let mat_1 =
+            MatQ::from_str(&format!("[[1/{}, 2],[-3, 4/5],[-3/-4, 4]]", i64::MAX,)).unwrap();
+        let mat_2 = MatQ::from_str("[[-1/1, 2/-4]]").unwrap();
+
+        let entries_1 = mat_1.collect_entries_f64();
+        let entries_2 = mat_2.collect_entries_f64();
+
+        assert_eq!(entries_1.len(), 3);
+        assert_eq!(entries_1[0].len(), 2);
+        assert_eq!(entries_1[0][0], 1.0 / i64::MAX as f64);
+        assert_eq!(entries_1[0][1], 2.0);
+        assert_eq!(entries_1[1][0], -3.0);
+        assert!((entries_1[1][1] - 0.8).abs() < 0.00001);
+        assert_eq!(entries_1[2][0], 0.75);
+        assert_eq!(entries_1[2][1], 4.0);
+
+        assert_eq!(entries_2.len(), 1);
+        assert_eq!(entries_2[0].len(), 2);
+        assert_eq!(entries_2[0][0], -1.0);
+        assert_eq!(entries_2[0][1], -0.5);
     }
 }
