@@ -143,7 +143,7 @@ impl ModulusPolynomialRingZq {
     pub fn get_q(&self) -> Z {
         let mut out = Z::default();
         unsafe {
-            fmpz_init_set(&mut out.value, &self.get_fq_ctx_struct().ctxp[0].n[0]);
+            fmpz_init_set(&mut out.value, &self.get_fq_ctx().ctxp[0].n[0]);
         }
         out
     }
