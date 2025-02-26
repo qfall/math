@@ -30,6 +30,7 @@ mod properties;
 mod reduce;
 mod sample;
 mod to_string;
+mod unsafe_functions;
 
 /// [`Zq`] is an arbitrary integer value in a residue class.
 ///

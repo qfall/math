@@ -29,6 +29,7 @@ mod sample;
 mod serialize;
 mod set;
 mod to_string;
+mod unsafe_functions;
 
 /// [`PolyOverZ`] is a type of polynomial with arbitrarily many coefficients of type
 /// [`Z`](crate::integer::Z).

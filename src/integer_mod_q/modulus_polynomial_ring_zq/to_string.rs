@@ -71,8 +71,8 @@ impl Display for ModulusPolynomialRingZq {
         unsafe {
             fmpz_mod_poly_get_fmpz_poly(
                 &mut poly.poly,
-                &self.get_fq_ctx_struct().modulus[0],
-                &self.get_fq_ctx_struct().ctxp[0],
+                &self.get_fq_ctx().modulus[0],
+                &self.get_fq_ctx().ctxp[0],
             )
         };
 

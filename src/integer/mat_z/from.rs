@@ -85,7 +85,7 @@ impl MatZ {
     /// This function can only construct positive or zero integers, but not negative ones.
     /// If the number of bytes and number of entries does not line up, we pad the message
     /// with `'0'`s.
-    /// The inverse of this function is [`Z::to_utf8`].
+    /// The inverse of this function is [`MatZ::to_utf8`].
     ///
     /// Parameters:
     /// - `message`: specifies the message that is transformed via its UTF8-Encoding
@@ -100,7 +100,7 @@ impl MatZ {
     /// use qfall_math::integer::MatZ;
     /// let message = "hello!";
     ///  
-    /// let value = MatZ::from_utf8(&message, 2, 1);
+    /// let matrix = MatZ::from_utf8(&message, 2, 1);
     /// ```
     ///
     /// # Panics ...
@@ -117,8 +117,7 @@ impl MatZ {
         let nr_entries = mat.get_num_rows() as usize * num_columns;
 
         // This error can't be triggered as no modulus is provided.
-        let (byte_vector, nr_bytes_per_entry) =
-            matrix_from_utf8_fill_bytes(message, nr_entries, None).unwrap();
+        let (byte_vector, nr_bytes_per_entry) = matrix_from_utf8_fill_bytes(message, nr_entries);
 
         // Fill rows going from left to right, entry by entry
         for row in 0..mat.get_num_rows() as usize {
