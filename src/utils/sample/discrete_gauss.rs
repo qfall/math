@@ -24,6 +24,10 @@ use crate::{
     traits::{GetNumColumns, GetNumRows, Pow},
 };
 use rand::RngCore;
+use rayon::{
+    current_num_threads,
+    iter::{IntoParallelIterator, ParallelIterator},
+};
 use serde::Serialize;
 use std::collections::HashMap;
 
@@ -170,6 +174,72 @@ impl DiscreteGaussianIntegerSampler {
             if evaluated_gauss_function >= &(rng.next_u64() as f64 / u64::MAX as f64) {
                 return sample;
             }
+        }
+    }
+
+    /// Chooses `nr_samples` samples according to the discrete Gaussian distribution out of
+    /// `[lower_bound , lower_bound + interval_size ]`.
+    ///
+    /// This function implements a multi-threaded version of [`DiscreteGaussianIntegerSampler::sample_z`]
+    /// that simply samples `nr_samples` many entries.
+    /// It first considers the number of available threads.
+    /// For each thread, a single sampler will be cloned from the origin (to ensure memory safeness),
+    /// and if there is only one avalable thread, then we will not clone the sampler, ensuring that the actual
+    /// sampler will be updated with new hash values.
+    ///
+    /// Parameters:
+    /// - `nr_samples`: the number of `sample_z` samples that should be computed.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{integer::Z, rational::Q};
+    /// use qfall_math::utils::sample::discrete_gauss::DiscreteGaussianIntegerSampler;
+    /// let n = Z::from(1024);
+    /// let center = Q::ZERO;
+    /// let gaussian_parameter = Q::ONE;
+    ///
+    /// let mut dgis = DiscreteGaussianIntegerSampler::init(&n, &center, &gaussian_parameter).unwrap();
+    ///
+    /// let samples_5 = dgis.sample_z_multiple(5);
+    /// assert_eq!(samples_5.len(), 5)
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if `nr_samples` is negative
+    pub fn sample_z_multiple(&mut self, nr_samples: i64) -> Vec<Z> {
+        let nr_threads = current_num_threads();
+        let nr_samples = nr_samples as usize;
+        if nr_threads == 1 {
+            // no multithreading
+            (0..nr_samples)
+                .into_iter()
+                .map(|_| self.sample_z())
+                .collect()
+        } else {
+            // with multithreading
+            let entries_per_thread = nr_samples / nr_threads;
+            let remainder = nr_samples % nr_threads;
+            (0..nr_threads)
+                .into_par_iter()
+                .map(|thread_i| {
+                    let mut dgis_thread = self.clone();
+                    let entries_thread_i = if thread_i < remainder {
+                        entries_per_thread + 1
+                    } else {
+                        entries_per_thread
+                    };
+                    (0..entries_thread_i)
+                        .into_iter()
+                        .map(|_| dgis_thread.sample_z())
+                        .collect()
+                })
+                .reduce(
+                    || Vec::new(),
+                    |mut a, mut b| {
+                        a.append(&mut b);
+                        a
+                    },
+                )
         }
     }
 }
@@ -798,5 +868,49 @@ mod test_sample_d {
         let false_gso = MatQ::new(basis.get_num_rows(), basis.get_num_columns() + 1);
 
         let _ = sample_d_precomputed_gso(&basis, &false_gso, &n, &center, &Q::from(5)).unwrap();
+    }
+}
+
+#[cfg(test)]
+mod test_sample_z_multiple {
+    use crate::{
+        integer::Z, rational::Q, utils::sample::discrete_gauss::DiscreteGaussianIntegerSampler,
+    };
+
+    /// Ensure that the function outputs the correct number of samples
+    #[test]
+    fn correct_number_of_samples() {
+        let n = Z::from(1024);
+        let center = Q::ZERO;
+        let gaussian_parameter = Q::ONE;
+
+        let mut dgis =
+            DiscreteGaussianIntegerSampler::init(&n, &center, &gaussian_parameter).unwrap();
+
+        let samples_0 = dgis.sample_z_multiple(0);
+        let samples_1 = dgis.sample_z_multiple(1);
+        let samples_10 = dgis.sample_z_multiple(10);
+        let samples_110 = dgis.sample_z_multiple(110);
+        let samples_12410 = dgis.sample_z_multiple(12410);
+
+        assert_eq!(0, samples_0.len());
+        assert_eq!(1, samples_1.len());
+        assert_eq!(10, samples_10.len());
+        assert_eq!(110, samples_110.len());
+        assert_eq!(12410, samples_12410.len());
+    }
+
+    /// Ensure that the function does not allow for negative number of samples
+    #[test]
+    #[should_panic]
+    fn panic_if_negative_nr_samples() {
+        let n = Z::from(1024);
+        let center = Q::ZERO;
+        let gaussian_parameter = Q::ONE;
+
+        let mut dgis =
+            DiscreteGaussianIntegerSampler::init(&n, &center, &gaussian_parameter).unwrap();
+
+        let samples_0 = dgis.sample_z_multiple(-1);
     }
 }

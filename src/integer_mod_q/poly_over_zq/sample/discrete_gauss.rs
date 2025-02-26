@@ -67,9 +67,9 @@ impl PolyOverZq {
 
         let mut dgis = DiscreteGaussianIntegerSampler::init(&n, &center, &s)?;
 
+        let mut entries = dgis.sample_z_multiple(max_degree + 1);
         for index in 0..=max_degree {
-            let sample = dgis.sample_z();
-            poly.set_coeff(index, &sample)?;
+            poly.set_coeff(index, entries.pop().unwrap())?;
         }
         Ok(poly)
     }

@@ -66,10 +66,11 @@ impl MatZq {
 
         let mut dgis = DiscreteGaussianIntegerSampler::init(&n, &center, &s)?;
 
+        let mut entries = dgis.sample_z_multiple(out.get_num_columns() * out.get_num_rows());
+
         for row in 0..out.get_num_rows() {
             for col in 0..out.get_num_columns() {
-                let sample = dgis.sample_z();
-                out.set_entry(row, col, sample).unwrap();
+                out.set_entry(row, col, entries.pop().unwrap()).unwrap();
             }
         }
 
