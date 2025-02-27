@@ -211,10 +211,7 @@ impl DiscreteGaussianIntegerSampler {
         let nr_samples = nr_samples as usize;
         if nr_threads == 1 || nr_samples < 10 {
             // no multithreading
-            (0..nr_samples)
-                .into_iter()
-                .map(|_| self.sample_z())
-                .collect()
+            (0..nr_samples).map(|_| self.sample_z()).collect()
         } else {
             // with multithreading
             let entries_per_thread = nr_samples / nr_threads;
@@ -229,17 +226,13 @@ impl DiscreteGaussianIntegerSampler {
                         entries_per_thread
                     };
                     (0..entries_thread_i)
-                        .into_iter()
                         .map(|_| dgis_thread.sample_z())
                         .collect()
                 })
-                .reduce(
-                    || Vec::new(),
-                    |mut a, mut b| {
-                        a.append(&mut b);
-                        a
-                    },
-                )
+                .reduce(Vec::new, |mut a, mut b| {
+                    a.append(&mut b);
+                    a
+                })
         }
     }
 }
