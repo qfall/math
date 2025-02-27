@@ -209,7 +209,7 @@ impl DiscreteGaussianIntegerSampler {
     pub fn sample_z_multiple(&mut self, nr_samples: i64) -> Vec<Z> {
         let nr_threads = current_num_threads();
         let nr_samples = nr_samples as usize;
-        if nr_threads == 1 {
+        if nr_threads == 1 || nr_samples < 10 {
             // no multithreading
             (0..nr_samples)
                 .into_iter()
@@ -911,6 +911,6 @@ mod test_sample_z_multiple {
         let mut dgis =
             DiscreteGaussianIntegerSampler::init(&n, &center, &gaussian_parameter).unwrap();
 
-        let samples_0 = dgis.sample_z_multiple(-1);
+        let _ = dgis.sample_z_multiple(-1);
     }
 }

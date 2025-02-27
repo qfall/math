@@ -42,6 +42,39 @@ pub fn bench_sample_z_narrow(c: &mut Criterion) {
     c.bench_function("SampleZ narrow 10,000", |b| b.iter(sample_z_narrow));
 }
 
+/// benchmark creating a matrix of size 1x9 sampled by a comparatively narrow discrete Gaussian distribution.
+pub fn bench_sample_z_1by9_matrix(c: &mut Criterion) {
+    let n = Z::from(1000);
+    let center = Q::from(0);
+    let s = Q::from(100);
+
+    c.bench_function("SampleZ 1x9 matrix", |b| {
+        b.iter(|| MatZ::sample_discrete_gauss(1, 9, &n, &center, &s).unwrap())
+    });
+}
+
+/// benchmark creating a matrix of size 1x10 sampled by a comparatively narrow discrete Gaussian distribution.
+pub fn bench_sample_z_1by10_matrix(c: &mut Criterion) {
+    let n = Z::from(1000);
+    let center = Q::from(0);
+    let s = Q::from(100);
+
+    c.bench_function("SampleZ 1x10 matrix", |b| {
+        b.iter(|| MatZ::sample_discrete_gauss(1, 10, &n, &center, &s).unwrap())
+    });
+}
+
+/// benchmark creating a matrix of size 1x1 sampled by a comparatively narrow discrete Gaussian distribution.
+pub fn bench_sample_z_1by1_matrix(c: &mut Criterion) {
+    let n = Z::from(1000);
+    let center = Q::from(0);
+    let s = Q::from(100);
+
+    c.bench_function("SampleZ 1x1 matrix", |b| {
+        b.iter(|| MatZ::sample_discrete_gauss(1, 1, &n, &center, &s).unwrap())
+    });
+}
+
 /// benchmark creating a single integer sampled by a comparatively wide discrete Gaussian distribution.
 pub fn bench_sample_z_wide_single(c: &mut Criterion) {
     /// Create a single integer sampled by a comparatively wide discrete Gaussian distribution.
@@ -75,5 +108,8 @@ criterion_group!(
     bench_sample_z_wide,
     bench_sample_z_narrow,
     bench_sample_z_wide_single,
-    bench_sample_z_narrow_single
+    bench_sample_z_narrow_single,
+    bench_sample_z_1by1_matrix,
+    bench_sample_z_1by9_matrix,
+    bench_sample_z_1by10_matrix
 );
