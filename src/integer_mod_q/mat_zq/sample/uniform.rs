@@ -12,7 +12,7 @@ use crate::{
     integer::Z,
     integer_mod_q::MatZq,
     traits::{GetNumColumns, GetNumRows, SetEntry},
-    utils::sample::uniform::sample_uniform_rejection,
+    utils::sample::uniform::{sample_uniform_rejection, UniformIntegerSampler},
 };
 use std::fmt::Display;
 
@@ -49,11 +49,12 @@ impl MatZq {
         modulus: impl Into<Z>,
     ) -> Self {
         let modulus: Z = modulus.into();
-        let mut matrix = MatZq::new(num_rows, num_cols, modulus.clone());
+        let mut uis = UniformIntegerSampler::init(&modulus).unwrap();
+        let mut matrix = MatZq::new(num_rows, num_cols, modulus);
 
         for row in 0..matrix.get_num_rows() {
             for col in 0..matrix.get_num_columns() {
-                let sample = sample_uniform_rejection(&modulus).unwrap();
+                let sample = uis.sample();
                 matrix.set_entry(row, col, sample).unwrap();
             }
         }
