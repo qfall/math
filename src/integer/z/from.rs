@@ -17,7 +17,7 @@ use crate::{
     macros::for_others::implement_empty_trait_owned_ref,
     traits::AsInteger,
 };
-use flint_sys::fmpz::{fmpz, fmpz_combit, fmpz_get_si, fmpz_set, fmpz_set_str};
+use flint_sys::fmpz::{fmpz, fmpz_combit, fmpz_get_si, fmpz_get_ui, fmpz_set, fmpz_set_str};
 use std::{ffi::CString, str::FromStr};
 
 impl Z {
@@ -347,7 +347,7 @@ impl TryFrom<Z> for i64 {
     /// let max = Z::from(i64::MAX);
     /// assert_eq!(i64::MAX, i64::try_from(max).unwrap());
     ///
-    /// let max = Z::from(u64::MAX);
+    /// let max = Z::from(u64::MAX) + 1;
     /// assert!(i64::try_from(max).is_err());
     /// ```
     ///
@@ -356,6 +356,78 @@ impl TryFrom<Z> for i64 {
     ///     if the value does not fit into an [`i64`]
     fn try_from(value: Z) -> Result<Self, Self::Error> {
         i64::try_from(&value)
+    }
+}
+
+impl TryFrom<&Z> for u64 {
+    type Error = MathError;
+
+    /// Converts a [`Z`] into an [`u64`]. If the value is either too large
+    /// or too small an error is returned.
+    ///
+    /// Parameters:
+    /// - `value`: the value that will be converted into an [`u64`]
+    ///
+    /// Returns the value as an [`u64`] or an error if it does not fit
+    /// into an [`u64`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    ///
+    /// let max = Z::from(u64::MAX);
+    /// assert_eq!(u64::MAX, u64::try_from(&max).unwrap());
+    ///
+    /// let max = Z::from(u64::MAX) + 1;
+    /// assert!(u64::try_from(&max).is_err());
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
+    ///     if the value does not fit into an [`u64`]
+    fn try_from(value: &Z) -> Result<Self, Self::Error> {
+        // The result is undefined if value.value does not fit into an ulong or is negative.
+        // Hence we are required to manually check if the value is actually correct
+        let value_u64 = unsafe { fmpz_get_ui(&value.value) };
+        if &value_u64 == value {
+            Ok(value_u64)
+        } else {
+            Err(MathError::ConversionError(format!(
+                "The provided value has to fit into an i64 and it doesn't as the 
+                provided value is {value}."
+            )))
+        }
+    }
+}
+
+impl TryFrom<Z> for u64 {
+    type Error = MathError;
+
+    /// Converts a [`Z`] into an [`u64`]. If the value is either too large
+    /// or too small an error is returned.
+    ///
+    /// Parameters:
+    /// - `value`: the value that will be converted into an [`u64`]
+    ///
+    /// Returns the value as an [`u64`] or an error if it does not fit
+    /// into an [`u64`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    ///
+    /// let max = Z::from(u64::MAX);
+    /// assert_eq!(u64::MAX, u64::try_from(max).unwrap());
+    ///
+    /// let max = Z::from(u64::MAX) + 1;
+    /// assert!(u64::try_from(max).is_err());
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
+    ///     if the value does not fit into an [`u64`]
+    fn try_from(value: Z) -> Result<Self, Self::Error> {
+        u64::try_from(&value)
     }
 }
 
@@ -767,5 +839,36 @@ mod test_try_from_into_i64 {
         assert_eq!(i64::MAX, i64::try_from(max).unwrap());
         assert_eq!(0, i64::try_from(Z::ZERO).unwrap());
         assert_eq!(42, i64::try_from(z_42).unwrap());
+    }
+}
+
+#[cfg(test)]
+mod test_try_from_into_u64 {
+    use crate::integer::Z;
+
+    /// ensure that an error is returned, if the value of the [`Z`]
+    /// does not fit into an [`u64`]
+    #[test]
+    fn overflow() {
+        assert!(u64::try_from(&(Z::from(u64::MAX) + 1)).is_err());
+        assert!(u64::try_from(&Z::MINUS_ONE).is_err());
+    }
+
+    /// ensure that a correct value is returned for values in bounds.
+    #[test]
+    fn correct() {
+        let min = Z::from(0);
+        let max = Z::from(u64::MAX);
+        let z_42 = Z::from(42);
+
+        assert_eq!(0, u64::try_from(&min).unwrap());
+        assert_eq!(u64::MAX, u64::try_from(&max).unwrap());
+        assert_eq!(0, i64::try_from(&Z::ZERO).unwrap());
+        assert_eq!(42, i64::try_from(&z_42).unwrap());
+
+        assert_eq!(0, u64::try_from(min).unwrap());
+        assert_eq!(u64::MAX, u64::try_from(max).unwrap());
+        assert_eq!(0, u64::try_from(Z::ZERO).unwrap());
+        assert_eq!(42, u64::try_from(z_42).unwrap());
     }
 }
