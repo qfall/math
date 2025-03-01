@@ -11,7 +11,7 @@
 
 use crate::{error::MathError, integer::Z};
 use flint_sys::fmpz::{fmpz, fmpz_addmul_ui, fmpz_set_ui};
-use rand::{rngs::ThreadRng, RngCore, TryRngCore};
+use rand::{rngs::ThreadRng, RngCore};
 
 /// Enables uniformly random sampling a [`Z`] in `[0, interval_size)`.
 ///
@@ -168,128 +168,6 @@ impl UniformIntegerSampler {
     }
 }
 
-/// Computes a uniform at random chosen [`Z`] sample in `[0, interval_size)`.
-///
-/// Parameters:
-/// - `interval_size`: specifies the size of the interval
-///     over which the samples are drawn
-///
-/// Returns a uniform at random chosen [`Z`] instance in `[0, interval_size)` or a [`MathError`],
-/// if the interval size is chosen smaller than or equal to `1`.
-///
-/// # Examples
-/// ```compile_fail
-/// use qfall_math::utils::sample::sample_uniform_rejection;
-/// use qfall_math::integer::Z;
-/// let interval_size = Z::from(20);
-///
-/// let sample = sample_uniform_rejection(&interval_size).unwrap();
-///
-/// assert!(Z::ZERO <= sample);
-/// assert!(sample < interval_size);
-/// ```
-///
-/// # Errors and Failures
-/// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-///     if the interval is chosen smaller than or equal to `1`.
-pub(crate) fn sample_uniform_rejection(interval_size: &Z) -> Result<Z, MathError> {
-    if interval_size <= &Z::ONE {
-        return Err(MathError::InvalidInterval(format!(
-            "An invalid interval size {interval_size} was provided."
-        )));
-    }
-
-    let bit_size = interval_size.bits() as usize;
-
-    let mut random = Z::from(&sample_bits_uniform(bit_size));
-    while &random >= interval_size {
-        random = Z::from(&sample_bits_uniform(bit_size));
-    }
-    Ok(random)
-}
-
-/// Computes `nr_bits` many uniform at random chosen bits.
-///
-/// Parameters:
-/// - `nr_bits`: specifies the number of bits to be chosen uniform at random
-///
-/// Returns a [`Vec<u8>`] including `nr_bits` many uniform at random chosen bits,
-/// filled with `0` bits if needed for the last byte resp. [`u8`].
-///
-/// # Examples
-/// ```compile_fail
-/// use qfall_math::utils::sample::sample_bits_uniform;
-/// let nr_bits = 14;
-///
-/// let byte_vector = sample_bits_uniform(nr_bits);
-///
-/// assert_eq!(byte_vector[1] < 64);
-/// assert_eq!(2, byte_vector.len());
-/// ```
-fn sample_bits_uniform(nr_bits: usize) -> Vec<u8> {
-    let mut rng = rand::rng();
-
-    // sample ⌈ nr_bits / 8 ⌉ bytes
-    let mut byte_vector;
-    if nr_bits % 8 == 0 {
-        byte_vector = vec![0u8; nr_bits / 8];
-    } else {
-        byte_vector = vec![0u8; nr_bits / 8 + 1];
-    }
-    let mut res = rng.try_fill_bytes(&mut byte_vector);
-    while res.is_err() {
-        // Continue filling bytes at first zero byte found by binary search.
-        // This may potentially discard previously sampled values, but stays uniform in the distribution
-        let first_unfilled_byte = find_first_unfilled_byte(&byte_vector);
-        res = rng.try_fill_bytes(&mut byte_vector[first_unfilled_byte..]);
-    }
-
-    // set superfluous bits at the end to `0`
-    if nr_bits % 8 != 0 {
-        let last_index = byte_vector.len() - 1;
-        byte_vector[last_index] %= 2u8.pow(nr_bits as u32 % 8);
-    }
-
-    byte_vector
-}
-
-/// Binary search to find the first zero byte.
-///
-/// As we do not mark the filled bytes, the first zero byte is our
-/// best guess to identify a not yet randomly/ unfilled byte.
-///
-/// Parameters:
-/// - `byte_arr`: specifies the slice whose first zero byte is looked for
-///
-/// Returns the position of the first zero byte acc. to binary search.
-/// If no zero byte exists, the length of the slice is returned.
-///
-/// # Examples
-/// ```compile_fail
-/// use qfall_math::utils::sample::{find_first_unfilled_byte, sample_bits_uniform};
-/// let nr_bits = 256;
-/// let byte_vector = sample_bits_uniform(nr_bits);
-///
-/// let first_zero_byte = find_first_unfilled_byte(&byte_vector);
-/// ```
-fn find_first_unfilled_byte(byte_arr: &[u8]) -> usize {
-    let mut lower_bound = 0;
-    let mut upper_bound = byte_arr.len();
-    while upper_bound - lower_bound > 1 {
-        let index = lower_bound + (upper_bound - lower_bound) / 2;
-        if byte_arr[index] == 0x0 {
-            upper_bound = index;
-        } else {
-            lower_bound = index;
-        }
-    }
-    if byte_arr[lower_bound] == 0x0 {
-        lower_bound
-    } else {
-        upper_bound
-    }
-}
-
 #[cfg(test)]
 mod test_uis {
     use super::{UniformIntegerSampler, Z};
@@ -351,7 +229,11 @@ mod test_uis {
             }
             // if len(samples) == interval_size, then every element in [0, interval_size)
             // needs to be represented in samples
-            assert_eq!(interval_size, samples.len() as u32);
+            assert_eq!(
+                interval_size,
+                samples.len() as u32,
+                "This test may fail with low probability."
+            );
         }
     }
 
