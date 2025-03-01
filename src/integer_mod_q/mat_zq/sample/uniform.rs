@@ -12,7 +12,7 @@ use crate::{
     integer::Z,
     integer_mod_q::MatZq,
     traits::{GetNumColumns, GetNumRows, SetEntry},
-    utils::sample::uniform::{sample_uniform_rejection, UniformIntegerSampler},
+    utils::sample::uniform::UniformIntegerSampler,
 };
 use std::fmt::Display;
 

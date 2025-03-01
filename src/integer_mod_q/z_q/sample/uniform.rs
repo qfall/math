@@ -9,10 +9,7 @@
 //! This module contains sampling algorithms for uniform random sampling.
 
 use crate::{
-    error::MathError,
-    integer::Z,
-    integer_mod_q::Zq,
-    utils::sample::uniform::{sample_uniform_rejection, UniformIntegerSampler},
+    error::MathError, integer::Z, integer_mod_q::Zq, utils::sample::uniform::UniformIntegerSampler,
 };
 
 impl Zq {
