@@ -183,8 +183,8 @@ impl DiscreteGaussianIntegerSampler {
     /// This function implements a multi-threaded version of [`DiscreteGaussianIntegerSampler::sample_z`]
     /// that simply samples `nr_samples` many entries.
     /// It first considers the number of available threads.
-    /// For each thread, a single sampler will be cloned from the origin (to ensure memory safeness),
-    /// and if there is only one avalable thread, then we will not clone the sampler, ensuring that the actual
+    /// For each thread, a single sampler will be cloned from the origin (to ensure memory safety),
+    /// and if there is only one available thread, then we will not clone the sampler, ensuring that the actual
     /// sampler will be updated with new hash values.
     ///
     /// Parameters:
