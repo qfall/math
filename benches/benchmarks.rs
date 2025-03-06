@@ -16,6 +16,7 @@ pub mod integer;
 pub mod sample_z;
 pub mod sampling;
 pub mod solve;
+pub mod uniform;
 
 criterion_main! {
     integer::benches,
@@ -23,5 +24,6 @@ criterion_main! {
     sampling::benches,
     solve::benches,
     cholesky_decomposition::benches,
-    sample_z::benches
+    sample_z::benches,
+    uniform::benches,
 }

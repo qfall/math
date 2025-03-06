@@ -16,7 +16,7 @@
 //!     In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
 //!     <https://citeseerx.ist.psu.edu/document?doi=d9f54077d568784c786f7b1d030b00493eb3ae35>
 
-use super::uniform::sample_uniform_rejection;
+use super::uniform::UniformIntegerSampler;
 use crate::{
     error::{MathError, StringConversionError},
     integer::{MatZ, Z},
@@ -152,9 +152,10 @@ impl DiscreteGaussianIntegerSampler {
     /// ```
     pub fn sample_z(&mut self) -> Z {
         let mut rng = rand::rng();
+        let mut uis = UniformIntegerSampler::init(&self.interval_size).unwrap();
         loop {
             // sample x in [c - s * log_2(n), c + s * log_2(n)]
-            let sample = &self.lower_bound + sample_uniform_rejection(&self.interval_size).unwrap();
+            let sample = &self.lower_bound + uis.sample();
 
             // grab value of Gauss function for sample if it exists
             let evaluated_gauss_function = self.table.get(&sample);

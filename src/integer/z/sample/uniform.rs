@@ -8,7 +8,7 @@
 
 //! This module contains algorithms for sampling according to the uniform distribution.
 
-use crate::{error::MathError, integer::Z, utils::sample::uniform::sample_uniform_rejection};
+use crate::{error::MathError, integer::Z, utils::sample::uniform::UniformIntegerSampler};
 
 impl Z {
     /// Chooses a [`Z`] instance uniformly at random
@@ -47,7 +47,9 @@ impl Z {
         let upper_bound: Z = upper_bound.into();
 
         let interval_size = &upper_bound - &lower_bound;
-        let sample = sample_uniform_rejection(&interval_size)?;
+        let mut uis = UniformIntegerSampler::init(&interval_size)?;
+
+        let sample = uis.sample();
         Ok(&lower_bound + sample)
     }
 
@@ -97,7 +99,8 @@ impl Z {
         }
 
         let interval_size = &upper_bound - &lower_bound;
-        let mut sample = &lower_bound + sample_uniform_rejection(&interval_size)?;
+        let mut uis = UniformIntegerSampler::init(&interval_size)?;
+        let mut sample = &lower_bound + uis.sample();
 
         // after 2 * size of interval many uniform random samples, a suitable prime should have been
         // found with high probability, if there is one prime in the interval
@@ -109,7 +112,7 @@ impl Z {
                         no prime was found. It is very likely, that no prime exists in this interval.
                         Please choose the interval larger.")));
             }
-            sample = &lower_bound + sample_uniform_rejection(&interval_size)?;
+            sample = &lower_bound + uis.sample();
             steps = steps - 1;
         }
 
