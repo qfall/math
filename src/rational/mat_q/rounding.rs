@@ -95,6 +95,79 @@ impl MatQ {
         out
     }
 
+    /// Returns a matrix, where each entry was simplified using [`Q::simplify`],
+    /// i.e. each entry becomes the smallest rational with the smallest denominator in the range
+    /// `\[entry - |precision|, entry + |precision|\]`.
+    ///
+    /// This function allows to free memory in exchange for the specified loss of
+    /// precision (see Example 3). Be aware that this loss of precision is propagated by
+    /// arithmetic operations depending on the size of the matrices.
+    /// This functions allows to trade precision for efficiency.
+    ///
+    /// This function ensures that simplifying does not change the sign of any entry in the matrix.
+    ///
+    /// Parameters:
+    /// - `precision`: the precision the new entries can differ from `self`.
+    ///     Note that the absolute value is relevant, not the sign.
+    ///
+    /// Returns a new [`MatQ`] with each entry being the simplest fraction within the defined range.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::{MatQ, Q};
+    /// use qfall_math::traits::{GetEntry, SetEntry};
+    /// let mut matrix = MatQ::new(1, 2);
+    /// matrix.set_entry(0, 0, Q::from((17, 20))).unwrap();
+    /// let precision = Q::from((1, 20));
+    ///
+    /// let matrix_simplified = matrix.simplify(precision);
+    ///
+    /// assert_eq!(Q::from((4, 5)), matrix_simplified.get_entry(0, 0).unwrap());
+    /// ```
+    ///
+    /// ```
+    /// use qfall_math::rational::{MatQ, Q};
+    /// use qfall_math::traits::{GetEntry, SetEntry};
+    /// let mut matrix = MatQ::new(2, 1);
+    /// matrix.set_entry(0, 0, Q::from((3, 2))).unwrap();
+    ///
+    /// let mat_simplified = matrix.simplify(0.5);
+    ///
+    /// assert_eq!(Q::ONE, mat_simplified.get_entry(0, 0).unwrap());
+    /// ```
+    ///
+    /// ## Simplify with reasonable precision loss
+    /// This example uses [`Q::INV_MAX32`], i.e. a loss of precision of at most `1 / 2^31 - 2` behind the decimal point.
+    /// If you require higher precision, [`Q::INV_MAX62`] is available.
+    /// ```
+    /// use qfall_math::rational::{MatQ, Q};
+    /// use qfall_math::traits::{GetEntry, SetEntry};
+    /// let mut matrix = MatQ::new(1, 1);
+    /// matrix.set_entry(0, 0, Q::PI).unwrap();
+    ///
+    /// let mat_simplified = matrix.simplify(Q::INV_MAX32);
+    ///
+    /// let entry_simplified = mat_simplified.get_entry(0, 0).unwrap();
+    ///
+    /// assert_ne!(&Q::PI, &entry_simplified);
+    /// assert!(&entry_simplified >= &(Q::PI - Q::INV_MAX32));
+    /// assert!(&entry_simplified <= &(Q::PI + Q::INV_MAX32));
+    /// ```
+    pub fn simplify(&self, precision: impl Into<Q>) -> MatQ {
+        let precision = precision.into();
+        let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns());
+
+        for i in 0..self.get_num_rows() {
+            for j in 0..self.get_num_columns() {
+                let entry = self.get_entry(i, j).unwrap();
+                let simplified_entry = entry.simplify(&precision);
+                out.set_entry(i, j, simplified_entry).unwrap();
+            }
+        }
+
+        out
+    }
+
     /// Performs the randomized rounding algorithm entrywise
     /// by sampling from a discrete Gaussian over the integers shifted
     /// by `self` with gaussian parameter `r`.
