@@ -10,7 +10,7 @@
 //! uniform random distribution.
 
 use crate::{error::MathError, integer::Z};
-use flint_sys::fmpz::{fmpz, fmpz_addmul_ui, fmpz_set_ui};
+use flint_sys::fmpz::{fmpz_addmul_ui, fmpz_set_ui};
 use rand::{rngs::ThreadRng, RngCore};
 
 /// Enables uniformly random sampling a [`Z`] in `[0, interval_size)`.
@@ -154,7 +154,7 @@ impl UniformIntegerSampler {
         for _ in 0..self.nr_iterations {
             let sample = self.rng.next_u32();
 
-            let mut res = Z { value: fmpz(0) };
+            let mut res = Z::default();
             unsafe {
                 fmpz_set_ui(&mut res.value, sample as u64);
                 // Sets res = res + value * 2^32 reusing the memory allocated of res
