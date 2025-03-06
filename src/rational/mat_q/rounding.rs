@@ -101,10 +101,10 @@ impl MatQ {
     ///
     /// This function allows to free memory in exchange for the specified loss of
     /// precision (see Example 3). Be aware that this loss of precision is propagated by
-    /// arithmetic operations and can be significantly increased depending on the
-    /// performed operations.
+    /// arithmetic operations depending on the size of the matrices.
+    /// This functions allows to trade precision for efficiency.
     ///
-    /// This function ensures that there is no sign change in any of the entries.
+    /// This function ensures that simplifying does not change the sign of any entry in the matrix.
     ///
     /// Parameters:
     /// - `precision`: the precision the new entries can differ from `self`.

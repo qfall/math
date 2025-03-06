@@ -93,7 +93,7 @@ impl Q {
     /// arithmetic operations and can be significantly increased depending on the
     /// performed operations.
     ///
-    /// This function ensures that there is no sign change.
+    /// This function ensures that simplifying does not change the sign of `self`.
     ///
     /// Parameters:
     /// - `precision`: the precision the new value can differ from `self`.
