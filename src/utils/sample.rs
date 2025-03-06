@@ -10,4 +10,4 @@
 
 pub(crate) mod binomial;
 pub mod discrete_gauss;
-pub(crate) mod uniform;
+pub mod uniform;

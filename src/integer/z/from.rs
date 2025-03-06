@@ -17,7 +17,7 @@ use crate::{
     macros::for_others::implement_empty_trait_owned_ref,
     traits::AsInteger,
 };
-use flint_sys::fmpz::{fmpz, fmpz_combit, fmpz_get_si, fmpz_set, fmpz_set_str};
+use flint_sys::fmpz::{fmpz, fmpz_get_si, fmpz_set, fmpz_set_str, fmpz_setbit};
 use std::{ffi::CString, str::FromStr};
 
 impl Z {
@@ -164,7 +164,7 @@ impl Z {
             for j in 0..u8::BITS {
                 // if j-th bit of `byte` is `1`, then set `i*8 + j`-th bit in fmpz to `1`
                 if ((byte >> j) & 1) % 2 == 1 {
-                    unsafe { fmpz_combit(&mut res.value, (i as u32 * u8::BITS + j) as u64) };
+                    unsafe { fmpz_setbit(&mut res.value, (i as u32 * u8::BITS + j) as u64) };
                 }
             }
         }
@@ -193,7 +193,7 @@ impl Z {
         let mut value = Z::default();
         for (i, bit) in bits.iter().enumerate() {
             if *bit {
-                unsafe { fmpz_combit(&mut value.value, i as u64) };
+                unsafe { fmpz_setbit(&mut value.value, i as u64) };
             }
         }
         value
