@@ -106,7 +106,14 @@ impl MatQ {
     /// or entries with small numerators and denominators. This function becomes more
     /// efficient once `self` or `other` has entries with large numerators and denominators
     /// as FLINT's implementation does not allow any loss of precision.
-    /// Furthermore, this function is unchecked, i.e. the user is expected to align matrix
+    ///
+    /// **WARNING:** Please be aware that the deviation of the representation of the matrices' entries as [`f64`]
+    /// will scale with the size of the entries, e.g. an entry within the size of `2^{64}`
+    /// might deviate from the original value by a distance of `1_000`. This loss of precision
+    /// might be aggravated by this matrix multiplication with a factor of `self.get_num_columns()`
+    /// for each entry in the resulting matrix.
+    ///
+    /// **WARNING:** This function is unchecked, i.e. the user is expected to align matrix
     /// dimensions for multiplication.
     ///  
     /// # Example
@@ -119,6 +126,8 @@ impl MatQ {
     ///
     /// # Panics ...
     /// - if the dimensions of `self` and `other` do not match for multiplication.
+    /// - if any result during the naive computation of matrix multiplication
+    ///     is larger than [`f64::MAX`] or smaller than [`f64::MIN`].
     pub fn mul_f64_unchecked(&self, other: &Self) -> MatQ {
         let num_rows = self.get_num_rows() as usize;
         let num_cols = other.get_num_columns() as usize;

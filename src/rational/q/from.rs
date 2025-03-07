@@ -164,6 +164,15 @@ impl From<&Q> for f64 {
     /// Convert a rational [`Q`] into an [`f64`].
     /// The value is rounded to the closest [`f64`] representation.
     ///
+    /// **WARNING:** The return is system dependent if `self` is
+    /// is too large or too small to fit in an [`f64`], i.e. the value should be within
+    /// [`f64::MIN`] and [`f64::MAX`]. It the entry can't be represented exactly, it will
+    /// be rounded towards zero.
+    ///
+    /// **WARNING:** Please be aware that the deviation of the representation of `self` as a [`f64`]
+    /// will scale with the size of `self`, e.g. a value within the size of `2^{64}`
+    /// might deviate from the original value by a distance of `1_000`.
+    ///
     /// # Examples
     /// ```
     /// use qfall_math::rational::Q;

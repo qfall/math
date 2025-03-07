@@ -294,6 +294,11 @@ impl MatQ {
     /// the resulting vector can be used as `entries_f64[i][j]` to
     /// access the entry in row `i` and column `j`.
     ///
+    /// **WARNING:** The return is system dependent if any entry of the matrix is
+    /// is too large or too small to fit in an [`f64`], i.e. the value should be within
+    /// [`f64::MIN`] and [`f64::MAX`]. It the entry can't be represented exactly, it will
+    /// be rounded towards zero.
+    ///
     /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
@@ -719,10 +724,17 @@ mod test_collect_entries {
         assert_eq!(entries_2[1].den.0, 2);
     }
 
+    /// Ensures that all entries from the matrices are actually collected
+    /// in [`MatQ::collect_entries_f64`].
     #[test]
     fn all_entries_collected_f64() {
-        let mat_1 =
-            MatQ::from_str(&format!("[[1/{}, 2],[-3, 4/5],[-3/-4, 4]]", i64::MAX,)).unwrap();
+        let mat_1 = MatQ::from_str(&format!(
+            "[[1/{}, 2],[{}, 4/5],[-3/-4, {}]]",
+            i64::MAX,
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
         let mat_2 = MatQ::from_str("[[-1/1, 2/-4]]").unwrap();
 
         let entries_1 = mat_1.collect_entries_f64();
@@ -732,10 +744,10 @@ mod test_collect_entries {
         assert_eq!(entries_1[0].len(), 2);
         assert_eq!(entries_1[0][0], 1.0 / i64::MAX as f64);
         assert_eq!(entries_1[0][1], 2.0);
-        assert_eq!(entries_1[1][0], -3.0);
+        assert!((entries_1[1][0] - i64::MAX as f64).abs() < 1_025.0);
         assert!((entries_1[1][1] - 0.8).abs() < 0.00001);
         assert_eq!(entries_1[2][0], 0.75);
-        assert_eq!(entries_1[2][1], 4.0);
+        assert_eq!(entries_1[2][1], i64::MIN as f64);
 
         assert_eq!(entries_2.len(), 1);
         assert_eq!(entries_2[0].len(), 2);
