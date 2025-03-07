@@ -9,4 +9,5 @@
 //! The logic module contains implementations of logical operations
 //! such as bit-wise `and`, `or` or `xor`.
 
-mod bitand;
+mod bit_and;
+mod bit_or;
