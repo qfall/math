@@ -11,7 +11,7 @@
 
 use super::MatZ;
 use crate::traits::{GetNumColumns, GetNumRows};
-use flint_sys::fmpz_mat::fmpz_mat_hnf_transform;
+use flint_sys::fmpz_mat::{fmpz_mat_hnf_transform, fmpz_mat_is_in_hnf};
 
 impl MatZ {
     /// Computes the Hermite-normal form of `self` along with
@@ -45,6 +45,22 @@ impl MatZ {
 
         (hnf, transform)
     }
+
+    /// Checks if `self` is a matrix in Hermite-normal form.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatZ;
+    /// use std::str::FromStr;
+    /// let non_hnf = MatZ::from_str("[[1, 2, 12],[2, 4, 5]]").unwrap();
+    /// let hnf = MatZ::from_str("[[1, 2, 12],[0, 0, 19]]").unwrap();
+    ///
+    /// assert!(!non_hnf.is_in_hnf());
+    /// assert!(hnf.is_in_hnf());
+    /// ```
+    pub fn is_in_hnf(&self) -> bool {
+        1 == unsafe { fmpz_mat_is_in_hnf(&self.matrix) }
+    }
 }
 
 #[cfg(test)]
@@ -52,7 +68,7 @@ mod test_hnf {
     use super::MatZ;
     use std::str::FromStr;
 
-    /// Ensures that [`MatZ::hnf`] works for small entries.
+    /// Ensures that [`MatZ::hnf`] and [`MatZ::is_in_hnf`] works for small entries.
     #[test]
     fn small_entries() {
         let matrix = MatZ::from_str("[[2,3,6,2],[5,6,1,6],[8,3,1,1]]").unwrap();
@@ -63,9 +79,13 @@ mod test_hnf {
 
         assert_eq!(h_cmp, h);
         assert_eq!(u_cmp, u);
+
+        assert!(!matrix.is_in_hnf());
+        assert!(h.is_in_hnf());
+        assert!(!u.is_in_hnf());
     }
 
-    /// Ensures that [`MatZ::hnf`] works for large entries.
+    /// Ensures that [`MatZ::hnf`] and [`MatZ::is_in_hnf`] works for large entries.
     #[test]
     fn large_entries() {
         let matrix = MatZ::from_str(&format!(
@@ -82,5 +102,9 @@ mod test_hnf {
 
         assert_eq!(h_cmp, h);
         assert_eq!(u_cmp, u);
+
+        assert!(!matrix.is_in_hnf());
+        assert!(h.is_in_hnf());
+        assert!(!u.is_in_hnf());
     }
 }
