@@ -37,7 +37,7 @@ impl PolynomialRingZq {
     /// poly_ring.reduce()
     /// ```
     pub(crate) fn reduce(&mut self) {
-        unsafe { fq_reduce(&mut self.poly.poly, self.modulus.get_fq_ctx_struct()) }
+        unsafe { fq_reduce(&mut self.poly.poly, self.modulus.get_fq_ctx()) }
     }
 }
 

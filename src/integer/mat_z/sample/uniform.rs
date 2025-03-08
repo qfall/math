@@ -12,7 +12,7 @@ use crate::{
     error::MathError,
     integer::{MatZ, Z},
     traits::{GetNumColumns, GetNumRows, SetEntry},
-    utils::sample::uniform::sample_uniform_rejection,
+    utils::sample::uniform::UniformIntegerSampler,
 };
 use std::fmt::Display;
 
@@ -62,9 +62,10 @@ impl MatZ {
         let mut matrix = MatZ::new(num_rows, num_cols);
 
         let interval_size = &upper_bound - &lower_bound;
+        let mut uis = UniformIntegerSampler::init(&interval_size)?;
         for row in 0..matrix.get_num_rows() {
             for col in 0..matrix.get_num_columns() {
-                let sample = sample_uniform_rejection(&interval_size)?;
+                let sample = uis.sample();
                 matrix.set_entry(row, col, &lower_bound + sample).unwrap();
             }
         }

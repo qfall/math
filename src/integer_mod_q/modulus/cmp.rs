@@ -12,7 +12,11 @@
 //! The explicit functions contain the documentation.
 
 use super::Modulus;
-use crate::integer::Z;
+use crate::{
+    integer::Z,
+    macros::for_others::{implement_for_others, implement_trait_reverse},
+};
+use flint_sys::fmpz::{fmpz, fmpz_equal};
 use std::cmp::Ordering;
 
 impl PartialEq for Modulus {
@@ -48,6 +52,49 @@ impl PartialEq for Modulus {
 // With the [`Eq`] trait, `a == a` is always true.
 // This is not guaranteed by the [`PartialEq`] trait.
 impl Eq for Modulus {}
+
+impl PartialEq<Z> for Modulus {
+    /// Checks if an integer and a modulus are equal. Used by the `==` and `!=` operators.
+    /// [`PartialEq`] is also implemented for [`Z`] using [`Modulus`].
+    ///
+    /// Parameters:
+    /// - `other`: the other value that is used to compare the elements
+    ///
+    /// Returns `true` if the elements are equal, otherwise `false`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::integer_mod_q::Modulus;
+    /// let a: Modulus = Modulus::from(42);
+    /// let b: Z = Z::from(42);
+    ///
+    /// // These are all equivalent and return true.
+    /// let compared: bool = (a == b);
+    /// # assert!(compared);
+    /// let compared: bool = (b == a);
+    /// # assert!(compared);
+    /// let compared: bool = (&a == &b);
+    /// # assert!(compared);
+    /// let compared: bool = (&b == &a);
+    /// # assert!(compared);
+    /// let compared: bool = (a.eq(&b));
+    /// # assert!(compared);
+    /// let compared: bool = (b.eq(&a));
+    /// # assert!(compared);
+    /// let compared: bool = (Z::eq(&b, &a));
+    /// # assert!(compared);
+    /// let compared: bool = (Modulus::eq(&a, &b));
+    /// # assert!(compared);
+    /// ```
+    fn eq(&self, other: &Z) -> bool {
+        unsafe { 1 == fmpz_equal(&other.value, &self.modulus.n[0]) }
+    }
+}
+
+implement_trait_reverse!(PartialEq, eq, Z, Modulus, bool);
+
+implement_for_others!(Z, Modulus, PartialEq for fmpz i8 i16 i32 i64 u8 u16 u32 u64);
 
 impl PartialOrd for Modulus {
     /// Compares two [`Modulus`] values. Used by the `<`, `<=`, `>`, and `>=` operators.
@@ -156,6 +203,58 @@ mod test_eq {
         assert_ne!(one, two);
         assert_ne!(one, large);
         assert_ne!(two, large);
+    }
+}
+
+/// Test that the [`PartialEq`] trait is correctly implemented.
+#[cfg(test)]
+mod test_partial_eq_modulus_other {
+    use super::Z;
+    use crate::integer_mod_q::Modulus;
+
+    // Ensure that the function can be called with several types
+    #[test]
+    #[allow(clippy::op_ref)]
+    fn availability() {
+        let modulus = Modulus::from(2);
+        let z = Z::from(2);
+
+        assert!(modulus == z);
+        assert!(modulus == z.value);
+        assert!(modulus == 2i8);
+        assert!(modulus == 2u8);
+        assert!(modulus == 2i16);
+        assert!(modulus == 2u16);
+        assert!(modulus == 2i32);
+        assert!(modulus == 2u32);
+        assert!(modulus == 2i64);
+        assert!(modulus == 2u64);
+
+        assert!(z == modulus);
+        assert!(z.value == modulus);
+        assert!(2i8 == modulus);
+        assert!(2u8 == modulus);
+        assert!(2i16 == modulus);
+        assert!(2u16 == modulus);
+        assert!(2i32 == modulus);
+        assert!(2u32 == modulus);
+        assert!(2i64 == modulus);
+        assert!(2u64 == modulus);
+
+        assert!(&modulus == &z);
+        assert!(&z == &modulus);
+        assert!(&modulus == &2i8);
+        assert!(&2i8 == &modulus);
+    }
+
+    // Ensure that large values are compared correctly
+    #[test]
+    fn equal_large() {
+        let modulus = Modulus::from(u64::MAX);
+        let z = Z::from(u64::MAX);
+
+        assert!(modulus == z);
+        assert!(modulus != z + 1);
     }
 }
 

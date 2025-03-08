@@ -9,8 +9,7 @@
 //! This module contains sampling algorithms for uniform random sampling.
 
 use crate::{
-    error::MathError, integer::Z, integer_mod_q::Zq,
-    utils::sample::uniform::sample_uniform_rejection,
+    error::MathError, integer::Z, integer_mod_q::Zq, utils::sample::uniform::UniformIntegerSampler,
 };
 
 impl Zq {
@@ -40,8 +39,9 @@ impl Zq {
     ///     if the given modulus is smaller than or equal to `1`.
     pub fn sample_uniform(modulus: impl Into<Z>) -> Result<Self, MathError> {
         let modulus: Z = modulus.into();
+        let mut uis = UniformIntegerSampler::init(&modulus)?;
 
-        let random = sample_uniform_rejection(&modulus)?;
+        let random = uis.sample();
         Ok(Zq::from((random, modulus)))
     }
 }
