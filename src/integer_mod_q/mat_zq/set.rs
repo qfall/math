@@ -74,6 +74,36 @@ impl<Integer: Into<Z>> SetEntry<Integer> for MatZq {
 
         self.set_entry(row, column, value)
     }
+
+    /// Sets the value of a specific matrix entry according to a given `value`
+    /// that implements [`Into<Z>`] without checking whether the coordinate is part of the matrix,
+    /// if the moduli match or the entry is reduced.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row in which the entry is located
+    /// - `column`: specifies the column in which the entry is located
+    /// - `value`: specifies the value to which the entry is set
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::traits::*;
+    ///
+    /// let mut matrix = MatZq::new(3, 3, 10);
+    ///
+    /// matrix.set_entry_unchecked(0, 1, 5);
+    /// matrix.set_entry_unchecked(2, 2, 19);
+    ///
+    /// assert_eq!("[[0, 5, 0],[0, 0, 0],[0, 0, 19]] mod 10", matrix.to_string());
+    /// ```
+    fn set_entry_unchecked(&mut self, row: i64, column: i64, value: Integer) {
+        let value: Z = value.into();
+
+        unsafe {
+            // get entry and replace the pointed at value with the specified value
+            fmpz_mod_mat_set_entry(&mut self.matrix, row, column, &value.value)
+        };
+    }
 }
 
 impl SetEntry<&Zq> for MatZq {
@@ -127,12 +157,38 @@ impl SetEntry<&Zq> for MatZq {
             )));
         }
 
-        unsafe {
-            // get entry and replace the pointed at value with the specified value
-            fmpz_mod_mat_set_entry(&mut self.matrix, row_i64, column_i64, &value.value.value)
-        }
+        self.set_entry_unchecked(row_i64, column_i64, value);
 
         Ok(())
+    }
+
+    /// Sets the value of a specific matrix entry according to a given `value` of type [`Zq`]
+    /// without checking whether the coordinate is part of the matrix,
+    /// if the moduli match or the entry is reduced.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row in which the entry is located
+    /// - `column`: specifies the column in which the entry is located
+    /// - `value`: specifies the value to which the entry is set
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{MatZq, Zq};
+    /// use qfall_math::traits::*;
+    ///
+    /// let mut matrix = MatZq::new(3, 3, 10);
+    /// let value = Zq::from((5, 10));
+    ///
+    /// matrix.set_entry_unchecked(0, 1, &value);
+    /// matrix.set_entry_unchecked(2, 2, Zq::from((19, 10)));
+    ///
+    /// assert_eq!("[[0, 5, 0],[0, 0, 0],[0, 0, 9]] mod 10", matrix.to_string());
+    /// ```
+    fn set_entry_unchecked(&mut self, row: i64, column: i64, value: &Zq) {
+        unsafe {
+            // get entry and replace the pointed at value with the specified value
+            fmpz_mod_mat_set_entry(&mut self.matrix, row, column, &value.value.value)
+        };
     }
 }
 
