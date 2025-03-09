@@ -63,6 +63,40 @@ impl SetEntry<&PolyOverZ> for MatPolynomialRingZq {
 
         self.set_entry(row, column, value)
     }
+
+    /// Sets the value of a specific matrix entry according to a given `value` of type [`PolyOverZ`]
+    /// without checking whether the coordinate is part of the matrix, if the moduli match
+    /// or if the entry is reduced.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row in which the entry is located
+    /// - `column`: specifies the column in which the entry is located
+    /// - `value`: specifies the value to which the entry is set
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use qfall_math::integer::{MatPolyOverZ, PolyOverZ};
+    /// use crate::qfall_math::traits::*;
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let poly_mat = MatPolyOverZ::from_str("[[0, 1  42],[0, 2  1 2]]").unwrap();
+    /// let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
+    /// let value = PolyOverZ::default();
+    ///
+    /// poly_ring_mat.set_entry_unchecked(0, 1, &value);
+    /// poly_ring_mat.set_entry_unchecked(1, 1, &value);
+    ///
+    /// let mat_cmp = MatPolynomialRingZq::from((&MatPolyOverZ::new(2, 2), &modulus));
+    /// assert_eq!(poly_ring_mat, mat_cmp);
+    /// ```
+    fn set_entry_unchecked(&mut self, row: i64, column: i64, value: &PolyOverZ) {
+        unsafe {
+            let entry = fmpz_poly_mat_entry(&self.matrix.matrix, row, column);
+            fmpz_poly_set(entry, &value.poly)
+        };
+    }
 }
 
 impl SetEntry<&PolynomialRingZq> for MatPolynomialRingZq {
@@ -120,12 +154,42 @@ impl SetEntry<&PolynomialRingZq> for MatPolynomialRingZq {
 
         let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
 
-        unsafe {
-            let entry = fmpz_poly_mat_entry(&self.matrix.matrix, row_i64, column_i64);
-            fmpz_poly_set(entry, &value.poly.poly)
-        };
+        self.set_entry_unchecked(row_i64, column_i64, value);
 
         Ok(())
+    }
+
+    /// Sets the value of a specific matrix entry according to a given `value` of type [`PolynomialRingZq`]
+    /// without checking whether the coordinate is part of the matrix or if the moduli match.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row in which the entry is located
+    /// - `column`: specifies the column in which the entry is located
+    /// - `value`: specifies the value to which the entry is set
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq, PolynomialRingZq};
+    /// use qfall_math::integer::{MatPolyOverZ, PolyOverZ};
+    /// use crate::qfall_math::traits::*;
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let poly_mat = MatPolyOverZ::from_str("[[0, 1  42],[0, 2  1 2]]").unwrap();
+    /// let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
+    /// let value = PolynomialRingZq::from((&PolyOverZ::default(), &modulus));
+    ///
+    /// poly_ring_mat.set_entry_unchecked(0, 1, &value);
+    /// poly_ring_mat.set_entry_unchecked(1, 1, &value);
+    ///
+    /// let mat_cmp = MatPolynomialRingZq::from((&MatPolyOverZ::new(2, 2), &modulus));
+    /// assert_eq!(poly_ring_mat, mat_cmp);
+    /// ```
+    fn set_entry_unchecked(&mut self, row: i64, column: i64, value: &PolynomialRingZq) {
+        unsafe {
+            let entry = fmpz_poly_mat_entry(&self.matrix.matrix, row, column);
+            fmpz_poly_set(entry, &value.poly.poly)
+        };
     }
 }
 

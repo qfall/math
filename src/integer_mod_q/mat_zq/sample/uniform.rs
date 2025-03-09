@@ -55,7 +55,7 @@ impl MatZq {
         for row in 0..matrix.get_num_rows() {
             for col in 0..matrix.get_num_columns() {
                 let sample = uis.sample();
-                matrix.set_entry(row, col, sample).unwrap();
+                matrix.set_entry_unchecked(row, col, sample);
             }
         }
 

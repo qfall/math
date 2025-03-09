@@ -149,7 +149,7 @@ impl MatQ {
         let mut res = MatQ::new(mat_dimension, mat_dimension);
         for (i, row) in out.iter().enumerate().take(mat_dimension) {
             for (j, entry) in row.iter().enumerate().take(mat_dimension) {
-                res.set_entry(i, j, *entry).unwrap();
+                res.set_entry_unchecked(i as i64, j as i64, *entry);
             }
         }
 

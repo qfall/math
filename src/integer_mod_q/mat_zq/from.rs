@@ -230,7 +230,7 @@ impl MatZq {
                         ..offset_row + nr_bytes_per_entry * (col + 1)],
                 );
                 if modulus_as_z > entry_value {
-                    mat.set_entry(row, col, entry_value).unwrap();
+                    mat.set_entry_unchecked(row as i64, col as i64, entry_value);
                 } else {
                     return Err(MathError::ConversionError(
                         "The provided modulus is smaller than the UTF8-Encoding of your message."

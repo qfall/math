@@ -92,9 +92,9 @@ impl MatZq {
 
                 // Not using Zq::distance for performance reasons.
                 if entry > modulus_half {
-                    out.set_entry(row, column, entry - &modulus).unwrap();
+                    out.set_entry_unchecked(row, column, entry - &modulus);
                 } else {
-                    out.set_entry(row, column, entry).unwrap();
+                    out.set_entry_unchecked(row, column, entry);
                 }
             }
         }

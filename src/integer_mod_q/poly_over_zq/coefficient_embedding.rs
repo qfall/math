@@ -60,7 +60,7 @@ impl IntoCoefficientEmbedding<MatZq> for &PolyOverZq {
         for j in 0..size {
             let coeff: Result<Z, _> = self.get_coeff(j);
             match coeff {
-                Ok(value) => out.set_entry(j, 0, value).unwrap(),
+                Ok(value) => out.set_entry_unchecked(j, 0, value),
                 Err(_) => break,
             }
         }

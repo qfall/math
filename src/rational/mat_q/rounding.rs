@@ -37,7 +37,7 @@ impl MatQ {
         for i in 0..out.get_num_rows() {
             for j in 0..out.get_num_columns() {
                 let entry = self.get_entry(i, j).unwrap().floor();
-                out.set_entry(i, j, entry).unwrap();
+                out.set_entry_unchecked(i, j, entry);
             }
         }
         out
@@ -63,7 +63,7 @@ impl MatQ {
         for i in 0..out.get_num_rows() {
             for j in 0..out.get_num_columns() {
                 let entry = self.get_entry(i, j).unwrap().ceil();
-                out.set_entry(i, j, entry).unwrap();
+                out.set_entry_unchecked(i, j, entry);
             }
         }
         out
@@ -89,7 +89,7 @@ impl MatQ {
         for i in 0..out.get_num_rows() {
             for j in 0..out.get_num_columns() {
                 let entry = self.get_entry(i, j).unwrap().round();
-                out.set_entry(i, j, entry).unwrap();
+                out.set_entry_unchecked(i, j, entry);
             }
         }
         out
@@ -161,7 +161,7 @@ impl MatQ {
             for j in 0..self.get_num_columns() {
                 let entry = self.get_entry(i, j).unwrap();
                 let simplified_entry = entry.simplify(&precision);
-                out.set_entry(i, j, simplified_entry).unwrap();
+                out.set_entry_unchecked(i, j, simplified_entry);
             }
         }
 
@@ -204,7 +204,7 @@ impl MatQ {
         for i in 0..out.get_num_rows() {
             for j in 0..out.get_num_columns() {
                 let entry = self.get_entry(i, j).unwrap().randomized_rounding(&r, &n)?;
-                out.set_entry(i, j, entry).unwrap();
+                out.set_entry_unchecked(i, j, entry);
             }
         }
         Ok(out)
