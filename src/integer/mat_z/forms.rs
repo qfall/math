@@ -118,6 +118,7 @@ mod test_hermite_nf {
 
         assert_eq!(h_cmp, h);
         assert_eq!(u_cmp, u);
+        assert_eq!(h, &u * &matrix);
 
         assert!(!matrix.is_in_hermite_nf());
         assert!(h.is_in_hermite_nf());
@@ -141,10 +142,32 @@ mod test_hermite_nf {
 
         assert_eq!(h_cmp, h);
         assert_eq!(u_cmp, u);
+        assert_eq!(h, &u * &matrix);
 
         assert!(!matrix.is_in_hermite_nf());
         assert!(h.is_in_hermite_nf());
         assert!(!u.is_in_hermite_nf());
+    }
+
+    /// Ensures that [`MatZ::hermite_nf`] and [`MatZ::is_in_hermite_nf`] work
+    /// for any matrix dimensions.
+    #[test]
+    fn dimensions() {
+        let mat_0 = MatZ::sample_uniform(4, 1, 0, 16).unwrap();
+        let mat_1 = MatZ::sample_uniform(5, 5, 0, 16).unwrap();
+        let mat_2 = MatZ::sample_uniform(2, 4, 0, 16).unwrap();
+
+        let (hnf_0, u_0) = mat_0.hermite_nf();
+        let (hnf_1, u_1) = mat_1.hermite_nf();
+        let (hnf_2, u_2) = mat_2.hermite_nf();
+
+        assert!(hnf_0.is_in_hermite_nf());
+        assert!(hnf_1.is_in_hermite_nf());
+        assert!(hnf_2.is_in_hermite_nf());
+
+        assert_eq!(hnf_0, u_0 * mat_0);
+        assert_eq!(hnf_1, u_1 * mat_1);
+        assert_eq!(hnf_2, u_2 * mat_2);
     }
 }
 
@@ -186,5 +209,22 @@ mod test_smith_nf {
 
         assert!(!matrix.is_in_smith_nf());
         assert!(s.is_in_smith_nf());
+    }
+
+    /// Ensures that [`MatZ::smith_nf`] and [`MatZ::is_in_smith_nf`] work
+    /// for any matrix dimensions.
+    #[test]
+    fn dimensions() {
+        let mat_0 = MatZ::sample_uniform(4, 1, 0, 16).unwrap();
+        let mat_1 = MatZ::sample_uniform(5, 5, 0, 16).unwrap();
+        let mat_2 = MatZ::sample_uniform(2, 4, 0, 16).unwrap();
+
+        let snf_0 = mat_0.smith_nf();
+        let snf_1 = mat_1.smith_nf();
+        let snf_2 = mat_2.smith_nf();
+
+        assert!(snf_0.is_in_smith_nf());
+        assert!(snf_1.is_in_smith_nf());
+        assert!(snf_2.is_in_smith_nf());
     }
 }
