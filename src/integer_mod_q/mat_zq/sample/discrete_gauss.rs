@@ -69,7 +69,7 @@ impl MatZq {
         for row in 0..out.get_num_rows() {
             for col in 0..out.get_num_columns() {
                 let sample = dgis.sample_z();
-                out.set_entry(row, col, sample).unwrap();
+                out.set_entry_unchecked(row, col, sample);
             }
         }
 
