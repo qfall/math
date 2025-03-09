@@ -132,6 +132,17 @@ mod test_lll {
         assert!(mat.is_reduced(0.99, 0.501));
     }
 
+    /// Ensure that a (0.75, 0.75)-LLL-reduced matrix is (0.75, 0.75)-reduced
+    /// for large numbers.
+    #[test]
+    fn large_number() {
+        let mut mat = MatZ::sample_uniform(3, 3, i64::MAX, u64::MAX).unwrap();
+
+        mat.lll(0.75, 0.75);
+
+        assert!(mat.is_reduced(0.75, 0.75));
+    }
+
     /// Ensures that choosing δ <= 0.25 will result in a panic.
     #[test]
     #[should_panic]
