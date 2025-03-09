@@ -95,6 +95,16 @@ pub trait SetEntry<T> {
         column: impl TryInto<i64> + Display,
         value: T,
     ) -> Result<(), MathError>;
+
+    /// Sets the value of a specific matrix entry according to a given value
+    /// without performing any checks, e.g. checking whether the entry is
+    /// part of the matrix or if the moduli of the matrices match.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row in which the entry is located.
+    /// - `column`: specifies the column in which the entry is located.
+    /// - `value`: specifies the value to which the entry is set.
+    fn set_entry_unchecked(&mut self, row: i64, column: i64, value: T);
 }
 
 /// Is implemented by matrices to compute the tensor product.
