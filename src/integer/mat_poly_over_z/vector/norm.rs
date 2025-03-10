@@ -52,7 +52,7 @@ impl MatPolyOverZ {
 
         for row in 0..self.get_num_rows() {
             for column in 0..self.get_num_columns() {
-                result = result + self.get_entry(row, column).unwrap().norm_eucl_sqrd();
+                result += self.get_entry(row, column).unwrap().norm_eucl_sqrd();
             }
         }
 

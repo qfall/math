@@ -41,10 +41,9 @@ impl PolynomialRingZq {
         let mut res = Z::ZERO;
         for i in 0..=self.get_degree() {
             let coeff: Z = self.get_coeff(i).unwrap();
-            res = res
-                + length(&coeff.value, &self.modulus.get_fq_ctx().ctxp[0].n[0])
-                    .pow(2)
-                    .unwrap();
+            res += length(&coeff.value, &self.modulus.get_fq_ctx().ctxp[0].n[0])
+                .pow(2)
+                .unwrap();
         }
         res
     }
