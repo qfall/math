@@ -13,6 +13,7 @@ use crate::{
     integer::PolyOverZ,
     integer_mod_q::Zq,
     macros::arithmetics::{
+        arithmetic_assign_between_types, arithmetic_assign_trait_borrowed_to_owned,
         arithmetic_between_types, arithmetic_trait_borrowed_to_owned,
         arithmetic_trait_mixed_borrowed_owned,
     },
@@ -23,7 +24,35 @@ use flint_sys::{
     fmpz::{fmpz, fmpz_add},
     fmpz_mod::fmpz_mod_add_fmpz,
 };
-use std::ops::Add;
+use std::ops::{Add, AddAssign};
+
+impl AddAssign<&Z> for Z {
+    /// Implements the [`AddAssign`] trait for [`Z`] in combination with any type
+    /// satisfying [`Into<Z>`].
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to add to `self`
+    ///
+    /// Returns the sum of both numbers as a [`Z`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    ///
+    /// let mut a: Z = Z::from(42);
+    /// let b: Z = Z::from(24);
+    ///
+    /// a += &b;
+    /// a += b;
+    /// a += 5;
+    /// ```
+    fn add_assign(&mut self, other: &Self) {
+        unsafe { fmpz_add(&mut self.value, &self.value, &other.value) };
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(AddAssign, add_assign, Z, Z);
+arithmetic_assign_between_types!(AddAssign, add_assign, Z, Z, i64 i32 i16 i8 u64 u32 u16 u8);
 
 impl Add for &Z {
     type Output = Z;

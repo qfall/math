@@ -258,3 +258,58 @@ macro_rules! arithmetic_between_types_zq {
 }
 
 pub(crate) use arithmetic_between_types_zq;
+
+// TRAITS for Arithmetic Assign traits
+
+/// Implements the `*trait*` for `*type*`, using the `*trait*` for
+/// `&*type*`.
+///
+/// Parameters:
+/// - `trait`: the trait that is implemented
+///     (e.g. [`Add`](std::ops::Add),[`Sub`](std::ops::Sub), ...).
+/// - `trait_function`: the function the trait implements
+///     (e.g. add for [`Add`](std::ops::Add), ...).
+/// - `type`: the type the trait is implemented for
+///     (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q))
+/// - `other_type`: the type the second part of the computation.
+/// - `output_type`: the type of the result.
+///
+/// Returns the owned Implementation code for the `*trait*`
+/// trait with the signature:
+///
+/// ```impl *trait<*other_type*>* for *type*```
+macro_rules! arithmetic_assign_trait_borrowed_to_owned {
+    ($trait:ident, $trait_function:ident, $type:ident, $other_type:ident) => {
+        #[doc(hidden)]
+        impl $trait<$other_type> for $type {
+            paste::paste! {
+                #[doc = "Documentation at [`" $type "::" $trait_function "`]."]
+                fn $trait_function(&mut self, other: $other_type) {
+                    self.$trait_function(&other)
+                }
+            }
+        }
+    };
+}
+
+pub(crate) use arithmetic_assign_trait_borrowed_to_owned;
+
+macro_rules! arithmetic_assign_between_types {
+    ($trait:ident, $trait_function:ident, $type:ident, $transfer_type:ident, $($other_type:ident)*) => {
+        $(
+            #[doc = "Documentation at"]
+            impl $trait<$other_type> for $type {
+                paste::paste! {
+                    #[doc = "Documentation at [`Zq::" $trait_function "`]."]
+                    fn $trait_function(&mut self, other: $other_type) {
+                        let other: $transfer_type = other.into();
+
+                        self.$trait_function(&other);
+                    }
+                }
+            }
+        )*
+    };
+}
+
+pub(crate) use arithmetic_assign_between_types;
