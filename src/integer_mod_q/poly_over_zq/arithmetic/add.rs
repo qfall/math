@@ -29,7 +29,7 @@ impl AddAssign<&PolyOverZq> for PolyOverZq {
     /// Parameters:
     /// - `other`: specifies the polynomial to add to `self`
     ///
-    /// Returns the sum of both polynomials as a [`PolyOverZq`].
+    /// Returns the sum of both polynomials modulo `q` as a [`PolyOverZq`].
     ///
     /// # Examples
     /// ```
@@ -42,7 +42,18 @@ impl AddAssign<&PolyOverZq> for PolyOverZq {
     /// a += &b;
     /// a += b;
     /// ```
+    ///
+    /// # Panics ...
+    /// - if the moduli of both [`PolyOverZq`] mismatch.
     fn add_assign(&mut self, other: &Self) {
+        if self.modulus != other.modulus {
+            panic!(
+                "Tried to add polynomial with modulus '{}' and polynomial with modulus '{}'.
+            If the modulus should be ignored please convert into a PolyOverZ beforehand.",
+                self.modulus, other.modulus
+            );
+        }
+
         unsafe {
             fmpz_mod_poly_add(
                 &mut self.poly,
@@ -183,6 +194,16 @@ mod test_add_assign {
         let b = PolyOverZq::from_str("3  -1 -2 3 mod 5").unwrap();
 
         a += &b;
+        a += b;
+    }
+
+    /// Ensures that mismatching moduli result in a panic.
+    #[test]
+    #[should_panic]
+    fn mismatching_moduli() {
+        let mut a: PolyOverZq = PolyOverZq::from_str("3  -5 4 1 mod 7").unwrap();
+        let b: PolyOverZq = PolyOverZq::from_str("3  -5 4 1 mod 8").unwrap();
+
         a += b;
     }
 }
