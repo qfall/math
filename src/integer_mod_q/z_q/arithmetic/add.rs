@@ -31,7 +31,7 @@ impl AddAssign<&Zq> for Zq {
     /// Parameters:
     /// - `other`: specifies the value to add to `self`
     ///
-    /// Returns the sum of both numbers as a [`Zq`].
+    /// Returns the sum of both numbers modulo `q` as a [`Zq`].
     ///
     /// # Examples
     /// ```

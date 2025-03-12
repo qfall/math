@@ -22,9 +22,9 @@ impl AddAssign<&PolyOverZ> for PolyOverZ {
     /// the memory of `self`.
     ///
     /// Parameters:
-    /// - `other`: specifies the value to add to `self`
+    /// - `other`: specifies the polynomial to add to `self`
     ///
-    /// Returns the sum of both numbers as a [`Z`].
+    /// Returns the sum of both polynomials as a [`PolyOverZ`].
     ///
     /// # Examples
     /// ```
