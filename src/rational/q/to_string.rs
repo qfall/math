@@ -86,7 +86,7 @@ impl fmt::Display for Q {
 impl Q {
     /// Outputs the decimal representation of a [`Q`] with
     /// the specified number of decimal digits.
-    /// If `self` can't be represented exactly, it provides to the
+    /// If `self` can't be represented exactly, it provides the
     /// closest value representable with `nr_decimal_digits` rounded towards zero.
     ///
     /// **WARNING:** This function converts the [`Q`] value into an [`f64`] before
