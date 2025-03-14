@@ -77,7 +77,7 @@ impl IntoCoefficientEmbedding<(MatZq, ModulusPolynomialRingZq)> for &MatPolynomi
                 }
             }
         }
-        println!("{}", out);
+
         (out, self.get_mod())
     }
 }
