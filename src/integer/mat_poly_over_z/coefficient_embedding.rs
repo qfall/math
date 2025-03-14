@@ -11,7 +11,7 @@
 
 use super::MatPolyOverZ;
 use crate::{
-    integer::{MatZ, PolyOverZ},
+    integer::{MatZ, PolyOverZ, Z},
     traits::{
         Concatenate, FromCoefficientEmbedding, GetCoefficient, GetEntry, GetNumColumns, GetNumRows,
         IntoCoefficientEmbedding, SetEntry,
@@ -19,44 +19,6 @@ use crate::{
 };
 
 impl MatPolyOverZ {
-    /// Computes the coefficient embedding of a matrix of polynomials.
-    /// All rows are independently embedded using the coefficient embedding
-    /// and then vertically concatenated to an embedding.
-    /// It inverts the operation of
-    /// [`MatPolyOverZ::from_coefficient_embedding_to_matrix`].
-    ///
-    /// Parameters:
-    /// - `size`: determines the number of rows each polynomial is embedded in.
-    ///     It has to be larger than the degree of all polynomials.
-    ///
-    /// Returns a coefficient embedding as a matrix if `size` is large enough.
-    ///
-    /// # Examples
-    /// ```
-    /// use std::str::FromStr;
-    /// use qfall_math::{
-    ///     integer::{MatZ, MatPolyOverZ},
-    /// };
-    ///
-    /// let poly = MatPolyOverZ::from_str("[[1  1, 2  1 2],[1  -1, 2  -1 -2]]").unwrap();
-    /// let mat = poly.into_coefficient_embedding_from_matrix(2);
-    /// let cmp_mat = MatZ::from_str("[[1, 1],[0, 2],[-1, -1],[0, -2]]").unwrap();
-    /// assert_eq!(cmp_mat, mat);
-    /// ```
-    ///
-    /// # Panics ...
-    /// - if `size` is not larger than the degree of the polynomial, i.e.
-    ///     not all coefficients can be embedded.
-    pub fn into_coefficient_embedding_from_matrix(&self, size: impl Into<i64>) -> MatZ {
-        let size = size.into();
-        let mut embedded = self.get_row(0).unwrap().into_coefficient_embedding(size);
-        for i in 1..self.get_num_rows() {
-            let self_i = self.get_row(i).unwrap().into_coefficient_embedding(size);
-            embedded = embedded.concat_vertical(&self_i).unwrap();
-        }
-        embedded
-    }
-
     /// Computes a matrix of polynomials from a matrix.
     /// The embedding is split into submatrices with `degree` number of rows.
     /// All submatrices are independently turned into a row vector of polynomials
@@ -117,8 +79,10 @@ impl MatPolyOverZ {
 
 impl IntoCoefficientEmbedding<MatZ> for &MatPolyOverZ {
     /// Computes the coefficient embedding of the row vector of polynomials
-    /// in a [`MatZ`]. The (i, j) th entry corresponds to the i-th coefficient
-    /// of the j-th polynomial provided.
+    /// in a [`MatZ`]. Each column vector of polynomials is embedded into
+    /// `size` many row vectors of coefficients. The first one containing their
+    /// coefficients of degree 0, and the last one their coefficients
+    /// of degree `size - 1`.
     /// It inverts the operation of [`MatPolyOverZ::from_coefficient_embedding`].
     ///
     /// Parameters:
@@ -135,41 +99,38 @@ impl IntoCoefficientEmbedding<MatZ> for &MatPolyOverZ {
     ///     traits::IntoCoefficientEmbedding,
     /// };
     ///
-    /// let poly = MatPolyOverZ::from_str("[[3  17 3 -5, 4  1 2 3 4]]").unwrap();
-    /// let mat = poly.into_coefficient_embedding(4);
-    /// let cmp_mat = MatZ::from_str("[[17, 1],[3, 2],[-5, 3],[0, 4]]").unwrap();
-    /// assert_eq!(cmp_mat, mat);
+    /// let poly = MatPolyOverZ::from_str("[[1  1, 2  1 2],[1  -1, 2  -1 -2]]").unwrap();
+    /// let embedding = poly.into_coefficient_embedding(2);
+    /// let cmp_mat = MatZ::from_str("[[1, 1],[0, 2],[-1, -1],[0, -2]]").unwrap();
+    /// assert_eq!(cmp_mat, embedding);
     /// ```
     ///
     /// # Panics ...
     /// - if `size` is not larger than the degree of the polynomial, i.e.
     ///     not all coefficients can be embedded.
-    /// - if `self` is not a row vector
     fn into_coefficient_embedding(self, size: impl Into<i64>) -> MatZ {
-        assert!(
-            self.is_row_vector(),
-            "This is no valid input, since the matrix is no row vector."
-        );
         let size = size.into();
 
-        let mut poly: Vec<PolyOverZ> = Vec::new();
-        for i in 0..self.get_num_columns() {
-            let entry = self.get_entry(0, i).unwrap();
-            let length = entry.get_degree() + 1;
-            assert!(
-                size >= length,
-                "The polynomial can not be embedded in the vector, \
-                as the length of the polynomial ({length}) is larger than \
-                the provided size ({size})."
-            );
-            poly.push(entry);
-        }
-        let mut out = MatZ::new(size, poly.len());
+        let num_rows = self.get_num_rows();
+        let num_columns = self.get_num_columns();
 
-        for (i, entry) in poly.iter().enumerate() {
-            for j in 0..size {
-                let coeff = entry.get_coeff(j).unwrap();
-                out.set_entry(j, i, coeff).unwrap();
+        let mut out = MatZ::new(num_rows * size, num_columns);
+
+        for column in 0..num_columns {
+            for row in 0..num_rows {
+                let entry: PolyOverZ = self.get_entry(row, column).unwrap();
+                let length = entry.get_degree() + 1;
+                assert!(
+                    size >= length,
+                    "The matrix can not be embedded, as the length \
+                    of a polynomial ({length}) is larger than \
+                    the provided size ({size})."
+                );
+
+                for index in 0..size {
+                    let coeff: Z = entry.get_coeff(index).unwrap();
+                    out.set_entry(row * size + index, column, coeff).unwrap()
+                }
             }
         }
 
@@ -218,7 +179,7 @@ impl FromCoefficientEmbedding<&MatZ> for MatPolyOverZ {
 mod test_into_coefficient_embedding_from_matrix {
     use crate::{
         integer::{MatPolyOverZ, MatZ},
-        traits::Concatenate,
+        traits::{Concatenate, IntoCoefficientEmbedding},
     };
     use std::str::FromStr;
 
@@ -228,7 +189,7 @@ mod test_into_coefficient_embedding_from_matrix {
         let standard_basis =
             MatPolyOverZ::from_str("[[1  1, 2  0 1, 3  0 0 1],[1  1, 2  0 1, 3  0 0 1]]").unwrap();
 
-        let basis = standard_basis.into_coefficient_embedding_from_matrix(3);
+        let basis = standard_basis.into_coefficient_embedding(3);
 
         assert_eq!(
             MatZ::identity(3, 3)
@@ -248,7 +209,7 @@ mod test_into_coefficient_embedding_from_matrix {
         ))
         .unwrap();
 
-        let matrix = poly.into_coefficient_embedding_from_matrix(3);
+        let matrix = poly.into_coefficient_embedding(3);
 
         let cmp_matrix = MatZ::from_str(&format!("[[17, 1],[{}, 0],[{}, 0]]", i64::MAX, i64::MIN))
             .unwrap()
@@ -263,7 +224,7 @@ mod test_into_coefficient_embedding_from_matrix {
     fn size_too_small() {
         let poly = MatPolyOverZ::from_str("[[3  17 5 7, 2  0 1],[1  1, 1  1]]").unwrap();
 
-        let _ = poly.into_coefficient_embedding_from_matrix(2);
+        let _ = poly.into_coefficient_embedding(2);
     }
 }
 
