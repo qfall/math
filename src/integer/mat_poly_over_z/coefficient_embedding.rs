@@ -168,10 +168,8 @@ impl IntoCoefficientEmbedding<MatZ> for &MatPolyOverZ {
 
         for (i, entry) in poly.iter().enumerate() {
             for j in 0..size {
-                match entry.get_coeff(j) {
-                    Ok(value) => out.set_entry(j, i, value).unwrap(),
-                    Err(_) => break,
-                }
+                let coeff = entry.get_coeff(j).unwrap();
+                out.set_entry(j, i, coeff).unwrap();
             }
         }
 
