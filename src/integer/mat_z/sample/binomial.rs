@@ -109,7 +109,7 @@ impl MatZ {
         for row in 0..matrix.get_num_rows() {
             for col in 0..matrix.get_num_columns() {
                 let sample = sample_binomial(&n, &p)?;
-                matrix.set_entry_unchecked(row, col, &offset + sample);
+                unsafe { matrix.set_entry_unchecked(row, col, &offset + sample) };
             }
         }
 

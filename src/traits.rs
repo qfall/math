@@ -118,7 +118,12 @@ pub trait SetEntry<T> {
     /// - `row`: specifies the row in which the entry is located.
     /// - `column`: specifies the column in which the entry is located.
     /// - `value`: specifies the value to which the entry is set.
-    fn set_entry_unchecked(&mut self, row: i64, column: i64, value: T);
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected entry is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    unsafe fn set_entry_unchecked(&mut self, row: i64, column: i64, value: T);
 }
 
 /// Is implemented by matrices to compute the tensor product.

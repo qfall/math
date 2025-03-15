@@ -73,6 +73,11 @@ impl SetEntry<&PolyOverZ> for MatPolynomialRingZq {
     /// - `column`: specifies the column in which the entry is located
     /// - `value`: specifies the value to which the entry is set
     ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected entry is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    ///
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
@@ -85,13 +90,15 @@ impl SetEntry<&PolyOverZ> for MatPolynomialRingZq {
     /// let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
     /// let value = PolyOverZ::default();
     ///
-    /// poly_ring_mat.set_entry_unchecked(0, 1, &value);
-    /// poly_ring_mat.set_entry_unchecked(1, 1, &value);
+    /// unsafe {
+    ///     poly_ring_mat.set_entry_unchecked(0, 1, &value);
+    ///     poly_ring_mat.set_entry_unchecked(1, 1, &value);
+    /// }
     ///
     /// let mat_cmp = MatPolynomialRingZq::from((&MatPolyOverZ::new(2, 2), &modulus));
     /// assert_eq!(poly_ring_mat, mat_cmp);
     /// ```
-    fn set_entry_unchecked(&mut self, row: i64, column: i64, value: &PolyOverZ) {
+    unsafe fn set_entry_unchecked(&mut self, row: i64, column: i64, value: &PolyOverZ) {
         unsafe {
             let entry = fmpz_poly_mat_entry(&self.matrix.matrix, row, column);
             fmpz_poly_set(entry, &value.poly)
@@ -154,7 +161,7 @@ impl SetEntry<&PolynomialRingZq> for MatPolynomialRingZq {
 
         let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
 
-        self.set_entry_unchecked(row_i64, column_i64, value);
+        unsafe { self.set_entry_unchecked(row_i64, column_i64, value) };
 
         Ok(())
     }
@@ -166,6 +173,11 @@ impl SetEntry<&PolynomialRingZq> for MatPolynomialRingZq {
     /// - `row`: specifies the row in which the entry is located
     /// - `column`: specifies the column in which the entry is located
     /// - `value`: specifies the value to which the entry is set
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected entry is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
     ///
     /// # Examples
     /// ```
@@ -179,13 +191,15 @@ impl SetEntry<&PolynomialRingZq> for MatPolynomialRingZq {
     /// let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
     /// let value = PolynomialRingZq::from((&PolyOverZ::default(), &modulus));
     ///
-    /// poly_ring_mat.set_entry_unchecked(0, 1, &value);
-    /// poly_ring_mat.set_entry_unchecked(1, 1, &value);
+    /// unsafe {
+    ///     poly_ring_mat.set_entry_unchecked(0, 1, &value);
+    ///     poly_ring_mat.set_entry_unchecked(1, 1, &value);
+    /// }
     ///
     /// let mat_cmp = MatPolynomialRingZq::from((&MatPolyOverZ::new(2, 2), &modulus));
     /// assert_eq!(poly_ring_mat, mat_cmp);
     /// ```
-    fn set_entry_unchecked(&mut self, row: i64, column: i64, value: &PolynomialRingZq) {
+    unsafe fn set_entry_unchecked(&mut self, row: i64, column: i64, value: &PolynomialRingZq) {
         unsafe {
             let entry = fmpz_poly_mat_entry(&self.matrix.matrix, row, column);
             fmpz_poly_set(entry, &value.poly.poly)

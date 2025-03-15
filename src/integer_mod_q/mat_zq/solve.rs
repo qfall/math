@@ -101,7 +101,7 @@ impl MatZq {
         let mut out = MatZq::new(self.get_num_columns(), 1, matrix.get_mod());
         for (i, j) in indices.iter() {
             let entry: Z = unsafe { matrix.get_entry_unchecked(*i, matrix.get_num_columns() - 1) };
-            out.set_entry_unchecked(*j, 0, entry);
+            unsafe { out.set_entry_unchecked(*j, 0, entry) };
         }
 
         Some(out)
@@ -361,7 +361,7 @@ impl MatZq {
         let mut out = MatZq::new(self.get_num_columns(), 1, self.get_mod());
         for (current_row_x, (_row_nr, column_nr)) in indices.into_iter().enumerate() {
             let entry: Z = unsafe { x.get_entry_unchecked(current_row_x as i64, 0) };
-            out.set_entry_unchecked(column_nr, 0, entry);
+            unsafe { out.set_entry_unchecked(column_nr, 0, entry) };
         }
 
         Some(out)

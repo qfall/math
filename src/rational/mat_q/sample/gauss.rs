@@ -46,7 +46,7 @@ impl MatQ {
             for j in 0..out.get_num_columns() {
                 let center_entry_ij = center.get_entry(i, j)?;
                 let sample = Q::sample_gauss(center_entry_ij, sigma)?;
-                out.set_entry_unchecked(i, j, sample);
+                unsafe { out.set_entry_unchecked(i, j, sample) };
             }
         }
 
@@ -94,7 +94,7 @@ impl MatQ {
         for i in 0..out.get_num_rows() {
             for j in 0..out.get_num_columns() {
                 let sample = Q::sample_gauss(&center, sigma)?;
-                out.set_entry_unchecked(i, j, sample);
+                unsafe { out.set_entry_unchecked(i, j, sample) };
             }
         }
 
