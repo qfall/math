@@ -114,7 +114,7 @@ impl MatPolyOverZ {
         for row in 0..matrix.get_num_rows() {
             for col in 0..matrix.get_num_columns() {
                 let sample = PolyOverZ::sample_binomial_with_offset(max_degree, &offset, &n, &p)?;
-                matrix.set_entry(row, col, sample).unwrap();
+                matrix.set_entry_unchecked(row, col, sample);
             }
         }
 

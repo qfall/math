@@ -13,7 +13,9 @@ use crate::{
     integer::{MatZ, Z},
     rational::{MatQ, Q},
     traits::{GetNumColumns, GetNumRows, SetEntry},
-    utils::sample::discrete_gauss::{sample_d, sample_d_precomputed_gso, sample_z},
+    utils::sample::discrete_gauss::{
+        sample_d, sample_d_precomputed_gso, DiscreteGaussianIntegerSampler,
+    },
 };
 use std::fmt::Display;
 
@@ -31,7 +33,7 @@ impl MatZ {
     ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a matrix with each entry sampled independently from the
-    /// specified discrete Gaussian distribution or an error if `n <= 1` or `s <= 0`.
+    /// specified discrete Gaussian distribution or an error if `n <= 1` or `s <= 0` or `s * log_2(n) < 1`.
     ///
     /// # Examples
     /// ```
@@ -59,10 +61,12 @@ impl MatZ {
         let center: Q = center.into();
         let s: Q = s.into();
 
+        let mut dgis = DiscreteGaussianIntegerSampler::init(&n, &center, &s)?;
+
         for row in 0..out.get_num_rows() {
             for col in 0..out.get_num_columns() {
-                let sample = sample_z(&n, &center, &s)?;
-                out.set_entry(row, col, sample)?;
+                let sample = dgis.sample_z();
+                out.set_entry_unchecked(row, col, sample);
             }
         }
 

@@ -16,6 +16,7 @@ mod cmp;
 mod concat;
 mod default;
 mod determinant;
+mod forms;
 mod from;
 mod get;
 mod inverse;
@@ -29,6 +30,7 @@ mod tensor;
 mod to_string;
 mod trace;
 mod transpose;
+mod unsafe_functions;
 mod vector;
 
 /// [`MatZ`] is a matrix with entries of type [`Z`](crate::integer::Z).

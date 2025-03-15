@@ -95,7 +95,7 @@ impl PolynomialRingZq {
                 &mut out.poly.poly,
                 &self.poly.poly,
                 &other.poly.poly,
-                self.modulus.get_fq_ctx_struct(),
+                self.modulus.get_fq_ctx(),
             );
         }
         Ok(out)

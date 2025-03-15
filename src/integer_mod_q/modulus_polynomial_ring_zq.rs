@@ -14,12 +14,14 @@ use flint_sys::fq::fq_ctx_struct;
 use std::rc::Rc;
 
 mod cmp;
+mod coefficient_embedding;
 mod from;
 mod get;
 mod norm;
 mod ownership;
 mod serialize;
 mod to_string;
+mod unsafe_functions;
 
 /// [`ModulusPolynomialRingZq`] represents the modulus object for
 /// [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq)

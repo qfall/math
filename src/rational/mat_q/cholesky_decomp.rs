@@ -112,15 +112,7 @@ impl MatQ {
         let mat_dimension = self.get_num_rows() as usize;
 
         let mut out = vec![vec![0.0; mat_dimension]; mat_dimension];
-        let mut mat = vec![vec![0.0; mat_dimension]; mat_dimension];
-
-        // extract `self` into a vector of vectors of `f64` values
-        // to avoid memory allocation and freeing during runtime
-        for (i, row) in mat.iter_mut().enumerate().take(mat_dimension) {
-            for (j, entry) in row.iter_mut().enumerate().take(mat_dimension) {
-                *entry = f64::from(&self.get_entry(i, j).unwrap());
-            }
-        }
+        let mat = self.collect_entries_f64();
 
         // This code snippet originates from [flint](https://github.com/flintlib/flint/blob/main/src/fmpz_mat/chol_d.c)
         // it is not part of [flint-sys] as it requires a specific data-type `d_mat_t`
@@ -149,7 +141,7 @@ impl MatQ {
         let mut res = MatQ::new(mat_dimension, mat_dimension);
         for (i, row) in out.iter().enumerate().take(mat_dimension) {
             for (j, entry) in row.iter().enumerate().take(mat_dimension) {
-                res.set_entry(i, j, *entry).unwrap();
+                res.set_entry_unchecked(i as i64, j as i64, *entry);
             }
         }
 

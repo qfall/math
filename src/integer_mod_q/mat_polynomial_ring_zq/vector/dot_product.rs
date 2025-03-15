@@ -81,14 +81,14 @@ impl MatPolynomialRingZq {
                     &mut temp.poly,
                     &self_entries[i],
                     &other_entries[i],
-                    self.modulus.get_fq_ctx_struct(),
+                    self.modulus.get_fq_ctx(),
                 );
 
                 fq_add(
                     &mut result.poly.poly,
                     &result.poly.poly,
                     &temp.poly,
-                    self.modulus.get_fq_ctx_struct(),
+                    self.modulus.get_fq_ctx(),
                 )
             }
         }
