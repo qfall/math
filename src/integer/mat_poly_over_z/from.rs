@@ -116,7 +116,7 @@ impl From<&MatZ> for MatPolyOverZ {
                 out.set_entry_unchecked(
                     row,
                     column,
-                    PolyOverZ::from(matrix.get_entry(row, column).unwrap()),
+                    PolyOverZ::from(unsafe { matrix.get_entry_unchecked(row, column) }),
                 );
             }
         }

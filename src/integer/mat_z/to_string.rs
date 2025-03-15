@@ -106,7 +106,7 @@ impl MatZ {
         // Fill byte vector
         for row in 0..self.get_num_rows() as usize {
             for col in 0..self.get_num_columns() as usize {
-                let entry_value = self.get_entry(row, col).unwrap();
+                let entry_value = unsafe { self.get_entry_unchecked(row as i64, col as i64) };
                 let entry_bytes = entry_value.to_bytes();
 
                 // Find maximum length of bytes in one entry of the matrix

@@ -76,6 +76,20 @@ pub trait GetEntry<T> {
         row: impl TryInto<i64> + Display,
         column: impl TryInto<i64> + Display,
     ) -> Result<T, MathError>;
+
+    /// Returns the value of a specific matrix entry
+    /// without performing any checks, e.g. checking whether the entry is
+    /// part of the matrix.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row in which the entry is located.
+    /// - `column`: specifies the column in which the entry is located.
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected entry is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> T;
 }
 
 /// Is implemented by matrices to set entries.

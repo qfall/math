@@ -81,7 +81,9 @@ impl MatZ {
         }
         for row in 0..self.get_num_rows() {
             for column in 0..row {
-                if self.get_entry(row, column).unwrap() != self.get_entry(column, row).unwrap() {
+                if unsafe {
+                    self.get_entry_unchecked(row, column) != self.get_entry_unchecked(column, row)
+                } {
                     return false;
                 }
             }

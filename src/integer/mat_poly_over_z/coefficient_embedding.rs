@@ -59,7 +59,7 @@ impl IntoCoefficientEmbedding<MatZ> for &MatPolyOverZ {
 
         for column in 0..num_columns {
             for row in 0..num_rows {
-                let entry: PolyOverZ = self.get_entry(row, column).unwrap();
+                let entry: PolyOverZ = unsafe { self.get_entry_unchecked(row, column) };
                 let length = entry.get_degree() + 1;
                 assert!(
                     size >= length,
@@ -125,10 +125,11 @@ impl FromCoefficientEmbedding<(&MatZ, i64)> for MatPolyOverZ {
             for column in 0..num_columns {
                 let mut poly = PolyOverZ::default();
                 for index in 0..(degree + 1) {
-                    let coeff: Z = embedding
-                        .0
-                        .get_entry(row * (degree + 1) + index, column)
-                        .unwrap();
+                    let coeff: Z = unsafe {
+                        embedding
+                            .0
+                            .get_entry_unchecked(row * (degree + 1) + index, column)
+                    };
                     poly.set_coeff(index, coeff).unwrap();
                 }
                 out.set_entry_unchecked(row, column, poly);

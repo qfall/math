@@ -96,11 +96,41 @@ impl GetEntry<PolyOverZ> for MatPolyOverZ {
         // are previously checked to be inside of the matrix, no errors
         // appear inside of `unsafe` and `fmpz_poly_set` can successfully clone the
         // entry of the matrix. Therefore no memory leaks can appear.
+        Ok(unsafe { self.get_entry_unchecked(row_i64, column_i64) })
+    }
+
+    /// Outputs the [`PolyOverZ`] value of a specific matrix entry
+    /// without checking whether it's part of the matrix.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row in which the entry is located
+    /// - `column`: specifies the column in which the entry is located
+    ///
+    /// Returns the [`PolyOverZ`] value of the matrix at the position of the given
+    /// row and column.
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected entry is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::{MatPolyOverZ, PolyOverZ};
+    /// use qfall_math::traits::*;
+    /// use std::str::FromStr;
+    ///
+    /// let matrix = MatPolyOverZ::from_str("[[1  1, 1  2],[1  3, 1  4],[0, 1  6]]").unwrap();
+    ///
+    /// assert_eq!(PolyOverZ::from(2), unsafe { matrix.get_entry_unchecked(0, 1) });
+    /// assert_eq!(PolyOverZ::from(4), unsafe { matrix.get_entry_unchecked(1, 1) });
+    /// ```
+    unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> PolyOverZ {
         let mut copy = PolyOverZ::default();
-        let entry = unsafe { fmpz_poly_mat_entry(&self.matrix, row_i64, column_i64) };
+        let entry = unsafe { fmpz_poly_mat_entry(&self.matrix, row, column) };
         unsafe { fmpz_poly_set(&mut copy.poly, entry) };
 
-        Ok(copy)
+        copy
     }
 }
 

@@ -97,7 +97,7 @@ impl MatPolynomialRingZq {
 
         for i in 0..self.get_num_rows() {
             for j in 0..self.get_num_columns() {
-                let entry: PolyOverZ = self.get_entry(i, j).unwrap();
+                let entry: PolyOverZ = unsafe { self.get_entry_unchecked(i, j) };
 
                 if !entry.is_zero() {
                     unsafe { set_matrix_window_mul(&mut out, i, j, entry, other) }

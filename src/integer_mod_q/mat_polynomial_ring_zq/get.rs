@@ -151,6 +151,43 @@ impl GetEntry<PolyOverZ> for MatPolynomialRingZq {
     ) -> Result<PolyOverZ, MathError> {
         self.matrix.get_entry(row, column)
     }
+
+    /// Outputs the [`PolyOverZ`] value of a specific matrix entry
+    /// without checking whether it's part of the matrix.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row in which the entry is located
+    /// - `column`: specifies the column in which the entry is located
+    ///
+    /// Returns the [`PolyOverZ`] value of the matrix at the position of the given
+    /// row and column.
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected entry is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use qfall_math::integer::{MatPolyOverZ, PolyOverZ};
+    /// use qfall_math::traits::*;
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 50").unwrap();
+    /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
+    /// let poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
+    ///
+    /// let entry_1: PolyOverZ = unsafe { poly_ring_mat.get_entry_unchecked(1, 0) };
+    /// let entry_2: PolyOverZ = unsafe { poly_ring_mat.get_entry_unchecked(0, 1) };
+    ///
+    ///
+    /// assert_eq!(entry_1, PolyOverZ::from(0));
+    /// assert_eq!(entry_2, PolyOverZ::from(42));
+    /// ```
+    unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> PolyOverZ {
+        self.matrix.get_entry_unchecked(row, column)
+    }
 }
 
 impl GetEntry<PolynomialRingZq> for MatPolynomialRingZq {
@@ -198,6 +235,46 @@ impl GetEntry<PolynomialRingZq> for MatPolynomialRingZq {
             poly: self.matrix.get_entry(row, column)?,
             modulus: self.get_mod(),
         })
+    }
+
+    /// Outputs the [`PolynomialRingZq`] value of a specific matrix entry
+    /// without checking whether it's part of the matrix.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row in which the entry is located
+    /// - `column`: specifies the column in which the entry is located
+    ///
+    /// Returns the [`PolynomialRingZq`] value of the matrix at the position of the given
+    /// row and column.
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected entry is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq, PolynomialRingZq};
+    /// use qfall_math::integer::{MatPolyOverZ, PolyOverZ};
+    /// use qfall_math::traits::*;
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 50").unwrap();
+    /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
+    /// let poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
+    ///
+    /// let entry_1: PolynomialRingZq = unsafe { poly_ring_mat.get_entry_unchecked(0, 1) };
+    /// let entry_2: PolynomialRingZq = unsafe { poly_ring_mat.get_entry_unchecked(0, 1) };
+    ///
+    /// let value_cmp = PolynomialRingZq::from((&PolyOverZ::from(42), &modulus));
+    /// assert_eq!(entry_1, value_cmp);
+    /// assert_eq!(entry_1, entry_2);
+    /// ```
+    unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> PolynomialRingZq {
+        PolynomialRingZq {
+            poly: self.matrix.get_entry_unchecked(row, column),
+            modulus: self.get_mod(),
+        }
     }
 }
 

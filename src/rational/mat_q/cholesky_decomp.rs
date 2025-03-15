@@ -48,7 +48,7 @@ impl MatQ {
 
         for i in 0..n {
             // get first entry and ith column
-            let a_ii = a.get_entry(0, 0).unwrap();
+            let a_ii = unsafe { a.get_entry_unchecked(0, 0) };
             assert!(a_ii > Q::ZERO, "The matrix is not positive-definite.");
             let column_a_i = match i {
                 0 => a.get_column(0).unwrap(),

@@ -36,7 +36,7 @@ impl MatQ {
         let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
         for i in 0..out.get_num_rows() {
             for j in 0..out.get_num_columns() {
-                let entry = self.get_entry(i, j).unwrap().floor();
+                let entry = unsafe { self.get_entry_unchecked(i, j) }.floor();
                 out.set_entry_unchecked(i, j, entry);
             }
         }
@@ -62,7 +62,7 @@ impl MatQ {
         let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
         for i in 0..out.get_num_rows() {
             for j in 0..out.get_num_columns() {
-                let entry = self.get_entry(i, j).unwrap().ceil();
+                let entry = unsafe { self.get_entry_unchecked(i, j) }.ceil();
                 out.set_entry_unchecked(i, j, entry);
             }
         }
@@ -88,7 +88,7 @@ impl MatQ {
         let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
         for i in 0..out.get_num_rows() {
             for j in 0..out.get_num_columns() {
-                let entry = self.get_entry(i, j).unwrap().round();
+                let entry = unsafe { self.get_entry_unchecked(i, j) }.round();
                 out.set_entry_unchecked(i, j, entry);
             }
         }
@@ -159,7 +159,7 @@ impl MatQ {
 
         for i in 0..self.get_num_rows() {
             for j in 0..self.get_num_columns() {
-                let entry = self.get_entry(i, j).unwrap();
+                let entry = unsafe { self.get_entry_unchecked(i, j) };
                 let simplified_entry = entry.simplify(&precision);
                 out.set_entry_unchecked(i, j, simplified_entry);
             }
@@ -203,7 +203,8 @@ impl MatQ {
         let n = n.into();
         for i in 0..out.get_num_rows() {
             for j in 0..out.get_num_columns() {
-                let entry = self.get_entry(i, j).unwrap().randomized_rounding(&r, &n)?;
+                let entry =
+                    unsafe { self.get_entry_unchecked(i, j) }.randomized_rounding(&r, &n)?;
                 out.set_entry_unchecked(i, j, entry);
             }
         }

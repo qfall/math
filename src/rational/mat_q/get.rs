@@ -93,11 +93,42 @@ impl GetEntry<Q> for MatQ {
         // are previously checked to be inside of the matrix, no errors
         // appear inside of `unsafe` and `fmpq_set` can successfully clone the
         // entry of the matrix. Therefore no memory leaks can appear.
+        Ok(unsafe { self.get_entry_unchecked(row_i64, column_i64) })
+    }
+
+    /// Outputs the [`Q`] value of a specific matrix entry
+    /// without checking whether it's part of the matrix.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row in which the entry is located
+    /// - `column`: specifies the column in which the entry is located
+    ///
+    /// Returns the [`Q`] value of the matrix at the position of the given
+    /// row and column.
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected entry is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::{MatQ, Q};
+    /// use qfall_math::traits::GetEntry;
+    /// use std::str::FromStr;
+    ///
+    /// let matrix = MatQ::from_str("[[1, 2, 3/4],[4, 5, 6],[7, 8, 9]]").unwrap();
+    ///
+    /// assert_eq!(unsafe { matrix.get_entry_unchecked(0, 2) }, Q::from((3, 4)));
+    /// assert_eq!(unsafe { matrix.get_entry_unchecked(2, 1) }, Q::from(8));
+    /// assert_eq!(unsafe { matrix.get_entry_unchecked(2, 1) }, Q::from(8));
+    /// ```
+    unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> Q {
         let mut copy = Q::default();
-        let entry = unsafe { fmpq_mat_entry(&self.matrix, row_i64, column_i64) };
+        let entry = unsafe { fmpq_mat_entry(&self.matrix, row, column) };
         unsafe { fmpq_set(&mut copy.value, entry) };
 
-        Ok(copy)
+        copy
     }
 }
 

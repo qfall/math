@@ -57,8 +57,8 @@ impl MatPolynomialRingZq {
 
         for row in 0..self.get_num_rows() {
             for column in 0..self.get_num_columns() {
-                let entry: PolynomialRingZq = self.get_entry(row, column).unwrap();
-                result = result + entry.norm_eucl_sqrd();
+                let entry: PolynomialRingZq = unsafe { self.get_entry_unchecked(row, column) };
+                result += entry.norm_eucl_sqrd();
             }
         }
 
@@ -104,7 +104,7 @@ impl MatPolynomialRingZq {
 
         for row in 0..self.get_num_rows() {
             for column in 0..self.get_num_columns() {
-                let entry: PolynomialRingZq = self.get_entry(row, column).unwrap();
+                let entry: PolynomialRingZq = unsafe { self.get_entry_unchecked(row, column) };
                 let entry_norm = entry.norm_infty().abs();
                 if result < entry_norm {
                     result = entry_norm;
