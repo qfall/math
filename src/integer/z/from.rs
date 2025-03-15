@@ -17,7 +17,7 @@ use crate::{
     macros::for_others::implement_empty_trait_owned_ref,
     traits::AsInteger,
 };
-use flint_sys::fmpz::{fmpz, fmpz_combit, fmpz_get_si, fmpz_init_set, fmpz_set_str, fmpz_setbit};
+use flint_sys::fmpz::{fmpz, fmpz_get_si, fmpz_get_ui, fmpz_init_set, fmpz_set_str, fmpz_setbit};
 use std::{ffi::CString, str::FromStr};
 
 impl Z {
