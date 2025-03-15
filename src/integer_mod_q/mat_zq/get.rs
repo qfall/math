@@ -441,7 +441,7 @@ impl GetEntry<Z> for MatZq {
     unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> Z {
         let mut out = Z::default();
         let entry = unsafe { fmpz_mod_mat_entry(&self.matrix, row, column) };
-        unsafe { fmpz_set(&mut out.value, entry) };
+        unsafe { fmpz_init_set(&mut out.value, entry) };
 
         out
     }
@@ -517,7 +517,7 @@ impl GetEntry<Zq> for MatZq {
     unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> Zq {
         let mut out = Zq::from((0, &self.modulus));
         let entry = unsafe { fmpz_mod_mat_entry(&self.matrix, row, column) };
-        unsafe { fmpz_set(&mut out.value.value, entry) };
+        unsafe { fmpz_init_set(&mut out.value.value, entry) };
 
         out
     }

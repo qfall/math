@@ -127,7 +127,7 @@ impl GetEntry<Z> for MatZ {
     unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> Z {
         let mut copy = fmpz(0);
         let entry = unsafe { fmpz_mat_entry(&self.matrix, row, column) };
-        unsafe { fmpz_set(&mut copy, entry) };
+        unsafe { fmpz_init_set(&mut copy, entry) };
 
         Z { value: copy }
     }
