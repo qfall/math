@@ -17,7 +17,7 @@ use crate::{
     utils::index::{evaluate_index, evaluate_indices_for_matrix},
 };
 use flint_sys::{
-    fmpz::{fmpz, fmpz_set},
+    fmpz::{fmpz, fmpz_init_set},
     fmpz_mat::fmpz_mat_set,
     fmpz_mod_mat::{
         fmpz_mod_mat_entry, fmpz_mod_mat_init_set, fmpz_mod_mat_window_clear,
@@ -92,9 +92,9 @@ impl MatZq {
 
                 // Not using Zq::distance for performance reasons.
                 if entry > modulus_half {
-                    out.set_entry(row, column, entry - &modulus).unwrap();
+                    out.set_entry_unchecked(row, column, entry - &modulus);
                 } else {
-                    out.set_entry(row, column, entry).unwrap();
+                    out.set_entry_unchecked(row, column, entry);
                 }
             }
         }
@@ -405,7 +405,7 @@ impl GetEntry<Z> for MatZq {
 
         let mut out = Z::default();
         let entry = unsafe { fmpz_mod_mat_entry(&self.matrix, row_i64, column_i64) };
-        unsafe { fmpz_set(&mut out.value, entry) };
+        unsafe { fmpz_init_set(&mut out.value, entry) };
         Ok(out)
     }
 }

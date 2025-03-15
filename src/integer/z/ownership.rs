@@ -12,7 +12,7 @@
 //! The explicit functions contain the documentation.
 
 use super::Z;
-use flint_sys::fmpz::{fmpz, fmpz_clear, fmpz_set};
+use flint_sys::fmpz::{fmpz, fmpz_clear, fmpz_init_set};
 
 impl Clone for Z {
     /// Clones the given element and returns a deep clone of the [`Z`] element.
@@ -28,7 +28,7 @@ impl Clone for Z {
         // a fresh fmpz value is created, set to the same value as the cloned one,
         // and wrapped in a new [`Z`] value. Hence, a fresh deep clone is created.
         let mut value = fmpz(0);
-        unsafe { fmpz_set(&mut value, &self.value) };
+        unsafe { fmpz_init_set(&mut value, &self.value) };
         Self { value }
     }
 }

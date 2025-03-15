@@ -17,6 +17,7 @@ mod cmp;
 mod concat;
 mod default;
 mod determinant;
+mod forms;
 mod from;
 mod get;
 mod inverse;

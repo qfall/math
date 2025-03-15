@@ -14,6 +14,7 @@ pub mod basis_reductions;
 pub mod cholesky_decomposition;
 pub mod classic_crypto;
 pub mod integer;
+pub mod matrix_arith;
 pub mod sample_z;
 pub mod sampling;
 pub mod solve;
@@ -27,5 +28,6 @@ criterion_main! {
     cholesky_decomposition::benches,
     sample_z::benches,
     basis_reductions::benches,
+    matrix_arith::benches,
     uniform::benches,
 }

@@ -57,11 +57,10 @@ impl IntoCoefficientEmbedding<MatZ> for &PolyOverZ {
         );
         let mut out = MatZ::new(size, 1);
         for j in 0..size {
-            match self.get_coeff(j) {
-                Ok(value) => out.set_entry(j, 0, value).unwrap(),
-                Err(_) => break,
-            }
+            let coeff = self.get_coeff(j).unwrap();
+            out.set_entry_unchecked(j, 0, coeff);
         }
+
         out
     }
 }
@@ -95,7 +94,10 @@ impl FromCoefficientEmbedding<&MatZ> for PolyOverZ {
     /// # Panics ...
     /// - if the provided embedding is not a column vector.
     fn from_coefficient_embedding(embedding: &MatZ) -> Self {
-        assert!(embedding.is_column_vector());
+        assert!(
+            embedding.is_column_vector(),
+            "This is no valid embedding, since the matrix is no column vector."
+        );
         let mut out = PolyOverZ::default();
         for i in 0..embedding.get_num_rows() {
             out.set_coeff(i, embedding.get_entry(i, 0).unwrap())

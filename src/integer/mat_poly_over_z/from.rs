@@ -113,12 +113,11 @@ impl From<&MatZ> for MatPolyOverZ {
 
         for row in 0..num_rows {
             for column in 0..num_columns {
-                out.set_entry(
+                out.set_entry_unchecked(
                     row,
                     column,
                     PolyOverZ::from(matrix.get_entry(row, column).unwrap()),
-                )
-                .unwrap();
+                );
             }
         }
 

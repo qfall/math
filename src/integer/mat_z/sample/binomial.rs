@@ -109,7 +109,7 @@ impl MatZ {
         for row in 0..matrix.get_num_rows() {
             for col in 0..matrix.get_num_columns() {
                 let sample = sample_binomial(&n, &p)?;
-                matrix.set_entry(row, col, &offset + sample).unwrap();
+                matrix.set_entry_unchecked(row, col, &offset + sample);
             }
         }
 
@@ -133,7 +133,7 @@ mod test_sample_binomial {
             let matrix = MatZ::sample_binomial(1, 1, 2, 0.5).unwrap();
             let sample = matrix.get_entry(0, 0).unwrap();
             assert!(Z::ZERO <= sample);
-            assert!(sample <= Z::from(2));
+            assert!(sample <= 2);
         }
     }
 

@@ -20,6 +20,7 @@ mod from;
 mod gcd;
 mod hash;
 mod lcm;
+mod logic;
 mod ownership;
 mod properties;
 mod sample;

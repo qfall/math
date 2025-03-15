@@ -55,7 +55,7 @@ impl MatZq {
         for row in 0..matrix.get_num_rows() {
             for col in 0..matrix.get_num_columns() {
                 let sample = uis.sample();
-                matrix.set_entry(row, col, sample).unwrap();
+                matrix.set_entry_unchecked(row, col, sample);
             }
         }
 
@@ -76,9 +76,9 @@ mod test_sample_uniform {
     fn boundaries_kept_small() {
         for _ in 0..32 {
             let matrix = MatZq::sample_uniform(1, 1, 17);
-            let sample = matrix.get_entry(0, 0).unwrap();
+            let sample: Z = matrix.get_entry(0, 0).unwrap();
             assert!(Z::ZERO <= sample);
-            assert!(sample < Z::from(17));
+            assert!(sample < 17);
         }
     }
 
@@ -88,7 +88,7 @@ mod test_sample_uniform {
         let modulus = Z::from(u64::MAX);
         for _ in 0..256 {
             let matrix = MatZq::sample_uniform(1, 1, &modulus);
-            let sample = matrix.get_entry(0, 0).unwrap();
+            let sample: Z = matrix.get_entry(0, 0).unwrap();
             assert!(Z::ZERO <= sample);
             assert!(sample < modulus);
         }

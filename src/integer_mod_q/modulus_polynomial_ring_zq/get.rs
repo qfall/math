@@ -16,7 +16,7 @@ use crate::{
     utils::index::evaluate_index,
 };
 use flint_sys::{
-    fmpz::fmpz_set,
+    fmpz::fmpz_init_set,
     fmpz_mod::fmpz_mod_ctx_init,
     fmpz_mod_poly::fmpz_mod_poly_get_coeff_fmpz,
     fq::{fq_ctx_degree, fq_ctx_struct},
@@ -143,7 +143,7 @@ impl ModulusPolynomialRingZq {
     pub fn get_q(&self) -> Z {
         let mut out = Z::default();
         unsafe {
-            fmpz_set(&mut out.value, &self.get_fq_ctx().ctxp[0].n[0]);
+            fmpz_init_set(&mut out.value, &self.get_fq_ctx().ctxp[0].n[0]);
         }
         out
     }

@@ -14,7 +14,7 @@ use crate::integer::MatZ;
 use crate::macros::arithmetics::{
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
 };
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::{GetNumColumns, GetNumRows, SetEntry};
 use flint_sys::fmpq_mat::{fmpq_mat_mul, fmpq_mat_mul_fmpz_mat};
 use std::ops::Mul;
 
@@ -91,6 +91,62 @@ impl Mul<&MatZ> for &MatQ {
         let mut new = MatQ::new(self.get_num_rows(), other.get_num_columns());
         unsafe { fmpq_mat_mul_fmpz_mat(&mut new.matrix, &self.matrix, &other.matrix) };
         new
+    }
+}
+
+impl MatQ {
+    /// Multiplies the matrices `self` and `other` naively with each other
+    /// using their [`f64`] presentation, i.e. with a small loss of precision.
+    ///
+    /// This function can speed up multiplications of [`MatQ`]'s as it allows for
+    /// some loss of precision. The loss of precision depends on the size of the matrices
+    /// and how exact the entries could be represented by a [`f64`].
+    ///
+    /// **WARNING:** This function is less efficient than [`Mul`] for integer values
+    /// or entries with small numerators and denominators. This function becomes more
+    /// efficient once `self` or `other` has entries with large numerators and denominators
+    /// as FLINT's implementation does not allow any loss of precision.
+    ///
+    /// **WARNING:** Please be aware that the deviation of the representation of the matrices' entries as [`f64`]
+    /// will scale with the size of the entries, e.g. an entry within the size of `2^{64}`
+    /// might deviate from the original value by a distance of `1_000`. This loss of precision
+    /// might be aggravated by this matrix multiplication with a factor of `self.get_num_columns()`
+    /// for each entry in the resulting matrix.
+    ///
+    /// **WARNING:** This function is unchecked, i.e. the user is expected to align matrix
+    /// dimensions for multiplication.
+    ///  
+    /// # Example
+    /// ```
+    /// use qfall_math::integer::MatZ;
+    /// let mat = MatZ::sample_uniform(3, 3, -256, 256).unwrap().inverse().unwrap();
+    ///
+    /// let mat_inv_sqrd = mat.mul_f64_unchecked(&mat);
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the dimensions of `self` and `other` do not match for multiplication.
+    /// - if any result during the naive computation of matrix multiplication
+    ///     is larger than [`f64::MAX`] or smaller than [`f64::MIN`].
+    pub fn mul_f64_unchecked(&self, other: &Self) -> MatQ {
+        let num_rows = self.get_num_rows() as usize;
+        let num_cols = other.get_num_columns() as usize;
+
+        let mat_self = self.collect_entries_f64();
+        let mat_other = other.collect_entries_f64();
+
+        let mut mat_out = MatQ::new(num_rows, num_cols);
+        for (i, row) in mat_self.iter().enumerate() {
+            for j in 0..num_cols {
+                let mut entry = 0.0;
+                for k in 0..self.get_num_columns() as usize {
+                    entry += row[k] * mat_other[k][j];
+                }
+                mat_out.set_entry(i, j, entry).unwrap();
+            }
+        }
+
+        mat_out
     }
 }
 
@@ -240,5 +296,56 @@ mod test_mul_matz {
         let mat_1 = MatQ::from_str("[[2/3, 1],[1/2, 2]]").unwrap();
         let mat_2 = MatZ::from_str("[[1, 0],[0, 1],[0, 0]]").unwrap();
         let _ = &mat_1 * &mat_2;
+    }
+}
+
+#[cfg(test)]
+mod test_mul_f64_unchecked {
+    use crate::{
+        rational::{MatQ, Q},
+        traits::{Distance, GetEntry},
+    };
+    use std::str::FromStr;
+
+    /// Ensures that the result of the multiplication is valid.
+    #[test]
+    fn correctness() {
+        // If the entries of the matrix are changed to fractions that can't be represented
+        // exactly by f64, the assertions need to be adapted to check for small losses.
+        let mat_0 = MatQ::from_str("[[1,0],[0,1]]").unwrap();
+        let mat_1 = MatQ::from_str("[[4,5],[5/10,-4/8],[-3,0]]").unwrap();
+        let mat_2 = MatQ::from_str("[[-3/-4],[1/2]]").unwrap();
+
+        assert_eq!(mat_0, mat_0.mul_f64_unchecked(&mat_0));
+        assert_eq!(&mat_1 * &mat_0, mat_1.mul_f64_unchecked(&mat_0));
+        assert_eq!(&mat_0 * &mat_2, mat_0.mul_f64_unchecked(&mat_2));
+    }
+
+    /// Ensures that the loss of precision is reasonable.
+    /// This test just showcases / gives an idea that the loss of precision
+    /// should be fairly irrelevant for most use-cases. Nevertheless,
+    /// the loss of precision depends on the dimensions of the matrices
+    /// and the loss of precision due to transforming to [`f64`].
+    #[test]
+    fn loss_of_precision() {
+        let mat = MatQ::from_str(&format!("[[1/{},0],[0,-1/{}]]", u64::MAX, i64::MAX)).unwrap();
+        let cmp_0 = Q::from((1, u64::MAX));
+        let cmp_1 = Q::from((1, i64::MAX));
+        let max_loss = Q::from((1, i64::MAX));
+
+        let res = mat.mul_f64_unchecked(&mat);
+
+        assert!(res.get_entry(0, 0).unwrap().distance(cmp_0) < max_loss);
+        assert!(res.get_entry(1, 1).unwrap().distance(cmp_1) < max_loss);
+    }
+
+    /// Ensures that the function panics if invalid dimensions are input.
+    #[test]
+    #[should_panic]
+    fn incorrect_dimensions() {
+        let mat_0 = MatQ::identity(2, 3);
+        let mat_1 = MatQ::new(1, 2);
+
+        let _ = mat_0.mul_f64_unchecked(&mat_1);
     }
 }

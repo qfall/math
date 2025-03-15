@@ -66,19 +66,44 @@ impl<Integer: Into<Z>> SetEntry<Integer> for MatZ {
         column: impl TryInto<i64> + Display,
         value: Integer,
     ) -> Result<(), MathError> {
-        let value = value.into();
         let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
 
         // since `self` is a correct matrix and both row and column
         // are previously checked to be inside of the matrix, no errors
         // appear inside of `unsafe` and `fmpz_set` can successfully clone the
         // value inside the matrix. Therefore no memory leaks can appear.
-        unsafe {
-            let entry = fmpz_mat_entry(&self.matrix, row_i64, column_i64);
-            fmpz_set(entry, &value.value)
-        };
+        self.set_entry_unchecked(row_i64, column_i64, value);
 
         Ok(())
+    }
+
+    /// Sets the value of a specific matrix entry according to the provided value
+    /// without checking whether the coordinate is part of the matrix.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row in which the entry is located
+    /// - `column`: specifies the column in which the entry is located
+    /// - `value`: specifies the value to which the entry is set
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::{MatZ, Z};
+    /// use qfall_math::traits::SetEntry;
+    ///
+    /// let mut matrix = MatZ::new(3, 3);
+    ///
+    /// matrix.set_entry_unchecked(0, 1, 5);
+    /// matrix.set_entry_unchecked(2, 2, 9);
+    ///
+    /// assert_eq!("[[0, 5, 0],[0, 0, 0],[0, 0, 9]]", matrix.to_string());
+    /// ```
+    fn set_entry_unchecked(&mut self, row: i64, column: i64, value: Integer) {
+        let value: Z = value.into();
+
+        unsafe {
+            let entry = fmpz_mat_entry(&self.matrix, row, column);
+            fmpz_set(entry, &value.value)
+        };
     }
 }
 

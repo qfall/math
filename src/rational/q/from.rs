@@ -19,7 +19,7 @@ use crate::{
 };
 use flint_sys::{
     fmpq::{fmpq, fmpq_canonicalise, fmpq_clear, fmpq_get_d, fmpq_set_str},
-    fmpz::{fmpz_is_zero, fmpz_set},
+    fmpz::{fmpz_init_set, fmpz_is_zero},
 };
 use std::{ffi::CString, str::FromStr};
 
@@ -130,7 +130,7 @@ impl<Integer: Into<Z>> From<Integer> for Q {
         let value = value.into();
         // this efficient implementation depends on Q::default instantiating 1 as denominator
         let mut out = Q::default();
-        unsafe { fmpz_set(&mut out.value.num, &value.value) }
+        unsafe { fmpz_init_set(&mut out.value.num, &value.value) }
         out
     }
 }
@@ -163,6 +163,15 @@ from_trait!(f32, Q, Q::from_f32);
 impl From<&Q> for f64 {
     /// Convert a rational [`Q`] into an [`f64`].
     /// The value is rounded to the closest [`f64`] representation.
+    ///
+    /// **WARNING:** The return is system dependent if `self` is
+    /// is too large or too small to fit in an [`f64`], i.e. the value should be within
+    /// [`f64::MIN`] and [`f64::MAX`]. It the entry can't be represented exactly, it will
+    /// be rounded towards zero.
+    ///
+    /// **WARNING:** Please be aware that the deviation of the representation of `self` as a [`f64`]
+    /// will scale with the size of `self`, e.g. a value within the size of `2^{64}`
+    /// might deviate from the original value by a distance of `1_000`.
     ///
     /// # Examples
     /// ```

@@ -22,6 +22,7 @@ use derive_more::Display;
 use serde::{Deserialize, Serialize};
 
 mod arithmetic;
+mod coefficient_embedding;
 mod from;
 mod get;
 mod norm;
