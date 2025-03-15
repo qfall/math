@@ -241,7 +241,7 @@ mod test_partial_eq_modulus_other {
     use super::Z;
     use crate::integer_mod_q::Modulus;
 
-    // Ensure that the function can be called with several types
+    /// Ensure that the function can be called with several types
     #[test]
     #[allow(clippy::op_ref)]
     fn availability() {
@@ -276,7 +276,7 @@ mod test_partial_eq_modulus_other {
         assert!(&2i8 == &modulus);
     }
 
-    // Ensure that large values are compared correctly
+    /// Ensure that large values are compared correctly
     #[test]
     fn equal_large() {
         let modulus = Modulus::from(u64::MAX);
@@ -330,7 +330,7 @@ mod test_partial_ord_modulus_other {
     use super::Modulus;
     use crate::integer::Z;
 
-    // Ensure that the function can be called with several types
+    /// Ensure that the function can be called with several types
     #[test]
     #[allow(clippy::op_ref)]
     fn availability() {

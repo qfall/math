@@ -677,7 +677,7 @@ mod test_partial_ord_q_other {
     use super::Q;
     use crate::{integer::Z, integer_mod_q::Modulus};
 
-    // Ensure that the function can be called with several types
+    /// Ensure that the function can be called with several types
     #[test]
     #[allow(clippy::op_ref)]
     fn availability() {
