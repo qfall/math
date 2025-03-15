@@ -87,7 +87,7 @@ impl MatZq {
             } else if let Some(row_nr) =
                 find_not_invertible_entry_column(&matrix, column_nr, &used_rows)
             {
-                let entry: Z = matrix.get_entry(row_nr, column_nr).unwrap();
+                let entry: Z = unsafe { matrix.get_entry_unchecked(row_nr, column_nr) };
 
                 // Factorize the modulus with the found entry, compute solutions
                 // for the system under the split modulus and use the
@@ -100,7 +100,7 @@ impl MatZq {
         // Set the entries of the output vector using the indices vector.
         let mut out = MatZq::new(self.get_num_columns(), 1, matrix.get_mod());
         for (i, j) in indices.iter() {
-            let entry: Z = matrix.get_entry(*i, -1).unwrap();
+            let entry: Z = unsafe { matrix.get_entry_unchecked(*i, matrix.get_num_columns() - 1) };
             out.set_entry_unchecked(*j, 0, entry);
         }
 
@@ -123,7 +123,7 @@ impl MatZq {
         // Set all other entries in that column to `0` (gaussian elimination).
         for row_nr in (0..self.get_num_rows()).filter(|x| *x != row_nr) {
             let old_row = self.get_row(row_nr).unwrap();
-            let entry: Z = old_row.get_entry(0, column_nr).unwrap();
+            let entry: Z = unsafe { old_row.get_entry_unchecked(0, column_nr) };
             if !entry.is_zero() {
                 let new_row = &old_row - entry * &row;
                 self.set_row(row_nr, &new_row, 0).unwrap();
@@ -295,9 +295,8 @@ impl MatZq {
                 // for the system under the split modulus and use the
                 // Chinese Remainder Theorem to compute a solution based on these
                 // sub-solutions.
-                let entry: Z = matrix_identity_base_gauss
-                    .get_entry(row_nr, column_nr)
-                    .unwrap();
+                let entry: Z =
+                    unsafe { matrix_identity_base_gauss.get_entry_unchecked(row_nr, column_nr) };
                 self.factorization_and_crt(y, entry);
             }
         }
@@ -361,7 +360,7 @@ impl MatZq {
 
         let mut out = MatZq::new(self.get_num_columns(), 1, self.get_mod());
         for (current_row_x, (_row_nr, column_nr)) in indices.into_iter().enumerate() {
-            let entry: Z = x.get_entry(current_row_x, 0).unwrap();
+            let entry: Z = unsafe { x.get_entry_unchecked(current_row_x as i64, 0) };
             out.set_entry_unchecked(column_nr, 0, entry);
         }
 
@@ -387,7 +386,7 @@ fn find_invertible_entry_column(
     used_rows: &[i64],
 ) -> Option<(i64, Zq)> {
     for i in (0..matrix.get_num_rows()).filter(|x| !used_rows.contains(x)) {
-        let entry: Zq = matrix.get_entry(i, column).unwrap();
+        let entry: Zq = unsafe { matrix.get_entry_unchecked(i, column) };
         if let Ok(inv) = entry.pow(-1) {
             return Some((i, inv));
         }
@@ -408,7 +407,7 @@ fn find_invertible_entry_column(
 /// that is not 0, and `None` if there is no such element
 fn find_not_invertible_entry_column(matrix: &MatZq, column: i64, used_rows: &[i64]) -> Option<i64> {
     for i in (0..matrix.get_num_rows()).filter(|x| !used_rows.contains(x)) {
-        let entry: Zq = matrix.get_entry(i, column).unwrap();
+        let entry: Zq = unsafe { matrix.get_entry_unchecked(i, column) };
         if !entry.is_zero() {
             if let Err(_inv) = entry.pow(-1) {
                 return Some(i);

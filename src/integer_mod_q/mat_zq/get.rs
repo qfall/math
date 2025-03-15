@@ -88,7 +88,7 @@ impl MatZq {
 
         for row in 0..self.get_num_rows() {
             for column in 0..self.get_num_columns() {
-                let entry: Z = self.get_entry(row, column).unwrap();
+                let entry: Z = unsafe { self.get_entry_unchecked(row, column) };
 
                 // Not using Zq::distance for performance reasons.
                 if entry > modulus_half {

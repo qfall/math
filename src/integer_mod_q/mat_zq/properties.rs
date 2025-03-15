@@ -93,9 +93,10 @@ impl MatZq {
         }
         for row in 0..self.get_num_rows() {
             for column in 0..row {
-                if GetEntry::<Z>::get_entry(self, row, column).unwrap()
-                    != GetEntry::<Z>::get_entry(self, column, row).unwrap()
-                {
+                if unsafe {
+                    GetEntry::<Z>::get_entry_unchecked(self, row, column)
+                        != GetEntry::<Z>::get_entry_unchecked(self, column, row)
+                } {
                     return false;
                 }
             }

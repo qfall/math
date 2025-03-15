@@ -111,7 +111,7 @@ impl FromCoefficientEmbedding<(&MatZq, &ModulusPolynomialRingZq)> for Polynomial
         );
         let mut out = PolynomialRingZq::from((0, embedding.1));
         for i in 0..embedding.0.get_num_rows() {
-            let entry: Z = embedding.0.get_entry(i, 0).unwrap();
+            let entry: Z = unsafe { embedding.0.get_entry_unchecked(i, 0) };
             out.set_coeff(i, &entry).unwrap()
         }
         out

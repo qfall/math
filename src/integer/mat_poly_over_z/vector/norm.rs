@@ -52,7 +52,7 @@ impl MatPolyOverZ {
 
         for row in 0..self.get_num_rows() {
             for column in 0..self.get_num_columns() {
-                result += self.get_entry(row, column).unwrap().norm_eucl_sqrd();
+                result += unsafe { self.get_entry_unchecked(row, column) }.norm_eucl_sqrd();
             }
         }
 
@@ -94,7 +94,9 @@ impl MatPolyOverZ {
 
         for row in 0..self.get_num_rows() {
             for column in 0..self.get_num_columns() {
-                let entry_norm = self.get_entry(row, column).unwrap().norm_infty().abs();
+                let entry_norm = unsafe { self.get_entry_unchecked(row, column) }
+                    .norm_infty()
+                    .abs();
                 if result < entry_norm {
                     result = entry_norm;
                 }
