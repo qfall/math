@@ -162,6 +162,11 @@ impl GetEntry<PolyOverZ> for MatPolynomialRingZq {
     /// Returns the [`PolyOverZ`] value of the matrix at the position of the given
     /// row and column.
     ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected entry is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    ///
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
@@ -173,17 +178,14 @@ impl GetEntry<PolyOverZ> for MatPolynomialRingZq {
     /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
     /// let poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
     ///
-    /// let entry_1: PolyOverZ = poly_ring_mat.get_entry_unchecked(1, 0);
-    /// let entry_2: PolyOverZ = poly_ring_mat.get_entry_unchecked(0, 1);
+    /// let entry_1: PolyOverZ = unsafe { poly_ring_mat.get_entry_unchecked(1, 0) };
+    /// let entry_2: PolyOverZ = unsafe { poly_ring_mat.get_entry_unchecked(0, 1) };
     ///
     ///
     /// assert_eq!(entry_1, PolyOverZ::from(0));
     /// assert_eq!(entry_2, PolyOverZ::from(42));
     /// ```
-    ///
-    /// # Panics ...
-    /// - if `row` or `column` are greater than the matrix size.
-    fn get_entry_unchecked(&self, row: i64, column: i64) -> PolyOverZ {
+    unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> PolyOverZ {
         self.matrix.get_entry_unchecked(row, column)
     }
 }
@@ -245,6 +247,11 @@ impl GetEntry<PolynomialRingZq> for MatPolynomialRingZq {
     /// Returns the [`PolynomialRingZq`] value of the matrix at the position of the given
     /// row and column.
     ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected entry is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    ///
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq, PolynomialRingZq};
@@ -256,17 +263,14 @@ impl GetEntry<PolynomialRingZq> for MatPolynomialRingZq {
     /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
     /// let poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
     ///
-    /// let entry_1: PolynomialRingZq = poly_ring_mat.get_entry_unchecked(0, 1);
-    /// let entry_2: PolynomialRingZq = poly_ring_mat.get_entry_unchecked(0, 1);
+    /// let entry_1: PolynomialRingZq = unsafe { poly_ring_mat.get_entry_unchecked(0, 1) };
+    /// let entry_2: PolynomialRingZq = unsafe { poly_ring_mat.get_entry_unchecked(0, 1) };
     ///
     /// let value_cmp = PolynomialRingZq::from((&PolyOverZ::from(42), &modulus));
     /// assert_eq!(entry_1, value_cmp);
     /// assert_eq!(entry_1, entry_2);
     /// ```
-    ///
-    /// # Panics ...
-    /// - if `row` or `column` are greater than the matrix size.
-    fn get_entry_unchecked(&self, row: i64, column: i64) -> PolynomialRingZq {
+    unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> PolynomialRingZq {
         PolynomialRingZq {
             poly: self.matrix.get_entry_unchecked(row, column),
             modulus: self.get_mod(),

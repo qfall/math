@@ -84,7 +84,12 @@ pub trait GetEntry<T> {
     /// Parameters:
     /// - `row`: specifies the row in which the entry is located.
     /// - `column`: specifies the column in which the entry is located.
-    fn get_entry_unchecked(&self, row: i64, column: i64) -> T;
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected entry is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> T;
 }
 
 /// Is implemented by matrices to set entries.

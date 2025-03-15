@@ -94,7 +94,7 @@ impl GetEntry<Z> for MatZ {
         // are previously checked to be inside of the matrix, no errors
         // appear inside of `unsafe` and `fmpz_set` can successfully clone the
         // entry of the matrix. Therefore no memory leaks can appear.
-        Ok(self.get_entry_unchecked(row_i64, column_i64))
+        unsafe { Ok(self.get_entry_unchecked(row_i64, column_i64)) }
     }
 
     /// Outputs the [`Z`] value of a specific matrix entry without checking
@@ -107,6 +107,11 @@ impl GetEntry<Z> for MatZ {
     /// Returns the [`Z`] value of the matrix at the position of the given
     /// row and column.
     ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected entry is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    ///
     /// # Examples
     /// ```
     /// use qfall_math::integer::{MatZ, Z};
@@ -115,14 +120,11 @@ impl GetEntry<Z> for MatZ {
     ///
     /// let matrix = MatZ::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]]").unwrap();
     ///
-    /// assert_eq!(matrix.get_entry_unchecked(0, 2), Z::from(3));
-    /// assert_eq!(matrix.get_entry_unchecked(2, 1), Z::from(8));
-    /// assert_eq!(matrix.get_entry_unchecked(2, 1), Z::from(8));
+    /// assert_eq!(unsafe { matrix.get_entry_unchecked(0, 2) }, Z::from(3));
+    /// assert_eq!(unsafe { matrix.get_entry_unchecked(2, 1) }, Z::from(8));
+    /// assert_eq!(unsafe { matrix.get_entry_unchecked(2, 1) }, Z::from(8));
     /// ```
-    ///
-    /// # Panics ...
-    /// - if `row` or `column` is negative or is greater than the matrix size.
-    fn get_entry_unchecked(&self, row: i64, column: i64) -> Z {
+    unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> Z {
         let mut copy = fmpz(0);
         let entry = unsafe { fmpz_mat_entry(&self.matrix, row, column) };
         unsafe { fmpz_set(&mut copy, entry) };

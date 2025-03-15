@@ -403,7 +403,7 @@ impl GetEntry<Z> for MatZq {
     ) -> Result<Z, MathError> {
         let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
 
-        Ok(self.get_entry_unchecked(row_i64, column_i64))
+        Ok(unsafe { self.get_entry_unchecked(row_i64, column_i64) })
     }
 
     /// Outputs the [`Z`] value of a specific matrix entry
@@ -416,6 +416,11 @@ impl GetEntry<Z> for MatZq {
     /// Returns the [`Z`] value of the matrix at the position of the given
     /// row and column.
     ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected entry is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    ///
     /// # Examples
     /// ```rust
     /// use qfall_math::integer_mod_q::MatZq;
@@ -425,18 +430,15 @@ impl GetEntry<Z> for MatZq {
     ///
     /// let matrix = MatZq::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]] mod 10").unwrap();
     ///
-    /// let entry_1 :Z = matrix.get_entry_unchecked(0, 2);
-    /// let entry_2 :Z = matrix.get_entry_unchecked(2, 1);
-    /// let entry_3 :Z = matrix.get_entry_unchecked(2, 1);
+    /// let entry_1 :Z = unsafe { matrix.get_entry_unchecked(0, 2) };
+    /// let entry_2 :Z = unsafe { matrix.get_entry_unchecked(2, 1) };
+    /// let entry_3 :Z = unsafe { matrix.get_entry_unchecked(2, 1) };
     ///
     /// assert_eq!(3, entry_1);
     /// assert_eq!(8, entry_2);
     /// assert_eq!(8, entry_3);
     /// ```
-    ///
-    /// # Panics ...
-    /// - if `row` or `column` are greater than the matrix size.
-    fn get_entry_unchecked(&self, row: i64, column: i64) -> Z {
+    unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> Z {
         let mut out = Z::default();
         let entry = unsafe { fmpz_mod_mat_entry(&self.matrix, row, column) };
         unsafe { fmpz_set(&mut out.value, entry) };
@@ -482,7 +484,7 @@ impl GetEntry<Zq> for MatZq {
     ) -> Result<Zq, MathError> {
         let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
 
-        Ok(self.get_entry_unchecked(row_i64, column_i64))
+        Ok(unsafe { self.get_entry_unchecked(row_i64, column_i64) })
     }
 
     /// Outputs the [`Zq`] value of a specific matrix entry
@@ -495,6 +497,11 @@ impl GetEntry<Zq> for MatZq {
     /// Returns the [`Zq`] value of the matrix at the position of the given
     /// row and column.
     ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected entry is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    ///
     /// # Examples
     /// ```rust
     /// use qfall_math::integer_mod_q::{MatZq, Zq};
@@ -503,14 +510,11 @@ impl GetEntry<Zq> for MatZq {
     ///
     /// let matrix = MatZq::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]] mod 10").unwrap();
     ///
-    /// assert_eq!(Zq::from((3, 10)), matrix.get_entry_unchecked(0, 2));
-    /// assert_eq!(Zq::from((8, 10)), matrix.get_entry_unchecked(2, 1));
-    /// assert_eq!(Zq::from((8, 10)), matrix.get_entry_unchecked(2, 1));
+    /// assert_eq!(Zq::from((3, 10)), unsafe { matrix.get_entry_unchecked(0, 2) } );
+    /// assert_eq!(Zq::from((8, 10)), unsafe { matrix.get_entry_unchecked(2, 1) } );
+    /// assert_eq!(Zq::from((8, 10)), unsafe { matrix.get_entry_unchecked(2, 1) } );
     /// ```
-    ///
-    /// # Panics ...
-    /// - if `row` or `column` are greater than the matrix size.
-    fn get_entry_unchecked(&self, row: i64, column: i64) -> Zq {
+    unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> Zq {
         let mut out = Zq::from((0, &self.modulus));
         let entry = unsafe { fmpz_mod_mat_entry(&self.matrix, row, column) };
         unsafe { fmpz_set(&mut out.value.value, entry) };
