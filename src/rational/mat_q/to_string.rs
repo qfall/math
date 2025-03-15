@@ -77,7 +77,7 @@ impl MatQ {
     /// If an entry can't be represented exactly, it provides the
     /// closest value representable with `nr_decimal_digits` rounded towards zero.
     ///
-    /// **WARNING:** This function converts any entry into an [`f64`] before
+    /// **WARNING:** This function converts every entry into an [`f64`] before
     /// outputting the decimal representation. Thus, values that can't be represented exactly
     /// by a [`f64`] will lose some precision. For large values, e.g. of size `2^64`
     /// the deviation to the original value might be within the size of `1_000`.
@@ -86,8 +86,8 @@ impl MatQ {
     /// - `nr_decimal_digits`: specifies the number of decimal digits
     ///     that will be a part of the output [`String`]
     ///
-    /// Returns the Matrix in form of a [`String`]. For matrix `[[1/2],[5/3]]`
-    /// the String looks like this `[[0.50],[1.66]]` if `nr_decimal_digits = 2`.
+    /// Returns the matrix in form of a [`String`]. For matrix `[[1/2],[5/3]]`
+    /// the [`String`] looks like this `[[0.50],[1.66]]` if `nr_decimal_digits = 2`.
     ///
     /// # Examples
     /// ```
@@ -158,6 +158,7 @@ impl MatQ {
     }
 }
 
+/// This module avoids tests already performed for [`crate::rational::Q::to_string_decimal`].
 #[cfg(test)]
 mod test_to_string_decimal {
     use super::MatQ;
