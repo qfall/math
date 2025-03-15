@@ -290,7 +290,7 @@ mod test_simplify {
 
         let simplified = value.simplify(&precision);
         assert!(&value - &precision <= simplified && simplified <= &value + &precision);
-        assert!(Q::from((i64::MAX - 2, i64::MAX)) <= simplified && simplified <= 1.into());
+        assert!(Q::from((i64::MAX - 2, i64::MAX)) <= simplified && simplified <= 1);
     }
 
     /// Ensure max_bits of denominator are not bigger than 1/2 * precision

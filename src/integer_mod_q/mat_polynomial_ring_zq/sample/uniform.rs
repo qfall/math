@@ -89,7 +89,7 @@ mod test_sample_uniform {
             let coeff = sample.get_coeff(0).unwrap();
 
             assert!(Z::ZERO <= coeff);
-            assert!(coeff < Z::from(17));
+            assert!(coeff < 17);
         }
     }
 
@@ -105,7 +105,7 @@ mod test_sample_uniform {
             let coeff = sample.get_coeff(0).unwrap();
 
             assert!(Z::ZERO <= coeff);
-            assert!(coeff < Z::from(u64::MAX));
+            assert!(coeff < u64::MAX);
         }
     }
 

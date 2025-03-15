@@ -151,7 +151,7 @@ mod test_sample_binomial {
             let poly = entry.get_coeff(0).unwrap();
 
             assert!(Z::ZERO <= poly);
-            assert!(poly <= Z::from(2));
+            assert!(poly <= 2);
         }
     }
 
@@ -262,7 +262,7 @@ mod test_sample_binomial_with_offset {
             let poly: PolyOverZ = matrix.get_entry(0, 0).unwrap();
             let value = poly.get_coeff(0).unwrap();
 
-            assert!(Z::from(16) <= value || value <= Z::ONE);
+            assert!(16 <= value || value <= Z::ONE);
         }
     }
 
