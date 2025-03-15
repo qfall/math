@@ -103,7 +103,7 @@ impl FromCoefficientEmbedding<(&MatZ, i64)> for MatPolyOverZ {
     /// };
     ///
     /// let matrix = MatZ::from_str("[[17, 1],[3, 2],[-5, 3]]").unwrap();
-    /// let poly = MatPolyOverZ::from_coefficient_embedding(&matrix);
+    /// let poly = MatPolyOverZ::from_coefficient_embedding((&matrix, 2));
     /// let cmp_poly = MatPolyOverZ::from_str("[[3  17 3 -5, 3  1 2 3]]").unwrap();
     /// assert_eq!(cmp_poly, poly);
     /// ```
