@@ -127,7 +127,7 @@ impl MatZ {
                     &byte_vector[offset_row + nr_bytes_per_entry * col
                         ..offset_row + nr_bytes_per_entry * (col + 1)],
                 );
-                mat.set_entry_unchecked(row as i64, col as i64, entry_value);
+                unsafe { mat.set_entry_unchecked(row as i64, col as i64, entry_value) };
             }
         }
 

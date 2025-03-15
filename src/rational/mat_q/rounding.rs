@@ -37,7 +37,7 @@ impl MatQ {
         for i in 0..out.get_num_rows() {
             for j in 0..out.get_num_columns() {
                 let entry = unsafe { self.get_entry_unchecked(i, j) }.floor();
-                out.set_entry_unchecked(i, j, entry);
+                unsafe { out.set_entry_unchecked(i, j, entry) };
             }
         }
         out
@@ -63,7 +63,7 @@ impl MatQ {
         for i in 0..out.get_num_rows() {
             for j in 0..out.get_num_columns() {
                 let entry = unsafe { self.get_entry_unchecked(i, j) }.ceil();
-                out.set_entry_unchecked(i, j, entry);
+                unsafe { out.set_entry_unchecked(i, j, entry) };
             }
         }
         out
@@ -89,7 +89,7 @@ impl MatQ {
         for i in 0..out.get_num_rows() {
             for j in 0..out.get_num_columns() {
                 let entry = unsafe { self.get_entry_unchecked(i, j) }.round();
-                out.set_entry_unchecked(i, j, entry);
+                unsafe { out.set_entry_unchecked(i, j, entry) };
             }
         }
         out
@@ -161,7 +161,7 @@ impl MatQ {
             for j in 0..self.get_num_columns() {
                 let entry = unsafe { self.get_entry_unchecked(i, j) };
                 let simplified_entry = entry.simplify(&precision);
-                out.set_entry_unchecked(i, j, simplified_entry);
+                unsafe { out.set_entry_unchecked(i, j, simplified_entry) };
             }
         }
 
@@ -205,7 +205,7 @@ impl MatQ {
             for j in 0..out.get_num_columns() {
                 let entry =
                     unsafe { self.get_entry_unchecked(i, j) }.randomized_rounding(&r, &n)?;
-                out.set_entry_unchecked(i, j, entry);
+                unsafe { out.set_entry_unchecked(i, j, entry) };
             }
         }
         Ok(out)

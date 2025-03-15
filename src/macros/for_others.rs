@@ -202,7 +202,7 @@ macro_rules! implement_for_owned {
                 }
 
                 #[doc = "Documentation can be found at [`" $type "::set_entry`] for &[`" $source_type "`]."]
-                fn set_entry_unchecked(
+                unsafe fn set_entry_unchecked(
                     &mut self,
                     row: i64,
                     column: i64,

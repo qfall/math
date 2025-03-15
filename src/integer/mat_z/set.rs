@@ -72,7 +72,7 @@ impl<Integer: Into<Z>> SetEntry<Integer> for MatZ {
         // are previously checked to be inside of the matrix, no errors
         // appear inside of `unsafe` and `fmpz_set` can successfully clone the
         // value inside the matrix. Therefore no memory leaks can appear.
-        self.set_entry_unchecked(row_i64, column_i64, value);
+        unsafe { self.set_entry_unchecked(row_i64, column_i64, value) };
 
         Ok(())
     }
@@ -85,6 +85,11 @@ impl<Integer: Into<Z>> SetEntry<Integer> for MatZ {
     /// - `column`: specifies the column in which the entry is located
     /// - `value`: specifies the value to which the entry is set
     ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected entry is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    ///
     /// # Examples
     /// ```
     /// use qfall_math::integer::{MatZ, Z};
@@ -92,12 +97,14 @@ impl<Integer: Into<Z>> SetEntry<Integer> for MatZ {
     ///
     /// let mut matrix = MatZ::new(3, 3);
     ///
-    /// matrix.set_entry_unchecked(0, 1, 5);
-    /// matrix.set_entry_unchecked(2, 2, 9);
+    /// unsafe {
+    ///     matrix.set_entry_unchecked(0, 1, 5);
+    ///     matrix.set_entry_unchecked(2, 2, 9);
+    /// }
     ///
     /// assert_eq!("[[0, 5, 0],[0, 0, 0],[0, 0, 9]]", matrix.to_string());
     /// ```
-    fn set_entry_unchecked(&mut self, row: i64, column: i64, value: Integer) {
+    unsafe fn set_entry_unchecked(&mut self, row: i64, column: i64, value: Integer) {
         let value: Z = value.into();
 
         unsafe {

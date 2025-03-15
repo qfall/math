@@ -76,7 +76,7 @@ impl<Rational: Into<Q>> SetEntry<Rational> for MatQ {
         // are previously checked to be inside of the matrix, no errors
         // appear inside of `unsafe` and `fmpq_set` can successfully clone the
         // value inside the matrix. Therefore no memory leaks can appear.
-        self.set_entry_unchecked(row_i64, column_i64, value);
+        unsafe { self.set_entry_unchecked(row_i64, column_i64, value) };
 
         Ok(())
     }
@@ -89,6 +89,11 @@ impl<Rational: Into<Q>> SetEntry<Rational> for MatQ {
     /// - `column`: specifies the column in which the entry is located
     /// - `value`: specifies the value to which the entry is set
     ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected entry is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    ///
     /// # Examples
     /// ```
     /// use qfall_math::rational::MatQ;
@@ -98,13 +103,15 @@ impl<Rational: Into<Q>> SetEntry<Rational> for MatQ {
     /// let mut matrix = MatQ::new(3, 3);
     /// let value = Q::from((5, 2));
     ///
-    /// matrix.set_entry_unchecked(0, 1, &value);
-    /// matrix.set_entry_unchecked(2, 2, 5);
-    /// matrix.set_entry_unchecked(0, 2, (2, 3));
+    /// unsafe {
+    ///     matrix.set_entry_unchecked(0, 1, &value);
+    ///     matrix.set_entry_unchecked(2, 2, 5);
+    ///     matrix.set_entry_unchecked(0, 2, (2, 3));
+    /// }
     ///
     /// assert_eq!("[[0, 5/2, 2/3],[0, 0, 0],[0, 0, 5]]", matrix.to_string());
     /// ```
-    fn set_entry_unchecked(&mut self, row: i64, column: i64, value: Rational) {
+    unsafe fn set_entry_unchecked(&mut self, row: i64, column: i64, value: Rational) {
         let value: Q = value.into();
 
         unsafe {
