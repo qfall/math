@@ -59,7 +59,7 @@ impl GetCoefficient<Zq> for ModulusPolynomialRingZq {
 
         let mut ctx = MaybeUninit::uninit();
         unsafe {
-            fmpz_mod_ctx_init(ctx.as_mut_ptr(), &self.get_fq_ctx_struct().ctxp[0].n[0]);
+            fmpz_mod_ctx_init(ctx.as_mut_ptr(), &self.get_fq_ctx().ctxp[0].n[0]);
 
             let modulus = Modulus {
                 modulus: Rc::new(ctx.assume_init()),
@@ -111,7 +111,7 @@ impl GetCoefficient<Z> for ModulusPolynomialRingZq {
                 &mut out.value,
                 &self.modulus.modulus[0],
                 index,
-                &self.get_fq_ctx_struct().ctxp[0],
+                &self.get_fq_ctx().ctxp[0],
             )
         }
 
@@ -121,7 +121,7 @@ impl GetCoefficient<Z> for ModulusPolynomialRingZq {
 
 impl ModulusPolynomialRingZq {
     /// Returns the [`fq_ctx_struct`] of a modulus and is only used internally.
-    pub(crate) fn get_fq_ctx_struct(&self) -> &fq_ctx_struct {
+    pub(crate) fn get_fq_ctx(&self) -> &fq_ctx_struct {
         self.modulus.as_ref()
     }
 
@@ -143,7 +143,7 @@ impl ModulusPolynomialRingZq {
     pub fn get_q(&self) -> Z {
         let mut out = Z::default();
         unsafe {
-            fmpz_set(&mut out.value, &self.get_fq_ctx_struct().ctxp[0].n[0]);
+            fmpz_set(&mut out.value, &self.get_fq_ctx().ctxp[0].n[0]);
         }
         out
     }
@@ -161,7 +161,7 @@ impl ModulusPolynomialRingZq {
     /// let degree = poly.get_degree(); // This would only return 3
     /// ```
     pub fn get_degree(&self) -> i64 {
-        unsafe { fq_ctx_degree(self.get_fq_ctx_struct()) }
+        unsafe { fq_ctx_degree(self.get_fq_ctx()) }
     }
 
     /// Returns a representative polynomial of the [`ModulusPolynomialRingZq`] element.

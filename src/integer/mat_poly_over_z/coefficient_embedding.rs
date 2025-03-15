@@ -166,7 +166,7 @@ impl IntoCoefficientEmbedding<MatZ> for &MatPolyOverZ {
         for (i, entry) in poly.iter().enumerate() {
             for j in 0..size {
                 match entry.get_coeff(j) {
-                    Ok(value) => out.set_entry(j, i, value).unwrap(),
+                    Ok(value) => out.set_entry_unchecked(j, i as i64, value),
                     Err(_) => break,
                 }
             }
@@ -207,7 +207,7 @@ impl FromCoefficientEmbedding<&MatZ> for MatPolyOverZ {
         for i in 0..embedding.get_num_columns() {
             let col_vec = embedding.get_column(i).unwrap();
             let entry = PolyOverZ::from_coefficient_embedding(&col_vec);
-            out.set_entry(0, i, entry).unwrap();
+            out.set_entry_unchecked(0, i, entry);
         }
         out
     }

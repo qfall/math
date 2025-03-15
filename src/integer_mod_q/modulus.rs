@@ -26,6 +26,7 @@ mod ownership;
 mod properties;
 mod serialize;
 mod to_string;
+mod unsafe_functions;
 
 /// [`Modulus`] is a type of a positive integer larger than `1` that is used
 /// to do modulus operations.

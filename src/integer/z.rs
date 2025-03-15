@@ -20,11 +20,13 @@ mod from;
 mod gcd;
 mod hash;
 mod lcm;
+mod logic;
 mod ownership;
 mod properties;
 mod sample;
 mod serialize;
 mod to_string;
+mod unsafe_functions;
 
 /// [`Z`] is an arbitrary integer value.
 ///

@@ -27,6 +27,7 @@ mod rounding;
 mod sample;
 mod serialize;
 mod to_string;
+mod unsafe_functions;
 
 /// [`Q`] is any rational value.
 ///

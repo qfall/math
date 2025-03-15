@@ -12,7 +12,7 @@ use crate::{
     error::MathError,
     integer::{PolyOverZ, Z},
     traits::SetCoefficient,
-    utils::{index::evaluate_index, sample::uniform::sample_uniform_rejection},
+    utils::{index::evaluate_index, sample::uniform::UniformIntegerSampler},
 };
 use std::fmt::Display;
 
@@ -59,10 +59,11 @@ impl PolyOverZ {
         let upper_bound: Z = upper_bound.into();
 
         let interval_size = &upper_bound - &lower_bound;
-        let mut poly_z = PolyOverZ::default();
+        let mut uis = UniformIntegerSampler::init(&interval_size)?;
 
+        let mut poly_z = PolyOverZ::default();
         for index in 0..=max_degree {
-            let sample = sample_uniform_rejection(&interval_size)?;
+            let sample = uis.sample();
             poly_z.set_coeff(index, &lower_bound + sample)?;
         }
         Ok(poly_z)

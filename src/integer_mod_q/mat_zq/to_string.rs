@@ -12,8 +12,14 @@
 //! This includes the [`Display`](std::fmt::Display) trait.
 
 use super::MatZq;
-use crate::{integer::Z, macros::for_others::implement_for_owned, utils::parse::matrix_to_string};
+use crate::{
+    integer::Z,
+    macros::for_others::implement_for_owned,
+    traits::{GetEntry, GetNumColumns, GetNumRows},
+    utils::parse::matrix_to_string,
+};
 use core::fmt;
+use std::string::FromUtf8Error;
 
 impl From<&MatZq> for String {
     /// Converts a [`MatZq`] into its [`String`] representation.
@@ -65,6 +71,68 @@ impl fmt::Display for MatZq {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let matrix = matrix_to_string::<Z, MatZq>(self);
         write!(f, "{matrix} mod {}", self.get_mod())
+    }
+}
+
+impl MatZq {
+    /// Enables conversion to a UTF8-Encoded [`String`] for [`MatZq`] values.
+    /// Every entry is padded with `00`s s.t. all entries contain the same number of bytes.
+    /// Afterwards, they are appended row-by-row and converted.
+    /// The inverse to this function is [`MatZq::from_utf8`] for valid UTF8-Encodings.
+    ///
+    /// **Warning**: Not every byte-sequence forms a valid UTF8-Encoding.
+    /// In these cases, an error is returned. Please check the format of your message again.
+    /// The matrix entries are evaluated row by row, i.e. in the order of the output of `mat_zq.to_string()`.
+    ///
+    /// Returns the corresponding UTF8-encoded [`String`] or a
+    /// [`FromUtf8Error`] if the byte sequence contains an invalid UTF8-character.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatZ;
+    /// use std::str::FromStr;
+    /// let matrix = MatZ::from_str("[[104, 101, 108],[108, 111, 33]]").unwrap();
+    ///
+    /// let message = matrix.to_utf8().unwrap();
+    ///
+    /// assert_eq!("hello!", message);
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`FromUtf8Error`] if the integer's byte sequence contains
+    ///     invalid UTF8-characters.
+    pub fn to_utf8(&self) -> Result<String, FromUtf8Error> {
+        let mut byte_vectors: Vec<Vec<u8>> = vec![];
+        let mut max_length = 0;
+
+        // Fill byte vector
+        for row in 0..self.get_num_rows() as usize {
+            for col in 0..self.get_num_columns() as usize {
+                let entry_value: Z = self.get_entry(row, col).unwrap();
+                let entry_bytes = entry_value.to_bytes();
+
+                // Find maximum length of bytes in one entry of the matrix
+                if max_length < entry_bytes.len() {
+                    max_length = entry_bytes.len();
+                }
+
+                byte_vectors.push(entry_bytes);
+            }
+        }
+
+        // Pad every entry to the same length with `0`s
+        // to ensure any matrix given a string provides the same matrix
+        // and append them in the same iteration
+        let mut bytes = vec![];
+        for mut byte_vector in byte_vectors {
+            // 0 encodes a control character �, which can be followed by anything
+            // Hence, this might change the encoding of any trailing sequences
+            byte_vector.resize(max_length, 0u8);
+
+            bytes.append(&mut byte_vector);
+        }
+
+        String::from_utf8(bytes)
     }
 }
 
@@ -171,5 +239,66 @@ mod test_to_string {
 
         assert_eq!(cmp, string);
         assert_eq!(cmp, borrowed_string);
+    }
+}
+
+#[cfg(test)]
+mod test_to_utf8 {
+    use crate::integer_mod_q::MatZq;
+    use std::str::FromStr;
+
+    /// Ensures that [`MatZq::to_utf8`] is inverse to [`MatZq::from_utf8`].
+    #[test]
+    fn inverse_of_from_utf8() {
+        let message = "some_random_string_1-9A-Z!?-_;:#";
+
+        let matrix = MatZq::from_utf8(message, 8, 4, 256).unwrap();
+
+        let string = matrix.to_utf8().unwrap();
+
+        assert_eq!(message, string);
+    }
+
+    /// Ensures that [`MatZq::from_utf8`] is inverse to [`MatZq::to_utf8`].
+    #[test]
+    fn inverse_to_from_utf8() {
+        let matrix_cmp_w_padding =
+            MatZq::from_str("[[104, 101, 108],[28524, 48, 48]] mod 256").unwrap();
+        let matrix_cmp_wo_padding =
+            MatZq::from_str("[[104, 101],[108, 108],[111, 33]] mod 256").unwrap();
+
+        let string_w_padding = matrix_cmp_w_padding.to_utf8().unwrap();
+        let string_wo_padding = matrix_cmp_wo_padding.to_utf8().unwrap();
+
+        let matrix_w_padding = MatZq::from_utf8(&string_w_padding, 2, 3, 256).unwrap();
+        let matrix_wo_padding = MatZq::from_utf8(&string_wo_padding, 3, 2, 256).unwrap();
+
+        assert_eq!(matrix_cmp_w_padding, matrix_w_padding);
+        assert_eq!(matrix_cmp_wo_padding, matrix_wo_padding);
+    }
+
+    /// Ensures that [`MatZq::to_utf8`] is inverse to [`MatZq::from_utf8`]
+    /// and padding is applied if necessary.
+    #[test]
+    fn inverse_incl_padding() {
+        let message = "some_random_string_1-9A-Z!?-_;";
+        let cmp_text = "some_random_string_1-9A-Z!?-_;00";
+
+        let matrix = MatZq::from_utf8(message, 4, 8, 256).unwrap();
+
+        let string = matrix.to_utf8().unwrap();
+
+        assert_eq!(cmp_text, string);
+    }
+
+    /// Ensures that [`MatZq::to_utf8`] outputs an error
+    /// if the integer contains an invalid UTF8-Encoding.
+    #[test]
+    fn invalid_encoding() {
+        // 128 is an invalid UTF8-character (at least at the end and on its own)
+        let matrix = MatZq::from_str("[[1,2],[3,128]] mod 256").unwrap();
+        let string = matrix.to_utf8();
+
+        assert!(string.is_err());
     }
 }

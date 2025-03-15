@@ -192,14 +192,24 @@ macro_rules! implement_for_owned {
         impl SetEntry<$source_type> for $type {
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::set_entry`] for &[`" $source_type "`]."]
-            fn set_entry(
-                &mut self,
-                row: impl TryInto<i64> + Display,
-                column: impl TryInto<i64> + Display,
-                value: $source_type,
-            ) -> Result<(), MathError> {
-                self.set_entry(row, column, &value)
-            }
+                fn set_entry(
+                    &mut self,
+                    row: impl TryInto<i64> + Display,
+                    column: impl TryInto<i64> + Display,
+                    value: $source_type,
+                ) -> Result<(), MathError> {
+                    self.set_entry(row, column, &value)
+                }
+
+                #[doc = "Documentation can be found at [`" $type "::set_entry`] for &[`" $source_type "`]."]
+                fn set_entry_unchecked(
+                    &mut self,
+                    row: i64,
+                    column: i64,
+                    value: $source_type,
+                ) {
+                    self.set_entry_unchecked(row, column, &value);
+                }
             }
         }
     };

@@ -158,7 +158,7 @@ unsafe fn set_matrix_window_mul(
                     ),
                     &scalar.poly,
                     fmpz_poly_mat_entry(&matrix.matrix.matrix, i_other, j_other),
-                    matrix.modulus.get_fq_ctx_struct(),
+                    matrix.modulus.get_fq_ctx(),
                 )
             }
         }
