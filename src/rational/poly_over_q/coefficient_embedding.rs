@@ -58,7 +58,7 @@ impl IntoCoefficientEmbedding<MatQ> for &PolyOverQ {
         let mut out = MatQ::new(size, 1);
         for j in 0..size {
             let coeff = self.get_coeff(j).unwrap();
-            out.set_entry(j, 0, coeff).unwrap();
+            out.set_entry_unchecked(j, 0, coeff);
         }
 
         out

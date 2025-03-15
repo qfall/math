@@ -62,7 +62,7 @@ impl IntoCoefficientEmbedding<(MatZq, ModulusPolynomialRingZq)> for &PolynomialR
         let mut out = MatZq::new(size, 1, self.modulus.get_q());
         for j in 0..size {
             let coeff: Z = self.get_coeff(j).unwrap();
-            out.set_entry(j, 0, coeff).unwrap();
+            out.set_entry_unchecked(j, 0, coeff);
         }
 
         (out, self.modulus.clone())

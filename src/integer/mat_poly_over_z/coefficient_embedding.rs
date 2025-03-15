@@ -70,7 +70,7 @@ impl IntoCoefficientEmbedding<MatZ> for &MatPolyOverZ {
 
                 for index in 0..size {
                     let coeff: Z = entry.get_coeff(index).unwrap();
-                    out.set_entry(row * size + index, column, coeff).unwrap()
+                    out.set_entry_unchecked(row * size + index, column, coeff)
                 }
             }
         }
@@ -131,7 +131,7 @@ impl FromCoefficientEmbedding<(&MatZ, i64)> for MatPolyOverZ {
                         .unwrap();
                     poly.set_coeff(index, coeff).unwrap();
                 }
-                out.set_entry(row, column, poly).unwrap();
+                out.set_entry_unchecked(row, column, poly);
             }
         }
 
