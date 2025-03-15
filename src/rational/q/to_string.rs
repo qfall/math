@@ -91,7 +91,7 @@ impl Q {
     ///
     /// **WARNING:** This function converts the [`Q`] value into an [`f64`] before
     /// outputting the decimal representation. Thus, values that can't be represented exactly
-    /// by a [`f64`] will lose some precision. For large values, e.g. of size `2^64`
+    /// by an [`f64`] will lose some precision. For large values, e.g. of size `2^64`
     /// the deviation to the original value might be within the size of `1_000`.
     ///
     /// Parameters:
@@ -110,7 +110,7 @@ impl Q {
     /// ```
     ///
     /// # Panics ...
-    /// - if `self` can't be represented as a [`f64`].
+    /// - if `self` can't be represented as an [`f64`].
     pub fn to_string_decimal(&self, nr_decimal_digits: usize) -> String {
         let value = f64::from(self);
         let mut string = value.to_string();
