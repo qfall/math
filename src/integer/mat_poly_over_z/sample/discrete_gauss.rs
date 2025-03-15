@@ -12,7 +12,7 @@ use crate::{
     error::MathError,
     integer::{MatPolyOverZ, MatZ, Z},
     rational::{PolyOverQ, Q},
-    traits::{Concatenate, IntoCoefficientEmbedding},
+    traits::{Concatenate, FromCoefficientEmbedding, IntoCoefficientEmbedding},
 };
 
 impl MatPolyOverZ {
@@ -82,9 +82,7 @@ impl MatPolyOverZ {
 
         let sample = MatZ::sample_d(&base_embedded, n, &center_embedded, s)?;
 
-        Ok(MatPolyOverZ::from_coefficient_embedding_to_matrix(
-            &sample, k,
-        ))
+        Ok(MatPolyOverZ::from_coefficient_embedding((&sample, k - 1)))
     }
 }
 
