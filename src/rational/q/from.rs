@@ -19,7 +19,7 @@ use crate::{
 };
 use flint_sys::{
     fmpq::{fmpq, fmpq_canonicalise, fmpq_clear, fmpq_get_d, fmpq_set_str},
-    fmpz::{fmpz_is_zero, fmpz_set},
+    fmpz::{fmpz_init_set, fmpz_is_zero},
 };
 use std::{ffi::CString, str::FromStr};
 
@@ -130,7 +130,7 @@ impl<Integer: Into<Z>> From<Integer> for Q {
         let value = value.into();
         // this efficient implementation depends on Q::default instantiating 1 as denominator
         let mut out = Q::default();
-        unsafe { fmpz_set(&mut out.value.num, &value.value) }
+        unsafe { fmpz_init_set(&mut out.value.num, &value.value) }
         out
     }
 }

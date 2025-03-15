@@ -140,7 +140,7 @@ mod test_sample_binomial {
             let poly = entry.get_coeff(0).unwrap();
 
             assert!(Z::ZERO <= poly);
-            assert!(poly <= Z::from(2));
+            assert!(poly <= 2);
         }
     }
 

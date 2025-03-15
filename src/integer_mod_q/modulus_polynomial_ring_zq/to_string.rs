@@ -16,7 +16,7 @@ use crate::{
     integer::{PolyOverZ, Z},
     macros::for_others::implement_for_owned,
 };
-use flint_sys::{fmpz::fmpz_set, fmpz_mod_poly::fmpz_mod_poly_get_fmpz_poly};
+use flint_sys::{fmpz::fmpz_init_set, fmpz_mod_poly::fmpz_mod_poly_get_fmpz_poly};
 use std::fmt::Display;
 
 impl From<&ModulusPolynomialRingZq> for String {
@@ -64,7 +64,7 @@ impl Display for ModulusPolynomialRingZq {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         // get the value of the modulus
         let mut modulus = Z::default();
-        unsafe { fmpz_set(&mut modulus.value, &self.get_fq_ctx().ctxp[0].n[0]) };
+        unsafe { fmpz_init_set(&mut modulus.value, &self.get_fq_ctx().ctxp[0].n[0]) };
 
         // get the value of the polynomial
         let mut poly = PolyOverZ::default();

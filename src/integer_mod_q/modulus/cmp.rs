@@ -16,7 +16,7 @@ use crate::{
     integer::Z,
     macros::for_others::{implement_for_others, implement_trait_reverse},
 };
-use flint_sys::fmpz::{fmpz, fmpz_equal};
+use flint_sys::fmpz::{fmpz, fmpz_cmp, fmpz_equal};
 use std::cmp::Ordering;
 
 impl PartialEq for Modulus {
@@ -163,6 +163,35 @@ impl Ord for Modulus {
     }
 }
 
+impl PartialOrd<Z> for Modulus {
+    /// Compares a [`Z`] value with a [`Modulus`]. Used by the `<`, `<=`, `>`, and `>=` operators.
+    /// [`PartialOrd`] is also implemented for [`Z`] using [`Modulus`].
+    ///
+    /// Parameters:
+    /// - `other`: the other value that is used to compare the elements
+    ///
+    /// Returns the [`Ordering`] of the elements.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::integer_mod_q::Modulus;
+    ///
+    /// let a: Modulus = Modulus::from(10);
+    /// let b: Z = Z::from(42);
+    ///
+    /// assert!(a < b);
+    /// assert!(a <= b);
+    /// assert!(b > a);
+    /// assert!(b >= a);
+    /// ```
+    fn partial_cmp(&self, other: &Z) -> Option<Ordering> {
+        Some(unsafe { fmpz_cmp(&self.modulus.n[0], &other.value).cmp(&0) })
+    }
+}
+
+implement_for_others!(Z, Modulus, PartialOrd for fmpz i8 i16 i32 i64 u8 u16 u32 u64);
+
 #[cfg(test)]
 mod test_eq {
     use super::Modulus;
@@ -212,7 +241,7 @@ mod test_partial_eq_modulus_other {
     use super::Z;
     use crate::integer_mod_q::Modulus;
 
-    // Ensure that the function can be called with several types
+    /// Ensure that the function can be called with several types
     #[test]
     #[allow(clippy::op_ref)]
     fn availability() {
@@ -247,7 +276,7 @@ mod test_partial_eq_modulus_other {
         assert!(&2i8 == &modulus);
     }
 
-    // Ensure that large values are compared correctly
+    /// Ensure that large values are compared correctly
     #[test]
     fn equal_large() {
         let modulus = Modulus::from(u64::MAX);
@@ -292,6 +321,46 @@ mod test_partial_ord {
         assert!(b >= a);
         assert!(a >= a);
         assert!(b >= b);
+    }
+}
+
+/// Test that the [`PartialOrd`] trait is correctly implemented.
+#[cfg(test)]
+mod test_partial_ord_modulus_other {
+    use super::Modulus;
+    use crate::integer::Z;
+
+    /// Ensure that the function can be called with several types
+    #[test]
+    #[allow(clippy::op_ref)]
+    fn availability() {
+        let modulus = Modulus::from(2);
+        let z = Z::from(2);
+
+        assert!(modulus <= z);
+        assert!(modulus <= z.value);
+        assert!(modulus <= 2i8);
+        assert!(modulus <= 2u8);
+        assert!(modulus <= 2i16);
+        assert!(modulus <= 2u16);
+        assert!(modulus <= 2i32);
+        assert!(modulus <= 2u32);
+        assert!(modulus <= 2i64);
+        assert!(modulus <= 2u64);
+
+        assert!(z.value >= modulus);
+        assert!(2i8 >= modulus);
+        assert!(2u8 >= modulus);
+        assert!(2i16 >= modulus);
+        assert!(2u16 >= modulus);
+        assert!(2i32 >= modulus);
+        assert!(2u32 >= modulus);
+        assert!(2i64 >= modulus);
+        assert!(2u64 >= modulus);
+
+        assert!(&modulus <= &z);
+        assert!(&modulus <= &2i8);
+        assert!(&2i8 >= &modulus);
     }
 }
 

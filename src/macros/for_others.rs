@@ -23,11 +23,14 @@
 ///     `($bridge_type, $type, Mul Scalar for $source_type)`
 /// - ['PartialEq'](std::cmp::PartialEq) with signature
 ///     `($bridge_type, $type, PartialEq for $source_type)`
+/// - ['PartialOrd'](std::cmp::PartialOrd) with signature
+///     `($bridge_type, $type, PartialEq for $source_type)`
 ///
 /// # Examples
 /// ```compile_fail
 /// implement_for_others!(Z, MatZ, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
 /// implement_for_others!(Z, Q, PartialEq for fmpz i8 i16 i32 i64 u8 u16 u32 u64);
+/// implement_for_others!(Z, Q, PartialOrd for fmpz i8 i16 i32 i64 u8 u16 u32 u64);
 /// ```
 macro_rules! implement_for_others {
     // [`Mul`] trait scalar
@@ -92,6 +95,27 @@ macro_rules! implement_for_others {
                 #[doc = "Documentation can be found at [`" $type "::partialEq`]."]
                 fn eq(&self, other: &$type) -> bool {
                     other.eq(&$bridge_type::from(self))
+                }
+            }
+        })*
+    };
+
+    // [`PartialOrd`] trait
+    ($bridge_type:ident, $type:ident, PartialOrd for $($source_type:ident)*) => {
+        $(#[doc(hidden)] impl PartialOrd<$source_type> for $type {
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::partialEq`]."]
+                fn partial_cmp(&self, other: &$source_type) -> Option<Ordering> {
+                    self.partial_cmp(&$bridge_type::from(other))
+                }
+            }
+        }
+
+        #[doc(hidden)] impl PartialOrd<$type> for $source_type {
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::partialEq`]."]
+                fn partial_cmp(&self, other: &$type) -> Option<Ordering> {
+                    $bridge_type::from(self).partial_cmp(other)
                 }
             }
         })*
@@ -235,7 +259,6 @@ macro_rules! implement_trait_reverse {
         #[doc(hidden)]
         impl $trait<$other_type> for $type {
             paste::paste! {
-                #[doc = "Documentation at [`" $output_type "::" $trait_function "`]."]
                 fn $trait_function(&self, other: &$other_type) -> $output_type {
                     other.$trait_function(self)
                 }

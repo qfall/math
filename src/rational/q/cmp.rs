@@ -215,6 +215,8 @@ impl Ord for Q {
     }
 }
 
+implement_for_others!(Q, Q, PartialOrd for Modulus Z fmpz i8 i16 i32 i64 u8 u16 u32 u64);
+
 /// Test that the [`PartialEq`] trait is correctly implemented.
 #[cfg(test)]
 mod test_partial_eq_q {
@@ -666,6 +668,53 @@ mod test_partial_ord {
 
         assert!(small > zero);
         assert!(small >= zero);
+    }
+}
+
+/// Test that the [`PartialOrd`] trait is correctly implemented.
+#[cfg(test)]
+mod test_partial_ord_q_other {
+    use super::Q;
+    use crate::{integer::Z, integer_mod_q::Modulus};
+
+    /// Ensure that the function can be called with several types
+    #[test]
+    #[allow(clippy::op_ref)]
+    fn availability() {
+        let q = Q::from((2, 1));
+        let z = Z::from(2);
+        let modulus = Modulus::from(2);
+
+        assert!(q <= z);
+        assert!(q <= modulus);
+        assert!(q <= z.value);
+        assert!(q <= 2i8);
+        assert!(q <= 2u8);
+        assert!(q <= 2i16);
+        assert!(q <= 2u16);
+        assert!(q <= 2i32);
+        assert!(q <= 2u32);
+        assert!(q <= 2i64);
+        assert!(q <= 2u64);
+
+        assert!(z >= q);
+        assert!(modulus >= q);
+        assert!(z.value >= q);
+        assert!(2i8 >= q);
+        assert!(2u8 >= q);
+        assert!(2i16 >= q);
+        assert!(2u16 >= q);
+        assert!(2i32 >= q);
+        assert!(2u32 >= q);
+        assert!(2i64 >= q);
+        assert!(2u64 >= q);
+
+        assert!(&q <= &z);
+        assert!(&z >= &q);
+        assert!(&q <= &modulus);
+        assert!(&modulus >= &q);
+        assert!(&q <= &2i8);
+        assert!(&2i8 >= &q);
     }
 }
 

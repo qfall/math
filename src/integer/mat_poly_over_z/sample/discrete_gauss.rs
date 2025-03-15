@@ -12,7 +12,7 @@ use crate::{
     error::MathError,
     integer::{MatPolyOverZ, MatZ, Z},
     rational::{PolyOverQ, Q},
-    traits::{Concatenate, IntoCoefficientEmbedding},
+    traits::{Concatenate, FromCoefficientEmbedding, IntoCoefficientEmbedding},
 };
 
 impl MatPolyOverZ {
@@ -71,7 +71,7 @@ impl MatPolyOverZ {
     ) -> Result<MatPolyOverZ, MathError> {
         let k = k.into();
         // use coefficient embedding and then call sampleD for the matrix representation
-        let base_embedded = base.into_coefficient_embedding_from_matrix(k);
+        let base_embedded = base.into_coefficient_embedding(k);
 
         // use coefficient embedding to get center
         let mut center_embedded = center[0].into_coefficient_embedding(k);
@@ -82,9 +82,7 @@ impl MatPolyOverZ {
 
         let sample = MatZ::sample_d(&base_embedded, n, &center_embedded, s)?;
 
-        Ok(MatPolyOverZ::from_coefficient_embedding_to_matrix(
-            &sample, k,
-        ))
+        Ok(MatPolyOverZ::from_coefficient_embedding((&sample, k - 1)))
     }
 }
 
@@ -125,7 +123,7 @@ mod test_sample_d {
         let orthogonal = MatZ::from_str("[[0, 1, 1, 0, 1, 1, 0 , 0, 0]]").unwrap();
         for _ in 0..10 {
             let sample = MatPolyOverZ::sample_d(&base, 3, 100, &center, 10.5_f64).unwrap();
-            let sample_embedded = sample.into_coefficient_embedding_from_matrix(3);
+            let sample_embedded = sample.into_coefficient_embedding(3);
 
             assert_eq!(MatZ::new(1, 1), &orthogonal * &sample_embedded);
         }

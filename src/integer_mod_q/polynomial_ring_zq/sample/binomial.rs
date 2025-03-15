@@ -134,8 +134,8 @@ mod test_sample_binomial {
 
         for _ in 0..8 {
             let poly = PolynomialRingZq::sample_binomial(&modulus, 2, 0.5).unwrap();
-            let sample = poly.get_coeff(0).unwrap();
-            assert!(Z::ZERO <= sample || sample <= Z::from(2));
+            let sample: Z = poly.get_coeff(0).unwrap();
+            assert!(Z::ZERO <= sample || sample <= 2);
         }
     }
 
@@ -188,7 +188,7 @@ mod test_sample_binomial_with_offset {
 
         for _ in 0..8 {
             let poly = PolynomialRingZq::sample_binomial_with_offset(&modulus, -1, 2, 0.5).unwrap();
-            let sample = poly.get_coeff(0).unwrap();
+            let sample: Z = poly.get_coeff(0).unwrap();
             assert!(Z::MINUS_ONE <= sample || sample <= Z::ONE);
         }
     }

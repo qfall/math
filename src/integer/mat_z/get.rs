@@ -16,7 +16,7 @@ use crate::{
     utils::index::{evaluate_index, evaluate_indices_for_matrix},
 };
 use flint_sys::{
-    fmpz::{fmpz, fmpz_set},
+    fmpz::{fmpz, fmpz_init_set},
     fmpz_mat::{fmpz_mat_entry, fmpz_mat_init_set, fmpz_mat_window_clear, fmpz_mat_window_init},
 };
 use std::{fmt::Display, mem::MaybeUninit};
@@ -92,7 +92,7 @@ impl GetEntry<Z> for MatZ {
 
         // since `self.matrix` is a correct fmpz matrix and both row and column
         // are previously checked to be inside of the matrix, no errors
-        // appear inside of `unsafe` and `fmpz_set` can successfully clone the
+        // appear inside of `unsafe` and `fmpz_init_set` can successfully clone the
         // entry of the matrix. Therefore no memory leaks can appear.
         unsafe { Ok(self.get_entry_unchecked(row_i64, column_i64)) }
     }

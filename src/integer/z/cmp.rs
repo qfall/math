@@ -10,7 +10,7 @@
 //! This uses the traits from [`std::cmp`].
 
 use super::Z;
-use crate::macros::for_others::implement_for_others;
+use crate::{integer_mod_q::Modulus, macros::for_others::implement_for_others};
 use flint_sys::fmpz::{fmpz, fmpz_cmp, fmpz_equal};
 use std::cmp::Ordering;
 
@@ -113,6 +113,35 @@ impl Ord for Z {
         unsafe { fmpz_cmp(&self.value, &other.value).cmp(&0) }
     }
 }
+
+impl PartialOrd<Modulus> for Z {
+    /// Compares a [`Z`] value with a [`Modulus`]. Used by the `<`, `<=`, `>`, and `>=` operators.
+    /// [`PartialOrd`] is also implemented for [`Z`] using [`Modulus`].
+    ///
+    /// Parameters:
+    /// - `other`: the other value that is used to compare the elements
+    ///
+    /// Returns the [`Ordering`] of the elements.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::integer_mod_q::Modulus;
+    ///
+    /// let a: Modulus = Modulus::from(10);
+    /// let b: Z = Z::from(42);
+    ///
+    /// assert!(a < b);
+    /// assert!(a <= b);
+    /// assert!(b > a);
+    /// assert!(b >= a);
+    /// ```
+    fn partial_cmp(&self, other: &Modulus) -> Option<Ordering> {
+        Some(unsafe { fmpz_cmp(&self.value, &other.modulus.n[0]).cmp(&0) })
+    }
+}
+
+implement_for_others!(Z, Z, PartialOrd for fmpz i8 i16 i32 i64 u8 u16 u32 u64);
 
 /// Test that the [`PartialEq`] trait is correctly implemented.
 #[cfg(test)]
@@ -448,6 +477,46 @@ mod test_partial_ord {
 
         assert!(max_1 >= max_negative);
         assert!(max_negative >= max_negative);
+    }
+}
+
+/// Test that the [`PartialOrd`] trait is correctly implemented.
+#[cfg(test)]
+mod test_partial_ord_z_other {
+    use super::Z;
+    use crate::integer_mod_q::Modulus;
+
+    // Ensure that the function can be called with several types
+    #[test]
+    #[allow(clippy::op_ref)]
+    fn availability() {
+        let z = Z::from(2);
+        let modulus = Modulus::from(2);
+
+        assert!(z <= modulus);
+        assert!(z <= z.value);
+        assert!(z <= 2i8);
+        assert!(z <= 2u8);
+        assert!(z <= 2i16);
+        assert!(z <= 2u16);
+        assert!(z <= 2i32);
+        assert!(z <= 2u32);
+        assert!(z <= 2i64);
+        assert!(z <= 2u64);
+
+        assert!(z.value >= z);
+        assert!(2i8 >= z);
+        assert!(2u8 >= z);
+        assert!(2i16 >= z);
+        assert!(2u16 >= z);
+        assert!(2i32 >= z);
+        assert!(2u32 >= z);
+        assert!(2i64 >= z);
+        assert!(2u64 >= z);
+
+        assert!(&z <= &modulus);
+        assert!(&z <= &2i8);
+        assert!(&2i8 >= &z);
     }
 }
 

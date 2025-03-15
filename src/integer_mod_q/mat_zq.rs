@@ -23,6 +23,7 @@ mod default;
 mod from;
 mod get;
 mod inverse;
+mod norm;
 mod ownership;
 mod properties;
 mod sample;

@@ -15,6 +15,7 @@ use derive_more::Display;
 use serde::{Deserialize, Serialize};
 
 mod arithmetic;
+mod coefficient_embedding;
 mod concat;
 mod default;
 mod from;

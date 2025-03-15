@@ -12,6 +12,7 @@
 use flint_sys::fmpz_mat::fmpz_mat_struct;
 
 mod arithmetic;
+mod basis_reductions;
 mod cmp;
 mod concat;
 mod default;
@@ -20,6 +21,7 @@ mod forms;
 mod from;
 mod get;
 mod inverse;
+mod norm;
 mod ownership;
 mod properties;
 mod sample;

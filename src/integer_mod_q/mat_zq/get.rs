@@ -17,7 +17,7 @@ use crate::{
     utils::index::{evaluate_index, evaluate_indices_for_matrix},
 };
 use flint_sys::{
-    fmpz::{fmpz, fmpz_set},
+    fmpz::{fmpz, fmpz_init_set},
     fmpz_mat::fmpz_mat_set,
     fmpz_mod_mat::{
         fmpz_mod_mat_entry, fmpz_mod_mat_init_set, fmpz_mod_mat_window_clear,

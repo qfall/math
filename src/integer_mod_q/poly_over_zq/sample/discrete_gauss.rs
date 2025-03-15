@@ -111,7 +111,7 @@ mod test_sample_discrete_gauss {
             for i in 0..3 {
                 let sample: Z = poly.get_coeff(i).unwrap();
                 assert!(Z::ZERO <= sample);
-                assert!(sample < Z::from(&modulus));
+                assert!(sample < modulus);
             }
         }
     }
@@ -127,7 +127,7 @@ mod test_sample_discrete_gauss {
             for i in 0..3 {
                 let sample: Z = poly.get_coeff(i).unwrap();
                 assert!(Z::ZERO <= sample);
-                assert!(sample < Z::from(&modulus));
+                assert!(sample < modulus);
             }
         }
     }
