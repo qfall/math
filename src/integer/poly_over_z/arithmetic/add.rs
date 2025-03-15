@@ -11,10 +11,38 @@
 use super::super::PolyOverZ;
 use crate::integer::Z;
 use crate::macros::arithmetics::{
-    arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+    arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
+    arithmetic_trait_mixed_borrowed_owned,
 };
 use flint_sys::{fmpz::fmpz_add, fmpz_poly::fmpz_poly_add};
-use std::ops::Add;
+use std::ops::{Add, AddAssign};
+
+impl AddAssign<&PolyOverZ> for PolyOverZ {
+    /// Computes the addition of `self` and `other` reusing
+    /// the memory of `self`.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the polynomial to add to `self`
+    ///
+    /// Returns the sum of both polynomials as a [`PolyOverZ`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::PolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let mut a = PolyOverZ::from_str("3  1 2 -3").unwrap();
+    /// let b = PolyOverZ::from_str("5  1 2 -3 0 8").unwrap();
+    ///
+    /// a += &b;
+    /// a += b;
+    /// ```
+    fn add_assign(&mut self, other: &Self) {
+        unsafe { fmpz_poly_add(&mut self.poly, &self.poly, &other.poly) };
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(AddAssign, add_assign, PolyOverZ, PolyOverZ);
 
 impl Add for &PolyOverZ {
     type Output = PolyOverZ;
@@ -92,6 +120,48 @@ impl Add<&Z> for &PolyOverZ {
 
 arithmetic_trait_borrowed_to_owned!(Add, add, PolyOverZ, Z, PolyOverZ);
 arithmetic_trait_mixed_borrowed_owned!(Add, add, PolyOverZ, Z, PolyOverZ);
+
+#[cfg(test)]
+mod test_add_assign {
+    use super::PolyOverZ;
+    use std::str::FromStr;
+
+    /// Ensure that `add_assign` works for small numbers.
+    #[test]
+    fn correct_small() {
+        let mut a = PolyOverZ::from_str("3  -1 2 -3").unwrap();
+        let b = PolyOverZ::from_str("5  1 2 5 1 2").unwrap();
+        let cmp = PolyOverZ::from_str("5  0 4 2 1 2").unwrap();
+
+        a += b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `add_assign` works for large numbers.
+    #[test]
+    fn correct_large() {
+        let mut a =
+            PolyOverZ::from_str(&format!("3  {} {} {}", u32::MAX, i32::MIN, i32::MAX)).unwrap();
+        let b = PolyOverZ::from_str(&format!("2  {} {}", u32::MAX, i32::MAX)).unwrap();
+        let cmp = PolyOverZ::from_str(&format!("3  {} -1 {}", u64::from(u32::MAX) * 2, i32::MAX))
+            .unwrap();
+
+        a += b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `add_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let mut a = PolyOverZ::from_str("3  1 2 -3").unwrap();
+        let b = PolyOverZ::from_str("3  -1 -2 3").unwrap();
+
+        a += &b;
+        a += b;
+    }
+}
 
 #[cfg(test)]
 mod test_add {

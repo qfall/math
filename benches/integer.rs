@@ -14,7 +14,7 @@ use qfall_math::{
     integer::*,
     traits::{GetEntry, SetEntry},
 };
-use std::str::FromStr;
+use std::{ops::AddAssign, str::FromStr};
 
 /// Create matrices of size 4x4 and vectors of size 4.
 /// 1. initialize them.
@@ -81,4 +81,48 @@ pub fn bench_mat_z_100_100(c: &mut Criterion) {
     c.bench_function("MatZ 100x100", |b| b.iter(mat_z_100_100));
 }
 
-criterion_group!(benches, bench_mat_z_4_4, bench_mat_z_100_100);
+/// benchmark [Z::add] for small numbers
+pub fn bench_z_add_small(c: &mut Criterion) {
+    let mut value_0 = Z::from(15);
+    let value_1 = Z::from(5);
+
+    c.bench_function("Z add small", |b| {
+        b.iter(|| add_z_z(&mut value_0, &value_1))
+    });
+}
+
+/// benchmark [Z::add] for large numbers
+pub fn bench_z_add_large(c: &mut Criterion) {
+    let mut value_0 = Z::from(i64::MAX);
+    let value_1 = Z::from(u64::MAX);
+
+    c.bench_function("Z add large", |b| {
+        b.iter(|| add_z_z(&mut value_0, &value_1))
+    });
+}
+
+/// benchmark [Z::add] for large numbers
+pub fn bench_z_add_u64(c: &mut Criterion) {
+    let mut value_0 = Z::from(i64::MAX);
+
+    c.bench_function("Z add u64", |b| {
+        b.iter(|| add_z_u64(&mut value_0, u64::MAX))
+    });
+}
+
+fn add_z_z(value_0: &mut Z, value_1: &Z) {
+    Z::add_assign(value_0, value_1);
+}
+
+fn add_z_u64(value_0: &mut Z, value_1: u64) {
+    Z::add_assign(value_0, value_1);
+}
+
+criterion_group!(
+    benches,
+    bench_mat_z_4_4,
+    bench_mat_z_100_100,
+    bench_z_add_small,
+    bench_z_add_large,
+    bench_z_add_u64,
+);

@@ -40,10 +40,9 @@ impl PolyOverZq {
         let mut res = Z::ZERO;
         for i in 0..=self.get_degree() {
             let coeff: Z = self.get_coeff(i).unwrap();
-            res = res
-                + length(&coeff.value, &self.modulus.get_fmpz_mod_ctx_struct().n[0])
-                    .pow(2)
-                    .unwrap();
+            res += length(&coeff.value, &self.modulus.get_fmpz_mod_ctx_struct().n[0])
+                .pow(2)
+                .unwrap();
         }
         res
     }
