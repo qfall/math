@@ -191,7 +191,7 @@ mod test_into_coefficient_embedding {
             .unwrap();
         assert_eq!(cmp_matrix, matrix);
     }
-  
+
     /// Ensure that the embedding works with large entries.
     #[test]
     fn large_entries_vector() {
