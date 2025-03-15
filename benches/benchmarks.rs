@@ -13,7 +13,19 @@ use criterion::criterion_main;
 pub mod cholesky_decomposition;
 pub mod classic_crypto;
 pub mod integer;
+pub mod matrix_arith;
+pub mod sample_z;
 pub mod sampling;
 pub mod solve;
+pub mod uniform;
 
-criterion_main! {integer::benches, classic_crypto::benches, sampling::benches, solve::benches, cholesky_decomposition::benches}
+criterion_main! {
+    integer::benches,
+    classic_crypto::benches,
+    sampling::benches,
+    solve::benches,
+    cholesky_decomposition::benches,
+    sample_z::benches,
+    matrix_arith::benches,
+    uniform::benches,
+}

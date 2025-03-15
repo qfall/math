@@ -15,6 +15,7 @@ use flint_sys::fmpq::fmpq_addmul;
 
 impl MatQ {
     /// Returns the dot product of two vectors of type [`MatQ`].
+    /// Note that the dimensions of the two vectors are irrelevant for the dot product.
     ///
     /// Parameters:
     /// - `other`: specifies the other vector the dot product is calculated over

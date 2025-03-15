@@ -1,4 +1,4 @@
-// Copyright © 2023 Niklas Siemer
+// Copyright © 2025 Niklas Siemer
 //
 // This file is part of qFALL-math.
 //
@@ -16,7 +16,7 @@
 //!     In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
 //!     <https://citeseerx.ist.psu.edu/document?doi=d9f54077d568784c786f7b1d030b00493eb3ae35>
 
-use super::uniform::sample_uniform_rejection;
+use super::uniform::UniformIntegerSampler;
 use crate::{
     error::{MathError, StringConversionError},
     integer::{MatZ, Z},
@@ -24,67 +24,155 @@ use crate::{
     traits::{GetNumColumns, GetNumRows, Pow},
 };
 use rand::RngCore;
+use serde::Serialize;
+use std::collections::HashMap;
 
-/// Chooses a sample according to the discrete Gaussian distribution out of
-/// `[center - ⌈s * log_2(n)⌉ , center + ⌊s * log_2(n)⌋ ]`.
+/// Enables for discrete Gaussian sampling out of
+/// `[⌈center - s * log_2(n)⌉ , ⌊center + s * log_2(n)⌋ ]`.
+/// This struct evaluates the Gauss function lazily (i.e. only if required)
+/// and saves it in a [`HashMap`].
 ///
-/// This function implements discrete Gaussian sampling according to the definition of
-/// SampleZ as in [\[1\]](<index.html#:~:text=[1]>).
+/// **WARNING:** If the attributes are not set using [`DiscreteGaussianIntegerSampler::init`],
+/// we can't guarantee sampling from the correct discrete Gaussian distribution.
+/// Altering any value will invalidate the [`HashMap`] in `table` and might invalidate
+/// other attributes, too.
 ///
-/// Parameters:
+/// Attributes:
 /// - `n`: specifies the range from which is sampled
 /// - `center`: specifies the position of the center with peak probability
 /// - `s`: specifies the Gaussian parameter, which is proportional
 ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
 ///
-/// Returns a sample chosen according to the specified discrete Gaussian distribution or
-/// a [`MathError`] if the specified parameters were not chosen appropriately,
-/// i.e. `n > 1` and `s > 0`.
-///
 /// # Examples
-/// ```compile_fail
+/// ```
 /// use qfall_math::{integer::Z, rational::Q};
-/// use qfall_math::utils::sample::discrete_gauss::sample_z;
+/// use qfall_math::utils::sample::discrete_gauss::DiscreteGaussianIntegerSampler;
 /// let n = Z::from(1024);
 /// let center = Q::ZERO;
 /// let gaussian_parameter = Q::ONE;
 ///
-/// let sample = sample_z(&n, &center, &gaussian_parameter).unwrap();
-/// ```
+/// let mut dgis = DiscreteGaussianIntegerSampler::init(&n, &center, &gaussian_parameter).unwrap();
 ///
-/// # Errors and Failures
-/// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-///     if `n <= 1` or `s <= 0`.
-pub(crate) fn sample_z(n: &Z, center: &Q, s: &Q) -> Result<Z, MathError> {
-    if n <= &Z::ONE {
-        return Err(MathError::InvalidIntegerInput(format!(
-            "The value {n} was provided for parameter n of the function sample_z.
-            This function expects this input to be larger than 1."
-        )));
+/// let sample = dgis.sample_z();
+/// ```
+#[derive(Debug, Serialize, Clone)]
+pub struct DiscreteGaussianIntegerSampler {
+    pub center: Q,
+    pub s: Q,
+    pub lower_bound: Z,
+    pub interval_size: Z,
+    pub table: HashMap<Z, f64>,
+}
+
+impl DiscreteGaussianIntegerSampler {
+    /// Initializes the [`DiscreteGaussianIntegerSampler`] with
+    /// - `center` as the center of the discrete Gaussian to sample from,
+    /// - `s` defining the Gaussian parameter, which is proportional
+    ///   to the standard deviation `sigma * sqrt(2 * pi) = s`,
+    /// - `lower_bound` as `⌈center - s * log_2(n)⌉`,
+    /// - `interval_size` as `⌊center + s * log_2(n)⌋ - ⌈center - s * log_2(n)⌉ + 1`, and
+    /// - `table` as an empty [`HashMap`] to store evaluations of the Gaussian function.
+    ///
+    /// Parameters:
+    /// - `n`: specifies the range from which is sampled
+    /// - `center`: as the center of the discrete Gaussian to sample from
+    /// - `s`: specifies the Gaussian parameter, which is proportional
+    ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
+    ///
+    /// Returns a sample chosen according to the specified discrete Gaussian distribution or
+    /// a [`MathError`] if the specified parameters were not chosen appropriately,
+    /// i.e. `n > 1` or `s > 0` or `s * log_2(n) < 1`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{integer::Z, rational::Q};
+    /// use qfall_math::utils::sample::discrete_gauss::DiscreteGaussianIntegerSampler;
+    /// let n = Z::from(1024);
+    /// let center = Q::ZERO;
+    /// let gaussian_parameter = Q::ONE;
+    ///
+    /// let mut dgis = DiscreteGaussianIntegerSampler::init(&n, &center, &gaussian_parameter).unwrap();
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
+    ///     if `n <= 1` or `s <= 0` or `s * log_2(n) < 1`.
+    pub fn init(n: &Z, center: &Q, s: &Q) -> Result<Self, MathError> {
+        if n <= &Z::ONE {
+            return Err(MathError::InvalidIntegerInput(format!(
+                "The value {n} was provided for parameter n of the function sample_z.
+                This function expects this input to be larger than 1."
+            )));
+        }
+        if s <= &Q::ZERO {
+            return Err(MathError::InvalidIntegerInput(format!(
+                "The value {s} was provided for parameter s of the function sample_z.
+                This function expects this input to be larger than 0."
+            )));
+        }
+        if s * n.log(2).unwrap() < Q::ONE {
+            return Err(MathError::InvalidIntegerInput(format!(
+                "The size {s} * log_2({n}) is smaller than 1.
+                Hence, the interval to sample from is of size 1.
+                Please provide larger parameters to sample discrete Gaussian."
+            )));
+        }
+
+        let lower_bound = (center - s * n.log(2).unwrap()).ceil();
+        let upper_bound = (center + s * n.log(2).unwrap()).floor();
+        // interval [lower_bound, upper_bound] has upper_bound - lower_bound + 1 elements in it
+        let interval_size = &upper_bound - &lower_bound + Z::ONE;
+
+        Ok(Self {
+            center: center.clone(),
+            s: s.clone(),
+            lower_bound,
+            interval_size,
+            table: HashMap::new(),
+        })
     }
-    if s <= &Q::ZERO {
-        return Err(MathError::InvalidIntegerInput(format!(
-            "The value {s} was provided for parameter s of the function sample_z.
-            This function expects this input to be larger than 0."
-        )));
+
+    /// Chooses a sample according to the discrete Gaussian distribution out of
+    /// `[lower_bound , lower_bound + interval_size ]`.
+    ///
+    /// This function implements discrete Gaussian sampling according to the definition of
+    /// SampleZ as in [\[1\]](<index.html#:~:text=[1]>).
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{integer::Z, rational::Q};
+    /// use qfall_math::utils::sample::discrete_gauss::DiscreteGaussianIntegerSampler;
+    /// let n = Z::from(1024);
+    /// let center = Q::ZERO;
+    /// let gaussian_parameter = Q::ONE;
+    ///
+    /// let mut dgis = DiscreteGaussianIntegerSampler::init(&n, &center, &gaussian_parameter).unwrap();
+    ///
+    /// let sample = dgis.sample_z();
+    /// ```
+    pub fn sample_z(&mut self) -> Z {
+        let mut rng = rand::rng();
+        let mut uis = UniformIntegerSampler::init(&self.interval_size).unwrap();
+        loop {
+            // sample x in [c - s * log_2(n), c + s * log_2(n)]
+            let sample = &self.lower_bound + uis.sample();
+
+            // grab value of Gauss function for sample if it exists
+            let evaluated_gauss_function = self.table.get(&sample);
+            let evaluated_gauss_function = match evaluated_gauss_function {
+                Some(x) => x,
+                None => &{
+                    let evaluated_gauss_function =
+                        gaussian_function(&sample, &self.center, &self.s);
+                    self.table.insert(sample.clone(), evaluated_gauss_function);
+                    evaluated_gauss_function
+                },
+            };
+            if evaluated_gauss_function >= &(rng.next_u64() as f64 / u64::MAX as f64) {
+                return sample;
+            }
+        }
     }
-
-    let lower_bound = (center - s * n.log(2).unwrap()).ceil();
-    let upper_bound = (center + s * n.log(2).unwrap()).floor();
-    let interval_size = &upper_bound - &lower_bound;
-
-    // sample x in [c - s * log_2(n), c + s * log_2(n)]
-    let mut sample = &lower_bound + sample_uniform_rejection(&interval_size).unwrap();
-
-    // rejection sample according to GPV08
-    // https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=d9f54077d568784c786f7b1d030b00493eb3ae35
-    // this eprint version explains in more detail how sample_z works
-    let mut rng = rand::rng();
-    while gaussian_function(&sample, center, s) <= Q::from((rng.next_u64(), u64::MAX)) {
-        sample = &lower_bound + sample_uniform_rejection(&interval_size).unwrap();
-    }
-
-    Ok(sample)
 }
 
 /// Computes the value of the Gaussian function for `x`.
@@ -100,7 +188,7 @@ pub(crate) fn sample_z(n: &Z, center: &Q, s: &Q) -> Result<Z, MathError> {
 /// Returns the computed value of the Gaussian function for `x`.
 ///
 /// # Examples
-/// ```compile_fail
+/// ```
 /// use qfall_math::{integer::Z, rational::Q};
 /// use qfall_math::utils::sample::discrete_gauss::gaussian_function;
 /// let sample = Z::ONE;
@@ -112,10 +200,11 @@ pub(crate) fn sample_z(n: &Z, center: &Q, s: &Q) -> Result<Z, MathError> {
 ///
 /// # Panics ...
 /// - if `s = 0`.
-fn gaussian_function(x: &Z, c: &Q, s: &Q) -> Q {
+/// - if `-π * (x - c)^2 / s^2` is larger than [`f64::MAX`]
+pub fn gaussian_function(x: &Z, c: &Q, s: &Q) -> f64 {
     let num = Q::MINUS_ONE * Q::PI * (x - c).pow(2).unwrap();
     let den = s.pow(2).unwrap();
-    let res: Q = num / den;
+    let res = f64::from(&(num / den));
     res.exp()
 }
 
@@ -258,7 +347,8 @@ pub(crate) fn sample_d_precomputed_gso(
         let s_2 = s / (basisvector_orth_i.norm_eucl_sqrd().unwrap().sqrt());
 
         // sample z ~ D_{Z, s2, c2}
-        let z = sample_z(n, &c_2, &s_2)?;
+        let mut dgis = DiscreteGaussianIntegerSampler::init(n, &c_2, &s_2)?;
+        let z = dgis.sample_z();
 
         // update the center c = c - z * b[i]
         let basisvector_i = basis.get_column(i).unwrap();
@@ -272,8 +362,9 @@ pub(crate) fn sample_d_precomputed_gso(
 }
 
 #[cfg(test)]
-mod test_sample_z {
-    use super::{sample_z, Q, Z};
+mod test_discrete_gaussian_integer_sampler {
+    use super::DiscreteGaussianIntegerSampler;
+    use crate::{integer::Z, rational::Q};
 
     /// Ensures that the doc tests works correctly.
     #[test]
@@ -282,7 +373,10 @@ mod test_sample_z {
         let center = Q::ZERO;
         let gaussian_parameter = Q::ONE;
 
-        let sample = sample_z(&n, &center, &gaussian_parameter).unwrap();
+        let mut dgis =
+            DiscreteGaussianIntegerSampler::init(&n, &center, &gaussian_parameter).unwrap();
+
+        let sample = dgis.sample_z();
 
         assert!(Z::from(-10) <= sample);
         assert!(sample <= Z::from(10));
@@ -295,8 +389,11 @@ mod test_sample_z {
         let center = Q::from(15);
         let gaussian_parameter = Q::from((1, 2));
 
+        let mut dgis =
+            DiscreteGaussianIntegerSampler::init(&n, &center, &gaussian_parameter).unwrap();
+
         for _ in 0..64 {
-            let sample = sample_z(&n, &center, &gaussian_parameter).unwrap();
+            let sample = dgis.sample_z();
 
             assert!(Z::from(10) <= sample);
             assert!(sample <= Z::from(20));
@@ -310,8 +407,11 @@ mod test_sample_z {
         let center = Q::MINUS_ONE;
         let gaussian_parameter = Q::ONE;
 
+        let mut dgis =
+            DiscreteGaussianIntegerSampler::init(&n, &center, &gaussian_parameter).unwrap();
+
         for _ in 0..256 {
-            let sample = sample_z(&n, &center, &gaussian_parameter).unwrap();
+            let sample = dgis.sample_z();
 
             assert!(Z::from(-64) <= sample);
             assert!(sample <= Z::from(62));
@@ -324,9 +424,9 @@ mod test_sample_z {
         let n = Z::from(4);
         let center = Q::ZERO;
 
-        assert!(sample_z(&n, &center, &Q::ZERO).is_err());
-        assert!(sample_z(&n, &center, &Q::MINUS_ONE).is_err());
-        assert!(sample_z(&n, &center, &Q::from(i64::MIN)).is_err());
+        assert!(DiscreteGaussianIntegerSampler::init(&n, &center, &Q::ZERO).is_err());
+        assert!(DiscreteGaussianIntegerSampler::init(&n, &center, &Q::MINUS_ONE).is_err());
+        assert!(DiscreteGaussianIntegerSampler::init(&n, &center, &Q::from(i64::MIN)).is_err());
     }
 
     /// Checks whether `sample_z` returns an error if `n <= 1`.
@@ -335,10 +435,22 @@ mod test_sample_z {
         let center = Q::MINUS_ONE;
         let gaussian_parameter = Q::ONE;
 
-        assert!(sample_z(&Z::ONE, &center, &gaussian_parameter).is_err());
-        assert!(sample_z(&Z::ZERO, &center, &gaussian_parameter).is_err());
-        assert!(sample_z(&Z::MINUS_ONE, &center, &gaussian_parameter).is_err());
-        assert!(sample_z(&Z::from(i64::MIN), &center, &gaussian_parameter).is_err());
+        assert!(
+            DiscreteGaussianIntegerSampler::init(&Z::ONE, &center, &gaussian_parameter).is_err()
+        );
+        assert!(
+            DiscreteGaussianIntegerSampler::init(&Z::ZERO, &center, &gaussian_parameter).is_err()
+        );
+        assert!(
+            DiscreteGaussianIntegerSampler::init(&Z::MINUS_ONE, &center, &gaussian_parameter)
+                .is_err()
+        );
+        assert!(DiscreteGaussianIntegerSampler::init(
+            &Z::from(i64::MIN),
+            &center,
+            &gaussian_parameter
+        )
+        .is_err());
     }
 }
 
@@ -358,7 +470,7 @@ mod test_gaussian_function {
 
         let value = gaussian_function(&sample, &center, &gaussian_parameter);
 
-        assert!(cmp.distance(&value) < Q::from((1, 1_000_000)));
+        assert!(cmp.distance(&Q::from(value)) < Q::from((1, 1_000_000)));
     }
 
     /// Checks whether the values for small values are computed appropriately
@@ -380,10 +492,10 @@ mod test_gaussian_function {
         let res_2 = gaussian_function(&sample_1, &center, &gaussian_parameter_0);
         let res_3 = gaussian_function(&sample_1, &center, &gaussian_parameter_1);
 
-        assert!(cmp_0.distance(&res_0) < Q::from((3, 1_000_000_000)));
-        assert!(cmp_1.distance(&res_1) < Q::from((1, 1_000_000)));
-        assert_eq!(Q::ONE, res_2);
-        assert_eq!(Q::ONE, res_3);
+        assert!(cmp_0.distance(&Q::from(res_0)) < Q::from((3, 1_000_000_000)));
+        assert!(cmp_1.distance(&Q::from(res_1)) < Q::from((1, 1_000_000)));
+        assert_eq!(1.0, res_2);
+        assert_eq!(1.0, res_3);
     }
 
     /// Checks whether the values for large values are computed appropriately
@@ -398,7 +510,7 @@ mod test_gaussian_function {
 
         let res = gaussian_function(&sample, &center, &gaussian_parameter);
 
-        assert!(cmp.distance(&res) < Q::from((3, 1_000_000_000)));
+        assert!(cmp.distance(&Q::from(res)) < Q::from((3, 1_000_000_000)));
     }
 
     /// Checks whether `s = 0` results in a panic.

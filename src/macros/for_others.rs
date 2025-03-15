@@ -168,14 +168,24 @@ macro_rules! implement_for_owned {
         impl SetEntry<$source_type> for $type {
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::set_entry`] for &[`" $source_type "`]."]
-            fn set_entry(
-                &mut self,
-                row: impl TryInto<i64> + Display,
-                column: impl TryInto<i64> + Display,
-                value: $source_type,
-            ) -> Result<(), MathError> {
-                self.set_entry(row, column, &value)
-            }
+                fn set_entry(
+                    &mut self,
+                    row: impl TryInto<i64> + Display,
+                    column: impl TryInto<i64> + Display,
+                    value: $source_type,
+                ) -> Result<(), MathError> {
+                    self.set_entry(row, column, &value)
+                }
+
+                #[doc = "Documentation can be found at [`" $type "::set_entry`] for &[`" $source_type "`]."]
+                fn set_entry_unchecked(
+                    &mut self,
+                    row: i64,
+                    column: i64,
+                    value: $source_type,
+                ) {
+                    self.set_entry_unchecked(row, column, &value);
+                }
             }
         }
     };
@@ -201,3 +211,37 @@ macro_rules! implement_empty_trait_owned_ref {
     };
 }
 pub(crate) use implement_empty_trait_owned_ref;
+
+/// Implements the `*trait*` for `*type*` using an implementation for `*other_type*`.
+///
+/// **Warning**: Only works for commutative operations.
+///
+/// Parameters:
+/// - `trait`: the trait that is implemented
+///     (e.g. [`PartialEq`],[`PartialOrd`], ...).
+/// - `trait_function`: the function the trait implements
+///     (e.g. eq for [`PartialEq`], ...).
+/// - `type`: the type the trait is implemented for
+///     (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q))
+/// - `other_type`: the type the second part of the computation.
+/// - `output_type`: the type of the result (e.g. bool for [`PartialEq`], ...).
+///
+/// Returns the owned Implementation code for the `*trait*`
+/// trait with the signature:
+///
+/// ```impl *trait<*other_type*>* for *type*```
+macro_rules! implement_trait_reverse {
+    ($trait:ident, $trait_function:ident, $type:ident, $other_type:ident, $output_type:ident) => {
+        #[doc(hidden)]
+        impl $trait<$other_type> for $type {
+            paste::paste! {
+                #[doc = "Documentation at [`" $output_type "::" $trait_function "`]."]
+                fn $trait_function(&self, other: &$other_type) -> $output_type {
+                    other.$trait_function(self)
+                }
+            }
+        }
+    };
+}
+
+pub(crate) use implement_trait_reverse;

@@ -45,14 +45,14 @@ impl PartialEq for ModulusPolynomialRingZq {
         unsafe {
             // compares the modulus `q`
             1 == fmpz_equal(
-                &self.get_fq_ctx_struct().ctxp[0].n[0],
-                &other.get_fq_ctx_struct().ctxp[0].n[0],
+                &self.get_fq_ctx().ctxp[0].n[0],
+                &other.get_fq_ctx().ctxp[0].n[0],
             ) &&
             // compares the polynomial under `q`
             1 == fmpz_mod_poly_equal(
-                    &self.get_fq_ctx_struct().modulus[0],
-                    &other.get_fq_ctx_struct().modulus[0],
-                    &self.get_fq_ctx_struct().ctxp[0],
+                    &self.get_fq_ctx().modulus[0],
+                    &other.get_fq_ctx().modulus[0],
+                    &self.get_fq_ctx().ctxp[0],
                 )
         }
     }

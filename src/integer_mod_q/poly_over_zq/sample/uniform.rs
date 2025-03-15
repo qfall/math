@@ -13,7 +13,7 @@ use crate::{
     integer::Z,
     integer_mod_q::{Modulus, PolyOverZq},
     traits::SetCoefficient,
-    utils::{index::evaluate_index, sample::uniform::sample_uniform_rejection},
+    utils::{index::evaluate_index, sample::uniform::UniformIntegerSampler},
 };
 use std::fmt::Display;
 
@@ -59,8 +59,10 @@ impl PolyOverZq {
         let modulus = Modulus::from(&interval_size);
         let mut poly_zq = PolyOverZq::from(&modulus);
 
+        let mut uis = UniformIntegerSampler::init(&interval_size)?;
+
         for index in 0..=max_degree {
-            let sample = sample_uniform_rejection(&interval_size)?;
+            let sample = uis.sample();
             poly_zq.set_coeff(index, &sample)?;
         }
         Ok(poly_zq)

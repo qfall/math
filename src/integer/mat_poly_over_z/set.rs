@@ -69,12 +69,38 @@ impl SetEntry<&PolyOverZ> for MatPolyOverZ {
         // are previously checked to be inside of the matrix, no errors
         // appear inside of `unsafe` and `fmpz_set` can successfully clone the
         // value inside the matrix. Therefore no memory leaks can appear.
-        unsafe {
-            let entry = fmpz_poly_mat_entry(&self.matrix, row_i64, column_i64);
-            fmpz_poly_set(entry, &value.poly)
-        };
+        self.set_entry_unchecked(row_i64, column_i64, value);
 
         Ok(())
+    }
+
+    /// Sets the value of a specific matrix entry according to a given `value` of type [`PolyOverZ`]
+    /// without checking whether the coordinate is part of the matrix.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row in which the entry is located
+    /// - `column`: specifies the column in which the entry is located
+    /// - `value`: specifies the value to which the entry is set
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::{MatPolyOverZ, PolyOverZ};
+    /// use qfall_math::traits::SetEntry;
+    /// use std::str::FromStr;
+    ///
+    /// let mut matrix = MatPolyOverZ::new(2, 2);
+    /// let value = PolyOverZ::from_str("2  1 1").unwrap();
+    ///
+    /// matrix.set_entry_unchecked(0, 1, &value);
+    /// matrix.set_entry_unchecked(1, 0, &PolyOverZ::from(2));
+    ///
+    /// assert_eq!("[[0, 2  1 1],[1  2, 0]]", matrix.to_string());
+    /// ```
+    fn set_entry_unchecked(&mut self, row: i64, column: i64, value: &PolyOverZ) {
+        unsafe {
+            let entry = fmpz_poly_mat_entry(&self.matrix, row, column);
+            fmpz_poly_set(entry, &value.poly)
+        };
     }
 }
 

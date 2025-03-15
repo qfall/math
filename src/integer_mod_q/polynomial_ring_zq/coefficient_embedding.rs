@@ -25,6 +25,8 @@ impl IntoCoefficientEmbedding<(MatZq, ModulusPolynomialRingZq)> for &PolynomialR
     /// [`ModulusPolynomialRingZq`].
     /// It inverts the operation of [`PolynomialRingZq::from_coefficient_embedding`].
     ///
+    /// The representation of the polynomials in the embedding is in the range `[0, modulus_polynomial)`.
+    ///
     /// Parameters:
     /// - `size`: determines the number of rows of the embedding. It has to be larger
     ///     than the degree of the polynomial.
@@ -59,12 +61,10 @@ impl IntoCoefficientEmbedding<(MatZq, ModulusPolynomialRingZq)> for &PolynomialR
         );
         let mut out = MatZq::new(size, 1, self.modulus.get_q());
         for j in 0..size {
-            let coeff: Result<Z, _> = self.get_coeff(j);
-            match coeff {
-                Ok(value) => out.set_entry(j, 0, value).unwrap(),
-                Err(_) => break,
-            }
+            let coeff: Z = self.get_coeff(j).unwrap();
+            out.set_entry_unchecked(j, 0, coeff);
         }
+
         (out, self.modulus.clone())
     }
 }
@@ -125,16 +125,6 @@ mod test_into_coefficient_embedding {
         traits::IntoCoefficientEmbedding,
     };
     use std::str::FromStr;
-
-    /// Ensure that the doc test works.
-    #[test]
-    fn test_example() {
-        let poly = PolynomialRingZq::from_str("2  1 -2 / 3  17 3 5 mod 19").unwrap();
-        let embedding = poly.into_coefficient_embedding(3);
-
-        let cmp_vector = MatZq::from_str("[[1],[-2],[0]] mod 19").unwrap();
-        assert_eq!((cmp_vector, poly.get_mod()), embedding);
-    }
 
     /// Ensure that the embedding works with large entries.
     #[test]

@@ -36,6 +36,7 @@ mod tensor;
 mod to_string;
 mod trace;
 mod transpose;
+mod unsafe_functions;
 mod vector;
 
 /// [`MatQ`] is a matrix with entries of type [`Q`](crate::rational::Q).

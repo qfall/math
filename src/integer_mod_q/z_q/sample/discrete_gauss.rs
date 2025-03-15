@@ -13,7 +13,7 @@ use crate::{
     integer::Z,
     integer_mod_q::{Modulus, Zq},
     rational::Q,
-    utils::sample::discrete_gauss::sample_z,
+    utils::sample::discrete_gauss::DiscreteGaussianIntegerSampler,
 };
 
 impl Zq {
@@ -43,7 +43,7 @@ impl Zq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if `n <= 1` or `s <= 0`.
+    ///     if `n <= 1` or `s <= 0` or `s * log_2(n) < 1`.
     ///
     /// # Panics ...
     /// - if `modulus` is smaller than `2`.
@@ -64,7 +64,9 @@ impl Zq {
         let center: Q = center.into();
         let s: Q = s.into();
 
-        let sample = sample_z(&n, &center, &s)?;
+        let mut dgis = DiscreteGaussianIntegerSampler::init(&n, &center, &s)?;
+
+        let sample = dgis.sample_z();
         Ok(Zq::from((&sample, &modulus)))
     }
 }
