@@ -25,6 +25,7 @@ mod from;
 mod get;
 mod gso;
 mod inverse;
+mod norm;
 mod ownership;
 mod properties;
 mod rounding;
