@@ -14,7 +14,7 @@ use super::MatZ;
 use crate::{
     error::MathError,
     integer::Z,
-    traits::{GetNumColumns, GetNumRows, SetEntry},
+    traits::{MatrixDimensions, SetEntry},
     utils::{
         dimensions::find_matrix_dimensions,
         index::evaluate_indices,

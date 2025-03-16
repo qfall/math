@@ -15,7 +15,7 @@
 //! hence no reduction is performed in the check.
 
 use super::MatPolynomialRingZq;
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::MatrixDimensions;
 use flint_sys::{fmpz_poly_mat::fmpz_poly_mat_entry, fq::fq_reduce};
 
 impl MatPolynomialRingZq {

@@ -10,7 +10,7 @@
 //! defined on matrices.
 
 use super::MatQ;
-use crate::{rational::Q, traits::GetNumColumns};
+use crate::{rational::Q, traits::MatrixDimensions};
 
 impl MatQ {
     /// Outputs the squared l_{2, ∞}-norm, i.e. it computes the squared Euclidean

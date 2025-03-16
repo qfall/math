@@ -11,7 +11,7 @@
 use super::MatPolynomialRingZq;
 use crate::{
     integer::PolyOverZ,
-    traits::{GetEntry, GetNumRows},
+    traits::{GetEntry, MatrixDimensions},
 };
 
 impl MatPolynomialRingZq {

@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::{MatZ, Z},
     rational::Q,
-    traits::{GetEntry, GetNumColumns, GetNumRows, SetEntry},
+    traits::{GetEntry, MatrixDimensions, SetEntry},
 };
 
 impl MatQ {

@@ -13,7 +13,7 @@ use crate::{
     integer::Z,
     integer_mod_q::{MatZq, Modulus},
     rational::{MatQ, Q},
-    traits::{GetNumColumns, GetNumRows, SetEntry},
+    traits::{MatrixDimensions, SetEntry},
     utils::sample::discrete_gauss::{
         sample_d, sample_d_precomputed_gso, DiscreteGaussianIntegerSampler,
     },

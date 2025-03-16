@@ -10,7 +10,7 @@
 //! matrices, e.g. (Hermite and Smith) normal forms, echelon form, ...
 
 use super::MatZ;
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::MatrixDimensions;
 use flint_sys::fmpz_mat::{
     fmpz_mat_hnf_transform, fmpz_mat_is_in_hnf, fmpz_mat_is_in_snf, fmpz_mat_snf,
 };

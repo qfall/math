@@ -15,7 +15,7 @@ use super::MatZq;
 use crate::{
     integer::Z,
     macros::for_others::implement_for_owned,
-    traits::{GetEntry, GetNumColumns, GetNumRows},
+    traits::{GetEntry, MatrixDimensions},
     utils::parse::matrix_to_string,
 };
 use core::fmt;

@@ -11,7 +11,7 @@
 use crate::{
     error::MathError,
     rational::{MatQ, Q},
-    traits::{GetNumColumns, GetNumRows, SetEntry},
+    traits::{MatrixDimensions, SetEntry},
     utils::{
         collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
         index::{evaluate_index, evaluate_indices_for_matrix},

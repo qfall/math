@@ -13,8 +13,8 @@ use crate::{
     integer::Z,
     integer_mod_q::{MatZq, ModulusPolynomialRingZq, PolynomialRingZq},
     traits::{
-        FromCoefficientEmbedding, GetCoefficient, GetEntry, GetNumRows, IntoCoefficientEmbedding,
-        SetCoefficient, SetEntry,
+        FromCoefficientEmbedding, GetCoefficient, GetEntry, IntoCoefficientEmbedding,
+        MatrixDimensions, SetCoefficient, SetEntry,
     },
 };
 

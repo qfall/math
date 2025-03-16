@@ -13,7 +13,7 @@ use std::fmt::Display;
 use crate::{
     error::MathError,
     rational::{MatQ, Q},
-    traits::{GetEntry, GetNumColumns, GetNumRows, SetEntry},
+    traits::{GetEntry, MatrixDimensions, SetEntry},
 };
 
 impl MatQ {
@@ -104,10 +104,7 @@ impl MatQ {
 
 #[cfg(test)]
 mod test_sample_gauss {
-    use crate::{
-        rational::MatQ,
-        traits::{GetNumColumns, GetNumRows},
-    };
+    use crate::{rational::MatQ, traits::MatrixDimensions};
 
     /// Ensure that an error is returned if `sigma` is not positive
     #[test]
@@ -133,10 +130,7 @@ mod test_sample_gauss {
 #[cfg(test)]
 mod test_sample_gauss_same_center {
 
-    use crate::{
-        rational::MatQ,
-        traits::{GetNumColumns, GetNumRows},
-    };
+    use crate::{rational::MatQ, traits::MatrixDimensions};
 
     /// Ensure that an error is returned if `sigma` is not positive
     #[test]

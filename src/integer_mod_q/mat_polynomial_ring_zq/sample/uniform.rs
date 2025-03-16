@@ -71,7 +71,7 @@ impl MatPolynomialRingZq {
 mod test_sample_uniform {
     use crate::integer::PolyOverZ;
     use crate::integer_mod_q::PolyOverZq;
-    use crate::traits::{GetCoefficient, GetEntry, GetNumColumns, GetNumRows, SetCoefficient};
+    use crate::traits::{GetCoefficient, GetEntry, MatrixDimensions, SetCoefficient};
     use crate::{
         integer::Z,
         integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},

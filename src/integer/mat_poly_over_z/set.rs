@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::PolyOverZ,
     macros::for_others::implement_for_owned,
-    traits::{GetNumColumns, GetNumRows, SetEntry},
+    traits::{MatrixDimensions, SetEntry},
     utils::{
         collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
         index::{evaluate_index, evaluate_indices_for_matrix},

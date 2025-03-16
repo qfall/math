@@ -12,7 +12,7 @@ use super::MatPolynomialRingZq;
 use crate::{
     error::MathError,
     integer::MatPolyOverZ,
-    traits::{Concatenate, GetNumColumns, GetNumRows},
+    traits::{Concatenate, MatrixDimensions},
 };
 use flint_sys::fmpz_poly_mat::{fmpz_poly_mat_concat_horizontal, fmpz_poly_mat_concat_vertical};
 
@@ -157,7 +157,7 @@ mod test_concatenate {
     use crate::{
         integer::MatPolyOverZ,
         integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
-        traits::{Concatenate, GetNumColumns, GetNumRows},
+        traits::{Concatenate, MatrixDimensions},
     };
     use std::str::FromStr;
 

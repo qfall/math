@@ -13,7 +13,7 @@ use crate::{
     integer::Z,
     integer_mod_q::{MatZq, Modulus, Zq},
     macros::for_others::implement_for_owned,
-    traits::{AsInteger, GetNumColumns, GetNumRows, SetEntry},
+    traits::{AsInteger, MatrixDimensions, SetEntry},
     utils::{
         collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
         index::{evaluate_index, evaluate_indices_for_matrix},

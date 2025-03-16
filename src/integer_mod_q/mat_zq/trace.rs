@@ -11,11 +11,7 @@
 use flint_sys::fmpz_mod_mat::fmpz_mod_mat_trace;
 
 use super::MatZq;
-use crate::{
-    error::MathError,
-    integer_mod_q::Zq,
-    traits::{GetNumColumns, GetNumRows},
-};
+use crate::{error::MathError, integer_mod_q::Zq, traits::MatrixDimensions};
 
 impl MatZq {
     /// Returns the trace of a matrix and an error,

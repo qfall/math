@@ -12,7 +12,7 @@
 use super::MatPolyOverZ;
 use crate::{
     integer::Z,
-    traits::{GetEntry, GetNumColumns, GetNumRows},
+    traits::{GetEntry, MatrixDimensions},
 };
 use flint_sys::fmpz_poly_mat::{fmpz_poly_mat_is_one, fmpz_poly_mat_is_zero, fmpz_poly_mat_rank};
 

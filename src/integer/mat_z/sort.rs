@@ -9,10 +9,7 @@
 //! Contains functions to sort [`MatZ`] by.
 
 use super::MatZ;
-use crate::{
-    error::MathError,
-    traits::{GetNumColumns, GetNumRows},
-};
+use crate::{error::MathError, traits::MatrixDimensions};
 
 impl MatZ {
     /// Sorts the columns of the matrix based on some condition defined by `cond_func` in an ascending order.
@@ -41,7 +38,7 @@ impl MatZ {
     /// ## Use a custom function as condition
     /// This function needs to take a column vector as input and output a type implementing [`PartialOrd`]
     /// ```
-    /// use qfall_math::{integer::{MatZ, Z}, error::MathError, traits::{GetNumRows, GetEntry}};
+    /// use qfall_math::{integer::{MatZ, Z}, error::MathError, traits::{MatrixDimensions, GetEntry}};
     /// use std::str::FromStr;
     /// let mat = MatZ::from_str("[[3, 2, 1]]").unwrap();
     /// let cmp = MatZ::from_str("[[1, 2, 3]]").unwrap();
@@ -107,7 +104,7 @@ impl MatZ {
     /// ## Use a custom function as condition
     /// This function needs to take a row vector as input and output a type implementing [`PartialOrd`]
     /// ```
-    /// use qfall_math::{integer::{MatZ, Z}, error::MathError, traits::{GetNumColumns, GetEntry}};
+    /// use qfall_math::{integer::{MatZ, Z}, error::MathError, traits::{MatrixDimensions, GetEntry}};
     /// use std::str::FromStr;
     /// let mat = MatZ::from_str("[[3],[2],[1]]").unwrap();
     /// let cmp = MatZ::from_str("[[1],[2],[3]]").unwrap();

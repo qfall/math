@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::{MatZ, Z},
     integer_mod_q::{fmpz_mod_helpers::length, Modulus, Zq},
-    traits::{GetEntry, GetNumColumns, GetNumRows, SetEntry},
+    traits::{GetEntry, MatrixDimensions, SetEntry},
     utils::index::{evaluate_index, evaluate_indices_for_matrix},
 };
 use flint_sys::{
@@ -329,7 +329,7 @@ impl MatZq {
     }
 }
 
-impl GetNumRows for MatZq {
+impl MatrixDimensions for MatZq {
     /// Returns the number of rows of the matrix as a [`i64`].
     ///
     /// # Examples
@@ -343,9 +343,7 @@ impl GetNumRows for MatZq {
     fn get_num_rows(&self) -> i64 {
         self.matrix.mat[0].r
     }
-}
 
-impl GetNumColumns for MatZq {
     /// Returns the number of columns of the matrix as a [`i64`].
     ///
     /// # Examples
@@ -687,10 +685,7 @@ mod test_get_entry {
 
 #[cfg(test)]
 mod test_get_num {
-    use crate::{
-        integer_mod_q::MatZq,
-        traits::{GetNumColumns, GetNumRows},
-    };
+    use crate::{integer_mod_q::MatZq, traits::MatrixDimensions};
 
     /// Ensure that the getter for number of rows works correctly.
     #[test]
@@ -714,7 +709,7 @@ mod test_get_representative_least_nonnegative_residue {
     use crate::{
         integer::Z,
         integer_mod_q::MatZq,
-        traits::{GetEntry, GetNumColumns, GetNumRows, SetEntry},
+        traits::{GetEntry, MatrixDimensions, SetEntry},
     };
 
     /// Test if the dimensions are taken over correctly
@@ -859,11 +854,7 @@ mod test_get_vec {
 
 #[cfg(test)]
 mod test_get_submatrix {
-    use crate::{
-        integer::Z,
-        integer_mod_q::MatZq,
-        traits::{GetNumColumns, GetNumRows},
-    };
+    use crate::{integer::Z, integer_mod_q::MatZq, traits::MatrixDimensions};
     use std::str::FromStr;
 
     /// Ensures that getting the entire matrix as a submatrix works.

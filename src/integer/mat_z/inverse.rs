@@ -9,10 +9,7 @@
 //! This module contains the implementation of the `inverse` function.
 
 use super::MatZ;
-use crate::{
-    rational::MatQ,
-    traits::{GetNumColumns, GetNumRows},
-};
+use crate::{rational::MatQ, traits::MatrixDimensions};
 use flint_sys::fmpq_mat::fmpq_mat_inv;
 
 impl MatZ {

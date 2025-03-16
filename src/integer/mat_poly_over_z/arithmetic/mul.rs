@@ -13,7 +13,7 @@ use crate::error::MathError;
 use crate::macros::arithmetics::{
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
 };
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::MatrixDimensions;
 use flint_sys::fmpz_poly_mat::fmpz_poly_mat_mul;
 use std::ops::Mul;
 

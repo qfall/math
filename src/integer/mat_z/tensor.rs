@@ -9,7 +9,7 @@
 //! This module contains the implementation of the `tensor` product.
 
 use super::MatZ;
-use crate::traits::{GetNumColumns, GetNumRows, Tensor};
+use crate::traits::{MatrixDimensions, Tensor};
 use flint_sys::fmpz_mat::fmpz_mat_kronecker_product;
 
 impl Tensor for MatZ {
@@ -52,7 +52,7 @@ impl Tensor for MatZ {
 mod test_tensor {
     use crate::{
         integer::MatZ,
-        traits::{GetNumColumns, GetNumRows, Tensor},
+        traits::{MatrixDimensions, Tensor},
     };
     use std::str::FromStr;
 

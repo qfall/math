@@ -11,7 +11,7 @@
 use super::MatZ;
 use crate::{
     integer::Z,
-    traits::{GetEntry, GetNumRows},
+    traits::{GetEntry, MatrixDimensions},
 };
 use flint_sys::fmpz_mat::{fmpz_mat_is_one, fmpz_mat_is_square, fmpz_mat_is_zero, fmpz_mat_rank};
 

@@ -14,7 +14,7 @@ use crate::{
     error::MathError,
     integer::{fmpz_helpers::find_max_abs, Z},
     rational::Q,
-    traits::{GetNumColumns, GetNumRows},
+    traits::MatrixDimensions,
 };
 use flint_sys::fmpz::fmpz_addmul;
 

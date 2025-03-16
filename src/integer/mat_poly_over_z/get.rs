@@ -12,7 +12,7 @@ use super::MatPolyOverZ;
 use crate::{
     error::MathError,
     integer::PolyOverZ,
-    traits::{GetEntry, GetNumColumns, GetNumRows},
+    traits::{GetEntry, MatrixDimensions},
     utils::index::{evaluate_index, evaluate_indices_for_matrix},
 };
 use flint_sys::{
@@ -24,7 +24,7 @@ use flint_sys::{
 };
 use std::{fmt::Display, mem::MaybeUninit};
 
-impl GetNumRows for MatPolyOverZ {
+impl MatrixDimensions for MatPolyOverZ {
     /// Returns the number of rows of the matrix as a [`i64`].
     ///
     /// # Examples
@@ -38,9 +38,7 @@ impl GetNumRows for MatPolyOverZ {
     fn get_num_rows(&self) -> i64 {
         self.matrix.r
     }
-}
 
-impl GetNumColumns for MatPolyOverZ {
     /// Returns the number of columns of the matrix as a [`i64`].
     ///
     /// # Examples
@@ -452,10 +450,7 @@ mod test_get_entry {
 
 #[cfg(test)]
 mod test_get_num {
-    use crate::{
-        integer::MatPolyOverZ,
-        traits::{GetNumColumns, GetNumRows},
-    };
+    use crate::{integer::MatPolyOverZ, traits::MatrixDimensions};
 
     /// Ensure that the getter for number of rows works correctly.
     #[test]
@@ -548,7 +543,7 @@ mod test_get_vec {
 mod test_get_submatrix {
     use crate::{
         integer::{MatPolyOverZ, Z},
-        traits::{GetNumColumns, GetNumRows},
+        traits::MatrixDimensions,
     };
     use std::str::FromStr;
 

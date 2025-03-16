@@ -48,14 +48,11 @@ pub trait SetCoefficient<T> {
     fn set_coeff(&mut self, index: impl TryInto<i64> + Display, value: T) -> Result<(), MathError>;
 }
 
-/// Is implemented by matrices to get the number of rows of the matrix.
-pub trait GetNumRows {
+/// Is implemented by matrices to get the number of rows and number of columns of the matrix.
+pub trait MatrixDimensions {
     /// Returns the number of rows of a matrix.
     fn get_num_rows(&self) -> i64;
-}
 
-/// Is implemented by matrices to get the number of columns of the matrix.
-pub trait GetNumColumns {
     /// Returns the number of columns of a matrix.
     fn get_num_columns(&self) -> i64;
 }

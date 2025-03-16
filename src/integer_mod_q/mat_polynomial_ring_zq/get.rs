@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::{MatPolyOverZ, PolyOverZ},
     integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq},
-    traits::{GetEntry, GetNumColumns, GetNumRows},
+    traits::{GetEntry, MatrixDimensions},
     utils::index::evaluate_index,
 };
 use flint_sys::{fmpz_poly::fmpz_poly_struct, fmpz_poly_mat::fmpz_poly_mat_entry};
@@ -66,7 +66,7 @@ impl MatPolynomialRingZq {
     }
 }
 
-impl GetNumRows for MatPolynomialRingZq {
+impl MatrixDimensions for MatPolynomialRingZq {
     /// Returns the number of rows of the matrix as an [`i64`].
     ///
     /// # Examples
@@ -85,9 +85,7 @@ impl GetNumRows for MatPolynomialRingZq {
     fn get_num_rows(&self) -> i64 {
         self.matrix.get_num_rows()
     }
-}
 
-impl GetNumColumns for MatPolynomialRingZq {
     /// Returns the number of columns of the matrix as an [`i64`].
     ///
     /// # Examples
@@ -535,7 +533,7 @@ mod test_get_entry {
 mod test_get_num {
     use crate::{
         integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
-        traits::{GetNumColumns, GetNumRows},
+        traits::MatrixDimensions,
     };
     use std::str::FromStr;
 
@@ -736,7 +734,7 @@ mod test_get_submatrix {
     use crate::{
         integer::{MatPolyOverZ, Z},
         integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
-        traits::{GetNumColumns, GetNumRows},
+        traits::MatrixDimensions,
     };
     use std::str::FromStr;
 

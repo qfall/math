@@ -12,7 +12,7 @@ use crate::{
     error::MathError,
     integer::{MatZ, Z},
     rational::{MatQ, Q},
-    traits::{GetNumColumns, GetNumRows, SetEntry},
+    traits::{MatrixDimensions, SetEntry},
     utils::sample::discrete_gauss::{
         sample_d, sample_d_precomputed_gso, DiscreteGaussianIntegerSampler,
     },
@@ -383,7 +383,7 @@ mod test_sample_d_common_non_spherical {
     use crate::{
         integer::{MatZ, Z},
         rational::{MatQ, Q},
-        traits::{GetNumRows, Pow},
+        traits::{MatrixDimensions, Pow},
     };
     use std::str::FromStr;
 

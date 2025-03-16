@@ -11,11 +11,7 @@
 use flint_sys::fmpz_mat::fmpz_mat_trace;
 
 use super::MatZ;
-use crate::{
-    error::MathError,
-    integer::Z,
-    traits::{GetNumColumns, GetNumRows},
-};
+use crate::{error::MathError, integer::Z, traits::MatrixDimensions};
 
 impl MatZ {
     /// Returns the trace of a matrix and an error,

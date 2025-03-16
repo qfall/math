@@ -11,11 +11,8 @@
 
 use super::super::MatZq;
 use crate::{
-    error::MathError,
-    integer::Z,
-    integer_mod_q::fmpz_mod_helpers::length,
-    rational::Q,
-    traits::{GetNumColumns, GetNumRows},
+    error::MathError, integer::Z, integer_mod_q::fmpz_mod_helpers::length, rational::Q,
+    traits::MatrixDimensions,
 };
 use flint_sys::fmpz::fmpz_addmul;
 

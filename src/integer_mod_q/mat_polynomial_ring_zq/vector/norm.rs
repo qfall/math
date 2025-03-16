@@ -14,7 +14,7 @@ use crate::{
     error::MathError,
     integer::Z,
     integer_mod_q::PolynomialRingZq,
-    traits::{GetEntry, GetNumColumns, GetNumRows},
+    traits::{GetEntry, MatrixDimensions},
 };
 
 impl MatPolynomialRingZq {

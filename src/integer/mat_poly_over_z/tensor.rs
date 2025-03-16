@@ -11,7 +11,7 @@
 use super::MatPolyOverZ;
 use crate::{
     integer::PolyOverZ,
-    traits::{GetEntry, GetNumColumns, GetNumRows, Tensor},
+    traits::{GetEntry, MatrixDimensions, Tensor},
 };
 use flint_sys::{fmpz_poly::fmpz_poly_mul, fmpz_poly_mat::fmpz_poly_mat_entry};
 
@@ -119,7 +119,7 @@ unsafe fn set_matrix_window_mul(
 mod test_tensor {
     use crate::{
         integer::MatPolyOverZ,
-        traits::{GetNumColumns, GetNumRows, Tensor},
+        traits::{MatrixDimensions, Tensor},
     };
     use std::str::FromStr;
 

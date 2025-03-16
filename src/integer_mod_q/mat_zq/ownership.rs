@@ -13,7 +13,7 @@
 
 use super::MatZq;
 use crate::integer::Z;
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::MatrixDimensions;
 use flint_sys::fmpz_mod_mat::{fmpz_mod_mat_clear, fmpz_mod_mat_init_set};
 
 impl Clone for MatZq {
@@ -73,7 +73,7 @@ impl Drop for MatZq {
 mod test_clone {
     use super::MatZq;
     use crate::integer::Z;
-    use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
+    use crate::traits::{GetEntry, MatrixDimensions};
     use std::str::FromStr;
 
     /// check if a cloned value is still alive after the original value ran out of scope

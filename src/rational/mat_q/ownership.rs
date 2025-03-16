@@ -11,7 +11,7 @@
 //!
 //! The explicit functions contain the documentation.
 
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::MatrixDimensions;
 
 use super::MatQ;
 use flint_sys::fmpq_mat::{fmpq_mat_clear, fmpq_mat_set};
@@ -70,7 +70,7 @@ mod test_clone {
     use super::MatQ;
     use crate::{
         rational::Q,
-        traits::{GetEntry, GetNumColumns, GetNumRows},
+        traits::{GetEntry, MatrixDimensions},
     };
     use std::str::FromStr;
 

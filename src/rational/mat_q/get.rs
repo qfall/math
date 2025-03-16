@@ -9,7 +9,7 @@
 //! Implementations to get information about a [`MatQ`] matrix.
 
 use super::MatQ;
-use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
+use crate::traits::{GetEntry, MatrixDimensions};
 use crate::utils::index::{evaluate_index, evaluate_indices_for_matrix};
 use crate::{error::MathError, rational::Q};
 use flint_sys::fmpq_mat::{fmpq_mat_init_set, fmpq_mat_window_clear, fmpq_mat_window_init};
@@ -20,7 +20,7 @@ use flint_sys::{
 use std::fmt::Display;
 use std::mem::MaybeUninit;
 
-impl GetNumRows for MatQ {
+impl MatrixDimensions for MatQ {
     /// Returns the number of rows of the matrix as a [`i64`].
     ///
     /// # Examples
@@ -34,9 +34,7 @@ impl GetNumRows for MatQ {
     fn get_num_rows(&self) -> i64 {
         self.matrix.r
     }
-}
 
-impl GetNumColumns for MatQ {
     /// Returns the number of columns of the matrix as a [`i64`].
     ///
     /// # Examples
@@ -493,10 +491,7 @@ mod test_get_entry {
 
 #[cfg(test)]
 mod test_get_num {
-    use crate::{
-        rational::MatQ,
-        traits::{GetNumColumns, GetNumRows},
-    };
+    use crate::{rational::MatQ, traits::MatrixDimensions};
 
     /// Ensure that the getter for number of rows works correctly.
     #[test]
@@ -602,11 +597,7 @@ mod test_get_vec {
 
 #[cfg(test)]
 mod test_get_submatrix {
-    use crate::{
-        integer::Z,
-        rational::MatQ,
-        traits::{GetNumColumns, GetNumRows},
-    };
+    use crate::{integer::Z, rational::MatQ, traits::MatrixDimensions};
     use std::str::FromStr;
 
     /// Ensures that getting the entire matrix as a submatrix works.

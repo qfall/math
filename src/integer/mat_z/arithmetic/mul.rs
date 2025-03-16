@@ -15,7 +15,7 @@ use crate::macros::arithmetics::{
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
 };
 use crate::rational::MatQ;
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::MatrixDimensions;
 use flint_sys::fmpq_mat::fmpq_mat_mul_r_fmpz_mat;
 use flint_sys::fmpz_mat::fmpz_mat_mul;
 use flint_sys::fmpz_mod_mat::_fmpz_mod_mat_reduce;
