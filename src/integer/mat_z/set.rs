@@ -12,7 +12,7 @@ use super::MatZ;
 use crate::{
     error::MathError,
     integer::Z,
-    traits::{MatrixDimensions, MatrixSetEntry},
+    traits::{MatrixDimensions, MatrixSetEntry, MatrixSetSubmatrix},
     utils::{
         collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
         index::{evaluate_index, evaluate_indices_for_matrix},
@@ -114,7 +114,7 @@ impl<Integer: Into<Z>> MatrixSetEntry<Integer> for MatZ {
     }
 }
 
-impl MatZ {
+impl MatrixSetSubmatrix for MatZ {
     /// Sets a column of the given matrix to the provided column of `other`.
     ///
     /// Parameters:
@@ -129,7 +129,7 @@ impl MatZ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::{integer::MatZ, traits::MatrixSetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let mut mat_1 = MatZ::new(2, 2);
@@ -142,7 +142,7 @@ impl MatZ {
     ///     if the provided column index is not defined within the margins of the matrix.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     ///     if the number of rows of `self` and `other` differ.
-    pub fn set_column(
+    fn set_column(
         &mut self,
         col_0: impl TryInto<i64> + Display,
         other: &Self,
@@ -187,7 +187,7 @@ impl MatZ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::{integer::MatZ, traits::MatrixSetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let mut mat_1 = MatZ::new(2, 2);
@@ -200,7 +200,7 @@ impl MatZ {
     ///     if the provided row index is not defined within the margins of the matrix.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     ///     if the number of columns of `self` and `other` differ.
-    pub fn set_row(
+    fn set_row(
         &mut self,
         row_0: impl TryInto<i64> + Display,
         other: &Self,
@@ -230,7 +230,9 @@ impl MatZ {
 
         Ok(())
     }
+}
 
+impl MatZ {
     /// Swaps two entries of the specified matrix.
     ///
     /// Parameters:
@@ -396,7 +398,7 @@ impl MatZ {
 mod test_setter {
     use super::Z;
     use crate::integer::MatZ;
-    use crate::traits::{MatrixGetEntry, MatrixSetEntry};
+    use crate::traits::{MatrixGetEntry, MatrixSetEntry, MatrixSetSubmatrix};
     use std::str::FromStr;
 
     /// Ensure that setting entries works with standard numbers.

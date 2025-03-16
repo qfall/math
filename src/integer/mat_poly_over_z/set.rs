@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::PolyOverZ,
     macros::for_others::implement_for_owned,
-    traits::{MatrixDimensions, MatrixSetEntry},
+    traits::{MatrixDimensions, MatrixSetEntry, MatrixSetSubmatrix},
     utils::{
         collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
         index::{evaluate_index, evaluate_indices_for_matrix},
@@ -113,7 +113,7 @@ impl MatrixSetEntry<&PolyOverZ> for MatPolyOverZ {
 
 implement_for_owned!(PolyOverZ, MatPolyOverZ, MatrixSetEntry);
 
-impl MatPolyOverZ {
+impl MatrixSetSubmatrix for MatPolyOverZ {
     /// Sets a column of the given matrix to the provided column of `other`.
     ///
     /// Parameters:
@@ -128,7 +128,7 @@ impl MatPolyOverZ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::{integer::MatPolyOverZ, traits::MatrixSetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let mut mat_1 = MatPolyOverZ::new(2, 2);
@@ -141,7 +141,7 @@ impl MatPolyOverZ {
     ///     if the provided column index is not defined within the margins of the matrix.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     ///     if the number of rows of `self` and `other` differ.
-    pub fn set_column(
+    fn set_column(
         &mut self,
         col_0: impl TryInto<i64> + Display,
         other: &Self,
@@ -186,7 +186,7 @@ impl MatPolyOverZ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::{integer::MatPolyOverZ, traits::MatrixSetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let mut mat_1 = MatPolyOverZ::new(2, 2);
@@ -199,7 +199,7 @@ impl MatPolyOverZ {
     ///     if the provided row index is not defined within the margins of the matrix.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     ///     if the number of columns of `self` and `other` differ.
-    pub fn set_row(
+    fn set_row(
         &mut self,
         row_0: impl TryInto<i64> + Display,
         other: &Self,
@@ -229,7 +229,9 @@ impl MatPolyOverZ {
 
         Ok(())
     }
+}
 
+impl MatPolyOverZ {
     /// Swaps two entries of the specified matrix.
     ///
     /// Parameters:
@@ -407,7 +409,7 @@ impl MatPolyOverZ {
 mod test_setter {
     use crate::{
         integer::{MatPolyOverZ, PolyOverZ},
-        traits::{MatrixGetEntry, MatrixSetEntry},
+        traits::{MatrixGetEntry, MatrixSetEntry, MatrixSetSubmatrix},
     };
     use std::str::FromStr;
 

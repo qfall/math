@@ -11,7 +11,7 @@
 use super::MatZq;
 use crate::{
     integer::Z,
-    traits::{Concatenate, Gcd, MatrixDimensions},
+    traits::{Concatenate, Gcd, MatrixDimensions, MatrixSetSubmatrix},
 };
 use flint_sys::fmpz_mod_mat::fmpz_mod_mat_rref;
 

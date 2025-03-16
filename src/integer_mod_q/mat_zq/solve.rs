@@ -10,15 +10,7 @@
 //! over [`MatZq`] with arbitrary moduli.
 
 use super::MatZq;
-use crate::{
-    integer::Z,
-    integer_mod_q::Zq,
-    traits::{
-        Concatenate, Gcd, MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix, MatrixSetEntry,
-        Pow, Xgcd,
-    },
-    utils::Factorization,
-};
+use crate::{integer::Z, integer_mod_q::Zq, traits::*, utils::Factorization};
 
 impl MatZq {
     /// Computes a solution for a system of linear equations under a certain modulus.

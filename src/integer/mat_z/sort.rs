@@ -11,7 +11,7 @@
 use super::MatZ;
 use crate::{
     error::MathError,
-    traits::{MatrixDimensions, MatrixGetSubmatrix},
+    traits::{MatrixDimensions, MatrixGetSubmatrix, MatrixSetSubmatrix},
 };
 
 impl MatZ {

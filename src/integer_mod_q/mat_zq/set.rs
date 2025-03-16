@@ -13,7 +13,7 @@ use crate::{
     integer::Z,
     integer_mod_q::{MatZq, Modulus, Zq},
     macros::for_others::implement_for_owned,
-    traits::{AsInteger, MatrixDimensions, MatrixSetEntry},
+    traits::{AsInteger, MatrixDimensions, MatrixSetEntry, MatrixSetSubmatrix},
     utils::{
         collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
         index::{evaluate_index, evaluate_indices_for_matrix},
@@ -208,7 +208,7 @@ impl MatrixSetEntry<&Zq> for MatZq {
 
 implement_for_owned!(Zq, MatZq, MatrixSetEntry);
 
-impl MatZq {
+impl MatrixSetSubmatrix for MatZq {
     /// Sets a column of the given matrix to the provided column of `other`.
     ///
     /// Parameters:
@@ -223,7 +223,7 @@ impl MatZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::{integer_mod_q::MatZq, traits::MatrixSetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let mut mat_1 = MatZq::new(2, 2, 3);
@@ -238,7 +238,7 @@ impl MatZq {
     ///     if the number of rows of `self` and `other` differ.
     /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus)
     ///     if the moduli of `self` and `other` mismatch.
-    pub fn set_column(
+    fn set_column(
         &mut self,
         col_0: impl TryInto<i64> + Display,
         other: &Self,
@@ -291,7 +291,7 @@ impl MatZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::{integer_mod_q::MatZq, traits::MatrixSetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let mut mat_1 = MatZq::new(2, 2, 3);
@@ -306,7 +306,7 @@ impl MatZq {
     ///     if the number of columns of `self` and `other` differ.
     /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus)
     ///     if the moduli of `self` and `other` mismatch.
-    pub fn set_row(
+    fn set_row(
         &mut self,
         row_0: impl TryInto<i64> + Display,
         other: &Self,
@@ -344,7 +344,9 @@ impl MatZq {
 
         Ok(())
     }
+}
 
+impl MatZq {
     /// Swaps two entries of the specified matrix.
     ///
     /// Parameters:
@@ -537,7 +539,7 @@ mod test_setter {
     use crate::{
         integer::Z,
         integer_mod_q::{MatZq, Zq},
-        traits::{MatrixGetEntry, MatrixSetEntry},
+        traits::{MatrixGetEntry, MatrixSetEntry, MatrixSetSubmatrix},
     };
     use std::str::FromStr;
 

@@ -614,7 +614,7 @@ mod test_get_vec {
 mod test_get_submatrix {
     use crate::{
         integer::{MatZ, Z},
-        traits::{MatrixDimensions, MatrixGetSubmatrix},
+        traits::{MatrixDimensions, MatrixGetSubmatrix, MatrixSetSubmatrix},
     };
     use std::str::FromStr;
 

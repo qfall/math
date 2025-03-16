@@ -11,7 +11,7 @@
 use crate::{
     error::MathError,
     rational::{MatQ, Q},
-    traits::{MatrixDimensions, MatrixSetEntry},
+    traits::{MatrixDimensions, MatrixSetEntry, MatrixSetSubmatrix},
     utils::{
         collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
         index::{evaluate_index, evaluate_indices_for_matrix},
@@ -121,7 +121,7 @@ impl<Rational: Into<Q>> MatrixSetEntry<Rational> for MatQ {
     }
 }
 
-impl MatQ {
+impl MatrixSetSubmatrix for MatQ {
     /// Sets a column of the given matrix to the provided column of `other`.
     ///
     /// Parameters:
@@ -136,7 +136,7 @@ impl MatQ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::rational::MatQ;
+    /// use qfall_math::{rational::MatQ, traits::MatrixSetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let mut mat_1 = MatQ::new(2, 2);
@@ -149,7 +149,7 @@ impl MatQ {
     ///     if the provided column index is not defined within the margins of the matrix.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     ///     if the number of rows of `self` and `other` differ.
-    pub fn set_column(
+    fn set_column(
         &mut self,
         col_0: impl TryInto<i64> + Display,
         other: &Self,
@@ -194,7 +194,7 @@ impl MatQ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::rational::MatQ;
+    /// use qfall_math::{rational::MatQ, traits::MatrixSetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let mut mat_1 = MatQ::new(2, 2);
@@ -207,7 +207,7 @@ impl MatQ {
     ///     if the provided row index is not defined within the margins of the matrix.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     ///     if the number of columns of `self` and `other` differ.
-    pub fn set_row(
+    fn set_row(
         &mut self,
         row_0: impl TryInto<i64> + Display,
         other: &Self,
@@ -237,7 +237,9 @@ impl MatQ {
 
         Ok(())
     }
+}
 
+impl MatQ {
     /// Swaps two entries of the specified matrix.
     ///
     /// Parameters:
@@ -407,7 +409,7 @@ mod test_setter {
         integer::Z,
         integer_mod_q::Modulus,
         rational::MatQ,
-        traits::{MatrixGetEntry, MatrixSetEntry},
+        traits::{MatrixGetEntry, MatrixSetEntry, MatrixSetSubmatrix},
     };
     use std::str::FromStr;
 

@@ -353,6 +353,57 @@ pub trait MatrixSetEntry<T> {
     unsafe fn set_entry_unchecked(&mut self, row: i64, column: i64, value: T);
 }
 
+/// Is implemented by matrices to set more than a single entry of the matrix.
+pub trait MatrixSetSubmatrix {
+    /// Sets a row of the given matrix to the provided row of `other`.
+    ///
+    /// Parameters:
+    /// - `row_0`: specifies the row of `self` that should be modified
+    /// - `other`: specifies the matrix providing the row replacing the row in `self`
+    /// - `row_1`: specifies the row of `other` providing
+    ///     the values replacing the original row in `self`
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of its matrix
+    /// or if the number of columns differs.
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    ///     if the provided row index is not defined within the margins of the matrix.
+    /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
+    ///     if the number of columns of `self` and `other` differ.
+    fn set_row(
+        &mut self,
+        row_0: impl TryInto<i64> + Display,
+        other: &Self,
+        row_1: impl TryInto<i64> + Display,
+    ) -> Result<(), MathError>;
+
+    /// Sets a column of the given matrix to the provided column of `other`.
+    ///
+    /// Parameters:
+    /// - `col_0`: specifies the column of `self` that should be modified
+    /// - `other`: specifies the matrix providing the column replacing the column in `self`
+    /// - `col_1`: specifies the column of `other` providing
+    ///     the values replacing the original column in `self`
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of its matrix
+    /// or if the number of rows differs.
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    ///     if the provided column index is not defined within the margins of the matrix.
+    /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
+    ///     if the number of rows of `self` and `other` differ.
+    fn set_column(
+        &mut self,
+        col_0: impl TryInto<i64> + Display,
+        other: &Self,
+        col_1: impl TryInto<i64> + Display,
+    ) -> Result<(), MathError>;
+}
+
 /// Is implemented by matrices to compute the tensor product.
 pub trait Tensor {
     /// Computes the tensor product of `self` with `other`

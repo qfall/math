@@ -11,6 +11,7 @@
 use super::MatPolynomialRingZq;
 use crate::integer_mod_q::PolynomialRingZq;
 use crate::macros::for_others::implement_for_owned;
+use crate::traits::MatrixSetSubmatrix;
 use crate::utils::index::evaluate_indices_for_matrix;
 use crate::{error::MathError, integer::PolyOverZ, traits::MatrixSetEntry};
 use flint_sys::{fmpz_poly::fmpz_poly_set, fmpz_poly_mat::fmpz_poly_mat_entry};
@@ -210,7 +211,7 @@ impl MatrixSetEntry<&PolynomialRingZq> for MatPolynomialRingZq {
 implement_for_owned!(PolyOverZ, MatPolynomialRingZq, MatrixSetEntry);
 implement_for_owned!(PolynomialRingZq, MatPolynomialRingZq, MatrixSetEntry);
 
-impl MatPolynomialRingZq {
+impl MatrixSetSubmatrix for MatPolynomialRingZq {
     /// Sets a column of the given matrix to the provided column of `other`.
     ///
     /// Parameters:
@@ -225,7 +226,7 @@ impl MatPolynomialRingZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
+    /// use qfall_math::{integer_mod_q::MatPolynomialRingZq, traits::MatrixSetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let mut mat_1 = MatPolynomialRingZq::from_str("[[0, 0, 0],[0, 0, 0]] / 2  1 1 mod 6").unwrap();
@@ -240,7 +241,7 @@ impl MatPolynomialRingZq {
     ///     if the number of rows of `self` and `other` differ.
     /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus)
     ///     if the moduli of `self` and `other` mismatch.
-    pub fn set_column(
+    fn set_column(
         &mut self,
         col_0: impl TryInto<i64> + Display,
         other: &Self,
@@ -271,7 +272,7 @@ impl MatPolynomialRingZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
+    /// use qfall_math::{integer_mod_q::MatPolynomialRingZq, traits::MatrixSetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let mut mat_1 = MatPolynomialRingZq::from_str("[[0, 0, 0],[0, 0, 0]] / 2  1 1 mod 6").unwrap();
@@ -286,7 +287,7 @@ impl MatPolynomialRingZq {
     ///     if the number of columns of `self` and `other` differ.
     /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus)
     ///     if the moduli of `self` and `other` mismatch.
-    pub fn set_row(
+    fn set_row(
         &mut self,
         row_0: impl TryInto<i64> + Display,
         other: &Self,
@@ -302,7 +303,9 @@ impl MatPolynomialRingZq {
 
         self.matrix.set_row(row_0, &other.matrix, row_1)
     }
+}
 
+impl MatPolynomialRingZq {
     /// Swaps two entries of the specified matrix.
     ///
     /// Parameters:
@@ -430,7 +433,7 @@ mod test_setter {
         integer_mod_q::{
             MatPolynomialRingZq, ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq,
         },
-        traits::{MatrixGetEntry, MatrixSetEntry},
+        traits::{MatrixGetEntry, MatrixSetEntry, MatrixSetSubmatrix},
     };
     use std::str::FromStr;
 
