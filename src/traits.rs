@@ -92,7 +92,7 @@ pub trait MatrixGetEntry<T> {
 /// Is implemented by Matrices to get submatrices such as rows, columns, etc.
 pub trait MatrixGetSubmatrix
 where
-    Self: Sized,
+    Self: Sized + MatrixDimensions,
 {
     /// Outputs the row vector of the specified row.
     ///
@@ -151,6 +151,82 @@ where
         col_1: impl TryInto<i64> + Display,
         col_2: impl TryInto<i64> + Display,
     ) -> Result<Self, MathError>;
+
+    // *** Automatically implemented functions
+
+    /// Outputs a [`Vec`] containing all rows of the matrix in order.
+    /// Use this function for simple iteration over the rows of the matrix.
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::{integer::MatZ, traits::MatrixGetSubmatrix};
+    /// let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+    ///
+    /// let mut added_rows = MatZ::new(1, 3);
+    /// for row in matrix.get_rows() {
+    ///     added_rows = added_rows + row;
+    /// }
+    /// ```
+    ///
+    /// If an index is required, use `.iter().enumerate()`, e.g. in this case.
+    /// ```
+    /// use qfall_math::{integer::MatZ, traits::*};
+    /// let mut matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+    ///
+    /// let mut added_rows = MatZ::new(1, 3);
+    /// for (i, row) in matrix.get_rows().iter().enumerate() {
+    ///     added_rows = added_rows + row;
+    ///     matrix.set_row(i, &added_rows, 0).unwrap();
+    /// }
+    /// ```
+    fn get_rows(&self) -> Vec<Self> {
+        let mut rows = vec![];
+
+        for i in 0..self.get_num_rows() {
+            // replace with self.get_row_unchecked once available
+            let entry = self.get_row(i).unwrap();
+            rows.push(entry);
+        }
+
+        rows
+    }
+
+    /// Outputs a [`Vec`] containing all columns of the matrix in order.
+    /// Use this function for simple iteration over the columns of the matrix.
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::{integer::MatZ, traits::MatrixGetSubmatrix};
+    /// let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+    ///
+    /// let mut added_columns = MatZ::new(3, 1);
+    /// for column in matrix.get_columns() {
+    ///     added_columns = added_columns + column;
+    /// }
+    /// ```
+    ///
+    /// If an index is required, use `.iter().enumerate()`, e.g. in this case.
+    /// ```
+    /// use qfall_math::{integer::MatZ, traits::*};
+    /// let mut matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+    ///
+    /// let mut added_columns = MatZ::new(3, 1);
+    /// for (i, column) in matrix.get_columns().iter().enumerate() {
+    ///     added_columns = added_columns + column;
+    ///     matrix.set_column(i, &added_columns, 0).unwrap();
+    /// }
+    /// ```
+    fn get_columns(&self) -> Vec<Self> {
+        let mut columns = vec![];
+
+        for i in 0..self.get_num_columns() {
+            // replace with self.get_column_unchecked once available
+            let entry = self.get_column(i).unwrap();
+            columns.push(entry);
+        }
+
+        columns
+    }
 }
 
 /// Is implemented by matrices to set entries.

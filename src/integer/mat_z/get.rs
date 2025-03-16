@@ -630,6 +630,54 @@ mod test_get_submatrix {
         let _ = mat.get_submatrix(0_u64, 0_i64, 0_u64, 0_u64);
         let _ = mat.get_submatrix(&Z::ZERO, &Z::ZERO, &Z::ZERO, &Z::ZERO);
     }
+
+    // *** Doc-tests of automatically implemented functions by `MatrixGetSubmatrix`
+
+    /// Ensures that the first doc-test of [`MatZ::get_rows`] works.
+    #[test]
+    fn get_rows_1() {
+        let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+
+        let mut added_rows = MatZ::new(1, 3);
+        for row in matrix.get_rows() {
+            added_rows = added_rows + row;
+        }
+    }
+
+    /// Ensures that the second doc-test of [`MatZ::get_rows`] works.
+    #[test]
+    fn get_rows_2() {
+        let mut matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+
+        let mut added_rows = MatZ::new(1, 3);
+        for (i, row) in matrix.get_rows().iter().enumerate() {
+            added_rows = added_rows + row;
+            matrix.set_row(i, &added_rows, 0).unwrap();
+        }
+    }
+
+    /// Ensures that the first doc-test of [`MatZ::get_columns`] works.
+    #[test]
+    fn get_columns_1() {
+        let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+
+        let mut added_columns = MatZ::new(3, 1);
+        for column in matrix.get_columns() {
+            added_columns = added_columns + column;
+        }
+    }
+
+    /// Ensures that the second doc-test of [`MatZ::get_columns`] works.
+    #[test]
+    fn get_columns_2() {
+        let mut matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+
+        let mut added_columns = MatZ::new(3, 1);
+        for (i, column) in matrix.get_columns().iter().enumerate() {
+            added_columns = added_columns + column;
+            matrix.set_column(i, &added_columns, 0).unwrap();
+        }
+    }
 }
 
 #[cfg(test)]
