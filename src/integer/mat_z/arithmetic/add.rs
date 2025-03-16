@@ -10,11 +10,14 @@
 
 use super::super::MatZ;
 use crate::error::MathError;
+use crate::integer_mod_q::MatZq;
 use crate::macros::arithmetics::{
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+    arithmetic_trait_reverse,
 };
 use crate::traits::MatrixDimensions;
 use flint_sys::fmpz_mat::fmpz_mat_add;
+use flint_sys::fmpz_mod_mat::_fmpz_mod_mat_reduce;
 use std::ops::Add;
 
 impl Add for &MatZ {
@@ -47,6 +50,61 @@ impl Add for &MatZ {
         self.add_safe(other).unwrap()
     }
 }
+
+impl Add<&MatZq> for &MatZ {
+    type Output = MatZq;
+
+    /// Implements the [`Add`] trait for a [`MatZ`] and a [`MatZq`] matrix.
+    /// [`Add`] is implemented for any combination of [`MatZ`] and [`MatZq`].
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to add to `self`
+    ///
+    /// Returns the sum of both numbers as a [`MatZq`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{integer::MatZ, integer_mod_q::MatZq};
+    /// use std::str::FromStr;
+    ///
+    /// let a = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();
+    /// let b = MatZq::from_str("[[1, 9, 3],[1, 0, 5]] mod 7").unwrap();
+    ///
+    /// let c = &a + &b;
+    /// let d = a + b;
+    /// let e = &c + d;
+    /// let f = c + &e;
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the dimensions of both matrices mismatch.
+    fn add(self, other: &MatZq) -> Self::Output {
+        if self.get_num_rows() != other.get_num_rows()
+            || self.get_num_columns() != other.get_num_columns()
+        {
+            panic!(
+                "Tried to add a '{}x{}' matrix and a '{}x{}' matrix.",
+                self.get_num_rows(),
+                self.get_num_columns(),
+                other.get_num_rows(),
+                other.get_num_columns()
+            );
+        }
+
+        let mut out = MatZq::new(self.get_num_rows(), self.get_num_columns(), other.get_mod());
+        unsafe {
+            fmpz_mat_add(&mut out.matrix.mat[0], &self.matrix, &other.matrix.mat[0]);
+            _fmpz_mod_mat_reduce(&mut out.matrix);
+        }
+        out
+    }
+}
+
+arithmetic_trait_borrowed_to_owned!(Add, add, MatZ, MatZq, MatZq);
+arithmetic_trait_mixed_borrowed_owned!(Add, add, MatZ, MatZq, MatZq);
+arithmetic_trait_reverse!(Add, add, MatZq, MatZ, MatZq);
+arithmetic_trait_borrowed_to_owned!(Add, add, MatZq, MatZ, MatZq);
+arithmetic_trait_mixed_borrowed_owned!(Add, add, MatZq, MatZ, MatZq);
 
 impl MatZ {
     /// Implements addition for two [`MatZ`] matrices.
@@ -98,6 +156,7 @@ arithmetic_trait_mixed_borrowed_owned!(Add, add, MatZ, MatZ, MatZ);
 #[cfg(test)]
 mod test_add {
     use super::MatZ;
+    use crate::integer_mod_q::MatZq;
     use std::str::FromStr;
 
     /// Testing addition for two [`MatZ`]
@@ -175,5 +234,25 @@ mod test_add {
         let c: MatZ = MatZ::from_str("[[1, 2, 3]]").unwrap();
         assert!(a.add_safe(&b).is_err());
         assert!(c.add_safe(&b).is_err());
+    }
+
+    /// Ensures that addition between [`MatZ`] and [`MatZq`] works properly incl. reduction mod q
+    /// and is available for any combination.
+    #[test]
+    fn add_matzq() {
+        let a = MatZ::from_str("[[1, 2],[3, 4]]").unwrap();
+        let b = MatZq::from_str("[[5, 6],[9, 10]] mod 11").unwrap();
+        let cmp = MatZq::from_str("[[6, 8],[1, 3]] mod 11").unwrap();
+
+        let _ = &b + &a;
+        let _ = &b + a.clone();
+        let _ = b.clone() + &a;
+        let _ = b.clone() + a.clone();
+        let _ = &a + &b;
+        let _ = &a + b.clone();
+        let _ = a.clone() + &b;
+        let res = a.clone() + b.clone();
+
+        assert_eq!(cmp, res);
     }
 }
