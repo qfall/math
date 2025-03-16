@@ -42,7 +42,7 @@ mod vector;
 /// use qfall_math::{
 ///     integer::{PolyOverZ, MatPolyOverZ},
 ///     integer_mod_q::{MatPolynomialRingZq, PolyOverZq},
-///     traits::{GetEntry, SetEntry},
+///     traits::{MatrixGetEntry, SetEntry},
 /// };
 /// use std::str::FromStr;
 ///

@@ -120,7 +120,7 @@ impl MatZ {
 #[cfg(test)]
 mod test_sample_binomial {
     use super::{MatZ, Q, Z};
-    use crate::traits::{GetEntry, MatrixDimensions};
+    use crate::traits::{MatrixDimensions, MatrixGetEntry};
 
     // As all major tests regarding an appropriate binomial distribution,
     // whether the correct interval is kept, and if the errors are thrown correctly,
@@ -186,7 +186,7 @@ mod test_sample_binomial {
 #[cfg(test)]
 mod test_sample_binomial_with_offset {
     use super::{MatZ, Q, Z};
-    use crate::traits::{GetEntry, MatrixDimensions};
+    use crate::traits::{MatrixDimensions, MatrixGetEntry};
 
     // As all major tests regarding an appropriate binomial distribution,
     // whether the correct interval is kept, and if the errors are thrown correctly,

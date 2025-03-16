@@ -38,7 +38,7 @@ impl MatQ {
     /// ## Use a custom function as condition
     /// This function needs to take a column vector as input and output a type implementing [`PartialOrd`]
     /// ```
-    /// use qfall_math::{rational::{MatQ, Q}, error::MathError, traits::{MatrixDimensions, GetEntry}};
+    /// use qfall_math::{rational::{MatQ, Q}, error::MathError, traits::{MatrixDimensions, MatrixGetEntry}};
     /// use std::str::FromStr;
     /// let mat = MatQ::from_str("[[3, 2, 1]]").unwrap();
     /// let cmp = MatQ::from_str("[[1, 2, 3]]").unwrap();
@@ -104,7 +104,7 @@ impl MatQ {
     /// ## Use a custom function as condition
     /// This function needs to take a row vector as input and output a type implementing [`PartialOrd`]
     /// ```
-    /// use qfall_math::{rational::{MatQ, Q}, error::MathError, traits::{MatrixDimensions, GetEntry}};
+    /// use qfall_math::{rational::{MatQ, Q}, error::MathError, traits::{MatrixDimensions, MatrixGetEntry}};
     /// use std::str::FromStr;
     /// let mat = MatQ::from_str("[[3],[2],[1]]").unwrap();
     /// let cmp = MatQ::from_str("[[1],[2],[3]]").unwrap();

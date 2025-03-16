@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::{MatPolyOverZ, PolyOverZ},
     integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq},
-    traits::{GetEntry, MatrixDimensions},
+    traits::{MatrixDimensions, MatrixGetEntry},
     utils::index::evaluate_index,
 };
 use flint_sys::{fmpz_poly::fmpz_poly_struct, fmpz_poly_mat::fmpz_poly_mat_entry};
@@ -106,7 +106,7 @@ impl MatrixDimensions for MatPolynomialRingZq {
     }
 }
 
-impl GetEntry<PolyOverZ> for MatPolynomialRingZq {
+impl MatrixGetEntry<PolyOverZ> for MatPolynomialRingZq {
     /// Outputs the [`PolyOverZ`] value of a specific matrix entry.
     ///
     /// Parameters:
@@ -188,7 +188,7 @@ impl GetEntry<PolyOverZ> for MatPolynomialRingZq {
     }
 }
 
-impl GetEntry<PolynomialRingZq> for MatPolynomialRingZq {
+impl MatrixGetEntry<PolynomialRingZq> for MatPolynomialRingZq {
     /// Outputs the [`PolynomialRingZq`] value of a specific matrix entry.
     ///
     /// Parameters:
@@ -451,7 +451,7 @@ impl MatPolynomialRingZq {
 mod test_get_entry {
     use crate::integer::{MatPolyOverZ, PolyOverZ};
     use crate::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq, PolynomialRingZq};
-    use crate::traits::GetEntry;
+    use crate::traits::MatrixGetEntry;
     use std::str::FromStr;
 
     const LARGE_PRIME: u64 = u64::MAX - 58;
@@ -496,10 +496,10 @@ mod test_get_entry {
                 .unwrap();
         let matrix = MatPolynomialRingZq::new(5, 10, &modulus);
 
-        assert!(GetEntry::<PolynomialRingZq>::get_entry(&matrix, 5, 1).is_err());
-        assert!(GetEntry::<PolynomialRingZq>::get_entry(&matrix, -6, 1).is_err());
-        assert!(GetEntry::<PolyOverZ>::get_entry(&matrix, 5, 1).is_err());
-        assert!(GetEntry::<PolyOverZ>::get_entry(&matrix, -6, 1).is_err());
+        assert!(MatrixGetEntry::<PolynomialRingZq>::get_entry(&matrix, 5, 1).is_err());
+        assert!(MatrixGetEntry::<PolynomialRingZq>::get_entry(&matrix, -6, 1).is_err());
+        assert!(MatrixGetEntry::<PolyOverZ>::get_entry(&matrix, 5, 1).is_err());
+        assert!(MatrixGetEntry::<PolyOverZ>::get_entry(&matrix, -6, 1).is_err());
     }
 
     /// Ensure that a wrong number of columns yields an Error.
@@ -510,10 +510,10 @@ mod test_get_entry {
                 .unwrap();
         let matrix = MatPolynomialRingZq::new(5, 10, &modulus);
 
-        assert!(GetEntry::<PolynomialRingZq>::get_entry(&matrix, 1, 10).is_err());
-        assert!(GetEntry::<PolynomialRingZq>::get_entry(&matrix, 1, -11).is_err());
-        assert!(GetEntry::<PolyOverZ>::get_entry(&matrix, 1, 10).is_err());
-        assert!(GetEntry::<PolyOverZ>::get_entry(&matrix, 1, -11).is_err());
+        assert!(MatrixGetEntry::<PolynomialRingZq>::get_entry(&matrix, 1, 10).is_err());
+        assert!(MatrixGetEntry::<PolynomialRingZq>::get_entry(&matrix, 1, -11).is_err());
+        assert!(MatrixGetEntry::<PolyOverZ>::get_entry(&matrix, 1, 10).is_err());
+        assert!(MatrixGetEntry::<PolyOverZ>::get_entry(&matrix, 1, -11).is_err());
     }
 
     /// Ensure that getting entries works with different types.

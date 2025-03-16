@@ -407,7 +407,7 @@ mod test_setter {
         integer::Z,
         integer_mod_q::Modulus,
         rational::MatQ,
-        traits::{GetEntry, SetEntry},
+        traits::{MatrixGetEntry, SetEntry},
     };
     use std::str::FromStr;
 

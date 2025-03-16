@@ -143,7 +143,7 @@ impl From<&MatPolynomialRingZq> for MatPolynomialRingZq {
 
 #[cfg(test)]
 mod test_from_str {
-    use crate::{integer::PolyOverZ, integer_mod_q::MatPolynomialRingZq, traits::GetEntry};
+    use crate::{integer::PolyOverZ, integer_mod_q::MatPolynomialRingZq, traits::MatrixGetEntry};
     use std::str::FromStr;
 
     /// Ensure that initialization works.

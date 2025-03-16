@@ -132,7 +132,7 @@ mod test_sample_binomial {
     use crate::{
         integer::PolyOverZ,
         integer_mod_q::PolyOverZq,
-        traits::{GetCoefficient, GetEntry, MatrixDimensions, SetCoefficient},
+        traits::{GetCoefficient, MatrixDimensions, MatrixGetEntry, SetCoefficient},
     };
     use std::str::FromStr;
 
@@ -242,7 +242,7 @@ mod test_sample_binomial_with_offset {
     use crate::{
         integer::PolyOverZ,
         integer_mod_q::PolyOverZq,
-        traits::{GetCoefficient, GetEntry, MatrixDimensions, SetCoefficient},
+        traits::{GetCoefficient, MatrixDimensions, MatrixGetEntry, SetCoefficient},
     };
     use std::str::FromStr;
 

@@ -82,7 +82,7 @@ impl MatPolyOverZ {
 
 #[cfg(test)]
 mod test_sample_uniform {
-    use crate::traits::{GetCoefficient, GetEntry, MatrixDimensions};
+    use crate::traits::{GetCoefficient, MatrixDimensions, MatrixGetEntry};
     use crate::{
         integer::{MatPolyOverZ, Z},
         integer_mod_q::Modulus,

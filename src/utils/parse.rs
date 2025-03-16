@@ -10,7 +10,7 @@
 
 use crate::{
     error::{MathError, StringConversionError},
-    traits::{GetEntry, MatrixDimensions},
+    traits::{MatrixDimensions, MatrixGetEntry},
 };
 use regex::Regex;
 use std::fmt::Display;
@@ -79,7 +79,10 @@ pub(crate) fn parse_matrix_string(string: &str) -> Result<Vec<Vec<String>>, Math
 ///
 /// Returns the Matrix in form of a [`String`]. For matrix `[[1, 2, 3],[4, 5, 6]]`
 /// the String looks like this `[[1, 2, 3],[4, 5, 6]]`.
-pub(crate) fn matrix_to_string<S: Display, T: GetEntry<S> + MatrixDimensions + MatrixDimensions>(
+pub(crate) fn matrix_to_string<
+    S: Display,
+    T: MatrixGetEntry<S> + MatrixDimensions + MatrixDimensions,
+>(
     matrix: &T,
 ) -> String {
     let mut builder = Builder::default();

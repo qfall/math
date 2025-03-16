@@ -12,7 +12,7 @@ use super::MatPolynomialRingZq;
 use crate::{
     error::MathError,
     integer::PolyOverZ,
-    traits::{GetEntry, MatrixDimensions, Tensor},
+    traits::{MatrixDimensions, MatrixGetEntry, Tensor},
 };
 use flint_sys::{fmpz_poly_mat::fmpz_poly_mat_entry, fq::fq_mul};
 

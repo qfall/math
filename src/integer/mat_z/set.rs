@@ -396,7 +396,7 @@ impl MatZ {
 mod test_setter {
     use super::Z;
     use crate::integer::MatZ;
-    use crate::traits::{GetEntry, SetEntry};
+    use crate::traits::{MatrixGetEntry, SetEntry};
     use std::str::FromStr;
 
     /// Ensure that setting entries works with standard numbers.

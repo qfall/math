@@ -249,7 +249,7 @@ mod test_from_mat_z_modulus {
     use crate::{
         integer::{MatZ, Z},
         integer_mod_q::{MatZq, Modulus},
-        traits::{GetEntry, MatrixDimensions, SetEntry},
+        traits::{MatrixDimensions, MatrixGetEntry, SetEntry},
     };
 
     /// Test if the dimensions are taken over correctly.
@@ -316,7 +316,7 @@ mod test_from_mat_z_modulus {
 
 #[cfg(test)]
 mod test_from_str {
-    use crate::{integer::Z, integer_mod_q::MatZq, traits::GetEntry};
+    use crate::{integer::Z, integer_mod_q::MatZq, traits::MatrixGetEntry};
     use std::str::FromStr;
 
     /// Ensure that initialization works.
@@ -425,7 +425,7 @@ mod test_from_str {
 /// and [`crate::utils::parse::matrix_from_utf8_fill_bytes`].
 mod test_from_utf8 {
     use super::{MatZq, Z};
-    use crate::traits::GetEntry;
+    use crate::traits::MatrixGetEntry;
     use std::str::FromStr;
 
     /// Ensure that the empty string results in a zero value.

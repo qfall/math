@@ -139,7 +139,7 @@ impl MatZ {
 mod test_from_str {
     use crate::{
         integer::{MatZ, Z},
-        traits::GetEntry,
+        traits::MatrixGetEntry,
     };
     use std::str::FromStr;
 
@@ -226,7 +226,7 @@ mod test_from_str {
 /// and [`crate::utils::parse::matrix_from_utf8_fill_bytes`].
 mod test_from_utf8 {
     use super::{MatZ, Z};
-    use crate::traits::GetEntry;
+    use crate::traits::MatrixGetEntry;
     use std::str::FromStr;
 
     /// Ensures that a wide range of (special) characters are transformed correctly.

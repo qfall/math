@@ -36,7 +36,7 @@ impl MatQ {
 mod test_gso {
     use crate::{
         rational::{MatQ, Q},
-        traits::GetEntry,
+        traits::MatrixGetEntry,
     };
     use std::str::FromStr;
 

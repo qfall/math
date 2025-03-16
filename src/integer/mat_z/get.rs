@@ -12,7 +12,7 @@ use super::MatZ;
 use crate::{
     error::MathError,
     integer::Z,
-    traits::{GetEntry, MatrixDimensions},
+    traits::{MatrixDimensions, MatrixGetEntry},
     utils::index::{evaluate_index, evaluate_indices_for_matrix},
 };
 use flint_sys::{
@@ -51,7 +51,7 @@ impl MatrixDimensions for MatZ {
     }
 }
 
-impl GetEntry<Z> for MatZ {
+impl MatrixGetEntry<Z> for MatZ {
     /// Outputs the [`Z`] value of a specific matrix entry.
     ///
     /// Parameters:
@@ -68,7 +68,7 @@ impl GetEntry<Z> for MatZ {
     /// # Examples
     /// ```
     /// use qfall_math::integer::{MatZ, Z};
-    /// use qfall_math::traits::GetEntry;
+    /// use qfall_math::traits::MatrixGetEntry;
     /// use std::str::FromStr;
     ///
     /// let matrix = MatZ::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]]").unwrap();
@@ -113,7 +113,7 @@ impl GetEntry<Z> for MatZ {
     /// # Examples
     /// ```
     /// use qfall_math::integer::{MatZ, Z};
-    /// use qfall_math::traits::GetEntry;
+    /// use qfall_math::traits::MatrixGetEntry;
     /// use std::str::FromStr;
     ///
     /// let matrix = MatZ::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]]").unwrap();
@@ -326,7 +326,7 @@ mod test_get_entry {
     use super::Z;
     use crate::{
         integer::MatZ,
-        traits::{GetEntry, SetEntry},
+        traits::{MatrixGetEntry, SetEntry},
     };
     use std::str::FromStr;
 

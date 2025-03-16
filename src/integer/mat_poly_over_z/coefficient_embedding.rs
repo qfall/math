@@ -13,8 +13,8 @@ use super::MatPolyOverZ;
 use crate::{
     integer::{MatZ, PolyOverZ, Z},
     traits::{
-        FromCoefficientEmbedding, GetCoefficient, GetEntry, IntoCoefficientEmbedding,
-        MatrixDimensions, SetCoefficient, SetEntry,
+        FromCoefficientEmbedding, GetCoefficient, IntoCoefficientEmbedding, MatrixDimensions,
+        MatrixGetEntry, SetCoefficient, SetEntry,
     },
 };
 

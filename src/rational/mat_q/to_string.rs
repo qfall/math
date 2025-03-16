@@ -14,7 +14,7 @@
 use super::MatQ;
 use crate::{
     macros::for_others::implement_for_owned,
-    traits::{GetEntry, MatrixDimensions},
+    traits::{MatrixDimensions, MatrixGetEntry},
     utils::parse::matrix_to_string,
 };
 use core::fmt;

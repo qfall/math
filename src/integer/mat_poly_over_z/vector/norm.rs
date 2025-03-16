@@ -13,7 +13,7 @@ use super::super::MatPolyOverZ;
 use crate::{
     error::MathError,
     integer::Z,
-    traits::{GetEntry, MatrixDimensions},
+    traits::{MatrixDimensions, MatrixGetEntry},
 };
 
 impl MatPolyOverZ {

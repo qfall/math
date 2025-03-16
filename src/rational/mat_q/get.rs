@@ -9,7 +9,7 @@
 //! Implementations to get information about a [`MatQ`] matrix.
 
 use super::MatQ;
-use crate::traits::{GetEntry, MatrixDimensions};
+use crate::traits::{MatrixDimensions, MatrixGetEntry};
 use crate::utils::index::{evaluate_index, evaluate_indices_for_matrix};
 use crate::{error::MathError, rational::Q};
 use flint_sys::fmpq_mat::{fmpq_mat_init_set, fmpq_mat_window_clear, fmpq_mat_window_init};
@@ -50,7 +50,7 @@ impl MatrixDimensions for MatQ {
     }
 }
 
-impl GetEntry<Q> for MatQ {
+impl MatrixGetEntry<Q> for MatQ {
     /// Outputs the [`Q`] value of a specific matrix entry.
     ///
     /// Parameters:
@@ -67,7 +67,7 @@ impl GetEntry<Q> for MatQ {
     /// # Examples
     /// ```
     /// use qfall_math::rational::{MatQ, Q};
-    /// use qfall_math::traits::GetEntry;
+    /// use qfall_math::traits::MatrixGetEntry;
     /// use std::str::FromStr;
     ///
     /// let matrix = MatQ::from_str("[[1, 2, 3/4],[4, 5, 6],[7, 8, 9]]").unwrap();
@@ -112,7 +112,7 @@ impl GetEntry<Q> for MatQ {
     /// # Examples
     /// ```
     /// use qfall_math::rational::{MatQ, Q};
-    /// use qfall_math::traits::GetEntry;
+    /// use qfall_math::traits::MatrixGetEntry;
     /// use std::str::FromStr;
     ///
     /// let matrix = MatQ::from_str("[[1, 2, 3/4],[4, 5, 6],[7, 8, 9]]").unwrap();
@@ -364,7 +364,7 @@ mod test_get_entry {
     use super::Q;
     use crate::{
         rational::MatQ,
-        traits::{GetEntry, SetEntry},
+        traits::{MatrixGetEntry, SetEntry},
     };
     use std::str::FromStr;
 

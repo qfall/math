@@ -430,7 +430,7 @@ mod test_setter {
         integer_mod_q::{
             MatPolynomialRingZq, ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq,
         },
-        traits::{GetEntry, SetEntry},
+        traits::{MatrixGetEntry, SetEntry},
     };
     use std::str::FromStr;
 

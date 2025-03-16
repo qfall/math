@@ -58,7 +58,7 @@ pub trait MatrixDimensions {
 }
 
 /// Is implemented by matrices to get entries.
-pub trait GetEntry<T> {
+pub trait MatrixGetEntry<T> {
     /// Returns the value of a specific matrix entry.
     ///
     /// Parameters:

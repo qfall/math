@@ -537,7 +537,7 @@ mod test_setter {
     use crate::{
         integer::Z,
         integer_mod_q::{MatZq, Zq},
-        traits::{GetEntry, SetEntry},
+        traits::{MatrixGetEntry, SetEntry},
     };
     use std::str::FromStr;
 

@@ -11,7 +11,7 @@
 use super::MatPolyOverZ;
 use crate::{
     integer::PolyOverZ,
-    traits::{GetEntry, MatrixDimensions, Tensor},
+    traits::{MatrixDimensions, MatrixGetEntry, Tensor},
 };
 use flint_sys::{fmpz_poly::fmpz_poly_mul, fmpz_poly_mat::fmpz_poly_mat_entry};
 

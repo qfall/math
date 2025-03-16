@@ -13,7 +13,7 @@ use super::MatZq;
 use crate::{
     integer::Z,
     integer_mod_q::Zq,
-    traits::{Concatenate, Gcd, GetEntry, MatrixDimensions, Pow, SetEntry, Xgcd},
+    traits::{Concatenate, Gcd, MatrixDimensions, MatrixGetEntry, Pow, SetEntry, Xgcd},
     utils::Factorization,
 };
 

@@ -303,7 +303,7 @@ mod test_mul_matz {
 mod test_mul_f64_unchecked {
     use crate::{
         rational::{MatQ, Q},
-        traits::{Distance, GetEntry},
+        traits::{Distance, MatrixGetEntry},
     };
     use std::str::FromStr;
 

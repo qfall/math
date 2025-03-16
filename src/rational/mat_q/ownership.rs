@@ -70,7 +70,7 @@ mod test_clone {
     use super::MatQ;
     use crate::{
         rational::Q,
-        traits::{GetEntry, MatrixDimensions},
+        traits::{MatrixDimensions, MatrixGetEntry},
     };
     use std::str::FromStr;
 
@@ -145,7 +145,7 @@ mod test_clone {
 #[cfg(test)]
 mod test_drop {
     use super::MatQ;
-    use crate::traits::GetEntry;
+    use crate::traits::MatrixGetEntry;
     use std::collections::HashSet;
     use std::str::FromStr;
 

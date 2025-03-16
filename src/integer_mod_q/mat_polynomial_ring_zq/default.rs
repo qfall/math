@@ -92,7 +92,7 @@ mod test_new {
     use crate::{
         integer::PolyOverZ,
         integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq, PolyOverZq},
-        traits::GetEntry,
+        traits::MatrixGetEntry,
     };
     use std::str::FromStr;
 
@@ -162,7 +162,7 @@ mod test_identity {
     use crate::{
         integer::PolyOverZ,
         integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
-        traits::{GetEntry, MatrixDimensions},
+        traits::{MatrixDimensions, MatrixGetEntry},
     };
     use std::str::FromStr;
 

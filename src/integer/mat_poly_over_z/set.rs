@@ -407,7 +407,7 @@ impl MatPolyOverZ {
 mod test_setter {
     use crate::{
         integer::{MatPolyOverZ, PolyOverZ},
-        traits::{GetEntry, SetEntry},
+        traits::{MatrixGetEntry, SetEntry},
     };
     use std::str::FromStr;
 

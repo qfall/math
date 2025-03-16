@@ -65,7 +65,7 @@ impl MatZq {
 
 #[cfg(test)]
 mod test_sample_uniform {
-    use crate::traits::{GetEntry, MatrixDimensions};
+    use crate::traits::{MatrixDimensions, MatrixGetEntry};
     use crate::{
         integer::Z,
         integer_mod_q::{MatZq, Modulus},

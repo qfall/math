@@ -14,8 +14,8 @@ use crate::{
     integer::{PolyOverZ, Z},
     integer_mod_q::{MatZq, ModulusPolynomialRingZq},
     traits::{
-        FromCoefficientEmbedding, GetCoefficient, GetEntry, IntoCoefficientEmbedding,
-        MatrixDimensions, SetCoefficient, SetEntry,
+        FromCoefficientEmbedding, GetCoefficient, IntoCoefficientEmbedding, MatrixDimensions,
+        MatrixGetEntry, SetCoefficient, SetEntry,
     },
 };
 

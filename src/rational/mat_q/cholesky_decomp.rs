@@ -12,7 +12,7 @@
 use super::MatQ;
 use crate::{
     rational::Q,
-    traits::{Concatenate, GetEntry, MatrixDimensions, SetEntry},
+    traits::{Concatenate, MatrixDimensions, MatrixGetEntry, SetEntry},
 };
 
 impl MatQ {

@@ -12,7 +12,7 @@ use super::MatPolyOverZ;
 use crate::{
     error::MathError,
     integer::PolyOverZ,
-    traits::{GetEntry, MatrixDimensions},
+    traits::{MatrixDimensions, MatrixGetEntry},
     utils::index::{evaluate_index, evaluate_indices_for_matrix},
 };
 use flint_sys::{
@@ -54,7 +54,7 @@ impl MatrixDimensions for MatPolyOverZ {
     }
 }
 
-impl GetEntry<PolyOverZ> for MatPolyOverZ {
+impl MatrixGetEntry<PolyOverZ> for MatPolyOverZ {
     /// Outputs the [`PolyOverZ`] value of a specific matrix entry.
     ///
     /// Parameters:
@@ -326,7 +326,7 @@ impl MatPolyOverZ {
 mod test_get_entry {
     use crate::{
         integer::{MatPolyOverZ, PolyOverZ},
-        traits::{GetEntry, SetEntry},
+        traits::{MatrixGetEntry, SetEntry},
     };
     use std::str::FromStr;
 

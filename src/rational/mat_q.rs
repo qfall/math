@@ -51,7 +51,7 @@ mod vector;
 /// ```
 /// use qfall_math::{
 ///     rational::{Q, MatQ},
-///     traits::{GetEntry, SetEntry},
+///     traits::{MatrixGetEntry, SetEntry},
 /// };
 /// use std::str::FromStr;
 ///

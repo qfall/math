@@ -126,7 +126,7 @@ mod test_from_mat_zq {
     use crate::{
         integer::MatZ,
         rational::{MatQ, Q},
-        traits::{GetEntry, MatrixDimensions, SetEntry},
+        traits::{MatrixDimensions, MatrixGetEntry, SetEntry},
     };
     use std::str::FromStr;
 
@@ -168,7 +168,7 @@ mod test_from_str {
     use crate::{
         integer::Z,
         rational::{MatQ, Q},
-        traits::GetEntry,
+        traits::MatrixGetEntry,
     };
     use std::str::FromStr;
 

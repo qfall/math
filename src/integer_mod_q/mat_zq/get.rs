@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::{MatZ, Z},
     integer_mod_q::{fmpz_mod_helpers::length, Modulus, Zq},
-    traits::{GetEntry, MatrixDimensions, SetEntry},
+    traits::{MatrixDimensions, MatrixGetEntry, SetEntry},
     utils::index::{evaluate_index, evaluate_indices_for_matrix},
 };
 use flint_sys::{
@@ -359,7 +359,7 @@ impl MatrixDimensions for MatZq {
     }
 }
 
-impl GetEntry<Z> for MatZq {
+impl MatrixGetEntry<Z> for MatZq {
     /// Outputs the [`Z`] value of a specific matrix entry.
     ///
     /// Parameters:
@@ -376,7 +376,7 @@ impl GetEntry<Z> for MatZq {
     /// # Examples
     /// ```rust
     /// use qfall_math::integer_mod_q::MatZq;
-    /// use qfall_math::traits::GetEntry;
+    /// use qfall_math::traits::MatrixGetEntry;
     /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
     ///
@@ -422,7 +422,7 @@ impl GetEntry<Z> for MatZq {
     /// # Examples
     /// ```rust
     /// use qfall_math::integer_mod_q::MatZq;
-    /// use qfall_math::traits::GetEntry;
+    /// use qfall_math::traits::MatrixGetEntry;
     /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
     ///
@@ -445,7 +445,7 @@ impl GetEntry<Z> for MatZq {
     }
 }
 
-impl GetEntry<Zq> for MatZq {
+impl MatrixGetEntry<Zq> for MatZq {
     /// Outputs the [`Zq`] value of a specific matrix entry.
     ///
     /// Parameters:
@@ -462,7 +462,7 @@ impl GetEntry<Zq> for MatZq {
     /// # Examples
     /// ```rust
     /// use qfall_math::integer_mod_q::{MatZq, Zq};
-    /// use qfall_math::traits::GetEntry;
+    /// use qfall_math::traits::MatrixGetEntry;
     /// use std::str::FromStr;
     ///
     /// let matrix = MatZq::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]] mod 10").unwrap();
@@ -503,7 +503,7 @@ impl GetEntry<Zq> for MatZq {
     /// # Examples
     /// ```rust
     /// use qfall_math::integer_mod_q::{MatZq, Zq};
-    /// use qfall_math::traits::GetEntry;
+    /// use qfall_math::traits::MatrixGetEntry;
     /// use std::str::FromStr;
     ///
     /// let matrix = MatZq::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]] mod 10").unwrap();
@@ -527,7 +527,7 @@ mod test_get_entry {
     use crate::{
         integer::Z,
         integer_mod_q::MatZq,
-        traits::{GetEntry, SetEntry},
+        traits::{MatrixGetEntry, SetEntry},
     };
     use std::str::FromStr;
 
@@ -596,10 +596,10 @@ mod test_get_entry {
     fn error_wrong_row() {
         let matrix: MatZq = MatZq::new(5, 10, 7);
 
-        assert!(GetEntry::<Z>::get_entry(&matrix, 5, 1).is_err());
-        assert!(GetEntry::<Z>::get_entry(&matrix, -6, 1).is_err());
-        assert!(GetEntry::<Zq>::get_entry(&matrix, 5, 1).is_err());
-        assert!(GetEntry::<Zq>::get_entry(&matrix, -6, 1).is_err());
+        assert!(MatrixGetEntry::<Z>::get_entry(&matrix, 5, 1).is_err());
+        assert!(MatrixGetEntry::<Z>::get_entry(&matrix, -6, 1).is_err());
+        assert!(MatrixGetEntry::<Zq>::get_entry(&matrix, 5, 1).is_err());
+        assert!(MatrixGetEntry::<Zq>::get_entry(&matrix, -6, 1).is_err());
     }
 
     /// Ensure that a wrong number of columns yields an Error.
@@ -607,10 +607,10 @@ mod test_get_entry {
     fn error_wrong_column() {
         let matrix = MatZq::new(5, 10, 7);
 
-        assert!(GetEntry::<Z>::get_entry(&matrix, 1, 10).is_err());
-        assert!(GetEntry::<Z>::get_entry(&matrix, 1, -11).is_err());
-        assert!(GetEntry::<Zq>::get_entry(&matrix, 1, 10).is_err());
-        assert!(GetEntry::<Zq>::get_entry(&matrix, 1, -11).is_err());
+        assert!(MatrixGetEntry::<Z>::get_entry(&matrix, 1, 10).is_err());
+        assert!(MatrixGetEntry::<Z>::get_entry(&matrix, 1, -11).is_err());
+        assert!(MatrixGetEntry::<Zq>::get_entry(&matrix, 1, 10).is_err());
+        assert!(MatrixGetEntry::<Zq>::get_entry(&matrix, 1, -11).is_err());
     }
 
     /// Ensure that negative indices return the correct values.
@@ -709,7 +709,7 @@ mod test_get_representative_least_nonnegative_residue {
     use crate::{
         integer::Z,
         integer_mod_q::MatZq,
-        traits::{GetEntry, MatrixDimensions, SetEntry},
+        traits::{MatrixDimensions, MatrixGetEntry, SetEntry},
     };
 
     /// Test if the dimensions are taken over correctly
