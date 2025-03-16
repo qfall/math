@@ -13,7 +13,7 @@ use crate::{
     integer::Z,
     integer_mod_q::{MatZq, Modulus, Zq},
     macros::for_others::implement_for_owned,
-    traits::{AsInteger, MatrixDimensions, MatrixSetEntry, MatrixSetSubmatrix},
+    traits::{AsInteger, MatrixDimensions, MatrixSetEntry, MatrixSetSubmatrix, MatrixSwaps},
     utils::{
         collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
         index::{evaluate_index, evaluate_indices_for_matrix},
@@ -346,7 +346,7 @@ impl MatrixSetSubmatrix for MatZq {
     }
 }
 
-impl MatZq {
+impl MatrixSwaps for MatZq {
     /// Swaps two entries of the specified matrix.
     ///
     /// Parameters:
@@ -363,7 +363,7 @@ impl MatZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::{integer_mod_q::MatZq, traits::MatrixSwaps};
     ///
     /// let mut matrix = MatZq::new(4, 3, 5);
     /// matrix.swap_entries(0, 0, 2, 1);
@@ -372,7 +372,7 @@ impl MatZq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
     ///     if row or column are greater than the matrix size.
-    pub fn swap_entries(
+    fn swap_entries(
         &mut self,
         row_0: impl TryInto<i64> + Display,
         col_0: impl TryInto<i64> + Display,
@@ -402,7 +402,7 @@ impl MatZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::{integer_mod_q::MatZq, traits::MatrixSwaps};
     ///
     /// let mut matrix = MatZq::new(4, 3, 5);
     /// matrix.swap_columns(0, 2);
@@ -411,7 +411,7 @@ impl MatZq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     ///     if one of the given columns is greater than the matrix or negative.
-    pub fn swap_columns(
+    fn swap_columns(
         &mut self,
         col_0: impl TryInto<i64> + Display,
         col_1: impl TryInto<i64> + Display,
@@ -443,7 +443,7 @@ impl MatZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::{integer_mod_q::MatZq, traits::MatrixSwaps};
     ///
     /// let mut matrix = MatZq::new(4, 3, 5);
     /// matrix.swap_rows(0, 2);
@@ -452,7 +452,7 @@ impl MatZq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     ///     if one of the given rows is greater than the matrix or negative.
-    pub fn swap_rows(
+    fn swap_rows(
         &mut self,
         row_0: impl TryInto<i64> + Display,
         row_1: impl TryInto<i64> + Display,
@@ -472,7 +472,9 @@ impl MatZq {
         unsafe { fmpz_mat_swap_rows(&mut self.matrix.mat[0], null(), row_0, row_1) }
         Ok(())
     }
+}
 
+impl MatZq {
     /// Swaps the `i`-th column with the `n-i`-th column for all `i <= n/2`
     /// of the specified matrix with `n` columns.
     ///
@@ -845,7 +847,7 @@ mod test_setter {
 #[cfg(test)]
 mod test_swaps {
     use super::MatZq;
-    use crate::traits::MatrixGetSubmatrix;
+    use crate::traits::{MatrixGetSubmatrix, MatrixSwaps};
     use std::str::FromStr;
 
     /// Ensures that swapping entries works fine for small entries

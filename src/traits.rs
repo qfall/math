@@ -404,6 +404,66 @@ pub trait MatrixSetSubmatrix {
     ) -> Result<(), MathError>;
 }
 
+pub trait MatrixSwaps {
+    /// Swaps two entries of the specified matrix.
+    ///
+    /// Parameters:
+    /// - `row_0`: specifies the row, in which the first entry is located
+    /// - `col_0`: specifies the column, in which the first entry is located
+    /// - `row_1`: specifies the row, in which the second entry is located
+    /// - `col_1`: specifies the column, in which the second entry is located
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if one of the specified entries is not part of the matrix.
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    ///     if row or column are greater than the matrix size.
+    fn swap_entries(
+        &mut self,
+        row_0: impl TryInto<i64> + Display,
+        col_0: impl TryInto<i64> + Display,
+        row_1: impl TryInto<i64> + Display,
+        col_1: impl TryInto<i64> + Display,
+    ) -> Result<(), MathError>;
+
+    /// Swaps two rows of the specified matrix.
+    ///
+    /// Parameters:
+    /// - `row_0`: specifies the first row which is swapped with the second one
+    /// - `row_1`: specifies the second row which is swapped with the first one
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of the matrix.
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
+    ///     if one of the given rows is greater than the matrix or negative.
+    fn swap_rows(
+        &mut self,
+        row_0: impl TryInto<i64> + Display,
+        row_1: impl TryInto<i64> + Display,
+    ) -> Result<(), MathError>;
+
+    /// Swaps two columns of the specified matrix.
+    ///
+    /// Parameters:
+    /// - `col_0`: specifies the first column which is swapped with the second one
+    /// - `col_1`: specifies the second column which is swapped with the first one
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of the matrix.
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
+    ///     if one of the given columns is greater than the matrix or negative.
+    fn swap_columns(
+        &mut self,
+        col_0: impl TryInto<i64> + Display,
+        col_1: impl TryInto<i64> + Display,
+    ) -> Result<(), MathError>;
+}
+
 /// Is implemented by matrices to compute the tensor product.
 pub trait Tensor {
     /// Computes the tensor product of `self` with `other`

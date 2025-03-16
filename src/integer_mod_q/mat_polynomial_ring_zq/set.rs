@@ -11,7 +11,7 @@
 use super::MatPolynomialRingZq;
 use crate::integer_mod_q::PolynomialRingZq;
 use crate::macros::for_others::implement_for_owned;
-use crate::traits::MatrixSetSubmatrix;
+use crate::traits::{MatrixSetSubmatrix, MatrixSwaps};
 use crate::utils::index::evaluate_indices_for_matrix;
 use crate::{error::MathError, integer::PolyOverZ, traits::MatrixSetEntry};
 use flint_sys::{fmpz_poly::fmpz_poly_set, fmpz_poly_mat::fmpz_poly_mat_entry};
@@ -305,7 +305,7 @@ impl MatrixSetSubmatrix for MatPolynomialRingZq {
     }
 }
 
-impl MatPolynomialRingZq {
+impl MatrixSwaps for MatPolynomialRingZq {
     /// Swaps two entries of the specified matrix.
     ///
     /// Parameters:
@@ -323,6 +323,7 @@ impl MatPolynomialRingZq {
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use qfall_math::traits::MatrixSwaps;
     ///
     /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from((3, 17)));
     /// matrix.swap_entries(0, 0, 2, 1);
@@ -331,7 +332,7 @@ impl MatPolynomialRingZq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
     ///     if row or column are greater than the matrix size.
-    pub fn swap_entries(
+    fn swap_entries(
         &mut self,
         row_0: impl TryInto<i64> + Display,
         col_0: impl TryInto<i64> + Display,
@@ -353,6 +354,7 @@ impl MatPolynomialRingZq {
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use qfall_math::traits::MatrixSwaps;
     ///
     /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from((3, 17)));
     /// matrix.swap_columns(0, 2);
@@ -361,7 +363,7 @@ impl MatPolynomialRingZq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     ///     if one of the given columns is greater than the matrix or negative.
-    pub fn swap_columns(
+    fn swap_columns(
         &mut self,
         col_0: impl TryInto<i64> + Display,
         col_1: impl TryInto<i64> + Display,
@@ -381,6 +383,7 @@ impl MatPolynomialRingZq {
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use qfall_math::traits::MatrixSwaps;
     ///
     /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from((3, 17)));
     /// matrix.swap_rows(0, 2);
@@ -389,14 +392,16 @@ impl MatPolynomialRingZq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     ///     if one of the given rows is greater than the matrix or negative.
-    pub fn swap_rows(
+    fn swap_rows(
         &mut self,
         row_0: impl TryInto<i64> + Display,
         row_1: impl TryInto<i64> + Display,
     ) -> Result<(), MathError> {
         self.matrix.swap_rows(row_0, row_1)
     }
+}
 
+impl MatPolynomialRingZq {
     /// Swaps the `i`-th column with the `n-i`-th column for all `i <= n/2`
     /// of the specified matrix with `n` columns.
     ///
@@ -800,7 +805,10 @@ mod test_setter {
 #[cfg(test)]
 mod test_swaps {
     use super::MatPolynomialRingZq;
-    use crate::{integer_mod_q::ModulusPolynomialRingZq, traits::MatrixGetSubmatrix};
+    use crate::{
+        integer_mod_q::ModulusPolynomialRingZq,
+        traits::{MatrixGetSubmatrix, MatrixSwaps},
+    };
     use std::str::FromStr;
 
     /// Since swapping functions only call the existing tested functions for [`MatPolyOverZ`](crate::integer::MatPolyOverZ),
