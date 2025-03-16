@@ -433,11 +433,101 @@ mod test_get_entry {
 
         assert_eq!(Z::from(u64::MAX), entry);
     }
+
+    // *** Doc-tests of automatically implemented functions by `MatrixGetEntry`
+
+    /// Ensures that the doc-test of [`MatZ::get_entries`] works.
+    #[test]
+    fn get_entries() {
+        let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+
+        let entries = matrix.get_entries();
+        let mut added_entries = Z::default();
+        for row in entries {
+            for entry in row {
+                added_entries += entry;
+            }
+        }
+    }
+
+    /// Ensures that [`MatZ::get_entries`] returns all entries in the correct order.
+    #[test]
+    fn get_entries_correct() {
+        let matrix = MatZ::from_str("[[2, 3, 4],[5, 6, 7]]").unwrap();
+
+        let entries = matrix.get_entries();
+
+        assert_eq!(2, entries[0][0]);
+        assert_eq!(3, entries[0][1]);
+        assert_eq!(4, entries[0][2]);
+        assert_eq!(5, entries[1][0]);
+        assert_eq!(6, entries[1][1]);
+        assert_eq!(7, entries[1][2]);
+
+        assert_eq!(2, entries.len());
+        assert_eq!(3, entries[0].len());
+        assert_eq!(3, entries[1].len());
+    }
+
+    /// Ensures that the doc-test of [`MatZ::get_entries_rowwise`] works.
+    #[test]
+    fn get_entries_rowwise() {
+        let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+
+        let entries = matrix.get_entries_rowwise();
+        let mut added_entries = Z::default();
+        for entry in entries {
+            added_entries += entry;
+        }
+    }
+
+    /// Ensures that [`MatZ::get_entries_rowwise`] returns all entries in the correct order.
+    #[test]
+    fn get_entries_rowwise_correct() {
+        let matrix = MatZ::from_str("[[2, 3, 4],[5, 6, 7]]").unwrap();
+
+        let entries = matrix.get_entries_rowwise();
+
+        assert_eq!(2, entries[0]);
+        assert_eq!(3, entries[1]);
+        assert_eq!(4, entries[2]);
+        assert_eq!(5, entries[3]);
+        assert_eq!(6, entries[4]);
+        assert_eq!(7, entries[5]);
+        assert_eq!(6, entries.len());
+    }
+
+    /// Ensures that the doc-test of [`MatZ::get_entries_columnwise`] works.
+    #[test]
+    fn get_entries_columnwise() {
+        let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+
+        let entries = matrix.get_entries_columnwise();
+        let mut added_entries = Z::default();
+        for entry in entries {
+            added_entries += entry;
+        }
+    }
+
+    /// Ensures that [`MatZ::get_entries_columnwise`] returns all entries in the correct order.
+    #[test]
+    fn get_entries_columnwise_correct() {
+        let matrix = MatZ::from_str("[[2, 3, 4],[5, 6, 7]]").unwrap();
+
+        let entries = matrix.get_entries_columnwise();
+
+        assert_eq!(2, entries[0]);
+        assert_eq!(5, entries[1]);
+        assert_eq!(3, entries[2]);
+        assert_eq!(6, entries[3]);
+        assert_eq!(4, entries[4]);
+        assert_eq!(7, entries[5]);
+        assert_eq!(6, entries.len());
+    }
 }
 
 #[cfg(test)]
 mod test_get_num {
-
     use crate::{integer::MatZ, traits::MatrixDimensions};
 
     /// Ensure that the getter for number of rows works correctly.

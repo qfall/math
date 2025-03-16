@@ -58,7 +58,11 @@ pub trait MatrixDimensions {
 }
 
 /// Is implemented by matrices to get entries.
-pub trait MatrixGetEntry<T> {
+pub trait MatrixGetEntry<T>
+where
+    Self: MatrixDimensions,
+    T: std::clone::Clone,
+{
     /// Returns the value of a specific matrix entry.
     ///
     /// Parameters:
@@ -87,6 +91,92 @@ pub trait MatrixGetEntry<T> {
     /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
     /// occur.
     unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> T;
+
+    // *** Automatically implemented functions
+
+    /// Outputs a [`Vec<Vec<T>>`] containing all entries of the matrix s.t.
+    /// any entry in row `i` and column `j` can be accessed via `entries[i][j]`
+    /// if `entries = matrix.get_entries`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{integer::{MatZ, Z}, traits::*};
+    /// let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+    ///
+    /// let entries = matrix.get_entries();
+    /// let mut added_entries = Z::default();
+    /// for row in entries {
+    ///     for entry in row {
+    ///         added_entries += entry;
+    ///     }
+    /// }
+    /// ```
+    fn get_entries(&self) -> Vec<Vec<T>> {
+        let mut entries = vec![vec![]; self.get_num_rows() as usize];
+
+        for i in 0..self.get_num_rows() {
+            for j in 0..self.get_num_columns() {
+                let entry = unsafe { self.get_entry_unchecked(i, j) };
+                entries[i as usize].push(entry);
+            }
+        }
+
+        entries
+    }
+
+    /// Outputs a [`Vec<T>`] containing all entries of the matrix in a row-wise order, i.e.
+    /// a matrix `[[2, 3, 4],[5, 6, 7]]` can be accessed via this function in this order `[2, 3, 4, 5, 6, 7]`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{integer::{MatZ, Z}, traits::*};
+    /// let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+    ///
+    /// let entries = matrix.get_entries_rowwise();
+    /// let mut added_entries = Z::default();
+    /// for entry in entries {
+    ///     added_entries += entry;
+    /// }
+    /// ```
+    fn get_entries_rowwise(&self) -> Vec<T> {
+        let mut entries = vec![];
+
+        for i in 0..self.get_num_rows() {
+            for j in 0..self.get_num_columns() {
+                let entry = unsafe { self.get_entry_unchecked(i, j) };
+                entries.push(entry);
+            }
+        }
+
+        entries
+    }
+
+    /// Outputs a [`Vec<T>`] containing all entries of the matrix in a column-wise order, i.e.
+    /// a matrix `[[2, 3, 4],[5, 6, 7]]` can be accessed via this function in this order `[2, 5, 3, 6, 4, 7]`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{integer::{MatZ, Z}, traits::*};
+    /// let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+    ///
+    /// let entries = matrix.get_entries_columnwise();
+    /// let mut added_entries = Z::default();
+    /// for entry in entries {
+    ///     added_entries += entry;
+    /// }
+    /// ```
+    fn get_entries_columnwise(&self) -> Vec<T> {
+        let mut entries = vec![];
+
+        for j in 0..self.get_num_columns() {
+            for i in 0..self.get_num_rows() {
+                let entry = unsafe { self.get_entry_unchecked(i, j) };
+                entries.push(entry);
+            }
+        }
+
+        entries
+    }
 }
 
 /// Is implemented by Matrices to get submatrices such as rows, columns, etc.
