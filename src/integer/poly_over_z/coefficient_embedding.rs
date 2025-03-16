@@ -13,7 +13,7 @@ use crate::{
     integer::{MatZ, PolyOverZ},
     traits::{
         FromCoefficientEmbedding, GetCoefficient, IntoCoefficientEmbedding, MatrixDimensions,
-        MatrixGetEntry, SetCoefficient, SetEntry,
+        MatrixGetEntry, MatrixSetEntry, SetCoefficient,
     },
 };
 

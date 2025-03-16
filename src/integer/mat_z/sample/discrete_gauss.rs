@@ -12,7 +12,7 @@ use crate::{
     error::MathError,
     integer::{MatZ, Z},
     rational::{MatQ, Q},
-    traits::{MatrixDimensions, SetEntry},
+    traits::{MatrixDimensions, MatrixSetEntry},
     utils::sample::discrete_gauss::{
         sample_d, sample_d_precomputed_gso, DiscreteGaussianIntegerSampler,
     },

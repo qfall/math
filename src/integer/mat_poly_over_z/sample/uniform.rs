@@ -11,7 +11,7 @@
 use crate::{
     error::MathError,
     integer::{MatPolyOverZ, PolyOverZ, Z},
-    traits::{MatrixDimensions, SetEntry},
+    traits::{MatrixDimensions, MatrixSetEntry},
     utils::index::evaluate_index,
 };
 use std::fmt::Display;

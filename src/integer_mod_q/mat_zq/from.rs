@@ -15,7 +15,7 @@ use crate::{
     error::{MathError, StringConversionError},
     integer::{MatZ, Z},
     integer_mod_q::Modulus,
-    traits::{MatrixDimensions, SetEntry},
+    traits::{MatrixDimensions, MatrixSetEntry},
     utils::{
         dimensions::find_matrix_dimensions,
         index::evaluate_indices,
@@ -249,7 +249,7 @@ mod test_from_mat_z_modulus {
     use crate::{
         integer::{MatZ, Z},
         integer_mod_q::{MatZq, Modulus},
-        traits::{MatrixDimensions, MatrixGetEntry, SetEntry},
+        traits::{MatrixDimensions, MatrixGetEntry, MatrixSetEntry},
     };
 
     /// Test if the dimensions are taken over correctly.

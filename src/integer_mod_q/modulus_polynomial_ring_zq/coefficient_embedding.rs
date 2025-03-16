@@ -12,7 +12,7 @@
 use crate::{
     integer::Z,
     integer_mod_q::{MatZq, ModulusPolynomialRingZq, PolyOverZq},
-    traits::{FromCoefficientEmbedding, GetCoefficient, IntoCoefficientEmbedding, SetEntry},
+    traits::{FromCoefficientEmbedding, GetCoefficient, IntoCoefficientEmbedding, MatrixSetEntry},
 };
 
 impl IntoCoefficientEmbedding<MatZq> for &ModulusPolynomialRingZq {

@@ -364,7 +364,7 @@ mod test_get_entry {
     use super::Q;
     use crate::{
         rational::MatQ,
-        traits::{MatrixGetEntry, SetEntry},
+        traits::{MatrixGetEntry, MatrixSetEntry},
     };
     use std::str::FromStr;
 

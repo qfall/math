@@ -326,7 +326,7 @@ mod test_get_entry {
     use super::Z;
     use crate::{
         integer::MatZ,
-        traits::{MatrixGetEntry, SetEntry},
+        traits::{MatrixGetEntry, MatrixSetEntry},
     };
     use std::str::FromStr;
 

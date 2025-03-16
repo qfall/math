@@ -13,7 +13,7 @@ use crate::{
     rational::{MatQ, PolyOverQ},
     traits::{
         FromCoefficientEmbedding, GetCoefficient, IntoCoefficientEmbedding, MatrixDimensions,
-        MatrixGetEntry, SetCoefficient, SetEntry,
+        MatrixGetEntry, MatrixSetEntry, SetCoefficient,
     },
 };
 

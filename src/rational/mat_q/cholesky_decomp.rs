@@ -12,7 +12,7 @@
 use super::MatQ;
 use crate::{
     rational::Q,
-    traits::{Concatenate, MatrixDimensions, MatrixGetEntry, SetEntry},
+    traits::{Concatenate, MatrixDimensions, MatrixGetEntry, MatrixSetEntry},
 };
 
 impl MatQ {
@@ -153,7 +153,7 @@ impl MatQ {
 mod test_cholesky_decomposition {
     use crate::{
         rational::{MatQ, Q},
-        traits::SetEntry,
+        traits::MatrixSetEntry,
     };
     use std::str::FromStr;
 
@@ -219,7 +219,7 @@ mod test_cholesky_decomposition {
 mod test_cholesky_decomposition_flint {
     use crate::{
         rational::{MatQ, Q},
-        traits::SetEntry,
+        traits::MatrixSetEntry,
     };
     use std::str::FromStr;
 

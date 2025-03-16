@@ -11,7 +11,7 @@
 use crate::{
     error::MathError,
     rational::{MatQ, Q},
-    traits::{MatrixDimensions, SetEntry},
+    traits::{MatrixDimensions, MatrixSetEntry},
     utils::{
         collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
         index::{evaluate_index, evaluate_indices_for_matrix},
@@ -29,7 +29,7 @@ use std::{
     ptr::{null, null_mut},
 };
 
-impl<Rational: Into<Q>> SetEntry<Rational> for MatQ {
+impl<Rational: Into<Q>> MatrixSetEntry<Rational> for MatQ {
     /// Sets the value of a specific matrix entry according to a given `value`
     /// that implements [`Into<Q>`].
     ///
@@ -407,7 +407,7 @@ mod test_setter {
         integer::Z,
         integer_mod_q::Modulus,
         rational::MatQ,
-        traits::{MatrixGetEntry, SetEntry},
+        traits::{MatrixGetEntry, MatrixSetEntry},
     };
     use std::str::FromStr;
 

@@ -14,7 +14,7 @@ use crate::{
     integer::Z,
     integer_mod_q::{MatZq, Modulus},
     rational::Q,
-    traits::{MatrixDimensions, SetEntry},
+    traits::{MatrixDimensions, MatrixSetEntry},
     utils::sample::binomial::sample_binomial,
 };
 use std::fmt::Display;

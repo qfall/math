@@ -155,7 +155,7 @@ impl MatZq {
 #[cfg(test)]
 mod test_mul {
     use super::MatZq;
-    use crate::{integer::Z, traits::SetEntry};
+    use crate::{integer::Z, traits::MatrixSetEntry};
     use std::str::FromStr;
 
     /// Checks if matrix multiplication works fine for squared matrices
@@ -209,7 +209,7 @@ mod test_mul {
 mod test_mul_matz {
     use super::MatZq;
     use crate::integer::MatZ;
-    use crate::{integer::Z, traits::SetEntry};
+    use crate::{integer::Z, traits::MatrixSetEntry};
     use std::str::FromStr;
 
     /// Checks if matrix multiplication works fine for squared matrices

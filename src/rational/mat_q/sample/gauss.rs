@@ -13,7 +13,7 @@ use std::fmt::Display;
 use crate::{
     error::MathError,
     rational::{MatQ, Q},
-    traits::{MatrixDimensions, MatrixGetEntry, SetEntry},
+    traits::{MatrixDimensions, MatrixGetEntry, MatrixSetEntry},
 };
 
 impl MatQ {

@@ -50,7 +50,7 @@ mod vector;
 /// use qfall_math::{
 ///     integer::Z,
 ///     integer_mod_q::MatZq,
-///     traits::{MatrixGetEntry, SetEntry},
+///     traits::{MatrixGetEntry, MatrixSetEntry},
 /// };
 /// use std::str::FromStr;
 ///

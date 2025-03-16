@@ -90,7 +90,7 @@ pub trait MatrixGetEntry<T> {
 }
 
 /// Is implemented by matrices to set entries.
-pub trait SetEntry<T> {
+pub trait MatrixSetEntry<T> {
     /// Sets the value of a specific matrix entry according to a given value.
     ///
     /// Returns an error, if the number of rows or columns is

@@ -46,7 +46,7 @@ mod vector;
 /// ```
 /// use qfall_math::{
 ///     integer::{MatZ, Z},
-///     traits::{MatrixGetEntry, SetEntry},
+///     traits::{MatrixGetEntry, MatrixSetEntry},
 /// };
 ///
 /// // instantiate new matrix

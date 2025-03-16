@@ -13,7 +13,7 @@ use crate::{
     integer::Z,
     integer_mod_q::{MatZq, Modulus, Zq},
     macros::for_others::implement_for_owned,
-    traits::{AsInteger, MatrixDimensions, SetEntry},
+    traits::{AsInteger, MatrixDimensions, MatrixSetEntry},
     utils::{
         collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
         index::{evaluate_index, evaluate_indices_for_matrix},
@@ -32,7 +32,7 @@ use std::{
     ptr::{null, null_mut},
 };
 
-impl<Integer: Into<Z>> SetEntry<Integer> for MatZq {
+impl<Integer: Into<Z>> MatrixSetEntry<Integer> for MatZq {
     /// Sets the value of a specific matrix entry according to a given `value`
     /// that implements [`Into<Z>`].
     ///
@@ -113,7 +113,7 @@ impl<Integer: Into<Z>> SetEntry<Integer> for MatZq {
     }
 }
 
-impl SetEntry<&Zq> for MatZq {
+impl MatrixSetEntry<&Zq> for MatZq {
     /// Sets the value of a specific matrix entry according to a given `value` of type [`Zq`].
     ///
     /// Parameters:
@@ -131,7 +131,7 @@ impl SetEntry<&Zq> for MatZq {
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::{MatZq, Zq};
-    /// use qfall_math::traits::SetEntry;
+    /// use qfall_math::traits::MatrixSetEntry;
     ///
     /// let mut matrix = MatZq::new(3, 3, 10);
     /// let value = Zq::from((5, 10));
@@ -206,7 +206,7 @@ impl SetEntry<&Zq> for MatZq {
     }
 }
 
-implement_for_owned!(Zq, MatZq, SetEntry);
+implement_for_owned!(Zq, MatZq, MatrixSetEntry);
 
 impl MatZq {
     /// Sets a column of the given matrix to the provided column of `other`.
@@ -537,7 +537,7 @@ mod test_setter {
     use crate::{
         integer::Z,
         integer_mod_q::{MatZq, Zq},
-        traits::{MatrixGetEntry, SetEntry},
+        traits::{MatrixGetEntry, MatrixSetEntry},
     };
     use std::str::FromStr;
 

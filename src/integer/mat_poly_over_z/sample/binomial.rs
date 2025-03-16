@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::{MatPolyOverZ, PolyOverZ, Z},
     rational::Q,
-    traits::{MatrixDimensions, SetEntry},
+    traits::{MatrixDimensions, MatrixSetEntry},
     utils::index::evaluate_index,
 };
 use std::fmt::Display;

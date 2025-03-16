@@ -11,7 +11,7 @@
 use crate::{
     integer::Z,
     integer_mod_q::MatZq,
-    traits::{MatrixDimensions, SetEntry},
+    traits::{MatrixDimensions, MatrixSetEntry},
     utils::sample::uniform::UniformIntegerSampler,
 };
 use std::fmt::Display;

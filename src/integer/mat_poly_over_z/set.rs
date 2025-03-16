@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::PolyOverZ,
     macros::for_others::implement_for_owned,
-    traits::{MatrixDimensions, SetEntry},
+    traits::{MatrixDimensions, MatrixSetEntry},
     utils::{
         collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
         index::{evaluate_index, evaluate_indices_for_matrix},
@@ -25,7 +25,7 @@ use flint_sys::{
 };
 use std::fmt::Display;
 
-impl SetEntry<&PolyOverZ> for MatPolyOverZ {
+impl MatrixSetEntry<&PolyOverZ> for MatPolyOverZ {
     /// Sets the value of a specific matrix entry according to a given `value` of type [`PolyOverZ`].
     ///
     /// Parameters:
@@ -90,7 +90,7 @@ impl SetEntry<&PolyOverZ> for MatPolyOverZ {
     /// # Examples
     /// ```
     /// use qfall_math::integer::{MatPolyOverZ, PolyOverZ};
-    /// use qfall_math::traits::SetEntry;
+    /// use qfall_math::traits::MatrixSetEntry;
     /// use std::str::FromStr;
     ///
     /// let mut matrix = MatPolyOverZ::new(2, 2);
@@ -111,7 +111,7 @@ impl SetEntry<&PolyOverZ> for MatPolyOverZ {
     }
 }
 
-implement_for_owned!(PolyOverZ, MatPolyOverZ, SetEntry);
+implement_for_owned!(PolyOverZ, MatPolyOverZ, MatrixSetEntry);
 
 impl MatPolyOverZ {
     /// Sets a column of the given matrix to the provided column of `other`.
@@ -407,7 +407,7 @@ impl MatPolyOverZ {
 mod test_setter {
     use crate::{
         integer::{MatPolyOverZ, PolyOverZ},
-        traits::{MatrixGetEntry, SetEntry},
+        traits::{MatrixGetEntry, MatrixSetEntry},
     };
     use std::str::FromStr;
 

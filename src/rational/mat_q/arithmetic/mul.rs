@@ -14,7 +14,7 @@ use crate::integer::MatZ;
 use crate::macros::arithmetics::{
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
 };
-use crate::traits::{MatrixDimensions, SetEntry};
+use crate::traits::{MatrixDimensions, MatrixSetEntry};
 use flint_sys::fmpq_mat::{fmpq_mat_mul, fmpq_mat_mul_fmpz_mat};
 use std::ops::Mul;
 
@@ -197,7 +197,7 @@ impl MatQ {
 #[cfg(test)]
 mod test_mul {
     use super::MatQ;
-    use crate::{rational::Q, traits::SetEntry};
+    use crate::{rational::Q, traits::MatrixSetEntry};
     use std::str::FromStr;
 
     /// Checks if matrix multiplication works fine for squared matrices
@@ -251,7 +251,7 @@ mod test_mul_matz {
     use super::MatQ;
     use crate::integer::MatZ;
     use crate::rational::Q;
-    use crate::traits::SetEntry;
+    use crate::traits::MatrixSetEntry;
     use std::str::FromStr;
 
     /// Checks if matrix multiplication works fine for squared matrices

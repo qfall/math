@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::{MatZ, Z},
     rational::Q,
-    traits::{MatrixDimensions, SetEntry},
+    traits::{MatrixDimensions, MatrixSetEntry},
     utils::sample::binomial::sample_binomial,
 };
 use std::fmt::Display;

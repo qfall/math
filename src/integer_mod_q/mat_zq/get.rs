@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::{MatZ, Z},
     integer_mod_q::{fmpz_mod_helpers::length, Modulus, Zq},
-    traits::{MatrixDimensions, MatrixGetEntry, SetEntry},
+    traits::{MatrixDimensions, MatrixGetEntry, MatrixSetEntry},
     utils::index::{evaluate_index, evaluate_indices_for_matrix},
 };
 use flint_sys::{
@@ -527,7 +527,7 @@ mod test_get_entry {
     use crate::{
         integer::Z,
         integer_mod_q::MatZq,
-        traits::{MatrixGetEntry, SetEntry},
+        traits::{MatrixGetEntry, MatrixSetEntry},
     };
     use std::str::FromStr;
 
@@ -709,7 +709,7 @@ mod test_get_representative_least_nonnegative_residue {
     use crate::{
         integer::Z,
         integer_mod_q::MatZq,
-        traits::{MatrixDimensions, MatrixGetEntry, SetEntry},
+        traits::{MatrixDimensions, MatrixGetEntry, MatrixSetEntry},
     };
 
     /// Test if the dimensions are taken over correctly

@@ -12,11 +12,11 @@ use super::MatPolynomialRingZq;
 use crate::integer_mod_q::PolynomialRingZq;
 use crate::macros::for_others::implement_for_owned;
 use crate::utils::index::evaluate_indices_for_matrix;
-use crate::{error::MathError, integer::PolyOverZ, traits::SetEntry};
+use crate::{error::MathError, integer::PolyOverZ, traits::MatrixSetEntry};
 use flint_sys::{fmpz_poly::fmpz_poly_set, fmpz_poly_mat::fmpz_poly_mat_entry};
 use std::fmt::Display;
 
-impl SetEntry<&PolyOverZ> for MatPolynomialRingZq {
+impl MatrixSetEntry<&PolyOverZ> for MatPolynomialRingZq {
     /// Sets the value of a specific matrix entry according to a given `value` of type [`PolyOverZ`].
     ///
     /// Parameters:
@@ -106,7 +106,7 @@ impl SetEntry<&PolyOverZ> for MatPolynomialRingZq {
     }
 }
 
-impl SetEntry<&PolynomialRingZq> for MatPolynomialRingZq {
+impl MatrixSetEntry<&PolynomialRingZq> for MatPolynomialRingZq {
     /// Sets the value of a specific matrix entry according to a given `value` of type [`PolynomialRingZq`].
     ///
     /// Parameters:
@@ -207,8 +207,8 @@ impl SetEntry<&PolynomialRingZq> for MatPolynomialRingZq {
     }
 }
 
-implement_for_owned!(PolyOverZ, MatPolynomialRingZq, SetEntry);
-implement_for_owned!(PolynomialRingZq, MatPolynomialRingZq, SetEntry);
+implement_for_owned!(PolyOverZ, MatPolynomialRingZq, MatrixSetEntry);
+implement_for_owned!(PolynomialRingZq, MatPolynomialRingZq, MatrixSetEntry);
 
 impl MatPolynomialRingZq {
     /// Sets a column of the given matrix to the provided column of `other`.
@@ -430,7 +430,7 @@ mod test_setter {
         integer_mod_q::{
             MatPolynomialRingZq, ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq,
         },
-        traits::{MatrixGetEntry, SetEntry},
+        traits::{MatrixGetEntry, MatrixSetEntry},
     };
     use std::str::FromStr;
 

@@ -12,7 +12,7 @@ use super::MatZ;
 use crate::{
     error::MathError,
     integer::Z,
-    traits::{MatrixDimensions, SetEntry},
+    traits::{MatrixDimensions, MatrixSetEntry},
     utils::{
         collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
         index::{evaluate_index, evaluate_indices_for_matrix},
@@ -30,7 +30,7 @@ use std::{
     ptr::{null, null_mut},
 };
 
-impl<Integer: Into<Z>> SetEntry<Integer> for MatZ {
+impl<Integer: Into<Z>> MatrixSetEntry<Integer> for MatZ {
     /// Sets the value of a specific matrix entry according to the provided value.
     ///
     /// Parameters:
@@ -93,7 +93,7 @@ impl<Integer: Into<Z>> SetEntry<Integer> for MatZ {
     /// # Examples
     /// ```
     /// use qfall_math::integer::{MatZ, Z};
-    /// use qfall_math::traits::SetEntry;
+    /// use qfall_math::traits::MatrixSetEntry;
     ///
     /// let mut matrix = MatZ::new(3, 3);
     ///
@@ -396,7 +396,7 @@ impl MatZ {
 mod test_setter {
     use super::Z;
     use crate::integer::MatZ;
-    use crate::traits::{MatrixGetEntry, SetEntry};
+    use crate::traits::{MatrixGetEntry, MatrixSetEntry};
     use std::str::FromStr;
 
     /// Ensure that setting entries works with standard numbers.

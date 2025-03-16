@@ -14,7 +14,7 @@ use crate::{
     integer_mod_q::{MatZq, PolyOverZq},
     traits::{
         FromCoefficientEmbedding, GetCoefficient, IntoCoefficientEmbedding, MatrixDimensions,
-        MatrixGetEntry, SetCoefficient, SetEntry,
+        MatrixGetEntry, MatrixSetEntry, SetCoefficient,
     },
 };
 

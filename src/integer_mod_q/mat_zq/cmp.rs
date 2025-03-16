@@ -54,7 +54,7 @@ impl Eq for MatZq {}
 #[cfg(test)]
 mod test_partial_eq {
     use super::MatZq;
-    use crate::traits::SetEntry;
+    use crate::traits::MatrixSetEntry;
     use std::str::FromStr;
 
     /// Ensures that different instantiations do not break the equality between matrices
