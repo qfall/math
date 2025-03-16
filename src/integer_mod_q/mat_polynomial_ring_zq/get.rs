@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::{MatPolyOverZ, PolyOverZ},
     integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq},
-    traits::{MatrixDimensions, MatrixGetEntry},
+    traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix},
     utils::index::evaluate_index,
 };
 use flint_sys::{fmpz_poly::fmpz_poly_struct, fmpz_poly_mat::fmpz_poly_mat_entry};
@@ -276,7 +276,7 @@ impl MatrixGetEntry<PolynomialRingZq> for MatPolynomialRingZq {
     }
 }
 
-impl MatPolynomialRingZq {
+impl MatrixGetSubmatrix for MatPolynomialRingZq {
     /// Outputs the row vector of the specified row.
     ///
     /// Parameters:
@@ -288,7 +288,7 @@ impl MatPolynomialRingZq {
     ///
     /// # Examples
     /// ```rust
-    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::{integer::MatPolyOverZ, traits::MatrixGetSubmatrix};
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
     /// use std::str::FromStr;
     ///
@@ -304,7 +304,7 @@ impl MatPolynomialRingZq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     ///     if the number of the row is greater than the matrix or negative.
-    pub fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError> {
+    fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError> {
         let row_i64 = evaluate_index(row)?;
 
         if self.get_num_rows() <= row_i64 {
@@ -328,7 +328,7 @@ impl MatPolynomialRingZq {
     ///
     /// # Examples
     /// ```rust
-    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::{integer::MatPolyOverZ, traits::MatrixGetSubmatrix};
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
     /// use std::str::FromStr;
     ///
@@ -344,7 +344,7 @@ impl MatPolynomialRingZq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     ///     if the number of the column is greater than the matrix or negative.
-    pub fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError> {
+    fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError> {
         let column_i64 = evaluate_index(column)?;
 
         if self.get_num_columns() <= column_i64 {
@@ -377,7 +377,7 @@ impl MatPolynomialRingZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::{integer::MatPolyOverZ, traits::MatrixGetSubmatrix};
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
     /// use std::str::FromStr;
     ///
@@ -400,7 +400,7 @@ impl MatPolynomialRingZq {
     ///
     /// # Panics ...
     /// - if `col_1 > col_2` or `row_1 > row_2`.
-    pub fn get_submatrix(
+    fn get_submatrix(
         &self,
         row_1: impl TryInto<i64> + Display,
         row_2: impl TryInto<i64> + Display,
@@ -412,7 +412,9 @@ impl MatPolynomialRingZq {
             modulus: self.get_mod(),
         })
     }
+}
 
+impl MatPolynomialRingZq {
     /// Efficiently collects all [`fmpz_poly_struct`]s in a [`MatPolynomialRingZq`] without cloning them.
     ///
     /// Hence, the values on the returned [`Vec`] are intended for short-term use
@@ -646,6 +648,7 @@ mod test_get_vec {
     use crate::{
         integer::MatPolyOverZ,
         integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
+        traits::MatrixGetSubmatrix,
     };
     use std::str::FromStr;
 
@@ -734,7 +737,7 @@ mod test_get_submatrix {
     use crate::{
         integer::{MatPolyOverZ, Z},
         integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
-        traits::MatrixDimensions,
+        traits::{MatrixDimensions, MatrixGetSubmatrix},
     };
     use std::str::FromStr;
 

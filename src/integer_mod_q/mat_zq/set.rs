@@ -843,6 +843,7 @@ mod test_setter {
 #[cfg(test)]
 mod test_swaps {
     use super::MatZq;
+    use crate::traits::MatrixGetSubmatrix;
     use std::str::FromStr;
 
     /// Ensures that swapping entries works fine for small entries
@@ -1070,6 +1071,7 @@ mod test_swaps {
 #[cfg(test)]
 mod test_reverses {
     use super::MatZq;
+    use crate::traits::MatrixGetSubmatrix;
     use std::str::FromStr;
 
     /// Ensures that reversing columns works fine for small entries

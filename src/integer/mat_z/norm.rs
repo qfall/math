@@ -10,7 +10,11 @@
 //! defined on matrices.
 
 use super::MatZ;
-use crate::{integer::Z, rational::Q, traits::MatrixDimensions};
+use crate::{
+    integer::Z,
+    rational::Q,
+    traits::{MatrixDimensions, MatrixGetSubmatrix},
+};
 
 impl MatZ {
     /// Outputs the squared l_{2, ∞}-norm, i.e. it computes the squared Euclidean

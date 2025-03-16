@@ -9,7 +9,10 @@
 //! Contains functions to sort [`MatZ`] by.
 
 use super::MatZ;
-use crate::{error::MathError, traits::MatrixDimensions};
+use crate::{
+    error::MathError,
+    traits::{MatrixDimensions, MatrixGetSubmatrix},
+};
 
 impl MatZ {
     /// Sorts the columns of the matrix based on some condition defined by `cond_func` in an ascending order.

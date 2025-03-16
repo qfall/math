@@ -797,7 +797,7 @@ mod test_setter {
 #[cfg(test)]
 mod test_swaps {
     use super::MatPolynomialRingZq;
-    use crate::integer_mod_q::ModulusPolynomialRingZq;
+    use crate::{integer_mod_q::ModulusPolynomialRingZq, traits::MatrixGetSubmatrix};
     use std::str::FromStr;
 
     /// Since swapping functions only call the existing tested functions for [`MatPolyOverZ`](crate::integer::MatPolyOverZ),
@@ -904,6 +904,7 @@ mod test_swaps {
 #[cfg(test)]
 mod test_reverses {
     use super::MatPolynomialRingZq;
+    use crate::traits::MatrixGetSubmatrix;
     use std::str::FromStr;
 
     /// Since reversing functions only call the existing tested functions for [`MatPolyOverZ`](crate::integer::MatPolyOverZ),

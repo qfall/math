@@ -89,6 +89,70 @@ pub trait MatrixGetEntry<T> {
     unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> T;
 }
 
+/// Is implemented by Matrices to get submatrices such as rows, columns, etc.
+pub trait MatrixGetSubmatrix
+where
+    Self: Sized,
+{
+    /// Outputs the row vector of the specified row.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row of the matrix to return
+    ///
+    /// Returns a row vector of the matrix at the position of the given
+    /// `row` or an error if specified row is not part of the matrix.
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
+    ///     if specified row is not part of the matrix.
+    fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError>;
+
+    /// Outputs the column vector of the specified column.
+    ///
+    /// Parameters:
+    /// - `column`: specifies the column of the matrix to return
+    ///
+    /// Returns a column vector of the matrix at the position of the given
+    /// `column` or an error if specified column is not part of the matrix.
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
+    ///     if specified column is not part of the matrix.
+    fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError>;
+
+    /// Returns a deep copy of the submatrix defined by the given parameters.
+    /// All entries starting from `(row_1, col_1)` to `(row_2, col_2)`(inclusively) are collected in
+    /// a new matrix.
+    /// Note that `row_1 >= row_2` and `col_1 >= col_2` must hold after converting negative indices.
+    /// Otherwise the function will panic.
+    ///
+    /// Parameters:
+    /// `row_1`: the starting row of the specified submatrix
+    /// `row_2`: the ending row of the specified submatrix
+    /// `col_1`: the starting column of the specified submatrix
+    /// `col_2`: the ending column of the specified submatrix
+    ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
+    /// Returns the submatrix from `(row_1, col_1)` to `(row_2, col_2)`(inclusively)
+    /// or an error if any provided row or column is larger than the matrix.
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    ///     if any provided row or column is larger than the matrix.
+    ///
+    /// # Panics ...
+    /// - if `col_1 > col_2` or `row_1 > row_2`.
+    fn get_submatrix(
+        &self,
+        row_1: impl TryInto<i64> + Display,
+        row_2: impl TryInto<i64> + Display,
+        col_1: impl TryInto<i64> + Display,
+        col_2: impl TryInto<i64> + Display,
+    ) -> Result<Self, MathError>;
+}
+
 /// Is implemented by matrices to set entries.
 pub trait MatrixSetEntry<T> {
     /// Sets the value of a specific matrix entry according to a given value.

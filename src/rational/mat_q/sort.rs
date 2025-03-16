@@ -9,7 +9,10 @@
 //! Contains functions to sort [`MatQ`] by.
 
 use super::MatQ;
-use crate::{error::MathError, traits::MatrixDimensions};
+use crate::{
+    error::MathError,
+    traits::{MatrixDimensions, MatrixGetSubmatrix},
+};
 
 impl MatQ {
     /// Sorts the columns of the matrix based on some condition defined by `cond_func` in an ascending order.

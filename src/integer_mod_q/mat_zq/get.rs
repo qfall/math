@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::{MatZ, Z},
     integer_mod_q::{fmpz_mod_helpers::length, Modulus, Zq},
-    traits::{MatrixDimensions, MatrixGetEntry, MatrixSetEntry},
+    traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix, MatrixSetEntry},
     utils::index::{evaluate_index, evaluate_indices_for_matrix},
 };
 use flint_sys::{
@@ -114,7 +114,9 @@ impl MatZq {
     pub fn get_mod(&self) -> Modulus {
         self.modulus.clone()
     }
+}
 
+impl MatrixGetSubmatrix for MatZq {
     /// Outputs the row vector of the specified row.
     ///
     /// Parameters:
@@ -126,7 +128,7 @@ impl MatZq {
     ///
     /// # Examples
     /// ```rust
-    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::{integer_mod_q::MatZq, traits::MatrixGetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let matrix = MatZq::from_str("[[1, 2, 3],[3, 4, 5]] mod 4").unwrap();
@@ -138,7 +140,7 @@ impl MatZq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     ///     if the number of the row is greater than the matrix or negative.
-    pub fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError> {
+    fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError> {
         let row_i64 = evaluate_index(row)?;
 
         if self.get_num_rows() <= row_i64 {
@@ -162,7 +164,7 @@ impl MatZq {
     ///
     /// # Examples
     /// ```rust
-    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::{integer_mod_q::MatZq, traits::MatrixGetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let matrix = MatZq::from_str("[[1, 2, 3],[3, 4, 5]] mod 4").unwrap();
@@ -175,7 +177,7 @@ impl MatZq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     ///     if the number of the column is greater than the matrix or negative.
-    pub fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError> {
+    fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError> {
         let column_i64 = evaluate_index(column)?;
 
         if self.get_num_columns() <= column_i64 {
@@ -208,7 +210,7 @@ impl MatZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::{integer_mod_q::MatZq, traits::MatrixGetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let mat = MatZq::identity(3, 3, 17);
@@ -227,7 +229,7 @@ impl MatZq {
     ///
     /// # Panics ...
     /// - if `col_1 > col_2` or `row_1 > row_2`.
-    pub fn get_submatrix(
+    fn get_submatrix(
         &self,
         row_1: impl TryInto<i64> + Display,
         row_2: impl TryInto<i64> + Display,
@@ -274,7 +276,9 @@ impl MatZq {
             modulus: self.get_mod(),
         })
     }
+}
 
+impl MatZq {
     /// Efficiently collects all [`fmpz`]s in a [`MatZq`] without cloning them.
     ///
     /// Hence, the values on the returned [`Vec`] are intended for short-term use
@@ -772,7 +776,7 @@ mod test_mod {
 
 #[cfg(test)]
 mod test_get_vec {
-    use crate::integer_mod_q::MatZq;
+    use crate::{integer_mod_q::MatZq, traits::MatrixGetSubmatrix};
     use std::str::FromStr;
 
     /// Ensure that getting a row works
@@ -854,7 +858,11 @@ mod test_get_vec {
 
 #[cfg(test)]
 mod test_get_submatrix {
-    use crate::{integer::Z, integer_mod_q::MatZq, traits::MatrixDimensions};
+    use crate::{
+        integer::Z,
+        integer_mod_q::MatZq,
+        traits::{MatrixDimensions, MatrixGetSubmatrix},
+    };
     use std::str::FromStr;
 
     /// Ensures that getting the entire matrix as a submatrix works.
