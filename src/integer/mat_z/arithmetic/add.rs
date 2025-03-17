@@ -34,6 +34,9 @@ impl AddAssign<&MatZ> for MatZ {
     /// a += &b;
     /// a += b;
     /// ```
+    ///
+    /// # Panics ...
+    /// - if the matrix dimensions mismatch.
     fn add_assign(&mut self, other: &Self) {
         if self.get_num_rows() != other.get_num_rows()
             || self.get_num_columns() != other.get_num_columns()

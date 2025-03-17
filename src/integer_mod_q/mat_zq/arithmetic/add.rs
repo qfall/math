@@ -39,6 +39,10 @@ impl AddAssign<&MatZq> for MatZq {
     /// a += &c;
     /// a += c;
     /// ```
+    ///
+    /// # Panics ...
+    /// - if the matrix dimensions mismatch.
+    /// - if the moduli of the matrices mismatch.
     fn add_assign(&mut self, other: &Self) {
         if self.get_num_rows() != other.get_num_rows()
             || self.get_num_columns() != other.get_num_columns()

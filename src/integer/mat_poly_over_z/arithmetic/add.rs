@@ -34,6 +34,9 @@ impl AddAssign<&MatPolyOverZ> for MatPolyOverZ {
     /// a += &b;
     /// a += b;
     /// ```
+    ///
+    /// # Panics ...
+    /// - if the matrix dimensions mismatch.
     fn add_assign(&mut self, other: &Self) {
         if self.get_num_rows() != other.get_num_rows()
             || self.get_num_columns() != other.get_num_columns()
@@ -104,7 +107,8 @@ impl MatPolyOverZ {
     ///
     /// let c: MatPolyOverZ = a.add_safe(&b).unwrap();
     /// ```
-    /// # Errors
+    ///
+    /// # Errors and Failures
     /// - Returns a [`MathError`] of type
     ///     [`MathError::MismatchingMatrixDimension`] if the matrix dimensions
     ///     mismatch.
