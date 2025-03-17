@@ -350,7 +350,7 @@ impl MatZq {
                 &self.get_mod(),
             ));
             x_i = &matrix_base_inv * &b_i;
-            x = x + &x_i * &base.pow(i).unwrap();
+            x += &x_i * &base.pow(i).unwrap();
         }
 
         let mut out = MatZq::new(self.get_num_columns(), 1, self.get_mod());
