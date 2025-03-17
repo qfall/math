@@ -1,4 +1,4 @@
-// Copyright © 2023 Sven Moog
+// Copyright © 2023 Sven Moog, Marcel Luca Schmidt
 //
 // This file is part of qFALL-math.
 //
@@ -9,6 +9,11 @@
 //! This module contains implementations for comparison of [`MatQ`].
 
 use super::MatQ;
+use crate::{
+    integer::MatZ,
+    macros::for_others::implement_trait_reverse,
+    traits::{GetEntry, GetNumColumns, GetNumRows},
+};
 use flint_sys::fmpq_mat::fmpq_mat_equal;
 
 impl PartialEq for MatQ {
@@ -48,6 +53,63 @@ impl PartialEq for MatQ {
 // With the [`Eq`] trait, `a == a` is always true.
 // This is not guaranteed by the [`PartialEq`] trait.
 impl Eq for MatQ {}
+
+impl PartialEq<MatZ> for MatQ {
+    /// Checks if an integer matrix and a rational matrix are equal. Used by the `==` and `!=` operators.
+    /// [`PartialEq`] is also implemented for [`MatZ`] using [`MatQ`].
+    ///
+    /// Parameters:
+    /// - `other`: the other value that is used to compare the elements
+    ///
+    /// Returns `true` if the elements are equal, otherwise `false`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::rational::MatQ;
+    /// use std::str::FromStr;
+    /// let a: MatQ = MatQ::from_str("[[42, 2],[3, 4]]").unwrap();
+    /// let b: MatZ = MatZ::from_str("[[42, 2],[3, 4]]").unwrap();
+    ///
+    /// // These are all equivalent and return true.
+    /// let compared: bool = (a == b);
+    /// # assert!(compared);
+    /// let compared: bool = (b == a);
+    /// # assert!(compared);
+    /// let compared: bool = (&a == &b);
+    /// # assert!(compared);
+    /// let compared: bool = (&b == &a);
+    /// # assert!(compared);
+    /// let compared: bool = (a.eq(&b));
+    /// # assert!(compared);
+    /// let compared: bool = (b.eq(&a));
+    /// # assert!(compared);
+    /// let compared: bool = (MatQ::eq(&a, &b));
+    /// # assert!(compared);
+    /// let compared: bool = (MatZ::eq(&b, &a));
+    /// # assert!(compared);
+    /// ```
+    fn eq(&self, other: &MatZ) -> bool {
+        let num_rows = self.get_num_rows();
+        let num_cols = self.get_num_columns();
+
+        if num_rows != other.get_num_rows() || num_cols != other.get_num_columns() {
+            return false;
+        }
+
+        for i in 0..num_rows {
+            for j in 0..num_cols {
+                if self.get_entry(i, j).unwrap() != other.get_entry(i, j).unwrap() {
+                    return false;
+                }
+            }
+        }
+
+        true
+    }
+}
+
+implement_trait_reverse!(PartialEq, eq, MatZ, MatQ, bool);
 
 /// Test that the [`PartialEq`] trait is correctly implemented.
 #[cfg(test)]
@@ -114,5 +176,35 @@ mod test_partial_eq {
         assert_ne!(&c, &d);
         assert_ne!(&c, &e);
         assert_ne!(&d, &e);
+    }
+}
+
+/// Test that the [`PartialEq`] trait is correctly implemented.
+#[cfg(test)]
+mod test_partial_eq_q_other {
+    use super::MatQ;
+    use crate::integer::MatZ;
+    use std::str::FromStr;
+
+    // Ensure that the function can be called with several types
+    #[test]
+    #[allow(clippy::op_ref)]
+    fn availability() {
+        let q = MatQ::from_str("[[1, 2],[3, 4]]").unwrap();
+        let z = MatZ::from_str("[[1, 2],[3, 4]]").unwrap();
+
+        assert!(q == z);
+        assert!(z == q);
+        assert!(&q == &z);
+        assert!(&z == &q);
+    }
+
+    // Ensure that large values are compared correctly
+    #[test]
+    fn equal_large() {
+        let q = MatQ::from_str(&format!("[[1,2],[3,{}]]", u64::MAX)).unwrap();
+        let z = MatZ::from_str(&format!("[[1,2],[3,{}]]", u64::MAX)).unwrap();
+
+        assert!(q == z);
     }
 }
