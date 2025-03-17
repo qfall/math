@@ -66,7 +66,7 @@ impl<Mod: Into<ModulusPolynomialRingZq>> From<(&PolyOverZq, Mod)> for Polynomial
     /// ```
     /// use qfall_math::integer_mod_q::PolynomialRingZq;
     /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
-    /// use qfall_math::integer::PolyOverZ;
+    /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -108,11 +108,11 @@ impl<Mod: Into<ModulusPolynomialRingZq>> From<(PolyOverZq, Mod)> for PolynomialR
     /// ```
     /// use qfall_math::integer_mod_q::PolynomialRingZq;
     /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
-    /// use qfall_math::integer::PolyOverZ;
+    /// use qfall_math::integer_mod_q::PolyOverZq;
     /// use std::str::FromStr;
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-    /// let poly = PolyOverZ::from_str("4  -1 0 1 1 mod 17").unwrap();
+    /// let poly = PolyOverZq::from_str("4  -1 0 1 1 mod 17").unwrap();
     /// let poly_ring = PolynomialRingZq::from((poly, &modulus));
     /// ```
     ///
