@@ -12,7 +12,7 @@ use criterion::*;
 use qfall_math::{
     error::MathError,
     integer::*,
-    traits::{GetEntry, SetEntry},
+    traits::{MatrixGetEntry, MatrixSetEntry},
 };
 use std::{ops::AddAssign, str::FromStr};
 

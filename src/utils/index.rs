@@ -9,7 +9,7 @@
 //! Implements methods to pre-process indices under certain conditions.
 
 use crate::error::MathError;
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::MatrixDimensions;
 use std::fmt::Display;
 
 /// Converts index into an [`i64`] that must be greater than `0` and must fit into
@@ -112,7 +112,7 @@ pub fn evaluate_indices(
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
 ///     if the number of rows or columns is greater than the matrix or negative.
-pub fn evaluate_indices_for_matrix<S: GetNumRows + GetNumColumns>(
+pub fn evaluate_indices_for_matrix<S: MatrixDimensions + MatrixDimensions>(
     matrix: &S,
     row: impl TryInto<i64> + Display,
     column: impl TryInto<i64> + Display,

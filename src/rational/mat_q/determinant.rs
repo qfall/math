@@ -9,11 +9,7 @@
 //! This module contains the implementation of the `determinant` function.
 
 use super::MatQ;
-use crate::{
-    error::MathError,
-    rational::Q,
-    traits::{GetNumColumns, GetNumRows},
-};
+use crate::{error::MathError, rational::Q, traits::MatrixDimensions};
 use flint_sys::fmpq_mat::fmpq_mat_det;
 
 impl MatQ {

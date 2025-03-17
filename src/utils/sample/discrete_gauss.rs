@@ -21,7 +21,7 @@ use crate::{
     error::{MathError, StringConversionError},
     integer::{MatZ, Z},
     rational::{MatQ, Q},
-    traits::{GetNumColumns, GetNumRows, Pow},
+    traits::{MatrixDimensions, MatrixGetSubmatrix, Pow},
 };
 use rand::RngCore;
 use serde::Serialize;
@@ -528,7 +528,7 @@ mod test_gaussian_function {
 #[cfg(test)]
 mod test_sample_d {
     use super::sample_d_precomputed_gso;
-    use crate::traits::{Concatenate, GetNumColumns, GetNumRows, Pow};
+    use crate::traits::{Concatenate, MatrixDimensions, MatrixGetSubmatrix, Pow};
     use crate::utils::sample::discrete_gauss::sample_d;
     use crate::{
         integer::{MatZ, Z},

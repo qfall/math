@@ -9,7 +9,7 @@
 //! Implementations to get information about a [`MatQ`] matrix.
 
 use super::MatQ;
-use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
+use crate::traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix};
 use crate::utils::index::{evaluate_index, evaluate_indices_for_matrix};
 use crate::{error::MathError, rational::Q};
 use flint_sys::fmpq_mat::{fmpq_mat_init_set, fmpq_mat_window_clear, fmpq_mat_window_init};
@@ -20,7 +20,7 @@ use flint_sys::{
 use std::fmt::Display;
 use std::mem::MaybeUninit;
 
-impl GetNumRows for MatQ {
+impl MatrixDimensions for MatQ {
     /// Returns the number of rows of the matrix as a [`i64`].
     ///
     /// # Examples
@@ -34,9 +34,7 @@ impl GetNumRows for MatQ {
     fn get_num_rows(&self) -> i64 {
         self.matrix.r
     }
-}
 
-impl GetNumColumns for MatQ {
     /// Returns the number of columns of the matrix as a [`i64`].
     ///
     /// # Examples
@@ -52,7 +50,7 @@ impl GetNumColumns for MatQ {
     }
 }
 
-impl GetEntry<Q> for MatQ {
+impl MatrixGetEntry<Q> for MatQ {
     /// Outputs the [`Q`] value of a specific matrix entry.
     ///
     /// Parameters:
@@ -69,7 +67,7 @@ impl GetEntry<Q> for MatQ {
     /// # Examples
     /// ```
     /// use qfall_math::rational::{MatQ, Q};
-    /// use qfall_math::traits::GetEntry;
+    /// use qfall_math::traits::MatrixGetEntry;
     /// use std::str::FromStr;
     ///
     /// let matrix = MatQ::from_str("[[1, 2, 3/4],[4, 5, 6],[7, 8, 9]]").unwrap();
@@ -114,7 +112,7 @@ impl GetEntry<Q> for MatQ {
     /// # Examples
     /// ```
     /// use qfall_math::rational::{MatQ, Q};
-    /// use qfall_math::traits::GetEntry;
+    /// use qfall_math::traits::MatrixGetEntry;
     /// use std::str::FromStr;
     ///
     /// let matrix = MatQ::from_str("[[1, 2, 3/4],[4, 5, 6],[7, 8, 9]]").unwrap();
@@ -132,7 +130,7 @@ impl GetEntry<Q> for MatQ {
     }
 }
 
-impl MatQ {
+impl MatrixGetSubmatrix for MatQ {
     /// Outputs the row vector of the specified row.
     ///
     /// Parameters:
@@ -144,7 +142,7 @@ impl MatQ {
     ///
     /// # Examples
     /// ```rust
-    /// use qfall_math::rational::MatQ;
+    /// use qfall_math::{rational::MatQ, traits::MatrixGetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let matrix = MatQ::from_str("[[1, 2/3, 3],[3, 4, 5/2]]").unwrap();
@@ -156,7 +154,7 @@ impl MatQ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     ///     if the number of the row is greater than the matrix or negative.
-    pub fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError> {
+    fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError> {
         let row_i64 = evaluate_index(row)?;
 
         if self.get_num_rows() <= row_i64 {
@@ -180,7 +178,7 @@ impl MatQ {
     ///
     /// # Examples
     /// ```rust
-    /// use qfall_math::rational::MatQ;
+    /// use qfall_math::{rational::MatQ, traits::MatrixGetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let matrix = MatQ::from_str("[[1, 2/3, 3],[3, 4, 5/2]]").unwrap();
@@ -193,7 +191,7 @@ impl MatQ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     ///     if the number of the column is greater than the matrix or negative.
-    pub fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError> {
+    fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError> {
         let column_i64 = evaluate_index(column)?;
 
         if self.get_num_columns() <= column_i64 {
@@ -226,7 +224,7 @@ impl MatQ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::rational::MatQ;
+    /// use qfall_math::{rational::MatQ, traits::MatrixGetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let mat = MatQ::identity(3, 3);
@@ -245,7 +243,7 @@ impl MatQ {
     ///
     /// # Panics ...
     /// - if `col_1 > col_2` or `row_1 > row_2`.
-    pub fn get_submatrix(
+    fn get_submatrix(
         &self,
         row_1: impl TryInto<i64> + Display,
         row_2: impl TryInto<i64> + Display,
@@ -291,7 +289,9 @@ impl MatQ {
             matrix: unsafe { window_copy.assume_init() },
         })
     }
+}
 
+impl MatQ {
     /// Efficiently collects all [`fmpq`]s in a [`MatQ`] without cloning them.
     ///
     /// Hence, the values on the returned [`Vec`] are intended for short-term use
@@ -366,7 +366,7 @@ mod test_get_entry {
     use super::Q;
     use crate::{
         rational::MatQ,
-        traits::{GetEntry, SetEntry},
+        traits::{MatrixGetEntry, MatrixSetEntry},
     };
     use std::str::FromStr;
 
@@ -493,10 +493,7 @@ mod test_get_entry {
 
 #[cfg(test)]
 mod test_get_num {
-    use crate::{
-        rational::MatQ,
-        traits::{GetNumColumns, GetNumRows},
-    };
+    use crate::{rational::MatQ, traits::MatrixDimensions};
 
     /// Ensure that the getter for number of rows works correctly.
     #[test]
@@ -517,7 +514,7 @@ mod test_get_num {
 
 #[cfg(test)]
 mod test_get_vec {
-    use crate::rational::MatQ;
+    use crate::{rational::MatQ, traits::MatrixGetSubmatrix};
     use std::str::FromStr;
 
     /// Ensure that getting a row works
@@ -605,7 +602,7 @@ mod test_get_submatrix {
     use crate::{
         integer::Z,
         rational::MatQ,
-        traits::{GetNumColumns, GetNumRows},
+        traits::{MatrixDimensions, MatrixGetSubmatrix},
     };
     use std::str::FromStr;
 

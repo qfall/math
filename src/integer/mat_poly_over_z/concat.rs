@@ -11,7 +11,7 @@
 use super::MatPolyOverZ;
 use crate::{
     error::MathError,
-    traits::{Concatenate, GetNumColumns, GetNumRows},
+    traits::{Concatenate, MatrixDimensions},
 };
 use flint_sys::fmpz_poly_mat::{fmpz_poly_mat_concat_horizontal, fmpz_poly_mat_concat_vertical};
 
@@ -109,7 +109,7 @@ impl Concatenate for &MatPolyOverZ {
 mod test_concatenate {
     use crate::{
         integer::MatPolyOverZ,
-        traits::{Concatenate, GetNumColumns, GetNumRows},
+        traits::{Concatenate, MatrixDimensions},
     };
     use std::str::FromStr;
 

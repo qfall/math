@@ -11,11 +11,7 @@
 use flint_sys::fmpq_mat::fmpq_mat_trace;
 
 use super::MatQ;
-use crate::{
-    error::MathError,
-    rational::Q,
-    traits::{GetNumColumns, GetNumRows},
-};
+use crate::{error::MathError, rational::Q, traits::MatrixDimensions};
 
 impl MatQ {
     /// Returns the trace of a matrix and an error,

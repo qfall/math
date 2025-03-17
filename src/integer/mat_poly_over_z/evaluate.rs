@@ -5,7 +5,7 @@
 use super::MatPolyOverZ;
 use crate::{
     integer::{MatZ, Z},
-    traits::{Evaluate, GetNumColumns, GetNumRows},
+    traits::{Evaluate, MatrixDimensions},
 };
 use flint_sys::fmpz_poly_mat::fmpz_poly_mat_evaluate_fmpz;
 

@@ -48,20 +48,21 @@ pub trait SetCoefficient<T> {
     fn set_coeff(&mut self, index: impl TryInto<i64> + Display, value: T) -> Result<(), MathError>;
 }
 
-/// Is implemented by matrices to get the number of rows of the matrix.
-pub trait GetNumRows {
+/// Is implemented by matrices to get the number of rows and number of columns of the matrix.
+pub trait MatrixDimensions {
     /// Returns the number of rows of a matrix.
     fn get_num_rows(&self) -> i64;
-}
 
-/// Is implemented by matrices to get the number of columns of the matrix.
-pub trait GetNumColumns {
     /// Returns the number of columns of a matrix.
     fn get_num_columns(&self) -> i64;
 }
 
 /// Is implemented by matrices to get entries.
-pub trait GetEntry<T> {
+pub trait MatrixGetEntry<T>
+where
+    Self: MatrixDimensions,
+    T: std::clone::Clone,
+{
     /// Returns the value of a specific matrix entry.
     ///
     /// Parameters:
@@ -90,10 +91,236 @@ pub trait GetEntry<T> {
     /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
     /// occur.
     unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> T;
+
+    // *** Automatically implemented functions
+
+    /// Outputs a [`Vec<Vec<T>>`] containing all entries of the matrix s.t.
+    /// any entry in row `i` and column `j` can be accessed via `entries[i][j]`
+    /// if `entries = matrix.get_entries`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{integer::{MatZ, Z}, traits::*};
+    /// let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+    ///
+    /// let entries = matrix.get_entries();
+    /// let mut added_entries = Z::default();
+    /// for row in entries {
+    ///     for entry in row {
+    ///         added_entries += entry;
+    ///     }
+    /// }
+    /// ```
+    fn get_entries(&self) -> Vec<Vec<T>> {
+        let mut entries = vec![vec![]; self.get_num_rows() as usize];
+
+        for i in 0..self.get_num_rows() {
+            for j in 0..self.get_num_columns() {
+                let entry = unsafe { self.get_entry_unchecked(i, j) };
+                entries[i as usize].push(entry);
+            }
+        }
+
+        entries
+    }
+
+    /// Outputs a [`Vec<T>`] containing all entries of the matrix in a row-wise order, i.e.
+    /// a matrix `[[2, 3, 4],[5, 6, 7]]` can be accessed via this function in this order `[2, 3, 4, 5, 6, 7]`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{integer::{MatZ, Z}, traits::*};
+    /// let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+    ///
+    /// let entries = matrix.get_entries_rowwise();
+    /// let mut added_entries = Z::default();
+    /// for entry in entries {
+    ///     added_entries += entry;
+    /// }
+    /// ```
+    fn get_entries_rowwise(&self) -> Vec<T> {
+        let mut entries = vec![];
+
+        for i in 0..self.get_num_rows() {
+            for j in 0..self.get_num_columns() {
+                let entry = unsafe { self.get_entry_unchecked(i, j) };
+                entries.push(entry);
+            }
+        }
+
+        entries
+    }
+
+    /// Outputs a [`Vec<T>`] containing all entries of the matrix in a column-wise order, i.e.
+    /// a matrix `[[2, 3, 4],[5, 6, 7]]` can be accessed via this function in this order `[2, 5, 3, 6, 4, 7]`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{integer::{MatZ, Z}, traits::*};
+    /// let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+    ///
+    /// let entries = matrix.get_entries_columnwise();
+    /// let mut added_entries = Z::default();
+    /// for entry in entries {
+    ///     added_entries += entry;
+    /// }
+    /// ```
+    fn get_entries_columnwise(&self) -> Vec<T> {
+        let mut entries = vec![];
+
+        for j in 0..self.get_num_columns() {
+            for i in 0..self.get_num_rows() {
+                let entry = unsafe { self.get_entry_unchecked(i, j) };
+                entries.push(entry);
+            }
+        }
+
+        entries
+    }
+}
+
+/// Is implemented by Matrices to get submatrices such as rows, columns, etc.
+pub trait MatrixGetSubmatrix
+where
+    Self: Sized + MatrixDimensions,
+{
+    /// Outputs the row vector of the specified row.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row of the matrix to return
+    ///
+    /// Returns a row vector of the matrix at the position of the given
+    /// `row` or an error if specified row is not part of the matrix.
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
+    ///     if specified row is not part of the matrix.
+    fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError>;
+
+    /// Outputs the column vector of the specified column.
+    ///
+    /// Parameters:
+    /// - `column`: specifies the column of the matrix to return
+    ///
+    /// Returns a column vector of the matrix at the position of the given
+    /// `column` or an error if specified column is not part of the matrix.
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
+    ///     if specified column is not part of the matrix.
+    fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError>;
+
+    /// Returns a deep copy of the submatrix defined by the given parameters.
+    /// All entries starting from `(row_1, col_1)` to `(row_2, col_2)`(inclusively) are collected in
+    /// a new matrix.
+    /// Note that `row_1 >= row_2` and `col_1 >= col_2` must hold after converting negative indices.
+    /// Otherwise the function will panic.
+    ///
+    /// Parameters:
+    /// `row_1`: the starting row of the specified submatrix
+    /// `row_2`: the ending row of the specified submatrix
+    /// `col_1`: the starting column of the specified submatrix
+    /// `col_2`: the ending column of the specified submatrix
+    ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
+    /// Returns the submatrix from `(row_1, col_1)` to `(row_2, col_2)`(inclusively)
+    /// or an error if any provided row or column is larger than the matrix.
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    ///     if any provided row or column is larger than the matrix.
+    ///
+    /// # Panics ...
+    /// - if `col_1 > col_2` or `row_1 > row_2`.
+    fn get_submatrix(
+        &self,
+        row_1: impl TryInto<i64> + Display,
+        row_2: impl TryInto<i64> + Display,
+        col_1: impl TryInto<i64> + Display,
+        col_2: impl TryInto<i64> + Display,
+    ) -> Result<Self, MathError>;
+
+    // *** Automatically implemented functions
+
+    /// Outputs a [`Vec`] containing all rows of the matrix in order.
+    /// Use this function for simple iteration over the rows of the matrix.
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::{integer::MatZ, traits::MatrixGetSubmatrix};
+    /// let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+    ///
+    /// let mut added_rows = MatZ::new(1, 3);
+    /// for row in matrix.get_rows() {
+    ///     added_rows = added_rows + row;
+    /// }
+    /// ```
+    ///
+    /// If an index is required, use `.iter().enumerate()`, e.g. in this case.
+    /// ```
+    /// use qfall_math::{integer::MatZ, traits::*};
+    /// let mut matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+    ///
+    /// let mut added_rows = MatZ::new(1, 3);
+    /// for (i, row) in matrix.get_rows().iter().enumerate() {
+    ///     added_rows = added_rows + row;
+    ///     matrix.set_row(i, &added_rows, 0).unwrap();
+    /// }
+    /// ```
+    fn get_rows(&self) -> Vec<Self> {
+        let mut rows = vec![];
+
+        for i in 0..self.get_num_rows() {
+            // replace with self.get_row_unchecked once available
+            let entry = self.get_row(i).unwrap();
+            rows.push(entry);
+        }
+
+        rows
+    }
+
+    /// Outputs a [`Vec`] containing all columns of the matrix in order.
+    /// Use this function for simple iteration over the columns of the matrix.
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::{integer::MatZ, traits::MatrixGetSubmatrix};
+    /// let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+    ///
+    /// let mut added_columns = MatZ::new(3, 1);
+    /// for column in matrix.get_columns() {
+    ///     added_columns = added_columns + column;
+    /// }
+    /// ```
+    ///
+    /// If an index is required, use `.iter().enumerate()`, e.g. in this case.
+    /// ```
+    /// use qfall_math::{integer::MatZ, traits::*};
+    /// let mut matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+    ///
+    /// let mut added_columns = MatZ::new(3, 1);
+    /// for (i, column) in matrix.get_columns().iter().enumerate() {
+    ///     added_columns = added_columns + column;
+    ///     matrix.set_column(i, &added_columns, 0).unwrap();
+    /// }
+    /// ```
+    fn get_columns(&self) -> Vec<Self> {
+        let mut columns = vec![];
+
+        for i in 0..self.get_num_columns() {
+            // replace with self.get_column_unchecked once available
+            let entry = self.get_column(i).unwrap();
+            columns.push(entry);
+        }
+
+        columns
+    }
 }
 
 /// Is implemented by matrices to set entries.
-pub trait SetEntry<T> {
+pub trait MatrixSetEntry<T> {
     /// Sets the value of a specific matrix entry according to a given value.
     ///
     /// Returns an error, if the number of rows or columns is
@@ -124,6 +351,117 @@ pub trait SetEntry<T> {
     /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
     /// occur.
     unsafe fn set_entry_unchecked(&mut self, row: i64, column: i64, value: T);
+}
+
+/// Is implemented by matrices to set more than a single entry of the matrix.
+pub trait MatrixSetSubmatrix {
+    /// Sets a row of the given matrix to the provided row of `other`.
+    ///
+    /// Parameters:
+    /// - `row_0`: specifies the row of `self` that should be modified
+    /// - `other`: specifies the matrix providing the row replacing the row in `self`
+    /// - `row_1`: specifies the row of `other` providing
+    ///     the values replacing the original row in `self`
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of its matrix
+    /// or if the number of columns differs.
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    ///     if the provided row index is not defined within the margins of the matrix.
+    /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
+    ///     if the number of columns of `self` and `other` differ.
+    fn set_row(
+        &mut self,
+        row_0: impl TryInto<i64> + Display,
+        other: &Self,
+        row_1: impl TryInto<i64> + Display,
+    ) -> Result<(), MathError>;
+
+    /// Sets a column of the given matrix to the provided column of `other`.
+    ///
+    /// Parameters:
+    /// - `col_0`: specifies the column of `self` that should be modified
+    /// - `other`: specifies the matrix providing the column replacing the column in `self`
+    /// - `col_1`: specifies the column of `other` providing
+    ///     the values replacing the original column in `self`
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of its matrix
+    /// or if the number of rows differs.
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    ///     if the provided column index is not defined within the margins of the matrix.
+    /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
+    ///     if the number of rows of `self` and `other` differ.
+    fn set_column(
+        &mut self,
+        col_0: impl TryInto<i64> + Display,
+        other: &Self,
+        col_1: impl TryInto<i64> + Display,
+    ) -> Result<(), MathError>;
+}
+
+pub trait MatrixSwaps {
+    /// Swaps two entries of the specified matrix.
+    ///
+    /// Parameters:
+    /// - `row_0`: specifies the row, in which the first entry is located
+    /// - `col_0`: specifies the column, in which the first entry is located
+    /// - `row_1`: specifies the row, in which the second entry is located
+    /// - `col_1`: specifies the column, in which the second entry is located
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if one of the specified entries is not part of the matrix.
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    ///     if row or column are greater than the matrix size.
+    fn swap_entries(
+        &mut self,
+        row_0: impl TryInto<i64> + Display,
+        col_0: impl TryInto<i64> + Display,
+        row_1: impl TryInto<i64> + Display,
+        col_1: impl TryInto<i64> + Display,
+    ) -> Result<(), MathError>;
+
+    /// Swaps two rows of the specified matrix.
+    ///
+    /// Parameters:
+    /// - `row_0`: specifies the first row which is swapped with the second one
+    /// - `row_1`: specifies the second row which is swapped with the first one
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of the matrix.
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
+    ///     if one of the given rows is greater than the matrix or negative.
+    fn swap_rows(
+        &mut self,
+        row_0: impl TryInto<i64> + Display,
+        row_1: impl TryInto<i64> + Display,
+    ) -> Result<(), MathError>;
+
+    /// Swaps two columns of the specified matrix.
+    ///
+    /// Parameters:
+    /// - `col_0`: specifies the first column which is swapped with the second one
+    /// - `col_1`: specifies the second column which is swapped with the first one
+    ///
+    /// Returns an empty `Ok` if the action could be performed successfully.
+    /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of the matrix.
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
+    ///     if one of the given columns is greater than the matrix or negative.
+    fn swap_columns(
+        &mut self,
+        col_0: impl TryInto<i64> + Display,
+        col_1: impl TryInto<i64> + Display,
+    ) -> Result<(), MathError>;
 }
 
 /// Is implemented by matrices to compute the tensor product.

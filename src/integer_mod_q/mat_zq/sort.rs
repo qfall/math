@@ -11,7 +11,7 @@
 use super::MatZq;
 use crate::{
     error::MathError,
-    traits::{GetNumColumns, GetNumRows},
+    traits::{MatrixDimensions, MatrixGetSubmatrix, MatrixSetSubmatrix},
 };
 
 impl MatZq {
@@ -41,7 +41,7 @@ impl MatZq {
     /// ## Use a custom function as condition
     /// This function needs to take a column vector as input and output a type implementing [`PartialOrd`]
     /// ```
-    /// use qfall_math::{integer_mod_q::MatZq, integer::Z, error::MathError, traits::{GetNumRows, GetEntry}};
+    /// use qfall_math::{integer_mod_q::MatZq, integer::Z, error::MathError, traits::{MatrixDimensions, MatrixGetEntry}};
     /// use std::str::FromStr;
     /// let mat = MatZq::from_str("[[3, 2, 1]] mod 7").unwrap();
     /// let cmp = MatZq::from_str("[[1, 2, 3]] mod 7").unwrap();
@@ -108,7 +108,7 @@ impl MatZq {
     /// ## Use a custom function as condition
     /// This function needs to take a row vector as input and output a type implementing [`PartialOrd`]
     /// ```
-    /// use qfall_math::{integer_mod_q::MatZq, integer::Z, error::MathError, traits::{GetNumColumns, GetEntry}};
+    /// use qfall_math::{integer_mod_q::MatZq, integer::Z, error::MathError, traits::{MatrixDimensions, MatrixGetEntry}};
     /// use std::str::FromStr;
     /// let mat = MatZq::from_str("[[3],[2],[1]] mod 7").unwrap();
     /// let cmp = MatZq::from_str("[[1],[2],[3]] mod 7").unwrap();

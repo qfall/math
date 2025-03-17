@@ -11,11 +11,7 @@
 use flint_sys::fmpz_poly_mat::fmpz_poly_mat_trace;
 
 use super::MatPolyOverZ;
-use crate::{
-    error::MathError,
-    integer::PolyOverZ,
-    traits::{GetNumColumns, GetNumRows},
-};
+use crate::{error::MathError, integer::PolyOverZ, traits::MatrixDimensions};
 
 impl MatPolyOverZ {
     /// Returns the trace of a matrix and an error,

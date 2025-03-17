@@ -11,7 +11,7 @@
 use super::MatPolynomialRingZq;
 use crate::{
     integer::PolyOverZ,
-    traits::{GetEntry, GetNumRows},
+    traits::{MatrixDimensions, MatrixGetEntry},
 };
 
 impl MatPolynomialRingZq {
@@ -108,8 +108,8 @@ impl MatPolynomialRingZq {
         for row in 0..self.get_num_rows() {
             for column in 0..row {
                 if unsafe {
-                    GetEntry::<PolyOverZ>::get_entry_unchecked(self, row, column)
-                        != GetEntry::<PolyOverZ>::get_entry_unchecked(self, column, row)
+                    MatrixGetEntry::<PolyOverZ>::get_entry_unchecked(self, row, column)
+                        != MatrixGetEntry::<PolyOverZ>::get_entry_unchecked(self, column, row)
                 } {
                     return false;
                 }

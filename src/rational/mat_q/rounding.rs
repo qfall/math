@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::{MatZ, Z},
     rational::Q,
-    traits::{GetEntry, GetNumColumns, GetNumRows, SetEntry},
+    traits::{MatrixDimensions, MatrixGetEntry, MatrixSetEntry},
 };
 
 impl MatQ {
@@ -115,7 +115,7 @@ impl MatQ {
     /// # Examples
     /// ```
     /// use qfall_math::rational::{MatQ, Q};
-    /// use qfall_math::traits::{GetEntry, SetEntry};
+    /// use qfall_math::traits::{MatrixGetEntry, MatrixSetEntry};
     /// let mut matrix = MatQ::new(1, 2);
     /// matrix.set_entry(0, 0, Q::from((17, 20))).unwrap();
     /// let precision = Q::from((1, 20));
@@ -127,7 +127,7 @@ impl MatQ {
     ///
     /// ```
     /// use qfall_math::rational::{MatQ, Q};
-    /// use qfall_math::traits::{GetEntry, SetEntry};
+    /// use qfall_math::traits::{MatrixGetEntry, MatrixSetEntry};
     /// let mut matrix = MatQ::new(2, 1);
     /// matrix.set_entry(0, 0, Q::from((3, 2))).unwrap();
     ///
@@ -141,7 +141,7 @@ impl MatQ {
     /// If you require higher precision, [`Q::INV_MAX62`] is available.
     /// ```
     /// use qfall_math::rational::{MatQ, Q};
-    /// use qfall_math::traits::{GetEntry, SetEntry};
+    /// use qfall_math::traits::{MatrixGetEntry, MatrixSetEntry};
     /// let mut matrix = MatQ::new(1, 1);
     /// matrix.set_entry(0, 0, Q::PI).unwrap();
     ///

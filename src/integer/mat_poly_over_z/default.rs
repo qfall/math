@@ -87,7 +87,7 @@ impl MatPolyOverZ {
 
 #[cfg(test)]
 mod test_new {
-    use crate::{integer::MatPolyOverZ, traits::GetEntry};
+    use crate::{integer::MatPolyOverZ, traits::MatrixGetEntry};
 
     /// Ensure that entries of a new matrix are `0`.
     #[test]
@@ -122,7 +122,7 @@ mod test_new {
 
 #[cfg(test)]
 mod test_identity {
-    use crate::{integer::MatPolyOverZ, traits::GetEntry};
+    use crate::{integer::MatPolyOverZ, traits::MatrixGetEntry};
 
     /// Tests if an identity matrix is set from a zero matrix.
     #[test]

@@ -11,7 +11,7 @@
 use crate::error::MathError;
 use crate::integer::PolyOverZ;
 use crate::integer_mod_q::{MatPolynomialRingZq, PolynomialRingZq};
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::MatrixDimensions;
 use flint_sys::fq::{fq_add, fq_mul};
 
 impl MatPolynomialRingZq {

@@ -10,11 +10,7 @@
 //! defined on vectors.
 
 use super::super::MatQ;
-use crate::{
-    error::MathError,
-    rational::Q,
-    traits::{GetNumColumns, GetNumRows},
-};
+use crate::{error::MathError, rational::Q, traits::MatrixDimensions};
 use flint_sys::fmpq::{fmpq_abs, fmpq_addmul, fmpq_cmp};
 
 impl MatQ {
