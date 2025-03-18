@@ -464,8 +464,8 @@ mod test_get_entry {
         let modulus = ModulusPolynomialRingZq::from_str("2  42 17 mod 89").unwrap();
         let matrix = MatPolynomialRingZq::new(5, 10, &modulus);
 
-        let entry_1 = matrix.get_entry(0, 0).unwrap();
-        let entry_2 = matrix.get_entry(4, 9).unwrap();
+        let entry_1: PolyOverZ = matrix.get_entry(0, 0).unwrap();
+        let entry_2: PolyOverZ = matrix.get_entry(4, 9).unwrap();
 
         assert_eq!(PolyOverZ::default(), entry_1);
         assert_eq!(PolyOverZ::default(), entry_2);
@@ -482,7 +482,7 @@ mod test_get_entry {
                 .unwrap();
         let matrix = MatPolynomialRingZq::from((&poly_mat, &modulus));
 
-        let entry = matrix.get_entry(0, 0).unwrap();
+        let entry: PolyOverZ = matrix.get_entry(0, 0).unwrap();
 
         assert_eq!(
             PolyOverZ::from_str(&format!("4  1 0 {} 1", i64::MAX)).unwrap(),

@@ -83,8 +83,8 @@ mod test_deserialize {
         let poly_str = "2  17/3 42/17";
         let cmp_str = format!("{{\"poly\":\"{poly_str}\"}}");
 
-        let poly_z = PolyOverQ::from_str(poly_str).unwrap();
-        assert_eq!(poly_z, serde_json::from_str(&cmp_str).unwrap());
+        let poly_q = PolyOverQ::from_str(poly_str).unwrap();
+        assert_eq!(poly_q, serde_json::from_str::<PolyOverQ>(&cmp_str).unwrap());
     }
 
     /// Tests whether the deserialization of a negative [`PolyOverQ`] works.
@@ -93,8 +93,8 @@ mod test_deserialize {
         let poly_str = "3  -17/3 -42/17 1";
         let cmp_str = format!("{{\"poly\":\"{poly_str}\"}}");
 
-        let poly_z = PolyOverQ::from_str(poly_str).unwrap();
-        assert_eq!(poly_z, serde_json::from_str(&cmp_str).unwrap());
+        let poly_q = PolyOverQ::from_str(poly_str).unwrap();
+        assert_eq!(poly_q, serde_json::from_str::<PolyOverQ>(&cmp_str).unwrap());
     }
 
     /// Tests whether the deserialization of a positive large [`PolyOverQ`] works.
@@ -103,8 +103,8 @@ mod test_deserialize {
         let poly_str = format!("3  -17/3 {}/2 1", u64::MAX);
         let cmp_str = format!("{{\"poly\":\"{poly_str}\"}}");
 
-        let poly_z = PolyOverQ::from_str(&poly_str).unwrap();
-        assert_eq!(poly_z, serde_json::from_str(&cmp_str).unwrap());
+        let poly_q = PolyOverQ::from_str(&poly_str).unwrap();
+        assert_eq!(poly_q, serde_json::from_str::<PolyOverQ>(&cmp_str).unwrap());
     }
 
     /// Tests whether the deserialization of a negative large [`PolyOverQ`] works.
@@ -113,8 +113,8 @@ mod test_deserialize {
         let poly_str = format!("3  -17/3 -{}/2 1", u64::MAX);
         let cmp_str = format!("{{\"poly\":\"{poly_str}\"}}");
 
-        let poly_z = PolyOverQ::from_str(&poly_str).unwrap();
-        assert_eq!(poly_z, serde_json::from_str(&cmp_str).unwrap());
+        let poly_q = PolyOverQ::from_str(&poly_str).unwrap();
+        assert_eq!(poly_q, serde_json::from_str::<PolyOverQ>(&cmp_str).unwrap());
     }
 
     /// Tests whether no fields 'poly' provided yield an error

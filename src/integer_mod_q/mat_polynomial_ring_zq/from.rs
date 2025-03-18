@@ -151,13 +151,12 @@ mod test_from_str {
     fn init_works() {
         let matrix_str_1 = "[[1  2, 0, 1  3],[1  3, 1  4, 1  5]] / 2  1 1 mod 6";
 
-        assert_eq!(
-            PolyOverZ::from(2),
-            MatPolynomialRingZq::from_str(matrix_str_1)
-                .unwrap()
-                .get_entry(0, 0)
-                .unwrap()
-        );
+        let matrix: PolyOverZ = MatPolynomialRingZq::from_str(matrix_str_1)
+            .unwrap()
+            .get_entry(0, 0)
+            .unwrap();
+
+        assert_eq!(PolyOverZ::from(2), matrix);
     }
 
     /// Ensure that entries are correctly reduced.
@@ -165,21 +164,12 @@ mod test_from_str {
     fn reduce_works() {
         let matrix_str_1 = "[[1  2, 0, 1  3],[1  3, 2  2 2, 1  5]] / 2  1 1 mod 3";
 
-        assert_eq!(
-            PolyOverZ::default(),
-            MatPolynomialRingZq::from_str(matrix_str_1)
-                .unwrap()
-                .get_entry(1, 0)
-                .unwrap()
-        );
+        let matrix: PolyOverZ = MatPolynomialRingZq::from_str(matrix_str_1)
+            .unwrap()
+            .get_entry(1, 0)
+            .unwrap();
 
-        assert_eq!(
-            PolyOverZ::default(),
-            MatPolynomialRingZq::from_str(matrix_str_1)
-                .unwrap()
-                .get_entry(1, 1)
-                .unwrap()
-        );
+        assert_eq!(PolyOverZ::default(), matrix);
     }
 
     /// Ensure that initialization with positive numbers that are larger than [`i64`] works.
@@ -190,14 +180,12 @@ mod test_from_str {
             u64::MAX - 1,
             u64::MAX
         );
+        let matrix: PolyOverZ = MatPolynomialRingZq::from_str(&matrix_string)
+            .unwrap()
+            .get_entry(0, 0)
+            .unwrap();
 
-        assert_eq!(
-            PolyOverZ::from(u64::MAX - 1),
-            MatPolynomialRingZq::from_str(&matrix_string)
-                .unwrap()
-                .get_entry(0, 0)
-                .unwrap()
-        );
+        assert_eq!(PolyOverZ::from(u64::MAX - 1), matrix);
     }
 
     /// Ensure that entries can have leading and trailing whitespaces.
@@ -206,13 +194,12 @@ mod test_from_str {
         let matrix_str_1 =
             "[[1  2    ,    0 , 1  3],[   1  3, 1  4, 1  5  ]]   /     2  1 1   mod6  ";
 
-        assert_eq!(
-            PolyOverZ::from(3),
-            MatPolynomialRingZq::from_str(matrix_str_1)
-                .unwrap()
-                .get_entry(0, 2)
-                .unwrap()
-        );
+        let matrix: PolyOverZ = MatPolynomialRingZq::from_str(matrix_str_1)
+            .unwrap()
+            .get_entry(0, 2)
+            .unwrap();
+
+        assert_eq!(PolyOverZ::from(3), matrix);
     }
 
     /// Ensure that a wrong format causes an error.
