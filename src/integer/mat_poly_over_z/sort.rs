@@ -171,8 +171,10 @@ mod test_sort_by_length {
     /// Checks whether sorting by column length acc. to eucl. norm works correct for small entries
     #[test]
     fn column_norm_eucl_sqrd_small_entries() {
-        let mat = MatPolyOverZ::from_str("[[1  3, 0, 1  2, 1  -1],[1  2, 1  2, 1  2, 1  2]]").unwrap();
-        let cmp = MatPolyOverZ::from_str("[[0, 1  -1, 1  2, 1  3],[1  2, 1  2, 1  2, 1  2]]").unwrap();
+        let mat =
+            MatPolyOverZ::from_str("[[1  3, 0, 1  2, 1  -1],[1  2, 1  2, 1  2, 1  2]]").unwrap();
+        let cmp =
+            MatPolyOverZ::from_str("[[0, 1  -1, 1  2, 1  3],[1  2, 1  2, 1  2, 1  2]]").unwrap();
 
         let res = mat.sort_by_column(MatPolyOverZ::norm_eucl_sqrd).unwrap();
 
@@ -204,8 +206,12 @@ mod test_sort_by_length {
     /// for matrices with a few more entries
     #[test]
     fn many_columns() {
-        let mat = MatPolyOverZ::from_str("[[1  3, 1  4, 1  1, 1  7, 1  2, 0, 1  9, 1  -8, 1  6, 1  5]]").unwrap();
-        let cmp = MatPolyOverZ::from_str("[[0, 1  1, 1  2, 1  3, 1  4, 1  5, 1  6, 1  7, 1  -8, 1  9]]").unwrap();
+        let mat =
+            MatPolyOverZ::from_str("[[1  3, 1  4, 1  1, 1  7, 1  2, 0, 1  9, 1  -8, 1  6, 1  5]]")
+                .unwrap();
+        let cmp =
+            MatPolyOverZ::from_str("[[0, 1  1, 1  2, 1  3, 1  4, 1  5, 1  6, 1  7, 1  -8, 1  9]]")
+                .unwrap();
 
         let res = mat.sort_by_column(MatPolyOverZ::norm_eucl_sqrd).unwrap();
 
@@ -225,8 +231,10 @@ mod test_sort_by_length {
     /// Checks whether sorting by row length acc. to eucl. norm works correct for small entries
     #[test]
     fn row_norm_eucl_sqrd_small_entries() {
-        let mat = MatPolyOverZ::from_str("[[1  3, 0, 1  2, 1  -1],[1  2, 1  2, 1  2, 1  2]]").unwrap();
-        let cmp = MatPolyOverZ::from_str("[[1  3, 0, 1  2, 1  -1],[1  2, 1  2, 1  2, 1  2]]").unwrap();
+        let mat =
+            MatPolyOverZ::from_str("[[1  3, 0, 1  2, 1  -1],[1  2, 1  2, 1  2, 1  2]]").unwrap();
+        let cmp =
+            MatPolyOverZ::from_str("[[1  3, 0, 1  2, 1  -1],[1  2, 1  2, 1  2, 1  2]]").unwrap();
 
         let res = mat.sort_by_row(MatPolyOverZ::norm_eucl_sqrd).unwrap();
 
@@ -279,8 +287,14 @@ mod test_sort_by_length {
     /// for matrices with a few more entries
     #[test]
     fn many_rows() {
-        let mat = MatPolyOverZ::from_str("[[1  3],[0],[1  -1],[1  -7],[1  2],[1  9],[1  4],[1  8],[1  6],[1  5]]").unwrap();
-        let cmp = MatPolyOverZ::from_str("[[0],[1  -1],[1  2],[1  3],[1  4],[1  5],[1  6],[1  -7],[1  8],[1  9]]").unwrap();
+        let mat = MatPolyOverZ::from_str(
+            "[[1  3],[0],[1  -1],[1  -7],[1  2],[1  9],[1  4],[1  8],[1  6],[1  5]]",
+        )
+        .unwrap();
+        let cmp = MatPolyOverZ::from_str(
+            "[[0],[1  -1],[1  2],[1  3],[1  4],[1  5],[1  6],[1  -7],[1  8],[1  9]]",
+        )
+        .unwrap();
 
         let res = mat.sort_by_row(MatPolyOverZ::norm_eucl_sqrd).unwrap();
 
