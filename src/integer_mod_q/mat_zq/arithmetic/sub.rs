@@ -103,35 +103,6 @@ impl Sub<&MatZ> for &MatZq {
 arithmetic_trait_borrowed_to_owned!(Sub, sub, MatZq, MatZ, MatZq);
 arithmetic_trait_mixed_borrowed_owned!(Sub, sub, MatZq, MatZ, MatZq);
 
-impl Sub<&MatZq> for &MatZ {
-    type Output = MatZq;
-
-    /// Documentation at [`MatZq::sub`].
-    fn sub(self, other: &MatZq) -> Self::Output {
-        if self.get_num_rows() != other.get_num_rows()
-            || self.get_num_columns() != other.get_num_columns()
-        {
-            panic!(
-                "Tried to subtract a '{}x{}' matrix from a '{}x{}' matrix.",
-                self.get_num_rows(),
-                self.get_num_columns(),
-                other.get_num_rows(),
-                other.get_num_columns()
-            );
-        }
-
-        let mut out = MatZq::new(self.get_num_rows(), self.get_num_columns(), other.get_mod());
-        unsafe {
-            fmpz_mat_sub(&mut out.matrix.mat[0], &self.matrix, &other.matrix.mat[0]);
-            _fmpz_mod_mat_reduce(&mut out.matrix);
-        }
-        out
-    }
-}
-
-arithmetic_trait_borrowed_to_owned!(Sub, sub, MatZ, MatZq, MatZq);
-arithmetic_trait_mixed_borrowed_owned!(Sub, sub, MatZ, MatZq, MatZq);
-
 impl MatZq {
     /// Implements subtraction for two [`MatZq`] matrices.
     ///
@@ -300,10 +271,10 @@ mod test_sub_matz {
     fn small_numbers() {
         let a = MatZ::from_str("[[1, 2],[3, 4]]").unwrap();
         let b = MatZq::from_str("[[5, 6],[2, 10]] mod 11").unwrap();
-        let cmp = MatZq::from_str("[[7, 7],[1, 5]] mod 11").unwrap();
+        let cmp = MatZq::from_str("[[4, 4],[-1, 6]] mod 11").unwrap();
 
-        let res_0 = &a - &b;
-        let res_1 = MatZq::from((a, 11)) - b.get_representative_least_nonnegative_residue();
+        let res_0 = &b - &a;
+        let res_1 = b - MatZq::from((a, 11));
 
         assert_eq!(res_0, res_1);
         assert_eq!(cmp, res_0);
@@ -313,16 +284,16 @@ mod test_sub_matz {
     #[test]
     fn large_numbers() {
         let a: MatZ =
-            MatZ::from_str(&format!("[[1, 2, {}],[3, -4, {}]]", i64::MIN, u64::MAX)).unwrap();
+            MatZ::from_str(&format!("[[1, 1, {}],[3, 9, {}]]", i64::MAX, i64::MAX)).unwrap();
         let b: MatZq = MatZq::from_str(&format!(
-            "[[1, 1, {}],[3, 9, {}]] mod {}",
-            i64::MAX,
-            i64::MAX,
+            "[[1, 2, {}],[3, -4, {}]] mod {}",
+            i64::MIN,
+            u64::MAX,
             u64::MAX - 58
         ))
         .unwrap();
 
-        let c = a - &b;
+        let c = &b - a;
 
         assert_eq!(
             c,
@@ -346,9 +317,6 @@ mod test_sub_matz {
         let _ = &b - a.clone();
         let _ = b.clone() - &a;
         let _ = b.clone() - a.clone();
-        let _ = &a - &b;
-        let _ = &a - b.clone();
-        let _ = a.clone() - &b;
     }
 
     /// Ensures that mismatching rows results in a panic.

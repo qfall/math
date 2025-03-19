@@ -52,7 +52,7 @@ impl Add for &MatZq {
     }
 }
 
-impl Add<&MatZq> for &MatZ {
+impl Add<&MatZ> for &MatZq {
     type Output = MatZq;
 
     /// Implements the [`Add`] trait for a [`MatZ`] and a [`MatZq`] matrix.
@@ -79,7 +79,7 @@ impl Add<&MatZq> for &MatZ {
     ///
     /// # Panics ...
     /// - if the dimensions of both matrices mismatch.
-    fn add(self, other: &MatZq) -> Self::Output {
+    fn add(self, other: &MatZ) -> Self::Output {
         if self.get_num_rows() != other.get_num_rows()
             || self.get_num_columns() != other.get_num_columns()
         {
@@ -92,20 +92,20 @@ impl Add<&MatZq> for &MatZ {
             );
         }
 
-        let mut out = MatZq::new(self.get_num_rows(), self.get_num_columns(), other.get_mod());
+        let mut out = MatZq::new(self.get_num_rows(), self.get_num_columns(), self.get_mod());
         unsafe {
-            fmpz_mat_add(&mut out.matrix.mat[0], &self.matrix, &other.matrix.mat[0]);
+            fmpz_mat_add(&mut out.matrix.mat[0], &self.matrix.mat[0], &other.matrix);
             _fmpz_mod_mat_reduce(&mut out.matrix);
         }
         out
     }
 }
 
-arithmetic_trait_borrowed_to_owned!(Add, add, MatZ, MatZq, MatZq);
-arithmetic_trait_mixed_borrowed_owned!(Add, add, MatZ, MatZq, MatZq);
-arithmetic_trait_reverse!(Add, add, MatZq, MatZ, MatZq);
 arithmetic_trait_borrowed_to_owned!(Add, add, MatZq, MatZ, MatZq);
 arithmetic_trait_mixed_borrowed_owned!(Add, add, MatZq, MatZ, MatZq);
+arithmetic_trait_reverse!(Add, add, MatZ, MatZq, MatZq);
+arithmetic_trait_borrowed_to_owned!(Add, add, MatZ, MatZq, MatZq);
+arithmetic_trait_mixed_borrowed_owned!(Add, add, MatZ, MatZq, MatZq);
 
 impl MatZq {
     /// Implements addition for two [`MatZq`] matrices.
