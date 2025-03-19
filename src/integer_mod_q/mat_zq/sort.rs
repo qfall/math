@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Contains functions to sort [`MatZq`] by.
+//! Contains functions to sort [`MatZq`].
 
 use super::MatZq;
 use crate::{
