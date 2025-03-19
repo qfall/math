@@ -51,11 +51,14 @@ impl Sub for &MatZq {
     }
 }
 
+arithmetic_trait_borrowed_to_owned!(Sub, sub, MatZq, MatZq, MatZq);
+arithmetic_trait_mixed_borrowed_owned!(Sub, sub, MatZq, MatZq, MatZq);
+
 impl Sub<&MatZ> for &MatZq {
     type Output = MatZq;
 
-    /// Implements the [`Sub`] trait for a [`MatZ`] and a [`MatZq`] matrix.
-    /// [`Sub`] is implemented for any combination of [`MatZ`] and [`MatZq`] and vice versa.
+    /// Implements the [`Sub`] trait for a [`MatZq`] and a [`MatZ`] matrix.
+    /// [`Sub`] is implemented for any combination of owned and borrowed values.
     ///
     /// Parameters:
     /// - `other`: specifies the matrix to subtract from `self`.
@@ -70,8 +73,8 @@ impl Sub<&MatZ> for &MatZq {
     /// let a = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();
     /// let b = MatZq::from_str("[[1, 9, 3],[1, 0, 5]] mod 7").unwrap();
     ///
-    /// let c = &a - &b;
-    /// let d = a.clone() - b.clone();
+    /// let c = &b - &a;
+    /// let d = b.clone() - a.clone();
     /// let e = &b - &a;
     /// let f = b - a;
     /// ```
@@ -154,9 +157,6 @@ impl MatZq {
         Ok(out)
     }
 }
-
-arithmetic_trait_borrowed_to_owned!(Sub, sub, MatZq, MatZq, MatZq);
-arithmetic_trait_mixed_borrowed_owned!(Sub, sub, MatZq, MatZq, MatZq);
 
 #[cfg(test)]
 mod test_sub {
