@@ -136,7 +136,7 @@ mod test_hermite_nf {
         ))
         .unwrap();
         let h_cmp = MatZ::from_str(&format!("[[{}, 0],[0, {}]]", i64::MAX, u64::MAX)).unwrap();
-        let u_cmp = MatZ::from_str(&format!("[[1, 0],[-2, 1]]")).unwrap();
+        let u_cmp = MatZ::from_str("[[1, 0],[-2, 1]]").unwrap();
 
         let (h, u) = matrix.hermite_nf();
 
