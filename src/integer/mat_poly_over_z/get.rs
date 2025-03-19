@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::PolyOverZ,
     traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix},
-    utils::index::{evaluate_index, evaluate_indices_for_matrix},
+    utils::index::{evaluate_index_for_vector, evaluate_indices_for_matrix},
 };
 use flint_sys::{
     fmpz_poly::{fmpz_poly_set, fmpz_poly_struct},
@@ -137,6 +137,9 @@ impl MatrixGetSubmatrix for MatPolyOverZ {
     ///
     /// Parameters:
     /// - `row`: specifies the row of the matrix
+    /// 
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
     ///
     /// Returns a row vector of the matrix at the position of the given
     /// `row` or an error if the number of rows is
@@ -156,16 +159,10 @@ impl MatrixGetSubmatrix for MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if the number of the row is greater than the matrix or negative.
+    ///     if the number of the row is greater than the matrix.
     fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError> {
-        let row_i64 = evaluate_index(row)?;
-
-        if self.get_num_rows() <= row_i64 {
-            return Err(MathError::OutOfBounds(
-                format!("be smaller than {}", self.get_num_rows()),
-                format!("{row_i64}"),
-            ));
-        }
+        let num_rows = self.get_num_rows();
+        let row_i64 = evaluate_index_for_vector(row, num_rows)?;
 
         self.get_submatrix(row_i64, row_i64, 0, self.get_num_columns() - 1)
     }
@@ -173,7 +170,10 @@ impl MatrixGetSubmatrix for MatPolyOverZ {
     /// Outputs a column vector of the specified column.
     ///
     /// Input parameters:
-    /// * `column`: specifies the column of the matrix
+    /// - `column`: specifies the column of the matrix
+    /// 
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
     ///
     /// Returns a column vector of the matrix at the position of the given
     /// `column` or an error if the number of columns is
@@ -192,16 +192,10 @@ impl MatrixGetSubmatrix for MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if the number of the column is greater than the matrix or negative.
+    ///     if the number of the column is greater than the matrix.
     fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError> {
-        let column_i64 = evaluate_index(column)?;
-
-        if self.get_num_columns() <= column_i64 {
-            return Err(MathError::OutOfBounds(
-                format!("be smaller than {}", self.get_num_columns()),
-                format!("{column_i64}"),
-            ));
-        }
+        let num_cols = self.get_num_columns();
+        let column_i64 = evaluate_index_for_vector(column, num_cols)?;
 
         self.get_submatrix(0, self.get_num_rows() - 1, column_i64, column_i64)
     }
@@ -496,6 +490,26 @@ mod test_get_vec {
         assert_eq!(cmp_2, row_2);
     }
 
+    /// Ensure that getting a row with a negative index works
+    #[test]
+    fn get_row_negative_indexing_works() {
+        let matrix = MatPolyOverZ::from_str(&format!(
+            "[[0, 0, 0],[1  42, 1  {}, 1  {}]]",
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
+        let row_1 = matrix.get_row(-2).unwrap();
+        let row_2 = matrix.get_row(-1).unwrap();
+
+        let cmp_1 = MatPolyOverZ::from_str("[[0, 0, 0]]").unwrap();
+        let cmp_2 = MatPolyOverZ::from_str(&format!("[[1  42, 1  {}, 1  {}]]", i64::MAX, i64::MIN))
+            .unwrap();
+
+        assert_eq!(cmp_1, row_1);
+        assert_eq!(cmp_2, row_2);
+    }
+
     /// Ensure that getting a column works
     #[test]
     fn get_column_works() {
@@ -520,6 +534,30 @@ mod test_get_vec {
         assert_eq!(cmp_3, column_3);
     }
 
+    /// Ensure that getting a column with a negative index works
+    #[test]
+    fn get_column_negative_indexing_works() {
+        let matrix = MatPolyOverZ::from_str(&format!(
+            "[[1  42, 0, 2  17 42],[1  {}, 0, 2  17 42],[1  {}, 0, 2  17 42]]",
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
+        let column_1 = matrix.get_column(-3).unwrap();
+        let column_2 = matrix.get_column(-2).unwrap();
+        let column_3 = matrix.get_column(-1).unwrap();
+
+        let cmp_1 =
+            MatPolyOverZ::from_str(&format!("[[1  42],[1  {}],[1  {}]]", i64::MAX, i64::MIN))
+                .unwrap();
+        let cmp_2 = MatPolyOverZ::from_str("[[0],[0],[0]]").unwrap();
+        let cmp_3 = MatPolyOverZ::from_str("[[2  17 42],[2  17 42],[2  17 42]]").unwrap();
+
+        assert_eq!(cmp_1, column_1);
+        assert_eq!(cmp_2, column_2);
+        assert_eq!(cmp_3, column_3);
+    }
+
     /// Ensure that wrong row and column dimensions yields an error
     #[test]
     fn wrong_dim_error() {
@@ -529,9 +567,9 @@ mod test_get_vec {
             i64::MIN
         ))
         .unwrap();
-        let row_1 = matrix.get_row(-1);
+        let row_1 = matrix.get_row(-4);
         let row_2 = matrix.get_row(4);
-        let column_1 = matrix.get_column(-1);
+        let column_1 = matrix.get_column(-4);
         let column_2 = matrix.get_column(4);
 
         assert!(row_1.is_err());

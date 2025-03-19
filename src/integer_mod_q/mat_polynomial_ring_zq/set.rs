@@ -220,6 +220,9 @@ impl MatrixSetSubmatrix for MatPolynomialRingZq {
     /// - `col_1`: specifies the column of `other` providing
     ///     the values replacing the original column in `self`
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of its matrix
     /// or if the number of rows differs.
@@ -265,6 +268,9 @@ impl MatrixSetSubmatrix for MatPolynomialRingZq {
     /// - `other`: specifies the matrix providing the row replacing the row in `self`
     /// - `row_1`: specifies the row of `other` providing
     ///     the values replacing the original row in `self`
+    ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of its matrix
@@ -348,6 +354,9 @@ impl MatrixSwaps for MatPolynomialRingZq {
     /// - `col_0`: specifies the first column which is swapped with the second one
     /// - `col_1`: specifies the second column which is swapped with the first one
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of the matrix.
     ///
@@ -376,6 +385,9 @@ impl MatrixSwaps for MatPolynomialRingZq {
     /// Parameters:
     /// - `row_0`: specifies the first row which is swapped with the second one
     /// - `row_1`: specifies the second row which is swapped with the first one
+    ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of the matrix.
@@ -669,9 +681,9 @@ mod test_setter {
                 .unwrap();
         let mat_2 = mat_1.clone();
 
-        assert!(mat_1.set_column(-1, &mat_2, 0).is_err());
+        assert!(mat_1.set_column(-3, &mat_2, 0).is_err());
         assert!(mat_1.set_column(2, &mat_2, 0).is_err());
-        assert!(mat_1.set_column(1, &mat_2, -1).is_err());
+        assert!(mat_1.set_column(1, &mat_2, -3).is_err());
         assert!(mat_1.set_column(1, &mat_2, 2).is_err());
     }
 
@@ -772,9 +784,9 @@ mod test_setter {
                 .unwrap();
         let mat_2 = mat_1.clone();
 
-        assert!(mat_1.set_row(-1, &mat_2, 0).is_err());
+        assert!(mat_1.set_row(-6, &mat_2, 0).is_err());
         assert!(mat_1.set_row(5, &mat_2, 0).is_err());
-        assert!(mat_1.set_row(2, &mat_2, -1).is_err());
+        assert!(mat_1.set_row(2, &mat_2, -6).is_err());
         assert!(mat_1.set_row(2, &mat_2, 5).is_err());
     }
 
@@ -878,8 +890,8 @@ mod test_swaps {
     fn column_out_of_bounds() {
         let mut matrix = MatPolynomialRingZq::new(5, 2, ModulusPolynomialRingZq::from((3, 17)));
 
-        assert!(matrix.swap_columns(-1, 0).is_err());
-        assert!(matrix.swap_columns(0, -1).is_err());
+        assert!(matrix.swap_columns(-6, 0).is_err());
+        assert!(matrix.swap_columns(0, -6).is_err());
         assert!(matrix.swap_columns(5, 0).is_err());
         assert!(matrix.swap_columns(0, 5).is_err());
     }
@@ -905,8 +917,8 @@ mod test_swaps {
     fn row_out_of_bounds() {
         let mut matrix = MatPolynomialRingZq::new(2, 4, ModulusPolynomialRingZq::from((3, 17)));
 
-        assert!(matrix.swap_rows(-1, 0).is_err());
-        assert!(matrix.swap_rows(0, -1).is_err());
+        assert!(matrix.swap_rows(-3, 0).is_err());
+        assert!(matrix.swap_rows(0, -3).is_err());
         assert!(matrix.swap_rows(4, 0).is_err());
         assert!(matrix.swap_rows(0, 4).is_err());
     }
