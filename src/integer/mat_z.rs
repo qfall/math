@@ -10,6 +10,7 @@
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use flint_sys::fmpz_mat::fmpz_mat_struct;
+use std::fmt;
 
 mod arithmetic;
 mod basis_reductions;
@@ -89,7 +90,12 @@ mod vector;
 /// assert_eq!(col_vec.norm_eucl_sqrd().unwrap(), Z::from(2));
 /// assert_eq!(row_vec.norm_infty().unwrap(), Z::ONE);
 /// ```
-#[derive(Debug)]
 pub struct MatZ {
     pub(crate) matrix: fmpz_mat_struct,
+}
+
+impl fmt::Debug for MatZ {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self)
+    }
 }

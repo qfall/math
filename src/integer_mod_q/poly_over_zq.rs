@@ -16,6 +16,7 @@
 
 use super::modulus::Modulus;
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_struct;
+use std::fmt;
 
 mod arithmetic;
 mod cmp;
@@ -61,8 +62,13 @@ mod unsafe_functions;
 /// // comparison
 /// assert_eq!(poly_1, poly_2);
 /// ```
-#[derive(Debug)]
 pub struct PolyOverZq {
     pub(crate) poly: fmpz_mod_poly_struct,
     pub(crate) modulus: Modulus,
+}
+
+impl fmt::Debug for PolyOverZq {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self)
+    }
 }

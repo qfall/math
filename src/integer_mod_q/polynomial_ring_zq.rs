@@ -20,6 +20,7 @@ use super::ModulusPolynomialRingZq;
 use crate::integer::PolyOverZ;
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 mod arithmetic;
 mod coefficient_embedding;
@@ -67,9 +68,15 @@ mod unsafe_functions;
 ///
 /// # Ok::<(), MathError>(())
 /// ```
-#[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Display, Clone)]
+#[derive(PartialEq, Eq, Serialize, Deserialize, Display, Clone)]
 #[display("{poly} / {modulus}")]
 pub struct PolynomialRingZq {
     pub(crate) poly: PolyOverZ,
     pub(crate) modulus: ModulusPolynomialRingZq,
+}
+
+impl fmt::Debug for PolynomialRingZq {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self)
+    }
 }

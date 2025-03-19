@@ -10,6 +10,7 @@
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use flint_sys::fmpz::fmpz;
+use std::fmt;
 
 mod arithmetic;
 mod cmp;
@@ -67,7 +68,12 @@ mod unsafe_functions;
 /// );
 /// # Ok::<(), qfall_math::error::MathError>(())
 /// ```
-#[derive(Debug)]
 pub struct Z {
     pub(crate) value: fmpz,
+}
+
+impl fmt::Debug for Z {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self)
+    }
 }

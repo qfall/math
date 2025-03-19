@@ -13,6 +13,7 @@ use super::ModulusPolynomialRingZq;
 use crate::integer::MatPolyOverZ;
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 mod arithmetic;
 mod coefficient_embedding;
@@ -87,9 +88,15 @@ mod vector;
 /// assert!(row_vec.is_row_vector());
 /// assert!(col_vec.is_column_vector());
 /// ```
-#[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Display, Clone)]
+#[derive(PartialEq, Eq, Serialize, Deserialize, Display, Clone)]
 #[display("{matrix} / {modulus}")]
 pub struct MatPolynomialRingZq {
     pub(crate) matrix: MatPolyOverZ,
     pub(crate) modulus: ModulusPolynomialRingZq,
+}
+
+impl fmt::Debug for MatPolynomialRingZq {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self)
+    }
 }

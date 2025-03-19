@@ -14,6 +14,7 @@
 //! values. The end-user should be unable to obtain a non-reduced value.
 
 use flint_sys::fmpq::fmpq;
+use std::fmt;
 
 mod arithmetic;
 mod cmp;
@@ -71,7 +72,12 @@ mod unsafe_functions;
 /// assert_ne!(a, b);
 /// # Ok::<(), qfall_math::error::MathError>(())
 /// ```
-#[derive(Debug)]
 pub struct Q {
     pub(crate) value: fmpq,
+}
+
+impl fmt::Debug for Q {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self)
+    }
 }

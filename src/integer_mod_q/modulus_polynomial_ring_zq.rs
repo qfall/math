@@ -11,7 +11,7 @@
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use flint_sys::fq::fq_ctx_struct;
-use std::rc::Rc;
+use std::{fmt, rc::Rc};
 
 mod cmp;
 mod coefficient_embedding;
@@ -40,7 +40,12 @@ mod unsafe_functions;
 /// let poly_mod = PolyOverZq::from_str("3  1 0 1 mod 17").unwrap();
 /// let modulus = ModulusPolynomialRingZq::from(poly_mod);
 /// ```
-#[derive(Debug)]
 pub struct ModulusPolynomialRingZq {
     modulus: Rc<fq_ctx_struct>,
+}
+
+impl fmt::Debug for ModulusPolynomialRingZq {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self)
+    }
 }

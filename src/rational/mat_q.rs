@@ -14,6 +14,7 @@
 //! values. The end-user should be unable to obtain a non-reduced value.
 
 use flint_sys::fmpq_mat::fmpq_mat_struct;
+use std::fmt;
 
 mod arithmetic;
 mod cholesky_decomp;
@@ -84,7 +85,12 @@ mod vector;
 /// assert!(row_vec.is_row_vector());
 /// assert!(col_vec.is_column_vector());
 /// ```
-#[derive(Debug)]
 pub struct MatQ {
     pub(crate) matrix: fmpq_mat_struct,
+}
+
+impl fmt::Debug for MatQ {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self)
+    }
 }

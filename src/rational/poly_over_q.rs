@@ -16,6 +16,7 @@
 //! non-reduced value.
 
 use flint_sys::fmpq_poly::fmpq_poly_struct;
+use std::fmt;
 
 mod arithmetic;
 mod cmp;
@@ -58,7 +59,12 @@ mod unsafe_functions;
 /// // comparison
 /// assert_ne!(poly_1, poly_2);
 /// ```
-#[derive(Debug)]
 pub struct PolyOverQ {
     pub(crate) poly: fmpq_poly_struct,
+}
+
+impl fmt::Debug for PolyOverQ {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self)
+    }
 }

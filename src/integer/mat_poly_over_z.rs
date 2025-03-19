@@ -10,6 +10,7 @@
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use flint_sys::fmpz_poly_mat::fmpz_poly_mat_struct;
+use std::fmt;
 
 mod arithmetic;
 mod cmp;
@@ -76,7 +77,12 @@ mod vector;
 /// assert!(row_vec.is_row_vector());
 /// assert!(col_vec.is_column_vector());
 /// ```
-#[derive(Debug)]
 pub struct MatPolyOverZ {
     pub(crate) matrix: fmpz_poly_mat_struct,
+}
+
+impl fmt::Debug for MatPolyOverZ {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self)
+    }
 }
