@@ -11,7 +11,7 @@
 use crate::{
     error::MathError,
     rational::{MatQ, Q},
-    traits::{GetNumColumns, GetNumRows, SetEntry},
+    traits::{MatrixDimensions, MatrixSetEntry, MatrixSetSubmatrix, MatrixSwaps},
     utils::{
         collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
         index::{evaluate_index, evaluate_indices_for_matrix},
@@ -29,7 +29,7 @@ use std::{
     ptr::{null, null_mut},
 };
 
-impl<Rational: Into<Q>> SetEntry<Rational> for MatQ {
+impl<Rational: Into<Q>> MatrixSetEntry<Rational> for MatQ {
     /// Sets the value of a specific matrix entry according to a given `value`
     /// that implements [`Into<Q>`].
     ///
@@ -121,7 +121,7 @@ impl<Rational: Into<Q>> SetEntry<Rational> for MatQ {
     }
 }
 
-impl MatQ {
+impl MatrixSetSubmatrix for MatQ {
     /// Sets a column of the given matrix to the provided column of `other`.
     ///
     /// Parameters:
@@ -136,7 +136,7 @@ impl MatQ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::rational::MatQ;
+    /// use qfall_math::{rational::MatQ, traits::MatrixSetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let mut mat_1 = MatQ::new(2, 2);
@@ -149,7 +149,7 @@ impl MatQ {
     ///     if the provided column index is not defined within the margins of the matrix.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     ///     if the number of rows of `self` and `other` differ.
-    pub fn set_column(
+    fn set_column(
         &mut self,
         col_0: impl TryInto<i64> + Display,
         other: &Self,
@@ -194,7 +194,7 @@ impl MatQ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::rational::MatQ;
+    /// use qfall_math::{rational::MatQ, traits::MatrixSetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let mut mat_1 = MatQ::new(2, 2);
@@ -207,7 +207,7 @@ impl MatQ {
     ///     if the provided row index is not defined within the margins of the matrix.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     ///     if the number of columns of `self` and `other` differ.
-    pub fn set_row(
+    fn set_row(
         &mut self,
         row_0: impl TryInto<i64> + Display,
         other: &Self,
@@ -237,7 +237,9 @@ impl MatQ {
 
         Ok(())
     }
+}
 
+impl MatrixSwaps for MatQ {
     /// Swaps two entries of the specified matrix.
     ///
     /// Parameters:
@@ -255,7 +257,7 @@ impl MatQ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::rational::MatQ;
+    /// use qfall_math::{rational::MatQ, traits::MatrixSwaps};
     ///
     /// let mut matrix = MatQ::new(4, 3);
     /// matrix.swap_entries(0, 0, 2, 1);
@@ -264,7 +266,7 @@ impl MatQ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
     ///     if row or column are greater than the matrix size.
-    pub fn swap_entries(
+    fn swap_entries(
         &mut self,
         row_0: impl TryInto<i64> + Display,
         col_0: impl TryInto<i64> + Display,
@@ -294,7 +296,7 @@ impl MatQ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::rational::MatQ;
+    /// use qfall_math::{rational::MatQ, traits::MatrixSwaps};
     ///
     /// let mut matrix = MatQ::new(4, 3);
     /// matrix.swap_columns(0, 2);
@@ -303,7 +305,7 @@ impl MatQ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     ///     if one of the given columns is greater than the matrix or negative.
-    pub fn swap_columns(
+    fn swap_columns(
         &mut self,
         col_0: impl TryInto<i64> + Display,
         col_1: impl TryInto<i64> + Display,
@@ -335,7 +337,7 @@ impl MatQ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::rational::MatQ;
+    /// use qfall_math::{rational::MatQ, traits::MatrixSwaps};
     ///
     /// let mut matrix = MatQ::new(4, 3);
     /// matrix.swap_rows(0, 2);
@@ -344,7 +346,7 @@ impl MatQ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     ///     if one of the given rows is greater than the matrix or negative.
-    pub fn swap_rows(
+    fn swap_rows(
         &mut self,
         row_0: impl TryInto<i64> + Display,
         row_1: impl TryInto<i64> + Display,
@@ -364,7 +366,9 @@ impl MatQ {
         unsafe { fmpq_mat_swap_rows(&mut self.matrix, null(), row_0, row_1) }
         Ok(())
     }
+}
 
+impl MatQ {
     /// Swaps the `i`-th column with the `n-i`-th column for all `i <= n/2`
     /// of the specified matrix with `n` columns.
     ///
@@ -407,7 +411,7 @@ mod test_setter {
         integer::Z,
         integer_mod_q::Modulus,
         rational::MatQ,
-        traits::{GetEntry, SetEntry},
+        traits::{MatrixGetEntry, MatrixSetEntry, MatrixSetSubmatrix},
     };
     use std::str::FromStr;
 
@@ -722,6 +726,7 @@ mod test_setter {
 #[cfg(test)]
 mod test_swaps {
     use super::MatQ;
+    use crate::traits::{MatrixGetSubmatrix, MatrixSwaps};
     use std::str::FromStr;
 
     /// Ensures that swapping entries works fine for small entries
@@ -920,6 +925,7 @@ mod test_swaps {
 #[cfg(test)]
 mod test_reverses {
     use super::MatQ;
+    use crate::traits::MatrixGetSubmatrix;
     use std::str::FromStr;
 
     /// Ensures that reversing columns works fine for small entries

@@ -114,7 +114,7 @@ mod test_new {
 mod test_set_one {
     use crate::{
         rational::{MatQ, Q},
-        traits::GetEntry,
+        traits::MatrixGetEntry,
     };
 
     /// Tests if an identity matrix is set from a zero matrix.

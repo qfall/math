@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::{MatPolyOverZ, PolyOverZ, Z},
     rational::Q,
-    traits::{GetNumColumns, GetNumRows, SetEntry},
+    traits::{MatrixDimensions, MatrixSetEntry},
     utils::index::evaluate_index,
 };
 use std::fmt::Display;
@@ -125,7 +125,7 @@ impl MatPolyOverZ {
 #[cfg(test)]
 mod test_sample_binomial {
     use super::{MatPolyOverZ, Q, Z};
-    use crate::traits::{GetCoefficient, GetEntry, GetNumColumns, GetNumRows};
+    use crate::traits::{GetCoefficient, MatrixDimensions, MatrixGetEntry};
 
     // As all major tests regarding an appropriate binomial distribution,
     // whether the correct interval is kept, and if the errors are thrown correctly,
@@ -219,7 +219,7 @@ mod test_sample_binomial {
 #[cfg(test)]
 mod test_sample_binomial_with_offset {
     use super::{MatPolyOverZ, Q, Z};
-    use crate::traits::{GetCoefficient, GetEntry, GetNumColumns, GetNumRows};
+    use crate::traits::{GetCoefficient, MatrixDimensions, MatrixGetEntry};
 
     // As all major tests regarding an appropriate binomial distribution,
     // whether the correct interval is kept, and if the errors are thrown correctly,

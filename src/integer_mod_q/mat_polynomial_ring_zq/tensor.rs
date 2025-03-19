@@ -12,7 +12,7 @@ use super::MatPolynomialRingZq;
 use crate::{
     error::MathError,
     integer::PolyOverZ,
-    traits::{GetEntry, GetNumColumns, GetNumRows, Tensor},
+    traits::{MatrixDimensions, MatrixGetEntry, Tensor},
 };
 use flint_sys::{fmpz_poly_mat::fmpz_poly_mat_entry, fq::fq_mul};
 
@@ -169,7 +169,7 @@ unsafe fn set_matrix_window_mul(
 mod test_tensor {
     use crate::{
         integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
-        traits::{GetNumColumns, GetNumRows, Tensor},
+        traits::{MatrixDimensions, Tensor},
     };
     use std::str::FromStr;
 

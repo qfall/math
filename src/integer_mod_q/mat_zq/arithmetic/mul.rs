@@ -14,7 +14,7 @@ use crate::integer::MatZ;
 use crate::macros::arithmetics::{
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
 };
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::MatrixDimensions;
 use flint_sys::fmpz_mat::fmpz_mat_mul;
 use flint_sys::fmpz_mod_mat::{_fmpz_mod_mat_reduce, fmpz_mod_mat_mul};
 use std::ops::Mul;
@@ -155,7 +155,7 @@ impl MatZq {
 #[cfg(test)]
 mod test_mul {
     use super::MatZq;
-    use crate::{integer::Z, traits::SetEntry};
+    use crate::{integer::Z, traits::MatrixSetEntry};
     use std::str::FromStr;
 
     /// Checks if matrix multiplication works fine for squared matrices
@@ -209,7 +209,7 @@ mod test_mul {
 mod test_mul_matz {
     use super::MatZq;
     use crate::integer::MatZ;
-    use crate::{integer::Z, traits::SetEntry};
+    use crate::{integer::Z, traits::MatrixSetEntry};
     use std::str::FromStr;
 
     /// Checks if matrix multiplication works fine for squared matrices

@@ -12,10 +12,7 @@
 //! These methods should be used to ensure that vector functions
 //! can only be called on suitably formed vector/matrices.
 
-use crate::{
-    integer_mod_q::MatPolynomialRingZq,
-    traits::{GetNumColumns, GetNumRows},
-};
+use crate::{integer_mod_q::MatPolynomialRingZq, traits::MatrixDimensions};
 
 impl MatPolynomialRingZq {
     /// Returns `true` if the provided [`MatPolynomialRingZq`] has only one row,

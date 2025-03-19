@@ -89,7 +89,7 @@ impl MatZ {
 mod test_new {
     use crate::{
         integer::{MatZ, Z},
-        traits::GetEntry,
+        traits::MatrixGetEntry,
     };
 
     /// Ensure that entries of a new matrix are `0`.
@@ -127,7 +127,7 @@ mod test_new {
 mod test_identity {
     use crate::{
         integer::{MatZ, Z},
-        traits::GetEntry,
+        traits::MatrixGetEntry,
     };
 
     /// Tests if an identity matrix is set from a zero matrix.

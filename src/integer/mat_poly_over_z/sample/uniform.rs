@@ -11,7 +11,7 @@
 use crate::{
     error::MathError,
     integer::{MatPolyOverZ, PolyOverZ, Z},
-    traits::{GetNumColumns, GetNumRows, SetEntry},
+    traits::{MatrixDimensions, MatrixSetEntry},
     utils::index::evaluate_index,
 };
 use std::fmt::Display;
@@ -82,7 +82,7 @@ impl MatPolyOverZ {
 
 #[cfg(test)]
 mod test_sample_uniform {
-    use crate::traits::{GetCoefficient, GetEntry, GetNumColumns, GetNumRows};
+    use crate::traits::{GetCoefficient, MatrixDimensions, MatrixGetEntry};
     use crate::{
         integer::{MatPolyOverZ, Z},
         integer_mod_q::Modulus,

@@ -9,11 +9,7 @@
 //! This module contains the implementation of the `determinant` function.
 
 use super::MatZ;
-use crate::{
-    error::MathError,
-    integer::Z,
-    traits::{GetNumColumns, GetNumRows},
-};
+use crate::{error::MathError, integer::Z, traits::MatrixDimensions};
 use flint_sys::fmpz_mat::fmpz_mat_det;
 
 impl MatZ {

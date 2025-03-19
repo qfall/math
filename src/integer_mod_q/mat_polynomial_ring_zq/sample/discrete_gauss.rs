@@ -88,7 +88,7 @@ mod test_sample_d {
         integer::{MatPolyOverZ, PolyOverZ, Z},
         integer_mod_q::{MatPolynomialRingZq, MatZq, ModulusPolynomialRingZq, Zq},
         rational::{PolyOverQ, Q},
-        traits::{GetEntry, IntoCoefficientEmbedding},
+        traits::{IntoCoefficientEmbedding, MatrixGetEntry},
     };
     use std::str::FromStr;
 

@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::{MatZ, Z},
     integer_mod_q::{fmpz_mod_helpers::length, Modulus, Zq},
-    traits::{GetEntry, GetNumColumns, GetNumRows, SetEntry},
+    traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix, MatrixSetEntry},
     utils::index::{evaluate_index, evaluate_indices_for_matrix},
 };
 use flint_sys::{
@@ -114,7 +114,9 @@ impl MatZq {
     pub fn get_mod(&self) -> Modulus {
         self.modulus.clone()
     }
+}
 
+impl MatrixGetSubmatrix for MatZq {
     /// Outputs the row vector of the specified row.
     ///
     /// Parameters:
@@ -126,7 +128,7 @@ impl MatZq {
     ///
     /// # Examples
     /// ```rust
-    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::{integer_mod_q::MatZq, traits::MatrixGetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let matrix = MatZq::from_str("[[1, 2, 3],[3, 4, 5]] mod 4").unwrap();
@@ -138,7 +140,7 @@ impl MatZq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     ///     if the number of the row is greater than the matrix or negative.
-    pub fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError> {
+    fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError> {
         let row_i64 = evaluate_index(row)?;
 
         if self.get_num_rows() <= row_i64 {
@@ -162,7 +164,7 @@ impl MatZq {
     ///
     /// # Examples
     /// ```rust
-    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::{integer_mod_q::MatZq, traits::MatrixGetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let matrix = MatZq::from_str("[[1, 2, 3],[3, 4, 5]] mod 4").unwrap();
@@ -175,7 +177,7 @@ impl MatZq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     ///     if the number of the column is greater than the matrix or negative.
-    pub fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError> {
+    fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError> {
         let column_i64 = evaluate_index(column)?;
 
         if self.get_num_columns() <= column_i64 {
@@ -208,7 +210,7 @@ impl MatZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::{integer_mod_q::MatZq, traits::MatrixGetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let mat = MatZq::identity(3, 3, 17);
@@ -227,7 +229,7 @@ impl MatZq {
     ///
     /// # Panics ...
     /// - if `col_1 > col_2` or `row_1 > row_2`.
-    pub fn get_submatrix(
+    fn get_submatrix(
         &self,
         row_1: impl TryInto<i64> + Display,
         row_2: impl TryInto<i64> + Display,
@@ -274,7 +276,9 @@ impl MatZq {
             modulus: self.get_mod(),
         })
     }
+}
 
+impl MatZq {
     /// Efficiently collects all [`fmpz`]s in a [`MatZq`] without cloning them.
     ///
     /// Hence, the values on the returned [`Vec`] are intended for short-term use
@@ -329,7 +333,7 @@ impl MatZq {
     }
 }
 
-impl GetNumRows for MatZq {
+impl MatrixDimensions for MatZq {
     /// Returns the number of rows of the matrix as a [`i64`].
     ///
     /// # Examples
@@ -343,9 +347,7 @@ impl GetNumRows for MatZq {
     fn get_num_rows(&self) -> i64 {
         self.matrix.mat[0].r
     }
-}
 
-impl GetNumColumns for MatZq {
     /// Returns the number of columns of the matrix as a [`i64`].
     ///
     /// # Examples
@@ -361,7 +363,7 @@ impl GetNumColumns for MatZq {
     }
 }
 
-impl GetEntry<Z> for MatZq {
+impl MatrixGetEntry<Z> for MatZq {
     /// Outputs the [`Z`] value of a specific matrix entry.
     ///
     /// Parameters:
@@ -378,7 +380,7 @@ impl GetEntry<Z> for MatZq {
     /// # Examples
     /// ```rust
     /// use qfall_math::integer_mod_q::MatZq;
-    /// use qfall_math::traits::GetEntry;
+    /// use qfall_math::traits::MatrixGetEntry;
     /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
     ///
@@ -424,7 +426,7 @@ impl GetEntry<Z> for MatZq {
     /// # Examples
     /// ```rust
     /// use qfall_math::integer_mod_q::MatZq;
-    /// use qfall_math::traits::GetEntry;
+    /// use qfall_math::traits::MatrixGetEntry;
     /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
     ///
@@ -447,7 +449,7 @@ impl GetEntry<Z> for MatZq {
     }
 }
 
-impl GetEntry<Zq> for MatZq {
+impl MatrixGetEntry<Zq> for MatZq {
     /// Outputs the [`Zq`] value of a specific matrix entry.
     ///
     /// Parameters:
@@ -464,7 +466,7 @@ impl GetEntry<Zq> for MatZq {
     /// # Examples
     /// ```rust
     /// use qfall_math::integer_mod_q::{MatZq, Zq};
-    /// use qfall_math::traits::GetEntry;
+    /// use qfall_math::traits::MatrixGetEntry;
     /// use std::str::FromStr;
     ///
     /// let matrix = MatZq::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]] mod 10").unwrap();
@@ -505,7 +507,7 @@ impl GetEntry<Zq> for MatZq {
     /// # Examples
     /// ```rust
     /// use qfall_math::integer_mod_q::{MatZq, Zq};
-    /// use qfall_math::traits::GetEntry;
+    /// use qfall_math::traits::MatrixGetEntry;
     /// use std::str::FromStr;
     ///
     /// let matrix = MatZq::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]] mod 10").unwrap();
@@ -529,7 +531,7 @@ mod test_get_entry {
     use crate::{
         integer::Z,
         integer_mod_q::MatZq,
-        traits::{GetEntry, SetEntry},
+        traits::{MatrixGetEntry, MatrixSetEntry},
     };
     use std::str::FromStr;
 
@@ -598,10 +600,10 @@ mod test_get_entry {
     fn error_wrong_row() {
         let matrix: MatZq = MatZq::new(5, 10, 7);
 
-        assert!(GetEntry::<Z>::get_entry(&matrix, 5, 1).is_err());
-        assert!(GetEntry::<Z>::get_entry(&matrix, -6, 1).is_err());
-        assert!(GetEntry::<Zq>::get_entry(&matrix, 5, 1).is_err());
-        assert!(GetEntry::<Zq>::get_entry(&matrix, -6, 1).is_err());
+        assert!(MatrixGetEntry::<Z>::get_entry(&matrix, 5, 1).is_err());
+        assert!(MatrixGetEntry::<Z>::get_entry(&matrix, -6, 1).is_err());
+        assert!(MatrixGetEntry::<Zq>::get_entry(&matrix, 5, 1).is_err());
+        assert!(MatrixGetEntry::<Zq>::get_entry(&matrix, -6, 1).is_err());
     }
 
     /// Ensure that a wrong number of columns yields an Error.
@@ -609,10 +611,10 @@ mod test_get_entry {
     fn error_wrong_column() {
         let matrix = MatZq::new(5, 10, 7);
 
-        assert!(GetEntry::<Z>::get_entry(&matrix, 1, 10).is_err());
-        assert!(GetEntry::<Z>::get_entry(&matrix, 1, -11).is_err());
-        assert!(GetEntry::<Zq>::get_entry(&matrix, 1, 10).is_err());
-        assert!(GetEntry::<Zq>::get_entry(&matrix, 1, -11).is_err());
+        assert!(MatrixGetEntry::<Z>::get_entry(&matrix, 1, 10).is_err());
+        assert!(MatrixGetEntry::<Z>::get_entry(&matrix, 1, -11).is_err());
+        assert!(MatrixGetEntry::<Zq>::get_entry(&matrix, 1, 10).is_err());
+        assert!(MatrixGetEntry::<Zq>::get_entry(&matrix, 1, -11).is_err());
     }
 
     /// Ensure that negative indices return the correct values.
@@ -687,10 +689,7 @@ mod test_get_entry {
 
 #[cfg(test)]
 mod test_get_num {
-    use crate::{
-        integer_mod_q::MatZq,
-        traits::{GetNumColumns, GetNumRows},
-    };
+    use crate::{integer_mod_q::MatZq, traits::MatrixDimensions};
 
     /// Ensure that the getter for number of rows works correctly.
     #[test]
@@ -714,7 +713,7 @@ mod test_get_representative_least_nonnegative_residue {
     use crate::{
         integer::Z,
         integer_mod_q::MatZq,
-        traits::{GetEntry, GetNumColumns, GetNumRows, SetEntry},
+        traits::{MatrixDimensions, MatrixGetEntry, MatrixSetEntry},
     };
 
     /// Test if the dimensions are taken over correctly
@@ -777,7 +776,7 @@ mod test_mod {
 
 #[cfg(test)]
 mod test_get_vec {
-    use crate::integer_mod_q::MatZq;
+    use crate::{integer_mod_q::MatZq, traits::MatrixGetSubmatrix};
     use std::str::FromStr;
 
     /// Ensure that getting a row works
@@ -862,7 +861,7 @@ mod test_get_submatrix {
     use crate::{
         integer::Z,
         integer_mod_q::MatZq,
-        traits::{GetNumColumns, GetNumRows},
+        traits::{MatrixDimensions, MatrixGetSubmatrix},
     };
     use std::str::FromStr;
 

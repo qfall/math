@@ -13,7 +13,7 @@
 
 use super::MatZq;
 use crate::integer::Z;
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::MatrixDimensions;
 use flint_sys::fmpz_mod_mat::{fmpz_mod_mat_clear, fmpz_mod_mat_init_set};
 
 impl Clone for MatZq {
@@ -73,7 +73,7 @@ impl Drop for MatZq {
 mod test_clone {
     use super::MatZq;
     use crate::integer::Z;
-    use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
+    use crate::traits::{MatrixDimensions, MatrixGetEntry};
     use std::str::FromStr;
 
     /// check if a cloned value is still alive after the original value ran out of scope
@@ -91,12 +91,12 @@ mod test_clone {
         assert_eq!(a.get_num_rows(), 2);
         assert_eq!(a.get_num_columns(), 3);
 
-        assert_eq!(GetEntry::<Z>::get_entry(&a, 0, 0).unwrap(), 1);
-        assert_eq!(GetEntry::<Z>::get_entry(&a, 0, 1).unwrap(), 2);
-        assert_eq!(GetEntry::<Z>::get_entry(&a, 0, 2).unwrap(), 3);
-        assert_eq!(GetEntry::<Z>::get_entry(&a, 1, 0).unwrap(), 3);
-        assert_eq!(GetEntry::<Z>::get_entry(&a, 1, 1).unwrap(), 4);
-        assert_eq!(GetEntry::<Z>::get_entry(&a, 1, 2).unwrap(), 5);
+        assert_eq!(MatrixGetEntry::<Z>::get_entry(&a, 0, 0).unwrap(), 1);
+        assert_eq!(MatrixGetEntry::<Z>::get_entry(&a, 0, 1).unwrap(), 2);
+        assert_eq!(MatrixGetEntry::<Z>::get_entry(&a, 0, 2).unwrap(), 3);
+        assert_eq!(MatrixGetEntry::<Z>::get_entry(&a, 1, 0).unwrap(), 3);
+        assert_eq!(MatrixGetEntry::<Z>::get_entry(&a, 1, 1).unwrap(), 4);
+        assert_eq!(MatrixGetEntry::<Z>::get_entry(&a, 1, 2).unwrap(), 5);
     }
 
     /// check whether the cloned entries are stored separately
@@ -109,20 +109,20 @@ mod test_clone {
         a = b.clone();
 
         assert_ne!(
-            GetEntry::<Z>::get_entry(&a, 0, 0).unwrap().value.0,
-            GetEntry::<Z>::get_entry(&b, 0, 0).unwrap().value.0
+            MatrixGetEntry::<Z>::get_entry(&a, 0, 0).unwrap().value.0,
+            MatrixGetEntry::<Z>::get_entry(&b, 0, 0).unwrap().value.0
         );
         assert_ne!(
-            GetEntry::<Z>::get_entry(&a, 0, 1).unwrap().value.0,
-            GetEntry::<Z>::get_entry(&b, 0, 1).unwrap().value.0
+            MatrixGetEntry::<Z>::get_entry(&a, 0, 1).unwrap().value.0,
+            MatrixGetEntry::<Z>::get_entry(&b, 0, 1).unwrap().value.0
         );
         assert_ne!(
-            GetEntry::<Z>::get_entry(&a, 1, 0).unwrap().value.0,
-            GetEntry::<Z>::get_entry(&b, 1, 0).unwrap().value.0
+            MatrixGetEntry::<Z>::get_entry(&a, 1, 0).unwrap().value.0,
+            MatrixGetEntry::<Z>::get_entry(&b, 1, 0).unwrap().value.0
         );
         assert_eq!(
-            GetEntry::<Z>::get_entry(&a, 1, 1).unwrap().value.0,
-            GetEntry::<Z>::get_entry(&b, 1, 1).unwrap().value.0
+            MatrixGetEntry::<Z>::get_entry(&a, 1, 1).unwrap().value.0,
+            MatrixGetEntry::<Z>::get_entry(&b, 1, 1).unwrap().value.0
         ); // kept on stack
     }
 
@@ -135,8 +135,8 @@ mod test_clone {
 
         let a = b.clone();
 
-        assert_eq!(GetEntry::<Z>::get_entry(&a, 1, 1).unwrap(), 1);
-        assert_eq!(GetEntry::<Z>::get_entry(&a, 1, 0).unwrap(), 0);
+        assert_eq!(MatrixGetEntry::<Z>::get_entry(&a, 1, 1).unwrap(), 1);
+        assert_eq!(MatrixGetEntry::<Z>::get_entry(&a, 1, 0).unwrap(), 0);
     }
 
     /// Check if large modulus is stored separately and therefore cloned deeply
@@ -156,7 +156,7 @@ mod test_clone {
 mod test_drop {
     use super::MatZq;
     use crate::integer::Z;
-    use crate::traits::GetEntry;
+    use crate::traits::MatrixGetEntry;
     use std::collections::HashSet;
     use std::str::FromStr;
 
@@ -167,8 +167,8 @@ mod test_drop {
         let a = MatZq::from_str(&string).unwrap();
 
         let storage_mod = a.matrix.mod_[0].0;
-        let storage_0 = GetEntry::<Z>::get_entry(&a, 0, 0).unwrap().value.0;
-        let storage_1 = GetEntry::<Z>::get_entry(&a, 0, 1).unwrap().value.0;
+        let storage_0 = MatrixGetEntry::<Z>::get_entry(&a, 0, 0).unwrap().value.0;
+        let storage_1 = MatrixGetEntry::<Z>::get_entry(&a, 0, 1).unwrap().value.0;
 
         (storage_mod, storage_0, storage_1)
     }

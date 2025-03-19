@@ -14,7 +14,7 @@ use crate::{
     integer::Z,
     integer_mod_q::{MatZq, Modulus},
     rational::Q,
-    traits::{GetNumColumns, GetNumRows, SetEntry},
+    traits::{MatrixDimensions, MatrixSetEntry},
     utils::sample::binomial::sample_binomial,
 };
 use std::fmt::Display;
@@ -127,7 +127,7 @@ impl MatZq {
 #[cfg(test)]
 mod test_sample_binomial {
     use super::{MatZq, Q, Z};
-    use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
+    use crate::traits::{MatrixDimensions, MatrixGetEntry};
 
     // As all major tests regarding an appropriate binomial distribution,
     // whether the correct interval is kept, and if the errors are thrown correctly,
@@ -193,7 +193,7 @@ mod test_sample_binomial {
 #[cfg(test)]
 mod test_sample_binomial_with_offset {
     use super::{MatZq, Q, Z};
-    use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
+    use crate::traits::{MatrixDimensions, MatrixGetEntry};
 
     // As all major tests regarding an appropriate binomial distribution,
     // whether the correct interval is kept, and if the errors are thrown correctly,

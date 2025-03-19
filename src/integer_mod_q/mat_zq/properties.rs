@@ -11,7 +11,7 @@
 use super::MatZq;
 use crate::{
     integer::Z,
-    traits::{GetEntry, GetNumRows},
+    traits::{MatrixDimensions, MatrixGetEntry},
 };
 use flint_sys::{
     fmpz_mat::fmpz_mat_is_one,
@@ -94,8 +94,8 @@ impl MatZq {
         for row in 0..self.get_num_rows() {
             for column in 0..row {
                 if unsafe {
-                    GetEntry::<Z>::get_entry_unchecked(self, row, column)
-                        != GetEntry::<Z>::get_entry_unchecked(self, column, row)
+                    MatrixGetEntry::<Z>::get_entry_unchecked(self, row, column)
+                        != MatrixGetEntry::<Z>::get_entry_unchecked(self, column, row)
                 } {
                     return false;
                 }

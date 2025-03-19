@@ -11,7 +11,7 @@
 use super::MatZ;
 use crate::{
     error::MathError,
-    traits::{Concatenate, GetNumColumns, GetNumRows},
+    traits::{Concatenate, MatrixDimensions},
 };
 use flint_sys::fmpz_mat::{fmpz_mat_concat_horizontal, fmpz_mat_concat_vertical};
 
@@ -109,7 +109,7 @@ impl Concatenate for &MatZ {
 mod test_concatenate {
     use crate::{
         integer::MatZ,
-        traits::{Concatenate, GetNumColumns, GetNumRows},
+        traits::{Concatenate, MatrixDimensions},
     };
     use std::str::FromStr;
 

@@ -13,7 +13,7 @@
 use super::MatPolyOverZ;
 use crate::{
     integer::{poly_over_z::fmpz_poly_helpers::reduce_fmpz_poly_by_poly_over_z, PolyOverZ},
-    traits::{GetNumColumns, GetNumRows},
+    traits::MatrixDimensions,
 };
 use flint_sys::fmpz_poly_mat::fmpz_poly_mat_entry;
 

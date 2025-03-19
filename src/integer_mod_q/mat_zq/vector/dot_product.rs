@@ -12,7 +12,7 @@ use crate::{
     error::MathError,
     integer::Z,
     integer_mod_q::{MatZq, Zq},
-    traits::{GetNumColumns, GetNumRows},
+    traits::MatrixDimensions,
 };
 use flint_sys::fmpz::fmpz_addmul;
 

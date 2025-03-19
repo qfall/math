@@ -9,10 +9,7 @@
 //! This module contains implementations of basis reduction algorithms.
 
 use super::MatZ;
-use crate::{
-    rational::Q,
-    traits::{GetNumColumns, GetNumRows},
-};
+use crate::{rational::Q, traits::MatrixDimensions};
 use flint_sys::fmpz_mat::{fmpz_mat_is_reduced, fmpz_mat_lll_storjohann};
 
 impl MatZ {

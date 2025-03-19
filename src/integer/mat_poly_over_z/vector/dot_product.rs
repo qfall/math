@@ -10,7 +10,7 @@
 
 use crate::error::MathError;
 use crate::integer::{MatPolyOverZ, PolyOverZ};
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::MatrixDimensions;
 use flint_sys::fmpz_poly::{fmpz_poly_add, fmpz_poly_mul};
 
 impl MatPolyOverZ {

@@ -16,7 +16,7 @@ use crate::{
     integer::MatZ,
     macros::for_others::implement_for_owned,
     rational::Q,
-    traits::{GetNumColumns, GetNumRows, SetEntry},
+    traits::{MatrixDimensions, MatrixSetEntry},
     utils::{dimensions::find_matrix_dimensions, parse::parse_matrix_string},
 };
 use flint_sys::fmpq_mat::fmpq_mat_set_fmpz_mat;
@@ -126,7 +126,7 @@ mod test_from_mat_zq {
     use crate::{
         integer::MatZ,
         rational::{MatQ, Q},
-        traits::{GetEntry, GetNumColumns, GetNumRows, SetEntry},
+        traits::{MatrixDimensions, MatrixGetEntry, MatrixSetEntry},
     };
     use std::str::FromStr;
 
@@ -168,7 +168,7 @@ mod test_from_str {
     use crate::{
         integer::Z,
         rational::{MatQ, Q},
-        traits::GetEntry,
+        traits::MatrixGetEntry,
     };
     use std::str::FromStr;
 

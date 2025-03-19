@@ -11,7 +11,7 @@
 use crate::{
     error::MathError,
     integer::{MatZ, Z},
-    traits::{GetNumColumns, GetNumRows, SetEntry},
+    traits::{MatrixDimensions, MatrixSetEntry},
     utils::sample::uniform::UniformIntegerSampler,
 };
 use std::fmt::Display;
@@ -76,7 +76,7 @@ impl MatZ {
 
 #[cfg(test)]
 mod test_sample_uniform {
-    use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
+    use crate::traits::{MatrixDimensions, MatrixGetEntry};
     use crate::{
         integer::{MatZ, Z},
         integer_mod_q::Modulus,

@@ -12,7 +12,7 @@ use super::MatPolyOverZ;
 use crate::{
     error::MathError,
     integer::PolyOverZ,
-    traits::{GetEntry, GetNumColumns, GetNumRows},
+    traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix},
     utils::index::{evaluate_index, evaluate_indices_for_matrix},
 };
 use flint_sys::{
@@ -24,7 +24,7 @@ use flint_sys::{
 };
 use std::{fmt::Display, mem::MaybeUninit};
 
-impl GetNumRows for MatPolyOverZ {
+impl MatrixDimensions for MatPolyOverZ {
     /// Returns the number of rows of the matrix as a [`i64`].
     ///
     /// # Examples
@@ -38,9 +38,7 @@ impl GetNumRows for MatPolyOverZ {
     fn get_num_rows(&self) -> i64 {
         self.matrix.r
     }
-}
 
-impl GetNumColumns for MatPolyOverZ {
     /// Returns the number of columns of the matrix as a [`i64`].
     ///
     /// # Examples
@@ -56,7 +54,7 @@ impl GetNumColumns for MatPolyOverZ {
     }
 }
 
-impl GetEntry<PolyOverZ> for MatPolyOverZ {
+impl MatrixGetEntry<PolyOverZ> for MatPolyOverZ {
     /// Outputs the [`PolyOverZ`] value of a specific matrix entry.
     ///
     /// Parameters:
@@ -134,7 +132,7 @@ impl GetEntry<PolyOverZ> for MatPolyOverZ {
     }
 }
 
-impl MatPolyOverZ {
+impl MatrixGetSubmatrix for MatPolyOverZ {
     /// Outputs the row vector of the specified row.
     ///
     /// Parameters:
@@ -146,7 +144,7 @@ impl MatPolyOverZ {
     ///
     /// # Examples
     /// ```rust
-    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::{integer::MatPolyOverZ, traits::MatrixGetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let matrix = MatPolyOverZ::from_str("[[1  1, 0],[1  3, 1  4],[0, 1  6]]").unwrap();
@@ -159,7 +157,7 @@ impl MatPolyOverZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     ///     if the number of the row is greater than the matrix or negative.
-    pub fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError> {
+    fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError> {
         let row_i64 = evaluate_index(row)?;
 
         if self.get_num_rows() <= row_i64 {
@@ -183,7 +181,7 @@ impl MatPolyOverZ {
     ///
     /// # Examples
     /// ```rust
-    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::{integer::MatPolyOverZ, traits::MatrixGetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let matrix = MatPolyOverZ::from_str("[[1  1, 0],[1  3, 1  4],[0, 1  6]]").unwrap();
@@ -195,7 +193,7 @@ impl MatPolyOverZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     ///     if the number of the column is greater than the matrix or negative.
-    pub fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError> {
+    fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError> {
         let column_i64 = evaluate_index(column)?;
 
         if self.get_num_columns() <= column_i64 {
@@ -228,7 +226,7 @@ impl MatPolyOverZ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::{integer::MatPolyOverZ, traits::MatrixGetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let mat = MatPolyOverZ::identity(3, 3);
@@ -247,7 +245,7 @@ impl MatPolyOverZ {
     ///
     /// # Panics ...
     /// - if `col_1 > col_2` or `row_1 > row_2`.
-    pub fn get_submatrix(
+    fn get_submatrix(
         &self,
         row_1: impl TryInto<i64> + Display,
         row_2: impl TryInto<i64> + Display,
@@ -293,7 +291,9 @@ impl MatPolyOverZ {
             matrix: unsafe { window_copy.assume_init() },
         })
     }
+}
 
+impl MatPolyOverZ {
     /// Efficiently collects all [`fmpz_poly_struct`]s in a [`MatPolyOverZ`] without cloning them.
     ///
     /// Hence, the values on the returned [`Vec`] are intended for short-term use
@@ -328,7 +328,7 @@ impl MatPolyOverZ {
 mod test_get_entry {
     use crate::{
         integer::{MatPolyOverZ, PolyOverZ},
-        traits::{GetEntry, SetEntry},
+        traits::{MatrixGetEntry, MatrixSetEntry},
     };
     use std::str::FromStr;
 
@@ -452,10 +452,7 @@ mod test_get_entry {
 
 #[cfg(test)]
 mod test_get_num {
-    use crate::{
-        integer::MatPolyOverZ,
-        traits::{GetNumColumns, GetNumRows},
-    };
+    use crate::{integer::MatPolyOverZ, traits::MatrixDimensions};
 
     /// Ensure that the getter for number of rows works correctly.
     #[test]
@@ -476,7 +473,7 @@ mod test_get_num {
 
 #[cfg(test)]
 mod test_get_vec {
-    use crate::integer::MatPolyOverZ;
+    use crate::{integer::MatPolyOverZ, traits::MatrixGetSubmatrix};
     use std::str::FromStr;
 
     /// Ensure that getting a row works
@@ -548,7 +545,7 @@ mod test_get_vec {
 mod test_get_submatrix {
     use crate::{
         integer::{MatPolyOverZ, Z},
-        traits::{GetNumColumns, GetNumRows},
+        traits::{MatrixDimensions, MatrixGetSubmatrix},
     };
     use std::str::FromStr;
 

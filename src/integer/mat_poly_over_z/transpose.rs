@@ -9,7 +9,7 @@
 //! This module contains the implementation of the `transpose` function.
 
 use super::MatPolyOverZ;
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::MatrixDimensions;
 use flint_sys::fmpz_poly_mat::fmpz_poly_mat_transpose;
 
 impl MatPolyOverZ {

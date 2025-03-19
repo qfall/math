@@ -9,7 +9,7 @@
 //! Implementation of the Gram-Schmidt Orthogonalization for [`MatQ`] matrices.
 
 use super::MatQ;
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::MatrixDimensions;
 use flint_sys::fmpq_mat::fmpq_mat_gso;
 
 impl MatQ {
@@ -36,7 +36,7 @@ impl MatQ {
 mod test_gso {
     use crate::{
         rational::{MatQ, Q},
-        traits::GetEntry,
+        traits::{MatrixGetEntry, MatrixGetSubmatrix},
     };
     use std::str::FromStr;
 

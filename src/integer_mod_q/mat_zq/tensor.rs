@@ -11,7 +11,7 @@
 use super::MatZq;
 use crate::{
     error::MathError,
-    traits::{GetNumColumns, GetNumRows, Tensor},
+    traits::{MatrixDimensions, Tensor},
 };
 use flint_sys::{fmpz_mat::fmpz_mat_kronecker_product, fmpz_mod_mat::_fmpz_mod_mat_reduce};
 
@@ -113,7 +113,7 @@ impl MatZq {
 mod test_tensor {
     use crate::{
         integer_mod_q::MatZq,
-        traits::{GetNumColumns, GetNumRows, Tensor},
+        traits::{MatrixDimensions, Tensor},
     };
     use std::str::FromStr;
 

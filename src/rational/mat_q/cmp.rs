@@ -115,7 +115,7 @@ implement_trait_reverse!(PartialEq, eq, MatZ, MatQ, bool);
 #[cfg(test)]
 mod test_partial_eq {
     use super::MatQ;
-    use crate::{rational::Q, traits::SetEntry};
+    use crate::{rational::Q, traits::MatrixSetEntry};
     use std::str::FromStr;
 
     /// Ensures that different instantiations do not break the equality between matrices

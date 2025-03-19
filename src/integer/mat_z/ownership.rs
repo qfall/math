@@ -11,7 +11,7 @@
 //!
 //! The explicit functions contain the documentation.
 
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::MatrixDimensions;
 
 use super::MatZ;
 use flint_sys::fmpz_mat::{fmpz_mat_clear, fmpz_mat_set};
@@ -68,7 +68,7 @@ impl Drop for MatZ {
 #[cfg(test)]
 mod test_clone {
     use super::MatZ;
-    use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
+    use crate::traits::{MatrixDimensions, MatrixGetEntry};
     use std::str::FromStr;
 
     /// Check if a cloned value is still alive after the original value ran out of scope
@@ -127,7 +127,7 @@ mod test_clone {
 #[cfg(test)]
 mod test_drop {
     use super::MatZ;
-    use crate::traits::GetEntry;
+    use crate::traits::MatrixGetEntry;
     use std::collections::HashSet;
     use std::str::FromStr;
 

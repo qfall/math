@@ -10,7 +10,7 @@
 
 use crate::error::MathError;
 use crate::integer::{MatZ, Z};
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::MatrixDimensions;
 use flint_sys::fmpz::fmpz_addmul;
 
 impl MatZ {

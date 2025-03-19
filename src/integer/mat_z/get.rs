@@ -12,7 +12,7 @@ use super::MatZ;
 use crate::{
     error::MathError,
     integer::Z,
-    traits::{GetEntry, GetNumColumns, GetNumRows},
+    traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix},
     utils::index::{evaluate_index, evaluate_indices_for_matrix},
 };
 use flint_sys::{
@@ -21,7 +21,7 @@ use flint_sys::{
 };
 use std::{fmt::Display, mem::MaybeUninit};
 
-impl GetNumRows for MatZ {
+impl MatrixDimensions for MatZ {
     /// Returns the number of rows of the matrix as a [`i64`].
     ///
     /// # Examples
@@ -35,9 +35,7 @@ impl GetNumRows for MatZ {
     fn get_num_rows(&self) -> i64 {
         self.matrix.r
     }
-}
 
-impl GetNumColumns for MatZ {
     /// Returns the number of columns of the matrix as a [`i64`].
     ///
     /// # Examples
@@ -53,7 +51,7 @@ impl GetNumColumns for MatZ {
     }
 }
 
-impl GetEntry<Z> for MatZ {
+impl MatrixGetEntry<Z> for MatZ {
     /// Outputs the [`Z`] value of a specific matrix entry.
     ///
     /// Parameters:
@@ -70,7 +68,7 @@ impl GetEntry<Z> for MatZ {
     /// # Examples
     /// ```
     /// use qfall_math::integer::{MatZ, Z};
-    /// use qfall_math::traits::GetEntry;
+    /// use qfall_math::traits::MatrixGetEntry;
     /// use std::str::FromStr;
     ///
     /// let matrix = MatZ::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]]").unwrap();
@@ -115,7 +113,7 @@ impl GetEntry<Z> for MatZ {
     /// # Examples
     /// ```
     /// use qfall_math::integer::{MatZ, Z};
-    /// use qfall_math::traits::GetEntry;
+    /// use qfall_math::traits::MatrixGetEntry;
     /// use std::str::FromStr;
     ///
     /// let matrix = MatZ::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]]").unwrap();
@@ -133,7 +131,7 @@ impl GetEntry<Z> for MatZ {
     }
 }
 
-impl MatZ {
+impl MatrixGetSubmatrix for MatZ {
     /// Outputs the row vector of the specified row.
     ///
     /// Parameters:
@@ -145,7 +143,7 @@ impl MatZ {
     ///
     /// # Examples
     /// ```rust
-    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::{integer::MatZ, traits::MatrixGetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let matrix = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();
@@ -157,7 +155,7 @@ impl MatZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     ///     if the number of the row is greater than the matrix or negative.
-    pub fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError> {
+    fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError> {
         let row_i64 = evaluate_index(row)?;
 
         if self.get_num_rows() <= row_i64 {
@@ -181,7 +179,7 @@ impl MatZ {
     ///
     /// # Examples
     /// ```rust
-    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::{integer::MatZ, traits::MatrixGetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let matrix = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();
@@ -194,7 +192,7 @@ impl MatZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     ///     if the number of the column is greater than the matrix or negative.
-    pub fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError> {
+    fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError> {
         let column_i64 = evaluate_index(column)?;
 
         if self.get_num_columns() <= column_i64 {
@@ -227,7 +225,7 @@ impl MatZ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::{integer::MatZ, traits::MatrixGetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let mat = MatZ::identity(3, 3);
@@ -246,7 +244,7 @@ impl MatZ {
     ///
     /// # Panics ...
     /// - if `col_1 > col_2` or `row_1 > row_2`.
-    pub fn get_submatrix(
+    fn get_submatrix(
         &self,
         row_1: impl TryInto<i64> + Display,
         row_2: impl TryInto<i64> + Display,
@@ -292,7 +290,9 @@ impl MatZ {
             matrix: unsafe { window_copy.assume_init() },
         })
     }
+}
 
+impl MatZ {
     /// Efficiently collects all [`fmpz`]s in a [`MatZ`] without cloning them.
     ///
     /// Hence, the values on the returned [`Vec`] are intended for short-term use
@@ -328,7 +328,7 @@ mod test_get_entry {
     use super::Z;
     use crate::{
         integer::MatZ,
-        traits::{GetEntry, SetEntry},
+        traits::{MatrixGetEntry, MatrixSetEntry},
     };
     use std::str::FromStr;
 
@@ -433,15 +433,102 @@ mod test_get_entry {
 
         assert_eq!(Z::from(u64::MAX), entry);
     }
+
+    // *** Doc-tests of automatically implemented functions by `MatrixGetEntry`
+
+    /// Ensures that the doc-test of [`MatZ::get_entries`] works.
+    #[test]
+    fn get_entries() {
+        let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+
+        let entries = matrix.get_entries();
+        let mut added_entries = Z::default();
+        for row in entries {
+            for entry in row {
+                added_entries += entry;
+            }
+        }
+    }
+
+    /// Ensures that [`MatZ::get_entries`] returns all entries in the correct order.
+    #[test]
+    fn get_entries_correct() {
+        let matrix = MatZ::from_str("[[2, 3, 4],[5, 6, 7]]").unwrap();
+
+        let entries = matrix.get_entries();
+
+        assert_eq!(2, entries[0][0]);
+        assert_eq!(3, entries[0][1]);
+        assert_eq!(4, entries[0][2]);
+        assert_eq!(5, entries[1][0]);
+        assert_eq!(6, entries[1][1]);
+        assert_eq!(7, entries[1][2]);
+
+        assert_eq!(2, entries.len());
+        assert_eq!(3, entries[0].len());
+        assert_eq!(3, entries[1].len());
+    }
+
+    /// Ensures that the doc-test of [`MatZ::get_entries_rowwise`] works.
+    #[test]
+    fn get_entries_rowwise() {
+        let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+
+        let entries = matrix.get_entries_rowwise();
+        let mut added_entries = Z::default();
+        for entry in entries {
+            added_entries += entry;
+        }
+    }
+
+    /// Ensures that [`MatZ::get_entries_rowwise`] returns all entries in the correct order.
+    #[test]
+    fn get_entries_rowwise_correct() {
+        let matrix = MatZ::from_str("[[2, 3, 4],[5, 6, 7]]").unwrap();
+
+        let entries = matrix.get_entries_rowwise();
+
+        assert_eq!(2, entries[0]);
+        assert_eq!(3, entries[1]);
+        assert_eq!(4, entries[2]);
+        assert_eq!(5, entries[3]);
+        assert_eq!(6, entries[4]);
+        assert_eq!(7, entries[5]);
+        assert_eq!(6, entries.len());
+    }
+
+    /// Ensures that the doc-test of [`MatZ::get_entries_columnwise`] works.
+    #[test]
+    fn get_entries_columnwise() {
+        let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+
+        let entries = matrix.get_entries_columnwise();
+        let mut added_entries = Z::default();
+        for entry in entries {
+            added_entries += entry;
+        }
+    }
+
+    /// Ensures that [`MatZ::get_entries_columnwise`] returns all entries in the correct order.
+    #[test]
+    fn get_entries_columnwise_correct() {
+        let matrix = MatZ::from_str("[[2, 3, 4],[5, 6, 7]]").unwrap();
+
+        let entries = matrix.get_entries_columnwise();
+
+        assert_eq!(2, entries[0]);
+        assert_eq!(5, entries[1]);
+        assert_eq!(3, entries[2]);
+        assert_eq!(6, entries[3]);
+        assert_eq!(4, entries[4]);
+        assert_eq!(7, entries[5]);
+        assert_eq!(6, entries.len());
+    }
 }
 
 #[cfg(test)]
 mod test_get_num {
-
-    use crate::{
-        integer::MatZ,
-        traits::{GetNumColumns, GetNumRows},
-    };
+    use crate::{integer::MatZ, traits::MatrixDimensions};
 
     /// Ensure that the getter for number of rows works correctly.
     #[test]
@@ -462,7 +549,7 @@ mod test_get_num {
 
 #[cfg(test)]
 mod test_get_vec {
-    use crate::integer::MatZ;
+    use crate::{integer::MatZ, traits::MatrixGetSubmatrix};
     use std::str::FromStr;
 
     /// Ensure that getting a row works
@@ -527,7 +614,7 @@ mod test_get_vec {
 mod test_get_submatrix {
     use crate::{
         integer::{MatZ, Z},
-        traits::{GetNumColumns, GetNumRows},
+        traits::{MatrixDimensions, MatrixGetSubmatrix, MatrixSetSubmatrix},
     };
     use std::str::FromStr;
 
@@ -632,6 +719,54 @@ mod test_get_submatrix {
         let _ = mat.get_submatrix(0_u32, 0_i32, 0_u32, 0_u32);
         let _ = mat.get_submatrix(0_u64, 0_i64, 0_u64, 0_u64);
         let _ = mat.get_submatrix(&Z::ZERO, &Z::ZERO, &Z::ZERO, &Z::ZERO);
+    }
+
+    // *** Doc-tests of automatically implemented functions by `MatrixGetSubmatrix`
+
+    /// Ensures that the first doc-test of [`MatZ::get_rows`] works.
+    #[test]
+    fn get_rows_1() {
+        let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+
+        let mut added_rows = MatZ::new(1, 3);
+        for row in matrix.get_rows() {
+            added_rows = added_rows + row;
+        }
+    }
+
+    /// Ensures that the second doc-test of [`MatZ::get_rows`] works.
+    #[test]
+    fn get_rows_2() {
+        let mut matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+
+        let mut added_rows = MatZ::new(1, 3);
+        for (i, row) in matrix.get_rows().iter().enumerate() {
+            added_rows = added_rows + row;
+            matrix.set_row(i, &added_rows, 0).unwrap();
+        }
+    }
+
+    /// Ensures that the first doc-test of [`MatZ::get_columns`] works.
+    #[test]
+    fn get_columns_1() {
+        let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+
+        let mut added_columns = MatZ::new(3, 1);
+        for column in matrix.get_columns() {
+            added_columns = added_columns + column;
+        }
+    }
+
+    /// Ensures that the second doc-test of [`MatZ::get_columns`] works.
+    #[test]
+    fn get_columns_2() {
+        let mut matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+
+        let mut added_columns = MatZ::new(3, 1);
+        for (i, column) in matrix.get_columns().iter().enumerate() {
+            added_columns = added_columns + column;
+            matrix.set_column(i, &added_columns, 0).unwrap();
+        }
     }
 }
 

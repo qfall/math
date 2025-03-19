@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::PolyOverZ,
     macros::for_others::implement_for_owned,
-    traits::{GetNumColumns, GetNumRows, SetEntry},
+    traits::{MatrixDimensions, MatrixSetEntry, MatrixSetSubmatrix, MatrixSwaps},
     utils::{
         collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
         index::{evaluate_index, evaluate_indices_for_matrix},
@@ -25,7 +25,7 @@ use flint_sys::{
 };
 use std::fmt::Display;
 
-impl SetEntry<&PolyOverZ> for MatPolyOverZ {
+impl MatrixSetEntry<&PolyOverZ> for MatPolyOverZ {
     /// Sets the value of a specific matrix entry according to a given `value` of type [`PolyOverZ`].
     ///
     /// Parameters:
@@ -90,7 +90,7 @@ impl SetEntry<&PolyOverZ> for MatPolyOverZ {
     /// # Examples
     /// ```
     /// use qfall_math::integer::{MatPolyOverZ, PolyOverZ};
-    /// use qfall_math::traits::SetEntry;
+    /// use qfall_math::traits::MatrixSetEntry;
     /// use std::str::FromStr;
     ///
     /// let mut matrix = MatPolyOverZ::new(2, 2);
@@ -111,9 +111,9 @@ impl SetEntry<&PolyOverZ> for MatPolyOverZ {
     }
 }
 
-implement_for_owned!(PolyOverZ, MatPolyOverZ, SetEntry);
+implement_for_owned!(PolyOverZ, MatPolyOverZ, MatrixSetEntry);
 
-impl MatPolyOverZ {
+impl MatrixSetSubmatrix for MatPolyOverZ {
     /// Sets a column of the given matrix to the provided column of `other`.
     ///
     /// Parameters:
@@ -128,7 +128,7 @@ impl MatPolyOverZ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::{integer::MatPolyOverZ, traits::MatrixSetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let mut mat_1 = MatPolyOverZ::new(2, 2);
@@ -141,7 +141,7 @@ impl MatPolyOverZ {
     ///     if the provided column index is not defined within the margins of the matrix.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     ///     if the number of rows of `self` and `other` differ.
-    pub fn set_column(
+    fn set_column(
         &mut self,
         col_0: impl TryInto<i64> + Display,
         other: &Self,
@@ -186,7 +186,7 @@ impl MatPolyOverZ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::{integer::MatPolyOverZ, traits::MatrixSetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let mut mat_1 = MatPolyOverZ::new(2, 2);
@@ -199,7 +199,7 @@ impl MatPolyOverZ {
     ///     if the provided row index is not defined within the margins of the matrix.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     ///     if the number of columns of `self` and `other` differ.
-    pub fn set_row(
+    fn set_row(
         &mut self,
         row_0: impl TryInto<i64> + Display,
         other: &Self,
@@ -229,7 +229,9 @@ impl MatPolyOverZ {
 
         Ok(())
     }
+}
 
+impl MatrixSwaps for MatPolyOverZ {
     /// Swaps two entries of the specified matrix.
     ///
     /// Parameters:
@@ -246,7 +248,7 @@ impl MatPolyOverZ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::{integer::MatPolyOverZ, traits::MatrixSwaps};
     ///
     /// let mut matrix = MatPolyOverZ::new(4, 3);
     /// matrix.swap_entries(0, 0, 2, 1);
@@ -255,7 +257,7 @@ impl MatPolyOverZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
     ///     if row or column are greater than the matrix size.
-    pub fn swap_entries(
+    fn swap_entries(
         &mut self,
         row_0: impl TryInto<i64> + Display,
         col_0: impl TryInto<i64> + Display,
@@ -285,7 +287,7 @@ impl MatPolyOverZ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::{integer::MatPolyOverZ, traits::MatrixSwaps};
     ///
     /// let mut matrix = MatPolyOverZ::new(4, 3);
     /// matrix.swap_columns(0, 2);
@@ -294,7 +296,7 @@ impl MatPolyOverZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     ///     if one of the given columns is greater than the matrix or negative.
-    pub fn swap_columns(
+    fn swap_columns(
         &mut self,
         col_0: impl TryInto<i64> + Display,
         col_1: impl TryInto<i64> + Display,
@@ -332,7 +334,7 @@ impl MatPolyOverZ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::{integer::MatPolyOverZ, traits::MatrixSwaps};
     ///
     /// let mut matrix = MatPolyOverZ::new(4, 3);
     /// matrix.swap_rows(0, 2);
@@ -341,7 +343,7 @@ impl MatPolyOverZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     ///     if one of the given rows is greater than the matrix or negative.
-    pub fn swap_rows(
+    fn swap_rows(
         &mut self,
         row_0: impl TryInto<i64> + Display,
         row_1: impl TryInto<i64> + Display,
@@ -367,7 +369,9 @@ impl MatPolyOverZ {
         }
         Ok(())
     }
+}
 
+impl MatPolyOverZ {
     /// Swaps the `i`-th column with the `n-i`-th column for all `i <= n/2`
     /// of the specified matrix with `n` columns.
     ///
@@ -407,7 +411,7 @@ impl MatPolyOverZ {
 mod test_setter {
     use crate::{
         integer::{MatPolyOverZ, PolyOverZ},
-        traits::{GetEntry, SetEntry},
+        traits::{MatrixGetEntry, MatrixSetEntry, MatrixSetSubmatrix},
     };
     use std::str::FromStr;
 
@@ -700,6 +704,7 @@ mod test_setter {
 #[cfg(test)]
 mod test_swaps {
     use super::MatPolyOverZ;
+    use crate::traits::{MatrixGetSubmatrix, MatrixSwaps};
     use std::str::FromStr;
 
     /// Ensures that swapping entries works fine for small entries
@@ -912,6 +917,7 @@ mod test_swaps {
 #[cfg(test)]
 mod test_reverses {
     use super::MatPolyOverZ;
+    use crate::traits::MatrixGetSubmatrix;
     use std::str::FromStr;
 
     /// Ensures that reversing columns works fine for small entries

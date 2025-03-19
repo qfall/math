@@ -10,7 +10,7 @@
 
 use crate::error::MathError;
 use crate::rational::{MatQ, Q};
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::MatrixDimensions;
 use flint_sys::fmpq::fmpq_addmul;
 
 impl MatQ {

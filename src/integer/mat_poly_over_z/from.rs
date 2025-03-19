@@ -138,7 +138,7 @@ impl From<&MatPolyOverZ> for MatPolyOverZ {
 
 #[cfg(test)]
 mod test_from_str {
-    use crate::{integer::MatPolyOverZ, traits::GetEntry};
+    use crate::{integer::MatPolyOverZ, traits::MatrixGetEntry};
     use std::str::FromStr;
 
     /// Ensure that initialization works.

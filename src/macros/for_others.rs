@@ -132,14 +132,14 @@ pub(crate) use implement_for_others;
 ///     `($bridge_type, $output_type, $type, Evaluate)`
 /// - [`SetCoefficient`](crate::traits::SetCoefficient) with the signature
 ///     `($bridge_type, $type, SetCoefficient)`
-/// - [`SetEntry`](crate::traits::SetEntry) with the signature
+/// - [`MatrixSetEntry`](crate::traits::MatrixSetEntry) with the signature
 ///     `($bridge_type, $type, SetCoefficient)`
 ///
 /// # Examples
 /// ```compile_fail
 /// implement_for_owned!(Q, Q, PolyOverQ, Evaluate);
 /// implement_for_owned!(Z, PolyOverZ, SetCoefficient);
-/// implement_for_owned!(Z, MatZq, SetEntry);
+/// implement_for_owned!(Z, MatZq, MatrixSetEntry);
 /// ```
 macro_rules! implement_for_owned {
     // [`Evaluate`] trait
@@ -187,9 +187,9 @@ macro_rules! implement_for_owned {
         }
     };
 
-    // [`SetEntry`] trait
-    ($source_type:ident, $type:ident, SetEntry) => {
-        impl SetEntry<$source_type> for $type {
+    // [`MatrixSetEntry`] trait
+    ($source_type:ident, $type:ident, MatrixSetEntry) => {
+        impl MatrixSetEntry<$source_type> for $type {
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::set_entry`] for &[`" $source_type "`]."]
                 fn set_entry(

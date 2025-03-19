@@ -12,8 +12,8 @@
 use crate::{
     integer::{MatZ, PolyOverZ},
     traits::{
-        FromCoefficientEmbedding, GetCoefficient, GetEntry, GetNumRows, IntoCoefficientEmbedding,
-        SetCoefficient, SetEntry,
+        FromCoefficientEmbedding, GetCoefficient, IntoCoefficientEmbedding, MatrixDimensions,
+        MatrixGetEntry, MatrixSetEntry, SetCoefficient,
     },
 };
 

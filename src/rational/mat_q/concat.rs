@@ -11,7 +11,7 @@
 use super::MatQ;
 use crate::{
     error::MathError,
-    traits::{Concatenate, GetNumColumns, GetNumRows},
+    traits::{Concatenate, MatrixDimensions},
 };
 use flint_sys::fmpq_mat::{fmpq_mat_concat_horizontal, fmpq_mat_concat_vertical};
 
@@ -109,7 +109,7 @@ impl Concatenate for &MatQ {
 mod test_concatenate {
     use crate::{
         rational::MatQ,
-        traits::{Concatenate, GetNumColumns, GetNumRows},
+        traits::{Concatenate, MatrixDimensions},
     };
     use std::str::FromStr;
 

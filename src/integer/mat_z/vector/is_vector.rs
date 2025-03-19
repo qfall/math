@@ -13,7 +13,7 @@
 //! can only be called on suitably formed vector/matrices.
 
 use super::super::MatZ;
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::MatrixDimensions;
 
 impl MatZ {
     /// Returns `true` if the provided [`MatZ`] has only one row,
