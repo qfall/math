@@ -564,18 +564,13 @@ mod test_get_vec {
     /// Ensure that getting a row with a negative index works
     #[test]
     fn get_row_negative_indexing_works() {
-        let matrix = MatZ::from_str(&format!(
-            "[[0, 0, 0],[42, {}, {}]]",
-            i64::MAX,
-            i64::MIN
-        ))
-        .unwrap();
+        let matrix =
+            MatZ::from_str(&format!("[[0, 0, 0],[42, {}, {}]]", i64::MAX, i64::MIN)).unwrap();
         let row_1 = matrix.get_row(-2).unwrap();
         let row_2 = matrix.get_row(-1).unwrap();
 
         let cmp_1 = MatZ::from_str("[[0, 0, 0]]").unwrap();
-        let cmp_2 = MatZ::from_str(&format!("[[42, {}, {}]]", i64::MAX, i64::MIN))
-            .unwrap();
+        let cmp_2 = MatZ::from_str(&format!("[[42, {}, {}]]", i64::MAX, i64::MIN)).unwrap();
 
         assert_eq!(cmp_1, row_1);
         assert_eq!(cmp_2, row_2);
@@ -616,9 +611,7 @@ mod test_get_vec {
         let column_2 = matrix.get_column(-2).unwrap();
         let column_3 = matrix.get_column(-1).unwrap();
 
-        let cmp_1 =
-            MatZ::from_str(&format!("[[42],[{}],[{}]]", i64::MAX, i64::MIN))
-                .unwrap();
+        let cmp_1 = MatZ::from_str(&format!("[[42],[{}],[{}]]", i64::MAX, i64::MIN)).unwrap();
         let cmp_2 = MatZ::from_str("[[0],[0],[0]]").unwrap();
         let cmp_3 = MatZ::from_str("[[42],[17],[42]]").unwrap();
 

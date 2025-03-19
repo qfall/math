@@ -137,7 +137,7 @@ impl MatrixGetSubmatrix for MatPolyOverZ {
     ///
     /// Parameters:
     /// - `row`: specifies the row of the matrix
-    /// 
+    ///
     /// Negative indices can be used to index from the back, e.g., `-1` for
     /// the last element.
     ///
@@ -171,7 +171,7 @@ impl MatrixGetSubmatrix for MatPolyOverZ {
     ///
     /// Input parameters:
     /// - `column`: specifies the column of the matrix
-    /// 
+    ///
     /// Negative indices can be used to index from the back, e.g., `-1` for
     /// the last element.
     ///

@@ -704,8 +704,7 @@ mod test_setter {
         matrix.set_column(-1, &matrix2, -2).unwrap();
         matrix.set_row(-1, &matrix2, -2).unwrap();
 
-        let matrix_cmp =
-            MatZ::from_str("[[1, 0, 0],[0, 1, 1],[0, 1, 0]]").unwrap();
+        let matrix_cmp = MatZ::from_str("[[1, 0, 0],[0, 1, 1],[0, 1, 0]]").unwrap();
         assert_eq!(matrix_cmp, matrix);
     }
 }
@@ -925,8 +924,7 @@ mod test_swaps {
         matrix.swap_columns(-1, -2).unwrap();
         matrix2.swap_rows(-1, -2).unwrap();
 
-        let matrix_cmp =
-            MatZ::from_str("[[1, 0, 0],[0, 0, 1],[0, 1, 0]]").unwrap();
+        let matrix_cmp = MatZ::from_str("[[1, 0, 0],[0, 0, 1],[0, 1, 0]]").unwrap();
         assert_eq!(matrix_cmp, matrix);
         assert_eq!(matrix_cmp, matrix2);
     }
