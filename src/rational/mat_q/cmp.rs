@@ -99,7 +99,7 @@ impl PartialEq<MatZ> for MatQ {
 
         for i in 0..num_rows {
             for j in 0..num_cols {
-                if self.get_entry(i, j).unwrap() != other.get_entry(i, j).unwrap() {
+                if unsafe { self.get_entry_unchecked(i, j) != other.get_entry_unchecked(i, j) } {
                     return false;
                 }
             }
@@ -186,7 +186,7 @@ mod test_partial_eq_q_other {
     use crate::integer::MatZ;
     use std::str::FromStr;
 
-    // Ensure that the function can be called with several types
+    /// Ensure that the function can be called with several types.
     #[test]
     #[allow(clippy::op_ref)]
     fn availability() {
@@ -199,7 +199,7 @@ mod test_partial_eq_q_other {
         assert!(&z == &q);
     }
 
-    // Ensure that large values are compared correctly
+    /// Ensure that large values are compared correctly.
     #[test]
     fn equal_large() {
         let q = MatQ::from_str(&format!("[[1,2],[3,{}]]", u64::MAX)).unwrap();
