@@ -21,6 +21,8 @@
 ///
 /// - ['Mul'](std::ops::Mul) with signature
 ///     `($bridge_type, $type, Mul Scalar for $source_type)`
+/// - ['Div'](std::ops::Mul) with signature
+///     `($bridge_type, $type, Div Scalar for $source_type)`
 /// - ['PartialEq'](std::cmp::PartialEq) with signature
 ///     `($bridge_type, $type, PartialEq for $source_type)`
 /// - ['PartialOrd'](std::cmp::PartialOrd) with signature
@@ -74,6 +76,30 @@ macro_rules! implement_for_others {
                 #[doc = "Documentation can be found at [`" $type "::mul`]."]
                 fn mul(self, matrix: $type) -> Self::Output {
                     matrix.mul($bridge_type::from(self))
+                }
+            }
+        })*
+    };
+
+    // [`Div`] trait scalar
+    ($bridge_type:ident, $type:ident, Div Scalar for $($source_type:ident)*) => {
+        $(#[doc(hidden)] impl Div<$source_type> for &$type {
+            type Output = $type;
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::div`]."]
+                fn div(self, scalar: $source_type) -> Self::Output {
+                    self.div($bridge_type::from(scalar))
+                }
+            }
+        }
+
+        #[doc(hidden)]
+        impl Div<$source_type> for $type {
+            type Output = $type;
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::div`]."]
+                fn div(self, scalar: $source_type) -> Self::Output {
+                    self.div($bridge_type::from(scalar))
                 }
             }
         })*
