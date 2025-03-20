@@ -15,9 +15,7 @@ use crate::{
         arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
         arithmetic_trait_mixed_borrowed_owned,
     },
-    traits::MatrixDimensions,
 };
-use flint_sys::fmpz_poly_mat::fmpz_poly_mat_add;
 use std::ops::{Add, AddAssign};
 
 impl AddAssign<&MatPolynomialRingZq> for MatPolynomialRingZq {
@@ -46,17 +44,6 @@ impl AddAssign<&MatPolynomialRingZq> for MatPolynomialRingZq {
     /// - if the matrix dimensions mismatch.
     /// - if the moduli of the matrices mismatch.
     fn add_assign(&mut self, other: &Self) {
-        if self.get_num_rows() != other.get_num_rows()
-            || self.get_num_columns() != other.get_num_columns()
-        {
-            panic!(
-                "Tried to add a '{}x{}' matrix and a '{}x{}' matrix.",
-                self.get_num_rows(),
-                self.get_num_columns(),
-                other.get_num_rows(),
-                other.get_num_columns()
-            );
-        }
         if self.modulus != other.modulus {
             panic!(
                 "Tried to add polynomial with modulus '{}' and polynomial with modulus '{}'.",
@@ -64,13 +51,8 @@ impl AddAssign<&MatPolynomialRingZq> for MatPolynomialRingZq {
             );
         }
 
-        unsafe {
-            fmpz_poly_mat_add(
-                &mut self.matrix.matrix,
-                &self.matrix.matrix,
-                &other.matrix.matrix,
-            )
-        };
+        self.matrix += &other.matrix;
+
         self.reduce();
     }
 }

@@ -10,13 +10,16 @@
 
 use super::super::MatQ;
 use crate::error::MathError;
-use crate::integer::MatZ;
+use crate::integer::{MatZ, Z};
 use crate::macros::arithmetics::{
     arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
     arithmetic_trait_mixed_borrowed_owned,
 };
 use crate::traits::MatrixDimensions;
-use flint_sys::fmpq_mat::fmpq_mat_add;
+use flint_sys::fmpq_mat::{
+    fmpq_mat_add, fmpq_mat_get_fmpz_mat_matwise, fmpq_mat_set_fmpz_mat_div_fmpz,
+};
+use flint_sys::fmpz_mat::fmpz_mat_add;
 use std::ops::{Add, AddAssign};
 
 impl AddAssign<&MatQ> for MatQ {
@@ -72,9 +75,13 @@ impl AddAssign<&MatZ> for MatQ {
             );
         }
 
-        // there should be a better way than this, but I haven't found it
-        let other = MatQ::from(other);
-        unsafe { fmpq_mat_add(&mut self.matrix, &self.matrix, &other.matrix) };
+        let mut num = MatZ::new(self.get_num_rows(), self.get_num_columns());
+        let mut den = Z::default();
+        unsafe {
+            fmpq_mat_get_fmpz_mat_matwise(&mut num.matrix, &mut den.value, &self.matrix);
+            fmpz_mat_add(&mut num.matrix, &num.matrix, &other.matrix);
+            fmpq_mat_set_fmpz_mat_div_fmpz(&mut self.matrix, &num.matrix, &den.value);
+        }
     }
 }
 
