@@ -10,11 +10,13 @@
 
 use super::super::MatZ;
 use crate::error::MathError;
+use crate::integer_mod_q::MatZq;
 use crate::macros::arithmetics::{
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
 };
 use crate::traits::MatrixDimensions;
 use flint_sys::fmpz_mat::fmpz_mat_sub;
+use flint_sys::fmpz_mod_mat::_fmpz_mod_mat_reduce;
 use std::ops::Sub;
 
 impl Sub for &MatZ {
@@ -47,6 +49,61 @@ impl Sub for &MatZ {
         self.sub_safe(other).unwrap()
     }
 }
+
+arithmetic_trait_borrowed_to_owned!(Sub, sub, MatZ, MatZ, MatZ);
+arithmetic_trait_mixed_borrowed_owned!(Sub, sub, MatZ, MatZ, MatZ);
+
+impl Sub<&MatZq> for &MatZ {
+    type Output = MatZq;
+
+    /// Implements the [`Sub`] trait for a [`MatZ`] and a [`MatZq`] matrix.
+    /// [`Sub`] is implemented for any combination of owned and borrowed values.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the matrix to subtract from `self`.
+    ///
+    /// Returns the subtraction of `self` and `other` as a [`MatZq`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{integer::MatZ, integer_mod_q::MatZq};
+    /// use std::str::FromStr;
+    ///
+    /// let a = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();
+    /// let b = MatZq::from_str("[[1, 9, 3],[1, 0, 5]] mod 7").unwrap();
+    ///
+    /// let c = &a - &b;
+    /// let d = a.clone() - b.clone();
+    /// let e = &a - &b;
+    /// let f = a - b;
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the dimensions of both matrices mismatch.
+    fn sub(self, other: &MatZq) -> Self::Output {
+        if self.get_num_rows() != other.get_num_rows()
+            || self.get_num_columns() != other.get_num_columns()
+        {
+            panic!(
+                "Tried to subtract a '{}x{}' matrix from a '{}x{}' matrix.",
+                self.get_num_rows(),
+                self.get_num_columns(),
+                other.get_num_rows(),
+                other.get_num_columns()
+            );
+        }
+
+        let mut out = MatZq::new(self.get_num_rows(), self.get_num_columns(), other.get_mod());
+        unsafe {
+            fmpz_mat_sub(&mut out.matrix.mat[0], &self.matrix, &other.matrix.mat[0]);
+            _fmpz_mod_mat_reduce(&mut out.matrix);
+        }
+        out
+    }
+}
+
+arithmetic_trait_borrowed_to_owned!(Sub, sub, MatZ, MatZq, MatZq);
+arithmetic_trait_mixed_borrowed_owned!(Sub, sub, MatZ, MatZq, MatZq);
 
 impl MatZ {
     /// Implements subtraction for two [`MatZ`] matrices.
@@ -91,9 +148,6 @@ impl MatZ {
         Ok(out)
     }
 }
-
-arithmetic_trait_borrowed_to_owned!(Sub, sub, MatZ, MatZ, MatZ);
-arithmetic_trait_mixed_borrowed_owned!(Sub, sub, MatZ, MatZ, MatZ);
 
 #[cfg(test)]
 mod test_sub {
@@ -172,5 +226,85 @@ mod test_sub {
         let c: MatZ = MatZ::from_str("[[1, 2, 3]]").unwrap();
         assert!(a.sub_safe(&b).is_err());
         assert!(c.sub_safe(&b).is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_sub_matzq {
+    use super::MatZ;
+    use crate::integer_mod_q::MatZq;
+    use std::str::FromStr;
+
+    /// Ensures that subtraction between [`MatZ`] and [`MatZq`] works properly incl. reduction mod q.
+    #[test]
+    fn small_numbers() {
+        let a = MatZ::from_str("[[1, 2],[3, 4]]").unwrap();
+        let b = MatZq::from_str("[[5, 6],[2, 10]] mod 11").unwrap();
+        let cmp = MatZq::from_str("[[7, 7],[1, 5]] mod 11").unwrap();
+
+        let res_0 = &a - &b;
+        let res_1 = MatZq::from((a, 11)) - b.get_representative_least_nonnegative_residue();
+
+        assert_eq!(res_0, res_1);
+        assert_eq!(cmp, res_0);
+    }
+
+    /// Testing subtraction for large numbers
+    #[test]
+    fn large_numbers() {
+        let a: MatZ =
+            MatZ::from_str(&format!("[[1, 2, {}],[3, -4, {}]]", i64::MIN, u64::MAX)).unwrap();
+        let b: MatZq = MatZq::from_str(&format!(
+            "[[1, 1, {}],[3, 9, {}]] mod {}",
+            i64::MAX,
+            i64::MAX,
+            u64::MAX - 58
+        ))
+        .unwrap();
+
+        let c = a - &b;
+
+        assert_eq!(
+            c,
+            MatZq::from_str(&format!(
+                "[[0, 1, -{}],[0, -13, {}]] mod {}",
+                u64::MAX,
+                (u64::MAX - 1) / 2 + 1,
+                u64::MAX - 58
+            ))
+            .unwrap()
+        );
+    }
+
+    /// Ensures that subtraction between [`MatZ`] and [`MatZq`] is available for any combination.
+    #[test]
+    fn available() {
+        let a = MatZ::new(2, 2);
+        let b = MatZq::new(2, 2, 7);
+
+        let _ = &a - &b;
+        let _ = &a - b.clone();
+        let _ = a.clone() - &b;
+        let _ = a.clone() - b.clone();
+    }
+
+    /// Ensures that mismatching rows results in a panic.
+    #[test]
+    #[should_panic]
+    fn mismatching_rows() {
+        let a = MatZ::new(3, 2);
+        let b = MatZq::new(2, 2, 7);
+
+        let _ = &a - &b;
+    }
+
+    /// Ensures that mismatching columns results in a panic.
+    #[test]
+    #[should_panic]
+    fn mismatching_column() {
+        let a = MatZ::new(2, 3);
+        let b = MatZq::new(2, 2, 7);
+
+        let _ = &a - &b;
     }
 }
