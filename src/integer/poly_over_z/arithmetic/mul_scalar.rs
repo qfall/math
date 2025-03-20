@@ -85,7 +85,7 @@ impl Mul<&Zq> for &PolyOverZ {
     /// let poly_2 = &poly_1 * &integer;
     /// ```
     fn mul(self, scalar: &Zq) -> PolyOverZq {
-        let mut out = PolyOverZq::from((1, &scalar.modulus));
+        let mut out = PolyOverZq::from(&scalar.modulus);
         unsafe {
             fmpz_mod_poly_scalar_mul_fmpz(
                 &mut out.poly,
@@ -181,13 +181,15 @@ mod test_mul_z {
         _ = poly.clone() * 2u64;
 
         _ = z.clone() * poly.clone();
-        _ = poly.clone() * 2i8;
-        _ = poly.clone() * 2u64;
+        _ = 2i8 * poly.clone();
+        _ = 2u64 * poly.clone();
 
         _ = &poly * &z;
         _ = &z * &poly;
         _ = &poly * z.clone();
-        _ = z * &poly;
+        _ = z.clone() * &poly;
+        _ = poly.clone() * &z;
+        _ = &z * poly.clone();
         _ = &poly * 2i8;
         _ = 2i8 * &poly;
     }
@@ -230,7 +232,9 @@ mod test_mul_zq {
         _ = &poly * &z;
         _ = &z * &poly;
         _ = &poly * z.clone();
-        _ = z * &poly;
+        _ = z.clone() * &poly;
+        _ = &z * poly.clone();
+        _ = poly.clone() * &z;
     }
 }
 
@@ -266,6 +270,8 @@ mod test_mul_q {
         _ = &poly * &q;
         _ = &q * &poly;
         _ = &poly * q.clone();
-        _ = q * &poly;
+        _ = q.clone() * &poly;
+        _ = &q * poly.clone();
+        _ = poly.clone() * &q;
     }
 }
