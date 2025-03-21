@@ -101,8 +101,11 @@ impl PartialEq<PolyOverZq> for ModulusPolynomialRingZq {
     /// # assert!(compared);
     /// ```
     fn eq(&self, other: &PolyOverZq) -> bool {
-        let degree = self.get_degree();
+        if self.get_q() != other.modulus {
+            return false;
+        }
 
+        let degree = self.get_degree();
         if degree != other.get_degree() {
             return false;
         }
@@ -300,7 +303,7 @@ mod test_partial_eq_q_other {
     use crate::integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq};
     use std::str::FromStr;
 
-    // Ensure that the function can be called with several types
+    /// Ensure that the function can be called with several types.
     #[test]
     #[allow(clippy::op_ref)]
     fn availability() {
@@ -313,13 +316,30 @@ mod test_partial_eq_q_other {
         assert!(&z == &q);
     }
 
-    // Ensure that large values are compared correctly
+    /// Ensure that equal values are compared correctly.
     #[test]
-    fn equal_large() {
+    fn equal() {
         let q = ModulusPolynomialRingZq::from_str(&format!("3  1 2 {} mod {}", i64::MAX, u64::MAX))
             .unwrap();
-        let z = PolyOverZq::from_str(&format!("3  1 2 {} mod {}", i64::MAX, u64::MAX)).unwrap();
+        let z_1 = PolyOverZq::from_str(&format!("3  1 2 {} mod {}", i64::MAX, u64::MAX)).unwrap();
+        let z_2 = PolyOverZq::from_str(&format!("4  1 2 {} 0 mod {}", i64::MAX, u64::MAX)).unwrap();
 
-        assert!(q == z);
+        assert!(q == z_1);
+        assert!(q == z_2);
+    }
+
+    /// Ensure that unequal values are compared correctly.
+    #[test]
+    fn unequal() {
+        let q = ModulusPolynomialRingZq::from_str(&format!("3  1 2 {} mod {}", i64::MAX, u64::MAX))
+            .unwrap();
+        let z_1 = PolyOverZq::from_str(&format!("3  1 3 {} mod {}", i64::MAX, u64::MAX)).unwrap();
+        let z_2 = PolyOverZq::from_str(&format!("4  1 2 {} 1 mod {}", i64::MAX, u64::MAX)).unwrap();
+        let z_3 =
+            PolyOverZq::from_str(&format!("3  1 2 {} mod {}", i64::MAX, u64::MAX - 1)).unwrap();
+
+        assert!(q != z_1);
+        assert!(q != z_2);
+        assert!(q != z_3);
     }
 }
