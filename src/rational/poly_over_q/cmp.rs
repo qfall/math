@@ -285,7 +285,7 @@ mod test_partial_eq_q_other {
     use crate::integer::PolyOverZ;
     use std::str::FromStr;
 
-    // Ensure that the function can be called with several types
+    /// Ensure that the function can be called with several types.
     #[test]
     #[allow(clippy::op_ref)]
     fn availability() {
@@ -298,12 +298,25 @@ mod test_partial_eq_q_other {
         assert!(&z == &q);
     }
 
-    // Ensure that large values are compared correctly
+    /// Ensure that equal values are compared correctly.
     #[test]
-    fn equal_large() {
+    fn equal() {
         let q = PolyOverQ::from_str(&format!("3  1 2 {}", u64::MAX)).unwrap();
-        let z = PolyOverZ::from_str(&format!("3  1 2 {}", u64::MAX)).unwrap();
+        let z_1 = PolyOverZ::from_str(&format!("3  1 2 {}", u64::MAX)).unwrap();
+        let z_2 = PolyOverZ::from_str(&format!("4  1 2 {} 0", u64::MAX)).unwrap();
 
-        assert!(q == z);
+        assert!(q == z_1);
+        assert!(q == z_2);
+    }
+
+    /// Ensure that unequal polynomials are compared correctly.
+    #[test]
+    fn unequal() {
+        let q = PolyOverQ::from_str(&format!("3  1 2 {}", u64::MAX)).unwrap();
+        let z_1 = PolyOverZ::from_str(&format!("3  1 3 {}", u64::MAX)).unwrap();
+        let z_2 = PolyOverZ::from_str(&format!("4  1 2 {} 1", u64::MAX)).unwrap();
+
+        assert!(q != z_1);
+        assert!(q != z_2);
     }
 }
