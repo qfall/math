@@ -82,7 +82,7 @@ mod test_deserialize {
         let cmp_str = format!("{{\"poly\":\"{poly_str}\"}}");
 
         let poly_z = PolyOverZ::from_str(poly_str).unwrap();
-        assert_eq!(poly_z, serde_json::from_str(&cmp_str).unwrap());
+        assert_eq!(poly_z, serde_json::from_str::<PolyOverZ>(&cmp_str).unwrap());
     }
 
     /// Tests whether the deserialization of a negative [`PolyOverZ`] works.
@@ -92,7 +92,7 @@ mod test_deserialize {
         let cmp_str = format!("{{\"poly\":\"{poly_str}\"}}");
 
         let poly_z = PolyOverZ::from_str(poly_str).unwrap();
-        assert_eq!(poly_z, serde_json::from_str(&cmp_str).unwrap());
+        assert_eq!(poly_z, serde_json::from_str::<PolyOverZ>(&cmp_str).unwrap());
     }
 
     /// Tests whether the deserialization of a positive large [`PolyOverZ`] works.
@@ -102,7 +102,7 @@ mod test_deserialize {
         let cmp_str = format!("{{\"poly\":\"{poly_str}\"}}");
 
         let poly_z = PolyOverZ::from_str(&poly_str).unwrap();
-        assert_eq!(poly_z, serde_json::from_str(&cmp_str).unwrap());
+        assert_eq!(poly_z, serde_json::from_str::<PolyOverZ>(&cmp_str).unwrap());
     }
 
     /// Tests whether the deserialization of a negative large [`PolyOverZ`] works.
@@ -112,7 +112,7 @@ mod test_deserialize {
         let cmp_str = format!("{{\"poly\":\"{poly_str}\"}}");
 
         let poly_z = PolyOverZ::from_str(&poly_str).unwrap();
-        assert_eq!(poly_z, serde_json::from_str(&cmp_str).unwrap());
+        assert_eq!(poly_z, serde_json::from_str::<PolyOverZ>(&cmp_str).unwrap());
     }
 
     /// Tests whether no fields 'poly' provided yield an error

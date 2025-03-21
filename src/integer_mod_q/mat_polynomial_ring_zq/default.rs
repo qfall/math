@@ -115,10 +115,10 @@ mod test_new {
 
         let matrix = MatPolynomialRingZq::new(2, 2, &modulus);
 
-        let entry_1 = matrix.get_entry(0, 0).unwrap();
-        let entry_2 = matrix.get_entry(0, 1).unwrap();
-        let entry_3 = matrix.get_entry(1, 0).unwrap();
-        let entry_4 = matrix.get_entry(1, 1).unwrap();
+        let entry_1: PolyOverZ = matrix.get_entry(0, 0).unwrap();
+        let entry_2: PolyOverZ = matrix.get_entry(0, 1).unwrap();
+        let entry_3: PolyOverZ = matrix.get_entry(1, 0).unwrap();
+        let entry_4: PolyOverZ = matrix.get_entry(1, 1).unwrap();
 
         assert_eq!(PolyOverZ::default(), entry_1);
         assert_eq!(PolyOverZ::default(), entry_2);
