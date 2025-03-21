@@ -38,10 +38,7 @@ impl Rem<&Z> for &PolyOverZ {
     /// let a: PolyOverZ = PolyOverZ::from_str("2  -2 42").unwrap();
     /// let b: Z = Z::from(24);
     ///
-    /// let c: Z = &a % &b;
-    /// let d: Z = a % b;
-    /// let e: Z = &c % d;
-    /// let f: Z = c % &e;
+    /// let c: PolyOverZ = a % b;
     /// ```
     ///
     /// # Panics ...

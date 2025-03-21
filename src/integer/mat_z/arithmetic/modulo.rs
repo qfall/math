@@ -39,10 +39,7 @@ impl Rem<&Z> for &MatZ {
     /// let a: MatZ = MatZ::from_str("[[-2],[42]]").unwrap();
     /// let b: Z = Z::from(24);
     ///
-    /// let c: Z = &a % &b;
-    /// let d: Z = a % b;
-    /// let e: Z = &c % d;
-    /// let f: Z = c % &e;
+    /// let c: MatZ = a % b;
     /// ```
     ///
     /// # Panics ...

@@ -35,10 +35,7 @@ impl Rem for &Z {
     /// let a: Z = Z::from(42);
     /// let b: Z = Z::from(24);
     ///
-    /// let c: Z = &a % &b;
-    /// let d: Z = a % b;
-    /// let e: Z = &c % d;
-    /// let f: Z = c % &e;
+    /// let c: Z = a % b;
     /// ```
     ///
     /// # Panics ...
