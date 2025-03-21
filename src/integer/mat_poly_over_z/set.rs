@@ -14,10 +14,7 @@ use crate::{
     integer::PolyOverZ,
     macros::for_others::implement_for_owned,
     traits::{MatrixDimensions, MatrixSetEntry, MatrixSetSubmatrix, MatrixSwaps},
-    utils::{
-        collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
-        index::{evaluate_index, evaluate_indices_for_matrix},
-    },
+    utils::index::{evaluate_index_for_vector, evaluate_indices_for_matrix},
 };
 use flint_sys::{
     fmpz_poly::{fmpz_poly_set, fmpz_poly_swap},
@@ -122,6 +119,9 @@ impl MatrixSetSubmatrix for MatPolyOverZ {
     /// - `col_1`: specifies the column of `other` providing
     ///     the values replacing the original column in `self`
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of its matrix
     /// or if the number of rows differs.
@@ -147,20 +147,20 @@ impl MatrixSetSubmatrix for MatPolyOverZ {
         other: &Self,
         col_1: impl TryInto<i64> + Display,
     ) -> Result<(), MathError> {
-        let col_0 = evaluate_index(col_0)?;
-        let col_1 = evaluate_index(col_1)?;
+        let num_rows_0 = self.get_num_rows();
+        let num_rows_1 = other.get_num_rows();
+        let num_cols_0 = self.get_num_columns();
+        let num_cols_1 = other.get_num_columns();
+        let col_0 = evaluate_index_for_vector(col_0, num_cols_0)?;
+        let col_1 = evaluate_index_for_vector(col_1, num_cols_1)?;
 
-        evaluate_vec_dimensions_set_row_or_col(
-            "set_column",
-            col_0,
-            col_1,
-            self.get_num_columns(),
-            other.get_num_columns(),
-            self.get_num_rows(),
-            other.get_num_rows(),
-        )?;
+        if num_rows_0 != num_rows_1 {
+            return Err(MathError::MismatchingMatrixDimension(format!(
+                "as set_column was called on two matrices with different number of rows/columns {num_rows_0} and {num_rows_1}",
+            )));
+        }
 
-        for row in 0..self.get_num_rows() {
+        for row in 0..num_rows_0 {
             unsafe {
                 fmpz_poly_set(
                     fmpz_poly_mat_entry(&self.matrix, row, col_0),
@@ -179,6 +179,9 @@ impl MatrixSetSubmatrix for MatPolyOverZ {
     /// - `other`: specifies the matrix providing the row replacing the row in `self`
     /// - `row_1`: specifies the row of `other` providing
     ///     the values replacing the original row in `self`
+    ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of its matrix
@@ -205,20 +208,20 @@ impl MatrixSetSubmatrix for MatPolyOverZ {
         other: &Self,
         row_1: impl TryInto<i64> + Display,
     ) -> Result<(), MathError> {
-        let row_0 = evaluate_index(row_0)?;
-        let row_1 = evaluate_index(row_1)?;
+        let num_cols_0 = self.get_num_columns();
+        let num_cols_1 = other.get_num_columns();
+        let num_rows_0 = self.get_num_rows();
+        let num_rows_1 = other.get_num_rows();
+        let row_0 = evaluate_index_for_vector(row_0, num_rows_0)?;
+        let row_1 = evaluate_index_for_vector(row_1, num_rows_1)?;
 
-        evaluate_vec_dimensions_set_row_or_col(
-            "set_row",
-            row_0,
-            row_1,
-            self.get_num_rows(),
-            other.get_num_rows(),
-            self.get_num_columns(),
-            other.get_num_columns(),
-        )?;
+        if num_cols_0 != num_cols_1 {
+            return Err(MathError::MismatchingMatrixDimension(format!(
+                "as set_row was called on two matrices with different number of rows/columns {num_cols_0} and {num_cols_1}",
+            )));
+        }
 
-        for col in 0..self.get_num_columns() {
+        for col in 0..num_cols_0 {
             unsafe {
                 fmpz_poly_set(
                     fmpz_poly_mat_entry(&self.matrix, row_0, col),
@@ -282,6 +285,9 @@ impl MatrixSwaps for MatPolyOverZ {
     /// - `col_0`: specifies the first column which is swapped with the second one
     /// - `col_1`: specifies the second column which is swapped with the first one
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of the matrix.
     ///
@@ -295,17 +301,19 @@ impl MatrixSwaps for MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if one of the given columns is greater than the matrix or negative.
+    ///     if one of the given columns is greater than the matrix.
     fn swap_columns(
         &mut self,
         col_0: impl TryInto<i64> + Display,
         col_1: impl TryInto<i64> + Display,
     ) -> Result<(), MathError> {
-        let col_0 = evaluate_index(col_0)?;
-        let col_1 = evaluate_index(col_1)?;
-        if col_0 >= self.get_num_columns() || col_1 >= self.get_num_columns() {
+        let num_cols = self.get_num_columns();
+        let col_0 = evaluate_index_for_vector(col_0, num_cols)?;
+        let col_1 = evaluate_index_for_vector(col_1, num_cols)?;
+
+        if col_0 >= num_cols || col_1 >= num_cols {
             return Err(MathError::OutOfBounds(
-                format!("smaller than {}", self.get_num_columns()),
+                format!("smaller than {}", num_cols),
                 if col_0 > col_1 {
                     col_0.to_string()
                 } else {
@@ -329,6 +337,9 @@ impl MatrixSwaps for MatPolyOverZ {
     /// - `row_0`: specifies the first row which is swapped with the second one
     /// - `row_1`: specifies the second row which is swapped with the first one
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of the matrix.
     ///
@@ -342,17 +353,19 @@ impl MatrixSwaps for MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if one of the given rows is greater than the matrix or negative.
+    ///     if one of the given rows is greater than the matrix.
     fn swap_rows(
         &mut self,
         row_0: impl TryInto<i64> + Display,
         row_1: impl TryInto<i64> + Display,
     ) -> Result<(), MathError> {
-        let row_0 = evaluate_index(row_0)?;
-        let row_1 = evaluate_index(row_1)?;
-        if row_0 >= self.get_num_rows() || row_1 >= self.get_num_rows() {
+        let num_rows = self.get_num_rows();
+        let row_0 = evaluate_index_for_vector(row_0, num_rows)?;
+        let row_1 = evaluate_index_for_vector(row_1, num_rows)?;
+
+        if row_0 >= num_rows || row_1 >= num_rows {
             return Err(MathError::OutOfBounds(
-                format!("smaller than {}", self.get_num_columns()),
+                format!("smaller than {}", num_rows),
                 if row_0 > row_1 {
                     row_0.to_string()
                 } else {
@@ -602,9 +615,9 @@ mod test_setter {
         let mut mat_1 = MatPolyOverZ::new(5, 2);
         let mat_2 = mat_1.clone();
 
-        assert!(mat_1.set_column(-1, &mat_2, 0).is_err());
+        assert!(mat_1.set_column(-3, &mat_2, 0).is_err());
         assert!(mat_1.set_column(2, &mat_2, 0).is_err());
-        assert!(mat_1.set_column(1, &mat_2, -1).is_err());
+        assert!(mat_1.set_column(1, &mat_2, -3).is_err());
         assert!(mat_1.set_column(1, &mat_2, 2).is_err());
     }
 
@@ -684,9 +697,9 @@ mod test_setter {
         let mut mat_1 = MatPolyOverZ::new(5, 2);
         let mat_2 = mat_1.clone();
 
-        assert!(mat_1.set_row(-1, &mat_2, 0).is_err());
+        assert!(mat_1.set_row(-6, &mat_2, 0).is_err());
         assert!(mat_1.set_row(5, &mat_2, 0).is_err());
-        assert!(mat_1.set_row(2, &mat_2, -1).is_err());
+        assert!(mat_1.set_row(2, &mat_2, -6).is_err());
         assert!(mat_1.set_row(2, &mat_2, 5).is_err());
     }
 
@@ -698,6 +711,20 @@ mod test_setter {
 
         assert!(mat_1.set_row(0, &mat_2, 0).is_err());
         assert!(mat_1.set_row(1, &mat_2, 1).is_err());
+    }
+
+    /// Ensure that negative indices work for set_column/row.
+    #[test]
+    fn negative_indexing_row_column() {
+        let mut matrix = MatPolyOverZ::identity(3, 3);
+        let matrix2 = MatPolyOverZ::identity(3, 3);
+
+        matrix.set_column(-1, &matrix2, -2).unwrap();
+        matrix.set_row(-1, &matrix2, -2).unwrap();
+
+        let matrix_cmp =
+            MatPolyOverZ::from_str("[[1  1, 0, 0],[0, 1  1, 1  1],[0, 1  1, 0]]").unwrap();
+        assert_eq!(matrix_cmp, matrix);
     }
 }
 
@@ -842,8 +869,8 @@ mod test_swaps {
     fn column_out_of_bounds() {
         let mut matrix = MatPolyOverZ::new(5, 2);
 
-        assert!(matrix.swap_columns(-1, 0).is_err());
-        assert!(matrix.swap_columns(0, -1).is_err());
+        assert!(matrix.swap_columns(-6, 0).is_err());
+        assert!(matrix.swap_columns(0, -6).is_err());
         assert!(matrix.swap_columns(5, 0).is_err());
         assert!(matrix.swap_columns(0, 5).is_err());
     }
@@ -907,10 +934,25 @@ mod test_swaps {
     fn row_out_of_bounds() {
         let mut matrix = MatPolyOverZ::new(2, 4);
 
-        assert!(matrix.swap_rows(-1, 0).is_err());
-        assert!(matrix.swap_rows(0, -1).is_err());
+        assert!(matrix.swap_rows(-3, 0).is_err());
+        assert!(matrix.swap_rows(0, -3).is_err());
         assert!(matrix.swap_rows(4, 0).is_err());
         assert!(matrix.swap_rows(0, 4).is_err());
+    }
+
+    /// Ensure that negative indices work for swap_column/row.
+    #[test]
+    fn negative_indexing_row_column() {
+        let mut matrix = MatPolyOverZ::identity(3, 3);
+        let mut matrix2 = MatPolyOverZ::identity(3, 3);
+
+        matrix.swap_columns(-1, -2).unwrap();
+        matrix2.swap_rows(-1, -2).unwrap();
+
+        let matrix_cmp =
+            MatPolyOverZ::from_str("[[1  1, 0, 0],[0, 0, 1  1],[0, 1  1, 0]]").unwrap();
+        assert_eq!(matrix_cmp, matrix);
+        assert_eq!(matrix_cmp, matrix2);
     }
 }
 
