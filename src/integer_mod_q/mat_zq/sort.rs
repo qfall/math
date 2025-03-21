@@ -48,9 +48,8 @@ impl MatZq {
     ///
     /// fn custom_cond_func(matrix: &MatZq) -> Result<Z, MathError> {
     ///     let mut sum = Z::ZERO;
-    ///     for row in 0..matrix.get_num_rows() {
-    ///         let entry: Z = matrix.get_entry(row, 0)?;
-    ///         sum = sum + entry;
+    ///     for entry in MatrixGetEntry::<Z>::get_entries_rowwise(matrix){
+    ///         sum += entry;
     ///     }
     ///     Ok(sum)
     /// }
@@ -115,9 +114,8 @@ impl MatZq {
     ///
     /// fn custom_cond_func(matrix: &MatZq) -> Result<Z, MathError> {
     ///     let mut sum = Z::ZERO;
-    ///     for col in 0..matrix.get_num_columns() {
-    ///         let entry: Z = matrix.get_entry(0, col)?;
-    ///         sum = sum + entry;
+    ///     for entry in MatrixGetEntry::<Z>::get_entries_rowwise(matrix){
+    ///         sum += entry;
     ///     }
     ///     Ok(sum)
     /// }

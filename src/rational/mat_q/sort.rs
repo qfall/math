@@ -48,8 +48,8 @@ impl MatQ {
     ///
     /// fn custom_cond_func(matrix: &MatQ) -> Result<Q, MathError> {
     ///     let mut sum = Q::ZERO;
-    ///     for row in 0..matrix.get_num_rows() {
-    ///         sum = sum + matrix.get_entry(row, 0)?;
+    ///     for entry in matrix.get_entries_rowwise(){
+    ///         sum += entry;
     ///     }
     ///     Ok(sum)
     /// }
@@ -114,8 +114,8 @@ impl MatQ {
     ///
     /// fn custom_cond_func(matrix: &MatQ) -> Result<Q, MathError> {
     ///     let mut sum = Q::ZERO;
-    ///     for col in 0..matrix.get_num_columns() {
-    ///         sum = sum + matrix.get_entry(0, col)?;
+    ///     for entry in matrix.get_entries_rowwise(){
+    ///         sum += entry;
     ///     }
     ///     Ok(sum)
     /// }

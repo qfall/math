@@ -49,9 +49,8 @@ impl MatPolynomialRingZq {
     ///
     /// fn custom_cond_func(matrix: &MatPolynomialRingZq) -> Result<Z, MathError> {
     ///     let mut sum = Z::ZERO;
-    ///     for row in 0..matrix.get_num_rows() {
-    ///         let entry: PolyOverZ = matrix.get_entry(row, 0)?;
-    ///         sum += entry.get_coeff(0)?;
+    ///     for entry in matrix.get_entries_rowwise() {
+    ///         sum += PolyOverZ::get_coeff(&entry, 0)?;
     ///     }
     ///     Ok(sum)
     /// }
@@ -117,9 +116,8 @@ impl MatPolynomialRingZq {
     ///
     /// fn custom_cond_func(matrix: &MatPolynomialRingZq) -> Result<Z, MathError> {
     ///     let mut sum = Z::ZERO;
-    ///     for col in 0..matrix.get_num_columns() {
-    ///         let entry: PolyOverZ = matrix.get_entry(0, col)?;
-    ///         sum += entry.get_coeff(0)?;
+    ///     for entry in matrix.get_entries_columnwise() {
+    ///         sum += PolyOverZ::get_coeff(&entry, 0)?;
     ///     }
     ///     Ok(sum)
     /// }
