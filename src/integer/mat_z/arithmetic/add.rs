@@ -11,11 +11,50 @@
 use super::super::MatZ;
 use crate::error::MathError;
 use crate::macros::arithmetics::{
-    arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+    arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
+    arithmetic_trait_mixed_borrowed_owned,
 };
 use crate::traits::MatrixDimensions;
 use flint_sys::fmpz_mat::fmpz_mat_add;
-use std::ops::Add;
+use std::ops::{Add, AddAssign};
+
+impl AddAssign<&MatZ> for MatZ {
+    /// Computes the addition of `self` and `other` reusing
+    /// the memory of `self`.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to add to `self`
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatZ;
+    /// let mut a = MatZ::identity(2, 2);
+    /// let b = MatZ::new(2, 2);
+    ///
+    /// a += &b;
+    /// a += b;
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the matrix dimensions mismatch.
+    fn add_assign(&mut self, other: &Self) {
+        if self.get_num_rows() != other.get_num_rows()
+            || self.get_num_columns() != other.get_num_columns()
+        {
+            panic!(
+                "Tried to add a '{}x{}' matrix and a '{}x{}' matrix.",
+                self.get_num_rows(),
+                self.get_num_columns(),
+                other.get_num_rows(),
+                other.get_num_columns()
+            );
+        }
+
+        unsafe { fmpz_mat_add(&mut self.matrix, &self.matrix, &other.matrix) };
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(AddAssign, add_assign, MatZ, MatZ);
 
 impl Add for &MatZ {
     type Output = MatZ;
@@ -94,6 +133,66 @@ impl MatZ {
 
 arithmetic_trait_borrowed_to_owned!(Add, add, MatZ, MatZ, MatZ);
 arithmetic_trait_mixed_borrowed_owned!(Add, add, MatZ, MatZ, MatZ);
+
+#[cfg(test)]
+mod test_add_assign {
+    use crate::integer::MatZ;
+    use std::str::FromStr;
+
+    /// Ensure that `add_assign` works for small numbers.
+    #[test]
+    fn correct_small() {
+        let mut a = MatZ::identity(2, 2);
+        let b = MatZ::from_str("[[4, 5],[-6, -1]]").unwrap();
+        let cmp = MatZ::from_str("[[5, 5],[-6, 0]]").unwrap();
+
+        a += b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `add_assign` works for large numbers.
+    #[test]
+    fn correct_large() {
+        let mut a = MatZ::from_str(&format!("[[{}, 5],[{}, -1]]", i64::MAX, i64::MIN)).unwrap();
+        let b = MatZ::from_str(&format!("[[{}, -6],[6, -1]]", i64::MAX)).unwrap();
+        let cmp = MatZ::from_str(&format!(
+            "[[{}, -1],[{}, -2]]",
+            2 * (i64::MAX as u64),
+            i64::MIN + 6
+        ))
+        .unwrap();
+
+        a += b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `add_assign` works for different matrix dimensions.
+    #[test]
+    fn matrix_dimensions() {
+        let dimensions = [(3, 3), (5, 1), (1, 4)];
+
+        for (nr_rows, nr_cols) in dimensions {
+            let mut a = MatZ::new(nr_rows, nr_cols);
+            let b = MatZ::identity(nr_rows, nr_cols);
+
+            a += b;
+
+            assert_eq!(MatZ::identity(nr_rows, nr_cols), a);
+        }
+    }
+
+    /// Ensure that `add_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let mut a = MatZ::new(2, 2);
+        let b = MatZ::new(2, 2);
+
+        a += &b;
+        a += b;
+    }
+}
 
 #[cfg(test)]
 mod test_add {
