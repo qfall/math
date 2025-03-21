@@ -19,7 +19,7 @@ use std::ops::Rem;
 
 impl Rem for &Z {
     type Output = Z;
-    /// Computes `self` mod `modulus` as long as `modulus` is unequal to 0.
+    /// Computes `self` mod `modulus` as long as `modulus` is greater than 1.
     /// For negative values of `self`, the smallest positive representative is returned.
     ///
     /// Parameters:
@@ -115,7 +115,7 @@ mod test_rem {
         assert_eq!(c, 2);
     }
 
-    /// Ensures that computing modulo a negative number  results in a panic
+    /// Ensures that computing modulo a negative number results in a panic
     #[test]
     #[should_panic]
     fn rem_negative_error() {
