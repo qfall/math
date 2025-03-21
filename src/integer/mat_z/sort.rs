@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Contains functions to sort [`MatZ`] by.
+//! Contains functions to sort [`MatZ`].
 
 use super::MatZ;
 use crate::{
@@ -48,8 +48,8 @@ impl MatZ {
     ///
     /// fn custom_cond_func(matrix: &MatZ) -> Result<Z, MathError> {
     ///     let mut sum = Z::ZERO;
-    ///     for row in 0..matrix.get_num_rows() {
-    ///         sum = sum + matrix.get_entry(row, 0)?;
+    ///     for entry in matrix.get_entries_rowwise() {
+    ///         sum += entry;
     ///     }
     ///     Ok(sum)
     /// }
@@ -114,8 +114,8 @@ impl MatZ {
     ///
     /// fn custom_cond_func(matrix: &MatZ) -> Result<Z, MathError> {
     ///     let mut sum = Z::ZERO;
-    ///     for col in 0..matrix.get_num_columns() {
-    ///         sum = sum + matrix.get_entry(0, col)?;
+    ///     for entry in matrix.get_entries_columnwise() {
+    ///         sum += entry;
     ///     }
     ///     Ok(sum)
     /// }
