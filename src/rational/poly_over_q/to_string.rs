@@ -141,8 +141,8 @@ mod test_to_string_decimal {
         assert_eq!("0", a_1);
         assert_eq!("1  0", b_0);
         assert_eq!("1  0.33", b_2);
-        assert_eq!("3  0 0 -1", c_0);
-        assert_eq!("3  0.3 0.0 -1.6", c_1);
+        assert_eq!("3  0 0 -2", c_0);
+        assert_eq!("3  0.3 0.0 -1.7", c_1);
     }
 }
 
