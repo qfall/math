@@ -122,25 +122,9 @@ impl Add<&MatZ> for &MatQ {
 
     /// Documentation at [`MatQ::add`].
     fn add(self, other: &MatZ) -> Self::Output {
-        if self.get_num_rows() != other.get_num_rows()
-            || self.get_num_columns() != other.get_num_columns()
-        {
-            panic!(
-                "Tried to add a '{}x{}' matrix and a '{}x{}' matrix.",
-                self.get_num_rows(),
-                self.get_num_columns(),
-                other.get_num_rows(),
-                other.get_num_columns()
-            );
-        }
-
         let other = MatQ::from(other);
-        let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns());
-        unsafe {
-            fmpq_mat_add(&mut out.matrix, &self.matrix, &other.matrix);
-        }
 
-        out
+        self.add_safe(&other).unwrap()
     }
 }
 
@@ -321,22 +305,6 @@ mod test_add {
         }
     }
 
-    /// Ensure that `add` is available for all types between [`MatZ`] and [`MatQ`].
-    #[test]
-    fn availability() {
-        let a = MatQ::new(2, 2);
-        let b = MatZ::new(2, 2);
-
-        let _ = &a + &b;
-        let _ = &a + b.clone();
-        let _ = a.clone() + &b;
-        let _ = a.clone() + b.clone();
-        let _ = &b + &a;
-        let _ = &b + a.clone();
-        let _ = b.clone() + &a;
-        let _ = b.clone() + a.clone();
-    }
-
     /// Testing addition for two [`MatQ`]
     #[test]
     fn add() {
@@ -416,5 +384,31 @@ mod test_add {
         let c: MatQ = MatQ::from_str("[[1, -2/9, 3/7]]").unwrap();
         assert!(a.add_safe(&b).is_err());
         assert!(c.add_safe(&b).is_err());
+    }
+
+    /// Ensure that `add` is available for all types between [`MatZ`] and [`MatQ`].
+    #[test]
+    fn availability() {
+        let a = MatQ::new(2, 2);
+        let b = MatZ::new(2, 2);
+        let c = MatQ::new(2, 2);
+
+        let _ = &a + &b;
+        let _ = &a + b.clone();
+        let _ = a.clone() + &b;
+        let _ = a.clone() + b.clone();
+        let _ = &b + &a;
+        let _ = &b + a.clone();
+        let _ = b.clone() + &a;
+        let _ = b.clone() + a.clone();
+
+        let _ = &a + &c;
+        let _ = &a + c.clone();
+        let _ = a.clone() + &c;
+        let _ = a.clone() + c.clone();
+        let _ = &c + &a;
+        let _ = &c + a.clone();
+        let _ = c.clone() + &a;
+        let _ = c.clone() + a.clone();
     }
 }
