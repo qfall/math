@@ -10,16 +10,13 @@
 
 use super::super::MatQ;
 use crate::error::MathError;
-use crate::integer::{MatZ, Z};
+use crate::integer::MatZ;
 use crate::macros::arithmetics::{
     arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
-    arithmetic_trait_mixed_borrowed_owned,
+    arithmetic_trait_mixed_borrowed_owned, arithmetic_trait_reverse,
 };
 use crate::traits::MatrixDimensions;
-use flint_sys::fmpq_mat::{
-    fmpq_mat_add, fmpq_mat_get_fmpz_mat_matwise, fmpq_mat_set_fmpz_mat_div_fmpz,
-};
-use flint_sys::fmpz_mat::fmpz_mat_add;
+use flint_sys::fmpq_mat::fmpq_mat_add;
 use std::ops::{Add, AddAssign};
 
 impl AddAssign<&MatQ> for MatQ {
@@ -75,12 +72,9 @@ impl AddAssign<&MatZ> for MatQ {
             );
         }
 
-        let mut num = MatZ::new(self.get_num_rows(), self.get_num_columns());
-        let mut den = Z::default();
+        let other = MatQ::from(other);
         unsafe {
-            fmpq_mat_get_fmpz_mat_matwise(&mut num.matrix, &mut den.value, &self.matrix);
-            fmpz_mat_add(&mut num.matrix, &num.matrix, &other.matrix);
-            fmpq_mat_set_fmpz_mat_div_fmpz(&mut self.matrix, &num.matrix, &den.value);
+            fmpq_mat_add(&mut self.matrix, &self.matrix, &other.matrix);
         }
     }
 }
@@ -92,6 +86,7 @@ impl Add for &MatQ {
     type Output = MatQ;
     /// Implements the [`Add`] trait for two [`MatQ`] values.
     /// [`Add`] is implemented for any combination of [`MatQ`] and borrowed [`MatQ`].
+    /// Furthermore, any combination of [`MatQ`] and [`MatZ`] elements can be added.
     ///
     /// Parameters:
     /// - `other`: specifies the value to add to `self`
@@ -100,16 +95,19 @@ impl Add for &MatQ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::rational::MatQ;
+    /// use qfall_math::{rational::MatQ, integer::MatZ};
     /// use std::str::FromStr;
     ///
-    /// let a: MatQ = MatQ::from_str("[[1/2, 2/3, 3/4],[3/4, 4/5, 5/7]]").unwrap();
-    /// let b: MatQ = MatQ::from_str("[[1/4, 9/7, 3/7],[1, 0, 5]]").unwrap();
+    /// let a = MatQ::from_str("[[1/2, 2/3, 3/4],[3/4, 4/5, 5/7]]").unwrap();
+    /// let b = MatQ::from_str("[[1/4, 9/7, 3/7],[1, 0, 5]]").unwrap();
+    /// let c = MatZ::identity(2, 3);
     ///
-    /// let c: MatQ = &a + &b;
-    /// let d: MatQ = a + b;
-    /// let e: MatQ = &c + d;
-    /// let f: MatQ = c + &e;
+    /// let d: MatQ = &a + &b;
+    /// let e: MatQ = a + b;
+    /// let f: MatQ = &d + e;
+    /// let g: MatQ = d + &f;
+    /// let h: MatQ = &f + &c;
+    /// let i: MatQ = f + c;
     /// ```
     ///
     /// # Panics ...
@@ -118,6 +116,39 @@ impl Add for &MatQ {
         self.add_safe(other).unwrap()
     }
 }
+
+impl Add<&MatZ> for &MatQ {
+    type Output = MatQ;
+
+    /// Documentation at [`MatQ::add`].
+    fn add(self, other: &MatZ) -> Self::Output {
+        if self.get_num_rows() != other.get_num_rows()
+            || self.get_num_columns() != other.get_num_columns()
+        {
+            panic!(
+                "Tried to add a '{}x{}' matrix and a '{}x{}' matrix.",
+                self.get_num_rows(),
+                self.get_num_columns(),
+                other.get_num_rows(),
+                other.get_num_columns()
+            );
+        }
+
+        let other = MatQ::from(other);
+        let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns());
+        unsafe {
+            fmpq_mat_add(&mut out.matrix, &self.matrix, &other.matrix);
+        }
+
+        out
+    }
+}
+
+arithmetic_trait_borrowed_to_owned!(Add, add, MatQ, MatZ, MatQ);
+arithmetic_trait_mixed_borrowed_owned!(Add, add, MatQ, MatZ, MatQ);
+arithmetic_trait_reverse!(Add, add, MatZ, MatQ, MatQ);
+arithmetic_trait_borrowed_to_owned!(Add, add, MatZ, MatQ, MatQ);
+arithmetic_trait_mixed_borrowed_owned!(Add, add, MatZ, MatQ, MatQ);
 
 impl MatQ {
     /// Implements addition for two [`MatQ`] matrices.
@@ -236,9 +267,75 @@ mod test_add_assign {
 
 #[cfg(test)]
 mod test_add {
-    use super::MatQ;
+    use super::{MatQ, MatZ};
     use crate::rational::Q;
     use std::str::FromStr;
+
+    /// Ensure that `add` works for small numbers between [`MatZ`] and [`MatQ`].
+    #[test]
+    fn correct_small() {
+        let a = MatZ::identity(2, 2);
+        let b = MatQ::from_str("[[4/5, 5],[-6, -1]]").unwrap();
+        let c = a.clone();
+        let d = MatQ::from_str("[[4, -5/-1],[-6, -1]]").unwrap();
+        let cmp_0 = MatQ::from_str("[[9/5, 5],[-6, 0]]").unwrap();
+        let cmp_1 = MatQ::from_str("[[5, 5],[-6, 0]]").unwrap();
+
+        let res_0 = a + b;
+        println!("{}", res_0);
+        let res_1 = c + d;
+
+        assert_eq!(cmp_0, res_0);
+        assert_eq!(cmp_1, res_1);
+    }
+
+    /// Ensure that `add` works for large numbers between [`MatZ`] and [`MatQ`].
+    #[test]
+    fn correct_large() {
+        let a = MatQ::from_str(&format!("[[{}/1, 5/2],[{}, -1]]", i64::MAX, i64::MIN)).unwrap();
+        let b = MatZ::from_str(&format!("[[{}, -3],[6, -1]]", i64::MAX)).unwrap();
+        let cmp = MatQ::from_str(&format!(
+            "[[{}, -1/2],[{}, -2]]",
+            2 * (i64::MAX as u64),
+            i64::MIN + 6
+        ))
+        .unwrap();
+
+        let c = a + b;
+
+        assert_eq!(cmp, c);
+    }
+
+    /// Ensure that `add` works for different matrix dimensions between [`MatZ`] and [`MatQ`].
+    #[test]
+    fn matrix_dimensions() {
+        let dimensions = [(3, 3), (5, 1), (1, 4)];
+
+        for (nr_rows, nr_cols) in dimensions {
+            let a = MatQ::new(nr_rows, nr_cols);
+            let b = MatQ::identity(nr_rows, nr_cols);
+
+            let c = a + b;
+
+            assert_eq!(MatQ::identity(nr_rows, nr_cols), c);
+        }
+    }
+
+    /// Ensure that `add` is available for all types between [`MatZ`] and [`MatQ`].
+    #[test]
+    fn availability() {
+        let a = MatQ::new(2, 2);
+        let b = MatZ::new(2, 2);
+
+        let _ = &a + &b;
+        let _ = &a + b.clone();
+        let _ = a.clone() + &b;
+        let _ = a.clone() + b.clone();
+        let _ = &b + &a;
+        let _ = &b + a.clone();
+        let _ = b.clone() + &a;
+        let _ = b.clone() + a.clone();
+    }
 
     /// Testing addition for two [`MatQ`]
     #[test]
