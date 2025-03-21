@@ -85,8 +85,11 @@ mod test_deserialize {
         let poly_str = "2  17 42 mod 331";
         let cmp_str = format!("{{\"poly\":\"{poly_str}\"}}");
 
-        let poly_z = ModulusPolynomialRingZq::from_str(poly_str).unwrap();
-        assert_eq!(poly_z, serde_json::from_str(&cmp_str).unwrap());
+        let poly_mod = ModulusPolynomialRingZq::from_str(poly_str).unwrap();
+        assert_eq!(
+            poly_mod,
+            serde_json::from_str::<ModulusPolynomialRingZq>(&cmp_str).unwrap()
+        );
     }
 
     /// Tests whether the deserialization of a negative [`ModulusPolynomialRingZq`] works.
@@ -95,8 +98,11 @@ mod test_deserialize {
         let poly_str = "3  -17 -42 1 mod 331";
         let cmp_str = format!("{{\"poly\":\"{poly_str}\"}}");
 
-        let poly_z = ModulusPolynomialRingZq::from_str(poly_str).unwrap();
-        assert_eq!(poly_z, serde_json::from_str(&cmp_str).unwrap());
+        let poly_mod = ModulusPolynomialRingZq::from_str(poly_str).unwrap();
+        assert_eq!(
+            poly_mod,
+            serde_json::from_str::<ModulusPolynomialRingZq>(&cmp_str).unwrap()
+        );
     }
 
     /// Tests whether the deserialization of a positive large [`ModulusPolynomialRingZq`] works.
@@ -105,8 +111,11 @@ mod test_deserialize {
         let poly_str = format!("3  -17 {} 1 mod {}", u64::MAX, u64::MAX - 58);
         let cmp_str = format!("{{\"poly\":\"{poly_str}\"}}");
 
-        let poly_z = ModulusPolynomialRingZq::from_str(&poly_str).unwrap();
-        assert_eq!(poly_z, serde_json::from_str(&cmp_str).unwrap());
+        let poly_mod = ModulusPolynomialRingZq::from_str(&poly_str).unwrap();
+        assert_eq!(
+            poly_mod,
+            serde_json::from_str::<ModulusPolynomialRingZq>(&cmp_str).unwrap()
+        );
     }
 
     /// Tests whether the deserialization of a negative large [`ModulusPolynomialRingZq`] works.
@@ -115,8 +124,11 @@ mod test_deserialize {
         let poly_str = format!("3  -17 -{} 1 mod {}", u64::MAX, u64::MAX - 58);
         let cmp_str = format!("{{\"poly\":\"{poly_str}\"}}");
 
-        let poly_z = ModulusPolynomialRingZq::from_str(&poly_str).unwrap();
-        assert_eq!(poly_z, serde_json::from_str(&cmp_str).unwrap());
+        let poly_mod = ModulusPolynomialRingZq::from_str(&poly_str).unwrap();
+        assert_eq!(
+            poly_mod,
+            serde_json::from_str::<ModulusPolynomialRingZq>(&cmp_str).unwrap()
+        );
     }
 
     /// Tests whether deserialization of a non-prime large `q` [`ModulusPolynomialRingZq`] fails.

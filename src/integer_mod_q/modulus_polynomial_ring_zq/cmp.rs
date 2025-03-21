@@ -10,6 +10,10 @@
 //! This uses the traits from [`std::cmp`].
 
 use super::ModulusPolynomialRingZq;
+use crate::{
+    integer::Z, integer_mod_q::PolyOverZq, macros::for_others::implement_trait_reverse,
+    traits::GetCoefficient,
+};
 use flint_sys::{fmpz::fmpz_equal, fmpz_mod_poly::fmpz_mod_poly_equal};
 
 impl PartialEq for ModulusPolynomialRingZq {
@@ -61,6 +65,64 @@ impl PartialEq for ModulusPolynomialRingZq {
 // With the [`Eq`] trait, `a == a` is always true.
 // This is not guaranteed by the [`PartialEq`] trait.
 impl Eq for ModulusPolynomialRingZq {}
+
+impl PartialEq<PolyOverZq> for ModulusPolynomialRingZq {
+    /// Checks if an integer matrix and a rational matrix are equal. Used by the `==` and `!=` operators.
+    /// [`PartialEq`] is also implemented for [`PolyOverZq`] using [`ModulusPolynomialRingZq`].
+    ///
+    /// Parameters:
+    /// - `other`: the other value that is used to compare the elements
+    ///
+    /// Returns `true` if the elements are equal, otherwise `false`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{PolyOverZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
+    /// let a: ModulusPolynomialRingZq = ModulusPolynomialRingZq::from_str("3  1 2 3 mod 17").unwrap();
+    /// let b: PolyOverZq = PolyOverZq::from_str("3  1 2 3 mod 17").unwrap();
+    ///
+    /// // These are all equivalent and return true.
+    /// let compared: bool = (a == b);
+    /// # assert!(compared);
+    /// let compared: bool = (b == a);
+    /// # assert!(compared);
+    /// let compared: bool = (&a == &b);
+    /// # assert!(compared);
+    /// let compared: bool = (&b == &a);
+    /// # assert!(compared);
+    /// let compared: bool = (a.eq(&b));
+    /// # assert!(compared);
+    /// let compared: bool = (b.eq(&a));
+    /// # assert!(compared);
+    /// let compared: bool = (ModulusPolynomialRingZq::eq(&a, &b));
+    /// # assert!(compared);
+    /// let compared: bool = (PolyOverZq::eq(&b, &a));
+    /// # assert!(compared);
+    /// ```
+    fn eq(&self, other: &PolyOverZq) -> bool {
+        if self.get_q() != other.modulus {
+            return false;
+        }
+
+        let degree = self.get_degree();
+        if degree != other.get_degree() {
+            return false;
+        }
+
+        for i in 0..degree + 1 {
+            if GetCoefficient::<Z>::get_coeff(self, i).unwrap()
+                != GetCoefficient::<Z>::get_coeff(other, i).unwrap()
+            {
+                return false;
+            }
+        }
+
+        true
+    }
+}
+
+implement_trait_reverse!(PartialEq, eq, PolyOverZq, ModulusPolynomialRingZq, bool);
 
 /// Test that the [`PartialEq`] trait is correctly implemented.
 /// Consider that negative is turned positive due to the modulus being applied.
@@ -232,5 +294,52 @@ mod test_partial_eq {
         let second = ModulusPolynomialRingZq::from_str(second_str).unwrap();
 
         assert_ne!(first, second);
+    }
+}
+
+/// Test that the [`PartialEq`] trait is correctly implemented.
+#[cfg(test)]
+mod test_partial_eq_q_other {
+    use crate::integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq};
+    use std::str::FromStr;
+
+    /// Ensure that the function can be called with several types.
+    #[test]
+    #[allow(clippy::op_ref)]
+    fn availability() {
+        let q = ModulusPolynomialRingZq::from_str("4  1 2 3 4 mod 17").unwrap();
+        let z = PolyOverZq::from_str("4  1 2 3 4 mod 17").unwrap();
+
+        assert!(q == z);
+        assert!(z == q);
+        assert!(&q == &z);
+        assert!(&z == &q);
+    }
+
+    /// Ensure that equal values are compared correctly.
+    #[test]
+    fn equal() {
+        let q = ModulusPolynomialRingZq::from_str(&format!("3  1 2 {} mod {}", i64::MAX, u64::MAX))
+            .unwrap();
+        let z_1 = PolyOverZq::from_str(&format!("3  1 2 {} mod {}", i64::MAX, u64::MAX)).unwrap();
+        let z_2 = PolyOverZq::from_str(&format!("4  1 2 {} 0 mod {}", i64::MAX, u64::MAX)).unwrap();
+
+        assert!(q == z_1);
+        assert!(q == z_2);
+    }
+
+    /// Ensure that unequal values are compared correctly.
+    #[test]
+    fn unequal() {
+        let q = ModulusPolynomialRingZq::from_str(&format!("3  1 2 {} mod {}", i64::MAX, u64::MAX))
+            .unwrap();
+        let z_1 = PolyOverZq::from_str(&format!("3  1 3 {} mod {}", i64::MAX, u64::MAX)).unwrap();
+        let z_2 = PolyOverZq::from_str(&format!("4  1 2 {} 1 mod {}", i64::MAX, u64::MAX)).unwrap();
+        let z_3 =
+            PolyOverZq::from_str(&format!("3  1 2 {} mod {}", i64::MAX, u64::MAX - 1)).unwrap();
+
+        assert!(q != z_1);
+        assert!(q != z_2);
+        assert!(q != z_3);
     }
 }
