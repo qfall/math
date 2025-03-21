@@ -22,7 +22,7 @@ impl Hash for Z {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         // We use Hash of i64 instead of String or Vec<u8> as it
         // significantly reduces the runtime of this function.
-        let modulo_value = self.modulo(MODULUS).value.0;
+        let modulo_value = (self % MODULUS).value.0;
         modulo_value.hash(state);
     }
 }

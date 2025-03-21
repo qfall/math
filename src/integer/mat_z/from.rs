@@ -239,7 +239,7 @@ mod test_from_utf8 {
 
         // easy trick s.t. we don't have to initialize a huge [`Z`] value
         // while this test should still fail if the value changes
-        let value_zq = value.modulo(65537);
+        let value_zq = value % 65537;
 
         assert_eq!(Z::from(58285), value_zq);
     }

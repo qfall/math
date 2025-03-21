@@ -13,6 +13,7 @@ mod add;
 mod div;
 mod exp;
 mod logarithm;
+mod modulo;
 mod mul;
 mod pow;
 mod root;
