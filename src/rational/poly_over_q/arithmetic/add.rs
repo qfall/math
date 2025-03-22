@@ -9,9 +9,12 @@
 //! Implementation of the [`Add`] trait for [`PolyOverQ`] values.
 
 use super::super::PolyOverQ;
-use crate::macros::arithmetics::{
-    arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
-    arithmetic_trait_mixed_borrowed_owned,
+use crate::{
+    integer::PolyOverZ,
+    macros::arithmetics::{
+        arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
+        arithmetic_trait_mixed_borrowed_owned,
+    },
 };
 use flint_sys::fmpq_poly::fmpq_poly_add;
 use std::ops::{Add, AddAssign};
@@ -19,6 +22,8 @@ use std::ops::{Add, AddAssign};
 impl AddAssign<&PolyOverQ> for PolyOverQ {
     /// Computes the addition of `self` and `other` reusing
     /// the memory of `self`.
+    /// [`AddAssign`] can be used on [`PolyOverQ`] in combination with
+    /// [`PolyOverQ`] and [`PolyOverZ`].
     ///
     /// Parameters:
     /// - `other`: specifies the polynomial to add to `self`
@@ -27,21 +32,33 @@ impl AddAssign<&PolyOverQ> for PolyOverQ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::rational::PolyOverQ;
+    /// use qfall_math::{rational::PolyOverQ, integer::PolyOverZ};
     /// use std::str::FromStr;
     ///
     /// let mut a = PolyOverQ::from_str("3  1 2/3 -3/4").unwrap();
     /// let b = PolyOverQ::from_str("5  1 2 -3 0 8/9").unwrap();
+    /// let c = PolyOverZ::from_str("2  -1 2").unwrap();
     ///
     /// a += &b;
     /// a += b;
+    /// a += &c;
+    /// a += c;
     /// ```
     fn add_assign(&mut self, other: &Self) {
         unsafe { fmpq_poly_add(&mut self.poly, &self.poly, &other.poly) };
     }
 }
+impl AddAssign<&PolyOverZ> for PolyOverQ {
+    /// Documentation at [`PolyOverQ::add_assign`].
+    fn add_assign(&mut self, other: &PolyOverZ) {
+        let other = PolyOverQ::from(other);
+
+        self.add_assign(other);
+    }
+}
 
 arithmetic_assign_trait_borrowed_to_owned!(AddAssign, add_assign, PolyOverQ, PolyOverQ);
+arithmetic_assign_trait_borrowed_to_owned!(AddAssign, add_assign, PolyOverQ, PolyOverZ);
 
 impl Add for &PolyOverQ {
     type Output = PolyOverQ;
@@ -81,7 +98,7 @@ arithmetic_trait_mixed_borrowed_owned!(Add, add, PolyOverQ, PolyOverQ, PolyOverQ
 #[cfg(test)]
 mod test_add_assign {
     use super::PolyOverQ;
-    use crate::rational::Q;
+    use crate::{integer::PolyOverZ, rational::Q};
     use std::str::FromStr;
 
     /// Ensure that `add_assign` works for small numbers.
@@ -126,9 +143,12 @@ mod test_add_assign {
     fn availability() {
         let mut a = PolyOverQ::from_str("3  1 2 -3").unwrap();
         let b = PolyOverQ::from_str("3  -1 -2 3").unwrap();
+        let c = PolyOverZ::from_str("4  2 -1 2 3").unwrap();
 
         a += &b;
         a += b;
+        a += &c;
+        a += c;
     }
 }
 
