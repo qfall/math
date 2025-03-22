@@ -23,6 +23,8 @@ use std::ops::{Add, AddAssign};
 impl AddAssign<&MatZq> for MatZq {
     /// Computes the addition of `self` and `other` reusing
     /// the memory of `self`.
+    /// [`AddAssign`] can be used on [`MatZq`] in combination with
+    /// [`MatZq`] and [`MatZ`].
     ///
     /// Parameters:
     /// - `other`: specifies the value to add to `self`

@@ -11,6 +11,7 @@
 use super::super::PolyOverZq;
 use crate::{
     error::MathError,
+    integer::PolyOverZ,
     macros::arithmetics::{
         arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
         arithmetic_trait_mixed_borrowed_owned,
@@ -25,6 +26,8 @@ use std::{
 impl AddAssign<&PolyOverZq> for PolyOverZq {
     /// Computes the addition of `self` and `other` reusing
     /// the memory of `self`.
+    /// [`AddAssign`] can be used on [`PolyOverZq`] in combination with
+    /// [`PolyOverZq`] and [`PolyOverZ`].
     ///
     /// Parameters:
     /// - `other`: specifies the polynomial to add to `self`
@@ -33,14 +36,17 @@ impl AddAssign<&PolyOverZq> for PolyOverZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use qfall_math::{integer_mod_q::PolyOverZq, integer::PolyOverZ};
     /// use std::str::FromStr;
     ///
     /// let mut a = PolyOverZq::from_str("3  1 2 3 mod 7").unwrap();
     /// let b = PolyOverZq::from_str("5  1 2 -3 0 4 mod 7").unwrap();
+    /// let c = PolyOverZ::from_str("4  -1 2 5 3").unwrap();
     ///
     /// a += &b;
     /// a += b;
+    /// a += &c;
+    /// a += c;
     /// ```
     ///
     /// # Panics ...
@@ -64,8 +70,17 @@ impl AddAssign<&PolyOverZq> for PolyOverZq {
         };
     }
 }
+impl AddAssign<&PolyOverZ> for PolyOverZq {
+    /// Documentation at [`PolyOverZq::add_assign`].
+    fn add_assign(&mut self, other: &PolyOverZ) {
+        let other = PolyOverZq::from((other, self.get_mod()));
+
+        self.add_assign(&other);
+    }
+}
 
 arithmetic_assign_trait_borrowed_to_owned!(AddAssign, add_assign, PolyOverZq, PolyOverZq);
+arithmetic_assign_trait_borrowed_to_owned!(AddAssign, add_assign, PolyOverZq, PolyOverZ);
 
 impl Add for &PolyOverZq {
     type Output = PolyOverZq;
@@ -147,6 +162,7 @@ arithmetic_trait_mixed_borrowed_owned!(Add, add, PolyOverZq, PolyOverZq, PolyOve
 #[cfg(test)]
 mod test_add_assign {
     use super::PolyOverZq;
+    use crate::integer::PolyOverZ;
     use std::str::FromStr;
 
     /// Ensure that `add_assign` works for small numbers.
@@ -192,9 +208,12 @@ mod test_add_assign {
     fn availability() {
         let mut a = PolyOverZq::from_str("3  1 2 -3 mod 5").unwrap();
         let b = PolyOverZq::from_str("3  -1 -2 3 mod 5").unwrap();
+        let c = PolyOverZ::from_str("2  -2 2").unwrap();
 
         a += &b;
         a += b;
+        a += &c;
+        a += c;
     }
 
     /// Ensures that mismatching moduli result in a panic.

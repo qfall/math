@@ -11,6 +11,7 @@
 use super::super::MatPolynomialRingZq;
 use crate::{
     error::MathError,
+    integer::MatPolyOverZ,
     macros::arithmetics::{
         arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
         arithmetic_trait_mixed_borrowed_owned,
@@ -21,6 +22,8 @@ use std::ops::{Add, AddAssign};
 impl AddAssign<&MatPolynomialRingZq> for MatPolynomialRingZq {
     /// Computes the addition of `self` and `other` reusing
     /// the memory of `self`.
+    /// [`AddAssign`] can be used on [`MatPolynomialRingZq`] in combination with
+    /// [`MatPolynomialRingZq`] and [`MatPolyOverZ`].
     ///
     /// Parameters:
     /// - `other`: specifies the value to add to `self`
@@ -35,9 +38,12 @@ impl AddAssign<&MatPolynomialRingZq> for MatPolynomialRingZq {
     /// let modulus = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 7").unwrap();
     /// let mut a = MatPolynomialRingZq::identity(2, 2, &modulus);
     /// let b = MatPolynomialRingZq::new(2, 2, &modulus);
+    /// let c = MatPolyOverZ::new(2, 2);
     ///
     /// a += &b;
     /// a += b;
+    /// a += &c;
+    /// a += c;
     /// ```
     ///
     /// # Panics ...
@@ -56,12 +62,26 @@ impl AddAssign<&MatPolynomialRingZq> for MatPolynomialRingZq {
         self.reduce();
     }
 }
+impl AddAssign<&MatPolyOverZ> for MatPolynomialRingZq {
+    /// Documentation at [`MatPolynomialRingZq::add_assign`].
+    fn add_assign(&mut self, other: &MatPolyOverZ) {
+        self.matrix += other;
+
+        self.reduce();
+    }
+}
 
 arithmetic_assign_trait_borrowed_to_owned!(
     AddAssign,
     add_assign,
     MatPolynomialRingZq,
     MatPolynomialRingZq
+);
+arithmetic_assign_trait_borrowed_to_owned!(
+    AddAssign,
+    add_assign,
+    MatPolynomialRingZq,
+    MatPolyOverZ
 );
 
 impl Add for &MatPolynomialRingZq {
@@ -161,7 +181,10 @@ arithmetic_trait_mixed_borrowed_owned!(
 
 #[cfg(test)]
 mod test_add_assign {
-    use crate::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    use crate::{
+        integer::MatPolyOverZ,
+        integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
+    };
     use std::str::FromStr;
 
     /// Ensure that `add_assign` works for small numbers.
@@ -240,9 +263,12 @@ mod test_add_assign {
         let modulus = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 7").unwrap();
         let mut a = MatPolynomialRingZq::new(2, 2, &modulus);
         let b = MatPolynomialRingZq::new(2, 2, &modulus);
+        let c = MatPolyOverZ::new(2, 2);
 
         a += &b;
         a += b;
+        a += &c;
+        a += c;
     }
 }
 
