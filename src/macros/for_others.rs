@@ -156,6 +156,8 @@ pub(crate) use implement_for_others;
 ///
 /// - [`Evaluate`](crate::traits::Evaluate) with the signature
 ///     `($bridge_type, $output_type, $type, Evaluate)`
+/// - [`From`] with the signature
+///     `($source_type, $type, From)`
 /// - [`SetCoefficient`](crate::traits::SetCoefficient) with the signature
 ///     `($bridge_type, $type, SetCoefficient)`
 /// - [`MatrixSetEntry`](crate::traits::MatrixSetEntry) with the signature
@@ -164,6 +166,7 @@ pub(crate) use implement_for_others;
 /// # Examples
 /// ```compile_fail
 /// implement_for_owned!(Q, Q, PolyOverQ, Evaluate);
+/// implement_for_owned!(Zq, PolyOverZq, From);
 /// implement_for_owned!(Z, PolyOverZ, SetCoefficient);
 /// implement_for_owned!(Z, MatZq, MatrixSetEntry);
 /// ```
