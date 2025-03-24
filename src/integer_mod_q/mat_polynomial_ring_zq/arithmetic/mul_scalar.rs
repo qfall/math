@@ -80,7 +80,7 @@ impl Mul<&Zq> for &MatPolynomialRingZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq, Zq};
     /// use qfall_math::integer::{MatPolyOverZ, Z};
     /// use std::str::FromStr;
     ///
@@ -91,6 +91,9 @@ impl Mul<&Zq> for &MatPolynomialRingZq {
     ///
     /// let poly_ring_mat2 = &poly_ring_mat1 * &integer;
     /// ```
+    ///
+    /// # Panics ...
+    /// - if the moduli mismatch.
     fn mul(self, scalar: &Zq) -> Self::Output {
         self.mul_scalar_zq_safe(scalar).unwrap()
     }
@@ -326,13 +329,13 @@ impl MatPolynomialRingZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::{MatpolynomialRingZq, Zq};
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, Zq};
     /// use std::str::FromStr;
     ///
-    /// let mat_1 = MatpolynomialRingZq::from_str("[[1  42, 1  17],[2  1 8, 1  6]] / 3  1 2 3 mod 61").unwrap();
+    /// let mat_1 = MatPolynomialRingZq::from_str("[[1  42, 1  17],[2  1 8, 1  6]] / 3  1 2 3 mod 61").unwrap();
     /// let integer = Zq::from((2, 61));
     ///
-    /// let mat_2 = &mat_1.mul_scalar_safe(&integer).unwrap();
+    /// let mat_2 = &mat_1.mul_scalar_zq_safe(&integer).unwrap();
     /// ```
     ///
     /// # Errors and Failures
