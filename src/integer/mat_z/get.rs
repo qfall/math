@@ -761,7 +761,7 @@ mod test_get_submatrix {
 
         let mut added_rows = MatZ::new(1, 3);
         for row in matrix.get_rows() {
-            added_rows = added_rows + row;
+            added_rows += row;
         }
     }
 
@@ -772,7 +772,7 @@ mod test_get_submatrix {
 
         let mut added_rows = MatZ::new(1, 3);
         for (i, row) in matrix.get_rows().iter().enumerate() {
-            added_rows = added_rows + row;
+            added_rows += row;
             matrix.set_row(i, &added_rows, 0).unwrap();
         }
     }
@@ -784,7 +784,7 @@ mod test_get_submatrix {
 
         let mut added_columns = MatZ::new(3, 1);
         for column in matrix.get_columns() {
-            added_columns = added_columns + column;
+            added_columns += column;
         }
     }
 
@@ -795,7 +795,7 @@ mod test_get_submatrix {
 
         let mut added_columns = MatZ::new(3, 1);
         for (i, column) in matrix.get_columns().iter().enumerate() {
-            added_columns = added_columns + column;
+            added_columns += column;
             matrix.set_column(i, &added_columns, 0).unwrap();
         }
     }
