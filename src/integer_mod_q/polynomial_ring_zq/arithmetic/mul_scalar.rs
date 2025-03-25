@@ -76,7 +76,7 @@ impl Mul<&Zq> for &PolynomialRingZq {
     /// use qfall_math::integer_mod_q::{PolynomialRingZq, Zq};
     /// use std::str::FromStr;
     ///
-    /// let poly_1 = PolynomialRingZq::from_str("4  1 2 3 4 mod 17").unwrap();
+    /// let poly_1 = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 17").unwrap();
     /// let integer = Zq::from((3,17));
     ///
     /// let poly_2 = &poly_1 * &integer;
@@ -233,7 +233,7 @@ mod test_mul_zq {
     /// Checks if scalar multiplication works fine for different types
     #[test]
     fn availability() {
-        let poly = PolynomialRingZq::from_str("3  1 2 3 mod 17").unwrap();
+        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 17").unwrap();
         let z = Zq::from((2, 17));
 
         _ = poly.clone() * z.clone();

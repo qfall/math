@@ -72,11 +72,11 @@ impl Mul<&PolyOverZ> for &MatPolyOverZ {
     /// # Examples
     /// ```
     /// use qfall_math::integer::MatPolyOverZ;
-    /// use qfall_math::integer::Z;
+    /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;
     ///
     /// let mat_1 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  5 6]]").unwrap();
-    /// let poly = PolyOverZ::from_str("3  1 2 3");
+    /// let poly = PolyOverZ::from_str("3  1 2 3").unwrap();
     ///
     /// let mat_2 = &mat_1 * &poly;
     /// ```
@@ -108,8 +108,8 @@ impl Mul<&PolynomialRingZq> for &MatPolyOverZ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq, PolynomialRingZq};
-    /// use qfall_math::integer::{MatPolyOverZ, PolyOverZ, Z};
+    /// use qfall_math::integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq};
+    /// use qfall_math::integer::{MatPolyOverZ, PolyOverZ};
     /// use std::str::FromStr;
     ///
     /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
