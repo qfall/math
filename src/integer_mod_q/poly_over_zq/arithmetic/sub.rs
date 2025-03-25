@@ -1,4 +1,4 @@
-// Copyright © 2023 Phil Milewski
+// Copyright © 2023 Phil Milewski, Marcel Luca Schmidt
 //
 // This file is part of qFALL-math.
 //
@@ -11,11 +11,13 @@
 use super::super::PolyOverZq;
 use crate::{
     error::MathError,
+    integer::PolyOverZ,
+    integer_mod_q::PolynomialRingZq,
     macros::arithmetics::{
         arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
     },
 };
-use flint_sys::fmpz_mod_poly::fmpz_mod_poly_sub;
+use flint_sys::{fmpz_mod_poly::fmpz_mod_poly_sub, fq::fq_sub};
 use std::{ops::Sub, str::FromStr};
 
 impl Sub for &PolyOverZq {
@@ -48,6 +50,56 @@ impl Sub for &PolyOverZq {
         self.sub_safe(other).unwrap()
     }
 }
+
+impl Sub<&PolynomialRingZq> for &PolyOverZq {
+    type Output = PolynomialRingZq;
+    /// Implements the [`Sub`] trait for [`PolyOverZq`] and [`PolynomialRingZq`].
+    /// [`Sub`] is implemented for any combination of owned and borrowed values.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the polynomial to subtract from `self`
+    ///
+    /// Returns the subtraction of both polynomials as a [`PolynomialRingZq`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::PolynomialRingZq;
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer::PolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let poly = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
+    /// let a = PolynomialRingZq::from((&poly, &modulus));
+    /// let b = PolyOverZq::from_str("4  2 0 3 1 mod 17").unwrap();
+    ///
+    /// let c: PolynomialRingZq = &b - &a;
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the moduli mismatch.
+    fn sub(self, other: &PolynomialRingZq) -> Self::Output {
+        assert_eq!(
+            self.modulus,
+            other.modulus.get_q(),
+            "Tried to subtract polynomials with different moduli."
+        );
+
+        let mut out = PolynomialRingZq::from((&PolyOverZ::default(), &other.modulus));
+        unsafe {
+            fq_sub(
+                &mut out.poly.poly,
+                &self.get_representative_least_nonnegative_residue().poly,
+                &other.poly.poly,
+                other.modulus.get_fq_ctx(),
+            );
+        }
+        out
+    }
+}
+
+arithmetic_trait_borrowed_to_owned!(Sub, sub, PolyOverZq, PolynomialRingZq, PolynomialRingZq);
+arithmetic_trait_mixed_borrowed_owned!(Sub, sub, PolyOverZq, PolynomialRingZq, PolynomialRingZq);
 
 impl PolyOverZq {
     /// Implements subtraction for two [`PolyOverZq`] values.
@@ -189,5 +241,53 @@ mod test_sub {
         let a: PolyOverZq = PolyOverZq::from_str("3  2 4 6 mod 9").unwrap();
         let b: PolyOverZq = PolyOverZq::from_str("3  -5 5 1 mod 7").unwrap();
         assert!(&a.sub_safe(&b).is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_sub_poly_ring_zq {
+    use super::PolynomialRingZq;
+    use crate::integer_mod_q::PolyOverZq;
+    use std::str::FromStr;
+
+    /// Checks if polynomial subtraction works fine for both borrowed
+    #[test]
+    fn borrowed_correctness() {
+        let poly_1 =
+            PolynomialRingZq::from_str(&format!("2  2 {} / 4  1 2 3 4 mod {}", i64::MAX, u64::MAX))
+                .unwrap();
+        let poly_2 = PolynomialRingZq::from_str(&format!(
+            "2  -1 -{} / 4  1 2 3 4 mod {}",
+            i64::MAX as u64 - 2,
+            u64::MAX
+        ))
+        .unwrap();
+        let poly = PolyOverZq::from_str(&format!("2  1 2 mod {}", u64::MAX)).unwrap();
+
+        let poly_1 = &poly - &poly_1;
+
+        assert_eq!(poly_2, poly_1);
+    }
+
+    /// Checks if subtraction works fine for different types
+    #[test]
+    fn availability() {
+        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 17").unwrap();
+        let zq = PolyOverZq::from((2, 17));
+
+        _ = zq.clone() - poly.clone();
+        _ = &zq - &poly;
+        _ = zq.clone() - &poly;
+        _ = &zq - poly.clone();
+    }
+
+    /// Checks if subtraction panics if the moduli mismatch
+    #[test]
+    #[should_panic]
+    fn different_moduli_panic() {
+        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 17").unwrap();
+        let zq = PolyOverZq::from((2, 16));
+
+        _ = &zq - &poly;
     }
 }
