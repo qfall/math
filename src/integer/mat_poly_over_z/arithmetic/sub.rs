@@ -1,4 +1,4 @@
-// Copyright © 2023 Phil Milewski
+// Copyright © 2023 Phil Milewski, Marcel Luca Schmidt
 //
 // This file is part of qFALL-math.
 //
@@ -155,14 +155,14 @@ impl MatPolyOverZ {
     /// let mat_1 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  5 6]]").unwrap();
     /// let mat_2 = MatPolynomialRingZq::from_str("[[2  1 42, 1  17],[1  8, 2  5 6]] / 3  1 2 3 mod 17").unwrap();
     ///
-    /// let mat_3 = &mat_1.add_mat_poly_over_z_safe(&mat_2).unwrap();
+    /// let mat_3 = &mat_1.sub_mat_poly_ring_zq_safe(&mat_2).unwrap();
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
     ///     [`MathError::MismatchingMatrixDimension`] if the dimensions of `self`
     ///     and `other` do not match for multiplication.
-    fn sub_mat_poly_ring_zq_safe(
+    pub fn sub_mat_poly_ring_zq_safe(
         &self,
         other: &MatPolynomialRingZq,
     ) -> Result<MatPolynomialRingZq, MathError> {

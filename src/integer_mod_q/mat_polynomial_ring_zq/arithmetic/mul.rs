@@ -186,7 +186,7 @@ impl MatPolynomialRingZq {
     /// - Returns a [`MathError`] of type
     ///     [`MathError::MismatchingMatrixDimension`] if the dimensions of `self`
     ///     and `other` do not match for multiplication.
-    fn mul_mat_poly_over_z_safe(&self, other: &MatPolyOverZ) -> Result<Self, MathError> {
+    pub fn mul_mat_poly_over_z_safe(&self, other: &MatPolyOverZ) -> Result<Self, MathError> {
         let mut out =
             MatPolynomialRingZq::new(self.get_num_rows(), self.get_num_columns(), self.get_mod());
 

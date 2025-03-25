@@ -137,7 +137,7 @@ impl Add<&MatPolyOverZ> for &MatPolynomialRingZq {
     /// let mat_1 = MatPolynomialRingZq::from_str("[[2  1 42, 1  17],[1  8, 2  5 6]] / 3  1 2 3 mod 17").unwrap();
     /// let mat_2 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  5 6]]").unwrap();
     ///
-    /// let mat_3 = &mat_1 * &mat_2;
+    /// let mat_3 = &mat_1 + &mat_2;
     /// ```
     ///
     /// # Panics ...
@@ -249,7 +249,7 @@ impl MatPolynomialRingZq {
     /// - Returns a [`MathError`] of type
     ///     [`MathError::MismatchingMatrixDimension`] if the dimensions of `self`
     ///     and `other` do not match for multiplication.
-    fn add_mat_poly_over_z_safe(&self, other: &MatPolyOverZ) -> Result<Self, MathError> {
+    pub fn add_mat_poly_over_z_safe(&self, other: &MatPolyOverZ) -> Result<Self, MathError> {
         let mut out =
             MatPolynomialRingZq::new(self.get_num_rows(), self.get_num_columns(), self.get_mod());
 
