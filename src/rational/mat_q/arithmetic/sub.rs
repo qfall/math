@@ -62,7 +62,7 @@ impl Sub<&MatZ> for &MatQ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::{integer::MatZ, integer_mod_q::MatZq};
+    /// use qfall_math::{integer::MatZ, rational::MatQ};
     /// use std::str::FromStr;
     ///
     /// let a = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();

@@ -120,7 +120,7 @@ impl Sub<&MatQ> for &MatZ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::{integer::MatZ, integer_mod_q::MatZq};
+    /// use qfall_math::{integer::MatZ, rational::MatQ};
     /// use std::str::FromStr;
     ///
     /// let a = MatQ::from_str("[[1/2, 9, 3/8],[1/7, 0, 5]]").unwrap();
