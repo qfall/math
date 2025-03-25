@@ -63,7 +63,7 @@ impl Sub<&PolynomialRingZq> for &PolyOverZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::PolynomialRingZq;
+    /// use qfall_math::integer_mod_q::{PolyOverZq, PolynomialRingZq};
     /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
     /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;
