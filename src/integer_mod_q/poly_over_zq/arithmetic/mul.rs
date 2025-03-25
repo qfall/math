@@ -1,4 +1,4 @@
-// Copyright © 2023 Phil Milewski
+// Copyright © 2023 Phil Milewski, Marcel Luca Schmidt
 //
 // This file is part of qFALL-math.
 //
@@ -11,8 +11,10 @@
 use super::super::PolyOverZq;
 use crate::{
     error::MathError,
+    integer::PolyOverZ,
     macros::arithmetics::{
         arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+        arithmetic_trait_reverse,
     },
 };
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_mul;
@@ -48,6 +50,52 @@ impl Mul for &PolyOverZq {
         self.mul_safe(other).unwrap()
     }
 }
+
+arithmetic_trait_borrowed_to_owned!(Mul, mul, PolyOverZq, PolyOverZq, PolyOverZq);
+arithmetic_trait_mixed_borrowed_owned!(Mul, mul, PolyOverZq, PolyOverZq, PolyOverZq);
+
+impl Mul<&PolyOverZ> for &PolyOverZq {
+    type Output = PolyOverZq;
+    /// Implements the [`Mul`] trait for [`PolyOverZq`] and [`PolyOverZ`].
+    /// [`Mul`] is implemented for any combination of owned and borrowed values.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the polynomial to multiply to `self`
+    ///
+    /// Returns the product of both polynomials as a [`PolyOverZq`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use qfall_math::integer_mod_q::ModulusPolyOverZq;
+    /// use qfall_math::integer::PolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let a = PolyOverZq::from_str("4  -1 0 1 1 mod 17").unwrap();
+    /// let b = PolyOverZ::from_str("4  2 0 3 1").unwrap();
+    ///
+    /// let c: PolyOverZq = &a * &b;
+    /// ```
+    fn mul(self, other: &PolyOverZ) -> Self::Output {
+        let mut out = PolyOverZq::from(&self.modulus);
+        unsafe {
+            fmpz_mod_poly_mul(
+                &mut out.poly,
+                &self.poly,
+                &PolyOverZq::from((other, &self.modulus)).poly,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            );
+        }
+        out
+    }
+}
+
+arithmetic_trait_reverse!(Mul, mul, PolyOverZ, PolyOverZq, PolyOverZq);
+
+arithmetic_trait_borrowed_to_owned!(Mul, mul, PolyOverZq, PolyOverZ, PolyOverZq);
+arithmetic_trait_borrowed_to_owned!(Mul, mul, PolyOverZ, PolyOverZq, PolyOverZq);
+arithmetic_trait_mixed_borrowed_owned!(Mul, mul, PolyOverZq, PolyOverZ, PolyOverZq);
+arithmetic_trait_mixed_borrowed_owned!(Mul, mul, PolyOverZ, PolyOverZq, PolyOverZq);
 
 impl PolyOverZq {
     /// Implements multiplication for two [`PolyOverZq`] values.
@@ -91,9 +139,6 @@ impl PolyOverZq {
         Ok(out)
     }
 }
-
-arithmetic_trait_borrowed_to_owned!(Mul, mul, PolyOverZq, PolyOverZq, PolyOverZq);
-arithmetic_trait_mixed_borrowed_owned!(Mul, mul, PolyOverZq, PolyOverZq, PolyOverZq);
 
 #[cfg(test)]
 mod test_mul {
@@ -195,5 +240,46 @@ mod test_mul {
         let a: PolyOverZq = PolyOverZq::from_str("3  2 4 1 mod 9").unwrap();
         let b: PolyOverZq = PolyOverZq::from_str("2  -5 4 mod 7").unwrap();
         assert!(&a.mul_safe(&b).is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_mul_poly_over_z {
+    use super::PolyOverZq;
+    use crate::integer::PolyOverZ;
+    use std::str::FromStr;
+
+    /// Checks if polynomial multiplication works fine for both borrowed
+    #[test]
+    fn borrowed_correctness() {
+        let poly_1 = PolyOverZq::from_str(&format!("1  {} mod {}", i64::MAX, u64::MAX)).unwrap();
+        let poly_2 = PolyOverZ::from_str("2  1 2").unwrap();
+        let poly_cmp = PolyOverZq::from_str(&format!(
+            "2  {} {} mod {}",
+            i64::MAX,
+            i64::MAX as u64 * 2,
+            u64::MAX
+        ))
+        .unwrap();
+
+        let poly_1 = &poly_1 * &poly_2;
+
+        assert_eq!(poly_cmp, poly_1);
+    }
+
+    /// Checks if multiplication works fine for different types
+    #[test]
+    fn availability() {
+        let poly = PolyOverZq::from_str("3  1 2 3 mod 17").unwrap();
+        let z = PolyOverZ::from(2);
+
+        _ = poly.clone() * z.clone();
+        _ = z.clone() * poly.clone();
+        _ = &poly * &z;
+        _ = &z * &poly;
+        _ = &poly * z.clone();
+        _ = z.clone() * &poly;
+        _ = &z * poly.clone();
+        _ = poly.clone() * &z;
     }
 }
