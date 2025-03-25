@@ -65,8 +65,7 @@ impl Sub<&PolyOverZ> for &PolyOverQ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::PolyOverQ;
-    /// use qfall_math::integer_mod_q::ModulusPolyOverQ;
+    /// use qfall_math::rational::PolyOverQ;
     /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;
     ///

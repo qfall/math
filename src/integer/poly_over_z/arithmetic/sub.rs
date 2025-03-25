@@ -69,7 +69,6 @@ impl Sub<&PolyOverZq> for &PolyOverZ {
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::PolyOverZq;
-    /// use qfall_math::integer_mod_q::ModulusPolyOverZq;
     /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;
     ///
@@ -107,8 +106,7 @@ impl Sub<&PolyOverQ> for &PolyOverZ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::PolyOverQ;
-    /// use qfall_math::integer_mod_q::ModulusPolyOverQ;
+    /// use qfall_math::rational::PolyOverQ;
     /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;
     ///
@@ -211,7 +209,7 @@ mod test_mul_poly_over_zq {
         let poly_2 = PolyOverZq::from_str(&format!("1  {} mod {}", i64::MAX, u64::MAX)).unwrap();
 
         let poly_cmp =
-            PolyOverZq::from_str(&format!("2  {} 2 mod {}", -i64::MAX as u64 + 1, u64::MAX))
+            PolyOverZq::from_str(&format!("2  {} 2 mod {}", -i64::MAX as i128 + 1, u64::MAX))
                 .unwrap();
 
         let poly_1 = &poly_1 - &poly_2;
