@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::PolyOverZ,
     traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix},
-    utils::index::{evaluate_index_for_vector, evaluate_indices_for_matrix},
+    utils::index::evaluate_indices_for_matrix,
 };
 use flint_sys::{
     fmpz_poly::{fmpz_poly_set, fmpz_poly_struct},
@@ -133,39 +133,6 @@ impl MatrixGetEntry<PolyOverZ> for MatPolyOverZ {
 }
 
 impl MatrixGetSubmatrix for MatPolyOverZ {
-    /// Outputs a column vector of the specified column.
-    ///
-    /// Input parameters:
-    /// - `column`: specifies the column of the matrix
-    ///
-    /// Negative indices can be used to index from the back, e.g., `-1` for
-    /// the last element.
-    ///
-    /// Returns a column vector of the matrix at the position of the given
-    /// `column` or an error if the number of columns is
-    /// greater than the matrix or negative.
-    ///
-    /// # Examples
-    /// ```rust
-    /// use qfall_math::{integer::MatPolyOverZ, traits::MatrixGetSubmatrix};
-    /// use std::str::FromStr;
-    ///
-    /// let matrix = MatPolyOverZ::from_str("[[1  1, 0],[1  3, 1  4],[0, 1  6]]").unwrap();
-    ///
-    /// let col_0 = matrix.get_column(0).unwrap(); // first column
-    /// let col_1 = matrix.get_column(1).unwrap(); // second column
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///   if the number of the column is greater than the matrix.
-    fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError> {
-        let num_cols = self.get_num_columns();
-        let column_i64 = evaluate_index_for_vector(column, num_cols)?;
-
-        self.get_submatrix(0, self.get_num_rows() - 1, column_i64, column_i64)
-    }
-
     /// Returns a deep copy of the submatrix defined by the given parameters.
     /// All entries starting from `(row_1, col_1)` to `(row_2, col_2)`(inclusively) are collected in
     /// a new matrix.

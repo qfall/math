@@ -208,13 +208,19 @@ where
     /// Parameters:
     /// - `column`: specifies the column of the matrix to return
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns a column vector of the matrix at the position of the given
-    /// `column` or an error if specified column is not part of the matrix.
+    /// `column` or an error if the number of columns is
+    /// greater than the matrix or negative.
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///   if specified column is not part of the matrix.
-    fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError>;
+    ///     if specified column is not part of the matrix.
+    fn get_column(&self, column: impl TryInto<i64> + Display + Clone) -> Result<Self, MathError> {
+        self.get_submatrix(0, -1, column.clone(), column)
+    }
 
     /// Returns a deep copy of the submatrix defined by the given parameters.
     /// All entries starting from `(row_1, col_1)` to `(row_2, col_2)`(inclusively) are collected in
