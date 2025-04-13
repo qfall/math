@@ -9,7 +9,7 @@
 //! This module contains basic traits for this library. These include
 //! specific traits for matrices and polynomials.
 
-use crate::error::MathError;
+use crate::{error::MathError, utils::index::evaluate_indices_for_matrix};
 use flint_sys::fmpz::fmpz;
 use std::fmt::Display;
 
@@ -252,6 +252,46 @@ where
         row_2: impl TryInto<i64> + Display,
         col_1: impl TryInto<i64> + Display,
         col_2: impl TryInto<i64> + Display,
+    ) -> Result<Self, MathError> {
+        let (row_1, col_1) = evaluate_indices_for_matrix(self, row_1, col_1)?;
+        let (row_2, col_2) = evaluate_indices_for_matrix(self, row_2, col_2)?;
+
+        assert!(
+            row_2 >= row_1,
+            "The number of rows must be positive, i.e. row_2 ({row_2}) must be greater or equal row_1 ({row_1})"
+        );
+
+        assert!(
+            col_2 >= col_1,
+            "The number of columns must be positive, i.e. col_2 ({col_2}) must be greater or equal col_1 ({col_1})"
+        );
+
+        // increase both values to have an inclusive capturing of the matrix entries
+        let (row_2, col_2) = (row_2 + 1, col_2 + 1);
+        unsafe { self.get_submatrix_unchecked(row_1, row_2, col_1, col_2) }
+    }
+
+    /// Returns a deep copy of the submatrix defined by the given parameters
+    /// and does not check the provided dimensions.
+    /// There is also a safe version of this function that checks the input.
+    ///
+    /// Parameters:
+    /// `row_1`: the starting row of the submatrix
+    /// `row_2`: the ending row of the submatrix
+    /// `col_1`: the starting column of the submatrix
+    /// `col_2`: the ending column of the submatrix
+    ///
+    /// Returns the submatrix from `(row_1, col_1)` to `(row_2, col_2)`(exclusively).
+    ///
+    /// # Safety
+    /// The user has to ensure that all entries are within the matrix dimensions.
+    /// Otherwise, memory leaks can occur and no guarantees are given.
+    unsafe fn get_submatrix_unchecked(
+        &self,
+        row_1: i64,
+        row_2: i64,
+        col_1: i64,
+        col_2: i64,
     ) -> Result<Self, MathError>;
 
     // *** Automatically implemented functions

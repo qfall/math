@@ -276,11 +276,9 @@ impl MatrixGetEntry<PolynomialRingZq> for MatPolynomialRingZq {
 }
 
 impl MatrixGetSubmatrix for MatPolynomialRingZq {
-    /// Returns a deep copy of the submatrix defined by the given parameters.
-    /// All entries starting from `(row_1, col_1)` to `(row_2, col_2)`(inclusively) are collected in
-    /// a new matrix.
-    /// Note that `row_1 >= row_2` and `col_1 >= col_2` must hold after converting negative indices.
-    /// Otherwise the function will panic.
+    /// Returns a deep copy of the submatrix defined by the given parameters
+    /// and does not check the provided dimensions.
+    /// There is also a safe version of this function that checks the input.
     ///
     /// Parameters:
     /// `row_1`: the starting row of the submatrix
@@ -288,11 +286,7 @@ impl MatrixGetSubmatrix for MatPolynomialRingZq {
     /// `col_1`: the starting column of the submatrix
     /// `col_2`: the ending column of the submatrix
     ///
-    /// Negative indices can be used to index from the back, e.g., `-1` for
-    /// the last element.
-    ///
-    /// Returns the submatrix from `(row_1, col_1)` to `(row_2, col_2)`(inclusively)
-    /// or an error if any provided row or column is greater than the matrix.
+    /// Returns the submatrix from `(row_1, col_1)` to `(row_2, col_2)`(exclusively).
     ///
     /// # Examples
     /// ```
@@ -313,21 +307,20 @@ impl MatrixGetSubmatrix for MatPolynomialRingZq {
     /// assert_eq!(e_2, sub_mat_2);
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///   if any provided row or column is greater than the matrix.
-    ///
-    /// # Panics ...
-    /// - if `col_1 > col_2` or `row_1 > row_2`.
-    fn get_submatrix(
+    /// # Safety
+    /// The user has to ensure that all entries are within the matrix dimensions.
+    /// Otherwise, memory leaks can occur and no guarantees are given.
+    unsafe fn get_submatrix_unchecked(
         &self,
-        row_1: impl TryInto<i64> + Display,
-        row_2: impl TryInto<i64> + Display,
-        col_1: impl TryInto<i64> + Display,
-        col_2: impl TryInto<i64> + Display,
+        row_1: i64,
+        row_2: i64,
+        col_1: i64,
+        col_2: i64,
     ) -> Result<Self, MathError> {
         Ok(MatPolynomialRingZq {
-            matrix: self.matrix.get_submatrix(row_1, row_2, col_1, col_2)?,
+            matrix: self
+                .matrix
+                .get_submatrix_unchecked(row_1, row_2, col_1, col_2)?,
             modulus: self.get_mod(),
         })
     }
