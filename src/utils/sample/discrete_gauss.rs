@@ -337,7 +337,7 @@ pub(crate) fn sample_d_precomputed_gso(
 
     for i in (0..basis_gso.get_num_columns()).rev() {
         // basisvector_i = b_tilde[i]
-        let basisvector_orth_i = basis_gso.get_column(i).unwrap();
+        let basisvector_orth_i = unsafe { basis_gso.get_column_unchecked(i) };
 
         // define the center for sample_z as c_2 = <c, b_tilde[i]> / <b_tilde[i], b_tilde[i]>;
         let c_2 = center.dot_product(&basisvector_orth_i).unwrap()
@@ -351,7 +351,7 @@ pub(crate) fn sample_d_precomputed_gso(
         let z = dgis.sample_z();
 
         // update the center c = c - z * b[i]
-        let basisvector_i = basis.get_column(i).unwrap();
+        let basisvector_i = unsafe { basis.get_column_unchecked(i) };
         center = center - MatQ::from(&(&z * &basisvector_i));
 
         // out = out + z * b[i]

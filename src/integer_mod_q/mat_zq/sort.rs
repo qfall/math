@@ -67,7 +67,7 @@ impl MatZq {
     ) -> Result<Self, MathError> {
         let mut condition_values = vec![];
         for col in 0..self.get_num_columns() {
-            condition_values.push(cond_func(&self.get_column(col).unwrap())?);
+            condition_values.push(cond_func(&unsafe { self.get_column_unchecked(col) })?);
         }
 
         let mut id_vec: Vec<usize> = (0..self.get_num_columns() as usize).collect();
@@ -133,7 +133,7 @@ impl MatZq {
     ) -> Result<Self, MathError> {
         let mut condition_values = vec![];
         for row in 0..self.get_num_rows() {
-            condition_values.push(cond_func(&self.get_row(row).unwrap())?);
+            condition_values.push(cond_func(&unsafe { self.get_row_unchecked(row) })?);
         }
         let mut id_vec: Vec<usize> = (0..self.get_num_rows() as usize).collect();
         id_vec.sort_by_key(|x| &condition_values[*x]);

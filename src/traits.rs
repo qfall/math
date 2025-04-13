@@ -204,7 +204,7 @@ where
     ///     if specified row is not part of the matrix.
     fn get_row(&self, row: impl TryInto<i64> + Display + Clone) -> Result<Self, MathError> {
         let row = evaluate_index_for_vector(row, self.get_num_rows())?;
-        Ok(unsafe { self.get_row_uncheckd(row) })
+        Ok(unsafe { self.get_row_unchecked(row) })
     }
 
     /// Outputs the row vector of the specified row.
@@ -219,7 +219,7 @@ where
     /// To use this function safely, make sure that the selected row is part
     /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
     /// occur.
-    unsafe fn get_row_uncheckd(&self, row: i64) -> Self {
+    unsafe fn get_row_unchecked(&self, row: i64) -> Self {
         self.get_submatrix_unchecked(row, row + 1, 0, self.get_num_columns())
     }
 
@@ -363,8 +363,7 @@ where
         let mut rows = vec![];
 
         for i in 0..self.get_num_rows() {
-            // replace with self.get_row_unchecked once available
-            let entry = self.get_row(i).unwrap();
+            let entry = unsafe { self.get_row_unchecked(i) };
             rows.push(entry);
         }
 
@@ -400,8 +399,7 @@ where
         let mut columns = vec![];
 
         for i in 0..self.get_num_columns() {
-            // replace with self.get_column_unchecked once available
-            let entry = self.get_column(i).unwrap();
+            let entry = unsafe { self.get_column_unchecked(i) };
             columns.push(entry);
         }
 
