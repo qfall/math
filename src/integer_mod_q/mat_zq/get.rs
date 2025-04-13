@@ -138,22 +138,25 @@ impl MatrixGetSubmatrix for MatZq {
     ///
     /// let sub_mat_1 = mat.get_submatrix(0, 2, 1, 1).unwrap();
     /// let sub_mat_2 = mat.get_submatrix(0, -1, 1, -2).unwrap();
+    /// let sub_mat_3 = unsafe{mat.get_submatrix_unchecked(0, 3, 1, 2)};
     ///
     /// let e_2 = MatZq::from_str("[[0],[1],[0]] mod 17").unwrap();
     /// assert_eq!(e_2, sub_mat_1);
     /// assert_eq!(e_2, sub_mat_2);
+    /// assert_eq!(e_2, sub_mat_3);
     /// ```
     ///
     /// # Safety
-    /// The user has to ensure that all entries are within the matrix dimensions.
-    /// Otherwise, memory leaks can occur and no guarantees are given.
+    /// To use this function safely, make sure that the selected submatrix is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
     unsafe fn get_submatrix_unchecked(
         &self,
         row_1: i64,
         row_2: i64,
         col_1: i64,
         col_2: i64,
-    ) -> Result<Self, MathError> {
+    ) -> Self {
         let mut window = MaybeUninit::uninit();
         // The memory for the elements of window is shared with self.
         unsafe {
@@ -174,10 +177,10 @@ impl MatrixGetSubmatrix for MatZq {
             // the memory to the underlying matrix that window points to is not freed
             fmpz_mod_mat_window_clear(window.as_mut_ptr());
         }
-        Ok(MatZq {
+        MatZq {
             matrix: unsafe { window_copy.assume_init() },
             modulus: self.get_mod(),
-        })
+        }
     }
 }
 

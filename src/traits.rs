@@ -9,7 +9,10 @@
 //! This module contains basic traits for this library. These include
 //! specific traits for matrices and polynomials.
 
-use crate::{error::MathError, utils::index::evaluate_indices_for_matrix};
+use crate::{
+    error::MathError,
+    utils::index::{evaluate_index_for_vector, evaluate_indices_for_matrix},
+};
 use flint_sys::fmpz::fmpz;
 use std::fmt::Display;
 
@@ -200,7 +203,24 @@ where
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     ///     if specified row is not part of the matrix.
     fn get_row(&self, row: impl TryInto<i64> + Display + Clone) -> Result<Self, MathError> {
-        self.get_submatrix(row.clone(), row, 0, -1)
+        let row = evaluate_index_for_vector(row, self.get_num_rows())?;
+        Ok(unsafe { self.get_row_uncheckd(row) })
+    }
+
+    /// Outputs the row vector of the specified row.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row of the matrix to return
+    ///
+    /// Returns a row vector of the matrix at the position of the given
+    /// `row`.
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected row is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    unsafe fn get_row_uncheckd(&self, row: i64) -> Self {
+        self.get_submatrix_unchecked(row, row + 1, 0, self.get_num_columns())
     }
 
     /// Outputs the column vector of the specified column.
@@ -219,7 +239,24 @@ where
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     ///     if specified column is not part of the matrix.
     fn get_column(&self, column: impl TryInto<i64> + Display + Clone) -> Result<Self, MathError> {
-        self.get_submatrix(0, -1, column.clone(), column)
+        let column = evaluate_index_for_vector(column, self.get_num_columns())?;
+        Ok(unsafe { self.get_column_unchecked(column) })
+    }
+
+    /// Outputs the column vector of the specified column.
+    ///
+    /// Parameters:
+    /// - `column`: specifies the row of the matrix to return
+    ///
+    /// Returns a column vector of the matrix at the position of the given
+    /// `column`.
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected column is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    unsafe fn get_column_unchecked(&self, column: i64) -> Self {
+        self.get_submatrix_unchecked(0, self.get_num_rows(), column, column + 1)
     }
 
     /// Returns a deep copy of the submatrix defined by the given parameters.
@@ -268,7 +305,7 @@ where
 
         // increase both values to have an inclusive capturing of the matrix entries
         let (row_2, col_2) = (row_2 + 1, col_2 + 1);
-        unsafe { self.get_submatrix_unchecked(row_1, row_2, col_1, col_2) }
+        Ok(unsafe { self.get_submatrix_unchecked(row_1, row_2, col_1, col_2) })
     }
 
     /// Returns a deep copy of the submatrix defined by the given parameters
@@ -284,15 +321,16 @@ where
     /// Returns the submatrix from `(row_1, col_1)` to `(row_2, col_2)`(exclusively).
     ///
     /// # Safety
-    /// The user has to ensure that all entries are within the matrix dimensions.
-    /// Otherwise, memory leaks can occur and no guarantees are given.
+    /// To use this function safely, make sure that the selected submatrix is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
     unsafe fn get_submatrix_unchecked(
         &self,
         row_1: i64,
         row_2: i64,
         col_1: i64,
         col_2: i64,
-    ) -> Result<Self, MathError>;
+    ) -> Self;
 
     // *** Automatically implemented functions
 

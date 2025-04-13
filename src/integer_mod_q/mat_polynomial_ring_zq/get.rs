@@ -300,29 +300,32 @@ impl MatrixGetSubmatrix for MatPolynomialRingZq {
     ///
     /// let sub_mat_1 = poly_ring_mat.get_submatrix(0, 2, 1, 1).unwrap();
     /// let sub_mat_2 = poly_ring_mat.get_submatrix(0, -1, 1, -2).unwrap();
+    /// let sub_mat_3 = unsafe{poly_ring_mat.get_submatrix_unchecked(0, 3, 1, 2)};
     ///
     /// let e_2 = MatPolyOverZ::from_str("[[0],[1  1],[0]]").unwrap();
     /// let e_2 = MatPolynomialRingZq::from((&e_2, &modulus));
     /// assert_eq!(e_2, sub_mat_1);
     /// assert_eq!(e_2, sub_mat_2);
+    /// assert_eq!(e_2, sub_mat_3);
     /// ```
     ///
     /// # Safety
-    /// The user has to ensure that all entries are within the matrix dimensions.
-    /// Otherwise, memory leaks can occur and no guarantees are given.
+    /// To use this function safely, make sure that the selected submatrix is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
     unsafe fn get_submatrix_unchecked(
         &self,
         row_1: i64,
         row_2: i64,
         col_1: i64,
         col_2: i64,
-    ) -> Result<Self, MathError> {
-        Ok(MatPolynomialRingZq {
+    ) -> Self {
+        MatPolynomialRingZq {
             matrix: self
                 .matrix
-                .get_submatrix_unchecked(row_1, row_2, col_1, col_2)?,
+                .get_submatrix_unchecked(row_1, row_2, col_1, col_2),
             modulus: self.get_mod(),
-        })
+        }
     }
 }
 
