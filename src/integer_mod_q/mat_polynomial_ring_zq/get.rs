@@ -277,43 +277,6 @@ impl MatrixGetEntry<PolynomialRingZq> for MatPolynomialRingZq {
 }
 
 impl MatrixGetSubmatrix for MatPolynomialRingZq {
-    /// Outputs the row vector of the specified row.
-    ///
-    /// Parameters:
-    /// - `row`: specifies the row of the matrix
-    ///
-    /// Negative indices can be used to index from the back, e.g., `-1` for
-    /// the last element.
-    ///
-    /// Returns a row vector of the matrix at the position of the given
-    /// `row` or an error if the number of rows is
-    /// greater than the matrix or negative.
-    ///
-    /// # Examples
-    /// ```rust
-    /// use qfall_math::{integer::MatPolyOverZ, traits::MatrixGetSubmatrix};
-    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
-    /// use std::str::FromStr;
-    ///
-    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();();
-    /// let mat_poly = MatPolyOverZ::identity(3, 3);
-    /// let matrix = MatPolynomialRingZq::from((&mat_poly, &modulus));
-    ///
-    /// let row_0 = matrix.get_row(0).unwrap(); // first row
-    /// let row_1 = matrix.get_row(1).unwrap(); // second row
-    /// let row_2 = matrix.get_row(2).unwrap(); // third row
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///   if the number of the row is greater than the matrix.
-    fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError> {
-        let num_rows = self.get_num_rows();
-        let row_i64 = evaluate_index_for_vector(row, num_rows)?;
-
-        self.get_submatrix(row_i64, row_i64, 0, self.get_num_columns() - 1)
-    }
-
     /// Outputs a column vector of the specified column.
     ///
     /// Input parameters:

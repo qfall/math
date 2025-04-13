@@ -189,13 +189,19 @@ where
     /// Parameters:
     /// - `row`: specifies the row of the matrix to return
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns a row vector of the matrix at the position of the given
-    /// `row` or an error if specified row is not part of the matrix.
+    /// `row` or an error if the number of rows is
+    /// greater than the matrix or negative.
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///   if specified row is not part of the matrix.
-    fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError>;
+    ///     if specified row is not part of the matrix.
+    fn get_row(&self, row: impl TryInto<i64> + Display + Clone) -> Result<Self, MathError> {
+        self.get_submatrix(row.clone(), row, 0, -1)
+    }
 
     /// Outputs the column vector of the specified column.
     ///
