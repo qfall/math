@@ -16,11 +16,32 @@ use crate::{
 use flint_sys::fmpz::fmpz;
 use std::fmt::Display;
 
+/// Is implemented by every type where a base-check might be needed.
+/// This also includes every type of matrix, because it allows for geneceric implementations.
+/// Per default, a basecheck simply returs that the bases match and no error is returned.
 pub trait CompareBase {
+    /// Compares the base elements of the objects and returns true if they match
+    /// and an operation between the two provided types is possible.
+    ///
+    /// Parameters:
+    /// - `other`: The other objects whose base is compared to `self`
+    ///
+    /// Returns true if the bases match and false otherwise.
+    /// The default implementation just returns true.
+    #[allow(unused_variables)]
     fn compare_base(&self, other: &Self) -> bool {
         true
     }
 
+    /// Calls an error that gives small explanation how the base elements differ.
+    /// This function only calls the error and does not check if the two actually differ.
+    ///
+    /// Parameters:
+    /// - `other`: The other objects whose base is compared to `self`
+    ///
+    /// Returns a MathError, typically [MathError::MismatchingModulus].
+    /// The default implementation just returns `None`.
+    #[allow(unused_variables)]
     fn call_compare_base_error(&self, other: &Self) -> Option<MathError> {
         None
     }

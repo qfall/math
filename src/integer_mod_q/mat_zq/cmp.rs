@@ -150,3 +150,34 @@ mod test_partial_eq {
         assert_ne!(c, e);
     }
 }
+
+/// Test that the [`CompareBase`] trait uses an actual implementation.
+#[cfg(test)]
+mod test_compare_base {
+    use crate::{
+        integer_mod_q::{MatZq, Modulus},
+        traits::CompareBase,
+    };
+
+    /// Ensures that the [`CompareBase`] trait uses an actual implementation.
+    #[test]
+    fn different_base() {
+        let modulus = Modulus::from(17);
+        let one_1 = MatZq::identity(10, 7, &modulus);
+        let modulus = Modulus::from(19);
+        let one_2 = MatZq::identity(10, 7, &modulus);
+
+        assert!(!one_1.compare_base(&one_2));
+        assert!(one_1.call_compare_base_error(&one_2).is_some())
+    }
+
+    /// Ensures that the same base return `true`.
+    #[test]
+    fn same_base() {
+        let modulus = Modulus::from(17);
+        let one_1 = MatZq::identity(10, 7, &modulus);
+        let one_2 = MatZq::identity(10, 7, &modulus);
+
+        assert!(one_1.compare_base(&one_2));
+    }
+}

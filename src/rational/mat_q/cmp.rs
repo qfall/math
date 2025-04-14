@@ -221,3 +221,20 @@ mod test_partial_eq_q_other {
         assert!(q == z);
     }
 }
+
+/// Test that the [`CompareBase`] trait uses the default implementation.
+#[cfg(test)]
+mod test_compare_base {
+    use crate::{rational::MatQ, traits::CompareBase};
+    use std::str::FromStr;
+
+    /// Ensures that the [`CompareBase`] trait uses the default implementation.
+    #[test]
+    fn uses_default_implementation() {
+        let one_1 = MatQ::from_str("[[2/3, 24, 47],[2, 24, 42]]").unwrap();
+        let one_2 = MatQ::from_str("[[2, 4, 42/9]]").unwrap();
+
+        assert!(one_1.compare_base(&one_2));
+        assert!(one_1.call_compare_base_error(&one_2).is_none());
+    }
+}

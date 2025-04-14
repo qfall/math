@@ -221,3 +221,20 @@ mod test_partial_eq {
         assert!(small_positive != min);
     }
 }
+
+/// Test that the [`CompareBase`] trait uses the default implementation.
+#[cfg(test)]
+mod test_compare_base {
+    use crate::{integer::MatPolyOverZ, traits::CompareBase};
+    use std::str::FromStr;
+
+    /// Ensures that the [`CompareBase`] trait uses the default implementation.
+    #[test]
+    fn uses_default_implementation() {
+        let one_1 = MatPolyOverZ::from_str("[[2  24 47],[2  24 42]]").unwrap();
+        let one_2 = MatPolyOverZ::from_str("[[2  24 42]]").unwrap();
+
+        assert!(one_1.compare_base(&one_2));
+        assert!(one_1.call_compare_base_error(&one_2).is_none());
+    }
+}
