@@ -488,6 +488,8 @@ where
     ///   if the provided row index is not defined within the margins of the matrix.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     ///   if the number of columns of `self` and `other` differ.
+    /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus) if the base types are
+    ///   not compatible. This can only happen if the base types themselves can mismatch.
     fn set_row(
         &mut self,
         row_0: impl TryInto<i64> + Display,
@@ -515,7 +517,19 @@ where
 
         Ok(())
     }
+    /// Sets a row of the given matrix to the provided row of `other`.
+    ///
+    /// Parameters:
+    /// - `row_0`: specifies the row of `self` that should be modified
+    /// - `other`: specifies the matrix providing the row replacing the row in `self`
+    /// - `row_1`: specifies the row of `other` providing
+    ///   the values replacing the original row in `self`
+    ///
     /// # Safety
+    /// To use this function safely, make sure that the selected rows are part
+    /// of the matrices, the columns are of the same length and the base types are the same.
+    /// If not, memory leaks, unexpected panics, etc. might
+    /// occur.
     unsafe fn set_row_unchecked(&mut self, row_0: i64, other: &Self, row_1: i64) {
         unsafe {
             self.set_submatrix_unchecked(
@@ -549,6 +563,8 @@ where
     ///   if the provided column index is not defined within the margins of the matrix.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     ///   if the number of rows of `self` and `other` differ.
+    /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus) if the base types are
+    ///   not compatible. This can only happen if the base types themselves can mismatch.
     fn set_column(
         &mut self,
         col_0: impl TryInto<i64> + Display,
@@ -577,7 +593,19 @@ where
         Ok(())
     }
 
+    /// Sets a column of the given matrix to the provided column of `other`.
+    ///
+    /// Parameters:
+    /// - `col_0`: specifies the column of `self` that should be modified
+    /// - `other`: specifies the matrix providing the column replacing the column in `self`
+    /// - `col_1`: specifies the column of `other` providing
+    ///   the values replacing the original column in `self`
+    ///
     /// # Safety
+    /// To use this function safely, make sure that the selected columns are part
+    /// of the matrices, the columns are of the same length and the base types are the same.
+    /// If not, memory leaks, unexpected panics, etc. might
+    /// occur.
     unsafe fn set_column_unchecked(&mut self, col_0: i64, other: &Self, col_1: i64) {
         unsafe {
             self.set_submatrix_unchecked(
