@@ -12,7 +12,7 @@ use super::MatQ;
 use crate::{
     integer::MatZ,
     macros::for_others::implement_trait_reverse,
-    traits::{MatrixDimensions, MatrixGetEntry},
+    traits::{CompareBase, MatrixDimensions, MatrixGetEntry},
 };
 use flint_sys::{
     fmpq_mat::{fmpq_mat_equal, fmpq_mat_set_fmpz_mat_div_fmpz},
@@ -121,6 +121,8 @@ impl MatQ {
 }
 
 implement_trait_reverse!(PartialEq, eq, MatZ, MatQ, bool);
+
+impl CompareBase for MatQ {}
 
 /// Test that the [`PartialEq`] trait is correctly implemented.
 #[cfg(test)]

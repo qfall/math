@@ -9,6 +9,7 @@
 //! This module contains implementations for comparison of [`MatZq`].
 
 use super::MatZq;
+use crate::{error::MathError, traits::CompareBase};
 use flint_sys::{fmpz::fmpz_equal, fmpz_mat::fmpz_mat_equal};
 
 impl PartialEq for MatZq {
@@ -43,6 +44,21 @@ impl PartialEq for MatZq {
             fmpz_equal(&self.matrix.mod_[0], &other.matrix.mod_[0]) != 0
                 && fmpz_mat_equal(&self.matrix.mat[0], &other.matrix.mat[0]) != 0
         }
+    }
+}
+
+impl CompareBase for MatZq {
+    fn compare_base(&self, other: &Self) -> bool {
+        self.get_mod() == other.get_mod()
+    }
+
+    fn call_compare_base_error(&self, other: &Self) -> Result<(), MathError> {
+        Err(MathError::MismatchingModulus(format!(
+            "The moduli of the matrices mismatch. One of them is {} and the other is {}.
+            The desired operation is not defined and an error is returned.",
+            self.get_mod(),
+            other.get_mod()
+        )))
     }
 }
 

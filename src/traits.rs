@@ -16,6 +16,16 @@ use crate::{
 use flint_sys::fmpz::fmpz;
 use std::fmt::Display;
 
+pub trait CompareBase {
+    fn compare_base(&self, other: &Self) -> bool {
+        true
+    }
+
+    fn call_compare_base_error(&self, other: &Self) -> Result<(), MathError> {
+        Ok(())
+    }
+}
+
 /// Is implemented by polynomials to evaluate them for a certain input.
 pub trait Evaluate<T, U> {
     /// Evaluates the object, e.g. polynomial or a matrix of polynomials,

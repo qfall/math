@@ -10,6 +10,7 @@
 //! This uses the traits from [`std::cmp`].
 
 use super::PolyOverZq;
+use crate::{error::MathError, traits::CompareBase};
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_equal;
 
 impl PartialEq for PolyOverZq {
@@ -55,6 +56,21 @@ impl PartialEq for PolyOverZq {
 // With the [`Eq`] trait, `a == a` is always true.
 // This is not guaranteed by the [`PartialEq`] trait.
 impl Eq for PolyOverZq {}
+
+impl CompareBase for PolyOverZq {
+    fn compare_base(&self, other: &Self) -> bool {
+        self.get_mod() == other.get_mod()
+    }
+
+    fn call_compare_base_error(&self, other: &Self) -> Result<(), MathError> {
+        Err(MathError::MismatchingModulus(format!(
+            "The moduli of the matrices mismatch. One of them is {} and the other is {}.
+            The desired operation is not defined and an error is returned.",
+            self.get_mod(),
+            other.get_mod()
+        )))
+    }
+}
 
 /// Test that the [`PartialEq`] trait is correctly implemented.
 /// Consider that negative is turned positive due to the modulus being applied.

@@ -10,6 +10,7 @@
 //! This uses the traits from [`std::cmp`].
 
 use super::MatPolyOverZ;
+use crate::traits::CompareBase;
 use flint_sys::fmpz_poly_mat::fmpz_poly_mat_equal;
 
 impl PartialEq for MatPolyOverZ {
@@ -47,6 +48,8 @@ impl PartialEq for MatPolyOverZ {
 // With the [`Eq`] trait, `a == a` is always true.
 // This is not guaranteed by the [`PartialEq`] trait.
 impl Eq for MatPolyOverZ {}
+
+impl CompareBase for MatPolyOverZ {}
 
 /// Test that the [`PartialEq`] trait is correctly implemented.
 #[cfg(test)]

@@ -9,6 +9,7 @@
 //! This module contains implementations for comparison of [`MatZ`].
 
 use super::MatZ;
+use crate::traits::CompareBase;
 use flint_sys::fmpz_mat::fmpz_mat_equal;
 
 impl PartialEq for MatZ {
@@ -41,6 +42,8 @@ impl PartialEq for MatZ {
         unsafe { fmpz_mat_equal(&self.matrix, &other.matrix) != 0 }
     }
 }
+
+impl CompareBase for MatPolyOverZ {}
 
 // With the [`Eq`] trait, `a == a` is always true.
 // This is not guaranteed by the [`PartialEq`] trait.
