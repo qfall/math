@@ -467,7 +467,10 @@ pub trait MatrixSetEntry<T> {
 }
 
 /// Is implemented by matrices to set more than a single entry of the matrix.
-pub trait MatrixSetSubmatrix {
+pub trait MatrixSetSubmatrix
+where
+    Self: Sized + MatrixDimensions,
+{
     /// Sets a row of the given matrix to the provided row of `other`.
     ///
     /// Parameters:
@@ -515,6 +518,75 @@ pub trait MatrixSetSubmatrix {
         other: &Self,
         col_1: impl TryInto<i64> + Display,
     ) -> Result<(), MathError>;
+
+    #[allow(clippy::too_many_arguments)]
+    fn set_submatrix(
+        &mut self,
+        row_self_start: impl TryInto<i64> + Display,
+        col_self_start: impl TryInto<i64> + Display,
+        other: &Self,
+        row_other_start: impl TryInto<i64> + Display,
+        col_other_start: impl TryInto<i64> + Display,
+        row_other_end: impl TryInto<i64> + Display,
+        col_other_end: impl TryInto<i64> + Display,
+    ) -> Result<(), MathError> {
+        let (row_self_start, col_self_start) =
+            evaluate_indices_for_matrix(self, row_self_start, col_self_start)?;
+        let (row_other_start, col_other_start) =
+            evaluate_indices_for_matrix(other, row_other_start, col_other_start)?;
+        let (row_other_end, col_other_end) =
+            evaluate_indices_for_matrix(other, row_other_end, col_other_end)?;
+
+        assert!(
+                row_other_end >= row_other_start,
+                "The number of rows must be positive, i.e. row_other_end ({row_other_end}) must be greater or equal row_other_start ({row_other_start})"
+            );
+
+        assert!(
+                col_other_end >= col_other_start,
+                "The number of columns must be positive, i.e. col_other_end ({col_other_end}) must be greater or equal col_other_start ({col_other_start})"
+            );
+
+        // increase both values to have an inclusive capturing of the matrix entries
+        let (row_other_end, col_other_end) = (row_other_end + 1, col_other_end + 1);
+        let nr_rows = row_other_end - row_other_start;
+        let nr_cols = col_other_end - col_other_start;
+        let row_self_end =
+            evaluate_index_for_vector(row_self_start + nr_rows, self.get_num_rows())?;
+        let col_self_end =
+            evaluate_index_for_vector(col_self_start + nr_cols, self.get_num_columns())?;
+
+        unsafe {
+            self.set_submatrix_unchecked(
+                row_self_start,
+                col_self_start,
+                row_self_end,
+                col_self_end,
+                other,
+                row_other_start,
+                col_other_start,
+                row_other_end,
+                col_other_end,
+            );
+        }
+
+        Ok(())
+    }
+
+    /// # Safety
+    #[allow(clippy::too_many_arguments)]
+    unsafe fn set_submatrix_unchecked(
+        &mut self,
+        row_self_start: i64,
+        col_self_start: i64,
+        row_self_end: i64,
+        col_self_end: i64,
+        other: &Self,
+        row_other_start: i64,
+        col_other_start: i64,
+        row_other_end: i64,
+        col_other_end: i64,
+    );
 }
 
 pub trait MatrixSwaps {

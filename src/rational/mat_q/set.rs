@@ -17,12 +17,13 @@ use crate::{
 use flint_sys::{
     fmpq::{fmpq_set, fmpq_swap},
     fmpq_mat::{
-        fmpq_mat_entry, fmpq_mat_invert_cols, fmpq_mat_invert_rows, fmpq_mat_swap_cols,
-        fmpq_mat_swap_rows,
+        fmpq_mat_entry, fmpq_mat_invert_cols, fmpq_mat_invert_rows, fmpq_mat_set,
+        fmpq_mat_swap_cols, fmpq_mat_swap_rows, fmpq_mat_window_clear, fmpq_mat_window_init,
     },
 };
 use std::{
     fmt::Display,
+    mem::MaybeUninit,
     ptr::{null, null_mut},
 };
 
@@ -239,6 +240,53 @@ impl MatrixSetSubmatrix for MatQ {
         }
 
         Ok(())
+    }
+
+    unsafe fn set_submatrix_unchecked(
+        &mut self,
+        row_self_start: i64,
+        col_self_start: i64,
+        row_self_end: i64,
+        col_self_end: i64,
+        other: &Self,
+        row_other_start: i64,
+        col_other_start: i64,
+        row_other_end: i64,
+        col_other_end: i64,
+    ) {
+        let mut window_self = MaybeUninit::uninit();
+        // The memory for the elements of window is shared with self.
+        unsafe {
+            fmpq_mat_window_init(
+                window_self.as_mut_ptr(),
+                &self.matrix,
+                row_self_start,
+                col_self_start,
+                row_self_end,
+                col_self_end,
+            )
+        };
+        let mut window_other = MaybeUninit::uninit();
+        // The memory for the elements of window is shared with other.
+        unsafe {
+            fmpq_mat_window_init(
+                window_other.as_mut_ptr(),
+                &other.matrix,
+                row_other_start,
+                col_other_start,
+                row_other_end,
+                col_other_end,
+            )
+        };
+        unsafe {
+            // TODO: this should not be mutable for the other window
+            fmpq_mat_set(window_self.as_mut_ptr(), window_other.as_mut_ptr());
+
+            // Clears the matrix window and releases any memory that it uses. Note that
+            // the memory to the underlying matrix that window points to is not freed
+            fmpq_mat_window_clear(window_self.as_mut_ptr());
+            fmpq_mat_window_clear(window_other.as_mut_ptr());
+        }
     }
 }
 

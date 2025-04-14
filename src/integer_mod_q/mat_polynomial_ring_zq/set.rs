@@ -14,8 +14,12 @@ use crate::macros::for_others::implement_for_owned;
 use crate::traits::{CompareBase, MatrixSetSubmatrix, MatrixSwaps};
 use crate::utils::index::evaluate_indices_for_matrix;
 use crate::{error::MathError, integer::PolyOverZ, traits::MatrixSetEntry};
+use flint_sys::fmpz_poly_mat::{
+    fmpz_poly_mat_set, fmpz_poly_mat_window_clear, fmpz_poly_mat_window_init,
+};
 use flint_sys::{fmpz_poly::fmpz_poly_set, fmpz_poly_mat::fmpz_poly_mat_entry};
 use std::fmt::Display;
+use std::mem::MaybeUninit;
 
 impl MatrixSetEntry<&PolyOverZ> for MatPolynomialRingZq {
     /// Sets the value of a specific matrix entry according to a given `value` of type [`PolyOverZ`].
@@ -300,6 +304,55 @@ impl MatrixSetSubmatrix for MatPolynomialRingZq {
         }
 
         self.matrix.set_row(row_0, &other.matrix, row_1)
+    }
+
+    unsafe fn set_submatrix_unchecked(
+        &mut self,
+        row_self_start: i64,
+        col_self_start: i64,
+        row_self_end: i64,
+        col_self_end: i64,
+        other: &Self,
+        row_other_start: i64,
+        col_other_start: i64,
+        row_other_end: i64,
+        col_other_end: i64,
+    ) {
+        {
+            let mut window_self = MaybeUninit::uninit();
+            // The memory for the elements of window is shared with self.
+            unsafe {
+                fmpz_poly_mat_window_init(
+                    window_self.as_mut_ptr(),
+                    &self.matrix.matrix,
+                    row_self_start,
+                    col_self_start,
+                    row_self_end,
+                    col_self_end,
+                )
+            };
+            let mut window_other = MaybeUninit::uninit();
+            // The memory for the elements of window is shared with other.
+            unsafe {
+                fmpz_poly_mat_window_init(
+                    window_other.as_mut_ptr(),
+                    &other.matrix.matrix,
+                    row_other_start,
+                    col_other_start,
+                    row_other_end,
+                    col_other_end,
+                )
+            };
+            unsafe {
+                // TODO: this should not be mutable for the other window
+                fmpz_poly_mat_set(window_self.as_mut_ptr(), window_other.as_mut_ptr());
+
+                // Clears the matrix window and releases any memory that it uses. Note that
+                // the memory to the underlying matrix that window points to is not freed
+                fmpz_poly_mat_window_clear(window_self.as_mut_ptr());
+                fmpz_poly_mat_window_clear(window_other.as_mut_ptr());
+            }
+        }
     }
 }
 
