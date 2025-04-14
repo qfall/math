@@ -270,30 +270,6 @@ impl MatrixGetSubmatrix for MatZq {
             modulus: self.get_mod(),
         })
     }
-
-    fn get_rows(&self) -> Vec<Self> {
-        let mut rows = std::vec![];
-
-        for i in 0..self.get_num_rows() {
-            // replace with self.get_row_unchecked once available
-            let entry = self.get_row(i).unwrap();
-            rows.push(entry);
-        }
-
-        rows
-    }
-
-    fn get_columns(&self) -> Vec<Self> {
-        let mut columns = std::vec![];
-
-        for i in 0..self.get_num_columns() {
-            // replace with self.get_column_unchecked once available
-            let entry = self.get_column(i).unwrap();
-            columns.push(entry);
-        }
-
-        columns
-    }
 }
 
 impl MatZq {
