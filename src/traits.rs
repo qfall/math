@@ -469,7 +469,7 @@ pub trait MatrixSetEntry<T> {
 /// Is implemented by matrices to set more than a single entry of the matrix.
 pub trait MatrixSetSubmatrix
 where
-    Self: Sized + MatrixDimensions,
+    Self: Sized + MatrixDimensions + CompareBase,
 {
     /// Sets a row of the given matrix to the provided row of `other`.
     ///
@@ -530,6 +530,10 @@ where
         row_other_end: impl TryInto<i64> + Display,
         col_other_end: impl TryInto<i64> + Display,
     ) -> Result<(), MathError> {
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
+        }
+
         let (row_self_start, col_self_start) =
             evaluate_indices_for_matrix(self, row_self_start, col_self_start)?;
         let (row_other_start, col_other_start) =
