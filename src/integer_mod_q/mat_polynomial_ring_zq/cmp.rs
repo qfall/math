@@ -18,6 +18,22 @@ impl CompareBase for MatPolynomialRingZq {
     /// - `other`: The other objects whose base is compared to `self`
     ///
     /// Returns true if the moduli match and false otherwise.
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::{
+    ///     integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
+    ///     traits::CompareBase,
+    /// };
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
+    /// let one_1 = MatPolynomialRingZq::identity(10, 7, &modulus);
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 23").unwrap();
+    /// let one_2 = MatPolynomialRingZq::identity(10, 7, &modulus);
+    ///
+    /// assert!(!one_1.compare_base(&one_2));
+    /// ```
     fn compare_base(&self, other: &Self) -> bool {
         self.get_mod() == other.get_mod()
     }
@@ -28,6 +44,22 @@ impl CompareBase for MatPolynomialRingZq {
     /// - `other`: The other objects whose base is compared to `self`
     ///
     /// Returns a MathError of type [MathError::MismatchingModulus].
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::{
+    ///     integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
+    ///     traits::CompareBase,
+    /// };
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
+    /// let one_1 = MatPolynomialRingZq::identity(10, 7, &modulus);
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 23").unwrap();
+    /// let one_2 = MatPolynomialRingZq::identity(10, 7, &modulus);
+    ///
+    /// assert!(one_1.call_compare_base_error(&one_2).is_some());
+    /// ```
     fn call_compare_base_error(&self, other: &Self) -> Option<MathError> {
         Some(MathError::MismatchingModulus(format!(
             "The moduli of the matrices mismatch. One of them is {} and the other is {}.

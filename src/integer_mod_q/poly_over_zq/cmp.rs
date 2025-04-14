@@ -64,6 +64,17 @@ impl CompareBase for PolyOverZq {
     /// - `other`: The other objects whose base is compared to `self`
     ///
     /// Returns true if the moduli match and false otherwise.
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::{integer_mod_q::PolyOverZq, traits::CompareBase};
+    /// use std::str::FromStr;
+    ///
+    /// let p1 = PolyOverZq::from_str("2  24 1 mod 17").unwrap();
+    /// let p2 = PolyOverZq::from_str("2  24 1 mod 19").unwrap();
+    ///
+    /// assert!(!p1.compare_base(&p2));
+    /// ```
     fn compare_base(&self, other: &Self) -> bool {
         self.get_mod() == other.get_mod()
     }
@@ -72,10 +83,21 @@ impl CompareBase for PolyOverZq {
     /// Parameters:
     /// - `other`: The other objects whose base is compared to `self`
     ///
-    /// Returns a MathError of type [MathError::MismatchingModulus].
+    /// Returns a MathError of type [MathError::MismatchingModulus].    
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::{integer_mod_q::PolyOverZq, traits::CompareBase};
+    /// use std::str::FromStr;
+    ///
+    /// let p1 = PolyOverZq::from_str("2  24 1 mod 17").unwrap();
+    /// let p2 = PolyOverZq::from_str("2  24 1 mod 19").unwrap();
+    ///
+    /// assert!(p1.call_compare_base_error(&p2).is_some())
+    /// ```
     fn call_compare_base_error(&self, other: &Self) -> Option<MathError> {
         Some(MathError::MismatchingModulus(format!(
-            "The moduli of the matrices mismatch. One of them is {} and the other is {}.
+            "The moduli of the polynomials mismatch. One of them is {} and the other is {}.
             The desired operation is not defined and an error is returned.",
             self.get_mod(),
             other.get_mod()
