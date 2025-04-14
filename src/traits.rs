@@ -554,7 +554,45 @@ where
         col_0: impl TryInto<i64> + Display,
         other: &Self,
         col_1: impl TryInto<i64> + Display,
-    ) -> Result<(), MathError>;
+    ) -> Result<(), MathError> {
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
+        }
+
+        let num_rows_0 = self.get_num_rows();
+        let num_rows_1 = other.get_num_rows();
+        if num_rows_0 != num_rows_1 {
+            return Err(MathError::MismatchingMatrixDimension(format!(
+                "as set_row was called on two matrices with different number of rows/columns {num_rows_0} and {num_rows_1}",
+            )));
+        }
+
+        let col_0 = evaluate_index_for_vector(col_0, self.get_num_columns())?;
+        let col_1 = evaluate_index_for_vector(col_1, other.get_num_columns())?;
+
+        unsafe {
+            self.set_column_unchecked(col_0, other, col_1);
+        }
+
+        Ok(())
+    }
+
+    /// # Safety
+    unsafe fn set_column_unchecked(&mut self, col_0: i64, other: &Self, col_1: i64) {
+        unsafe {
+            self.set_submatrix_unchecked(
+                0,
+                col_0,
+                self.get_num_rows(),
+                col_0 + 1,
+                other,
+                0,
+                col_1,
+                self.get_num_rows(),
+                col_1 + 1,
+            );
+        }
+    }
 
     #[allow(clippy::too_many_arguments)]
     fn set_submatrix(

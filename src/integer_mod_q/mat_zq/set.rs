@@ -13,13 +13,11 @@ use crate::{
     integer::Z,
     integer_mod_q::{MatZq, Modulus, Zq},
     macros::for_others::implement_for_owned,
-    traits::{
-        AsInteger, CompareBase, MatrixDimensions, MatrixSetEntry, MatrixSetSubmatrix, MatrixSwaps,
-    },
+    traits::{AsInteger, MatrixDimensions, MatrixSetEntry, MatrixSetSubmatrix, MatrixSwaps},
     utils::index::{evaluate_index_for_vector, evaluate_indices_for_matrix},
 };
 use flint_sys::{
-    fmpz::{fmpz_set, fmpz_swap},
+    fmpz::fmpz_swap,
     fmpz_mat::{
         fmpz_mat_entry, fmpz_mat_invert_cols, fmpz_mat_invert_rows, fmpz_mat_swap_cols,
         fmpz_mat_swap_rows,
@@ -212,73 +210,6 @@ impl MatrixSetEntry<&Zq> for MatZq {
 implement_for_owned!(Zq, MatZq, MatrixSetEntry);
 
 impl MatrixSetSubmatrix for MatZq {
-    /// Sets a column of the given matrix to the provided column of `other`.
-    ///
-    /// Parameters:
-    /// - `col_0`: specifies the column of `self` that should be modified
-    /// - `other`: specifies the matrix providing the column replacing the column in `self`
-    /// - `col_1`: specifies the column of `other` providing
-    ///   the values replacing the original column in `self`
-    ///
-    /// Negative indices can be used to index from the back, e.g., `-1` for
-    /// the last element.
-    ///
-    /// Returns an empty `Ok` if the action could be performed successfully.
-    ///     Otherwise, a [`MathError`] is returned if one of the specified columns is not part of its matrix
-    ///     or if the number of rows differs.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::{integer_mod_q::MatZq, traits::MatrixSetSubmatrix};
-    /// use std::str::FromStr;
-    ///
-    /// let mut mat_1 = MatZq::new(2, 2, 3);
-    /// let mat_2 = MatZq::from_str("[[1],[2]] mod 3").unwrap();
-    /// mat_1.set_column(1, &mat_2, 0);
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///   if the provided column index is not defined within the margins of the matrix.
-    /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///   if the number of rows of `self` and `other` differ.
-    /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus)
-    ///   if the moduli of `self` and `other` mismatch.
-    fn set_column(
-        &mut self,
-        col_0: impl TryInto<i64> + Display,
-        other: &Self,
-        col_1: impl TryInto<i64> + Display,
-    ) -> Result<(), MathError> {
-        let num_rows_0 = self.get_num_rows();
-        let num_rows_1 = other.get_num_rows();
-        let num_cols_0 = self.get_num_columns();
-        let num_cols_1 = other.get_num_columns();
-        let col_0 = evaluate_index_for_vector(col_0, num_cols_0)?;
-        let col_1 = evaluate_index_for_vector(col_1, num_cols_1)?;
-
-        if num_rows_0 != num_rows_1 {
-            return Err(MathError::MismatchingMatrixDimension(format!(
-                "as set_column was called on two matrices with different number of rows/columns {num_rows_0} and {num_rows_1}",
-            )));
-        }
-
-        if !self.compare_base(other) {
-            return Err(self.call_compare_base_error(other).unwrap());
-        }
-
-        for row in 0..num_rows_0 {
-            unsafe {
-                fmpz_set(
-                    fmpz_mat_entry(&self.matrix.mat[0], row, col_0),
-                    fmpz_mat_entry(&other.matrix.mat[0], row, col_1),
-                )
-            };
-        }
-
-        Ok(())
-    }
-
     unsafe fn set_submatrix_unchecked(
         &mut self,
         row_self_start: i64,
