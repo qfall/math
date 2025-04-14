@@ -41,7 +41,7 @@ impl MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
-    ///     the given [`MatZq`] instance is not a (row or column) vector.
+    ///   the given [`MatZq`] instance is not a (row or column) vector.
     pub fn norm_eucl_sqrd(&self) -> Result<Z, MathError> {
         if !self.is_vector() {
             return Err(MathError::VectorFunctionCalledOnNonVector(
@@ -88,7 +88,7 @@ impl MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
-    ///     the given [`MatZq`] instance is not a (row or column) vector.
+    ///   the given [`MatZq`] instance is not a (row or column) vector.
     pub fn norm_eucl(&self) -> Result<Q, MathError> {
         Ok(self.norm_eucl_sqrd()?.sqrt())
     }
@@ -117,7 +117,7 @@ impl MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
-    ///     the given [`MatZq`] instance is not a (row or column) vector.
+    ///   the given [`MatZq`] instance is not a (row or column) vector.
     pub fn norm_infty(&self) -> Result<Z, MathError> {
         if !self.is_vector() {
             return Err(MathError::VectorFunctionCalledOnNonVector(

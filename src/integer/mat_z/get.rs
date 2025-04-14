@@ -80,7 +80,7 @@ impl MatrixGetEntry<Z> for MatZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if `row` or `column` are greater than the matrix size.
+    ///   if `row` or `column` are greater than the matrix size.
     fn get_entry(
         &self,
         row: impl TryInto<i64> + Display,
@@ -157,7 +157,7 @@ impl MatrixGetSubmatrix for MatZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if the number of the row is greater than the matrix.
+    ///   if the number of the row is greater than the matrix.
     fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError> {
         let num_rows = self.get_num_rows();
         let row_i64 = evaluate_index_for_vector(row, num_rows)?;
@@ -191,7 +191,7 @@ impl MatrixGetSubmatrix for MatZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if the number of the column is greater than the matrix.
+    ///   if the number of the column is greater than the matrix.
     fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError> {
         let num_cols = self.get_num_columns();
         let column_i64 = evaluate_index_for_vector(column, num_cols)?;
@@ -234,7 +234,7 @@ impl MatrixGetSubmatrix for MatZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if any provided row or column is greater than the matrix.
+    ///   if any provided row or column is greater than the matrix.
     ///
     /// # Panics ...
     /// - if `col_1 > col_2` or `row_1 > row_2`.
@@ -761,7 +761,7 @@ mod test_get_submatrix {
 
         let mut added_rows = MatZ::new(1, 3);
         for row in matrix.get_rows() {
-            added_rows = added_rows + row;
+            added_rows += row;
         }
     }
 
@@ -772,7 +772,7 @@ mod test_get_submatrix {
 
         let mut added_rows = MatZ::new(1, 3);
         for (i, row) in matrix.get_rows().iter().enumerate() {
-            added_rows = added_rows + row;
+            added_rows += row;
             matrix.set_row(i, &added_rows, 0).unwrap();
         }
     }
@@ -784,7 +784,7 @@ mod test_get_submatrix {
 
         let mut added_columns = MatZ::new(3, 1);
         for column in matrix.get_columns() {
-            added_columns = added_columns + column;
+            added_columns += column;
         }
     }
 
@@ -795,7 +795,7 @@ mod test_get_submatrix {
 
         let mut added_columns = MatZ::new(3, 1);
         for (i, column) in matrix.get_columns().iter().enumerate() {
-            added_columns = added_columns + column;
+            added_columns += column;
             matrix.set_column(i, &added_columns, 0).unwrap();
         }
     }

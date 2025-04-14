@@ -44,7 +44,7 @@ impl Tensor for MatPolynomialRingZq {
     ///
     /// # Panics ...
     /// - if the moduli of both matrices mismatch.
-    ///     Use [`tensor_product_safe`](crate::integer_mod_q::MatZq::tensor_product_safe) to get an error instead.
+    ///   Use [`tensor_product_safe`](crate::integer_mod_q::MatZq::tensor_product_safe) to get an error instead.
     fn tensor_product(&self, other: &Self) -> Self {
         self.tensor_product_safe(other).unwrap()
     }
@@ -78,8 +78,8 @@ impl MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`MismatchingModulus`](MathError::MismatchingModulus) if the
-    ///     moduli of the provided matrices mismatch.
+    ///   [`MismatchingModulus`](MathError::MismatchingModulus) if the
+    ///   moduli of the provided matrices mismatch.
     pub fn tensor_product_safe(&self, other: &Self) -> Result<Self, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(
@@ -120,9 +120,9 @@ impl MatPolynomialRingZq {
 /// - `row_left`: defines the leftmost row of the set window
 /// - `column_upper`: defines the highest column of the set window
 /// - `scalar`: defines the value with which the part of the tensor product
-///     is calculated
+///   is calculated
 /// - `matrix`: the matrix with which the scalar is multiplied
-///     before setting the entries in `out`
+///   before setting the entries in `out`
 ///
 /// Implicitly sets the entries of the matrix according to the definition
 /// of the tensor product.

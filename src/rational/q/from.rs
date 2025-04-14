@@ -240,12 +240,12 @@ impl FromStr for Q {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`StringConversionError`](MathError::StringConversionError)
+    ///   [`StringConversionError`](MathError::StringConversionError)
     ///     - if the provided string contains a `Null` byte, or
     ///     - if the provided string was not formatted correctly.
     /// - Returns a [`MathError`] of type
-    ///     [`DivisionByZeroError`](MathError::DivisionByZeroError)
-    ///     if the provided string has `0` as the denominator.
+    ///   [`DivisionByZeroError`](MathError::DivisionByZeroError)
+    ///   if the provided string has `0` as the denominator.
     fn from_str(s: &str) -> Result<Self, MathError> {
         if s.contains(char::is_whitespace) {
             return Err(StringConversionError::InvalidStringToQInput(s.to_owned()))?;

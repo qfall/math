@@ -82,7 +82,7 @@ impl MatrixGetEntry<PolyOverZ> for MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if `row` or `column` are greater than the matrix size.
+    ///   if `row` or `column` are greater than the matrix size.
     fn get_entry(
         &self,
         row: impl TryInto<i64> + Display,
@@ -159,7 +159,7 @@ impl MatrixGetSubmatrix for MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if the number of the row is greater than the matrix.
+    ///   if the number of the row is greater than the matrix.
     fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError> {
         let num_rows = self.get_num_rows();
         let row_i64 = evaluate_index_for_vector(row, num_rows)?;
@@ -192,7 +192,7 @@ impl MatrixGetSubmatrix for MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if the number of the column is greater than the matrix.
+    ///   if the number of the column is greater than the matrix.
     fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError> {
         let num_cols = self.get_num_columns();
         let column_i64 = evaluate_index_for_vector(column, num_cols)?;
@@ -235,7 +235,7 @@ impl MatrixGetSubmatrix for MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if any provided row or column is greater than the matrix.
+    ///   if any provided row or column is greater than the matrix.
     ///
     /// # Panics ...
     /// - if `col_1 > col_2` or `row_1 > row_2`.

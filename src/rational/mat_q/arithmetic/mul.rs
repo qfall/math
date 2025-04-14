@@ -127,7 +127,7 @@ impl MatQ {
     /// # Panics ...
     /// - if the dimensions of `self` and `other` do not match for multiplication.
     /// - if any result during the naive computation of matrix multiplication
-    ///     is larger than [`f64::MAX`] or smaller than [`f64::MIN`].
+    ///   is larger than [`f64::MAX`] or smaller than [`f64::MIN`].
     pub fn mul_f64_unchecked(&self, other: &Self) -> MatQ {
         let num_rows = self.get_num_rows() as usize;
         let num_cols = other.get_num_columns() as usize;
@@ -175,8 +175,8 @@ impl MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`MathError::MismatchingMatrixDimension`] if the dimensions of `self`
-    ///     and `other` do not match for multiplication.
+    ///   [`MathError::MismatchingMatrixDimension`] if the dimensions of `self`
+    ///   and `other` do not match for multiplication.
     pub fn mul_safe(&self, other: &Self) -> Result<Self, MathError> {
         if self.get_num_columns() != other.get_num_rows() {
             return Err(MathError::MismatchingMatrixDimension(format!(

@@ -142,7 +142,7 @@ impl MatrixGetSubmatrix for MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if the number of the row is greater than the matrix.
+    ///   if the number of the row is greater than the matrix.
     fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError> {
         let num_rows = self.get_num_rows();
         let row_i64 = evaluate_index_for_vector(row, num_rows)?;
@@ -176,7 +176,7 @@ impl MatrixGetSubmatrix for MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if the number of the column is greater than the matrix.
+    ///   if the number of the column is greater than the matrix.
     fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError> {
         let num_cols = self.get_num_columns();
         let column_i64 = evaluate_index_for_vector(column, num_cols)?;
@@ -219,7 +219,7 @@ impl MatrixGetSubmatrix for MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if any provided row or column is greater than the matrix.
+    ///   if any provided row or column is greater than the matrix.
     ///
     /// # Panics ...
     /// - if `col_1 > col_2` or `row_1 > row_2`.
@@ -269,6 +269,30 @@ impl MatrixGetSubmatrix for MatZq {
             matrix: unsafe { window_copy.assume_init() },
             modulus: self.get_mod(),
         })
+    }
+
+    fn get_rows(&self) -> Vec<Self> {
+        let mut rows = std::vec![];
+
+        for i in 0..self.get_num_rows() {
+            // replace with self.get_row_unchecked once available
+            let entry = self.get_row(i).unwrap();
+            rows.push(entry);
+        }
+
+        rows
+    }
+
+    fn get_columns(&self) -> Vec<Self> {
+        let mut columns = std::vec![];
+
+        for i in 0..self.get_num_columns() {
+            // replace with self.get_column_unchecked once available
+            let entry = self.get_column(i).unwrap();
+            columns.push(entry);
+        }
+
+        columns
     }
 }
 
@@ -391,7 +415,7 @@ impl MatrixGetEntry<Z> for MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if `row` or `column` are greater than the matrix size.
+    ///   if `row` or `column` are greater than the matrix size.
     fn get_entry(
         &self,
         row: impl TryInto<i64> + Display,
@@ -472,7 +496,7 @@ impl MatrixGetEntry<Zq> for MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if `row` or `column` are greater than the matrix size.
+    ///   if `row` or `column` are greater than the matrix size.
     fn get_entry(
         &self,
         row: impl TryInto<i64> + Display,
