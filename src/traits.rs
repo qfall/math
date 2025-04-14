@@ -493,7 +493,44 @@ where
         row_0: impl TryInto<i64> + Display,
         other: &Self,
         row_1: impl TryInto<i64> + Display,
-    ) -> Result<(), MathError>;
+    ) -> Result<(), MathError> {
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
+        }
+
+        let num_cols_0 = self.get_num_columns();
+        let num_cols_1 = other.get_num_columns();
+        if num_cols_0 != num_cols_1 {
+            return Err(MathError::MismatchingMatrixDimension(format!(
+                "as set_row was called on two matrices with different number of rows/columns {num_cols_0} and {num_cols_1}",
+            )));
+        }
+
+        let row_0 = evaluate_index_for_vector(row_0, self.get_num_rows())?;
+        let row_1 = evaluate_index_for_vector(row_1, other.get_num_rows())?;
+
+        unsafe {
+            self.set_row_unchecked(row_0, other, row_1);
+        }
+
+        Ok(())
+    }
+    /// # Safety
+    unsafe fn set_row_unchecked(&mut self, row_0: i64, other: &Self, row_1: i64) {
+        unsafe {
+            self.set_submatrix_unchecked(
+                row_0,
+                0,
+                row_0 + 1,
+                self.get_num_columns(),
+                other,
+                row_1,
+                0,
+                row_1 + 1,
+                other.get_num_columns(),
+            );
+        }
+    }
 
     /// Sets a column of the given matrix to the provided column of `other`.
     ///

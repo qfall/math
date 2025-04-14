@@ -175,67 +175,6 @@ impl MatrixSetSubmatrix for MatPolyOverZ {
         Ok(())
     }
 
-    /// Sets a row of the given matrix to the provided row of `other`.
-    ///
-    /// Parameters:
-    /// - `row_0`: specifies the row of `self` that should be modified
-    /// - `other`: specifies the matrix providing the row replacing the row in `self`
-    /// - `row_1`: specifies the row of `other` providing
-    ///   the values replacing the original row in `self`
-    ///
-    /// Negative indices can be used to index from the back, e.g., `-1` for
-    /// the last element.
-    ///
-    /// Returns an empty `Ok` if the action could be performed successfully.
-    /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of its matrix
-    /// or if the number of columns differs.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::{integer::MatPolyOverZ, traits::MatrixSetSubmatrix};
-    /// use std::str::FromStr;
-    ///
-    /// let mut mat_1 = MatPolyOverZ::new(2, 2);
-    /// let mat_2 = MatPolyOverZ::from_str("[[1  1, 0]]").unwrap();
-    /// mat_1.set_row(0, &mat_2, 0);
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///   if the provided row index is not defined within the margins of the matrix.
-    /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///   if the number of columns of `self` and `other` differ.
-    fn set_row(
-        &mut self,
-        row_0: impl TryInto<i64> + Display,
-        other: &Self,
-        row_1: impl TryInto<i64> + Display,
-    ) -> Result<(), MathError> {
-        let num_cols_0 = self.get_num_columns();
-        let num_cols_1 = other.get_num_columns();
-        let num_rows_0 = self.get_num_rows();
-        let num_rows_1 = other.get_num_rows();
-        let row_0 = evaluate_index_for_vector(row_0, num_rows_0)?;
-        let row_1 = evaluate_index_for_vector(row_1, num_rows_1)?;
-
-        if num_cols_0 != num_cols_1 {
-            return Err(MathError::MismatchingMatrixDimension(format!(
-                "as set_row was called on two matrices with different number of rows/columns {num_cols_0} and {num_cols_1}",
-            )));
-        }
-
-        for col in 0..num_cols_0 {
-            unsafe {
-                fmpz_poly_set(
-                    fmpz_poly_mat_entry(&self.matrix, row_0, col),
-                    fmpz_poly_mat_entry(&other.matrix, row_1, col),
-                )
-            };
-        }
-
-        Ok(())
-    }
-
     unsafe fn set_submatrix_unchecked(
         &mut self,
         row_self_start: i64,

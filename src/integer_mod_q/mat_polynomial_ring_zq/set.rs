@@ -261,51 +261,6 @@ impl MatrixSetSubmatrix for MatPolynomialRingZq {
         self.matrix.set_column(col_0, &other.matrix, col_1)
     }
 
-    /// Sets a row of the given matrix to the provided row of `other`.
-    ///
-    /// Parameters:
-    /// - `row_0`: specifies the row of `self` that should be modified
-    /// - `other`: specifies the matrix providing the row replacing the row in `self`
-    /// - `row_1`: specifies the row of `other` providing
-    ///   the values replacing the original row in `self`
-    ///
-    /// Negative indices can be used to index from the back, e.g., `-1` for
-    /// the last element.
-    ///
-    /// Returns an empty `Ok` if the action could be performed successfully.
-    /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of its matrix
-    /// or if the number of columns differs.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::{integer_mod_q::MatPolynomialRingZq, traits::MatrixSetSubmatrix};
-    /// use std::str::FromStr;
-    ///
-    /// let mut mat_1 = MatPolynomialRingZq::from_str("[[0, 0, 0],[0, 0, 0]] / 2  1 1 mod 6").unwrap();
-    /// let mat_2 = MatPolynomialRingZq::from_str("[[1  2, 0, 1  3],[1  3, 1  4, 1  5]] / 2  1 1 mod 6").unwrap();
-    /// mat_1.set_row(1, &mat_2, 0);
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///   if the provided row index is not defined within the margins of the matrix.
-    /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///   if the number of columns of `self` and `other` differ.
-    /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus)
-    ///   if the moduli of `self` and `other` mismatch.
-    fn set_row(
-        &mut self,
-        row_0: impl TryInto<i64> + Display,
-        other: &Self,
-        row_1: impl TryInto<i64> + Display,
-    ) -> Result<(), MathError> {
-        if !self.compare_base(other) {
-            return Err(self.call_compare_base_error(other).unwrap());
-        }
-
-        self.matrix.set_row(row_0, &other.matrix, row_1)
-    }
-
     unsafe fn set_submatrix_unchecked(
         &mut self,
         row_self_start: i64,
