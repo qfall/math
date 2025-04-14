@@ -12,7 +12,7 @@ use super::MatPolynomialRingZq;
 use crate::{
     error::MathError,
     integer::MatPolyOverZ,
-    traits::{Concatenate, MatrixDimensions},
+    traits::{CompareBase, Concatenate, MatrixDimensions},
 };
 use flint_sys::fmpz_poly_mat::{fmpz_poly_mat_concat_horizontal, fmpz_poly_mat_concat_vertical};
 
@@ -60,12 +60,8 @@ impl Concatenate for &MatPolynomialRingZq {
             )));
         }
 
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to concatenate matrices with different moduli {} and {}.",
-                self.get_mod(),
-                other.get_mod(),
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
 
         let mut matrix = MatPolyOverZ::new(
@@ -126,12 +122,8 @@ impl Concatenate for &MatPolynomialRingZq {
             )));
         }
 
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to concatenate matrices with different moduli {} and {}.",
-                self.get_mod(),
-                other.get_mod(),
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
 
         let mut matrix = MatPolyOverZ::new(

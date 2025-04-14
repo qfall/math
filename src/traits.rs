@@ -21,8 +21,8 @@ pub trait CompareBase {
         true
     }
 
-    fn call_compare_base_error(&self, other: &Self) -> Result<(), MathError> {
-        Ok(())
+    fn call_compare_base_error(&self, other: &Self) -> Option<MathError> {
+        None
     }
 }
 

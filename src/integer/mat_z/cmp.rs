@@ -43,7 +43,7 @@ impl PartialEq for MatZ {
     }
 }
 
-impl CompareBase for MatPolyOverZ {}
+impl CompareBase for MatZ {}
 
 // With the [`Eq`] trait, `a == a` is always true.
 // This is not guaranteed by the [`PartialEq`] trait.

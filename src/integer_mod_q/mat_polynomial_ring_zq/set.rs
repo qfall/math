@@ -11,7 +11,7 @@
 use super::MatPolynomialRingZq;
 use crate::integer_mod_q::PolynomialRingZq;
 use crate::macros::for_others::implement_for_owned;
-use crate::traits::{MatrixSetSubmatrix, MatrixSwaps};
+use crate::traits::{CompareBase, MatrixSetSubmatrix, MatrixSwaps};
 use crate::utils::index::evaluate_indices_for_matrix;
 use crate::{error::MathError, integer::PolyOverZ, traits::MatrixSetEntry};
 use flint_sys::{fmpz_poly::fmpz_poly_set, fmpz_poly_mat::fmpz_poly_mat_entry};
@@ -250,12 +250,8 @@ impl MatrixSetSubmatrix for MatPolynomialRingZq {
         other: &Self,
         col_1: impl TryInto<i64> + Display,
     ) -> Result<(), MathError> {
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "set_column requires the moduli to be equal, but {} differs from {}",
-                self.get_mod(),
-                other.get_mod()
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
 
         self.matrix.set_column(col_0, &other.matrix, col_1)
@@ -299,12 +295,8 @@ impl MatrixSetSubmatrix for MatPolynomialRingZq {
         other: &Self,
         row_1: impl TryInto<i64> + Display,
     ) -> Result<(), MathError> {
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "set_row requires the moduli to be equal, but {} differs from {}",
-                self.get_mod(),
-                other.get_mod()
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
 
         self.matrix.set_row(row_0, &other.matrix, row_1)

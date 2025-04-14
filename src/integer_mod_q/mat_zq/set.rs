@@ -13,7 +13,9 @@ use crate::{
     integer::Z,
     integer_mod_q::{MatZq, Modulus, Zq},
     macros::for_others::implement_for_owned,
-    traits::{AsInteger, MatrixDimensions, MatrixSetEntry, MatrixSetSubmatrix, MatrixSwaps},
+    traits::{
+        AsInteger, CompareBase, MatrixDimensions, MatrixSetEntry, MatrixSetSubmatrix, MatrixSwaps,
+    },
     utils::index::{evaluate_index_for_vector, evaluate_indices_for_matrix},
 };
 use flint_sys::{
@@ -257,12 +259,8 @@ impl MatrixSetSubmatrix for MatZq {
             )));
         }
 
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "set_column requires the moduli to be equal, but {} differs from {}",
-                self.get_mod(),
-                other.get_mod()
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
 
         for row in 0..num_rows_0 {
@@ -328,12 +326,8 @@ impl MatrixSetSubmatrix for MatZq {
             )));
         }
 
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "set_row requires the moduli to be equal, but {} differs from {}",
-                self.get_mod(),
-                other.get_mod()
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
 
         for col in 0..num_cols_0 {

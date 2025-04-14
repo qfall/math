@@ -15,6 +15,7 @@ use crate::{
     macros::arithmetics::{
         arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
     },
+    traits::CompareBase,
 };
 use flint_sys::fq::fq_mul;
 use std::ops::Mul;
@@ -83,11 +84,8 @@ impl PolynomialRingZq {
     /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
     ///   both [`PolynomialRingZq`] mismatch.
     pub fn mul_safe(&self, other: &Self) -> Result<PolynomialRingZq, MathError> {
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to multiply polynomial with modulus '{}' and polynomial with modulus '{}'.",
-                self.modulus, other.modulus
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
         let mut out = PolynomialRingZq::from((&PolyOverZ::default(), &self.modulus));
         unsafe {
