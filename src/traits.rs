@@ -201,7 +201,7 @@ where
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if specified row is not part of the matrix.
+    ///   if specified row is not part of the matrix.
     fn get_row(&self, row: impl TryInto<i64> + Display + Clone) -> Result<Self, MathError> {
         let row = evaluate_index_for_vector(row, self.get_num_rows())?;
         Ok(unsafe { self.get_row_unchecked(row) })
@@ -237,7 +237,7 @@ where
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if specified column is not part of the matrix.
+    ///   if specified column is not part of the matrix.
     fn get_column(&self, column: impl TryInto<i64> + Display + Clone) -> Result<Self, MathError> {
         let column = evaluate_index_for_vector(column, self.get_num_columns())?;
         Ok(unsafe { self.get_column_unchecked(column) })
