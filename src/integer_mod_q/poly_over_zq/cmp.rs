@@ -58,10 +58,21 @@ impl PartialEq for PolyOverZq {
 impl Eq for PolyOverZq {}
 
 impl CompareBase for PolyOverZq {
+    /// Compares the moduli of the two elements.
+    ///
+    /// Parameters:
+    /// - `other`: The other objects whose base is compared to `self`
+    ///
+    /// Returns true if the moduli match and false otherwise.
     fn compare_base(&self, other: &Self) -> bool {
         self.get_mod() == other.get_mod()
     }
-
+    /// Returns an error that gives small explanation how the moduli differ.
+    ///
+    /// Parameters:
+    /// - `other`: The other objects whose base is compared to `self`
+    ///
+    /// Returns a MathError of type [MathError::MismatchingModulus].
     fn call_compare_base_error(&self, other: &Self) -> Option<MathError> {
         Some(MathError::MismatchingModulus(format!(
             "The moduli of the matrices mismatch. One of them is {} and the other is {}.
