@@ -686,7 +686,6 @@ where
             );
 
         // increase both values to have an inclusive capturing of the matrix entries
-        let (row_other_end, col_other_end) = (row_other_end + 1, col_other_end + 1);
         let nr_rows = row_other_end - row_other_start;
         let nr_cols = col_other_end - col_other_start;
         // check if all entries that have to be set are contained in `self`
@@ -694,6 +693,8 @@ where
             evaluate_index_for_vector(row_self_start + nr_rows, self.get_num_rows())?;
         let col_self_end =
             evaluate_index_for_vector(col_self_start + nr_cols, self.get_num_columns())?;
+        let (row_other_end, col_other_end) = (row_other_end + 1, col_other_end + 1);
+        let (row_self_end, col_self_end) = (row_self_end + 1, col_self_end + 1);
 
         unsafe {
             self.set_submatrix_unchecked(

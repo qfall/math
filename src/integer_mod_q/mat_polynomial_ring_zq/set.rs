@@ -216,6 +216,46 @@ implement_for_owned!(PolyOverZ, MatPolynomialRingZq, MatrixSetEntry);
 implement_for_owned!(PolynomialRingZq, MatPolynomialRingZq, MatrixSetEntry);
 
 impl MatrixSetSubmatrix for MatPolynomialRingZq {
+    /// Sets the matrix entries in `self` to entries defined in `other`.
+    /// The entries in `self` starting from `(row_self_start, col_self_start)` up to
+    /// `(row_self_end, col_self_end)`are set to be
+    /// the entries from the submatrix from `other` defined by `(row_other_start, col_other_start)`
+    /// to `(row_other_end, col_other_end)` (exclusively).
+    ///
+    /// Parameters:
+    /// `row_self_start`: the starting row of the matrix in which to set a submatrix
+    /// `col_self_start`: the starting column of the matrix in which to set a submatrix
+    /// `other`: the matrix from where to take the submatrix to set
+    /// `row_self_start`: the starting row of the specified submatrix
+    /// `col_self_start`: the starting column of the specified submatrix
+    /// `row_other_end`: the ending row of the specified submatrix
+    /// `col_other_end`:the ending column of the specified submatrix
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::traits::MatrixSetSubmatrix;
+    /// use std::str::FromStr;
+    ///
+    /// let mat = MatPolyOverZ::identity(3, 3);
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let mut mat = MatPolynomialRingZq::from((&mat, &modulus));
+    ///
+    /// mat.set_submatrix(0, 1, &mat.clone(), 0, 0, 1, 1).unwrap();
+    /// // [[1,1,0],[0,0,1],[0,0,1]]
+    /// let mat_cmp = MatPolyOverZ::from_str("[[1  1, 1  1, 0],[0, 0, 1  1],[0, 0, 1  1]]").unwrap();
+    /// assert_eq!(mat, MatPolynomialRingZq::from((&mat_cmp, &modulus)));
+    ///
+    /// unsafe{ mat.set_submatrix_unchecked(2, 0, 3, 2, &mat.clone(), 0, 0, 1, 2) };
+    /// let mat_cmp = MatPolyOverZ::from_str("[[1  1, 1  1, 0],[0, 0, 1  1],[1  1, 1  1, 1  1]]").unwrap();
+    /// assert_eq!(mat, MatPolynomialRingZq::from((&mat_cmp, &modulus)));
+    /// ```
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected submatrices are part
+    /// of the matrices, the submatrices are of the same dimensions and the base types are the same.
+    /// If not, memory leaks, unexpected panics, etc. might occur.
     unsafe fn set_submatrix_unchecked(
         &mut self,
         row_self_start: i64,
