@@ -37,7 +37,7 @@ impl MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`NonPositive`](MathError::NonPositive)
-    ///     if `sigma <= 0`.
+    ///   if `sigma <= 0`.
     pub fn sample_gauss(center: &MatQ, sigma: impl Into<f64>) -> Result<MatQ, MathError> {
         let mut out = MatQ::new(center.get_num_rows(), center.get_num_columns());
         let sigma = sigma.into();
@@ -78,7 +78,7 @@ impl MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`NonPositive`](MathError::NonPositive)
-    ///     if `sigma <= 0`.
+    ///   if `sigma <= 0`.
     ///
     /// # Panics ...
     /// - if the number of rows or columns is negative, `0`, or does not fit into an [`i64`].

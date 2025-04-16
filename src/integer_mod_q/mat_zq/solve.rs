@@ -192,7 +192,7 @@ impl MatZq {
     ///
     /// # Panics ...
     /// - if the the number of elements in `solutions` is greater than the number
-    ///     of elements in `moduli`.
+    ///   of elements in `moduli`.
     fn crt_mat_zq(&self, mut solutions: Vec<MatZq>, mut moduli: Vec<(Z, u64)>) -> Option<MatZq> {
         while solutions.len() > 1 {
             // Compute Bézout’s identity: a x_1 + b x_2 = 1

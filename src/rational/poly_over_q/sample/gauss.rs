@@ -41,7 +41,7 @@ impl PolyOverQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`NonPositive`](MathError::NonPositive)
-    ///     if `sigma <= 0`.
+    ///   if `sigma <= 0`.
     ///
     /// # Panics ...
     /// - if `max_degree` is negative, or does not fit into an [`i64`].

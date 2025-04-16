@@ -194,7 +194,7 @@ where
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if specified row is not part of the matrix.
+    ///   if specified row is not part of the matrix.
     fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError>;
 
     /// Outputs the column vector of the specified column.
@@ -207,7 +207,7 @@ where
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if specified column is not part of the matrix.
+    ///   if specified column is not part of the matrix.
     fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError>;
 
     /// Returns a deep copy of the submatrix defined by the given parameters.
@@ -230,7 +230,7 @@ where
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if any provided row or column is larger than the matrix.
+    ///   if any provided row or column is larger than the matrix.
     ///
     /// # Panics ...
     /// - if `col_1 > col_2` or `row_1 > row_2`.
@@ -361,7 +361,7 @@ pub trait MatrixSetSubmatrix {
     /// - `row_0`: specifies the row of `self` that should be modified
     /// - `other`: specifies the matrix providing the row replacing the row in `self`
     /// - `row_1`: specifies the row of `other` providing
-    ///     the values replacing the original row in `self`
+    ///   the values replacing the original row in `self`
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of its matrix
@@ -369,9 +369,9 @@ pub trait MatrixSetSubmatrix {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if the provided row index is not defined within the margins of the matrix.
+    ///   if the provided row index is not defined within the margins of the matrix.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the number of columns of `self` and `other` differ.
+    ///   if the number of columns of `self` and `other` differ.
     fn set_row(
         &mut self,
         row_0: impl TryInto<i64> + Display,
@@ -385,7 +385,7 @@ pub trait MatrixSetSubmatrix {
     /// - `col_0`: specifies the column of `self` that should be modified
     /// - `other`: specifies the matrix providing the column replacing the column in `self`
     /// - `col_1`: specifies the column of `other` providing
-    ///     the values replacing the original column in `self`
+    ///   the values replacing the original column in `self`
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of its matrix
@@ -393,9 +393,9 @@ pub trait MatrixSetSubmatrix {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if the provided column index is not defined within the margins of the matrix.
+    ///   if the provided column index is not defined within the margins of the matrix.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the number of rows of `self` and `other` differ.
+    ///   if the number of rows of `self` and `other` differ.
     fn set_column(
         &mut self,
         col_0: impl TryInto<i64> + Display,
@@ -418,7 +418,7 @@ pub trait MatrixSwaps {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if row or column are greater than the matrix size.
+    ///   if row or column are greater than the matrix size.
     fn swap_entries(
         &mut self,
         row_0: impl TryInto<i64> + Display,
@@ -438,7 +438,7 @@ pub trait MatrixSwaps {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if one of the given rows is greater than the matrix or negative.
+    ///   if one of the given rows is greater than the matrix or negative.
     fn swap_rows(
         &mut self,
         row_0: impl TryInto<i64> + Display,
@@ -456,7 +456,7 @@ pub trait MatrixSwaps {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if one of the given columns is greater than the matrix or negative.
+    ///   if one of the given columns is greater than the matrix or negative.
     fn swap_columns(
         &mut self,
         col_0: impl TryInto<i64> + Display,
@@ -486,8 +486,8 @@ pub trait Concatenate {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the matrices can not be concatenated due to mismatching dimensions
+    ///   [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
+    ///   if the matrices can not be concatenated due to mismatching dimensions
     fn concat_vertical(self, other: Self) -> Result<Self::Output, MathError>;
 
     /// Concatenates `self` with `other` horizontally.
@@ -497,8 +497,8 @@ pub trait Concatenate {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the matrices can not be concatenated due to mismatching dimensions
+    ///   [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
+    ///   if the matrices can not be concatenated due to mismatching dimensions
     fn concat_horizontal(self, other: Self) -> Result<Self::Output, MathError>;
 }
 
@@ -614,7 +614,7 @@ pub trait IntoCoefficientEmbedding<T> {
     ///
     /// Parameters:
     /// - `size`: determines the length of the object in which the coefficients are
-    ///     embedded, e.g. length of the vector
+    ///   embedded, e.g. length of the vector
     fn into_coefficient_embedding(self, size: impl Into<i64>) -> T;
 }
 

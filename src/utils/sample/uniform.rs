@@ -20,7 +20,7 @@ use rand::{rngs::ThreadRng, RngCore};
 /// - `two_pow_32`: is a helper to shift bits by 32-bits left by multiplication
 /// - `nr_iterations`: defines how many full samples of u32 are required
 /// - `upper_modulo`: is a power of two to remove superfluously sampled bits to increase
-///     the probability of accepting a sample to at least 1/2
+///   the probability of accepting a sample to at least 1/2
 /// - `rng`: defines the [`ThreadRng`] that's used to sample uniform [u32] integers
 ///
 /// # Examples
@@ -38,7 +38,7 @@ use rand::{rngs::ThreadRng, RngCore};
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-///     if the interval is chosen smaller than or equal to `1`.
+///   if the interval is chosen smaller than or equal to `1`.
 pub struct UniformIntegerSampler {
     interval_size: Z,
     two_pow_32: u64,
@@ -57,7 +57,7 @@ impl UniformIntegerSampler {
     ///
     /// Parameters:
     /// - `interval_size`: specifies the interval `[0, interval_size)`
-    ///     from which the samples are drawn
+    ///   from which the samples are drawn
     ///
     /// Returns a [`UniformIntegerSampler`] or a [`MathError`],
     /// if the interval size is chosen smaller than or equal to `1`.
@@ -72,7 +72,7 @@ impl UniformIntegerSampler {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    ///     if the interval is chosen smaller than or equal to `1`.
+    ///   if the interval is chosen smaller than or equal to `1`.
     pub fn init(interval_size: &Z) -> Result<Self, MathError> {
         if interval_size <= &Z::ONE {
             return Err(MathError::InvalidInterval(format!(

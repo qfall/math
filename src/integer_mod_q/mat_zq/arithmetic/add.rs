@@ -199,10 +199,10 @@ impl MatZq {
     /// ```
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`MathError::MismatchingMatrixDimension`] if the matrix dimensions
-    ///     mismatch.
+    ///   [`MathError::MismatchingMatrixDimension`] if the matrix dimensions
+    ///   mismatch.
     /// - Returns a [`MathError`] of type
-    ///     [`MathError::MismatchingModulus`] if the moduli mismatch.
+    ///   [`MathError::MismatchingModulus`] if the moduli mismatch.
     pub fn add_safe(&self, other: &Self) -> Result<MatZq, MathError> {
         if self.modulus != other.modulus {
             return Err(MathError::MismatchingModulus(format!(

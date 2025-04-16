@@ -44,11 +44,11 @@ impl Concatenate for &MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the matrices can not be concatenated due to mismatching dimensions.
+    ///   [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
+    ///   if the matrices can not be concatenated due to mismatching dimensions.
     /// - Returns a [`MathError`] of type
-    ///     [`MismatchingModulus`](MathError::MismatchingModulus)
-    ///     if the matrices can not be concatenated due to mismatching moduli.
+    ///   [`MismatchingModulus`](MathError::MismatchingModulus)
+    ///   if the matrices can not be concatenated due to mismatching moduli.
     fn concat_vertical(self, other: Self) -> Result<Self::Output, crate::error::MathError> {
         if self.get_num_columns() != other.get_num_columns() {
             return Err(MathError::MismatchingMatrixDimension(format!(
@@ -110,11 +110,11 @@ impl Concatenate for &MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the matrices can not be concatenated due to mismatching dimensions.
+    ///   [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
+    ///   if the matrices can not be concatenated due to mismatching dimensions.
     /// - Returns a [`MathError`] of type
-    ///     [`MismatchingModulus`](MathError::MismatchingModulus)
-    ///     if the matrices can not be concatenated due to mismatching moduli.
+    ///   [`MismatchingModulus`](MathError::MismatchingModulus)
+    ///   if the matrices can not be concatenated due to mismatching moduli.
     fn concat_horizontal(self, other: Self) -> Result<Self::Output, crate::error::MathError> {
         if self.get_num_rows() != other.get_num_rows() {
             return Err(MathError::MismatchingMatrixDimension(format!(

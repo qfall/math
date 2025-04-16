@@ -32,7 +32,7 @@ impl FromStr for MatZq {
     ///
     /// Parameters:
     /// - `string`: the matrix of form: `"[[1, 2, 3],[4, 5, 6]] mod 4"` for a 2x3 matrix
-    ///     with entries 1, 2, 3 in the first row, 4, 5, 6 in the second row and 4 as modulus.
+    ///   with entries 1, 2, 3 in the first row, 4, 5, 6 in the second row and 4 as modulus.
     ///
     /// Note that the strings for entries and the modulus are trimmed,
     /// i.e. all whitespaces around all values are ignored.
@@ -72,11 +72,11 @@ impl FromStr for MatZq {
     ///     - if the number of entries in rows is unequal,
     ///     - if the delimiter `mod` could not be found, or
     ///     - if the modulus or an entry is not formatted correctly.
-    ///         For further information see [`Z::from_str`].
+    ///       For further information see [`Z::from_str`].
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns or the modulus are not suited to create a matrix.
-    ///     For further information see [`MatZq::new`].
+    ///   For further information see [`MatZq::new`].
     /// - if the modulus is smaller than `2`.
     fn from_str(string: &str) -> Result<Self, MathError> {
         let (matrix, modulus) = match string.split_once("mod") {
@@ -184,7 +184,7 @@ impl MatZq {
     /// - `num_rows`: number of rows the new matrix should have
     /// - `num_cols`: number of columns the new matrix should have
     /// - `modulus`: specifies the modulus of the matrix, it is required to be larger
-    ///     than any entry of the matrix
+    ///   than any entry of the matrix
     ///
     /// Returns a [`MatZq`] with corresponding entries to the message's UTF8-Encoding or
     /// a [`ConversionError`](MathError::ConversionError) if the modulus isn't larger than
@@ -201,12 +201,12 @@ impl MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
-    ///     if the modulus isn't larger than the largest entry of the matrix after equally
-    ///     distributing the (potentially padded) UTF8-Conversion over the matrix.
+    ///   if the modulus isn't larger than the largest entry of the matrix after equally
+    ///   distributing the (potentially padded) UTF8-Conversion over the matrix.
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    ///     For further information see [`MatZq::new`].
+    ///   For further information see [`MatZq::new`].
     pub fn from_utf8(
         message: &str,
         num_rows: impl TryInto<i64> + Display,
