@@ -961,3 +961,121 @@ mod test_reverses {
         assert_eq!(cmp_vec_0, matrix.get_row(1).unwrap());
     }
 }
+
+#[cfg(test)]
+mod test_set_submatrix {
+    use crate::{
+        integer::MatPolyOverZ,
+        integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
+        traits::MatrixSetSubmatrix,
+    };
+    use std::str::FromStr;
+
+    /// Ensure that the entire matrix can be set.
+    #[test]
+    fn entire_matrix() {
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
+        let mut mat = MatPolynomialRingZq::from((
+            &MatPolyOverZ::sample_uniform(10, 10, 5, -100, 100).unwrap(),
+            &modulus,
+        ));
+        let identity = MatPolynomialRingZq::identity(10, 10, &modulus);
+
+        mat.set_submatrix(0, 0, &identity, 0, 0, 9, 9).unwrap();
+
+        assert_eq!(identity, mat);
+    }
+
+    /// Ensure that matrix access out of bounds leadss to an error.
+    #[test]
+    fn out_of_bounds() {
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
+        let mut mat = MatPolynomialRingZq::identity(10, 10, &modulus);
+
+        assert!(mat.set_submatrix(10, 0, &mat.clone(), 0, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 10, &mat.clone(), 0, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 10, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 10, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 0, 10, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 0, 9, 10).is_err());
+        assert!(mat.set_submatrix(-11, 0, &mat.clone(), 0, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, -11, &mat.clone(), 0, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), -11, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, -11, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 0, -11, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 0, 9, -11).is_err());
+    }
+
+    /// Ensure that the function returns an error if the defined submatrix is too large
+    /// and there is not enough space in the original matrix.
+    #[test]
+    fn submatrix_too_large() {
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
+        let mut mat = MatPolynomialRingZq::identity(10, 10, &modulus);
+
+        assert!(mat
+            .set_submatrix(
+                0,
+                0,
+                &MatPolynomialRingZq::identity(11, 11, &modulus),
+                0,
+                0,
+                10,
+                10
+            )
+            .is_err());
+        assert!(mat.set_submatrix(1, 2, &mat.clone(), 0, 0, 9, 9).is_err());
+    }
+
+    /// Ensure that setting submatrices with large values works.
+    #[test]
+    fn large_values() {
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
+        let mut mat = MatPolynomialRingZq::from((
+            &MatPolyOverZ::from_str(&format!(
+                "[[1  1, 2  1 {}],[1  -{}, 0]]",
+                u64::MAX,
+                u64::MAX
+            ))
+            .unwrap(),
+            &modulus,
+        ));
+        let cmp_mat = MatPolynomialRingZq::from((
+            &MatPolyOverZ::from_str(&format!("[[1  -{}, 0],[1  -{}, 0]]", u64::MAX, u64::MAX))
+                .unwrap(),
+            &modulus,
+        ));
+
+        mat.set_submatrix(0, 0, &mat.clone(), 1, 0, 1, 1).unwrap();
+        assert_eq!(cmp_mat, mat);
+    }
+
+    /// Ensure that setting with an undefined submatrix.
+    #[test]
+    #[should_panic]
+    fn submatrix_negative() {
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
+        let mut mat = MatPolynomialRingZq::identity(10, 10, &modulus);
+
+        let _ = mat.set_submatrix(0, 0, &mat.clone(), 0, 9, 9, 5);
+    }
+
+    /// Ensure that different moduli cause the set_submatrix to fail.
+    #[test]
+    fn different_moduli() {
+        let modulus1 =
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
+        let mut mat1 = MatPolynomialRingZq::identity(10, 10, &modulus1);
+
+        let modulus2 =
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 2 mod {}", u64::MAX - 1)).unwrap();
+        let mat2 = MatPolynomialRingZq::identity(10, 10, &modulus2);
+
+        assert!(mat1.set_submatrix(0, 0, &mat2.clone(), 0, 9, 0, 9).is_err());
+    }
+}
