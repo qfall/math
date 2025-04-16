@@ -61,7 +61,7 @@ impl CompareBase for PolyOverZq {
     /// Compares the moduli of the two elements.
     ///
     /// Parameters:
-    /// - `other`: The other objects whose base is compared to `self`
+    /// - `other`: The other object whose base is compared to `self`
     ///
     /// Returns true if the moduli match and false otherwise.
     ///
@@ -81,7 +81,7 @@ impl CompareBase for PolyOverZq {
     /// Returns an error that gives small explanation how the moduli differ.
     ///
     /// Parameters:
-    /// - `other`: The other objects whose base is compared to `self`
+    /// - `other`: The other object whose base is compared to `self`
     ///
     /// Returns a MathError of type [MathError::MismatchingModulus].    
     ///

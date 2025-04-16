@@ -24,7 +24,7 @@ pub trait CompareBase {
     /// and an operation between the two provided types is possible.
     ///
     /// Parameters:
-    /// - `other`: The other objects whose base is compared to `self`
+    /// - `other`: The other object whose base is compared to `self`
     ///
     /// Returns true if the bases match and false otherwise.
     /// The default implementation just returns true.
@@ -37,7 +37,7 @@ pub trait CompareBase {
     /// This function only calls the error and does not check if the two actually differ.
     ///
     /// Parameters:
-    /// - `other`: The other objects whose base is compared to `self`
+    /// - `other`: The other object whose base is compared to `self`
     ///
     /// Returns a MathError, typically [MathError::MismatchingModulus].
     /// The default implementation just returns `None`.
