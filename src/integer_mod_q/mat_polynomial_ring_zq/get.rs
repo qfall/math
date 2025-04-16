@@ -116,8 +116,7 @@ impl MatrixGetEntry<PolyOverZ> for MatPolynomialRingZq {
     /// the last element.
     ///
     /// Returns the [`PolyOverZ`] value of the matrix at the position of the given
-    /// row and column or an error if the number of rows or columns is
-    /// greater than the matrix or negative.
+    /// row and column or an error if the position is not in the matrix.
     ///
     /// # Examples
     /// ```
@@ -198,8 +197,7 @@ impl MatrixGetEntry<PolynomialRingZq> for MatPolynomialRingZq {
     /// the last element.
     ///
     /// Returns the [`PolynomialRingZq`] value of the matrix at the position of the given
-    /// row and column or an error if the number of rows or columns is
-    /// greater than the matrix or negative.
+    /// row and column or an error if the position is not in the matrix.
     ///
     /// # Examples
     /// ```

@@ -95,8 +95,6 @@ where
     /// occur.
     unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> T;
 
-    // *** Automatically implemented functions
-
     /// Outputs a [`Vec<Vec<T>>`] containing all entries of the matrix s.t.
     /// any entry in row `i` and column `j` can be accessed via `entries[i][j]`
     /// if `entries = matrix.get_entries`.
@@ -196,8 +194,7 @@ where
     /// the last element.
     ///
     /// Returns a row vector of the matrix at the position of the given
-    /// `row` or an error if the number of rows is
-    /// greater than the matrix or negative.
+    /// `row` or an error if specified row is not part of the matrix.
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
@@ -232,8 +229,7 @@ where
     /// the last element.
     ///
     /// Returns a column vector of the matrix at the position of the given
-    /// `column` or an error if the number of columns is
-    /// greater than the matrix or negative.
+    /// `column` or an error if specified column is not part of the matrix.
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
@@ -331,8 +327,6 @@ where
         col_1: i64,
         col_2: i64,
     ) -> Self;
-
-    // *** Automatically implemented functions
 
     /// Outputs a [`Vec`] containing all rows of the matrix in order.
     /// Use this function for simple iteration over the rows of the matrix.
@@ -526,7 +520,7 @@ pub trait MatrixSwaps {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///   if one of the given rows is greater than the matrix or negative.
+    ///   if one of the given rows is not in the matrix.
     fn swap_rows(
         &mut self,
         row_0: impl TryInto<i64> + Display,
@@ -544,7 +538,7 @@ pub trait MatrixSwaps {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///   if one of the given columns is greater than the matrix or negative.
+    ///   if one of the given columns is not in the matrix.
     fn swap_columns(
         &mut self,
         col_0: impl TryInto<i64> + Display,

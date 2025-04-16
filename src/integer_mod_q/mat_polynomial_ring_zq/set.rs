@@ -371,7 +371,7 @@ impl MatrixSwaps for MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///   if one of the given columns is greater than the matrix or negative.
+    ///   if one of the given columns is not in the matrix.
     fn swap_columns(
         &mut self,
         col_0: impl TryInto<i64> + Display,
@@ -403,7 +403,7 @@ impl MatrixSwaps for MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///   if one of the given rows is greater than the matrix or negative.
+    ///   if one of the given rows is not in the matrix.
     fn swap_rows(
         &mut self,
         row_0: impl TryInto<i64> + Display,
