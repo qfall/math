@@ -972,8 +972,8 @@ mod test_reverses {
 
 #[cfg(test)]
 mod test_set_submatrix {
-    use std::str::FromStr;
     use crate::{integer::MatZ, traits::MatrixSetSubmatrix};
+    use std::str::FromStr;
 
     /// Ensure that the entire matrix can be set.
     #[test]
@@ -1026,7 +1026,6 @@ mod test_set_submatrix {
         mat.set_submatrix(0, 0, &mat.clone(), 1, 0, 1, 1).unwrap();
         assert_eq!(cmp_mat, mat);
     }
-
 
     /// Ensure that setting with an undefined submatrix.
     #[test]

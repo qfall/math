@@ -315,9 +315,9 @@ impl MatZq {
             self.get_mod(),
         );
         for (current_column, (_row_nr, column_nr)) in indices.iter().enumerate() {
-            invertible_matrix
-                .set_column(current_column, self, *column_nr)
-                .unwrap();
+            unsafe {
+                invertible_matrix.set_column_unchecked(current_column as i64, self, *column_nr)
+            };
         }
 
         // The inverse of the previously picked square matrix consists of the last
@@ -330,13 +330,13 @@ impl MatZq {
             self.get_mod(),
         );
         for row_nr in 0..matrix_identity_gauss.get_num_rows() {
-            matrix_base_inv
-                .set_column(
+            unsafe {
+                matrix_base_inv.set_column_unchecked(
                     row_nr,
                     &matrix_identity_gauss,
                     row_nr + self.get_num_columns(),
                 )
-                .unwrap();
+            };
         }
 
         // Use the method from [\[1\]](<index.html#:~:text=[1]>)
