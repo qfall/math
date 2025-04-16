@@ -142,7 +142,8 @@ impl MatPolyOverZ {
 
         let mut out = Self::new(self.get_num_rows(), self.get_num_columns());
         for (row, item) in id_vec.iter().enumerate() {
-            out.set_row(row, self, *item).unwrap();
+            let (row_0, row_1) = (row as i64, *item as i64);
+            unsafe { out.set_row_unchecked(row_0, self, row_1) };
         }
 
         Ok(out)

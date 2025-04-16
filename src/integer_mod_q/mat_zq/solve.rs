@@ -78,7 +78,7 @@ impl MatZq {
                 // Save the position of `1` for that column.
                 indices.push((row_nr, column_nr));
 
-                matrix.gauss_row_reduction(row_nr, column_nr, inv);
+                unsafe { matrix.gauss_row_reduction(row_nr, column_nr, inv) };
             } else if let Some(row_nr) =
                 find_not_invertible_entry_column(&matrix, column_nr, &used_rows)
             {
@@ -111,9 +111,13 @@ impl MatZq {
     /// - `row_nr`: the row where the entry is located
     /// - `column_nr`: the column where the entry is located
     /// - `inverse`: the inverse of the entry located at (row_nr, column_nr)
-    fn gauss_row_reduction(&mut self, row_nr: i64, column_nr: i64, inverse: Zq) {
+    ///
+    /// # Safety
+    /// The user must ensure that `row_nr` and `col_nr` refer to entries in `self`.
+    /// Otherwise, unintended behavior can occur.
+    unsafe fn gauss_row_reduction(&mut self, row_nr: i64, column_nr: i64, inverse: Zq) {
         let row = inverse * self.get_row(row_nr).unwrap();
-        self.set_row(row_nr, &row, 0).unwrap();
+        unsafe { self.set_row_unchecked(row_nr, &row, 0) };
 
         // Set all other entries in that column to `0` (gaussian elimination).
         for row_nr in (0..self.get_num_rows()).filter(|x| *x != row_nr) {
@@ -121,7 +125,7 @@ impl MatZq {
             let entry: Z = unsafe { old_row.get_entry_unchecked(0, column_nr) };
             if !entry.is_zero() {
                 let new_row = &old_row - entry * &row;
-                self.set_row(row_nr, &new_row, 0).unwrap();
+                unsafe { self.set_row_unchecked(row_nr, &new_row, 0) };
             }
         }
     }
@@ -268,7 +272,7 @@ impl MatZq {
             if let Some((row_nr, inv)) =
                 find_invertible_entry_column(&matrix_identity_base_gauss, column_nr, &used_rows)
             {
-                matrix_identity_base_gauss.gauss_row_reduction(row_nr, column_nr, inv);
+                unsafe { matrix_identity_base_gauss.gauss_row_reduction(row_nr, column_nr, inv) };
 
                 if row_count != row_nr {
                     matrix_identity_base_gauss
