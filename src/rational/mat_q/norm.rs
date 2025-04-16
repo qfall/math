@@ -34,7 +34,7 @@ impl MatQ {
     pub fn norm_l_2_infty_sqrd(&self) -> Q {
         let mut max_sqrd_norm = Q::ZERO;
         for i in 0..self.get_num_columns() {
-            let column = self.get_column(i).unwrap();
+            let column = unsafe { self.get_column_unchecked(i) };
             let sqrd_norm = column.norm_eucl_sqrd().unwrap();
             if sqrd_norm > max_sqrd_norm {
                 max_sqrd_norm = sqrd_norm;
@@ -80,7 +80,7 @@ impl MatQ {
     pub fn norm_l_infty_infty(&self) -> Q {
         let mut max_norm = Q::ZERO;
         for i in 0..self.get_num_columns() {
-            let column = self.get_column(i).unwrap();
+            let column = unsafe { self.get_column_unchecked(i) };
             let norm = column.norm_infty().unwrap();
             if norm > max_norm {
                 max_norm = norm;

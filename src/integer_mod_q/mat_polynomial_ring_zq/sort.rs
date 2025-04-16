@@ -68,7 +68,7 @@ impl MatPolynomialRingZq {
     ) -> Result<Self, MathError> {
         let mut condition_values = vec![];
         for col in 0..self.get_num_columns() {
-            condition_values.push(cond_func(&self.get_column(col).unwrap())?);
+            condition_values.push(cond_func(&unsafe { self.get_column_unchecked(col) })?);
         }
 
         let mut id_vec: Vec<usize> = (0..self.get_num_columns() as usize).collect();

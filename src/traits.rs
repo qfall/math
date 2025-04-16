@@ -9,7 +9,10 @@
 //! This module contains basic traits for this library. These include
 //! specific traits for matrices and polynomials.
 
-use crate::error::MathError;
+use crate::{
+    error::MathError,
+    utils::index::{evaluate_index_for_vector, evaluate_indices_for_matrix},
+};
 use flint_sys::fmpz::fmpz;
 use std::fmt::Display;
 
@@ -91,8 +94,6 @@ where
     /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
     /// occur.
     unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> T;
-
-    // *** Automatically implemented functions
 
     /// Outputs a [`Vec<Vec<T>>`] containing all entries of the matrix s.t.
     /// any entry in row `i` and column `j` can be accessed via `entries[i][j]`
@@ -189,18 +190,43 @@ where
     /// Parameters:
     /// - `row`: specifies the row of the matrix to return
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns a row vector of the matrix at the position of the given
     /// `row` or an error if specified row is not part of the matrix.
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     ///   if specified row is not part of the matrix.
-    fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError>;
+    fn get_row(&self, row: impl TryInto<i64> + Display + Clone) -> Result<Self, MathError> {
+        let row = evaluate_index_for_vector(row, self.get_num_rows())?;
+        Ok(unsafe { self.get_row_unchecked(row) })
+    }
+
+    /// Outputs the row vector of the specified row.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row of the matrix to return
+    ///
+    /// Returns a row vector of the matrix at the position of the given
+    /// `row`.
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected row is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    unsafe fn get_row_unchecked(&self, row: i64) -> Self {
+        self.get_submatrix_unchecked(row, row + 1, 0, self.get_num_columns())
+    }
 
     /// Outputs the column vector of the specified column.
     ///
     /// Parameters:
     /// - `column`: specifies the column of the matrix to return
+    ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
     ///
     /// Returns a column vector of the matrix at the position of the given
     /// `column` or an error if specified column is not part of the matrix.
@@ -208,7 +234,26 @@ where
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
     ///   if specified column is not part of the matrix.
-    fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError>;
+    fn get_column(&self, column: impl TryInto<i64> + Display + Clone) -> Result<Self, MathError> {
+        let column = evaluate_index_for_vector(column, self.get_num_columns())?;
+        Ok(unsafe { self.get_column_unchecked(column) })
+    }
+
+    /// Outputs the column vector of the specified column.
+    ///
+    /// Parameters:
+    /// - `column`: specifies the row of the matrix to return
+    ///
+    /// Returns a column vector of the matrix at the position of the given
+    /// `column`.
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected column is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    unsafe fn get_column_unchecked(&self, column: i64) -> Self {
+        self.get_submatrix_unchecked(0, self.get_num_rows(), column, column + 1)
+    }
 
     /// Returns a deep copy of the submatrix defined by the given parameters.
     /// All entries starting from `(row_1, col_1)` to `(row_2, col_2)`(inclusively) are collected in
@@ -240,9 +285,48 @@ where
         row_2: impl TryInto<i64> + Display,
         col_1: impl TryInto<i64> + Display,
         col_2: impl TryInto<i64> + Display,
-    ) -> Result<Self, MathError>;
+    ) -> Result<Self, MathError> {
+        let (row_1, col_1) = evaluate_indices_for_matrix(self, row_1, col_1)?;
+        let (row_2, col_2) = evaluate_indices_for_matrix(self, row_2, col_2)?;
 
-    // *** Automatically implemented functions
+        assert!(
+            row_2 >= row_1,
+            "The number of rows must be positive, i.e. row_2 ({row_2}) must be greater or equal row_1 ({row_1})"
+        );
+
+        assert!(
+            col_2 >= col_1,
+            "The number of columns must be positive, i.e. col_2 ({col_2}) must be greater or equal col_1 ({col_1})"
+        );
+
+        // increase both values to have an inclusive capturing of the matrix entries
+        let (row_2, col_2) = (row_2 + 1, col_2 + 1);
+        Ok(unsafe { self.get_submatrix_unchecked(row_1, row_2, col_1, col_2) })
+    }
+
+    /// Returns a deep copy of the submatrix defined by the given parameters
+    /// and does not check the provided dimensions.
+    /// There is also a safe version of this function that checks the input.
+    ///
+    /// Parameters:
+    /// `row_1`: the starting row of the submatrix
+    /// `row_2`: the ending row of the submatrix
+    /// `col_1`: the starting column of the submatrix
+    /// `col_2`: the ending column of the submatrix
+    ///
+    /// Returns the submatrix from `(row_1, col_1)` to `(row_2, col_2)`(exclusively).
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected submatrix is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    unsafe fn get_submatrix_unchecked(
+        &self,
+        row_1: i64,
+        row_2: i64,
+        col_1: i64,
+        col_2: i64,
+    ) -> Self;
 
     /// Outputs a [`Vec`] containing all rows of the matrix in order.
     /// Use this function for simple iteration over the rows of the matrix.
@@ -273,8 +357,7 @@ where
         let mut rows = vec![];
 
         for i in 0..self.get_num_rows() {
-            // replace with self.get_row_unchecked once available
-            let entry = self.get_row(i).unwrap();
+            let entry = unsafe { self.get_row_unchecked(i) };
             rows.push(entry);
         }
 
@@ -310,8 +393,7 @@ where
         let mut columns = vec![];
 
         for i in 0..self.get_num_columns() {
-            // replace with self.get_column_unchecked once available
-            let entry = self.get_column(i).unwrap();
+            let entry = unsafe { self.get_column_unchecked(i) };
             columns.push(entry);
         }
 
@@ -438,7 +520,7 @@ pub trait MatrixSwaps {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///   if one of the given rows is greater than the matrix or negative.
+    ///   if one of the given rows is not in the matrix.
     fn swap_rows(
         &mut self,
         row_0: impl TryInto<i64> + Display,
@@ -456,7 +538,7 @@ pub trait MatrixSwaps {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///   if one of the given columns is greater than the matrix or negative.
+    ///   if one of the given columns is not in the matrix.
     fn swap_columns(
         &mut self,
         col_0: impl TryInto<i64> + Display,
