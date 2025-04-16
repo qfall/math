@@ -528,8 +528,7 @@ where
     /// # Safety
     /// To use this function safely, make sure that the selected rows are part
     /// of the matrices, the columns are of the same length and the base types are the same.
-    /// If not, memory leaks, unexpected panics, etc. might
-    /// occur.
+    /// If not, memory leaks, unexpected panics, etc. might occur.
     unsafe fn set_row_unchecked(&mut self, row_0: i64, other: &Self, row_1: i64) {
         unsafe {
             self.set_submatrix_unchecked(
@@ -604,8 +603,7 @@ where
     /// # Safety
     /// To use this function safely, make sure that the selected columns are part
     /// of the matrices, the columns are of the same length and the base types are the same.
-    /// If not, memory leaks, unexpected panics, etc. might
-    /// occur.
+    /// If not, memory leaks, unexpected panics, etc. might occur.
     unsafe fn set_column_unchecked(&mut self, col_0: i64, other: &Self, col_1: i64) {
         unsafe {
             self.set_submatrix_unchecked(
@@ -622,6 +620,39 @@ where
         }
     }
 
+    /// Sets the matrix entries in `self` to entries defined in `other`.
+    /// The entries in `self` starting from `(row_self_start, col_self_start)` are set to be
+    /// the entries from the submatrix from `other` defined by `(row_other_start, col_other_start)`
+    /// to `(row_other_end, col_other_end)` (inclusively).
+    /// The original matrix must have sufficiently many entries to contain the defined submatrix.
+    ///
+    /// Parameters:
+    /// `row_self_start`: the starting row of the matrix in which to set a submatrix
+    /// `col_self_start`: the starting column of the matrix in which to set a submatrix
+    /// `other`: the matrix from where to take the submatrix to set
+    /// `row_self_start`: the starting row of the specified submatrix
+    /// `col_self_start`: the starting column of the specified submatrix
+    /// `row_other_end`: the ending row of the specified submatrix
+    /// `col_other_end`:the ending column of the specified submatrix
+    ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element, but after conversion they must be within the matrix dimensions.
+    ///
+    /// Sets the submatrix of `self`, starting from the specified starting row and column
+    /// to the submatrix defined in `other` by the provided indices (inclusively).
+    /// Errors can occur if the provided indices are not within the dimensions of the provided matrices,
+    /// the bases of the matrices are not compatible, e.g. different modulus or if the `self` can not
+    /// contain the specified submatrix from `other`.
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    ///   if any provided row or column is larger than the matrix or if entries of `self` would have to be
+    ///   set that are not within `self`.
+    /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus) if the base types are
+    ///   not compatible. This can only happen if the base types themselves can mismatch.
+    ///
+    /// # Panics ...
+    /// - if `row_other_start > row_other_end` or `col_other_start > col_other_end`.
     #[allow(clippy::too_many_arguments)]
     fn set_submatrix(
         &mut self,
@@ -658,6 +689,7 @@ where
         let (row_other_end, col_other_end) = (row_other_end + 1, col_other_end + 1);
         let nr_rows = row_other_end - row_other_start;
         let nr_cols = col_other_end - col_other_start;
+        // check if all entries that have to be set are contained in `self`
         let row_self_end =
             evaluate_index_for_vector(row_self_start + nr_rows, self.get_num_rows())?;
         let col_self_end =
@@ -680,7 +712,25 @@ where
         Ok(())
     }
 
+    /// Sets the matrix entries in `self` to entries defined in `other`.
+    /// The entries in `self` starting from `(row_self_start, col_self_start)` up to
+    /// `(row_self_end, col_self_end)`are set to be
+    /// the entries from the submatrix from `other` defined by `(row_other_start, col_other_start)`
+    /// to `(row_other_end, col_other_end)` (exclusively).
+    ///
+    /// Parameters:
+    /// `row_self_start`: the starting row of the matrix in which to set a submatrix
+    /// `col_self_start`: the starting column of the matrix in which to set a submatrix
+    /// `other`: the matrix from where to take the submatrix to set
+    /// `row_self_start`: the starting row of the specified submatrix
+    /// `col_self_start`: the starting column of the specified submatrix
+    /// `row_other_end`: the ending row of the specified submatrix
+    /// `col_other_end`:the ending column of the specified submatrix
+    ///
     /// # Safety
+    /// To use this function safely, make sure that the selected submatrices are part
+    /// of the matrices, the submatrices are of the same dimensions and the base types are the same.
+    /// If not, memory leaks, unexpected panics, etc. might occur.
     #[allow(clippy::too_many_arguments)]
     unsafe fn set_submatrix_unchecked(
         &mut self,
