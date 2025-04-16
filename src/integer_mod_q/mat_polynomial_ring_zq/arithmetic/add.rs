@@ -15,6 +15,7 @@ use crate::{
         arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
         arithmetic_trait_mixed_borrowed_owned,
     },
+    traits::CompareBase,
 };
 use std::ops::{Add, AddAssign};
 
@@ -132,11 +133,8 @@ impl MatPolynomialRingZq {
     /// - Returns a [`MathError`] of type [`MathError::MismatchingMatrixDimension`]
     ///   if the dimensions of both [`MatPolynomialRingZq`] mismatch.
     pub fn add_safe(&self, other: &Self) -> Result<MatPolynomialRingZq, MathError> {
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to add polynomial with modulus '{}' and polynomial with modulus '{}'.",
-                self.modulus, other.modulus
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
         let matrix = self.matrix.add_safe(&other.matrix)?;
 

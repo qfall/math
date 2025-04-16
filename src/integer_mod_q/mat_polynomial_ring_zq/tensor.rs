@@ -12,7 +12,7 @@ use super::MatPolynomialRingZq;
 use crate::{
     error::MathError,
     integer::PolyOverZ,
-    traits::{MatrixDimensions, MatrixGetEntry, Tensor},
+    traits::{CompareBase, MatrixDimensions, MatrixGetEntry, Tensor},
 };
 use flint_sys::{fmpz_poly_mat::fmpz_poly_mat_entry, fq::fq_mul};
 
@@ -81,12 +81,8 @@ impl MatPolynomialRingZq {
     ///   [`MismatchingModulus`](MathError::MismatchingModulus) if the
     ///   moduli of the provided matrices mismatch.
     pub fn tensor_product_safe(&self, other: &Self) -> Result<Self, MathError> {
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to compute tensor product of matrices with moduli '{}' and '{}'.",
-                self.get_mod(),
-                other.get_mod()
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
 
         let mut out = MatPolynomialRingZq::new(

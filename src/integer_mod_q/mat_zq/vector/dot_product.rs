@@ -12,7 +12,7 @@ use crate::{
     error::MathError,
     integer::Z,
     integer_mod_q::{MatZq, Zq},
-    traits::MatrixDimensions,
+    traits::{CompareBase, MatrixDimensions},
 };
 use flint_sys::fmpz::fmpz_addmul;
 
@@ -62,12 +62,8 @@ impl MatZq {
                 other.get_num_columns(),
             ));
         }
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "dot_product needs matching moduli of both matrices, but they differ: {}, {}",
-                self.get_mod(),
-                other.get_mod(),
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
 
         let self_entries = self.collect_entries();

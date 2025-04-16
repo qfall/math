@@ -13,6 +13,7 @@ use crate::error::MathError;
 use crate::macros::arithmetics::{
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
 };
+use crate::traits::CompareBase;
 use std::ops::Mul;
 
 impl Mul for &MatPolynomialRingZq {
@@ -101,12 +102,8 @@ impl MatPolynomialRingZq {
     /// - Returns a [`MathError`] of type
     ///   [`MathError::MismatchingModulus`] if the moduli mismatch.
     pub fn mul_safe(&self, other: &Self) -> Result<Self, MathError> {
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to multiply matrices with moduli '{}' and '{}'.",
-                self.get_mod(),
-                other.get_mod()
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
 
         let mut new =

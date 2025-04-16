@@ -11,7 +11,7 @@
 use super::MatZq;
 use crate::{
     error::MathError,
-    traits::{Concatenate, MatrixDimensions},
+    traits::{CompareBase, Concatenate, MatrixDimensions},
 };
 use flint_sys::fmpz_mod_mat::{fmpz_mod_mat_concat_horizontal, fmpz_mod_mat_concat_vertical};
 
@@ -55,12 +55,8 @@ impl Concatenate for &MatZq {
             )));
         }
 
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to concatenate matrices with different moduli {} and {}.",
-                self.get_mod(),
-                other.get_mod(),
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
 
         let mut out = MatZq::new(
@@ -111,12 +107,8 @@ impl Concatenate for &MatZq {
             )));
         }
 
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to concatenate matrices with different moduli {} and {}.",
-                self.get_mod(),
-                other.get_mod(),
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
 
         let mut out = MatZq::new(

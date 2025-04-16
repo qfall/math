@@ -9,6 +9,7 @@
 //! This module includes functionality to compute the dot product of two polynomials.
 
 use crate::integer_mod_q::{PolyOverZq, Zq};
+use crate::traits::CompareBase;
 use crate::{error::MathError, integer::Z};
 use flint_sys::fmpz_mod::{fmpz_mod_add, fmpz_mod_mul};
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_get_coeff_fmpz;
@@ -39,12 +40,8 @@ impl PolyOverZq {
     /// - Returns a [`MathError`] of type
     ///   [`MathError::MismatchingModulus`] if the moduli mismatch.
     pub fn dot_product(&self, other: &Self) -> Result<Zq, MathError> {
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                " Modulus of self: '{}'. Modulus of other: '{}'.
-                If the modulus should be ignored please convert into a PolyOverZ beforehand.",
-                self.modulus, other.modulus
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
 
         let self_degree = self.get_degree();
