@@ -10,6 +10,7 @@
 //! This uses the traits from [`std::cmp`].
 
 use super::PolyOverZq;
+use crate::{error::MathError, traits::CompareBase};
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_equal;
 
 impl PartialEq for PolyOverZq {
@@ -55,6 +56,54 @@ impl PartialEq for PolyOverZq {
 // With the [`Eq`] trait, `a == a` is always true.
 // This is not guaranteed by the [`PartialEq`] trait.
 impl Eq for PolyOverZq {}
+
+impl CompareBase for PolyOverZq {
+    /// Compares the moduli of the two elements.
+    ///
+    /// Parameters:
+    /// - `other`: The other object whose base is compared to `self`
+    ///
+    /// Returns true if the moduli match and false otherwise.
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::{integer_mod_q::PolyOverZq, traits::CompareBase};
+    /// use std::str::FromStr;
+    ///
+    /// let p1 = PolyOverZq::from_str("2  24 1 mod 17").unwrap();
+    /// let p2 = PolyOverZq::from_str("2  24 1 mod 19").unwrap();
+    ///
+    /// assert!(!p1.compare_base(&p2));
+    /// ```
+    fn compare_base(&self, other: &Self) -> bool {
+        self.get_mod() == other.get_mod()
+    }
+    /// Returns an error that gives small explanation how the moduli differ.
+    ///
+    /// Parameters:
+    /// - `other`: The other object whose base is compared to `self`
+    ///
+    /// Returns a MathError of type [MathError::MismatchingModulus].    
+    ///
+    /// # Example
+    /// ```
+    /// use qfall_math::{integer_mod_q::PolyOverZq, traits::CompareBase};
+    /// use std::str::FromStr;
+    ///
+    /// let p1 = PolyOverZq::from_str("2  24 1 mod 17").unwrap();
+    /// let p2 = PolyOverZq::from_str("2  24 1 mod 19").unwrap();
+    ///
+    /// assert!(p1.call_compare_base_error(&p2).is_some())
+    /// ```
+    fn call_compare_base_error(&self, other: &Self) -> Option<MathError> {
+        Some(MathError::MismatchingModulus(format!(
+            "The moduli of the polynomials mismatch. One of them is {} and the other is {}.
+            The desired operation is not defined and an error is returned.",
+            self.get_mod(),
+            other.get_mod()
+        )))
+    }
+}
 
 /// Test that the [`PartialEq`] trait is correctly implemented.
 /// Consider that negative is turned positive due to the modulus being applied.
@@ -240,5 +289,31 @@ mod test_partial_eq {
 
         assert_eq!(poly_1, poly_2);
         assert!(poly_1 == poly_2);
+    }
+}
+
+/// Test that the [`CompareBase`] trait uses an actual implementation.
+#[cfg(test)]
+mod test_compare_base {
+    use crate::{integer_mod_q::PolyOverZq, traits::CompareBase};
+    use std::str::FromStr;
+
+    /// Ensures that the [`CompareBase`] trait uses an actual implementation.
+    #[test]
+    fn different_base() {
+        let p1 = PolyOverZq::from_str("2  24 1 mod 17").unwrap();
+        let p2 = PolyOverZq::from_str("2  24 1 mod 19").unwrap();
+
+        assert!(!p1.compare_base(&p2));
+        assert!(p1.call_compare_base_error(&p2).is_some())
+    }
+
+    /// Ensures that the same base return `true`.
+    #[test]
+    fn same_base() {
+        let p1 = PolyOverZq::from_str("2  24 1 mod 17").unwrap();
+        let p2 = PolyOverZq::from_str("2  17 1 mod 17").unwrap();
+
+        assert!(p1.compare_base(&p2));
     }
 }

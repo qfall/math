@@ -14,7 +14,7 @@ use crate::{
     integer::{MatZ, Z},
     integer_mod_q::{fmpz_mod_helpers::length, Modulus, Zq},
     traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix, MatrixSetEntry},
-    utils::index::{evaluate_index_for_vector, evaluate_indices_for_matrix},
+    utils::index::evaluate_indices_for_matrix,
 };
 use flint_sys::{
     fmpz::{fmpz, fmpz_init_set},
@@ -117,78 +117,9 @@ impl MatZq {
 }
 
 impl MatrixGetSubmatrix for MatZq {
-    /// Outputs the row vector of the specified row.
-    ///
-    /// Parameters:
-    /// - `row`: specifies the row of the matrix
-    ///
-    /// Negative indices can be used to index from the back, e.g., `-1` for
-    /// the last element.
-    ///
-    /// Returns a row vector of the matrix at the position of the given
-    /// `row` or an error if the number of rows is
-    /// greater than the matrix or negative.
-    ///
-    /// # Examples
-    /// ```rust
-    /// use qfall_math::{integer_mod_q::MatZq, traits::MatrixGetSubmatrix};
-    /// use std::str::FromStr;
-    ///
-    /// let matrix = MatZq::from_str("[[1, 2, 3],[3, 4, 5]] mod 4").unwrap();
-    ///
-    /// let row_0 = matrix.get_row(0).unwrap(); // first row
-    /// let row_1 = matrix.get_row(1).unwrap(); // second row
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if the number of the row is greater than the matrix.
-    fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError> {
-        let num_rows = self.get_num_rows();
-        let row_i64 = evaluate_index_for_vector(row, num_rows)?;
-
-        self.get_submatrix(row_i64, row_i64, 0, self.get_num_columns() - 1)
-    }
-
-    /// Outputs a column vector of the specified column.
-    ///
-    /// Input parameters:
-    /// - `column`: specifies the column of the matrix
-    ///
-    /// Negative indices can be used to index from the back, e.g., `-1` for
-    /// the last element.
-    ///
-    /// Returns a column vector of the matrix at the position of the given
-    /// `column` or an error if the number of columns is
-    /// greater than the matrix or negative.
-    ///
-    /// # Examples
-    /// ```rust
-    /// use qfall_math::{integer_mod_q::MatZq, traits::MatrixGetSubmatrix};
-    /// use std::str::FromStr;
-    ///
-    /// let matrix = MatZq::from_str("[[1, 2, 3],[3, 4, 5]] mod 4").unwrap();
-    ///
-    /// let col_0 = matrix.get_column(0).unwrap(); // first column
-    /// let col_1 = matrix.get_column(1).unwrap(); // second column
-    /// let col_2 = matrix.get_column(2).unwrap(); // third column
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if the number of the column is greater than the matrix.
-    fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError> {
-        let num_cols = self.get_num_columns();
-        let column_i64 = evaluate_index_for_vector(column, num_cols)?;
-
-        self.get_submatrix(0, self.get_num_rows() - 1, column_i64, column_i64)
-    }
-
-    /// Returns a deep copy of the submatrix defined by the given parameters.
-    /// All entries starting from `(row_1, col_1)` to `(row_2, col_2)`(inclusively) are collected in
-    /// a new matrix.
-    /// Note that `row_1 >= row_2` and `col_1 >= col_2` must hold after converting negative indices.
-    /// Otherwise the function will panic.
+    /// Returns a deep copy of the submatrix defined by the given parameters
+    /// and does not check the provided dimensions.
+    /// There is also a safe version of this function that checks the input.
     ///
     /// Parameters:
     /// `row_1`: the starting row of the submatrix
@@ -196,11 +127,7 @@ impl MatrixGetSubmatrix for MatZq {
     /// `col_1`: the starting column of the submatrix
     /// `col_2`: the ending column of the submatrix
     ///
-    /// Negative indices can be used to index from the back, e.g., `-1` for
-    /// the last element.
-    ///
-    /// Returns the submatrix from `(row_1, col_1)` to `(row_2, col_2)`(inclusively)
-    /// or an error if the number of rows or columns is greater than the matrix.
+    /// Returns the submatrix from `(row_1, col_1)` to `(row_2, col_2)`(exclusively).
     ///
     /// # Examples
     /// ```
@@ -211,40 +138,25 @@ impl MatrixGetSubmatrix for MatZq {
     ///
     /// let sub_mat_1 = mat.get_submatrix(0, 2, 1, 1).unwrap();
     /// let sub_mat_2 = mat.get_submatrix(0, -1, 1, -2).unwrap();
+    /// let sub_mat_3 = unsafe{mat.get_submatrix_unchecked(0, 3, 1, 2)};
     ///
     /// let e_2 = MatZq::from_str("[[0],[1],[0]] mod 17").unwrap();
     /// assert_eq!(e_2, sub_mat_1);
     /// assert_eq!(e_2, sub_mat_2);
+    /// assert_eq!(e_2, sub_mat_3);
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if any provided row or column is greater than the matrix.
-    ///
-    /// # Panics ...
-    /// - if `col_1 > col_2` or `row_1 > row_2`.
-    fn get_submatrix(
+    /// # Safety
+    /// To use this function safely, make sure that the selected submatrix is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    unsafe fn get_submatrix_unchecked(
         &self,
-        row_1: impl TryInto<i64> + Display,
-        row_2: impl TryInto<i64> + Display,
-        col_1: impl TryInto<i64> + Display,
-        col_2: impl TryInto<i64> + Display,
-    ) -> Result<Self, MathError> {
-        let (row_1, col_1) = evaluate_indices_for_matrix(self, row_1, col_1)?;
-        let (row_2, col_2) = evaluate_indices_for_matrix(self, row_2, col_2)?;
-        assert!(
-                row_2 >= row_1,
-                "The number of rows must be positive, i.e. row_2 ({row_2}) must be greater or equal row_1 ({row_1})"
-            );
-
-        assert!(
-                col_2 >= col_1,
-                "The number of columns must be positive, i.e. col_2 ({col_2}) must be greater or equal col_1 ({col_1})"
-            );
-
-        // increase both values to have an inclusive capturing of the matrix entries
-        let (row_2, col_2) = (row_2 + 1, col_2 + 1);
-
+        row_1: i64,
+        row_2: i64,
+        col_1: i64,
+        col_2: i64,
+    ) -> Self {
         let mut window = MaybeUninit::uninit();
         // The memory for the elements of window is shared with self.
         unsafe {
@@ -265,10 +177,10 @@ impl MatrixGetSubmatrix for MatZq {
             // the memory to the underlying matrix that window points to is not freed
             fmpz_mod_mat_window_clear(window.as_mut_ptr());
         }
-        Ok(MatZq {
+        MatZq {
             matrix: unsafe { window_copy.assume_init() },
             modulus: self.get_mod(),
-        })
+        }
     }
 }
 
@@ -391,7 +303,7 @@ impl MatrixGetEntry<Z> for MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if `row` or `column` are greater than the matrix size.
+    ///   if `row` or `column` are greater than the matrix size.
     fn get_entry(
         &self,
         row: impl TryInto<i64> + Display,
@@ -472,7 +384,7 @@ impl MatrixGetEntry<Zq> for MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if `row` or `column` are greater than the matrix size.
+    ///   if `row` or `column` are greater than the matrix size.
     fn get_entry(
         &self,
         row: impl TryInto<i64> + Display,

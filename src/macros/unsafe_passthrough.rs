@@ -94,7 +94,7 @@ macro_rules! unsafe_getter_mod {
 /// - `struct`: the struct for which the getter is implemented (e.g. [`Z`](crate::integer::Z), ...).
 /// - `attribute_name`: the name of the field (e.g. `value`, ...).
 /// - `function_name`: the name of the function, which is called to gather
-///     the [`flint_sys`] struct (e.g. [crate::integer::Z::get_fmpz])
+///   the [`flint_sys`] struct (e.g. [crate::integer::Z::get_fmpz])
 /// - `attribute_type`: the struct resp. type of the field (e.g. [`fmpz`](flint_sys::fmpz::fmpz))
 ///
 ///  Returns the Implementation code for the given $struct with the signature:

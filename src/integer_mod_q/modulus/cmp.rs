@@ -369,8 +369,8 @@ mod test_ord {
     use crate::integer_mod_q::Modulus;
     use std::cmp::{max, min};
 
-    /// Tests that are already performed in the [`PartialOrd`] tests and the
-    /// implementation of [`Ord`] for [`Z`](crate::integer::Z) are omitted.
+    // Tests that are already performed in the [`PartialOrd`] tests and the
+    // implementation of [`Ord`] for [`Z`](crate::integer::Z) are omitted.
 
     /// Checks whether default implementations `max`, `min`, `clamp` work properly.
     #[test]

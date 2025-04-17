@@ -32,7 +32,7 @@ impl IntoCoefficientEmbedding<(MatZq, ModulusPolynomialRingZq)> for &MatPolynomi
     ///
     /// Parameters:
     /// - `size`: determines the number of rows each polynomial is embedded in.
-    ///     It has to be larger than the degree of all polynomials.
+    ///   It has to be larger than the degree of all polynomials.
     ///
     /// Returns a coefficient embedding as a matrix if `size` is large enough.
     ///
@@ -52,7 +52,7 @@ impl IntoCoefficientEmbedding<(MatZq, ModulusPolynomialRingZq)> for &MatPolynomi
     ///
     /// # Panics ...
     /// - if `size` is not larger than the degree of the polynomial, i.e.
-    ///     not all coefficients can be embedded.
+    ///   not all coefficients can be embedded.
     fn into_coefficient_embedding(self, size: impl Into<i64>) -> (MatZq, ModulusPolynomialRingZq) {
         let size = size.into();
         let num_rows = self.get_num_rows();

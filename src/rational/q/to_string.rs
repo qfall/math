@@ -96,7 +96,7 @@ impl Q {
     ///
     /// Parameters:
     /// - `nr_decimal_digits`: specifies the number of decimal digits
-    ///     that will be a part of the output [`String`]
+    ///   that will be a part of the output [`String`]
     ///
     /// Returns a [`String`] of the form `"10.25"` if `nr_decimal_digits = 2`.
     ///

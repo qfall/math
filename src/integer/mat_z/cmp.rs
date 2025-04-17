@@ -9,6 +9,7 @@
 //! This module contains implementations for comparison of [`MatZ`].
 
 use super::MatZ;
+use crate::traits::CompareBase;
 use flint_sys::fmpz_mat::fmpz_mat_equal;
 
 impl PartialEq for MatZ {
@@ -41,6 +42,8 @@ impl PartialEq for MatZ {
         unsafe { fmpz_mat_equal(&self.matrix, &other.matrix) != 0 }
     }
 }
+
+impl CompareBase for MatZ {}
 
 // With the [`Eq`] trait, `a == a` is always true.
 // This is not guaranteed by the [`PartialEq`] trait.
@@ -102,5 +105,22 @@ mod test_partial_eq {
         assert_ne!(&c, &d);
         assert_ne!(&c, &e);
         assert_ne!(&d, &e);
+    }
+}
+
+/// Test that the [`CompareBase`] trait uses the default implementation.
+#[cfg(test)]
+mod test_compare_base {
+    use crate::{integer::MatZ, traits::CompareBase};
+    use std::str::FromStr;
+
+    /// Ensures that the [`CompareBase`] trait uses the default implementation.
+    #[test]
+    fn different_base() {
+        let one_1 = MatZ::from_str("[[2, 24, 47],[2, 24, 42]]").unwrap();
+        let one_2 = MatZ::from_str("[[2, 4, 42]]").unwrap();
+
+        assert!(one_1.compare_base(&one_2));
+        assert!(one_1.call_compare_base_error(&one_2).is_none());
     }
 }

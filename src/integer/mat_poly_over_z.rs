@@ -37,7 +37,7 @@ mod vector;
 ///
 /// Attributes:
 /// - `matrix`: holds [FLINT](https://flintlib.org/)'s [struct](fmpz_poly_mat_struct)
-///     of the [`PolyOverZ`](crate::integer::PolyOverZ) matrix
+///   of the [`PolyOverZ`](crate::integer::PolyOverZ) matrix
 ///
 /// # Examples
 /// ## Matrix usage

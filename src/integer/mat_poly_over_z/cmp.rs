@@ -10,6 +10,7 @@
 //! This uses the traits from [`std::cmp`].
 
 use super::MatPolyOverZ;
+use crate::traits::CompareBase;
 use flint_sys::fmpz_poly_mat::fmpz_poly_mat_equal;
 
 impl PartialEq for MatPolyOverZ {
@@ -47,6 +48,8 @@ impl PartialEq for MatPolyOverZ {
 // With the [`Eq`] trait, `a == a` is always true.
 // This is not guaranteed by the [`PartialEq`] trait.
 impl Eq for MatPolyOverZ {}
+
+impl CompareBase for MatPolyOverZ {}
 
 /// Test that the [`PartialEq`] trait is correctly implemented.
 #[cfg(test)]
@@ -216,5 +219,22 @@ mod test_partial_eq {
         assert!(small_negative != min);
         assert!(min != small_positive);
         assert!(small_positive != min);
+    }
+}
+
+/// Test that the [`CompareBase`] trait uses the default implementation.
+#[cfg(test)]
+mod test_compare_base {
+    use crate::{integer::MatPolyOverZ, traits::CompareBase};
+    use std::str::FromStr;
+
+    /// Ensures that the [`CompareBase`] trait uses the default implementation.
+    #[test]
+    fn uses_default_implementation() {
+        let one_1 = MatPolyOverZ::from_str("[[2  24 47],[2  24 42]]").unwrap();
+        let one_2 = MatPolyOverZ::from_str("[[2  24 42]]").unwrap();
+
+        assert!(one_1.compare_base(&one_2));
+        assert!(one_1.call_compare_base_error(&one_2).is_none());
     }
 }

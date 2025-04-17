@@ -92,7 +92,6 @@ mod test_reduce_by_poly {
         a.reduce_by_poly(&modulus);
 
         let cmp_mat = MatPolyOverZ::from_str("[[1  1, 1  1],[1  -1, 0]]").unwrap();
-        println!("{a}");
         assert_eq!(cmp_mat, a);
     }
 }

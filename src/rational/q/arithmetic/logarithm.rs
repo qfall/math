@@ -32,8 +32,8 @@ impl Q {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`NonPositive`](MathError::NonPositive) if `self` is not
-    ///     greater than `0`.
+    ///   [`NonPositive`](MathError::NonPositive) if `self` is not
+    ///   greater than `0`.
     pub fn ln(&self) -> Result<Self, MathError> {
         if self <= &Q::ZERO {
             Err(MathError::NonPositive(self.to_string()))
@@ -68,10 +68,10 @@ impl Q {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if the `base` is smaller than `2`.
+    ///   if the `base` is smaller than `2`.
     /// - Returns a [`MathError`] of type
-    ///     [`NonPositive`](MathError::NonPositive) if `self` is not
-    ///     greater than `0`.
+    ///   [`NonPositive`](MathError::NonPositive) if `self` is not
+    ///   greater than `0`.
     pub fn log(&self, base: impl Into<Z>) -> Result<Q, MathError> {
         let base: Z = base.into();
         if base <= Z::ONE {
