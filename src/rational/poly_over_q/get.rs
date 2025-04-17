@@ -9,9 +9,8 @@
 //! Implementations to get information about a [`PolyOverQ`].
 
 use super::PolyOverQ;
-use crate::{error::MathError, rational::Q, traits::GetCoefficient, utils::index::evaluate_index};
+use crate::{rational::Q, traits::GetCoefficient};
 use flint_sys::fmpq_poly::{fmpq_poly_degree, fmpq_poly_get_coeff_fmpq};
-use std::fmt::Display;
 
 impl GetCoefficient<Q> for PolyOverQ {
     /// Returns the coefficient of a polynomial [`PolyOverQ`] as a [`Q`].
@@ -33,7 +32,7 @@ impl GetCoefficient<Q> for PolyOverQ {
     /// let poly = PolyOverQ::from_str("4  0 1 2/3 3/2").unwrap();
     ///
     /// let coeff_0 = poly.get_coeff(0).unwrap();
-    /// let coeff_1 = poly.get_coeff(1).unwrap();
+    /// let coeff_1 = unsafe{ poly.get_coeff_unchecked(1) };
     /// let coeff_4 = poly.get_coeff(4).unwrap();
     ///
     /// assert_eq!(Q::ZERO, coeff_0);
@@ -41,14 +40,13 @@ impl GetCoefficient<Q> for PolyOverQ {
     /// assert_eq!(Q::ZERO, coeff_4);
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    ///   either the index is negative or it does not fit into an [`i64`].
-    fn get_coeff(&self, index: impl TryInto<i64> + Display) -> Result<Q, MathError> {
+    /// # Safety
+    /// To use this function safely, make sure that the selected index
+    /// is greater or equal than `0`.
+    unsafe fn get_coeff_unchecked(&self, index: i64) -> Q {
         let mut out = Q::default();
-        let index = evaluate_index(index)?;
         unsafe { fmpq_poly_get_coeff_fmpq(&mut out.value, &self.poly, index) }
-        Ok(out)
+        out
     }
 }
 

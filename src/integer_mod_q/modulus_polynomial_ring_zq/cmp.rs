@@ -111,8 +111,8 @@ impl PartialEq<PolyOverZq> for ModulusPolynomialRingZq {
         }
 
         for i in 0..degree + 1 {
-            if GetCoefficient::<Z>::get_coeff(self, i).unwrap()
-                != GetCoefficient::<Z>::get_coeff(other, i).unwrap()
+            if unsafe { GetCoefficient::<Z>::get_coeff_unchecked(self, i) }
+                != unsafe { GetCoefficient::<Z>::get_coeff_unchecked(other, i) }
             {
                 return false;
             }

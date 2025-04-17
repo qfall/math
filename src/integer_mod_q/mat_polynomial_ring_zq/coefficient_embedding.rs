@@ -72,7 +72,7 @@ impl IntoCoefficientEmbedding<(MatZq, ModulusPolynomialRingZq)> for &MatPolynomi
                 );
 
                 for index in 0..size {
-                    let coeff: Z = entry.get_coeff(index).unwrap();
+                    let coeff: Z = unsafe { entry.get_coeff_unchecked(index) };
                     out.set_entry(row * size + index, column, coeff).unwrap()
                 }
             }

@@ -47,7 +47,7 @@ pub(crate) unsafe fn reduce_fmpz_poly_by_poly_over_z(
 
     assert_eq!(
         Z::ONE,
-        modulus.get_coeff(modulus_nr_coeff).unwrap(),
+        unsafe { modulus.get_coeff_unchecked(modulus_nr_coeff) },
         "In order to reduce, the modulus must have a leading coefficient of 1."
     );
 

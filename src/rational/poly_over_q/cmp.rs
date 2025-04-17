@@ -92,7 +92,7 @@ impl PartialEq<PolyOverZ> for PolyOverQ {
         }
 
         for i in 0..degree + 1 {
-            if self.get_coeff(i).unwrap() != other.get_coeff(i).unwrap() {
+            if unsafe { self.get_coeff_unchecked(i) } != unsafe { other.get_coeff_unchecked(i) } {
                 return false;
             }
         }

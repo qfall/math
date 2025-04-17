@@ -69,7 +69,7 @@ impl IntoCoefficientEmbedding<MatZ> for &MatPolyOverZ {
                 );
 
                 for index in 0..size {
-                    let coeff: Z = entry.get_coeff(index).unwrap();
+                    let coeff: Z = unsafe { entry.get_coeff_unchecked(index) };
                     unsafe { out.set_entry_unchecked(row * size + index, column, coeff) }
                 }
             }
