@@ -26,7 +26,7 @@ impl Rem<&Z> for &MatPolyOverZ {
     ///
     /// Parameters:
     /// - `modulus`: specifies a non-zero integer
-    ///     over which the positive remainders are computed
+    ///   over which the positive remainders are computed
     ///
     /// Returns `self` mod `modulus` as a [`MatPolyOverZ`] instance.
     ///
