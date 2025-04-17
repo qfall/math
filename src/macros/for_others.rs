@@ -95,7 +95,7 @@ macro_rules! implement_for_others {
                 }
             }
         }
-                  
+
         #[doc(hidden)]
         impl Div<$source_type> for $type {
             type Output = $type;
