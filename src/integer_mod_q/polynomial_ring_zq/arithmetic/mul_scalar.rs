@@ -17,7 +17,6 @@ use crate::macros::arithmetics::{
     arithmetic_trait_reverse,
 };
 use crate::macros::for_others::implement_for_others;
-use flint_sys::fmpz_mod_poly::fmpz_mod_poly_scalar_mul_fmpz;
 use std::ops::Mul;
 
 impl Mul<&Z> for &PolynomialRingZq {
@@ -46,7 +45,7 @@ impl Mul<&Z> for &PolynomialRingZq {
         let mut out = PolynomialRingZq::from(&self.modulus);
 
         out.poly = &self.poly * scalar;
-      
+
         out.reduce();
         out
     }
