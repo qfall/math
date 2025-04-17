@@ -11,7 +11,10 @@
 
 use super::PolyOverQ;
 use crate::{
-    integer::PolyOverZ, macros::for_others::implement_trait_reverse, traits::GetCoefficient,
+    integer::PolyOverZ,
+    macros::for_others::implement_trait_reverse,
+    rational::Q,
+    traits::{CompareBase, GetCoefficient},
 };
 use flint_sys::fmpq_poly::fmpq_poly_equal;
 
@@ -102,6 +105,8 @@ impl PartialEq<PolyOverZ> for PolyOverQ {
 }
 
 implement_trait_reverse!(PartialEq, eq, PolyOverZ, PolyOverQ, bool);
+
+impl<Rational: Into<Q>> CompareBase<Rational> for PolyOverQ {}
 
 /// Test that the [`PartialEq`] trait is correctly implemented.
 #[cfg(test)]

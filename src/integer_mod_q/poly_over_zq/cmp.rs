@@ -10,7 +10,7 @@
 //! This uses the traits from [`std::cmp`].
 
 use super::PolyOverZq;
-use crate::{error::MathError, traits::CompareBase};
+use crate::{error::MathError, integer::Z, integer_mod_q::Zq, traits::CompareBase};
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_equal;
 
 impl PartialEq for PolyOverZq {
@@ -104,6 +104,34 @@ impl CompareBase for PolyOverZq {
         )))
     }
 }
+impl CompareBase<Zq> for PolyOverZq {
+    fn compare_base(&self, other: &Zq) -> bool {
+        self.get_mod() == other.get_mod()
+    }
+    fn call_compare_base_error(&self, other: &Zq) -> Option<MathError> {
+        Some(MathError::MismatchingModulus(format!(
+            "The moduli of the polynomials mismatch. One of them is {} and the other is {}.
+            The desired operation is not defined and an error is returned.",
+            self.get_mod(),
+            other.get_mod()
+        )))
+    }
+}
+impl CompareBase<&Zq> for PolyOverZq {
+    fn compare_base(&self, other: &&Zq) -> bool {
+        self.get_mod() == other.get_mod()
+    }
+    fn call_compare_base_error(&self, other: &&Zq) -> Option<MathError> {
+        Some(MathError::MismatchingModulus(format!(
+            "The moduli of the polynomials mismatch. One of them is {} and the other is {}.
+            The desired operation is not defined and an error is returned.",
+            self.get_mod(),
+            other.get_mod()
+        )))
+    }
+}
+
+impl<Integer: Into<Z>> CompareBase<Integer> for PolyOverZq {}
 
 /// Test that the [`PartialEq`] trait is correctly implemented.
 /// Consider that negative is turned positive due to the modulus being applied.

@@ -10,11 +10,9 @@
 
 use super::PolyOverZq;
 use crate::{
-    error::MathError, integer::Z, integer_mod_q::Zq, macros::for_others::implement_for_owned,
-    traits::SetCoefficient, utils::index::evaluate_index,
+    integer::Z, integer_mod_q::Zq, macros::for_others::implement_for_owned, traits::SetCoefficient,
 };
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_set_coeff_fmpz;
-use std::fmt::Display;
 
 impl<Integer: Into<Z>> SetCoefficient<Integer> for PolyOverZq {
     /// Sets the coefficient of a polynomial [`PolyOverZq`].
@@ -45,13 +43,8 @@ impl<Integer: Into<Z>> SetCoefficient<Integer> for PolyOverZq {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
     ///   either the index is negative or it does not fit into an [`i64`].
-    fn set_coeff(
-        &mut self,
-        index: impl TryInto<i64> + Display,
-        value: Integer,
-    ) -> Result<(), MathError> {
+    unsafe fn set_coeff_unchecked(&mut self, index: i64, value: Integer) {
         let value: Z = value.into();
-        let index = evaluate_index(index)?;
 
         unsafe {
             fmpz_mod_poly_set_coeff_fmpz(
@@ -60,8 +53,7 @@ impl<Integer: Into<Z>> SetCoefficient<Integer> for PolyOverZq {
                 &value.value,
                 self.modulus.get_fmpz_mod_ctx_struct(),
             );
-        };
-        Ok(())
+        }
     }
 }
 
@@ -101,15 +93,8 @@ impl SetCoefficient<&Zq> for PolyOverZq {
     /// - Returns a [`MathError`] of type
     ///   [`MismatchingModulus`](MathError::MismatchingModulus) the moduli of
     ///   the polynomial and the input mismatch
-    fn set_coeff(
-        &mut self,
-        index: impl TryInto<i64> + Display,
-        value: &Zq,
-    ) -> Result<(), MathError> {
-        if self.modulus != value.modulus {
-            return Err(MathError::MismatchingModulus(value.to_string()));
-        }
-        self.set_coeff(index, &value.value)
+    unsafe fn set_coeff_unchecked(&mut self, index: i64, value: &Zq) {
+        self.set_coeff_unchecked(index, &value.value)
     }
 }
 

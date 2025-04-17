@@ -9,6 +9,7 @@
 //! Implementations to compare [`PolyOverZ`] with other values.
 //! This uses the traits from [`std::cmp`].
 
+use crate::{integer::Z, traits::CompareBase};
 use flint_sys::fmpz_poly::fmpz_poly_equal;
 
 use super::PolyOverZ;
@@ -46,6 +47,9 @@ impl PartialEq for PolyOverZ {
 // With the [`Eq`] trait, `a == a` is always true.
 // This is not guaranteed by the [`PartialEq`] trait.
 impl Eq for PolyOverZ {}
+
+impl CompareBase<PolyOverZ> for PolyOverZ {}
+impl<Integer: Into<Z>> CompareBase<Integer> for PolyOverZ {}
 
 /// Test that the [`PartialEq`] trait is correctly implemented.
 #[cfg(test)]

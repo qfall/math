@@ -9,7 +9,7 @@
 //! This module contains implementations for comparison of [`PolynomialRingZq`].
 
 use super::PolynomialRingZq;
-use crate::{error::MathError, traits::CompareBase};
+use crate::{error::MathError, integer::Z, integer_mod_q::Zq, traits::CompareBase};
 
 impl CompareBase for PolynomialRingZq {
     /// Compares the moduli of the two elements.
@@ -53,6 +53,35 @@ impl CompareBase for PolynomialRingZq {
     fn call_compare_base_error(&self, other: &Self) -> Option<MathError> {
         Some(MathError::MismatchingModulus(format!(
             "The moduli of the polynomial ring elements mismatch. One of them is {} and the other is {}.
+            The desired operation is not defined and an error is returned.",
+            self.get_mod(),
+            other.get_mod()
+        )))
+    }
+}
+
+impl<Integer: Into<Z>> CompareBase<Integer> for PolynomialRingZq {}
+impl CompareBase<Zq> for PolynomialRingZq {
+    fn compare_base(&self, other: &Zq) -> bool {
+        self.get_mod().get_q() == other.get_mod()
+    }
+    fn call_compare_base_error(&self, other: &Zq) -> Option<MathError> {
+        Some(MathError::MismatchingModulus(format!(
+            "The moduli of the polynomials mismatch. One of them is {} and the other is {}.
+            The desired operation is not defined and an error is returned.",
+            self.get_mod(),
+            other.get_mod()
+        )))
+    }
+}
+
+impl CompareBase<&Zq> for PolynomialRingZq {
+    fn compare_base(&self, other: &&Zq) -> bool {
+        self.get_mod().get_q() == other.get_mod()
+    }
+    fn call_compare_base_error(&self, other: &&Zq) -> Option<MathError> {
+        Some(MathError::MismatchingModulus(format!(
+            "The moduli of the polynomials mismatch. One of them is {} and the other is {}.
             The desired operation is not defined and an error is returned.",
             self.get_mod(),
             other.get_mod()

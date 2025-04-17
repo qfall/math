@@ -19,7 +19,7 @@ use std::fmt::Display;
 /// Is implemented by every type where a base-check might be needed.
 /// This also includes every type of matrix, because it allows for geneceric implementations.
 /// Per default, a basecheck simply returs that the bases match and no error is returned.
-pub trait CompareBase {
+pub trait CompareBase<T = Self> {
     /// Compares the base elements of the objects and returns true if they match
     /// and an operation between the two provided types is possible.
     ///
@@ -29,7 +29,7 @@ pub trait CompareBase {
     /// Returns true if the bases match and false otherwise.
     /// The default implementation just returns true.
     #[allow(unused_variables)]
-    fn compare_base(&self, other: &Self) -> bool {
+    fn compare_base(&self, other: &T) -> bool {
         true
     }
 
@@ -42,7 +42,7 @@ pub trait CompareBase {
     /// Returns a MathError, typically [MathError::MismatchingModulus].
     /// The default implementation just returns `None`.
     #[allow(unused_variables)]
-    fn call_compare_base_error(&self, other: &Self) -> Option<MathError> {
+    fn call_compare_base_error(&self, other: &T) -> Option<MathError> {
         None
     }
 }
@@ -67,9 +67,12 @@ pub trait GetCoefficient<T> {
     /// Parameters:
     /// - `index`: the index of the coefficient
     ///
-    /// Returns the coefficient of the polynomial or a [`MathError`] of type
-    /// [`OutOfBounds`](MathError::OutOfBounds) if either the index is negative
-    /// or does not fit into an [`i64`].
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type
+    ///   [`OutOfBounds`](MathError::OutOfBounds) if either the index is negative
+    ///   or does not fit into an [`i64`].
+    /// - Returns a [`MathError`] of type
+    ///   [`MismatchingModulus`](MathError::MismatchingModulus) if the
     fn get_coeff(&self, index: impl TryInto<i64> + Display) -> Result<T, MathError> {
         let index = evaluate_index(index)?;
         Ok(unsafe { self.get_coeff_unchecked(index) })
@@ -90,14 +93,46 @@ pub trait GetCoefficient<T> {
 }
 
 /// Is implemented by polynomials to set a coefficient.
-pub trait SetCoefficient<T> {
+pub trait SetCoefficient<T>
+where
+    Self: CompareBase<T>,
+{
     /// Sets coefficient of the object, e.g. polynomial,
     /// for a given input value and a index.
     ///
     /// Parameters:
     /// - `index`: the coefficient to be set.
     /// - `value`: the value the coefficient is set to.
-    fn set_coeff(&mut self, index: impl TryInto<i64> + Display, value: T) -> Result<(), MathError>;
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type
+    ///   [`OutOfBounds`](MathError::OutOfBounds) if either the index is negative
+    ///   or does not fit into an [`i64`].
+    /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus) if the base types are
+    ///   not compatible. This can only happen if the base types themselves can mismatch.
+    fn set_coeff(&mut self, index: impl TryInto<i64> + Display, value: T) -> Result<(), MathError> {
+        let index = evaluate_index(index)?;
+        if !self.compare_base(&value) {
+            return Err(self.call_compare_base_error(&value).unwrap());
+        }
+        unsafe {
+            self.set_coeff_unchecked(index, value);
+        }
+        Ok(())
+    }
+
+    /// Sets coefficient of the object, e.g. polynomial,
+    /// for a given input value and a index.
+    ///
+    /// Parameters:
+    /// - `index`: the coefficient to be set.
+    /// - `value`: the value the coefficient is set to.
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected index
+    /// is greater or equal than `0` and that the provided value has
+    /// the same base so that they have a matching base.
+    unsafe fn set_coeff_unchecked(&mut self, index: i64, value: T);
 }
 
 /// Is implemented by matrices to get the number of rows and number of columns of the matrix.

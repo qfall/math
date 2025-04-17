@@ -9,9 +9,8 @@
 //! Implementations to manipulate a [`PolyOverZ`] polynomial.
 
 use super::PolyOverZ;
-use crate::{error::MathError, integer::Z, traits::SetCoefficient, utils::index::evaluate_index};
+use crate::{integer::Z, traits::SetCoefficient};
 use flint_sys::fmpz_poly::fmpz_poly_set_coeff_fmpz;
-use std::fmt::Display;
 
 impl<Integer: Into<Z>> SetCoefficient<Integer> for PolyOverZ {
     /// Sets the coefficient of a polynomial [`PolyOverZ`].
@@ -42,18 +41,12 @@ impl<Integer: Into<Z>> SetCoefficient<Integer> for PolyOverZ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
     ///   either the index is negative or it does not fit into an [`i64`].
-    fn set_coeff(
-        &mut self,
-        index: impl TryInto<i64> + Display,
-        value: Integer,
-    ) -> Result<(), MathError> {
+    unsafe fn set_coeff_unchecked(&mut self, index: i64, value: Integer) {
         let value = value.into();
-        let index = evaluate_index(index)?;
 
         unsafe {
             fmpz_poly_set_coeff_fmpz(&mut self.poly, index, &value.value);
         };
-        Ok(())
     }
 }
 

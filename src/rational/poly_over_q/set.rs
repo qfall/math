@@ -9,9 +9,8 @@
 //! Implementations to manipulate a [`PolyOverQ`] polynomial.
 
 use super::PolyOverQ;
-use crate::{error::MathError, rational::Q, traits::SetCoefficient, utils::index::evaluate_index};
+use crate::{rational::Q, traits::SetCoefficient};
 use flint_sys::fmpq_poly::fmpq_poly_set_coeff_fmpq;
-use std::fmt::Display;
 
 impl<Rational: Into<Q>> SetCoefficient<Rational> for PolyOverQ {
     /// Sets the coefficient of a polynomial [`PolyOverQ`].
@@ -43,18 +42,12 @@ impl<Rational: Into<Q>> SetCoefficient<Rational> for PolyOverQ {
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
     ///   either the index is negative or it does not fit into an [`i64`].
-    fn set_coeff(
-        &mut self,
-        index: impl TryInto<i64> + Display,
-        value: Rational,
-    ) -> Result<(), MathError> {
+    unsafe fn set_coeff_unchecked(&mut self, index: i64, value: Rational) {
         let value = value.into();
-        let index = evaluate_index(index)?;
 
         unsafe {
             fmpq_poly_set_coeff_fmpq(&mut self.poly, index, &value.value);
-        };
-        Ok(())
+        }
     }
 }
 
