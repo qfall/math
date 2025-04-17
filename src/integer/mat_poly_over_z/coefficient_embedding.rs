@@ -130,7 +130,7 @@ impl FromCoefficientEmbedding<(&MatZ, i64)> for MatPolyOverZ {
                             .0
                             .get_entry_unchecked(row * (degree + 1) + index, column)
                     };
-                    poly.set_coeff(index, coeff).unwrap();
+                    unsafe { poly.set_coeff_unchecked(index, coeff) };
                 }
                 unsafe { out.set_entry_unchecked(row, column, poly) };
             }

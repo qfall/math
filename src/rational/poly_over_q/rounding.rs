@@ -36,7 +36,7 @@ impl PolyOverQ {
         let mut out = PolyOverZ::from(unsafe { self.get_coeff_unchecked(0).floor() });
         for i in 1..self.get_degree() + 1 {
             let coeff = unsafe { self.get_coeff_unchecked(i).floor() };
-            out.set_coeff(i, coeff).unwrap();
+            unsafe { out.set_coeff_unchecked(i, coeff) };
         }
 
         out
@@ -61,7 +61,7 @@ impl PolyOverQ {
         let mut out = PolyOverZ::from(unsafe { self.get_coeff_unchecked(0).ceil() });
         for i in 1..self.get_degree() + 1 {
             let coeff = unsafe { self.get_coeff_unchecked(i).ceil() };
-            out.set_coeff(i, coeff).unwrap();
+            unsafe { out.set_coeff_unchecked(i, coeff) };
         }
 
         out
@@ -88,7 +88,7 @@ impl PolyOverQ {
 
         for i in 1..self.get_degree() + 1 {
             let coeff = unsafe { self.get_coeff_unchecked(i).round() };
-            out.set_coeff(i, coeff).unwrap();
+            unsafe { out.set_coeff_unchecked(i, coeff) };
         }
 
         out
@@ -134,7 +134,7 @@ impl PolyOverQ {
             PolyOverZ::from(unsafe { self.get_coeff_unchecked(0).randomized_rounding(&r, &n)? });
         for i in 1..self.get_degree() + 1 {
             let coeff = unsafe { self.get_coeff_unchecked(i).randomized_rounding(&r, &n)? };
-            out.set_coeff(i, coeff).unwrap();
+            unsafe { out.set_coeff_unchecked(i, coeff) };
         }
 
         Ok(out)

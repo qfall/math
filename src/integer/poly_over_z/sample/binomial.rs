@@ -106,7 +106,7 @@ impl PolyOverZ {
 
         for index in 0..=max_degree {
             let sample = sample_binomial(&n, &p)?;
-            poly_z.set_coeff(index, &offset + sample)?;
+            unsafe { poly_z.set_coeff_unchecked(index, &offset + sample) };
         }
 
         Ok(poly_z)

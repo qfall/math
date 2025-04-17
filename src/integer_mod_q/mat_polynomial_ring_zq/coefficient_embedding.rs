@@ -142,7 +142,7 @@ impl FromCoefficientEmbedding<(&MatZq, &ModulusPolynomialRingZq, i64)> for MatPo
                             .0
                             .get_entry_unchecked(row * (degree + 1) + index, column)
                     };
-                    poly.set_coeff(index, coeff).unwrap();
+                    unsafe { poly.set_coeff_unchecked(index, coeff) };
                 }
                 out.set_entry(row, column, poly).unwrap();
             }

@@ -55,7 +55,7 @@ pub(crate) unsafe fn reduce_fmpz_poly_by_poly_over_z(
         let mut coeff = Z::default();
         unsafe { fmpz_poly_get_coeff_fmpz(&mut coeff.value, poly, i) }
         let mut degree = PolyOverZ::default();
-        degree.set_coeff(i - modulus_nr_coeff, coeff).unwrap();
+        unsafe { degree.set_coeff_unchecked(i - modulus_nr_coeff, coeff) };
         let minus_poly: PolyOverZ = degree * modulus;
 
         unsafe { fmpz_poly_sub(poly, poly, &minus_poly.poly) }
