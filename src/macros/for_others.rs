@@ -23,6 +23,8 @@
 ///   `($bridge_type, $type, Mul Scalar for $source_type)`
 /// - ['Div'](std::ops::Mul) with signature
 ///   `($bridge_type, $type, Div Scalar for $source_type)`
+/// - ['Rem'](std::ops::Rem) with signature
+///   `($bridge_type, $type, Rem for $source_type)`
 /// - ['PartialEq'](std::cmp::PartialEq) with signature
 ///   `($bridge_type, $type, PartialEq for $source_type)`
 /// - ['PartialOrd'](std::cmp::PartialOrd) with signature
@@ -33,6 +35,7 @@
 /// implement_for_others!(Z, MatZ, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
 /// implement_for_others!(Z, Q, PartialEq for fmpz i8 i16 i32 i64 u8 u16 u32 u64);
 /// implement_for_others!(Z, Q, PartialOrd for fmpz i8 i16 i32 i64 u8 u16 u32 u64);
+/// implement_for_others!(Z, PolyOverZ, Rem for i8 i16 i32 i64 u8 u16 u32 u64);
 /// ```
 macro_rules! implement_for_others {
     // [`Mul`] trait scalar
@@ -92,7 +95,7 @@ macro_rules! implement_for_others {
                 }
             }
         }
-
+                  
         #[doc(hidden)]
         impl Div<$source_type> for $type {
             type Output = $type;
@@ -100,6 +103,29 @@ macro_rules! implement_for_others {
                 #[doc = "Documentation can be found at [`" $type "::div`]."]
                 fn div(self, scalar: $source_type) -> Self::Output {
                     self.div($bridge_type::from(scalar))
+                }
+            }
+        })*
+    };
+
+    // [`Rem`] trait scalar
+    ($bridge_type:ident, $type:ident, Rem for $($source_type:ident)*) => {
+        $(#[doc(hidden)] impl Rem<$source_type> for &$type {
+            type Output = $type;
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::rem`]."]
+                fn rem(self, modulus: $source_type) -> Self::Output {
+                    self.rem($bridge_type::from(modulus))
+                }
+            }
+        }
+
+        impl Rem<$source_type> for $type {
+            type Output = $type;
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::rem`]."]
+                fn rem(self, modulus: $source_type) -> Self::Output {
+                    self.rem($bridge_type::from(modulus))
                 }
             }
         })*
