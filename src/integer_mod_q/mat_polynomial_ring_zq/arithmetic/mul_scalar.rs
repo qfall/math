@@ -340,7 +340,7 @@ impl MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`MismatchingModulus`](MathError::MismatchingModulus) if the moduli mismatch.
+    ///   [`MismatchingModulus`](MathError::MismatchingModulus) if the moduli mismatch.
     pub fn mul_scalar_zq_safe(&self, scalar: &Zq) -> Result<Self, MathError> {
         if self.modulus.get_q() != scalar.modulus {
             return Err(MathError::MismatchingModulus(format!(
