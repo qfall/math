@@ -26,11 +26,11 @@ impl MatZ {
     ///
     /// Parameters:
     /// - `delta`: mainly defines the quality of the reduced
-    ///     basis with higher quality the closer it's chosen to 1.
-    ///     Needs to be chosen between 0.25 < δ <= 1.
+    ///   basis with higher quality the closer it's chosen to 1.
+    ///   Needs to be chosen between 0.25 < δ <= 1.
     /// - `eta`: defines the maximum deviation per vector
-    ///     from the Gram-Schmidt orthogonalisation.
-    ///     Needs to be chosen between 0.5 <= η < √δ.
+    ///   from the Gram-Schmidt orthogonalisation.
+    ///   Needs to be chosen between 0.5 <= η < √δ.
     ///
     /// Choosing δ=0.99 and η=0.501 optimizes the quality of the basis and
     /// is a good choice to start from. Decreasing δ or increasing η will
@@ -82,11 +82,11 @@ impl MatZ {
     ///
     /// Parameters:
     /// - `delta`: mainly defines the quality of the reduced
-    ///     basis with higher quality the closer it's chosen to 1.
-    ///     If δ > 1, the output will always be `false`.
+    ///   basis with higher quality the closer it's chosen to 1.
+    ///   If δ > 1, the output will always be `false`.
     /// - `eta`: defines the maximum deviation per vector
-    ///     from the Gram-Schmidt orthogonalisation.
-    ///     If η < 0, the output will always be `false`.
+    ///   from the Gram-Schmidt orthogonalisation.
+    ///   If η < 0, the output will always be `false`.
     ///
     /// If `self` has `|rows| > |columns|`, it can't be a basis and therefore,
     /// the output of this algorithm will always be `false`.

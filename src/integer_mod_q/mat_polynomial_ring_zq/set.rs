@@ -11,7 +11,7 @@
 use super::MatPolynomialRingZq;
 use crate::integer_mod_q::PolynomialRingZq;
 use crate::macros::for_others::implement_for_owned;
-use crate::traits::{MatrixSetSubmatrix, MatrixSwaps};
+use crate::traits::{CompareBase, MatrixSetSubmatrix, MatrixSwaps};
 use crate::utils::index::evaluate_indices_for_matrix;
 use crate::{error::MathError, integer::PolyOverZ, traits::MatrixSetEntry};
 use flint_sys::{fmpz_poly::fmpz_poly_set, fmpz_poly_mat::fmpz_poly_mat_entry};
@@ -53,7 +53,7 @@ impl MatrixSetEntry<&PolyOverZ> for MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if `row` or `column` are greater than the matrix size.
+    ///   if `row` or `column` are greater than the matrix size.
     fn set_entry(
         &mut self,
         row: impl TryInto<i64> + Display,
@@ -143,9 +143,9 @@ impl MatrixSetEntry<&PolynomialRingZq> for MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if `row` or `column` are greater than the matrix size.
+    ///   if `row` or `column` are greater than the matrix size.
     /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`]
-    ///     if the moduli are different.
+    ///   if the moduli are different.
     fn set_entry(
         &mut self,
         row: impl TryInto<i64> + Display,
@@ -218,7 +218,10 @@ impl MatrixSetSubmatrix for MatPolynomialRingZq {
     /// - `col_0`: specifies the column of `self` that should be modified
     /// - `other`: specifies the matrix providing the column replacing the column in `self`
     /// - `col_1`: specifies the column of `other` providing
-    ///     the values replacing the original column in `self`
+    ///   the values replacing the original column in `self`
+    ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of its matrix
@@ -236,23 +239,19 @@ impl MatrixSetSubmatrix for MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if the provided column index is not defined within the margins of the matrix.
+    ///   if the provided column index is not defined within the margins of the matrix.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the number of rows of `self` and `other` differ.
+    ///   if the number of rows of `self` and `other` differ.
     /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus)
-    ///     if the moduli of `self` and `other` mismatch.
+    ///   if the moduli of `self` and `other` mismatch.
     fn set_column(
         &mut self,
         col_0: impl TryInto<i64> + Display,
         other: &Self,
         col_1: impl TryInto<i64> + Display,
     ) -> Result<(), MathError> {
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "set_column requires the moduli to be equal, but {} differs from {}",
-                self.get_mod(),
-                other.get_mod()
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
 
         self.matrix.set_column(col_0, &other.matrix, col_1)
@@ -264,7 +263,10 @@ impl MatrixSetSubmatrix for MatPolynomialRingZq {
     /// - `row_0`: specifies the row of `self` that should be modified
     /// - `other`: specifies the matrix providing the row replacing the row in `self`
     /// - `row_1`: specifies the row of `other` providing
-    ///     the values replacing the original row in `self`
+    ///   the values replacing the original row in `self`
+    ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of its matrix
@@ -282,23 +284,19 @@ impl MatrixSetSubmatrix for MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if the provided row index is not defined within the margins of the matrix.
+    ///   if the provided row index is not defined within the margins of the matrix.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the number of columns of `self` and `other` differ.
+    ///   if the number of columns of `self` and `other` differ.
     /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus)
-    ///     if the moduli of `self` and `other` mismatch.
+    ///   if the moduli of `self` and `other` mismatch.
     fn set_row(
         &mut self,
         row_0: impl TryInto<i64> + Display,
         other: &Self,
         row_1: impl TryInto<i64> + Display,
     ) -> Result<(), MathError> {
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "set_row requires the moduli to be equal, but {} differs from {}",
-                self.get_mod(),
-                other.get_mod()
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
 
         self.matrix.set_row(row_0, &other.matrix, row_1)
@@ -331,7 +329,7 @@ impl MatrixSwaps for MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if row or column are greater than the matrix size.
+    ///   if row or column are greater than the matrix size.
     fn swap_entries(
         &mut self,
         row_0: impl TryInto<i64> + Display,
@@ -348,6 +346,9 @@ impl MatrixSwaps for MatPolynomialRingZq {
     /// - `col_0`: specifies the first column which is swapped with the second one
     /// - `col_1`: specifies the second column which is swapped with the first one
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of the matrix.
     ///
@@ -362,7 +363,7 @@ impl MatrixSwaps for MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if one of the given columns is greater than the matrix or negative.
+    ///   if one of the given columns is not in the matrix.
     fn swap_columns(
         &mut self,
         col_0: impl TryInto<i64> + Display,
@@ -376,6 +377,9 @@ impl MatrixSwaps for MatPolynomialRingZq {
     /// Parameters:
     /// - `row_0`: specifies the first row which is swapped with the second one
     /// - `row_1`: specifies the second row which is swapped with the first one
+    ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of the matrix.
@@ -391,7 +395,7 @@ impl MatrixSwaps for MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if one of the given rows is greater than the matrix or negative.
+    ///   if one of the given rows is not in the matrix.
     fn swap_rows(
         &mut self,
         row_0: impl TryInto<i64> + Display,
@@ -669,9 +673,9 @@ mod test_setter {
                 .unwrap();
         let mat_2 = mat_1.clone();
 
-        assert!(mat_1.set_column(-1, &mat_2, 0).is_err());
+        assert!(mat_1.set_column(-3, &mat_2, 0).is_err());
         assert!(mat_1.set_column(2, &mat_2, 0).is_err());
-        assert!(mat_1.set_column(1, &mat_2, -1).is_err());
+        assert!(mat_1.set_column(1, &mat_2, -3).is_err());
         assert!(mat_1.set_column(1, &mat_2, 2).is_err());
     }
 
@@ -772,9 +776,9 @@ mod test_setter {
                 .unwrap();
         let mat_2 = mat_1.clone();
 
-        assert!(mat_1.set_row(-1, &mat_2, 0).is_err());
+        assert!(mat_1.set_row(-6, &mat_2, 0).is_err());
         assert!(mat_1.set_row(5, &mat_2, 0).is_err());
-        assert!(mat_1.set_row(2, &mat_2, -1).is_err());
+        assert!(mat_1.set_row(2, &mat_2, -6).is_err());
         assert!(mat_1.set_row(2, &mat_2, 5).is_err());
     }
 
@@ -811,8 +815,8 @@ mod test_swaps {
     };
     use std::str::FromStr;
 
-    /// Since swapping functions only call the existing tested functions for [`MatPolyOverZ`](crate::integer::MatPolyOverZ),
-    /// we omit some tests that are already covered.
+    // Since swapping functions only call the existing tested functions for [`MatPolyOverZ`](crate::integer::MatPolyOverZ),
+    // we omit some tests that are already covered.
 
     /// Ensures that swapping entries works
     #[test]
@@ -878,8 +882,8 @@ mod test_swaps {
     fn column_out_of_bounds() {
         let mut matrix = MatPolynomialRingZq::new(5, 2, ModulusPolynomialRingZq::from((3, 17)));
 
-        assert!(matrix.swap_columns(-1, 0).is_err());
-        assert!(matrix.swap_columns(0, -1).is_err());
+        assert!(matrix.swap_columns(-6, 0).is_err());
+        assert!(matrix.swap_columns(0, -6).is_err());
         assert!(matrix.swap_columns(5, 0).is_err());
         assert!(matrix.swap_columns(0, 5).is_err());
     }
@@ -905,8 +909,8 @@ mod test_swaps {
     fn row_out_of_bounds() {
         let mut matrix = MatPolynomialRingZq::new(2, 4, ModulusPolynomialRingZq::from((3, 17)));
 
-        assert!(matrix.swap_rows(-1, 0).is_err());
-        assert!(matrix.swap_rows(0, -1).is_err());
+        assert!(matrix.swap_rows(-3, 0).is_err());
+        assert!(matrix.swap_rows(0, -3).is_err());
         assert!(matrix.swap_rows(4, 0).is_err());
         assert!(matrix.swap_rows(0, 4).is_err());
     }
@@ -918,8 +922,8 @@ mod test_reverses {
     use crate::traits::MatrixGetSubmatrix;
     use std::str::FromStr;
 
-    /// Since reversing functions only call the existing tested functions for [`MatPolyOverZ`](crate::integer::MatPolyOverZ),
-    /// we omit some tests that are already covered.
+    // Since reversing functions only call the existing tested functions for [`MatPolyOverZ`](crate::integer::MatPolyOverZ),
+    // we omit some tests that are already covered.
 
     /// Ensures that reversing columns works fine for small entries
     #[test]

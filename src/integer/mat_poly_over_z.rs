@@ -25,6 +25,7 @@ mod reduce;
 mod sample;
 mod serialize;
 mod set;
+mod sort;
 mod tensor;
 mod to_string;
 mod trace;
@@ -36,7 +37,7 @@ mod vector;
 ///
 /// Attributes:
 /// - `matrix`: holds [FLINT](https://flintlib.org/)'s [struct](fmpz_poly_mat_struct)
-///     of the [`PolyOverZ`](crate::integer::PolyOverZ) matrix
+///   of the [`PolyOverZ`](crate::integer::PolyOverZ) matrix
 ///
 /// # Examples
 /// ## Matrix usage

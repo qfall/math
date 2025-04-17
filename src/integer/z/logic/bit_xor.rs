@@ -25,7 +25,7 @@ impl BitXor for &Z {
     ///
     /// Parameters:
     /// - `other`: specifies the value to apply the bit-wise logical `xor` action to
-    ///     apart from `self`
+    ///   apart from `self`
     ///
     /// Returns a new instance of [`Z`] containing the number resulting
     /// from the bit-wise logical `xor` operation performed on `self` and `other`.

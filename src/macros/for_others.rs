@@ -20,13 +20,13 @@
 /// Implements a specified trait using implicit conversions to a bridge type.
 ///
 /// - ['Mul'](std::ops::Mul) with signature
-///     `($bridge_type, $type, Mul Scalar for $source_type)`
+///   `($bridge_type, $type, Mul Scalar for $source_type)`
 /// - ['Div'](std::ops::Mul) with signature
-///     `($bridge_type, $type, Div Scalar for $source_type)`
+///   `($bridge_type, $type, Div Scalar for $source_type)`
 /// - ['PartialEq'](std::cmp::PartialEq) with signature
-///     `($bridge_type, $type, PartialEq for $source_type)`
+///   `($bridge_type, $type, PartialEq for $source_type)`
 /// - ['PartialOrd'](std::cmp::PartialOrd) with signature
-///     `($bridge_type, $type, PartialEq for $source_type)`
+///   `($bridge_type, $type, PartialEq for $source_type)`
 ///
 /// # Examples
 /// ```compile_fail
@@ -155,13 +155,13 @@ pub(crate) use implement_for_others;
 /// Several traits are already supported:
 ///
 /// - [`Evaluate`](crate::traits::Evaluate) with the signature
-///     `($bridge_type, $output_type, $type, Evaluate)`
+///   `($bridge_type, $output_type, $type, Evaluate)`
 /// - [`From`] with the signature
-///     `($source_type, $type, From)`
+///   `($source_type, $type, From)`
 /// - [`SetCoefficient`](crate::traits::SetCoefficient) with the signature
-///     `($bridge_type, $type, SetCoefficient)`
+///   `($bridge_type, $type, SetCoefficient)`
 /// - [`MatrixSetEntry`](crate::traits::MatrixSetEntry) with the signature
-///     `($bridge_type, $type, SetCoefficient)`
+///   `($bridge_type, $type, SetCoefficient)`
 ///
 /// # Examples
 /// ```compile_fail
@@ -271,11 +271,11 @@ pub(crate) use implement_empty_trait_owned_ref;
 ///
 /// Parameters:
 /// - `trait`: the trait that is implemented
-///     (e.g. [`PartialEq`],[`PartialOrd`], ...).
+///   (e.g. [`PartialEq`],[`PartialOrd`], ...).
 /// - `trait_function`: the function the trait implements
-///     (e.g. eq for [`PartialEq`], ...).
+///   (e.g. eq for [`PartialEq`], ...).
 /// - `type`: the type the trait is implemented for
-///     (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q))
+///   (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q))
 /// - `other_type`: the type the second part of the computation.
 /// - `output_type`: the type of the result (e.g. bool for [`PartialEq`], ...).
 ///

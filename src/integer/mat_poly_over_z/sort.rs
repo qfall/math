@@ -1,4 +1,4 @@
-// Copyright © 2023 Niklas Siemer
+// Copyright © 2025 Marcel Luca Schmidt
 //
 // This file is part of qFALL-math.
 //
@@ -6,15 +6,15 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Contains functions to sort [`MatZq`].
+//! Contains functions to sort [`MatPolyOverZ`].
 
-use super::MatZq;
+use super::MatPolyOverZ;
 use crate::{
     error::MathError,
     traits::{MatrixDimensions, MatrixGetSubmatrix, MatrixSetSubmatrix},
 };
 
-impl MatZq {
+impl MatPolyOverZ {
     /// Sorts the columns of the matrix based on some condition defined by `cond_func` in an ascending order.
     ///
     /// This condition is usually a norm with the described input-output behaviour.
@@ -29,27 +29,28 @@ impl MatZq {
     /// # Examples
     /// ## Use a build-in function as condition
     /// ```
-    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
-    /// let mat = MatZq::from_str("[[3, 2, 1]] mod 7").unwrap();
-    /// let cmp = MatZq::from_str("[[1, 2, 3]] mod 7").unwrap();
+    /// let mat = MatPolyOverZ::from_str("[[2  3 4, 1  2, 1  1]]").unwrap();
+    /// let cmp = MatPolyOverZ::from_str("[[1  1, 1  2, 2  3 4]]").unwrap();
     ///
-    /// let sorted = mat.sort_by_column(MatZq::norm_eucl_sqrd).unwrap();
+    /// let sorted = mat.sort_by_column(MatPolyOverZ::norm_eucl_sqrd).unwrap();
     ///
     /// assert_eq!(cmp, sorted);
     /// ```
     /// ## Use a custom function as condition
     /// This function needs to take a column vector as input and output a type implementing [`PartialOrd`]
     /// ```
-    /// use qfall_math::{integer_mod_q::MatZq, integer::Z, error::MathError, traits::{MatrixDimensions, MatrixGetEntry}};
+    /// use qfall_math::{integer::{MatPolyOverZ, Z}, error::MathError, traits::{MatrixDimensions, MatrixGetEntry}};
+    /// use crate::qfall_math::traits::GetCoefficient;
     /// use std::str::FromStr;
-    /// let mat = MatZq::from_str("[[3, 2, 1]] mod 7").unwrap();
-    /// let cmp = MatZq::from_str("[[1, 2, 3]] mod 7").unwrap();
+    /// let mat = MatPolyOverZ::from_str("[[2  0 4, 1  2, 1  1]]").unwrap();
+    /// let cmp = MatPolyOverZ::from_str("[[2  0 4, 1  1, 1  2]]").unwrap();
     ///
-    /// fn custom_cond_func(matrix: &MatZq) -> Result<Z, MathError> {
+    /// fn custom_cond_func(matrix: &MatPolyOverZ) -> Result<Z, MathError> {
     ///     let mut sum = Z::ZERO;
-    ///     for entry in MatrixGetEntry::<Z>::get_entries_rowwise(matrix){
-    ///         sum += entry;
+    ///     for entry in matrix.get_entries_rowwise() {
+    ///         sum += entry.get_coeff(0)?;
     ///     }
     ///     Ok(sum)
     /// }
@@ -73,7 +74,7 @@ impl MatZq {
         let mut id_vec: Vec<usize> = (0..self.get_num_columns() as usize).collect();
         id_vec.sort_by_key(|x| &condition_values[*x]);
 
-        let mut out = Self::new(self.get_num_rows(), self.get_num_columns(), self.get_mod());
+        let mut out = Self::new(self.get_num_rows(), self.get_num_columns());
         for (col, item) in id_vec.iter().enumerate() {
             out.set_column(col, self, *item).unwrap();
         }
@@ -95,27 +96,28 @@ impl MatZq {
     /// # Examples
     /// ## Use a build-in function as condition
     /// ```
-    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
-    /// let mat = MatZq::from_str("[[3],[2],[1]] mod 7").unwrap();
-    /// let cmp = MatZq::from_str("[[1],[2],[3]] mod 7").unwrap();
+    /// let mat = MatPolyOverZ::from_str("[[2  3 4],[1  2],[1  1]]").unwrap();
+    /// let cmp = MatPolyOverZ::from_str("[[1  1],[1  2],[2  3 4]]").unwrap();
     ///
-    /// let sorted = mat.sort_by_row(MatZq::norm_infty).unwrap();
+    /// let sorted = mat.sort_by_row(MatPolyOverZ::norm_infty).unwrap();
     ///
     /// assert_eq!(cmp, sorted);
     /// ```
     /// ## Use a custom function as condition
     /// This function needs to take a row vector as input and output a type implementing [`PartialOrd`]
     /// ```
-    /// use qfall_math::{integer_mod_q::MatZq, integer::Z, error::MathError, traits::{MatrixDimensions, MatrixGetEntry}};
+    /// use qfall_math::{integer::{MatPolyOverZ, Z}, error::MathError, traits::{MatrixDimensions, MatrixGetEntry}};
+    /// use crate::qfall_math::traits::GetCoefficient;
     /// use std::str::FromStr;
-    /// let mat = MatZq::from_str("[[3],[2],[1]] mod 7").unwrap();
-    /// let cmp = MatZq::from_str("[[1],[2],[3]] mod 7").unwrap();
+    /// let mat = MatPolyOverZ::from_str("[[2  0 4],[1  2],[1  1]]").unwrap();
+    /// let cmp = MatPolyOverZ::from_str("[[2  0 4],[1  1],[1  2]]").unwrap();
     ///
-    /// fn custom_cond_func(matrix: &MatZq) -> Result<Z, MathError> {
+    /// fn custom_cond_func(matrix: &MatPolyOverZ) -> Result<Z, MathError> {
     ///     let mut sum = Z::ZERO;
-    ///     for entry in MatrixGetEntry::<Z>::get_entries_rowwise(matrix){
-    ///         sum += entry;
+    ///     for entry in matrix.get_entries_columnwise() {
+    ///         sum += entry.get_coeff(0)?;
     ///     }
     ///     Ok(sum)
     /// }
@@ -138,7 +140,7 @@ impl MatZq {
         let mut id_vec: Vec<usize> = (0..self.get_num_rows() as usize).collect();
         id_vec.sort_by_key(|x| &condition_values[*x]);
 
-        let mut out = Self::new(self.get_num_rows(), self.get_num_columns(), self.get_mod());
+        let mut out = Self::new(self.get_num_rows(), self.get_num_columns());
         for (row, item) in id_vec.iter().enumerate() {
             out.set_row(row, self, *item).unwrap();
         }
@@ -149,14 +151,14 @@ impl MatZq {
 
 #[cfg(test)]
 mod test_sort_by_length {
-    use super::MatZq;
+    use super::MatPolyOverZ;
     use crate::error::{MathError, StringConversionError};
     use std::str::FromStr;
 
     /// This function should fail in any case a vector is provided to it.
     /// As `sort_by_column` and `sort_by_row` execute this function on the columns resp. rows of its matrix,
     /// it should always return an error if used as `cond_func` for these two functions
-    fn failing_func(matrix: &MatZq) -> Result<(), MathError> {
+    fn failing_func(matrix: &MatPolyOverZ) -> Result<(), MathError> {
         if matrix.is_vector() {
             Err(StringConversionError::InvalidMatrix(String::from(
                 "Some silly mistake was made - on purpose",
@@ -169,10 +171,12 @@ mod test_sort_by_length {
     /// Checks whether sorting by column length acc. to eucl. norm works correct for small entries
     #[test]
     fn column_norm_eucl_sqrd_small_entries() {
-        let mat = MatZq::from_str("[[3, 0, 2, -1],[2, 2, 2, 2]] mod 7").unwrap();
-        let cmp = MatZq::from_str("[[0, -1, 2, 3],[2, 2, 2, 2]] mod 7").unwrap();
+        let mat =
+            MatPolyOverZ::from_str("[[1  3, 0, 1  2, 1  -1],[1  2, 1  2, 1  2, 1  2]]").unwrap();
+        let cmp =
+            MatPolyOverZ::from_str("[[0, 1  -1, 1  2, 1  3],[1  2, 1  2, 1  2, 1  2]]").unwrap();
 
-        let res = mat.sort_by_column(MatZq::norm_eucl_sqrd).unwrap();
+        let res = mat.sort_by_column(MatPolyOverZ::norm_eucl_sqrd).unwrap();
 
         assert_eq!(cmp, res);
     }
@@ -180,45 +184,20 @@ mod test_sort_by_length {
     /// Checks whether sorting by column length acc. to eucl. norm works correct for large entries
     #[test]
     fn column_norm_eucl_sqrd_large_entries() {
-        let mat = MatZq::from_str(&format!(
-            "[[{}, {}, 5],[1, 2, 5],[0, 0, 0]] mod {}",
+        let mat = MatPolyOverZ::from_str(&format!(
+            "[[1  {}, 1  {}, 1  5],[1  1, 1  2, 1  5],[0, 0, 0]]",
             i64::MIN,
-            i64::MAX,
-            u64::MAX
+            i64::MAX
         ))
         .unwrap();
-        let cmp = MatZq::from_str(&format!(
-            "[[5, {}, {}],[5, 1, 2],[0, 0, 0]] mod {}",
+        let cmp = MatPolyOverZ::from_str(&format!(
+            "[[1  5, 1  {}, 1  {}],[1  5, 1  2, 1  1],[0, 0, 0]]",
             i64::MAX,
-            i64::MIN,
-            u64::MAX
-        ))
-        .unwrap();
-
-        let res = mat.sort_by_column(MatZq::norm_eucl_sqrd).unwrap();
-
-        assert_eq!(cmp, res);
-    }
-
-    /// Checks whether sorting by column length acc. to infty norm works correct for large entries
-    #[test]
-    fn column_norm_infty_large_entries() {
-        let mat = MatZq::from_str(&format!(
-            "[[{}, {}, 5],[1, 2, 5],[0, 0, 0]] mod {}",
-            i64::MIN,
-            i64::MAX,
-            u64::MAX
-        ))
-        .unwrap();
-        let cmp = MatZq::from_str(&format!(
-            "[[5, {}, {}],[5, 1, 2],[0, 0, 0]] mod {}",
-            i64::MAX,
-            i64::MIN,
-            u64::MAX
+            i64::MIN
         ))
         .unwrap();
 
-        let res = mat.sort_by_column(MatZq::norm_infty).unwrap();
+        let res = mat.sort_by_column(MatPolyOverZ::norm_eucl_sqrd).unwrap();
 
         assert_eq!(cmp, res);
     }
@@ -227,10 +206,14 @@ mod test_sort_by_length {
     /// for matrices with a few more entries
     #[test]
     fn many_columns() {
-        let mat = MatZq::from_str("[[3, 4, 1, 7, 2, 0, 9, -8, 6, 5]] mod 19").unwrap();
-        let cmp = MatZq::from_str("[[0, 1, 2, 3, 4, 5, 6, 7, -8, 9]] mod 19").unwrap();
+        let mat =
+            MatPolyOverZ::from_str("[[1  3, 1  4, 1  1, 1  7, 1  2, 0, 1  9, 1  -8, 1  6, 1  5]]")
+                .unwrap();
+        let cmp =
+            MatPolyOverZ::from_str("[[0, 1  1, 1  2, 1  3, 1  4, 1  5, 1  6, 1  7, 1  -8, 1  9]]")
+                .unwrap();
 
-        let res = mat.sort_by_column(MatZq::norm_eucl_sqrd).unwrap();
+        let res = mat.sort_by_column(MatPolyOverZ::norm_eucl_sqrd).unwrap();
 
         assert_eq!(cmp, res);
     }
@@ -238,7 +221,7 @@ mod test_sort_by_length {
     /// Checks whether an error is returned for sorting by columns if the `cond_func` returns an error
     #[test]
     fn column_error_cond_func() {
-        let mat = MatZq::from_str("[[1, 2],[3, 4]] mod 7").unwrap();
+        let mat = MatPolyOverZ::from_str("[[1  1, 1  2],[1  3, 1  4]]").unwrap();
 
         let res = mat.sort_by_column(failing_func);
 
@@ -248,10 +231,12 @@ mod test_sort_by_length {
     /// Checks whether sorting by row length acc. to eucl. norm works correct for small entries
     #[test]
     fn row_norm_eucl_sqrd_small_entries() {
-        let mat = MatZq::from_str("[[3, 0, 2, -1],[2, 2, 2, 2]] mod 7").unwrap();
-        let cmp = MatZq::from_str("[[3, 0, 2, -1],[2, 2, 2, 2]] mod 7").unwrap();
+        let mat =
+            MatPolyOverZ::from_str("[[1  3, 0, 1  2, 1  -1],[1  2, 1  2, 1  2, 1  2]]").unwrap();
+        let cmp =
+            MatPolyOverZ::from_str("[[1  3, 0, 1  2, 1  -1],[1  2, 1  2, 1  2, 1  2]]").unwrap();
 
-        let res = mat.sort_by_row(MatZq::norm_eucl_sqrd).unwrap();
+        let res = mat.sort_by_row(MatPolyOverZ::norm_eucl_sqrd).unwrap();
 
         assert_eq!(cmp, res);
     }
@@ -259,22 +244,20 @@ mod test_sort_by_length {
     /// Checks whether sorting by row length acc. to eucl. norm works correct for large entries
     #[test]
     fn row_norm_eucl_sqrd_large_entries() {
-        let mat = MatZq::from_str(&format!(
-            "[[{}, 0, 5],[{}, 2, 5],[0, 0, 0]] mod {}",
+        let mat = MatPolyOverZ::from_str(&format!(
+            "[[1  {}, 0, 1  5],[1  {}, 1  2, 1  5],[0, 0, 0]]",
             i64::MIN,
-            i64::MAX,
-            u64::MAX
+            i64::MAX
         ))
         .unwrap();
-        let cmp = MatZq::from_str(&format!(
-            "[[0, 0, 0],[{}, 0, 5],[{}, 2, 5]] mod {}",
+        let cmp = MatPolyOverZ::from_str(&format!(
+            "[[0, 0, 0],[1  {}, 1  2, 1  5],[1  {}, 0, 1  5]]",
             i64::MAX,
-            i64::MIN,
-            u64::MAX
+            i64::MIN
         ))
         .unwrap();
 
-        let res = mat.sort_by_row(MatZq::norm_eucl_sqrd).unwrap();
+        let res = mat.sort_by_row(MatPolyOverZ::norm_eucl_sqrd).unwrap();
 
         assert_eq!(cmp, res);
     }
@@ -282,22 +265,20 @@ mod test_sort_by_length {
     /// Checks whether sorting by row length acc. to infty norm works correct for large entries
     #[test]
     fn row_norm_infty_large_entries() {
-        let mat = MatZq::from_str(&format!(
-            "[[{}, 0, 5],[{}, 2, 5],[0, 0, 0]] mod {}",
+        let mat = MatPolyOverZ::from_str(&format!(
+            "[[1  {}, 0, 1  5],[1  {}, 1  2, 1  5],[0, 0, 0]]",
             i64::MIN,
-            i64::MAX,
-            u64::MAX
+            i64::MAX
         ))
         .unwrap();
-        let cmp = MatZq::from_str(&format!(
-            "[[0, 0, 0],[{}, 0, 5],[{}, 2, 5]] mod {}",
+        let cmp = MatPolyOverZ::from_str(&format!(
+            "[[0, 0, 0],[1  {}, 1  2, 1  5],[1  {}, 0, 1  5]]",
             i64::MAX,
-            i64::MIN,
-            u64::MAX
+            i64::MIN
         ))
         .unwrap();
 
-        let res = mat.sort_by_row(MatZq::norm_infty).unwrap();
+        let res = mat.sort_by_row(MatPolyOverZ::norm_infty).unwrap();
 
         assert_eq!(cmp, res);
     }
@@ -306,10 +287,16 @@ mod test_sort_by_length {
     /// for matrices with a few more entries
     #[test]
     fn many_rows() {
-        let mat = MatZq::from_str("[[3],[0],[-1],[-7],[2],[9],[4],[8],[6],[5]] mod 19").unwrap();
-        let cmp = MatZq::from_str("[[0],[-1],[2],[3],[4],[5],[6],[-7],[8],[9]] mod 19").unwrap();
+        let mat = MatPolyOverZ::from_str(
+            "[[1  3],[0],[1  -1],[1  -7],[1  2],[1  9],[1  4],[1  8],[1  6],[1  5]]",
+        )
+        .unwrap();
+        let cmp = MatPolyOverZ::from_str(
+            "[[0],[1  -1],[1  2],[1  3],[1  4],[1  5],[1  6],[1  -7],[1  8],[1  9]]",
+        )
+        .unwrap();
 
-        let res = mat.sort_by_row(MatZq::norm_eucl_sqrd).unwrap();
+        let res = mat.sort_by_row(MatPolyOverZ::norm_eucl_sqrd).unwrap();
 
         assert_eq!(cmp, res);
     }
@@ -317,7 +304,7 @@ mod test_sort_by_length {
     /// Checks whether an error is returned for sorting by rows if the `cond_func` returns an error
     #[test]
     fn row_error_cond_func() {
-        let mat = MatZq::from_str("[[1, 2],[3, 4]] mod 7").unwrap();
+        let mat = MatPolyOverZ::from_str("[[1  1, 1  2],[1  3, 1  4]]").unwrap();
 
         let res = mat.sort_by_row(failing_func);
 

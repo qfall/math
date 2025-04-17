@@ -12,10 +12,58 @@ use super::super::MatPolynomialRingZq;
 use crate::{
     error::MathError,
     macros::arithmetics::{
-        arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+        arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
+        arithmetic_trait_mixed_borrowed_owned,
     },
+    traits::CompareBase,
 };
-use std::ops::Add;
+use std::ops::{Add, AddAssign};
+
+impl AddAssign<&MatPolynomialRingZq> for MatPolynomialRingZq {
+    /// Computes the addition of `self` and `other` reusing
+    /// the memory of `self`.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to add to `self`
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 7").unwrap();
+    /// let mut a = MatPolynomialRingZq::identity(2, 2, &modulus);
+    /// let b = MatPolynomialRingZq::new(2, 2, &modulus);
+    ///
+    /// a += &b;
+    /// a += b;
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the matrix dimensions mismatch.
+    /// - if the moduli of the matrices mismatch.
+    fn add_assign(&mut self, other: &Self) {
+        if self.modulus != other.modulus {
+            panic!(
+                "Tried to add polynomial with modulus '{}' and polynomial with modulus '{}'.",
+                self.modulus, other.modulus
+            );
+        }
+
+        self.matrix += &other.matrix;
+
+        self.reduce();
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(
+    AddAssign,
+    add_assign,
+    MatPolynomialRingZq,
+    MatPolynomialRingZq
+);
 
 impl Add for &MatPolynomialRingZq {
     type Output = MatPolynomialRingZq;
@@ -78,17 +126,15 @@ impl MatPolynomialRingZq {
     ///
     /// let poly_ring_mat_3: MatPolynomialRingZq = poly_ring_mat_1.add_safe(&poly_ring_mat_2).unwrap();
     /// ```
+    ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
-    ///     both [`MatPolynomialRingZq`] mismatch.
+    ///   both [`MatPolynomialRingZq`] mismatch.
     /// - Returns a [`MathError`] of type [`MathError::MismatchingMatrixDimension`]
-    ///     if the dimensions of both [`MatPolynomialRingZq`] mismatch.
+    ///   if the dimensions of both [`MatPolynomialRingZq`] mismatch.
     pub fn add_safe(&self, other: &Self) -> Result<MatPolynomialRingZq, MathError> {
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to add polynomial with modulus '{}' and polynomial with modulus '{}'.",
-                self.modulus, other.modulus
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
         let matrix = self.matrix.add_safe(&other.matrix)?;
 
@@ -110,6 +156,93 @@ arithmetic_trait_mixed_borrowed_owned!(
     MatPolynomialRingZq,
     MatPolynomialRingZq
 );
+
+#[cfg(test)]
+mod test_add_assign {
+    use crate::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    use std::str::FromStr;
+
+    /// Ensure that `add_assign` works for small numbers.
+    #[test]
+    fn correct_small() {
+        let mut a = MatPolynomialRingZq::from_str("[[1  1, 0],[0, 1  1]] / 2  0 1 mod 7").unwrap();
+        let b =
+            MatPolynomialRingZq::from_str("[[1  4, 1  5],[1  -6, 2  6 1]] / 2  0 1 mod 7").unwrap();
+        let cmp = MatPolynomialRingZq::from_str("[[1  5, 1  5],[1  1, 0]] / 2  0 1 mod 7").unwrap();
+
+        a += b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `add_assign` works for large numbers.
+    #[test]
+    fn correct_large() {
+        let mut a = MatPolynomialRingZq::from_str(&format!(
+            "[[1  {}, 1  5],[1  {}, 1  -1]] / 2  0 1 mod {}",
+            i64::MAX,
+            i64::MIN,
+            u64::MAX
+        ))
+        .unwrap();
+        let b = MatPolynomialRingZq::from_str(&format!(
+            "[[1  {}, 1  -6],[1  6, 1  -1]] / 2  0 1 mod {}",
+            i64::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+        let cmp = MatPolynomialRingZq::from_str(&format!(
+            "[[1  {}, 1  -1],[1  {}, 1  -2]] / 2  0 1 mod {}",
+            2 * (i64::MAX as u64),
+            i64::MIN + 6,
+            u64::MAX
+        ))
+        .unwrap();
+
+        a += b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `add_assign` works for different matrix dimensions.
+    #[test]
+    fn matrix_dimensions() {
+        let modulus = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 7").unwrap();
+        let dimensions = [(3, 3), (5, 1), (1, 4)];
+
+        for (nr_rows, nr_cols) in dimensions {
+            let mut a = MatPolynomialRingZq::new(nr_rows, nr_cols, &modulus);
+            let b = MatPolynomialRingZq::identity(nr_rows, nr_cols, &modulus);
+
+            a += b;
+
+            assert_eq!(MatPolynomialRingZq::identity(nr_rows, nr_cols, &modulus), a);
+        }
+    }
+
+    /// Ensures that mismatching moduli will result in a panic.
+    #[test]
+    #[should_panic]
+    fn mismatching_moduli() {
+        let modulus_0 = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 7").unwrap();
+        let modulus_1 = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 7").unwrap();
+        let mut a = MatPolynomialRingZq::new(1, 1, &modulus_0);
+        let b = MatPolynomialRingZq::new(1, 1, &modulus_1);
+
+        a += b;
+    }
+
+    /// Ensure that `add_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let modulus = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 7").unwrap();
+        let mut a = MatPolynomialRingZq::new(2, 2, &modulus);
+        let b = MatPolynomialRingZq::new(2, 2, &modulus);
+
+        a += &b;
+        a += b;
+    }
+}
 
 #[cfg(test)]
 mod test_add {

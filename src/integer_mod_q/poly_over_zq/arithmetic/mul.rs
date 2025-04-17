@@ -14,6 +14,7 @@ use crate::{
     macros::arithmetics::{
         arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
     },
+    traits::CompareBase,
 };
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_mul;
 use std::{ops::Mul, str::FromStr};
@@ -70,14 +71,10 @@ impl PolyOverZq {
     /// ```
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
-    ///     both [`PolyOverZq`] mismatch.
+    ///   both [`PolyOverZq`] mismatch.
     pub fn mul_safe(&self, other: &Self) -> Result<PolyOverZq, MathError> {
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to multiply polynomial with modulus '{}' and polynomial with modulus '{}'.
-            If the modulus should be ignored please convert into a PolyOverZ beforehand.",
-                self.modulus, other.modulus
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
         let mut out = PolyOverZq::from_str(&format!("0 mod {}", self.modulus)).unwrap();
         unsafe {

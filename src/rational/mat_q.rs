@@ -44,7 +44,7 @@ mod vector;
 ///
 /// Attributes:
 /// - `matrix`: holds [FLINT](https://flintlib.org/)'s [struct](fmpq_mat_struct)
-///     of the [`Q`](crate::rational::Q) matrix
+///   of the [`Q`](crate::rational::Q) matrix
 ///
 /// # Examples
 /// ## Matrix usage

@@ -12,7 +12,7 @@ use super::MatQ;
 use crate::{
     integer::MatZ,
     macros::for_others::implement_trait_reverse,
-    traits::{MatrixDimensions, MatrixGetEntry},
+    traits::{CompareBase, MatrixDimensions, MatrixGetEntry},
 };
 use flint_sys::{
     fmpq_mat::{fmpq_mat_equal, fmpq_mat_set_fmpz_mat_div_fmpz},
@@ -122,6 +122,8 @@ impl MatQ {
 
 implement_trait_reverse!(PartialEq, eq, MatZ, MatQ, bool);
 
+impl CompareBase for MatQ {}
+
 /// Test that the [`PartialEq`] trait is correctly implemented.
 #[cfg(test)]
 mod test_partial_eq {
@@ -217,5 +219,22 @@ mod test_partial_eq_q_other {
         let z = MatZ::from_str(&format!("[[1,2],[3,{}]]", u64::MAX)).unwrap();
 
         assert!(q == z);
+    }
+}
+
+/// Test that the [`CompareBase`] trait uses the default implementation.
+#[cfg(test)]
+mod test_compare_base {
+    use crate::{rational::MatQ, traits::CompareBase};
+    use std::str::FromStr;
+
+    /// Ensures that the [`CompareBase`] trait uses the default implementation.
+    #[test]
+    fn uses_default_implementation() {
+        let one_1 = MatQ::from_str("[[2/3, 24, 47],[2, 24, 42]]").unwrap();
+        let one_2 = MatQ::from_str("[[2, 4, 42/9]]").unwrap();
+
+        assert!(one_1.compare_base(&one_2));
+        assert!(one_1.call_compare_base_error(&one_2).is_none());
     }
 }

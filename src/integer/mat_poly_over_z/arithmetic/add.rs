@@ -11,11 +11,50 @@
 use super::super::MatPolyOverZ;
 use crate::error::MathError;
 use crate::macros::arithmetics::{
-    arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+    arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
+    arithmetic_trait_mixed_borrowed_owned,
 };
 use crate::traits::MatrixDimensions;
 use flint_sys::fmpz_poly_mat::fmpz_poly_mat_add;
-use std::ops::Add;
+use std::ops::{Add, AddAssign};
+
+impl AddAssign<&MatPolyOverZ> for MatPolyOverZ {
+    /// Computes the addition of `self` and `other` reusing
+    /// the memory of `self`.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to add to `self`
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// let mut a = MatPolyOverZ::identity(2, 2);
+    /// let b = MatPolyOverZ::new(2, 2);
+    ///
+    /// a += &b;
+    /// a += b;
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the matrix dimensions mismatch.
+    fn add_assign(&mut self, other: &Self) {
+        if self.get_num_rows() != other.get_num_rows()
+            || self.get_num_columns() != other.get_num_columns()
+        {
+            panic!(
+                "Tried to add a '{}x{}' matrix and a '{}x{}' matrix.",
+                self.get_num_rows(),
+                self.get_num_columns(),
+                other.get_num_rows(),
+                other.get_num_columns()
+            );
+        }
+
+        unsafe { fmpz_poly_mat_add(&mut self.matrix, &self.matrix, &other.matrix) };
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(AddAssign, add_assign, MatPolyOverZ, MatPolyOverZ);
 
 impl Add for &MatPolyOverZ {
     type Output = MatPolyOverZ;
@@ -68,10 +107,11 @@ impl MatPolyOverZ {
     ///
     /// let c: MatPolyOverZ = a.add_safe(&b).unwrap();
     /// ```
-    /// # Errors
+    ///
+    /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`MathError::MismatchingMatrixDimension`] if the matrix dimensions
-    ///     mismatch.
+    ///   [`MathError::MismatchingMatrixDimension`] if the matrix dimensions
+    ///   mismatch.
     pub fn add_safe(&self, other: &Self) -> Result<MatPolyOverZ, MathError> {
         if self.get_num_rows() != other.get_num_rows()
             || self.get_num_columns() != other.get_num_columns()
@@ -94,6 +134,68 @@ impl MatPolyOverZ {
 
 arithmetic_trait_borrowed_to_owned!(Add, add, MatPolyOverZ, MatPolyOverZ, MatPolyOverZ);
 arithmetic_trait_mixed_borrowed_owned!(Add, add, MatPolyOverZ, MatPolyOverZ, MatPolyOverZ);
+
+#[cfg(test)]
+mod test_add_assign {
+    use crate::integer::MatPolyOverZ;
+    use std::str::FromStr;
+
+    /// Ensure that `add_assign` works for small numbers.
+    #[test]
+    fn correct_small() {
+        let mut a = MatPolyOverZ::identity(2, 2);
+        let b = MatPolyOverZ::from_str("[[1  4, 2  1 5],[1  -6, 1  -1]]").unwrap();
+        let cmp = MatPolyOverZ::from_str("[[1  5, 2  1 5],[1  -6, 0]]").unwrap();
+
+        a += b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `add_assign` works for large numbers.
+    #[test]
+    fn correct_large() {
+        let mut a =
+            MatPolyOverZ::from_str(&format!("[[1  {}, 2  0 2],[1  {}, 0]]", i64::MAX, i64::MIN))
+                .unwrap();
+        let b = MatPolyOverZ::from_str(&format!("[[1  {}, 1  1],[1  6, 1  3]]", i64::MAX)).unwrap();
+        let cmp = MatPolyOverZ::from_str(&format!(
+            "[[1  {}, 2  1 2],[1  {}, 1  3]]",
+            2 * (i64::MAX as u64),
+            i64::MIN + 6
+        ))
+        .unwrap();
+
+        a += b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `add_assign` works for different matrix dimensions.
+    #[test]
+    fn matrix_dimensions() {
+        let dimensions = [(3, 3), (5, 1), (1, 4)];
+
+        for (nr_rows, nr_cols) in dimensions {
+            let mut a = MatPolyOverZ::new(nr_rows, nr_cols);
+            let b = MatPolyOverZ::identity(nr_rows, nr_cols);
+
+            a += b;
+
+            assert_eq!(MatPolyOverZ::identity(nr_rows, nr_cols), a);
+        }
+    }
+
+    /// Ensure that `add_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let mut a = MatPolyOverZ::new(2, 2);
+        let b = MatPolyOverZ::new(2, 2);
+
+        a += &b;
+        a += b;
+    }
+}
 
 #[cfg(test)]
 mod test_add {

@@ -25,7 +25,7 @@ impl BitOr for &Z {
     ///
     /// Parameters:
     /// - `other`: specifies the value to apply the bit-wise logical `or` action to
-    ///     apart from `self`
+    ///   apart from `self`
     ///
     /// Returns a new instance of [`Z`] containing the number resulting
     /// from the bit-wise logical `or` operation performed on `self` and `other`.

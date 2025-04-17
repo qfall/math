@@ -117,7 +117,7 @@ impl MatZq {
 
         // Set all other entries in that column to `0` (gaussian elimination).
         for row_nr in (0..self.get_num_rows()).filter(|x| *x != row_nr) {
-            let old_row = self.get_row(row_nr).unwrap();
+            let old_row = unsafe { self.get_row_unchecked(row_nr) };
             let entry: Z = unsafe { old_row.get_entry_unchecked(0, column_nr) };
             if !entry.is_zero() {
                 let new_row = &old_row - entry * &row;
@@ -192,7 +192,7 @@ impl MatZq {
     ///
     /// # Panics ...
     /// - if the the number of elements in `solutions` is greater than the number
-    ///     of elements in `moduli`.
+    ///   of elements in `moduli`.
     fn crt_mat_zq(&self, mut solutions: Vec<MatZq>, mut moduli: Vec<(Z, u64)>) -> Option<MatZq> {
         while solutions.len() > 1 {
             // Compute Bézout’s identity: a x_1 + b x_2 = 1
@@ -350,7 +350,7 @@ impl MatZq {
                 &self.get_mod(),
             ));
             x_i = &matrix_base_inv * &b_i;
-            x = x + &x_i * &base.pow(i).unwrap();
+            x += &x_i * &base.pow(i).unwrap();
         }
 
         let mut out = MatZq::new(self.get_num_columns(), 1, self.get_mod());

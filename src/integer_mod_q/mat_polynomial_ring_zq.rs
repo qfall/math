@@ -15,6 +15,7 @@ use derive_more::Display;
 use serde::{Deserialize, Serialize};
 
 mod arithmetic;
+mod cmp;
 mod coefficient_embedding;
 mod concat;
 mod default;
@@ -24,6 +25,7 @@ mod properties;
 mod reduce;
 mod sample;
 mod set;
+mod sort;
 mod tensor;
 mod to_string;
 mod transpose;
