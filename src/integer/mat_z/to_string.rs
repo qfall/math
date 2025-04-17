@@ -98,7 +98,7 @@ impl MatZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`FromUtf8Error`] if the integer's byte sequence contains
-    ///     invalid UTF8-characters.
+    ///   invalid UTF8-characters.
     pub fn to_utf8(&self) -> Result<String, FromUtf8Error> {
         let mut byte_vectors: Vec<Vec<u8>> = vec![];
         let mut max_length = 0;

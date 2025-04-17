@@ -82,7 +82,7 @@ impl PolyOverQ {
     ///
     /// Parameters:
     /// - `nr_decimal_digits`: specifies the number of decimal digits
-    ///     that will be a part of the output [`String`]
+    ///   that will be a part of the output [`String`]
     ///
     /// Returns the polynomial in form of a [`String`]. For polynomial `2  1/2 5/3`
     /// the [`String`] looks like this `2  0.50 1.66` if `nr_decimal_digits = 2`.

@@ -73,7 +73,7 @@ impl Z {
     ///
     /// Parameters:
     /// - `b`: specifies any base between `2` and `62` which specifies
-    ///     the base of the returned [`String`].
+    ///   the base of the returned [`String`].
     ///
     /// Returns the integer in form of a [`String`] with regards to the base `b`
     /// or an error, if the base is out of bounds.
@@ -97,7 +97,7 @@ impl Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if the
-    ///     base is not between `2` and `62`.
+    ///   base is not between `2` and `62`.
     pub fn to_string_b(&self, base: i32) -> Result<String, MathError> {
         if !(2..=62).contains(&base) {
             return Err(MathError::OutOfBounds(
@@ -182,7 +182,7 @@ impl Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`FromUtf8Error`] if the integer's byte sequence contains
-    ///     invalid UTF8-characters.
+    ///   invalid UTF8-characters.
     pub fn to_utf8(&self) -> Result<String, FromUtf8Error> {
         String::from_utf8(self.to_bytes())
     }

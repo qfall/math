@@ -149,7 +149,7 @@ impl FromStr for PolynomialRingZq {
     ///
     /// Parameters:
     /// - `s`: the polynomial ring element of form:
-    ///     `"[#number of coefficients of element]⌴⌴[0th coefficient]⌴
+    ///   `"[#number of coefficients of element]⌴⌴[0th coefficient]⌴
     ///     [1st coefficient]⌴...⌴/⌴[#number of coefficients of polynomial modulus]⌴⌴
     ///     [0th coefficient]⌴[1st coefficient]⌴...⌴mod⌴[q]"`.
     ///
@@ -170,18 +170,18 @@ impl FromStr for PolynomialRingZq {
     /// ```
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`StringConversionError`](MathError::StringConversionError)
+    ///   [`StringConversionError`](MathError::StringConversionError)
     ///     - if the provided first half of the string was not formatted correctly to
-    ///         create a [`PolyOverZ`],
+    ///       create a [`PolyOverZ`],
     ///     - if the provided second half of the
-    ///         string was not formatted correctly to create a [`ModulusPolynomialRingZq`],
+    ///       string was not formatted correctly to create a [`ModulusPolynomialRingZq`],
     ///     - if the numbers of coefficients were smaller than the numbers provided
-    ///         at the start of the provided string,
+    ///       at the start of the provided string,
     ///     - if the provided values did not contain two whitespaces, or
     ///     - if the delimiter `/` and `mod` could not be found.
     /// - Returns a [`MathError`] of type
-    ///     [`InvalidModulus`](MathError::InvalidModulus)
-    ///     if the integer modulus `q` is smaller than `2`.
+    ///   [`InvalidModulus`](MathError::InvalidModulus)
+    ///   if the integer modulus `q` is smaller than `2`.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (poly_s, modulus) = match s.split_once("/") {
             Some((poly_s, modulus)) => (poly_s, modulus),

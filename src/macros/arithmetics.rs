@@ -13,11 +13,11 @@
 ///
 /// Parameters:
 /// - `trait`: the trait that is implemented
-///     (e.g. [`Add`](std::ops::Add),[`Sub`](std::ops::Sub), ...).
+///   (e.g. [`Add`](std::ops::Add),[`Sub`](std::ops::Sub), ...).
 /// - `trait_function`: the function the trait implements
-///     (e.g. add for [`Add`](std::ops::Add), ...).
+///   (e.g. add for [`Add`](std::ops::Add), ...).
 /// - `type`: the type the trait is implemented for
-///     (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q))
+///   (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q))
 /// - `other_type`: the type the second part of the computation.
 /// - `output_type`: the type of the result.
 ///
@@ -48,11 +48,11 @@ pub(crate) use arithmetic_trait_borrowed_to_owned;
 ///
 /// Parameters:
 /// - `trait`: the trait that is implemented
-///     (e.g. [`Add`](std::ops::Add),[`Sub`](std::ops::Sub), ...).
+///   (e.g. [`Add`](std::ops::Add),[`Sub`](std::ops::Sub), ...).
 /// - `trait_function`: the function the trait implements
-///     (e.g. add for [`Add`](std::ops::Add), ...).
+///   (e.g. add for [`Add`](std::ops::Add), ...).
 /// - `type`: the type the trait is implemented for
-///     (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q), ...).
+///   (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q), ...).
 /// - `other_type`: the type the second part of the computation.
 /// - `output_type`: the type of the result.
 ///
@@ -96,14 +96,14 @@ pub(crate) use arithmetic_trait_mixed_borrowed_owned;
 ///
 /// Parameters:
 /// - `trait`: the trait that is implemented
-///     (e.g. [`Add`](std::ops::Add),[`Sub`](std::ops::Sub), ...).
+///   (e.g. [`Add`](std::ops::Add),[`Sub`](std::ops::Sub), ...).
 /// - `trait_function`: the function the trait implements
-///     (e.g. add for [`Add`](std::ops::Add), ...).
+///   (e.g. add for [`Add`](std::ops::Add), ...).
 /// - `type`: the type the trait is implemented for.
 /// - `output_type`: one type that is part of the computation and it is the
-///     result type (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q), ...).
+///   result type (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q), ...).
 /// - `other_type*`: the other types that is part of the computation
-///     (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q), ...).
+///   (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q), ...).
 ///
 /// Returns the owned and borrowed Implementation code for the
 /// `*trait*` trait with the signatures:
@@ -164,11 +164,11 @@ pub(crate) use arithmetic_between_types;
 ///
 /// Parameters:
 /// - `trait`: the trait that is implemented
-///     (e.g. [`Add`](std::ops::Add),[`Sub`](std::ops::Sub), ...).
+///   (e.g. [`Add`](std::ops::Add),[`Sub`](std::ops::Sub), ...).
 /// - `trait_function`: the function the trait implements
-///     (e.g. add for [`Add`](std::ops::Add), ...).
+///   (e.g. add for [`Add`](std::ops::Add), ...).
 /// - `type`: the type the trait is implemented for
-///     (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q))
+///   (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q))
 /// - `other_type`: the type the second part of the computation.
 /// - `output_type`: the type of the result.
 ///
@@ -199,13 +199,13 @@ pub(crate) use arithmetic_trait_reverse;
 ///
 /// Parameters:
 /// - `trait`: the trait that is implemented
-///     (e.g. [`Add`](std::ops::Add),[`Sub`](std::ops::Sub), ...).
+///   (e.g. [`Add`](std::ops::Add),[`Sub`](std::ops::Sub), ...).
 /// - `trait_function`: the function the trait implements
-///     (e.g. add for [`Add`](std::ops::Add), ...).
+///   (e.g. add for [`Add`](std::ops::Add), ...).
 /// - `output_type`: one type that is part of the computation and it is the
-///     result type (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q), ...).
+///   result type (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q), ...).
 /// - `other_type*`: the other types that is part of the computation
-///     (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q), ...).
+///   (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q), ...).
 ///
 /// Returns the owned and borrowed Implementation code for the
 /// `*trait*` trait with the signatures:
@@ -267,11 +267,11 @@ pub(crate) use arithmetic_between_types_zq;
 ///
 /// Parameters:
 /// - `trait`: the trait that is implemented
-///     (e.g. [`Add`](std::ops::Add),[`Sub`](std::ops::Sub), ...).
+///   (e.g. [`Add`](std::ops::Add),[`Sub`](std::ops::Sub), ...).
 /// - `trait_function`: the function the trait implements
-///     (e.g. add for [`Add`](std::ops::Add), ...).
+///   (e.g. add for [`Add`](std::ops::Add), ...).
 /// - `type`: the type the trait is implemented for
-///     (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q))
+///   (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q))
 /// - `other_type`: the type the second part of the computation.
 ///
 /// Returns the owned Implementation code for the `*trait*`
@@ -298,14 +298,14 @@ pub(crate) use arithmetic_assign_trait_borrowed_to_owned;
 ///
 /// Parameters:
 /// - `trait`: the trait that is implemented
-///     (e.g. [`Add`](std::ops::Add),[`Sub`](std::ops::Sub), ...).
+///   (e.g. [`Add`](std::ops::Add),[`Sub`](std::ops::Sub), ...).
 /// - `trait_function`: the function the trait implements
-///     (e.g. add for [`Add`](std::ops::Add), ...).
+///   (e.g. add for [`Add`](std::ops::Add), ...).
 /// - `type`: the type the trait is implemented for
-///     (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q))
+///   (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q))
 /// - `transfer_type`: the type to convert `other_type` to before
-///     it's input to the `trait_function`
-///     (e.g. [`i64`] or [`u64`])
+///   it's input to the `trait_function`
+///   (e.g. [`i64`] or [`u64`])
 /// - `other_type`: the type the second part of the computation.
 ///
 /// Returns the Implementation code for the `*trait*`

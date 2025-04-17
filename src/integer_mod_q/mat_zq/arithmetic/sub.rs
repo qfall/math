@@ -14,7 +14,7 @@ use crate::integer::MatZ;
 use crate::macros::arithmetics::{
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
 };
-use crate::traits::MatrixDimensions;
+use crate::traits::{CompareBase, MatrixDimensions};
 use flint_sys::fmpz_mat::fmpz_mat_sub;
 use flint_sys::fmpz_mod_mat::{_fmpz_mod_mat_reduce, fmpz_mod_mat_sub};
 use std::ops::Sub;
@@ -127,17 +127,13 @@ impl MatZq {
     /// ```
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`MathError::MismatchingMatrixDimension`] if the matrix dimensions
-    ///     mismatch.
+    ///   [`MathError::MismatchingMatrixDimension`] if the matrix dimensions
+    ///   mismatch.
     /// - Returns a [`MathError`] of type
-    ///     [`MathError::MismatchingModulus`] if the moduli mismatch.
+    ///   [`MathError::MismatchingModulus`] if the moduli mismatch.
     pub fn sub_safe(&self, other: &Self) -> Result<MatZq, MathError> {
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to subtract matrices with moduli '{}' and '{}'.",
-                self.get_mod(),
-                other.get_mod()
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
         if self.get_num_rows() != other.get_num_rows()
             || self.get_num_columns() != other.get_num_columns()

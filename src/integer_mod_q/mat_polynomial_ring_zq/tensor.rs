@@ -12,7 +12,7 @@ use super::MatPolynomialRingZq;
 use crate::{
     error::MathError,
     integer::PolyOverZ,
-    traits::{MatrixDimensions, MatrixGetEntry, Tensor},
+    traits::{CompareBase, MatrixDimensions, MatrixGetEntry, Tensor},
 };
 use flint_sys::{fmpz_poly_mat::fmpz_poly_mat_entry, fq::fq_mul};
 
@@ -44,7 +44,7 @@ impl Tensor for MatPolynomialRingZq {
     ///
     /// # Panics ...
     /// - if the moduli of both matrices mismatch.
-    ///     Use [`tensor_product_safe`](crate::integer_mod_q::MatZq::tensor_product_safe) to get an error instead.
+    ///   Use [`tensor_product_safe`](crate::integer_mod_q::MatZq::tensor_product_safe) to get an error instead.
     fn tensor_product(&self, other: &Self) -> Self {
         self.tensor_product_safe(other).unwrap()
     }
@@ -78,15 +78,11 @@ impl MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`MismatchingModulus`](MathError::MismatchingModulus) if the
-    ///     moduli of the provided matrices mismatch.
+    ///   [`MismatchingModulus`](MathError::MismatchingModulus) if the
+    ///   moduli of the provided matrices mismatch.
     pub fn tensor_product_safe(&self, other: &Self) -> Result<Self, MathError> {
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to compute tensor product of matrices with moduli '{}' and '{}'.",
-                self.get_mod(),
-                other.get_mod()
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
 
         let mut out = MatPolynomialRingZq::new(
@@ -120,9 +116,9 @@ impl MatPolynomialRingZq {
 /// - `row_left`: defines the leftmost row of the set window
 /// - `column_upper`: defines the highest column of the set window
 /// - `scalar`: defines the value with which the part of the tensor product
-///     is calculated
+///   is calculated
 /// - `matrix`: the matrix with which the scalar is multiplied
-///     before setting the entries in `out`
+///   before setting the entries in `out`
 ///
 /// Implicitly sets the entries of the matrix according to the definition
 /// of the tensor product.
