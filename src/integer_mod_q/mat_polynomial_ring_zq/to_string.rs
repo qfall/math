@@ -40,8 +40,8 @@ mod test_to_string {
     use crate::integer_mod_q::MatPolynomialRingZq;
     use std::str::FromStr;
 
-    /// Most tests are omitted, since the [`Display`](std::fmt::Display) trait
-    /// is derived and therefor already tested.
+    // Most tests are omitted, since the [`Display`](std::fmt::Display) trait
+    // is derived and therefor already tested.
 
     /// Tests whether a roundtrip works correctly.
     #[test]

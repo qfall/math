@@ -88,7 +88,7 @@ impl Zq {
     ///
     /// # Errors and Failures
     /// - Returns a [`FromUtf8Error`] if the integer's byte sequence contains
-    ///     invalid UTF8-characters.
+    ///   valid UTF8-characters.
     pub fn to_utf8(&self) -> Result<String, FromUtf8Error> {
         String::from_utf8(
             self.get_representative_least_nonnegative_residue()

@@ -52,7 +52,7 @@ impl FromStr for PolyOverZ {
     /// - Returns a [`MathError`] of type [`MathError::StringConversionError`]
     ///     - if the provided string was not formatted correctly,
     ///     - if the number of coefficients was smaller than the number provided
-    ///         at the start of the provided string,
+    ///       at the start of the provided string,
     ///     - if the provided value did not contain two whitespaces, or
     ///     - if the provided string contains a `Null` Byte.
     fn from_str(s: &str) -> Result<Self, Self::Err> {

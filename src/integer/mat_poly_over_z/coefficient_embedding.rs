@@ -28,7 +28,7 @@ impl IntoCoefficientEmbedding<MatZ> for &MatPolyOverZ {
     ///
     /// Parameters:
     /// - `size`: determines the number of rows of the embedding. It has to be larger
-    ///     than the degree of the polynomial.
+    ///   than the degree of the polynomial.
     ///
     /// Returns a coefficient embedding as a matrix if `size` is large enough.
     ///
@@ -48,7 +48,7 @@ impl IntoCoefficientEmbedding<MatZ> for &MatPolyOverZ {
     ///
     /// # Panics ...
     /// - if `size` is not larger than the degree of the polynomial, i.e.
-    ///     not all coefficients can be embedded.
+    ///   not all coefficients can be embedded.
     fn into_coefficient_embedding(self, size: impl Into<i64>) -> MatZ {
         let size = size.into();
 

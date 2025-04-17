@@ -54,11 +54,9 @@ impl MatQ {
             let a_ii = unsafe { a.get_entry_unchecked(0, 0) };
             assert!(a_ii > Q::ZERO, "The matrix is not positive-definite.");
             let column_a_i = match i {
-                0 => a.get_column(0).unwrap(),
-                _ => MatQ::new(i, 1)
-                    .get_column(0)
-                    .unwrap()
-                    .concat_vertical(&a.get_column(0).unwrap())
+                0 => unsafe { a.get_column_unchecked(0) },
+                _ => unsafe { MatQ::new(i, 1).get_column_unchecked(0) }
+                    .concat_vertical(&unsafe { a.get_column_unchecked(0) })
                     .unwrap(),
             } * (1 / (a_ii.sqrt()));
             // in the previous line: sqrt panics if `a_ii` is negative, i.e. if an

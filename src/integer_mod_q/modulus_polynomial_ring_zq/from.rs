@@ -219,7 +219,7 @@ impl FromStr for ModulusPolynomialRingZq {
     ///
     /// Parameters:
     /// - `s`: has to be a valid string to create a [`PolyOverZq`].
-    ///     For further information see [`PolyOverZq::from_str`].
+    ///   For further information see [`PolyOverZq::from_str`].
     ///
     /// Note that the `[#number of coefficients]` and `[0th coefficient]`
     /// are divided by two spaces and the string for the polynomial is trimmed,
@@ -237,18 +237,18 @@ impl FromStr for ModulusPolynomialRingZq {
     /// ```
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`StringConversionError`](MathError::StringConversionError)
+    ///   [`StringConversionError`](MathError::StringConversionError)
     ///     - if the provided first half of the string was not formatted correctly to
-    ///         create a [`PolyOverZ`],
+    ///       create a [`PolyOverZ`],
     ///     - if the provided second half of the
-    ///         string was not formatted correctly to create a [`Modulus`],
+    ///       string was not formatted correctly to create a [`Modulus`],
     ///     - if the number of coefficients was smaller than the number provided
-    ///         at the start of the provided string,
+    ///       at the start of the provided string,
     ///     - if the provided value did not contain two whitespaces, or
     ///     - if the delimiter `mod` could not be found.
     ///     - For further information see [`PolyOverZq::from_str`].
     /// - Returns a [`MathError`] of type
-    ///     [`InvalidModulus`](MathError::InvalidModulus)
+    ///   [`InvalidModulus`](MathError::InvalidModulus)
     ///     - if `modulus` is smaller than `2`, or
     ///     - if the modulus polynomial is `0`.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -279,8 +279,8 @@ impl FromStr for ModulusPolynomialRingZq {
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type
-///     [`InvalidModulus`](MathError::InvalidModulus)
-///     if the modulus polynomial is `0`.
+///   [`InvalidModulus`](MathError::InvalidModulus)
+///   if the modulus polynomial is `0`.
 pub(crate) fn check_poly_mod(poly_zq: &PolyOverZq) -> Result<(), MathError> {
     if poly_zq == &PolyOverZq::from((0, &poly_zq.modulus)) {
         return Err(MathError::InvalidModulus(poly_zq.to_string()));

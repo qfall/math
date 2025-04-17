@@ -31,7 +31,7 @@ impl MatZq {
     /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
     /// - `center`: specifies the positions of the center with peak probability
     /// - `s`: specifies the Gaussian parameter, which is proportional
-    ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
+    ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a matrix with each entry sampled independently from the
     /// specified discrete Gaussian distribution or an error if `n <= 1` or `s <= 0`.
@@ -45,11 +45,11 @@ impl MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if `n <= 1` or `s <= 0` or `s * log_2(n) < 1` or `s * log_2(n) < 1`.
+    ///   if `n <= 1` or `s <= 0` or `s * log_2(n) < 1` or `s * log_2(n) < 1`.
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns or the modulus are not suited to create a matrix.
-    ///     For further information see [`MatZq::new`].
+    ///   For further information see [`MatZq::new`].
     /// - if the provided `modulus < 2`.
     pub fn sample_discrete_gauss(
         num_rows: impl TryInto<i64> + Display,
@@ -86,7 +86,7 @@ impl MatZq {
     /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
     /// - `center`: specifies the positions of the center with peak probability
     /// - `s`: specifies the Gaussian parameter, which is proportional
-    ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
+    ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a lattice vector sampled according to the discrete Gaussian distribution
     /// or an error if `n <= 1` or `s <= 0`, the number of rows of the `basis` and `center` differ,
@@ -103,17 +103,17 @@ impl MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if `n <= 1` or `s <= 0`.
+    ///   if `n <= 1` or `s <= 0`.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the number of rows of the `basis` and `center` differ.
+    ///   if the number of rows of the `basis` and `center` differ.
     /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
-    ///     if `center` is not a column vector.
+    ///   if `center` is not a column vector.
     ///
     /// This function implements SampleD according to:
     /// - \[1\] Gentry, Craig and Peikert, Chris and Vaikuntanathan, Vinod (2008).
-    ///     Trapdoors for hard lattices and new cryptographic constructions.
-    ///     In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
-    ///     <https://dl.acm.org/doi/pdf/10.1145/1374376.1374407>
+    ///   Trapdoors for hard lattices and new cryptographic constructions.
+    ///   In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
+    ///   <https://dl.acm.org/doi/pdf/10.1145/1374376.1374407>
     pub fn sample_d(
         basis: &MatZq,
         n: impl Into<Z>,
@@ -138,12 +138,12 @@ impl MatZq {
     ///
     /// Parameters:
     /// - `dimension`: specifies the number of rows and columns
-    ///     that the identity basis should have
+    ///   that the identity basis should have
     /// - `modulus`: specifies the modulus of the new matrix
     /// - `n`: specifies the range from which
-    ///     [`Zq::sample_discrete_gauss`](crate::integer_mod_q::Zq::sample_discrete_gauss) samples
+    ///   [`Zq::sample_discrete_gauss`](crate::integer_mod_q::Zq::sample_discrete_gauss) samples
     /// - `s`: specifies the Gaussian parameter, which is proportional
-    ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
+    ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a lattice vector sampled according to the discrete Gaussian distribution.
     /// The lattice specified as `Z^m` for `m = dimension` and its center fixed to `0^m`.
@@ -175,7 +175,7 @@ impl MatZq {
     /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
     /// - `center`: specifies the positions of the center with peak probability
     /// - `s`: specifies the Gaussian parameter, which is proportional
-    ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
+    ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a lattice vector sampled according to the discrete Gaussian distribution
     /// or an error if `n <= 1` or `s <= 0`, the number of rows of the `basis` and `center` differ,
@@ -193,20 +193,20 @@ impl MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if `n <= 1` or `s <= 0`.
+    ///   if `n <= 1` or `s <= 0`.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the number of rows of the `basis` and `center` differ.
+    ///   if the number of rows of the `basis` and `center` differ.
     /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
-    ///     if `center` is not a column vector.
+    ///   if `center` is not a column vector.
     ///
     /// # Panics ...
     /// - if the number of rows/columns of `basis_gso` and `basis` mismatch.
     ///
     /// This function implements SampleD according to:
     /// - \[1\] Gentry, Craig and Peikert, Chris and Vaikuntanathan, Vinod (2008).
-    ///     Trapdoors for hard lattices and new cryptographic constructions.
-    ///     In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
-    ///     <https://dl.acm.org/doi/pdf/10.1145/1374376.1374407>
+    ///   Trapdoors for hard lattices and new cryptographic constructions.
+    ///   In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
+    ///   <https://dl.acm.org/doi/pdf/10.1145/1374376.1374407>
     pub fn sample_d_precomputed_gso(
         basis: &MatZq,
         basis_gso: &MatQ,
