@@ -99,6 +99,7 @@ pub(crate) use arithmetic_trait_mixed_borrowed_owned;
 ///   (e.g. [`Add`](std::ops::Add),[`Sub`](std::ops::Sub), ...).
 /// - `trait_function`: the function the trait implements
 ///   (e.g. add for [`Add`](std::ops::Add), ...).
+/// - `type`: the type the trait is implemented for.
 /// - `output_type`: one type that is part of the computation and it is the
 ///   result type (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q), ...).
 /// - `other_type*`: the other types that is part of the computation

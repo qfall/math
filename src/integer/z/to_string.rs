@@ -311,9 +311,8 @@ mod test_to_bytes {
         let cmp_bytes: Vec<u8> = vec![255];
 
         let bytes = integer.to_bytes();
-        let integer = Z::from_bytes(&bytes);
+        let _integer = Z::from_bytes(&bytes);
 
-        println!("{}", integer);
         assert_eq!(cmp_bytes, bytes);
     }
 }
