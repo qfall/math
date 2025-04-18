@@ -121,7 +121,7 @@ impl MatZq {
     pub fn mul_scalar_safe(&self, scalar: &Zq) -> Result<Self, MathError> {
         if self.modulus != scalar.modulus {
             return Err(MathError::MismatchingModulus(format!(
-                "Tried to multiply scalar with modulus '{}' and matrices with modulus '{}'.",
+                "Tried to multiply scalar with modulus '{}' and matrix with modulus '{}'.",
                 self.get_mod(),
                 scalar.modulus
             )));
@@ -343,7 +343,7 @@ mod test_mul_zq {
         _ = &integer * mat_1;
     }
 
-    /// Checks if scalar multiplication panics if the moduli mismatch
+    /// Checks if scalar multiplication returns an error if the moduli mismatch
     #[test]
     fn different_moduli_error_safe() {
         let mat_1 = MatZq::from_str("[[42],[0],[2]] mod 61").unwrap();

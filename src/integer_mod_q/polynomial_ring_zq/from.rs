@@ -17,8 +17,43 @@ use crate::{
     error::{MathError, StringConversionError},
     integer::PolyOverZ,
     integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq},
+    macros::for_others::implement_for_owned,
 };
 use std::str::FromStr;
+
+impl From<&ModulusPolynomialRingZq> for PolynomialRingZq {
+    /// Creates a zero polynomial with a given [`ModulusPolynomialRingZq`].
+    ///
+    /// Parameters:
+    /// - `modulus`: the modulus that is applied to the polynomial ring element.
+    ///
+    /// Returns a new constant [`PolynomialRingZq`] with the specified [`ModulusPolynomialRingZq`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::PolynomialRingZq;
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let poly = PolyOverZq::from_str("4  -1 0 1 1 mod 17").unwrap();
+    /// let poly_ring = PolynomialRingZq::from((poly, &modulus));
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the moduli mismatch.
+    fn from(modulus: &ModulusPolynomialRingZq) -> Self {
+        let modulus = modulus.into();
+
+        Self {
+            poly: PolyOverZ::default(),
+            modulus,
+        }
+    }
+}
+
+implement_for_owned!(ModulusPolynomialRingZq, PolynomialRingZq, From);
 
 impl<Poly: Into<PolyOverZ>, Mod: Into<ModulusPolynomialRingZq>> From<(Poly, Mod)>
     for PolynomialRingZq
@@ -196,6 +231,36 @@ impl FromStr for PolynomialRingZq {
         let modulus = ModulusPolynomialRingZq::from_str(modulus)?;
 
         Ok(Self::from((&poly_over_z, &modulus)))
+    }
+}
+
+#[cfg(test)]
+mod test_from_modulus_polynomial_ring_zq {
+    use crate::{
+        integer::PolyOverZ,
+        integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq},
+    };
+    use std::str::FromStr;
+
+    /// Ensure that the default value is set correctly and that the modulus is correct
+    #[test]
+    fn is_reduced_large() {
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+
+        let poly_ring = PolynomialRingZq::from(&modulus);
+
+        assert_eq!(PolyOverZ::default(), poly_ring.poly);
+        assert_eq!(modulus, poly_ring.modulus);
+    }
+
+    /// Ensures that the function is still available for all values implementing
+    /// `Into<ModulusPolynomialRingZq>`.
+    #[test]
+    fn availability() {
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+
+        let _ = PolynomialRingZq::from(&modulus);
+        let _ = PolynomialRingZq::from(modulus);
     }
 }
 
