@@ -10,14 +10,15 @@
 
 use super::super::PolyOverZ;
 use crate::{
-    integer_mod_q::{PolynomialRingZq, PolyOverZq},
+    integer_mod_q::{PolyOverZq, PolynomialRingZq},
     macros::arithmetics::{
         arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
     },
     rational::PolyOverQ,
 };
 use flint_sys::{
-    fmpq_poly::fmpq_poly_sub, fmpz_mod_poly::fmpz_mod_poly_sub, fmpz_poly::fmpz_poly_sub, fq::fq_sub,
+    fmpq_poly::fmpq_poly_sub, fmpz_mod_poly::fmpz_mod_poly_sub, fmpz_poly::fmpz_poly_sub,
+    fq::fq_sub,
 };
 use std::ops::Sub;
 
@@ -340,4 +341,3 @@ mod test_mul_poly_over_q {
         _ = &z - poly.clone();
     }
 }
-  
