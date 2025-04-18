@@ -160,8 +160,8 @@ impl MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`MathError::MismatchingMatrixDimension`] if the dimensions of `self`
-    ///     and `other` do not match for multiplication.
+    ///   [`MathError::MismatchingMatrixDimension`] if the dimensions of `self`
+    ///   and `other` do not match for multiplication.
     pub fn sub_mat_poly_ring_zq_safe(
         &self,
         other: &MatPolynomialRingZq,
