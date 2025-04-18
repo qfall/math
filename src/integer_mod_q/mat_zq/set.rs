@@ -13,7 +13,9 @@ use crate::{
     integer::Z,
     integer_mod_q::{MatZq, Modulus, Zq},
     macros::for_others::implement_for_owned,
-    traits::{AsInteger, MatrixDimensions, MatrixSetEntry, MatrixSetSubmatrix, MatrixSwaps},
+    traits::{
+        AsInteger, CompareBase, MatrixDimensions, MatrixSetEntry, MatrixSetSubmatrix, MatrixSwaps,
+    },
     utils::index::{evaluate_index_for_vector, evaluate_indices_for_matrix},
 };
 use flint_sys::{
@@ -156,13 +158,8 @@ impl MatrixSetEntry<&Zq> for MatZq {
     ) -> Result<(), MathError> {
         let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
 
-        if self.modulus != value.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                " Modulus of matrix: '{}'. Modulus of value: '{}'.
-            If the modulus should be ignored please convert into a Z beforehand.",
-                self.get_mod(),
-                value.modulus
-            )));
+        if !self.compare_base(value) {
+            return Err(self.call_compare_base_error(value).unwrap());
         }
 
         unsafe { self.set_entry_unchecked(row_i64, column_i64, value) };

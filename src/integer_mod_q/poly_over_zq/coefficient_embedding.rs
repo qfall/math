@@ -102,7 +102,7 @@ impl FromCoefficientEmbedding<&MatZq> for PolyOverZq {
         let mut out = PolyOverZq::from(&embedding.get_mod());
         for i in 0..embedding.get_num_rows() {
             let entry: Z = unsafe { embedding.get_entry_unchecked(i, 0) };
-            unsafe { out.set_coeff_unchecked(i, &entry) }
+            unsafe { out.set_coeff_unchecked(i, entry) }
         }
         out
     }

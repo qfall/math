@@ -11,7 +11,7 @@
 use super::MatPolynomialRingZq;
 use crate::integer_mod_q::PolynomialRingZq;
 use crate::macros::for_others::implement_for_owned;
-use crate::traits::{MatrixSetSubmatrix, MatrixSwaps};
+use crate::traits::{CompareBase, MatrixSetSubmatrix, MatrixSwaps};
 use crate::utils::index::evaluate_indices_for_matrix;
 use crate::{error::MathError, integer::PolyOverZ, traits::MatrixSetEntry};
 use flint_sys::fmpz_poly_mat::{
@@ -156,12 +156,8 @@ impl MatrixSetEntry<&PolynomialRingZq> for MatPolynomialRingZq {
         column: impl TryInto<i64> + Display,
         value: &PolynomialRingZq,
     ) -> Result<(), MathError> {
-        if self.modulus != value.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                " Modulus of matrix: '{}'. Modulus of value: '{}'.
-                If the modulus should be ignored please convert into a Z beforehand.",
-                self.modulus, value.modulus
-            )));
+        if !self.compare_base(value) {
+            return Err(self.call_compare_base_error(value).unwrap());
         }
 
         let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;

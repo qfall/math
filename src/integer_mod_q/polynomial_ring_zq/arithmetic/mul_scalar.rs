@@ -17,6 +17,7 @@ use crate::macros::arithmetics::{
     arithmetic_trait_reverse,
 };
 use crate::macros::for_others::implement_for_others;
+use crate::traits::CompareBase;
 use std::ops::Mul;
 
 impl Mul<&Z> for &PolynomialRingZq {
@@ -120,12 +121,8 @@ impl PolynomialRingZq {
     /// - Returns a [`MathError`] of type
     ///   [`MathError::MismatchingModulus`] if the moduli mismatch.
     pub fn mul_scalar_zq_safe(&self, scalar: &Zq) -> Result<Self, MathError> {
-        if self.modulus.get_q() != scalar.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to multiply two types with moduli '{}' and '{}'.",
-                self.modulus.get_q(),
-                scalar.get_mod()
-            )));
+        if !self.compare_base(scalar) {
+            return Err(self.call_compare_base_error(scalar).unwrap());
         }
 
         let mut out = PolynomialRingZq::from(&self.modulus);

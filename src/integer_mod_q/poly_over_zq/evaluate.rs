@@ -12,8 +12,11 @@
 
 use super::PolyOverZq;
 use crate::{
-    error::MathError, integer::Z, integer_mod_q::Zq, macros::for_others::implement_for_owned,
-    traits::Evaluate,
+    error::MathError,
+    integer::Z,
+    integer_mod_q::Zq,
+    macros::for_others::implement_for_owned,
+    traits::{CompareBase, Evaluate},
 };
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_evaluate_fmpz;
 
@@ -81,11 +84,8 @@ impl PolyOverZq {
     /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`]
     ///   if the moduli of the polynomial and the input mismatch.
     pub fn evaluate_safe(&self, value: &Zq) -> Result<Zq, MathError> {
-        if self.modulus != value.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                " The provided moduli are {} and {}",
-                self.modulus, value.modulus
-            )));
+        if !self.compare_base(value) {
+            return Err(self.call_compare_base_error(value).unwrap());
         }
         Ok(self.evaluate(&value.value))
     }

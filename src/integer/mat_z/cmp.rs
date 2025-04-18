@@ -9,7 +9,7 @@
 //! This module contains implementations for comparison of [`MatZ`].
 
 use super::MatZ;
-use crate::traits::CompareBase;
+use crate::{integer::Z, macros::compare_base::compare_base_default, traits::CompareBase};
 use flint_sys::fmpz_mat::fmpz_mat_equal;
 
 impl PartialEq for MatZ {
@@ -43,7 +43,8 @@ impl PartialEq for MatZ {
     }
 }
 
-impl CompareBase for MatZ {}
+compare_base_default!(MatZ for MatZ);
+impl<Integer: Into<Z>> CompareBase<Integer> for MatZ {}
 
 // With the [`Eq`] trait, `a == a` is always true.
 // This is not guaranteed by the [`PartialEq`] trait.

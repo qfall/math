@@ -63,7 +63,7 @@ impl PolyOverZq {
 
         for index in 0..=max_degree {
             let sample = uis.sample();
-            unsafe { poly_zq.set_coeff_unchecked(index, &sample) };
+            unsafe { poly_zq.set_coeff_unchecked(index, sample) };
         }
         Ok(poly_zq)
     }

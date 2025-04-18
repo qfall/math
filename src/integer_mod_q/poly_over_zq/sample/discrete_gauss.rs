@@ -69,7 +69,7 @@ impl PolyOverZq {
 
         for index in 0..=max_degree {
             let sample = dgis.sample_z();
-            unsafe { poly.set_coeff_unchecked(index, &sample) };
+            unsafe { poly.set_coeff_unchecked(index, sample) };
         }
         Ok(poly)
     }
