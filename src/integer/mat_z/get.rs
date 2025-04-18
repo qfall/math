@@ -10,16 +10,14 @@
 
 use super::MatZ;
 use crate::{
-    error::MathError,
     integer::Z,
     traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix},
-    utils::index::evaluate_indices_for_matrix,
 };
 use flint_sys::{
     fmpz::{fmpz, fmpz_init_set},
     fmpz_mat::{fmpz_mat_entry, fmpz_mat_init_set, fmpz_mat_window_clear, fmpz_mat_window_init},
 };
-use std::{fmt::Display, mem::MaybeUninit};
+use std::mem::MaybeUninit;
 
 impl MatrixDimensions for MatZ {
     /// Returns the number of rows of the matrix as a [`i64`].
@@ -52,49 +50,6 @@ impl MatrixDimensions for MatZ {
 }
 
 impl MatrixGetEntry<Z> for MatZ {
-    /// Outputs the [`Z`] value of a specific matrix entry.
-    ///
-    /// Parameters:
-    /// - `row`: specifies the row in which the entry is located
-    /// - `column`: specifies the column in which the entry is located
-    ///
-    /// Negative indices can be used to index from the back, e.g., `-1` for
-    /// the last element.
-    ///
-    /// Returns the [`Z`] value of the matrix at the position of the given
-    /// row and column or an error if the number of rows or columns is
-    /// greater than the matrix.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer::{MatZ, Z};
-    /// use qfall_math::traits::MatrixGetEntry;
-    /// use std::str::FromStr;
-    ///
-    /// let matrix = MatZ::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]]").unwrap();
-    ///
-    /// assert_eq!(matrix.get_entry(0, 2).unwrap(), Z::from(3));
-    /// assert_eq!(matrix.get_entry(2, 1).unwrap(), Z::from(8));
-    /// assert_eq!(matrix.get_entry(-1, -2).unwrap(), Z::from(8));
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///   if `row` or `column` are greater than the matrix size.
-    fn get_entry(
-        &self,
-        row: impl TryInto<i64> + Display,
-        column: impl TryInto<i64> + Display,
-    ) -> Result<Z, MathError> {
-        let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
-
-        // since `self.matrix` is a correct fmpz matrix and both row and column
-        // are previously checked to be inside of the matrix, no errors
-        // appear inside of `unsafe` and `fmpz_init_set` can successfully clone the
-        // entry of the matrix. Therefore no memory leaks can appear.
-        unsafe { Ok(self.get_entry_unchecked(row_i64, column_i64)) }
-    }
-
     /// Outputs the [`Z`] value of a specific matrix entry without checking
     /// whether it's part of the matrix.
     ///

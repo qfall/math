@@ -147,7 +147,7 @@ pub trait MatrixDimensions {
 /// Is implemented by matrices to get entries.
 pub trait MatrixGetEntry<T>
 where
-    Self: MatrixDimensions,
+    Self: MatrixDimensions + Sized,
     T: std::clone::Clone,
 {
     /// Returns the value of a specific matrix entry.
@@ -156,14 +156,25 @@ where
     /// - `row`: specifies the row in which the entry is located.
     /// - `column`: specifies the column in which the entry is located.
     ///
-    /// Returns the value of the matrix at the position of the given
-    /// row and column or an error if the number of rows or columns is
-    /// greater than the matrix or negative.
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
+    /// Errors can occur if the provided indices are not within the dimensions of the provided matrices,
+    /// the bases of the matrix and value are not compatible, e.g. different modulus.
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    ///   if `row` or `column` do not define an entry in the mtrix
+    /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`]
+    ///   if the moduli are different.
     fn get_entry(
         &self,
         row: impl TryInto<i64> + Display,
         column: impl TryInto<i64> + Display,
-    ) -> Result<T, MathError>;
+    ) -> Result<T, MathError> {
+        let (row, column) = evaluate_indices_for_matrix(self, row, column)?;
+        Ok(unsafe { self.get_entry_unchecked(row, column) })
+    }
 
     /// Returns the value of a specific matrix entry
     /// without performing any checks, e.g. checking whether the entry is
@@ -492,13 +503,22 @@ where
 {
     /// Sets the value of a specific matrix entry according to a given value.
     ///
-    /// Returns an error, if the number of rows or columns is
-    /// greater than the matrix or negative.
-    ///
     /// Parameters:
     /// - `row`: specifies the row in which the entry is located.
     /// - `column`: specifies the column in which the entry is located.
     /// - `value`: specifies the value to which the entry is set.
+    ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element, but after conversion they must be within the matrix dimensions.
+    ///
+    /// Errors can occur if the provided indices are not within the dimensions of the provided matrices,
+    /// the bases of the matrix and value are not compatible, e.g. different modulus.
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    ///   if `row` or `column` do not define an entry in the mtrix
+    /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`]
+    ///   if the moduli are different.
     fn set_entry(
         &mut self,
         row: impl TryInto<i64> + Display,
@@ -543,6 +563,9 @@ where
     /// - `other`: specifies the matrix providing the row replacing the row in `self`
     /// - `row_1`: specifies the row of `other` providing
     ///   the values replacing the original row in `self`
+    ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element, but after conversion they must be within the matrix dimensions.
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of its matrix
@@ -617,6 +640,9 @@ where
     /// - `other`: specifies the matrix providing the column replacing the column in `self`
     /// - `col_1`: specifies the column of `other` providing
     ///   the values replacing the original column in `self`
+    ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element, but after conversion they must be within the matrix dimensions.
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of its matrix
