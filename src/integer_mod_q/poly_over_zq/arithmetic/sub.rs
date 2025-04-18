@@ -90,6 +90,9 @@ impl Sub<&PolyOverZ> for &PolyOverZq {
     }
 }
 
+arithmetic_trait_borrowed_to_owned!(Sub, sub, PolyOverZq, PolyOverZ, PolyOverZq);
+arithmetic_trait_mixed_borrowed_owned!(Sub, sub, PolyOverZq, PolyOverZ, PolyOverZq);
+
 impl Sub<&PolynomialRingZq> for &PolyOverZq {
     type Output = PolynomialRingZq;
     /// Implements the [`Sub`] trait for [`PolyOverZq`] and [`PolynomialRingZq`].
