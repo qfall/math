@@ -11,8 +11,7 @@
 use super::MatPolynomialRingZq;
 use crate::integer_mod_q::PolynomialRingZq;
 use crate::macros::for_others::implement_for_owned;
-use crate::traits::{CompareBase, MatrixSetSubmatrix, MatrixSwaps};
-use crate::utils::index::evaluate_indices_for_matrix;
+use crate::traits::{MatrixSetSubmatrix, MatrixSwaps};
 use crate::{error::MathError, integer::PolyOverZ, traits::MatrixSetEntry};
 use flint_sys::fmpz_poly_mat::{
     fmpz_poly_mat_set, fmpz_poly_mat_window_clear, fmpz_poly_mat_window_init,
@@ -112,61 +111,6 @@ impl MatrixSetEntry<&PolyOverZ> for MatPolynomialRingZq {
 }
 
 impl MatrixSetEntry<&PolynomialRingZq> for MatPolynomialRingZq {
-    /// Sets the value of a specific matrix entry according to a given `value` of type [`PolynomialRingZq`].
-    ///
-    /// Parameters:
-    /// - `row`: specifies the row in which the entry is located
-    /// - `column`: specifies the column in which the entry is located
-    /// - `value`: specifies the value to which the entry is set
-    ///
-    /// Negative indices can be used to index from the back, e.g., `-1` for
-    /// the last element.
-    ///
-    /// Returns an empty `Ok` if the action could be performed successfully.
-    /// Otherwise, a [`MathError`] is returned if the specified entry is
-    /// not part of the matrix or the moduli are different.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq, PolynomialRingZq};
-    /// use qfall_math::integer::{MatPolyOverZ, PolyOverZ};
-    /// use crate::qfall_math::traits::*;
-    /// use std::str::FromStr;
-    ///
-    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-    /// let poly_mat = MatPolyOverZ::from_str("[[0, 1  42],[0, 2  1 2]]").unwrap();
-    /// let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
-    /// let value = PolynomialRingZq::from((&PolyOverZ::default(), &modulus));
-    ///
-    /// poly_ring_mat.set_entry(0, 1, &value).unwrap();
-    /// poly_ring_mat.set_entry(-1, -1, &value).unwrap();
-    ///
-    /// let mat_cmp = MatPolynomialRingZq::from((&MatPolyOverZ::new(2, 2), &modulus));
-    /// assert_eq!(poly_ring_mat, mat_cmp);
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///   if `row` or `column` are greater than the matrix size.
-    /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`]
-    ///   if the moduli are different.
-    fn set_entry(
-        &mut self,
-        row: impl TryInto<i64> + Display,
-        column: impl TryInto<i64> + Display,
-        value: &PolynomialRingZq,
-    ) -> Result<(), MathError> {
-        if !self.compare_base(value) {
-            return Err(self.call_compare_base_error(value).unwrap());
-        }
-
-        let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
-
-        unsafe { self.set_entry_unchecked(row_i64, column_i64, value) };
-
-        Ok(())
-    }
-
     /// Sets the value of a specific matrix entry according to a given `value` of type [`PolynomialRingZq`]
     /// without checking whether the coordinate is part of the matrix or if the moduli match.
     ///

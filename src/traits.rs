@@ -486,7 +486,10 @@ where
 }
 
 /// Is implemented by matrices to set entries.
-pub trait MatrixSetEntry<T> {
+pub trait MatrixSetEntry<T>
+where
+    Self: CompareBase<T> + MatrixDimensions + Sized,
+{
     /// Sets the value of a specific matrix entry according to a given value.
     ///
     /// Returns an error, if the number of rows or columns is
@@ -501,7 +504,16 @@ pub trait MatrixSetEntry<T> {
         row: impl TryInto<i64> + Display,
         column: impl TryInto<i64> + Display,
         value: T,
-    ) -> Result<(), MathError>;
+    ) -> Result<(), MathError> {
+        if !self.compare_base(&value) {
+            return Err(self.call_compare_base_error(&value).unwrap());
+        }
+        let (row, column) = evaluate_indices_for_matrix(self, row, column)?;
+        unsafe {
+            self.set_entry_unchecked(row, column, value);
+        }
+        Ok(())
+    }
 
     /// Sets the value of a specific matrix entry according to a given value
     /// without performing any checks, e.g. checking whether the entry is
