@@ -9,7 +9,9 @@
 //! Implementations to manipulate a [`PolynomialRingZq`] element.
 
 use super::PolynomialRingZq;
-use crate::{integer::Z, traits::SetCoefficient};
+use crate::{
+    integer::Z, integer_mod_q::Zq, macros::for_others::implement_for_owned, traits::SetCoefficient,
+};
 use flint_sys::fmpz_poly::fmpz_poly_set_coeff_fmpz;
 
 impl<Integer: Into<Z>> SetCoefficient<Integer> for PolynomialRingZq {
@@ -52,6 +54,14 @@ impl<Integer: Into<Z>> SetCoefficient<Integer> for PolynomialRingZq {
         self.reduce();
     }
 }
+
+impl SetCoefficient<&Zq> for PolynomialRingZq {
+    unsafe fn set_coeff_unchecked(&mut self, index: i64, value: &Zq) {
+        unsafe { self.set_coeff_unchecked(index, &value.value) };
+    }
+}
+
+implement_for_owned!(Zq, PolynomialRingZq, SetCoefficient);
 
 #[cfg(test)]
 mod test_set_coeff {
