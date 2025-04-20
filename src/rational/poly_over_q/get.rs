@@ -20,7 +20,7 @@ impl GetCoefficient<Q> for PolyOverQ {
     /// Parameters:
     /// - `index`: the index of the coefficient to get (has to be positive)
     ///
-    /// Returns the coefficient as a [`Q`], or a [`MathError`] if the provided index
+    /// Returns the coefficient as a [`Q`], or a [`MathError`](crate::error::MathError) if the provided index
     /// is negative and therefore invalid, or it does not fit into an [`i64`].
     ///
     /// # Examples

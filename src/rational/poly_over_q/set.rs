@@ -23,7 +23,7 @@ impl<Rational: Into<Q>> SetCoefficient<Rational> for PolyOverQ {
     /// - `value`: the new value the index should have
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
-    /// Otherwise, a [`MathError`] is returned if either the index is negative
+    /// Otherwise, a [`MathError`](crate::error::MathError) is returned if either the index is negative
     /// or it does not fit into an [`i64`].
     ///
     /// # Examples

@@ -20,7 +20,7 @@ impl GetCoefficient<Z> for PolyOverZ {
     /// Parameters:
     /// - `index`: the index of the coefficient to get (has to be positive)
     ///
-    /// Returns the coefficient as a [`Z`], or a [`MathError`] if the provided index
+    /// Returns the coefficient as a [`Z`], or a [`MathError`](crate::error::MathError) if the provided index
     /// is negative and therefore invalid, or it does not fit into an [`i64`].
     ///
     /// # Examples
