@@ -24,10 +24,6 @@ impl<Integer: Into<Z>> SetCoefficient<Integer> for PolynomialRingZq {
     /// - `index`: the index of the coefficient to set (has to be positive)
     /// - `value`: the new value the index should have
     ///
-    /// Returns an empty `Ok` if the action could be performed successfully.
-    /// Otherwise, a [`MathError`] is returned if either the index is negative
-    /// or it does not fit into an [`i64`].
-    ///
     /// # Examples
     /// ```
     /// use crate::qfall_math::traits::SetCoefficient;
@@ -40,11 +36,13 @@ impl<Integer: Into<Z>> SetCoefficient<Integer> for PolynomialRingZq {
     /// let mut poly_ring = PolynomialRingZq::from((&poly, &modulus));
     ///
     /// poly_ring.set_coeff(2, 16).unwrap();
+    /// unsafe{ poly_ring.set_coeff_unchecked(5, 5) };
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    ///   either the index is negative or it does not fit into an [`i64`].
+    /// # Safety
+    /// To use this function safely, make sure that the selected index
+    /// is greater or equal than `0` and that the provided value has
+    /// the same base so that they have a matching base.
     unsafe fn set_coeff_unchecked(&mut self, index: i64, value: Integer) {
         let value = value.into();
 
@@ -56,6 +54,38 @@ impl<Integer: Into<Z>> SetCoefficient<Integer> for PolynomialRingZq {
 }
 
 impl SetCoefficient<&Zq> for PolynomialRingZq {
+    /// Sets the coefficient of a [`PolynomialRingZq`] element.
+    /// We advise to use small coefficients, since already 2^32 coefficients take space
+    /// of roughly 34 GB. If not careful, be prepared that memory problems can occur, if
+    /// the index is very high.
+    ///
+    /// This function does not check if the modulus of the polynomial and the value match.
+    ///
+    /// Parameters:
+    /// - `index`: the index of the coefficient to set (has to be positive)
+    /// - `value`: the new value the index should have
+    ///
+    /// # Examples
+    /// ```
+    /// use crate::qfall_math::traits::SetCoefficient;
+    /// use qfall_math::integer::PolyOverZ;
+    /// use qfall_math::integer_mod_q::{PolynomialRingZq, ModulusPolynomialRingZq};
+    /// use qfall_math::integer_mod_q::Zq;
+    /// use std::str::FromStr;    
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let poly = PolyOverZ::from_str("3  0 1 1").unwrap();
+    /// let mut poly_ring = PolynomialRingZq::from((&poly, &modulus));
+    /// let value = Zq::from((1000, 17));
+    ///
+    /// poly_ring.set_coeff(2, &value).unwrap();
+    /// unsafe{ poly_ring.set_coeff_unchecked(5, &value) };
+    /// ```
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected index
+    /// is greater or equal than `0` and that the provided value has
+    /// the same base so that they have a matching base.
     unsafe fn set_coeff_unchecked(&mut self, index: i64, value: &Zq) {
         unsafe { self.set_coeff_unchecked(index, &value.value) };
     }
@@ -67,7 +97,7 @@ implement_for_owned!(Zq, PolynomialRingZq, SetCoefficient);
 mod test_set_coeff {
     use crate::{
         integer::{PolyOverZ, Z},
-        integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq},
+        integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq, Zq},
         traits::SetCoefficient,
     };
     use std::str::FromStr;
@@ -89,6 +119,7 @@ mod test_set_coeff {
         poly_ring.set_coeff(1, 3i8).unwrap();
         poly_ring.set_coeff(1, Z::from(3)).unwrap();
         poly_ring.set_coeff(1, &Z::from(3)).unwrap();
+        poly_ring.set_coeff(1, &Zq::from((3, 17))).unwrap();
     }
 
     /// Ensure that large coefficients work.
@@ -169,5 +200,16 @@ mod test_set_coeff {
         assert!(poly_ring.set_coeff(i32::MIN, 2).is_err());
         assert!(poly_ring.set_coeff(i16::MIN, 2).is_err());
         assert!(poly_ring.set_coeff(i8::MIN, 2).is_err());
+    }
+
+    /// Ensure that a different base returns an error.
+    #[test]
+    fn different_base() {
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        let poly = PolyOverZ::from_str("3  0 1 1").unwrap();
+        let mut poly_ring = PolynomialRingZq::from((&poly, &modulus));
+        let value = Zq::from((13, 18));
+
+        assert!(poly_ring.set_coeff(1, &value).is_err());
     }
 }

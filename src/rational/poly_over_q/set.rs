@@ -37,11 +37,13 @@ impl<Rational: Into<Q>> SetCoefficient<Rational> for PolyOverQ {
     /// let value = Q::from((3, 17));
     ///
     /// assert!(poly.set_coeff(4, &value).is_ok());
+    /// unsafe{ poly.set_coeff_unchecked(5, 3.5_f64) };
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    ///   either the index is negative or it does not fit into an [`i64`].
+    /// # Safety
+    /// To use this function safely, make sure that the selected index
+    /// is greater or equal than `0` and that the provided value has
+    /// the same base so that they have a matching base.
     unsafe fn set_coeff_unchecked(&mut self, index: i64, value: Rational) {
         let value = value.into();
 
