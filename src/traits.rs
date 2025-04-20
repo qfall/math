@@ -72,7 +72,8 @@ pub trait GetCoefficient<T> {
     ///   [`OutOfBounds`](MathError::OutOfBounds) if either the index is negative
     ///   or does not fit into an [`i64`].
     /// - Returns a [`MathError`] of type
-    ///   [`MismatchingModulus`](MathError::MismatchingModulus) if the
+    ///   [`MismatchingModulus`](MathError::MismatchingModulus) if the base types are
+    ///   not compatible. This can only happen if the base types themselves can mismatch.
     fn get_coeff(&self, index: impl TryInto<i64> + Display) -> Result<T, MathError> {
         let index = evaluate_index(index)?;
         Ok(unsafe { self.get_coeff_unchecked(index) })
