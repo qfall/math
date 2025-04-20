@@ -258,25 +258,59 @@ mod test_partial_eq {
 /// Test that the [`CompareBase`] trait uses an actual implementation.
 #[cfg(test)]
 mod test_compare_base {
-    use crate::{integer_mod_q::PolyOverZq, traits::CompareBase};
+    use crate::{
+        integer::{PolyOverZ, Z},
+        integer_mod_q::{PolyOverZq, Zq},
+        traits::CompareBase,
+    };
     use std::str::FromStr;
 
-    /// Ensures that the [`CompareBase`] trait uses an actual implementation.
+    /// Ensures that the [`CompareBase`] is available for all types it would be checked against
+    /// where no comparison is needed
     #[test]
-    fn different_base() {
-        let p1 = PolyOverZq::from_str("2  24 1 mod 17").unwrap();
-        let p2 = PolyOverZq::from_str("2  24 1 mod 19").unwrap();
+    fn availability_without_comparisons() {
+        let one_1 = PolyOverZq::from(17);
 
-        assert!(!p1.compare_base(&p2));
-        assert!(p1.call_compare_base_error(&p2).is_some())
+        assert!(one_1.compare_base(&Z::ONE));
+        assert!(one_1.compare_base(&PolyOverZ::from_str("1  3").unwrap()));
+        assert!(one_1.compare_base(&0_i8));
+        assert!(one_1.compare_base(&0_i16));
+        assert!(one_1.compare_base(&0_i32));
+        assert!(one_1.compare_base(&0_i64));
+        assert!(one_1.compare_base(&0_u8));
+        assert!(one_1.compare_base(&0_u16));
+        assert!(one_1.compare_base(&0_u32));
+        assert!(one_1.compare_base(&0_u64));
+
+        assert!(one_1.call_compare_base_error(&Z::ONE).is_none());
+        assert!(one_1
+            .call_compare_base_error(&PolyOverZ::from_str("1  3").unwrap())
+            .is_none());
+        assert!(one_1.call_compare_base_error(&0_i8).is_none());
+        assert!(one_1.call_compare_base_error(&0_i16).is_none());
+        assert!(one_1.call_compare_base_error(&0_i32).is_none());
+        assert!(one_1.call_compare_base_error(&0_i64).is_none());
+        assert!(one_1.call_compare_base_error(&0_u8).is_none());
+        assert!(one_1.call_compare_base_error(&0_u16).is_none());
+        assert!(one_1.call_compare_base_error(&0_u32).is_none());
+        assert!(one_1.call_compare_base_error(&0_u64).is_none());
     }
 
-    /// Ensures that the same base return `true`.
+    /// Ensures that the [`CompareBase`] is available for all types it would be checked against
+    /// where comparison is needed
     #[test]
-    fn same_base() {
-        let p1 = PolyOverZq::from_str("2  24 1 mod 17").unwrap();
-        let p2 = PolyOverZq::from_str("2  17 1 mod 17").unwrap();
+    fn availability_with_comparisons() {
+        let one_1 = PolyOverZq::from(17);
 
-        assert!(p1.compare_base(&p2));
+        assert!(one_1.compare_base(&one_1));
+        assert!(one_1.compare_base(&Zq::from((3, 17))));
+        assert!(!one_1.compare_base(&Zq::from((3, 18))));
+        assert!(one_1.compare_base(&PolyOverZq::from_str("1  3 mod 17").unwrap()));
+        assert!(!one_1.compare_base(&PolyOverZq::from_str("1  3 mod 18").unwrap()));
+
+        assert!(one_1.call_compare_base_error(&Zq::from((3, 18))).is_some());
+        assert!(one_1
+            .call_compare_base_error(&PolyOverZq::from_str("1  3 mod 18").unwrap())
+            .is_some());
     }
 }

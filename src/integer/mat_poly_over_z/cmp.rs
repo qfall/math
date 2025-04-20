@@ -230,16 +230,42 @@ mod test_partial_eq {
 /// Test that the [`CompareBase`] trait uses the default implementation.
 #[cfg(test)]
 mod test_compare_base {
-    use crate::{integer::MatPolyOverZ, traits::CompareBase};
+    use crate::{
+        integer::{MatPolyOverZ, MatZ, Z},
+        traits::CompareBase,
+    };
     use std::str::FromStr;
 
-    /// Ensures that the [`CompareBase`] trait uses the default implementation.
+    /// Ensures that the [`CompareBase`] trait uses the default implementation
+    /// and is available for all types it would be checked against.
     #[test]
-    fn uses_default_implementation() {
+    fn availability() {
         let one_1 = MatPolyOverZ::from_str("[[2  24 47],[2  24 42]]").unwrap();
-        let one_2 = MatPolyOverZ::from_str("[[2  24 42]]").unwrap();
 
-        assert!(one_1.compare_base(&one_2));
-        assert!(one_1.call_compare_base_error(&one_2).is_none());
+        assert!(one_1.compare_base(&MatZ::new(1, 1)));
+        assert!(one_1.compare_base(&MatPolyOverZ::new(1, 1)));
+        assert!(one_1.compare_base(&Z::ONE));
+        assert!(one_1.compare_base(&0_i8));
+        assert!(one_1.compare_base(&0_i16));
+        assert!(one_1.compare_base(&0_i32));
+        assert!(one_1.compare_base(&0_i64));
+        assert!(one_1.compare_base(&0_u8));
+        assert!(one_1.compare_base(&0_u16));
+        assert!(one_1.compare_base(&0_u32));
+        assert!(one_1.compare_base(&0_u64));
+
+        assert!(one_1.call_compare_base_error(&MatZ::new(1, 1)).is_none());
+        assert!(one_1
+            .call_compare_base_error(&MatPolyOverZ::new(1, 1))
+            .is_none());
+        assert!(one_1.call_compare_base_error(&Z::ONE).is_none());
+        assert!(one_1.call_compare_base_error(&0_i8).is_none());
+        assert!(one_1.call_compare_base_error(&0_i16).is_none());
+        assert!(one_1.call_compare_base_error(&0_i32).is_none());
+        assert!(one_1.call_compare_base_error(&0_i64).is_none());
+        assert!(one_1.call_compare_base_error(&0_u8).is_none());
+        assert!(one_1.call_compare_base_error(&0_u16).is_none());
+        assert!(one_1.call_compare_base_error(&0_u32).is_none());
+        assert!(one_1.call_compare_base_error(&0_u64).is_none());
     }
 }
