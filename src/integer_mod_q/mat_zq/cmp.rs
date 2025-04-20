@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::{MatZ, Z},
     integer_mod_q::Zq,
-    macros::compare_base::{compare_base_default, compare_base_get_mod},
+    macros::compare_base::{compare_base_default, compare_base_get_mod, compare_base_impl},
     traits::CompareBase,
 };
 use flint_sys::{fmpz::fmpz_equal, fmpz_mat::fmpz_mat_equal};

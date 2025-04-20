@@ -14,7 +14,7 @@ use crate::{
     error::MathError,
     integer::{PolyOverZ, Z},
     integer_mod_q::Zq,
-    macros::compare_base::{compare_base_default, compare_base_get_mod},
+    macros::compare_base::{compare_base_default, compare_base_get_mod, compare_base_impl},
     traits::CompareBase,
 };
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_equal;

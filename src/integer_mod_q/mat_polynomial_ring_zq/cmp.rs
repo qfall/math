@@ -14,7 +14,7 @@ use crate::{
     integer::{MatPolyOverZ, MatZ, PolyOverZ, Z},
     integer_mod_q::{MatZq, PolyOverZq, PolynomialRingZq, Zq},
     macros::compare_base::{
-        compare_base_default, compare_base_get_mod, compare_base_get_mod_get_q,
+        compare_base_default, compare_base_get_mod, compare_base_get_mod_get_q, compare_base_impl,
     },
     traits::CompareBase,
 };

@@ -10,7 +10,8 @@
 
 use super::Zq;
 use crate::{
-    error::MathError, integer::Z, macros::compare_base::compare_base_get_mod, traits::CompareBase,
+    error::MathError, integer::Z, macros::compare_base::compare_base_get_mod,
+    macros::compare_base::compare_base_impl, traits::CompareBase,
 };
 
 compare_base_get_mod!(Zq for Zq);
