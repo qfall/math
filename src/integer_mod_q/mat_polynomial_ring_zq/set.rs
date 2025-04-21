@@ -265,8 +265,9 @@ impl MatrixSwaps for MatPolynomialRingZq {
     /// ```
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
     /// use qfall_math::traits::MatrixSwaps;
+    /// use std::str::FromStr;
     ///
-    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from((3, 17)));
+    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap());
     /// matrix.swap_entries(0, 0, 2, 1);
     /// ```
     ///
@@ -297,10 +298,11 @@ impl MatrixSwaps for MatPolynomialRingZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
     /// use qfall_math::traits::MatrixSwaps;
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
     ///
-    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from((3, 17)));
+    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap());
     /// matrix.swap_columns(0, 2);
     /// ```
     ///
@@ -331,8 +333,9 @@ impl MatrixSwaps for MatPolynomialRingZq {
     /// ```
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
     /// use qfall_math::traits::MatrixSwaps;
+    /// use std::str::FromStr;
     ///
-    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from((3, 17)));
+    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap());
     /// matrix.swap_rows(0, 2);
     /// ```
     ///
@@ -355,8 +358,9 @@ impl MatPolynomialRingZq {
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
     ///
-    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from((3, 17)));
+    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap());
     /// matrix.reverse_columns();
     /// ```
     pub fn reverse_columns(&mut self) {
@@ -369,8 +373,9 @@ impl MatPolynomialRingZq {
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
     ///
-    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from((3, 17)));
+    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap());
     /// matrix.reverse_rows();
     /// ```
     pub fn reverse_rows(&mut self) {
