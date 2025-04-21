@@ -11,6 +11,7 @@
 use super::super::PolyOverZ;
 use crate::{
     integer::Z,
+    integer_mod_q::{Modulus, ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq},
     macros::{
         arithmetics::{arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned},
         for_others::implement_for_others,
@@ -51,6 +52,91 @@ impl Rem<&Z> for &PolyOverZ {
     }
 }
 
+impl Rem<&Modulus> for &PolyOverZ {
+    type Output = PolyOverZ;
+    /// Computes `self` mod `modulus` as long as `modulus` is greater than 1.
+    /// For negative values of `self`, the smallest positive representative is returned.
+    ///
+    /// Parameters:
+    /// - `modulus`: specifies a non-zero integer
+    ///   over which the positive remainder is computed
+    ///
+    /// Returns `self` mod `modulus` as a [`PolyOverZ`] instance.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::Modulus;
+    /// use qfall_math::integer::{PolyOverZ, Z};
+    /// use std::str::FromStr;
+    ///
+    /// let a: PolyOverZ = PolyOverZ::from_str("2  -2 42").unwrap();
+    /// let b = Modulus::from(24);
+    ///
+    /// let c: PolyOverZ = a % b;
+    /// ```
+    fn rem(self, modulus: &Modulus) -> Self::Output {
+        let out = PolyOverZq::from((self, modulus));
+        out.get_representative_least_nonnegative_residue()
+    }
+}
+
+impl<Mod: Into<ModulusPolynomialRingZq>> Rem<Mod> for &PolyOverZ {
+    type Output = PolyOverZ;
+    /// Computes `self` mod `modulus` as long as `modulus` is greater than 1.
+    /// For negative values of `self`, the smallest positive representative is returned.
+    ///
+    /// Parameters:
+    /// - `modulus`: specifies a non-zero integer
+    ///   over which the positive remainder is computed
+    ///
+    /// Returns `self` mod `modulus` as a [`PolyOverZ`] instance.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer::{PolyOverZ, Z};
+    /// use std::str::FromStr;
+    ///
+    /// let a: PolyOverZ = PolyOverZ::from_str("2  -2 42").unwrap();
+    /// let b = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 24").unwrap();
+    ///
+    /// let c: PolyOverZ = &a % b;
+    /// ```
+    fn rem(self, modulus: Mod) -> Self::Output {
+        let out = PolynomialRingZq::from((self, modulus));
+        out.get_representative_least_nonnegative_residue()
+    }
+}
+
+impl<Mod: Into<ModulusPolynomialRingZq>> Rem<Mod> for PolyOverZ {
+    type Output = PolyOverZ;
+    /// Computes `self` mod `modulus` as long as `modulus` is greater than 1.
+    /// For negative values of `self`, the smallest positive representative is returned.
+    ///
+    /// Parameters:
+    /// - `modulus`: specifies a non-zero integer
+    ///   over which the positive remainder is computed
+    ///
+    /// Returns `self` mod `modulus` as a [`PolyOverZ`] instance.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer::{PolyOverZ, Z};
+    /// use std::str::FromStr;
+    ///
+    /// let a: PolyOverZ = PolyOverZ::from_str("2  -2 42").unwrap();
+    /// let b = ModulusPolynomialRingZq::from(24);
+    ///
+    /// let c: PolyOverZ = a % b;
+    /// ```
+    fn rem(self, modulus: Mod) -> Self::Output {
+        PolynomialRingZq::from((self, modulus)).poly
+    }
+}
+
+arithmetic_trait_borrowed_to_owned!(Rem, rem, PolyOverZ, Modulus, PolyOverZ);
+arithmetic_trait_mixed_borrowed_owned!(Rem, rem, PolyOverZ, Modulus, PolyOverZ);
 arithmetic_trait_borrowed_to_owned!(Rem, rem, PolyOverZ, Z, PolyOverZ);
 arithmetic_trait_mixed_borrowed_owned!(Rem, rem, PolyOverZ, Z, PolyOverZ);
 
@@ -59,7 +145,10 @@ implement_for_others!(Z, PolyOverZ, Rem for i8 i16 i32 i64 u8 u16 u32 u64);
 #[cfg(test)]
 mod test_rem {
     use super::Z;
-    use crate::integer::PolyOverZ;
+    use crate::{
+        integer::PolyOverZ,
+        integer_mod_q::{Modulus, ModulusPolynomialRingZq, PolyOverZq},
+    };
     use std::str::FromStr;
 
     /// Testing modulo for two owned
@@ -67,8 +156,15 @@ mod test_rem {
     fn rem() {
         let a = PolyOverZ::from_str("2  2 42").unwrap();
         let b = Z::from(24);
-        let c = a % b;
-        assert_eq!(c, PolyOverZ::from_str("2  2 18").unwrap());
+        let modulus = Modulus::from(24);
+        let poly_mod = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 24").unwrap();
+        let c1 = a.clone() % b;
+        let c2 = a.clone() % modulus;
+        let c3 = a % poly_mod;
+        let cmp = PolyOverZ::from_str("2  2 18").unwrap();
+        assert_eq!(c1, cmp);
+        assert_eq!(c2, cmp);
+        assert_eq!(c3, cmp);
     }
 
     /// Testing modulo for two borrowed
@@ -76,8 +172,15 @@ mod test_rem {
     fn rem_borrow() {
         let a = PolyOverZ::from_str("2  2 42").unwrap();
         let b = Z::from(24);
-        let c = &a % &b;
-        assert_eq!(c, PolyOverZ::from_str("2  2 18").unwrap());
+        let modulus = Modulus::from(24);
+        let poly_mod = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 24").unwrap();
+        let c1 = &a % &b;
+        let c2 = &a % &modulus;
+        let c3 = &a % &poly_mod;
+        let cmp = PolyOverZ::from_str("2  2 18").unwrap();
+        assert_eq!(c1, cmp);
+        assert_eq!(c2, cmp);
+        assert_eq!(c3, cmp);
     }
 
     /// Testing modulo for borrowed and owned
@@ -85,8 +188,15 @@ mod test_rem {
     fn rem_first_borrowed() {
         let a = PolyOverZ::from_str("2  2 42").unwrap();
         let b = Z::from(24);
-        let c = &a % b;
-        assert_eq!(c, PolyOverZ::from_str("2  2 18").unwrap());
+        let modulus = Modulus::from(24);
+        let poly_mod = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 24").unwrap();
+        let c1 = &a % b;
+        let c2 = &a % modulus;
+        let c3 = &a % poly_mod;
+        let cmp = PolyOverZ::from_str("2  2 18").unwrap();
+        assert_eq!(c1, cmp);
+        assert_eq!(c2, cmp);
+        assert_eq!(c3, cmp);
     }
 
     /// Testing modulo for owned and borrowed
@@ -94,8 +204,15 @@ mod test_rem {
     fn rem_second_borrowed() {
         let a = PolyOverZ::from_str("2  2 42").unwrap();
         let b = Z::from(24);
-        let c = a % &b;
-        assert_eq!(c, PolyOverZ::from_str("2  2 18").unwrap());
+        let modulus = Modulus::from(24);
+        let poly_mod = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 24").unwrap();
+        let c1 = a.clone() % &b;
+        let c2 = a.clone() % &modulus;
+        let c3 = a % &poly_mod;
+        let cmp = PolyOverZ::from_str("2  2 18").unwrap();
+        assert_eq!(c1, cmp);
+        assert_eq!(c2, cmp);
+        assert_eq!(c3, cmp);
     }
 
     /// Testing modulo for negative values
@@ -103,8 +220,15 @@ mod test_rem {
     fn rem_negative_representation() {
         let a = PolyOverZ::from_str("2  -2 42").unwrap();
         let b = Z::from(24);
-        let c = &a % &b;
-        assert_eq!(c, PolyOverZ::from_str("2  22 18").unwrap());
+        let modulus = Modulus::from(24);
+        let poly_mod = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 24").unwrap();
+        let c1 = &a % &b;
+        let c2 = &a % &modulus;
+        let c3 = a % &poly_mod;
+        let cmp = PolyOverZ::from_str("2  22 18").unwrap();
+        assert_eq!(c1, cmp);
+        assert_eq!(c2, cmp);
+        assert_eq!(c3, cmp);
     }
 
     /// Testing modulo for large numbers
@@ -112,8 +236,26 @@ mod test_rem {
     fn rem_large_numbers() {
         let a = PolyOverZ::from_str(&format!("2  2 {}", u64::MAX)).unwrap();
         let b = Z::from(u64::MAX - 2);
-        let c = &a % &b;
-        assert_eq!(c, PolyOverZ::from_str("2  2 2").unwrap());
+        let modulus = Modulus::from(u64::MAX - 2);
+        let poly_mod =
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX - 2)).unwrap();
+        let c1 = a.clone() % &b;
+        let c2 = a.clone() % &modulus;
+        let c3 = a % &poly_mod;
+        let cmp = PolyOverZ::from_str("2  2 2").unwrap();
+        assert_eq!(c1, cmp);
+        assert_eq!(c2, cmp);
+        assert_eq!(c3, cmp);
+    }
+
+    /// Ensure that the reduction with a polynomial modulus also reduces the polynomial degree.
+    #[test]
+    fn polynomial_reduction() {
+        let a = PolyOverZ::from_str("4  2 42 0 1").unwrap();
+        let b = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 24").unwrap();
+        let c = a % b;
+        let cmp = PolyOverZ::from_str("2  1 18").unwrap();
+        assert_eq!(c, cmp);
     }
 
     /// Ensures that computing modulo a negative number results in a panic
@@ -132,7 +274,7 @@ mod test_rem {
         _ = PolyOverZ::from_str("2  2 42").unwrap() % 0;
     }
 
-    /// Ensures that `modulo` is available for several types implementing [`Into<Z>`].
+    /// Ensures that `modulo` is available for several types
     #[test]
     fn availability() {
         let _ = PolyOverZ::from_str("2  2 42").unwrap() % 2u8;
@@ -144,9 +286,16 @@ mod test_rem {
         let _ = PolyOverZ::from_str("2  2 42").unwrap() % 2i32;
         let _ = PolyOverZ::from_str("2  2 42").unwrap() % 2i64;
         let _ = PolyOverZ::from_str("2  2 42").unwrap() % Z::from(2);
+        let _ = PolyOverZ::from_str("2  2 42").unwrap() % Modulus::from(2);
+        let _ = PolyOverZ::from_str("2  2 42").unwrap()
+            % ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 24").unwrap();
 
         let _ = &PolyOverZ::from_str("2  2 42").unwrap() % 2u8;
         let _ = PolyOverZ::from_str("2  2 42").unwrap() % &Z::from(2);
         let _ = &PolyOverZ::from_str("2  2 42").unwrap() % &Z::from(2);
+        let _ = PolyOverZ::from_str("2  2 42").unwrap()
+            % PolyOverZq::from_str("4  1 0 0 1 mod 24").unwrap();
+        let _ = PolyOverZ::from_str("2  2 42").unwrap()
+            % &PolyOverZq::from_str("4  1 0 0 1 mod 24").unwrap();
     }
 }
