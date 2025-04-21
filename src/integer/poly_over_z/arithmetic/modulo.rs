@@ -126,7 +126,7 @@ impl<Mod: Into<ModulusPolynomialRingZq>> Rem<Mod> for PolyOverZ {
     /// use std::str::FromStr;
     ///
     /// let a: PolyOverZ = PolyOverZ::from_str("2  -2 42").unwrap();
-    /// let b = ModulusPolynomialRingZq::from(24);
+    /// let b = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 24").unwrap();
     ///
     /// let c: PolyOverZ = a % b;
     /// ```

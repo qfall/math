@@ -68,7 +68,7 @@ impl Rem<&Modulus> for &Z {
     /// use qfall_math::integer_mod_q::Modulus;
     ///
     /// let a: Z = Z::from(42);
-    /// let b: Z = Modulus::from(24);
+    /// let b = Modulus::from(24);
     ///
     /// let c: Z = a % &b;
     /// ```

@@ -18,17 +18,15 @@ unsafe_getter_mod!(ModulusPolynomialRingZq, modulus, fq_ctx_struct);
 #[cfg(test)]
 mod test_get_fq_ctx_struct {
     use super::ModulusPolynomialRingZq;
-    use crate::integer_mod_q::Zq;
+    use std::str::FromStr;
 
     /// Checks availability of the getter for [`ModulusPolynomialRingZq::modulus`]
     /// and its ability to be modified.
     #[test]
     #[allow(unused_mut)]
     fn availability_and_modification() {
-        let zq = Zq::from((3, 7));
-        let mut modulus = ModulusPolynomialRingZq::from(zq);
-        let cmp_zq = Zq::from((3, 5));
-        let cmp_mod = ModulusPolynomialRingZq::from(cmp_zq);
+        let mut modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 7").unwrap();
+        let cmp_mod = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 5").unwrap();
 
         let mut fmpz_mod = unsafe { modulus.get_fq_ctx_struct() };
 

@@ -79,7 +79,7 @@ impl Rem<&Modulus> for &MatZ {
     /// use std::str::FromStr;
     ///
     /// let a: MatZ = MatZ::from_str("[[-2],[42]]").unwrap();
-    /// let b: Z = Modulus::from(24);
+    /// let b = Modulus::from(24);
     ///
     /// let c: MatZ = &a % &b;
     /// ```
