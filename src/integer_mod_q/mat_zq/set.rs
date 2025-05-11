@@ -13,7 +13,9 @@ use crate::{
     integer::Z,
     integer_mod_q::{MatZq, Modulus, Zq},
     macros::for_others::implement_for_owned,
-    traits::{AsInteger, MatrixDimensions, MatrixSetEntry, MatrixSetSubmatrix, MatrixSwaps},
+    traits::{
+        AsInteger, CompareBase, MatrixDimensions, MatrixSetEntry, MatrixSetSubmatrix, MatrixSwaps,
+    },
     utils::index::{evaluate_index_for_vector, evaluate_indices_for_matrix},
 };
 use flint_sys::{
@@ -59,7 +61,7 @@ impl<Integer: Into<Z>> MatrixSetEntry<Integer> for MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if `row` or `column` are greater than the matrix size.
+    ///   if `row` or `column` are greater than the matrix size.
     fn set_entry(
         &mut self,
         row: impl TryInto<i64> + Display,
@@ -141,9 +143,9 @@ impl MatrixSetEntry<&Zq> for MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if `row` or `column` are greater than the matrix size.
+    ///   if `row` or `column` are greater than the matrix size.
     /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`]
-    ///     if the moduli mismatch.
+    ///   if the moduli mismatch.
     fn set_entry(
         &mut self,
         row: impl TryInto<i64> + Display,
@@ -212,7 +214,7 @@ impl MatrixSetSubmatrix for MatZq {
     /// - `col_0`: specifies the column of `self` that should be modified
     /// - `other`: specifies the matrix providing the column replacing the column in `self`
     /// - `col_1`: specifies the column of `other` providing
-    ///     the values replacing the original column in `self`
+    ///   the values replacing the original column in `self`
     ///
     /// Negative indices can be used to index from the back, e.g., `-1` for
     /// the last element.
@@ -233,11 +235,11 @@ impl MatrixSetSubmatrix for MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if the provided column index is not defined within the margins of the matrix.
+    ///   if the provided column index is not defined within the margins of the matrix.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the number of rows of `self` and `other` differ.
+    ///   if the number of rows of `self` and `other` differ.
     /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus)
-    ///     if the moduli of `self` and `other` mismatch.
+    ///   if the moduli of `self` and `other` mismatch.
     fn set_column(
         &mut self,
         col_0: impl TryInto<i64> + Display,
@@ -257,12 +259,8 @@ impl MatrixSetSubmatrix for MatZq {
             )));
         }
 
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "set_column requires the moduli to be equal, but {} differs from {}",
-                self.get_mod(),
-                other.get_mod()
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
 
         for row in 0..num_rows_0 {
@@ -283,7 +281,7 @@ impl MatrixSetSubmatrix for MatZq {
     /// - `row_0`: specifies the row of `self` that should be modified
     /// - `other`: specifies the matrix providing the row replacing the row in `self`
     /// - `row_1`: specifies the row of `other` providing
-    ///     the values replacing the original row in `self`
+    ///   the values replacing the original row in `self`
     ///
     /// Negative indices can be used to index from the back, e.g., `-1` for
     /// the last element.
@@ -304,11 +302,11 @@ impl MatrixSetSubmatrix for MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if the provided row index is not defined within the margins of the matrix.
+    ///   if the provided row index is not defined within the margins of the matrix.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the number of columns of `self` and `other` differ.
+    ///   if the number of columns of `self` and `other` differ.
     /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus)
-    ///     if the moduli of `self` and `other` mismatch.
+    ///   if the moduli of `self` and `other` mismatch.
     fn set_row(
         &mut self,
         row_0: impl TryInto<i64> + Display,
@@ -328,12 +326,8 @@ impl MatrixSetSubmatrix for MatZq {
             )));
         }
 
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "set_row requires the moduli to be equal, but {} differs from {}",
-                self.get_mod(),
-                other.get_mod()
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
 
         for col in 0..num_cols_0 {
@@ -374,7 +368,7 @@ impl MatrixSwaps for MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if row or column are greater than the matrix size.
+    ///   if row or column are greater than the matrix size.
     fn swap_entries(
         &mut self,
         row_0: impl TryInto<i64> + Display,
@@ -416,7 +410,7 @@ impl MatrixSwaps for MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if one of the given columns is greater than the matrix.
+    ///   if one of the given columns is greater than the matrix.
     fn swap_columns(
         &mut self,
         col_0: impl TryInto<i64> + Display,
@@ -462,7 +456,7 @@ impl MatrixSwaps for MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if one of the given rows is greater than the matrix.
+    ///   if one of the given rows is greater than the matrix.
     fn swap_rows(
         &mut self,
         row_0: impl TryInto<i64> + Display,

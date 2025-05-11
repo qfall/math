@@ -1,4 +1,4 @@
-// Copyright © 2023 Phil Milewski
+// Copyright © 2023 Phil Milewski, Marcel Luca Schmidt
 //
 // This file is part of qFALL-math.
 //
@@ -15,8 +15,9 @@ use crate::{
     integer_mod_q::PolyOverZq,
     macros::arithmetics::{
         arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
-        arithmetic_trait_mixed_borrowed_owned,
+        arithmetic_trait_mixed_borrowed_owned, arithmetic_trait_reverse,
     },
+    traits::CompareBase,
 };
 use flint_sys::fq::fq_add;
 use std::ops::{Add, AddAssign};
@@ -147,6 +148,105 @@ impl Add for &PolynomialRingZq {
     }
 }
 
+impl Add<&PolyOverZ> for &PolynomialRingZq {
+    type Output = PolynomialRingZq;
+    /// Implements the [`Add`] trait for [`PolynomialRingZq`] and [`PolyOverZ`].
+    /// [`Add`] is implemented for any combination of owned and borrowed values.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the polynomial to add to `self`
+    ///
+    /// Returns the addition of both polynomials as a [`PolynomialRingZq`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::PolynomialRingZq;
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer::PolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let poly = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
+    /// let a = PolynomialRingZq::from((&poly, &modulus));
+    /// let b = PolyOverZ::from_str("4  2 0 3 1").unwrap();
+    ///
+    /// let c: PolynomialRingZq = &a + &b;
+    /// ```
+    fn add(self, other: &PolyOverZ) -> Self::Output {
+        let mut out = PolynomialRingZq::from((&PolyOverZ::default(), &self.modulus));
+        unsafe {
+            fq_add(
+                &mut out.poly.poly,
+                &self.poly.poly,
+                &other.poly,
+                self.modulus.get_fq_ctx(),
+            );
+        }
+        out
+    }
+}
+
+arithmetic_trait_reverse!(Add, add, PolyOverZ, PolynomialRingZq, PolynomialRingZq);
+
+arithmetic_trait_borrowed_to_owned!(Add, add, PolynomialRingZq, PolyOverZ, PolynomialRingZq);
+arithmetic_trait_borrowed_to_owned!(Add, add, PolyOverZ, PolynomialRingZq, PolynomialRingZq);
+arithmetic_trait_mixed_borrowed_owned!(Add, add, PolynomialRingZq, PolyOverZ, PolynomialRingZq);
+arithmetic_trait_mixed_borrowed_owned!(Add, add, PolyOverZ, PolynomialRingZq, PolynomialRingZq);
+
+impl Add<&PolyOverZq> for &PolynomialRingZq {
+    type Output = PolynomialRingZq;
+    /// Implements the [`Add`] trait for [`PolynomialRingZq`] and [`PolyOverZq`].
+    /// [`Add`] is implemented for any combination of owned and borrowed values.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the polynomial to add to `self`
+    ///
+    /// Returns the addition of both polynomials as a [`PolynomialRingZq`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{PolyOverZq, PolynomialRingZq};
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer::PolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let poly = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
+    /// let a = PolynomialRingZq::from((&poly, &modulus));
+    /// let b = PolyOverZq::from_str("4  2 0 3 1 mod 17").unwrap();
+    ///
+    /// let c: PolynomialRingZq = &a + &b;
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the moduli mismatch.
+    fn add(self, other: &PolyOverZq) -> Self::Output {
+        assert_eq!(
+            self.modulus.get_q(),
+            other.modulus,
+            "Tried to add polynomials with different moduli."
+        );
+
+        let mut out = PolynomialRingZq::from((&PolyOverZ::default(), &self.modulus));
+        unsafe {
+            fq_add(
+                &mut out.poly.poly,
+                &self.poly.poly,
+                &other.get_representative_least_nonnegative_residue().poly,
+                self.modulus.get_fq_ctx(),
+            );
+        }
+        out
+    }
+}
+
+arithmetic_trait_reverse!(Add, add, PolyOverZq, PolynomialRingZq, PolynomialRingZq);
+
+arithmetic_trait_borrowed_to_owned!(Add, add, PolynomialRingZq, PolyOverZq, PolynomialRingZq);
+arithmetic_trait_borrowed_to_owned!(Add, add, PolyOverZq, PolynomialRingZq, PolynomialRingZq);
+arithmetic_trait_mixed_borrowed_owned!(Add, add, PolynomialRingZq, PolyOverZq, PolynomialRingZq);
+arithmetic_trait_mixed_borrowed_owned!(Add, add, PolyOverZq, PolynomialRingZq, PolynomialRingZq);
+
 impl PolynomialRingZq {
     /// Implements addition for two [`PolynomialRingZq`] values.
     ///
@@ -173,13 +273,10 @@ impl PolynomialRingZq {
     /// ```
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
-    ///     both [`PolynomialRingZq`] mismatch.
+    ///   both [`PolynomialRingZq`] mismatch.
     pub fn add_safe(&self, other: &Self) -> Result<PolynomialRingZq, MathError> {
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to add polynomial with modulus '{}' and polynomial with modulus '{}'.",
-                self.modulus, other.modulus
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
         let mut out = PolynomialRingZq::from((&PolyOverZ::default(), &self.modulus));
         unsafe {
@@ -421,5 +518,99 @@ mod test_add {
         let b = PolynomialRingZq::from((&poly_2, &modulus));
 
         assert!(&a.add_safe(&b).is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_add_poly_over_z {
+    use super::PolynomialRingZq;
+    use crate::integer::PolyOverZ;
+    use std::str::FromStr;
+
+    /// Checks if polynomial addition works fine for both borrowed
+    #[test]
+    fn borrowed_correctness() {
+        let poly_1 =
+            PolynomialRingZq::from_str(&format!("2  2 {} / 4  1 2 3 4 mod {}", i64::MAX, u64::MAX))
+                .unwrap();
+        let poly_2 = PolynomialRingZq::from_str(&format!(
+            "2  3 {} / 4  1 2 3 4 mod {}",
+            i64::MAX as u64 + 2,
+            u64::MAX
+        ))
+        .unwrap();
+        let poly = PolyOverZ::from_str("2  1 2").unwrap();
+
+        let poly_1 = &poly_1 + &poly;
+
+        assert_eq!(poly_2, poly_1);
+    }
+
+    /// Checks if addition works fine for different types
+    #[test]
+    fn availability() {
+        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 17").unwrap();
+        let z = PolyOverZ::from(2);
+
+        _ = poly.clone() + z.clone();
+        _ = z.clone() + poly.clone();
+        _ = &poly + &z;
+        _ = &z + &poly;
+        _ = &poly + z.clone();
+        _ = z.clone() + &poly;
+        _ = &z + poly.clone();
+        _ = poly.clone() + &z;
+    }
+}
+
+#[cfg(test)]
+mod test_add_poly_over_zq {
+    use super::PolynomialRingZq;
+    use crate::integer_mod_q::PolyOverZq;
+    use std::str::FromStr;
+
+    /// Checks if polynomial addition works fine for both borrowed
+    #[test]
+    fn borrowed_correctness() {
+        let poly_1 =
+            PolynomialRingZq::from_str(&format!("2  2 {} / 4  1 2 3 4 mod {}", i64::MAX, u64::MAX))
+                .unwrap();
+        let poly_2 = PolynomialRingZq::from_str(&format!(
+            "2  3 {} / 4  1 2 3 4 mod {}",
+            i64::MAX as u64 + 2,
+            u64::MAX
+        ))
+        .unwrap();
+        let poly = PolyOverZq::from_str(&format!("2  1 2 mod {}", u64::MAX)).unwrap();
+
+        let poly_1 = &poly_1 + &poly;
+
+        assert_eq!(poly_2, poly_1);
+    }
+
+    /// Checks if addition works fine for different types
+    #[test]
+    fn availability() {
+        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 17").unwrap();
+        let zq = PolyOverZq::from((2, 17));
+
+        _ = poly.clone() + zq.clone();
+        _ = zq.clone() + poly.clone();
+        _ = &poly + &zq;
+        _ = &zq + &poly;
+        _ = &poly + zq.clone();
+        _ = zq.clone() + &poly;
+        _ = &zq + poly.clone();
+        _ = poly.clone() + &zq;
+    }
+
+    /// Checks if addition panics if the moduli mismatch
+    #[test]
+    #[should_panic]
+    fn different_moduli_panic() {
+        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 17").unwrap();
+        let zq = PolyOverZq::from((2, 16));
+
+        _ = &poly + &zq;
     }
 }

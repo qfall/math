@@ -84,7 +84,7 @@ impl MatQ {
     ///
     /// Parameters:
     /// - `nr_decimal_digits`: specifies the number of decimal digits
-    ///     that will be a part of the output [`String`]
+    ///   that will be a part of the output [`String`]
     ///
     /// Returns the matrix in form of a [`String`]. For matrix `[[1/2],[5/3]]`
     /// the [`String`] looks like this `[[0.50],[1.66]]` if `nr_decimal_digits = 2`.

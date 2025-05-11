@@ -30,7 +30,7 @@ use std::fmt::Display;
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-///     either the index is negative or it does not fit into an [`i64`].
+///   either the index is negative or it does not fit into an [`i64`].
 pub fn evaluate_index(index: impl TryInto<i64> + Display) -> Result<i64, MathError> {
     // the index must fit into an [`i64`]
 
@@ -88,7 +88,7 @@ pub fn evaluate_index(index: impl TryInto<i64> + Display) -> Result<i64, MathErr
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-///     either the index is negative or it does not fit into an [`i64`].
+///   either the index is negative or it does not fit into an [`i64`].
 pub fn evaluate_indices(
     index1: impl TryInto<i64> + Display,
     index2: impl TryInto<i64> + Display,
@@ -111,7 +111,7 @@ pub fn evaluate_indices(
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-///     if the index is not within the bounds of the vector.
+///   if the index is not within the bounds of the vector.
 pub fn evaluate_index_for_vector(
     index: impl TryInto<i64> + Display,
     vector_length: i64,
@@ -158,7 +158,7 @@ pub fn evaluate_index_for_vector(
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-///     if the number of rows or columns is greater than the matrix.
+///   if the number of rows or columns is greater than the matrix.
 pub fn evaluate_indices_for_matrix<S: MatrixDimensions + MatrixDimensions>(
     matrix: &S,
     row: impl TryInto<i64> + Display,

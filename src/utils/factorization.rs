@@ -22,7 +22,7 @@ mod to_string;
 ///
 /// Attributes:
 /// - `factors`: holds [FLINT](https://flintlib.org/)'s [struct](fmpz_factor_struct)
-///     for a factorization of an integer value
+///   for a factorization of an integer value
 ///
 /// # Implicit Typecasting
 /// Most of our functions take as input values of type Integer.

@@ -29,8 +29,8 @@ impl FromStr for MatQ {
     ///
     /// Parameters:
     /// - `string`: the matrix of form: `"[[1/2, 2/3, 3/4],[4/5, 5/6, 6/7]"`
-    ///     for a 2x3 matrix with entries 1/2, 2/3, 3/4 in the first row
-    ///     and 4/5, 5/6, 6/7 in the second row.
+    ///   for a 2x3 matrix with entries 1/2, 2/3, 3/4 in the first row
+    ///   and 4/5, 5/6, 6/7 in the second row.
     ///
     /// Returns a [`MatQ`] or an error if the matrix is not formatted in a suitable way,
     /// the number of rows or columns is too large (must fit into [`i64`]),
@@ -66,11 +66,11 @@ impl FromStr for MatQ {
     ///     - if the number of rows or columns is too large (must fit into i64),
     ///     - if the number of entries in rows is unequal, or
     ///     - if an entry is not formatted correctly.
-    ///         For further information see [`Q::from_str`].
+    ///       For further information see [`Q::from_str`].
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    ///     For further information see [`MatQ::new`].
+    ///   For further information see [`MatQ::new`].
     fn from_str(string: &str) -> Result<Self, MathError> {
         let string_matrix = parse_matrix_string(string)?;
         let (num_rows, num_cols) = find_matrix_dimensions(&string_matrix)?;

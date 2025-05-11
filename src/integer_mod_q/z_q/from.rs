@@ -93,7 +93,7 @@ impl FromStr for Zq {
     ///
     /// Parameters:
     /// - `s`: the integer and modulus value of form: `"12 mod 25"` for the number 12
-    ///     under the modulus 25.
+    ///   under the modulus 25.
     ///
     /// Returns a [`Zq`] or an error if the provided string was not formatted
     /// correctly.
@@ -109,14 +109,14 @@ impl FromStr for Zq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`StringConversionError`](MathError::StringConversionError)
+    ///   [`StringConversionError`](MathError::StringConversionError)
     ///     - if the provided string contains a `Null` byte,
     ///     - if the provided string was not formatted correctly,
     ///     - if the provided modulus was not formatted correctly to create a [`Z`], or
     ///     - if the delimiter `mod` could not be found.
     /// - Returns a [`MathError`] of type
-    ///     [`InvalidModulus`](MathError::InvalidModulus)
-    ///     if the provided value is smaller than `2`.
+    ///   [`InvalidModulus`](MathError::InvalidModulus)
+    ///   if the provided value is smaller than `2`.
     /// - Returns a [`MathError`] of type
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let input_split: Vec<&str> = s.split("mod").collect();
@@ -166,7 +166,7 @@ impl Zq {
     ///
     /// # Errors and Failures
     /// - Returns a [`ConversionError`](MathError::ConversionError) if the provided modulus
-    ///     is smaller than the UTF8-Encoding of the message.
+    ///   is smaller than the UTF8-Encoding of the message.
     ///
     /// # Panics ...
     /// - if `modulus` is smaller than `2`.

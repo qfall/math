@@ -30,8 +30,8 @@ impl FromStr for MatZ {
     ///
     /// Parameters:
     /// - `string`: the matrix of form: `"[[1, 2, 3],[4, 5, 6]]"`
-    ///     for a 2x3 matrix with entries 1, 2, 3 in the first row and 4, 5, 6
-    ///     in the second row.
+    ///   for a 2x3 matrix with entries 1, 2, 3 in the first row and 4, 5, 6
+    ///   in the second row.
     ///
     /// Returns a [`MatZ`] or an error if the matrix is not formatted in a suitable way,
     /// the number of rows or columns is too large (must fit into [`i64`]),
@@ -52,11 +52,11 @@ impl FromStr for MatZ {
     ///     - if the number of rows or columns is too large (must fit into i64),
     ///     - if the number of entries in rows is unequal, or
     ///     - if an entry is not formatted correctly.
-    ///         For further information see [`Z::from_str`].
+    ///       For further information see [`Z::from_str`].
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    ///     For further information see [`MatZ::new`].
+    ///   For further information see [`MatZ::new`].
     fn from_str(string: &str) -> Result<Self, MathError> {
         let string_matrix = parse_matrix_string(string)?;
         let (num_rows, num_cols) = find_matrix_dimensions(&string_matrix)?;
@@ -105,7 +105,7 @@ impl MatZ {
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    ///     For further information see [`MatZ::new`].
+    ///   For further information see [`MatZ::new`].
     pub fn from_utf8(
         message: &str,
         num_rows: impl TryInto<i64> + Display,
@@ -239,7 +239,7 @@ mod test_from_utf8 {
 
         // easy trick s.t. we don't have to initialize a huge [`Z`] value
         // while this test should still fail if the value changes
-        let value_zq = value.modulo(65537);
+        let value_zq = value % 65537;
 
         assert_eq!(Z::from(58285), value_zq);
     }
