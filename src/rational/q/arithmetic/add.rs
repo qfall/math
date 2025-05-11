@@ -23,6 +23,8 @@ use std::ops::{Add, AddAssign};
 impl AddAssign<&Q> for Q {
     /// Computes the addition of `self` and `other` reusing
     /// the memory of `self`.
+    /// [`AddAssign`] can be used on [`Q`] in combination with
+    /// [`Q`], [`Z`], [`f64`], [`f32`], [`i64`], [`i32`], [`i16`], [`i8`], [`u64`], [`u32`], [`u16`] and [`u8`].
     ///
     /// Parameters:
     ///  - `other`: specifies the value to add to `self`
@@ -41,6 +43,7 @@ impl AddAssign<&Q> for Q {
     /// a += b;
     /// a += 5;
     /// a += c;
+    /// a += 5.0;
     /// ```
     fn add_assign(&mut self, other: &Self) {
         unsafe { fmpq_add(&mut self.value, &self.value, &other.value) };

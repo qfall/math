@@ -29,6 +29,8 @@ use std::ops::{Add, AddAssign};
 impl AddAssign<&Z> for Z {
     /// Computes the addition of `self` and `other` reusing
     /// the memory of `self`.
+    /// [`AddAssign`] can be used on [`Z`] in combination with
+    /// [`Z`], [`i64`], [`i32`], [`i16`], [`i8`], [`u64`], [`u32`], [`u16`] and [`u8`].
     ///
     /// Parameters:
     /// - `other`: specifies the value to add to `self`
