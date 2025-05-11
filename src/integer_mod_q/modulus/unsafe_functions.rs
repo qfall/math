@@ -16,12 +16,12 @@ use flint_sys::fmpz_mod::{fmpz_mod_ctx, fmpz_mod_ctx_clear};
 unsafe_getter_mod!(Modulus, modulus, fmpz_mod_ctx);
 
 impl Modulus {
-    /// Returns a mutable reference to the field `modulus` of type [`Modulus`].
+    /// Sets a mutable reference to the field `modulus` of type [`Modulus`] to a given `fmpz_mod_ctx`.
     ///
     /// Parameters:
     /// - `flint_struct`: value to set the attribute to
     ///
-    /// **WARNING:** The returned struct is part of [`flint_sys`].
+    /// **WARNING:** The set struct is part of [`flint_sys`].
     /// Any changes to this object are unsafe and may introduce memory leaks.
     /// Please be aware that most moduli are shared across multiple instances and all
     /// modifications of this struct will affect any other instance with a reference to this object.

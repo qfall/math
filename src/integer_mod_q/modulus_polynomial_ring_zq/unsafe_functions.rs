@@ -16,7 +16,7 @@ use flint_sys::fq::{fq_ctx_clear, fq_ctx_struct};
 unsafe_getter_mod!(ModulusPolynomialRingZq, modulus, fq_ctx_struct);
 
 impl ModulusPolynomialRingZq {
-    /// Returns a mutable reference to the field `modulus` of type [`ModulusPolynomialRingZq`].
+    /// Sets a mutable reference to the field `modulus` of type [`ModulusPolynomialRingZq`] to a given `fq_ctx_struct`.
     ///
     /// Parameters:
     /// - `flint_struct`: value to set the attribute to
