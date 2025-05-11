@@ -22,7 +22,7 @@ unsafe_setter!(Z, value, fmpz, fmpz_clear);
 mod test_get_fmpz {
     use super::Z;
 
-    /// Checks availability of the setter for [`Z::value`]
+    /// Checks availability of the getter for [`Z::value`]
     /// and its ability to be modified.
     #[test]
     #[allow(unused_mut)]
