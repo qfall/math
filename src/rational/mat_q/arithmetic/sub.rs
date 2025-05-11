@@ -22,7 +22,6 @@ impl Sub for &MatQ {
     type Output = MatQ;
     /// Implements the [`Sub`] trait for two matrices.
     /// [`Sub`] is implemented for any combination of [`MatQ`] and borrowed [`MatQ`].
-    /// Furthermore, it is available for any combination of [`MatZ`] and [`MatQ`].
     ///
     /// Parameters:
     /// - `other`: specifies the value to subtract from `self`
@@ -31,19 +30,16 @@ impl Sub for &MatQ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::{rational::MatQ, integer::MatZ};
+    /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
     /// let a: MatQ = MatQ::from_str("[[1/2, 2/3, 3/4],[3/4, 4/5, 5/7]]").unwrap();
     /// let b: MatQ = MatQ::from_str("[[1/4, 9/7, 3/7],[1, 0, 5]]").unwrap();
-    /// let c: MatZ = MatZ::identity(2, 3);
     ///
     /// let d: MatQ = &a - &b;
     /// let e: MatQ = a - b;
     /// let f: MatQ = &d - e;
     /// let g: MatQ = d - &f;
-    /// let h: MatQ = &f - &c;
-    /// let i: MatQ = f - c;
     /// ```
     ///
     /// # Panics ...
@@ -56,6 +52,7 @@ impl Sub for &MatQ {
 impl Sub<&MatZ> for &MatQ {
     type Output = MatQ;
 
+<<<<<<< HEAD
     /// Implements the [`Sub`] trait for a [`MatQ`] and a [`MatZ`] matrix.
     /// [`Sub`] is implemented for any combination of owned and borrowed values.
     ///
@@ -76,6 +73,28 @@ impl Sub<&MatZ> for &MatQ {
     /// let d = b.clone() - a.clone();
     /// let e = &b - &a;
     /// let f = b - a;
+=======
+    /// Implements the [`Sub`] trait for two matrices.
+    /// [`Sub`] is implemented for any combination of [`MatQ`] and [`MatZ`].
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to subtract from `self`
+    ///
+    /// Returns the result of the subtraction as a [`MatQ`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{rational::MatQ, integer::MatZ};
+    /// use std::str::FromStr;
+    ///
+    /// let a: MatQ = MatQ::from_str("[[1/2, 2/3, 3/4],[3/4, 4/5, 5/7]]").unwrap();
+    /// let b: MatZ = MatZ::identity(2, 3);
+    ///
+    /// let d: MatQ = &a - &b;
+    /// let e: MatQ = a - &b;
+    /// let f: MatQ = &b - e;
+    /// let g: MatQ = b - f;
+>>>>>>> 2e3b2379 (Apply suggestions from review)
     /// ```
     ///
     /// # Panics ...

@@ -86,7 +86,6 @@ impl Add for &MatQ {
     type Output = MatQ;
     /// Implements the [`Add`] trait for two [`MatQ`] values.
     /// [`Add`] is implemented for any combination of [`MatQ`] and borrowed [`MatQ`].
-    /// Furthermore, any combination of [`MatQ`] and [`MatZ`] elements can be added.
     ///
     /// Parameters:
     /// - `other`: specifies the value to add to `self`
@@ -95,19 +94,16 @@ impl Add for &MatQ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::{rational::MatQ, integer::MatZ};
+    /// use qfall_math::rational::MatQ;
     /// use std::str::FromStr;
     ///
     /// let a = MatQ::from_str("[[1/2, 2/3, 3/4],[3/4, 4/5, 5/7]]").unwrap();
     /// let b = MatQ::from_str("[[1/4, 9/7, 3/7],[1, 0, 5]]").unwrap();
-    /// let c = MatZ::identity(2, 3);
     ///
     /// let d: MatQ = &a + &b;
-    /// let e: MatQ = a + b;
-    /// let f: MatQ = &d + e;
-    /// let g: MatQ = d + &f;
-    /// let h: MatQ = &f + &c;
-    /// let i: MatQ = f + c;
+    /// let e: MatQ = &a + b;
+    /// let f: MatQ = d + &e;
+    /// let g: MatQ = e + f;
     /// ```
     ///
     /// # Panics ...
@@ -120,7 +116,30 @@ impl Add for &MatQ {
 impl Add<&MatZ> for &MatQ {
     type Output = MatQ;
 
-    /// Documentation at [`MatQ::add`].
+    /// Implements the [`Add`] trait for two [`MatQ`] values.
+    /// [`Add`] is implemented for any combination of [`MatQ`] and [`MatZ`].
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to add to `self`
+    ///
+    /// Returns the sum of both numbers as a [`MatQ`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{rational::MatQ, integer::MatZ};
+    /// use std::str::FromStr;
+    ///
+    /// let a = MatQ::from_str("[[1/2, 2/3, 3/4],[3/4, 4/5, 5/7]]").unwrap();
+    /// let b = MatZ::identity(2, 3);
+    ///
+    /// let d: MatQ = &a + &b;
+    /// let e: MatQ = a + &b;
+    /// let f: MatQ = &b + d;
+    /// let g: MatQ = b + f;
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the dimensions of both matrices mismatch.
     fn add(self, other: &MatZ) -> Self::Output {
         let other = MatQ::from(other);
 

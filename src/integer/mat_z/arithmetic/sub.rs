@@ -109,7 +109,11 @@ arithmetic_trait_mixed_borrowed_owned!(Sub, sub, MatZ, MatZq, MatZq);
 impl Sub<&MatQ> for &MatZ {
     type Output = MatQ;
 
+<<<<<<< HEAD
     /// Implements the [`Sub`] trait for a [`MatZ`] and a [`MatQ`] matrix.
+=======
+    /// Implements the [`Sub`] trait for two matrices.
+>>>>>>> 2e3b2379 (Apply suggestions from review)
     /// [`Sub`] is implemented for any combination of owned and borrowed values.
     ///
     /// Parameters:
