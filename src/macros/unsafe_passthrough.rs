@@ -184,7 +184,7 @@ macro_rules! unsafe_setter {
 /// - `struct`: the struct for which the setter is implemented (e.g. [`Z`](crate::integer::Z), ...).
 /// - `attribute_name`: the name of the field (e.g. `value`, ...).
 /// - `function_name`: the name of the function, which is called to gather
-///     the [`flint_sys`] struct (e.g. [crate::integer::Z::set_fmpz])
+///   the [`flint_sys`] struct (e.g. [crate::integer::Z::set_fmpz])
 /// - `attribute_type`: the struct resp. type of the field (e.g. [`fmpz`](flint_sys::fmpz::fmpz))
 ///
 ///  Returns the Implementation code for the given $struct with the signature:
