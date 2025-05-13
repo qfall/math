@@ -124,8 +124,8 @@ impl MatrixSetSubmatrix for MatPolyOverZ {
     /// `row_self_start`: the starting row of the matrix in which to set a submatrix
     /// `col_self_start`: the starting column of the matrix in which to set a submatrix
     /// `other`: the matrix from where to take the submatrix to set
-    /// `row_self_start`: the starting row of the specified submatrix
-    /// `col_self_start`: the starting column of the specified submatrix
+    /// `row_other_start`: the starting row of the specified submatrix
+    /// `col_other_start`: the starting column of the specified submatrix
     /// `row_other_end`: the ending row of the specified submatrix
     /// `col_other_end`:the ending column of the specified submatrix
     ///
