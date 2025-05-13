@@ -109,9 +109,7 @@ impl MatZq {
                 // The inverse is now the right half of the matrix `identity_inverse`.
                 let mut inverse = MatZq::new(dimensions, dimensions, self.get_mod());
                 for i in 0..dimensions {
-                    inverse
-                        .set_column(i, &identity_inverse, dimensions + i)
-                        .unwrap();
+                    unsafe { inverse.set_column_unchecked(i, &identity_inverse, dimensions + i) };
                 }
                 Some(inverse)
             }

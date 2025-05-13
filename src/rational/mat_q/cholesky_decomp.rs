@@ -64,7 +64,7 @@ impl MatQ {
 
             // produce L matrix recursively
             let mut l_i = MatQ::identity(n, n);
-            l_i.set_column(i, &column_a_i, 0).unwrap();
+            unsafe { l_i.set_column_unchecked(i, &column_a_i, 0) };
             l = l * l_i;
 
             // update matrix A recursively

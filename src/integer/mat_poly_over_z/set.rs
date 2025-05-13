@@ -18,9 +18,12 @@ use crate::{
 };
 use flint_sys::{
     fmpz_poly::{fmpz_poly_set, fmpz_poly_swap},
-    fmpz_poly_mat::fmpz_poly_mat_entry,
+    fmpz_poly_mat::{
+        fmpz_poly_mat_entry, fmpz_poly_mat_set, fmpz_poly_mat_window_clear,
+        fmpz_poly_mat_window_init,
+    },
 };
-use std::fmt::Display;
+use std::{fmt::Display, mem::MaybeUninit};
 
 impl MatrixSetEntry<&PolyOverZ> for MatPolyOverZ {
     /// Sets the value of a specific matrix entry according to a given `value` of type [`PolyOverZ`].
@@ -111,126 +114,89 @@ impl MatrixSetEntry<&PolyOverZ> for MatPolyOverZ {
 implement_for_owned!(PolyOverZ, MatPolyOverZ, MatrixSetEntry);
 
 impl MatrixSetSubmatrix for MatPolyOverZ {
-    /// Sets a column of the given matrix to the provided column of `other`.
+    /// Sets the matrix entries in `self` to entries defined in `other`.
+    /// The entries in `self` starting from `(row_self_start, col_self_start)` up to
+    /// `(row_self_end, col_self_end)`are set to be
+    /// the entries from the submatrix from `other` defined by `(row_other_start, col_other_start)`
+    /// to `(row_other_end, col_other_end)` (exclusively).
     ///
     /// Parameters:
-    /// - `col_0`: specifies the column of `self` that should be modified
-    /// - `other`: specifies the matrix providing the column replacing the column in `self`
-    /// - `col_1`: specifies the column of `other` providing
-    ///   the values replacing the original column in `self`
-    ///
-    /// Negative indices can be used to index from the back, e.g., `-1` for
-    /// the last element.
-    ///
-    /// Returns an empty `Ok` if the action could be performed successfully.
-    /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of its matrix
-    /// or if the number of rows differs.
+    /// `row_self_start`: the starting row of the matrix in which to set a submatrix
+    /// `col_self_start`: the starting column of the matrix in which to set a submatrix
+    /// `other`: the matrix from where to take the submatrix to set
+    /// `row_other_start`: the starting row of the specified submatrix
+    /// `col_other_start`: the starting column of the specified submatrix
+    /// `row_other_end`: the ending row of the specified submatrix
+    /// `col_other_end`:the ending column of the specified submatrix
     ///
     /// # Examples
     /// ```
     /// use qfall_math::{integer::MatPolyOverZ, traits::MatrixSetSubmatrix};
     /// use std::str::FromStr;
     ///
-    /// let mut mat_1 = MatPolyOverZ::new(2, 2);
-    /// let mat_2 = MatPolyOverZ::from_str("[[1  1],[0]]").unwrap();
-    /// mat_1.set_column(1, &mat_2, 0);
+    /// let mut mat = MatPolyOverZ::identity(3, 3);
+    ///
+    /// mat.set_submatrix(0, 1, &mat.clone(), 0, 0, 1, 1).unwrap();
+    /// // [[1,1,0],[0,0,1],[0,0,1]]
+    /// let mat_cmp = MatPolyOverZ::from_str("[[1  1, 1  1, 0],[0, 0, 1  1],[0, 0, 1  1]]").unwrap();
+    /// assert_eq!(mat, mat_cmp);
+    ///
+    /// unsafe{ mat.set_submatrix_unchecked(2, 0, 3, 2, &mat.clone(), 0, 0, 1, 2) };
+    /// let mat_cmp = MatPolyOverZ::from_str("[[1  1, 1  1, 0],[0, 0, 1  1],[1  1, 1  1, 1  1]]").unwrap();
+    /// assert_eq!(mat, mat_cmp);
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///   if the provided column index is not defined within the margins of the matrix.
-    /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///   if the number of rows of `self` and `other` differ.
-    fn set_column(
+    /// # Safety
+    /// To use this function safely, make sure that the selected submatrices are part
+    /// of the matrices, the submatrices are of the same dimensions and the base types are the same.
+    /// If not, memory leaks, unexpected panics, etc. might occur.
+    unsafe fn set_submatrix_unchecked(
         &mut self,
-        col_0: impl TryInto<i64> + Display,
+        row_self_start: i64,
+        col_self_start: i64,
+        row_self_end: i64,
+        col_self_end: i64,
         other: &Self,
-        col_1: impl TryInto<i64> + Display,
-    ) -> Result<(), MathError> {
-        let num_rows_0 = self.get_num_rows();
-        let num_rows_1 = other.get_num_rows();
-        let num_cols_0 = self.get_num_columns();
-        let num_cols_1 = other.get_num_columns();
-        let col_0 = evaluate_index_for_vector(col_0, num_cols_0)?;
-        let col_1 = evaluate_index_for_vector(col_1, num_cols_1)?;
-
-        if num_rows_0 != num_rows_1 {
-            return Err(MathError::MismatchingMatrixDimension(format!(
-                "as set_column was called on two matrices with different number of rows/columns {num_rows_0} and {num_rows_1}",
-            )));
-        }
-
-        for row in 0..num_rows_0 {
+        row_other_start: i64,
+        col_other_start: i64,
+        row_other_end: i64,
+        col_other_end: i64,
+    ) {
+        {
+            let mut window_self = MaybeUninit::uninit();
+            // The memory for the elements of window is shared with self.
             unsafe {
-                fmpz_poly_set(
-                    fmpz_poly_mat_entry(&self.matrix, row, col_0),
-                    fmpz_poly_mat_entry(&other.matrix, row, col_1),
+                fmpz_poly_mat_window_init(
+                    window_self.as_mut_ptr(),
+                    &self.matrix,
+                    row_self_start,
+                    col_self_start,
+                    row_self_end,
+                    col_self_end,
                 )
             };
-        }
-
-        Ok(())
-    }
-
-    /// Sets a row of the given matrix to the provided row of `other`.
-    ///
-    /// Parameters:
-    /// - `row_0`: specifies the row of `self` that should be modified
-    /// - `other`: specifies the matrix providing the row replacing the row in `self`
-    /// - `row_1`: specifies the row of `other` providing
-    ///   the values replacing the original row in `self`
-    ///
-    /// Negative indices can be used to index from the back, e.g., `-1` for
-    /// the last element.
-    ///
-    /// Returns an empty `Ok` if the action could be performed successfully.
-    /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of its matrix
-    /// or if the number of columns differs.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::{integer::MatPolyOverZ, traits::MatrixSetSubmatrix};
-    /// use std::str::FromStr;
-    ///
-    /// let mut mat_1 = MatPolyOverZ::new(2, 2);
-    /// let mat_2 = MatPolyOverZ::from_str("[[1  1, 0]]").unwrap();
-    /// mat_1.set_row(0, &mat_2, 0);
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///   if the provided row index is not defined within the margins of the matrix.
-    /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///   if the number of columns of `self` and `other` differ.
-    fn set_row(
-        &mut self,
-        row_0: impl TryInto<i64> + Display,
-        other: &Self,
-        row_1: impl TryInto<i64> + Display,
-    ) -> Result<(), MathError> {
-        let num_cols_0 = self.get_num_columns();
-        let num_cols_1 = other.get_num_columns();
-        let num_rows_0 = self.get_num_rows();
-        let num_rows_1 = other.get_num_rows();
-        let row_0 = evaluate_index_for_vector(row_0, num_rows_0)?;
-        let row_1 = evaluate_index_for_vector(row_1, num_rows_1)?;
-
-        if num_cols_0 != num_cols_1 {
-            return Err(MathError::MismatchingMatrixDimension(format!(
-                "as set_row was called on two matrices with different number of rows/columns {num_cols_0} and {num_cols_1}",
-            )));
-        }
-
-        for col in 0..num_cols_0 {
+            let mut window_other = MaybeUninit::uninit();
+            // The memory for the elements of window is shared with other.
             unsafe {
-                fmpz_poly_set(
-                    fmpz_poly_mat_entry(&self.matrix, row_0, col),
-                    fmpz_poly_mat_entry(&other.matrix, row_1, col),
+                fmpz_poly_mat_window_init(
+                    window_other.as_mut_ptr(),
+                    &other.matrix,
+                    row_other_start,
+                    col_other_start,
+                    row_other_end,
+                    col_other_end,
                 )
             };
-        }
+            unsafe {
+                // TODO: this should not be mutable for the other window
+                fmpz_poly_mat_set(window_self.as_mut_ptr(), window_other.as_mut_ptr());
 
-        Ok(())
+                // Clears the matrix window and releases any memory that it uses. Note that
+                // the memory to the underlying matrix that window points to is not freed
+                fmpz_poly_mat_window_clear(window_self.as_mut_ptr());
+                fmpz_poly_mat_window_clear(window_other.as_mut_ptr());
+            }
+        }
     }
 }
 
@@ -1038,5 +1004,79 @@ mod test_reverses {
         assert_eq!(cmp_vec_2, matrix.get_row(0).unwrap());
         assert_eq!(cmp_vec_1, matrix.get_row(1).unwrap());
         assert_eq!(cmp_vec_0, matrix.get_row(2).unwrap());
+    }
+}
+
+#[cfg(test)]
+mod test_set_submatrix {
+    use crate::{integer::MatPolyOverZ, traits::MatrixSetSubmatrix};
+    use std::str::FromStr;
+
+    /// Ensure that the entire matrix can be set.
+    #[test]
+    fn entire_matrix() {
+        let mut mat = MatPolyOverZ::sample_uniform(10, 10, 5, -100, 100).unwrap();
+        let identity = MatPolyOverZ::identity(10, 10);
+
+        mat.set_submatrix(0, 0, &identity, 0, 0, 9, 9).unwrap();
+
+        assert_eq!(identity, mat);
+    }
+
+    /// Ensure that matrix access out of bounds leadss to an error.
+    #[test]
+    fn out_of_bounds() {
+        let mut mat = MatPolyOverZ::identity(10, 10);
+
+        assert!(mat.set_submatrix(10, 0, &mat.clone(), 0, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 10, &mat.clone(), 0, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 10, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 10, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 0, 10, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 0, 9, 10).is_err());
+        assert!(mat.set_submatrix(-11, 0, &mat.clone(), 0, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, -11, &mat.clone(), 0, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), -11, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, -11, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 0, -11, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 0, 9, -11).is_err());
+    }
+
+    /// Ensure that the function returns an error if the defined submatrix is too large
+    /// and there is not enough space in the original matrix.
+    #[test]
+    fn submatrix_too_large() {
+        let mut mat = MatPolyOverZ::sample_uniform(10, 10, 5, -100, 100).unwrap();
+
+        assert!(mat
+            .set_submatrix(0, 0, &MatPolyOverZ::identity(11, 11), 0, 0, 10, 10)
+            .is_err());
+        assert!(mat.set_submatrix(1, 2, &mat.clone(), 0, 0, 9, 9).is_err());
+    }
+
+    /// Ensure that setting submatrices with large values works.
+    #[test]
+    fn large_values() {
+        let mut mat = MatPolyOverZ::from_str(&format!(
+            "[[1  1, 2  1 {}],[1  -{}, 0]]",
+            u64::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+        let cmp_mat =
+            MatPolyOverZ::from_str(&format!("[[1  -{}, 0],[1  -{}, 0]]", u64::MAX, u64::MAX))
+                .unwrap();
+
+        mat.set_submatrix(0, 0, &mat.clone(), 1, 0, 1, 1).unwrap();
+        assert_eq!(cmp_mat, mat);
+    }
+
+    /// Ensure that setting with an undefined submatrix.
+    #[test]
+    #[should_panic]
+    fn submatrix_negative() {
+        let mut mat = MatPolyOverZ::identity(10, 10);
+
+        let _ = mat.set_submatrix(0, 0, &mat.clone(), 0, 9, 9, 5);
     }
 }
