@@ -1,4 +1,4 @@
-// Copyright © 2025 Marcel Luca Schmidt
+// Copyright © 2025 Marcel Luca Schmidt, Marvin Beckmann
 //
 // This file is part of qFALL-math.
 //
@@ -11,13 +11,14 @@
 use super::super::MatZ;
 use crate::{
     integer::Z,
+    integer_mod_q::Modulus,
     macros::{
         arithmetics::{arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned},
         for_others::implement_for_others,
     },
-    traits::{MatrixDimensions, MatrixGetEntry, MatrixSetEntry},
+    traits::MatrixDimensions,
 };
-use flint_sys::fmpz_mat::fmpz_mat_scalar_smod;
+use flint_sys::{fmpz::fmpz_mod, fmpz_mat::fmpz_mat_entry, fmpz_mod::fmpz_mod_set_fmpz};
 use std::ops::Rem;
 
 impl Rem<&Z> for &MatZ {
@@ -46,18 +47,49 @@ impl Rem<&Z> for &MatZ {
     /// - if `modulus` is smaller than `2`.
     fn rem(self, modulus: &Z) -> Self::Output {
         assert!(modulus > &1, "Modulus can not be smaller than 2.");
-        let num_cols = self.get_num_columns();
-        let num_rows = self.get_num_rows();
 
-        let mut out = MatZ::new(num_rows, num_cols);
-        unsafe { fmpz_mat_scalar_smod(&mut out.matrix, &self.matrix, &modulus.value) };
+        let out = self.clone();
 
-        for i in 0..num_rows {
-            for j in 0..num_cols {
-                let entry = unsafe { out.get_entry_unchecked(i, j) };
-                if entry < 0 {
-                    unsafe { out.set_entry_unchecked(i, j, entry + modulus) };
-                }
+        for i in 0..out.get_num_rows() {
+            for j in 0..out.get_num_columns() {
+                let entry = unsafe { fmpz_mat_entry(&out.matrix, i, j) };
+                unsafe { fmpz_mod(entry, entry, &modulus.value) }
+            }
+        }
+
+        out
+    }
+}
+
+impl Rem<&Modulus> for &MatZ {
+    type Output = MatZ;
+    /// Computes `self` mod `modulus`.
+    /// For negative entries in `self`, the smallest positive representative is returned.
+    ///
+    /// Parameters:
+    /// - `modulus`: specifies a non-zero integer
+    ///   over which the positive remainders are computed
+    ///
+    /// Returns `self` mod `modulus` as a [`MatZ`] instance.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::integer_mod_q::Modulus;
+    /// use std::str::FromStr;
+    ///
+    /// let a: MatZ = MatZ::from_str("[[-2],[42]]").unwrap();
+    /// let b = Modulus::from(24);
+    ///
+    /// let c: MatZ = &a % &b;
+    /// ```
+    fn rem(self, modulus: &Modulus) -> Self::Output {
+        let out = self.clone();
+
+        for i in 0..out.get_num_rows() {
+            for j in 0..out.get_num_columns() {
+                let entry = unsafe { fmpz_mat_entry(&out.matrix, i, j) };
+                unsafe { fmpz_mod_set_fmpz(entry, entry, modulus.get_fmpz_mod_ctx_struct()) }
             }
         }
 
@@ -67,13 +99,15 @@ impl Rem<&Z> for &MatZ {
 
 arithmetic_trait_borrowed_to_owned!(Rem, rem, MatZ, Z, MatZ);
 arithmetic_trait_mixed_borrowed_owned!(Rem, rem, MatZ, Z, MatZ);
+arithmetic_trait_borrowed_to_owned!(Rem, rem, MatZ, Modulus, MatZ);
+arithmetic_trait_mixed_borrowed_owned!(Rem, rem, MatZ, Modulus, MatZ);
 
 implement_for_others!(Z, MatZ, Rem for i8 i16 i32 i64 u8 u16 u32 u64);
 
 #[cfg(test)]
 mod test_rem {
     use super::Z;
-    use crate::integer::MatZ;
+    use crate::{integer::MatZ, integer_mod_q::Modulus};
     use std::str::FromStr;
 
     /// Testing modulo for two owned
@@ -81,8 +115,10 @@ mod test_rem {
     fn rem() {
         let a = MatZ::from_str("[[2, 3],[42, 24]]").unwrap();
         let b = Z::from(24);
-        let c = a % b;
-        assert_eq!(c, MatZ::from_str("[[2, 3],[18, 0]]").unwrap());
+        let c1 = a.clone() % b;
+        let c2 = a % Modulus::from(24);
+        assert_eq!(c1, MatZ::from_str("[[2, 3],[18, 0]]").unwrap());
+        assert_eq!(c2, MatZ::from_str("[[2, 3],[18, 0]]").unwrap());
     }
 
     /// Testing modulo for two borrowed
@@ -90,8 +126,10 @@ mod test_rem {
     fn rem_borrow() {
         let a = MatZ::from_str("[[2, 3],[42, 24]]").unwrap();
         let b = Z::from(24);
-        let c = &a % &b;
-        assert_eq!(c, MatZ::from_str("[[2, 3],[18, 0]]").unwrap());
+        let c1 = &a % &b;
+        let c2 = &a % &Modulus::from(24);
+        assert_eq!(c1, MatZ::from_str("[[2, 3],[18, 0]]").unwrap());
+        assert_eq!(c2, MatZ::from_str("[[2, 3],[18, 0]]").unwrap());
     }
 
     /// Testing modulo for borrowed and owned
@@ -99,8 +137,10 @@ mod test_rem {
     fn rem_first_borrowed() {
         let a = MatZ::from_str("[[2, 3],[42, 24]]").unwrap();
         let b = Z::from(24);
-        let c = &a % b;
-        assert_eq!(c, MatZ::from_str("[[2, 3],[18, 0]]").unwrap());
+        let c1 = &a % b;
+        let c2 = &a % Modulus::from(24);
+        assert_eq!(c1, MatZ::from_str("[[2, 3],[18, 0]]").unwrap());
+        assert_eq!(c2, MatZ::from_str("[[2, 3],[18, 0]]").unwrap());
     }
 
     /// Testing modulo for owned and borrowed
@@ -108,8 +148,10 @@ mod test_rem {
     fn rem_second_borrowed() {
         let a = MatZ::from_str("[[2, 3],[42, 24]]").unwrap();
         let b = Z::from(24);
-        let c = a % &b;
-        assert_eq!(c, MatZ::from_str("[[2, 3],[18, 0]]").unwrap());
+        let c1 = a.clone() % &b;
+        let c2 = a % &Modulus::from(24);
+        assert_eq!(c1, MatZ::from_str("[[2, 3],[18, 0]]").unwrap());
+        assert_eq!(c2, MatZ::from_str("[[2, 3],[18, 0]]").unwrap());
     }
 
     /// Testing modulo for negative values
@@ -117,8 +159,10 @@ mod test_rem {
     fn rem_negative_representation() {
         let a = MatZ::from_str("[[-2, 3],[42, 24]]").unwrap();
         let b = Z::from(24);
-        let c = &a % &b;
-        assert_eq!(c, MatZ::from_str("[[22, 3],[18, 0]]").unwrap());
+        let c1 = &a % &b;
+        let c2 = &a % &Modulus::from(24);
+        assert_eq!(c1, MatZ::from_str("[[22, 3],[18, 0]]").unwrap());
+        assert_eq!(c2, MatZ::from_str("[[22, 3],[18, 0]]").unwrap());
     }
 
     /// Testing modulo for large numbers
@@ -126,8 +170,10 @@ mod test_rem {
     fn rem_large_numbers() {
         let a = MatZ::from_str(&format!("[[2, 3],[{}, 24]]", u64::MAX)).unwrap();
         let b = Z::from(u64::MAX - 2);
-        let c = &a % &b;
-        assert_eq!(c, MatZ::from_str("[[2, 3],[2, 24]]").unwrap());
+        let c1 = &a % &b;
+        let c2 = &a % &Modulus::from(u64::MAX - 2);
+        assert_eq!(c1, MatZ::from_str("[[2, 3],[2, 24]]").unwrap());
+        assert_eq!(c2, MatZ::from_str("[[2, 3],[2, 24]]").unwrap());
     }
 
     /// Ensures that computing modulo a negative number results in a panic
@@ -146,7 +192,7 @@ mod test_rem {
         _ = MatZ::from_str("[[2, 3],[42, 24]]").unwrap() % 0;
     }
 
-    /// Ensures that `modulo` is available for several types implementing [`Into<Z>`].
+    /// Ensures that `modulo` is available for several types.
     #[test]
     fn availability() {
         let _ = MatZ::from_str("[[2, 3],[42, 24]]").unwrap() % 2u8;
@@ -158,6 +204,7 @@ mod test_rem {
         let _ = MatZ::from_str("[[2, 3],[42, 24]]").unwrap() % 2i32;
         let _ = MatZ::from_str("[[2, 3],[42, 24]]").unwrap() % 2i64;
         let _ = MatZ::from_str("[[2, 3],[42, 24]]").unwrap() % Z::from(2);
+        let _ = MatZ::from_str("[[2, 3],[42, 24]]").unwrap() % Modulus::from(2);
 
         let _ = &MatZ::from_str("[[2, 3],[42, 24]]").unwrap() % 2u8;
         let _ = MatZ::from_str("[[2, 3],[42, 24]]").unwrap() % &Z::from(2);

@@ -265,8 +265,9 @@ impl MatrixSwaps for MatPolynomialRingZq {
     /// ```
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
     /// use qfall_math::traits::MatrixSwaps;
+    /// use std::str::FromStr;
     ///
-    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from((3, 17)));
+    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap());
     /// matrix.swap_entries(0, 0, 2, 1);
     /// ```
     ///
@@ -297,10 +298,11 @@ impl MatrixSwaps for MatPolynomialRingZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
     /// use qfall_math::traits::MatrixSwaps;
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
     ///
-    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from((3, 17)));
+    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap());
     /// matrix.swap_columns(0, 2);
     /// ```
     ///
@@ -331,8 +333,9 @@ impl MatrixSwaps for MatPolynomialRingZq {
     /// ```
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
     /// use qfall_math::traits::MatrixSwaps;
+    /// use std::str::FromStr;
     ///
-    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from((3, 17)));
+    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap());
     /// matrix.swap_rows(0, 2);
     /// ```
     ///
@@ -355,8 +358,9 @@ impl MatPolynomialRingZq {
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
     ///
-    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from((3, 17)));
+    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap());
     /// matrix.reverse_columns();
     /// ```
     pub fn reverse_columns(&mut self) {
@@ -369,8 +373,9 @@ impl MatPolynomialRingZq {
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
     ///
-    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from((3, 17)));
+    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap());
     /// matrix.reverse_rows();
     /// ```
     pub fn reverse_rows(&mut self) {
@@ -781,7 +786,8 @@ mod test_swaps {
     /// Ensures that `swap_entries` returns an error if one of the specified entries is out of bounds
     #[test]
     fn entries_out_of_bounds() {
-        let mut matrix = MatPolynomialRingZq::new(5, 2, ModulusPolynomialRingZq::from((3, 17)));
+        let modulus = ModulusPolynomialRingZq::from_str("3  3 0 1 mod 17").unwrap();
+        let mut matrix = MatPolynomialRingZq::new(5, 2, modulus);
 
         assert!(matrix.swap_entries(-6, 0, 0, 0).is_err());
         assert!(matrix.swap_entries(0, -3, 0, 0).is_err());
@@ -823,7 +829,8 @@ mod test_swaps {
     /// Ensures that `swap_columns` returns an error if one of the specified columns is out of bounds
     #[test]
     fn column_out_of_bounds() {
-        let mut matrix = MatPolynomialRingZq::new(5, 2, ModulusPolynomialRingZq::from((3, 17)));
+        let modulus = ModulusPolynomialRingZq::from_str("3  3 0 1 mod 17").unwrap();
+        let mut matrix = MatPolynomialRingZq::new(5, 2, modulus);
 
         assert!(matrix.swap_columns(-6, 0).is_err());
         assert!(matrix.swap_columns(0, -6).is_err());
@@ -850,7 +857,8 @@ mod test_swaps {
     /// Ensures that `swap_rows` returns an error if one of the specified rows is out of bounds
     #[test]
     fn row_out_of_bounds() {
-        let mut matrix = MatPolynomialRingZq::new(2, 4, ModulusPolynomialRingZq::from((3, 17)));
+        let modulus = ModulusPolynomialRingZq::from_str("3  3 0 1 mod 17").unwrap();
+        let mut matrix = MatPolynomialRingZq::new(2, 4, modulus);
 
         assert!(matrix.swap_rows(-3, 0).is_err());
         assert!(matrix.swap_rows(0, -3).is_err());

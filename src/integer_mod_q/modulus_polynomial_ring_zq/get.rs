@@ -257,7 +257,7 @@ mod test_get_degree {
     /// Ensures that degree is working for constant polynomials.
     #[test]
     fn degree_constant() {
-        let degrees = [0, 1, 3, 7, 15, 32, 120];
+        let degrees = [1, 3, 7, 15, 32, 120];
         for degree in degrees {
             let modulus_ring = ModulusPolynomialRingZq::from_str(&format!(
                 "{}  {}2 mod 17",
@@ -273,11 +273,11 @@ mod test_get_degree {
     /// Ensure that degree is working for polynomials with leading 0 coefficients.
     #[test]
     fn degree_leading_zeros() {
-        let poly = ModulusPolynomialRingZq::from_str("4  2 0 0 0 mod 199").unwrap();
+        let poly = ModulusPolynomialRingZq::from_str("4  2 1 0 0 mod 199").unwrap();
 
         let deg = poly.get_degree();
 
-        assert_eq!(0, deg);
+        assert_eq!(1, deg);
     }
 
     /// Ensure that degree is working for polynomials with many coefficients
