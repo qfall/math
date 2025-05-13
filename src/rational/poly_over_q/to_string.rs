@@ -104,7 +104,7 @@ impl PolyOverQ {
 
         for i in 0..degree {
             // swap with get_coeff_unchecked once available
-            let entry = self.get_coeff(i).unwrap();
+            let entry = unsafe { self.get_coeff_unchecked(i) };
             let entry_string = entry.to_string_decimal(nr_decimal_digits);
 
             poly_string.push_str(&entry_string);

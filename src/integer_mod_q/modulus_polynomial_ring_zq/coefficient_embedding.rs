@@ -55,11 +55,8 @@ impl IntoCoefficientEmbedding<MatZq> for &ModulusPolynomialRingZq {
         );
         let mut out = MatZq::new(size, 1, self.get_q());
         for j in 0..size {
-            let coeff: Result<Z, _> = self.get_coeff(j);
-            match coeff {
-                Ok(value) => unsafe { out.set_entry_unchecked(j, 0, value) },
-                Err(_) => break,
-            }
+            let coeff: Z = unsafe { self.get_coeff_unchecked(j) };
+            unsafe { out.set_entry_unchecked(j, 0, coeff) };
         }
         out
     }

@@ -9,79 +9,85 @@
 //! This module contains implementations for comparison of [`PolynomialRingZq`].
 
 use super::PolynomialRingZq;
-use crate::{error::MathError, traits::CompareBase};
+use crate::{
+    error::MathError,
+    integer::{PolyOverZ, Z},
+    integer_mod_q::{PolyOverZq, Zq},
+    macros::compare_base::{
+        compare_base_default, compare_base_get_mod, compare_base_get_mod_get_q, compare_base_impl,
+    },
+    traits::CompareBase,
+};
 
-impl CompareBase for PolynomialRingZq {
-    /// Compares the moduli of the two elements.
-    ///
-    /// Parameters:
-    /// - `other`: The other object whose base is compared to `self`
-    ///
-    /// Returns true if the moduli match and false otherwise.
-    ///
-    /// # Example
-    /// ```
-    /// use qfall_math::{integer_mod_q::PolynomialRingZq, traits::CompareBase};
-    /// use std::str::FromStr;
-    ///
-    /// let p1 = PolynomialRingZq::from_str("0 / 3  1 1 2 mod 7").unwrap();
-    /// let p2 = PolynomialRingZq::from_str("2  7 14 / 2  1 1  mod 7").unwrap();
-    ///
-    /// assert!(!p1.compare_base(&p2));
-    /// ```
-    fn compare_base(&self, other: &Self) -> bool {
-        self.get_mod() == other.get_mod()
-    }
-
-    /// Returns an error that gives small explanation how the moduli differ.
-    ///
-    /// Parameters:
-    /// - `other`: The other object whose base is compared to `self`
-    ///
-    /// Returns a MathError of type [MathError::MismatchingModulus].
-    ///
-    /// # Example
-    /// ```
-    /// use qfall_math::{integer_mod_q::PolynomialRingZq, traits::CompareBase};
-    /// use std::str::FromStr;
-    ///
-    /// let p1 = PolynomialRingZq::from_str("0 / 3  1 1 2 mod 7").unwrap();
-    /// let p2 = PolynomialRingZq::from_str("2  7 14 / 2  1 1  mod 7").unwrap();
-    ///
-    /// assert!(p1.call_compare_base_error(&p2).is_some())
-    /// ```
-    fn call_compare_base_error(&self, other: &Self) -> Option<MathError> {
-        Some(MathError::MismatchingModulus(format!(
-            "The moduli of the polynomial ring elements mismatch. One of them is {} and the other is {}.
-            The desired operation is not defined and an error is returned.",
-            self.get_mod(),
-            other.get_mod()
-        )))
-    }
-}
+compare_base_default!(PolynomialRingZq for PolyOverZ);
+compare_base_get_mod!(PolynomialRingZq for PolynomialRingZq);
+compare_base_get_mod_get_q!(PolynomialRingZq for Zq PolyOverZq);
+impl<Integer: Into<Z>> CompareBase<Integer> for PolynomialRingZq {}
 
 /// Test that the [`CompareBase`] trait uses an actual implementation.
 #[cfg(test)]
 mod test_compare_base {
-    use crate::{integer_mod_q::PolynomialRingZq, traits::CompareBase};
+    use crate::{
+        integer::{PolyOverZ, Z},
+        integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq, Zq},
+        traits::CompareBase,
+    };
     use std::str::FromStr;
 
-    /// Ensures that the [`CompareBase`] trait uses an actual implementation.
+    /// Ensures that the [`CompareBase`] is available for all types it would be checked against
+    /// where no comparison is needed
     #[test]
-    fn different_base() {
-        let p1 = PolynomialRingZq::from_str("0 / 3  1 1 2 mod 7").unwrap();
-        let p2 = PolynomialRingZq::from_str("2  7 14 / 2  1 1  mod 7").unwrap();
+    fn availability_without_comparisons() {
+        let modulus = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
+        let one_1 = PolynomialRingZq::from(&modulus);
 
-        assert!(!p1.compare_base(&p2));
-        assert!(p1.call_compare_base_error(&p2).is_some())
+        assert!(one_1.compare_base(&Z::ONE));
+        assert!(one_1.compare_base(&PolyOverZ::from_str("1  3").unwrap()));
+        assert!(one_1.compare_base(&0_i8));
+        assert!(one_1.compare_base(&0_i16));
+        assert!(one_1.compare_base(&0_i32));
+        assert!(one_1.compare_base(&0_i64));
+        assert!(one_1.compare_base(&0_u8));
+        assert!(one_1.compare_base(&0_u16));
+        assert!(one_1.compare_base(&0_u32));
+        assert!(one_1.compare_base(&0_u64));
+
+        assert!(one_1.call_compare_base_error(&Z::ONE).is_none());
+        assert!(one_1
+            .call_compare_base_error(&PolyOverZ::from_str("1  3").unwrap())
+            .is_none());
+        assert!(one_1.call_compare_base_error(&0_i8).is_none());
+        assert!(one_1.call_compare_base_error(&0_i16).is_none());
+        assert!(one_1.call_compare_base_error(&0_i32).is_none());
+        assert!(one_1.call_compare_base_error(&0_i64).is_none());
+        assert!(one_1.call_compare_base_error(&0_u8).is_none());
+        assert!(one_1.call_compare_base_error(&0_u16).is_none());
+        assert!(one_1.call_compare_base_error(&0_u32).is_none());
+        assert!(one_1.call_compare_base_error(&0_u64).is_none());
     }
 
-    /// Ensures that the same base return `true`.
+    /// Ensures that the [`CompareBase`] is available for all types it would be checked against
+    /// where comparison is needed
     #[test]
-    fn same_base() {
-        let p1 = PolynomialRingZq::from_str("0 / 2  1 1 mod 7").unwrap();
-        let p2 = PolynomialRingZq::from_str("2  7 14 / 2  1 1  mod 7").unwrap();
+    fn availability_with_comparisons() {
+        let modulus = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
+        let modulus_other = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 18").unwrap();
+        let one_1 = PolynomialRingZq::from(&modulus);
 
-        assert!(p1.compare_base(&p2));
+        assert!(one_1.compare_base(&one_1));
+        assert!(one_1.compare_base(&Zq::from((3, 17))));
+        assert!(!one_1.compare_base(&Zq::from((3, 18))));
+        assert!(one_1.compare_base(&PolyOverZq::from_str("1  3 mod 17").unwrap()));
+        assert!(!one_1.compare_base(&PolyOverZq::from_str("1  3 mod 18").unwrap()));
+        assert!(one_1.compare_base(&PolynomialRingZq::from(&modulus)));
+        assert!(!one_1.compare_base(&PolynomialRingZq::from(&modulus_other)));
+
+        assert!(one_1.call_compare_base_error(&Zq::from((3, 18))).is_some());
+        assert!(one_1
+            .call_compare_base_error(&PolyOverZq::from_str("1  3 mod 18").unwrap())
+            .is_some());
+        assert!(one_1
+            .call_compare_base_error(&PolynomialRingZq::from(&modulus_other))
+            .is_some());
     }
 }

@@ -17,7 +17,7 @@ use crate::macros::arithmetics::{
     arithmetic_trait_reverse,
 };
 use crate::macros::for_others::implement_for_others;
-use crate::traits::MatrixDimensions;
+use crate::traits::{CompareBase, MatrixDimensions};
 use flint_sys::fmpz_poly_mat::{fmpz_poly_mat_scalar_mul_fmpz, fmpz_poly_mat_scalar_mul_fmpz_poly};
 use std::ops::Mul;
 
@@ -342,12 +342,8 @@ impl MatPolynomialRingZq {
     /// - Returns a [`MathError`] of type
     ///   [`MismatchingModulus`](MathError::MismatchingModulus) if the moduli mismatch.
     pub fn mul_scalar_zq_safe(&self, scalar: &Zq) -> Result<Self, MathError> {
-        if self.modulus.get_q() != scalar.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to multiply scalar with modulus '{}' and matrix with modulus '{}'.",
-                self.modulus.get_q(),
-                scalar.modulus
-            )));
+        if !self.compare_base(scalar) {
+            return Err(self.call_compare_base_error(scalar).unwrap());
         }
 
         let mut out =
@@ -389,12 +385,8 @@ impl MatPolynomialRingZq {
     /// - Returns a [`MathError`] of type
     ///   [`MathError::MismatchingModulus`] if the moduli mismatch.
     pub fn mul_scalar_poly_over_zq_safe(&self, scalar: &PolyOverZq) -> Result<Self, MathError> {
-        if self.modulus.get_q() != scalar.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to multiply matrices with moduli '{}' and '{}'.",
-                self.modulus.get_q(),
-                scalar.get_mod()
-            )));
+        if !self.compare_base(scalar) {
+            return Err(self.call_compare_base_error(scalar).unwrap());
         }
 
         Ok(self * scalar.get_representative_least_nonnegative_residue())
@@ -430,12 +422,8 @@ impl MatPolynomialRingZq {
         &self,
         scalar: &PolynomialRingZq,
     ) -> Result<Self, MathError> {
-        if self.modulus != scalar.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to multiply matrices with moduli '{}' and '{}'.",
-                self.get_mod(),
-                scalar.get_mod()
-            )));
+        if !self.compare_base(scalar) {
+            return Err(self.call_compare_base_error(scalar).unwrap());
         }
 
         Ok(self * &scalar.poly)

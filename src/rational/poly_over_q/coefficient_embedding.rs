@@ -57,7 +57,7 @@ impl IntoCoefficientEmbedding<MatQ> for &PolyOverQ {
         );
         let mut out = MatQ::new(size, 1);
         for j in 0..size {
-            let coeff = self.get_coeff(j).unwrap();
+            let coeff = unsafe { self.get_coeff_unchecked(j) };
             unsafe { out.set_entry_unchecked(j, 0, coeff) };
         }
 
@@ -100,8 +100,7 @@ impl FromCoefficientEmbedding<&MatQ> for PolyOverQ {
         );
         let mut out = PolyOverQ::default();
         for i in 0..embedding.get_num_rows() {
-            out.set_coeff(i, unsafe { embedding.get_entry_unchecked(i, 0) })
-                .unwrap()
+            unsafe { out.set_coeff_unchecked(i, embedding.get_entry_unchecked(i, 0)) }
         }
         out
     }

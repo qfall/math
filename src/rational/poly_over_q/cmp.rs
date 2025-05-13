@@ -11,7 +11,10 @@
 
 use super::PolyOverQ;
 use crate::{
-    integer::PolyOverZ, macros::for_others::implement_trait_reverse, traits::GetCoefficient,
+    integer::PolyOverZ,
+    macros::for_others::implement_trait_reverse,
+    rational::Q,
+    traits::{CompareBase, GetCoefficient},
 };
 use flint_sys::fmpq_poly::fmpq_poly_equal;
 
@@ -92,7 +95,7 @@ impl PartialEq<PolyOverZ> for PolyOverQ {
         }
 
         for i in 0..degree + 1 {
-            if self.get_coeff(i).unwrap() != other.get_coeff(i).unwrap() {
+            if unsafe { self.get_coeff_unchecked(i) } != unsafe { other.get_coeff_unchecked(i) } {
                 return false;
             }
         }
@@ -102,6 +105,10 @@ impl PartialEq<PolyOverZ> for PolyOverQ {
 }
 
 implement_trait_reverse!(PartialEq, eq, PolyOverZ, PolyOverQ, bool);
+
+impl CompareBase<PolyOverQ> for PolyOverQ {}
+impl CompareBase<PolyOverZ> for PolyOverQ {}
+impl<Rational: Into<Q>> CompareBase<Rational> for PolyOverQ {}
 
 /// Test that the [`PartialEq`] trait is correctly implemented.
 #[cfg(test)]
@@ -318,5 +325,53 @@ mod test_partial_eq_q_other {
 
         assert!(q != z_1);
         assert!(q != z_2);
+    }
+}
+
+/// Test that the [`CompareBase`] trait uses the default implementation.
+#[cfg(test)]
+mod test_compare_base {
+    use crate::{
+        integer::{PolyOverZ, Z},
+        rational::{PolyOverQ, Q},
+        traits::CompareBase,
+    };
+    use std::str::FromStr;
+
+    /// Ensures that the [`CompareBase`] trait uses the default implementation
+    /// and is available for all types it would be checked against.
+    #[test]
+    fn availability() {
+        let one_1 = PolyOverQ::from_str("3  1/3 1 -7").unwrap();
+
+        assert!(one_1.compare_base(&Q::ONE));
+        assert!(one_1.compare_base(&Z::ONE));
+        assert!(one_1.compare_base(&PolyOverQ::from(1)));
+        assert!(one_1.compare_base(&PolyOverZ::from(1)));
+        assert!(one_1.compare_base(&0_i8));
+        assert!(one_1.compare_base(&0_i16));
+        assert!(one_1.compare_base(&0_i32));
+        assert!(one_1.compare_base(&0_i64));
+        assert!(one_1.compare_base(&0_u8));
+        assert!(one_1.compare_base(&0_u16));
+        assert!(one_1.compare_base(&0_u32));
+        assert!(one_1.compare_base(&0_u64));
+        assert!(one_1.compare_base(&0.5_f32));
+        assert!(one_1.compare_base(&0.5_f64));
+
+        assert!(one_1.call_compare_base_error(&PolyOverQ::from(1)).is_none());
+        assert!(one_1.call_compare_base_error(&PolyOverZ::from(1)).is_none());
+        assert!(one_1.call_compare_base_error(&Z::ONE).is_none());
+        assert!(one_1.call_compare_base_error(&Q::ONE).is_none());
+        assert!(one_1.call_compare_base_error(&0_i8).is_none());
+        assert!(one_1.call_compare_base_error(&0_i16).is_none());
+        assert!(one_1.call_compare_base_error(&0_i32).is_none());
+        assert!(one_1.call_compare_base_error(&0_i64).is_none());
+        assert!(one_1.call_compare_base_error(&0_u8).is_none());
+        assert!(one_1.call_compare_base_error(&0_u16).is_none());
+        assert!(one_1.call_compare_base_error(&0_u32).is_none());
+        assert!(one_1.call_compare_base_error(&0_u64).is_none());
+        assert!(one_1.call_compare_base_error(&0.5_f32).is_none());
+        assert!(one_1.call_compare_base_error(&0.5_f64).is_none());
     }
 }

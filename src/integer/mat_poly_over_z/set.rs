@@ -26,54 +26,6 @@ use flint_sys::{
 use std::{fmt::Display, mem::MaybeUninit};
 
 impl MatrixSetEntry<&PolyOverZ> for MatPolyOverZ {
-    /// Sets the value of a specific matrix entry according to a given `value` of type [`PolyOverZ`].
-    ///
-    /// Parameters:
-    /// - `row`: specifies the row in which the entry is located
-    /// - `column`: specifies the column in which the entry is located
-    /// - `value`: specifies the value to which the entry is set
-    ///
-    /// Negative indices can be used to index from the back, e.g., `-1` for
-    /// the last element.
-    ///
-    /// Returns an empty `Ok` if the action could be performed successfully.
-    /// Otherwise, a [`MathError`] is returned if the specified entry is not part of the matrix.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer::{MatPolyOverZ, PolyOverZ};
-    /// use qfall_math::traits::*;
-    /// use std::str::FromStr;
-    ///
-    /// let mut matrix = MatPolyOverZ::new(2, 2);
-    /// let value = PolyOverZ::from_str("2  1 1").unwrap();
-    ///
-    /// matrix.set_entry(0, 1, &value).unwrap();
-    /// matrix.set_entry(-1, -2, &PolyOverZ::from(2)).unwrap();
-    ///
-    /// assert_eq!("[[0, 2  1 1],[1  2, 0]]", matrix.to_string());
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///   if `row` or `column` are greater than the matrix size.
-    fn set_entry(
-        &mut self,
-        row: impl TryInto<i64> + Display,
-        column: impl TryInto<i64> + Display,
-        value: &PolyOverZ,
-    ) -> Result<(), MathError> {
-        let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
-
-        // since `self` is a correct matrix and both row and column
-        // are previously checked to be inside of the matrix, no errors
-        // appear inside of `unsafe` and `fmpz_set` can successfully clone the
-        // value inside the matrix. Therefore no memory leaks can appear.
-        unsafe { self.set_entry_unchecked(row_i64, column_i64, value) };
-
-        Ok(())
-    }
-
     /// Sets the value of a specific matrix entry according to a given `value` of type [`PolyOverZ`]
     /// without checking whether the coordinate is part of the matrix.
     ///

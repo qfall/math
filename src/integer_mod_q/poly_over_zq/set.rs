@@ -10,11 +10,9 @@
 
 use super::PolyOverZq;
 use crate::{
-    error::MathError, integer::Z, integer_mod_q::Zq, macros::for_others::implement_for_owned,
-    traits::SetCoefficient, utils::index::evaluate_index,
+    integer::Z, integer_mod_q::Zq, macros::for_others::implement_for_owned, traits::SetCoefficient,
 };
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_set_coeff_fmpz;
-use std::fmt::Display;
 
 impl<Integer: Into<Z>> SetCoefficient<Integer> for PolyOverZq {
     /// Sets the coefficient of a polynomial [`PolyOverZq`].
@@ -26,10 +24,6 @@ impl<Integer: Into<Z>> SetCoefficient<Integer> for PolyOverZq {
     /// - `index`: the index of the coefficient to set (has to be positive)
     /// - `value`: the new value the coefficient will be set to.
     ///
-    /// Returns an empty `Ok` if the action could be performed successfully.
-    /// Otherwise, a [`MathError`] is returned if either the index is negative
-    /// or it does not fit into an [`i64`].
-    ///
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::PolyOverZq;
@@ -40,18 +34,15 @@ impl<Integer: Into<Z>> SetCoefficient<Integer> for PolyOverZq {
     /// let mut poly = PolyOverZq::from_str("4  0 1 2 3 mod 17").unwrap();
     ///
     /// assert!(poly.set_coeff(4, 1000).is_ok());
+    /// unsafe{ poly.set_coeff_unchecked(5, 75) };
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    ///   either the index is negative or it does not fit into an [`i64`].
-    fn set_coeff(
-        &mut self,
-        index: impl TryInto<i64> + Display,
-        value: Integer,
-    ) -> Result<(), MathError> {
+    /// # Safety
+    /// To use this function safely, make sure that the selected index
+    /// is greater or equal than `0` and that the provided value has
+    /// the same base so that they have a matching base.
+    unsafe fn set_coeff_unchecked(&mut self, index: i64, value: Integer) {
         let value: Z = value.into();
-        let index = evaluate_index(index)?;
 
         unsafe {
             fmpz_mod_poly_set_coeff_fmpz(
@@ -60,8 +51,7 @@ impl<Integer: Into<Z>> SetCoefficient<Integer> for PolyOverZq {
                 &value.value,
                 self.modulus.get_fmpz_mod_ctx_struct(),
             );
-        };
-        Ok(())
+        }
     }
 }
 
@@ -71,16 +61,11 @@ impl SetCoefficient<&Zq> for PolyOverZq {
     /// of roughly 34 GB. If not careful, be prepared that memory problems can occur, if
     /// the index is very high.
     ///
-    /// All entries which are not directly addressed are automatically treated as zero.
+    /// This function does not check if the modulus of the polynomial and the value match.
     ///
     /// Parameters:
     /// - `index`: the index of the coefficient to set (has to be positive)
     /// - `value`: the new value the index should have from a borrowed [`Zq`].
-    ///
-    /// Returns an empty `Ok` if the action could be performed successfully.
-    /// Otherwise, a [`MathError`] is returned if either the index is negative
-    /// or it does not fit into an [`i64`], or the moduli of
-    /// the polynomial and the input mismatch.
     ///
     /// # Examples
     /// ```
@@ -93,23 +78,15 @@ impl SetCoefficient<&Zq> for PolyOverZq {
     /// let value = Zq::from((1000, 17));
     ///
     /// assert!(poly.set_coeff(4, &value).is_ok());
+    /// unsafe{ poly.set_coeff_unchecked(5, &value) };
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    ///   either the index is negative or it does not fit into an [`i64`].
-    /// - Returns a [`MathError`] of type
-    ///   [`MismatchingModulus`](MathError::MismatchingModulus) the moduli of
-    ///   the polynomial and the input mismatch
-    fn set_coeff(
-        &mut self,
-        index: impl TryInto<i64> + Display,
-        value: &Zq,
-    ) -> Result<(), MathError> {
-        if self.modulus != value.modulus {
-            return Err(MathError::MismatchingModulus(value.to_string()));
-        }
-        self.set_coeff(index, &value.value)
+    /// # Safety
+    /// To use this function safely, make sure that the selected index
+    /// is greater or equal than `0` and that the provided value has
+    /// the same base so that they have a matching base.
+    unsafe fn set_coeff_unchecked(&mut self, index: i64, value: &Zq) {
+        self.set_coeff_unchecked(index, &value.value)
     }
 }
 

@@ -12,8 +12,8 @@ use crate::error::MathError;
 use crate::traits::MatrixDimensions;
 use std::fmt::Display;
 
-/// Converts index into an [`i64`] that must be greater than `0` and must fit into
-/// an [`i64`].
+/// Converts index into an [`i64`] that must be greater or equal than `0`
+/// and must fit into an [`i64`].
 ///
 /// Parameters:
 /// - `index`: the index that has to be converted into an [`i64`].

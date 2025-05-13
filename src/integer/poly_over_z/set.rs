@@ -9,9 +9,8 @@
 //! Implementations to manipulate a [`PolyOverZ`] polynomial.
 
 use super::PolyOverZ;
-use crate::{error::MathError, integer::Z, traits::SetCoefficient, utils::index::evaluate_index};
+use crate::{integer::Z, traits::SetCoefficient};
 use flint_sys::fmpz_poly::fmpz_poly_set_coeff_fmpz;
-use std::fmt::Display;
 
 impl<Integer: Into<Z>> SetCoefficient<Integer> for PolyOverZ {
     /// Sets the coefficient of a polynomial [`PolyOverZ`].
@@ -23,10 +22,6 @@ impl<Integer: Into<Z>> SetCoefficient<Integer> for PolyOverZ {
     /// - `index`: the index of the coefficient to set (has to be positive)
     /// - `value`: the new value the index should have
     ///
-    /// Returns an empty `Ok` if the action could be performed successfully.
-    /// Otherwise, a [`MathError`] is returned if either the index is negative
-    /// or it does not fit into an [`i64`].
-    ///
     /// # Examples
     /// ```
     /// use qfall_math::integer::PolyOverZ;
@@ -37,23 +32,19 @@ impl<Integer: Into<Z>> SetCoefficient<Integer> for PolyOverZ {
     /// let mut poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
     ///
     /// assert!(poly.set_coeff(4, 1000).is_ok());
+    /// unsafe{ poly.set_coeff_unchecked(5, -1000) };
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    ///   either the index is negative or it does not fit into an [`i64`].
-    fn set_coeff(
-        &mut self,
-        index: impl TryInto<i64> + Display,
-        value: Integer,
-    ) -> Result<(), MathError> {
+    /// # Safety
+    /// To use this function safely, make sure that the selected index
+    /// is greater or equal than `0` and that the provided value has
+    /// the same base so that they have a matching base.
+    unsafe fn set_coeff_unchecked(&mut self, index: i64, value: Integer) {
         let value = value.into();
-        let index = evaluate_index(index)?;
 
         unsafe {
             fmpz_poly_set_coeff_fmpz(&mut self.poly, index, &value.value);
         };
-        Ok(())
     }
 }
 

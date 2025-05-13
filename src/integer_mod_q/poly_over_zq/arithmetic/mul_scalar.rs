@@ -17,6 +17,7 @@ use crate::macros::arithmetics::{
     arithmetic_trait_reverse,
 };
 use crate::macros::for_others::implement_for_others;
+use crate::traits::CompareBase;
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_scalar_mul_fmpz;
 use std::ops::Mul;
 
@@ -125,12 +126,8 @@ impl PolyOverZq {
     /// - Returns a [`MathError`] of type
     ///   [`MathError::MismatchingModulus`] if the moduli mismatch.
     pub fn mul_scalar_zq_safe(&self, scalar: &Zq) -> Result<Self, MathError> {
-        if self.modulus != scalar.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to multiply two types with moduli '{}' and '{}'.",
-                self.modulus,
-                scalar.get_mod()
-            )));
+        if !self.compare_base(scalar) {
+            return Err(self.call_compare_base_error(scalar).unwrap());
         }
 
         let mut out = PolyOverZq::from(&scalar.modulus);

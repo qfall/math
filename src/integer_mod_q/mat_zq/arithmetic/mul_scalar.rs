@@ -17,7 +17,7 @@ use crate::macros::arithmetics::{
     arithmetic_trait_reverse,
 };
 use crate::macros::for_others::implement_for_others;
-use crate::traits::MatrixDimensions;
+use crate::traits::{CompareBase, MatrixDimensions};
 use flint_sys::fmpz_mod_mat::fmpz_mod_mat_scalar_mul_fmpz;
 use std::ops::Mul;
 
@@ -119,12 +119,8 @@ impl MatZq {
     /// - Returns a [`MathError`] of type
     ///   [`MismatchingModulus`](MathError::MismatchingModulus) if the moduli mismatch.
     pub fn mul_scalar_safe(&self, scalar: &Zq) -> Result<Self, MathError> {
-        if self.modulus != scalar.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to multiply scalar with modulus '{}' and matrix with modulus '{}'.",
-                self.get_mod(),
-                scalar.modulus
-            )));
+        if !self.compare_base(scalar) {
+            return Err(self.call_compare_base_error(scalar).unwrap());
         }
 
         let mut out = MatZq::new(self.get_num_rows(), self.get_num_columns(), self.get_mod());

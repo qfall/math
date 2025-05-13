@@ -33,10 +33,10 @@ impl PolyOverQ {
     /// assert_eq!(PolyOverZ::from_str("2  -3 1").unwrap(), value.floor());
     /// ```
     pub fn floor(&self) -> PolyOverZ {
-        let mut out = PolyOverZ::from(self.get_coeff(0).unwrap().floor());
+        let mut out = PolyOverZ::from(unsafe { self.get_coeff_unchecked(0).floor() });
         for i in 1..self.get_degree() + 1 {
-            let coeff = self.get_coeff(i).unwrap().floor();
-            out.set_coeff(i, coeff).unwrap();
+            let coeff = unsafe { self.get_coeff_unchecked(i).floor() };
+            unsafe { out.set_coeff_unchecked(i, coeff) };
         }
 
         out
@@ -58,10 +58,10 @@ impl PolyOverQ {
     /// assert_eq!(PolyOverZ::from_str("2  -2 1").unwrap(), value.ceil());
     /// ```
     pub fn ceil(&self) -> PolyOverZ {
-        let mut out = PolyOverZ::from(self.get_coeff(0).unwrap().ceil());
+        let mut out = PolyOverZ::from(unsafe { self.get_coeff_unchecked(0).ceil() });
         for i in 1..self.get_degree() + 1 {
-            let coeff = self.get_coeff(i).unwrap().ceil();
-            out.set_coeff(i, coeff).unwrap();
+            let coeff = unsafe { self.get_coeff_unchecked(i).ceil() };
+            unsafe { out.set_coeff_unchecked(i, coeff) };
         }
 
         out
@@ -84,11 +84,11 @@ impl PolyOverQ {
     /// assert_eq!(PolyOverZ::from_str("2  -2 1").unwrap(), value.round());
     /// ```
     pub fn round(&self) -> PolyOverZ {
-        let mut out = PolyOverZ::from(self.get_coeff(0).unwrap().round());
+        let mut out = PolyOverZ::from(unsafe { self.get_coeff_unchecked(0).round() });
 
         for i in 1..self.get_degree() + 1 {
-            let coeff = self.get_coeff(i).unwrap().round();
-            out.set_coeff(i, coeff).unwrap();
+            let coeff = unsafe { self.get_coeff_unchecked(i).round() };
+            unsafe { out.set_coeff_unchecked(i, coeff) };
         }
 
         out
@@ -130,10 +130,11 @@ impl PolyOverQ {
     ) -> Result<PolyOverZ, MathError> {
         let r = r.into();
         let n = n.into();
-        let mut out = PolyOverZ::from(self.get_coeff(0).unwrap().randomized_rounding(&r, &n)?);
+        let mut out =
+            PolyOverZ::from(unsafe { self.get_coeff_unchecked(0).randomized_rounding(&r, &n)? });
         for i in 1..self.get_degree() + 1 {
-            let coeff = self.get_coeff(i).unwrap().randomized_rounding(&r, &n)?;
-            out.set_coeff(i, coeff).unwrap();
+            let coeff = unsafe { self.get_coeff_unchecked(i).randomized_rounding(&r, &n)? };
+            unsafe { out.set_coeff_unchecked(i, coeff) };
         }
 
         Ok(out)

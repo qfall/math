@@ -9,7 +9,13 @@
 //! This module contains implementations for comparison of [`MatZq`].
 
 use super::MatZq;
-use crate::{error::MathError, traits::CompareBase};
+use crate::{
+    error::MathError,
+    integer::{MatZ, Z},
+    integer_mod_q::Zq,
+    macros::compare_base::{compare_base_default, compare_base_get_mod, compare_base_impl},
+    traits::CompareBase,
+};
 use flint_sys::{fmpz::fmpz_equal, fmpz_mat::fmpz_mat_equal};
 
 impl PartialEq for MatZq {
@@ -47,62 +53,9 @@ impl PartialEq for MatZq {
     }
 }
 
-impl CompareBase for MatZq {
-    /// Compares the moduli of the two elements.
-    ///
-    /// Parameters:
-    /// - `other`: The other object whose base is compared to `self`
-    ///
-    /// Returns true if the moduli match and false otherwise.
-    ///
-    /// # Example
-    /// ```
-    /// use qfall_math::{
-    ///     integer_mod_q::{MatZq, Modulus},
-    ///     traits::CompareBase,
-    /// };
-    ///
-    /// let modulus = Modulus::from(17);
-    /// let one_1 = MatZq::identity(10, 7, &modulus);
-    /// let modulus = Modulus::from(19);
-    /// let one_2 = MatZq::identity(10, 7, &modulus);
-    ///
-    /// assert!(!one_1.compare_base(&one_2));
-    /// ```
-    fn compare_base(&self, other: &Self) -> bool {
-        self.get_mod() == other.get_mod()
-    }
-
-    /// Returns an error that gives small explanation how the moduli differ.
-    ///
-    /// Parameters:
-    /// - `other`: The other object whose base is compared to `self`
-    ///
-    /// Returns a MathError of type [MathError::MismatchingModulus].
-    ///
-    /// # Example
-    /// ```
-    /// use qfall_math::{
-    ///     integer_mod_q::{MatZq, Modulus},
-    ///     traits::CompareBase,
-    /// };
-    ///
-    /// let modulus = Modulus::from(17);
-    /// let one_1 = MatZq::identity(10, 7, &modulus);
-    /// let modulus = Modulus::from(19);
-    /// let one_2 = MatZq::identity(10, 7, &modulus);
-    ///
-    /// assert!(one_1.call_compare_base_error(&one_2).is_some())
-    /// ```
-    fn call_compare_base_error(&self, other: &Self) -> Option<MathError> {
-        Some(MathError::MismatchingModulus(format!(
-            "The moduli of the matrices mismatch. One of them is {} and the other is {}.
-            The desired operation is not defined and an error is returned.",
-            self.get_mod(),
-            other.get_mod()
-        )))
-    }
-}
+compare_base_get_mod!(MatZq for MatZq Zq);
+compare_base_default!(MatZq for MatZ);
+impl<Integer: Into<Z>> CompareBase<Integer> for MatZq {}
 
 // With the [`Eq`] trait, `a == a` is always true.
 // This is not guaranteed by the [`PartialEq`] trait.
@@ -197,29 +150,55 @@ mod test_partial_eq {
 #[cfg(test)]
 mod test_compare_base {
     use crate::{
-        integer_mod_q::{MatZq, Modulus},
+        integer::{MatZ, Z},
+        integer_mod_q::{MatZq, Zq},
         traits::CompareBase,
     };
 
-    /// Ensures that the [`CompareBase`] trait uses an actual implementation.
+    /// Ensures that the [`CompareBase`] is available for all types it would be checked against
+    /// where no comparison is needed
     #[test]
-    fn different_base() {
-        let modulus = Modulus::from(17);
-        let one_1 = MatZq::identity(10, 7, &modulus);
-        let modulus = Modulus::from(19);
-        let one_2 = MatZq::identity(10, 7, &modulus);
+    fn availability_without_comparisons() {
+        let one_1 = MatZq::new(3, 4, 17);
 
-        assert!(!one_1.compare_base(&one_2));
-        assert!(one_1.call_compare_base_error(&one_2).is_some())
+        assert!(one_1.compare_base(&MatZ::new(1, 1)));
+        assert!(one_1.compare_base(&Z::ONE));
+        assert!(one_1.compare_base(&0_i8));
+        assert!(one_1.compare_base(&0_i16));
+        assert!(one_1.compare_base(&0_i32));
+        assert!(one_1.compare_base(&0_i64));
+        assert!(one_1.compare_base(&0_u8));
+        assert!(one_1.compare_base(&0_u16));
+        assert!(one_1.compare_base(&0_u32));
+        assert!(one_1.compare_base(&0_u64));
+
+        assert!(one_1.call_compare_base_error(&MatZ::new(1, 1)).is_none());
+        assert!(one_1.call_compare_base_error(&Z::ONE).is_none());
+        assert!(one_1.call_compare_base_error(&0_i8).is_none());
+        assert!(one_1.call_compare_base_error(&0_i16).is_none());
+        assert!(one_1.call_compare_base_error(&0_i32).is_none());
+        assert!(one_1.call_compare_base_error(&0_i64).is_none());
+        assert!(one_1.call_compare_base_error(&0_u8).is_none());
+        assert!(one_1.call_compare_base_error(&0_u16).is_none());
+        assert!(one_1.call_compare_base_error(&0_u32).is_none());
+        assert!(one_1.call_compare_base_error(&0_u64).is_none());
     }
 
-    /// Ensures that the same base return `true`.
+    /// Ensures that the [`CompareBase`] is available for all types it would be checked against
+    /// where comparison is needed
     #[test]
-    fn same_base() {
-        let modulus = Modulus::from(17);
-        let one_1 = MatZq::identity(10, 7, &modulus);
-        let one_2 = MatZq::identity(10, 7, &modulus);
+    fn availability_with_comparisons() {
+        let one_1 = MatZq::new(3, 4, 17);
 
-        assert!(one_1.compare_base(&one_2));
+        assert!(one_1.compare_base(&one_1));
+        assert!(one_1.compare_base(&Zq::from((3, 17))));
+        assert!(!one_1.compare_base(&Zq::from((3, 18))));
+        assert!(one_1.compare_base(&MatZq::new(1, 1, 17)));
+        assert!(!one_1.compare_base(&MatZq::new(1, 1, 18)));
+
+        assert!(one_1.call_compare_base_error(&Zq::from((3, 18))).is_some());
+        assert!(one_1
+            .call_compare_base_error(&MatZq::new(1, 1, 18))
+            .is_some());
     }
 }

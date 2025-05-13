@@ -231,12 +231,12 @@ macro_rules! implement_for_owned {
         impl SetCoefficient<$source_type> for $type {
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::set_coeff`] for &[`" $source_type "`]."]
-            fn set_coeff(
+            unsafe fn set_coeff_unchecked(
                 &mut self,
-                index: impl TryInto<i64> + Display,
+                index: i64,
                 value: $source_type,
-            ) -> Result<(), MathError> {
-                self.set_coeff(index, &value)
+            ) {
+                self.set_coeff_unchecked(index, &value)
             }
             }
         }

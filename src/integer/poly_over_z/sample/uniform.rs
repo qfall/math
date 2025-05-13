@@ -64,7 +64,7 @@ impl PolyOverZ {
         let mut poly_z = PolyOverZ::default();
         for index in 0..=max_degree {
             let sample = uis.sample();
-            poly_z.set_coeff(index, &lower_bound + sample)?;
+            unsafe { poly_z.set_coeff_unchecked(index, &lower_bound + sample) };
         }
         Ok(poly_z)
     }
