@@ -151,8 +151,7 @@ impl MatQ {
         column: i64,
         nr_decimal_digits: usize,
     ) {
-        // exchange with `get_entry_unchecked` once changes are on dev
-        let entry = self.get_entry(row, column).unwrap();
+        let entry = unsafe { self.get_entry_unchecked(row, column) };
         let entry_string = entry.to_string_decimal(nr_decimal_digits);
         matrix_string.push_str(&entry_string);
     }
@@ -178,11 +177,11 @@ mod test_to_string_decimal {
         let c_0 = c.to_string_decimal(0);
         let c_1 = c.to_string_decimal(1);
 
-        assert_eq!("[[1, 0],\n[-1, -2]]", a_0);
+        assert_eq!("[[2, 0],\n[-1, -2]]", a_0);
         assert_eq!("[[1.5, 0.5],\n[-1.0, -2.3]]", a_1);
-        assert_eq!("[[1],\n[-2]]", b_0);
+        assert_eq!("[[2],\n[-2]]", b_0);
         assert_eq!("[[1.50],\n[-2.33]]", b_2);
-        assert_eq!("[[1, 0, -2]]", c_0);
+        assert_eq!("[[2, 0, -2]]", c_0);
         assert_eq!("[[1.5, 0.5, -2.3]]", c_1);
     }
 }
