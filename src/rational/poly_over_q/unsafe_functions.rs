@@ -10,10 +10,12 @@
 //! [FLINT](https://flintlib.org/) structs. Therefore, they require to be unsafe.
 
 use super::PolyOverQ;
-use crate::macros::unsafe_passthrough::unsafe_getter;
-use flint_sys::fmpq_poly::fmpq_poly_struct;
+use crate::macros::unsafe_passthrough::{unsafe_getter, unsafe_setter};
+use flint_sys::fmpq_poly::{fmpq_poly_clear, fmpq_poly_struct};
 
 unsafe_getter!(PolyOverQ, poly, fmpq_poly_struct);
+
+unsafe_setter!(PolyOverQ, poly, fmpq_poly_struct, fmpq_poly_clear);
 
 #[cfg(test)]
 mod test_get_fmpq_poly_struct {
@@ -34,5 +36,29 @@ mod test_get_fmpq_poly_struct {
         unsafe { fmpq_poly_set_coeff_fmpq(fmpq_poly, 0, value.get_fmpq()) };
 
         assert_eq!(PolyOverQ::from(2), poly);
+    }
+}
+
+#[cfg(test)]
+mod test_set_fmpq_poly_struct {
+    use super::PolyOverQ;
+    use flint_sys::fmpq_poly::fmpq_poly_init;
+    use std::mem::MaybeUninit;
+
+    /// Checks availability of the setter for [`PolyOverQ::poly`]
+    /// and its ability to modify [`PolyOverQ`].
+    #[test]
+    #[allow(unused_mut)]
+    fn availability_and_modification() {
+        let mut poly = PolyOverQ::from(1);
+        let mut flint_struct = MaybeUninit::uninit();
+        let flint_struct = unsafe {
+            fmpq_poly_init(flint_struct.as_mut_ptr());
+            flint_struct.assume_init()
+        };
+
+        unsafe { poly.set_fmpq_poly_struct(flint_struct) };
+
+        assert_eq!(PolyOverQ::from(0), poly);
     }
 }
