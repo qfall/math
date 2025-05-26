@@ -20,11 +20,11 @@ use std::ops::Sub;
 
 impl Sub for &MatQ {
     type Output = MatQ;
-    /// Implements the [`Sub`] trait for two [`MatQ`] values.
+    /// Implements the [`Sub`] trait for two matrices.
     /// [`Sub`] is implemented for any combination of [`MatQ`] and borrowed [`MatQ`].
     ///
     /// Parameters:
-    /// - `other`: specifies the value to subtract from`self`
+    /// - `other`: specifies the value to subtract from `self`
     ///
     /// Returns the result of the subtraction as a [`MatQ`].
     ///
@@ -36,10 +36,10 @@ impl Sub for &MatQ {
     /// let a: MatQ = MatQ::from_str("[[1/2, 2/3, 3/4],[3/4, 4/5, 5/7]]").unwrap();
     /// let b: MatQ = MatQ::from_str("[[1/4, 9/7, 3/7],[1, 0, 5]]").unwrap();
     ///
-    /// let c: MatQ = &a - &b;
-    /// let d: MatQ = a - b;
-    /// let e: MatQ = &c - d;
-    /// let f: MatQ = c - &e;
+    /// let d: MatQ = &a - &b;
+    /// let e: MatQ = a - b;
+    /// let f: MatQ = &d - e;
+    /// let g: MatQ = d - &f;
     /// ```
     ///
     /// # Panics ...
@@ -77,23 +77,9 @@ impl Sub<&MatZ> for &MatQ {
     /// # Panics ...
     /// - if the dimensions of both matrices mismatch.
     fn sub(self, other: &MatZ) -> Self::Output {
-        if self.get_num_rows() != other.get_num_rows()
-            || self.get_num_columns() != other.get_num_columns()
-        {
-            panic!(
-                "Tried to subtract a '{}x{}' matrix from a '{}x{}' matrix.",
-                other.get_num_rows(),
-                other.get_num_columns(),
-                self.get_num_rows(),
-                self.get_num_columns()
-            );
-        }
+        let other = MatQ::from(other);
 
-        let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns());
-        unsafe {
-            fmpq_mat_sub(&mut out.matrix, &self.matrix, &MatQ::from(other).matrix);
-        }
-        out
+        self.sub_safe(&other).unwrap()
     }
 }
 
@@ -150,7 +136,7 @@ arithmetic_trait_mixed_borrowed_owned!(Sub, sub, MatQ, MatQ, MatQ);
 #[cfg(test)]
 mod test_sub {
     use super::MatQ;
-    use crate::rational::Q;
+    use crate::{integer::MatZ, rational::Q};
     use std::str::FromStr;
 
     /// Testing subtraction for two [`MatQ`]
@@ -225,6 +211,32 @@ mod test_sub {
         let c: MatQ = MatQ::from_str("[[1, 2, 3]]").unwrap();
         assert!(a.sub_safe(&b).is_err());
         assert!(c.sub_safe(&b).is_err());
+    }
+
+    /// Ensure that `sub` is available for all types between [`MatZ`] and [`MatQ`].
+    #[test]
+    fn availability() {
+        let a = MatQ::new(2, 2);
+        let b = MatZ::new(2, 2);
+        let c = MatQ::new(2, 2);
+
+        let _ = &a - &b;
+        let _ = &a - b.clone();
+        let _ = a.clone() - &b;
+        let _ = a.clone() - b.clone();
+        let _ = &b - &a;
+        let _ = &b - a.clone();
+        let _ = b.clone() - &a;
+        let _ = b.clone() - a.clone();
+
+        let _ = &a - &c;
+        let _ = &a - c.clone();
+        let _ = a.clone() - &c;
+        let _ = a.clone() - c.clone();
+        let _ = &c - &a;
+        let _ = &c - a.clone();
+        let _ = c.clone() - &a;
+        let _ = c.clone() - a.clone();
     }
 }
 

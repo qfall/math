@@ -16,7 +16,6 @@ use crate::macros::arithmetics::{
 };
 use crate::rational::MatQ;
 use crate::traits::MatrixDimensions;
-use flint_sys::fmpq_mat::fmpq_mat_sub;
 use flint_sys::fmpz_mat::fmpz_mat_sub;
 use flint_sys::fmpz_mod_mat::_fmpz_mod_mat_reduce;
 use std::ops::Sub;
@@ -135,23 +134,9 @@ impl Sub<&MatQ> for &MatZ {
     /// # Panics ...
     /// - if the dimensions of both matrices mismatch.
     fn sub(self, other: &MatQ) -> Self::Output {
-        if self.get_num_rows() != other.get_num_rows()
-            || self.get_num_columns() != other.get_num_columns()
-        {
-            panic!(
-                "Tried to subtract a '{}x{}' matrix from a '{}x{}' matrix.",
-                other.get_num_rows(),
-                other.get_num_columns(),
-                self.get_num_rows(),
-                self.get_num_columns()
-            );
-        }
+        let new_self = MatQ::from(self);
 
-        let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns());
-        unsafe {
-            fmpq_mat_sub(&mut out.matrix, &MatQ::from(self).matrix, &other.matrix);
-        }
-        out
+        new_self.sub_safe(other).unwrap()
     }
 }
 
