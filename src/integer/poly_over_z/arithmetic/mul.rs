@@ -10,10 +10,38 @@
 
 use super::super::PolyOverZ;
 use crate::macros::arithmetics::{
-    arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+    arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
+    arithmetic_trait_mixed_borrowed_owned,
 };
 use flint_sys::fmpz_poly::fmpz_poly_mul;
-use std::ops::Mul;
+use std::ops::{Mul, MulAssign};
+
+impl MulAssign<&PolyOverZ> for PolyOverZ {
+    /// Computes the multiplication of `self` and `other` reusing
+    /// the memory of `self`.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the polynomial to multiply to `self`
+    ///
+    /// Returns the product of both polynomials as a [`PolyOverZ`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::PolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let mut a = PolyOverZ::from_str("3  1 2 -3").unwrap();
+    /// let b = PolyOverZ::from_str("5  1 2 -3 0 8").unwrap();
+    ///
+    /// a *= &b;
+    /// a *= b;
+    /// ```
+    fn mul_assign(&mut self, other: &Self) {
+        unsafe { fmpz_poly_mul(&mut self.poly, &self.poly, &other.poly) };
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, PolyOverZ, PolyOverZ);
 
 impl Mul for &PolyOverZ {
     type Output = PolyOverZ;
@@ -49,6 +77,51 @@ impl Mul for &PolyOverZ {
 
 arithmetic_trait_borrowed_to_owned!(Mul, mul, PolyOverZ, PolyOverZ, PolyOverZ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, PolyOverZ, PolyOverZ, PolyOverZ);
+
+#[cfg(test)]
+mod test_mul_assign {
+    use super::PolyOverZ;
+    use std::str::FromStr;
+
+    /// Ensure that `mul_assign` works for small numbers.
+    #[test]
+    fn correct_small() {
+        let mut a = PolyOverZ::from_str("3  -1 2 -3").unwrap();
+        let b = PolyOverZ::from_str("2  5 2").unwrap();
+        let cmp = PolyOverZ::from_str("4  -5 8 -11 -6").unwrap();
+
+        a *= b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `mul_assign` works for large numbers.
+    #[test]
+    fn correct_large() {
+        let mut a = PolyOverZ::from_str(&format!("1  {}", i32::MIN)).unwrap();
+        let b = PolyOverZ::from_str(&format!("2  {} {}", i32::MAX, i32::MIN)).unwrap();
+        let cmp = PolyOverZ::from_str(&format!(
+            "2  {} {}",
+            i32::MIN as i64 * i32::MAX as i64,
+            i32::MIN as i64 * i32::MIN as i64
+        ))
+        .unwrap();
+
+        a *= b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `mul_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let mut a = PolyOverZ::from_str("3  1 2 -3").unwrap();
+        let b = PolyOverZ::from_str("3  -1 -2 3").unwrap();
+
+        a *= &b;
+        a *= b;
+    }
+}
 
 #[cfg(test)]
 mod test_mul {
