@@ -21,6 +21,7 @@ mod concat;
 mod default;
 mod from;
 mod get;
+mod norm;
 mod properties;
 mod reduce;
 mod sample;
