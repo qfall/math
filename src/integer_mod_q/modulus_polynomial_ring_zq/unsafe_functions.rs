@@ -83,22 +83,22 @@ mod test_get_fq_ctx_struct {
 #[cfg(test)]
 mod test_set_fq_ctx_struct {
     use super::ModulusPolynomialRingZq;
-    use crate::{integer::Z, integer_mod_q::Zq, traits::GetCoefficient};
+    use crate::{integer::Z, integer_mod_q::PolyOverZq, traits::GetCoefficient};
     use flint_sys::{
         fmpz::fmpz,
         fmpz_mod::fmpz_mod_ctx_init,
         fmpz_mod_poly::{fmpz_mod_poly_init, fmpz_mod_poly_set_coeff_fmpz},
         fq::fq_ctx_init_modulus,
     };
-    use std::{ffi::CString, mem::MaybeUninit};
+    use std::{ffi::CString, mem::MaybeUninit, str::FromStr};
 
     /// Checks availability of the setter for [`ModulusPolynomialRingZq::modulus`]
     /// and its ability to modify [`ModulusPolynomialRingZq`].
     #[test]
     #[allow(unused_mut)]
     fn availability_and_modification() {
-        let zq = Zq::from((3, 7));
-        let mut test_struct = ModulusPolynomialRingZq::from(zq);
+        let poly_zq = PolyOverZq::from_str("2  2 3 mod 7").unwrap();
+        let mut test_struct = ModulusPolynomialRingZq::from(poly_zq);
         // Setup modulus, i.e. mod 11
         let mut modulus = MaybeUninit::uninit();
         let mut modulus = unsafe {
@@ -112,7 +112,7 @@ mod test_set_fq_ctx_struct {
             poly.assume_init()
         };
         unsafe {
-            fmpz_mod_poly_set_coeff_fmpz(&mut poly, 0, &fmpz(7), &modulus);
+            fmpz_mod_poly_set_coeff_fmpz(&mut poly, 1, &fmpz(7), &modulus);
         };
         // Setup ModPolynomialRingZq
         let mut mod_poly_ring_zq = MaybeUninit::uninit();
@@ -130,10 +130,10 @@ mod test_set_fq_ctx_struct {
         unsafe { test_struct.set_fq_ctx_struct(mod_poly_ring_zq) };
 
         assert_eq!(Z::from(11), test_struct.get_q());
-        assert_eq!(0, test_struct.get_degree());
+        assert_eq!(1, test_struct.get_degree());
         assert_eq!(
             Z::from(7),
-            GetCoefficient::<Z>::get_coeff(&test_struct, 0).unwrap()
+            GetCoefficient::<Z>::get_coeff(&test_struct, 1).unwrap()
         );
     }
 }
