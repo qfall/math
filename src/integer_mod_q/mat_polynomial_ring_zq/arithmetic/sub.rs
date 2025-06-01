@@ -12,10 +12,76 @@ use crate::error::MathError;
 use crate::integer::MatPolyOverZ;
 use crate::integer_mod_q::MatPolynomialRingZq;
 use crate::macros::arithmetics::{
-    arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+    arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
+    arithmetic_trait_mixed_borrowed_owned,
 };
 use crate::traits::{CompareBase, MatrixDimensions};
-use std::ops::Sub;
+use std::ops::{Sub, SubAssign};
+
+impl SubAssign<&MatPolynomialRingZq> for MatPolynomialRingZq {
+    /// Computes the subtraction of `self` and `other` reusing
+    /// the memory of `self`.
+    /// [`SubAssign`] can be used on [`MatPolynomialRingZq`] in combination with
+    /// [`MatPolynomialRingZq`] and [`MatPolyOverZ`].
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to subtract from `self`
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 7").unwrap();
+    /// let mut a = MatPolynomialRingZq::identity(2, 2, &modulus);
+    /// let b = MatPolynomialRingZq::new(2, 2, &modulus);
+    /// let c = MatPolyOverZ::new(2, 2);
+    ///
+    /// a -= &b;
+    /// a -= b;
+    /// a -= &c;
+    /// a -= c;
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the matrix dimensions mismatch.
+    /// - if the moduli of the matrices mismatch.
+    fn sub_assign(&mut self, other: &Self) {
+        if self.modulus != other.modulus {
+            panic!(
+                "Tried to subtract a polynomial with modulus '{}' and a polynomial with modulus '{}'.",
+                self.modulus, other.modulus
+            );
+        }
+
+        self.matrix -= &other.matrix;
+
+        self.reduce();
+    }
+}
+impl SubAssign<&MatPolyOverZ> for MatPolynomialRingZq {
+    /// Documentation at [`MatPolynomialRingZq::sub_assign`].
+    fn sub_assign(&mut self, other: &MatPolyOverZ) {
+        self.matrix -= other;
+
+        self.reduce();
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(
+    SubAssign,
+    sub_assign,
+    MatPolynomialRingZq,
+    MatPolynomialRingZq
+);
+arithmetic_assign_trait_borrowed_to_owned!(
+    SubAssign,
+    sub_assign,
+    MatPolynomialRingZq,
+    MatPolyOverZ
+);
 
 impl Sub for &MatPolynomialRingZq {
     type Output = MatPolynomialRingZq;
@@ -184,6 +250,99 @@ impl MatPolynomialRingZq {
         out.reduce();
 
         Ok(out)
+    }
+}
+
+#[cfg(test)]
+mod test_sub_assign {
+    use crate::{
+        integer::MatPolyOverZ,
+        integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
+    };
+    use std::str::FromStr;
+
+    /// Ensure that `sub_assign` works for small numbers.
+    #[test]
+    fn correct_small() {
+        let mut a = MatPolynomialRingZq::from_str("[[1  1, 0],[0, 1  1]] / 2  0 1 mod 7").unwrap();
+        let b = MatPolynomialRingZq::from_str("[[1  -4, 1  -5],[1  6, 2  -6 -1]] / 2  0 1 mod 7")
+            .unwrap();
+        let cmp = MatPolynomialRingZq::from_str("[[1  5, 1  5],[1  1, 0]] / 2  0 1 mod 7").unwrap();
+
+        a -= b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `sub_assign` works for large numbers.
+    #[test]
+    fn correct_large() {
+        let mut a = MatPolynomialRingZq::from_str(&format!(
+            "[[1  {}, 1  5],[1  {}, 1  -1]] / 2  0 1 mod {}",
+            i64::MAX,
+            i64::MIN,
+            u64::MAX
+        ))
+        .unwrap();
+        let b = MatPolynomialRingZq::from_str(&format!(
+            "[[1  -{}, 1  6],[1  -6, 1  1]] / 2  0 1 mod {}",
+            i64::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+        let cmp = MatPolynomialRingZq::from_str(&format!(
+            "[[1  {}, 1  -1],[1  {}, 1  -2]] / 2  0 1 mod {}",
+            2 * (i64::MAX as u64),
+            i64::MIN + 6,
+            u64::MAX
+        ))
+        .unwrap();
+
+        a -= b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `sub_assign` works for different matrix dimensions.
+    #[test]
+    fn matrix_dimensions() {
+        let modulus = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 7").unwrap();
+        let dimensions = [(3, 3), (5, 1), (1, 4)];
+
+        for (nr_rows, nr_cols) in dimensions {
+            let mut a = MatPolynomialRingZq::identity(nr_rows, nr_cols, &modulus);
+            let b = MatPolynomialRingZq::new(nr_rows, nr_cols, &modulus);
+
+            a -= b;
+
+            assert_eq!(MatPolynomialRingZq::identity(nr_rows, nr_cols, &modulus), a);
+        }
+    }
+
+    /// Ensures that mismatching moduli will result in a panic.
+    #[test]
+    #[should_panic]
+    fn mismatching_moduli() {
+        let modulus_0 = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 7").unwrap();
+        let modulus_1 = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 7").unwrap();
+        let mut a = MatPolynomialRingZq::new(1, 1, &modulus_0);
+        let b = MatPolynomialRingZq::new(1, 1, &modulus_1);
+
+        a -= b;
+    }
+
+    /// Ensure that `sub_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let modulus = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 7").unwrap();
+        let mut a = MatPolynomialRingZq::new(2, 2, &modulus);
+        let b = MatPolynomialRingZq::new(2, 2, &modulus);
+        let c = MatPolyOverZ::new(2, 2);
+
+        a -= &b;
+        a -= b;
+        a -= &c;
+        a -= c;
     }
 }
 
