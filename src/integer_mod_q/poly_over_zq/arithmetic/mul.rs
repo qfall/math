@@ -13,13 +13,75 @@ use crate::{
     error::MathError,
     integer::PolyOverZ,
     macros::arithmetics::{
-        arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
-        arithmetic_trait_reverse,
+        arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
+        arithmetic_trait_mixed_borrowed_owned, arithmetic_trait_reverse,
     },
     traits::CompareBase,
 };
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_mul;
-use std::{ops::Mul, str::FromStr};
+use std::{
+    ops::{Mul, MulAssign},
+    str::FromStr,
+};
+
+impl MulAssign<&PolyOverZq> for PolyOverZq {
+    /// Computes the multiplication of `self` and `other` reusing
+    /// the memory of `self`.
+    /// [`MulAssign`] can be used on [`PolyOverZq`] in combination with
+    /// [`PolyOverZq`] and [`PolyOverZ`].
+    ///
+    /// Parameters:
+    /// - `other`: specifies the polynomial to multiply to `self`
+    ///
+    /// Returns the product of both polynomials modulo `q` as a [`PolyOverZq`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{integer_mod_q::PolyOverZq, integer::PolyOverZ};
+    /// use std::str::FromStr;
+    ///
+    /// let mut a = PolyOverZq::from_str("3  1 2 3 mod 7").unwrap();
+    /// let b = PolyOverZq::from_str("5  1 2 -3 0 4 mod 7").unwrap();
+    /// let c = PolyOverZ::from_str("4  -1 2 5 3").unwrap();
+    ///
+    /// a *= &b;
+    /// a *= b;
+    /// a *= &c;
+    /// a *= c;
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the moduli of both [`PolyOverZq`] mismatch.
+    fn mul_assign(&mut self, other: &Self) {
+        if self.modulus != other.modulus {
+            panic!(
+                "Tried to multiply polynomial with modulus '{}' and polynomial with modulus '{}'.
+            If the modulus should be ignored please convert into a PolyOverZ beforehand.",
+                self.modulus, other.modulus
+            );
+        }
+
+        unsafe {
+            fmpz_mod_poly_mul(
+                &mut self.poly,
+                &self.poly,
+                &other.poly,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
+    }
+}
+impl MulAssign<&PolyOverZ> for PolyOverZq {
+    /// Documentation at [`PolyOverZq::mul_assign`].
+    fn mul_assign(&mut self, other: &PolyOverZ) {
+        let other = PolyOverZq::from((other, self.get_mod()));
+
+        self.mul_assign(&other);
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, PolyOverZq, PolyOverZq);
+arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, PolyOverZq, PolyOverZ);
 
 impl Mul for &PolyOverZq {
     type Output = PolyOverZq;
@@ -133,6 +195,80 @@ impl PolyOverZq {
             );
         }
         Ok(out)
+    }
+}
+
+#[cfg(test)]
+mod test_mul_assign {
+    use super::PolyOverZq;
+    use crate::integer::PolyOverZ;
+    use std::str::FromStr;
+
+    /// Ensure that `mul_assign` works for small numbers.
+    #[test]
+    fn correct_small() {
+        let mut a = PolyOverZq::from_str("3  2 4 1 mod 7").unwrap();
+        let b = PolyOverZq::from_str("2  2 4 mod 7").unwrap();
+
+        a *= b;
+
+        assert_eq!(a, PolyOverZq::from_str("4  4 2 4 4 mod 7").unwrap());
+    }
+
+    /// Ensure that `mul_assign` works for large numbers.
+    #[test]
+    fn correct_large() {
+        let mut a = PolyOverZq::from_str(&format!(
+            "2  {} {} mod {}",
+            u64::MAX,
+            i64::MAX,
+            u64::MAX - 58
+        ))
+        .unwrap();
+        let b = PolyOverZq::from_str(&format!(
+            "2  {} {} mod {}",
+            i64::MAX,
+            i64::MIN,
+            u64::MAX - 58
+        ))
+        .unwrap();
+
+        a *= b;
+
+        assert_eq!(
+            a,
+            PolyOverZq::from_str(&format!(
+                "3  {} {} {} mod {}",
+                i128::from(i64::MAX) * 58,
+                i128::from(i64::MIN) * 58 + i128::from(i64::MAX) * i128::from(i64::MAX),
+                i128::from(i64::MAX) * i128::from(i64::MIN),
+                u64::MAX - 58
+            ))
+            .unwrap()
+        );
+    }
+
+    /// Ensure that `mul_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let mut a = PolyOverZq::from_str("3  1 2 -3 mod 5").unwrap();
+        let b = PolyOverZq::from_str("3  -1 -2 3 mod 5").unwrap();
+        let c = PolyOverZ::from_str("2  -2 2").unwrap();
+
+        a *= &b;
+        a *= b;
+        a *= &c;
+        a *= c;
+    }
+
+    /// Ensures that mismatching moduli result in a panic.
+    #[test]
+    #[should_panic]
+    fn mismatching_moduli() {
+        let mut a: PolyOverZq = PolyOverZq::from_str("3  -5 4 1 mod 7").unwrap();
+        let b: PolyOverZq = PolyOverZq::from_str("3  -5 4 1 mod 8").unwrap();
+
+        a *= b;
     }
 }
 

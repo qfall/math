@@ -14,13 +14,103 @@ use crate::{
     integer::PolyOverZ,
     integer_mod_q::PolyOverZq,
     macros::arithmetics::{
-        arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
-        arithmetic_trait_reverse,
+        arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
+        arithmetic_trait_mixed_borrowed_owned, arithmetic_trait_reverse,
     },
     traits::CompareBase,
 };
 use flint_sys::fq::fq_mul;
-use std::ops::Mul;
+use std::ops::{Mul, MulAssign};
+
+impl MulAssign<&PolynomialRingZq> for PolynomialRingZq {
+    /// Computes the multiplication of `self` and `other` reusing
+    /// the memory of `self`.
+    /// [`MulAssign`] can be used on [`PolynomialRingZq`] in combination with
+    /// [`PolynomialRingZq`], [`PolyOverZ`] and [`PolyOverZq`].
+    ///
+    /// Parameters:
+    /// - `other`: specifies the polynomial to multiply to `self`
+    ///
+    /// Returns the product of both polynomials modulo `Z_q[X]` as a [`PolynomialRingZq`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{PolynomialRingZq, ModulusPolynomialRingZq, PolyOverZq};
+    /// use qfall_math::integer::PolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let poly_1 = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
+    /// let mut a = PolynomialRingZq::from((&poly_1, &modulus));
+    /// let c = PolyOverZ::from_str("4  2 0 3 1").unwrap();
+    /// let b = PolynomialRingZq::from((&c, &modulus));
+    /// let d = PolyOverZq::from((&c, 17));
+    ///
+    /// a *= &b;
+    /// a *= b;
+    /// a *= &c;
+    /// a *= c;
+    /// a *= &d;
+    /// a *= d;
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the moduli of both [`PolynomialRingZq`] mismatch.
+    fn mul_assign(&mut self, other: &Self) {
+        if self.modulus != other.modulus {
+            panic!(
+                "Tried to multiply polynomial with modulus '{}' and polynomial with modulus '{}'.",
+                self.modulus, other.modulus
+            );
+        }
+
+        unsafe {
+            fq_mul(
+                &mut self.poly.poly,
+                &self.poly.poly,
+                &other.poly.poly,
+                self.modulus.get_fq_ctx(),
+            );
+        };
+    }
+}
+impl MulAssign<&PolyOverZ> for PolynomialRingZq {
+    /// Documentation at [`PolynomialRingZq::mul_assign`].
+    fn mul_assign(&mut self, other: &PolyOverZ) {
+        self.poly *= other;
+        self.reduce();
+    }
+}
+impl MulAssign<&PolyOverZq> for PolynomialRingZq {
+    /// Documentation at [`PolynomialRingZq::mul_assign`].
+    fn mul_assign(&mut self, other: &PolyOverZq) {
+        if self.modulus.get_q() != other.modulus {
+            panic!(
+                "Tried to multiply polynomial with modulus '{}' and polynomial with modulus '{}'.",
+                self.modulus, other.modulus
+            );
+        }
+        let other = other.get_representative_least_nonnegative_residue();
+
+        unsafe {
+            fq_mul(
+                &mut self.poly.poly,
+                &self.poly.poly,
+                &other.poly,
+                self.modulus.get_fq_ctx(),
+            );
+        };
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(
+    MulAssign,
+    mul_assign,
+    PolynomialRingZq,
+    PolynomialRingZq
+);
+arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, PolynomialRingZq, PolyOverZ);
+arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, PolynomialRingZq, PolyOverZq);
 
 impl Mul for &PolynomialRingZq {
     type Output = PolynomialRingZq;
@@ -215,6 +305,99 @@ arithmetic_trait_mixed_borrowed_owned!(
     PolynomialRingZq,
     PolynomialRingZq
 );
+
+#[cfg(test)]
+mod test_mul_assign {
+    use super::PolyOverZ;
+    use crate::integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq};
+    use std::str::FromStr;
+
+    /// Ensure that `mul_assign` works for small numbers.
+    #[test]
+    fn correct_small() {
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        let poly_1 = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
+        let mut a = PolynomialRingZq::from((&poly_1, &modulus));
+        let poly_2 = PolyOverZ::from_str("4  2 0 3 1").unwrap();
+        let b = PolynomialRingZq::from((&poly_2, &modulus));
+
+        a *= b;
+
+        assert_eq!(
+            a,
+            PolynomialRingZq::from((&PolyOverZ::from_str("3  15 14 12").unwrap(), &modulus))
+        );
+    }
+
+    /// Ensure that `mul_assign` works for large numbers.
+    #[test]
+    fn correct_large() {
+        let modulus = ModulusPolynomialRingZq::from_str(&format!(
+            "4  {} 0 0 {} mod {}",
+            u64::MAX,
+            i64::MIN,
+            u64::MAX - 58
+        ))
+        .unwrap();
+
+        let poly_1 = PolyOverZ::from_str(&format!("3  {} 0 {}", u64::MAX, i64::MIN)).unwrap();
+        let mut a = PolynomialRingZq::from((&poly_1, &modulus));
+
+        let poly_2 = PolyOverZ::from_str(&format!("3  {} 0 {}", i64::MAX, i64::MAX)).unwrap();
+        let b = PolynomialRingZq::from((&poly_2, &modulus));
+
+        a *= b;
+
+        assert_eq!(
+            a,
+            PolynomialRingZq::from((
+                &PolyOverZ::from_str(&format!(
+                    "5  {} {} {} {} {}",
+                    u128::from(u64::MAX) * u128::from((u64::MAX - 1) / 2),
+                    0,
+                    i128::from(i64::MIN) * i128::from(i64::MAX)
+                        + (i128::from(i64::MAX) - i128::from(i64::MIN)) * i128::from(i64::MAX),
+                    0,
+                    i128::from(i64::MAX) * i128::from(i64::MIN)
+                ))
+                .unwrap(),
+                &modulus
+            ))
+        );
+    }
+
+    /// Ensure that `mul_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        let poly_1 = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
+        let mut a = PolynomialRingZq::from((&poly_1, &modulus));
+        let poly_2 = PolyOverZ::from_str("4  2 0 3 1").unwrap();
+        let b = PolynomialRingZq::from((&poly_2, &modulus));
+        let c = PolyOverZq::from((poly_2, 17));
+
+        a *= &b;
+        a *= b;
+        a *= &poly_1;
+        a *= poly_1;
+        a *= &c;
+        a *= c;
+    }
+
+    /// Ensures that mismatching moduli result in a panic.
+    #[test]
+    #[should_panic]
+    fn mismatching_moduli() {
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        let poly_1 = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
+        let mut a = PolynomialRingZq::from((&poly_1, &modulus));
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
+        let poly_2 = PolyOverZ::from_str("4  2 0 3 1").unwrap();
+        let b = PolynomialRingZq::from((&poly_2, &modulus));
+
+        a *= b;
+    }
+}
 
 #[cfg(test)]
 mod test_mul {
