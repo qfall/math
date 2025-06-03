@@ -12,7 +12,8 @@ use super::super::PolyOverZ;
 use crate::{
     integer_mod_q::{PolyOverZq, PolynomialRingZq},
     macros::arithmetics::{
-        arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+        arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
+        arithmetic_trait_mixed_borrowed_owned,
     },
     rational::PolyOverQ,
 };
@@ -20,7 +21,34 @@ use flint_sys::{
     fmpq_poly::fmpq_poly_sub, fmpz_mod_poly::fmpz_mod_poly_sub, fmpz_poly::fmpz_poly_sub,
     fq::fq_sub,
 };
-use std::ops::Sub;
+use std::ops::{Sub, SubAssign};
+
+impl SubAssign<&PolyOverZ> for PolyOverZ {
+    /// Computes the subtraction of `self` and `other` reusing
+    /// the memory of `self`.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the polynomial to subtract from `self`
+    ///
+    /// Returns the difference of both polynomials as a [`PolyOverZ`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::PolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let mut a = PolyOverZ::from_str("3  1 2 -3").unwrap();
+    /// let b = PolyOverZ::from_str("5  1 2 -3 0 8").unwrap();
+    ///
+    /// a -= &b;
+    /// a -= b;
+    /// ```
+    fn sub_assign(&mut self, other: &Self) {
+        unsafe { fmpz_poly_sub(&mut self.poly, &self.poly, &other.poly) };
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(SubAssign, sub_assign, PolyOverZ, PolyOverZ);
 
 impl Sub for &PolyOverZ {
     type Output = PolyOverZ;
@@ -168,6 +196,48 @@ impl Sub<&PolyOverQ> for &PolyOverZ {
 
 arithmetic_trait_borrowed_to_owned!(Sub, sub, PolyOverZ, PolyOverQ, PolyOverQ);
 arithmetic_trait_mixed_borrowed_owned!(Sub, sub, PolyOverZ, PolyOverQ, PolyOverQ);
+
+#[cfg(test)]
+mod test_sub_assign {
+    use super::PolyOverZ;
+    use std::str::FromStr;
+
+    /// Ensure that `sub_assign` works for small numbers.
+    #[test]
+    fn correct_small() {
+        let mut a = PolyOverZ::from_str("3  -1 2 -3").unwrap();
+        let b = PolyOverZ::from_str("5  -1 -2 -5 -1 -2").unwrap();
+        let cmp = PolyOverZ::from_str("5  0 4 2 1 2").unwrap();
+
+        a -= b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `sub_assign` works for large numbers.
+    #[test]
+    fn correct_large() {
+        let mut a =
+            PolyOverZ::from_str(&format!("3  {} {} {}", u32::MAX, i32::MIN, i32::MAX)).unwrap();
+        let b = PolyOverZ::from_str(&format!("2  -{} -{}", u32::MAX, i32::MAX)).unwrap();
+        let cmp = PolyOverZ::from_str(&format!("3  {} -1 {}", u64::from(u32::MAX) * 2, i32::MAX))
+            .unwrap();
+
+        a -= b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `sub_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let mut a = PolyOverZ::from_str("3  1 2 -3").unwrap();
+        let b = PolyOverZ::from_str("3  -1 -2 3").unwrap();
+
+        a -= &b;
+        a -= b;
+    }
+}
 
 #[cfg(test)]
 mod test_sub {

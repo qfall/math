@@ -12,11 +12,50 @@ use super::super::MatPolyOverZ;
 use crate::error::MathError;
 use crate::integer_mod_q::MatPolynomialRingZq;
 use crate::macros::arithmetics::{
-    arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+    arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
+    arithmetic_trait_mixed_borrowed_owned,
 };
 use crate::traits::MatrixDimensions;
 use flint_sys::fmpz_poly_mat::fmpz_poly_mat_sub;
-use std::ops::Sub;
+use std::ops::{Sub, SubAssign};
+
+impl SubAssign<&MatPolyOverZ> for MatPolyOverZ {
+    /// Computes the subtraction of `self` and `other` reusing
+    /// the memory of `self`.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to subtract from `self`
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// let mut a = MatPolyOverZ::identity(2, 2);
+    /// let b = MatPolyOverZ::new(2, 2);
+    ///
+    /// a -= &b;
+    /// a -= b;
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the matrix dimensions mismatch.
+    fn sub_assign(&mut self, other: &Self) {
+        if self.get_num_rows() != other.get_num_rows()
+            || self.get_num_columns() != other.get_num_columns()
+        {
+            panic!(
+                "Tried to subtract a '{}x{}' matrix and a '{}x{}' matrix.",
+                self.get_num_rows(),
+                self.get_num_columns(),
+                other.get_num_rows(),
+                other.get_num_columns()
+            );
+        }
+
+        unsafe { fmpz_poly_mat_sub(&mut self.matrix, &self.matrix, &other.matrix) };
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(SubAssign, sub_assign, MatPolyOverZ, MatPolyOverZ);
 
 impl Sub for &MatPolyOverZ {
     type Output = MatPolyOverZ;
@@ -173,6 +212,69 @@ impl MatPolyOverZ {
         out.reduce();
 
         Ok(out)
+    }
+}
+
+#[cfg(test)]
+mod test_sub_assign {
+    use crate::integer::MatPolyOverZ;
+    use std::str::FromStr;
+
+    /// Ensure that `sub_assign` works for small numbers.
+    #[test]
+    fn correct_small() {
+        let mut a = MatPolyOverZ::identity(2, 2);
+        let b = MatPolyOverZ::from_str("[[1  -4, 2  -1 -5],[1  6, 1  1]]").unwrap();
+        let cmp = MatPolyOverZ::from_str("[[1  5, 2  1 5],[1  -6, 0]]").unwrap();
+
+        a -= b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `sub_assign` works for large numbers.
+    #[test]
+    fn correct_large() {
+        let mut a =
+            MatPolyOverZ::from_str(&format!("[[1  {}, 2  0 2],[1  {}, 0]]", i64::MAX, i64::MIN))
+                .unwrap();
+        let b =
+            MatPolyOverZ::from_str(&format!("[[1  -{}, 1  -1],[1  -6, 1  -3]]", i64::MAX)).unwrap();
+        let cmp = MatPolyOverZ::from_str(&format!(
+            "[[1  {}, 2  1 2],[1  {}, 1  3]]",
+            2 * (i64::MAX as u64),
+            i64::MIN + 6
+        ))
+        .unwrap();
+
+        a -= b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `sub_assign` works for different matrix dimensions.
+    #[test]
+    fn matrix_dimensions() {
+        let dimensions = [(3, 3), (5, 1), (1, 4)];
+
+        for (nr_rows, nr_cols) in dimensions {
+            let mut a = MatPolyOverZ::identity(nr_rows, nr_cols);
+            let b = MatPolyOverZ::new(nr_rows, nr_cols);
+
+            a -= b;
+
+            assert_eq!(MatPolyOverZ::identity(nr_rows, nr_cols), a);
+        }
+    }
+
+    /// Ensure that `sub_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let mut a = MatPolyOverZ::new(2, 2);
+        let b = MatPolyOverZ::new(2, 2);
+
+        a -= &b;
+        a -= b;
     }
 }
 

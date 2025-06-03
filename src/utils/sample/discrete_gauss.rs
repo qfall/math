@@ -352,7 +352,7 @@ pub(crate) fn sample_d_precomputed_gso(
 
         // update the center c = c - z * b[i]
         let basisvector_i = unsafe { basis.get_column_unchecked(i) };
-        center = center - MatQ::from(&(&z * &basisvector_i));
+        center -= MatQ::from(&(&z * &basisvector_i));
 
         // out = out + z * b[i]
         out = &out + &z * &basisvector_i;

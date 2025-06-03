@@ -12,12 +12,82 @@ use super::super::MatZq;
 use crate::error::MathError;
 use crate::integer::MatZ;
 use crate::macros::arithmetics::{
-    arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+    arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
+    arithmetic_trait_mixed_borrowed_owned,
 };
 use crate::traits::{CompareBase, MatrixDimensions};
 use flint_sys::fmpz_mat::fmpz_mat_sub;
 use flint_sys::fmpz_mod_mat::{_fmpz_mod_mat_reduce, fmpz_mod_mat_sub};
-use std::ops::Sub;
+use std::ops::{Sub, SubAssign};
+
+impl SubAssign<&MatZq> for MatZq {
+    /// Computes the subtraction of `self` and `other` reusing
+    /// the memory of `self`.
+    /// [`SubAssign`] can be used on [`MatZq`] in combination with
+    /// [`MatZq`] and [`MatZ`].
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to subtract from `self`
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{integer_mod_q::MatZq, integer::MatZ};
+    /// let mut a = MatZq::identity(2, 2, 7);
+    /// let b = MatZq::new(2, 2, 7);
+    /// let c = MatZ::new(2, 2);
+    ///
+    /// a -= &b;
+    /// a -= b;
+    /// a -= &c;
+    /// a -= c;
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the matrix dimensions mismatch.
+    /// - if the moduli of the matrices mismatch.
+    fn sub_assign(&mut self, other: &Self) {
+        if self.get_num_rows() != other.get_num_rows()
+            || self.get_num_columns() != other.get_num_columns()
+        {
+            panic!(
+                "Tried to subtract a '{}x{}' matrix and a '{}x{}' matrix.",
+                self.get_num_rows(),
+                self.get_num_columns(),
+                other.get_num_rows(),
+                other.get_num_columns()
+            );
+        }
+        if !self.compare_base(other) {
+            panic!("{}", self.call_compare_base_error(other).unwrap());
+        }
+
+        unsafe { fmpz_mod_mat_sub(&mut self.matrix, &self.matrix, &other.matrix) };
+    }
+}
+impl SubAssign<&MatZ> for MatZq {
+    /// Documentation at [`MatZq::sub_assign`].
+    fn sub_assign(&mut self, other: &MatZ) {
+        if self.get_num_rows() != other.get_num_rows()
+            || self.get_num_columns() != other.get_num_columns()
+        {
+            panic!(
+                "Tried to subtract a '{}x{}' matrix and a '{}x{}' matrix.",
+                self.get_num_rows(),
+                self.get_num_columns(),
+                other.get_num_rows(),
+                other.get_num_columns()
+            );
+        }
+
+        unsafe {
+            fmpz_mat_sub(&mut self.matrix.mat[0], &self.matrix.mat[0], &other.matrix);
+            _fmpz_mod_mat_reduce(&mut self.matrix);
+        };
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(SubAssign, sub_assign, MatZq, MatZq);
+arithmetic_assign_trait_borrowed_to_owned!(SubAssign, sub_assign, MatZq, MatZ);
 
 impl Sub for &MatZq {
     type Output = MatZq;
@@ -151,6 +221,90 @@ impl MatZq {
             fmpz_mod_mat_sub(&mut out.matrix, &self.matrix, &other.matrix);
         }
         Ok(out)
+    }
+}
+
+#[cfg(test)]
+mod test_sub_assign {
+    use crate::{integer::MatZ, integer_mod_q::MatZq};
+    use std::str::FromStr;
+
+    /// Ensure that `sub_assign` works for small numbers.
+    #[test]
+    fn correct_small() {
+        let mut a = MatZq::identity(2, 2, 7);
+        let b = MatZq::from_str("[[-4, -5],[6, -6]] mod 7").unwrap();
+        let mut c = a.clone();
+        let d = b.get_representative_least_nonnegative_residue();
+        let cmp = MatZq::from_str("[[5, 5],[1, 0]] mod 7").unwrap();
+
+        a -= b;
+        c -= d;
+
+        assert_eq!(cmp, a);
+        assert_eq!(cmp, c);
+    }
+
+    /// Ensure that `sub_assign` works for large numbers.
+    #[test]
+    fn correct_large() {
+        let mut a = MatZq::from_str(&format!(
+            "[[{}, 5],[{}, -1]] mod {}",
+            i64::MAX,
+            i64::MIN,
+            u64::MAX
+        ))
+        .unwrap();
+        let b = MatZq::from_str(&format!("[[-{}, 6],[-6, 1]] mod {}", i64::MAX, u64::MAX)).unwrap();
+        let cmp = MatZq::from_str(&format!(
+            "[[{}, -1],[{}, -2]] mod {}",
+            2 * (i64::MAX as u64),
+            i64::MIN + 6,
+            u64::MAX
+        ))
+        .unwrap();
+
+        a -= b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `sub_assign` works for different matrix dimensions.
+    #[test]
+    fn matrix_dimensions() {
+        let dimensions = [(3, 3), (5, 1), (1, 4)];
+
+        for (nr_rows, nr_cols) in dimensions {
+            let mut a = MatZq::identity(nr_rows, nr_cols, 7);
+            let b = MatZq::new(nr_rows, nr_cols, 7);
+
+            a -= b;
+
+            assert_eq!(MatZq::identity(nr_rows, nr_cols, 7), a);
+        }
+    }
+
+    /// Ensures that mismatching moduli will result in a panic.
+    #[test]
+    #[should_panic]
+    fn mismatching_moduli() {
+        let mut a = MatZq::new(1, 1, 5);
+        let b = MatZq::new(1, 1, 6);
+
+        a -= b;
+    }
+
+    /// Ensure that `sub_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let mut a = MatZq::new(2, 2, 7);
+        let b = MatZq::new(2, 2, 7);
+        let c = MatZ::new(2, 2);
+
+        a -= &b;
+        a -= b;
+        a -= &c;
+        a -= c;
     }
 }
 

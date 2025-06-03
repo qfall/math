@@ -12,11 +12,77 @@ use super::super::MatQ;
 use crate::error::MathError;
 use crate::integer::MatZ;
 use crate::macros::arithmetics::{
-    arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+    arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
+    arithmetic_trait_mixed_borrowed_owned,
 };
 use crate::traits::MatrixDimensions;
 use flint_sys::fmpq_mat::fmpq_mat_sub;
-use std::ops::Sub;
+use std::ops::{Sub, SubAssign};
+
+impl SubAssign<&MatQ> for MatQ {
+    /// Computes the subtraction of `self` and `other` reusing
+    /// the memory of `self`.
+    /// [`SubAssign`] can be used on [`MatQ`] in combination with
+    /// [`MatQ`] and [`MatZ`].
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to subrract from `self`
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{rational::MatQ, integer::MatZ};
+    /// let mut a = MatQ::identity(2, 2);
+    /// let b = MatQ::new(2, 2);
+    /// let c = MatZ::new(2, 2);
+    ///
+    /// a -= &b;
+    /// a -= b;
+    /// a -= &c;
+    /// a -= c;
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the matrix dimensions mismatch.
+    fn sub_assign(&mut self, other: &Self) {
+        if self.get_num_rows() != other.get_num_rows()
+            || self.get_num_columns() != other.get_num_columns()
+        {
+            panic!(
+                "Tried to subtract a '{}x{}' matrix and a '{}x{}' matrix.",
+                self.get_num_rows(),
+                self.get_num_columns(),
+                other.get_num_rows(),
+                other.get_num_columns()
+            );
+        }
+
+        unsafe { fmpq_mat_sub(&mut self.matrix, &self.matrix, &other.matrix) };
+    }
+}
+impl SubAssign<&MatZ> for MatQ {
+    /// Documentation at [`MatQ::sub_assign`].
+    fn sub_assign(&mut self, other: &MatZ) {
+        if self.get_num_rows() != other.get_num_rows()
+            || self.get_num_columns() != other.get_num_columns()
+        {
+            panic!(
+                "Tried to subtract a '{}x{}' matrix and a '{}x{}' matrix.",
+                self.get_num_rows(),
+                self.get_num_columns(),
+                other.get_num_rows(),
+                other.get_num_columns()
+            );
+        }
+
+        let other = MatQ::from(other);
+        unsafe {
+            fmpq_mat_sub(&mut self.matrix, &self.matrix, &other.matrix);
+        }
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(SubAssign, sub_assign, MatQ, MatQ);
+arithmetic_assign_trait_borrowed_to_owned!(SubAssign, sub_assign, MatQ, MatZ);
 
 impl Sub for &MatQ {
     type Output = MatQ;
@@ -132,6 +198,74 @@ impl MatQ {
 
 arithmetic_trait_borrowed_to_owned!(Sub, sub, MatQ, MatQ, MatQ);
 arithmetic_trait_mixed_borrowed_owned!(Sub, sub, MatQ, MatQ, MatQ);
+
+#[cfg(test)]
+mod test_sub_assign {
+    use crate::{integer::MatZ, rational::MatQ};
+    use std::str::FromStr;
+
+    /// Ensure that `sub_assign` works for small numbers.
+    #[test]
+    fn correct_small() {
+        let mut a = MatQ::identity(2, 2);
+        let b = MatQ::from_str("[[-4/5, -5],[6, 1]]").unwrap();
+        let mut c = a.clone();
+        let d = MatZ::from_str("[[-4, -5],[6, 1]]").unwrap();
+        let cmp_0 = MatQ::from_str("[[9/5, 5],[-6, 0]]").unwrap();
+        let cmp_1 = MatQ::from_str("[[5, 5],[-6, 0]]").unwrap();
+
+        a -= b;
+        c -= d;
+
+        assert_eq!(cmp_0, a);
+        assert_eq!(cmp_1, c);
+    }
+
+    /// Ensure that `sub_assign` works for large numbers.
+    #[test]
+    fn correct_large() {
+        let mut a = MatQ::from_str(&format!("[[{}/1, 5/2],[{}, -1]]", i64::MAX, i64::MIN)).unwrap();
+        let b = MatQ::from_str(&format!("[[-{}, 6/2],[-6, 1]]", i64::MAX)).unwrap();
+        let cmp = MatQ::from_str(&format!(
+            "[[{}, -1/2],[{}, -2]]",
+            2 * (i64::MAX as u64),
+            i64::MIN + 6
+        ))
+        .unwrap();
+
+        a -= b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `sub_assign` works for different matrix dimensions.
+    #[test]
+    fn matrix_dimensions() {
+        let dimensions = [(3, 3), (5, 1), (1, 4)];
+
+        for (nr_rows, nr_cols) in dimensions {
+            let mut a = MatQ::identity(nr_rows, nr_cols);
+            let b = MatQ::new(nr_rows, nr_cols);
+
+            a -= b;
+
+            assert_eq!(MatQ::identity(nr_rows, nr_cols), a);
+        }
+    }
+
+    /// Ensure that `sub_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let mut a = MatQ::new(2, 2);
+        let b = MatQ::new(2, 2);
+        let c = MatZ::new(2, 2);
+
+        a -= &b;
+        a -= b;
+        a -= &c;
+        a -= c;
+    }
+}
 
 #[cfg(test)]
 mod test_sub {

@@ -113,7 +113,7 @@ impl Z {
                         Please choose the interval larger.")));
             }
             sample = &lower_bound + uis.sample();
-            steps = steps - 1;
+            steps -= 1;
         }
 
         Ok(sample)

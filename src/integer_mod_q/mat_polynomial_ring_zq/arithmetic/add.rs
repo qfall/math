@@ -51,11 +51,8 @@ impl AddAssign<&MatPolynomialRingZq> for MatPolynomialRingZq {
     /// - if the matrix dimensions mismatch.
     /// - if the moduli of the matrices mismatch.
     fn add_assign(&mut self, other: &Self) {
-        if self.modulus != other.modulus {
-            panic!(
-                "Tried to add polynomial with modulus '{}' and polynomial with modulus '{}'.",
-                self.modulus, other.modulus
-            );
+        if !self.compare_base(other) {
+            panic!("{}", self.call_compare_base_error(other).unwrap());
         }
 
         self.matrix += &other.matrix;
@@ -340,6 +337,17 @@ mod test_add_assign {
 
             assert_eq!(MatPolynomialRingZq::identity(nr_rows, nr_cols, &modulus), a);
         }
+    }
+
+    /// Ensure that mismatching dimensions will result in a panic.
+    #[test]
+    #[should_panic]
+    fn mismatching_dimensions() {
+        let modulus = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 7").unwrap();
+        let mut a = MatPolynomialRingZq::new(2, 1, &modulus);
+        let b = MatPolynomialRingZq::new(1, 1, &modulus);
+
+        a += b;
     }
 
     /// Ensures that mismatching moduli will result in a panic.

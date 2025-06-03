@@ -14,12 +14,71 @@ use crate::{
     integer::PolyOverZ,
     integer_mod_q::PolynomialRingZq,
     macros::arithmetics::{
-        arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+        arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
+        arithmetic_trait_mixed_borrowed_owned,
     },
     traits::CompareBase,
 };
 use flint_sys::{fmpz_mod_poly::fmpz_mod_poly_sub, fq::fq_sub};
-use std::{ops::Sub, str::FromStr};
+use std::{
+    ops::{Sub, SubAssign},
+    str::FromStr,
+};
+
+impl SubAssign<&PolyOverZq> for PolyOverZq {
+    /// Computes the subtraction of `self` and `other` reusing
+    /// the memory of `self`.
+    /// [`SubAssign`] can be used on [`PolyOverZq`] in combination with
+    /// [`PolyOverZq`] and [`PolyOverZ`].
+    ///
+    /// Parameters:
+    /// - `other`: specifies the polynomial to subtract from `self`
+    ///
+    /// Returns the difference of both polynomials modulo `q` as a [`PolyOverZq`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{integer_mod_q::PolyOverZq, integer::PolyOverZ};
+    /// use std::str::FromStr;
+    ///
+    /// let mut a = PolyOverZq::from_str("3  1 2 3 mod 7").unwrap();
+    /// let b = PolyOverZq::from_str("5  1 2 -3 0 4 mod 7").unwrap();
+    /// let c = PolyOverZ::from_str("4  -1 2 5 3").unwrap();
+    ///
+    /// a -= &b;
+    /// a -= b;
+    /// a -= &c;
+    /// a -= c;
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the moduli of both [`PolyOverZq`] mismatch.
+    fn sub_assign(&mut self, other: &Self) {
+        if !self.compare_base(other) {
+            panic!("{}", self.call_compare_base_error(other).unwrap());
+        }
+
+        unsafe {
+            fmpz_mod_poly_sub(
+                &mut self.poly,
+                &self.poly,
+                &other.poly,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
+    }
+}
+impl SubAssign<&PolyOverZ> for PolyOverZq {
+    /// Documentation at [`PolyOverZq::sub_assign`].
+    fn sub_assign(&mut self, other: &PolyOverZ) {
+        let other = PolyOverZq::from((other, self.get_mod()));
+
+        self.sub_assign(&other);
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(SubAssign, sub_assign, PolyOverZq, PolyOverZq);
+arithmetic_assign_trait_borrowed_to_owned!(SubAssign, sub_assign, PolyOverZq, PolyOverZ);
 
 impl Sub for &PolyOverZq {
     type Output = PolyOverZq;
@@ -179,6 +238,74 @@ impl PolyOverZq {
             );
         }
         Ok(out)
+    }
+}
+
+#[cfg(test)]
+mod test_sub_assign {
+    use super::PolyOverZq;
+    use crate::integer::PolyOverZ;
+    use std::str::FromStr;
+
+    /// Ensure that `sub_assign` works for small numbers.
+    #[test]
+    fn correct_small() {
+        let mut a = PolyOverZq::from_str("3  6 2 -3 mod 7").unwrap();
+        let b = PolyOverZq::from_str("5  -1 -2 -5 -1 -2 mod 7").unwrap();
+        let cmp = PolyOverZq::from_str("5  0 4 2 1 2 mod 7").unwrap();
+
+        a -= b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `sub_assign` works for large numbers.
+    #[test]
+    fn correct_large() {
+        let mut a = PolyOverZq::from_str(&format!(
+            "3  {} {} {} mod {}",
+            u32::MAX,
+            i32::MIN,
+            i32::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+        let b = PolyOverZq::from_str(&format!("2  -{} -{} mod {}", u32::MAX, i32::MAX, u64::MAX))
+            .unwrap();
+        let cmp = PolyOverZq::from_str(&format!(
+            "3  {} -1 {} mod {}",
+            u64::from(u32::MAX) * 2,
+            i32::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+
+        a -= b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `sub_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let mut a = PolyOverZq::from_str("3  1 2 -3 mod 5").unwrap();
+        let b = PolyOverZq::from_str("3  -1 -2 3 mod 5").unwrap();
+        let c = PolyOverZ::from_str("2  -2 2").unwrap();
+
+        a -= &b;
+        a -= b;
+        a -= &c;
+        a -= c;
+    }
+
+    /// Ensures that mismatching moduli result in a panic.
+    #[test]
+    #[should_panic]
+    fn mismatching_moduli() {
+        let mut a: PolyOverZq = PolyOverZq::from_str("3  -5 4 1 mod 7").unwrap();
+        let b: PolyOverZq = PolyOverZq::from_str("3  -5 4 1 mod 8").unwrap();
+
+        a -= b;
     }
 }
 
