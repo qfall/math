@@ -18,6 +18,7 @@ use crate::{
     },
     traits::CompareBase,
 };
+use core::panic;
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_mul;
 use std::{
     ops::{Mul, MulAssign},
@@ -53,12 +54,8 @@ impl MulAssign<&PolyOverZq> for PolyOverZq {
     /// # Panics ...
     /// - if the moduli of both [`PolyOverZq`] mismatch.
     fn mul_assign(&mut self, other: &Self) {
-        if self.modulus != other.modulus {
-            panic!(
-                "Tried to multiply polynomial with modulus '{}' and polynomial with modulus '{}'.
-            If the modulus should be ignored please convert into a PolyOverZ beforehand.",
-                self.modulus, other.modulus
-            );
+        if !self.compare_base(other) {
+            panic!("{}", self.call_compare_base_error(other).unwrap());
         }
 
         unsafe {

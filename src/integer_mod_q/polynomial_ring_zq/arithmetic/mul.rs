@@ -57,11 +57,8 @@ impl MulAssign<&PolynomialRingZq> for PolynomialRingZq {
     /// # Panics ...
     /// - if the moduli of both [`PolynomialRingZq`] mismatch.
     fn mul_assign(&mut self, other: &Self) {
-        if self.modulus != other.modulus {
-            panic!(
-                "Tried to multiply polynomial with modulus '{}' and polynomial with modulus '{}'.",
-                self.modulus, other.modulus
-            );
+        if !self.compare_base(other) {
+            panic!("{}", self.call_compare_base_error(other).unwrap());
         }
 
         unsafe {
@@ -90,6 +87,7 @@ impl MulAssign<&PolyOverZq> for PolynomialRingZq {
                 self.modulus, other.modulus
             );
         }
+        // get a fmpz_poly_struct from a fmpz_mod_poly_struct
         let other = other.get_representative_least_nonnegative_residue();
 
         unsafe {
@@ -221,11 +219,12 @@ impl Mul<&PolyOverZq> for &PolynomialRingZq {
     /// # Panics ...
     /// - if the moduli mismatch.
     fn mul(self, other: &PolyOverZq) -> Self::Output {
-        assert_eq!(
-            self.modulus.get_q(),
-            other.modulus,
-            "Tried to multiply polynomials with different moduli."
-        );
+        if self.modulus.get_q() != other.modulus {
+            panic!(
+                "Tried to multiply polynomial with modulus '{}' and polynomial with modulus '{}'.",
+                self.modulus, other.modulus
+            );
+        }
 
         let mut out = PolynomialRingZq::from((&PolyOverZ::default(), &self.modulus));
         unsafe {
