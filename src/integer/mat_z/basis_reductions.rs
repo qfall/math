@@ -42,7 +42,7 @@ impl MatZ {
     ///
     /// let mut matrix = MatZ::sample_uniform(2, 2, 0, 65537).unwrap();
     ///
-    /// matrix.lll(0.75, 0.501);
+    /// let reduced_matrix = matrix.lll(0.75, 0.501);
     /// ```
     ///
     /// # Panics ...
@@ -101,9 +101,9 @@ impl MatZ {
     /// use qfall_math::integer::MatZ;
     ///
     /// let mut matrix = MatZ::sample_uniform(2, 2, 0, 65537).unwrap();
-    /// matrix.lll(0.75, 0.501);
+    /// let reduced_matrix = matrix.lll(0.75, 0.501);
     ///
-    /// let check = matrix.is_reduced(0.75, 0.501);
+    /// let check = reduced_matrix.is_reduced(0.75, 0.501);
     ///
     /// assert!(check);
     /// ```
