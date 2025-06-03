@@ -12,12 +12,53 @@ use super::super::PolyOverQ;
 use crate::{
     integer::PolyOverZ,
     macros::arithmetics::{
-        arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
-        arithmetic_trait_reverse,
+        arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
+        arithmetic_trait_mixed_borrowed_owned, arithmetic_trait_reverse,
     },
 };
 use flint_sys::fmpq_poly::fmpq_poly_mul;
-use std::ops::Mul;
+use std::ops::{Mul, MulAssign};
+
+impl MulAssign<&PolyOverQ> for PolyOverQ {
+    /// Computes the multiplication of `self` and `other` reusing
+    /// the memory of `self`.
+    /// [`MulAssign`] can be used on [`PolyOverQ`] in combination with
+    /// [`PolyOverQ`] and [`PolyOverZ`].
+    ///
+    /// Parameters:
+    /// - `other`: specifies the polynomial to multiply to `self`
+    ///
+    /// Returns the product of both polynomials as a [`PolyOverQ`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{rational::PolyOverQ, integer::PolyOverZ};
+    /// use std::str::FromStr;
+    ///
+    /// let mut a = PolyOverQ::from_str("3  1 2/3 -3/4").unwrap();
+    /// let b = PolyOverQ::from_str("5  1 2 -3 0 8/9").unwrap();
+    /// let c = PolyOverZ::from_str("2  -1 2").unwrap();
+    ///
+    /// a *= &b;
+    /// a *= b;
+    /// a *= &c;
+    /// a *= c;
+    /// ```
+    fn mul_assign(&mut self, other: &Self) {
+        unsafe { fmpq_poly_mul(&mut self.poly, &self.poly, &other.poly) };
+    }
+}
+impl MulAssign<&PolyOverZ> for PolyOverQ {
+    /// Documentation at [`PolyOverQ::mul_assign`].
+    fn mul_assign(&mut self, other: &PolyOverZ) {
+        let other = PolyOverQ::from(other);
+
+        self.mul_assign(other);
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, PolyOverQ, PolyOverQ);
+arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, PolyOverQ, PolyOverZ);
 
 impl Mul for &PolyOverQ {
     type Output = PolyOverQ;
@@ -90,6 +131,70 @@ arithmetic_trait_borrowed_to_owned!(Mul, mul, PolyOverQ, PolyOverZ, PolyOverQ);
 arithmetic_trait_borrowed_to_owned!(Mul, mul, PolyOverZ, PolyOverQ, PolyOverQ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, PolyOverQ, PolyOverZ, PolyOverQ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, PolyOverZ, PolyOverQ, PolyOverQ);
+
+#[cfg(test)]
+mod test_mul_assign {
+    use super::PolyOverQ;
+    use crate::integer::PolyOverZ;
+    use std::str::FromStr;
+
+    /// Ensure that `mul_assign` works for small numbers.
+    #[test]
+    fn correct_small() {
+        let mut a = PolyOverQ::from_str("3  1/7 2/7 -3/7").unwrap();
+        let b = PolyOverQ::from_str("5  1/11 2/11 5/11 1/11 2/11").unwrap();
+
+        a *= b;
+
+        assert_eq!(
+            a,
+            PolyOverQ::from_str("7  1/77 4/77 6/77 5/77 -11/77 1/77 -6/77").unwrap()
+        );
+    }
+
+    /// Ensure that `mul_assign` works for large numbers.
+    #[test]
+    fn correct_large() {
+        let mut a = PolyOverQ::from_str(&format!("2  {} {}", 2, i64::MIN)).unwrap();
+        let b = PolyOverQ::from_str(&format!(
+            "2  {}/{} {}/{}",
+            u32::MAX,
+            u128::MAX,
+            i64::MAX,
+            u128::MAX
+        ))
+        .unwrap();
+
+        a *= b;
+
+        assert_eq!(
+            a,
+            PolyOverQ::from_str(&format!(
+                "3  {}/{} {}/{} {}/{}",
+                2_u128 * u128::from(u32::MAX),
+                u128::MAX,
+                2_i128 * i128::from(i64::MAX) + i128::from(u32::MAX) * i128::from(i64::MIN),
+                u128::MAX,
+                i128::from(i64::MAX) * i128::from(i64::MIN),
+                u128::MAX
+            ))
+            .unwrap()
+        );
+    }
+
+    /// Ensure that `mul_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let mut a = PolyOverQ::from_str("3  1 2 -3").unwrap();
+        let b = PolyOverQ::from_str("3  -1 -2 3").unwrap();
+        let c = PolyOverZ::from_str("4  2 -1 2 3").unwrap();
+
+        a *= &b;
+        a *= b;
+        a *= &c;
+        a *= c;
+    }
+}
 
 #[cfg(test)]
 mod test_mul {
