@@ -53,8 +53,8 @@ impl SubAssign<&Zq> for Zq {
     /// # Panics ...
     /// - if the moduli of both [`Zq`] mismatch.
     fn sub_assign(&mut self, other: &Self) {
-        if self.modulus != other.modulus {
-            panic!("Tried to subtract '{self}' and '{other}'. If the modulus should be ignored please convert into a Z beforehand.");
+        if !self.compare_base(other) {
+            panic!("{}", self.call_compare_base_error(other).unwrap());
         }
 
         unsafe {

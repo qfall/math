@@ -57,11 +57,8 @@ impl SubAssign<&PolynomialRingZq> for PolynomialRingZq {
     /// # Panics ...
     /// - if the moduli of both [`PolynomialRingZq`] mismatch.
     fn sub_assign(&mut self, other: &Self) {
-        if self.modulus != other.modulus {
-            panic!(
-                "Tried to subtract a polynomial with modulus '{}' and a polynomial with modulus '{}'.",
-                self.modulus, other.modulus
-            );
+        if !self.compare_base(other) {
+            panic!("{}", self.call_compare_base_error(other).unwrap());
         }
 
         unsafe {
@@ -90,6 +87,7 @@ impl SubAssign<&PolyOverZq> for PolynomialRingZq {
                 self.modulus, other.modulus
             );
         }
+        // get a fmpz_poly_struct from a fmpz_mod_poly_struct
         let other = other.get_representative_least_nonnegative_residue();
 
         unsafe {

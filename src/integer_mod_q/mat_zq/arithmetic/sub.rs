@@ -57,12 +57,8 @@ impl SubAssign<&MatZq> for MatZq {
                 other.get_num_columns()
             );
         }
-        if self.modulus != other.modulus {
-            panic!(
-                "Tried to sub matrices with moduli '{}' and '{}'.",
-                self.get_mod(),
-                other.get_mod()
-            )
+        if !self.compare_base(other) {
+            panic!("{}", self.call_compare_base_error(other).unwrap());
         }
 
         unsafe { fmpz_mod_mat_sub(&mut self.matrix, &self.matrix, &other.matrix) };

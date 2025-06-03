@@ -54,12 +54,8 @@ impl SubAssign<&PolyOverZq> for PolyOverZq {
     /// # Panics ...
     /// - if the moduli of both [`PolyOverZq`] mismatch.
     fn sub_assign(&mut self, other: &Self) {
-        if self.modulus != other.modulus {
-            panic!(
-                "Tried to subtract polynomial with modulus '{}' and polynomial with modulus '{}'.
-            If the modulus should be ignored please convert into a PolyOverZ beforehand.",
-                self.modulus, other.modulus
-            );
+        if !self.compare_base(other) {
+            panic!("{}", self.call_compare_base_error(other).unwrap());
         }
 
         unsafe {
