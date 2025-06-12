@@ -24,9 +24,9 @@ impl MatQ {
     /// use qfall_math::rational::{MatQ, Q};
     /// use std::str::FromStr;
     ///
-    /// let vec = MatQ::from_str("[[2, 3],[-2/1, 0]]").unwrap();
+    /// let mat = MatQ::from_str("[[2, 3],[-2/1, 0]]").unwrap();
     ///
-    /// let eucl_norm = vec.norm_l_2_infty_sqrd();
+    /// let eucl_norm = mat.norm_l_2_infty_sqrd();
     ///
     /// // 3^2 + 0^2 = 9
     /// assert_eq!(Q::from(9), eucl_norm);
@@ -51,9 +51,9 @@ impl MatQ {
     /// use qfall_math::rational::{Q, MatQ};
     /// use std::str::FromStr;
     ///
-    /// let vec = MatQ::from_str("[[4/2, 3],[2, 0]]").unwrap();
+    /// let mat = MatQ::from_str("[[4/2, 3],[2, 0]]").unwrap();
     ///
-    /// let eucl_norm = vec.norm_l_2_infty();
+    /// let eucl_norm = mat.norm_l_2_infty();
     ///
     /// // sqrt(3^2 + 0^2) = 3
     /// assert_eq!(Q::from(3), eucl_norm);
@@ -70,9 +70,9 @@ impl MatQ {
     /// use qfall_math::rational::{MatQ, Q};
     /// use std::str::FromStr;
     ///
-    /// let vec = MatQ::from_str("[[2, 6/2],[2, 0]]").unwrap();
+    /// let mat = MatQ::from_str("[[2, 6/2],[2, 0]]").unwrap();
     ///
-    /// let eucl_norm = vec.norm_l_infty_infty();
+    /// let eucl_norm = mat.norm_l_infty_infty();
     ///
     /// // max{2, 3} = 3
     /// assert_eq!(Q::from(3), eucl_norm);

@@ -9,23 +9,23 @@
 //! This module includes functionality to compute several norms
 //! defined on matrices.
 
-use super::MatZq;
+use super::MatPolyOverZ;
 use crate::{
     integer::Z,
     rational::Q,
     traits::{MatrixDimensions, MatrixGetSubmatrix},
 };
 
-impl MatZq {
+impl MatPolyOverZ {
     /// Outputs the squared l_{2, ∞}-norm, i.e. it computes the squared Euclidean
     /// norm of each column of the matrix and returns the largest one.
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::{integer_mod_q::MatZq, integer::Z};
+    /// use qfall_math::integer::{MatPolyOverZ, Z};
     /// use std::str::FromStr;
     ///
-    /// let mat = MatZq::from_str("[[2, 3],[2, 0]] mod 7").unwrap();
+    /// let mat = MatPolyOverZ::from_str("[[1  2, 1  3],[1  2, 0]]").unwrap();
     ///
     /// let eucl_norm = mat.norm_l_2_infty_sqrd();
     ///
@@ -49,15 +49,15 @@ impl MatZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::{integer_mod_q::MatZq, rational::Q};
+    /// use qfall_math::{integer::MatPolyOverZ, rational::Q};
     /// use std::str::FromStr;
     ///
-    /// let mat = MatZq::from_str("[[2, 3],[2, 0],[3, 4],[3, 4]] mod 5").unwrap();
+    /// let mat = MatPolyOverZ::from_str("[[1  2, 1  3],[1  2, 0]]").unwrap();
     ///
     /// let eucl_norm = mat.norm_l_2_infty();
     ///
-    /// // sqrt(4 * 2^2) = 4
-    /// assert_eq!(Q::from(4), eucl_norm);
+    /// // sqrt(3^2 + 0^2) = 3
+    /// assert_eq!(Q::from(3), eucl_norm);
     /// ```
     pub fn norm_l_2_infty(&self) -> Q {
         self.norm_l_2_infty_sqrd().sqrt()
@@ -68,10 +68,10 @@ impl MatZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::{integer_mod_q::MatZq, integer::Z};
+    /// use qfall_math::integer::{MatPolyOverZ, Z};
     /// use std::str::FromStr;
     ///
-    /// let mat = MatZq::from_str("[[2, 4],[2, 0]] mod 7").unwrap();
+    /// let mat = MatPolyOverZ::from_str("[[1  2, 1  3],[1  2, 0]]").unwrap();
     ///
     /// let eucl_norm = mat.norm_l_infty_infty();
     ///
@@ -93,23 +93,28 @@ impl MatZq {
 
 #[cfg(test)]
 mod test_matrix_norms {
-    use super::{MatZq, Q, Z};
+    use super::{MatPolyOverZ, Q, Z};
     use std::str::FromStr;
 
     /// Ensures that the squared l_{2, ∞}-norm is correctly computed.
     #[test]
     fn norm_sqrd_l_2_infty() {
-        let mat = MatZq::from_str("[[3, -2, 5],[-5, -6, 2],[-4, 0, 0],[2, 0, 1]] mod 9").unwrap();
+        let mat = MatPolyOverZ::from_str(
+            "[[1  3, 1  -2, 1  5],[1  -5, 1  -6, 2  2 1],[1  -4, 0, 0],[1  2, 0, 1  1]]",
+        )
+        .unwrap();
 
         let sqrd_norm = mat.norm_l_2_infty_sqrd();
 
-        assert_eq!(Z::from(45), sqrd_norm);
+        assert_eq!(Z::from(54), sqrd_norm);
     }
 
     /// Ensures that the l_{2, ∞}-norm is correctly computed.
     #[test]
     fn norm_l_2_infty() {
-        let mat = MatZq::from_str("[[-2, -2],[-2, -3],[-2, 0],[2, 0]] mod 5").unwrap();
+        let mat =
+            MatPolyOverZ::from_str("[[1  -2, 3  -2 1 1],[1  -2, 1  -3],[1  -2, 0],[1  2, 0]]")
+                .unwrap();
 
         let norm = mat.norm_l_2_infty();
 
@@ -119,10 +124,10 @@ mod test_matrix_norms {
     /// Ensures that the l_{∞, ∞}-norm is correctly computed.
     #[test]
     fn norm_l_infty_infty() {
-        let mat = MatZq::from_str("[[-2, 3],[2, -5],[-2, 0]] mod 8").unwrap();
+        let mat = MatPolyOverZ::from_str("[[2  -2 1, 1  3],[1  2, 1  -5],[1  -2, 0]]").unwrap();
 
         let infty_norm = mat.norm_l_infty_infty();
 
-        assert_eq!(Z::from(3), infty_norm);
+        assert_eq!(Z::from(5), infty_norm);
     }
 }

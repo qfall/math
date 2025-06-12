@@ -19,6 +19,7 @@ mod default;
 mod evaluate;
 mod from;
 mod get;
+mod norm;
 mod ownership;
 mod properties;
 mod reduce;

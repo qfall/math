@@ -9,23 +9,25 @@
 //! This module includes functionality to compute several norms
 //! defined on matrices.
 
-use super::MatZq;
+use super::MatPolynomialRingZq;
 use crate::{
     integer::Z,
     rational::Q,
     traits::{MatrixDimensions, MatrixGetSubmatrix},
 };
 
-impl MatZq {
+impl MatPolynomialRingZq {
     /// Outputs the squared l_{2, ∞}-norm, i.e. it computes the squared Euclidean
     /// norm of each column of the matrix and returns the largest one.
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::{integer_mod_q::MatZq, integer::Z};
+    /// use qfall_math::{integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq}, integer::{Z, MatPolyOverZ}};
     /// use std::str::FromStr;
     ///
-    /// let mat = MatZq::from_str("[[2, 3],[2, 0]] mod 7").unwrap();
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 7").unwrap();
+    /// let mat = MatPolyOverZ::from_str("[[1  2, 1  3],[1  2, 0]]").unwrap();
+    /// let mat = MatPolynomialRingZq::from((&mat, &modulus));
     ///
     /// let eucl_norm = mat.norm_l_2_infty_sqrd();
     ///
@@ -49,10 +51,13 @@ impl MatZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::{integer_mod_q::MatZq, rational::Q};
+    /// use qfall_math::{integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq}, integer::{Z, MatPolyOverZ}};
     /// use std::str::FromStr;
+    /// # use qfall_math::rational::Q;
     ///
-    /// let mat = MatZq::from_str("[[2, 3],[2, 0],[3, 4],[3, 4]] mod 5").unwrap();
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 5").unwrap();
+    /// let mat = MatPolyOverZ::from_str("[[1  2, 1  3],[1  2, 1  0],[1  3, 1  4],[1  3, 1  4]]").unwrap();
+    /// let mat = MatPolynomialRingZq::from((&mat, &modulus));
     ///
     /// let eucl_norm = mat.norm_l_2_infty();
     ///
@@ -68,10 +73,12 @@ impl MatZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::{integer_mod_q::MatZq, integer::Z};
+    /// use qfall_math::{integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq}, integer::{Z, MatPolyOverZ}};
     /// use std::str::FromStr;
     ///
-    /// let mat = MatZq::from_str("[[2, 4],[2, 0]] mod 7").unwrap();
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 7").unwrap();
+    /// let mat = MatPolyOverZ::from_str("[[1  2, 1  4],[1  2, 0]]").unwrap();
+    /// let mat = MatPolynomialRingZq::from((&mat, &modulus));
     ///
     /// let eucl_norm = mat.norm_l_infty_infty();
     ///
@@ -93,13 +100,19 @@ impl MatZq {
 
 #[cfg(test)]
 mod test_matrix_norms {
-    use super::{MatZq, Q, Z};
+    use super::{MatPolynomialRingZq, Q, Z};
+    use crate::{integer::MatPolyOverZ, integer_mod_q::ModulusPolynomialRingZq};
     use std::str::FromStr;
 
     /// Ensures that the squared l_{2, ∞}-norm is correctly computed.
     #[test]
     fn norm_sqrd_l_2_infty() {
-        let mat = MatZq::from_str("[[3, -2, 5],[-5, -6, 2],[-4, 0, 0],[2, 0, 1]] mod 9").unwrap();
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 9").unwrap();
+        let mat = MatPolyOverZ::from_str(
+            "[[1  3, 1  -2, 1  5],[1  -5, 1  -6, 2  1 1],[1  -4, 0, 0],[1  2, 0, 3  1 1 1]]",
+        )
+        .unwrap();
+        let mat = MatPolynomialRingZq::from((&mat, &modulus));
 
         let sqrd_norm = mat.norm_l_2_infty_sqrd();
 
@@ -109,7 +122,11 @@ mod test_matrix_norms {
     /// Ensures that the l_{2, ∞}-norm is correctly computed.
     #[test]
     fn norm_l_2_infty() {
-        let mat = MatZq::from_str("[[-2, -2],[-2, -3],[-2, 0],[2, 0]] mod 5").unwrap();
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 5").unwrap();
+        let mat =
+            MatPolyOverZ::from_str("[[1  -2, 4  -2 0 0 1],[1  -2, 1  -3],[1  -2, 0],[1  2, 0]]")
+                .unwrap();
+        let mat = MatPolynomialRingZq::from((&mat, &modulus));
 
         let norm = mat.norm_l_2_infty();
 
@@ -119,7 +136,9 @@ mod test_matrix_norms {
     /// Ensures that the l_{∞, ∞}-norm is correctly computed.
     #[test]
     fn norm_l_infty_infty() {
-        let mat = MatZq::from_str("[[-2, 3],[2, -5],[-2, 0]] mod 8").unwrap();
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 8").unwrap();
+        let mat = MatPolyOverZ::from_str("[[2  -2 1, 1  3],[1  2, 1  -5],[1  -2, 0]]").unwrap();
+        let mat = MatPolynomialRingZq::from((&mat, &modulus));
 
         let infty_norm = mat.norm_l_infty_infty();
 
