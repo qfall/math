@@ -47,60 +47,12 @@ impl GetCoefficient<Zq> for PolyOverZq {
     /// assert_eq!(Zq::from((0, 17)), coeff_4);
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    ///     either the index is negative or it does not fit into an [`i64`].
-    fn get_coeff(&self, index: impl TryInto<i64> + Display) -> Result<Zq, MathError> {
-        let out_z: Z = self.get_coeff(index)?;
-        // as we know that the entry is already reduced we can directly det the values
-        // instead of putting it through the from function to save some runtime
-        Ok(Zq {
-            value: out_z,
-            modulus: self.modulus.clone(),
-        })
-    }
-}
-
-impl PolyOverZq {
-    /// This is an unchecked version of the other getters.
-    /// It only returns a clone of the contained `fmpz` value as a `Z` value.
-    /// This is considerably more efficient than the other getters, but it also does not check if the coefficient
-    /// of the polynomial is set.
-    /// Therefore, if a value outside of the range is chosen, it will be `0`.
-    ///
-    /// The entry is reduced as `self` is reduced.
-    ///
-    /// Parameters:
-    /// - `index`: the index for which the coefficient will be returned.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::traits::*;
-    /// use qfall_math::integer_mod_q::PolyOverZq;
-    /// use qfall_math::integer::Z;
-    /// use std::str::FromStr;
-    ///
-    /// let poly = PolyOverZq::from_str("4  0 1 2 3 mod 17").unwrap();
-    ///
-    /// let coeff_0: Z = poly.get_coeff_unchecked(0);
-    /// let coeff_1: Z = poly.get_coeff_unchecked(1);
-    /// let coeff_4: Z = poly.get_coeff_unchecked(4);
-    ///
-    /// assert_eq!(Z::ZERO, coeff_0);
-    /// assert_eq!(Z::ONE, coeff_1);
-    /// assert_eq!(Z::ZERO, coeff_4);
-    /// ```
-    pub fn get_coeff_unchecked(&self, index: i64) -> Z {
-        let mut z = Z::default();
-        unsafe {
-            fmpz_mod_poly_get_coeff_fmpz(
-                &mut z.value,
-                &self.poly,
-                index,
-                self.modulus.get_fmpz_mod_ctx_struct(),
-            )
-        }
-        z
+    /// # Safety
+    /// To use this function safely, make sure that the selected index
+    /// is greater or equal than `0`.
+    unsafe fn get_coeff_unchecked(&self, index: i64) -> Zq {
+        let out_z: Z = self.get_coeff_unchecked(index);
+        Zq::from((out_z, &self.modulus))
     }
 }
 
