@@ -74,7 +74,7 @@ impl MatZ {
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    ///     For further information see [`MatZ::new`].
+    ///   For further information see [`MatZ::new`].
     pub fn identity(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
@@ -89,7 +89,7 @@ impl MatZ {
 mod test_new {
     use crate::{
         integer::{MatZ, Z},
-        traits::GetEntry,
+        traits::MatrixGetEntry,
     };
 
     /// Ensure that entries of a new matrix are `0`.
@@ -127,7 +127,7 @@ mod test_new {
 mod test_identity {
     use crate::{
         integer::{MatZ, Z},
-        traits::GetEntry,
+        traits::MatrixGetEntry,
     };
 
     /// Tests if an identity matrix is set from a zero matrix.

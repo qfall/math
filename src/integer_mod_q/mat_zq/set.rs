@@ -13,26 +13,27 @@ use crate::{
     integer::Z,
     integer_mod_q::{MatZq, Modulus, Zq},
     macros::for_others::implement_for_owned,
-    traits::{AsInteger, GetNumColumns, GetNumRows, SetEntry},
-    utils::{
-        collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
-        index::{evaluate_index, evaluate_indices_for_matrix},
-    },
+    traits::{AsInteger, MatrixDimensions, MatrixSetEntry, MatrixSetSubmatrix, MatrixSwaps},
+    utils::index::{evaluate_index_for_vector, evaluate_indices_for_matrix},
 };
 use flint_sys::{
-    fmpz::{fmpz_set, fmpz_swap},
+    fmpz::fmpz_swap,
     fmpz_mat::{
         fmpz_mat_entry, fmpz_mat_invert_cols, fmpz_mat_invert_rows, fmpz_mat_swap_cols,
         fmpz_mat_swap_rows,
     },
-    fmpz_mod_mat::{_fmpz_mod_mat_reduce, _fmpz_mod_mat_set_mod, fmpz_mod_mat_set_entry},
+    fmpz_mod_mat::{
+        _fmpz_mod_mat_reduce, _fmpz_mod_mat_set_mod, fmpz_mod_mat_set, fmpz_mod_mat_set_entry,
+        fmpz_mod_mat_window_clear, fmpz_mod_mat_window_init,
+    },
 };
 use std::{
     fmt::Display,
+    mem::MaybeUninit,
     ptr::{null, null_mut},
 };
 
-impl<Integer: Into<Z>> SetEntry<Integer> for MatZq {
+impl<Integer: Into<Z>> MatrixSetEntry<Integer> for MatZq {
     /// Sets the value of a specific matrix entry according to a given `value`
     /// that implements [`Into<Z>`].
     ///
@@ -62,7 +63,7 @@ impl<Integer: Into<Z>> SetEntry<Integer> for MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if `row` or `column` are greater than the matrix size.
+    ///   if `row` or `column` are greater than the matrix size.
     fn set_entry(
         &mut self,
         row: impl TryInto<i64> + Display,
@@ -74,207 +75,176 @@ impl<Integer: Into<Z>> SetEntry<Integer> for MatZq {
 
         self.set_entry(row, column, value)
     }
-}
 
-impl SetEntry<&Zq> for MatZq {
-    /// Sets the value of a specific matrix entry according to a given `value` of type [`Zq`].
+    /// Sets the value of a specific matrix entry according to a given `value`
+    /// that implements [`Into<Z>`] without checking whether the coordinate is part of the matrix,
+    /// if the moduli match or the entry is reduced.
     ///
     /// Parameters:
     /// - `row`: specifies the row in which the entry is located
     /// - `column`: specifies the column in which the entry is located
     /// - `value`: specifies the value to which the entry is set
     ///
-    /// Negative indices can be used to index from the back, e.g., `-1` for
-    /// the last element.
+    /// # Safety
+    /// To use this function safely, make sure that the selected entry is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
     ///
-    /// Returns an empty `Ok` if the action could be performed successfully.
-    /// Otherwise, a [`MathError`] is returned if either the specified entry
-    /// is not part of the matrix or the moduli mismatch.
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::traits::*;
+    ///
+    /// let mut matrix = MatZq::new(3, 3, 10);
+    ///
+    /// unsafe {
+    ///     matrix.set_entry_unchecked(0, 1, 5);
+    ///     matrix.set_entry_unchecked(2, 2, 19);
+    /// }
+    ///
+    /// assert_eq!("[[0, 5, 0],[0, 0, 0],[0, 0, 19]] mod 10", matrix.to_string());
+    /// ```
+    unsafe fn set_entry_unchecked(&mut self, row: i64, column: i64, value: Integer) {
+        let value: Z = value.into();
+
+        unsafe {
+            // get entry and replace the pointed at value with the specified value
+            fmpz_mod_mat_set_entry(&mut self.matrix, row, column, &value.value)
+        };
+    }
+}
+
+impl MatrixSetEntry<&Zq> for MatZq {
+    /// Sets the value of a specific matrix entry according to a given `value` of type [`Zq`]
+    /// without checking whether the coordinate is part of the matrix,
+    /// if the moduli match or the entry is reduced.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row in which the entry is located
+    /// - `column`: specifies the column in which the entry is located
+    /// - `value`: specifies the value to which the entry is set
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected entry is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
     ///
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::{MatZq, Zq};
-    /// use qfall_math::traits::SetEntry;
+    /// use qfall_math::traits::*;
     ///
     /// let mut matrix = MatZq::new(3, 3, 10);
     /// let value = Zq::from((5, 10));
     ///
-    /// matrix.set_entry(0, 1, &value).unwrap();
-    /// matrix.set_entry(-1, 2, Zq::from((9, 10))).unwrap();
+    /// unsafe {
+    ///     matrix.set_entry_unchecked(0, 1, &value);
+    ///     matrix.set_entry_unchecked(2, 2, Zq::from((19, 10)));
+    /// }
     ///
     /// assert_eq!("[[0, 5, 0],[0, 0, 0],[0, 0, 9]] mod 10", matrix.to_string());
     /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if `row` or `column` are greater than the matrix size.
-    /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`]
-    ///     if the moduli mismatch.
-    fn set_entry(
-        &mut self,
-        row: impl TryInto<i64> + Display,
-        column: impl TryInto<i64> + Display,
-        value: &Zq,
-    ) -> Result<(), MathError> {
-        let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
-
-        if self.modulus != value.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                " Modulus of matrix: '{}'. Modulus of value: '{}'.
-            If the modulus should be ignored please convert into a Z beforehand.",
-                self.get_mod(),
-                value.modulus
-            )));
-        }
-
+    unsafe fn set_entry_unchecked(&mut self, row: i64, column: i64, value: &Zq) {
         unsafe {
             // get entry and replace the pointed at value with the specified value
-            fmpz_mod_mat_set_entry(&mut self.matrix, row_i64, column_i64, &value.value.value)
-        }
-
-        Ok(())
+            fmpz_mod_mat_set_entry(&mut self.matrix, row, column, &value.value.value)
+        };
     }
 }
 
-implement_for_owned!(Zq, MatZq, SetEntry);
+implement_for_owned!(Zq, MatZq, MatrixSetEntry);
 
-impl MatZq {
-    /// Sets a column of the given matrix to the provided column of `other`.
+impl MatrixSetSubmatrix for MatZq {
+    /// Sets the matrix entries in `self` to entries defined in `other`.
+    /// The entries in `self` starting from `(row_self_start, col_self_start)` up to
+    /// `(row_self_end, col_self_end)`are set to be
+    /// the entries from the submatrix from `other` defined by `(row_other_start, col_other_start)`
+    /// to `(row_other_end, col_other_end)` (exclusively).
     ///
     /// Parameters:
-    /// - `col_0`: specifies the column of `self` that should be modified
-    /// - `other`: specifies the matrix providing the column replacing the column in `self`
-    /// - `col_1`: specifies the column of `other` providing
-    ///     the values replacing the original column in `self`
-    ///
-    /// Returns an empty `Ok` if the action could be performed successfully.
-    ///     Otherwise, a [`MathError`] is returned if one of the specified columns is not part of its matrix
-    ///     or if the number of rows differs.
+    /// `row_self_start`: the starting row of the matrix in which to set a submatrix
+    /// `col_self_start`: the starting column of the matrix in which to set a submatrix
+    /// `other`: the matrix from where to take the submatrix to set
+    /// `row_other_start`: the starting row of the specified submatrix
+    /// `col_other_start`: the starting column of the specified submatrix
+    /// `row_other_end`: the ending row of the specified submatrix
+    /// `col_other_end`:the ending column of the specified submatrix
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::integer_mod_q::{MatZq, Modulus};
+    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::traits::MatrixSetSubmatrix;
     /// use std::str::FromStr;
     ///
-    /// let mut mat_1 = MatZq::new(2, 2, 3);
-    /// let mat_2 = MatZq::from_str("[[1],[2]] mod 3").unwrap();
-    /// mat_1.set_column(1, &mat_2, 0);
+    /// let mat = MatZ::identity(3, 3);
+    /// let modulus = Modulus::from(17);
+    /// let mut mat = MatZq::from((&mat, &modulus));
+    ///
+    /// mat.set_submatrix(0, 1, &mat.clone(), 0, 0, 1, 1).unwrap();
+    /// // [[1,1,0],[0,0,1],[0,0,1]]
+    /// let mat_cmp = MatZ::from_str("[[1, 1, 0],[0, 0, 1],[0, 0, 1]]").unwrap();
+    /// assert_eq!(mat, MatZq::from((&mat_cmp, &modulus)));
+    ///
+    /// unsafe{ mat.set_submatrix_unchecked(2, 0, 3, 2, &mat.clone(), 0, 0, 1, 2) };
+    /// let mat_cmp = MatZ::from_str("[[1, 1, 0],[0, 0, 1],[1, 1, 1]]").unwrap();
+    /// assert_eq!(mat, MatZq::from((&mat_cmp, &modulus)));
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if the provided column index is not defined within the margins of the matrix.
-    /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the number of rows of `self` and `other` differ.
-    /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus)
-    ///     if the moduli of `self` and `other` mismatch.
-    pub fn set_column(
+    /// # Safety
+    /// To use this function safely, make sure that the selected submatrices are part
+    /// of the matrices, the submatrices are of the same dimensions and the base types are the same.
+    /// If not, memory leaks, unexpected panics, etc. might occur.
+    unsafe fn set_submatrix_unchecked(
         &mut self,
-        col_0: impl TryInto<i64> + Display,
+        row_self_start: i64,
+        col_self_start: i64,
+        row_self_end: i64,
+        col_self_end: i64,
         other: &Self,
-        col_1: impl TryInto<i64> + Display,
-    ) -> Result<(), MathError> {
-        let col_0 = evaluate_index(col_0)?;
-        let col_1 = evaluate_index(col_1)?;
-
-        evaluate_vec_dimensions_set_row_or_col(
-            "set_column",
-            col_0,
-            col_1,
-            self.get_num_columns(),
-            other.get_num_columns(),
-            self.get_num_rows(),
-            other.get_num_rows(),
-        )?;
-
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "set_column requires the moduli to be equal, but {} differs from {}",
-                self.get_mod(),
-                other.get_mod()
-            )));
-        }
-
-        for row in 0..self.get_num_rows() {
+        row_other_start: i64,
+        col_other_start: i64,
+        row_other_end: i64,
+        col_other_end: i64,
+    ) {
+        {
+            let mut window_self = MaybeUninit::uninit();
+            // The memory for the elements of window is shared with self.
             unsafe {
-                fmpz_set(
-                    fmpz_mat_entry(&self.matrix.mat[0], row, col_0),
-                    fmpz_mat_entry(&other.matrix.mat[0], row, col_1),
+                fmpz_mod_mat_window_init(
+                    window_self.as_mut_ptr(),
+                    &self.matrix,
+                    row_self_start,
+                    col_self_start,
+                    row_self_end,
+                    col_self_end,
                 )
             };
-        }
-
-        Ok(())
-    }
-
-    /// Sets a row of the given matrix to the provided row of `other`.
-    ///
-    /// Parameters:
-    /// - `row_0`: specifies the row of `self` that should be modified
-    /// - `other`: specifies the matrix providing the row replacing the row in `self`
-    /// - `row_1`: specifies the row of `other` providing
-    ///     the values replacing the original row in `self`
-    ///
-    /// Returns an empty `Ok` if the action could be performed successfully.
-    /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of its matrix
-    /// or if the number of columns differs.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer_mod_q::MatZq;
-    /// use std::str::FromStr;
-    ///
-    /// let mut mat_1 = MatZq::new(2, 2, 3);
-    /// let mat_2 = MatZq::from_str("[[1, 2]] mod 3").unwrap();
-    /// mat_1.set_row(0, &mat_2, 0);
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if the provided row index is not defined within the margins of the matrix.
-    /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the number of columns of `self` and `other` differ.
-    /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus)
-    ///     if the moduli of `self` and `other` mismatch.
-    pub fn set_row(
-        &mut self,
-        row_0: impl TryInto<i64> + Display,
-        other: &Self,
-        row_1: impl TryInto<i64> + Display,
-    ) -> Result<(), MathError> {
-        let row_0 = evaluate_index(row_0)?;
-        let row_1 = evaluate_index(row_1)?;
-
-        evaluate_vec_dimensions_set_row_or_col(
-            "set_row",
-            row_0,
-            row_1,
-            self.get_num_rows(),
-            other.get_num_rows(),
-            self.get_num_columns(),
-            other.get_num_columns(),
-        )?;
-
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "set_row requires the moduli to be equal, but {} differs from {}",
-                self.get_mod(),
-                other.get_mod()
-            )));
-        }
-
-        for col in 0..self.get_num_columns() {
+            let mut window_other = MaybeUninit::uninit();
+            // The memory for the elements of window is shared with other.
             unsafe {
-                fmpz_set(
-                    fmpz_mat_entry(&self.matrix.mat[0], row_0, col),
-                    fmpz_mat_entry(&other.matrix.mat[0], row_1, col),
+                fmpz_mod_mat_window_init(
+                    window_other.as_mut_ptr(),
+                    &other.matrix,
+                    row_other_start,
+                    col_other_start,
+                    row_other_end,
+                    col_other_end,
                 )
             };
+            unsafe {
+                fmpz_mod_mat_set(window_self.as_mut_ptr(), window_other.as_ptr());
+
+                // Clears the matrix window and releases any memory that it uses. Note that
+                // the memory to the underlying matrix that window points to is not freed
+                fmpz_mod_mat_window_clear(window_self.as_mut_ptr());
+                fmpz_mod_mat_window_clear(window_other.as_mut_ptr());
+            }
         }
-
-        Ok(())
     }
+}
 
+impl MatrixSwaps for MatZq {
     /// Swaps two entries of the specified matrix.
     ///
     /// Parameters:
@@ -291,7 +261,7 @@ impl MatZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::{integer_mod_q::MatZq, traits::MatrixSwaps};
     ///
     /// let mut matrix = MatZq::new(4, 3, 5);
     /// matrix.swap_entries(0, 0, 2, 1);
@@ -299,8 +269,8 @@ impl MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if row or column are greater than the matrix size.
-    pub fn swap_entries(
+    ///   if row or column are greater than the matrix size.
+    fn swap_entries(
         &mut self,
         row_0: impl TryInto<i64> + Display,
         col_0: impl TryInto<i64> + Display,
@@ -325,12 +295,15 @@ impl MatZq {
     /// - `col_0`: specifies the first column which is swapped with the second one
     /// - `col_1`: specifies the second column which is swapped with the first one
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of the matrix.
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::{integer_mod_q::MatZq, traits::MatrixSwaps};
     ///
     /// let mut matrix = MatZq::new(4, 3, 5);
     /// matrix.swap_columns(0, 2);
@@ -338,17 +311,19 @@ impl MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if one of the given columns is greater than the matrix or negative.
-    pub fn swap_columns(
+    ///   if one of the given columns is greater than the matrix.
+    fn swap_columns(
         &mut self,
         col_0: impl TryInto<i64> + Display,
         col_1: impl TryInto<i64> + Display,
     ) -> Result<(), MathError> {
-        let col_0 = evaluate_index(col_0)?;
-        let col_1 = evaluate_index(col_1)?;
-        if col_0 >= self.get_num_columns() || col_1 >= self.get_num_columns() {
+        let num_cols = self.get_num_columns();
+        let col_0 = evaluate_index_for_vector(col_0, num_cols)?;
+        let col_1 = evaluate_index_for_vector(col_1, num_cols)?;
+
+        if col_0 >= num_cols || col_1 >= num_cols {
             return Err(MathError::OutOfBounds(
-                format!("smaller than {}", self.get_num_columns()),
+                format!("smaller than {}", num_cols),
                 if col_0 > col_1 {
                     col_0.to_string()
                 } else {
@@ -366,12 +341,15 @@ impl MatZq {
     /// - `row_0`: specifies the first row which is swapped with the second one
     /// - `row_1`: specifies the second row which is swapped with the first one
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of the matrix.
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::{integer_mod_q::MatZq, traits::MatrixSwaps};
     ///
     /// let mut matrix = MatZq::new(4, 3, 5);
     /// matrix.swap_rows(0, 2);
@@ -379,17 +357,19 @@ impl MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if one of the given rows is greater than the matrix or negative.
-    pub fn swap_rows(
+    ///   if one of the given rows is greater than the matrix.
+    fn swap_rows(
         &mut self,
         row_0: impl TryInto<i64> + Display,
         row_1: impl TryInto<i64> + Display,
     ) -> Result<(), MathError> {
-        let row_0 = evaluate_index(row_0)?;
-        let row_1 = evaluate_index(row_1)?;
-        if row_0 >= self.get_num_rows() || row_1 >= self.get_num_rows() {
+        let num_rows = self.get_num_rows();
+        let row_0 = evaluate_index_for_vector(row_0, num_rows)?;
+        let row_1 = evaluate_index_for_vector(row_1, num_rows)?;
+
+        if row_0 >= num_rows || row_1 >= num_rows {
             return Err(MathError::OutOfBounds(
-                format!("smaller than {}", self.get_num_columns()),
+                format!("smaller than {}", num_rows),
                 if row_0 > row_1 {
                     row_0.to_string()
                 } else {
@@ -400,7 +380,9 @@ impl MatZq {
         unsafe { fmpz_mat_swap_rows(&mut self.matrix.mat[0], null(), row_0, row_1) }
         Ok(())
     }
+}
 
+impl MatZq {
     /// Swaps the `i`-th column with the `n-i`-th column for all `i <= n/2`
     /// of the specified matrix with `n` columns.
     ///
@@ -467,7 +449,7 @@ mod test_setter {
     use crate::{
         integer::Z,
         integer_mod_q::{MatZq, Zq},
-        traits::{GetEntry, SetEntry},
+        traits::{MatrixGetEntry, MatrixSetEntry, MatrixSetSubmatrix},
     };
     use std::str::FromStr;
 
@@ -649,9 +631,9 @@ mod test_setter {
         let mut mat_1 = MatZq::new(5, 2, 17);
         let mat_2 = mat_1.clone();
 
-        assert!(mat_1.set_column(-1, &mat_2, 0).is_err());
+        assert!(mat_1.set_column(-3, &mat_2, 0).is_err());
         assert!(mat_1.set_column(2, &mat_2, 0).is_err());
-        assert!(mat_1.set_column(1, &mat_2, -1).is_err());
+        assert!(mat_1.set_column(1, &mat_2, -3).is_err());
         assert!(mat_1.set_column(1, &mat_2, 2).is_err());
     }
 
@@ -744,9 +726,9 @@ mod test_setter {
         let mut mat_1 = MatZq::new(5, 2, 17);
         let mat_2 = mat_1.clone();
 
-        assert!(mat_1.set_row(-1, &mat_2, 0).is_err());
+        assert!(mat_1.set_row(-6, &mat_2, 0).is_err());
         assert!(mat_1.set_row(5, &mat_2, 0).is_err());
-        assert!(mat_1.set_row(2, &mat_2, -1).is_err());
+        assert!(mat_1.set_row(2, &mat_2, -6).is_err());
         assert!(mat_1.set_row(2, &mat_2, 5).is_err());
     }
 
@@ -768,11 +750,25 @@ mod test_setter {
 
         assert!(mat_1.set_row(0, &mat_2, 0).is_err());
     }
+
+    /// Ensure that negative indices work for set_column/row.
+    #[test]
+    fn negative_indexing_row_column() {
+        let mut matrix = MatZq::identity(3, 3, 17);
+        let matrix2 = MatZq::identity(3, 3, 17);
+
+        matrix.set_column(-1, &matrix2, -2).unwrap();
+        matrix.set_row(-1, &matrix2, -2).unwrap();
+
+        let matrix_cmp = MatZq::from_str("[[1, 0, 0],[0, 1, 1],[0, 1, 0]] mod 17").unwrap();
+        assert_eq!(matrix_cmp, matrix);
+    }
 }
 
 #[cfg(test)]
 mod test_swaps {
     use super::MatZq;
+    use crate::traits::{MatrixGetSubmatrix, MatrixSwaps};
     use std::str::FromStr;
 
     /// Ensures that swapping entries works fine for small entries
@@ -919,8 +915,8 @@ mod test_swaps {
     fn column_out_of_bounds() {
         let mut matrix = MatZq::new(5, 2, 5);
 
-        assert!(matrix.swap_columns(-1, 0).is_err());
-        assert!(matrix.swap_columns(0, -1).is_err());
+        assert!(matrix.swap_columns(-6, 0).is_err());
+        assert!(matrix.swap_columns(0, -6).is_err());
         assert!(matrix.swap_columns(5, 0).is_err());
         assert!(matrix.swap_columns(0, 5).is_err());
     }
@@ -990,16 +986,31 @@ mod test_swaps {
     fn row_out_of_bounds() {
         let mut matrix = MatZq::new(2, 4, 5);
 
-        assert!(matrix.swap_rows(-1, 0).is_err());
-        assert!(matrix.swap_rows(0, -1).is_err());
+        assert!(matrix.swap_rows(-3, 0).is_err());
+        assert!(matrix.swap_rows(0, -3).is_err());
         assert!(matrix.swap_rows(4, 0).is_err());
         assert!(matrix.swap_rows(0, 4).is_err());
+    }
+
+    /// Ensure that negative indices work for swap_column/row.
+    #[test]
+    fn negative_indexing_row_column() {
+        let mut matrix = MatZq::identity(3, 3, 17);
+        let mut matrix2 = MatZq::identity(3, 3, 17);
+
+        matrix.swap_columns(-1, -2).unwrap();
+        matrix2.swap_rows(-1, -2).unwrap();
+
+        let matrix_cmp = MatZq::from_str("[[1, 0, 0],[0, 0, 1],[0, 1, 0]] mod 17").unwrap();
+        assert_eq!(matrix_cmp, matrix);
+        assert_eq!(matrix_cmp, matrix2);
     }
 }
 
 #[cfg(test)]
 mod test_reverses {
     use super::MatZq;
+    use crate::traits::MatrixGetSubmatrix;
     use std::str::FromStr;
 
     /// Ensures that reversing columns works fine for small entries
@@ -1132,5 +1143,99 @@ mod test_change_modulus {
         matrix.change_modulus(&modulus);
 
         assert_eq!("[[1, 0, 1],[0, 1, 0]] mod 2", matrix.to_string());
+    }
+}
+
+#[cfg(test)]
+mod test_set_submatrix {
+    use crate::{
+        integer::MatZ,
+        integer_mod_q::{MatZq, Modulus},
+        traits::MatrixSetSubmatrix,
+    };
+    use std::str::FromStr;
+
+    /// Ensure that the entire matrix can be set.
+    #[test]
+    fn entire_matrix() {
+        let modulus = Modulus::from(u64::MAX);
+        let mut mat = MatZq::from((&MatZ::sample_uniform(10, 10, -100, 100).unwrap(), &modulus));
+        let identity = MatZq::identity(10, 10, &modulus);
+
+        mat.set_submatrix(0, 0, &identity, 0, 0, 9, 9).unwrap();
+
+        assert_eq!(identity, mat);
+    }
+
+    /// Ensure that matrix access out of bounds leadss to an error.
+    #[test]
+    fn out_of_bounds() {
+        let modulus = Modulus::from(u64::MAX);
+        let mut mat = MatZq::identity(10, 10, &modulus);
+
+        assert!(mat.set_submatrix(10, 0, &mat.clone(), 0, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 10, &mat.clone(), 0, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 10, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 10, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 0, 10, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 0, 9, 10).is_err());
+        assert!(mat.set_submatrix(-11, 0, &mat.clone(), 0, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, -11, &mat.clone(), 0, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), -11, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, -11, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 0, -11, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 0, 9, -11).is_err());
+    }
+
+    /// Ensure that the function returns an error if the defined submatrix is too large
+    /// and there is not enough space in the original matrix.
+    #[test]
+    fn submatrix_too_large() {
+        let modulus = Modulus::from(u64::MAX);
+        let mut mat = MatZq::identity(10, 10, &modulus);
+
+        assert!(mat
+            .set_submatrix(0, 0, &MatZq::identity(11, 11, &modulus), 0, 0, 10, 10)
+            .is_err());
+        assert!(mat.set_submatrix(1, 2, &mat.clone(), 0, 0, 9, 9).is_err());
+    }
+
+    /// Ensure that setting submatrices with large values works.
+    #[test]
+    fn large_values() {
+        let modulus = Modulus::from(u64::MAX);
+        let mut mat = MatZq::from((
+            &MatZ::from_str(&format!("[[1, {}],[-{}, 0]]", u64::MAX, u64::MAX)).unwrap(),
+            &modulus,
+        ));
+        let cmp_mat = MatZq::from((
+            &MatZ::from_str(&format!("[[-{}, 0],[-{}, 0]]", u64::MAX, u64::MAX)).unwrap(),
+            &modulus,
+        ));
+
+        mat.set_submatrix(0, 0, &mat.clone(), 1, 0, 1, 1).unwrap();
+        assert_eq!(cmp_mat, mat);
+    }
+
+    /// Ensure that setting with an undefined submatrix.
+    #[test]
+    #[should_panic]
+    fn submatrix_negative() {
+        let modulus = Modulus::from(u64::MAX);
+        let mut mat = MatZq::identity(10, 10, &modulus);
+
+        let _ = mat.set_submatrix(0, 0, &mat.clone(), 0, 9, 9, 5);
+    }
+
+    /// Ensure that different moduli cause the set_submatrix to fail.
+    #[test]
+    fn different_moduli() {
+        let modulus1 = Modulus::from(u64::MAX);
+        let mut mat1 = MatZq::identity(10, 10, &modulus1);
+
+        let modulus2 = Modulus::from(u64::MAX - 1);
+        let mat2 = MatZq::identity(10, 10, &modulus2);
+
+        assert!(mat1.set_submatrix(0, 0, &mat2.clone(), 0, 9, 0, 9).is_err());
     }
 }

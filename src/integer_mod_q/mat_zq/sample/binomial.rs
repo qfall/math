@@ -14,7 +14,7 @@ use crate::{
     integer::Z,
     integer_mod_q::{MatZq, Modulus},
     rational::Q,
-    traits::{GetNumColumns, GetNumRows, SetEntry},
+    traits::{MatrixDimensions, MatrixSetEntry},
     utils::sample::binomial::sample_binomial,
 };
 use std::fmt::Display;
@@ -44,16 +44,16 @@ impl MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if `n < 1`.
+    ///   if `n < 1`.
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    ///     if `p ∉ (0,1)`.
+    ///   if `p ∉ (0,1)`.
     /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
-    ///     if `n` does not fit into an [`i64`].
+    ///   if `n` does not fit into an [`i64`].
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    ///     For further information see [`MatZq::new`].
-    /// - - if `modulus` is smaller than `2`.
+    ///   For further information see [`MatZq::new`].
+    /// - if `modulus` is smaller than `2`.
     pub fn sample_binomial(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
@@ -71,7 +71,7 @@ impl MatZq {
     /// - `num_rows`: specifies the number of rows the new matrix should have
     /// - `num_cols`: specifies the number of columns the new matrix should have
     /// - `offset`: specifies an offset applied to each sample
-    ///     collected from the binomial distribution
+    ///   collected from the binomial distribution
     /// - `modulus`: specifies the [`Modulus`] of the new [`MatZq`] instance
     /// - `n`: specifies the number of trials
     /// - `p`: specifies the probability of success
@@ -90,15 +90,15 @@ impl MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if `n < 1`.
+    ///   if `n < 1`.
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    ///     if `p ∉ (0,1)`.
+    ///   if `p ∉ (0,1)`.
     /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
-    ///     if `n` does not fit into an [`i64`].
+    ///   if `n` does not fit into an [`i64`].
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    ///     For further information see [`MatZq::new`].
+    ///   For further information see [`MatZq::new`].
     /// - if `modulus` is smaller than `2`.
     pub fn sample_binomial_with_offset(
         num_rows: impl TryInto<i64> + Display,
@@ -116,7 +116,7 @@ impl MatZq {
         for row in 0..matrix.get_num_rows() {
             for col in 0..matrix.get_num_columns() {
                 let sample = sample_binomial(&n, &p)?;
-                matrix.set_entry(row, col, &offset + sample).unwrap();
+                unsafe { matrix.set_entry_unchecked(row, col, &offset + sample) };
             }
         }
 
@@ -127,7 +127,7 @@ impl MatZq {
 #[cfg(test)]
 mod test_sample_binomial {
     use super::{MatZq, Q, Z};
-    use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
+    use crate::traits::{MatrixDimensions, MatrixGetEntry};
 
     // As all major tests regarding an appropriate binomial distribution,
     // whether the correct interval is kept, and if the errors are thrown correctly,
@@ -138,8 +138,8 @@ mod test_sample_binomial {
     fn boundaries_kept() {
         for _ in 0..8 {
             let matrix = MatZq::sample_binomial(1, 1, 7, 2, 0.5).unwrap();
-            let sample = matrix.get_entry(0, 0).unwrap();
-            assert!(Z::ZERO <= sample || sample <= Z::from(2));
+            let sample: Z = matrix.get_entry(0, 0).unwrap();
+            assert!(Z::ZERO <= sample || sample <= 2);
         }
     }
 
@@ -193,7 +193,7 @@ mod test_sample_binomial {
 #[cfg(test)]
 mod test_sample_binomial_with_offset {
     use super::{MatZq, Q, Z};
-    use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
+    use crate::traits::{MatrixDimensions, MatrixGetEntry};
 
     // As all major tests regarding an appropriate binomial distribution,
     // whether the correct interval is kept, and if the errors are thrown correctly,
@@ -204,7 +204,7 @@ mod test_sample_binomial_with_offset {
     fn boundaries_kept() {
         for _ in 0..8 {
             let matrix = MatZq::sample_binomial_with_offset(1, 1, -1, 7, 2, 0.5).unwrap();
-            let sample = matrix.get_entry(0, 0).unwrap();
+            let sample: Z = matrix.get_entry(0, 0).unwrap();
             assert!(Z::MINUS_ONE <= sample || sample <= Z::ONE);
         }
     }

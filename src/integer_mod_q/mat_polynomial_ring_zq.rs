@@ -15,17 +15,22 @@ use derive_more::Display;
 use serde::{Deserialize, Serialize};
 
 mod arithmetic;
+mod cmp;
+mod coefficient_embedding;
 mod concat;
 mod default;
 mod from;
 mod get;
+mod norm;
 mod properties;
 mod reduce;
 mod sample;
 mod set;
+mod sort;
 mod tensor;
 mod to_string;
 mod transpose;
+mod unsafe_functions;
 mod vector;
 
 /// [`MatPolynomialRingZq`] is a matrix with entries of type [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq).
@@ -40,7 +45,7 @@ mod vector;
 /// use qfall_math::{
 ///     integer::{PolyOverZ, MatPolyOverZ},
 ///     integer_mod_q::{MatPolynomialRingZq, PolyOverZq},
-///     traits::{GetEntry, SetEntry},
+///     traits::{MatrixGetEntry, MatrixSetEntry},
 /// };
 /// use std::str::FromStr;
 ///

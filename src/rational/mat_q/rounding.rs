@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     integer::{MatZ, Z},
     rational::Q,
-    traits::{GetEntry, GetNumColumns, GetNumRows, SetEntry},
+    traits::{MatrixDimensions, MatrixGetEntry, MatrixSetEntry},
 };
 
 impl MatQ {
@@ -36,8 +36,8 @@ impl MatQ {
         let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
         for i in 0..out.get_num_rows() {
             for j in 0..out.get_num_columns() {
-                let entry = self.get_entry(i, j).unwrap().floor();
-                out.set_entry(i, j, entry).unwrap();
+                let entry = unsafe { self.get_entry_unchecked(i, j) }.floor();
+                unsafe { out.set_entry_unchecked(i, j, entry) };
             }
         }
         out
@@ -62,8 +62,8 @@ impl MatQ {
         let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
         for i in 0..out.get_num_rows() {
             for j in 0..out.get_num_columns() {
-                let entry = self.get_entry(i, j).unwrap().ceil();
-                out.set_entry(i, j, entry).unwrap();
+                let entry = unsafe { self.get_entry_unchecked(i, j) }.ceil();
+                unsafe { out.set_entry_unchecked(i, j, entry) };
             }
         }
         out
@@ -88,10 +88,83 @@ impl MatQ {
         let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
         for i in 0..out.get_num_rows() {
             for j in 0..out.get_num_columns() {
-                let entry = self.get_entry(i, j).unwrap().round();
-                out.set_entry(i, j, entry).unwrap();
+                let entry = unsafe { self.get_entry_unchecked(i, j) }.round();
+                unsafe { out.set_entry_unchecked(i, j, entry) };
             }
         }
+        out
+    }
+
+    /// Returns a matrix, where each entry was simplified using [`Q::simplify`],
+    /// i.e. each entry becomes the smallest rational with the smallest denominator in the range
+    /// `\[entry - |precision|, entry + |precision|\]`.
+    ///
+    /// This function allows to free memory in exchange for the specified loss of
+    /// precision (see Example 3). Be aware that this loss of precision is propagated by
+    /// arithmetic operations depending on the size of the matrices.
+    /// This functions allows to trade precision for efficiency.
+    ///
+    /// This function ensures that simplifying does not change the sign of any entry in the matrix.
+    ///
+    /// Parameters:
+    /// - `precision`: the precision the new entries can differ from `self`.
+    ///   Note that the absolute value is relevant, not the sign.
+    ///
+    /// Returns a new [`MatQ`] with each entry being the simplest fraction within the defined range.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::{MatQ, Q};
+    /// use qfall_math::traits::{MatrixGetEntry, MatrixSetEntry};
+    /// let mut matrix = MatQ::new(1, 2);
+    /// matrix.set_entry(0, 0, Q::from((17, 20))).unwrap();
+    /// let precision = Q::from((1, 20));
+    ///
+    /// let matrix_simplified = matrix.simplify(precision);
+    ///
+    /// assert_eq!(Q::from((4, 5)), matrix_simplified.get_entry(0, 0).unwrap());
+    /// ```
+    ///
+    /// ```
+    /// use qfall_math::rational::{MatQ, Q};
+    /// use qfall_math::traits::{MatrixGetEntry, MatrixSetEntry};
+    /// let mut matrix = MatQ::new(2, 1);
+    /// matrix.set_entry(0, 0, Q::from((3, 2))).unwrap();
+    ///
+    /// let mat_simplified = matrix.simplify(0.5);
+    ///
+    /// assert_eq!(Q::ONE, mat_simplified.get_entry(0, 0).unwrap());
+    /// ```
+    ///
+    /// ## Simplify with reasonable precision loss
+    /// This example uses [`Q::INV_MAX32`], i.e. a loss of precision of at most `1 / 2^31 - 2` behind the decimal point.
+    /// If you require higher precision, [`Q::INV_MAX62`] is available.
+    /// ```
+    /// use qfall_math::rational::{MatQ, Q};
+    /// use qfall_math::traits::{MatrixGetEntry, MatrixSetEntry};
+    /// let mut matrix = MatQ::new(1, 1);
+    /// matrix.set_entry(0, 0, Q::PI).unwrap();
+    ///
+    /// let mat_simplified = matrix.simplify(Q::INV_MAX32);
+    ///
+    /// let entry_simplified = mat_simplified.get_entry(0, 0).unwrap();
+    ///
+    /// assert_ne!(&Q::PI, &entry_simplified);
+    /// assert!(&entry_simplified >= &(Q::PI - Q::INV_MAX32));
+    /// assert!(&entry_simplified <= &(Q::PI + Q::INV_MAX32));
+    /// ```
+    pub fn simplify(&self, precision: impl Into<Q>) -> MatQ {
+        let precision = precision.into();
+        let mut out = MatQ::new(self.get_num_rows(), self.get_num_columns());
+
+        for i in 0..self.get_num_rows() {
+            for j in 0..self.get_num_columns() {
+                let entry = unsafe { self.get_entry_unchecked(i, j) };
+                let simplified_entry = entry.simplify(&precision);
+                unsafe { out.set_entry_unchecked(i, j, simplified_entry) };
+            }
+        }
+
         out
     }
 
@@ -102,7 +175,7 @@ impl MatQ {
     /// Parameters:
     /// - `n`: the security parameter; also specifies the range from which is sampled
     /// - `r`: specifies the Gaussian parameter, which is proportional
-    ///     to the standard deviation `sigma * sqrt(2 * pi) = r`
+    ///   to the standard deviation `sigma * sqrt(2 * pi) = r`
     ///
     /// Returns the rounded matrix as a [`MatZ`] or an error if `n <= 1` or `r <= 0`.
     ///
@@ -117,21 +190,22 @@ impl MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if `n <= 1` or `r <= 0`.
+    ///   if `n <= 1` or `r <= 0`.
     ///
     /// This function implements randomized rounding according to:
     /// - \[1\] Peikert, C. (2010, August).
-    ///     An efficient and parallel Gaussian sampler for lattices.
-    ///     In: Annual Cryptology Conference (pp. 80-97).
-    ///     <https://link.springer.com/chapter/10.1007/978-3-642-14623-7_5>
+    ///   An efficient and parallel Gaussian sampler for lattices.
+    ///   In: Annual Cryptology Conference (pp. 80-97).
+    ///   <https://link.springer.com/chapter/10.1007/978-3-642-14623-7_5>
     pub fn randomized_rounding(&self, r: impl Into<Q>, n: impl Into<Z>) -> Result<MatZ, MathError> {
         let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
         let r = r.into();
         let n = n.into();
         for i in 0..out.get_num_rows() {
             for j in 0..out.get_num_columns() {
-                let entry = self.get_entry(i, j).unwrap().randomized_rounding(&r, &n)?;
-                out.set_entry(i, j, entry).unwrap();
+                let entry =
+                    unsafe { self.get_entry_unchecked(i, j) }.randomized_rounding(&r, &n)?;
+                unsafe { out.set_entry_unchecked(i, j, entry) };
             }
         }
         Ok(out)

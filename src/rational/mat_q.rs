@@ -25,6 +25,7 @@ mod from;
 mod get;
 mod gso;
 mod inverse;
+mod norm;
 mod ownership;
 mod properties;
 mod rounding;
@@ -36,20 +37,21 @@ mod tensor;
 mod to_string;
 mod trace;
 mod transpose;
+mod unsafe_functions;
 mod vector;
 
 /// [`MatQ`] is a matrix with entries of type [`Q`](crate::rational::Q).
 ///
 /// Attributes:
 /// - `matrix`: holds [FLINT](https://flintlib.org/)'s [struct](fmpq_mat_struct)
-///     of the [`Q`](crate::rational::Q) matrix
+///   of the [`Q`](crate::rational::Q) matrix
 ///
 /// # Examples
 /// ## Matrix usage
 /// ```
 /// use qfall_math::{
 ///     rational::{Q, MatQ},
-///     traits::{GetEntry, SetEntry},
+///     traits::{MatrixGetEntry, MatrixSetEntry},
 /// };
 /// use std::str::FromStr;
 ///

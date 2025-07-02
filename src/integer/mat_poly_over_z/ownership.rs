@@ -12,7 +12,7 @@
 //! The explicit functions contain the documentation.
 
 use super::MatPolyOverZ;
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::MatrixDimensions;
 use flint_sys::fmpz_poly_mat::{fmpz_poly_mat_clear, fmpz_poly_mat_set};
 
 impl Clone for MatPolyOverZ {

@@ -41,7 +41,7 @@ impl PolyOverQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`NonPositive`](MathError::NonPositive)
-    ///     if `sigma <= 0`.
+    ///   if `sigma <= 0`.
     ///
     /// # Panics ...
     /// - if `max_degree` is negative, or does not fit into an [`i64`].
@@ -58,7 +58,7 @@ impl PolyOverQ {
 
         for index in 0..=max_degree {
             let sample: Q = Q::sample_gauss(&center, sigma)?;
-            poly.set_coeff(index, &sample)?;
+            unsafe { poly.set_coeff_unchecked(index, &sample) };
         }
         Ok(poly)
     }

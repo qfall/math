@@ -12,7 +12,7 @@ use super::MatPolynomialRingZq;
 use crate::{
     error::MathError,
     integer::PolyOverZ,
-    traits::{GetEntry, GetNumColumns, GetNumRows, Tensor},
+    traits::{CompareBase, MatrixDimensions, MatrixGetEntry, Tensor},
 };
 use flint_sys::{fmpz_poly_mat::fmpz_poly_mat_entry, fq::fq_mul};
 
@@ -44,7 +44,7 @@ impl Tensor for MatPolynomialRingZq {
     ///
     /// # Panics ...
     /// - if the moduli of both matrices mismatch.
-    ///     Use [`tensor_product_safe`](crate::integer_mod_q::MatZq::tensor_product_safe) to get an error instead.
+    ///   Use [`tensor_product_safe`](crate::integer_mod_q::MatZq::tensor_product_safe) to get an error instead.
     fn tensor_product(&self, other: &Self) -> Self {
         self.tensor_product_safe(other).unwrap()
     }
@@ -78,15 +78,11 @@ impl MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`MismatchingModulus`](MathError::MismatchingModulus) if the
-    ///     moduli of the provided matrices mismatch.
+    ///   [`MismatchingModulus`](MathError::MismatchingModulus) if the
+    ///   moduli of the provided matrices mismatch.
     pub fn tensor_product_safe(&self, other: &Self) -> Result<Self, MathError> {
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to compute tensor product of matrices with moduli '{}' and '{}'.",
-                self.get_mod(),
-                other.get_mod()
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
 
         let mut out = MatPolynomialRingZq::new(
@@ -97,7 +93,7 @@ impl MatPolynomialRingZq {
 
         for i in 0..self.get_num_rows() {
             for j in 0..self.get_num_columns() {
-                let entry: PolyOverZ = self.get_entry(i, j).unwrap();
+                let entry: PolyOverZ = unsafe { self.get_entry_unchecked(i, j) };
 
                 if !entry.is_zero() {
                     unsafe { set_matrix_window_mul(&mut out, i, j, entry, other) }
@@ -120,9 +116,9 @@ impl MatPolynomialRingZq {
 /// - `row_left`: defines the leftmost row of the set window
 /// - `column_upper`: defines the highest column of the set window
 /// - `scalar`: defines the value with which the part of the tensor product
-///     is calculated
+///   is calculated
 /// - `matrix`: the matrix with which the scalar is multiplied
-///     before setting the entries in `out`
+///   before setting the entries in `out`
 ///
 /// Implicitly sets the entries of the matrix according to the definition
 /// of the tensor product.
@@ -158,7 +154,7 @@ unsafe fn set_matrix_window_mul(
                     ),
                     &scalar.poly,
                     fmpz_poly_mat_entry(&matrix.matrix.matrix, i_other, j_other),
-                    matrix.modulus.get_fq_ctx_struct(),
+                    matrix.modulus.get_fq_ctx(),
                 )
             }
         }
@@ -169,7 +165,7 @@ unsafe fn set_matrix_window_mul(
 mod test_tensor {
     use crate::{
         integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
-        traits::{GetNumColumns, GetNumRows, Tensor},
+        traits::{MatrixDimensions, Tensor},
     };
     use std::str::FromStr;
 

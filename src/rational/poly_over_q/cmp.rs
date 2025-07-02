@@ -1,4 +1,4 @@
-// Copyright © 2023 Marvin Beckmann
+// Copyright © 2023 Marvin Beckmann, Marcel Luca Schmidt
 //
 // This file is part of qFALL-math.
 //
@@ -9,9 +9,14 @@
 //! Implementations to compare [`PolyOverQ`] with other values.
 //! This uses the traits from [`std::cmp`].
 
-use flint_sys::fmpq_poly::fmpq_poly_equal;
-
 use super::PolyOverQ;
+use crate::{
+    integer::PolyOverZ,
+    macros::for_others::implement_trait_reverse,
+    rational::Q,
+    traits::{CompareBase, GetCoefficient},
+};
+use flint_sys::fmpq_poly::fmpq_poly_equal;
 
 impl PartialEq for PolyOverQ {
     /// Checks if two polynomials over [`Q`](crate::rational::Q) are equal. Used by the `==` and `!=` operators.
@@ -46,6 +51,64 @@ impl PartialEq for PolyOverQ {
 // With the [`Eq`] trait, `a == a` is always true.
 // This is not guaranteed by the [`PartialEq`] trait.
 impl Eq for PolyOverQ {}
+
+impl PartialEq<PolyOverZ> for PolyOverQ {
+    /// Checks if an integer matrix and a rational matrix are equal. Used by the `==` and `!=` operators.
+    /// [`PartialEq`] is also implemented for [`PolyOverZ`] using [`PolyOverQ`].
+    ///
+    /// Parameters:
+    /// - `other`: the other value that is used to compare the elements
+    ///
+    /// Returns `true` if the elements are equal, otherwise `false`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::PolyOverZ;
+    /// use qfall_math::rational::PolyOverQ;
+    /// use std::str::FromStr;
+    /// let a: PolyOverQ = PolyOverQ::from_str("3  1 2 3").unwrap();
+    /// let b: PolyOverZ = PolyOverZ::from_str("3  1 2 3").unwrap();
+    ///
+    /// // These are all equivalent and return true.
+    /// let compared: bool = (a == b);
+    /// # assert!(compared);
+    /// let compared: bool = (b == a);
+    /// # assert!(compared);
+    /// let compared: bool = (&a == &b);
+    /// # assert!(compared);
+    /// let compared: bool = (&b == &a);
+    /// # assert!(compared);
+    /// let compared: bool = (a.eq(&b));
+    /// # assert!(compared);
+    /// let compared: bool = (b.eq(&a));
+    /// # assert!(compared);
+    /// let compared: bool = (PolyOverQ::eq(&a, &b));
+    /// # assert!(compared);
+    /// let compared: bool = (PolyOverZ::eq(&b, &a));
+    /// # assert!(compared);
+    /// ```
+    fn eq(&self, other: &PolyOverZ) -> bool {
+        let degree = self.get_degree();
+
+        if degree != other.get_degree() {
+            return false;
+        }
+
+        for i in 0..degree + 1 {
+            if unsafe { self.get_coeff_unchecked(i) } != unsafe { other.get_coeff_unchecked(i) } {
+                return false;
+            }
+        }
+
+        true
+    }
+}
+
+implement_trait_reverse!(PartialEq, eq, PolyOverZ, PolyOverQ, bool);
+
+impl CompareBase<PolyOverQ> for PolyOverQ {}
+impl CompareBase<PolyOverZ> for PolyOverQ {}
+impl<Rational: Into<Q>> CompareBase<Rational> for PolyOverQ {}
 
 /// Test that the [`PartialEq`] trait is correctly implemented.
 #[cfg(test)]
@@ -219,5 +282,96 @@ mod test_partial_eq {
         assert!(one.ne(&two));
         assert!(PolyOverQ::ne(&one, &two));
         assert_ne!(one, two);
+    }
+}
+
+/// Test that the [`PartialEq`] trait is correctly implemented.
+#[cfg(test)]
+mod test_partial_eq_q_other {
+    use super::PolyOverQ;
+    use crate::integer::PolyOverZ;
+    use std::str::FromStr;
+
+    /// Ensure that the function can be called with several types.
+    #[test]
+    #[allow(clippy::op_ref)]
+    fn availability() {
+        let q = PolyOverQ::from_str("4  1 2 3 4").unwrap();
+        let z = PolyOverZ::from_str("4  1 2 3 4").unwrap();
+
+        assert!(q == z);
+        assert!(z == q);
+        assert!(&q == &z);
+        assert!(&z == &q);
+    }
+
+    /// Ensure that equal values are compared correctly.
+    #[test]
+    fn equal() {
+        let q = PolyOverQ::from_str(&format!("3  1 2 {}", u64::MAX)).unwrap();
+        let z_1 = PolyOverZ::from_str(&format!("3  1 2 {}", u64::MAX)).unwrap();
+        let z_2 = PolyOverZ::from_str(&format!("4  1 2 {} 0", u64::MAX)).unwrap();
+
+        assert!(q == z_1);
+        assert!(q == z_2);
+    }
+
+    /// Ensure that unequal polynomials are compared correctly.
+    #[test]
+    fn unequal() {
+        let q = PolyOverQ::from_str(&format!("3  1 2 {}", u64::MAX)).unwrap();
+        let z_1 = PolyOverZ::from_str(&format!("3  1 3 {}", u64::MAX)).unwrap();
+        let z_2 = PolyOverZ::from_str(&format!("4  1 2 {} 1", u64::MAX)).unwrap();
+
+        assert!(q != z_1);
+        assert!(q != z_2);
+    }
+}
+
+/// Test that the [`CompareBase`] trait uses the default implementation.
+#[cfg(test)]
+mod test_compare_base {
+    use crate::{
+        integer::{PolyOverZ, Z},
+        rational::{PolyOverQ, Q},
+        traits::CompareBase,
+    };
+    use std::str::FromStr;
+
+    /// Ensures that the [`CompareBase`] trait uses the default implementation
+    /// and is available for all types it would be checked against.
+    #[test]
+    fn availability() {
+        let one_1 = PolyOverQ::from_str("3  1/3 1 -7").unwrap();
+
+        assert!(one_1.compare_base(&Q::ONE));
+        assert!(one_1.compare_base(&Z::ONE));
+        assert!(one_1.compare_base(&PolyOverQ::from(1)));
+        assert!(one_1.compare_base(&PolyOverZ::from(1)));
+        assert!(one_1.compare_base(&0_i8));
+        assert!(one_1.compare_base(&0_i16));
+        assert!(one_1.compare_base(&0_i32));
+        assert!(one_1.compare_base(&0_i64));
+        assert!(one_1.compare_base(&0_u8));
+        assert!(one_1.compare_base(&0_u16));
+        assert!(one_1.compare_base(&0_u32));
+        assert!(one_1.compare_base(&0_u64));
+        assert!(one_1.compare_base(&0.5_f32));
+        assert!(one_1.compare_base(&0.5_f64));
+
+        assert!(one_1.call_compare_base_error(&PolyOverQ::from(1)).is_none());
+        assert!(one_1.call_compare_base_error(&PolyOverZ::from(1)).is_none());
+        assert!(one_1.call_compare_base_error(&Z::ONE).is_none());
+        assert!(one_1.call_compare_base_error(&Q::ONE).is_none());
+        assert!(one_1.call_compare_base_error(&0_i8).is_none());
+        assert!(one_1.call_compare_base_error(&0_i16).is_none());
+        assert!(one_1.call_compare_base_error(&0_i32).is_none());
+        assert!(one_1.call_compare_base_error(&0_i64).is_none());
+        assert!(one_1.call_compare_base_error(&0_u8).is_none());
+        assert!(one_1.call_compare_base_error(&0_u16).is_none());
+        assert!(one_1.call_compare_base_error(&0_u32).is_none());
+        assert!(one_1.call_compare_base_error(&0_u64).is_none());
+        assert!(one_1.call_compare_base_error(&0.5_f32).is_none());
+        assert!(one_1.call_compare_base_error(&0.5_f64).is_none());
     }
 }

@@ -27,12 +27,13 @@ mod rounding;
 mod sample;
 mod serialize;
 mod to_string;
+mod unsafe_functions;
 
 /// [`Q`] is any rational value.
 ///
 /// Attributes:
 /// - `value`: holds [FLINT](https://flintlib.org/)'s [struct](fmpq)
-///     for a rational value
+///   for a rational value
 ///
 /// # Implicit Typecasting
 /// Most of our functions take as input values of type [`Into<Q>`].

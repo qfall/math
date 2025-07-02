@@ -17,7 +17,7 @@ use crate::{
     macros::for_others::implement_empty_trait_owned_ref,
     traits::AsInteger,
 };
-use flint_sys::fmpz::{fmpz, fmpz_combit, fmpz_get_si, fmpz_set, fmpz_set_str};
+use flint_sys::fmpz::{fmpz, fmpz_get_si, fmpz_get_ui, fmpz_init_set, fmpz_set_str, fmpz_setbit};
 use std::{ffi::CString, str::FromStr};
 
 impl Z {
@@ -54,7 +54,7 @@ impl Z {
     pub(crate) fn from_fmpz_ref(value: &fmpz) -> Self {
         let mut out = Z::default();
         unsafe {
-            fmpz_set(&mut out.value, value);
+            fmpz_init_set(&mut out.value, value);
         }
         out
     }
@@ -105,9 +105,9 @@ impl Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if the
-    ///     base is not between `2` and `62`.
+    ///   base is not between `2` and `62`.
     /// - Returns a [`MathError`] of type
-    ///     [`StringConversionError`](MathError::StringConversionError)
+    ///   [`StringConversionError`](MathError::StringConversionError)
     ///     - if the provided string contains a `Null` byte, or
     ///     - if the provided string was not formatted correctly.
     pub fn from_str_b(s: &str, base: i32) -> Result<Self, MathError> {
@@ -143,8 +143,8 @@ impl Z {
     ///
     /// Parameters:
     /// - `bytes`: specifies an iterable of bytes that should be set in the new [`Z`] instance.
-    ///     The first byte should be the least significant byte, i.e. its first bit the
-    ///     least significant bit.
+    ///   The first byte should be the least significant byte, i.e. its first bit the
+    ///   least significant bit.
     ///
     /// Returns a [`Z`] with the value provided by the byte iterable.
     ///
@@ -164,7 +164,7 @@ impl Z {
             for j in 0..u8::BITS {
                 // if j-th bit of `byte` is `1`, then set `i*8 + j`-th bit in fmpz to `1`
                 if ((byte >> j) & 1) % 2 == 1 {
-                    unsafe { fmpz_combit(&mut res.value, (i as u32 * u8::BITS + j) as u64) };
+                    unsafe { fmpz_setbit(&mut res.value, (i as u32 * u8::BITS + j) as u64) };
                 }
             }
         }
@@ -176,7 +176,7 @@ impl Z {
     ///
     /// Parameters:
     /// - `bits`: specifies an iterable of bits that should be set in the new [`Z`] instance.
-    ///     The first bit should be the least significant bit.
+    ///   The first bit should be the least significant bit.
     ///
     /// Returns a [`Z`] with the value provided by the bit iterable.
     ///
@@ -193,7 +193,7 @@ impl Z {
         let mut value = Z::default();
         for (i, bit) in bits.iter().enumerate() {
             if *bit {
-                unsafe { fmpz_combit(&mut value.value, i as u64) };
+                unsafe { fmpz_setbit(&mut value.value, i as u64) };
             }
         }
         value
@@ -278,7 +278,7 @@ impl FromStr for Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`StringConversionError`](MathError::StringConversionError)
+    ///   [`StringConversionError`](MathError::StringConversionError)
     ///     - if the provided string contains a `Null` byte, or
     ///     - if the provided string was not formatted correctly.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -311,7 +311,7 @@ impl TryFrom<&Z> for i64 {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
-    ///     if the value does not fit into an [`i64`]
+    ///   if the value does not fit into an [`i64`]
     fn try_from(value: &Z) -> Result<Self, Self::Error> {
         // fmpz_get_si returns the i64::MAX or respectively i64::MIN
         // if the value is too large/small to fit into an [`i64`].
@@ -347,15 +347,87 @@ impl TryFrom<Z> for i64 {
     /// let max = Z::from(i64::MAX);
     /// assert_eq!(i64::MAX, i64::try_from(max).unwrap());
     ///
-    /// let max = Z::from(u64::MAX);
+    /// let max = Z::from(u64::MAX) + 1;
     /// assert!(i64::try_from(max).is_err());
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
-    ///     if the value does not fit into an [`i64`]
+    ///   if the value does not fit into an [`i64`]
     fn try_from(value: Z) -> Result<Self, Self::Error> {
         i64::try_from(&value)
+    }
+}
+
+impl TryFrom<&Z> for u64 {
+    type Error = MathError;
+
+    /// Converts a [`Z`] into an [`u64`]. If the value is either too large
+    /// or too small an error is returned.
+    ///
+    /// Parameters:
+    /// - `value`: the value that will be converted into an [`u64`]
+    ///
+    /// Returns the value as an [`u64`] or an error if it does not fit
+    /// into an [`u64`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    ///
+    /// let max = Z::from(u64::MAX);
+    /// assert_eq!(u64::MAX, u64::try_from(&max).unwrap());
+    ///
+    /// let max = Z::from(u64::MAX) + 1;
+    /// assert!(u64::try_from(&max).is_err());
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
+    ///   if the value does not fit into an [`u64`]
+    fn try_from(value: &Z) -> Result<Self, Self::Error> {
+        // The result is undefined if value.value does not fit into an ulong or is negative.
+        // Hence we are required to manually check if the value is actually correct
+        let value_u64 = unsafe { fmpz_get_ui(&value.value) };
+        if &value_u64 == value {
+            Ok(value_u64)
+        } else {
+            Err(MathError::ConversionError(format!(
+                "The provided value has to fit into an i64 and it doesn't as the 
+                provided value is {value}."
+            )))
+        }
+    }
+}
+
+impl TryFrom<Z> for u64 {
+    type Error = MathError;
+
+    /// Converts a [`Z`] into an [`u64`]. If the value is either too large
+    /// or too small an error is returned.
+    ///
+    /// Parameters:
+    /// - `value`: the value that will be converted into an [`u64`]
+    ///
+    /// Returns the value as an [`u64`] or an error if it does not fit
+    /// into an [`u64`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    ///
+    /// let max = Z::from(u64::MAX);
+    /// assert_eq!(u64::MAX, u64::try_from(max).unwrap());
+    ///
+    /// let max = Z::from(u64::MAX) + 1;
+    /// assert!(u64::try_from(max).is_err());
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
+    ///   if the value does not fit into an [`u64`]
+    fn try_from(value: Z) -> Result<Self, Self::Error> {
+        u64::try_from(&value)
     }
 }
 
@@ -473,7 +545,7 @@ mod test_from_utf8 {
 
         // easy trick s.t. we don't have to initialize a huge [`Z`] value
         // while this test should still fail if the value changes
-        let value_zq = value.modulo(65537);
+        let value_zq = value % 65537;
 
         assert_eq!(Z::from(58285), value_zq);
     }
@@ -767,5 +839,36 @@ mod test_try_from_into_i64 {
         assert_eq!(i64::MAX, i64::try_from(max).unwrap());
         assert_eq!(0, i64::try_from(Z::ZERO).unwrap());
         assert_eq!(42, i64::try_from(z_42).unwrap());
+    }
+}
+
+#[cfg(test)]
+mod test_try_from_into_u64 {
+    use crate::integer::Z;
+
+    /// ensure that an error is returned, if the value of the [`Z`]
+    /// does not fit into an [`u64`]
+    #[test]
+    fn overflow() {
+        assert!(u64::try_from(&(Z::from(u64::MAX) + 1)).is_err());
+        assert!(u64::try_from(&Z::MINUS_ONE).is_err());
+    }
+
+    /// ensure that a correct value is returned for values in bounds.
+    #[test]
+    fn correct() {
+        let min = Z::from(0);
+        let max = Z::from(u64::MAX);
+        let z_42 = Z::from(42);
+
+        assert_eq!(0, u64::try_from(&min).unwrap());
+        assert_eq!(u64::MAX, u64::try_from(&max).unwrap());
+        assert_eq!(0, i64::try_from(&Z::ZERO).unwrap());
+        assert_eq!(42, i64::try_from(&z_42).unwrap());
+
+        assert_eq!(0, u64::try_from(min).unwrap());
+        assert_eq!(u64::MAX, u64::try_from(max).unwrap());
+        assert_eq!(0, u64::try_from(Z::ZERO).unwrap());
+        assert_eq!(42, u64::try_from(z_42).unwrap());
     }
 }

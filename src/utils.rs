@@ -11,11 +11,10 @@
 //! This can include functions to pre-process inputs
 //! and similar tasks.
 
-pub(crate) mod collective_evaluation;
 pub(crate) mod dimensions;
 mod factorization;
 pub mod index;
 pub(crate) mod parse;
-pub(crate) mod sample;
+pub mod sample;
 
 pub use factorization::Factorization;

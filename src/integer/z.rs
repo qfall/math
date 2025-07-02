@@ -20,17 +20,19 @@ mod from;
 mod gcd;
 mod hash;
 mod lcm;
+mod logic;
 mod ownership;
 mod properties;
 mod sample;
 mod serialize;
 mod to_string;
+mod unsafe_functions;
 
 /// [`Z`] is an arbitrary integer value.
 ///
 /// Attributes:
 /// - `value`: holds [FLINT](https://flintlib.org/)'s [struct](fmpz)
-///     for an integer value
+///   for an integer value
 ///
 /// # Implicit Typecasting
 /// Most of our functions take as input values of type [`Into<Z>`].

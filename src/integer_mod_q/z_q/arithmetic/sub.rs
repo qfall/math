@@ -13,15 +13,104 @@ use crate::{
     error::MathError,
     integer::Z,
     macros::arithmetics::{
+        arithmetic_assign_between_types, arithmetic_assign_trait_borrowed_to_owned,
         arithmetic_between_types_zq, arithmetic_trait_borrowed_to_owned,
         arithmetic_trait_mixed_borrowed_owned,
     },
+    traits::CompareBase,
 };
 use flint_sys::{
     fmpz::fmpz,
-    fmpz_mod::{fmpz_mod_sub, fmpz_mod_sub_fmpz},
+    fmpz_mod::{fmpz_mod_sub, fmpz_mod_sub_fmpz, fmpz_mod_sub_si, fmpz_mod_sub_ui},
 };
-use std::ops::Sub;
+use std::ops::{Sub, SubAssign};
+
+impl SubAssign<&Zq> for Zq {
+    /// Computes the subtraction of `self` and `other` reusing
+    /// the memory of `self`.
+    /// [`SubAssign`] can be used on [`Zq`] in combination with
+    /// [`Zq`], [`Z`], [`i64`], [`i32`], [`i16`], [`i8`], [`u64`], [`u32`], [`u16`] and [`u8`].
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to subtract from `self`
+    ///
+    /// Returns the difference of both numbers modulo `q` as a [`Zq`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{integer_mod_q::Zq, integer::Z};
+    ///
+    /// let mut a: Zq = Zq::from((23, 42));
+    /// let b: Zq = Zq::from((1, 42));
+    /// let c: Z = Z::from(5);
+    ///
+    /// a -= &b;
+    /// a -= b;
+    /// a -= 5;
+    /// a -= c;
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the moduli of both [`Zq`] mismatch.
+    fn sub_assign(&mut self, other: &Self) {
+        if !self.compare_base(other) {
+            panic!("{}", self.call_compare_base_error(other).unwrap());
+        }
+
+        unsafe {
+            fmpz_mod_sub(
+                &mut self.value.value,
+                &self.value.value,
+                &other.value.value,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
+    }
+}
+impl SubAssign<i64> for Zq {
+    /// Documentation at [`Zq::sub_assign`].
+    fn sub_assign(&mut self, other: i64) {
+        unsafe {
+            fmpz_mod_sub_si(
+                &mut self.value.value,
+                &self.value.value,
+                other,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
+    }
+}
+impl SubAssign<u64> for Zq {
+    /// Documentation at [`Zq::sub_assign`].
+    fn sub_assign(&mut self, other: u64) {
+        unsafe {
+            fmpz_mod_sub_ui(
+                &mut self.value.value,
+                &self.value.value,
+                other,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
+    }
+}
+impl SubAssign<&Z> for Zq {
+    /// Documentation at [`Zq::sub_assign`].
+    fn sub_assign(&mut self, other: &Z) {
+        unsafe {
+            fmpz_mod_sub_fmpz(
+                &mut self.value.value,
+                &self.value.value,
+                &other.value,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(SubAssign, sub_assign, Zq, Zq);
+arithmetic_assign_trait_borrowed_to_owned!(SubAssign, sub_assign, Zq, Z);
+arithmetic_assign_between_types!(SubAssign, sub_assign, Zq, i64, i32 i16 i8);
+arithmetic_assign_between_types!(SubAssign, sub_assign, Zq, u64, u32 u16 u8);
 
 impl Sub for &Zq {
     type Output = Zq;
@@ -74,13 +163,10 @@ impl Zq {
     /// ```
     /// # Errors
     /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
-    ///     both [`Zq`] mismatch.
+    ///   both [`Zq`] mismatch.
     pub fn sub_safe(&self, other: &Self) -> Result<Zq, MathError> {
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to subtract '{self}' from '{other}'.
-                If the modulus should be ignored please convert into a Z beforehand."
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
         let mut out_z = Z::ZERO;
         unsafe {
@@ -147,6 +233,73 @@ impl Sub<&Z> for &Zq {
 
 arithmetic_trait_borrowed_to_owned!(Sub, sub, Zq, Z, Zq);
 arithmetic_trait_mixed_borrowed_owned!(Sub, sub, Zq, Z, Zq);
+
+#[cfg(test)]
+mod test_sub_assign {
+    use crate::{integer::Z, integer_mod_q::Zq};
+
+    /// Ensure that `sub_assign` works for small numbers.
+    #[test]
+    fn correct_small() {
+        let mut a: Zq = Zq::from((-1, 7));
+        let b = Zq::from((1, 7));
+        let c = Zq::from((-1, 7));
+
+        a -= &b;
+        assert_eq!(Zq::from((5, 7)), a);
+        a -= &c;
+        assert_eq!(Zq::from((6, 7)), a);
+        a -= &c;
+        assert_eq!(Zq::from((0, 7)), a);
+        a -= &c;
+        assert_eq!(Zq::from((1, 7)), a);
+        a -= &c;
+        assert_eq!(Zq::from((2, 7)), a);
+        a -= 2 * b;
+        assert_eq!(Zq::from((0, 7)), a);
+    }
+
+    /// Ensure that `sub_assign` works for large numbers.
+    #[test]
+    fn correct_large() {
+        let mut a = Zq::from((i64::MAX, u64::MAX));
+        let b = Zq::from((i64::MAX - 1, u64::MAX));
+
+        a -= b;
+        assert_eq!(Zq::from((1, u64::MAX)), a);
+    }
+
+    /// Ensure that `sub_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let mut a = Zq::from((3, 7));
+        let b = Zq::from((1, 7));
+        let c = Z::from(1);
+
+        a -= &b;
+        a -= b;
+        a -= &c;
+        a -= c;
+        a -= 1_u8;
+        a -= 1_u16;
+        a -= 1_u32;
+        a -= 1_u64;
+        a -= 1_i8;
+        a -= 1_i16;
+        a -= 1_i32;
+        a -= 1_i64;
+    }
+
+    /// Ensures that mismatching moduli result in a panic.
+    #[test]
+    #[should_panic]
+    fn mismatching_moduli() {
+        let mut a = Zq::from((3, 7));
+        let b = Zq::from((1, 8));
+
+        a -= b;
+    }
+}
 
 #[cfg(test)]
 mod test_sub {
@@ -272,13 +425,13 @@ mod test_sub_between_z_and_zq {
 }
 
 #[cfg(test)]
-mod test_add_between_types {
+mod test_sub_between_types {
     use crate::integer_mod_q::Zq;
 
-    /// Testing addition between different types
+    /// Testing subition between different types
     #[test]
     #[allow(clippy::op_ref)]
-    fn add() {
+    fn sub() {
         let a: Zq = Zq::from((4, 11));
         let b: u64 = 1;
         let c: u32 = 1;

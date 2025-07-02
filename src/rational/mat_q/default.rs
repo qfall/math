@@ -74,7 +74,7 @@ impl MatQ {
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    ///     For further information see [`MatQ::new`].
+    ///   For further information see [`MatQ::new`].
     pub fn identity(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
@@ -114,7 +114,7 @@ mod test_new {
 mod test_set_one {
     use crate::{
         rational::{MatQ, Q},
-        traits::GetEntry,
+        traits::MatrixGetEntry,
     };
 
     /// Tests if an identity matrix is set from a zero matrix.

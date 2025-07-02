@@ -9,7 +9,7 @@
 //! This module includes functionality about properties of [`MatQ`] instances.
 
 use super::MatQ;
-use crate::traits::{GetEntry, GetNumRows};
+use crate::traits::{MatrixDimensions, MatrixGetEntry};
 use flint_sys::fmpq_mat::{fmpq_mat_is_one, fmpq_mat_is_square, fmpq_mat_is_zero};
 
 impl MatQ {
@@ -86,7 +86,9 @@ impl MatQ {
         }
         for row in 0..self.get_num_rows() {
             for column in 0..row {
-                if self.get_entry(row, column).unwrap() != self.get_entry(column, row).unwrap() {
+                if unsafe {
+                    self.get_entry_unchecked(row, column) != self.get_entry_unchecked(column, row)
+                } {
                     return false;
                 }
             }

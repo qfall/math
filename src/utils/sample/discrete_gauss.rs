@@ -1,4 +1,4 @@
-// Copyright © 2023 Niklas Siemer
+// Copyright © 2025 Niklas Siemer
 //
 // This file is part of qFALL-math.
 //
@@ -12,16 +12,16 @@
 //! The main references are listed in the following
 //! and will be further referenced in submodules by these numbers:
 //! - \[1\] Gentry, Craig and Peikert, Chris and Vaikuntanathan, Vinod (2008).
-//!     Trapdoors for hard lattices and new cryptographic constructions.
-//!     In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
-//!     <https://citeseerx.ist.psu.edu/document?doi=d9f54077d568784c786f7b1d030b00493eb3ae35>
+//!   Trapdoors for hard lattices and new cryptographic constructions.
+//!   In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
+//!   <https://citeseerx.ist.psu.edu/document?doi=d9f54077d568784c786f7b1d030b00493eb3ae35>
 
-use super::uniform::sample_uniform_rejection;
+use super::uniform::UniformIntegerSampler;
 use crate::{
     error::{MathError, StringConversionError},
     integer::{MatZ, Z},
     rational::{MatQ, Q},
-    traits::{GetNumColumns, GetNumRows, Pow},
+    traits::{MatrixDimensions, MatrixGetSubmatrix, Pow},
 };
 use rand::RngCore;
 use serde::Serialize;
@@ -32,16 +32,21 @@ use std::collections::HashMap;
 /// This struct evaluates the Gauss function lazily (i.e. only if required)
 /// and saves it in a [`HashMap`].
 ///
+/// **WARNING:** If the attributes are not set using [`DiscreteGaussianIntegerSampler::init`],
+/// we can't guarantee sampling from the correct discrete Gaussian distribution.
+/// Altering any value will invalidate the [`HashMap`] in `table` and might invalidate
+/// other attributes, too.
+///
 /// Attributes:
 /// - `n`: specifies the range from which is sampled
 /// - `center`: specifies the position of the center with peak probability
 /// - `s`: specifies the Gaussian parameter, which is proportional
-///     to the standard deviation `sigma * sqrt(2 * pi) = s`
+///   to the standard deviation `sigma * sqrt(2 * pi) = s`
 ///
 /// # Examples
-/// ```compile_fail
+/// ```
 /// use qfall_math::{integer::Z, rational::Q};
-/// use qfall_math::utils::sample::discrete_gauss::sample_z;
+/// use qfall_math::utils::sample::discrete_gauss::DiscreteGaussianIntegerSampler;
 /// let n = Z::from(1024);
 /// let center = Q::ZERO;
 /// let gaussian_parameter = Q::ONE;
@@ -51,12 +56,12 @@ use std::collections::HashMap;
 /// let sample = dgis.sample_z();
 /// ```
 #[derive(Debug, Serialize, Clone)]
-pub(crate) struct DiscreteGaussianIntegerSampler {
-    center: Q,
-    s: Q,
-    lower_bound: Z,
-    interval_size: Z,
-    table: HashMap<Z, f64>,
+pub struct DiscreteGaussianIntegerSampler {
+    pub center: Q,
+    pub s: Q,
+    pub lower_bound: Z,
+    pub interval_size: Z,
+    pub table: HashMap<Z, f64>,
 }
 
 impl DiscreteGaussianIntegerSampler {
@@ -72,16 +77,16 @@ impl DiscreteGaussianIntegerSampler {
     /// - `n`: specifies the range from which is sampled
     /// - `center`: as the center of the discrete Gaussian to sample from
     /// - `s`: specifies the Gaussian parameter, which is proportional
-    ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
+    ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a sample chosen according to the specified discrete Gaussian distribution or
     /// a [`MathError`] if the specified parameters were not chosen appropriately,
     /// i.e. `n > 1` or `s > 0` or `s * log_2(n) < 1`.
     ///
     /// # Examples
-    /// ```compile_fail
+    /// ```
     /// use qfall_math::{integer::Z, rational::Q};
-    /// use qfall_math::utils::sample::discrete_gauss::sample_z;
+    /// use qfall_math::utils::sample::discrete_gauss::DiscreteGaussianIntegerSampler;
     /// let n = Z::from(1024);
     /// let center = Q::ZERO;
     /// let gaussian_parameter = Q::ONE;
@@ -91,8 +96,8 @@ impl DiscreteGaussianIntegerSampler {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if `n <= 1` or `s <= 0` or `s * log_2(n) < 1`.
-    pub(crate) fn init(n: &Z, center: &Q, s: &Q) -> Result<Self, MathError> {
+    ///   if `n <= 1` or `s <= 0` or `s * log_2(n) < 1`.
+    pub fn init(n: &Z, center: &Q, s: &Q) -> Result<Self, MathError> {
         if n <= &Z::ONE {
             return Err(MathError::InvalidIntegerInput(format!(
                 "The value {n} was provided for parameter n of the function sample_z.
@@ -134,9 +139,9 @@ impl DiscreteGaussianIntegerSampler {
     /// SampleZ as in [\[1\]](<index.html#:~:text=[1]>).
     ///
     /// # Examples
-    /// ```compile_fail
+    /// ```
     /// use qfall_math::{integer::Z, rational::Q};
-    /// use qfall_math::utils::sample::discrete_gauss::sample_z;
+    /// use qfall_math::utils::sample::discrete_gauss::DiscreteGaussianIntegerSampler;
     /// let n = Z::from(1024);
     /// let center = Q::ZERO;
     /// let gaussian_parameter = Q::ONE;
@@ -145,11 +150,12 @@ impl DiscreteGaussianIntegerSampler {
     ///
     /// let sample = dgis.sample_z();
     /// ```
-    pub(crate) fn sample_z(&mut self) -> Z {
+    pub fn sample_z(&mut self) -> Z {
         let mut rng = rand::rng();
+        let mut uis = UniformIntegerSampler::init(&self.interval_size).unwrap();
         loop {
             // sample x in [c - s * log_2(n), c + s * log_2(n)]
-            let sample = &self.lower_bound + sample_uniform_rejection(&self.interval_size).unwrap();
+            let sample = &self.lower_bound + uis.sample();
 
             // grab value of Gauss function for sample if it exists
             let evaluated_gauss_function = self.table.get(&sample);
@@ -177,12 +183,12 @@ impl DiscreteGaussianIntegerSampler {
 /// - `x`: specifies the value/ sample for which the Gaussian function's value is computed
 /// - `c`: specifies the position of the center with peak probability
 /// - `s`: specifies the Gaussian parameter, which is proportional
-///     to the standard deviation `sigma * sqrt(2 * pi) = s`
+///   to the standard deviation `sigma * sqrt(2 * pi) = s`
 ///
 /// Returns the computed value of the Gaussian function for `x`.
 ///
 /// # Examples
-/// ```compile_fail
+/// ```
 /// use qfall_math::{integer::Z, rational::Q};
 /// use qfall_math::utils::sample::discrete_gauss::gaussian_function;
 /// let sample = Z::ONE;
@@ -195,7 +201,7 @@ impl DiscreteGaussianIntegerSampler {
 /// # Panics ...
 /// - if `s = 0`.
 /// - if `-π * (x - c)^2 / s^2` is larger than [`f64::MAX`]
-fn gaussian_function(x: &Z, c: &Q, s: &Q) -> f64 {
+pub fn gaussian_function(x: &Z, c: &Q, s: &Q) -> f64 {
     let num = Q::MINUS_ONE * Q::PI * (x - c).pow(2).unwrap();
     let den = s.pow(2).unwrap();
     let res = f64::from(&(num / den));
@@ -212,7 +218,7 @@ fn gaussian_function(x: &Z, c: &Q, s: &Q) -> f64 {
 /// - `n`: specifies the range from which [`sample_z`] samples
 /// - `center`: specifies the positions of the center with peak probability
 /// - `s`: specifies the Gaussian parameter, which is proportional
-///     to the standard deviation `sigma * sqrt(2 * pi) = s`
+///   to the standard deviation `sigma * sqrt(2 * pi) = s`
 ///
 /// Returns a vector with discrete gaussian error based on a lattice point
 /// as in [\[1\]](<index.html#:~:text=[1]>): SampleD or a [`MathError`], if the
@@ -233,11 +239,11 @@ fn gaussian_function(x: &Z, c: &Q, s: &Q) -> f64 {
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-///     if `n <= 1` or `s <= 0`.
+///   if `n <= 1` or `s <= 0`.
 /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-///     if the number of rows of the `basis` and `center` differ.
+///   if the number of rows of the `basis` and `center` differ.
 /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
-///     if `center` is not a column vector.
+///   if `center` is not a column vector.
 pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ, MathError> {
     let basis_gso = MatQ::from(basis).gso();
     sample_d_precomputed_gso(basis, &basis_gso, n, center, s)
@@ -255,7 +261,7 @@ pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ
 /// - `n`: specifies the range from which [`sample_z`] samples
 /// - `center`: specifies the positions of the center with peak probability
 /// - `s`: specifies the Gaussian parameter, which is proportional
-///     to the standard deviation `sigma * sqrt(2 * pi) = s`
+///   to the standard deviation `sigma * sqrt(2 * pi) = s`
 ///
 /// Returns a vector with discrete gaussian error based on a lattice point
 /// as in [\[1\]](<index.html#:~:text=[1]>): SampleD or a [`MathError`], if the
@@ -278,11 +284,11 @@ pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-///     if `n <= 1` or `s <= 0`.
+///   if `n <= 1` or `s <= 0`.
 /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-///     if the number of rows of the `basis` and `center` differ.
+///   if the number of rows of the `basis` and `center` differ.
 /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
-///     if `center` is not a column vector.
+///   if `center` is not a column vector.
 ///
 /// # Panics...
 /// - if the number of rows/columns of `basis_gso` and `basis` mismatch.
@@ -331,7 +337,7 @@ pub(crate) fn sample_d_precomputed_gso(
 
     for i in (0..basis_gso.get_num_columns()).rev() {
         // basisvector_i = b_tilde[i]
-        let basisvector_orth_i = basis_gso.get_column(i).unwrap();
+        let basisvector_orth_i = unsafe { basis_gso.get_column_unchecked(i) };
 
         // define the center for sample_z as c_2 = <c, b_tilde[i]> / <b_tilde[i], b_tilde[i]>;
         let c_2 = center.dot_product(&basisvector_orth_i).unwrap()
@@ -345,8 +351,8 @@ pub(crate) fn sample_d_precomputed_gso(
         let z = dgis.sample_z();
 
         // update the center c = c - z * b[i]
-        let basisvector_i = basis.get_column(i).unwrap();
-        center = center - MatQ::from(&(&z * &basisvector_i));
+        let basisvector_i = unsafe { basis.get_column_unchecked(i) };
+        center -= MatQ::from(&(&z * &basisvector_i));
 
         // out = out + z * b[i]
         out = &out + &z * &basisvector_i;
@@ -372,8 +378,8 @@ mod test_discrete_gaussian_integer_sampler {
 
         let sample = dgis.sample_z();
 
-        assert!(Z::from(-10) <= sample);
-        assert!(sample <= Z::from(10));
+        assert!(-10 <= sample);
+        assert!(sample <= 10);
     }
 
     /// Checks whether samples are kept in correct interval for a small interval.
@@ -389,8 +395,8 @@ mod test_discrete_gaussian_integer_sampler {
         for _ in 0..64 {
             let sample = dgis.sample_z();
 
-            assert!(Z::from(10) <= sample);
-            assert!(sample <= Z::from(20));
+            assert!(10 <= sample);
+            assert!(sample <= 20);
         }
     }
 
@@ -407,8 +413,8 @@ mod test_discrete_gaussian_integer_sampler {
         for _ in 0..256 {
             let sample = dgis.sample_z();
 
-            assert!(Z::from(-64) <= sample);
-            assert!(sample <= Z::from(62));
+            assert!(-64 <= sample);
+            assert!(sample <= 62);
         }
     }
 
@@ -522,7 +528,7 @@ mod test_gaussian_function {
 #[cfg(test)]
 mod test_sample_d {
     use super::sample_d_precomputed_gso;
-    use crate::traits::{Concatenate, GetNumColumns, GetNumRows, Pow};
+    use crate::traits::{Concatenate, MatrixDimensions, MatrixGetSubmatrix, Pow};
     use crate::utils::sample::discrete_gauss::sample_d;
     use crate::{
         integer::{MatZ, Z},

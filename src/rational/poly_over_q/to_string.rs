@@ -12,7 +12,7 @@
 //! This includes the [`Display`](std::fmt::Display) trait.
 
 use super::PolyOverQ;
-use crate::macros::for_others::implement_for_owned;
+use crate::{macros::for_others::implement_for_owned, traits::GetCoefficient};
 use core::fmt;
 use flint_sys::fmpq_poly::fmpq_poly_get_str;
 use std::ffi::CStr;
@@ -66,6 +66,83 @@ impl fmt::Display for PolyOverQ {
         // free the space allocated by the pointer
         unsafe { libc::free(c_str_ptr as *mut libc::c_void) };
         write!(f, "{return_str}")
+    }
+}
+
+impl PolyOverQ {
+    /// Outputs a representation of [`PolyOverQ`] with the decimal representation
+    /// of each coefficient with the specified number of decimal digits.
+    /// If a coefficient can't be represented exactly, it provides the
+    /// closest value representable with `nr_decimal_digits` rounded towards zero.
+    ///
+    /// **WARNING:** This function converts every coefficient into an [`f64`] before
+    /// outputting the decimal representation. Thus, values that can't be represented exactly
+    /// by a [`f64`] will lose some precision. For large values, e.g. of size `2^64`
+    /// the deviation to the original value might be within the size of `1_000`.
+    ///
+    /// Parameters:
+    /// - `nr_decimal_digits`: specifies the number of decimal digits
+    ///   that will be a part of the output [`String`]
+    ///
+    /// Returns the polynomial in form of a [`String`]. For polynomial `2  1/2 5/3`
+    /// the [`String`] looks like this `2  0.50 1.66` if `nr_decimal_digits = 2`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::PolyOverQ;
+    /// use std::str::FromStr;
+    /// let poly = PolyOverQ::from_str("4  5/2 2 -2/3 4/3").unwrap();
+    ///
+    /// let decimal_repr = poly.to_string_decimal(3);
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if any entry of the polynomial can't be represented as a [`f64`].
+    pub fn to_string_decimal(&self, nr_decimal_digits: usize) -> String {
+        let degree = self.get_degree() + 1;
+        let mut poly_string = format!("{degree}  ");
+
+        for i in 0..degree {
+            // swap with get_coeff_unchecked once available
+            let entry = unsafe { self.get_coeff_unchecked(i) };
+            let entry_string = entry.to_string_decimal(nr_decimal_digits);
+
+            poly_string.push_str(&entry_string);
+            poly_string.push(' ');
+        }
+        poly_string = poly_string.trim().to_string();
+
+        poly_string
+    }
+}
+
+/// This module avoids tests already performed for [`crate::rational::Q::to_string_decimal`].
+#[cfg(test)]
+mod test_to_string_decimal {
+    use super::PolyOverQ;
+    use std::str::FromStr;
+
+    /// Ensures that [`PolyOverQ::to_string_decimal`] works for different degrees
+    /// and different `nr_decimal_digits`.
+    #[test]
+    fn different_degrees() {
+        let a = PolyOverQ::from_str("0").unwrap();
+        let b = PolyOverQ::from_str("1  1/3").unwrap();
+        let c = PolyOverQ::from_str("3  1/3 0 -5/3").unwrap();
+
+        let a_0 = a.to_string_decimal(0);
+        let a_1 = a.to_string_decimal(1);
+        let b_0 = b.to_string_decimal(0);
+        let b_2 = b.to_string_decimal(2);
+        let c_0 = c.to_string_decimal(0);
+        let c_1 = c.to_string_decimal(1);
+
+        assert_eq!("0", a_0);
+        assert_eq!("0", a_1);
+        assert_eq!("1  0", b_0);
+        assert_eq!("1  0.33", b_2);
+        assert_eq!("3  0 0 -2", c_0);
+        assert_eq!("3  0.3 0.0 -1.7", c_1);
     }
 }
 

@@ -11,11 +11,7 @@
 use flint_sys::fmpq_mat::fmpq_mat_trace;
 
 use super::MatQ;
-use crate::{
-    error::MathError,
-    rational::Q,
-    traits::{GetNumColumns, GetNumRows},
-};
+use crate::{error::MathError, rational::Q, traits::MatrixDimensions};
 
 impl MatQ {
     /// Returns the trace of a matrix and an error,
@@ -32,8 +28,8 @@ impl MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`NoSquareMatrix`](MathError::NoSquareMatrix)
-    ///     if the matrix is not a square matrix
+    ///   [`NoSquareMatrix`](MathError::NoSquareMatrix)
+    ///   if the matrix is not a square matrix
     pub fn trace(&self) -> Result<Q, MathError> {
         // check if matrix is square
         if self.get_num_rows() != self.get_num_columns() {

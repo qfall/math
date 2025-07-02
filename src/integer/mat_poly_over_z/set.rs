@@ -13,190 +13,146 @@ use crate::{
     error::MathError,
     integer::PolyOverZ,
     macros::for_others::implement_for_owned,
-    traits::{GetNumColumns, GetNumRows, SetEntry},
-    utils::{
-        collective_evaluation::evaluate_vec_dimensions_set_row_or_col,
-        index::{evaluate_index, evaluate_indices_for_matrix},
-    },
+    traits::{MatrixDimensions, MatrixSetEntry, MatrixSetSubmatrix, MatrixSwaps},
+    utils::index::{evaluate_index_for_vector, evaluate_indices_for_matrix},
 };
 use flint_sys::{
     fmpz_poly::{fmpz_poly_set, fmpz_poly_swap},
-    fmpz_poly_mat::fmpz_poly_mat_entry,
+    fmpz_poly_mat::{
+        fmpz_poly_mat_entry, fmpz_poly_mat_set, fmpz_poly_mat_window_clear,
+        fmpz_poly_mat_window_init,
+    },
 };
-use std::fmt::Display;
+use std::{fmt::Display, mem::MaybeUninit};
 
-impl SetEntry<&PolyOverZ> for MatPolyOverZ {
-    /// Sets the value of a specific matrix entry according to a given `value` of type [`PolyOverZ`].
+impl MatrixSetEntry<&PolyOverZ> for MatPolyOverZ {
+    /// Sets the value of a specific matrix entry according to a given `value` of type [`PolyOverZ`]
+    /// without checking whether the coordinate is part of the matrix.
     ///
     /// Parameters:
     /// - `row`: specifies the row in which the entry is located
     /// - `column`: specifies the column in which the entry is located
     /// - `value`: specifies the value to which the entry is set
     ///
-    /// Negative indices can be used to index from the back, e.g., `-1` for
-    /// the last element.
-    ///
-    /// Returns an empty `Ok` if the action could be performed successfully.
-    /// Otherwise, a [`MathError`] is returned if the specified entry is not part of the matrix.
+    /// # Safety
+    /// To use this function safely, make sure that the selected entry is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
     ///
     /// # Examples
     /// ```
     /// use qfall_math::integer::{MatPolyOverZ, PolyOverZ};
-    /// use qfall_math::traits::*;
+    /// use qfall_math::traits::MatrixSetEntry;
     /// use std::str::FromStr;
     ///
     /// let mut matrix = MatPolyOverZ::new(2, 2);
     /// let value = PolyOverZ::from_str("2  1 1").unwrap();
     ///
-    /// matrix.set_entry(0, 1, &value).unwrap();
-    /// matrix.set_entry(-1, -2, &PolyOverZ::from(2)).unwrap();
+    /// unsafe {
+    ///     matrix.set_entry_unchecked(0, 1, &value);
+    ///     matrix.set_entry_unchecked(1, 0, &PolyOverZ::from(2));
+    /// }
     ///
     /// assert_eq!("[[0, 2  1 1],[1  2, 0]]", matrix.to_string());
     /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if `row` or `column` are greater than the matrix size.
-    fn set_entry(
-        &mut self,
-        row: impl TryInto<i64> + Display,
-        column: impl TryInto<i64> + Display,
-        value: &PolyOverZ,
-    ) -> Result<(), MathError> {
-        let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
-
-        // since `self` is a correct matrix and both row and column
-        // are previously checked to be inside of the matrix, no errors
-        // appear inside of `unsafe` and `fmpz_set` can successfully clone the
-        // value inside the matrix. Therefore no memory leaks can appear.
+    unsafe fn set_entry_unchecked(&mut self, row: i64, column: i64, value: &PolyOverZ) {
         unsafe {
-            let entry = fmpz_poly_mat_entry(&self.matrix, row_i64, column_i64);
+            let entry = fmpz_poly_mat_entry(&self.matrix, row, column);
             fmpz_poly_set(entry, &value.poly)
         };
-
-        Ok(())
     }
 }
 
-implement_for_owned!(PolyOverZ, MatPolyOverZ, SetEntry);
+implement_for_owned!(PolyOverZ, MatPolyOverZ, MatrixSetEntry);
 
-impl MatPolyOverZ {
-    /// Sets a column of the given matrix to the provided column of `other`.
+impl MatrixSetSubmatrix for MatPolyOverZ {
+    /// Sets the matrix entries in `self` to entries defined in `other`.
+    /// The entries in `self` starting from `(row_self_start, col_self_start)` up to
+    /// `(row_self_end, col_self_end)`are set to be
+    /// the entries from the submatrix from `other` defined by `(row_other_start, col_other_start)`
+    /// to `(row_other_end, col_other_end)` (exclusively).
     ///
     /// Parameters:
-    /// - `col_0`: specifies the column of `self` that should be modified
-    /// - `other`: specifies the matrix providing the column replacing the column in `self`
-    /// - `col_1`: specifies the column of `other` providing
-    ///     the values replacing the original column in `self`
-    ///
-    /// Returns an empty `Ok` if the action could be performed successfully.
-    /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of its matrix
-    /// or if the number of rows differs.
+    /// `row_self_start`: the starting row of the matrix in which to set a submatrix
+    /// `col_self_start`: the starting column of the matrix in which to set a submatrix
+    /// `other`: the matrix from where to take the submatrix to set
+    /// `row_other_start`: the starting row of the specified submatrix
+    /// `col_other_start`: the starting column of the specified submatrix
+    /// `row_other_end`: the ending row of the specified submatrix
+    /// `col_other_end`:the ending column of the specified submatrix
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::{integer::MatPolyOverZ, traits::MatrixSetSubmatrix};
     /// use std::str::FromStr;
     ///
-    /// let mut mat_1 = MatPolyOverZ::new(2, 2);
-    /// let mat_2 = MatPolyOverZ::from_str("[[1  1],[0]]").unwrap();
-    /// mat_1.set_column(1, &mat_2, 0);
+    /// let mut mat = MatPolyOverZ::identity(3, 3);
+    ///
+    /// mat.set_submatrix(0, 1, &mat.clone(), 0, 0, 1, 1).unwrap();
+    /// // [[1,1,0],[0,0,1],[0,0,1]]
+    /// let mat_cmp = MatPolyOverZ::from_str("[[1  1, 1  1, 0],[0, 0, 1  1],[0, 0, 1  1]]").unwrap();
+    /// assert_eq!(mat, mat_cmp);
+    ///
+    /// unsafe{ mat.set_submatrix_unchecked(2, 0, 3, 2, &mat.clone(), 0, 0, 1, 2) };
+    /// let mat_cmp = MatPolyOverZ::from_str("[[1  1, 1  1, 0],[0, 0, 1  1],[1  1, 1  1, 1  1]]").unwrap();
+    /// assert_eq!(mat, mat_cmp);
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if the provided column index is not defined within the margins of the matrix.
-    /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the number of rows of `self` and `other` differ.
-    pub fn set_column(
+    /// # Safety
+    /// To use this function safely, make sure that the selected submatrices are part
+    /// of the matrices, the submatrices are of the same dimensions and the base types are the same.
+    /// If not, memory leaks, unexpected panics, etc. might occur.
+    unsafe fn set_submatrix_unchecked(
         &mut self,
-        col_0: impl TryInto<i64> + Display,
+        row_self_start: i64,
+        col_self_start: i64,
+        row_self_end: i64,
+        col_self_end: i64,
         other: &Self,
-        col_1: impl TryInto<i64> + Display,
-    ) -> Result<(), MathError> {
-        let col_0 = evaluate_index(col_0)?;
-        let col_1 = evaluate_index(col_1)?;
-
-        evaluate_vec_dimensions_set_row_or_col(
-            "set_column",
-            col_0,
-            col_1,
-            self.get_num_columns(),
-            other.get_num_columns(),
-            self.get_num_rows(),
-            other.get_num_rows(),
-        )?;
-
-        for row in 0..self.get_num_rows() {
+        row_other_start: i64,
+        col_other_start: i64,
+        row_other_end: i64,
+        col_other_end: i64,
+    ) {
+        {
+            let mut window_self = MaybeUninit::uninit();
+            // The memory for the elements of window is shared with self.
             unsafe {
-                fmpz_poly_set(
-                    fmpz_poly_mat_entry(&self.matrix, row, col_0),
-                    fmpz_poly_mat_entry(&other.matrix, row, col_1),
+                fmpz_poly_mat_window_init(
+                    window_self.as_mut_ptr(),
+                    &self.matrix,
+                    row_self_start,
+                    col_self_start,
+                    row_self_end,
+                    col_self_end,
                 )
             };
-        }
-
-        Ok(())
-    }
-
-    /// Sets a row of the given matrix to the provided row of `other`.
-    ///
-    /// Parameters:
-    /// - `row_0`: specifies the row of `self` that should be modified
-    /// - `other`: specifies the matrix providing the row replacing the row in `self`
-    /// - `row_1`: specifies the row of `other` providing
-    ///     the values replacing the original row in `self`
-    ///
-    /// Returns an empty `Ok` if the action could be performed successfully.
-    /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of its matrix
-    /// or if the number of columns differs.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer::MatPolyOverZ;
-    /// use std::str::FromStr;
-    ///
-    /// let mut mat_1 = MatPolyOverZ::new(2, 2);
-    /// let mat_2 = MatPolyOverZ::from_str("[[1  1, 0]]").unwrap();
-    /// mat_1.set_row(0, &mat_2, 0);
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if the provided row index is not defined within the margins of the matrix.
-    /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the number of columns of `self` and `other` differ.
-    pub fn set_row(
-        &mut self,
-        row_0: impl TryInto<i64> + Display,
-        other: &Self,
-        row_1: impl TryInto<i64> + Display,
-    ) -> Result<(), MathError> {
-        let row_0 = evaluate_index(row_0)?;
-        let row_1 = evaluate_index(row_1)?;
-
-        evaluate_vec_dimensions_set_row_or_col(
-            "set_row",
-            row_0,
-            row_1,
-            self.get_num_rows(),
-            other.get_num_rows(),
-            self.get_num_columns(),
-            other.get_num_columns(),
-        )?;
-
-        for col in 0..self.get_num_columns() {
+            let mut window_other = MaybeUninit::uninit();
+            // The memory for the elements of window is shared with other.
             unsafe {
-                fmpz_poly_set(
-                    fmpz_poly_mat_entry(&self.matrix, row_0, col),
-                    fmpz_poly_mat_entry(&other.matrix, row_1, col),
+                fmpz_poly_mat_window_init(
+                    window_other.as_mut_ptr(),
+                    &other.matrix,
+                    row_other_start,
+                    col_other_start,
+                    row_other_end,
+                    col_other_end,
                 )
             };
+            unsafe {
+                // TODO: this should not be mutable for the other window
+                fmpz_poly_mat_set(window_self.as_mut_ptr(), window_other.as_mut_ptr());
+
+                // Clears the matrix window and releases any memory that it uses. Note that
+                // the memory to the underlying matrix that window points to is not freed
+                fmpz_poly_mat_window_clear(window_self.as_mut_ptr());
+                fmpz_poly_mat_window_clear(window_other.as_mut_ptr());
+            }
         }
-
-        Ok(())
     }
+}
 
+impl MatrixSwaps for MatPolyOverZ {
     /// Swaps two entries of the specified matrix.
     ///
     /// Parameters:
@@ -213,7 +169,7 @@ impl MatPolyOverZ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::{integer::MatPolyOverZ, traits::MatrixSwaps};
     ///
     /// let mut matrix = MatPolyOverZ::new(4, 3);
     /// matrix.swap_entries(0, 0, 2, 1);
@@ -221,8 +177,8 @@ impl MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if row or column are greater than the matrix size.
-    pub fn swap_entries(
+    ///   if row or column are greater than the matrix size.
+    fn swap_entries(
         &mut self,
         row_0: impl TryInto<i64> + Display,
         col_0: impl TryInto<i64> + Display,
@@ -247,12 +203,15 @@ impl MatPolyOverZ {
     /// - `col_0`: specifies the first column which is swapped with the second one
     /// - `col_1`: specifies the second column which is swapped with the first one
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of the matrix.
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::{integer::MatPolyOverZ, traits::MatrixSwaps};
     ///
     /// let mut matrix = MatPolyOverZ::new(4, 3);
     /// matrix.swap_columns(0, 2);
@@ -260,17 +219,19 @@ impl MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if one of the given columns is greater than the matrix or negative.
-    pub fn swap_columns(
+    ///   if one of the given columns is greater than the matrix.
+    fn swap_columns(
         &mut self,
         col_0: impl TryInto<i64> + Display,
         col_1: impl TryInto<i64> + Display,
     ) -> Result<(), MathError> {
-        let col_0 = evaluate_index(col_0)?;
-        let col_1 = evaluate_index(col_1)?;
-        if col_0 >= self.get_num_columns() || col_1 >= self.get_num_columns() {
+        let num_cols = self.get_num_columns();
+        let col_0 = evaluate_index_for_vector(col_0, num_cols)?;
+        let col_1 = evaluate_index_for_vector(col_1, num_cols)?;
+
+        if col_0 >= num_cols || col_1 >= num_cols {
             return Err(MathError::OutOfBounds(
-                format!("smaller than {}", self.get_num_columns()),
+                format!("smaller than {}", num_cols),
                 if col_0 > col_1 {
                     col_0.to_string()
                 } else {
@@ -294,12 +255,15 @@ impl MatPolyOverZ {
     /// - `row_0`: specifies the first row which is swapped with the second one
     /// - `row_1`: specifies the second row which is swapped with the first one
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of the matrix.
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::{integer::MatPolyOverZ, traits::MatrixSwaps};
     ///
     /// let mut matrix = MatPolyOverZ::new(4, 3);
     /// matrix.swap_rows(0, 2);
@@ -307,17 +271,19 @@ impl MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if one of the given rows is greater than the matrix or negative.
-    pub fn swap_rows(
+    ///   if one of the given rows is greater than the matrix.
+    fn swap_rows(
         &mut self,
         row_0: impl TryInto<i64> + Display,
         row_1: impl TryInto<i64> + Display,
     ) -> Result<(), MathError> {
-        let row_0 = evaluate_index(row_0)?;
-        let row_1 = evaluate_index(row_1)?;
-        if row_0 >= self.get_num_rows() || row_1 >= self.get_num_rows() {
+        let num_rows = self.get_num_rows();
+        let row_0 = evaluate_index_for_vector(row_0, num_rows)?;
+        let row_1 = evaluate_index_for_vector(row_1, num_rows)?;
+
+        if row_0 >= num_rows || row_1 >= num_rows {
             return Err(MathError::OutOfBounds(
-                format!("smaller than {}", self.get_num_columns()),
+                format!("smaller than {}", num_rows),
                 if row_0 > row_1 {
                     row_0.to_string()
                 } else {
@@ -334,7 +300,9 @@ impl MatPolyOverZ {
         }
         Ok(())
     }
+}
 
+impl MatPolyOverZ {
     /// Swaps the `i`-th column with the `n-i`-th column for all `i <= n/2`
     /// of the specified matrix with `n` columns.
     ///
@@ -374,7 +342,7 @@ impl MatPolyOverZ {
 mod test_setter {
     use crate::{
         integer::{MatPolyOverZ, PolyOverZ},
-        traits::{GetEntry, SetEntry},
+        traits::{MatrixGetEntry, MatrixSetEntry, MatrixSetSubmatrix},
     };
     use std::str::FromStr;
 
@@ -565,9 +533,9 @@ mod test_setter {
         let mut mat_1 = MatPolyOverZ::new(5, 2);
         let mat_2 = mat_1.clone();
 
-        assert!(mat_1.set_column(-1, &mat_2, 0).is_err());
+        assert!(mat_1.set_column(-3, &mat_2, 0).is_err());
         assert!(mat_1.set_column(2, &mat_2, 0).is_err());
-        assert!(mat_1.set_column(1, &mat_2, -1).is_err());
+        assert!(mat_1.set_column(1, &mat_2, -3).is_err());
         assert!(mat_1.set_column(1, &mat_2, 2).is_err());
     }
 
@@ -647,9 +615,9 @@ mod test_setter {
         let mut mat_1 = MatPolyOverZ::new(5, 2);
         let mat_2 = mat_1.clone();
 
-        assert!(mat_1.set_row(-1, &mat_2, 0).is_err());
+        assert!(mat_1.set_row(-6, &mat_2, 0).is_err());
         assert!(mat_1.set_row(5, &mat_2, 0).is_err());
-        assert!(mat_1.set_row(2, &mat_2, -1).is_err());
+        assert!(mat_1.set_row(2, &mat_2, -6).is_err());
         assert!(mat_1.set_row(2, &mat_2, 5).is_err());
     }
 
@@ -662,11 +630,26 @@ mod test_setter {
         assert!(mat_1.set_row(0, &mat_2, 0).is_err());
         assert!(mat_1.set_row(1, &mat_2, 1).is_err());
     }
+
+    /// Ensure that negative indices work for set_column/row.
+    #[test]
+    fn negative_indexing_row_column() {
+        let mut matrix = MatPolyOverZ::identity(3, 3);
+        let matrix2 = MatPolyOverZ::identity(3, 3);
+
+        matrix.set_column(-1, &matrix2, -2).unwrap();
+        matrix.set_row(-1, &matrix2, -2).unwrap();
+
+        let matrix_cmp =
+            MatPolyOverZ::from_str("[[1  1, 0, 0],[0, 1  1, 1  1],[0, 1  1, 0]]").unwrap();
+        assert_eq!(matrix_cmp, matrix);
+    }
 }
 
 #[cfg(test)]
 mod test_swaps {
     use super::MatPolyOverZ;
+    use crate::traits::{MatrixGetSubmatrix, MatrixSwaps};
     use std::str::FromStr;
 
     /// Ensures that swapping entries works fine for small entries
@@ -804,8 +787,8 @@ mod test_swaps {
     fn column_out_of_bounds() {
         let mut matrix = MatPolyOverZ::new(5, 2);
 
-        assert!(matrix.swap_columns(-1, 0).is_err());
-        assert!(matrix.swap_columns(0, -1).is_err());
+        assert!(matrix.swap_columns(-6, 0).is_err());
+        assert!(matrix.swap_columns(0, -6).is_err());
         assert!(matrix.swap_columns(5, 0).is_err());
         assert!(matrix.swap_columns(0, 5).is_err());
     }
@@ -869,16 +852,32 @@ mod test_swaps {
     fn row_out_of_bounds() {
         let mut matrix = MatPolyOverZ::new(2, 4);
 
-        assert!(matrix.swap_rows(-1, 0).is_err());
-        assert!(matrix.swap_rows(0, -1).is_err());
+        assert!(matrix.swap_rows(-3, 0).is_err());
+        assert!(matrix.swap_rows(0, -3).is_err());
         assert!(matrix.swap_rows(4, 0).is_err());
         assert!(matrix.swap_rows(0, 4).is_err());
+    }
+
+    /// Ensure that negative indices work for swap_column/row.
+    #[test]
+    fn negative_indexing_row_column() {
+        let mut matrix = MatPolyOverZ::identity(3, 3);
+        let mut matrix2 = MatPolyOverZ::identity(3, 3);
+
+        matrix.swap_columns(-1, -2).unwrap();
+        matrix2.swap_rows(-1, -2).unwrap();
+
+        let matrix_cmp =
+            MatPolyOverZ::from_str("[[1  1, 0, 0],[0, 0, 1  1],[0, 1  1, 0]]").unwrap();
+        assert_eq!(matrix_cmp, matrix);
+        assert_eq!(matrix_cmp, matrix2);
     }
 }
 
 #[cfg(test)]
 mod test_reverses {
     use super::MatPolyOverZ;
+    use crate::traits::MatrixGetSubmatrix;
     use std::str::FromStr;
 
     /// Ensures that reversing columns works fine for small entries
@@ -957,5 +956,79 @@ mod test_reverses {
         assert_eq!(cmp_vec_2, matrix.get_row(0).unwrap());
         assert_eq!(cmp_vec_1, matrix.get_row(1).unwrap());
         assert_eq!(cmp_vec_0, matrix.get_row(2).unwrap());
+    }
+}
+
+#[cfg(test)]
+mod test_set_submatrix {
+    use crate::{integer::MatPolyOverZ, traits::MatrixSetSubmatrix};
+    use std::str::FromStr;
+
+    /// Ensure that the entire matrix can be set.
+    #[test]
+    fn entire_matrix() {
+        let mut mat = MatPolyOverZ::sample_uniform(10, 10, 5, -100, 100).unwrap();
+        let identity = MatPolyOverZ::identity(10, 10);
+
+        mat.set_submatrix(0, 0, &identity, 0, 0, 9, 9).unwrap();
+
+        assert_eq!(identity, mat);
+    }
+
+    /// Ensure that matrix access out of bounds leadss to an error.
+    #[test]
+    fn out_of_bounds() {
+        let mut mat = MatPolyOverZ::identity(10, 10);
+
+        assert!(mat.set_submatrix(10, 0, &mat.clone(), 0, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 10, &mat.clone(), 0, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 10, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 10, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 0, 10, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 0, 9, 10).is_err());
+        assert!(mat.set_submatrix(-11, 0, &mat.clone(), 0, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, -11, &mat.clone(), 0, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), -11, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, -11, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 0, -11, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 0, 9, -11).is_err());
+    }
+
+    /// Ensure that the function returns an error if the defined submatrix is too large
+    /// and there is not enough space in the original matrix.
+    #[test]
+    fn submatrix_too_large() {
+        let mut mat = MatPolyOverZ::sample_uniform(10, 10, 5, -100, 100).unwrap();
+
+        assert!(mat
+            .set_submatrix(0, 0, &MatPolyOverZ::identity(11, 11), 0, 0, 10, 10)
+            .is_err());
+        assert!(mat.set_submatrix(1, 2, &mat.clone(), 0, 0, 9, 9).is_err());
+    }
+
+    /// Ensure that setting submatrices with large values works.
+    #[test]
+    fn large_values() {
+        let mut mat = MatPolyOverZ::from_str(&format!(
+            "[[1  1, 2  1 {}],[1  -{}, 0]]",
+            u64::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+        let cmp_mat =
+            MatPolyOverZ::from_str(&format!("[[1  -{}, 0],[1  -{}, 0]]", u64::MAX, u64::MAX))
+                .unwrap();
+
+        mat.set_submatrix(0, 0, &mat.clone(), 1, 0, 1, 1).unwrap();
+        assert_eq!(cmp_mat, mat);
+    }
+
+    /// Ensure that setting with an undefined submatrix.
+    #[test]
+    #[should_panic]
+    fn submatrix_negative() {
+        let mut mat = MatPolyOverZ::identity(10, 10);
+
+        let _ = mat.set_submatrix(0, 0, &mat.clone(), 0, 9, 9, 5);
     }
 }

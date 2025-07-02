@@ -13,39 +13,12 @@
 use super::ModulusPolynomialRingZq;
 use crate::{
     error::MathError,
-    integer::{PolyOverZ, Z},
-    integer_mod_q::{Modulus, PolyOverZq, Zq},
+    integer::PolyOverZ,
+    integer_mod_q::{Modulus, PolyOverZq},
     macros::for_others::implement_for_owned,
 };
 use flint_sys::fq::fq_ctx_init_modulus;
 use std::{ffi::CString, mem::MaybeUninit, rc::Rc, str::FromStr};
-
-impl From<&Zq> for ModulusPolynomialRingZq {
-    /// Creates a constant [`ModulusPolynomialRingZq`], i.e. the polynomial `x mod q`,
-    /// where `x` is the value of the given [`Zq`] value and `q` its modulus.
-    ///
-    /// Parameters:
-    /// - `value`: the constant value the polynomial will have.
-    ///   
-    /// Returns a new constant [`ModulusPolynomialRingZq`] with the specified
-    /// `value` and `modulus` of the [`Zq`] value.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::{integer_mod_q::*, traits::*};
-    ///
-    /// let zq = Zq::from((2, 10));
-    ///
-    /// let mod_poly = ModulusPolynomialRingZq::from(&zq);
-    /// ```
-    fn from(value: &Zq) -> Self {
-        let poly_zq = PolyOverZq::from(value);
-
-        Self::from(poly_zq)
-    }
-}
-
-implement_for_owned!(Zq, ModulusPolynomialRingZq, From);
 
 impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for ModulusPolynomialRingZq {
     /// Creates a [`ModulusPolynomialRingZq`] from a [`PolyOverZ`] and a value that implements [`Into<Modulus>`].
@@ -73,7 +46,7 @@ impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for ModulusPolynomialRingZq {
     ///
     /// # Panics ...
     /// - if `modulus` is smaller than `2`, or
-    /// - if the modulus polynomial is `0`.
+    /// - if the degree of the polynomial is smaller than `1`.
     fn from((poly, modulus): (&PolyOverZ, Mod)) -> Self {
         let poly_zq = PolyOverZq::from((poly, modulus));
 
@@ -109,42 +82,9 @@ impl<Mod: Into<Modulus>> From<(PolyOverZ, Mod)> for ModulusPolynomialRingZq {
     ///
     /// # Panics ...
     /// - if `modulus` is smaller than `2`, or
-    /// - if the modulus polynomial is `0`.
+    /// - if the modulus polynomial is of degree smaller than `1`.
     fn from((poly, modulus): (PolyOverZ, Mod)) -> Self {
         let poly_zq = PolyOverZq::from((poly, modulus));
-
-        check_poly_mod(&poly_zq).unwrap();
-
-        Self::from(poly_zq)
-    }
-}
-
-impl<Integer: Into<Z>, Mod: Into<Modulus>> From<(Integer, Mod)> for ModulusPolynomialRingZq {
-    /// Creates a [`ModulusPolynomialRingZq`] from any values that implement [`Into<Z>`] and [`Into<Modulus>`],
-    /// where the second value must be larger than `1`.
-    ///
-    /// Parameters:
-    /// - `z`: the single, constant coefficient of the polynomial.
-    /// - `modulus`: the modulus by which each entry is reduced.
-    ///
-    /// Returns a new constant [`ModulusPolynomialRingZq`] with the specified `z` and `modulus` value.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer_mod_q::PolyOverZq;
-    /// use std::str::FromStr;
-    ///
-    /// let mod_poly = PolyOverZq::from((5, 42));
-    ///
-    /// let poly_cmp = PolyOverZq::from_str("1  5 mod 42").unwrap();
-    /// assert_eq!(poly_cmp, mod_poly);
-    /// ```
-    ///
-    /// # Panics ...
-    /// - if `modulus` is smaller than `2`, or
-    /// - if the modulus polynomial is `0`.
-    fn from((z, modulus): (Integer, Mod)) -> Self {
-        let poly_zq = PolyOverZq::from((z, modulus));
 
         check_poly_mod(&poly_zq).unwrap();
 
@@ -174,7 +114,7 @@ impl From<&PolyOverZq> for ModulusPolynomialRingZq {
     ///
     /// # Panics ...
     /// - if `modulus` is smaller than `2`, or
-    /// - if the modulus polynomial is `0`.
+    /// - if the modulus polynomial is of degree smaller than `1`.
     fn from(poly: &PolyOverZq) -> Self {
         check_poly_mod(poly).unwrap();
 
@@ -220,7 +160,7 @@ impl FromStr for ModulusPolynomialRingZq {
     ///
     /// Parameters:
     /// - `s`: has to be a valid string to create a [`PolyOverZq`].
-    ///     For further information see [`PolyOverZq::from_str`].
+    ///   For further information see [`PolyOverZq::from_str`].
     ///
     /// Note that the `[#number of coefficients]` and `[0th coefficient]`
     /// are divided by two spaces and the string for the polynomial is trimmed,
@@ -238,20 +178,20 @@ impl FromStr for ModulusPolynomialRingZq {
     /// ```
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`StringConversionError`](MathError::StringConversionError)
+    ///   [`StringConversionError`](MathError::StringConversionError)
     ///     - if the provided first half of the string was not formatted correctly to
-    ///         create a [`PolyOverZ`],
+    ///       create a [`PolyOverZ`],
     ///     - if the provided second half of the
-    ///         string was not formatted correctly to create a [`Modulus`],
+    ///       string was not formatted correctly to create a [`Modulus`],
     ///     - if the number of coefficients was smaller than the number provided
-    ///         at the start of the provided string,
+    ///       at the start of the provided string,
     ///     - if the provided value did not contain two whitespaces, or
     ///     - if the delimiter `mod` could not be found.
     ///     - For further information see [`PolyOverZq::from_str`].
     /// - Returns a [`MathError`] of type
-    ///     [`InvalidModulus`](MathError::InvalidModulus)
+    ///   [`InvalidModulus`](MathError::InvalidModulus)
     ///     - if `modulus` is smaller than `2`, or
-    ///     - if the modulus polynomial is `0`.
+    ///     - if the modulus polynomial is of degree smaller than `1`.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let poly_zq = PolyOverZq::from_str(s)?;
 
@@ -280,10 +220,10 @@ impl FromStr for ModulusPolynomialRingZq {
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type
-///     [`InvalidModulus`](MathError::InvalidModulus)
-///     if the modulus polynomial is `0`.
+///   [`InvalidModulus`](MathError::InvalidModulus)
+///   if the modulus polynomial is of degree less than `1`.
 pub(crate) fn check_poly_mod(poly_zq: &PolyOverZq) -> Result<(), MathError> {
-    if poly_zq == &PolyOverZq::from((0, &poly_zq.modulus)) {
+    if poly_zq.get_degree() < 1 {
         return Err(MathError::InvalidModulus(poly_zq.to_string()));
     }
 
@@ -295,33 +235,17 @@ pub(crate) fn check_poly_mod(poly_zq: &PolyOverZq) -> Result<(), MathError> {
 #[cfg(test)]
 mod test_availability {
     use super::*;
-    use crate::{integer::Z, integer_mod_q::Zq};
-    use crate::{integer_mod_q::ModulusPolynomialRingZq, integer_mod_q::PolyOverZq};
+    use crate::integer_mod_q::PolyOverZq;
     use std::str::FromStr;
 
     /// Ensure that the from function can be called with several types.
     #[test]
     fn availability() {
-        let z = Z::from(4);
-        let modulus = Modulus::from(3);
-        let zq = Zq::from((2, 3));
         let poly = PolyOverZ::from_str("2  1 1").unwrap();
         let poly_zq = PolyOverZq::from_str("4  1 0 0 1 mod 17").unwrap();
 
-        let _ = ModulusPolynomialRingZq::from(&zq);
-        let _ = ModulusPolynomialRingZq::from(zq.clone());
-
-        let _ = ModulusPolynomialRingZq::from((2, 5));
-        let _ = ModulusPolynomialRingZq::from((&z, 5));
-        let _ = ModulusPolynomialRingZq::from((z.clone(), 5));
-        let _ = ModulusPolynomialRingZq::from((&modulus, 5));
-        let _ = ModulusPolynomialRingZq::from((modulus.clone(), 5));
         let _ = ModulusPolynomialRingZq::from((&poly, 5));
         let _ = ModulusPolynomialRingZq::from((poly.clone(), 5));
-        let _ = ModulusPolynomialRingZq::from((3, &z));
-        let _ = ModulusPolynomialRingZq::from((3, z.clone()));
-        let _ = ModulusPolynomialRingZq::from((2, &modulus));
-        let _ = ModulusPolynomialRingZq::from((2, modulus));
 
         let _ = ModulusPolynomialRingZq::from(&poly_zq);
         let _ = ModulusPolynomialRingZq::from(poly_zq);
@@ -358,20 +282,23 @@ mod test_try_from_poly_z {
 /// since the format is reused, we omit some tests
 #[cfg(test)]
 mod test_try_from_integer_mod {
-    use crate::integer_mod_q::ModulusPolynomialRingZq;
+    use std::str::FromStr;
+
+    use crate::{integer::PolyOverZ, integer_mod_q::ModulusPolynomialRingZq};
 
     /// Ensure that primes and non-primes work as modulus
     #[test]
     fn mod_primes() {
-        let _ = ModulusPolynomialRingZq::from((5, 10));
-        let _ = ModulusPolynomialRingZq::from((5, 11));
+        let _ = ModulusPolynomialRingZq::from_str("3  3 0 1 mod 17").unwrap();
+        let _ = ModulusPolynomialRingZq::from_str("3  3 0 1 mod 18").unwrap();
     }
 
     /// Ensure that the function panics if the modulus polynomial is 0
     #[test]
     #[should_panic]
-    fn panic_0() {
-        let _ = ModulusPolynomialRingZq::from((0, 17));
+    fn panic_degree_1() {
+        let poly = PolyOverZ::from_str("1 5").unwrap();
+        let _ = ModulusPolynomialRingZq::from((poly, 17));
     }
 }
 

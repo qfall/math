@@ -1,4 +1,4 @@
-// Copyright © 2023 Phil Milewski
+// Copyright © 2023 Phil Milewski, Marcel Luca Schmidt
 //
 // This file is part of qFALL-math.
 //
@@ -11,12 +11,73 @@
 use super::super::PolyOverZq;
 use crate::{
     error::MathError,
+    integer::PolyOverZ,
     macros::arithmetics::{
-        arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+        arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
+        arithmetic_trait_mixed_borrowed_owned, arithmetic_trait_reverse,
     },
+    traits::CompareBase,
 };
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_add;
-use std::{ops::Add, str::FromStr};
+use std::{
+    ops::{Add, AddAssign},
+    str::FromStr,
+};
+
+impl AddAssign<&PolyOverZq> for PolyOverZq {
+    /// Computes the addition of `self` and `other` reusing
+    /// the memory of `self`.
+    /// [`AddAssign`] can be used on [`PolyOverZq`] in combination with
+    /// [`PolyOverZq`] and [`PolyOverZ`].
+    ///
+    /// Parameters:
+    /// - `other`: specifies the polynomial to add to `self`
+    ///
+    /// Returns the sum of both polynomials modulo `q` as a [`PolyOverZq`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{integer_mod_q::PolyOverZq, integer::PolyOverZ};
+    /// use std::str::FromStr;
+    ///
+    /// let mut a = PolyOverZq::from_str("3  1 2 3 mod 7").unwrap();
+    /// let b = PolyOverZq::from_str("5  1 2 -3 0 4 mod 7").unwrap();
+    /// let c = PolyOverZ::from_str("4  -1 2 5 3").unwrap();
+    ///
+    /// a += &b;
+    /// a += b;
+    /// a += &c;
+    /// a += c;
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the moduli of both [`PolyOverZq`] mismatch.
+    fn add_assign(&mut self, other: &Self) {
+        if !self.compare_base(other) {
+            panic!("{}", self.call_compare_base_error(other).unwrap());
+        }
+
+        unsafe {
+            fmpz_mod_poly_add(
+                &mut self.poly,
+                &self.poly,
+                &other.poly,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
+    }
+}
+impl AddAssign<&PolyOverZ> for PolyOverZq {
+    /// Documentation at [`PolyOverZq::add_assign`].
+    fn add_assign(&mut self, other: &PolyOverZ) {
+        let other = PolyOverZq::from((other, self.get_mod()));
+
+        self.add_assign(&other);
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(AddAssign, add_assign, PolyOverZq, PolyOverZq);
+arithmetic_assign_trait_borrowed_to_owned!(AddAssign, add_assign, PolyOverZq, PolyOverZ);
 
 impl Add for &PolyOverZq {
     type Output = PolyOverZq;
@@ -49,6 +110,51 @@ impl Add for &PolyOverZq {
     }
 }
 
+arithmetic_trait_borrowed_to_owned!(Add, add, PolyOverZq, PolyOverZq, PolyOverZq);
+arithmetic_trait_mixed_borrowed_owned!(Add, add, PolyOverZq, PolyOverZq, PolyOverZq);
+
+impl Add<&PolyOverZ> for &PolyOverZq {
+    type Output = PolyOverZq;
+    /// Implements the [`Add`] trait for [`PolyOverZq`] and [`PolyOverZ`].
+    /// [`Add`] is implemented for any combination of owned and borrowed values.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the polynomial to add to `self`
+    ///
+    /// Returns the addition of both polynomials as a [`PolyOverZq`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use qfall_math::integer::PolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let a = PolyOverZq::from_str("4  -1 0 1 1 mod 17").unwrap();
+    /// let b = PolyOverZ::from_str("4  2 0 3 1").unwrap();
+    ///
+    /// let c: PolyOverZq = &a + &b;
+    /// ```
+    fn add(self, other: &PolyOverZ) -> Self::Output {
+        let mut out = PolyOverZq::from(&self.modulus);
+        unsafe {
+            fmpz_mod_poly_add(
+                &mut out.poly,
+                &self.poly,
+                &PolyOverZq::from((other, &self.modulus)).poly,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            );
+        }
+        out
+    }
+}
+
+arithmetic_trait_reverse!(Add, add, PolyOverZ, PolyOverZq, PolyOverZq);
+
+arithmetic_trait_borrowed_to_owned!(Add, add, PolyOverZq, PolyOverZ, PolyOverZq);
+arithmetic_trait_borrowed_to_owned!(Add, add, PolyOverZ, PolyOverZq, PolyOverZq);
+arithmetic_trait_mixed_borrowed_owned!(Add, add, PolyOverZq, PolyOverZ, PolyOverZq);
+arithmetic_trait_mixed_borrowed_owned!(Add, add, PolyOverZ, PolyOverZq, PolyOverZq);
+
 impl PolyOverZq {
     /// Implements addition for two [`PolyOverZq`] values.
     ///
@@ -70,14 +176,10 @@ impl PolyOverZq {
     /// ```
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
-    ///     both [`PolyOverZq`] mismatch.
+    ///   both [`PolyOverZq`] mismatch.
     pub fn add_safe(&self, other: &Self) -> Result<PolyOverZq, MathError> {
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to add polynomial with modulus '{}' and polynomial with modulus '{}'.
-            If the modulus should be ignored please convert into a PolyOverZ beforehand.",
-                self.modulus, other.modulus
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
         let mut out = PolyOverZq::from_str(&format!("0 mod {}", self.modulus)).unwrap();
         unsafe {
@@ -92,8 +194,73 @@ impl PolyOverZq {
     }
 }
 
-arithmetic_trait_borrowed_to_owned!(Add, add, PolyOverZq, PolyOverZq, PolyOverZq);
-arithmetic_trait_mixed_borrowed_owned!(Add, add, PolyOverZq, PolyOverZq, PolyOverZq);
+#[cfg(test)]
+mod test_add_assign {
+    use super::PolyOverZq;
+    use crate::integer::PolyOverZ;
+    use std::str::FromStr;
+
+    /// Ensure that `add_assign` works for small numbers.
+    #[test]
+    fn correct_small() {
+        let mut a = PolyOverZq::from_str("3  6 2 -3 mod 7").unwrap();
+        let b = PolyOverZq::from_str("5  1 2 5 1 2 mod 7").unwrap();
+        let cmp = PolyOverZq::from_str("5  0 4 2 1 2 mod 7").unwrap();
+
+        a += b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `add_assign` works for large numbers.
+    #[test]
+    fn correct_large() {
+        let mut a = PolyOverZq::from_str(&format!(
+            "3  {} {} {} mod {}",
+            u32::MAX,
+            i32::MIN,
+            i32::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+        let b = PolyOverZq::from_str(&format!("2  {} {} mod {}", u32::MAX, i32::MAX, u64::MAX))
+            .unwrap();
+        let cmp = PolyOverZq::from_str(&format!(
+            "3  {} -1 {} mod {}",
+            u64::from(u32::MAX) * 2,
+            i32::MAX,
+            u64::MAX
+        ))
+        .unwrap();
+
+        a += b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `add_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let mut a = PolyOverZq::from_str("3  1 2 -3 mod 5").unwrap();
+        let b = PolyOverZq::from_str("3  -1 -2 3 mod 5").unwrap();
+        let c = PolyOverZ::from_str("2  -2 2").unwrap();
+
+        a += &b;
+        a += b;
+        a += &c;
+        a += c;
+    }
+
+    /// Ensures that mismatching moduli result in a panic.
+    #[test]
+    #[should_panic]
+    fn mismatching_moduli() {
+        let mut a: PolyOverZq = PolyOverZq::from_str("3  -5 4 1 mod 7").unwrap();
+        let b: PolyOverZq = PolyOverZq::from_str("3  -5 4 1 mod 8").unwrap();
+
+        a += b;
+    }
+}
 
 #[cfg(test)]
 mod test_add {
@@ -189,5 +356,42 @@ mod test_add {
         let a: PolyOverZq = PolyOverZq::from_str("3  -5 4 1 mod 7").unwrap();
         let b: PolyOverZq = PolyOverZq::from_str("3  -5 4 1 mod 11").unwrap();
         assert!(&a.add_safe(&b).is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_mul_poly_over_z {
+    use super::PolyOverZq;
+    use crate::integer::PolyOverZ;
+    use std::str::FromStr;
+
+    /// Checks if polynomial addition works fine for both borrowed
+    #[test]
+    fn borrowed_correctness() {
+        let poly_1 = PolyOverZq::from_str(&format!("1  {} mod {}", i64::MAX, u64::MAX)).unwrap();
+        let poly_2 = PolyOverZ::from_str("2  1 2").unwrap();
+        let poly_cmp =
+            PolyOverZq::from_str(&format!("2  {} 2 mod {}", i64::MAX as u64 + 1, u64::MAX))
+                .unwrap();
+
+        let poly_1 = &poly_1 + &poly_2;
+
+        assert_eq!(poly_cmp, poly_1);
+    }
+
+    /// Checks if addition works fine for different types
+    #[test]
+    fn availability() {
+        let poly = PolyOverZq::from_str("3  1 2 3 mod 17").unwrap();
+        let z = PolyOverZ::from(2);
+
+        _ = poly.clone() + z.clone();
+        _ = z.clone() + poly.clone();
+        _ = &poly + &z;
+        _ = &z + &poly;
+        _ = &poly + z.clone();
+        _ = z.clone() + &poly;
+        _ = &z + poly.clone();
+        _ = poly.clone() + &z;
     }
 }

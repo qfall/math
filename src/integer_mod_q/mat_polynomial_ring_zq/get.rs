@@ -10,14 +10,11 @@
 
 use super::MatPolynomialRingZq;
 use crate::{
-    error::MathError,
     integer::{MatPolyOverZ, PolyOverZ},
     integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq},
-    traits::{GetEntry, GetNumColumns, GetNumRows},
-    utils::index::evaluate_index,
+    traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix},
 };
 use flint_sys::{fmpz_poly::fmpz_poly_struct, fmpz_poly_mat::fmpz_poly_mat_entry};
-use std::fmt::Display;
 
 impl MatPolynomialRingZq {
     /// Returns the modulus of the matrix as a [`ModulusPolynomialRingZq`].
@@ -66,7 +63,7 @@ impl MatPolynomialRingZq {
     }
 }
 
-impl GetNumRows for MatPolynomialRingZq {
+impl MatrixDimensions for MatPolynomialRingZq {
     /// Returns the number of rows of the matrix as an [`i64`].
     ///
     /// # Examples
@@ -85,9 +82,7 @@ impl GetNumRows for MatPolynomialRingZq {
     fn get_num_rows(&self) -> i64 {
         self.matrix.get_num_rows()
     }
-}
 
-impl GetNumColumns for MatPolynomialRingZq {
     /// Returns the number of columns of the matrix as an [`i64`].
     ///
     /// # Examples
@@ -108,19 +103,21 @@ impl GetNumColumns for MatPolynomialRingZq {
     }
 }
 
-impl GetEntry<PolyOverZ> for MatPolynomialRingZq {
-    /// Outputs the [`PolyOverZ`] value of a specific matrix entry.
+impl MatrixGetEntry<PolyOverZ> for MatPolynomialRingZq {
+    /// Outputs the [`PolyOverZ`] value of a specific matrix entry
+    /// without checking whether it's part of the matrix.
     ///
     /// Parameters:
     /// - `row`: specifies the row in which the entry is located
     /// - `column`: specifies the column in which the entry is located
     ///
-    /// Negative indices can be used to index from the back, e.g., `-1` for
-    /// the last element.
-    ///
     /// Returns the [`PolyOverZ`] value of the matrix at the position of the given
-    /// row and column or an error if the number of rows or columns is
-    /// greater than the matrix or negative.
+    /// row and column.
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected entry is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
     ///
     /// # Examples
     /// ```
@@ -133,39 +130,33 @@ impl GetEntry<PolyOverZ> for MatPolynomialRingZq {
     /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
     /// let poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
     ///
-    /// let entry_1: PolyOverZ = poly_ring_mat.get_entry(1, 0).unwrap();
-    /// let entry_2: PolyOverZ = poly_ring_mat.get_entry(-2, -1).unwrap();
+    /// let entry_1: PolyOverZ = unsafe { poly_ring_mat.get_entry_unchecked(1, 0) };
+    /// let entry_2: PolyOverZ = unsafe { poly_ring_mat.get_entry_unchecked(0, 1) };
     ///
     ///
     /// assert_eq!(entry_1, PolyOverZ::from(0));
     /// assert_eq!(entry_2, PolyOverZ::from(42));
     /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if `row` or `column` are greater than the matrix size.
-    fn get_entry(
-        &self,
-        row: impl TryInto<i64> + Display,
-        column: impl TryInto<i64> + Display,
-    ) -> Result<PolyOverZ, MathError> {
-        self.matrix.get_entry(row, column)
+    unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> PolyOverZ {
+        self.matrix.get_entry_unchecked(row, column)
     }
 }
 
-impl GetEntry<PolynomialRingZq> for MatPolynomialRingZq {
-    /// Outputs the [`PolynomialRingZq`] value of a specific matrix entry.
+impl MatrixGetEntry<PolynomialRingZq> for MatPolynomialRingZq {
+    /// Outputs the [`PolynomialRingZq`] value of a specific matrix entry
+    /// without checking whether it's part of the matrix.
     ///
     /// Parameters:
     /// - `row`: specifies the row in which the entry is located
     /// - `column`: specifies the column in which the entry is located
     ///
-    /// Negative indices can be used to index from the back, e.g., `-1` for
-    /// the last element.
-    ///
     /// Returns the [`PolynomialRingZq`] value of the matrix at the position of the given
-    /// row and column or an error if the number of rows or columns is
-    /// greater than the matrix or negative.
+    /// row and column.
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected entry is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
     ///
     /// # Examples
     /// ```
@@ -178,115 +169,25 @@ impl GetEntry<PolynomialRingZq> for MatPolynomialRingZq {
     /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
     /// let poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
     ///
-    /// let entry_1: PolynomialRingZq = poly_ring_mat.get_entry(0, 1).unwrap();
-    /// let entry_2: PolynomialRingZq = poly_ring_mat.get_entry(-2, -1).unwrap();
+    /// let entry_1: PolynomialRingZq = unsafe { poly_ring_mat.get_entry_unchecked(0, 1) };
+    /// let entry_2: PolynomialRingZq = unsafe { poly_ring_mat.get_entry_unchecked(0, 1) };
     ///
     /// let value_cmp = PolynomialRingZq::from((&PolyOverZ::from(42), &modulus));
     /// assert_eq!(entry_1, value_cmp);
     /// assert_eq!(entry_1, entry_2);
     /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if `row` or `column` are greater than the matrix size.
-    fn get_entry(
-        &self,
-        row: impl TryInto<i64> + Display,
-        column: impl TryInto<i64> + Display,
-    ) -> Result<PolynomialRingZq, MathError> {
-        Ok(PolynomialRingZq {
-            poly: self.matrix.get_entry(row, column)?,
+    unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> PolynomialRingZq {
+        PolynomialRingZq {
+            poly: self.matrix.get_entry_unchecked(row, column),
             modulus: self.get_mod(),
-        })
+        }
     }
 }
 
-impl MatPolynomialRingZq {
-    /// Outputs the row vector of the specified row.
-    ///
-    /// Parameters:
-    /// - `row`: specifies the row of the matrix
-    ///
-    /// Returns a row vector of the matrix at the position of the given
-    /// `row` or an error if the number of rows is
-    /// greater than the matrix or negative.
-    ///
-    /// # Examples
-    /// ```rust
-    /// use qfall_math::integer::MatPolyOverZ;
-    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
-    /// use std::str::FromStr;
-    ///
-    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();();
-    /// let mat_poly = MatPolyOverZ::identity(3, 3);
-    /// let matrix = MatPolynomialRingZq::from((&mat_poly, &modulus));
-    ///
-    /// let row_0 = matrix.get_row(0).unwrap(); // first row
-    /// let row_1 = matrix.get_row(1).unwrap(); // second row
-    /// let row_2 = matrix.get_row(2).unwrap(); // third row
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if the number of the row is greater than the matrix or negative.
-    pub fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError> {
-        let row_i64 = evaluate_index(row)?;
-
-        if self.get_num_rows() <= row_i64 {
-            return Err(MathError::OutOfBounds(
-                format!("be smaller than {}", self.get_num_rows()),
-                format!("{row_i64}"),
-            ));
-        }
-
-        self.get_submatrix(row_i64, row_i64, 0, self.get_num_columns() - 1)
-    }
-
-    /// Outputs a column vector of the specified column.
-    ///
-    /// Input parameters:
-    /// * `column`: specifies the column of the matrix
-    ///
-    /// Returns a column vector of the matrix at the position of the given
-    /// `column` or an error if the number of columns is
-    /// greater than the matrix or negative.
-    ///
-    /// # Examples
-    /// ```rust
-    /// use qfall_math::integer::MatPolyOverZ;
-    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
-    /// use std::str::FromStr;
-    ///
-    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();();
-    /// let mat_poly = MatPolyOverZ::identity(3, 3);
-    /// let matrix = MatPolynomialRingZq::from((&mat_poly, &modulus));
-    ///
-    /// let col_0 = matrix.get_column(0).unwrap(); // first column
-    /// let col_1 = matrix.get_column(1).unwrap(); // second column
-    /// let col_1 = matrix.get_column(2).unwrap(); // third column
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if the number of the column is greater than the matrix or negative.
-    pub fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError> {
-        let column_i64 = evaluate_index(column)?;
-
-        if self.get_num_columns() <= column_i64 {
-            return Err(MathError::OutOfBounds(
-                format!("be smaller than {}", self.get_num_columns()),
-                format!("{column_i64}"),
-            ));
-        }
-
-        self.get_submatrix(0, self.get_num_rows() - 1, column_i64, column_i64)
-    }
-
-    /// Returns a deep copy of the submatrix defined by the given parameters.
-    /// All entries starting from `(row_1, col_1)` to `(row_2, col_2)`(inclusively) are collected in
-    /// a new matrix.
-    /// Note that `row_1 >= row_2` and `col_1 >= col_2` must hold after converting negative indices.
-    /// Otherwise the function will panic.
+impl MatrixGetSubmatrix for MatPolynomialRingZq {
+    /// Returns a deep copy of the submatrix defined by the given parameters
+    /// and does not check the provided dimensions.
+    /// There is also a safe version of this function that checks the input.
     ///
     /// Parameters:
     /// `row_1`: the starting row of the submatrix
@@ -294,15 +195,11 @@ impl MatPolynomialRingZq {
     /// `col_1`: the starting column of the submatrix
     /// `col_2`: the ending column of the submatrix
     ///
-    /// Negative indices can be used to index from the back, e.g., `-1` for
-    /// the last element.
-    ///
-    /// Returns the submatrix from `(row_1, col_1)` to `(row_2, col_2)`(inclusively)
-    /// or an error if any provided row or column is greater than the matrix.
+    /// Returns the submatrix from `(row_1, col_1)` to `(row_2, col_2)`(exclusively).
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::{integer::MatPolyOverZ, traits::MatrixGetSubmatrix};
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
     /// use std::str::FromStr;
     ///
@@ -312,32 +209,36 @@ impl MatPolynomialRingZq {
     ///
     /// let sub_mat_1 = poly_ring_mat.get_submatrix(0, 2, 1, 1).unwrap();
     /// let sub_mat_2 = poly_ring_mat.get_submatrix(0, -1, 1, -2).unwrap();
+    /// let sub_mat_3 = unsafe{poly_ring_mat.get_submatrix_unchecked(0, 3, 1, 2)};
     ///
     /// let e_2 = MatPolyOverZ::from_str("[[0],[1  1],[0]]").unwrap();
     /// let e_2 = MatPolynomialRingZq::from((&e_2, &modulus));
     /// assert_eq!(e_2, sub_mat_1);
     /// assert_eq!(e_2, sub_mat_2);
+    /// assert_eq!(e_2, sub_mat_3);
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if any provided row or column is greater than the matrix.
-    ///
-    /// # Panics ...
-    /// - if `col_1 > col_2` or `row_1 > row_2`.
-    pub fn get_submatrix(
+    /// # Safety
+    /// To use this function safely, make sure that the selected submatrix is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    unsafe fn get_submatrix_unchecked(
         &self,
-        row_1: impl TryInto<i64> + Display,
-        row_2: impl TryInto<i64> + Display,
-        col_1: impl TryInto<i64> + Display,
-        col_2: impl TryInto<i64> + Display,
-    ) -> Result<Self, MathError> {
-        Ok(MatPolynomialRingZq {
-            matrix: self.matrix.get_submatrix(row_1, row_2, col_1, col_2)?,
+        row_1: i64,
+        row_2: i64,
+        col_1: i64,
+        col_2: i64,
+    ) -> Self {
+        MatPolynomialRingZq {
+            matrix: self
+                .matrix
+                .get_submatrix_unchecked(row_1, row_2, col_1, col_2),
             modulus: self.get_mod(),
-        })
+        }
     }
+}
 
+impl MatPolynomialRingZq {
     /// Efficiently collects all [`fmpz_poly_struct`]s in a [`MatPolynomialRingZq`] without cloning them.
     ///
     /// Hence, the values on the returned [`Vec`] are intended for short-term use
@@ -376,7 +277,7 @@ impl MatPolynomialRingZq {
 mod test_get_entry {
     use crate::integer::{MatPolyOverZ, PolyOverZ};
     use crate::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq, PolynomialRingZq};
-    use crate::traits::GetEntry;
+    use crate::traits::MatrixGetEntry;
     use std::str::FromStr;
 
     const LARGE_PRIME: u64 = u64::MAX - 58;
@@ -387,8 +288,8 @@ mod test_get_entry {
         let modulus = ModulusPolynomialRingZq::from_str("2  42 17 mod 89").unwrap();
         let matrix = MatPolynomialRingZq::new(5, 10, &modulus);
 
-        let entry_1 = matrix.get_entry(0, 0).unwrap();
-        let entry_2 = matrix.get_entry(4, 9).unwrap();
+        let entry_1: PolyOverZ = matrix.get_entry(0, 0).unwrap();
+        let entry_2: PolyOverZ = matrix.get_entry(4, 9).unwrap();
 
         assert_eq!(PolyOverZ::default(), entry_1);
         assert_eq!(PolyOverZ::default(), entry_2);
@@ -405,7 +306,7 @@ mod test_get_entry {
                 .unwrap();
         let matrix = MatPolynomialRingZq::from((&poly_mat, &modulus));
 
-        let entry = matrix.get_entry(0, 0).unwrap();
+        let entry: PolyOverZ = matrix.get_entry(0, 0).unwrap();
 
         assert_eq!(
             PolyOverZ::from_str(&format!("4  1 0 {} 1", i64::MAX)).unwrap(),
@@ -421,10 +322,10 @@ mod test_get_entry {
                 .unwrap();
         let matrix = MatPolynomialRingZq::new(5, 10, &modulus);
 
-        assert!(GetEntry::<PolynomialRingZq>::get_entry(&matrix, 5, 1).is_err());
-        assert!(GetEntry::<PolynomialRingZq>::get_entry(&matrix, -6, 1).is_err());
-        assert!(GetEntry::<PolyOverZ>::get_entry(&matrix, 5, 1).is_err());
-        assert!(GetEntry::<PolyOverZ>::get_entry(&matrix, -6, 1).is_err());
+        assert!(MatrixGetEntry::<PolynomialRingZq>::get_entry(&matrix, 5, 1).is_err());
+        assert!(MatrixGetEntry::<PolynomialRingZq>::get_entry(&matrix, -6, 1).is_err());
+        assert!(MatrixGetEntry::<PolyOverZ>::get_entry(&matrix, 5, 1).is_err());
+        assert!(MatrixGetEntry::<PolyOverZ>::get_entry(&matrix, -6, 1).is_err());
     }
 
     /// Ensure that a wrong number of columns yields an Error.
@@ -435,10 +336,10 @@ mod test_get_entry {
                 .unwrap();
         let matrix = MatPolynomialRingZq::new(5, 10, &modulus);
 
-        assert!(GetEntry::<PolynomialRingZq>::get_entry(&matrix, 1, 10).is_err());
-        assert!(GetEntry::<PolynomialRingZq>::get_entry(&matrix, 1, -11).is_err());
-        assert!(GetEntry::<PolyOverZ>::get_entry(&matrix, 1, 10).is_err());
-        assert!(GetEntry::<PolyOverZ>::get_entry(&matrix, 1, -11).is_err());
+        assert!(MatrixGetEntry::<PolynomialRingZq>::get_entry(&matrix, 1, 10).is_err());
+        assert!(MatrixGetEntry::<PolynomialRingZq>::get_entry(&matrix, 1, -11).is_err());
+        assert!(MatrixGetEntry::<PolyOverZ>::get_entry(&matrix, 1, 10).is_err());
+        assert!(MatrixGetEntry::<PolyOverZ>::get_entry(&matrix, 1, -11).is_err());
     }
 
     /// Ensure that getting entries works with different types.
@@ -458,7 +359,7 @@ mod test_get_entry {
 mod test_get_num {
     use crate::{
         integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
-        traits::{GetNumColumns, GetNumRows},
+        traits::MatrixDimensions,
     };
     use std::str::FromStr;
 
@@ -571,6 +472,7 @@ mod test_get_vec {
     use crate::{
         integer::MatPolyOverZ,
         integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
+        traits::MatrixGetSubmatrix,
     };
     use std::str::FromStr;
 
@@ -597,6 +499,30 @@ mod test_get_vec {
         let cmp_2 = MatPolynomialRingZq::from((&cmp_2, &modulus));
         assert_eq!(cmp_1, row_1);
         assert_eq!(cmp_2, row_2);
+    }
+
+    /// Ensure that getting a row with a negative index works
+    #[test]
+    fn get_row_negative_indexing_works() {
+        let matrix = MatPolyOverZ::from_str(&format!(
+            "[[0, 0, 0],[1  42, 1  {}, 1  {}]]",
+            i64::MAX,
+            u64::MAX - 1
+        ))
+        .unwrap();
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
+        let matrix = MatPolynomialRingZq::from((&matrix, &modulus));
+        let row_1 = matrix.get_row(-2).unwrap();
+        let row_2 = matrix.get_row(-1).unwrap();
+
+        let cmp_1 = MatPolyOverZ::from_str("[[0, 0, 0]]").unwrap();
+        let cmp_2 =
+            MatPolyOverZ::from_str(&format!("[[1  42, 1  {}, 1  {}]]", i64::MAX, u64::MAX - 1))
+                .unwrap();
+
+        assert_eq!(cmp_1, row_1.matrix);
+        assert_eq!(cmp_2, row_2.matrix);
     }
 
     /// Ensure that getting a column works.
@@ -629,6 +555,36 @@ mod test_get_vec {
         assert_eq!(cmp_3, column_3);
     }
 
+    /// Ensure that getting a column with a negative index works
+    #[test]
+    fn get_column_negative_indexing_works() {
+        let matrix = MatPolyOverZ::from_str(&format!(
+            "[[1  42, 0, 2  17 42],[1  {}, 0, 2  17 42],[1  {}, 0, 2  17 42]]",
+            i64::MAX,
+            u64::MAX - 1
+        ))
+        .unwrap();
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
+        let matrix = MatPolynomialRingZq::from((&matrix, &modulus));
+        let column_1 = matrix.get_column(-3).unwrap();
+        let column_2 = matrix.get_column(-2).unwrap();
+        let column_3 = matrix.get_column(-1).unwrap();
+
+        let cmp_1 = MatPolyOverZ::from_str(&format!(
+            "[[1  42],[1  {}],[1  {}]]",
+            i64::MAX,
+            u64::MAX - 1
+        ))
+        .unwrap();
+        let cmp_2 = MatPolyOverZ::from_str("[[0],[0],[0]]").unwrap();
+        let cmp_3 = MatPolyOverZ::from_str("[[2  17 42],[2  17 42],[2  17 42]]").unwrap();
+
+        assert_eq!(cmp_1, column_1.matrix);
+        assert_eq!(cmp_2, column_2.matrix);
+        assert_eq!(cmp_3, column_3.matrix);
+    }
+
     /// Ensure that wrong row and column dimensions yields an error.
     #[test]
     fn wrong_dim_error() {
@@ -642,9 +598,9 @@ mod test_get_vec {
         .unwrap();
         let matrix = MatPolynomialRingZq::from((&matrix, &modulus));
 
-        let row_1 = matrix.get_row(-1);
+        let row_1 = matrix.get_row(-4);
         let row_2 = matrix.get_row(4);
-        let column_1 = matrix.get_column(-1);
+        let column_1 = matrix.get_column(-4);
         let column_2 = matrix.get_column(4);
 
         assert!(row_1.is_err());
@@ -659,7 +615,7 @@ mod test_get_submatrix {
     use crate::{
         integer::{MatPolyOverZ, Z},
         integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
-        traits::{GetNumColumns, GetNumRows},
+        traits::{MatrixDimensions, MatrixGetSubmatrix},
     };
     use std::str::FromStr;
 

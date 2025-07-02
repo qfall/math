@@ -11,8 +11,8 @@
 use crate::{
     error::MathError,
     integer::{MatZ, Z},
-    traits::{GetNumColumns, GetNumRows, SetEntry},
-    utils::sample::uniform::sample_uniform_rejection,
+    traits::{MatrixDimensions, MatrixSetEntry},
+    utils::sample::uniform::UniformIntegerSampler,
 };
 use std::fmt::Display;
 
@@ -28,9 +28,9 @@ impl MatZ {
     /// - `num_rows`: specifies the number of rows the new matrix should have
     /// - `num_cols`: specifies the number of columns the new matrix should have
     /// - `lower_bound`: specifies the included lower bound of the
-    ///     interval over which is sampled
+    ///   interval over which is sampled
     /// - `upper_bound`: specifies the excluded upper bound of the
-    ///     interval over which is sampled
+    ///   interval over which is sampled
     ///
     /// Returns a new [`MatZ`] instance with entries chosen
     /// uniformly at random in `[lower_bound, upper_bound)` or a [`MathError`]
@@ -45,12 +45,12 @@ impl MatZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    ///     if the given `upper_bound` isn't at least larger than `lower_bound + 1`,
-    ///     i.e. the interval size is at most `1`.
+    ///   if the given `upper_bound` isn't at least larger than `lower_bound + 1`,
+    ///   i.e. the interval size is at most `1`.
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    ///     For further information see [`MatZ::new`].
+    ///   For further information see [`MatZ::new`].
     pub fn sample_uniform(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
@@ -62,10 +62,11 @@ impl MatZ {
         let mut matrix = MatZ::new(num_rows, num_cols);
 
         let interval_size = &upper_bound - &lower_bound;
+        let mut uis = UniformIntegerSampler::init(&interval_size)?;
         for row in 0..matrix.get_num_rows() {
             for col in 0..matrix.get_num_columns() {
-                let sample = sample_uniform_rejection(&interval_size)?;
-                matrix.set_entry(row, col, &lower_bound + sample).unwrap();
+                let sample = uis.sample();
+                unsafe { matrix.set_entry_unchecked(row, col, &lower_bound + sample) };
             }
         }
 
@@ -75,7 +76,7 @@ impl MatZ {
 
 #[cfg(test)]
 mod test_sample_uniform {
-    use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
+    use crate::traits::{MatrixDimensions, MatrixGetEntry};
     use crate::{
         integer::{MatZ, Z},
         integer_mod_q::Modulus,

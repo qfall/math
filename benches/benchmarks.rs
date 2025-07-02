@@ -10,13 +10,16 @@
 
 use criterion::criterion_main;
 
+pub mod basis_reductions;
 pub mod cholesky_decomposition;
 pub mod classic_crypto;
 pub mod integer;
+pub mod matrix_arith;
 pub mod ntt_multiplication;
 pub mod sample_z;
 pub mod sampling;
 pub mod solve;
+pub mod uniform;
 
 criterion_main! {
     integer::benches,
@@ -25,5 +28,8 @@ criterion_main! {
     solve::benches,
     cholesky_decomposition::benches,
     sample_z::benches,
+    basis_reductions::benches,
+    matrix_arith::benches,
+    uniform::benches,,
     ntt_multiplication::benches
 }

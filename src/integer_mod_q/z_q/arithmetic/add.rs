@@ -13,15 +13,104 @@ use crate::{
     error::MathError,
     integer::Z,
     macros::arithmetics::{
+        arithmetic_assign_between_types, arithmetic_assign_trait_borrowed_to_owned,
         arithmetic_between_types_zq, arithmetic_trait_borrowed_to_owned,
         arithmetic_trait_mixed_borrowed_owned,
     },
+    traits::CompareBase,
 };
 use flint_sys::{
     fmpz::fmpz,
-    fmpz_mod::{fmpz_mod_add, fmpz_mod_add_fmpz},
+    fmpz_mod::{fmpz_mod_add, fmpz_mod_add_fmpz, fmpz_mod_add_si, fmpz_mod_add_ui},
 };
-use std::ops::Add;
+use std::ops::{Add, AddAssign};
+
+impl AddAssign<&Zq> for Zq {
+    /// Computes the addition of `self` and `other` reusing
+    /// the memory of `self`.
+    /// [`AddAssign`] can be used on [`Zq`] in combination with
+    /// [`Zq`], [`Z`], [`i64`], [`i32`], [`i16`], [`i8`], [`u64`], [`u32`], [`u16`] and [`u8`].
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to add to `self`
+    ///
+    /// Returns the sum of both numbers modulo `q` as a [`Zq`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{integer_mod_q::Zq, integer::Z};
+    ///
+    /// let mut a: Zq = Zq::from((23, 42));
+    /// let b: Zq = Zq::from((1, 42));
+    /// let c: Z = Z::from(5);
+    ///
+    /// a += &b;
+    /// a += b;
+    /// a += 5;
+    /// a += c;
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the moduli of both [`Zq`] mismatch.
+    fn add_assign(&mut self, other: &Self) {
+        if !self.compare_base(other) {
+            panic!("{}", self.call_compare_base_error(other).unwrap());
+        }
+
+        unsafe {
+            fmpz_mod_add(
+                &mut self.value.value,
+                &self.value.value,
+                &other.value.value,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
+    }
+}
+impl AddAssign<i64> for Zq {
+    /// Documentation at [`Zq::add_assign`].
+    fn add_assign(&mut self, other: i64) {
+        unsafe {
+            fmpz_mod_add_si(
+                &mut self.value.value,
+                &self.value.value,
+                other,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
+    }
+}
+impl AddAssign<u64> for Zq {
+    /// Documentation at [`Zq::add_assign`].
+    fn add_assign(&mut self, other: u64) {
+        unsafe {
+            fmpz_mod_add_ui(
+                &mut self.value.value,
+                &self.value.value,
+                other,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
+    }
+}
+impl AddAssign<&Z> for Zq {
+    /// Documentation at [`Zq::add_assign`].
+    fn add_assign(&mut self, other: &Z) {
+        unsafe {
+            fmpz_mod_add_fmpz(
+                &mut self.value.value,
+                &self.value.value,
+                &other.value,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(AddAssign, add_assign, Zq, Zq);
+arithmetic_assign_trait_borrowed_to_owned!(AddAssign, add_assign, Zq, Z);
+arithmetic_assign_between_types!(AddAssign, add_assign, Zq, i64, i32 i16 i8);
+arithmetic_assign_between_types!(AddAssign, add_assign, Zq, u64, u32 u16 u8);
 
 impl Add for &Zq {
     type Output = Zq;
@@ -74,13 +163,10 @@ impl Zq {
     /// ```
     /// # Errors
     /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
-    ///     both [`Zq`] mismatch.
+    ///   both [`Zq`] mismatch.
     pub fn add_safe(&self, other: &Self) -> Result<Zq, MathError> {
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to add '{self}' and '{other}'.
-            If the modulus should be ignored please convert into a Z beforehand."
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
         let mut out_z = Z::ZERO;
         unsafe {
@@ -147,6 +233,76 @@ impl Add<&Z> for &Zq {
 
 arithmetic_trait_borrowed_to_owned!(Add, add, Zq, Z, Zq);
 arithmetic_trait_mixed_borrowed_owned!(Add, add, Zq, Z, Zq);
+
+#[cfg(test)]
+mod test_add_assign {
+    use crate::{integer::Z, integer_mod_q::Zq};
+
+    /// Ensure that `add_assign` works for small numbers.
+    #[test]
+    fn correct_small() {
+        let mut a: Zq = Zq::from((-1, 7));
+        let b = Zq::from((-1, 7));
+        let c = Zq::from((1, 7));
+
+        a += &b;
+        assert_eq!(Zq::from((5, 7)), a);
+        a += &c;
+        assert_eq!(Zq::from((6, 7)), a);
+        a += &c;
+        assert_eq!(Zq::from((0, 7)), a);
+        a += &c;
+        assert_eq!(Zq::from((1, 7)), a);
+        a += &c;
+        assert_eq!(Zq::from((2, 7)), a);
+        a += 2 * b;
+        assert_eq!(Zq::from((0, 7)), a);
+    }
+
+    /// Ensure that `add_assign` works for large numbers.
+    #[test]
+    fn correct_large() {
+        let mut a = Zq::from((i64::MAX, u64::MAX));
+        let b = Zq::from((i64::MIN + 2, u64::MAX));
+        let c = Zq::from((u64::MAX - 1, u64::MAX));
+
+        a += b;
+        assert_eq!(Zq::from((1, u64::MAX)), a);
+        a += c;
+        assert_eq!(Zq::from((0, u64::MAX)), a);
+    }
+
+    /// Ensure that `add_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let mut a = Zq::from((3, 7));
+        let b = Zq::from((1, 7));
+        let c = Z::from(1);
+
+        a += &b;
+        a += b;
+        a += &c;
+        a += c;
+        a += 1_u8;
+        a += 1_u16;
+        a += 1_u32;
+        a += 1_u64;
+        a += 1_i8;
+        a += 1_i16;
+        a += 1_i32;
+        a += 1_i64;
+    }
+
+    /// Ensures that mismatching moduli result in a panic.
+    #[test]
+    #[should_panic]
+    fn mismatching_moduli() {
+        let mut a = Zq::from((3, 7));
+        let b = Zq::from((1, 8));
+
+        a += b;
+    }
+}
 
 #[cfg(test)]
 mod test_add {

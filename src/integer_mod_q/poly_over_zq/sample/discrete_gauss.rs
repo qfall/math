@@ -30,7 +30,7 @@ impl PolyOverZq {
     /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
     /// - `center`: specifies the positions of the center with peak probability
     /// - `s`: specifies the Gaussian parameter, which is proportional
-    ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
+    ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a fresh [`PolyOverZq`] instance of maximum degree `max_degree`
     /// with coefficients chosen independently according the discrete Gaussian distribution or
@@ -45,7 +45,7 @@ impl PolyOverZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if `n <= 1` or `s <= 0` or `s * log_2(n) < 1`.
+    ///   if `n <= 1` or `s <= 0` or `s * log_2(n) < 1`.
     ///
     /// # Panics ...
     /// - if `max_degree` is negative, or does not fit into an [`i64`].
@@ -69,7 +69,7 @@ impl PolyOverZq {
 
         for index in 0..=max_degree {
             let sample = dgis.sample_z();
-            poly.set_coeff(index, &sample)?;
+            unsafe { poly.set_coeff_unchecked(index, sample) };
         }
         Ok(poly)
     }
@@ -111,7 +111,7 @@ mod test_sample_discrete_gauss {
             for i in 0..3 {
                 let sample: Z = poly.get_coeff(i).unwrap();
                 assert!(Z::ZERO <= sample);
-                assert!(sample < Z::from(&modulus));
+                assert!(sample < modulus);
             }
         }
     }
@@ -127,7 +127,7 @@ mod test_sample_discrete_gauss {
             for i in 0..3 {
                 let sample: Z = poly.get_coeff(i).unwrap();
                 assert!(Z::ZERO <= sample);
-                assert!(sample < Z::from(&modulus));
+                assert!(sample < modulus);
             }
         }
     }

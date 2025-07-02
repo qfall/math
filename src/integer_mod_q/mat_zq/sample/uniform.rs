@@ -11,8 +11,8 @@
 use crate::{
     integer::Z,
     integer_mod_q::MatZq,
-    traits::{GetNumColumns, GetNumRows, SetEntry},
-    utils::sample::uniform::sample_uniform_rejection,
+    traits::{MatrixDimensions, MatrixSetEntry},
+    utils::sample::uniform::UniformIntegerSampler,
 };
 use std::fmt::Display;
 
@@ -28,7 +28,7 @@ impl MatZq {
     /// - `num_rows`: specifies the number of rows the new matrix should have
     /// - `num_cols`: specifies the number of columns the new matrix should have
     /// - `modulus`: specifies the modulus of the matrix and defines the interval
-    ///     over which is sampled
+    ///   over which is sampled
     ///
     /// Returns a new [`MatZq`] instance with entries chosen
     /// uniformly at random in `[0, modulus)`.
@@ -42,19 +42,20 @@ impl MatZq {
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns or the modulus are not suited to create a matrix.
-    ///     For further information see [`MatZq::new`].
+    ///   For further information see [`MatZq::new`].
     pub fn sample_uniform(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
         modulus: impl Into<Z>,
     ) -> Self {
         let modulus: Z = modulus.into();
-        let mut matrix = MatZq::new(num_rows, num_cols, modulus.clone());
+        let mut uis = UniformIntegerSampler::init(&modulus).unwrap();
+        let mut matrix = MatZq::new(num_rows, num_cols, modulus);
 
         for row in 0..matrix.get_num_rows() {
             for col in 0..matrix.get_num_columns() {
-                let sample = sample_uniform_rejection(&modulus).unwrap();
-                matrix.set_entry(row, col, sample).unwrap();
+                let sample = uis.sample();
+                unsafe { matrix.set_entry_unchecked(row, col, sample) };
             }
         }
 
@@ -64,7 +65,7 @@ impl MatZq {
 
 #[cfg(test)]
 mod test_sample_uniform {
-    use crate::traits::{GetEntry, GetNumColumns, GetNumRows};
+    use crate::traits::{MatrixDimensions, MatrixGetEntry};
     use crate::{
         integer::Z,
         integer_mod_q::{MatZq, Modulus},
@@ -75,9 +76,9 @@ mod test_sample_uniform {
     fn boundaries_kept_small() {
         for _ in 0..32 {
             let matrix = MatZq::sample_uniform(1, 1, 17);
-            let sample = matrix.get_entry(0, 0).unwrap();
+            let sample: Z = matrix.get_entry(0, 0).unwrap();
             assert!(Z::ZERO <= sample);
-            assert!(sample < Z::from(17));
+            assert!(sample < 17);
         }
     }
 
@@ -87,7 +88,7 @@ mod test_sample_uniform {
         let modulus = Z::from(u64::MAX);
         for _ in 0..256 {
             let matrix = MatZq::sample_uniform(1, 1, &modulus);
-            let sample = matrix.get_entry(0, 0).unwrap();
+            let sample: Z = matrix.get_entry(0, 0).unwrap();
             assert!(Z::ZERO <= sample);
             assert!(sample < modulus);
         }

@@ -74,7 +74,7 @@ impl MatPolyOverZ {
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    ///     For further information see [`MatPolyOverZ::new`].
+    ///   For further information see [`MatPolyOverZ::new`].
     pub fn identity(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
@@ -87,7 +87,7 @@ impl MatPolyOverZ {
 
 #[cfg(test)]
 mod test_new {
-    use crate::{integer::MatPolyOverZ, traits::GetEntry};
+    use crate::{integer::MatPolyOverZ, traits::MatrixGetEntry};
 
     /// Ensure that entries of a new matrix are `0`.
     #[test]
@@ -122,7 +122,7 @@ mod test_new {
 
 #[cfg(test)]
 mod test_identity {
-    use crate::{integer::MatPolyOverZ, traits::GetEntry};
+    use crate::{integer::MatPolyOverZ, traits::MatrixGetEntry};
 
     /// Tests if an identity matrix is set from a zero matrix.
     #[test]

@@ -13,7 +13,7 @@ use crate::{
     integer::Z,
     integer_mod_q::{Modulus, PolyOverZq},
     traits::SetCoefficient,
-    utils::{index::evaluate_index, sample::uniform::sample_uniform_rejection},
+    utils::{index::evaluate_index, sample::uniform::UniformIntegerSampler},
 };
 use std::fmt::Display;
 
@@ -27,9 +27,9 @@ impl PolyOverZq {
     ///
     /// Parameters:
     /// - `max_degree`: specifies the length of the polynomial,
-    ///     i.e. the number of coefficients
+    ///   i.e. the number of coefficients
     /// - `modulus`: specifies the modulus of the coefficients and thus,
-    ///     the interval size over which is sampled
+    ///   the interval size over which is sampled
     ///
     /// Returns a fresh [`PolyOverZq`] instance of length `max_degree` with coefficients
     /// chosen uniform at random in `[0, modulus)` or a [`MathError`]
@@ -44,9 +44,9 @@ impl PolyOverZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    ///     if the given `modulus` isn't larger than `1`, i.e. the interval size is at most `1`.
+    ///   if the given `modulus` isn't larger than `1`, i.e. the interval size is at most `1`.
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    ///     the `max_degree` is negative or it does not fit into an [`i64`].
+    ///   the `max_degree` is negative or it does not fit into an [`i64`].
     ///
     /// # Panics ...
     /// - if `modulus` is smaller than `2`.
@@ -59,9 +59,11 @@ impl PolyOverZq {
         let modulus = Modulus::from(&interval_size);
         let mut poly_zq = PolyOverZq::from(&modulus);
 
+        let mut uis = UniformIntegerSampler::init(&interval_size)?;
+
         for index in 0..=max_degree {
-            let sample = sample_uniform_rejection(&interval_size)?;
-            poly_zq.set_coeff(index, &sample)?;
+            let sample = uis.sample();
+            unsafe { poly_zq.set_coeff_unchecked(index, sample) };
         }
         Ok(poly_zq)
     }

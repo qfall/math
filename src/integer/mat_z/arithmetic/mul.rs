@@ -15,7 +15,7 @@ use crate::macros::arithmetics::{
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
 };
 use crate::rational::MatQ;
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::MatrixDimensions;
 use flint_sys::fmpq_mat::fmpq_mat_mul_r_fmpz_mat;
 use flint_sys::fmpz_mat::fmpz_mat_mul;
 use flint_sys::fmpz_mod_mat::_fmpz_mod_mat_reduce;
@@ -174,8 +174,8 @@ impl MatZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`MathError::MismatchingMatrixDimension`] if the dimensions of `self`
-    ///     and `other` do not match for multiplication.
+    ///   [`MathError::MismatchingMatrixDimension`] if the dimensions of `self`
+    ///   and `other` do not match for multiplication.
     pub fn mul_safe(&self, other: &Self) -> Result<Self, MathError> {
         if self.get_num_columns() != other.get_num_rows() {
             return Err(MathError::MismatchingMatrixDimension(format!(
@@ -196,7 +196,7 @@ impl MatZ {
 #[cfg(test)]
 mod test_mul {
     use super::MatZ;
-    use crate::{integer::Z, traits::SetEntry};
+    use crate::{integer::Z, traits::MatrixSetEntry};
     use std::str::FromStr;
 
     /// Checks if matrix multiplication works fine for squared matrices
@@ -248,7 +248,7 @@ mod test_mul {
 mod test_mul_matzq {
     use super::MatZq;
     use crate::integer::MatZ;
-    use crate::{integer::Z, traits::SetEntry};
+    use crate::{integer::Z, traits::MatrixSetEntry};
     use std::str::FromStr;
 
     /// Checks if matrix multiplication works fine for squared matrices
@@ -302,7 +302,7 @@ mod test_mul_matq {
     use super::MatQ;
     use crate::integer::MatZ;
     use crate::rational::Q;
-    use crate::traits::SetEntry;
+    use crate::traits::MatrixSetEntry;
     use std::str::FromStr;
 
     /// Checks if matrix multiplication works fine for squared matrices

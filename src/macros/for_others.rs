@@ -20,14 +20,22 @@
 /// Implements a specified trait using implicit conversions to a bridge type.
 ///
 /// - ['Mul'](std::ops::Mul) with signature
-///     `($bridge_type, $type, Mul Scalar for $source_type)`
+///   `($bridge_type, $type, Mul Scalar for $source_type)`
+/// - ['Div'](std::ops::Mul) with signature
+///   `($bridge_type, $type, Div Scalar for $source_type)`
+/// - ['Rem'](std::ops::Rem) with signature
+///   `($bridge_type, $type, Rem for $source_type)`
 /// - ['PartialEq'](std::cmp::PartialEq) with signature
-///     `($bridge_type, $type, PartialEq for $source_type)`
+///   `($bridge_type, $type, PartialEq for $source_type)`
+/// - ['PartialOrd'](std::cmp::PartialOrd) with signature
+///   `($bridge_type, $type, PartialEq for $source_type)`
 ///
 /// # Examples
 /// ```compile_fail
 /// implement_for_others!(Z, MatZ, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
 /// implement_for_others!(Z, Q, PartialEq for fmpz i8 i16 i32 i64 u8 u16 u32 u64);
+/// implement_for_others!(Z, Q, PartialOrd for fmpz i8 i16 i32 i64 u8 u16 u32 u64);
+/// implement_for_others!(Z, PolyOverZ, Rem for i8 i16 i32 i64 u8 u16 u32 u64);
 /// ```
 macro_rules! implement_for_others {
     // [`Mul`] trait scalar
@@ -76,6 +84,53 @@ macro_rules! implement_for_others {
         })*
     };
 
+    // [`Div`] trait scalar
+    ($bridge_type:ident, $type:ident, Div Scalar for $($source_type:ident)*) => {
+        $(#[doc(hidden)] impl Div<$source_type> for &$type {
+            type Output = $type;
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::div`]."]
+                fn div(self, scalar: $source_type) -> Self::Output {
+                    self.div($bridge_type::from(scalar))
+                }
+            }
+        }
+
+        #[doc(hidden)]
+        impl Div<$source_type> for $type {
+            type Output = $type;
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::div`]."]
+                fn div(self, scalar: $source_type) -> Self::Output {
+                    self.div($bridge_type::from(scalar))
+                }
+            }
+        })*
+    };
+
+    // [`Rem`] trait scalar
+    ($bridge_type:ident, $type:ident, Rem for $($source_type:ident)*) => {
+        $(#[doc(hidden)] impl Rem<$source_type> for &$type {
+            type Output = $type;
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::rem`]."]
+                fn rem(self, modulus: $source_type) -> Self::Output {
+                    self.rem($bridge_type::from(modulus))
+                }
+            }
+        }
+
+        impl Rem<$source_type> for $type {
+            type Output = $type;
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::rem`]."]
+                fn rem(self, modulus: $source_type) -> Self::Output {
+                    self.rem($bridge_type::from(modulus))
+                }
+            }
+        })*
+    };
+
     // [`PartialEq`] trait
     ($bridge_type:ident, $type:ident, PartialEq for $($source_type:ident)*) => {
         $(#[doc(hidden)] impl PartialEq<$source_type> for $type {
@@ -96,6 +151,27 @@ macro_rules! implement_for_others {
             }
         })*
     };
+
+    // [`PartialOrd`] trait
+    ($bridge_type:ident, $type:ident, PartialOrd for $($source_type:ident)*) => {
+        $(#[doc(hidden)] impl PartialOrd<$source_type> for $type {
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::partialEq`]."]
+                fn partial_cmp(&self, other: &$source_type) -> Option<Ordering> {
+                    self.partial_cmp(&$bridge_type::from(other))
+                }
+            }
+        }
+
+        #[doc(hidden)] impl PartialOrd<$type> for $source_type {
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::partialEq`]."]
+                fn partial_cmp(&self, other: &$type) -> Option<Ordering> {
+                    $bridge_type::from(self).partial_cmp(other)
+                }
+            }
+        })*
+    };
 }
 
 pub(crate) use implement_for_others;
@@ -105,17 +181,20 @@ pub(crate) use implement_for_others;
 /// Several traits are already supported:
 ///
 /// - [`Evaluate`](crate::traits::Evaluate) with the signature
-///     `($bridge_type, $output_type, $type, Evaluate)`
+///   `($bridge_type, $output_type, $type, Evaluate)`
+/// - [`From`] with the signature
+///   `($source_type, $type, From)`
 /// - [`SetCoefficient`](crate::traits::SetCoefficient) with the signature
-///     `($bridge_type, $type, SetCoefficient)`
-/// - [`SetEntry`](crate::traits::SetEntry) with the signature
-///     `($bridge_type, $type, SetCoefficient)`
+///   `($bridge_type, $type, SetCoefficient)`
+/// - [`MatrixSetEntry`](crate::traits::MatrixSetEntry) with the signature
+///   `($bridge_type, $type, SetCoefficient)`
 ///
 /// # Examples
 /// ```compile_fail
 /// implement_for_owned!(Q, Q, PolyOverQ, Evaluate);
+/// implement_for_owned!(Zq, PolyOverZq, From);
 /// implement_for_owned!(Z, PolyOverZ, SetCoefficient);
-/// implement_for_owned!(Z, MatZq, SetEntry);
+/// implement_for_owned!(Z, MatZq, MatrixSetEntry);
 /// ```
 macro_rules! implement_for_owned {
     // [`Evaluate`] trait
@@ -152,30 +231,40 @@ macro_rules! implement_for_owned {
         impl SetCoefficient<$source_type> for $type {
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::set_coeff`] for &[`" $source_type "`]."]
-            fn set_coeff(
+            unsafe fn set_coeff_unchecked(
                 &mut self,
-                index: impl TryInto<i64> + Display,
+                index: i64,
                 value: $source_type,
-            ) -> Result<(), MathError> {
-                self.set_coeff(index, &value)
+            ) {
+                self.set_coeff_unchecked(index, &value)
             }
             }
         }
     };
 
-    // [`SetEntry`] trait
-    ($source_type:ident, $type:ident, SetEntry) => {
-        impl SetEntry<$source_type> for $type {
+    // [`MatrixSetEntry`] trait
+    ($source_type:ident, $type:ident, MatrixSetEntry) => {
+        impl MatrixSetEntry<$source_type> for $type {
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::set_entry`] for &[`" $source_type "`]."]
-            fn set_entry(
-                &mut self,
-                row: impl TryInto<i64> + Display,
-                column: impl TryInto<i64> + Display,
-                value: $source_type,
-            ) -> Result<(), MathError> {
-                self.set_entry(row, column, &value)
-            }
+                fn set_entry(
+                    &mut self,
+                    row: impl TryInto<i64> + Display,
+                    column: impl TryInto<i64> + Display,
+                    value: $source_type,
+                ) -> Result<(), MathError> {
+                    self.set_entry(row, column, &value)
+                }
+
+                #[doc = "Documentation can be found at [`" $type "::set_entry`] for &[`" $source_type "`]."]
+                unsafe fn set_entry_unchecked(
+                    &mut self,
+                    row: i64,
+                    column: i64,
+                    value: $source_type,
+                ) {
+                    self.set_entry_unchecked(row, column, &value);
+                }
             }
         }
     };
@@ -201,3 +290,36 @@ macro_rules! implement_empty_trait_owned_ref {
     };
 }
 pub(crate) use implement_empty_trait_owned_ref;
+
+/// Implements the `*trait*` for `*type*` using an implementation for `*other_type*`.
+///
+/// **Warning**: Only works for commutative operations.
+///
+/// Parameters:
+/// - `trait`: the trait that is implemented
+///   (e.g. [`PartialEq`],[`PartialOrd`], ...).
+/// - `trait_function`: the function the trait implements
+///   (e.g. eq for [`PartialEq`], ...).
+/// - `type`: the type the trait is implemented for
+///   (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q))
+/// - `other_type`: the type the second part of the computation.
+/// - `output_type`: the type of the result (e.g. bool for [`PartialEq`], ...).
+///
+/// Returns the owned Implementation code for the `*trait*`
+/// trait with the signature:
+///
+/// ```impl *trait<*other_type*>* for *type*```
+macro_rules! implement_trait_reverse {
+    ($trait:ident, $trait_function:ident, $type:ident, $other_type:ident, $output_type:ident) => {
+        #[doc(hidden)]
+        impl $trait<$other_type> for $type {
+            paste::paste! {
+                fn $trait_function(&self, other: &$other_type) -> $output_type {
+                    other.$trait_function(self)
+                }
+            }
+        }
+    };
+}
+
+pub(crate) use implement_trait_reverse;

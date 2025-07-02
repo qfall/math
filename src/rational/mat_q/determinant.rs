@@ -9,11 +9,7 @@
 //! This module contains the implementation of the `determinant` function.
 
 use super::MatQ;
-use crate::{
-    error::MathError,
-    rational::Q,
-    traits::{GetNumColumns, GetNumRows},
-};
+use crate::{error::MathError, rational::Q, traits::MatrixDimensions};
 use flint_sys::fmpq_mat::fmpq_mat_det;
 
 impl MatQ {
@@ -31,7 +27,7 @@ impl MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the number of rows and columns is not equal.
+    ///   if the number of rows and columns is not equal.
     pub fn det(&self) -> Result<Q, MathError> {
         if self.get_num_rows() != self.get_num_columns() {
             return Err(MathError::MismatchingMatrixDimension(

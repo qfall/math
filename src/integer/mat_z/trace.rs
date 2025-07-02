@@ -11,11 +11,7 @@
 use flint_sys::fmpz_mat::fmpz_mat_trace;
 
 use super::MatZ;
-use crate::{
-    error::MathError,
-    integer::Z,
-    traits::{GetNumColumns, GetNumRows},
-};
+use crate::{error::MathError, integer::Z, traits::MatrixDimensions};
 
 impl MatZ {
     /// Returns the trace of a matrix and an error,
@@ -32,7 +28,7 @@ impl MatZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`NoSquareMatrix`](MathError::NoSquareMatrix)
-    ///     if the matrix is not a square matrix
+    ///   if the matrix is not a square matrix
     pub fn trace(&self) -> Result<Z, MathError> {
         // check if matrix is square
         if self.get_num_rows() != self.get_num_columns() {

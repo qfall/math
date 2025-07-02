@@ -11,7 +11,7 @@
 use flint_sys::fmpq_mat::fmpq_mat_kronecker_product;
 
 use super::MatQ;
-use crate::traits::{GetNumColumns, GetNumRows, Tensor};
+use crate::traits::{MatrixDimensions, Tensor};
 
 impl Tensor for MatQ {
     /// Computes the tensor product of `self` with `other`.
@@ -54,7 +54,7 @@ impl Tensor for MatQ {
 mod test_tensor {
     use crate::{
         rational::MatQ,
-        traits::{GetNumColumns, GetNumRows, Tensor},
+        traits::{MatrixDimensions, Tensor},
     };
     use std::str::FromStr;
 

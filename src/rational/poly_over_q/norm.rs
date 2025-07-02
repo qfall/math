@@ -36,8 +36,8 @@ impl PolyOverQ {
         let mut res = Q::ZERO;
 
         for i in 0..=self.get_degree() {
-            let coeff = self.get_coeff(i).unwrap();
-            res = res + coeff.pow(2).unwrap();
+            let coeff = unsafe { self.get_coeff_unchecked(i) };
+            res += coeff.pow(2).unwrap();
         }
         res
     }
@@ -64,7 +64,7 @@ impl PolyOverQ {
     pub fn norm_infty(&self) -> Q {
         let mut res = Q::ZERO;
         for i in 0..=self.get_degree() {
-            res = max(res, self.get_coeff(i).unwrap().abs());
+            res = max(res, unsafe { self.get_coeff_unchecked(i).abs() });
         }
         res
     }

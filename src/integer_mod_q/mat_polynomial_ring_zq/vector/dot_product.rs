@@ -11,7 +11,7 @@
 use crate::error::MathError;
 use crate::integer::PolyOverZ;
 use crate::integer_mod_q::{MatPolynomialRingZq, PolynomialRingZq};
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::MatrixDimensions;
 use flint_sys::fq::{fq_add, fq_mul};
 
 impl MatPolynomialRingZq {
@@ -42,9 +42,9 @@ impl MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
-    ///     the given [`MatPolynomialRingZq`] instance is not a (row or column) vector.
+    ///   the given [`MatPolynomialRingZq`] instance is not a (row or column) vector.
     /// - Returns a [`MathError`] of type [`MathError::MismatchingMatrixDimension`] if
-    ///     the given vectors have different lengths.
+    ///   the given vectors have different lengths.
     pub fn dot_product(&self, other: &Self) -> Result<PolynomialRingZq, MathError> {
         if !self.is_vector() {
             return Err(MathError::VectorFunctionCalledOnNonVector(
@@ -81,14 +81,14 @@ impl MatPolynomialRingZq {
                     &mut temp.poly,
                     &self_entries[i],
                     &other_entries[i],
-                    self.modulus.get_fq_ctx_struct(),
+                    self.modulus.get_fq_ctx(),
                 );
 
                 fq_add(
                     &mut result.poly.poly,
                     &result.poly.poly,
                     &temp.poly,
-                    self.modulus.get_fq_ctx_struct(),
+                    self.modulus.get_fq_ctx(),
                 )
             }
         }

@@ -11,7 +11,7 @@
 use super::MatZq;
 use crate::{
     integer::Z,
-    traits::{Concatenate, Gcd, GetNumRows},
+    traits::{Concatenate, Gcd, MatrixDimensions, MatrixSetSubmatrix, MatrixSwaps},
 };
 use flint_sys::fmpz_mod_mat::fmpz_mod_mat_rref;
 
@@ -109,9 +109,7 @@ impl MatZq {
                 // The inverse is now the right half of the matrix `identity_inverse`.
                 let mut inverse = MatZq::new(dimensions, dimensions, self.get_mod());
                 for i in 0..dimensions {
-                    inverse
-                        .set_column(i, &identity_inverse, dimensions + i)
-                        .unwrap();
+                    unsafe { inverse.set_column_unchecked(i, &identity_inverse, dimensions + i) };
                 }
                 Some(inverse)
             }

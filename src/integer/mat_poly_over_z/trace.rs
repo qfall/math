@@ -11,11 +11,7 @@
 use flint_sys::fmpz_poly_mat::fmpz_poly_mat_trace;
 
 use super::MatPolyOverZ;
-use crate::{
-    error::MathError,
-    integer::PolyOverZ,
-    traits::{GetNumColumns, GetNumRows},
-};
+use crate::{error::MathError, integer::PolyOverZ, traits::MatrixDimensions};
 
 impl MatPolyOverZ {
     /// Returns the trace of a matrix and an error,
@@ -32,8 +28,8 @@ impl MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`NoSquareMatrix`](MathError::NoSquareMatrix)
-    ///     if the matrix is not a square matrix
+    ///   [`NoSquareMatrix`](MathError::NoSquareMatrix)
+    ///   if the matrix is not a square matrix.
     pub fn trace(&self) -> Result<PolyOverZ, MathError> {
         // check if matrix is square
         if self.get_num_rows() != self.get_num_columns() {

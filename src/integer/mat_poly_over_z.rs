@@ -19,30 +19,33 @@ mod default;
 mod evaluate;
 mod from;
 mod get;
+mod norm;
 mod ownership;
 mod properties;
 mod reduce;
 mod sample;
 mod serialize;
 mod set;
+mod sort;
 mod tensor;
 mod to_string;
 mod trace;
 mod transpose;
+mod unsafe_functions;
 mod vector;
 
 /// [`MatPolyOverZ`] is a matrix with entries of type [`PolyOverZ`](crate::integer::PolyOverZ).
 ///
 /// Attributes:
 /// - `matrix`: holds [FLINT](https://flintlib.org/)'s [struct](fmpz_poly_mat_struct)
-///     of the [`PolyOverZ`](crate::integer::PolyOverZ) matrix
+///   of the [`PolyOverZ`](crate::integer::PolyOverZ) matrix
 ///
 /// # Examples
 /// ## Matrix usage
 /// ```
 /// use qfall_math::{
 ///     integer::{PolyOverZ, MatPolyOverZ},
-///     traits::{GetEntry, SetEntry},
+///     traits::{MatrixGetEntry, MatrixSetEntry},
 /// };
 /// use std::str::FromStr;
 ///

@@ -10,11 +10,7 @@
 //! defined on vectors.
 
 use super::super::MatQ;
-use crate::{
-    error::MathError,
-    rational::Q,
-    traits::{GetNumColumns, GetNumRows},
-};
+use crate::{error::MathError, rational::Q, traits::MatrixDimensions};
 use flint_sys::fmpq::{fmpq_abs, fmpq_addmul, fmpq_cmp};
 
 impl MatQ {
@@ -36,7 +32,7 @@ impl MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
-    ///     the given [`MatQ`] instance is not a (row or column) vector.
+    ///   the given [`MatQ`] instance is not a (row or column) vector.
     pub fn norm_eucl_sqrd(&self) -> Result<Q, MathError> {
         if !self.is_vector() {
             return Err(MathError::VectorFunctionCalledOnNonVector(
@@ -58,6 +54,29 @@ impl MatQ {
         Ok(result)
     }
 
+    /// Returns the Euclidean norm or 2-norm of the given (row or column) vector
+    /// or an error if the given [`MatQ`] instance is not a (row or column) vector.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::{MatQ, Q};
+    /// use std::str::FromStr;
+    ///
+    /// let vec = MatQ::from_str("[[2],[2/1],[4/2],[2]]").unwrap();
+    ///
+    /// let eucl_norm = vec.norm_eucl().unwrap();
+    ///
+    /// // sqrt(4 * 2^2) = 4
+    /// assert_eq!(Q::from(4), eucl_norm);
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
+    ///   the given [`MatQ`] instance is not a (row or column) vector.
+    pub fn norm_eucl(&self) -> Result<Q, MathError> {
+        Ok(self.norm_eucl_sqrd()?.sqrt())
+    }
+
     /// Returns the infinity norm or ∞-norm of the given (row or column) vector.
     ///
     /// # Examples
@@ -75,7 +94,7 @@ impl MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
-    ///     the given [`MatQ`] instance is not a (row or column) vector.
+    ///   the given [`MatQ`] instance is not a (row or column) vector.
     pub fn norm_infty(&self) -> Result<Q, MathError> {
         if !self.is_vector() {
             return Err(MathError::VectorFunctionCalledOnNonVector(

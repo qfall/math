@@ -10,18 +10,16 @@
 
 use super::MatZ;
 use crate::{
-    error::MathError,
     integer::Z,
-    traits::{GetEntry, GetNumColumns, GetNumRows},
-    utils::index::{evaluate_index, evaluate_indices_for_matrix},
+    traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix},
 };
 use flint_sys::{
-    fmpz::{fmpz, fmpz_set},
+    fmpz::{fmpz, fmpz_init_set},
     fmpz_mat::{fmpz_mat_entry, fmpz_mat_init_set, fmpz_mat_window_clear, fmpz_mat_window_init},
 };
-use std::{fmt::Display, mem::MaybeUninit};
+use std::mem::MaybeUninit;
 
-impl GetNumRows for MatZ {
+impl MatrixDimensions for MatZ {
     /// Returns the number of rows of the matrix as a [`i64`].
     ///
     /// # Examples
@@ -35,9 +33,7 @@ impl GetNumRows for MatZ {
     fn get_num_rows(&self) -> i64 {
         self.matrix.r
     }
-}
 
-impl GetNumColumns for MatZ {
     /// Returns the number of columns of the matrix as a [`i64`].
     ///
     /// # Examples
@@ -53,134 +49,47 @@ impl GetNumColumns for MatZ {
     }
 }
 
-impl GetEntry<Z> for MatZ {
-    /// Outputs the [`Z`] value of a specific matrix entry.
+impl MatrixGetEntry<Z> for MatZ {
+    /// Outputs the [`Z`] value of a specific matrix entry without checking
+    /// whether it's part of the matrix.
     ///
     /// Parameters:
     /// - `row`: specifies the row in which the entry is located
     /// - `column`: specifies the column in which the entry is located
     ///
-    /// Negative indices can be used to index from the back, e.g., `-1` for
-    /// the last element.
-    ///
     /// Returns the [`Z`] value of the matrix at the position of the given
-    /// row and column or an error if the number of rows or columns is
-    /// greater than the matrix.
+    /// row and column.
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected entry is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
     ///
     /// # Examples
     /// ```
     /// use qfall_math::integer::{MatZ, Z};
-    /// use qfall_math::traits::GetEntry;
+    /// use qfall_math::traits::MatrixGetEntry;
     /// use std::str::FromStr;
     ///
     /// let matrix = MatZ::from_str("[[1, 2, 3],[4, 5, 6],[7, 8, 9]]").unwrap();
     ///
-    /// assert_eq!(matrix.get_entry(0, 2).unwrap(), Z::from(3));
-    /// assert_eq!(matrix.get_entry(2, 1).unwrap(), Z::from(8));
-    /// assert_eq!(matrix.get_entry(-1, -2).unwrap(), Z::from(8));
+    /// assert_eq!(unsafe { matrix.get_entry_unchecked(0, 2) }, Z::from(3));
+    /// assert_eq!(unsafe { matrix.get_entry_unchecked(2, 1) }, Z::from(8));
+    /// assert_eq!(unsafe { matrix.get_entry_unchecked(2, 1) }, Z::from(8));
     /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if `row` or `column` are greater than the matrix size.
-    fn get_entry(
-        &self,
-        row: impl TryInto<i64> + Display,
-        column: impl TryInto<i64> + Display,
-    ) -> Result<Z, MathError> {
-        let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
-
-        // since `self.matrix` is a correct fmpz matrix and both row and column
-        // are previously checked to be inside of the matrix, no errors
-        // appear inside of `unsafe` and `fmpz_set` can successfully clone the
-        // entry of the matrix. Therefore no memory leaks can appear.
+    unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> Z {
         let mut copy = fmpz(0);
-        let entry = unsafe { fmpz_mat_entry(&self.matrix, row_i64, column_i64) };
-        unsafe { fmpz_set(&mut copy, entry) };
+        let entry = unsafe { fmpz_mat_entry(&self.matrix, row, column) };
+        unsafe { fmpz_init_set(&mut copy, entry) };
 
-        Ok(Z { value: copy })
+        Z { value: copy }
     }
 }
 
-impl MatZ {
-    /// Outputs the row vector of the specified row.
-    ///
-    /// Parameters:
-    /// - `row`: specifies the row of the matrix
-    ///
-    /// Returns a row vector of the matrix at the position of the given
-    /// `row` or an error if the number of rows is
-    /// greater than the matrix or negative.
-    ///
-    /// # Examples
-    /// ```rust
-    /// use qfall_math::integer::MatZ;
-    /// use std::str::FromStr;
-    ///
-    /// let matrix = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();
-    ///
-    /// let row_0 = matrix.get_row(0).unwrap(); // first row
-    /// let row_1 = matrix.get_row(1).unwrap(); // second row
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if the number of the row is greater than the matrix or negative.
-    pub fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError> {
-        let row_i64 = evaluate_index(row)?;
-
-        if self.get_num_rows() <= row_i64 {
-            return Err(MathError::OutOfBounds(
-                format!("be smaller than {}", self.get_num_rows()),
-                format!("{row_i64}"),
-            ));
-        }
-
-        self.get_submatrix(row_i64, row_i64, 0, self.get_num_columns() - 1)
-    }
-
-    /// Outputs a column vector of the specified column.
-    ///
-    /// Input parameters:
-    /// * `column`: specifies the column of the matrix
-    ///
-    /// Returns a column vector of the matrix at the position of the given
-    /// `column` or an error if the number of columns is
-    /// greater than the matrix or negative.
-    ///
-    /// # Examples
-    /// ```rust
-    /// use qfall_math::integer::MatZ;
-    /// use std::str::FromStr;
-    ///
-    /// let matrix = MatZ::from_str("[[1, 2, 3],[3, 4, 5]]").unwrap();
-    ///
-    /// let col_0 = matrix.get_column(0).unwrap(); // first column
-    /// let col_1 = matrix.get_column(1).unwrap(); // second column
-    /// let col_2 = matrix.get_column(2).unwrap(); // third column
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if the number of the column is greater than the matrix or negative.
-    pub fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError> {
-        let column_i64 = evaluate_index(column)?;
-
-        if self.get_num_columns() <= column_i64 {
-            return Err(MathError::OutOfBounds(
-                format!("be smaller than {}", self.get_num_columns()),
-                format!("{column_i64}"),
-            ));
-        }
-
-        self.get_submatrix(0, self.get_num_rows() - 1, column_i64, column_i64)
-    }
-
-    /// Returns a deep copy of the submatrix defined by the given parameters.
-    /// All entries starting from `(row_1, col_1)` to `(row_2, col_2)`(inclusively) are collected in
-    /// a new matrix.
-    /// Note that `row_1 >= row_2` and `col_1 >= col_2` must hold after converting negative indices.
-    /// Otherwise the function will panic.
+impl MatrixGetSubmatrix for MatZ {
+    /// Returns a deep copy of the submatrix defined by the given parameters
+    /// and does not check the provided dimensions.
+    /// There is also a safe version of this function that checks the input.
     ///
     /// Parameters:
     /// `row_1`: the starting row of the submatrix
@@ -188,55 +97,36 @@ impl MatZ {
     /// `col_1`: the starting column of the submatrix
     /// `col_2`: the ending column of the submatrix
     ///
-    /// Negative indices can be used to index from the back, e.g., `-1` for
-    /// the last element.
-    ///
-    /// Returns the submatrix from `(row_1, col_1)` to `(row_2, col_2)`(inclusively)
-    /// or an error if any provided row or column is greater than the matrix.
+    /// Returns the submatrix from `(row_1, col_1)` to `(row_2, col_2)`(exclusively).
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::{integer::MatZ, traits::MatrixGetSubmatrix};
     /// use std::str::FromStr;
     ///
     /// let mat = MatZ::identity(3, 3);
     ///
     /// let sub_mat_1 = mat.get_submatrix(0, 2, 1, 1).unwrap();
     /// let sub_mat_2 = mat.get_submatrix(0, -1, 1, -2).unwrap();
+    /// let sub_mat_3 = unsafe{mat.get_submatrix_unchecked(0, 3, 1, 2)};
     ///
     /// let e_2 = MatZ::from_str("[[0],[1],[0]]").unwrap();
     /// assert_eq!(e_2, sub_mat_1);
     /// assert_eq!(e_2, sub_mat_2);
+    /// assert_eq!(e_2, sub_mat_3);
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if any provided row or column is greater than the matrix.
-    ///
-    /// # Panics ...
-    /// - if `col_1 > col_2` or `row_1 > row_2`.
-    pub fn get_submatrix(
+    /// # Safety
+    /// To use this function safely, make sure that the selected submatrix is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    unsafe fn get_submatrix_unchecked(
         &self,
-        row_1: impl TryInto<i64> + Display,
-        row_2: impl TryInto<i64> + Display,
-        col_1: impl TryInto<i64> + Display,
-        col_2: impl TryInto<i64> + Display,
-    ) -> Result<Self, MathError> {
-        let (row_1, col_1) = evaluate_indices_for_matrix(self, row_1, col_1)?;
-        let (row_2, col_2) = evaluate_indices_for_matrix(self, row_2, col_2)?;
-        assert!(
-            row_2 >= row_1,
-            "The number of rows must be positive, i.e. row_2 ({row_2}) must be greater or equal row_1 ({row_1})"
-        );
-
-        assert!(
-            col_2 >= col_1,
-            "The number of columns must be positive, i.e. col_2 ({col_2}) must be greater or equal col_1 ({col_1})"
-        );
-
-        // increase both values to have an inclusive capturing of the matrix entries
-        let (row_2, col_2) = (row_2 + 1, col_2 + 1);
-
+        row_1: i64,
+        row_2: i64,
+        col_1: i64,
+        col_2: i64,
+    ) -> Self {
         let mut window = MaybeUninit::uninit();
         // The memory for the elements of window is shared with self.
         unsafe {
@@ -257,11 +147,13 @@ impl MatZ {
             // the memory to the underlying matrix that window points to is not freed
             fmpz_mat_window_clear(window.as_mut_ptr());
         }
-        Ok(MatZ {
+        MatZ {
             matrix: unsafe { window_copy.assume_init() },
-        })
+        }
     }
+}
 
+impl MatZ {
     /// Efficiently collects all [`fmpz`]s in a [`MatZ`] without cloning them.
     ///
     /// Hence, the values on the returned [`Vec`] are intended for short-term use
@@ -297,7 +189,7 @@ mod test_get_entry {
     use super::Z;
     use crate::{
         integer::MatZ,
-        traits::{GetEntry, SetEntry},
+        traits::{MatrixGetEntry, MatrixSetEntry},
     };
     use std::str::FromStr;
 
@@ -402,15 +294,102 @@ mod test_get_entry {
 
         assert_eq!(Z::from(u64::MAX), entry);
     }
+
+    // *** Doc-tests of automatically implemented functions by `MatrixGetEntry`
+
+    /// Ensures that the doc-test of [`MatZ::get_entries`] works.
+    #[test]
+    fn get_entries() {
+        let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+
+        let entries = matrix.get_entries();
+        let mut added_entries = Z::default();
+        for row in entries {
+            for entry in row {
+                added_entries += entry;
+            }
+        }
+    }
+
+    /// Ensures that [`MatZ::get_entries`] returns all entries in the correct order.
+    #[test]
+    fn get_entries_correct() {
+        let matrix = MatZ::from_str("[[2, 3, 4],[5, 6, 7]]").unwrap();
+
+        let entries = matrix.get_entries();
+
+        assert_eq!(2, entries[0][0]);
+        assert_eq!(3, entries[0][1]);
+        assert_eq!(4, entries[0][2]);
+        assert_eq!(5, entries[1][0]);
+        assert_eq!(6, entries[1][1]);
+        assert_eq!(7, entries[1][2]);
+
+        assert_eq!(2, entries.len());
+        assert_eq!(3, entries[0].len());
+        assert_eq!(3, entries[1].len());
+    }
+
+    /// Ensures that the doc-test of [`MatZ::get_entries_rowwise`] works.
+    #[test]
+    fn get_entries_rowwise() {
+        let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+
+        let entries = matrix.get_entries_rowwise();
+        let mut added_entries = Z::default();
+        for entry in entries {
+            added_entries += entry;
+        }
+    }
+
+    /// Ensures that [`MatZ::get_entries_rowwise`] returns all entries in the correct order.
+    #[test]
+    fn get_entries_rowwise_correct() {
+        let matrix = MatZ::from_str("[[2, 3, 4],[5, 6, 7]]").unwrap();
+
+        let entries = matrix.get_entries_rowwise();
+
+        assert_eq!(2, entries[0]);
+        assert_eq!(3, entries[1]);
+        assert_eq!(4, entries[2]);
+        assert_eq!(5, entries[3]);
+        assert_eq!(6, entries[4]);
+        assert_eq!(7, entries[5]);
+        assert_eq!(6, entries.len());
+    }
+
+    /// Ensures that the doc-test of [`MatZ::get_entries_columnwise`] works.
+    #[test]
+    fn get_entries_columnwise() {
+        let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+
+        let entries = matrix.get_entries_columnwise();
+        let mut added_entries = Z::default();
+        for entry in entries {
+            added_entries += entry;
+        }
+    }
+
+    /// Ensures that [`MatZ::get_entries_columnwise`] returns all entries in the correct order.
+    #[test]
+    fn get_entries_columnwise_correct() {
+        let matrix = MatZ::from_str("[[2, 3, 4],[5, 6, 7]]").unwrap();
+
+        let entries = matrix.get_entries_columnwise();
+
+        assert_eq!(2, entries[0]);
+        assert_eq!(5, entries[1]);
+        assert_eq!(3, entries[2]);
+        assert_eq!(6, entries[3]);
+        assert_eq!(4, entries[4]);
+        assert_eq!(7, entries[5]);
+        assert_eq!(6, entries.len());
+    }
 }
 
 #[cfg(test)]
 mod test_get_num {
-
-    use crate::{
-        integer::MatZ,
-        traits::{GetNumColumns, GetNumRows},
-    };
+    use crate::{integer::MatZ, traits::MatrixDimensions};
 
     /// Ensure that the getter for number of rows works correctly.
     #[test]
@@ -431,7 +410,7 @@ mod test_get_num {
 
 #[cfg(test)]
 mod test_get_vec {
-    use crate::integer::MatZ;
+    use crate::{integer::MatZ, traits::MatrixGetSubmatrix};
     use std::str::FromStr;
 
     /// Ensure that getting a row works
@@ -444,6 +423,21 @@ mod test_get_vec {
 
         let cmp_1 = MatZ::from_str("[[0, 0, 0]]").unwrap();
         let cmp_2 = MatZ::from_str(&format!("[[4, {}, {}]]", i64::MAX, i64::MIN)).unwrap();
+
+        assert_eq!(cmp_1, row_1);
+        assert_eq!(cmp_2, row_2);
+    }
+
+    /// Ensure that getting a row with a negative index works
+    #[test]
+    fn get_row_negative_indexing_works() {
+        let matrix =
+            MatZ::from_str(&format!("[[0, 0, 0],[42, {}, {}]]", i64::MAX, i64::MIN)).unwrap();
+        let row_1 = matrix.get_row(-2).unwrap();
+        let row_2 = matrix.get_row(-1).unwrap();
+
+        let cmp_1 = MatZ::from_str("[[0, 0, 0]]").unwrap();
+        let cmp_2 = MatZ::from_str(&format!("[[42, {}, {}]]", i64::MAX, i64::MIN)).unwrap();
 
         assert_eq!(cmp_1, row_1);
         assert_eq!(cmp_2, row_2);
@@ -471,6 +465,28 @@ mod test_get_vec {
         assert_eq!(cmp_3, column_3);
     }
 
+    /// Ensure that getting a column with a negative index works
+    #[test]
+    fn get_column_negative_indexing_works() {
+        let matrix = MatZ::from_str(&format!(
+            "[[42, 0, 42],[{}, 0, 17],[{}, 0, 42]]",
+            i64::MAX,
+            i64::MIN
+        ))
+        .unwrap();
+        let column_1 = matrix.get_column(-3).unwrap();
+        let column_2 = matrix.get_column(-2).unwrap();
+        let column_3 = matrix.get_column(-1).unwrap();
+
+        let cmp_1 = MatZ::from_str(&format!("[[42],[{}],[{}]]", i64::MAX, i64::MIN)).unwrap();
+        let cmp_2 = MatZ::from_str("[[0],[0],[0]]").unwrap();
+        let cmp_3 = MatZ::from_str("[[42],[17],[42]]").unwrap();
+
+        assert_eq!(cmp_1, column_1);
+        assert_eq!(cmp_2, column_2);
+        assert_eq!(cmp_3, column_3);
+    }
+
     /// Ensure that wrong row and column dimensions yields an error
     #[test]
     fn wrong_dim_error() {
@@ -480,9 +496,9 @@ mod test_get_vec {
             i64::MIN
         ))
         .unwrap();
-        let row_1 = matrix.get_row(-1);
+        let row_1 = matrix.get_row(-4);
         let row_2 = matrix.get_row(4);
-        let column_1 = matrix.get_column(-1);
+        let column_1 = matrix.get_column(-4);
         let column_2 = matrix.get_column(4);
 
         assert!(row_1.is_err());
@@ -496,7 +512,7 @@ mod test_get_vec {
 mod test_get_submatrix {
     use crate::{
         integer::{MatZ, Z},
-        traits::{GetNumColumns, GetNumRows},
+        traits::{MatrixDimensions, MatrixGetSubmatrix, MatrixSetSubmatrix},
     };
     use std::str::FromStr;
 
@@ -601,6 +617,54 @@ mod test_get_submatrix {
         let _ = mat.get_submatrix(0_u32, 0_i32, 0_u32, 0_u32);
         let _ = mat.get_submatrix(0_u64, 0_i64, 0_u64, 0_u64);
         let _ = mat.get_submatrix(&Z::ZERO, &Z::ZERO, &Z::ZERO, &Z::ZERO);
+    }
+
+    // *** Doc-tests of automatically implemented functions by `MatrixGetSubmatrix`
+
+    /// Ensures that the first doc-test of [`MatZ::get_rows`] works.
+    #[test]
+    fn get_rows_1() {
+        let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+
+        let mut added_rows = MatZ::new(1, 3);
+        for row in matrix.get_rows() {
+            added_rows += row;
+        }
+    }
+
+    /// Ensures that the second doc-test of [`MatZ::get_rows`] works.
+    #[test]
+    fn get_rows_2() {
+        let mut matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+
+        let mut added_rows = MatZ::new(1, 3);
+        for (i, row) in matrix.get_rows().iter().enumerate() {
+            added_rows += row;
+            matrix.set_row(i, &added_rows, 0).unwrap();
+        }
+    }
+
+    /// Ensures that the first doc-test of [`MatZ::get_columns`] works.
+    #[test]
+    fn get_columns_1() {
+        let matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+
+        let mut added_columns = MatZ::new(3, 1);
+        for column in matrix.get_columns() {
+            added_columns += column;
+        }
+    }
+
+    /// Ensures that the second doc-test of [`MatZ::get_columns`] works.
+    #[test]
+    fn get_columns_2() {
+        let mut matrix = MatZ::sample_uniform(3, 3, 0, 16).unwrap();
+
+        let mut added_columns = MatZ::new(3, 1);
+        for (i, column) in matrix.get_columns().iter().enumerate() {
+            added_columns += column;
+            matrix.set_column(i, &added_columns, 0).unwrap();
+        }
     }
 }
 

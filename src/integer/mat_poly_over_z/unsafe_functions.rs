@@ -1,0 +1,74 @@
+// Copyright © 2025 Niklas Siemer
+//
+// This file is part of qFALL-math.
+//
+// qFALL-math is free software: you can redistribute it and/or modify it under
+// the terms of the Mozilla Public License Version 2.0 as published by the
+// Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
+
+//! This module contains public functions that enable access to underlying
+//! [FLINT](https://flintlib.org/) structs. Therefore, they require to be unsafe.
+
+use super::MatPolyOverZ;
+use crate::macros::unsafe_passthrough::{unsafe_getter, unsafe_setter};
+use flint_sys::fmpz_poly_mat::{fmpz_poly_mat_clear, fmpz_poly_mat_struct};
+
+unsafe_getter!(MatPolyOverZ, matrix, fmpz_poly_mat_struct);
+unsafe_setter!(
+    MatPolyOverZ,
+    matrix,
+    fmpz_poly_mat_struct,
+    fmpz_poly_mat_clear
+);
+
+#[cfg(test)]
+mod test_get_fmpz_poly_mat_struct {
+    use super::MatPolyOverZ;
+    use crate::{integer::PolyOverZ, traits::MatrixGetEntry};
+    use flint_sys::{fmpz_poly::fmpz_poly_set, fmpz_poly_mat::fmpz_poly_mat_entry};
+    use std::str::FromStr;
+
+    /// Checks availability of the getter for [`MatPolyOverZ::matrix`]
+    /// and its ability to be modified.
+    #[test]
+    #[allow(unused_mut)]
+    fn availability_and_modification() {
+        let mut mat = MatPolyOverZ::from_str("[[1  1]]").unwrap();
+        let mut poly = PolyOverZ::from(2);
+
+        let mut fmpz_poly_mat = unsafe { mat.get_fmpz_poly_mat_struct() };
+
+        unsafe {
+            let entry = fmpz_poly_mat_entry(fmpz_poly_mat, 0, 0);
+            fmpz_poly_set(entry, poly.get_fmpz_poly_struct())
+        };
+
+        assert_eq!(poly, mat.get_entry(0, 0).unwrap());
+    }
+}
+
+#[cfg(test)]
+mod test_set_fmpz_poly_mat_struct {
+    use super::MatPolyOverZ;
+    use crate::{integer::PolyOverZ, traits::MatrixGetEntry};
+    use flint_sys::fmpz_poly_mat::fmpz_poly_mat_init;
+    use std::{mem::MaybeUninit, str::FromStr};
+
+    /// Checks availability of the setter for [`MatPolyOverZ::matrix`]
+    /// and its ability to modify [`MatPolyOverZ`].
+    #[test]
+    #[allow(unused_mut)]
+    fn availability_and_modification() {
+        let mut mat = MatPolyOverZ::from_str("[[1  1]]").unwrap();
+        let mut flint_struct = MaybeUninit::uninit();
+        let flint_struct = unsafe {
+            fmpz_poly_mat_init(flint_struct.as_mut_ptr(), 1, 1);
+            flint_struct.assume_init()
+        };
+        let poly = PolyOverZ::default();
+
+        unsafe { mat.set_fmpz_poly_mat_struct(flint_struct) };
+
+        assert_eq!(poly, mat.get_entry(0, 0).unwrap());
+    }
+}

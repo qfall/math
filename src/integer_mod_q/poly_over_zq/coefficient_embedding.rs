@@ -13,8 +13,8 @@ use crate::{
     integer::Z,
     integer_mod_q::{MatZq, PolyOverZq},
     traits::{
-        FromCoefficientEmbedding, GetCoefficient, GetEntry, GetNumRows, IntoCoefficientEmbedding,
-        SetCoefficient, SetEntry,
+        FromCoefficientEmbedding, GetCoefficient, IntoCoefficientEmbedding, MatrixDimensions,
+        MatrixGetEntry, MatrixSetEntry, SetCoefficient,
     },
 };
 
@@ -26,7 +26,7 @@ impl IntoCoefficientEmbedding<MatZq> for &PolyOverZq {
     ///
     /// Parameters:
     /// - `size`: determines the number of rows of the embedding. It has to be larger
-    ///     than the degree of the polynomial.
+    ///   than the degree of the polynomial.
     ///
     /// Returns a coefficient embedding as a column vector if `size` is large enough.
     ///
@@ -46,7 +46,7 @@ impl IntoCoefficientEmbedding<MatZq> for &PolyOverZq {
     ///
     /// # Panics ...
     /// - if `size` is not larger than the degree of the polynomial, i.e.
-    ///     not all coefficients can be embedded.
+    ///   not all coefficients can be embedded.
     fn into_coefficient_embedding(self, size: impl Into<i64>) -> MatZq {
         let size = size.into();
         let length = self.get_degree() + 1;
@@ -58,12 +58,10 @@ impl IntoCoefficientEmbedding<MatZq> for &PolyOverZq {
         );
         let mut out = MatZq::new(size, 1, &self.modulus);
         for j in 0..size {
-            let coeff: Result<Z, _> = self.get_coeff(j);
-            match coeff {
-                Ok(value) => out.set_entry(j, 0, value).unwrap(),
-                Err(_) => break,
-            }
+            let coeff: Z = unsafe { self.get_coeff_unchecked(j) };
+            unsafe { out.set_entry_unchecked(j, 0, coeff) };
         }
+
         out
     }
 }
@@ -97,11 +95,14 @@ impl FromCoefficientEmbedding<&MatZq> for PolyOverZq {
     /// # Panics ...
     /// - if the provided embedding is not a column vector.
     fn from_coefficient_embedding(embedding: &MatZq) -> Self {
-        assert!(embedding.is_column_vector());
+        assert!(
+            embedding.is_column_vector(),
+            "This is no valid embedding, since the matrix is no column vector."
+        );
         let mut out = PolyOverZq::from(&embedding.get_mod());
         for i in 0..embedding.get_num_rows() {
-            let entry: Z = embedding.get_entry(i, 0).unwrap();
-            out.set_coeff(i, &entry).unwrap()
+            let entry: Z = unsafe { embedding.get_entry_unchecked(i, 0) };
+            unsafe { out.set_coeff_unchecked(i, entry) }
         }
         out
     }

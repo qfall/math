@@ -9,19 +9,17 @@
 //! Implementations to get information about a [`ModulusPolynomialRingZq].
 
 use crate::{
-    error::MathError,
     integer::{PolyOverZ, Z},
     integer_mod_q::{Modulus, ModulusPolynomialRingZq, PolyOverZq, Zq},
     traits::GetCoefficient,
-    utils::index::evaluate_index,
 };
 use flint_sys::{
-    fmpz::fmpz_set,
+    fmpz::fmpz_init_set,
     fmpz_mod::fmpz_mod_ctx_init,
     fmpz_mod_poly::fmpz_mod_poly_get_coeff_fmpz,
     fq::{fq_ctx_degree, fq_ctx_struct},
 };
-use std::{fmt::Display, mem::MaybeUninit, rc::Rc};
+use std::{mem::MaybeUninit, rc::Rc};
 
 impl GetCoefficient<Zq> for ModulusPolynomialRingZq {
     /// Returns the coefficient of a polynomial [`ModulusPolynomialRingZq`] as a [`Zq`].
@@ -31,8 +29,7 @@ impl GetCoefficient<Zq> for ModulusPolynomialRingZq {
     /// Parameters:
     /// - `index`: the index of the coefficient to get (has to be positive)
     ///
-    /// Returns the coefficient as a [`Zq`], or a [`MathError`] if the provided index
-    /// is negative and therefore invalid, or it does not fit into an [`i64`].
+    /// Returns the coefficient as a [`Zq`].
     ///
     /// # Examples
     /// ```
@@ -43,7 +40,7 @@ impl GetCoefficient<Zq> for ModulusPolynomialRingZq {
     /// let poly = ModulusPolynomialRingZq::from_str("4  0 1 2 3 mod 17").unwrap();
     ///
     /// let coeff_0: Zq = poly.get_coeff(0).unwrap();
-    /// let coeff_1: Zq = poly.get_coeff(1).unwrap();
+    /// let coeff_1: Zq = unsafe{ poly.get_coeff_unchecked(1) };
     /// let coeff_4: Zq = poly.get_coeff(4).unwrap();
     ///
     /// assert_eq!(Zq::from((0, 17)), coeff_0);
@@ -51,21 +48,21 @@ impl GetCoefficient<Zq> for ModulusPolynomialRingZq {
     /// assert_eq!(Zq::from((0, 17)), coeff_4);
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    ///     either the index is negative or it does not fit into an [`i64`].
-    fn get_coeff(&self, index: impl TryInto<i64> + Display) -> Result<Zq, MathError> {
-        let out_z: Z = self.get_coeff(index)?;
+    /// # Safety
+    /// To use this function safely, make sure that the selected index
+    /// is greater or equal than `0`.
+    unsafe fn get_coeff_unchecked(&self, index: i64) -> Zq {
+        let out_z: Z = self.get_coeff_unchecked(index);
 
         let mut ctx = MaybeUninit::uninit();
         unsafe {
-            fmpz_mod_ctx_init(ctx.as_mut_ptr(), &self.get_fq_ctx_struct().ctxp[0].n[0]);
+            fmpz_mod_ctx_init(ctx.as_mut_ptr(), &self.get_fq_ctx().ctxp[0].n[0]);
 
             let modulus = Modulus {
                 modulus: Rc::new(ctx.assume_init()),
             };
 
-            Ok(Zq::from((out_z, modulus)))
+            Zq::from((out_z, modulus))
         }
     }
 }
@@ -78,7 +75,7 @@ impl GetCoefficient<Z> for ModulusPolynomialRingZq {
     /// Parameters:
     /// - `index`: the index of the coefficient to get (has to be positive)
     ///
-    /// Returns the coefficient as a [`Z`], or a [`MathError`] if the provided index
+    /// Returns the coefficient as a [`Z`], or a [`MathError`](crate::error::MathError) if the provided index
     /// is negative and therefore invalid, or it does not fit into an [`i64`].
     ///
     /// # Examples
@@ -91,7 +88,7 @@ impl GetCoefficient<Z> for ModulusPolynomialRingZq {
     /// let poly = ModulusPolynomialRingZq::from_str("4  0 1 2 3 mod 17").unwrap();
     ///
     /// let coeff_0: Z = poly.get_coeff(0).unwrap();
-    /// let coeff_1: Z = poly.get_coeff(1).unwrap();
+    /// let coeff_1: Z = unsafe{ poly.get_coeff_unchecked(1) };
     /// let coeff_4: Z = poly.get_coeff(4).unwrap();
     ///
     /// assert_eq!(Z::ZERO, coeff_0);
@@ -99,11 +96,10 @@ impl GetCoefficient<Z> for ModulusPolynomialRingZq {
     /// assert_eq!(Z::ZERO, coeff_4);
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    ///     either the index is negative or it does not fit into an [`i64`].
-    fn get_coeff(&self, index: impl TryInto<i64> + Display) -> Result<Z, MathError> {
-        let index = evaluate_index(index)?;
+    /// # Safety
+    /// To use this function safely, make sure that the selected index
+    /// is greater or equal than `0`.
+    unsafe fn get_coeff_unchecked(&self, index: i64) -> Z {
         let mut out = Z::default();
 
         unsafe {
@@ -111,17 +107,17 @@ impl GetCoefficient<Z> for ModulusPolynomialRingZq {
                 &mut out.value,
                 &self.modulus.modulus[0],
                 index,
-                &self.get_fq_ctx_struct().ctxp[0],
+                &self.get_fq_ctx().ctxp[0],
             )
         }
 
-        Ok(out)
+        out
     }
 }
 
 impl ModulusPolynomialRingZq {
     /// Returns the [`fq_ctx_struct`] of a modulus and is only used internally.
-    pub(crate) fn get_fq_ctx_struct(&self) -> &fq_ctx_struct {
+    pub(crate) fn get_fq_ctx(&self) -> &fq_ctx_struct {
         self.modulus.as_ref()
     }
 
@@ -143,7 +139,7 @@ impl ModulusPolynomialRingZq {
     pub fn get_q(&self) -> Z {
         let mut out = Z::default();
         unsafe {
-            fmpz_set(&mut out.value, &self.get_fq_ctx_struct().ctxp[0].n[0]);
+            fmpz_init_set(&mut out.value, &self.get_fq_ctx().ctxp[0].n[0]);
         }
         out
     }
@@ -161,7 +157,7 @@ impl ModulusPolynomialRingZq {
     /// let degree = poly.get_degree(); // This would only return 3
     /// ```
     pub fn get_degree(&self) -> i64 {
-        unsafe { fq_ctx_degree(self.get_fq_ctx_struct()) }
+        unsafe { fq_ctx_degree(self.get_fq_ctx()) }
     }
 
     /// Returns a representative polynomial of the [`ModulusPolynomialRingZq`] element.
@@ -261,7 +257,7 @@ mod test_get_degree {
     /// Ensures that degree is working for constant polynomials.
     #[test]
     fn degree_constant() {
-        let degrees = [0, 1, 3, 7, 15, 32, 120];
+        let degrees = [1, 3, 7, 15, 32, 120];
         for degree in degrees {
             let modulus_ring = ModulusPolynomialRingZq::from_str(&format!(
                 "{}  {}2 mod 17",
@@ -277,11 +273,11 @@ mod test_get_degree {
     /// Ensure that degree is working for polynomials with leading 0 coefficients.
     #[test]
     fn degree_leading_zeros() {
-        let poly = ModulusPolynomialRingZq::from_str("4  2 0 0 0 mod 199").unwrap();
+        let poly = ModulusPolynomialRingZq::from_str("4  2 1 0 0 mod 199").unwrap();
 
         let deg = poly.get_degree();
 
-        assert_eq!(0, deg);
+        assert_eq!(1, deg);
     }
 
     /// Ensure that degree is working for polynomials with many coefficients

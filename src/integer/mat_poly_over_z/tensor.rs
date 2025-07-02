@@ -11,7 +11,7 @@
 use super::MatPolyOverZ;
 use crate::{
     integer::PolyOverZ,
-    traits::{GetEntry, GetNumColumns, GetNumRows, Tensor},
+    traits::{MatrixDimensions, MatrixGetEntry, Tensor},
 };
 use flint_sys::{fmpz_poly::fmpz_poly_mul, fmpz_poly_mat::fmpz_poly_mat_entry};
 
@@ -48,7 +48,7 @@ impl Tensor for MatPolyOverZ {
 
         for i in 0..self.get_num_rows() {
             for j in 0..self.get_num_columns() {
-                let entry = self.get_entry(i, j).unwrap();
+                let entry = unsafe { self.get_entry_unchecked(i, j) };
 
                 if !entry.is_zero() {
                     unsafe { set_matrix_window_mul(&mut out, i, j, entry, other) }
@@ -71,9 +71,9 @@ impl Tensor for MatPolyOverZ {
 /// - `row_left`: defines the leftmost row of the set window
 /// - `column_upper`: defines the highest column of the set window
 /// - `scalar`: defines the value with which the part of the tensor product
-///     is calculated
+///   is calculated
 /// - `matrix`: the matrix with which the scalar is multiplied
-///     before setting the entries in `out`
+///   before setting the entries in `out`
 ///
 /// Implicitly sets the entries of the matrix according to the definition
 /// of the tensor product.
@@ -119,7 +119,7 @@ unsafe fn set_matrix_window_mul(
 mod test_tensor {
     use crate::{
         integer::MatPolyOverZ,
-        traits::{GetNumColumns, GetNumRows, Tensor},
+        traits::{MatrixDimensions, Tensor},
     };
     use std::str::FromStr;
 

@@ -23,6 +23,8 @@ use flint_sys::fmpz_mod::fmpz_mod_mul;
 use serde::{Deserialize, Serialize};
 
 mod arithmetic;
+mod cmp;
+mod coefficient_embedding;
 mod from;
 mod get;
 mod norm;
@@ -31,6 +33,7 @@ mod reduce;
 mod sample;
 mod set;
 mod to_string;
+mod unsafe_functions;
 
 /// [`PolynomialRingZq`] represents polynomials over the finite field
 /// [`PolyOverZq`](crate::integer_mod_q::PolyOverZq)/f(X) where f(X) is a polynomial over [`Zq`](super::Zq).

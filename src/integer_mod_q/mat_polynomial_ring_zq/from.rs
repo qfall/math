@@ -30,8 +30,8 @@ impl FromStr for MatPolynomialRingZq {
     ///
     /// Parameters:
     /// - `string`: the matrix of form: `"[[poly_1, poly_2, poly_3],[poly_4, poly_5, poly_6]] / poly_7 mod 11"`
-    ///     for a 2x3 matrix where the first three polynomials are in the first row,
-    ///     the second three are in the second row, and the seventh polynomial and 11 form the modulus.
+    ///   for a 2x3 matrix where the first three polynomials are in the first row,
+    ///   the second three are in the second row, and the seventh polynomial and 11 form the modulus.
     ///
     /// Note that the strings for entries, the polynomial modulus and the integer modulus are trimmed,
     /// i.e. all whitespaces around all values are ignored.
@@ -71,16 +71,16 @@ impl FromStr for MatPolynomialRingZq {
     ///     - if the number of entries in rows is unequal,
     ///     - if the delimiter `/` and `mod` could not be found,
     ///     - if the modulus is not formatted correctly,
-    ///         for further information see [`PolyOverZq::from_str`](crate::integer_mod_q::PolyOverZq::from_str), or
+    ///       for further information see [`PolyOverZq::from_str`](crate::integer_mod_q::PolyOverZq::from_str), or
     ///     - if an entry is not formatted correctly.
-    ///         For further information see [`PolyOverZ::from_str`](crate::integer::PolyOverZ::from_str).
+    ///       For further information see [`PolyOverZ::from_str`](crate::integer::PolyOverZ::from_str).
     /// - Returns a MathError of type InvalidModulus
     ///     - if modulus is smaller than 2, or
     ///     - if the modulus polynomial is 0.
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    ///     For further information see [`MatPolyOverZ::new`].
+    ///   For further information see [`MatPolyOverZ::new`].
     fn from_str(string: &str) -> Result<Self, MathError> {
         let (matrix, modulus) = match string.split_once("/") {
             Some((matrix, modulus)) => (matrix, modulus),
@@ -143,7 +143,7 @@ impl From<&MatPolynomialRingZq> for MatPolynomialRingZq {
 
 #[cfg(test)]
 mod test_from_str {
-    use crate::{integer::PolyOverZ, integer_mod_q::MatPolynomialRingZq, traits::GetEntry};
+    use crate::{integer::PolyOverZ, integer_mod_q::MatPolynomialRingZq, traits::MatrixGetEntry};
     use std::str::FromStr;
 
     /// Ensure that initialization works.
@@ -151,13 +151,12 @@ mod test_from_str {
     fn init_works() {
         let matrix_str_1 = "[[1  2, 0, 1  3],[1  3, 1  4, 1  5]] / 2  1 1 mod 6";
 
-        assert_eq!(
-            PolyOverZ::from(2),
-            MatPolynomialRingZq::from_str(matrix_str_1)
-                .unwrap()
-                .get_entry(0, 0)
-                .unwrap()
-        );
+        let matrix: PolyOverZ = MatPolynomialRingZq::from_str(matrix_str_1)
+            .unwrap()
+            .get_entry(0, 0)
+            .unwrap();
+
+        assert_eq!(PolyOverZ::from(2), matrix);
     }
 
     /// Ensure that entries are correctly reduced.
@@ -165,21 +164,12 @@ mod test_from_str {
     fn reduce_works() {
         let matrix_str_1 = "[[1  2, 0, 1  3],[1  3, 2  2 2, 1  5]] / 2  1 1 mod 3";
 
-        assert_eq!(
-            PolyOverZ::default(),
-            MatPolynomialRingZq::from_str(matrix_str_1)
-                .unwrap()
-                .get_entry(1, 0)
-                .unwrap()
-        );
+        let matrix: PolyOverZ = MatPolynomialRingZq::from_str(matrix_str_1)
+            .unwrap()
+            .get_entry(1, 0)
+            .unwrap();
 
-        assert_eq!(
-            PolyOverZ::default(),
-            MatPolynomialRingZq::from_str(matrix_str_1)
-                .unwrap()
-                .get_entry(1, 1)
-                .unwrap()
-        );
+        assert_eq!(PolyOverZ::default(), matrix);
     }
 
     /// Ensure that initialization with positive numbers that are larger than [`i64`] works.
@@ -190,14 +180,12 @@ mod test_from_str {
             u64::MAX - 1,
             u64::MAX
         );
+        let matrix: PolyOverZ = MatPolynomialRingZq::from_str(&matrix_string)
+            .unwrap()
+            .get_entry(0, 0)
+            .unwrap();
 
-        assert_eq!(
-            PolyOverZ::from(u64::MAX - 1),
-            MatPolynomialRingZq::from_str(&matrix_string)
-                .unwrap()
-                .get_entry(0, 0)
-                .unwrap()
-        );
+        assert_eq!(PolyOverZ::from(u64::MAX - 1), matrix);
     }
 
     /// Ensure that entries can have leading and trailing whitespaces.
@@ -206,13 +194,12 @@ mod test_from_str {
         let matrix_str_1 =
             "[[1  2    ,    0 , 1  3],[   1  3, 1  4, 1  5  ]]   /     2  1 1   mod6  ";
 
-        assert_eq!(
-            PolyOverZ::from(3),
-            MatPolynomialRingZq::from_str(matrix_str_1)
-                .unwrap()
-                .get_entry(0, 2)
-                .unwrap()
-        );
+        let matrix: PolyOverZ = MatPolynomialRingZq::from_str(matrix_str_1)
+            .unwrap()
+            .get_entry(0, 2)
+            .unwrap();
+
+        assert_eq!(PolyOverZ::from(3), matrix);
     }
 
     /// Ensure that a wrong format causes an error.

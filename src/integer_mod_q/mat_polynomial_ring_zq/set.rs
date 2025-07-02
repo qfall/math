@@ -11,12 +11,16 @@
 use super::MatPolynomialRingZq;
 use crate::integer_mod_q::PolynomialRingZq;
 use crate::macros::for_others::implement_for_owned;
-use crate::utils::index::evaluate_indices_for_matrix;
-use crate::{error::MathError, integer::PolyOverZ, traits::SetEntry};
+use crate::traits::{MatrixSetSubmatrix, MatrixSwaps};
+use crate::{error::MathError, integer::PolyOverZ, traits::MatrixSetEntry};
+use flint_sys::fmpz_poly_mat::{
+    fmpz_poly_mat_set, fmpz_poly_mat_window_clear, fmpz_poly_mat_window_init,
+};
 use flint_sys::{fmpz_poly::fmpz_poly_set, fmpz_poly_mat::fmpz_poly_mat_entry};
 use std::fmt::Display;
+use std::mem::MaybeUninit;
 
-impl SetEntry<&PolyOverZ> for MatPolynomialRingZq {
+impl MatrixSetEntry<&PolyOverZ> for MatPolynomialRingZq {
     /// Sets the value of a specific matrix entry according to a given `value` of type [`PolyOverZ`].
     ///
     /// Parameters:
@@ -52,7 +56,7 @@ impl SetEntry<&PolyOverZ> for MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if `row` or `column` are greater than the matrix size.
+    ///   if `row` or `column` are greater than the matrix size.
     fn set_entry(
         &mut self,
         row: impl TryInto<i64> + Display,
@@ -63,22 +67,62 @@ impl SetEntry<&PolyOverZ> for MatPolynomialRingZq {
 
         self.set_entry(row, column, value)
     }
-}
 
-impl SetEntry<&PolynomialRingZq> for MatPolynomialRingZq {
-    /// Sets the value of a specific matrix entry according to a given `value` of type [`PolynomialRingZq`].
+    /// Sets the value of a specific matrix entry according to a given `value` of type [`PolyOverZ`]
+    /// without checking whether the coordinate is part of the matrix, if the moduli match
+    /// or if the entry is reduced.
     ///
     /// Parameters:
     /// - `row`: specifies the row in which the entry is located
     /// - `column`: specifies the column in which the entry is located
     /// - `value`: specifies the value to which the entry is set
     ///
-    /// Negative indices can be used to index from the back, e.g., `-1` for
-    /// the last element.
+    /// # Safety
+    /// To use this function safely, make sure that the selected entry is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
     ///
-    /// Returns an empty `Ok` if the action could be performed successfully.
-    /// Otherwise, a [`MathError`] is returned if the specified entry is
-    /// not part of the matrix or the moduli are different.
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use qfall_math::integer::{MatPolyOverZ, PolyOverZ};
+    /// use crate::qfall_math::traits::*;
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let poly_mat = MatPolyOverZ::from_str("[[0, 1  42],[0, 2  1 2]]").unwrap();
+    /// let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
+    /// let value = PolyOverZ::default();
+    ///
+    /// unsafe {
+    ///     poly_ring_mat.set_entry_unchecked(0, 1, &value);
+    ///     poly_ring_mat.set_entry_unchecked(1, 1, &value);
+    /// }
+    ///
+    /// let mat_cmp = MatPolynomialRingZq::from((&MatPolyOverZ::new(2, 2), &modulus));
+    /// assert_eq!(poly_ring_mat, mat_cmp);
+    /// ```
+    unsafe fn set_entry_unchecked(&mut self, row: i64, column: i64, value: &PolyOverZ) {
+        unsafe {
+            let entry = fmpz_poly_mat_entry(&self.matrix.matrix, row, column);
+            fmpz_poly_set(entry, &value.poly)
+        };
+    }
+}
+
+impl MatrixSetEntry<&PolynomialRingZq> for MatPolynomialRingZq {
+    /// Sets the value of a specific matrix entry according to a given `value` of type [`PolynomialRingZq`]
+    /// without checking whether the coordinate is part of the matrix or if the moduli match.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row in which the entry is located
+    /// - `column`: specifies the column in which the entry is located
+    /// - `value`: specifies the value to which the entry is set
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected entry is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
     ///
     /// # Examples
     /// ```
@@ -92,139 +136,117 @@ impl SetEntry<&PolynomialRingZq> for MatPolynomialRingZq {
     /// let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
     /// let value = PolynomialRingZq::from((&PolyOverZ::default(), &modulus));
     ///
-    /// poly_ring_mat.set_entry(0, 1, &value).unwrap();
-    /// poly_ring_mat.set_entry(-1, -1, &value).unwrap();
+    /// unsafe {
+    ///     poly_ring_mat.set_entry_unchecked(0, 1, &value);
+    ///     poly_ring_mat.set_entry_unchecked(1, 1, &value);
+    /// }
     ///
     /// let mat_cmp = MatPolynomialRingZq::from((&MatPolyOverZ::new(2, 2), &modulus));
     /// assert_eq!(poly_ring_mat, mat_cmp);
     /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if `row` or `column` are greater than the matrix size.
-    /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`]
-    ///     if the moduli are different.
-    fn set_entry(
-        &mut self,
-        row: impl TryInto<i64> + Display,
-        column: impl TryInto<i64> + Display,
-        value: &PolynomialRingZq,
-    ) -> Result<(), MathError> {
-        if self.modulus != value.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                " Modulus of matrix: '{}'. Modulus of value: '{}'.
-                If the modulus should be ignored please convert into a Z beforehand.",
-                self.modulus, value.modulus
-            )));
-        }
-
-        let (row_i64, column_i64) = evaluate_indices_for_matrix(self, row, column)?;
-
+    unsafe fn set_entry_unchecked(&mut self, row: i64, column: i64, value: &PolynomialRingZq) {
         unsafe {
-            let entry = fmpz_poly_mat_entry(&self.matrix.matrix, row_i64, column_i64);
+            let entry = fmpz_poly_mat_entry(&self.matrix.matrix, row, column);
             fmpz_poly_set(entry, &value.poly.poly)
         };
-
-        Ok(())
     }
 }
 
-implement_for_owned!(PolyOverZ, MatPolynomialRingZq, SetEntry);
-implement_for_owned!(PolynomialRingZq, MatPolynomialRingZq, SetEntry);
+implement_for_owned!(PolyOverZ, MatPolynomialRingZq, MatrixSetEntry);
+implement_for_owned!(PolynomialRingZq, MatPolynomialRingZq, MatrixSetEntry);
 
-impl MatPolynomialRingZq {
-    /// Sets a column of the given matrix to the provided column of `other`.
+impl MatrixSetSubmatrix for MatPolynomialRingZq {
+    /// Sets the matrix entries in `self` to entries defined in `other`.
+    /// The entries in `self` starting from `(row_self_start, col_self_start)` up to
+    /// `(row_self_end, col_self_end)`are set to be
+    /// the entries from the submatrix from `other` defined by `(row_other_start, col_other_start)`
+    /// to `(row_other_end, col_other_end)` (exclusively).
     ///
     /// Parameters:
-    /// - `col_0`: specifies the column of `self` that should be modified
-    /// - `other`: specifies the matrix providing the column replacing the column in `self`
-    /// - `col_1`: specifies the column of `other` providing
-    ///     the values replacing the original column in `self`
-    ///
-    /// Returns an empty `Ok` if the action could be performed successfully.
-    /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of its matrix
-    /// or if the number of rows differs.
+    /// `row_self_start`: the starting row of the matrix in which to set a submatrix
+    /// `col_self_start`: the starting column of the matrix in which to set a submatrix
+    /// `other`: the matrix from where to take the submatrix to set
+    /// `row_other_start`: the starting row of the specified submatrix
+    /// `col_other_start`: the starting column of the specified submatrix
+    /// `row_other_end`: the ending row of the specified submatrix
+    /// `col_other_end`:the ending column of the specified submatrix
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::traits::MatrixSetSubmatrix;
     /// use std::str::FromStr;
     ///
-    /// let mut mat_1 = MatPolynomialRingZq::from_str("[[0, 0, 0],[0, 0, 0]] / 2  1 1 mod 6").unwrap();
-    /// let mat_2 = MatPolynomialRingZq::from_str("[[1  2, 0, 1  3],[1  3, 1  4, 1  5]] / 2  1 1 mod 6").unwrap();
-    /// mat_1.set_column(1, &mat_2, 0);
+    /// let mat = MatPolyOverZ::identity(3, 3);
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let mut mat = MatPolynomialRingZq::from((&mat, &modulus));
+    ///
+    /// mat.set_submatrix(0, 1, &mat.clone(), 0, 0, 1, 1).unwrap();
+    /// // [[1,1,0],[0,0,1],[0,0,1]]
+    /// let mat_cmp = MatPolyOverZ::from_str("[[1  1, 1  1, 0],[0, 0, 1  1],[0, 0, 1  1]]").unwrap();
+    /// assert_eq!(mat, MatPolynomialRingZq::from((&mat_cmp, &modulus)));
+    ///
+    /// unsafe{ mat.set_submatrix_unchecked(2, 0, 3, 2, &mat.clone(), 0, 0, 1, 2) };
+    /// let mat_cmp = MatPolyOverZ::from_str("[[1  1, 1  1, 0],[0, 0, 1  1],[1  1, 1  1, 1  1]]").unwrap();
+    /// assert_eq!(mat, MatPolynomialRingZq::from((&mat_cmp, &modulus)));
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if the provided column index is not defined within the margins of the matrix.
-    /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the number of rows of `self` and `other` differ.
-    /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus)
-    ///     if the moduli of `self` and `other` mismatch.
-    pub fn set_column(
+    /// # Safety
+    /// To use this function safely, make sure that the selected submatrices are part
+    /// of the matrices, the submatrices are of the same dimensions and the base types are the same.
+    /// If not, memory leaks, unexpected panics, etc. might occur.
+    unsafe fn set_submatrix_unchecked(
         &mut self,
-        col_0: impl TryInto<i64> + Display,
+        row_self_start: i64,
+        col_self_start: i64,
+        row_self_end: i64,
+        col_self_end: i64,
         other: &Self,
-        col_1: impl TryInto<i64> + Display,
-    ) -> Result<(), MathError> {
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "set_column requires the moduli to be equal, but {} differs from {}",
-                self.get_mod(),
-                other.get_mod()
-            )));
+        row_other_start: i64,
+        col_other_start: i64,
+        row_other_end: i64,
+        col_other_end: i64,
+    ) {
+        {
+            let mut window_self = MaybeUninit::uninit();
+            // The memory for the elements of window is shared with self.
+            unsafe {
+                fmpz_poly_mat_window_init(
+                    window_self.as_mut_ptr(),
+                    &self.matrix.matrix,
+                    row_self_start,
+                    col_self_start,
+                    row_self_end,
+                    col_self_end,
+                )
+            };
+            let mut window_other = MaybeUninit::uninit();
+            // The memory for the elements of window is shared with other.
+            unsafe {
+                fmpz_poly_mat_window_init(
+                    window_other.as_mut_ptr(),
+                    &other.matrix.matrix,
+                    row_other_start,
+                    col_other_start,
+                    row_other_end,
+                    col_other_end,
+                )
+            };
+            unsafe {
+                // TODO: this should not be mutable for the other window
+                fmpz_poly_mat_set(window_self.as_mut_ptr(), window_other.as_mut_ptr());
+
+                // Clears the matrix window and releases any memory that it uses. Note that
+                // the memory to the underlying matrix that window points to is not freed
+                fmpz_poly_mat_window_clear(window_self.as_mut_ptr());
+                fmpz_poly_mat_window_clear(window_other.as_mut_ptr());
+            }
         }
-
-        self.matrix.set_column(col_0, &other.matrix, col_1)
     }
+}
 
-    /// Sets a row of the given matrix to the provided row of `other`.
-    ///
-    /// Parameters:
-    /// - `row_0`: specifies the row of `self` that should be modified
-    /// - `other`: specifies the matrix providing the row replacing the row in `self`
-    /// - `row_1`: specifies the row of `other` providing
-    ///     the values replacing the original row in `self`
-    ///
-    /// Returns an empty `Ok` if the action could be performed successfully.
-    /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of its matrix
-    /// or if the number of columns differs.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
-    /// use std::str::FromStr;
-    ///
-    /// let mut mat_1 = MatPolynomialRingZq::from_str("[[0, 0, 0],[0, 0, 0]] / 2  1 1 mod 6").unwrap();
-    /// let mat_2 = MatPolynomialRingZq::from_str("[[1  2, 0, 1  3],[1  3, 1  4, 1  5]] / 2  1 1 mod 6").unwrap();
-    /// mat_1.set_row(1, &mat_2, 0);
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if the provided row index is not defined within the margins of the matrix.
-    /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the number of columns of `self` and `other` differ.
-    /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus)
-    ///     if the moduli of `self` and `other` mismatch.
-    pub fn set_row(
-        &mut self,
-        row_0: impl TryInto<i64> + Display,
-        other: &Self,
-        row_1: impl TryInto<i64> + Display,
-    ) -> Result<(), MathError> {
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "set_row requires the moduli to be equal, but {} differs from {}",
-                self.get_mod(),
-                other.get_mod()
-            )));
-        }
-
-        self.matrix.set_row(row_0, &other.matrix, row_1)
-    }
-
+impl MatrixSwaps for MatPolynomialRingZq {
     /// Swaps two entries of the specified matrix.
     ///
     /// Parameters:
@@ -242,15 +264,17 @@ impl MatPolynomialRingZq {
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use qfall_math::traits::MatrixSwaps;
+    /// use std::str::FromStr;
     ///
-    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from((3, 17)));
+    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap());
     /// matrix.swap_entries(0, 0, 2, 1);
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if row or column are greater than the matrix size.
-    pub fn swap_entries(
+    ///   if row or column are greater than the matrix size.
+    fn swap_entries(
         &mut self,
         row_0: impl TryInto<i64> + Display,
         col_0: impl TryInto<i64> + Display,
@@ -266,21 +290,26 @@ impl MatPolynomialRingZq {
     /// - `col_0`: specifies the first column which is swapped with the second one
     /// - `col_1`: specifies the second column which is swapped with the first one
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of the matrix.
     ///
     /// # Examples
     /// ```
+    /// use qfall_math::traits::MatrixSwaps;
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
     ///
-    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from((3, 17)));
+    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap());
     /// matrix.swap_columns(0, 2);
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if one of the given columns is greater than the matrix or negative.
-    pub fn swap_columns(
+    ///   if one of the given columns is not in the matrix.
+    fn swap_columns(
         &mut self,
         col_0: impl TryInto<i64> + Display,
         col_1: impl TryInto<i64> + Display,
@@ -294,36 +323,44 @@ impl MatPolynomialRingZq {
     /// - `row_0`: specifies the first row which is swapped with the second one
     /// - `row_1`: specifies the second row which is swapped with the first one
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of the matrix.
     ///
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use qfall_math::traits::MatrixSwaps;
+    /// use std::str::FromStr;
     ///
-    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from((3, 17)));
+    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap());
     /// matrix.swap_rows(0, 2);
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if one of the given rows is greater than the matrix or negative.
-    pub fn swap_rows(
+    ///   if one of the given rows is not in the matrix.
+    fn swap_rows(
         &mut self,
         row_0: impl TryInto<i64> + Display,
         row_1: impl TryInto<i64> + Display,
     ) -> Result<(), MathError> {
         self.matrix.swap_rows(row_0, row_1)
     }
+}
 
+impl MatPolynomialRingZq {
     /// Swaps the `i`-th column with the `n-i`-th column for all `i <= n/2`
     /// of the specified matrix with `n` columns.
     ///
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
     ///
-    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from((3, 17)));
+    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap());
     /// matrix.reverse_columns();
     /// ```
     pub fn reverse_columns(&mut self) {
@@ -336,8 +373,9 @@ impl MatPolynomialRingZq {
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
     ///
-    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from((3, 17)));
+    /// let mut matrix = MatPolynomialRingZq::new(4, 3, ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap());
     /// matrix.reverse_rows();
     /// ```
     pub fn reverse_rows(&mut self) {
@@ -352,7 +390,7 @@ mod test_setter {
         integer_mod_q::{
             MatPolynomialRingZq, ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq,
         },
-        traits::{GetEntry, SetEntry},
+        traits::{MatrixGetEntry, MatrixSetEntry, MatrixSetSubmatrix},
     };
     use std::str::FromStr;
 
@@ -583,9 +621,9 @@ mod test_setter {
                 .unwrap();
         let mat_2 = mat_1.clone();
 
-        assert!(mat_1.set_column(-1, &mat_2, 0).is_err());
+        assert!(mat_1.set_column(-3, &mat_2, 0).is_err());
         assert!(mat_1.set_column(2, &mat_2, 0).is_err());
-        assert!(mat_1.set_column(1, &mat_2, -1).is_err());
+        assert!(mat_1.set_column(1, &mat_2, -3).is_err());
         assert!(mat_1.set_column(1, &mat_2, 2).is_err());
     }
 
@@ -686,9 +724,9 @@ mod test_setter {
                 .unwrap();
         let mat_2 = mat_1.clone();
 
-        assert!(mat_1.set_row(-1, &mat_2, 0).is_err());
+        assert!(mat_1.set_row(-6, &mat_2, 0).is_err());
         assert!(mat_1.set_row(5, &mat_2, 0).is_err());
-        assert!(mat_1.set_row(2, &mat_2, -1).is_err());
+        assert!(mat_1.set_row(2, &mat_2, -6).is_err());
         assert!(mat_1.set_row(2, &mat_2, 5).is_err());
     }
 
@@ -719,11 +757,14 @@ mod test_setter {
 #[cfg(test)]
 mod test_swaps {
     use super::MatPolynomialRingZq;
-    use crate::integer_mod_q::ModulusPolynomialRingZq;
+    use crate::{
+        integer_mod_q::ModulusPolynomialRingZq,
+        traits::{MatrixGetSubmatrix, MatrixSwaps},
+    };
     use std::str::FromStr;
 
-    /// Since swapping functions only call the existing tested functions for [`MatPolyOverZ`](crate::integer::MatPolyOverZ),
-    /// we omit some tests that are already covered.
+    // Since swapping functions only call the existing tested functions for [`MatPolyOverZ`](crate::integer::MatPolyOverZ),
+    // we omit some tests that are already covered.
 
     /// Ensures that swapping entries works
     #[test]
@@ -745,7 +786,8 @@ mod test_swaps {
     /// Ensures that `swap_entries` returns an error if one of the specified entries is out of bounds
     #[test]
     fn entries_out_of_bounds() {
-        let mut matrix = MatPolynomialRingZq::new(5, 2, ModulusPolynomialRingZq::from((3, 17)));
+        let modulus = ModulusPolynomialRingZq::from_str("3  3 0 1 mod 17").unwrap();
+        let mut matrix = MatPolynomialRingZq::new(5, 2, modulus);
 
         assert!(matrix.swap_entries(-6, 0, 0, 0).is_err());
         assert!(matrix.swap_entries(0, -3, 0, 0).is_err());
@@ -787,10 +829,11 @@ mod test_swaps {
     /// Ensures that `swap_columns` returns an error if one of the specified columns is out of bounds
     #[test]
     fn column_out_of_bounds() {
-        let mut matrix = MatPolynomialRingZq::new(5, 2, ModulusPolynomialRingZq::from((3, 17)));
+        let modulus = ModulusPolynomialRingZq::from_str("3  3 0 1 mod 17").unwrap();
+        let mut matrix = MatPolynomialRingZq::new(5, 2, modulus);
 
-        assert!(matrix.swap_columns(-1, 0).is_err());
-        assert!(matrix.swap_columns(0, -1).is_err());
+        assert!(matrix.swap_columns(-6, 0).is_err());
+        assert!(matrix.swap_columns(0, -6).is_err());
         assert!(matrix.swap_columns(5, 0).is_err());
         assert!(matrix.swap_columns(0, 5).is_err());
     }
@@ -814,10 +857,11 @@ mod test_swaps {
     /// Ensures that `swap_rows` returns an error if one of the specified rows is out of bounds
     #[test]
     fn row_out_of_bounds() {
-        let mut matrix = MatPolynomialRingZq::new(2, 4, ModulusPolynomialRingZq::from((3, 17)));
+        let modulus = ModulusPolynomialRingZq::from_str("3  3 0 1 mod 17").unwrap();
+        let mut matrix = MatPolynomialRingZq::new(2, 4, modulus);
 
-        assert!(matrix.swap_rows(-1, 0).is_err());
-        assert!(matrix.swap_rows(0, -1).is_err());
+        assert!(matrix.swap_rows(-3, 0).is_err());
+        assert!(matrix.swap_rows(0, -3).is_err());
         assert!(matrix.swap_rows(4, 0).is_err());
         assert!(matrix.swap_rows(0, 4).is_err());
     }
@@ -826,10 +870,11 @@ mod test_swaps {
 #[cfg(test)]
 mod test_reverses {
     use super::MatPolynomialRingZq;
+    use crate::traits::MatrixGetSubmatrix;
     use std::str::FromStr;
 
-    /// Since reversing functions only call the existing tested functions for [`MatPolyOverZ`](crate::integer::MatPolyOverZ),
-    /// we omit some tests that are already covered.
+    // Since reversing functions only call the existing tested functions for [`MatPolyOverZ`](crate::integer::MatPolyOverZ),
+    // we omit some tests that are already covered.
 
     /// Ensures that reversing columns works fine for small entries
     #[test]
@@ -862,5 +907,123 @@ mod test_reverses {
 
         assert_eq!(cmp_vec_1, matrix.get_row(0).unwrap());
         assert_eq!(cmp_vec_0, matrix.get_row(1).unwrap());
+    }
+}
+
+#[cfg(test)]
+mod test_set_submatrix {
+    use crate::{
+        integer::MatPolyOverZ,
+        integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
+        traits::MatrixSetSubmatrix,
+    };
+    use std::str::FromStr;
+
+    /// Ensure that the entire matrix can be set.
+    #[test]
+    fn entire_matrix() {
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
+        let mut mat = MatPolynomialRingZq::from((
+            &MatPolyOverZ::sample_uniform(10, 10, 5, -100, 100).unwrap(),
+            &modulus,
+        ));
+        let identity = MatPolynomialRingZq::identity(10, 10, &modulus);
+
+        mat.set_submatrix(0, 0, &identity, 0, 0, 9, 9).unwrap();
+
+        assert_eq!(identity, mat);
+    }
+
+    /// Ensure that matrix access out of bounds leadss to an error.
+    #[test]
+    fn out_of_bounds() {
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
+        let mut mat = MatPolynomialRingZq::identity(10, 10, &modulus);
+
+        assert!(mat.set_submatrix(10, 0, &mat.clone(), 0, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 10, &mat.clone(), 0, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 10, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 10, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 0, 10, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 0, 9, 10).is_err());
+        assert!(mat.set_submatrix(-11, 0, &mat.clone(), 0, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, -11, &mat.clone(), 0, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), -11, 0, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, -11, 9, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 0, -11, 9).is_err());
+        assert!(mat.set_submatrix(0, 0, &mat.clone(), 0, 0, 9, -11).is_err());
+    }
+
+    /// Ensure that the function returns an error if the defined submatrix is too large
+    /// and there is not enough space in the original matrix.
+    #[test]
+    fn submatrix_too_large() {
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
+        let mut mat = MatPolynomialRingZq::identity(10, 10, &modulus);
+
+        assert!(mat
+            .set_submatrix(
+                0,
+                0,
+                &MatPolynomialRingZq::identity(11, 11, &modulus),
+                0,
+                0,
+                10,
+                10
+            )
+            .is_err());
+        assert!(mat.set_submatrix(1, 2, &mat.clone(), 0, 0, 9, 9).is_err());
+    }
+
+    /// Ensure that setting submatrices with large values works.
+    #[test]
+    fn large_values() {
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
+        let mut mat = MatPolynomialRingZq::from((
+            &MatPolyOverZ::from_str(&format!(
+                "[[1  1, 2  1 {}],[1  -{}, 0]]",
+                u64::MAX,
+                u64::MAX
+            ))
+            .unwrap(),
+            &modulus,
+        ));
+        let cmp_mat = MatPolynomialRingZq::from((
+            &MatPolyOverZ::from_str(&format!("[[1  -{}, 0],[1  -{}, 0]]", u64::MAX, u64::MAX))
+                .unwrap(),
+            &modulus,
+        ));
+
+        mat.set_submatrix(0, 0, &mat.clone(), 1, 0, 1, 1).unwrap();
+        assert_eq!(cmp_mat, mat);
+    }
+
+    /// Ensure that setting with an undefined submatrix.
+    #[test]
+    #[should_panic]
+    fn submatrix_negative() {
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
+        let mut mat = MatPolynomialRingZq::identity(10, 10, &modulus);
+
+        let _ = mat.set_submatrix(0, 0, &mat.clone(), 0, 9, 9, 5);
+    }
+
+    /// Ensure that different moduli cause the set_submatrix to fail.
+    #[test]
+    fn different_moduli() {
+        let modulus1 =
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
+        let mut mat1 = MatPolynomialRingZq::identity(10, 10, &modulus1);
+
+        let modulus2 =
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 2 mod {}", u64::MAX - 1)).unwrap();
+        let mat2 = MatPolynomialRingZq::identity(10, 10, &modulus2);
+
+        assert!(mat1.set_submatrix(0, 0, &mat2.clone(), 0, 9, 0, 9).is_err());
     }
 }

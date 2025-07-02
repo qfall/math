@@ -12,13 +12,16 @@
 use flint_sys::fmpz_mat::fmpz_mat_struct;
 
 mod arithmetic;
+mod basis_reductions;
 mod cmp;
 mod concat;
 mod default;
 mod determinant;
+mod forms;
 mod from;
 mod get;
 mod inverse;
+mod norm;
 mod ownership;
 mod properties;
 mod sample;
@@ -29,20 +32,21 @@ mod tensor;
 mod to_string;
 mod trace;
 mod transpose;
+mod unsafe_functions;
 mod vector;
 
 /// [`MatZ`] is a matrix with entries of type [`Z`](crate::integer::Z).
 ///
 /// Attributes:
 /// - `matrix`: holds [FLINT](https://flintlib.org/)'s [struct](fmpz_mat_struct)
-///     of the [`Z`](crate::integer::Z) matrix
+///   of the [`Z`](crate::integer::Z) matrix
 ///
 /// # Examples
 /// ## Matrix usage
 /// ```
 /// use qfall_math::{
 ///     integer::{MatZ, Z},
-///     traits::{GetEntry, SetEntry},
+///     traits::{MatrixGetEntry, MatrixSetEntry},
 /// };
 ///
 /// // instantiate new matrix

@@ -32,8 +32,8 @@ impl FromStr for MatPolyOverZ {
     ///
     /// Parameters:
     /// - `string`: the matrix of form: `"[[poly_1, poly_2, poly_3],[poly_4, poly_5, poly_6]]"`
-    ///     for a 2x3 matrix where first three polynomials are in the first row
-    ///     and the second three are in the second row.
+    ///   for a 2x3 matrix where first three polynomials are in the first row
+    ///   and the second three are in the second row.
     ///
     /// Returns a [`MatPolyOverZ`] or an error if the matrix is not formatted in a suitable way,
     /// the number of rows or columns is too large (must fit into [`i64`]),
@@ -69,11 +69,11 @@ impl FromStr for MatPolyOverZ {
     ///     - if the number of rows or columns is too large (must fit into i64),
     ///     - if the number of entries in rows is unequal, or
     ///     - if an entry is not formatted correctly.
-    ///         For further information see [`PolyOverZ::from_str`].
+    ///       For further information see [`PolyOverZ::from_str`].
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    ///     For further information see [`MatPolyOverZ::new`].
+    ///   For further information see [`MatPolyOverZ::new`].
     fn from_str(string: &str) -> Result<Self, MathError> {
         let string_matrix = parse_matrix_string(string)?;
         let (num_rows, num_cols) = find_matrix_dimensions(&string_matrix)?;
@@ -113,12 +113,13 @@ impl From<&MatZ> for MatPolyOverZ {
 
         for row in 0..num_rows {
             for column in 0..num_columns {
-                out.set_entry(
-                    row,
-                    column,
-                    PolyOverZ::from(matrix.get_entry(row, column).unwrap()),
-                )
-                .unwrap();
+                unsafe {
+                    out.set_entry_unchecked(
+                        row,
+                        column,
+                        PolyOverZ::from(matrix.get_entry_unchecked(row, column)),
+                    )
+                };
             }
         }
 
@@ -137,7 +138,7 @@ impl From<&MatPolyOverZ> for MatPolyOverZ {
 
 #[cfg(test)]
 mod test_from_str {
-    use crate::{integer::MatPolyOverZ, traits::GetEntry};
+    use crate::{integer::MatPolyOverZ, traits::MatrixGetEntry};
     use std::str::FromStr;
 
     /// Ensure that initialization works.

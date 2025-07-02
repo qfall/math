@@ -35,7 +35,7 @@ impl Q {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`NonPositive`](MathError::NonPositive)
-    ///     if `sigma <= 0`.
+    ///   if `sigma <= 0`.
     pub fn sample_gauss(center: impl Into<Q>, sigma: impl Into<f64>) -> Result<Q, MathError> {
         let center = center.into();
         let sigma = sigma.into();
@@ -66,9 +66,7 @@ mod test_sample_gauss {
     fn in_concentration_bound() {
         let range = 3;
         for (mu, sigma) in [(i64::MAX, 1), (0, 20), (i64::MIN, 100)] {
-            assert!(
-                Q::from(range * sigma) >= (Q::from(mu) - Q::sample_gauss(mu, sigma).unwrap()).abs()
-            )
+            assert!(range * sigma >= (Q::from(mu) - Q::sample_gauss(mu, sigma).unwrap()).abs())
         }
     }
 

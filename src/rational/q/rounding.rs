@@ -93,11 +93,11 @@ impl Q {
     /// arithmetic operations and can be significantly increased depending on the
     /// performed operations.
     ///
-    /// This function ensures that there is no sign change.
+    /// This function ensures that simplifying does not change the sign of `self`.
     ///
     /// Parameters:
     /// - `precision`: the precision the new value can differ from `self`.
-    ///     Note that the absolute value is relevant, not the sign.
+    ///   Note that the absolute value is relevant, not the sign.
     ///
     /// Returns the simplest [`Q`] within the defined range.
     ///
@@ -155,7 +155,7 @@ impl Q {
     /// Parameters:
     /// - `n`: the security parameter; also specifies the range from which is sampled
     /// - `r`: specifies the Gaussian parameter, which is proportional
-    ///     to the standard deviation `sigma * sqrt(2 * pi) = r`
+    ///   to the standard deviation `sigma * sqrt(2 * pi) = r`
     ///
     /// Returns the rounded value as an [`Z`] or an error if `n <= 1` or `r <= 0`.
     ///
@@ -169,13 +169,13 @@ impl Q {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if `n <= 1` or `r <= 0`.
+    ///   if `n <= 1` or `r <= 0`.
     ///
     /// This function implements randomized rounding according to:
     /// - Peikert, C. (2010, August).
-    ///     An efficient and parallel Gaussian sampler for lattices.
-    ///     In: Annual Cryptology Conference (pp. 80-97).
-    ///     <https://link.springer.com/chapter/10.1007/978-3-642-14623-7_5>
+    ///   An efficient and parallel Gaussian sampler for lattices.
+    ///   In: Annual Cryptology Conference (pp. 80-97).
+    ///   <https://link.springer.com/chapter/10.1007/978-3-642-14623-7_5>
     pub fn randomized_rounding(&self, r: impl Into<Q>, n: impl Into<Z>) -> Result<Z, MathError> {
         Z::sample_discrete_gauss(n, self, r)
     }
@@ -290,7 +290,7 @@ mod test_simplify {
 
         let simplified = value.simplify(&precision);
         assert!(&value - &precision <= simplified && simplified <= &value + &precision);
-        assert!(Q::from((i64::MAX - 2, i64::MAX)) <= simplified && simplified <= 1.into());
+        assert!(Q::from((i64::MAX - 2, i64::MAX)) <= simplified && simplified <= 1);
     }
 
     /// Ensure max_bits of denominator are not bigger than 1/2 * precision

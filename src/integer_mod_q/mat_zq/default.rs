@@ -86,7 +86,7 @@ impl MatZq {
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns or the modulus are not suited to create a matrix.
-    ///     For further information see [`MatZq::new`].
+    ///   For further information see [`MatZq::new`].
     pub fn identity(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
@@ -100,7 +100,7 @@ impl MatZq {
 
 #[cfg(test)]
 mod test_identity {
-    use crate::{integer::Z, integer_mod_q::MatZq, traits::GetEntry};
+    use crate::{integer::Z, integer_mod_q::MatZq, traits::MatrixGetEntry};
 
     /// Tests if an identity matrix is set from a zero matrix.
     #[test]
@@ -176,7 +176,7 @@ mod test_identity {
 
 #[cfg(test)]
 mod test_new {
-    use crate::{integer::Z, integer_mod_q::MatZq, traits::GetEntry};
+    use crate::{integer::Z, integer_mod_q::MatZq, traits::MatrixGetEntry};
 
     /// Ensure that initialization works.
     #[test]

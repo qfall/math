@@ -11,7 +11,8 @@
 use super::Z;
 use crate::traits::AsInteger;
 use flint_sys::fmpz::{
-    fmpz, fmpz_abs, fmpz_cmpabs, fmpz_init_set_si, fmpz_init_set_ui, fmpz_set, fmpz_sub, fmpz_swap,
+    fmpz, fmpz_abs, fmpz_cmpabs, fmpz_init_set, fmpz_init_set_si, fmpz_init_set_ui, fmpz_sub,
+    fmpz_swap,
 };
 
 /// Efficiently finds maximum absolute value and returns
@@ -53,7 +54,7 @@ pub(crate) fn find_max_abs(fmpz_vector: &Vec<fmpz>) -> Z {
 ///
 /// Parameters:
 /// - `other`: specifies the [`fmpz`] value whose distance
-///     is calculated to `self`
+///   is calculated to `self`
 ///
 /// Returns the absolute difference, i.e. distance between the two given [`fmpz`]
 /// instances as a new [`fmpz`] instance.
@@ -138,7 +139,7 @@ unsafe impl AsInteger for &Z {
     /// Documentation at [`AsInteger::into_fmpz`]
     unsafe fn into_fmpz(self) -> fmpz {
         let mut value = fmpz(0);
-        fmpz_set(&mut value, &self.value);
+        fmpz_init_set(&mut value, &self.value);
         value
     }
 
@@ -164,7 +165,7 @@ unsafe impl AsInteger for &fmpz {
     /// Documentation at [`AsInteger::into_fmpz`]
     unsafe fn into_fmpz(self) -> fmpz {
         let mut value = fmpz(0);
-        fmpz_set(&mut value, self);
+        fmpz_init_set(&mut value, self);
         value
     }
 

@@ -12,7 +12,7 @@ use crate::{
     error::MathError,
     integer::{MatZ, Z},
     rational::{MatQ, Q},
-    traits::{GetNumColumns, GetNumRows, SetEntry},
+    traits::{MatrixDimensions, MatrixSetEntry},
     utils::sample::discrete_gauss::{
         sample_d, sample_d_precomputed_gso, DiscreteGaussianIntegerSampler,
     },
@@ -30,7 +30,7 @@ impl MatZ {
     /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
     /// - `center`: specifies the positions of the center with peak probability
     /// - `s`: specifies the Gaussian parameter, which is proportional
-    ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
+    ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a matrix with each entry sampled independently from the
     /// specified discrete Gaussian distribution or an error if `n <= 1` or `s <= 0` or `s * log_2(n) < 1`.
@@ -44,11 +44,11 @@ impl MatZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if `n <= 1` or `s <= 0`.
+    ///   if `n <= 1` or `s <= 0`.
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    ///     For further information see [`MatZ::new`].
+    ///   For further information see [`MatZ::new`].
     pub fn sample_discrete_gauss(
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
@@ -66,7 +66,7 @@ impl MatZ {
         for row in 0..out.get_num_rows() {
             for col in 0..out.get_num_columns() {
                 let sample = dgis.sample_z();
-                out.set_entry(row, col, sample)?;
+                unsafe { out.set_entry_unchecked(row, col, sample) };
             }
         }
 
@@ -83,7 +83,7 @@ impl MatZ {
     /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
     /// - `center`: specifies the positions of the center with peak probability
     /// - `s`: specifies the Gaussian parameter, which is proportional
-    ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
+    ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a lattice vector sampled according to the discrete Gaussian distribution
     /// or an error if `n <= 1` or `s <= 0`, the number of rows of the `basis` and `center` differ,
@@ -100,17 +100,17 @@ impl MatZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if `n <= 1` or `s <= 0`.
+    ///   if `n <= 1` or `s <= 0`.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the number of rows of the `basis` and `center` differ.
+    ///   if the number of rows of the `basis` and `center` differ.
     /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
-    ///     if `center` is not a column vector.
+    ///   if `center` is not a column vector.
     ///
     /// This function implements SampleD according to:
     /// - \[1\] Gentry, Craig and Peikert, Chris and Vaikuntanathan, Vinod (2008).
-    ///     Trapdoors for hard lattices and new cryptographic constructions.
-    ///     In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
-    ///     <https://dl.acm.org/doi/pdf/10.1145/1374376.1374407>
+    ///   Trapdoors for hard lattices and new cryptographic constructions.
+    ///   In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
+    ///   <https://dl.acm.org/doi/pdf/10.1145/1374376.1374407>
     pub fn sample_d(
         basis: &MatZ,
         n: impl Into<Z>,
@@ -128,17 +128,17 @@ impl MatZ {
     ///
     /// Parameters:
     /// - `dimension`: specifies the number of rows and columns
-    ///     that the identity basis should have
+    ///   that the identity basis should have
     /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
     /// - `s`: specifies the Gaussian parameter, which is proportional
-    ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
+    ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a lattice vector sampled according to the discrete Gaussian distribution.
     /// The lattice specified as `Z^m` for `m = dimension` and its center fixed to `0^m`.
     ///
     /// # Panics ...
     /// - if the provided `dimension` is not suited to create a matrix.
-    ///     For further information see [`MatZ::new`].
+    ///   For further information see [`MatZ::new`].
     pub fn sample_d_common(
         dimension: impl TryInto<i64> + Display + Clone,
         n: impl Into<Z>,
@@ -156,10 +156,10 @@ impl MatZ {
     /// Parameters:
     /// - `n`: specifies the range from which [`MatQ::randomized_rounding`] samples
     /// - `sigma_sqrt`: specifies the positive definite Gaussian convolution matrix
-    ///     with which the *intermediate* continuous Gaussian is sampled before
-    ///     the randomized rounding is applied. Here `sigma_sqrt = sqrt(sigma^2 - r^2*I)`
-    ///     where sigma is the target convolution matrix. The root can be computed using
-    ///     the [`MatQ::cholesky_decomposition`].
+    ///   with which the *intermediate* continuous Gaussian is sampled before
+    ///   the randomized rounding is applied. Here `sigma_sqrt = sqrt(sigma^2 - r^2*I)`
+    ///   where sigma is the target convolution matrix. The root can be computed using
+    ///   the [`MatQ::cholesky_decomposition`].
     /// - `r`: specifies the rounding parameter for [`MatQ::randomized_rounding`].
     ///
     /// Returns a lattice vector sampled according to the discrete Gaussian distribution.
@@ -181,16 +181,16 @@ impl MatZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if the `n <= 1` or `r <= 0`.
+    ///   if the `n <= 1` or `r <= 0`.
     /// - Returns a [`MathError`] of type [`NoSquareMatrix`](MathError::NoSquareMatrix)
-    ///     if the matrix is not symmetric.
+    ///   if the matrix is not symmetric.
     ///
     /// This function implements SampleD according to Algorithm 1. in \[2\].
     /// - \[2\] Peikert, Chris.
-    ///     "An efficient and parallel Gaussian sampler for lattices.
-    ///     In Annual Cryptology Conference, pp. 80-97. Berlin, Heidelberg: Springer
-    ///     Berlin Heidelberg, 2010.
-    ///     <https://link.springer.com/chapter/10.1007/978-3-642-14623-7_5>
+    ///   "An efficient and parallel Gaussian sampler for lattices.
+    ///   In Annual Cryptology Conference, pp. 80-97. Berlin, Heidelberg: Springer
+    ///   Berlin Heidelberg, 2010.
+    ///   <https://link.springer.com/chapter/10.1007/978-3-642-14623-7_5>
     pub fn sample_d_common_non_spherical(
         n: impl Into<Z>,
         sigma_sqrt: &MatQ,
@@ -225,7 +225,7 @@ impl MatZ {
     /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
     /// - `center`: specifies the positions of the center with peak probability
     /// - `s`: specifies the Gaussian parameter, which is proportional
-    ///     to the standard deviation `sigma * sqrt(2 * pi) = s`
+    ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a lattice vector sampled according to the discrete Gaussian distribution
     /// or an error if `n <= 1` or `s <= 0`, the number of rows of the `basis` and `center` differ,
@@ -243,20 +243,20 @@ impl MatZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if `n <= 1` or `s <= 0`.
+    ///   if `n <= 1` or `s <= 0`.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the number of rows of the `basis` and `center` differ.
+    ///   if the number of rows of the `basis` and `center` differ.
     /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
-    ///     if `center` is not a column vector.
+    ///   if `center` is not a column vector.
     ///
     /// # Panics ...
     /// - if the number of rows/columns of `basis_gso` and `basis` mismatch.
     ///
     /// This function implements SampleD according to:
     /// - \[1\] Gentry, Craig and Peikert, Chris and Vaikuntanathan, Vinod (2008).
-    ///     Trapdoors for hard lattices and new cryptographic constructions.
-    ///     In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
-    ///     <https://dl.acm.org/doi/pdf/10.1145/1374376.1374407>
+    ///   Trapdoors for hard lattices and new cryptographic constructions.
+    ///   In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
+    ///   <https://dl.acm.org/doi/pdf/10.1145/1374376.1374407>
     pub fn sample_d_precomputed_gso(
         basis: &MatZ,
         basis_gso: &MatQ,
@@ -383,7 +383,7 @@ mod test_sample_d_common_non_spherical {
     use crate::{
         integer::{MatZ, Z},
         rational::{MatQ, Q},
-        traits::{GetNumRows, Pow},
+        traits::{MatrixDimensions, Pow},
     };
     use std::str::FromStr;
 

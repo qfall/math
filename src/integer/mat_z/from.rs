@@ -14,7 +14,7 @@ use super::MatZ;
 use crate::{
     error::MathError,
     integer::Z,
-    traits::{GetNumColumns, GetNumRows, SetEntry},
+    traits::{MatrixDimensions, MatrixSetEntry},
     utils::{
         dimensions::find_matrix_dimensions,
         index::evaluate_indices,
@@ -30,8 +30,8 @@ impl FromStr for MatZ {
     ///
     /// Parameters:
     /// - `string`: the matrix of form: `"[[1, 2, 3],[4, 5, 6]]"`
-    ///     for a 2x3 matrix with entries 1, 2, 3 in the first row and 4, 5, 6
-    ///     in the second row.
+    ///   for a 2x3 matrix with entries 1, 2, 3 in the first row and 4, 5, 6
+    ///   in the second row.
     ///
     /// Returns a [`MatZ`] or an error if the matrix is not formatted in a suitable way,
     /// the number of rows or columns is too large (must fit into [`i64`]),
@@ -52,11 +52,11 @@ impl FromStr for MatZ {
     ///     - if the number of rows or columns is too large (must fit into i64),
     ///     - if the number of entries in rows is unequal, or
     ///     - if an entry is not formatted correctly.
-    ///         For further information see [`Z::from_str`].
+    ///       For further information see [`Z::from_str`].
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    ///     For further information see [`MatZ::new`].
+    ///   For further information see [`MatZ::new`].
     fn from_str(string: &str) -> Result<Self, MathError> {
         let string_matrix = parse_matrix_string(string)?;
         let (num_rows, num_cols) = find_matrix_dimensions(&string_matrix)?;
@@ -85,7 +85,7 @@ impl MatZ {
     /// This function can only construct positive or zero integers, but not negative ones.
     /// If the number of bytes and number of entries does not line up, we pad the message
     /// with `'0'`s.
-    /// The inverse of this function is [`Z::to_utf8`].
+    /// The inverse of this function is [`MatZ::to_utf8`].
     ///
     /// Parameters:
     /// - `message`: specifies the message that is transformed via its UTF8-Encoding
@@ -100,12 +100,12 @@ impl MatZ {
     /// use qfall_math::integer::MatZ;
     /// let message = "hello!";
     ///  
-    /// let value = MatZ::from_utf8(&message, 2, 1);
+    /// let matrix = MatZ::from_utf8(&message, 2, 1);
     /// ```
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    ///     For further information see [`MatZ::new`].
+    ///   For further information see [`MatZ::new`].
     pub fn from_utf8(
         message: &str,
         num_rows: impl TryInto<i64> + Display,
@@ -117,8 +117,7 @@ impl MatZ {
         let nr_entries = mat.get_num_rows() as usize * num_columns;
 
         // This error can't be triggered as no modulus is provided.
-        let (byte_vector, nr_bytes_per_entry) =
-            matrix_from_utf8_fill_bytes(message, nr_entries, None).unwrap();
+        let (byte_vector, nr_bytes_per_entry) = matrix_from_utf8_fill_bytes(message, nr_entries);
 
         // Fill rows going from left to right, entry by entry
         for row in 0..mat.get_num_rows() as usize {
@@ -128,7 +127,7 @@ impl MatZ {
                     &byte_vector[offset_row + nr_bytes_per_entry * col
                         ..offset_row + nr_bytes_per_entry * (col + 1)],
                 );
-                mat.set_entry(row, col, entry_value).unwrap();
+                unsafe { mat.set_entry_unchecked(row as i64, col as i64, entry_value) };
             }
         }
 
@@ -140,7 +139,7 @@ impl MatZ {
 mod test_from_str {
     use crate::{
         integer::{MatZ, Z},
-        traits::GetEntry,
+        traits::MatrixGetEntry,
     };
     use std::str::FromStr;
 
@@ -227,7 +226,7 @@ mod test_from_str {
 /// and [`crate::utils::parse::matrix_from_utf8_fill_bytes`].
 mod test_from_utf8 {
     use super::{MatZ, Z};
-    use crate::traits::GetEntry;
+    use crate::traits::MatrixGetEntry;
     use std::str::FromStr;
 
     /// Ensures that a wide range of (special) characters are transformed correctly.
@@ -240,7 +239,7 @@ mod test_from_utf8 {
 
         // easy trick s.t. we don't have to initialize a huge [`Z`] value
         // while this test should still fail if the value changes
-        let value_zq = value.modulo(65537);
+        let value_zq = value % 65537;
 
         assert_eq!(Z::from(58285), value_zq);
     }

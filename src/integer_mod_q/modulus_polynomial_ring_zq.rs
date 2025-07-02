@@ -23,13 +23,14 @@ mod ntt_basis;
 mod ownership;
 mod serialize;
 mod to_string;
+mod unsafe_functions;
 
 /// [`ModulusPolynomialRingZq`] represents the modulus object for
 /// [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq)
 ///
 /// Attributes
 /// - `modulus`: holds the specific content, i.e. the modulus `q` and f(X); it
-///     holds [FLINT](https://flintlib.org/)'s [struct](fq_ctx_struct)
+///   holds [FLINT](https://flintlib.org/)'s [struct](fq_ctx_struct)
 ///
 /// # Examples
 /// ```

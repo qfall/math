@@ -23,6 +23,7 @@ mod default;
 mod from;
 mod get;
 mod inverse;
+mod norm;
 mod ownership;
 mod properties;
 mod sample;
@@ -34,13 +35,14 @@ mod tensor;
 mod to_string;
 mod trace;
 mod transpose;
+mod unsafe_functions;
 mod vector;
 
 /// [`MatZq`] is a matrix with entries of type [`Zq`](crate::integer_mod_q::Zq).
 ///
 /// Attributes:
 /// - `matrix`: holds [FLINT](https://flintlib.org/)'s [struct](fmpz_mod_mat_struct)
-///     of the [`Zq`](crate::integer_mod_q::Zq) matrix
+///   of the [`Zq`](crate::integer_mod_q::Zq) matrix
 ///
 /// # Examples
 /// ## Matrix usage
@@ -48,7 +50,7 @@ mod vector;
 /// use qfall_math::{
 ///     integer::Z,
 ///     integer_mod_q::MatZq,
-///     traits::{GetEntry, SetEntry},
+///     traits::{MatrixGetEntry, MatrixSetEntry},
 /// };
 /// use std::str::FromStr;
 ///

@@ -11,7 +11,7 @@
 use super::MatPolyOverZ;
 use crate::{
     error::MathError,
-    traits::{Concatenate, GetNumColumns, GetNumRows},
+    traits::{Concatenate, MatrixDimensions},
 };
 use flint_sys::fmpz_poly_mat::{fmpz_poly_mat_concat_horizontal, fmpz_poly_mat_concat_vertical};
 
@@ -39,8 +39,8 @@ impl Concatenate for &MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the matrices can not be concatenated due to mismatching dimensions.
+    ///   [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
+    ///   if the matrices can not be concatenated due to mismatching dimensions.
     fn concat_vertical(self, other: Self) -> Result<Self::Output, crate::error::MathError> {
         if self.get_num_columns() != other.get_num_columns() {
             return Err(MathError::MismatchingMatrixDimension(format!(
@@ -82,8 +82,8 @@ impl Concatenate for &MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the matrices can not be concatenated due to mismatching dimensions.
+    ///   [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
+    ///   if the matrices can not be concatenated due to mismatching dimensions.
     fn concat_horizontal(self, other: Self) -> Result<Self::Output, crate::error::MathError> {
         if self.get_num_rows() != other.get_num_rows() {
             return Err(MathError::MismatchingMatrixDimension(format!(
@@ -109,7 +109,7 @@ impl Concatenate for &MatPolyOverZ {
 mod test_concatenate {
     use crate::{
         integer::MatPolyOverZ,
-        traits::{Concatenate, GetNumColumns, GetNumRows},
+        traits::{Concatenate, MatrixDimensions},
     };
     use std::str::FromStr;
 

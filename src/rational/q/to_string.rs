@@ -83,6 +83,117 @@ impl fmt::Display for Q {
     }
 }
 
+impl Q {
+    /// Outputs the decimal representation of a [`Q`] with
+    /// the specified number of decimal digits.
+    /// If `self` can't be represented exactly, it provides the
+    /// closest value representable with `nr_decimal_digits` rounded
+    /// towards the next representable number.
+    ///
+    /// Notice that, e.g., `0.5` is represented as `0.499...` as [`f64`].
+    /// Therefore, rounding with `nr_decimal_digits = 0` will output `0`.
+    ///
+    /// **WARNING:** This function converts the [`Q`] value into an [`f64`] before
+    /// outputting the decimal representation. Thus, values that can't be represented exactly
+    /// by an [`f64`] will lose some precision. For large values, e.g. of size `2^64`
+    /// the deviation to the original value might be within the size of `1_000`.
+    ///
+    /// Parameters:
+    /// - `nr_decimal_digits`: specifies the number of decimal digits
+    ///   that will be a part of the output [`String`]
+    ///
+    /// Returns a [`String`] of the form `"10.25"` if `nr_decimal_digits = 2`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::Q;
+    /// use std::str::FromStr;
+    /// let rational = Q::from_str("6/7").unwrap();
+    ///
+    /// let decimal_repr = rational.to_string_decimal(3);
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if `self` can't be represented as an [`f64`].
+    pub fn to_string_decimal(&self, nr_decimal_digits: usize) -> String {
+        let value = f64::from(self);
+        format!("{:.1$}", value, nr_decimal_digits)
+    }
+}
+
+#[cfg(test)]
+mod test_to_string_decimal {
+    use super::Q;
+
+    /// Ensures that [`Q::to_string_decimal`] works for integer values as intended.
+    #[test]
+    fn integer() {
+        let a = Q::from((5, 1));
+        let b = Q::from((256, 8));
+        let c = Q::from((-1, 1));
+
+        let a_0 = a.to_string_decimal(0);
+        let a_1 = a.to_string_decimal(1);
+        let a_2 = a.to_string_decimal(2);
+        let b_0 = b.to_string_decimal(0);
+        let b_1 = b.to_string_decimal(1);
+        let b_5 = b.to_string_decimal(5);
+        let c_0 = c.to_string_decimal(0);
+        let c_1 = c.to_string_decimal(1);
+        let c_2 = c.to_string_decimal(2);
+
+        assert_eq!("5", a_0);
+        assert_eq!("5.0", a_1);
+        assert_eq!("5.00", a_2);
+        assert_eq!("32", b_0);
+        assert_eq!("32.0", b_1);
+        assert_eq!("32.00000", b_5);
+        assert_eq!("-1", c_0);
+        assert_eq!("-1.0", c_1);
+        assert_eq!("-1.00", c_2);
+    }
+
+    /// Ensures that [`Q::to_string_decimal`] works for rational / non-integer values as intended.
+    #[test]
+    fn non_integer() {
+        let a = Q::from((2, 3));
+        let b = Q::from((21, 2));
+        let c = Q::from((-1, 3));
+
+        let a_0 = a.to_string_decimal(0);
+        let a_1 = a.to_string_decimal(1);
+        let a_2 = a.to_string_decimal(2);
+        let b_0 = b.to_string_decimal(0);
+        let b_1 = b.to_string_decimal(1);
+        let b_2 = b.to_string_decimal(2);
+        let c_0 = c.to_string_decimal(0);
+        let c_1 = c.to_string_decimal(1);
+        let c_2 = c.to_string_decimal(2);
+
+        assert_eq!("1", a_0);
+        assert_eq!("0.7", a_1);
+        assert_eq!("0.67", a_2);
+        assert_eq!("10", b_0);
+        assert_eq!("10.5", b_1);
+        assert_eq!("10.50", b_2);
+        assert_eq!("-0", c_0);
+        assert_eq!("-0.3", c_1);
+        assert_eq!("-0.33", c_2);
+    }
+
+    /// Ensures that [`Q::to_string_decimal`] works for large numbers.
+    #[test]
+    fn large_number() {
+        let a = Q::from((i64::MAX, 1));
+
+        let a_0 = a.to_string_decimal(0);
+        let a_1 = a.to_string_decimal(1);
+
+        assert_eq!("9223372036854774784", a_0); // deviation of 1023 from original value
+        assert_eq!("9223372036854774784.0", a_1);
+    }
+}
+
 #[cfg(test)]
 mod test_to_string {
     use crate::rational::Q;

@@ -233,7 +233,7 @@ impl From<&ModulusPolynomialRingZq> for PolyOverZq {
         unsafe {
             fmpz_mod_poly_set(
                 &mut out.poly,
-                &modulus.get_fq_ctx_struct().modulus[0],
+                &modulus.get_fq_ctx().modulus[0],
                 out.modulus.get_fmpz_mod_ctx_struct(),
             )
         };
@@ -261,7 +261,7 @@ impl FromStr for PolyOverZq {
     ///
     /// Parameters:
     /// - `s`: the polynomial of form:
-    ///     `"[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴...⌴mod⌴[modulus]"`.
+    ///   `"[#number of coefficients]⌴⌴[0th coefficient]⌴[1st coefficient]⌴...⌴mod⌴[modulus]"`.
     ///
     /// Note that the `[#number of coefficients]` and `[0th coefficient]`
     /// are divided by two spaces and the string for the polynomial is trimmed,
@@ -280,18 +280,18 @@ impl FromStr for PolyOverZq {
     /// ```
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`StringConversionError`](MathError::StringConversionError)
+    ///   [`StringConversionError`](MathError::StringConversionError)
     ///     - if the provided first half of the string was not formatted correctly to
-    ///         create a [`PolyOverZ`],
+    ///       create a [`PolyOverZ`],
     ///     - if the provided second half of the
-    ///         string was not formatted correctly to create a [`Modulus`],
+    ///       string was not formatted correctly to create a [`Modulus`],
     ///     - if the number of coefficients was smaller than the number provided
-    ///         at the start of the provided string,
+    ///       at the start of the provided string,
     ///     - if the provided value did not contain two whitespaces, or
     ///     - if the delimiter `mod` could not be found.
     /// - Returns a [`MathError`] of type
-    ///     [`InvalidModulus`](MathError::InvalidModulus)
-    ///     if `modulus` is smaller than `2`.
+    ///   [`InvalidModulus`](MathError::InvalidModulus)
+    ///   if `modulus` is smaller than `2`.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (poly_s, modulus) = match s.split_once("mod") {
             Some((poly_s, modulus)) => (poly_s, modulus.trim()),

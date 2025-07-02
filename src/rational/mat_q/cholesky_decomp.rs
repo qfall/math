@@ -12,7 +12,10 @@
 use super::MatQ;
 use crate::{
     rational::Q,
-    traits::{Concatenate, GetEntry, GetNumColumns, GetNumRows, SetEntry},
+    traits::{
+        Concatenate, MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix, MatrixSetEntry,
+        MatrixSetSubmatrix,
+    },
 };
 
 impl MatQ {
@@ -48,14 +51,12 @@ impl MatQ {
 
         for i in 0..n {
             // get first entry and ith column
-            let a_ii = a.get_entry(0, 0).unwrap();
+            let a_ii = unsafe { a.get_entry_unchecked(0, 0) };
             assert!(a_ii > Q::ZERO, "The matrix is not positive-definite.");
             let column_a_i = match i {
-                0 => a.get_column(0).unwrap(),
-                _ => MatQ::new(i, 1)
-                    .get_column(0)
-                    .unwrap()
-                    .concat_vertical(&a.get_column(0).unwrap())
+                0 => unsafe { a.get_column_unchecked(0) },
+                _ => unsafe { MatQ::new(i, 1).get_column_unchecked(0) }
+                    .concat_vertical(&unsafe { a.get_column_unchecked(0) })
                     .unwrap(),
             } * (1 / (a_ii.sqrt()));
             // in the previous line: sqrt panics if `a_ii` is negative, i.e. if an
@@ -63,7 +64,7 @@ impl MatQ {
 
             // produce L matrix recursively
             let mut l_i = MatQ::identity(n, n);
-            l_i.set_column(i, &column_a_i, 0).unwrap();
+            unsafe { l_i.set_column_unchecked(i, &column_a_i, 0) };
             l = l * l_i;
 
             // update matrix A recursively
@@ -112,15 +113,7 @@ impl MatQ {
         let mat_dimension = self.get_num_rows() as usize;
 
         let mut out = vec![vec![0.0; mat_dimension]; mat_dimension];
-        let mut mat = vec![vec![0.0; mat_dimension]; mat_dimension];
-
-        // extract `self` into a vector of vectors of `f64` values
-        // to avoid memory allocation and freeing during runtime
-        for (i, row) in mat.iter_mut().enumerate().take(mat_dimension) {
-            for (j, entry) in row.iter_mut().enumerate().take(mat_dimension) {
-                *entry = f64::from(&self.get_entry(i, j).unwrap());
-            }
-        }
+        let mat = self.collect_entries_f64();
 
         // This code snippet originates from [flint](https://github.com/flintlib/flint/blob/main/src/fmpz_mat/chol_d.c)
         // it is not part of [flint-sys] as it requires a specific data-type `d_mat_t`
@@ -149,7 +142,7 @@ impl MatQ {
         let mut res = MatQ::new(mat_dimension, mat_dimension);
         for (i, row) in out.iter().enumerate().take(mat_dimension) {
             for (j, entry) in row.iter().enumerate().take(mat_dimension) {
-                res.set_entry(i, j, *entry).unwrap();
+                unsafe { res.set_entry_unchecked(i as i64, j as i64, *entry) };
             }
         }
 
@@ -161,7 +154,7 @@ impl MatQ {
 mod test_cholesky_decomposition {
     use crate::{
         rational::{MatQ, Q},
-        traits::SetEntry,
+        traits::MatrixSetEntry,
     };
     use std::str::FromStr;
 
@@ -227,7 +220,7 @@ mod test_cholesky_decomposition {
 mod test_cholesky_decomposition_flint {
     use crate::{
         rational::{MatQ, Q},
-        traits::SetEntry,
+        traits::MatrixSetEntry,
     };
     use std::str::FromStr;
 

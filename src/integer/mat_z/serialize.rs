@@ -82,7 +82,7 @@ mod test_deserialize {
         let cmp_str = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
 
         let mat_poly_z = MatZ::from_str(mat_poly_str).unwrap();
-        assert_eq!(mat_poly_z, serde_json::from_str(&cmp_str).unwrap());
+        assert_eq!(mat_poly_z, serde_json::from_str::<MatZ>(&cmp_str).unwrap());
     }
 
     /// Tests whether the deserialization of a negative [`MatZ`] works.
@@ -92,7 +92,7 @@ mod test_deserialize {
         let cmp_str = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
 
         let mat_poly_z = MatZ::from_str(mat_poly_str).unwrap();
-        assert_eq!(mat_poly_z, serde_json::from_str(&cmp_str).unwrap());
+        assert_eq!(mat_poly_z, serde_json::from_str::<MatZ>(&cmp_str).unwrap());
     }
 
     /// Tests whether the deserialization of a positive large [`MatZ`] works.
@@ -102,7 +102,7 @@ mod test_deserialize {
         let cmp_str = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
 
         let mat_poly_z = MatZ::from_str(&mat_poly_str).unwrap();
-        assert_eq!(mat_poly_z, serde_json::from_str(&cmp_str).unwrap());
+        assert_eq!(mat_poly_z, serde_json::from_str::<MatZ>(&cmp_str).unwrap());
     }
 
     /// Tests whether the deserialization of a negative large [`MatZ`] works.
@@ -112,7 +112,7 @@ mod test_deserialize {
         let cmp_str = format!("{{\"matrix\":\"{mat_poly_str}\"}}");
 
         let mat_poly_z = MatZ::from_str(&mat_poly_str).unwrap();
-        assert_eq!(mat_poly_z, serde_json::from_str(&cmp_str).unwrap());
+        assert_eq!(mat_poly_z, serde_json::from_str::<MatZ>(&cmp_str).unwrap());
     }
 
     /// Tests whether no fields 'matrix' provided yield an error

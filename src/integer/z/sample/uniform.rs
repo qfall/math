@@ -8,7 +8,7 @@
 
 //! This module contains algorithms for sampling according to the uniform distribution.
 
-use crate::{error::MathError, integer::Z, utils::sample::uniform::sample_uniform_rejection};
+use crate::{error::MathError, integer::Z, utils::sample::uniform::UniformIntegerSampler};
 
 impl Z {
     /// Chooses a [`Z`] instance uniformly at random
@@ -20,9 +20,9 @@ impl Z {
     ///
     /// Parameters:
     /// - `lower_bound`: specifies the included lower bound of the
-    ///     interval over which is sampled
+    ///   interval over which is sampled
     /// - `upper_bound`: specifies the excluded upper bound of the
-    ///     interval over which is sampled
+    ///   interval over which is sampled
     ///
     /// Returns a fresh [`Z`] instance with a
     /// uniform random value in `[lower_bound, upper_bound)` or a [`MathError`]
@@ -37,8 +37,8 @@ impl Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    ///     if the given `upper_bound` isn't at least larger than `lower_bound + 1`,
-    ///     i.e. the interval size is at most `1`.
+    ///   if the given `upper_bound` isn't at least larger than `lower_bound + 1`,
+    ///   i.e. the interval size is at most `1`.
     pub fn sample_uniform(
         lower_bound: impl Into<Z>,
         upper_bound: impl Into<Z>,
@@ -47,7 +47,9 @@ impl Z {
         let upper_bound: Z = upper_bound.into();
 
         let interval_size = &upper_bound - &lower_bound;
-        let sample = sample_uniform_rejection(&interval_size)?;
+        let mut uis = UniformIntegerSampler::init(&interval_size)?;
+
+        let sample = uis.sample();
         Ok(&lower_bound + sample)
     }
 
@@ -61,9 +63,9 @@ impl Z {
     ///
     /// Parameters:
     /// - `lower_bound`: specifies the included lower bound of the
-    ///     interval over which is sampled
+    ///   interval over which is sampled
     /// - `upper_bound`: specifies the excluded upper bound of the
-    ///     interval over which is sampled
+    ///   interval over which is sampled
     ///
     /// Returns a fresh [`Z`] instance with a
     /// uniform random value in `[lower_bound, upper_bound)`. Otherwise, a [`MathError`]
@@ -79,10 +81,10 @@ impl Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    ///     if the given `upper_bound` isn't at least larger than `lower_bound + 1`,
-    ///     i.e. the interval size is at most `1`, or if no prime could be found in the specified interval.
+    ///   if the given `upper_bound` isn't at least larger than `lower_bound + 1`,
+    ///   i.e. the interval size is at most `1`, or if no prime could be found in the specified interval.
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if `lower_bound` is negative as primes are always positive.
+    ///   if `lower_bound` is negative as primes are always positive.
     pub fn sample_prime_uniform(
         lower_bound: impl Into<Z>,
         upper_bound: impl Into<Z>,
@@ -97,7 +99,8 @@ impl Z {
         }
 
         let interval_size = &upper_bound - &lower_bound;
-        let mut sample = &lower_bound + sample_uniform_rejection(&interval_size)?;
+        let mut uis = UniformIntegerSampler::init(&interval_size)?;
+        let mut sample = &lower_bound + uis.sample();
 
         // after 2 * size of interval many uniform random samples, a suitable prime should have been
         // found with high probability, if there is one prime in the interval
@@ -109,8 +112,8 @@ impl Z {
                         no prime was found. It is very likely, that no prime exists in this interval.
                         Please choose the interval larger.")));
             }
-            sample = &lower_bound + sample_uniform_rejection(&interval_size)?;
-            steps = steps - 1;
+            sample = &lower_bound + uis.sample();
+            steps -= 1;
         }
 
         Ok(sample)

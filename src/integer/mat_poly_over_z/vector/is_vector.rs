@@ -13,7 +13,7 @@
 //! can only be called on suitably formed vector/matrices.
 
 use super::super::MatPolyOverZ;
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::MatrixDimensions;
 
 impl MatPolyOverZ {
     /// Returns `true` if the provided [`MatPolyOverZ`] has only one row,

@@ -12,6 +12,7 @@ use super::super::Z;
 use crate::{
     integer_mod_q::Zq,
     macros::arithmetics::{
+        arithmetic_assign_between_types, arithmetic_assign_trait_borrowed_to_owned,
         arithmetic_between_types, arithmetic_trait_borrowed_to_owned,
         arithmetic_trait_mixed_borrowed_owned,
     },
@@ -19,10 +20,53 @@ use crate::{
 };
 use flint_sys::{
     fmpq::{fmpq, fmpq_set_fmpz_frac, fmpq_sub},
-    fmpz::{fmpz, fmpz_sub},
+    fmpz::{fmpz, fmpz_sub, fmpz_sub_si, fmpz_sub_ui},
     fmpz_mod::fmpz_mod_sub_fmpz,
 };
-use std::ops::Sub;
+use std::ops::{Sub, SubAssign};
+
+impl SubAssign<&Z> for Z {
+    /// Computes the subtraction of `self` and `other` reusing
+    /// the memory of `self`.
+    /// [`SubAssign`] can be used on [`Z`] in combination with
+    /// [`Z`], [`i64`], [`i32`], [`i16`], [`i8`], [`u64`], [`u32`], [`u16`] and [`u8`].
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to subtract from `self`
+    ///
+    /// Returns the difference of both numbers as a [`Z`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    ///
+    /// let mut a: Z = Z::from(42);
+    /// let b: Z = Z::from(24);
+    ///
+    /// a -= &b;
+    /// a -= b;
+    /// a -= 5;
+    /// ```
+    fn sub_assign(&mut self, other: &Self) {
+        unsafe { fmpz_sub(&mut self.value, &self.value, &other.value) };
+    }
+}
+impl SubAssign<i64> for Z {
+    /// Documentation at [`Z::sub_assign`].
+    fn sub_assign(&mut self, other: i64) {
+        unsafe { fmpz_sub_si(&mut self.value, &self.value, other) };
+    }
+}
+impl SubAssign<u64> for Z {
+    /// Documentation at [`Z::sub_assign`].
+    fn sub_assign(&mut self, other: u64) {
+        unsafe { fmpz_sub_ui(&mut self.value, &self.value, other) };
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(SubAssign, sub_assign, Z, Z);
+arithmetic_assign_between_types!(SubAssign, sub_assign, Z, i64, i32 i16 i8);
+arithmetic_assign_between_types!(SubAssign, sub_assign, Z, u64, u32 u16 u8);
 
 impl Sub for &Z {
     type Output = Z;
@@ -141,6 +185,63 @@ impl Sub<&Zq> for &Z {
 
 arithmetic_trait_borrowed_to_owned!(Sub, sub, Z, Zq, Zq);
 arithmetic_trait_mixed_borrowed_owned!(Sub, sub, Z, Zq, Zq);
+
+#[cfg(test)]
+mod test_sub_assign {
+    use crate::integer::Z;
+
+    /// Ensure that `sub_assign` works for small numbers.
+    #[test]
+    fn correct_small() {
+        let mut a: Z = Z::MINUS_ONE;
+        let b = Z::ONE;
+        let c = Z::MINUS_ONE;
+
+        a -= &b;
+        assert_eq!(-2, a);
+        a -= &c;
+        assert_eq!(-1, a);
+        a -= &c;
+        assert_eq!(0, a);
+        a -= &c;
+        assert_eq!(1, a);
+        a -= &c;
+        assert_eq!(2, a);
+        a -= 2 * b;
+        assert_eq!(0, a);
+    }
+
+    /// Ensure that `sub_assign` works for large numbers.
+    #[test]
+    fn correct_large() {
+        let mut a: Z = Z::from(i64::MAX);
+        let b = Z::from(i64::MAX as u64 + 1);
+        let c = -1 * Z::from(u64::MAX);
+
+        a -= b;
+        assert_eq!(-1, a);
+        a -= c;
+        assert_eq!(u64::MAX - 1, a);
+    }
+
+    /// Ensure that `sub_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let mut a: Z = Z::from(42);
+        let b: Z = Z::from(1);
+
+        a -= &b;
+        a -= b;
+        a -= 1_u8;
+        a -= 1_u16;
+        a -= 1_u32;
+        a -= 1_u64;
+        a -= 1_i8;
+        a -= 1_i16;
+        a -= 1_i32;
+        a -= 1_i64;
+    }
+}
 
 #[cfg(test)]
 mod test_sub_between_types {

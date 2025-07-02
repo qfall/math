@@ -13,7 +13,7 @@ use std::fmt::Display;
 use crate::{
     error::MathError,
     rational::{MatQ, Q},
-    traits::{GetEntry, GetNumColumns, GetNumRows, SetEntry},
+    traits::{MatrixDimensions, MatrixGetEntry, MatrixSetEntry},
 };
 
 impl MatQ {
@@ -37,7 +37,7 @@ impl MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`NonPositive`](MathError::NonPositive)
-    ///     if `sigma <= 0`.
+    ///   if `sigma <= 0`.
     pub fn sample_gauss(center: &MatQ, sigma: impl Into<f64>) -> Result<MatQ, MathError> {
         let mut out = MatQ::new(center.get_num_rows(), center.get_num_columns());
         let sigma = sigma.into();
@@ -46,7 +46,7 @@ impl MatQ {
             for j in 0..out.get_num_columns() {
                 let center_entry_ij = center.get_entry(i, j)?;
                 let sample = Q::sample_gauss(center_entry_ij, sigma)?;
-                out.set_entry(i, j, sample)?
+                unsafe { out.set_entry_unchecked(i, j, sample) };
             }
         }
 
@@ -78,7 +78,7 @@ impl MatQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`NonPositive`](MathError::NonPositive)
-    ///     if `sigma <= 0`.
+    ///   if `sigma <= 0`.
     ///
     /// # Panics ...
     /// - if the number of rows or columns is negative, `0`, or does not fit into an [`i64`].
@@ -94,7 +94,7 @@ impl MatQ {
         for i in 0..out.get_num_rows() {
             for j in 0..out.get_num_columns() {
                 let sample = Q::sample_gauss(&center, sigma)?;
-                out.set_entry(i, j, sample)?
+                unsafe { out.set_entry_unchecked(i, j, sample) };
             }
         }
 
@@ -104,10 +104,7 @@ impl MatQ {
 
 #[cfg(test)]
 mod test_sample_gauss {
-    use crate::{
-        rational::MatQ,
-        traits::{GetNumColumns, GetNumRows},
-    };
+    use crate::{rational::MatQ, traits::MatrixDimensions};
 
     /// Ensure that an error is returned if `sigma` is not positive
     #[test]
@@ -133,10 +130,7 @@ mod test_sample_gauss {
 #[cfg(test)]
 mod test_sample_gauss_same_center {
 
-    use crate::{
-        rational::MatQ,
-        traits::{GetNumColumns, GetNumRows},
-    };
+    use crate::{rational::MatQ, traits::MatrixDimensions};
 
     /// Ensure that an error is returned if `sigma` is not positive
     #[test]

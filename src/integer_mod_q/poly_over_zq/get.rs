@@ -10,16 +10,13 @@
 
 use super::PolyOverZq;
 use crate::{
-    error::MathError,
     integer::{PolyOverZ, Z},
     integer_mod_q::{Modulus, Zq},
     traits::GetCoefficient,
-    utils::index::evaluate_index,
 };
 use flint_sys::fmpz_mod_poly::{
     fmpz_mod_poly_degree, fmpz_mod_poly_get_coeff_fmpz, fmpz_mod_poly_get_fmpz_poly,
 };
-use std::fmt::Display;
 
 impl GetCoefficient<Zq> for PolyOverZq {
     /// Returns the coefficient of a polynomial [`PolyOverZq`] as a [`Zq`].
@@ -29,7 +26,7 @@ impl GetCoefficient<Zq> for PolyOverZq {
     /// Parameters:
     /// - `index`: the index of the coefficient to get (has to be positive)
     ///
-    /// Returns the coefficient as a [`Zq`], or a [`MathError`] if the provided index
+    /// Returns the coefficient as a [`Zq`], or a [`MathError`](crate::error::MathError) if the provided index
     /// is negative and therefore invalid, or it does not fit into an [`i64`].
     ///
     /// # Examples
@@ -42,7 +39,7 @@ impl GetCoefficient<Zq> for PolyOverZq {
     /// let poly = PolyOverZq::from_str("4  0 1 2 3 mod 17").unwrap();
     ///
     /// let coeff_0: Zq = poly.get_coeff(0).unwrap();
-    /// let coeff_1: Zq = poly.get_coeff(1).unwrap();
+    /// let coeff_1: Zq = unsafe{ poly.get_coeff_unchecked(1) };
     /// let coeff_4: Zq = poly.get_coeff(4).unwrap();
     ///
     /// assert_eq!(Zq::from((0, 17)), coeff_0);
@@ -115,7 +112,7 @@ impl GetCoefficient<Z> for PolyOverZq {
     /// Parameters:
     /// - `index`: the index of the coefficient to get (has to be positive)
     ///
-    /// Returns the coefficient as a [`Z`], or a [`MathError`] if the provided index
+    /// Returns the coefficient as a [`Z`], or a [`MathError`](crate::error::MathError) if the provided index
     /// is negative and therefore invalid, or it does not fit into an [`i64`].
     ///
     /// # Examples
@@ -128,7 +125,7 @@ impl GetCoefficient<Z> for PolyOverZq {
     /// let poly = PolyOverZq::from_str("4  0 1 2 3 mod 17").unwrap();
     ///
     /// let coeff_0: Z = poly.get_coeff(0).unwrap();
-    /// let coeff_1: Z = poly.get_coeff(1).unwrap();
+    /// let coeff_1: Z = unsafe{ poly.get_coeff_unchecked(1) };
     /// let coeff_4: Z = poly.get_coeff(4).unwrap();
     ///
     /// assert_eq!(Z::ZERO, coeff_0);
@@ -136,11 +133,10 @@ impl GetCoefficient<Z> for PolyOverZq {
     /// assert_eq!(Z::ZERO, coeff_4);
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    ///     either the index is negative or it does not fit into an [`i64`].
-    fn get_coeff(&self, index: impl TryInto<i64> + Display) -> Result<Z, MathError> {
-        let index = evaluate_index(index)?;
+    /// # Safety
+    /// To use this function safely, make sure that the selected index
+    /// is greater or equal than `0`.
+    unsafe fn get_coeff_unchecked(&self, index: i64) -> Z {
         let mut out = Z::default();
         unsafe {
             fmpz_mod_poly_get_coeff_fmpz(
@@ -150,7 +146,7 @@ impl GetCoefficient<Z> for PolyOverZq {
                 self.modulus.get_fmpz_mod_ctx_struct(),
             )
         }
-        Ok(out)
+        out
     }
 }
 

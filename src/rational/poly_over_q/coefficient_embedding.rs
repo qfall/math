@@ -12,8 +12,8 @@
 use crate::{
     rational::{MatQ, PolyOverQ},
     traits::{
-        FromCoefficientEmbedding, GetCoefficient, GetEntry, GetNumRows, IntoCoefficientEmbedding,
-        SetCoefficient, SetEntry,
+        FromCoefficientEmbedding, GetCoefficient, IntoCoefficientEmbedding, MatrixDimensions,
+        MatrixGetEntry, MatrixSetEntry, SetCoefficient,
     },
 };
 
@@ -25,7 +25,7 @@ impl IntoCoefficientEmbedding<MatQ> for &PolyOverQ {
     ///
     /// Parameters:
     /// - `size`: determines the number of rows of the embedding. It has to be larger
-    ///     than the degree of the polynomial.
+    ///   than the degree of the polynomial.
     ///
     /// Returns a coefficient embedding as a column vector if `size` is large enough.
     ///
@@ -45,7 +45,7 @@ impl IntoCoefficientEmbedding<MatQ> for &PolyOverQ {
     ///
     /// # Panics ...
     /// - if `size` is not larger than the degree of the polynomial, i.e.
-    ///     not all coefficients can be embedded.
+    ///   not all coefficients can be embedded.
     fn into_coefficient_embedding(self, size: impl Into<i64>) -> MatQ {
         let size = size.into();
         let length = self.get_degree() + 1;
@@ -57,11 +57,10 @@ impl IntoCoefficientEmbedding<MatQ> for &PolyOverQ {
         );
         let mut out = MatQ::new(size, 1);
         for j in 0..size {
-            match self.get_coeff(j) {
-                Ok(value) => out.set_entry(j, 0, value).unwrap(),
-                Err(_) => break,
-            }
+            let coeff = unsafe { self.get_coeff_unchecked(j) };
+            unsafe { out.set_entry_unchecked(j, 0, coeff) };
         }
+
         out
     }
 }
@@ -95,11 +94,13 @@ impl FromCoefficientEmbedding<&MatQ> for PolyOverQ {
     /// # Panics ...
     /// - if the provided embedding is not a column vector.
     fn from_coefficient_embedding(embedding: &MatQ) -> Self {
-        assert!(embedding.is_column_vector());
+        assert!(
+            embedding.is_column_vector(),
+            "This is no valid embedding, since the matrix is no column vector."
+        );
         let mut out = PolyOverQ::default();
         for i in 0..embedding.get_num_rows() {
-            out.set_coeff(i, embedding.get_entry(i, 0).unwrap())
-                .unwrap()
+            unsafe { out.set_coeff_unchecked(i, embedding.get_entry_unchecked(i, 0)) }
         }
         out
     }

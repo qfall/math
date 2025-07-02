@@ -8,7 +8,7 @@
 
 //! This module contains the implementation of the `transpose` function.
 
-use crate::traits::{GetNumColumns, GetNumRows};
+use crate::traits::MatrixDimensions;
 
 use super::MatZ;
 use flint_sys::fmpz_mat::fmpz_mat_transpose;

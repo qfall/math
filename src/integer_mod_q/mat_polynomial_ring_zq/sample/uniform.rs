@@ -26,7 +26,7 @@ impl MatPolynomialRingZq {
     /// - `num_rows`: specifies the number of rows the new matrix should have
     /// - `num_cols`: specifies the number of columns the new matrix should have
     /// - `modulus`: specifies the [`ModulusPolynomialRingZq`] over which the
-    ///     ring of polynomials modulo `modulus.get_q()` is defined
+    ///   ring of polynomials modulo `modulus.get_q()` is defined
     ///
     /// Returns a fresh [`MatPolynomialRingZq`] instance of length `modulus.get_degree() - 1`
     /// with coefficients chosen uniform at random in `[0, modulus.get_q())`.
@@ -42,7 +42,7 @@ impl MatPolynomialRingZq {
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
-    ///     For further information see [`MatPolynomialRingZq::new`].
+    ///   For further information see [`MatPolynomialRingZq::new`].
     /// - if the provided [`ModulusPolynomialRingZq`] has degree `0`.
     pub fn sample_uniform(
         num_rows: impl TryInto<i64> + Display,
@@ -71,7 +71,7 @@ impl MatPolynomialRingZq {
 mod test_sample_uniform {
     use crate::integer::PolyOverZ;
     use crate::integer_mod_q::PolyOverZq;
-    use crate::traits::{GetCoefficient, GetEntry, GetNumColumns, GetNumRows, SetCoefficient};
+    use crate::traits::{GetCoefficient, MatrixDimensions, MatrixGetEntry, SetCoefficient};
     use crate::{
         integer::Z,
         integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
@@ -89,7 +89,7 @@ mod test_sample_uniform {
             let coeff = sample.get_coeff(0).unwrap();
 
             assert!(Z::ZERO <= coeff);
-            assert!(coeff < Z::from(17));
+            assert!(coeff < 17);
         }
     }
 
@@ -105,7 +105,7 @@ mod test_sample_uniform {
             let coeff = sample.get_coeff(0).unwrap();
 
             assert!(Z::ZERO <= coeff);
-            assert!(coeff < Z::from(u64::MAX));
+            assert!(coeff < u64::MAX);
         }
     }
 

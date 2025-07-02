@@ -23,6 +23,7 @@ use crate::integer::Z;
 use serde::{Deserialize, Serialize};
 
 mod arithmetic;
+mod cmp;
 pub(crate) mod fmpz_mod_helpers;
 mod from;
 mod get;
@@ -30,6 +31,7 @@ mod properties;
 mod reduce;
 mod sample;
 mod to_string;
+mod unsafe_functions;
 
 /// [`Zq`] is an arbitrary integer value in a residue class.
 ///
