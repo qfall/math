@@ -138,7 +138,7 @@ pub fn evaluate_index_for_vector(
 
     if vector_length <= index_i64 {
         return Err(MathError::OutOfBounds(
-            format!("be smaller than {}", vector_length),
+            format!("be smaller than {vector_length}"),
             format!("{index_i64}"),
         ));
     }

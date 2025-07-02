@@ -30,6 +30,6 @@ criterion_main! {
     sample_z::benches,
     basis_reductions::benches,
     matrix_arith::benches,
-    uniform::benches,,
+    uniform::benches,
     ntt_multiplication::benches
 }

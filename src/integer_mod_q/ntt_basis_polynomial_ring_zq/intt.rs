@@ -192,21 +192,8 @@ fn iterative_intt(coefficients: Vec<Zq>, powers_of_omega_inv: &[Zq], n_inv: &Zq)
 
     let mut power_pointer = 0;
     let mut stride = n / 2;
-    // iterate through all layers
     while stride > 0 {
         // split into strides and perform action for each respective stride
-        // !!! currently the multi-threading is turned off, because it is plainly slower... !!!
-        // if stride >= n {
-        //     res_z.par_chunks_mut(2 * stride).for_each(|chunk| unsafe {
-        //         intt_stride_steps(
-        //             chunk,
-        //             stride,
-        //             power_pointer,
-        //             modulus_pointer,
-        //             &powers_of_omega_inv_pointers,
-        //         );
-        //     });
-        // } else {
         res_z.chunks_mut(2 * stride).for_each(|chunk| unsafe {
             intt_stride_steps(
                 chunk,
@@ -216,7 +203,6 @@ fn iterative_intt(coefficients: Vec<Zq>, powers_of_omega_inv: &[Zq], n_inv: &Zq)
                 &powers_of_omega_inv_pointers,
             );
         });
-        // }
 
         stride /= 2;
         power_pointer += 1;

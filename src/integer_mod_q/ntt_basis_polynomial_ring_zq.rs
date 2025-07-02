@@ -28,15 +28,15 @@ mod ntt;
 /// - `n`: the degree of the modulus polynomials
 /// - `n_inv`: the inverse of `n` when viewed `modulo q`
 /// - `powers_of_omega`: contains a list of `n` elements, corresponding to the `n` powers of
-///     of the `n`th root of unity
+///   of the `n`th root of unity
 /// - `powers_of_omega`: contains a list of `n` elements, corresponding to the `n` powers of
-///     of the inverse of the `n`th root of unity
+///   of the inverse of the `n`th root of unity
 /// - `powers_of_psi`: contains a list of `n` elements, corresponding to the `n` powers of
-///     of the `2n`th root of unity (empty for positively wrapped convolutions)
+///   of the `2n`th root of unity (empty for positively wrapped convolutions)
 /// - `powers_of_psi`: contains a list of `n` elements, corresponding to the `n` powers of
-///     of the inverse of the `2n`th root of unity (empty for positively wrapped convolutions)
+///   of the inverse of the `2n`th root of unity (empty for positively wrapped convolutions)
 /// - `modulus`: a clone of the modulus object the transform is connected to
-/// - `convolution_type`: tells subsequet algorithms if the convolution is positively or negatively wrapped
+/// - `convolution_type`: tells subsequent algorithms if the convolution is positively or negatively wrapped
 ///
 /// # Examples
 /// This example is taken from: <https://eprint.iacr.org/2024/585.pdf> Example 3.8
@@ -54,7 +54,7 @@ mod ntt;
 /// let ghat = ntt_basis.ntt(&g_poly);
 /// let hhat = ntt_basis.ntt(&h_poly);
 ///
-/// // simulate entrywise mutliplication
+/// // simulate entrywise multiplication
 /// let mut ghat_hhat = Vec::new();
 /// for i in 0..4 {
 ///     ghat_hhat.push(&ghat[i] * &hhat[i]);

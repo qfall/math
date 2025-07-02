@@ -15,6 +15,7 @@ use super::{from::ConvolutionType, NTTBasisPolynomialRingZq};
 use crate::{
     integer::Z,
     integer_mod_q::{PolyOverZq, Zq},
+    traits::GetCoefficient,
     utils::index::bit_reverse_permutation,
 };
 use flint_sys::fmpz_mod::{fmpz_mod_add, fmpz_mod_ctx, fmpz_mod_mul, fmpz_mod_sub};
@@ -95,7 +96,7 @@ impl NTTBasisPolynomialRingZq {
         // and no error can occur here
         let mut poly_coeffs: Vec<Zq> = (0..self.n)
             .map(|i| Zq {
-                value: poly.get_coeff_unchecked(i),
+                value: unsafe { poly.get_coeff_unchecked(i) },
                 modulus: self.modulus.clone(),
             })
             .collect();
@@ -191,18 +192,6 @@ fn iterative_ntt(coefficients: Vec<Zq>, powers_of_omega: &[Zq]) -> Vec<Zq> {
     // iterate through all layers
     while stride < n {
         // split into strides and perform action for each respective stride
-        // !!! currently the multi-threading is turned off, because it is slower... !!!
-        // if stride >= n {
-        // res_z.par_chunks_mut(2 * stride).for_each(|chunk| unsafe {
-        //     ntt_stride_steps(
-        //         chunk,
-        //         stride,
-        //         power_pointer,
-        //         modulus_pointer,
-        //         &powers_of_omega_pointers,
-        //     )
-        // });
-        // } else {
         res_z.chunks_mut(2 * stride).for_each(|chunk| unsafe {
             ntt_stride_steps(
                 chunk,
@@ -212,7 +201,6 @@ fn iterative_ntt(coefficients: Vec<Zq>, powers_of_omega: &[Zq]) -> Vec<Zq> {
                 &powers_of_omega_pointers,
             )
         });
-        // }
         stride *= 2;
         power_pointer -= 1;
     }

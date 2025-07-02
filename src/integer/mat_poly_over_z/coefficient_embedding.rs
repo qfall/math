@@ -115,8 +115,7 @@ impl FromCoefficientEmbedding<(&MatZ, i64)> for MatPolyOverZ {
         assert_eq!(
             num_rows % (degree+1),
             0,
-            "The provided degree of polynomials ({degree}) +1 must divide the number of rows of the embedding ({}).",
-            num_rows
+            "The provided degree of polynomials ({degree}) +1 must divide the number of rows of the embedding ({num_rows})."
         );
 
         let mut out = MatPolyOverZ::new(num_rows / (degree + 1), num_columns);
