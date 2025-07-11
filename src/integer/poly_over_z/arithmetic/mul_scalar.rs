@@ -12,6 +12,7 @@ use super::super::PolyOverZ;
 use crate::integer::Z;
 use crate::integer_mod_q::{PolyOverZq, Zq};
 use crate::macros::arithmetics::{
+    arithmetic_assign_between_types, arithmetic_assign_trait_borrowed_to_owned,
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
     arithmetic_trait_reverse,
 };
@@ -19,8 +20,10 @@ use crate::macros::for_others::implement_for_others;
 use crate::rational::{PolyOverQ, Q};
 use flint_sys::fmpq_poly::fmpq_poly_scalar_mul_fmpq;
 use flint_sys::fmpz_mod_poly::fmpz_mod_poly_scalar_mul_fmpz;
-use flint_sys::fmpz_poly::fmpz_poly_scalar_mul_fmpz;
-use std::ops::Mul;
+use flint_sys::fmpz_poly::{
+    fmpz_poly_scalar_mul_fmpz, fmpz_poly_scalar_mul_si, fmpz_poly_scalar_mul_ui,
+};
+use std::ops::{Mul, MulAssign};
 
 impl Mul<&Z> for &PolyOverZ {
     type Output = PolyOverZ;
@@ -143,6 +146,51 @@ arithmetic_trait_borrowed_to_owned!(Mul, mul, Q, PolyOverZ, PolyOverQ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, PolyOverZ, Q, PolyOverQ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Q, PolyOverZ, PolyOverQ);
 
+impl MulAssign<&Z> for PolyOverZ {
+    /// Computes the scalar multiplication of `self` and `other` reusing
+    /// the memory of `self`.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to multiply to `self`
+    ///
+    /// Returns the scalar of the polynomial as a [`PolyOverZ`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::{Z,PolyOverZ};
+    /// use std::str::FromStr;
+    ///
+    /// let mut a = PolyOverZ::from_str("3  1 2 -3").unwrap();
+    /// let b = Z::from(2);
+    ///
+    /// a *= &b;
+    /// a *= b;
+    /// a *= 2;
+    /// a *= -2;
+    /// ```
+    fn mul_assign(&mut self, scalar: &Z) {
+        unsafe { fmpz_poly_scalar_mul_fmpz(&mut self.poly, &self.poly, &scalar.value) };
+    }
+}
+
+impl MulAssign<i64> for PolyOverZ {
+    /// Documentation at [`PolyOverZ::mul_assign`].
+    fn mul_assign(&mut self, other: i64) {
+        unsafe { fmpz_poly_scalar_mul_si(&mut self.poly, &self.poly, other) };
+    }
+}
+
+impl MulAssign<u64> for PolyOverZ {
+    /// Documentation at [`PolyOverZ::mul_assign`].
+    fn mul_assign(&mut self, other: u64) {
+        unsafe { fmpz_poly_scalar_mul_ui(&mut self.poly, &self.poly, other) };
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, PolyOverZ, Z);
+arithmetic_assign_between_types!(MulAssign, mul_assign, PolyOverZ, i64, i32 i16 i8);
+arithmetic_assign_between_types!(MulAssign, mul_assign, PolyOverZ, u64, u32 u16 u8);
+
 #[cfg(test)]
 mod test_mul_z {
     use super::PolyOverZ;
@@ -235,6 +283,60 @@ mod test_mul_zq {
         _ = z.clone() * &poly;
         _ = &z * poly.clone();
         _ = poly.clone() * &z;
+    }
+}
+
+#[cfg(test)]
+mod test_mul_assign {
+    use crate::integer::{PolyOverZ, Z};
+    use std::str::FromStr;
+
+    /// Ensure that `mul_assign` works for small numbers.
+    #[test]
+    fn correct_small() {
+        let mut a = PolyOverZ::from_str("3  1 2 -3").unwrap();
+        let b = Z::from(2);
+        let c = Z::ZERO;
+
+        a *= &b;
+        assert_eq!(PolyOverZ::from_str("3  2 4 -6").unwrap(), a);
+        a *= &c;
+        assert_eq!(PolyOverZ::from(0), a);
+    }
+
+    /// Ensure that `mul_assign` works for large numbers.
+    #[test]
+    fn correct_large() {
+        let mut a = PolyOverZ::from_str("2  2 -1").unwrap();
+        let b = i32::MAX;
+        let cmp = PolyOverZ::from_str(&format!(
+            "2  {} {}",
+            i32::MAX as i64 * 2,
+            i32::MAX as i64 * -1
+        ))
+        .unwrap();
+
+        a *= b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `mul_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let mut a = PolyOverZ::from_str("3  1 2 -3").unwrap();
+        let b = Z::from(2);
+
+        a *= &b;
+        a *= b;
+        a *= 1_u8;
+        a *= 1_u16;
+        a *= 1_u32;
+        a *= 1_u64;
+        a *= 1_i8;
+        a *= 1_i16;
+        a *= 1_i32;
+        a *= 1_i64;
     }
 }
 
