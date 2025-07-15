@@ -108,9 +108,6 @@ impl Q {
     ///
     /// let decimal_repr = rational.to_string_decimal(3);
     /// ```
-    ///
-    /// # Panics ...
-    /// - if `self` can't be represented as an [`f64`].
     pub fn to_string_decimal(&self, nr_decimal_digits: usize) -> String {
         let value = f64::from(self);
         let mut string = value.to_string();

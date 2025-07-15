@@ -68,6 +68,10 @@ pub struct Zq {
 
 impl fmt::Debug for Zq {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self)
+        write!(
+            f,
+            "Zq {{value: {}, modulus: {}, storage: {{value: {:?} , modulus: {:?}}}}}",
+            self.value, self.modulus, self.value, self.modulus,
+        )
     }
 }

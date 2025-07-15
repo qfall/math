@@ -65,6 +65,10 @@ pub struct PolyOverZ {
 
 impl fmt::Debug for PolyOverZ {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self)
+        write!(
+            f,
+            "PolyOverZ {{poly: {}, storage: {{poly: {:?}}}}}",
+            self, self.poly
+        )
     }
 }

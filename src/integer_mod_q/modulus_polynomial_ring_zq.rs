@@ -46,6 +46,10 @@ pub struct ModulusPolynomialRingZq {
 
 impl fmt::Debug for ModulusPolynomialRingZq {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self)
+        write!(
+            f,
+            "ModulusPolynomialRingZq {{ modulus: {}, storage: {{modulus: {:?}}}}}",
+            self, self.modulus
+        )
     }
 }

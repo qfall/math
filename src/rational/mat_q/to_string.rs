@@ -97,9 +97,6 @@ impl MatQ {
     ///
     /// let decimal_repr = matrix.to_string_decimal(3);
     /// ```
-    ///
-    /// # Panics ...
-    /// - if any entry of the matrix can't be represented as an [`f64`].
     pub fn to_string_decimal(&self, nr_decimal_digits: usize) -> String {
         let mut matrix_string = String::from("[");
         let nr_rows = self.get_num_rows() - 1;

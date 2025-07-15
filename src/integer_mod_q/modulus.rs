@@ -69,6 +69,10 @@ pub struct Modulus {
 
 impl fmt::Debug for Modulus {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self)
+        write!(
+            f,
+            "Modulus {{ modulus: {}, storage: {{modulus: {:?}}}}}",
+            self, self.modulus
+        )
     }
 }

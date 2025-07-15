@@ -65,6 +65,13 @@ pub struct PolyOverQ {
 
 impl fmt::Debug for PolyOverQ {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self)
+        write!(
+            f,
+            "PolyOverQ {{poly_f64(may be rounded; 5 decimals): {}, poly: {}, \
+            storage: {{poly: {:?}}}}}",
+            self.to_string_decimal(5),
+            self,
+            self.poly
+        )
     }
 }

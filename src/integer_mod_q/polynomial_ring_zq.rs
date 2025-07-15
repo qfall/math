@@ -77,6 +77,10 @@ pub struct PolynomialRingZq {
 
 impl fmt::Debug for PolynomialRingZq {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self)
+        write!(
+            f,
+            "PolynomialRingZq {{poly: {}, modulus {}, storage: {{poly: {:?}, modulus: {:?}}}}}",
+            self.poly, self.modulus, self.poly, self.modulus
+        )
     }
 }

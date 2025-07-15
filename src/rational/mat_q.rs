@@ -13,6 +13,7 @@
 //! To avoid unnecessary checks and reductions, always return canonical/reduced
 //! values. The end-user should be unable to obtain a non-reduced value.
 
+use crate::utils::parse::print_debug_3x3_p1;
 use flint_sys::fmpq_mat::fmpq_mat_struct;
 use std::fmt;
 
@@ -91,6 +92,12 @@ pub struct MatQ {
 
 impl fmt::Debug for MatQ {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self)
+        write!(
+            f,
+            "MatQ: {{matrix: {}, storage: {:?}}}",
+            // printing the entire matrix is not meaningful for large matrices
+            print_debug_3x3_p1(self),
+            self.matrix
+        )
     }
 }

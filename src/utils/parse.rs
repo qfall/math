@@ -151,6 +151,66 @@ pub(crate) fn matrix_from_utf8_fill_bytes(message: &str, nr_entries: usize) -> (
     (bytes, bytes_per_entry.ceil() as usize)
 }
 
+/// Prints at most 4 rows and columns of a matrix.
+/// It prints the first three and last one respectively.
+pub(crate) fn print_debug_3x3_p1<
+    S: Display + Clone,
+    T: MatrixGetEntry<S> + MatrixDimensions + MatrixDimensions,
+>(
+    matrix: &T,
+) -> String {
+    let rows = matrix.get_num_rows();
+    let cols = matrix.get_num_columns();
+
+    let mut result = String::from("[\n");
+
+    for i in 0..rows {
+        if rows > 4 && i == 3 {
+            result.push_str("  [...],\n");
+            continue;
+        }
+        if rows > 4 && i > 3 && i < rows - 1 {
+            // skip all rows from [4, rows - 1]
+            continue;
+        }
+
+        result.push_str("  [");
+
+        for j in 0..cols {
+            if cols > 4 && j == 3 {
+                result.push_str(", ..., ");
+                continue;
+            }
+            if cols > 4 && j > 3 && j < cols - 1 {
+                // skip all columns from [4, columns - 1]
+                continue;
+            }
+
+            let entry = matrix.get_entry(i, j).unwrap();
+            result.push_str(&format!("{entry}"));
+
+            let is_last = if cols <= 4 {
+                j == cols - 1
+            } else {
+                j == 2 || j == cols - 1
+            };
+
+            if !is_last {
+                result.push_str(", ");
+            }
+        }
+
+        result.push(']');
+        if i < rows - 1 {
+            result.push(',');
+        }
+        result.push('\n');
+    }
+
+    result.push(']');
+    result
+}
+
 #[cfg(test)]
 mod test_parse_matrix_string {
     use crate::utils::parse::parse_matrix_string;

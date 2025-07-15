@@ -9,6 +9,7 @@
 //! `MatZ` is a type of matrix with integer entries of arbitrary length.
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
+use crate::utils::parse::print_debug_3x3_p1;
 use flint_sys::fmpz_mat::fmpz_mat_struct;
 use std::fmt;
 
@@ -96,6 +97,12 @@ pub struct MatZ {
 
 impl fmt::Debug for MatZ {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self)
+        write!(
+            f,
+            "MatZ: {{matrix: {}, storage: {:?}}}",
+            // printing the entire matrix is not meaningful for large matrices
+            print_debug_3x3_p1(self),
+            self.matrix
+        )
     }
 }

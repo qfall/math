@@ -78,6 +78,12 @@ pub struct Q {
 
 impl fmt::Debug for Q {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self)
+        write!(
+            f,
+            "Q {{value_f64(may be rounded): {}, value: {}, storage: {{value: {:?}}}}}",
+            f64::from(self),
+            self,
+            self.value
+        )
     }
 }

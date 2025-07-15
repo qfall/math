@@ -10,7 +10,7 @@
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use super::ModulusPolynomialRingZq;
-use crate::integer::MatPolyOverZ;
+use crate::{integer::MatPolyOverZ, utils::parse::print_debug_3x3_p1};
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
 use std::fmt;
@@ -97,6 +97,14 @@ pub struct MatPolynomialRingZq {
 
 impl fmt::Debug for MatPolynomialRingZq {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self)
+        write!(
+            f,
+            "MatPolynomialRingZq: {{matrix: {}, modulus: {} storage: {{matrix: {:?}, modulus: {:?}}}}}",
+            // printing the entire matrix is not meaningful for large matrices
+            print_debug_3x3_p1(&self.get_representative_least_nonnegative_residue()),
+            self.modulus,
+            self.matrix,
+            self.modulus
+        )
     }
 }

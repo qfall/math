@@ -74,6 +74,10 @@ pub struct Z {
 
 impl fmt::Debug for Z {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self)
+        write!(
+            f,
+            "Z {{value: {}, storage: {{value: {:?}}}}}",
+            self, self.value
+        )
     }
 }
