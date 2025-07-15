@@ -10,10 +10,12 @@
 //! [FLINT](https://flintlib.org/) structs. Therefore, they require to be unsafe.
 
 use super::MatQ;
-use crate::macros::unsafe_passthrough::unsafe_getter;
-use flint_sys::fmpq_mat::fmpq_mat_struct;
+use crate::macros::unsafe_passthrough::{unsafe_getter, unsafe_setter};
+use flint_sys::fmpq_mat::{fmpq_mat_clear, fmpq_mat_struct};
 
 unsafe_getter!(MatQ, matrix, fmpq_mat_struct);
+
+unsafe_setter!(MatQ, matrix, fmpq_mat_struct, fmpq_mat_clear);
 
 #[cfg(test)]
 mod test_get_fmpq_mat_struct {
@@ -38,5 +40,30 @@ mod test_get_fmpq_mat_struct {
         };
 
         assert_eq!(value, mat.get_entry(0, 0).unwrap());
+    }
+}
+
+#[cfg(test)]
+mod test_set_fmpq_mat_struct {
+    use super::MatQ;
+    use crate::{rational::Q, traits::MatrixGetEntry};
+    use flint_sys::fmpq_mat::fmpq_mat_init;
+    use std::{mem::MaybeUninit, str::FromStr};
+
+    /// Checks availability of the setter for [`MatQ::matrix`]
+    /// and its ability to modify [`MatQ`].
+    #[test]
+    #[allow(unused_mut)]
+    fn availability_and_modification() {
+        let mut mat = MatQ::from_str("[[1]]").unwrap();
+        let mut flint_struct = MaybeUninit::uninit();
+        let flint_struct = unsafe {
+            fmpq_mat_init(flint_struct.as_mut_ptr(), 1, 1);
+            flint_struct.assume_init()
+        };
+
+        unsafe { mat.set_fmpq_mat_struct(flint_struct) };
+
+        assert_eq!(Q::ZERO, mat.get_entry(0, 0).unwrap());
     }
 }

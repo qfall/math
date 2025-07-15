@@ -11,13 +11,13 @@
 use super::super::MatPolynomialRingZq;
 use crate::error::MathError;
 use crate::integer::{PolyOverZ, Z};
-use crate::integer_mod_q::{PolyOverZq, PolynomialRingZq};
+use crate::integer_mod_q::{PolyOverZq, PolynomialRingZq, Zq};
 use crate::macros::arithmetics::{
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
     arithmetic_trait_reverse,
 };
 use crate::macros::for_others::implement_for_others;
-use crate::traits::MatrixDimensions;
+use crate::traits::{CompareBase, MatrixDimensions};
 use flint_sys::fmpz_poly_mat::{fmpz_poly_mat_scalar_mul_fmpz, fmpz_poly_mat_scalar_mul_fmpz_poly};
 use std::ops::Mul;
 
@@ -67,6 +67,44 @@ arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatPolynomialRingZq, Z, MatPoly
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Z, MatPolynomialRingZq, MatPolynomialRingZq);
 
 implement_for_others!(Z, MatPolynomialRingZq, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
+
+impl Mul<&Zq> for &MatPolynomialRingZq {
+    type Output = MatPolynomialRingZq;
+    /// Implements the [`Mul`] trait for a [`MatPolynomialRingZq`] matrix with a [`Zq`] integer.
+    /// [`Mul`] is implemented for any combination of owned and borrowed values.
+    ///
+    /// Parameters:
+    /// - `scalar`: Specifies the scalar by which the matrix is multiplied.
+    ///
+    /// Returns the product of `self` and `scalar` as a [`MatPolynomialRingZq`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq, Zq};
+    /// use qfall_math::integer::{MatPolyOverZ, Z};
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let poly_mat1 = MatPolyOverZ::from_str("[[3  0 1 1, 1  42],[0, 2  1 2]]").unwrap();
+    /// let poly_ring_mat1 = MatPolynomialRingZq::from((&poly_mat1, &modulus));
+    /// let integer = Zq::from((3, 17));
+    ///
+    /// let poly_ring_mat2 = &poly_ring_mat1 * &integer;
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the moduli mismatch.
+    fn mul(self, scalar: &Zq) -> Self::Output {
+        self.mul_scalar_zq_safe(scalar).unwrap()
+    }
+}
+
+arithmetic_trait_reverse!(Mul, mul, Zq, MatPolynomialRingZq, MatPolynomialRingZq);
+
+arithmetic_trait_borrowed_to_owned!(Mul, mul, MatPolynomialRingZq, Zq, MatPolynomialRingZq);
+arithmetic_trait_borrowed_to_owned!(Mul, mul, Zq, MatPolynomialRingZq, MatPolynomialRingZq);
+arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatPolynomialRingZq, Zq, MatPolynomialRingZq);
+arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Zq, MatPolynomialRingZq, MatPolynomialRingZq);
 
 impl Mul<&PolyOverZ> for &MatPolynomialRingZq {
     type Output = MatPolynomialRingZq;
@@ -281,6 +319,46 @@ arithmetic_trait_mixed_borrowed_owned!(
 );
 
 impl MatPolynomialRingZq {
+    /// Implements multiplication for a [`MatPolynomialRingZq`] matrix with a [`Zq`].
+    ///
+    /// Parameters:
+    /// - `scalar`: specifies the scalar by which the matrix is multiplied
+    ///
+    /// Returns the product of `self` and `scalar` as a [`MatPolynomialRingZq`] or
+    /// an error if the moduli mismatch.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, Zq};
+    /// use std::str::FromStr;
+    ///
+    /// let mat_1 = MatPolynomialRingZq::from_str("[[1  42, 1  17],[2  1 8, 1  6]] / 3  1 2 3 mod 61").unwrap();
+    /// let integer = Zq::from((2, 61));
+    ///
+    /// let mat_2 = &mat_1.mul_scalar_zq_safe(&integer).unwrap();
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type
+    ///   [`MismatchingModulus`](MathError::MismatchingModulus) if the moduli mismatch.
+    pub fn mul_scalar_zq_safe(&self, scalar: &Zq) -> Result<Self, MathError> {
+        if !self.compare_base(scalar) {
+            return Err(self.call_compare_base_error(scalar).unwrap());
+        }
+
+        let mut out =
+            MatPolynomialRingZq::new(self.get_num_rows(), self.get_num_columns(), &self.modulus);
+        unsafe {
+            fmpz_poly_mat_scalar_mul_fmpz(
+                &mut out.matrix.matrix,
+                &self.matrix.matrix,
+                &scalar.value.value,
+            );
+        }
+        out.reduce();
+        Ok(out)
+    }
+
     /// Implements multiplication for a [`MatPolynomialRingZq`] matrix with a [`PolyOverZq`].
     ///
     /// Parameters:
@@ -305,14 +383,10 @@ impl MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`MathError::MismatchingModulus`] if the moduli mismatch.
+    ///   [`MathError::MismatchingModulus`] if the moduli mismatch.
     pub fn mul_scalar_poly_over_zq_safe(&self, scalar: &PolyOverZq) -> Result<Self, MathError> {
-        if self.modulus.get_q() != scalar.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to multiply matrices with moduli '{}' and '{}'.",
-                self.modulus.get_q(),
-                scalar.get_mod()
-            )));
+        if !self.compare_base(scalar) {
+            return Err(self.call_compare_base_error(scalar).unwrap());
         }
 
         Ok(self * scalar.get_representative_least_nonnegative_residue())
@@ -343,17 +417,13 @@ impl MatPolynomialRingZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`MathError::MismatchingModulus`] if the moduli mismatch.
+    ///   [`MathError::MismatchingModulus`] if the moduli mismatch.
     pub fn mul_scalar_poly_ring_zq_safe(
         &self,
         scalar: &PolynomialRingZq,
     ) -> Result<Self, MathError> {
-        if self.modulus != scalar.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to multiply matrices with moduli '{}' and '{}'.",
-                self.get_mod(),
-                scalar.get_mod()
-            )));
+        if !self.compare_base(scalar) {
+            return Err(self.call_compare_base_error(scalar).unwrap());
         }
 
         Ok(self * &scalar.poly)
@@ -477,6 +547,132 @@ mod test_mul_z {
 
         assert_eq!(cmp_poly_ring_mat1, &poly_ring_mat1 * &integer1);
         assert_eq!(cmp_poly_ring_mat2, &poly_ring_mat2 * &integer2);
+    }
+}
+
+#[cfg(test)]
+mod test_mul_zq {
+    use crate::integer::MatPolyOverZ;
+    use crate::integer_mod_q::MatPolynomialRingZq;
+    use crate::integer_mod_q::ModulusPolynomialRingZq;
+    use crate::integer_mod_q::Zq;
+    use std::str::FromStr;
+
+    /// Checks whether scalar multiplication is available for other types.
+    #[test]
+    fn availability() {
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        let poly_mat = MatPolyOverZ::from_str("[[3  0 1 1, 1  3],[0, 2  1 2]]").unwrap();
+        let poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
+        let integer = Zq::from((3, 17));
+
+        let _ = &poly_ring_mat * &integer;
+        let _ = &poly_ring_mat * integer.clone();
+        let _ = &integer * &poly_ring_mat;
+        let _ = integer.clone() * &poly_ring_mat;
+
+        let _ = poly_ring_mat.clone() * &integer;
+        let _ = poly_ring_mat.clone() * integer.clone();
+        let _ = &integer * poly_ring_mat.clone();
+        let _ = integer * poly_ring_mat;
+    }
+
+    /// Checks if scalar multiplication works.
+    #[test]
+    fn mul_correctness() {
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        let poly_mat1 = MatPolyOverZ::from_str("[[3  0 1 1, 1  3],[0, 2  1 2]]").unwrap();
+        let poly_ring_mat1 = MatPolynomialRingZq::from((&poly_mat1, &modulus));
+        let integer = Zq::from((3, 17));
+
+        let poly_ring_mat2 = &poly_ring_mat1 * &integer;
+
+        let cmp_poly_mat = MatPolyOverZ::from_str("[[3  0 3 3, 1  9],[0, 2  3 6]]").unwrap();
+        let cmp_poly_ring_mat = MatPolynomialRingZq::from((&cmp_poly_mat, &modulus));
+
+        assert_eq!(cmp_poly_ring_mat, poly_ring_mat2);
+    }
+
+    /// Checks if scalar multiplication reduction works.
+    #[test]
+    fn reduction_correct() {
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        let poly_mat1 = MatPolyOverZ::from_str("[[3  0 1 1, 1  10],[0, 2  1 2]]").unwrap();
+        let poly_ring_mat1 = MatPolynomialRingZq::from((&poly_mat1, &modulus));
+        let integer = Zq::from((3, 17));
+
+        let poly_ring_mat2 = &poly_ring_mat1 * &integer;
+
+        let cmp_poly_mat = MatPolyOverZ::from_str("[[3  0 3 3, 1  13],[0, 2  3 6]]").unwrap();
+        let cmp_poly_ring_mat = MatPolynomialRingZq::from((&cmp_poly_mat, &modulus));
+
+        assert_eq!(cmp_poly_ring_mat, poly_ring_mat2);
+    }
+
+    /// Checks if scalar multiplication works fine for matrices of different dimensions.
+    #[test]
+    fn different_dimensions_correctness() {
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        let poly_mat1 = MatPolyOverZ::from_str("[[1  42],[0],[2  1 2]]").unwrap();
+        let poly_ring_mat1 = MatPolynomialRingZq::from((&poly_mat1, &modulus));
+        let poly_mat2 = MatPolyOverZ::from_str("[[1  2,1  6,1  5],[1  4,2  17 42,1  3]]").unwrap();
+        let poly_ring_mat2 = MatPolynomialRingZq::from((&poly_mat2, &modulus));
+
+        let cmp_poly_mat1 = MatPolyOverZ::from_str("[[1  84],[0],[2  2 4]]").unwrap();
+        let cmp_poly_ring_mat1 = MatPolynomialRingZq::from((&cmp_poly_mat1, &modulus));
+        let cmp_poly_mat2 =
+            MatPolyOverZ::from_str("[[1  4,1  12,1  10],[1  8,2  34 84,1  6]]").unwrap();
+        let cmp_poly_ring_mat2 = MatPolynomialRingZq::from((&cmp_poly_mat2, &modulus));
+        let integer = Zq::from((2, 17));
+
+        assert_eq!(cmp_poly_ring_mat1, &poly_ring_mat1 * &integer);
+        assert_eq!(cmp_poly_ring_mat2, &poly_ring_mat2 * &integer);
+    }
+
+    /// Checks if matrix multiplication works fine for large values.
+    #[test]
+    fn large_entries() {
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
+        let poly_mat1 =
+            MatPolyOverZ::from_str(&format!("[[1  1],[1  {}],[1  4]]", i64::MAX)).unwrap();
+        let poly_ring_mat1 = MatPolynomialRingZq::from((&poly_mat1, &modulus));
+        let poly_mat2 = MatPolyOverZ::from_str("[[1  3]]").unwrap();
+        let poly_ring_mat2 = MatPolynomialRingZq::from((&poly_mat2, &modulus));
+        let integer1 = Zq::from((3, u64::MAX));
+        let integer2 = Zq::from((i64::MAX, u64::MAX));
+
+        let cmp_poly_mat1 =
+            MatPolyOverZ::from_str(&format!("[[1  3],[1  {}],[1  12]]", 3 * i64::MAX as i128))
+                .unwrap();
+        let cmp_poly_ring_mat1 = MatPolynomialRingZq::from((&cmp_poly_mat1, &modulus));
+        let cmp_poly_mat2 =
+            MatPolyOverZ::from_str(&format!("[[1  {}]]", 3 * i64::MAX as i128)).unwrap();
+        let cmp_poly_ring_mat2 = MatPolynomialRingZq::from((&cmp_poly_mat2, &modulus));
+
+        assert_eq!(cmp_poly_ring_mat1, &poly_ring_mat1 * &integer1);
+        assert_eq!(cmp_poly_ring_mat2, &poly_ring_mat2 * &integer2);
+    }
+
+    /// Checks if scalar multiplication panics if the moduli mismatch
+    #[test]
+    #[should_panic]
+    fn different_moduli_error() {
+        let mat_1 = MatPolynomialRingZq::from_str("[[1  42],[0],[1  2]] / 2  1 2 mod 61").unwrap();
+        let integer = Zq::from((2, 3));
+
+        _ = &integer * mat_1;
+    }
+
+    /// Checks if scalar multiplication returns an error if the moduli mismatch
+    #[test]
+    fn different_moduli_error_safe() {
+        let mat_1 = MatPolynomialRingZq::from_str("[[1  42],[0],[1  2]] / 2  1 2 mod 61").unwrap();
+        let integer = Zq::from((2, 3));
+
+        let mat_2 = &mat_1.mul_scalar_zq_safe(&integer);
+
+        assert!(mat_2.is_err());
     }
 }
 

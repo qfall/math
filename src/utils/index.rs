@@ -12,8 +12,8 @@ use crate::error::MathError;
 use crate::traits::MatrixDimensions;
 use std::fmt::Display;
 
-/// Converts index into an [`i64`] that must be greater than `0` and must fit into
-/// an [`i64`].
+/// Converts index into an [`i64`] that must be greater or equal than `0`
+/// and must fit into an [`i64`].
 ///
 /// Parameters:
 /// - `index`: the index that has to be converted into an [`i64`].
@@ -30,7 +30,7 @@ use std::fmt::Display;
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-///     either the index is negative or it does not fit into an [`i64`].
+///   either the index is negative or it does not fit into an [`i64`].
 pub fn evaluate_index(index: impl TryInto<i64> + Display) -> Result<i64, MathError> {
     // the index must fit into an [`i64`]
 
@@ -88,7 +88,7 @@ pub fn evaluate_index(index: impl TryInto<i64> + Display) -> Result<i64, MathErr
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-///     either the index is negative or it does not fit into an [`i64`].
+///   either the index is negative or it does not fit into an [`i64`].
 pub fn evaluate_indices(
     index1: impl TryInto<i64> + Display,
     index2: impl TryInto<i64> + Display,
@@ -99,7 +99,54 @@ pub fn evaluate_indices(
     Ok((index1_i64, index2_i64))
 }
 
+/// Evaluates whether the provided index is referencing an entry in a vector.
+/// Negative indices are allowed and reference entries form the end of the vector.
+///
+/// Parameters:
+/// - `index`: specifies the index in which the entry is located
+/// - `vector_length`: specifies the length of the vector
+///
+/// Returns the index as an [`i64`] if it references an entry and return
+/// an error otherwise.
+///
+/// # Errors and Failures
+/// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+///   if the index is not within the bounds of the vector.
+pub fn evaluate_index_for_vector(
+    index: impl TryInto<i64> + Display,
+    vector_length: i64,
+) -> Result<i64, MathError> {
+    let mut index_i64: i64 = match index.try_into() {
+        Ok(index) => index,
+        _ => {
+            return Err(MathError::OutOfBounds(
+                "fit into a i64".to_owned(),
+                "unknown for performance reasons".to_owned(),
+            ))
+        }
+    };
+
+    if index_i64 < 0 {
+        index_i64 += vector_length;
+        if index_i64 < 0 {
+            return Err(MathError::OutOfBounds(
+                format!("be larger or equal to {}", -vector_length),
+                format!("{}", index_i64 - vector_length),
+            ));
+        }
+    }
+
+    if vector_length <= index_i64 {
+        return Err(MathError::OutOfBounds(
+            format!("be smaller than {}", vector_length),
+            format!("{index_i64}"),
+        ));
+    }
+    Ok(index_i64)
+}
+
 /// Evaluates whether the provided row and column are referencing an entry in a matrix.
+/// Negative indices are allowed and reference rows and columns form the end of the matrix.
 ///
 /// Parameters:
 /// - `matrix`: specifies the matrix in which the entry is located
@@ -111,7 +158,7 @@ pub fn evaluate_indices(
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-///     if the number of rows or columns is greater than the matrix or negative.
+///   if the number of rows or columns is greater than the matrix.
 pub fn evaluate_indices_for_matrix<S: MatrixDimensions + MatrixDimensions>(
     matrix: &S,
     row: impl TryInto<i64> + Display,
@@ -146,7 +193,7 @@ pub fn evaluate_indices_for_matrix<S: MatrixDimensions + MatrixDimensions>(
                     -matrix.get_num_rows(),
                     -matrix.get_num_columns()
                 ),
-                format!("({}, {})", row_i64 + matrix.get_num_rows(), column_i64),
+                format!("({}, {})", row_i64 - matrix.get_num_rows(), column_i64),
             ));
         }
     }
@@ -159,7 +206,7 @@ pub fn evaluate_indices_for_matrix<S: MatrixDimensions + MatrixDimensions>(
                     -matrix.get_num_rows(),
                     -matrix.get_num_columns()
                 ),
-                format!("({}, {})", row_i64, column_i64 + matrix.get_num_columns()),
+                format!("({}, {})", row_i64, column_i64 - matrix.get_num_columns()),
             ));
         }
     }
@@ -207,6 +254,46 @@ mod test_eval_index {
     #[test]
     fn does_not_fit() {
         assert!(evaluate_index(u64::MAX).is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_eval_index_for_vector {
+    use super::evaluate_index_for_vector;
+
+    /// Test that negative addressing works.
+    #[test]
+    fn small_negative() {
+        let a = evaluate_index_for_vector(-1, 10).expect("No error with small negative index.");
+
+        assert_eq!(a, 9);
+    }
+
+    /// Assert that an error is returned if the index is just out of bounds.
+    #[test]
+    fn negative_out_of_bounds() {
+        assert!(evaluate_index_for_vector(-4, 3).is_err());
+        assert!(evaluate_index_for_vector(3, 3).is_err());
+    }
+
+    /// Tests that the function can be called with several types.
+    #[test]
+    fn is_ok_several_types() {
+        assert!(evaluate_index_for_vector(3i8, 4).is_ok());
+        assert!(evaluate_index_for_vector(3i16, 4).is_ok());
+        assert!(evaluate_index_for_vector(3i32, 4).is_ok());
+        assert!(evaluate_index_for_vector(3i64, 4).is_ok());
+        assert!(evaluate_index_for_vector(3u8, 4).is_ok());
+        assert!(evaluate_index_for_vector(3u16, 4).is_ok());
+        assert!(evaluate_index_for_vector(3u32, 4).is_ok());
+        assert!(evaluate_index_for_vector(3u64, 4).is_ok());
+    }
+
+    /// Ensure that integers which can not be converted to an [`i64`]
+    /// are not accepted
+    #[test]
+    fn does_not_fit() {
+        assert!(evaluate_index_for_vector(u64::MAX - 1, i64::MAX).is_err());
     }
 }
 

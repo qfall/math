@@ -34,7 +34,7 @@ mod unsafe_functions;
 ///
 /// Attributes:
 /// - `value`: holds [FLINT](https://flintlib.org/)'s [struct](fmpq)
-///     for a rational value
+///   for a rational value
 ///
 /// # Implicit Typecasting
 /// Most of our functions take as input values of type [`Into<Q>`].

@@ -82,7 +82,7 @@ impl PolyOverQ {
     ///
     /// Parameters:
     /// - `nr_decimal_digits`: specifies the number of decimal digits
-    ///     that will be a part of the output [`String`]
+    ///   that will be a part of the output [`String`]
     ///
     /// Returns the polynomial in form of a [`String`]. For polynomial `2  1/2 5/3`
     /// the [`String`] looks like this `2  0.50 1.66` if `nr_decimal_digits = 2`.
@@ -101,7 +101,7 @@ impl PolyOverQ {
 
         for i in 0..degree {
             // swap with get_coeff_unchecked once available
-            let entry = self.get_coeff(i).unwrap();
+            let entry = unsafe { self.get_coeff_unchecked(i) };
             let entry_string = entry.to_string_decimal(nr_decimal_digits);
 
             poly_string.push_str(&entry_string);
@@ -138,8 +138,8 @@ mod test_to_string_decimal {
         assert_eq!("0", a_1);
         assert_eq!("1  0", b_0);
         assert_eq!("1  0.33", b_2);
-        assert_eq!("3  0 0 -1", c_0);
-        assert_eq!("3  0.3 0.0 -1.6", c_1);
+        assert_eq!("3  0 0 -2", c_0);
+        assert_eq!("3  0.3 0.0 -1.7", c_1);
     }
 
     /// Ensures that [`PolyOverQ::to_string_decimal`] does not panic if it is given a

@@ -9,9 +9,43 @@
 //! This module contains basic traits for this library. These include
 //! specific traits for matrices and polynomials.
 
-use crate::error::MathError;
+use crate::{
+    error::MathError,
+    utils::index::{evaluate_index, evaluate_index_for_vector, evaluate_indices_for_matrix},
+};
 use flint_sys::fmpz::fmpz;
 use std::fmt::Display;
+
+/// Is implemented by every type where a base-check might be needed.
+/// This also includes every type of matrix, because it allows for geneceric implementations.
+/// Per default, a basecheck simply returs that the bases match and no error is returned.
+pub trait CompareBase<T = Self> {
+    /// Compares the base elements of the objects and returns true if they match
+    /// and an operation between the two provided types is possible.
+    ///
+    /// Parameters:
+    /// - `other`: The other object whose base is compared to `self`
+    ///
+    /// Returns true if the bases match and false otherwise.
+    /// The default implementation just returns true.
+    #[allow(unused_variables)]
+    fn compare_base(&self, other: &T) -> bool {
+        true
+    }
+
+    /// Calls an error that gives small explanation how the base elements differ.
+    /// This function only calls the error and does not check if the two actually differ.
+    ///
+    /// Parameters:
+    /// - `other`: The other object whose base is compared to `self`
+    ///
+    /// Returns a MathError, typically [MathError::MismatchingModulus].
+    /// The default implementation just returns `None`.
+    #[allow(unused_variables)]
+    fn call_compare_base_error(&self, other: &T) -> Option<MathError> {
+        None
+    }
+}
 
 /// Is implemented by polynomials to evaluate them for a certain input.
 pub trait Evaluate<T, U> {
@@ -33,19 +67,73 @@ pub trait GetCoefficient<T> {
     /// Parameters:
     /// - `index`: the index of the coefficient
     ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type
+    ///   [`OutOfBounds`](MathError::OutOfBounds) if either the index is negative
+    ///   or does not fit into an [`i64`].
+    /// - Returns a [`MathError`] of type
+    ///   [`MismatchingModulus`](MathError::MismatchingModulus) if the base types are
+    ///   not compatible. This can only happen if the base types themselves can mismatch.
+    fn get_coeff(&self, index: impl TryInto<i64> + Display) -> Result<T, MathError> {
+        let index = evaluate_index(index)?;
+        Ok(unsafe { self.get_coeff_unchecked(index) })
+    }
+
+    /// Returns a coefficient of the given object, e.g. a polynomial,
+    /// for a given index.
+    ///
+    /// Parameters:
+    /// - `index`: the index of the coefficient
+    ///
     /// Returns the coefficient of the polynomial.
-    fn get_coeff(&self, index: impl TryInto<i64> + Display) -> Result<T, MathError>;
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected index
+    /// is greater or equal than `0`.
+    unsafe fn get_coeff_unchecked(&self, index: i64) -> T;
 }
 
 /// Is implemented by polynomials to set a coefficient.
-pub trait SetCoefficient<T> {
+pub trait SetCoefficient<T>
+where
+    Self: CompareBase<T>,
+{
     /// Sets coefficient of the object, e.g. polynomial,
     /// for a given input value and a index.
     ///
     /// Parameters:
     /// - `index`: the coefficient to be set.
     /// - `value`: the value the coefficient is set to.
-    fn set_coeff(&mut self, index: impl TryInto<i64> + Display, value: T) -> Result<(), MathError>;
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type
+    ///   [`OutOfBounds`](MathError::OutOfBounds) if either the index is negative
+    ///   or does not fit into an [`i64`].
+    /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus) if the base types are
+    ///   not compatible. This can only happen if the base types themselves can mismatch.
+    fn set_coeff(&mut self, index: impl TryInto<i64> + Display, value: T) -> Result<(), MathError> {
+        let index = evaluate_index(index)?;
+        if !self.compare_base(&value) {
+            return Err(self.call_compare_base_error(&value).unwrap());
+        }
+        unsafe {
+            self.set_coeff_unchecked(index, value);
+        }
+        Ok(())
+    }
+
+    /// Sets coefficient of the object, e.g. polynomial,
+    /// for a given input value and a index.
+    ///
+    /// Parameters:
+    /// - `index`: the coefficient to be set.
+    /// - `value`: the value the coefficient is set to.
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected index
+    /// is greater or equal than `0` and that the provided value has
+    /// the same base so that they have a matching base.
+    unsafe fn set_coeff_unchecked(&mut self, index: i64, value: T);
 }
 
 /// Is implemented by matrices to get the number of rows and number of columns of the matrix.
@@ -60,7 +148,7 @@ pub trait MatrixDimensions {
 /// Is implemented by matrices to get entries.
 pub trait MatrixGetEntry<T>
 where
-    Self: MatrixDimensions,
+    Self: MatrixDimensions + Sized,
     T: std::clone::Clone,
 {
     /// Returns the value of a specific matrix entry.
@@ -69,14 +157,25 @@ where
     /// - `row`: specifies the row in which the entry is located.
     /// - `column`: specifies the column in which the entry is located.
     ///
-    /// Returns the value of the matrix at the position of the given
-    /// row and column or an error if the number of rows or columns is
-    /// greater than the matrix or negative.
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
+    /// Errors can occur if the provided indices are not within the dimensions of the provided matrices,
+    /// the bases of the matrix and value are not compatible, e.g. different modulus.
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    ///   if `row` or `column` do not define an entry in the mtrix
+    /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`]
+    ///   if the moduli are different.
     fn get_entry(
         &self,
         row: impl TryInto<i64> + Display,
         column: impl TryInto<i64> + Display,
-    ) -> Result<T, MathError>;
+    ) -> Result<T, MathError> {
+        let (row, column) = evaluate_indices_for_matrix(self, row, column)?;
+        Ok(unsafe { self.get_entry_unchecked(row, column) })
+    }
 
     /// Returns the value of a specific matrix entry
     /// without performing any checks, e.g. checking whether the entry is
@@ -91,8 +190,6 @@ where
     /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
     /// occur.
     unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> T;
-
-    // *** Automatically implemented functions
 
     /// Outputs a [`Vec<Vec<T>>`] containing all entries of the matrix s.t.
     /// any entry in row `i` and column `j` can be accessed via `entries[i][j]`
@@ -189,26 +286,70 @@ where
     /// Parameters:
     /// - `row`: specifies the row of the matrix to return
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns a row vector of the matrix at the position of the given
     /// `row` or an error if specified row is not part of the matrix.
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if specified row is not part of the matrix.
-    fn get_row(&self, row: impl TryInto<i64> + Display) -> Result<Self, MathError>;
+    ///   if specified row is not part of the matrix.
+    fn get_row(&self, row: impl TryInto<i64> + Display + Clone) -> Result<Self, MathError> {
+        let row = evaluate_index_for_vector(row, self.get_num_rows())?;
+        Ok(unsafe { self.get_row_unchecked(row) })
+    }
+
+    /// Outputs the row vector of the specified row.
+    ///
+    /// Parameters:
+    /// - `row`: specifies the row of the matrix to return
+    ///
+    /// Returns a row vector of the matrix at the position of the given
+    /// `row`.
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected row is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    unsafe fn get_row_unchecked(&self, row: i64) -> Self {
+        self.get_submatrix_unchecked(row, row + 1, 0, self.get_num_columns())
+    }
 
     /// Outputs the column vector of the specified column.
     ///
     /// Parameters:
     /// - `column`: specifies the column of the matrix to return
     ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element.
+    ///
     /// Returns a column vector of the matrix at the position of the given
     /// `column` or an error if specified column is not part of the matrix.
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if specified column is not part of the matrix.
-    fn get_column(&self, column: impl TryInto<i64> + Display) -> Result<Self, MathError>;
+    ///   if specified column is not part of the matrix.
+    fn get_column(&self, column: impl TryInto<i64> + Display + Clone) -> Result<Self, MathError> {
+        let column = evaluate_index_for_vector(column, self.get_num_columns())?;
+        Ok(unsafe { self.get_column_unchecked(column) })
+    }
+
+    /// Outputs the column vector of the specified column.
+    ///
+    /// Parameters:
+    /// - `column`: specifies the row of the matrix to return
+    ///
+    /// Returns a column vector of the matrix at the position of the given
+    /// `column`.
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected column is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    unsafe fn get_column_unchecked(&self, column: i64) -> Self {
+        self.get_submatrix_unchecked(0, self.get_num_rows(), column, column + 1)
+    }
 
     /// Returns a deep copy of the submatrix defined by the given parameters.
     /// All entries starting from `(row_1, col_1)` to `(row_2, col_2)`(inclusively) are collected in
@@ -230,7 +371,7 @@ where
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if any provided row or column is larger than the matrix.
+    ///   if any provided row or column is larger than the matrix.
     ///
     /// # Panics ...
     /// - if `col_1 > col_2` or `row_1 > row_2`.
@@ -240,9 +381,48 @@ where
         row_2: impl TryInto<i64> + Display,
         col_1: impl TryInto<i64> + Display,
         col_2: impl TryInto<i64> + Display,
-    ) -> Result<Self, MathError>;
+    ) -> Result<Self, MathError> {
+        let (row_1, col_1) = evaluate_indices_for_matrix(self, row_1, col_1)?;
+        let (row_2, col_2) = evaluate_indices_for_matrix(self, row_2, col_2)?;
 
-    // *** Automatically implemented functions
+        assert!(
+            row_2 >= row_1,
+            "The number of rows must be positive, i.e. row_2 ({row_2}) must be greater or equal row_1 ({row_1})"
+        );
+
+        assert!(
+            col_2 >= col_1,
+            "The number of columns must be positive, i.e. col_2 ({col_2}) must be greater or equal col_1 ({col_1})"
+        );
+
+        // increase both values to have an inclusive capturing of the matrix entries
+        let (row_2, col_2) = (row_2 + 1, col_2 + 1);
+        Ok(unsafe { self.get_submatrix_unchecked(row_1, row_2, col_1, col_2) })
+    }
+
+    /// Returns a deep copy of the submatrix defined by the given parameters
+    /// and does not check the provided dimensions.
+    /// There is also a safe version of this function that checks the input.
+    ///
+    /// Parameters:
+    /// `row_1`: the starting row of the submatrix
+    /// `row_2`: the ending row of the submatrix
+    /// `col_1`: the starting column of the submatrix
+    /// `col_2`: the ending column of the submatrix
+    ///
+    /// Returns the submatrix from `(row_1, col_1)` to `(row_2, col_2)`(exclusively).
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected submatrix is part
+    /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
+    /// occur.
+    unsafe fn get_submatrix_unchecked(
+        &self,
+        row_1: i64,
+        row_2: i64,
+        col_1: i64,
+        col_2: i64,
+    ) -> Self;
 
     /// Outputs a [`Vec`] containing all rows of the matrix in order.
     /// Use this function for simple iteration over the rows of the matrix.
@@ -273,8 +453,7 @@ where
         let mut rows = vec![];
 
         for i in 0..self.get_num_rows() {
-            // replace with self.get_row_unchecked once available
-            let entry = self.get_row(i).unwrap();
+            let entry = unsafe { self.get_row_unchecked(i) };
             rows.push(entry);
         }
 
@@ -310,8 +489,7 @@ where
         let mut columns = vec![];
 
         for i in 0..self.get_num_columns() {
-            // replace with self.get_column_unchecked once available
-            let entry = self.get_column(i).unwrap();
+            let entry = unsafe { self.get_column_unchecked(i) };
             columns.push(entry);
         }
 
@@ -320,22 +498,43 @@ where
 }
 
 /// Is implemented by matrices to set entries.
-pub trait MatrixSetEntry<T> {
+pub trait MatrixSetEntry<T>
+where
+    Self: CompareBase<T> + MatrixDimensions + Sized,
+{
     /// Sets the value of a specific matrix entry according to a given value.
-    ///
-    /// Returns an error, if the number of rows or columns is
-    /// greater than the matrix or negative.
     ///
     /// Parameters:
     /// - `row`: specifies the row in which the entry is located.
     /// - `column`: specifies the column in which the entry is located.
     /// - `value`: specifies the value to which the entry is set.
+    ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element, but after conversion they must be within the matrix dimensions.
+    ///
+    /// Errors can occur if the provided indices are not within the dimensions of the provided matrices,
+    /// the bases of the matrix and value are not compatible, e.g. different modulus.
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    ///   if `row` or `column` do not define an entry in the mtrix
+    /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`]
+    ///   if the moduli are different.
     fn set_entry(
         &mut self,
         row: impl TryInto<i64> + Display,
         column: impl TryInto<i64> + Display,
         value: T,
-    ) -> Result<(), MathError>;
+    ) -> Result<(), MathError> {
+        if !self.compare_base(&value) {
+            return Err(self.call_compare_base_error(&value).unwrap());
+        }
+        let (row, column) = evaluate_indices_for_matrix(self, row, column)?;
+        unsafe {
+            self.set_entry_unchecked(row, column, value);
+        }
+        Ok(())
+    }
 
     /// Sets the value of a specific matrix entry according to a given value
     /// without performing any checks, e.g. checking whether the entry is
@@ -354,14 +553,20 @@ pub trait MatrixSetEntry<T> {
 }
 
 /// Is implemented by matrices to set more than a single entry of the matrix.
-pub trait MatrixSetSubmatrix {
+pub trait MatrixSetSubmatrix
+where
+    Self: Sized + MatrixDimensions + CompareBase,
+{
     /// Sets a row of the given matrix to the provided row of `other`.
     ///
     /// Parameters:
     /// - `row_0`: specifies the row of `self` that should be modified
     /// - `other`: specifies the matrix providing the row replacing the row in `self`
     /// - `row_1`: specifies the row of `other` providing
-    ///     the values replacing the original row in `self`
+    ///   the values replacing the original row in `self`
+    ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element, but after conversion they must be within the matrix dimensions.
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified rows is not part of its matrix
@@ -369,15 +574,65 @@ pub trait MatrixSetSubmatrix {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if the provided row index is not defined within the margins of the matrix.
+    ///   if the provided row index is not defined within the margins of the matrix.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the number of columns of `self` and `other` differ.
+    ///   if the number of columns of `self` and `other` differ.
+    /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus) if the base types are
+    ///   not compatible. This can only happen if the base types themselves can mismatch.
     fn set_row(
         &mut self,
         row_0: impl TryInto<i64> + Display,
         other: &Self,
         row_1: impl TryInto<i64> + Display,
-    ) -> Result<(), MathError>;
+    ) -> Result<(), MathError> {
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
+        }
+
+        let num_cols_0 = self.get_num_columns();
+        let num_cols_1 = other.get_num_columns();
+        if num_cols_0 != num_cols_1 {
+            return Err(MathError::MismatchingMatrixDimension(format!(
+                "as set_row was called on two matrices with different number of rows/columns {num_cols_0} and {num_cols_1}",
+            )));
+        }
+
+        let row_0 = evaluate_index_for_vector(row_0, self.get_num_rows())?;
+        let row_1 = evaluate_index_for_vector(row_1, other.get_num_rows())?;
+
+        unsafe {
+            self.set_row_unchecked(row_0, other, row_1);
+        }
+
+        Ok(())
+    }
+    /// Sets a row of the given matrix to the provided row of `other`.
+    ///
+    /// Parameters:
+    /// - `row_0`: specifies the row of `self` that should be modified
+    /// - `other`: specifies the matrix providing the row replacing the row in `self`
+    /// - `row_1`: specifies the row of `other` providing
+    ///   the values replacing the original row in `self`
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected rows are part
+    /// of the matrices, the columns are of the same length and the base types are the same.
+    /// If not, memory leaks, unexpected panics, etc. might occur.
+    unsafe fn set_row_unchecked(&mut self, row_0: i64, other: &Self, row_1: i64) {
+        unsafe {
+            self.set_submatrix_unchecked(
+                row_0,
+                0,
+                row_0 + 1,
+                self.get_num_columns(),
+                other,
+                row_1,
+                0,
+                row_1 + 1,
+                other.get_num_columns(),
+            );
+        }
+    }
 
     /// Sets a column of the given matrix to the provided column of `other`.
     ///
@@ -385,7 +640,10 @@ pub trait MatrixSetSubmatrix {
     /// - `col_0`: specifies the column of `self` that should be modified
     /// - `other`: specifies the matrix providing the column replacing the column in `self`
     /// - `col_1`: specifies the column of `other` providing
-    ///     the values replacing the original column in `self`
+    ///   the values replacing the original column in `self`
+    ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element, but after conversion they must be within the matrix dimensions.
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// Otherwise, a [`MathError`] is returned if one of the specified columns is not part of its matrix
@@ -393,15 +651,192 @@ pub trait MatrixSetSubmatrix {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if the provided column index is not defined within the margins of the matrix.
+    ///   if the provided column index is not defined within the margins of the matrix.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the number of rows of `self` and `other` differ.
+    ///   if the number of rows of `self` and `other` differ.
+    /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus) if the base types are
+    ///   not compatible. This can only happen if the base types themselves can mismatch.
     fn set_column(
         &mut self,
         col_0: impl TryInto<i64> + Display,
         other: &Self,
         col_1: impl TryInto<i64> + Display,
-    ) -> Result<(), MathError>;
+    ) -> Result<(), MathError> {
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
+        }
+
+        let num_rows_0 = self.get_num_rows();
+        let num_rows_1 = other.get_num_rows();
+        if num_rows_0 != num_rows_1 {
+            return Err(MathError::MismatchingMatrixDimension(format!(
+                "as set_row was called on two matrices with different number of rows/columns {num_rows_0} and {num_rows_1}",
+            )));
+        }
+
+        let col_0 = evaluate_index_for_vector(col_0, self.get_num_columns())?;
+        let col_1 = evaluate_index_for_vector(col_1, other.get_num_columns())?;
+
+        unsafe {
+            self.set_column_unchecked(col_0, other, col_1);
+        }
+
+        Ok(())
+    }
+
+    /// Sets a column of the given matrix to the provided column of `other`.
+    ///
+    /// Parameters:
+    /// - `col_0`: specifies the column of `self` that should be modified
+    /// - `other`: specifies the matrix providing the column replacing the column in `self`
+    /// - `col_1`: specifies the column of `other` providing
+    ///   the values replacing the original column in `self`
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected columns are part
+    /// of the matrices, the columns are of the same length and the base types are the same.
+    /// If not, memory leaks, unexpected panics, etc. might occur.
+    unsafe fn set_column_unchecked(&mut self, col_0: i64, other: &Self, col_1: i64) {
+        unsafe {
+            self.set_submatrix_unchecked(
+                0,
+                col_0,
+                self.get_num_rows(),
+                col_0 + 1,
+                other,
+                0,
+                col_1,
+                self.get_num_rows(),
+                col_1 + 1,
+            );
+        }
+    }
+
+    /// Sets the matrix entries in `self` to entries defined in `other`.
+    /// The entries in `self` starting from `(row_self_start, col_self_start)` are set to be
+    /// the entries from the submatrix from `other` defined by `(row_other_start, col_other_start)`
+    /// to `(row_other_end, col_other_end)` (inclusively).
+    /// The original matrix must have sufficiently many entries to contain the defined submatrix.
+    ///
+    /// Parameters:
+    /// `row_self_start`: the starting row of the matrix in which to set a submatrix
+    /// `col_self_start`: the starting column of the matrix in which to set a submatrix
+    /// `other`: the matrix from where to take the submatrix to set
+    /// `row_other_start`: the starting row of the specified submatrix
+    /// `col_other_start`: the starting column of the specified submatrix
+    /// `row_other_end`: the ending row of the specified submatrix
+    /// `col_other_end`:the ending column of the specified submatrix
+    ///
+    /// Negative indices can be used to index from the back, e.g., `-1` for
+    /// the last element, but after conversion they must be within the matrix dimensions.
+    ///
+    /// Sets the submatrix of `self`, starting from the specified starting row and column
+    /// to the submatrix defined in `other` by the provided indices (inclusively).
+    /// Errors can occur if the provided indices are not within the dimensions of the provided matrices,
+    /// the bases of the matrices are not compatible, e.g. different modulus or if the `self` can not
+    /// contain the specified submatrix from `other`.
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
+    ///   if any provided row or column is larger than the matrix or if entries of `self` would have to be
+    ///   set that are not within `self`.
+    /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus) if the base types are
+    ///   not compatible. This can only happen if the base types themselves can mismatch.
+    ///
+    /// # Panics ...
+    /// - if `row_other_start > row_other_end` or `col_other_start > col_other_end`.
+    #[allow(clippy::too_many_arguments)]
+    fn set_submatrix(
+        &mut self,
+        row_self_start: impl TryInto<i64> + Display,
+        col_self_start: impl TryInto<i64> + Display,
+        other: &Self,
+        row_other_start: impl TryInto<i64> + Display,
+        col_other_start: impl TryInto<i64> + Display,
+        row_other_end: impl TryInto<i64> + Display,
+        col_other_end: impl TryInto<i64> + Display,
+    ) -> Result<(), MathError> {
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
+        }
+
+        let (row_self_start, col_self_start) =
+            evaluate_indices_for_matrix(self, row_self_start, col_self_start)?;
+        let (row_other_start, col_other_start) =
+            evaluate_indices_for_matrix(other, row_other_start, col_other_start)?;
+        let (row_other_end, col_other_end) =
+            evaluate_indices_for_matrix(other, row_other_end, col_other_end)?;
+
+        assert!(
+                row_other_end >= row_other_start,
+                "The number of rows must be positive, i.e. row_other_end ({row_other_end}) must be greater or equal row_other_start ({row_other_start})"
+            );
+
+        assert!(
+                col_other_end >= col_other_start,
+                "The number of columns must be positive, i.e. col_other_end ({col_other_end}) must be greater or equal col_other_start ({col_other_start})"
+            );
+
+        // increase both values to have an inclusive capturing of the matrix entries
+        let nr_rows = row_other_end - row_other_start;
+        let nr_cols = col_other_end - col_other_start;
+        // check if all entries that have to be set are contained in `self`
+        let row_self_end =
+            evaluate_index_for_vector(row_self_start + nr_rows, self.get_num_rows())?;
+        let col_self_end =
+            evaluate_index_for_vector(col_self_start + nr_cols, self.get_num_columns())?;
+        let (row_other_end, col_other_end) = (row_other_end + 1, col_other_end + 1);
+        let (row_self_end, col_self_end) = (row_self_end + 1, col_self_end + 1);
+
+        unsafe {
+            self.set_submatrix_unchecked(
+                row_self_start,
+                col_self_start,
+                row_self_end,
+                col_self_end,
+                other,
+                row_other_start,
+                col_other_start,
+                row_other_end,
+                col_other_end,
+            );
+        }
+
+        Ok(())
+    }
+
+    /// Sets the matrix entries in `self` to entries defined in `other`.
+    /// The entries in `self` starting from `(row_self_start, col_self_start)` up to
+    /// `(row_self_end, col_self_end)`are set to be
+    /// the entries from the submatrix from `other` defined by `(row_other_start, col_other_start)`
+    /// to `(row_other_end, col_other_end)` (exclusively).
+    ///
+    /// Parameters:
+    /// `row_self_start`: the starting row of the matrix in which to set a submatrix
+    /// `col_self_start`: the starting column of the matrix in which to set a submatrix
+    /// `other`: the matrix from where to take the submatrix to set
+    /// `row_other_start`: the starting row of the specified submatrix
+    /// `col_other_start`: the starting column of the specified submatrix
+    /// `row_other_end`: the ending row of the specified submatrix
+    /// `col_other_end`:the ending column of the specified submatrix
+    ///
+    /// # Safety
+    /// To use this function safely, make sure that the selected submatrices are part
+    /// of the matrices, the submatrices are of the same dimensions and the base types are the same.
+    /// If not, memory leaks, unexpected panics, etc. might occur.
+    #[allow(clippy::too_many_arguments)]
+    unsafe fn set_submatrix_unchecked(
+        &mut self,
+        row_self_start: i64,
+        col_self_start: i64,
+        row_self_end: i64,
+        col_self_end: i64,
+        other: &Self,
+        row_other_start: i64,
+        col_other_start: i64,
+        row_other_end: i64,
+        col_other_end: i64,
+    );
 }
 
 pub trait MatrixSwaps {
@@ -418,7 +853,7 @@ pub trait MatrixSwaps {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::OutOfBounds`]
-    ///     if row or column are greater than the matrix size.
+    ///   if row or column are greater than the matrix size.
     fn swap_entries(
         &mut self,
         row_0: impl TryInto<i64> + Display,
@@ -438,7 +873,7 @@ pub trait MatrixSwaps {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if one of the given rows is greater than the matrix or negative.
+    ///   if one of the given rows is not in the matrix.
     fn swap_rows(
         &mut self,
         row_0: impl TryInto<i64> + Display,
@@ -456,7 +891,7 @@ pub trait MatrixSwaps {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds)
-    ///     if one of the given columns is greater than the matrix or negative.
+    ///   if one of the given columns is not in the matrix.
     fn swap_columns(
         &mut self,
         col_0: impl TryInto<i64> + Display,
@@ -486,8 +921,8 @@ pub trait Concatenate {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the matrices can not be concatenated due to mismatching dimensions
+    ///   [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
+    ///   if the matrices can not be concatenated due to mismatching dimensions
     fn concat_vertical(self, other: Self) -> Result<Self::Output, MathError>;
 
     /// Concatenates `self` with `other` horizontally.
@@ -497,8 +932,8 @@ pub trait Concatenate {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
-    ///     [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the matrices can not be concatenated due to mismatching dimensions
+    ///   [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
+    ///   if the matrices can not be concatenated due to mismatching dimensions
     fn concat_horizontal(self, other: Self) -> Result<Self::Output, MathError>;
 }
 
@@ -614,7 +1049,7 @@ pub trait IntoCoefficientEmbedding<T> {
     ///
     /// Parameters:
     /// - `size`: determines the length of the object in which the coefficients are
-    ///     embedded, e.g. length of the vector
+    ///   embedded, e.g. length of the vector
     fn into_coefficient_embedding(self, size: impl Into<i64>) -> T;
 }
 

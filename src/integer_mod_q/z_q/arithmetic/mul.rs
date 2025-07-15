@@ -13,15 +13,104 @@ use crate::{
     error::MathError,
     integer::Z,
     macros::arithmetics::{
+        arithmetic_assign_between_types, arithmetic_assign_trait_borrowed_to_owned,
         arithmetic_between_types_zq, arithmetic_trait_borrowed_to_owned,
         arithmetic_trait_mixed_borrowed_owned,
     },
+    traits::CompareBase,
 };
 use flint_sys::{
     fmpz::fmpz,
-    fmpz_mod::{fmpz_mod_mul, fmpz_mod_mul_fmpz},
+    fmpz_mod::{fmpz_mod_mul, fmpz_mod_mul_fmpz, fmpz_mod_mul_si, fmpz_mod_mul_ui},
 };
-use std::ops::Mul;
+use std::ops::{Mul, MulAssign};
+
+impl MulAssign<&Zq> for Zq {
+    /// Computes the multiplication of `self` and `other` reusing
+    /// the memory of `self`.
+    /// [`MulAssign`] can be used on [`Zq`] in combination with
+    /// [`Zq`], [`Z`], [`i64`], [`i32`], [`i16`], [`i8`], [`u64`], [`u32`], [`u16`] and [`u8`].
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to multiply to `self`
+    ///
+    /// Returns the product of both numbers modulo `q` as a [`Zq`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{integer_mod_q::Zq, integer::Z};
+    ///
+    /// let mut a: Zq = Zq::from((23, 42));
+    /// let b: Zq = Zq::from((1, 42));
+    /// let c: Z = Z::from(5);
+    ///
+    /// a *= &b;
+    /// a *= b;
+    /// a *= 5;
+    /// a *= c;
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the moduli of both [`Zq`] mismatch.
+    fn mul_assign(&mut self, other: &Self) {
+        if !self.compare_base(other) {
+            panic!("{}", self.call_compare_base_error(other).unwrap());
+        }
+
+        unsafe {
+            fmpz_mod_mul(
+                &mut self.value.value,
+                &self.value.value,
+                &other.value.value,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
+    }
+}
+impl MulAssign<i64> for Zq {
+    /// Documentation at [`Zq::mul_assign`].
+    fn mul_assign(&mut self, other: i64) {
+        unsafe {
+            fmpz_mod_mul_si(
+                &mut self.value.value,
+                &self.value.value,
+                other,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
+    }
+}
+impl MulAssign<u64> for Zq {
+    /// Documentation at [`Zq::mul_assign`].
+    fn mul_assign(&mut self, other: u64) {
+        unsafe {
+            fmpz_mod_mul_ui(
+                &mut self.value.value,
+                &self.value.value,
+                other,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
+    }
+}
+impl MulAssign<&Z> for Zq {
+    /// Documentation at [`Zq::mul_assign`].
+    fn mul_assign(&mut self, other: &Z) {
+        unsafe {
+            fmpz_mod_mul_fmpz(
+                &mut self.value.value,
+                &self.value.value,
+                &other.value,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, Zq, Zq);
+arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, Zq, Z);
+arithmetic_assign_between_types!(MulAssign, mul_assign, Zq, i64, i32 i16 i8);
+arithmetic_assign_between_types!(MulAssign, mul_assign, Zq, u64, u32 u16 u8);
 
 impl Mul for &Zq {
     type Output = Zq;
@@ -74,13 +163,10 @@ impl Zq {
     /// ```
     /// # Errors
     /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
-    ///     both [`Zq`] mismatch.
+    ///   both [`Zq`] mismatch.
     pub fn mul_safe(&self, other: &Self) -> Result<Zq, MathError> {
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to multiply '{self}' and '{other}'. 
-                If the modulus should be ignored please convert into a Z beforehand."
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
         let mut out = Zq::from((1, &self.modulus));
         unsafe {
@@ -143,6 +229,69 @@ impl Mul<&Z> for &Zq {
 arithmetic_trait_borrowed_to_owned!(Mul, mul, Zq, Z, Zq);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Zq, Z, Zq);
 arithmetic_between_types_zq!(Mul, mul, Zq, i64 i32 i16 i8 u64 u32 u16 u8);
+
+#[cfg(test)]
+mod test_mul_assign {
+    use crate::{integer::Z, integer_mod_q::Zq};
+
+    /// Ensure that `mul_assign` works for small numbers.
+    #[test]
+    fn correct_small() {
+        let mut a: Zq = Zq::from((-1, 7));
+        let b = Zq::from((-1, 7));
+        let c = Zq::from((0, 7));
+
+        a *= &b;
+        assert_eq!(Zq::from((1, 7)), a);
+        a *= &b;
+        assert_eq!(Zq::from((6, 7)), a);
+        a *= &c;
+        assert_eq!(Zq::from((0, 7)), a);
+    }
+
+    /// Ensure that `mul_assign` works for large numbers.
+    #[test]
+    fn correct_large() {
+        let mut a = Zq::from((i64::MAX, u64::MAX));
+        let b = Zq::from((-1, u64::MAX));
+
+        a *= &b;
+        assert_eq!(Zq::from((9223372036854775808u64, u64::MAX)), a);
+        a *= b;
+        assert_eq!(Zq::from((i64::MAX, u64::MAX)), a);
+    }
+
+    /// Ensure that `mul_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let mut a = Zq::from((3, 7));
+        let b = Zq::from((1, 7));
+        let c = Z::from(1);
+
+        a *= &b;
+        a *= b;
+        a *= &c;
+        a *= c;
+        a *= 1_u8;
+        a *= 1_u16;
+        a *= 1_u32;
+        a *= 1_u64;
+        a *= 1_i8;
+        a *= 1_i16;
+        a *= 1_i32;
+        a *= 1_i64;
+    }
+
+    /// Ensures that mismatching moduli result in a panic.
+    #[test]
+    #[should_panic]
+    fn mismatching_moduli() {
+        let mut a = Zq::from((3, 7));
+        let b = Zq::from((1, 8));
+
+        a *= b;
+    }
+}
 
 #[cfg(test)]
 mod test_mul {

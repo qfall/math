@@ -9,6 +9,13 @@
 //! This module contains implementations for comparison of [`MatZq`].
 
 use super::MatZq;
+use crate::{
+    error::MathError,
+    integer::{MatZ, Z},
+    integer_mod_q::Zq,
+    macros::compare_base::{compare_base_default, compare_base_get_mod, compare_base_impl},
+    traits::CompareBase,
+};
 use flint_sys::{fmpz::fmpz_equal, fmpz_mat::fmpz_mat_equal};
 
 impl PartialEq for MatZq {
@@ -45,6 +52,10 @@ impl PartialEq for MatZq {
         }
     }
 }
+
+compare_base_get_mod!(MatZq for MatZq Zq);
+compare_base_default!(MatZq for MatZ);
+impl<Integer: Into<Z>> CompareBase<Integer> for MatZq {}
 
 // With the [`Eq`] trait, `a == a` is always true.
 // This is not guaranteed by the [`PartialEq`] trait.
@@ -132,5 +143,62 @@ mod test_partial_eq {
 
         assert_ne!(c, d);
         assert_ne!(c, e);
+    }
+}
+
+/// Test that the [`CompareBase`] trait uses an actual implementation.
+#[cfg(test)]
+mod test_compare_base {
+    use crate::{
+        integer::{MatZ, Z},
+        integer_mod_q::{MatZq, Zq},
+        traits::CompareBase,
+    };
+
+    /// Ensures that the [`CompareBase`] is available for all types it would be checked against
+    /// where no comparison is needed
+    #[test]
+    fn availability_without_comparisons() {
+        let one_1 = MatZq::new(3, 4, 17);
+
+        assert!(one_1.compare_base(&MatZ::new(1, 1)));
+        assert!(one_1.compare_base(&Z::ONE));
+        assert!(one_1.compare_base(&0_i8));
+        assert!(one_1.compare_base(&0_i16));
+        assert!(one_1.compare_base(&0_i32));
+        assert!(one_1.compare_base(&0_i64));
+        assert!(one_1.compare_base(&0_u8));
+        assert!(one_1.compare_base(&0_u16));
+        assert!(one_1.compare_base(&0_u32));
+        assert!(one_1.compare_base(&0_u64));
+
+        assert!(one_1.call_compare_base_error(&MatZ::new(1, 1)).is_none());
+        assert!(one_1.call_compare_base_error(&Z::ONE).is_none());
+        assert!(one_1.call_compare_base_error(&0_i8).is_none());
+        assert!(one_1.call_compare_base_error(&0_i16).is_none());
+        assert!(one_1.call_compare_base_error(&0_i32).is_none());
+        assert!(one_1.call_compare_base_error(&0_i64).is_none());
+        assert!(one_1.call_compare_base_error(&0_u8).is_none());
+        assert!(one_1.call_compare_base_error(&0_u16).is_none());
+        assert!(one_1.call_compare_base_error(&0_u32).is_none());
+        assert!(one_1.call_compare_base_error(&0_u64).is_none());
+    }
+
+    /// Ensures that the [`CompareBase`] is available for all types it would be checked against
+    /// where comparison is needed
+    #[test]
+    fn availability_with_comparisons() {
+        let one_1 = MatZq::new(3, 4, 17);
+
+        assert!(one_1.compare_base(&one_1));
+        assert!(one_1.compare_base(&Zq::from((3, 17))));
+        assert!(!one_1.compare_base(&Zq::from((3, 18))));
+        assert!(one_1.compare_base(&MatZq::new(1, 1, 17)));
+        assert!(!one_1.compare_base(&MatZq::new(1, 1, 18)));
+
+        assert!(one_1.call_compare_base_error(&Zq::from((3, 18))).is_some());
+        assert!(one_1
+            .call_compare_base_error(&MatZq::new(1, 1, 18))
+            .is_some());
     }
 }

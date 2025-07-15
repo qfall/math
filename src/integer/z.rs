@@ -33,7 +33,7 @@ mod unsafe_functions;
 ///
 /// Attributes:
 /// - `value`: holds [FLINT](https://flintlib.org/)'s [struct](fmpz)
-///     for an integer value
+///   for an integer value
 ///
 /// # Implicit Typecasting
 /// Most of our functions take as input values of type [`Into<Z>`].

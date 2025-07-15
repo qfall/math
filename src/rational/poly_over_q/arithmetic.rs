@@ -10,6 +10,8 @@
 //! such as addition or subtraction.
 
 mod add;
+mod div_scalar;
 mod exp;
 mod mul;
+mod mul_scalar;
 mod sub;

@@ -9,9 +9,8 @@
 //! Implementations to get information about a [`PolyOverZ`].
 
 use super::PolyOverZ;
-use crate::{error::MathError, integer::Z, traits::GetCoefficient, utils::index::evaluate_index};
+use crate::{integer::Z, traits::GetCoefficient};
 use flint_sys::fmpz_poly::{fmpz_poly_degree, fmpz_poly_get_coeff_fmpz};
-use std::fmt::Display;
 
 impl GetCoefficient<Z> for PolyOverZ {
     /// Returns the coefficient of a polynomial [`PolyOverZ`] as a [`Z`].
@@ -21,7 +20,7 @@ impl GetCoefficient<Z> for PolyOverZ {
     /// Parameters:
     /// - `index`: the index of the coefficient to get (has to be positive)
     ///
-    /// Returns the coefficient as a [`Z`], or a [`MathError`] if the provided index
+    /// Returns the coefficient as a [`Z`], or a [`MathError`](crate::error::MathError) if the provided index
     /// is negative and therefore invalid, or it does not fit into an [`i64`].
     ///
     /// # Examples
@@ -33,7 +32,7 @@ impl GetCoefficient<Z> for PolyOverZ {
     /// let poly = PolyOverZ::from_str("4  0 1 2 3").unwrap();
     ///
     /// let coeff_0 = poly.get_coeff(0).unwrap();
-    /// let coeff_1 = poly.get_coeff(1).unwrap();
+    /// let coeff_1 = unsafe{ poly.get_coeff_unchecked(1) };
     /// let coeff_4 = poly.get_coeff(4).unwrap();
     ///
     /// assert_eq!(Z::ZERO, coeff_0);
@@ -41,14 +40,13 @@ impl GetCoefficient<Z> for PolyOverZ {
     /// assert_eq!(Z::ZERO, coeff_4);
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    ///     either the index is negative or it does not fit into an [`i64`].
-    fn get_coeff(&self, index: impl TryInto<i64> + Display) -> Result<Z, MathError> {
+    /// # Safety
+    /// To use this function safely, make sure that the selected index
+    /// is greater or equal than `0`.
+    unsafe fn get_coeff_unchecked(&self, index: i64) -> Z {
         let mut out = Z::default();
-        let index = evaluate_index(index)?;
         unsafe { fmpz_poly_get_coeff_fmpz(&mut out.value, &self.poly, index) }
-        Ok(out)
+        out
     }
 }
 

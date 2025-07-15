@@ -12,7 +12,7 @@ use crate::{
     error::MathError,
     integer::Z,
     integer_mod_q::{MatZq, Zq},
-    traits::MatrixDimensions,
+    traits::{CompareBase, MatrixDimensions},
 };
 use flint_sys::fmpz::fmpz_addmul;
 
@@ -43,11 +43,11 @@ impl MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`VectorFunctionCalledOnNonVector`](MathError::VectorFunctionCalledOnNonVector)
-    ///     if the given [`MatZq`] instance is not a (row or column) vector.
+    ///   if the given [`MatZq`] instance is not a (row or column) vector.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
-    ///     if the given vectors have different lengths.
+    ///   if the given vectors have different lengths.
     /// - Returns a [`MathError`] of type [`MismatchingModulus`](MathError::MismatchingModulus)
-    ///     if the provided matrices have different moduli.
+    ///   if the provided matrices have different moduli.
     pub fn dot_product(&self, other: &Self) -> Result<Zq, MathError> {
         if !self.is_vector() {
             return Err(MathError::VectorFunctionCalledOnNonVector(
@@ -62,12 +62,8 @@ impl MatZq {
                 other.get_num_columns(),
             ));
         }
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "dot_product needs matching moduli of both matrices, but they differ: {}, {}",
-                self.get_mod(),
-                other.get_mod(),
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
 
         let self_entries = self.collect_entries();

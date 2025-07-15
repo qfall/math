@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Contains functions to sort [`MatZq`] by.
+//! Contains functions to sort [`MatZq`].
 
 use super::MatZq;
 use crate::{
@@ -21,7 +21,7 @@ impl MatZq {
     ///
     /// Parameters:
     /// - `cond_func`: computes values implementing [`Ord`] over the columns of the specified matrix.
-    ///     These values are then used to re-order / sort the rows of the matrix.
+    ///   These values are then used to re-order / sort the rows of the matrix.
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// A [`MathError`] is returned if the execution of `cond_func` returned an error.
@@ -48,9 +48,8 @@ impl MatZq {
     ///
     /// fn custom_cond_func(matrix: &MatZq) -> Result<Z, MathError> {
     ///     let mut sum = Z::ZERO;
-    ///     for row in 0..matrix.get_num_rows() {
-    ///         let entry: Z = matrix.get_entry(row, 0)?;
-    ///         sum = sum + entry;
+    ///     for entry in MatrixGetEntry::<Z>::get_entries_rowwise(matrix){
+    ///         sum += entry;
     ///     }
     ///     Ok(sum)
     /// }
@@ -68,7 +67,7 @@ impl MatZq {
     ) -> Result<Self, MathError> {
         let mut condition_values = vec![];
         for col in 0..self.get_num_columns() {
-            condition_values.push(cond_func(&self.get_column(col).unwrap())?);
+            condition_values.push(cond_func(&unsafe { self.get_column_unchecked(col) })?);
         }
 
         let mut id_vec: Vec<usize> = (0..self.get_num_columns() as usize).collect();
@@ -76,7 +75,8 @@ impl MatZq {
 
         let mut out = Self::new(self.get_num_rows(), self.get_num_columns(), self.get_mod());
         for (col, item) in id_vec.iter().enumerate() {
-            out.set_column(col, self, *item).unwrap();
+            let (col_0, col_1) = (col as i64, *item as i64);
+            unsafe { out.set_column_unchecked(col_0, self, col_1) };
         }
 
         Ok(out)
@@ -88,7 +88,7 @@ impl MatZq {
     ///
     /// Parameters:
     /// - `cond_func`: computes values implementing [`Ord`] over the columns of the specified matrix.
-    ///     These values are then used to re-order / sort the columns of the matrix.
+    ///   These values are then used to re-order / sort the columns of the matrix.
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
     /// A [`MathError`] is returned if the execution of `cond_func` returned an error.
@@ -115,9 +115,8 @@ impl MatZq {
     ///
     /// fn custom_cond_func(matrix: &MatZq) -> Result<Z, MathError> {
     ///     let mut sum = Z::ZERO;
-    ///     for col in 0..matrix.get_num_columns() {
-    ///         let entry: Z = matrix.get_entry(0, col)?;
-    ///         sum = sum + entry;
+    ///     for entry in MatrixGetEntry::<Z>::get_entries_rowwise(matrix){
+    ///         sum += entry;
     ///     }
     ///     Ok(sum)
     /// }
@@ -135,14 +134,15 @@ impl MatZq {
     ) -> Result<Self, MathError> {
         let mut condition_values = vec![];
         for row in 0..self.get_num_rows() {
-            condition_values.push(cond_func(&self.get_row(row).unwrap())?);
+            condition_values.push(cond_func(&unsafe { self.get_row_unchecked(row) })?);
         }
         let mut id_vec: Vec<usize> = (0..self.get_num_rows() as usize).collect();
         id_vec.sort_by_key(|x| &condition_values[*x]);
 
         let mut out = Self::new(self.get_num_rows(), self.get_num_columns(), self.get_mod());
         for (row, item) in id_vec.iter().enumerate() {
-            out.set_row(row, self, *item).unwrap();
+            let (row_0, row_1) = (row as i64, *item as i64);
+            unsafe { out.set_row_unchecked(row_0, self, row_1) };
         }
 
         Ok(out)

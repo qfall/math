@@ -41,7 +41,7 @@ mod vector;
 ///
 /// Attributes:
 /// - `matrix`: holds [FLINT](https://flintlib.org/)'s [struct](fmpz_mat_struct)
-///     of the [`Z`](crate::integer::Z) matrix
+///   of the [`Z`](crate::integer::Z) matrix
 ///
 /// # Examples
 /// ## Matrix usage

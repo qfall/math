@@ -16,15 +16,18 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 
 mod arithmetic;
+mod cmp;
 mod coefficient_embedding;
 mod concat;
 mod default;
 mod from;
 mod get;
+mod norm;
 mod properties;
 mod reduce;
 mod sample;
 mod set;
+mod sort;
 mod tensor;
 mod to_string;
 mod transpose;

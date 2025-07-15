@@ -33,10 +33,10 @@ impl PolyOverQ {
     /// assert_eq!(PolyOverZ::from_str("2  -3 1").unwrap(), value.floor());
     /// ```
     pub fn floor(&self) -> PolyOverZ {
-        let mut out = PolyOverZ::from(self.get_coeff(0).unwrap().floor());
+        let mut out = PolyOverZ::from(unsafe { self.get_coeff_unchecked(0).floor() });
         for i in 1..self.get_degree() + 1 {
-            let coeff = self.get_coeff(i).unwrap().floor();
-            out.set_coeff(i, coeff).unwrap();
+            let coeff = unsafe { self.get_coeff_unchecked(i).floor() };
+            unsafe { out.set_coeff_unchecked(i, coeff) };
         }
 
         out
@@ -58,10 +58,10 @@ impl PolyOverQ {
     /// assert_eq!(PolyOverZ::from_str("2  -2 1").unwrap(), value.ceil());
     /// ```
     pub fn ceil(&self) -> PolyOverZ {
-        let mut out = PolyOverZ::from(self.get_coeff(0).unwrap().ceil());
+        let mut out = PolyOverZ::from(unsafe { self.get_coeff_unchecked(0).ceil() });
         for i in 1..self.get_degree() + 1 {
-            let coeff = self.get_coeff(i).unwrap().ceil();
-            out.set_coeff(i, coeff).unwrap();
+            let coeff = unsafe { self.get_coeff_unchecked(i).ceil() };
+            unsafe { out.set_coeff_unchecked(i, coeff) };
         }
 
         out
@@ -84,11 +84,11 @@ impl PolyOverQ {
     /// assert_eq!(PolyOverZ::from_str("2  -2 1").unwrap(), value.round());
     /// ```
     pub fn round(&self) -> PolyOverZ {
-        let mut out = PolyOverZ::from(self.get_coeff(0).unwrap().round());
+        let mut out = PolyOverZ::from(unsafe { self.get_coeff_unchecked(0).round() });
 
         for i in 1..self.get_degree() + 1 {
-            let coeff = self.get_coeff(i).unwrap().round();
-            out.set_coeff(i, coeff).unwrap();
+            let coeff = unsafe { self.get_coeff_unchecked(i).round() };
+            unsafe { out.set_coeff_unchecked(i, coeff) };
         }
 
         out
@@ -101,7 +101,7 @@ impl PolyOverQ {
     /// Parameters:
     /// - `n`: the security parameter; also specifies the range from which is sampled
     /// - `r`: specifies the Gaussian parameter, which is proportional
-    ///     to the standard deviation `sigma * sqrt(2 * pi) = r`
+    ///   to the standard deviation `sigma * sqrt(2 * pi) = r`
     ///
     /// Returns the rounded polynomial as a [`PolyOverZ`] or an error if `n <= 1` or `r <= 0`.
     ///
@@ -116,13 +116,13 @@ impl PolyOverQ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///     if `n <= 1` or `r <= 0`.
+    ///   if `n <= 1` or `r <= 0`.
     ///
     /// This function implements randomized rounding according to:
     /// - \[1\] Peikert, C. (2010, August).
-    ///     An efficient and parallel Gaussian sampler for lattices.
-    ///     In: Annual Cryptology Conference (pp. 80-97).
-    ///     <https://link.springer.com/chapter/10.1007/978-3-642-14623-7_5>
+    ///   An efficient and parallel Gaussian sampler for lattices.
+    ///   In: Annual Cryptology Conference (pp. 80-97).
+    ///   <https://link.springer.com/chapter/10.1007/978-3-642-14623-7_5>
     pub fn randomized_rounding(
         &self,
         r: impl Into<Q>,
@@ -130,10 +130,11 @@ impl PolyOverQ {
     ) -> Result<PolyOverZ, MathError> {
         let r = r.into();
         let n = n.into();
-        let mut out = PolyOverZ::from(self.get_coeff(0).unwrap().randomized_rounding(&r, &n)?);
+        let mut out =
+            PolyOverZ::from(unsafe { self.get_coeff_unchecked(0).randomized_rounding(&r, &n)? });
         for i in 1..self.get_degree() + 1 {
-            let coeff = self.get_coeff(i).unwrap().randomized_rounding(&r, &n)?;
-            out.set_coeff(i, coeff).unwrap();
+            let coeff = unsafe { self.get_coeff_unchecked(i).randomized_rounding(&r, &n)? };
+            unsafe { out.set_coeff_unchecked(i, coeff) };
         }
 
         Ok(out)

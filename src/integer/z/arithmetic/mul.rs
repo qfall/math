@@ -12,6 +12,7 @@ use super::super::Z;
 use crate::{
     integer_mod_q::Zq,
     macros::arithmetics::{
+        arithmetic_assign_between_types, arithmetic_assign_trait_borrowed_to_owned,
         arithmetic_between_types, arithmetic_trait_borrowed_to_owned,
         arithmetic_trait_mixed_borrowed_owned,
     },
@@ -19,10 +20,53 @@ use crate::{
 };
 use flint_sys::{
     fmpq::fmpq_mul_fmpz,
-    fmpz::{fmpz, fmpz_mul},
+    fmpz::{fmpz, fmpz_mul, fmpz_mul_si, fmpz_mul_ui},
     fmpz_mod::fmpz_mod_mul_fmpz,
 };
-use std::ops::Mul;
+use std::ops::{Mul, MulAssign};
+
+impl MulAssign<&Z> for Z {
+    /// Computes the multiplication of `self` and `other` reusing
+    /// the memory of `self`.
+    /// [`MulAssign`] can be used on [`Z`] in combination with
+    /// [`Z`], [`i64`], [`i32`], [`i16`], [`i8`], [`u64`], [`u32`], [`u16`] and [`u8`].
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to multiply to `self`
+    ///
+    /// Returns the product of both numbers as a [`Z`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    ///
+    /// let mut a: Z = Z::from(42);
+    /// let b: Z = Z::from(24);
+    ///
+    /// a *= &b;
+    /// a *= b;
+    /// a *= 5;
+    /// ```
+    fn mul_assign(&mut self, other: &Self) {
+        unsafe { fmpz_mul(&mut self.value, &self.value, &other.value) };
+    }
+}
+impl MulAssign<i64> for Z {
+    /// Documentation at [`Z::mul_assign`].
+    fn mul_assign(&mut self, other: i64) {
+        unsafe { fmpz_mul_si(&mut self.value, &self.value, other) };
+    }
+}
+impl MulAssign<u64> for Z {
+    /// Documentation at [`Z::mul_assign`].
+    fn mul_assign(&mut self, other: u64) {
+        unsafe { fmpz_mul_ui(&mut self.value, &self.value, other) };
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, Z, Z);
+arithmetic_assign_between_types!(MulAssign, mul_assign, Z, i64, i32 i16 i8);
+arithmetic_assign_between_types!(MulAssign, mul_assign, Z, u64, u32 u16 u8);
 
 impl Mul for &Z {
     type Output = Z;
@@ -139,6 +183,57 @@ impl Mul<&Zq> for &Z {
 
 arithmetic_trait_borrowed_to_owned!(Mul, mul, Z, Zq, Zq);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Z, Zq, Zq);
+
+#[cfg(test)]
+mod test_mul_assign {
+    use crate::integer::Z;
+
+    /// Ensure that `mul_assign` works for small numbers.
+    #[test]
+    fn correct_small() {
+        let mut a: Z = Z::MINUS_ONE;
+        let b = Z::MINUS_ONE;
+        let c = Z::ZERO;
+
+        a *= &b;
+        assert_eq!(1, a);
+        a *= &b;
+        assert_eq!(-1, a);
+        a *= &c;
+        assert_eq!(0, a);
+        a *= &c;
+    }
+
+    /// Ensure that `mul_assign` works for large numbers.
+    #[test]
+    fn correct_large() {
+        let mut a: Z = Z::from(i64::MIN);
+        let mut b = Z::from(u64::MAX);
+
+        a *= Z::MINUS_ONE;
+        assert_eq!(-1 * Z::from(i64::MIN), a);
+        b *= Z::MINUS_ONE;
+        assert_eq!(-1 * Z::from(u64::MAX), b);
+    }
+
+    /// Ensure that `mul_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let mut a: Z = Z::from(42);
+        let b: Z = Z::from(1);
+
+        a *= &b;
+        a *= b;
+        a *= 1_u8;
+        a *= 1_u16;
+        a *= 1_u32;
+        a *= 1_u64;
+        a *= 1_i8;
+        a *= 1_i16;
+        a *= 1_i32;
+        a *= 1_i64;
+    }
+}
 
 #[cfg(test)]
 mod test_mul_between_types {

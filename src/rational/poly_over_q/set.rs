@@ -9,9 +9,8 @@
 //! Implementations to manipulate a [`PolyOverQ`] polynomial.
 
 use super::PolyOverQ;
-use crate::{error::MathError, rational::Q, traits::SetCoefficient, utils::index::evaluate_index};
+use crate::{rational::Q, traits::SetCoefficient};
 use flint_sys::fmpq_poly::fmpq_poly_set_coeff_fmpq;
-use std::fmt::Display;
 
 impl<Rational: Into<Q>> SetCoefficient<Rational> for PolyOverQ {
     /// Sets the coefficient of a polynomial [`PolyOverQ`].
@@ -24,7 +23,7 @@ impl<Rational: Into<Q>> SetCoefficient<Rational> for PolyOverQ {
     /// - `value`: the new value the index should have
     ///
     /// Returns an empty `Ok` if the action could be performed successfully.
-    /// Otherwise, a [`MathError`] is returned if either the index is negative
+    /// Otherwise, a [`MathError`](crate::error::MathError) is returned if either the index is negative
     /// or it does not fit into an [`i64`].
     ///
     /// # Examples
@@ -38,23 +37,19 @@ impl<Rational: Into<Q>> SetCoefficient<Rational> for PolyOverQ {
     /// let value = Q::from((3, 17));
     ///
     /// assert!(poly.set_coeff(4, &value).is_ok());
+    /// unsafe{ poly.set_coeff_unchecked(5, 3.5_f64) };
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if
-    ///     either the index is negative or it does not fit into an [`i64`].
-    fn set_coeff(
-        &mut self,
-        index: impl TryInto<i64> + Display,
-        value: Rational,
-    ) -> Result<(), MathError> {
+    /// # Safety
+    /// To use this function safely, make sure that the selected index
+    /// is greater or equal than `0` and that the provided value has
+    /// the same base so that they have a matching base.
+    unsafe fn set_coeff_unchecked(&mut self, index: i64, value: Rational) {
         let value = value.into();
-        let index = evaluate_index(index)?;
 
         unsafe {
             fmpq_poly_set_coeff_fmpq(&mut self.poly, index, &value.value);
-        };
-        Ok(())
+        }
     }
 }
 

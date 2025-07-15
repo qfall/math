@@ -78,7 +78,7 @@ impl MatZq {
                 // Save the position of `1` for that column.
                 indices.push((row_nr, column_nr));
 
-                matrix.gauss_row_reduction(row_nr, column_nr, inv);
+                unsafe { matrix.gauss_row_reduction(row_nr, column_nr, inv) };
             } else if let Some(row_nr) =
                 find_not_invertible_entry_column(&matrix, column_nr, &used_rows)
             {
@@ -111,17 +111,21 @@ impl MatZq {
     /// - `row_nr`: the row where the entry is located
     /// - `column_nr`: the column where the entry is located
     /// - `inverse`: the inverse of the entry located at (row_nr, column_nr)
-    fn gauss_row_reduction(&mut self, row_nr: i64, column_nr: i64, inverse: Zq) {
+    ///
+    /// # Safety
+    /// The user must ensure that `row_nr` and `col_nr` refer to entries in `self`.
+    /// Otherwise, unintended behavior can occur.
+    unsafe fn gauss_row_reduction(&mut self, row_nr: i64, column_nr: i64, inverse: Zq) {
         let row = inverse * self.get_row(row_nr).unwrap();
-        self.set_row(row_nr, &row, 0).unwrap();
+        unsafe { self.set_row_unchecked(row_nr, &row, 0) };
 
         // Set all other entries in that column to `0` (gaussian elimination).
         for row_nr in (0..self.get_num_rows()).filter(|x| *x != row_nr) {
-            let old_row = self.get_row(row_nr).unwrap();
+            let old_row = unsafe { self.get_row_unchecked(row_nr) };
             let entry: Z = unsafe { old_row.get_entry_unchecked(0, column_nr) };
             if !entry.is_zero() {
                 let new_row = &old_row - entry * &row;
-                self.set_row(row_nr, &new_row, 0).unwrap();
+                unsafe { self.set_row_unchecked(row_nr, &new_row, 0) };
             }
         }
     }
@@ -192,7 +196,7 @@ impl MatZq {
     ///
     /// # Panics ...
     /// - if the the number of elements in `solutions` is greater than the number
-    ///     of elements in `moduli`.
+    ///   of elements in `moduli`.
     fn crt_mat_zq(&self, mut solutions: Vec<MatZq>, mut moduli: Vec<(Z, u64)>) -> Option<MatZq> {
         while solutions.len() > 1 {
             // Compute Bézout’s identity: a x_1 + b x_2 = 1
@@ -268,7 +272,7 @@ impl MatZq {
             if let Some((row_nr, inv)) =
                 find_invertible_entry_column(&matrix_identity_base_gauss, column_nr, &used_rows)
             {
-                matrix_identity_base_gauss.gauss_row_reduction(row_nr, column_nr, inv);
+                unsafe { matrix_identity_base_gauss.gauss_row_reduction(row_nr, column_nr, inv) };
 
                 if row_count != row_nr {
                     matrix_identity_base_gauss
@@ -311,9 +315,9 @@ impl MatZq {
             self.get_mod(),
         );
         for (current_column, (_row_nr, column_nr)) in indices.iter().enumerate() {
-            invertible_matrix
-                .set_column(current_column, self, *column_nr)
-                .unwrap();
+            unsafe {
+                invertible_matrix.set_column_unchecked(current_column as i64, self, *column_nr)
+            };
         }
 
         // The inverse of the previously picked square matrix consists of the last
@@ -326,13 +330,13 @@ impl MatZq {
             self.get_mod(),
         );
         for row_nr in 0..matrix_identity_gauss.get_num_rows() {
-            matrix_base_inv
-                .set_column(
+            unsafe {
+                matrix_base_inv.set_column_unchecked(
                     row_nr,
                     &matrix_identity_gauss,
                     row_nr + self.get_num_columns(),
                 )
-                .unwrap();
+            };
         }
 
         // Use the method from [\[1\]](<index.html#:~:text=[1]>)
@@ -350,7 +354,7 @@ impl MatZq {
                 &self.get_mod(),
             ));
             x_i = &matrix_base_inv * &b_i;
-            x = x + &x_i * &base.pow(i).unwrap();
+            x += &x_i * &base.pow(i).unwrap();
         }
 
         let mut out = MatZq::new(self.get_num_columns(), 1, self.get_mod());

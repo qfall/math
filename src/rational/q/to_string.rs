@@ -87,7 +87,11 @@ impl Q {
     /// Outputs the decimal representation of a [`Q`] with
     /// the specified number of decimal digits.
     /// If `self` can't be represented exactly, it provides the
-    /// closest value representable with `nr_decimal_digits` rounded towards zero.
+    /// closest value representable with `nr_decimal_digits` rounded
+    /// towards the next representable number.
+    ///
+    /// Notice that, e.g., `0.5` is represented as `0.499...` as [`f64`].
+    /// Therefore, rounding with `nr_decimal_digits = 0` will output `0`.
     ///
     /// **WARNING:** This function converts the [`Q`] value into an [`f64`] before
     /// outputting the decimal representation. Thus, values that can't be represented exactly
@@ -96,7 +100,7 @@ impl Q {
     ///
     /// Parameters:
     /// - `nr_decimal_digits`: specifies the number of decimal digits
-    ///     that will be a part of the output [`String`]
+    ///   that will be a part of the output [`String`]
     ///
     /// Returns a [`String`] of the form `"10.25"` if `nr_decimal_digits = 2`.
     ///
@@ -110,26 +114,7 @@ impl Q {
     /// ```
     pub fn to_string_decimal(&self, nr_decimal_digits: usize) -> String {
         let value = f64::from(self);
-        let mut string = value.to_string();
-        let index_of_dot = string.find(".");
-
-        match (index_of_dot, nr_decimal_digits) {
-            (Some(index), 0) => string.truncate(index + nr_decimal_digits),
-            (Some(index), _) => {
-                if index + nr_decimal_digits + 1 > string.len() {
-                    string.push_str(&str::repeat(
-                        "0",
-                        index + nr_decimal_digits + 1 - string.len(),
-                    ));
-                } else {
-                    string.truncate(index + nr_decimal_digits + 1);
-                }
-            }
-            (None, 0) => (),
-            (None, _) => string.push_str(&format!(".{}", str::repeat("0", nr_decimal_digits))),
-        }
-
-        string
+        format!("{:.1$}", value, nr_decimal_digits)
     }
 }
 
@@ -182,9 +167,9 @@ mod test_to_string_decimal {
         let c_1 = c.to_string_decimal(1);
         let c_2 = c.to_string_decimal(2);
 
-        assert_eq!("0", a_0);
-        assert_eq!("0.6", a_1);
-        assert_eq!("0.66", a_2);
+        assert_eq!("1", a_0);
+        assert_eq!("0.7", a_1);
+        assert_eq!("0.67", a_2);
         assert_eq!("10", b_0);
         assert_eq!("10.5", b_1);
         assert_eq!("10.50", b_2);
@@ -201,8 +186,8 @@ mod test_to_string_decimal {
         let a_0 = a.to_string_decimal(0);
         let a_1 = a.to_string_decimal(1);
 
-        assert_eq!("9223372036854775000", a_0); // deviation of 807 from original value
-        assert_eq!("9223372036854775000.0", a_1);
+        assert_eq!("9223372036854774784", a_0); // deviation of 1023 from original value
+        assert_eq!("9223372036854774784.0", a_1);
     }
 }
 

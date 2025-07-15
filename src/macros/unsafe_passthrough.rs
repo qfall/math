@@ -94,7 +94,7 @@ macro_rules! unsafe_getter_mod {
 /// - `struct`: the struct for which the getter is implemented (e.g. [`Z`](crate::integer::Z), ...).
 /// - `attribute_name`: the name of the field (e.g. `value`, ...).
 /// - `function_name`: the name of the function, which is called to gather
-///     the [`flint_sys`] struct (e.g. [crate::integer::Z::get_fmpz])
+///   the [`flint_sys`] struct (e.g. [crate::integer::Z::get_fmpz])
 /// - `attribute_type`: the struct resp. type of the field (e.g. [`fmpz`](flint_sys::fmpz::fmpz))
 ///
 ///  Returns the Implementation code for the given $struct with the signature:
@@ -133,3 +133,93 @@ macro_rules! unsafe_getter_indirect {
 pub(crate) use unsafe_getter;
 pub(crate) use unsafe_getter_indirect;
 pub(crate) use unsafe_getter_mod;
+
+/// Implements a setter-function for a field in a struct.
+///
+/// Input parameters:
+/// - `struct`: the struct for which the setter is implemented (e.g. [`Z`](crate::integer::Z), ...).
+/// - `attribute_name`: the name of the field (e.g. `value`, ...).
+/// - `attribute_type`: the struct resp. type of the field (e.g. [`fmpz`](flint_sys::fmpz::fmpz))
+///
+///  Returns the Implementation code for the given $struct with the signature:
+///     ```impl $struct```
+macro_rules! unsafe_setter {
+    ($struct:ident, $attribute_name:meta, $attribute_type:ty, $clear_function:ident) => {
+        impl $struct {
+            paste::paste! {
+                #[doc = "Sets the field `" $attribute_name "` of type [`" $attribute_type "`] to `flint_struct`."]
+                ///
+                /// Parameters:
+                /// - `flint_struct`: value to set the attribute to
+                ///
+                /// This function is a passthrough to enable users of this library to use [`flint_sys`]
+                /// and with that [FLINT](https://flintlib.org/) functions that might not be covered in our library yet.
+                /// If this is the case, please consider contributing to this open-source project
+                /// by opening a Pull Request at [qfall_math](https://github.com/qfall/math)
+                /// to provide this feature in the future.
+                ///
+                /// # Safety
+                /// Ensure that the old struct does not share any memory with any other structs
+                /// that might be used in the future. The memory of the old struct is freed
+                /// using this function.
+                ///
+                /// Any [`flint_sys`] struct and function is part of a FFI to the C-library `FLINT`.
+                /// As `FLINT` is a C-library, it does not provide all memory safety features
+                /// that Rust and our Wrapper provide.
+                /// Thus, using functions of [`flint_sys`] can introduce memory leaks.
+                pub unsafe fn [<set_ $attribute_type>](&mut self, flint_struct: $attribute_type) {
+                    $clear_function(&mut self.$attribute_name);
+
+                    self.$attribute_name = flint_struct;
+                }
+            }
+        }
+    };
+}
+
+/// Implements a setter-function for a field in a struct, which itself has an
+/// unsafe setter for an underlying struct.
+///
+/// Input parameters:
+/// - `struct`: the struct for which the setter is implemented (e.g. [`Z`](crate::integer::Z), ...).
+/// - `attribute_name`: the name of the field (e.g. `value`, ...).
+/// - `function_name`: the name of the function, which is called to gather
+///   the [`flint_sys`] struct (e.g. [crate::integer::Z::set_fmpz])
+/// - `attribute_type`: the struct resp. type of the field (e.g. [`fmpz`](flint_sys::fmpz::fmpz))
+///
+///  Returns the Implementation code for the given $struct with the signature:
+///     ```impl $struct```
+macro_rules! unsafe_setter_indirect {
+    ($struct:ident, $attribute_name:meta, $function_name:ident, $attribute_type:ty) => {
+        impl $struct {
+            paste::paste! {
+                #[doc = "Sets the field [`" $attribute_type "`] to `flint_struct` by calling `" $function_name "` on `" $attribute_name "`."]
+                ///
+                /// Parameters:
+                /// - `flint_struct`: value to set the attribute to
+                ///
+                /// This function is a passthrough to enable users of this library to use [`flint_sys`]
+                /// and with that [FLINT](https://flintlib.org/) functions that might not be covered in our library yet.
+                /// If this is the case, please consider contributing to this open-source project
+                /// by opening a Pull Request at [qfall_math](https://github.com/qfall/math)
+                /// to provide this feature in the future.
+                ///
+                /// # Safety
+                /// Ensure that the old struct does not share any memory with any other structs
+                /// that might be used in the future. The memory of the old struct is freed
+                /// using this function.
+                ///
+                /// Any [`flint_sys`] struct and function is part of a FFI to the C-library `FLINT`.
+                /// As `FLINT` is a C-library, it does not provide all memory safety features
+                /// that Rust and our Wrapper provide.
+                /// Thus, using functions of [`flint_sys`] can introduce memory leaks.
+                pub unsafe fn [<set_ $attribute_type>](&mut self, flint_struct: $attribute_type) {
+                    self.$attribute_name.$function_name(flint_struct)
+                }
+            }
+        }
+    };
+}
+
+pub(crate) use unsafe_setter;
+pub(crate) use unsafe_setter_indirect;

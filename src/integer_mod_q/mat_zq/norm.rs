@@ -25,9 +25,9 @@ impl MatZq {
     /// use qfall_math::{integer_mod_q::MatZq, integer::Z};
     /// use std::str::FromStr;
     ///
-    /// let vec = MatZq::from_str("[[2, 3],[2, 0]] mod 7").unwrap();
+    /// let mat = MatZq::from_str("[[2, 3],[2, 0]] mod 7").unwrap();
     ///
-    /// let eucl_norm = vec.norm_l_2_infty_sqrd();
+    /// let eucl_norm = mat.norm_l_2_infty_sqrd();
     ///
     /// // 3^2 + 0^2 = 9
     /// assert_eq!(Z::from(9), eucl_norm);
@@ -35,7 +35,7 @@ impl MatZq {
     pub fn norm_l_2_infty_sqrd(&self) -> Z {
         let mut max_sqrd_norm = Z::ZERO;
         for i in 0..self.get_num_columns() {
-            let column = self.get_column(i).unwrap();
+            let column = unsafe { self.get_column_unchecked(i) };
             let sqrd_norm = column.norm_eucl_sqrd().unwrap();
             if sqrd_norm > max_sqrd_norm {
                 max_sqrd_norm = sqrd_norm;
@@ -52,9 +52,9 @@ impl MatZq {
     /// use qfall_math::{integer_mod_q::MatZq, rational::Q};
     /// use std::str::FromStr;
     ///
-    /// let vec = MatZq::from_str("[[2, 3],[2, 0],[3, 4],[3, 4]] mod 5").unwrap();
+    /// let mat = MatZq::from_str("[[2, 3],[2, 0],[3, 4],[3, 4]] mod 5").unwrap();
     ///
-    /// let eucl_norm = vec.norm_l_2_infty();
+    /// let eucl_norm = mat.norm_l_2_infty();
     ///
     /// // sqrt(4 * 2^2) = 4
     /// assert_eq!(Q::from(4), eucl_norm);
@@ -71,9 +71,9 @@ impl MatZq {
     /// use qfall_math::{integer_mod_q::MatZq, integer::Z};
     /// use std::str::FromStr;
     ///
-    /// let vec = MatZq::from_str("[[2, 4],[2, 0]] mod 7").unwrap();
+    /// let mat = MatZq::from_str("[[2, 4],[2, 0]] mod 7").unwrap();
     ///
-    /// let eucl_norm = vec.norm_l_infty_infty();
+    /// let eucl_norm = mat.norm_l_infty_infty();
     ///
     /// // max{2, 3} = 3
     /// assert_eq!(Z::from(3), eucl_norm);
@@ -81,7 +81,7 @@ impl MatZq {
     pub fn norm_l_infty_infty(&self) -> Z {
         let mut max_norm = Z::ZERO;
         for i in 0..self.get_num_columns() {
-            let column = self.get_column(i).unwrap();
+            let column = unsafe { self.get_column_unchecked(i) };
             let norm = column.norm_infty().unwrap();
             if norm > max_norm {
                 max_norm = norm;

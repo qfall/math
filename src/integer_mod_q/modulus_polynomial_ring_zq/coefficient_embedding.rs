@@ -23,7 +23,7 @@ impl IntoCoefficientEmbedding<MatZq> for &ModulusPolynomialRingZq {
     ///
     /// Parameters:
     /// - `size`: determines the number of rows of the embedding. It has to be larger
-    ///     than the degree of the polynomial.
+    ///   than the degree of the polynomial.
     ///
     /// Returns a coefficient embedding as a column vector if `size` is large enough.
     ///
@@ -43,7 +43,7 @@ impl IntoCoefficientEmbedding<MatZq> for &ModulusPolynomialRingZq {
     ///
     /// # Panics ...
     /// - if `size` is not larger than the degree of the polynomial, i.e.
-    ///     not all coefficients can be embedded.
+    ///   not all coefficients can be embedded.
     fn into_coefficient_embedding(self, size: impl Into<i64>) -> MatZq {
         let size = size.into();
         let length = self.get_degree() + 1;
@@ -55,11 +55,8 @@ impl IntoCoefficientEmbedding<MatZq> for &ModulusPolynomialRingZq {
         );
         let mut out = MatZq::new(size, 1, self.get_q());
         for j in 0..size {
-            let coeff: Result<Z, _> = self.get_coeff(j);
-            match coeff {
-                Ok(value) => unsafe { out.set_entry_unchecked(j, 0, value) },
-                Err(_) => break,
-            }
+            let coeff: Z = unsafe { self.get_coeff_unchecked(j) };
+            unsafe { out.set_entry_unchecked(j, 0, coeff) };
         }
         out
     }

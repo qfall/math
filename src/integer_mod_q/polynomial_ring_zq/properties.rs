@@ -77,7 +77,6 @@ mod test_is_irreducible {
     fn poly_is_irreducible() {
         // 9X^2 + 12X + 10 is irreducible over 17
         let poly_irr = PolynomialRingZq::from_str("3  10 12 9 / 4  1 10 12 9 mod 17").unwrap();
-        print!("{}", poly_irr);
         assert!(poly_irr.is_irreducible());
     }
 

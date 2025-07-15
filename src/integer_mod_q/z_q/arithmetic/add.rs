@@ -17,6 +17,7 @@ use crate::{
         arithmetic_between_types_zq, arithmetic_trait_borrowed_to_owned,
         arithmetic_trait_mixed_borrowed_owned,
     },
+    traits::CompareBase,
 };
 use flint_sys::{
     fmpz::fmpz,
@@ -27,6 +28,8 @@ use std::ops::{Add, AddAssign};
 impl AddAssign<&Zq> for Zq {
     /// Computes the addition of `self` and `other` reusing
     /// the memory of `self`.
+    /// [`AddAssign`] can be used on [`Zq`] in combination with
+    /// [`Zq`], [`Z`], [`i64`], [`i32`], [`i16`], [`i8`], [`u64`], [`u32`], [`u16`] and [`u8`].
     ///
     /// Parameters:
     /// - `other`: specifies the value to add to `self`
@@ -50,8 +53,8 @@ impl AddAssign<&Zq> for Zq {
     /// # Panics ...
     /// - if the moduli of both [`Zq`] mismatch.
     fn add_assign(&mut self, other: &Self) {
-        if self.modulus != other.modulus {
-            panic!("Tried to add '{self}' and '{other}'. If the modulus should be ignored please convert into a Z beforehand.");
+        if !self.compare_base(other) {
+            panic!("{}", self.call_compare_base_error(other).unwrap());
         }
 
         unsafe {
@@ -160,13 +163,10 @@ impl Zq {
     /// ```
     /// # Errors
     /// - Returns a [`MathError`] of type [`MathError::MismatchingModulus`] if the moduli of
-    ///     both [`Zq`] mismatch.
+    ///   both [`Zq`] mismatch.
     pub fn add_safe(&self, other: &Self) -> Result<Zq, MathError> {
-        if self.modulus != other.modulus {
-            return Err(MathError::MismatchingModulus(format!(
-                "Tried to add '{self}' and '{other}'.
-            If the modulus should be ignored please convert into a Z beforehand."
-            )));
+        if !self.compare_base(other) {
+            return Err(self.call_compare_base_error(other).unwrap());
         }
         let mut out = Zq::from((1, &self.modulus));
         unsafe {

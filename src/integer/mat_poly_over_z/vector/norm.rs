@@ -13,6 +13,7 @@ use super::super::MatPolyOverZ;
 use crate::{
     error::MathError,
     integer::Z,
+    rational::Q,
     traits::{MatrixDimensions, MatrixGetEntry},
 };
 
@@ -38,7 +39,7 @@ impl MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
-    ///     the given [`MatPolyOverZ`] instance is not a (row or column) vector.
+    ///   the given [`MatPolyOverZ`] instance is not a (row or column) vector.
     pub fn norm_eucl_sqrd(&self) -> Result<Z, MathError> {
         if !self.is_vector() {
             return Err(MathError::VectorFunctionCalledOnNonVector(
@@ -57,6 +58,28 @@ impl MatPolyOverZ {
         }
 
         Ok(result)
+    }
+
+    /// Returns the Euclidean norm or 2-norm of the given (row or column) vector
+    /// or an error if the given [`MatPolyOverZ`] instance is not a (row or column) vector.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let vec = MatPolyOverZ::from_str("[[1  2],[2  2 2],[1  2]]").unwrap();
+    ///
+    /// let eucl_norm = vec.norm_eucl().unwrap();
+    ///
+    /// assert_eq!(4, eucl_norm);
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
+    ///   the given [`MatPolyOverZ`] instance is not a (row or column) vector.
+    pub fn norm_eucl(&self) -> Result<Q, MathError> {
+        Ok(self.norm_eucl_sqrd()?.sqrt())
     }
 
     /// Returns the infinity norm or ∞-norm of the given (row or column) vector
@@ -80,7 +103,7 @@ impl MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`MathError::VectorFunctionCalledOnNonVector`] if
-    ///     the given [`MatPolyOverZ`] instance is not a (row or column) vector.
+    ///   the given [`MatPolyOverZ`] instance is not a (row or column) vector.
     pub fn norm_infty(&self) -> Result<Z, MathError> {
         if !self.is_vector() {
             return Err(MathError::VectorFunctionCalledOnNonVector(

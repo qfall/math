@@ -26,11 +26,11 @@ impl MatZ {
     ///
     /// Parameters:
     /// - `delta`: mainly defines the quality of the reduced
-    ///     basis with higher quality the closer it's chosen to 1.
-    ///     Needs to be chosen between 0.25 < δ <= 1.
+    ///   basis with higher quality the closer it's chosen to 1.
+    ///   Needs to be chosen between 0.25 < δ <= 1.
     /// - `eta`: defines the maximum deviation per vector
-    ///     from the Gram-Schmidt orthogonalisation.
-    ///     Needs to be chosen between 0.5 <= η < √δ.
+    ///   from the Gram-Schmidt orthogonalisation.
+    ///   Needs to be chosen between 0.5 <= η < √δ.
     ///
     /// Choosing δ=0.99 and η=0.501 optimizes the quality of the basis and
     /// is a good choice to start from. Decreasing δ or increasing η will
@@ -42,14 +42,14 @@ impl MatZ {
     ///
     /// let mut matrix = MatZ::sample_uniform(2, 2, 0, 65537).unwrap();
     ///
-    /// matrix.lll(0.75, 0.501);
+    /// let reduced_matrix = matrix.lll(0.75, 0.501);
     /// ```
     ///
     /// # Panics ...
     /// - if δ is not in (0.25, 1].
     /// - if η is not in [0.5, √δ).
-    /// - if `self` can't be a basis, i.e. #rows > #columns.
-    pub fn lll(&mut self, delta: impl Into<Q>, eta: impl Into<Q>) {
+    /// - if `self` can't be a basis, i.e. #rows < #columns.
+    pub fn lll(&self, delta: impl Into<Q>, eta: impl Into<Q>) -> MatZ {
         let delta: Q = delta.into();
         let eta: Q = eta.into();
 
@@ -59,15 +59,17 @@ impl MatZ {
         if eta < Q::from(0.5) || eta >= delta.sqrt() {
             panic!("η needs to be chosen between 0.5 <= η < √δ.");
         }
-        if self.get_num_rows() > self.get_num_columns() {
-            panic!(
-                "The n-by-m matrix is required to form a basis, i.e. n can't be smaller than m."
-            );
+        if self.get_num_rows() < self.get_num_columns() {
+            panic!("The n-by-m matrix is required to form a basis, i.e. n can't be larger than m.");
         }
 
+        // ensure that LLL operates on column vectors as basis vectors
+        let mut transposed = self.transpose();
         unsafe {
-            fmpz_mat_lll_storjohann(&mut self.matrix, &delta.value, &eta.value);
+            fmpz_mat_lll_storjohann(&mut transposed.matrix, &delta.value, &eta.value);
         };
+
+        transposed.transpose()
     }
 
     /// Checks if the basis `self` is (δ, η)-reduced.
@@ -82,11 +84,11 @@ impl MatZ {
     ///
     /// Parameters:
     /// - `delta`: mainly defines the quality of the reduced
-    ///     basis with higher quality the closer it's chosen to 1.
-    ///     If δ > 1, the output will always be `false`.
+    ///   basis with higher quality the closer it's chosen to 1.
+    ///   If δ > 1, the output will always be `false`.
     /// - `eta`: defines the maximum deviation per vector
-    ///     from the Gram-Schmidt orthogonalisation.
-    ///     If η < 0, the output will always be `false`.
+    ///   from the Gram-Schmidt orthogonalisation.
+    ///   If η < 0, the output will always be `false`.
     ///
     /// If `self` has `|rows| > |columns|`, it can't be a basis and therefore,
     /// the output of this algorithm will always be `false`.
@@ -99,9 +101,9 @@ impl MatZ {
     /// use qfall_math::integer::MatZ;
     ///
     /// let mut matrix = MatZ::sample_uniform(2, 2, 0, 65537).unwrap();
-    /// matrix.lll(0.75, 0.501);
+    /// let reduced_matrix = matrix.lll(0.75, 0.501);
     ///
-    /// let check = matrix.is_reduced(0.75, 0.501);
+    /// let check = reduced_matrix.is_reduced(0.75, 0.501);
     ///
     /// assert!(check);
     /// ```
@@ -111,7 +113,10 @@ impl MatZ {
         let delta = f64::from(&delta);
         let eta = f64::from(&eta);
 
-        0 != unsafe { fmpz_mat_is_reduced(&self.matrix, delta, eta) }
+        // ensure that LLL-check operates on column vectors as basis vectors
+        let transposed = self.transpose();
+
+        0 != unsafe { fmpz_mat_is_reduced(&transposed.matrix, delta, eta) }
     }
 }
 
@@ -122,29 +127,29 @@ mod test_lll {
     /// Ensure that a (0.99, 0.501)-LLL-reduced matrix is (0.99, 0.501)-reduced.
     #[test]
     fn reduction_works() {
-        let mut mat = MatZ::sample_uniform(4, 5, 0, 257).unwrap();
+        let mat = MatZ::sample_uniform(5, 4, 0, 257).unwrap();
 
-        mat.lll(0.99, 0.501);
+        let reduced_mat = mat.lll(0.99, 0.501);
 
-        assert!(mat.is_reduced(0.99, 0.501));
+        assert!(reduced_mat.is_reduced(0.99, 0.501));
     }
 
     /// Ensure that a (0.75, 0.75)-LLL-reduced matrix is (0.75, 0.75)-reduced
     /// for large numbers.
     #[test]
     fn large_number() {
-        let mut mat = MatZ::sample_uniform(3, 3, i64::MAX, u64::MAX).unwrap();
+        let mat = MatZ::sample_uniform(3, 3, i64::MAX, u64::MAX).unwrap();
 
-        mat.lll(0.75, 0.75);
+        let reduced_mat = mat.lll(0.75, 0.75);
 
-        assert!(mat.is_reduced(0.75, 0.75));
+        assert!(reduced_mat.is_reduced(0.75, 0.75));
     }
 
     /// Ensures that choosing δ <= 0.25 will result in a panic.
     #[test]
     #[should_panic]
     fn small_delta() {
-        let mut mat = MatZ::identity(2, 2);
+        let mat = MatZ::identity(2, 2);
 
         mat.lll(0.25, 0.501);
     }
@@ -153,7 +158,7 @@ mod test_lll {
     #[test]
     #[should_panic]
     fn large_delta() {
-        let mut mat = MatZ::identity(3, 5);
+        let mat = MatZ::identity(3, 5);
 
         mat.lll(1.01, 0.501);
     }
@@ -162,7 +167,7 @@ mod test_lll {
     #[test]
     #[should_panic]
     fn small_eta() {
-        let mut mat = MatZ::identity(2, 2);
+        let mat = MatZ::identity(2, 2);
 
         mat.lll(0.75, 0.499);
     }
@@ -171,7 +176,7 @@ mod test_lll {
     #[test]
     #[should_panic]
     fn large_eta() {
-        let mut mat = MatZ::identity(4, 4);
+        let mat = MatZ::identity(4, 4);
 
         mat.lll(0.75, 0.867);
     }
@@ -180,7 +185,7 @@ mod test_lll {
     #[test]
     #[should_panic]
     fn not_basis() {
-        let mut mat = MatZ::identity(4, 3);
+        let mat = MatZ::identity(3, 4);
 
         mat.lll(0.75, 0.75);
     }
@@ -202,10 +207,10 @@ mod test_is_reduced {
     /// Ensure that a (0.75, 0.75)-LLL-reduced matrix is (0.75, 0.75)-reduced.
     #[test]
     fn reduced_lll() {
-        let mut mat = MatZ::sample_uniform(3, 3, 0, 257).unwrap();
-        mat.lll(0.75, 0.75);
+        let mat = MatZ::sample_uniform(3, 3, 0, 257).unwrap();
+        let reduced_mat = mat.lll(0.75, 0.75);
 
-        assert!(mat.is_reduced(0.75, 0.75));
+        assert!(reduced_mat.is_reduced(0.75, 0.75));
     }
 
     /// Ensures that a fixed matrix that was previously uniformly generated within [0,257)
@@ -225,7 +230,7 @@ mod test_is_reduced {
     #[test]
     fn nonsense_parameters() {
         let square_mat = MatZ::identity(2, 2);
-        let non_square_mat = MatZ::identity(3, 2);
+        let non_square_mat = MatZ::identity(2, 3);
 
         assert!(!square_mat.is_reduced(1.01, 0.75));
         assert!(!square_mat.is_reduced(0.75, -0.01));

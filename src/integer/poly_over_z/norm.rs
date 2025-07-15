@@ -36,7 +36,7 @@ impl PolyOverZ {
         let mut res = Z::ZERO;
 
         for i in 0..=self.get_degree() {
-            let coeff = self.get_coeff(i).unwrap();
+            let coeff = unsafe { self.get_coeff_unchecked(i) };
             res += coeff.pow(2).unwrap();
         }
         res
@@ -62,8 +62,8 @@ impl PolyOverZ {
     pub fn norm_infty(&self) -> Z {
         let mut res = Z::ZERO;
         for i in 0..=self.get_degree() {
-            if res < self.get_coeff(i).unwrap().abs() {
-                res = max(res, self.get_coeff(i).unwrap().abs());
+            if res < unsafe { self.get_coeff_unchecked(i).abs() } {
+                res = max(res, unsafe { self.get_coeff_unchecked(i).abs() });
             }
         }
         res

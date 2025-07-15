@@ -11,8 +11,9 @@
 use super::MatQ;
 use crate::{
     integer::MatZ,
-    macros::for_others::implement_trait_reverse,
-    traits::{MatrixDimensions, MatrixGetEntry},
+    macros::{compare_base::compare_base_default, for_others::implement_trait_reverse},
+    rational::Q,
+    traits::{CompareBase, MatrixDimensions, MatrixGetEntry},
 };
 use flint_sys::{
     fmpq_mat::{fmpq_mat_equal, fmpq_mat_set_fmpz_mat_div_fmpz},
@@ -122,6 +123,9 @@ impl MatQ {
 
 implement_trait_reverse!(PartialEq, eq, MatZ, MatQ, bool);
 
+compare_base_default!(MatQ for MatQ MatZ);
+impl<Rational: Into<Q>> CompareBase<Rational> for MatQ {}
+
 /// Test that the [`PartialEq`] trait is correctly implemented.
 #[cfg(test)]
 mod test_partial_eq {
@@ -217,5 +221,53 @@ mod test_partial_eq_q_other {
         let z = MatZ::from_str(&format!("[[1,2],[3,{}]]", u64::MAX)).unwrap();
 
         assert!(q == z);
+    }
+}
+
+/// Test that the [`CompareBase`] trait uses the default implementation.
+#[cfg(test)]
+mod test_compare_base {
+    use crate::{
+        integer::{MatZ, Z},
+        rational::{MatQ, Q},
+        traits::CompareBase,
+    };
+    use std::str::FromStr;
+
+    /// Ensures that the [`CompareBase`] trait uses the default implementation
+    /// and is available for all types it would be checked against.
+    #[test]
+    fn availability() {
+        let one_1 = MatQ::from_str("[[2,5,-7/3],[2,3,4]]").unwrap();
+
+        assert!(one_1.compare_base(&MatZ::new(1, 1)));
+        assert!(one_1.compare_base(&MatQ::new(1, 1)));
+        assert!(one_1.compare_base(&Z::ONE));
+        assert!(one_1.compare_base(&Q::ONE));
+        assert!(one_1.compare_base(&0_i8));
+        assert!(one_1.compare_base(&0_i16));
+        assert!(one_1.compare_base(&0_i32));
+        assert!(one_1.compare_base(&0_i64));
+        assert!(one_1.compare_base(&0_u8));
+        assert!(one_1.compare_base(&0_u16));
+        assert!(one_1.compare_base(&0_u32));
+        assert!(one_1.compare_base(&0_u64));
+        assert!(one_1.compare_base(&0.5_f32));
+        assert!(one_1.compare_base(&0.5_f64));
+
+        assert!(one_1.call_compare_base_error(&MatZ::new(1, 1)).is_none());
+        assert!(one_1.call_compare_base_error(&MatQ::new(1, 1)).is_none());
+        assert!(one_1.call_compare_base_error(&Z::ONE).is_none());
+        assert!(one_1.call_compare_base_error(&Q::ONE).is_none());
+        assert!(one_1.call_compare_base_error(&0_i8).is_none());
+        assert!(one_1.call_compare_base_error(&0_i16).is_none());
+        assert!(one_1.call_compare_base_error(&0_i32).is_none());
+        assert!(one_1.call_compare_base_error(&0_i64).is_none());
+        assert!(one_1.call_compare_base_error(&0_u8).is_none());
+        assert!(one_1.call_compare_base_error(&0_u16).is_none());
+        assert!(one_1.call_compare_base_error(&0_u32).is_none());
+        assert!(one_1.call_compare_base_error(&0_u64).is_none());
+        assert!(one_1.call_compare_base_error(&0.5_f32).is_none());
+        assert!(one_1.call_compare_base_error(&0.5_f64).is_none());
     }
 }

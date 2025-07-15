@@ -1,4 +1,4 @@
-// Copyright © 2023 Phil Milewski
+// Copyright © 2023 Phil Milewski, Marcel Luca Schmidt
 //
 // This file is part of qFALL-math.
 //
@@ -9,9 +9,12 @@
 //! Implementation of the [`Add`] trait for [`PolyOverQ`] values.
 
 use super::super::PolyOverQ;
-use crate::macros::arithmetics::{
-    arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
-    arithmetic_trait_mixed_borrowed_owned,
+use crate::{
+    integer::PolyOverZ,
+    macros::arithmetics::{
+        arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
+        arithmetic_trait_mixed_borrowed_owned, arithmetic_trait_reverse,
+    },
 };
 use flint_sys::fmpq_poly::fmpq_poly_add;
 use std::ops::{Add, AddAssign};
@@ -19,6 +22,8 @@ use std::ops::{Add, AddAssign};
 impl AddAssign<&PolyOverQ> for PolyOverQ {
     /// Computes the addition of `self` and `other` reusing
     /// the memory of `self`.
+    /// [`AddAssign`] can be used on [`PolyOverQ`] in combination with
+    /// [`PolyOverQ`] and [`PolyOverZ`].
     ///
     /// Parameters:
     /// - `other`: specifies the polynomial to add to `self`
@@ -27,21 +32,33 @@ impl AddAssign<&PolyOverQ> for PolyOverQ {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::rational::PolyOverQ;
+    /// use qfall_math::{rational::PolyOverQ, integer::PolyOverZ};
     /// use std::str::FromStr;
     ///
     /// let mut a = PolyOverQ::from_str("3  1 2/3 -3/4").unwrap();
     /// let b = PolyOverQ::from_str("5  1 2 -3 0 8/9").unwrap();
+    /// let c = PolyOverZ::from_str("2  -1 2").unwrap();
     ///
     /// a += &b;
     /// a += b;
+    /// a += &c;
+    /// a += c;
     /// ```
     fn add_assign(&mut self, other: &Self) {
         unsafe { fmpq_poly_add(&mut self.poly, &self.poly, &other.poly) };
     }
 }
+impl AddAssign<&PolyOverZ> for PolyOverQ {
+    /// Documentation at [`PolyOverQ::add_assign`].
+    fn add_assign(&mut self, other: &PolyOverZ) {
+        let other = PolyOverQ::from(other);
+
+        self.add_assign(other);
+    }
+}
 
 arithmetic_assign_trait_borrowed_to_owned!(AddAssign, add_assign, PolyOverQ, PolyOverQ);
+arithmetic_assign_trait_borrowed_to_owned!(AddAssign, add_assign, PolyOverQ, PolyOverZ);
 
 impl Add for &PolyOverQ {
     type Output = PolyOverQ;
@@ -78,10 +95,47 @@ impl Add for &PolyOverQ {
 arithmetic_trait_borrowed_to_owned!(Add, add, PolyOverQ, PolyOverQ, PolyOverQ);
 arithmetic_trait_mixed_borrowed_owned!(Add, add, PolyOverQ, PolyOverQ, PolyOverQ);
 
+impl Add<&PolyOverZ> for &PolyOverQ {
+    type Output = PolyOverQ;
+    /// Implements the [`Add`] trait for [`PolyOverQ`] and [`PolyOverZ`].
+    /// [`Add`] is implemented for any combination of owned and borrowed values.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the polynomial to add to `self`
+    ///
+    /// Returns the addition of both polynomials as a [`PolyOverQ`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::PolyOverQ;
+    /// use qfall_math::integer::PolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let a = PolyOverQ::from_str("4  1/2 0 3/7 1").unwrap();
+    /// let b = PolyOverZ::from_str("4  2 0 3 1").unwrap();
+    ///
+    /// let c: PolyOverQ = &a + &b;
+    /// ```
+    fn add(self, other: &PolyOverZ) -> Self::Output {
+        let mut out = PolyOverQ::default();
+        unsafe {
+            fmpq_poly_add(&mut out.poly, &self.poly, &PolyOverQ::from(other).poly);
+        }
+        out
+    }
+}
+
+arithmetic_trait_reverse!(Add, add, PolyOverZ, PolyOverQ, PolyOverQ);
+
+arithmetic_trait_borrowed_to_owned!(Add, add, PolyOverQ, PolyOverZ, PolyOverQ);
+arithmetic_trait_borrowed_to_owned!(Add, add, PolyOverZ, PolyOverQ, PolyOverQ);
+arithmetic_trait_mixed_borrowed_owned!(Add, add, PolyOverQ, PolyOverZ, PolyOverQ);
+arithmetic_trait_mixed_borrowed_owned!(Add, add, PolyOverZ, PolyOverQ, PolyOverQ);
+
 #[cfg(test)]
 mod test_add_assign {
     use super::PolyOverQ;
-    use crate::rational::Q;
+    use crate::{integer::PolyOverZ, rational::Q};
     use std::str::FromStr;
 
     /// Ensure that `add_assign` works for small numbers.
@@ -126,9 +180,12 @@ mod test_add_assign {
     fn availability() {
         let mut a = PolyOverQ::from_str("3  1 2 -3").unwrap();
         let b = PolyOverQ::from_str("3  -1 -2 3").unwrap();
+        let c = PolyOverZ::from_str("4  2 -1 2 3").unwrap();
 
         a += &b;
         a += b;
+        a += &c;
+        a += c;
     }
 }
 
@@ -206,5 +263,41 @@ mod test_add {
             ))
             .unwrap()
         );
+    }
+}
+
+#[cfg(test)]
+mod test_mul_poly_over_z {
+    use super::PolyOverQ;
+    use crate::integer::PolyOverZ;
+    use std::str::FromStr;
+
+    /// Checks if polynomial addition works fine for both borrowed
+    #[test]
+    fn borrowed_correctness() {
+        let poly_1 = PolyOverQ::from_str(&format!("1  1/{}", i64::MAX)).unwrap();
+        let poly_2 = PolyOverZ::from_str("2  1 2").unwrap();
+        let poly_cmp =
+            PolyOverQ::from_str(&format!("2  {}/{} 2", i64::MAX as u64 + 1, i64::MAX)).unwrap();
+
+        let poly_1 = &poly_1 + &poly_2;
+
+        assert_eq!(poly_cmp, poly_1);
+    }
+
+    /// Checks if addition works fine for different types
+    #[test]
+    fn availability() {
+        let poly = PolyOverQ::from_str("3  1/2 2 3/7").unwrap();
+        let z = PolyOverZ::from(2);
+
+        _ = poly.clone() + z.clone();
+        _ = z.clone() + poly.clone();
+        _ = &poly + &z;
+        _ = &z + &poly;
+        _ = &poly + z.clone();
+        _ = z.clone() + &poly;
+        _ = &z + poly.clone();
+        _ = poly.clone() + &z;
     }
 }

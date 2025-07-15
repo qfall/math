@@ -1,4 +1,4 @@
-// Copyright © 2023 Phil Milewski
+// Copyright © 2023 Phil Milewski, Marcel Luca Schmidt
 //
 // This file is part of qFALL-math.
 //
@@ -9,11 +9,46 @@
 //! Implementation of the [`Sub`] trait for [`PolyOverZ`] values.
 
 use super::super::PolyOverZ;
-use crate::macros::arithmetics::{
-    arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+use crate::{
+    integer_mod_q::{PolyOverZq, PolynomialRingZq},
+    macros::arithmetics::{
+        arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
+        arithmetic_trait_mixed_borrowed_owned,
+    },
+    rational::PolyOverQ,
 };
-use flint_sys::fmpz_poly::fmpz_poly_sub;
-use std::ops::Sub;
+use flint_sys::{
+    fmpq_poly::fmpq_poly_sub, fmpz_mod_poly::fmpz_mod_poly_sub, fmpz_poly::fmpz_poly_sub,
+    fq::fq_sub,
+};
+use std::ops::{Sub, SubAssign};
+
+impl SubAssign<&PolyOverZ> for PolyOverZ {
+    /// Computes the subtraction of `self` and `other` reusing
+    /// the memory of `self`.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the polynomial to subtract from `self`
+    ///
+    /// Returns the difference of both polynomials as a [`PolyOverZ`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::PolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let mut a = PolyOverZ::from_str("3  1 2 -3").unwrap();
+    /// let b = PolyOverZ::from_str("5  1 2 -3 0 8").unwrap();
+    ///
+    /// a -= &b;
+    /// a -= b;
+    /// ```
+    fn sub_assign(&mut self, other: &Self) {
+        unsafe { fmpz_poly_sub(&mut self.poly, &self.poly, &other.poly) };
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(SubAssign, sub_assign, PolyOverZ, PolyOverZ);
 
 impl Sub for &PolyOverZ {
     type Output = PolyOverZ;
@@ -49,6 +84,160 @@ impl Sub for &PolyOverZ {
 
 arithmetic_trait_borrowed_to_owned!(Sub, sub, PolyOverZ, PolyOverZ, PolyOverZ);
 arithmetic_trait_mixed_borrowed_owned!(Sub, sub, PolyOverZ, PolyOverZ, PolyOverZ);
+
+impl Sub<&PolyOverZq> for &PolyOverZ {
+    type Output = PolyOverZq;
+    /// Implements the [`Sub`] trait for [`PolyOverZ`] and [`PolyOverZq`].
+    /// [`Sub`] is implemented for any combination of owned and borrowed values.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the polynomial to subtract from `self`
+    ///
+    /// Returns the subtraction of both polynomials as a [`PolyOverZq`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use qfall_math::integer::PolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let a = PolyOverZ::from_str("4  2 0 3 1").unwrap();
+    /// let b = PolyOverZq::from_str("4  -1 0 1 1 mod 17").unwrap();
+    ///
+    /// let c: PolyOverZq = &a - &b;
+    /// ```
+    fn sub(self, other: &PolyOverZq) -> Self::Output {
+        let mut out = PolyOverZq::from(&other.modulus);
+        unsafe {
+            fmpz_mod_poly_sub(
+                &mut out.poly,
+                &PolyOverZq::from((self, &other.modulus)).poly,
+                &other.poly,
+                other.modulus.get_fmpz_mod_ctx_struct(),
+            );
+        }
+        out
+    }
+}
+
+arithmetic_trait_borrowed_to_owned!(Sub, sub, PolyOverZ, PolyOverZq, PolyOverZq);
+arithmetic_trait_mixed_borrowed_owned!(Sub, sub, PolyOverZ, PolyOverZq, PolyOverZq);
+
+impl Sub<&PolynomialRingZq> for &PolyOverZ {
+    type Output = PolynomialRingZq;
+    /// Implements the [`Sub`] trait for [`PolyOverZ`] and [`PolynomialRingZq`].
+    /// [`Sub`] is implemented for any combination of owned and borrowed values.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the polynomial to subtract from `self`
+    ///
+    /// Returns the subtraction of both polynomials as a [`PolynomialRingZq`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::PolynomialRingZq;
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer::PolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let poly = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
+    /// let a = PolynomialRingZq::from((&poly, &modulus));
+    /// let b = PolyOverZ::from_str("4  2 0 3 1").unwrap();
+    ///
+    /// let c: PolynomialRingZq = &b - &a;
+    /// ```
+    fn sub(self, other: &PolynomialRingZq) -> Self::Output {
+        let mut out = PolynomialRingZq::from((&PolyOverZ::default(), &other.modulus));
+        unsafe {
+            fq_sub(
+                &mut out.poly.poly,
+                &self.poly,
+                &other.poly.poly,
+                other.modulus.get_fq_ctx(),
+            );
+        }
+        out
+    }
+}
+
+arithmetic_trait_borrowed_to_owned!(Sub, sub, PolyOverZ, PolynomialRingZq, PolynomialRingZq);
+arithmetic_trait_mixed_borrowed_owned!(Sub, sub, PolyOverZ, PolynomialRingZq, PolynomialRingZq);
+
+impl Sub<&PolyOverQ> for &PolyOverZ {
+    type Output = PolyOverQ;
+    /// Implements the [`Sub`] trait for [`PolyOverZ`] and [`PolyOverQ`].
+    /// [`Sub`] is implemented for any combination of owned and borrowed values.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the polynomial to subtract from `self`
+    ///
+    /// Returns the subtraction of both polynomials as a [`PolyOverQ`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::PolyOverQ;
+    /// use qfall_math::integer::PolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let a = PolyOverZ::from_str("4  2 0 3 1").unwrap();
+    /// let b = PolyOverQ::from_str("4  1/2 0 3/7 1").unwrap();
+    ///
+    /// let c: PolyOverQ = &a - &b;
+    /// ```
+    fn sub(self, other: &PolyOverQ) -> Self::Output {
+        let mut out = PolyOverQ::default();
+        unsafe {
+            fmpq_poly_sub(&mut out.poly, &PolyOverQ::from(self).poly, &other.poly);
+        }
+        out
+    }
+}
+
+arithmetic_trait_borrowed_to_owned!(Sub, sub, PolyOverZ, PolyOverQ, PolyOverQ);
+arithmetic_trait_mixed_borrowed_owned!(Sub, sub, PolyOverZ, PolyOverQ, PolyOverQ);
+
+#[cfg(test)]
+mod test_sub_assign {
+    use super::PolyOverZ;
+    use std::str::FromStr;
+
+    /// Ensure that `sub_assign` works for small numbers.
+    #[test]
+    fn correct_small() {
+        let mut a = PolyOverZ::from_str("3  -1 2 -3").unwrap();
+        let b = PolyOverZ::from_str("5  -1 -2 -5 -1 -2").unwrap();
+        let cmp = PolyOverZ::from_str("5  0 4 2 1 2").unwrap();
+
+        a -= b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `sub_assign` works for large numbers.
+    #[test]
+    fn correct_large() {
+        let mut a =
+            PolyOverZ::from_str(&format!("3  {} {} {}", u32::MAX, i32::MIN, i32::MAX)).unwrap();
+        let b = PolyOverZ::from_str(&format!("2  -{} -{}", u32::MAX, i32::MAX)).unwrap();
+        let cmp = PolyOverZ::from_str(&format!("3  {} -1 {}", u64::from(u32::MAX) * 2, i32::MAX))
+            .unwrap();
+
+        a -= b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `sub_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let mut a = PolyOverZ::from_str("3  1 2 -3").unwrap();
+        let b = PolyOverZ::from_str("3  -1 -2 3").unwrap();
+
+        a -= &b;
+        a -= b;
+    }
+}
 
 #[cfg(test)]
 mod test_sub {
@@ -116,5 +305,109 @@ mod test_sub {
             ))
             .unwrap()
         );
+    }
+}
+
+#[cfg(test)]
+mod test_mul_poly_over_zq {
+    use super::PolyOverZq;
+    use crate::integer::PolyOverZ;
+    use std::str::FromStr;
+
+    /// Checks if polynomial subtraction works fine for both borrowed
+    #[test]
+    fn borrowed_correctness() {
+        let poly_1 = PolyOverZ::from_str("2  1 2").unwrap();
+        let poly_2 = PolyOverZq::from_str(&format!("1  {} mod {}", i64::MAX, u64::MAX)).unwrap();
+
+        let poly_cmp =
+            PolyOverZq::from_str(&format!("2  {} 2 mod {}", -i64::MAX as i128 + 1, u64::MAX))
+                .unwrap();
+
+        let poly_1 = &poly_1 - &poly_2;
+
+        assert_eq!(poly_cmp, poly_1);
+    }
+
+    /// Checks if subtraction works fine for different types
+    #[test]
+    fn availability() {
+        let poly = PolyOverZq::from_str("3  1 2 3 mod 17").unwrap();
+        let z = PolyOverZ::from(2);
+
+        _ = z.clone() - poly.clone();
+        _ = &z - &poly;
+        _ = z.clone() - &poly;
+        _ = &z - poly.clone();
+    }
+}
+
+#[cfg(test)]
+mod test_sub_poly_ring_zq {
+    use super::PolynomialRingZq;
+    use crate::integer::PolyOverZ;
+    use std::str::FromStr;
+
+    /// Checks if polynomial subtraction works fine for both borrowed
+    #[test]
+    fn borrowed_correctness() {
+        let poly_1 =
+            PolynomialRingZq::from_str(&format!("2  2 {} / 4  1 2 3 4 mod {}", i64::MAX, u64::MAX))
+                .unwrap();
+        let poly_2 = PolynomialRingZq::from_str(&format!(
+            "2  -1 -{} / 4  1 2 3 4 mod {}",
+            i64::MAX as u64 - 2,
+            u64::MAX
+        ))
+        .unwrap();
+        let poly = PolyOverZ::from_str("2  1 2").unwrap();
+
+        let poly_1 = &poly - &poly_1;
+
+        assert_eq!(poly_2, poly_1);
+    }
+
+    /// Checks if subtraction works fine for different types
+    #[test]
+    fn availability() {
+        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 17").unwrap();
+        let z = PolyOverZ::from(2);
+
+        _ = z.clone() - poly.clone();
+        _ = &z - &poly;
+        _ = z.clone() - &poly;
+        _ = &z - poly.clone();
+    }
+}
+
+#[cfg(test)]
+mod test_mul_poly_over_q {
+    use super::PolyOverQ;
+    use crate::integer::PolyOverZ;
+    use std::str::FromStr;
+
+    /// Checks if polynomial subtraction works fine for both borrowed
+    #[test]
+    fn borrowed_correctness() {
+        let poly_1 = PolyOverZ::from_str("2  1 2").unwrap();
+        let poly_2 = PolyOverQ::from_str(&format!("1  1/{}", i64::MAX)).unwrap();
+        let poly_cmp =
+            PolyOverQ::from_str(&format!("2  {}/{} 2", i64::MAX as i128 - 1, i64::MAX)).unwrap();
+
+        let poly_1 = &poly_1 - &poly_2;
+
+        assert_eq!(poly_cmp, poly_1);
+    }
+
+    /// Checks if subtraction works fine for different types
+    #[test]
+    fn availability() {
+        let poly = PolyOverQ::from_str("3  1/2 2 3/7").unwrap();
+        let z = PolyOverZ::from(2);
+
+        _ = z.clone() - poly.clone();
+        _ = &z - &poly;
+        _ = z.clone() - &poly;
+        _ = &z - poly.clone();
     }
 }

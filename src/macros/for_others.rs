@@ -20,17 +20,22 @@
 /// Implements a specified trait using implicit conversions to a bridge type.
 ///
 /// - ['Mul'](std::ops::Mul) with signature
-///     `($bridge_type, $type, Mul Scalar for $source_type)`
+///   `($bridge_type, $type, Mul Scalar for $source_type)`
+/// - ['Div'](std::ops::Mul) with signature
+///   `($bridge_type, $type, Div Scalar for $source_type)`
+/// - ['Rem'](std::ops::Rem) with signature
+///   `($bridge_type, $type, Rem for $source_type)`
 /// - ['PartialEq'](std::cmp::PartialEq) with signature
-///     `($bridge_type, $type, PartialEq for $source_type)`
+///   `($bridge_type, $type, PartialEq for $source_type)`
 /// - ['PartialOrd'](std::cmp::PartialOrd) with signature
-///     `($bridge_type, $type, PartialEq for $source_type)`
+///   `($bridge_type, $type, PartialEq for $source_type)`
 ///
 /// # Examples
 /// ```compile_fail
 /// implement_for_others!(Z, MatZ, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
 /// implement_for_others!(Z, Q, PartialEq for fmpz i8 i16 i32 i64 u8 u16 u32 u64);
 /// implement_for_others!(Z, Q, PartialOrd for fmpz i8 i16 i32 i64 u8 u16 u32 u64);
+/// implement_for_others!(Z, PolyOverZ, Rem for i8 i16 i32 i64 u8 u16 u32 u64);
 /// ```
 macro_rules! implement_for_others {
     // [`Mul`] trait scalar
@@ -74,6 +79,53 @@ macro_rules! implement_for_others {
                 #[doc = "Documentation can be found at [`" $type "::mul`]."]
                 fn mul(self, matrix: $type) -> Self::Output {
                     matrix.mul($bridge_type::from(self))
+                }
+            }
+        })*
+    };
+
+    // [`Div`] trait scalar
+    ($bridge_type:ident, $type:ident, Div Scalar for $($source_type:ident)*) => {
+        $(#[doc(hidden)] impl Div<$source_type> for &$type {
+            type Output = $type;
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::div`]."]
+                fn div(self, scalar: $source_type) -> Self::Output {
+                    self.div($bridge_type::from(scalar))
+                }
+            }
+        }
+
+        #[doc(hidden)]
+        impl Div<$source_type> for $type {
+            type Output = $type;
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::div`]."]
+                fn div(self, scalar: $source_type) -> Self::Output {
+                    self.div($bridge_type::from(scalar))
+                }
+            }
+        })*
+    };
+
+    // [`Rem`] trait scalar
+    ($bridge_type:ident, $type:ident, Rem for $($source_type:ident)*) => {
+        $(#[doc(hidden)] impl Rem<$source_type> for &$type {
+            type Output = $type;
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::rem`]."]
+                fn rem(self, modulus: $source_type) -> Self::Output {
+                    self.rem($bridge_type::from(modulus))
+                }
+            }
+        }
+
+        impl Rem<$source_type> for $type {
+            type Output = $type;
+            paste::paste! {
+                #[doc = "Documentation can be found at [`" $type "::rem`]."]
+                fn rem(self, modulus: $source_type) -> Self::Output {
+                    self.rem($bridge_type::from(modulus))
                 }
             }
         })*
@@ -129,15 +181,18 @@ pub(crate) use implement_for_others;
 /// Several traits are already supported:
 ///
 /// - [`Evaluate`](crate::traits::Evaluate) with the signature
-///     `($bridge_type, $output_type, $type, Evaluate)`
+///   `($bridge_type, $output_type, $type, Evaluate)`
+/// - [`From`] with the signature
+///   `($source_type, $type, From)`
 /// - [`SetCoefficient`](crate::traits::SetCoefficient) with the signature
-///     `($bridge_type, $type, SetCoefficient)`
+///   `($bridge_type, $type, SetCoefficient)`
 /// - [`MatrixSetEntry`](crate::traits::MatrixSetEntry) with the signature
-///     `($bridge_type, $type, SetCoefficient)`
+///   `($bridge_type, $type, SetCoefficient)`
 ///
 /// # Examples
 /// ```compile_fail
 /// implement_for_owned!(Q, Q, PolyOverQ, Evaluate);
+/// implement_for_owned!(Zq, PolyOverZq, From);
 /// implement_for_owned!(Z, PolyOverZ, SetCoefficient);
 /// implement_for_owned!(Z, MatZq, MatrixSetEntry);
 /// ```
@@ -176,12 +231,12 @@ macro_rules! implement_for_owned {
         impl SetCoefficient<$source_type> for $type {
             paste::paste! {
                 #[doc = "Documentation can be found at [`" $type "::set_coeff`] for &[`" $source_type "`]."]
-            fn set_coeff(
+            unsafe fn set_coeff_unchecked(
                 &mut self,
-                index: impl TryInto<i64> + Display,
+                index: i64,
                 value: $source_type,
-            ) -> Result<(), MathError> {
-                self.set_coeff(index, &value)
+            ) {
+                self.set_coeff_unchecked(index, &value)
             }
             }
         }
@@ -242,11 +297,11 @@ pub(crate) use implement_empty_trait_owned_ref;
 ///
 /// Parameters:
 /// - `trait`: the trait that is implemented
-///     (e.g. [`PartialEq`],[`PartialOrd`], ...).
+///   (e.g. [`PartialEq`],[`PartialOrd`], ...).
 /// - `trait_function`: the function the trait implements
-///     (e.g. eq for [`PartialEq`], ...).
+///   (e.g. eq for [`PartialEq`], ...).
 /// - `type`: the type the trait is implemented for
-///     (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q))
+///   (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q))
 /// - `other_type`: the type the second part of the computation.
 /// - `output_type`: the type of the result (e.g. bool for [`PartialEq`], ...).
 ///

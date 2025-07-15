@@ -23,6 +23,7 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 
 mod arithmetic;
+mod cmp;
 mod coefficient_embedding;
 mod from;
 mod get;

@@ -39,7 +39,7 @@ impl PolyOverZq {
     pub fn norm_eucl_sqrd(&self) -> Z {
         let mut res = Z::ZERO;
         for i in 0..=self.get_degree() {
-            let coeff: Z = self.get_coeff(i).unwrap();
+            let coeff: Z = unsafe { self.get_coeff_unchecked(i) };
             res += length(&coeff.value, &self.modulus.get_fmpz_mod_ctx_struct().n[0])
                 .pow(2)
                 .unwrap();
@@ -71,7 +71,7 @@ impl PolyOverZq {
         let mut res = Z::ZERO;
 
         for i in 0..=self.get_degree() {
-            let coeff: Z = self.get_coeff(i).unwrap();
+            let coeff: Z = unsafe { self.get_coeff_unchecked(i) };
             let len = length(&coeff.value, &self.modulus.get_fmpz_mod_ctx_struct().n[0]);
             res = max(res, len);
         }

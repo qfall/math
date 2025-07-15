@@ -9,6 +9,7 @@
 //! This module contains implementations for comparison of [`MatZ`].
 
 use super::MatZ;
+use crate::{integer::Z, macros::compare_base::compare_base_default, traits::CompareBase};
 use flint_sys::fmpz_mat::fmpz_mat_equal;
 
 impl PartialEq for MatZ {
@@ -41,6 +42,9 @@ impl PartialEq for MatZ {
         unsafe { fmpz_mat_equal(&self.matrix, &other.matrix) != 0 }
     }
 }
+
+compare_base_default!(MatZ for MatZ);
+impl<Integer: Into<Z>> CompareBase<Integer> for MatZ {}
 
 // With the [`Eq`] trait, `a == a` is always true.
 // This is not guaranteed by the [`PartialEq`] trait.
@@ -102,5 +106,44 @@ mod test_partial_eq {
         assert_ne!(&c, &d);
         assert_ne!(&c, &e);
         assert_ne!(&d, &e);
+    }
+}
+
+/// Test that the [`CompareBase`] trait uses the default implementation.
+#[cfg(test)]
+mod test_compare_base {
+    use crate::{
+        integer::{MatZ, Z},
+        traits::CompareBase,
+    };
+    use std::str::FromStr;
+
+    /// Ensures that the [`CompareBase`] trait uses the default implementation
+    /// and is available for all types it would be checked against.
+    #[test]
+    fn availability() {
+        let one_1 = MatZ::from_str("[[2,5,-7],[2,3,4]]").unwrap();
+
+        assert!(one_1.compare_base(&MatZ::new(1, 1)));
+        assert!(one_1.compare_base(&Z::ONE));
+        assert!(one_1.compare_base(&0_i8));
+        assert!(one_1.compare_base(&0_i16));
+        assert!(one_1.compare_base(&0_i32));
+        assert!(one_1.compare_base(&0_i64));
+        assert!(one_1.compare_base(&0_u8));
+        assert!(one_1.compare_base(&0_u16));
+        assert!(one_1.compare_base(&0_u32));
+        assert!(one_1.compare_base(&0_u64));
+
+        assert!(one_1.call_compare_base_error(&MatZ::new(1, 1)).is_none());
+        assert!(one_1.call_compare_base_error(&Z::ONE).is_none());
+        assert!(one_1.call_compare_base_error(&0_i8).is_none());
+        assert!(one_1.call_compare_base_error(&0_i16).is_none());
+        assert!(one_1.call_compare_base_error(&0_i32).is_none());
+        assert!(one_1.call_compare_base_error(&0_i64).is_none());
+        assert!(one_1.call_compare_base_error(&0_u8).is_none());
+        assert!(one_1.call_compare_base_error(&0_u16).is_none());
+        assert!(one_1.call_compare_base_error(&0_u32).is_none());
+        assert!(one_1.call_compare_base_error(&0_u64).is_none());
     }
 }

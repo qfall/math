@@ -32,7 +32,7 @@ impl IntoCoefficientEmbedding<(MatZq, ModulusPolynomialRingZq)> for &MatPolynomi
     ///
     /// Parameters:
     /// - `size`: determines the number of rows each polynomial is embedded in.
-    ///     It has to be larger than the degree of all polynomials.
+    ///   It has to be larger than the degree of all polynomials.
     ///
     /// Returns a coefficient embedding as a matrix if `size` is large enough.
     ///
@@ -52,7 +52,7 @@ impl IntoCoefficientEmbedding<(MatZq, ModulusPolynomialRingZq)> for &MatPolynomi
     ///
     /// # Panics ...
     /// - if `size` is not larger than the degree of the polynomial, i.e.
-    ///     not all coefficients can be embedded.
+    ///   not all coefficients can be embedded.
     fn into_coefficient_embedding(self, size: impl Into<i64>) -> (MatZq, ModulusPolynomialRingZq) {
         let size = size.into();
         let num_rows = self.get_num_rows();
@@ -72,7 +72,7 @@ impl IntoCoefficientEmbedding<(MatZq, ModulusPolynomialRingZq)> for &MatPolynomi
                 );
 
                 for index in 0..size {
-                    let coeff: Z = entry.get_coeff(index).unwrap();
+                    let coeff: Z = unsafe { entry.get_coeff_unchecked(index) };
                     out.set_entry(row * size + index, column, coeff).unwrap()
                 }
             }
@@ -142,7 +142,7 @@ impl FromCoefficientEmbedding<(&MatZq, &ModulusPolynomialRingZq, i64)> for MatPo
                             .0
                             .get_entry_unchecked(row * (degree + 1) + index, column)
                     };
-                    poly.set_coeff(index, coeff).unwrap();
+                    unsafe { poly.set_coeff_unchecked(index, coeff) };
                 }
                 out.set_entry(row, column, poly).unwrap();
             }

@@ -88,8 +88,6 @@ mod test_to_string {
     fn working_negative() {
         let fac = Factorization::from(-42);
 
-        println!("{}", fac);
-
         assert_eq!("[(-42, 1)]", fac.to_string());
     }
 
