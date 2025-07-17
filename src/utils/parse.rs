@@ -153,6 +153,22 @@ pub(crate) fn matrix_from_utf8_fill_bytes(message: &str, nr_entries: usize) -> (
 
 /// Prints at most 4 rows and columns of a matrix.
 /// It prints the first three and last one respectively.
+/// For example: a matrix A = [[a00, a01, a02, a03, a04, a05],[a10, a11, a02, a13, a14, a15]]
+/// would be returned as a readable string of the form:
+/// ```txt
+/// [
+///   [a00, a01, a02, ..., a05],
+///   [a10, a11, a12, ..., a15],
+/// ]
+/// ```
+/// If the matrix only has up to 4 rows or columns, they are not cut or interleaved with '...'.
+///
+/// This function is only relevant internally for pretty debug statements.
+///
+/// Parameters:
+/// - `matrix`: a matrix, e.g. [`MatZ`](crate::integer::MatZ), [`MatQ`](crate::rational::MatQ).
+///
+/// Returns the Matrix as a simplified [`String`].
 pub(crate) fn print_debug_3x3_p1<
     S: Display + Clone,
     T: MatrixGetEntry<S> + MatrixDimensions + MatrixDimensions,
@@ -424,5 +440,43 @@ mod test_matrix_from_utf8_fill_bytes {
         let matrix_size = 0;
 
         let _ = matrix_from_utf8_fill_bytes(message, matrix_size);
+    }
+}
+
+#[cfg(test)]
+mod test_debug_string {
+    use std::str::FromStr;
+
+    use crate::{integer::MatZ, utils::parse::print_debug_3x3_p1};
+
+    /// Ensure that the entire matrix is printed if the matrix is smaller or equal than a 4x4
+    #[test]
+    fn print_full_matrix() {
+        let matrix_str = "[[1, 2, 3, 4],[3, 4, 5, 6]]";
+        let mat = MatZ::from_str(matrix_str).unwrap();
+
+        let cmp_str = "[\n  [1, 2, 3, 4],\n  [3, 4, 5, 6]\n]";
+        assert_eq!(cmp_str, print_debug_3x3_p1(&mat))
+    }
+
+    /// Ensure that matrices with more than 4 rows are shortened
+    #[test]
+    fn print_reduced_rows() {
+        let matrix_str = "[[1, 2, 3, 4],[3, 4, 5, 6],[3, 4, 5, 6],[3, 4, 5, 6],[3, 4, 5, 6]]";
+        let mat = MatZ::from_str(matrix_str).unwrap();
+
+        let cmp_str =
+            "[\n  [1, 2, 3, 4],\n  [3, 4, 5, 6],\n  [3, 4, 5, 6],\n  [...],\n  [3, 4, 5, 6]\n]";
+        assert_eq!(cmp_str, print_debug_3x3_p1(&mat))
+    }
+
+    /// Ensure that matrices with more than 4 columns are shortened
+    #[test]
+    fn print_reduced_columns() {
+        let matrix_str = "[[1, 2, 3, 4, 5, 6, 7, 8],[3, 4, 5, 6, 7, 8, 9, 10]]";
+        let mat = MatZ::from_str(matrix_str).unwrap();
+
+        let cmp_str = "[\n  [1, 2, 3, ..., 8],\n  [3, 4, 5, ..., 10]\n]";
+        assert_eq!(cmp_str, print_debug_3x3_p1(&mat))
     }
 }
