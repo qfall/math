@@ -11,6 +11,7 @@
 use super::super::MatQ;
 use crate::integer::Z;
 use crate::macros::arithmetics::{
+    arithmetic_assign_between_types, arithmetic_assign_trait_borrowed_to_owned,
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
     arithmetic_trait_reverse,
 };
@@ -18,7 +19,7 @@ use crate::macros::for_others::implement_for_others;
 use crate::rational::Q;
 use crate::traits::MatrixDimensions;
 use flint_sys::fmpq_mat::{fmpq_mat_scalar_mul_fmpq, fmpq_mat_scalar_mul_fmpz};
-use std::ops::Mul;
+use std::ops::{Mul, MulAssign};
 
 impl Mul<&Z> for &MatQ {
     type Output = MatQ;
@@ -97,6 +98,65 @@ arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatQ, Z, MatQ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Z, MatQ, MatQ);
 
 implement_for_others!(Q, MatQ, Mul Scalar for f32 f64);
+
+impl MulAssign<&Q> for MatQ {
+    /// Computes the scalar multiplication of `self` and `other` reusing
+    /// the memory of `self`.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to multiply to `self`
+    ///
+    /// Returns the scalar of the matrix as a [`MatQ`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::rational::{MatQ, Q};
+    /// use std::str::FromStr;
+    ///
+    /// let mut a = MatQ::from_str("[[2, 1],[-1, 2/7]]").unwrap();
+    /// let b = Z::from(2);
+    /// let c = Q::from((2,5));
+    ///
+    /// a *= &b;
+    /// a *= b;
+    /// a *= &c;
+    /// a *= c;
+    /// a *= 2;
+    /// a *= -2;
+    /// ```
+    fn mul_assign(&mut self, scalar: &Q) {
+        unsafe { fmpq_mat_scalar_mul_fmpq(&mut self.matrix, &self.matrix, &scalar.value) };
+    }
+}
+
+impl MulAssign<&Z> for MatQ {
+    /// Documentation at [`MatQ::mul_assign`].
+    fn mul_assign(&mut self, other: &Z) {
+        unsafe { fmpq_mat_scalar_mul_fmpz(&mut self.matrix, &self.matrix, &other.value) };
+    }
+}
+
+impl MulAssign<i64> for MatQ {
+    /// Documentation at [`MatQ::mul_assign`].
+    fn mul_assign(&mut self, other: i64) {
+        let z = Z::from(other);
+        unsafe { fmpq_mat_scalar_mul_fmpz(&mut self.matrix, &self.matrix, &z.value) };
+    }
+}
+
+impl MulAssign<u64> for MatQ {
+    /// Documentation at [`MatQ::mul_assign`].
+    fn mul_assign(&mut self, other: u64) {
+        let z = Z::from(other);
+        unsafe { fmpq_mat_scalar_mul_fmpz(&mut self.matrix, &self.matrix, &z.value) };
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, MatQ, Q);
+arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, MatQ, Z);
+arithmetic_assign_between_types!(MulAssign, mul_assign, MatQ, i64, i32 i16 i8);
+arithmetic_assign_between_types!(MulAssign, mul_assign, MatQ, u64, u32 u16 u8);
 
 #[cfg(test)]
 mod test_mul_z {
@@ -322,5 +382,67 @@ mod test_mul_q {
         assert_eq!(mat_3, rational_1 * mat_1);
         assert_eq!(mat_4, rational_2 * &mat_2);
         assert_eq!(mat_5, rational_3 * mat_2);
+    }
+}
+
+#[cfg(test)]
+mod test_mul_assign {
+    use crate::integer::Z;
+    use crate::rational::{MatQ, Q};
+    use std::str::FromStr;
+
+    /// Ensure that `mul_assign` works for small numbers.
+    #[test]
+    fn correct_small() {
+        let mut a = MatQ::from_str("[[2, 1],[1, 1/2]]").unwrap();
+        let b = Z::from(2);
+        let c = Q::from((2, 5));
+        let d = Z::ZERO;
+
+        a *= &b;
+        assert_eq!(MatQ::from_str("[[4, 2],[2, 1]]").unwrap(), a);
+        a *= &c;
+        assert_eq!(MatQ::from_str("[[8/5, 4/5],[4/5, 2/5]]").unwrap(), a);
+        a *= &d;
+        assert_eq!(MatQ::from_str("[[0, 0],[0, 0]]").unwrap(), a);
+    }
+
+    /// Ensure that `mul_assign` works for large numbers.
+    #[test]
+    fn correct_large() {
+        let mut a = MatQ::from_str("[[2, 1],[-1, 0]]").unwrap();
+        let b = Q::from((1, i32::MAX));
+        let cmp = MatQ::from_str(&format!(
+            "[[2/{}, 1/{}],[-1/{}, 0]]",
+            i32::MAX,
+            i32::MAX,
+            i32::MAX
+        ))
+        .unwrap();
+
+        a *= b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `mul_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let mut a = MatQ::from_str("[[2, 1],[1, 2]]").unwrap();
+        let b = Z::from(2);
+        let c = Q::from((2, 3));
+
+        a *= &b;
+        a *= b;
+        a *= &c;
+        a *= c;
+        a *= 1_u8;
+        a *= 1_u16;
+        a *= 1_u32;
+        a *= 1_u64;
+        a *= 1_i8;
+        a *= 1_i16;
+        a *= 1_i32;
+        a *= 1_i64;
     }
 }
