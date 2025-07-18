@@ -195,7 +195,7 @@ impl MulAssign<i64> for PolyOverZq {
 }
 
 impl MulAssign<u64> for PolyOverZq {
-    /// Documentation at [`PolyOverZ::mul_assign`].
+    /// Documentation at [`PolyOverZq::mul_assign`].
     fn mul_assign(&mut self, other: u64) {
         unsafe {
             fmpz_mod_poly_scalar_mul_ui(
