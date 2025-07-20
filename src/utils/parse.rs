@@ -10,10 +10,11 @@
 
 use crate::{
     error::{MathError, StringConversionError},
+    rational::Q,
     traits::{MatrixDimensions, MatrixGetEntry},
 };
 use regex::Regex;
-use std::fmt::Display;
+use std::{any::Any, fmt::Display};
 use string_builder::Builder;
 
 /// Takes the string of a matrix as input and parses it for easy use.
@@ -167,13 +168,19 @@ pub(crate) fn matrix_from_utf8_fill_bytes(message: &str, nr_entries: usize) -> (
 ///
 /// Parameters:
 /// - `matrix`: a matrix, e.g. [`MatZ`](crate::integer::MatZ), [`MatQ`](crate::rational::MatQ).
+/// - `nr_printed_rows`: defines the number of printed rows at the beginning
+/// - `nr_printed_columns`: defines the number of printed columns at the beginning
 ///
-/// Returns the Matrix as a simplified [`String`].
-pub(crate) fn print_debug_3x3_p1<
-    S: Display + Clone,
-    T: MatrixGetEntry<S> + MatrixDimensions + MatrixDimensions,
+/// Returns the Matrix as a simplified [`String`] with the leftmost at topmost
+/// `nr_printed_rows` x `nr_printed_columns` submatrix printed out fully and the last
+/// column and row printed for the corresponding number of entries.
+pub(crate) fn partial_print<
+    S: Display + Clone + 'static,
+    T: MatrixGetEntry<S> + MatrixDimensions,
 >(
     matrix: &T,
+    nr_printed_rows: i64,
+    nr_printed_columns: i64,
 ) -> String {
     let rows = matrix.get_num_rows();
     let cols = matrix.get_num_columns();
@@ -181,31 +188,36 @@ pub(crate) fn print_debug_3x3_p1<
     let mut result = String::from("[\n");
 
     for i in 0..rows {
-        if rows > 4 && i == 3 {
+        if rows > nr_printed_rows + 1 && i == nr_printed_rows {
             result.push_str("  [...],\n");
             continue;
         }
-        if rows > 4 && i > 3 && i < rows - 1 {
-            // skip all rows from [4, rows - 1]
+        if rows > nr_printed_rows + 1 && i > nr_printed_rows && i < rows - 1 {
+            // skip all rows from [nr_printed_rows, rows - 1]
             continue;
         }
 
         result.push_str("  [");
 
         for j in 0..cols {
-            if cols > 4 && j == 3 {
+            if cols > nr_printed_columns + 1 && j == nr_printed_columns {
                 result.push_str(", ..., ");
                 continue;
             }
-            if cols > 4 && j > 3 && j < cols - 1 {
+            if cols > nr_printed_columns + 1 && j > nr_printed_columns && j < cols - 1 {
                 // skip all columns from [4, columns - 1]
                 continue;
             }
 
             let entry = matrix.get_entry(i, j).unwrap();
-            result.push_str(&format!("{entry}"));
 
-            let is_last = if cols <= 4 {
+            if let Some(q) = (&entry as &dyn Any).downcast_ref::<Q>() {
+                result.push_str(&q.to_string_decimal(2));
+            } else {
+                result.push_str(&entry.to_string());
+            }
+
+            let is_last = if cols <= nr_printed_columns + 1 {
                 j == cols - 1
             } else {
                 j == 2 || j == cols - 1
@@ -445,21 +457,33 @@ mod test_matrix_from_utf8_fill_bytes {
 
 #[cfg(test)]
 mod test_debug_string {
+    use crate::{integer::MatZ, utils::parse::partial_print};
     use std::str::FromStr;
 
-    use crate::{integer::MatZ, utils::parse::print_debug_3x3_p1};
-
-    /// Ensure that the entire matrix is printed if the matrix is smaller or equal than a 4x4
+    /// Ensure that the entire matrix is printed if the matrix is smaller or equal than a 4x4.
     #[test]
     fn print_full_matrix() {
         let matrix_str = "[[1, 2, 3, 4],[3, 4, 5, 6]]";
         let mat = MatZ::from_str(matrix_str).unwrap();
 
         let cmp_str = "[\n  [1, 2, 3, 4],\n  [3, 4, 5, 6]\n]";
-        assert_eq!(cmp_str, print_debug_3x3_p1(&mat))
+        assert_eq!(cmp_str, partial_print(&mat, 3, 3))
     }
 
-    /// Ensure that matrices with more than 4 rows are shortened
+    /// Ensure that the matrix prints properly for different dimensions.
+    #[test]
+    fn print_matrix_different_dimensions() {
+        let matrix_str = "[[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5]]";
+        let mat = MatZ::from_str(matrix_str).unwrap();
+
+        let cmp_str_0 = "[\n  [1, 2, , ..., 5],\n  [1, 2, , ..., 5],\n  [1, 2, , ..., 5],\n  [...],\n  [1, 2, , ..., 5]\n]";
+        let cmp_str_1 =
+            "[\n  [1, 2, 3, ..., 5],\n  [1, 2, 3, ..., 5],\n  [...],\n  [1, 2, 3, ..., 5]\n]";
+        assert_eq!(cmp_str_0, partial_print(&mat, 3, 2));
+        assert_eq!(cmp_str_1, partial_print(&mat, 2, 3));
+    }
+
+    /// Ensure that matrices with more than 4 rows are shortened.
     #[test]
     fn print_reduced_rows() {
         let matrix_str = "[[1, 2, 3, 4],[3, 4, 5, 6],[3, 4, 5, 6],[3, 4, 5, 6],[3, 4, 5, 6]]";
@@ -467,16 +491,26 @@ mod test_debug_string {
 
         let cmp_str =
             "[\n  [1, 2, 3, 4],\n  [3, 4, 5, 6],\n  [3, 4, 5, 6],\n  [...],\n  [3, 4, 5, 6]\n]";
-        assert_eq!(cmp_str, print_debug_3x3_p1(&mat))
+        assert_eq!(cmp_str, partial_print(&mat, 3, 3))
     }
 
-    /// Ensure that matrices with more than 4 columns are shortened
+    /// Ensure that matrices with more than 4 columns are shortened.
     #[test]
     fn print_reduced_columns() {
         let matrix_str = "[[1, 2, 3, 4, 5, 6, 7, 8],[3, 4, 5, 6, 7, 8, 9, 10]]";
         let mat = MatZ::from_str(matrix_str).unwrap();
 
         let cmp_str = "[\n  [1, 2, 3, ..., 8],\n  [3, 4, 5, ..., 10]\n]";
-        assert_eq!(cmp_str, print_debug_3x3_p1(&mat))
+        assert_eq!(cmp_str, partial_print(&mat, 3, 3))
+    }
+
+    /// Ensure that a MatQ is printed properly with its decimal presentation
+    #[test]
+    fn print_matq() {
+        let matrix_str = "[[4/3, 5/3, 3, 4, 5, 6, 7, 8],[3/4, 4, 5, 6, 7, 8, 9, 10/8]]";
+        let mat = crate::rational::MatQ::from_str(matrix_str).unwrap();
+
+        let cmp_str = "[\n  [1.33, 1.67, 3.00, ..., 8.00],\n  [0.75, 4.00, 5.00, ..., 1.25]\n]";
+        assert_eq!(cmp_str, partial_print(&mat, 3, 3))
     }
 }

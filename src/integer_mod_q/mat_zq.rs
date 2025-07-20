@@ -13,7 +13,7 @@
 //! To avoid unnecessary checks and reductions, always return canonical/reduced
 //! values. The end-user should be unable to obtain a non-reduced value.
 
-use crate::{integer_mod_q::Modulus, utils::parse::print_debug_3x3_p1};
+use crate::{integer_mod_q::Modulus, utils::parse::partial_print};
 use flint_sys::fmpz_mod_mat::fmpz_mod_mat_struct;
 use std::fmt;
 
@@ -101,7 +101,7 @@ impl fmt::Debug for MatZq {
             f,
             "MatZq: {{matrix: {}, modulus: {}, storage: {{matrix: {:?}, modulus: {:?}}}}}",
             // printing the entire matrix is not meaningful for large matrices
-            print_debug_3x3_p1(&self.get_representative_least_nonnegative_residue()),
+            partial_print(&self.get_representative_least_nonnegative_residue(), 3, 3),
             self.modulus,
             self.matrix,
             self.modulus

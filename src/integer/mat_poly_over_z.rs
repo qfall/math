@@ -9,7 +9,7 @@
 //! [`MatPolyOverZ`] is a type of matrix with entries of [`PolyOverZ`](crate::integer::PolyOverZ).
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
-use crate::utils::parse::print_debug_3x3_p1;
+use crate::utils::parse::partial_print;
 use flint_sys::fmpz_poly_mat::fmpz_poly_mat_struct;
 use std::fmt;
 
@@ -90,7 +90,7 @@ impl fmt::Debug for MatPolyOverZ {
             f,
             "MatPolyOverZ: {{matrix: {}, storage: {:?}}}",
             // printing the entire matrix is not meaningful for large matrices
-            print_debug_3x3_p1(self),
+            partial_print(self, 3, 3),
             self.matrix
         )
     }
