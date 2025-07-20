@@ -68,6 +68,8 @@ impl fmt::Display for MatPolyOverZ {
     }
 }
 
+crate::macros::serialize::matrix_pretty_print!(MatPolyOverZ, PolyOverZ);
+
 #[cfg(test)]
 mod test_to_string {
     use crate::integer::MatPolyOverZ;

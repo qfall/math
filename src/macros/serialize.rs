@@ -100,6 +100,51 @@ macro_rules! deserialize {
 };
 }
 
+/// Implements the [`Serialize`](serde::Serialize) for `*type*`.
+///
+/// Parameters:
+/// - `field_identifier`: the name of the field
+/// - `type`: the type for which [`Serialize`](serde::Serialize) is implemented
+///   (e.g. [`Z`](crate::integer::Z))
+///
+/// ```impl Serialize for *type*```
+macro_rules! matrix_pretty_print {
+    ($matrix_type:ident, $entry_type:ident) => {
+        impl $matrix_type {
+            paste::paste! {
+                /// Outputs the matrix as a [`String`], where the upper leftmost `nr_printed_rows x nr_printed_columns`
+                /// submatrix is output entirely as well as the corresponding entries in the last column and row of the matrix.
+                ///
+                /// Parameters:
+                /// - `nr_printed_rows`: defines the number of rows of the upper leftmost matrix that are printed entirely
+                /// - `nr_printed_columns`: defines the number of columns of the upper leftmost matrix that are printed entirely
+                ///
+                /// Returns a [`String`] representing the abbreviated matrix.
+                ///
+                /// # Example
+                /// ```
+                /// use qfall_math::integer::MatZ;
+                /// let matrix = MatZ::identity(10, 10);
+                ///
+                /// println!("Matrix: {}", matrix.pretty_print(2, 2));
+                /// // outputs the following:
+                /// // Matrix: [
+                /// //   [1, 0, , ..., 0],
+                /// //   [0, 1, , ..., 0],
+                /// //   [...],
+                /// //   [0, 0, , ..., 1]
+                /// // ]
+                /// ```
+                pub fn pretty_print(&self, nr_printed_rows: i64, nr_printed_columns: i64) -> String {
+                    crate::utils::parse::partial_print(self, nr_printed_rows, nr_printed_columns)
+                }
+            }
+        }
+    };
+}
+
+pub(crate) use matrix_pretty_print;
+
 pub(crate) use serialize;
 
 pub(crate) use deserialize;

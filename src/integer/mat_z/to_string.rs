@@ -134,6 +134,8 @@ impl MatZ {
     }
 }
 
+crate::macros::serialize::matrix_pretty_print!(MatZ, Z);
+
 #[cfg(test)]
 mod test_to_string {
     use crate::integer::MatZ;
