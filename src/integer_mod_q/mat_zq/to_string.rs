@@ -166,7 +166,7 @@ impl MatZq {
             nr_printed_rows,
             nr_printed_columns,
         );
-        result.push_str(&format!(" {}", self.modulus));
+        result.push_str(&format!(" mod {}", self.modulus));
         result
     }
 }
