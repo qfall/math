@@ -220,7 +220,7 @@ pub(crate) fn partial_print<
             let is_last = if cols <= nr_printed_columns + 1 {
                 j == cols - 1
             } else {
-                j == 2 || j == cols - 1
+                j == nr_printed_columns - 1 || j == cols - 1
             };
 
             if !is_last {
@@ -476,7 +476,7 @@ mod test_debug_string {
         let matrix_str = "[[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5]]";
         let mat = MatZ::from_str(matrix_str).unwrap();
 
-        let cmp_str_0 = "[\n  [1, 2, , ..., 5],\n  [1, 2, , ..., 5],\n  [1, 2, , ..., 5],\n  [...],\n  [1, 2, , ..., 5]\n]";
+        let cmp_str_0 = "[\n  [1, 2, ..., 5],\n  [1, 2, ..., 5],\n  [1, 2, ..., 5],\n  [...],\n  [1, 2, ..., 5]\n]";
         let cmp_str_1 =
             "[\n  [1, 2, 3, ..., 5],\n  [1, 2, 3, ..., 5],\n  [...],\n  [1, 2, 3, ..., 5]\n]";
         assert_eq!(cmp_str_0, partial_print(&mat, 3, 2));
