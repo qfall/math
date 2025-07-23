@@ -28,7 +28,7 @@ impl Zq {
     /// ```
     /// use qfall_math::integer_mod_q::Zq;
     ///
-    /// let sample = Zq::sample_uniform(17).unwrap();
+    /// let sample = Zq::sample_uniform(17);
     /// ```
     ///
     /// # Panics

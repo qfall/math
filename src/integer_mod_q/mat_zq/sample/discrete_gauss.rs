@@ -45,7 +45,7 @@ impl MatZq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///   if `n <= 1` or `s <= 0` or `s * log_2(n) < 1` or `s * log_2(n) < 1`.
+    ///   if `n <= 1` or `s <= 0`.
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns or the modulus are not suited to create a matrix.

@@ -43,7 +43,7 @@ impl Zq {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///   if `n <= 1` or `s <= 0` or `s * log_2(n) < 1`.
+    ///   if `n <= 1` or `s <= 0`.
     ///
     /// # Panics ...
     /// - if `modulus` is smaller than `2`.
