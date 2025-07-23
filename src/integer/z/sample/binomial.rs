@@ -21,7 +21,7 @@ impl Z {
     ///
     /// Returns a fresh [`Z`] instance with a value sampled
     /// according to the binomial distribution or a [`MathError`]
-    /// if `n < 1`, `p ∉ (0,1)`, or `n` does not fit into an [`i64`].
+    /// if `n < 0`, `p ∉ (0,1)`, or `n` does not fit into an [`i64`].
     ///
     /// # Examples
     /// ```
@@ -32,7 +32,7 @@ impl Z {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///   if `n < 1`.
+    ///   if `n < 0`.
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
     ///   if `p ∉ (0,1)`.
     /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
