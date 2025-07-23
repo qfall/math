@@ -120,7 +120,7 @@ mod test_sample_uniform {
     /// Checks whether providing an invalid interval results in an error.
     #[test]
     fn invalid_interval() {
-        let lb_0 = Z::from(i64::MIN) - Z::ONE;
+        let lb_0 = Z::from(i64::MIN);
         let lb_1 = Z::from(i64::MIN);
         let lb_2 = Z::ZERO;
         let upper_bound = Z::from(i64::MIN);
