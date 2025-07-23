@@ -8,9 +8,7 @@
 
 //! This module contains sampling algorithms for uniform random sampling.
 
-use crate::{
-    error::MathError, integer::Z, integer_mod_q::Zq, utils::sample::uniform::UniformIntegerSampler,
-};
+use crate::{integer::Z, integer_mod_q::Zq, utils::sample::uniform::UniformIntegerSampler};
 
 impl Zq {
     /// Chooses a [`Zq`] instance uniformly at random in `[0, modulus)`.
@@ -24,8 +22,7 @@ impl Zq {
     ///   of the new [`Zq`] instance and thus the size of the interval over which is sampled
     ///
     /// Returns a new [`Zq`] instance with a value chosen
-    /// uniformly at random in `[0, modulus)` or a [`MathError`]
-    /// if the provided modulus was too small.
+    /// uniformly at random in `[0, modulus)`.
     ///
     /// # Examples
     /// ```
@@ -34,15 +31,14 @@ impl Zq {
     /// let sample = Zq::sample_uniform(17).unwrap();
     /// ```
     ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    ///   if the given modulus is smaller than or equal to `1`.
-    pub fn sample_uniform(modulus: impl Into<Z>) -> Result<Self, MathError> {
+    /// # Panics
+    /// - if the given modulus is smaller than or equal to `1`.
+    pub fn sample_uniform(modulus: impl Into<Z>) -> Self {
         let modulus: Z = modulus.into();
-        let mut uis = UniformIntegerSampler::init(&modulus)?;
+        let mut uis = UniformIntegerSampler::init(&modulus).unwrap();
 
         let random = uis.sample();
-        Ok(Zq::from((random, modulus)))
+        Zq::from((random, modulus))
     }
 }
 
@@ -59,7 +55,7 @@ mod test_sample_uniform {
     fn boundaries_kept_small() {
         let modulus = Z::from(17);
         for _ in 0..32 {
-            let sample = Zq::sample_uniform(&modulus).unwrap();
+            let sample = Zq::sample_uniform(&modulus);
             assert!(Z::ZERO <= sample.value);
             assert!(sample.value < modulus);
         }
@@ -71,7 +67,7 @@ mod test_sample_uniform {
     fn boundaries_kept_large() {
         let modulus = Z::from(u64::MAX);
         for _ in 0..256 {
-            let sample = Zq::sample_uniform(&modulus).unwrap();
+            let sample = Zq::sample_uniform(&modulus);
             assert!(Z::ZERO <= sample.value);
             assert!(sample.value < modulus);
         }
@@ -79,18 +75,11 @@ mod test_sample_uniform {
 
     /// Checks whether providing an invalid interval results in an error.
     #[test]
+    #[should_panic]
     fn invalid_interval() {
-        let mod_0 = Z::from(i64::MIN);
-        let mod_1 = Z::ONE;
-        let mod_2 = Z::ZERO;
+        let modulus = Z::ZERO;
 
-        let res_0 = Zq::sample_uniform(&mod_0);
-        let res_1 = Zq::sample_uniform(&mod_1);
-        let res_2 = Zq::sample_uniform(&mod_2);
-
-        assert!(res_0.is_err());
-        assert!(res_1.is_err());
-        assert!(res_2.is_err());
+        let _ = Zq::sample_uniform(&modulus);
     }
 
     /// Checks whether `sample_uniform` is available for all types
@@ -121,7 +110,7 @@ mod test_sample_uniform {
         let mut counts = [0; 5];
         // count sampled instances
         for _ in 0..1000 {
-            let sample_z = Zq::sample_uniform(&modulus).unwrap();
+            let sample_z = Zq::sample_uniform(&modulus);
             let sample_int = i64::try_from(&sample_z.value).unwrap() as usize;
             counts[sample_int] += 1;
         }

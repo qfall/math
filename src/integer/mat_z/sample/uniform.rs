@@ -45,8 +45,7 @@ impl MatZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    ///   if the given `upper_bound` isn't at least larger than `lower_bound + 1`,
-    ///   i.e. the interval size is at most `1`.
+    ///   if the given `upper_bound` isn't at least larger than `lower_bound`.
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
