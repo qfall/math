@@ -41,7 +41,7 @@ impl From<&MatQ> for String {
 }
 
 implement_for_owned!(MatQ, String, From);
-crate::macros::serialize::matrix_pretty_print!(MatQ, Q);
+crate::macros::serialize::matrix_pretty_string!(MatQ, Q);
 
 impl fmt::Display for MatQ {
     /// Allows to convert a matrix of type [`MatQ`] into a [`String`].

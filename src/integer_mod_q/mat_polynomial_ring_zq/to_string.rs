@@ -50,7 +50,7 @@ impl MatPolynomialRingZq {
     /// use qfall_math::integer::MatZ;
     /// let matrix = MatZ::identity(10, 10);
     ///
-    /// println!("Matrix: {}", matrix.pretty_print(2, 2));
+    /// println!("Matrix: {}", matrix.pretty_string(2, 2));
     /// // outputs the following:
     /// // Matrix: [
     /// //   [1, 0, , ..., 0],
@@ -59,8 +59,8 @@ impl MatPolynomialRingZq {
     /// //   [0, 0, , ..., 1]
     /// // ]
     /// ```
-    pub fn pretty_print(&self, nr_printed_rows: i64, nr_printed_columns: i64) -> String {
-        let mut result = crate::utils::parse::partial_print(
+    pub fn pretty_string(&self, nr_printed_rows: u64, nr_printed_columns: u64) -> String {
+        let mut result = crate::utils::parse::partial_string(
             &self.get_representative_least_nonnegative_residue(),
             nr_printed_rows,
             nr_printed_columns,

@@ -152,17 +152,18 @@ pub(crate) fn matrix_from_utf8_fill_bytes(message: &str, nr_entries: usize) -> (
     (bytes, bytes_per_entry.ceil() as usize)
 }
 
-/// Prints at most 4 rows and columns of a matrix.
-/// It prints the first three and last one respectively.
+/// Returns a matrix string where the upper left matrix of size `nr_printed_rows x nr_printed_columns`.
+/// The rest of the matrix is dotted out, while the last entry of the columns/rows is printed.
+///
 /// For example: a matrix A = [[a00, a01, a02, a03, a04, a05],[a10, a11, a02, a13, a14, a15]]
-/// would be returned as a readable string of the form:
+/// calling the function with 1 row and 3 columns returns the following string:
 /// ```txt
 /// [
 ///   [a00, a01, a02, ..., a05],
 ///   [a10, a11, a12, ..., a15],
 /// ]
 /// ```
-/// If the matrix only has up to 4 rows or columns, they are not cut or interleaved with '...'.
+/// If the function would be called with >=1 row and >=4 columns, then the entire matrix would be printed.
 ///
 /// This function is only relevant internally for pretty debug statements.
 ///
@@ -174,16 +175,16 @@ pub(crate) fn matrix_from_utf8_fill_bytes(message: &str, nr_entries: usize) -> (
 /// Returns the Matrix as a simplified [`String`] with the leftmost at topmost
 /// `nr_printed_rows` x `nr_printed_columns` submatrix printed out fully and the last
 /// column and row printed for the corresponding number of entries.
-pub(crate) fn partial_print<
+pub(crate) fn partial_string<
     S: Display + Clone + 'static,
     T: MatrixGetEntry<S> + MatrixDimensions,
 >(
     matrix: &T,
-    nr_printed_rows: i64,
-    nr_printed_columns: i64,
+    nr_printed_rows: u64,
+    nr_printed_columns: u64,
 ) -> String {
-    let rows = matrix.get_num_rows();
-    let cols = matrix.get_num_columns();
+    let rows = matrix.get_num_rows() as u64;
+    let cols = matrix.get_num_columns() as u64;
 
     let mut result = String::from("[\n");
 
@@ -457,7 +458,7 @@ mod test_matrix_from_utf8_fill_bytes {
 
 #[cfg(test)]
 mod test_debug_string {
-    use crate::{integer::MatZ, utils::parse::partial_print};
+    use crate::{integer::MatZ, utils::parse::partial_string};
     use std::str::FromStr;
 
     /// Ensure that the entire matrix is printed if the matrix is smaller or equal than a 4x4.
@@ -467,7 +468,7 @@ mod test_debug_string {
         let mat = MatZ::from_str(matrix_str).unwrap();
 
         let cmp_str = "[\n  [1, 2, 3, 4],\n  [3, 4, 5, 6]\n]";
-        assert_eq!(cmp_str, partial_print(&mat, 3, 3))
+        assert_eq!(cmp_str, partial_string(&mat, 3, 3))
     }
 
     /// Ensure that the matrix prints properly for different dimensions.
@@ -479,8 +480,8 @@ mod test_debug_string {
         let cmp_str_0 = "[\n  [1, 2, ..., 5],\n  [1, 2, ..., 5],\n  [1, 2, ..., 5],\n  [...],\n  [1, 2, ..., 5]\n]";
         let cmp_str_1 =
             "[\n  [1, 2, 3, ..., 5],\n  [1, 2, 3, ..., 5],\n  [...],\n  [1, 2, 3, ..., 5]\n]";
-        assert_eq!(cmp_str_0, partial_print(&mat, 3, 2));
-        assert_eq!(cmp_str_1, partial_print(&mat, 2, 3));
+        assert_eq!(cmp_str_0, partial_string(&mat, 3, 2));
+        assert_eq!(cmp_str_1, partial_string(&mat, 2, 3));
     }
 
     /// Ensure that matrices with more than 4 rows are shortened.
@@ -491,7 +492,7 @@ mod test_debug_string {
 
         let cmp_str =
             "[\n  [1, 2, 3, 4],\n  [3, 4, 5, 6],\n  [3, 4, 5, 6],\n  [...],\n  [3, 4, 5, 6]\n]";
-        assert_eq!(cmp_str, partial_print(&mat, 3, 3))
+        assert_eq!(cmp_str, partial_string(&mat, 3, 3))
     }
 
     /// Ensure that matrices with more than 4 columns are shortened.
@@ -501,7 +502,7 @@ mod test_debug_string {
         let mat = MatZ::from_str(matrix_str).unwrap();
 
         let cmp_str = "[\n  [1, 2, 3, ..., 8],\n  [3, 4, 5, ..., 10]\n]";
-        assert_eq!(cmp_str, partial_print(&mat, 3, 3))
+        assert_eq!(cmp_str, partial_string(&mat, 3, 3))
     }
 
     /// Ensure that a MatQ is printed properly with its decimal presentation
@@ -511,6 +512,6 @@ mod test_debug_string {
         let mat = crate::rational::MatQ::from_str(matrix_str).unwrap();
 
         let cmp_str = "[\n  [1.33, 1.67, 3.00, ..., 8.00],\n  [0.75, 4.00, 5.00, ..., 1.25]\n]";
-        assert_eq!(cmp_str, partial_print(&mat, 3, 3))
+        assert_eq!(cmp_str, partial_string(&mat, 3, 3))
     }
 }
