@@ -80,8 +80,8 @@ impl fmt::Debug for Q {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "Q {{value_f64(may be rounded): {}, value: {}, storage: {{value: {:?}}}}}",
-            f64::from(self),
+            "Q {{value_f64(may be rounded; 5 decimals): {}, value: {}, storage: {{value: {:?}}}}}",
+            self.to_string_decimal(5),
             self,
             self.value
         )
