@@ -10,9 +10,10 @@
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use super::ModulusPolynomialRingZq;
-use crate::integer::MatPolyOverZ;
+use crate::{integer::MatPolyOverZ, utils::parse::partial_string};
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 mod arithmetic;
 mod cmp;
@@ -90,9 +91,23 @@ mod vector;
 /// assert!(row_vec.is_row_vector());
 /// assert!(col_vec.is_column_vector());
 /// ```
-#[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Display, Clone)]
+#[derive(PartialEq, Eq, Serialize, Deserialize, Display, Clone)]
 #[display("{matrix} / {modulus}")]
 pub struct MatPolynomialRingZq {
     pub(crate) matrix: MatPolyOverZ,
     pub(crate) modulus: ModulusPolynomialRingZq,
+}
+
+impl fmt::Debug for MatPolynomialRingZq {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "MatPolynomialRingZq: {{matrix: {}, modulus: {} storage: {{matrix: {:?}, modulus: {:?}}}}}",
+            // printing the entire matrix is not meaningful for large matrices
+            partial_string(&self.get_representative_least_nonnegative_residue(), 3, 3),
+            self.modulus,
+            self.matrix,
+            self.modulus
+        )
+    }
 }

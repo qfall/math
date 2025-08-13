@@ -588,22 +588,22 @@ mod test_solve_gauss {
             if let Some(solution) = mat.solve_gaussian_elimination(&y) {
                 if &mat * &solution == y {
                     correct_count += 1;
-                    println!("{}: Correct!", i);
+                    println!("{i}: Correct!");
                 } else {
                     false_count += 1;
-                    println!("{}: False", i);
-                    println!("\t Matrix: {} \n\t y: {} \n\t x: {}", &mat, y, &x);
+                    println!("{i}: False");
+                    println!("\t Matrix: {mat} \n\t y: {y} \n\t x: {x}");
                 }
             } else {
                 none_count += 1;
-                println!("{}: None", i);
-                println!("\t Matrix: {} \n\t y: {} \n\t x: {}", mat, y, x);
+                println!("{i}: None");
+                println!("\t Matrix: {mat} \n\t y: {y} \n\t x: {x}");
             }
         }
 
-        println!("Nones: {}", none_count);
-        println!("Corrects: {}", correct_count);
-        println!("False: {}", false_count);
+        println!("Nones: {none_count}");
+        println!("Corrects: {correct_count}");
+        println!("False: {false_count}");
     }
 
     /// Ensure that for different moduli the function panics.

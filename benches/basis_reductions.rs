@@ -15,7 +15,7 @@ use qfall_math::integer::MatZ;
 ///
 /// We uniformly sample a matrix `A = ZZ_256^{20 x 20}` and execute (0.99, 0.501)-LLL on it.
 pub fn bench_lll(c: &mut Criterion) {
-    let mut matrix = MatZ::sample_uniform(20, 20, 0, 256).unwrap();
+    let matrix = MatZ::sample_uniform(20, 20, 0, 256).unwrap();
 
     c.bench_function("LLL on 20x20 matrix", |b| {
         b.iter(|| matrix.lll(0.99, 0.501))

@@ -248,20 +248,20 @@ mod test_inverse {
 
                 if id == MatZq::identity(row_sample, row_sample, modulus) {
                     correct_count += 1;
-                    println!("{}: Correct", i);
+                    println!("{i}: Correct");
                 } else {
                     false_count += 1;
-                    println!("{}: False", i);
+                    println!("{i}: False");
                 }
             } else {
                 none_count += 1;
-                println!("{}: None", i);
+                println!("{i}: None");
             }
         }
 
-        println!("Nones: {}", none_count);
-        println!("Corrects: {}", correct_count);
-        println!("False: {}", false_count);
+        println!("Nones: {none_count}");
+        println!("Corrects: {correct_count}");
+        println!("False: {false_count}");
     }
 }
 
