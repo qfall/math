@@ -11,11 +11,67 @@
 use crate::{
     error::MathError,
     integer::{MatPolyOverZ, Z},
-    integer_mod_q::MatPolynomialRingZq,
+    integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
     rational::{PolyOverQ, Q},
 };
+use std::fmt::Display;
 
 impl MatPolynomialRingZq {
+    /// Initializes a new matrix with dimensions `num_rows` x `num_columns` and with each entry
+    /// sampled independently according to the discrete Gaussian distribution,
+    /// using [`PolynomialRingZq::sample_discrete_gauss`](crate::integer_mod_q::PolynomialRingZq::sample_discrete_gauss).
+    ///
+    /// Parameters:
+    /// - `num_rows`: specifies the number of rows the new matrix should have
+    /// - `num_cols`: specifies the number of columns the new matrix should have
+    /// - `modulus`: specifies the Modulus for the matrix and the maximum degree
+    ///   any discrete Gaussian polynomial can have
+    /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
+    /// - `center`: specifies the positions of the center with peak probability
+    /// - `s`: specifies the Gaussian parameter, which is proportional
+    ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
+    ///
+    /// Returns a [`MatPolynomialRingZq`] with each entry sampled independently from the
+    /// specified discrete Gaussian distribution or an error if `n <= 1` or `s <= 0`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
+    /// let modulus = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
+    ///
+    /// let matrix = MatPolynomialRingZq::sample_discrete_gauss(3, 1, &modulus, 128, 0, 1.25f32).unwrap();
+    /// ```
+    ///
+    /// # Errors and Failures
+    /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
+    ///   if `n <= 1` or `s <= 0`.
+    ///
+    /// # Panics ...
+    /// - if the provided number of rows and columns are not suited to create a matrix.
+    ///   For further information see [`MatPolynomialRingZq::new`].
+    /// - if `modulus` is not a valid choice for a [`ModulusPolynomialRingZq`], see
+    ///   [`ModulusPolynomialRingZq::from`] for further information.
+    pub fn sample_discrete_gauss(
+        num_rows: impl TryInto<i64> + Display,
+        num_cols: impl TryInto<i64> + Display,
+        modulus: impl Into<ModulusPolynomialRingZq>,
+        n: impl Into<Z>,
+        center: impl Into<Q>,
+        s: impl Into<Q>,
+    ) -> Result<MatPolynomialRingZq, MathError> {
+        let modulus: ModulusPolynomialRingZq = modulus.into();
+        let sample = MatPolyOverZ::sample_discrete_gauss(
+            num_rows,
+            num_cols,
+            modulus.get_degree() - 1,
+            n,
+            center,
+            s,
+        )?;
+        Ok(MatPolynomialRingZq::from((&sample, modulus)))
+    }
+
     /// SampleD samples a discrete Gaussian from the lattice with a provided `basis`.
     ///
     /// We do not check whether `basis` is actually a basis. Hence, the callee is
@@ -79,6 +135,36 @@ impl MatPolynomialRingZq {
     ) -> Result<MatPolynomialRingZq, MathError> {
         let sample = MatPolyOverZ::sample_d(&basis.matrix, k, n, center, s)?;
         Ok(MatPolynomialRingZq::from((&sample, &basis.get_mod())))
+    }
+}
+
+#[cfg(test)]
+mod test_sample_discrete_gauss {
+    use crate::{
+        integer::PolyOverZ,
+        integer_mod_q::{MatPolynomialRingZq, MatZq, ModulusPolynomialRingZq},
+        traits::{FromCoefficientEmbedding, MatrixGetEntry, MatrixSetEntry},
+    };
+
+    /// Ensures that the resulting entries have correct degree.
+    #[test]
+    fn correct_degree_entries() {
+        let degrees = [1, 2, 3, 7, 15, 32, 120];
+        for degree in degrees {
+            let mut coeff_emb_mod = MatZq::new(degree + 1, 1, i64::MAX);
+            coeff_emb_mod.set_entry(0, 0, 1).unwrap();
+            coeff_emb_mod.set_entry(degree, 0, 1).unwrap();
+            let modulus = ModulusPolynomialRingZq::from_coefficient_embedding(&coeff_emb_mod);
+            let res = MatPolynomialRingZq::sample_discrete_gauss(1, 1, modulus, 1024, i32::MAX, 1)
+                .unwrap();
+
+            let entry: PolyOverZ = res.get_entry(0, 0).unwrap();
+            assert_eq!(
+                entry.get_degree(),
+                degree - 1,
+                "Could fail with negligible probability."
+            );
+        }
     }
 }
 
