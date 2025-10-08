@@ -104,7 +104,7 @@ impl DivAssign<&Q> for MatQ {
     /// Parameters:
     /// - `other`: specifies the value to multiply to `self`
     ///
-    /// Returns the scalar of the matrix as a [`MatPolynomialRingZq`].
+    /// Returns the scalar of the matrix as a [`MatQ`].
     ///
     /// # Examples
     /// ```
