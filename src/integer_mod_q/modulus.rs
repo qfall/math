@@ -15,7 +15,7 @@
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use flint_sys::fmpz_mod::fmpz_mod_ctx;
-use std::rc::Rc;
+use std::{fmt, rc::Rc};
 
 mod cmp;
 mod distance;
@@ -63,7 +63,16 @@ mod unsafe_functions;
 /// // comparison
 /// assert_eq!(a, clone);
 /// ```
-#[derive(Debug)]
 pub struct Modulus {
     pub(crate) modulus: Rc<fmpz_mod_ctx>,
+}
+
+impl fmt::Debug for Modulus {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "Modulus {{ modulus: {}, storage: {{modulus: {:?}}}}}",
+            self, self.modulus
+        )
+    }
 }

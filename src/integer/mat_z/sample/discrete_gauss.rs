@@ -33,7 +33,7 @@ impl MatZ {
     ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a matrix with each entry sampled independently from the
-    /// specified discrete Gaussian distribution or an error if `n <= 1` or `s <= 0` or `s * log_2(n) < 1`.
+    /// specified discrete Gaussian distribution or an error if `n <= 1` or `s <= 0`.
     ///
     /// # Examples
     /// ```

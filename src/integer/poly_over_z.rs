@@ -11,6 +11,7 @@
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use flint_sys::fmpz_poly::fmpz_poly_struct;
+use std::fmt;
 
 mod arithmetic;
 mod cmp;
@@ -58,7 +59,16 @@ mod unsafe_functions;
 /// // comparison
 /// assert_ne!(poly_1, poly_2);
 /// ```
-#[derive(Debug)]
 pub struct PolyOverZ {
     pub(crate) poly: fmpz_poly_struct,
+}
+
+impl fmt::Debug for PolyOverZ {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "PolyOverZ {{poly: {}, storage: {{poly: {:?}}}}}",
+            self, self.poly
+        )
+    }
 }

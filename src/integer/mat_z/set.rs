@@ -229,7 +229,7 @@ impl MatrixSwaps for MatZ {
 
         if col_0 >= num_cols || col_1 >= num_cols {
             return Err(MathError::OutOfBounds(
-                format!("smaller than {}", num_cols),
+                format!("smaller than {num_cols}"),
                 if col_0 > col_1 {
                     col_0.to_string()
                 } else {
@@ -275,7 +275,7 @@ impl MatrixSwaps for MatZ {
 
         if row_0 >= num_rows || row_1 >= num_rows {
             return Err(MathError::OutOfBounds(
-                format!("smaller than {}", num_rows),
+                format!("smaller than {num_rows}"),
                 if row_0 > row_1 {
                     row_0.to_string()
                 } else {

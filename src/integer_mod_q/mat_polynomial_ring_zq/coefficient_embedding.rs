@@ -122,8 +122,7 @@ impl FromCoefficientEmbedding<(&MatZq, &ModulusPolynomialRingZq, i64)> for MatPo
         assert_eq!(
             num_rows % (degree+1),
             0,
-            "The provided degree of polynomials ({degree}) +1 must divide the number of rows of the embedding ({}).",
-            num_rows
+            "The provided degree of polynomials ({degree}) +1 must divide the number of rows of the embedding ({num_rows})."
         );
         assert_eq!(
             Z::from(embedding.0.get_mod()),

@@ -65,7 +65,7 @@ impl fmt::Display for PolyOverZ {
         let return_str = unsafe { CStr::from_ptr(c_str_ptr).to_str().unwrap().to_owned() };
         // free the space allocated by the pointer
         unsafe { libc::free(c_str_ptr as *mut libc::c_void) };
-        write!(f, "{}", return_str)
+        write!(f, "{return_str}")
     }
 }
 

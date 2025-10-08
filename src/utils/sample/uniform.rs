@@ -72,9 +72,9 @@ impl UniformIntegerSampler {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    ///   if the interval is chosen smaller than or equal to `1`.
+    ///   if the interval is chosen smaller than `1`.
     pub fn init(interval_size: &Z) -> Result<Self, MathError> {
-        if interval_size <= &Z::ONE {
+        if interval_size < &Z::ONE {
             return Err(MathError::InvalidInterval(format!(
                 "An invalid interval size {interval_size} was provided."
             )));
@@ -122,6 +122,10 @@ impl UniformIntegerSampler {
     /// assert!(sample < interval_size);
     /// ```
     pub fn sample(&mut self) -> Z {
+        if self.interval_size.is_one() {
+            return Z::ZERO;
+        }
+
         let mut sample = self.sample_bits_uniform();
         while sample >= self.interval_size {
             sample = self.sample_bits_uniform();
@@ -240,7 +244,6 @@ mod test_uis {
     /// Checks whether interval sizes smaller than 2 result in an error.
     #[test]
     fn invalid_interval() {
-        assert!(UniformIntegerSampler::init(&Z::ONE).is_err());
         assert!(UniformIntegerSampler::init(&Z::ZERO).is_err());
         assert!(UniformIntegerSampler::init(&Z::MINUS_ONE).is_err());
     }
