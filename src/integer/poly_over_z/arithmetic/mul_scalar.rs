@@ -312,7 +312,7 @@ mod test_mul_assign {
         let cmp = PolyOverZ::from_str(&format!(
             "2  {} {}",
             i32::MAX as i64 * 2,
-            i32::MAX as i64 * -1
+            -(i32::MAX as i64)
         ))
         .unwrap();
 

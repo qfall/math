@@ -275,7 +275,7 @@ mod test_mul_assign {
         let mut a = PolyOverQ::from_str("2  2 -1").unwrap();
         let b = Q::from((1, i32::MAX));
         let cmp =
-            PolyOverQ::from_str(&format!("2  2/{} 1/{}", i32::MAX, i32::MAX as i64 * -1)).unwrap();
+            PolyOverQ::from_str(&format!("2  2/{} 1/{}", i32::MAX, -(i32::MAX as i64))).unwrap();
 
         a *= b;
 

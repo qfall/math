@@ -444,6 +444,7 @@ where
 
 impl MulAssign<&Zq> for MatPolynomialRingZq {
     /// Documentation at [`MatPolynomialRingZq::mul_assign`].
+    ///
     /// # Panics ...
     /// - if the moduli are different.
     fn mul_assign(&mut self, rhs: &Zq) {
