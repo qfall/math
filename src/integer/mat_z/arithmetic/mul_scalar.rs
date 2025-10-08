@@ -335,31 +335,12 @@ mod test_mul_assign {
     use crate::integer::{MatZ, Z};
     use std::str::FromStr;
 
-    /// Ensure that `mul_assign` works for small numbers.
+    /// Ensure that `mul_assign` produces same output as normal multiplication.
     #[test]
-    fn correct_small() {
-        let mut a = MatZ::from_str("[[2, 1],[1, 2]]").unwrap();
-        let b = Z::from(2);
-        let c = Z::ZERO;
-
-        a *= &b;
-        assert_eq!(MatZ::from_str("[[4, 2],[2, 4]]").unwrap(), a);
-        a *= &c;
-        assert_eq!(MatZ::from_str("[[0, 0],[0, 0]]").unwrap(), a);
-    }
-
-    /// Ensure that `mul_assign` works for large numbers.
-    #[test]
-    fn correct_large() {
+    fn consistency() {
         let mut a = MatZ::from_str("[[2, 1],[-1, 0]]").unwrap();
         let b = i32::MAX;
-        let cmp = MatZ::from_str(&format!(
-            "[[{}, {}],[{}, 0]]",
-            i32::MAX as i64 * 2,
-            i32::MAX,
-            i32::MAX as i64 * -1
-        ))
-        .unwrap();
+        let cmp = &a * b;
 
         a *= b;
 

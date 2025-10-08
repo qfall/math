@@ -1,4 +1,4 @@
-// Copyright © 2025 Marcel Luca Schmidt
+// Copyright © 2025 Marcel Luca Schmidt, Marvin Beckmann
 //
 // This file is part of qFALL-math.
 //
@@ -173,11 +173,33 @@ impl MulAssign<&Z> for PolyOverZq {
                 &mut self.poly,
                 &self.poly,
                 &scalar.value,
-                self.modulus.get_fmpz_mod_ctx(),
+                self.modulus.get_fmpz_mod_ctx_struct(),
             )
         };
     }
 }
+
+impl MulAssign<&Zq> for PolyOverZq {
+    /// Documentation at [`PolyOverZq::mul_assign`]
+    ///
+    /// # Panics ...
+    /// - if the moduli are different.
+    fn mul_assign(&mut self, scalar: &Zq) {
+        if !self.compare_base(scalar) {
+            panic!("{:?}", self.call_compare_base_error(scalar).unwrap())
+        }
+        unsafe {
+            fmpz_mod_poly_scalar_mul_fmpz(
+                &mut self.poly,
+                &self.poly,
+                &scalar.value.value,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, PolyOverZq, Zq);
 
 impl MulAssign<i64> for PolyOverZq {
     /// Documentation at [`PolyOverZq::mul_assign`].
@@ -188,7 +210,7 @@ impl MulAssign<i64> for PolyOverZq {
                 &mut self.poly,
                 &self.poly,
                 &z.value,
-                self.modulus.get_fmpz_mod_ctx(),
+                self.modulus.get_fmpz_mod_ctx_struct(),
             )
         };
     }
@@ -202,7 +224,7 @@ impl MulAssign<u64> for PolyOverZq {
                 &mut self.poly,
                 &self.poly,
                 other,
-                self.modulus.get_fmpz_mod_ctx(),
+                self.modulus.get_fmpz_mod_ctx_struct(),
             )
         };
     }
@@ -335,37 +357,17 @@ mod test_mul_zq {
 
 #[cfg(test)]
 mod test_mul_assign {
-    use crate::integer::Z;
-    use crate::integer_mod_q::PolyOverZq;
+    use crate::integer::{PolyOverZ, Z};
+    use crate::integer_mod_q::{PolyOverZq, Zq};
     use std::str::FromStr;
 
-    /// Ensure that `mul_assign` works for small numbers.
+    /// Ensure that `mul_assign` produces same output as normal multiply.
     #[test]
-    fn correct_small() {
-        let mut a = PolyOverZq::from_str("3  1 2 -3 mod 7").unwrap();
-        let b = Z::from(2);
-        let c = Z::ZERO;
-
-        a *= &b;
-        assert_eq!(PolyOverZq::from_str("3  2 4 1 mod 7").unwrap(), a);
-        a *= &c;
-        assert_eq!(PolyOverZq::from_str("0 mod 7").unwrap(), a);
-    }
-
-    /// Ensure that `mul_assign` works for large numbers.
-    #[test]
-    fn correct_large() {
+    fn consistency() {
         let mut a = PolyOverZq::from_str(&format!("2  2 -1 mod {}", u64::MAX - 1)).unwrap();
-        let b = i32::MAX;
-        let cmp = PolyOverZq::from_str(&format!(
-            "2  {} {} mod {}",
-            i32::MAX as i64 * 2,
-            i32::MAX as i64 * -1,
-            u64::MAX - 1
-        ))
-        .unwrap();
+        let cmp = &a * i32::MAX;
 
-        a *= b;
+        a *= i32::MAX;
 
         assert_eq!(cmp, a);
     }
@@ -373,18 +375,36 @@ mod test_mul_assign {
     /// Ensure that `mul_assign` is available for all types.
     #[test]
     fn availability() {
-        let mut a = PolyOverZq::from_str("3  1 2 -3 mod 8").unwrap();
-        let b = Z::from(2);
+        let mut poly_zq = PolyOverZq::from_str("3  1 2 -3 mod 8").unwrap();
 
-        a *= &b;
-        a *= b;
-        a *= 1_u8;
-        a *= 1_u16;
-        a *= 1_u32;
-        a *= 1_u64;
-        a *= 1_i8;
-        a *= 1_i16;
-        a *= 1_i32;
-        a *= 1_i64;
+        let z = Z::from(2);
+        let zq = Zq::from((2, 8));
+        let poly_z = PolyOverZ::from_str("2  3 1").unwrap();
+
+        poly_zq *= &z;
+        poly_zq *= z;
+        poly_zq *= &zq;
+        poly_zq *= zq;
+        poly_zq *= &poly_z;
+        poly_zq *= poly_z;
+        poly_zq *= 1_u8;
+        poly_zq *= 1_u16;
+        poly_zq *= 1_u32;
+        poly_zq *= 1_u64;
+        poly_zq *= 1_i8;
+        poly_zq *= 1_i16;
+        poly_zq *= 1_i32;
+        poly_zq *= 1_i64;
+    }
+
+    /// Ensure that `mul_assign` panics if the moduli mismatch.
+    #[test]
+    #[should_panic]
+    fn mismatching_modulus_zq() {
+        let mut poly_zq = PolyOverZq::from_str("3  1 2 -3 mod 8").unwrap();
+
+        let zq = Zq::from((2, u64::MAX - 1));
+
+        poly_zq *= &zq;
     }
 }

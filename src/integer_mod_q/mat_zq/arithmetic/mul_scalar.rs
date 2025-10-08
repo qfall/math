@@ -162,6 +162,23 @@ impl MulAssign<&Z> for MatZq {
     }
 }
 
+impl MulAssign<&Zq> for MatZq {
+    /// Documentation at [`MatZq::mul_assign`]
+    ///
+    /// # Panics ...
+    /// - if the moduli are different.
+    fn mul_assign(&mut self, scalar: &Zq) {
+        if !self.compare_base(scalar) {
+            panic!("{:?}", self.call_compare_base_error(scalar).unwrap())
+        }
+        unsafe {
+            fmpz_mod_mat_scalar_mul_fmpz(&mut self.matrix, &self.matrix, &scalar.value.value)
+        };
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, MatZq, Zq);
+
 impl MulAssign<i64> for MatZq {
     /// Documentation at [`MatZq::mul_assign`].
     fn mul_assign(&mut self, other: i64) {
@@ -403,35 +420,15 @@ mod test_mul_zq {
 #[cfg(test)]
 mod test_mul_assign {
     use crate::integer::Z;
-    use crate::integer_mod_q::MatZq;
+    use crate::integer_mod_q::{MatZq, Zq};
     use std::str::FromStr;
 
-    /// Ensure that `mul_assign` works for small numbers.
+    /// Ensure that `mul_assign` produces same output as normal multiply.
     #[test]
-    fn correct_small() {
-        let mut a = MatZq::from_str("[[2, 1],[1, 2]] mod 3").unwrap();
-        let b = Z::from(2);
-        let c = Z::ZERO;
-
-        a *= &b;
-        assert_eq!(MatZq::from_str("[[1, 2],[2, 1]] mod 3").unwrap(), a);
-        a *= &c;
-        assert_eq!(MatZq::from_str("[[0, 0],[0, 0]] mod 3").unwrap(), a);
-    }
-
-    /// Ensure that `mul_assign` works for large numbers.
-    #[test]
-    fn correct_large() {
+    fn consistency() {
         let mut a = MatZq::from_str(&format!("[[2, 1],[-1, 0]] mod {}", u64::MAX - 1)).unwrap();
         let b = i32::MAX;
-        let cmp = MatZq::from_str(&format!(
-            "[[{}, {}],[{}, 0]] mod {}",
-            i32::MAX as i64 * 2,
-            i32::MAX,
-            i32::MAX as i64 * -1,
-            u64::MAX - 1
-        ))
-        .unwrap();
+        let cmp = &a * b;
 
         a *= b;
 
@@ -441,18 +438,32 @@ mod test_mul_assign {
     /// Ensure that `mul_assign` is available for all types.
     #[test]
     fn availability() {
-        let mut a = MatZq::from_str("[[2, 1],[1, 2]] mod 7").unwrap();
-        let b = Z::from(2);
+        let mut mat_zq = MatZq::from_str("[[2, 1],[1, 2]] mod 7").unwrap();
+        let z = Z::from(2);
+        let zq = Zq::from((2, 7));
 
-        a *= &b;
-        a *= b;
-        a *= 1_u8;
-        a *= 1_u16;
-        a *= 1_u32;
-        a *= 1_u64;
-        a *= 1_i8;
-        a *= 1_i16;
-        a *= 1_i32;
-        a *= 1_i64;
+        mat_zq *= &z;
+        mat_zq *= z;
+        mat_zq *= &zq;
+        mat_zq *= zq;
+        mat_zq *= 1_u8;
+        mat_zq *= 1_u16;
+        mat_zq *= 1_u32;
+        mat_zq *= 1_u64;
+        mat_zq *= 1_i8;
+        mat_zq *= 1_i16;
+        mat_zq *= 1_i32;
+        mat_zq *= 1_i64;
+    }
+
+    /// Ensure that `mul_assign` panics if the moduli mismatch.
+    #[test]
+    #[should_panic]
+    fn mismatching_modulus_zq() {
+        let mut mat_zq = MatZq::from_str("[[2, 1],[1, 2]] mod 7").unwrap();
+
+        let zq = Zq::from((2, u64::MAX - 1));
+
+        mat_zq *= &zq;
     }
 }

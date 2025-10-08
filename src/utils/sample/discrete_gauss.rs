@@ -283,7 +283,7 @@ pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ
 /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
 ///   if `center` is not a column vector.
 ///
-/// # Panics...
+/// # Panics ...
 /// - if the number of rows/columns of `basis_gso` and `basis` mismatch.
 pub(crate) fn sample_d_precomputed_gso(
     basis: &MatZ,

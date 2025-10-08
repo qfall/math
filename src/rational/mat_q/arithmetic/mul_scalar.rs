@@ -137,26 +137,9 @@ impl MulAssign<&Z> for MatQ {
     }
 }
 
-impl MulAssign<i64> for MatQ {
-    /// Documentation at [`MatQ::mul_assign`].
-    fn mul_assign(&mut self, other: i64) {
-        let z = Z::from(other);
-        unsafe { fmpq_mat_scalar_mul_fmpz(&mut self.matrix, &self.matrix, &z.value) };
-    }
-}
-
-impl MulAssign<u64> for MatQ {
-    /// Documentation at [`MatQ::mul_assign`].
-    fn mul_assign(&mut self, other: u64) {
-        let z = Z::from(other);
-        unsafe { fmpq_mat_scalar_mul_fmpz(&mut self.matrix, &self.matrix, &z.value) };
-    }
-}
-
 arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, MatQ, Q);
 arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, MatQ, Z);
-arithmetic_assign_between_types!(MulAssign, mul_assign, MatQ, i64, i32 i16 i8);
-arithmetic_assign_between_types!(MulAssign, mul_assign, MatQ, u64, u32 u16 u8);
+arithmetic_assign_between_types!(MulAssign, mul_assign, MatQ, Z, u64 u32 u16 u8 i64 i32 i16 i8);
 
 #[cfg(test)]
 mod test_mul_z {
@@ -391,34 +374,12 @@ mod test_mul_assign {
     use crate::rational::{MatQ, Q};
     use std::str::FromStr;
 
-    /// Ensure that `mul_assign` works for small numbers.
+    /// Ensure that `mul_assign` produces same output as normal multiply.
     #[test]
-    fn correct_small() {
-        let mut a = MatQ::from_str("[[2, 1],[1, 1/2]]").unwrap();
-        let b = Z::from(2);
-        let c = Q::from((2, 5));
-        let d = Z::ZERO;
-
-        a *= &b;
-        assert_eq!(MatQ::from_str("[[4, 2],[2, 1]]").unwrap(), a);
-        a *= &c;
-        assert_eq!(MatQ::from_str("[[8/5, 4/5],[4/5, 2/5]]").unwrap(), a);
-        a *= &d;
-        assert_eq!(MatQ::from_str("[[0, 0],[0, 0]]").unwrap(), a);
-    }
-
-    /// Ensure that `mul_assign` works for large numbers.
-    #[test]
-    fn correct_large() {
+    fn consistency() {
         let mut a = MatQ::from_str("[[2, 1],[-1, 0]]").unwrap();
         let b = Q::from((1, i32::MAX));
-        let cmp = MatQ::from_str(&format!(
-            "[[2/{}, 1/{}],[-1/{}, 0]]",
-            i32::MAX,
-            i32::MAX,
-            i32::MAX
-        ))
-        .unwrap();
+        let cmp = &a * &b;
 
         a *= b;
 

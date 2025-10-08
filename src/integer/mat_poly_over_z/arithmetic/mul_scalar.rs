@@ -533,42 +533,12 @@ mod test_mul_assign {
     use crate::integer::{MatPolyOverZ, PolyOverZ, Z};
     use std::str::FromStr;
 
-    /// Ensure that `mul_assign` works for small numbers.
+    /// Ensure that `mul_assign` produces same output as normal multiplication.
     #[test]
-    fn correct_small() {
-        let mut a = MatPolyOverZ::from_str("[[2  2 1, 1  -3],[0, 2  3 1]]").unwrap();
-        let b = Z::from(2);
-        let c = PolyOverZ::from_str("2  1 0").unwrap();
-        let d = Z::ZERO;
-
-        a *= &b;
-        assert_eq!(
-            MatPolyOverZ::from_str("[[2  4 2, 1  -6],[0, 2  6 2]]").unwrap(),
-            a
-        );
-        a *= &c;
-        assert_eq!(
-            MatPolyOverZ::from_str("[[3  4 2 0, 2  -6 0],[0, 3  6 2 0]]").unwrap(),
-            a
-        );
-        a *= &d;
-        assert_eq!(MatPolyOverZ::from_str("[[0, 0],[0, 0]]").unwrap(), a);
-    }
-
-    /// Ensure that `mul_assign` works for large numbers.
-    #[test]
-    fn correct_large() {
+    fn consistency() {
         let mut a = MatPolyOverZ::from_str("[[2  2 1, 1  -2],[0, 2  2 -1]]").unwrap();
         let b = i32::MAX;
-        let cmp = MatPolyOverZ::from_str(&format!(
-            "[[2  {} {}, 1  {}],[0, 2  {} {}]]",
-            i32::MAX as i64 * 2,
-            i32::MAX,
-            i32::MAX as i64 * -2,
-            i32::MAX as i64 * 2,
-            i32::MAX as i64 * -1
-        ))
-        .unwrap();
+        let cmp = &a * b;
 
         a *= b;
 
