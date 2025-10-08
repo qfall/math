@@ -146,16 +146,19 @@ impl MulAssign<&Z> for MatZq {
     /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
-    /// use qfall_math::integer_mod_q::MatZq;
+    /// use qfall_math::integer_mod_q::{MatZq, Zq};
     /// use std::str::FromStr;
     ///
     /// let mut a = MatZq::from_str("[[2, 1],[1, 2]] mod 61").unwrap();
     /// let b = Z::from(2);
+    /// let c = Zq::from((17, 61));
     ///
     /// a *= &b;
     /// a *= b;
     /// a *= 2;
     /// a *= -2;
+    /// a *= &c;
+    /// a *= c;
     /// ```
     fn mul_assign(&mut self, scalar: &Z) {
         unsafe { fmpz_mod_mat_scalar_mul_fmpz(&mut self.matrix, &self.matrix, &scalar.value) };

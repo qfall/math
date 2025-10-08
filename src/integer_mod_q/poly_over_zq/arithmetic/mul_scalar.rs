@@ -156,14 +156,17 @@ impl MulAssign<&Z> for PolyOverZq {
     /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
-    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use qfall_math::integer_mod_q::{PolyOverZq, Zq};
     /// use std::str::FromStr;
     ///
     /// let mut a = PolyOverZq::from_str("3  1 2 -3 mod 5").unwrap();
     /// let b = Z::from(2);
+    /// let c = Zq::from((17, 5));
     ///
     /// a *= &b;
+    /// a *= &c;
     /// a *= b;
+    /// a *= c;
     /// a *= 2;
     /// a *= -2;
     /// ```

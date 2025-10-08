@@ -116,8 +116,14 @@ impl MulAssign<&Zq> for PolynomialRingZq {
     /// let poly_z = PolyOverZ::from_str("2  3 1").unwrap();
     /// let mut polynomial_ring_zq = PolynomialRingZq::from((&poly_z, &modulus));
     /// let zq = Zq::from((17, u64::MAX -1 ));
+    /// let z = Z::from(5);
     ///
     /// polynomial_ring_zq *= &zq;
+    /// polynomial_ring_zq *= zq;
+    /// polynomial_ring_zq *= &z;
+    /// polynomial_ring_zq *= z;
+    /// polynomial_ring_zq *= 2;
+    /// polynomial_ring_zq *= -2;
     /// ```
     ///
     /// # Panics ...

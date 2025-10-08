@@ -478,7 +478,7 @@ impl MulAssign<&PolynomialRingZq> for MatPolynomialRingZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq,ModulusPolynomialRingZq,PolynomialRingZq};
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq,ModulusPolynomialRingZq,PolynomialRingZq,Zq};
     /// use qfall_math::integer::{MatZ,PolyOverZ,Z,MatPolyOverZ};
     /// use std::str::FromStr;
     ///
@@ -491,6 +491,11 @@ impl MulAssign<&PolynomialRingZq> for MatPolynomialRingZq {
     /// let polynomial_ring_zq = PolynomialRingZq::from((&poly_z, &modulus));
     ///
     /// poly_ring_mat *= &polynomial_ring_zq;
+    /// poly_ring_mat *= &poly_z;
+    /// poly_ring_mat *= 2;
+    /// poly_ring_mat *= -2;
+    /// poly_ring_mat *= &Z::from(5);
+    /// poly_ring_mat *= &Zq::from((5, u64::MAX -1));
     /// ```
     ///
     /// # Panics ...

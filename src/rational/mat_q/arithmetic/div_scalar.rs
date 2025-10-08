@@ -109,12 +109,19 @@ impl DivAssign<&Q> for MatQ {
     /// # Examples
     /// ```
     /// use qfall_math::rational::{Q, MatQ};
+    /// use qfall_math::integer::{Z};
     /// use std::str::FromStr;
     ///
     /// let mut matq = MatQ::from_str(&format!("[[1, 2, 3],[4, 5/4, -1]]")).unwrap();
     /// let q = Q::from((3, 4));
+    /// let z = Z::from(5);
     ///
     /// matq *= &q;
+    /// matq *= q;
+    /// matq *= &z;
+    /// matq *= z;
+    /// matq *= -1;
+    /// matq *= 2;
     /// ```
     ///
     /// # Panics ...
