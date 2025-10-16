@@ -11,13 +11,17 @@
 use super::super::PolyOverQ;
 use crate::integer::Z;
 use crate::macros::arithmetics::{
+    arithmetic_assign_between_types, arithmetic_assign_trait_borrowed_to_owned,
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
     arithmetic_trait_reverse,
 };
 use crate::macros::for_others::implement_for_others;
 use crate::rational::Q;
-use flint_sys::fmpq_poly::{fmpq_poly_scalar_mul_fmpq, fmpq_poly_scalar_mul_fmpz};
-use std::ops::Mul;
+use flint_sys::fmpq_poly::{
+    fmpq_poly_scalar_mul_fmpq, fmpq_poly_scalar_mul_fmpz, fmpq_poly_scalar_mul_si,
+    fmpq_poly_scalar_mul_ui,
+};
+use std::ops::{Mul, MulAssign};
 
 impl Mul<&Z> for &PolyOverQ {
     type Output = PolyOverQ;
@@ -96,13 +100,70 @@ arithmetic_trait_borrowed_to_owned!(Mul, mul, Q, PolyOverQ, PolyOverQ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, PolyOverQ, Q, PolyOverQ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Q, PolyOverQ, PolyOverQ);
 
+impl MulAssign<&Q> for PolyOverQ {
+    /// Computes the scalar multiplication of `self` and `other` reusing
+    /// the memory of `self`.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to multiply to `self`
+    ///
+    /// Returns the scalar of the polynomial as a [`PolyOverQ`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::rational::{PolyOverQ, Q};
+    /// use std::str::FromStr;
+    ///
+    /// let mut a = PolyOverQ::from_str("3  1 2 -3/2").unwrap();
+    /// let b = Q::from((2,5));
+    /// let c = Z::from(2);
+    ///
+    /// a *= &b;
+    /// a *= b;
+    /// a *= &c;
+    /// a *= c;
+    /// a *= 2;
+    /// a *= -2;
+    /// ```
+    fn mul_assign(&mut self, scalar: &Q) {
+        unsafe { fmpq_poly_scalar_mul_fmpq(&mut self.poly, &self.poly, &scalar.value) };
+    }
+}
+
+impl MulAssign<&Z> for PolyOverQ {
+    /// Documentation at [`PolyOverQ::mul_assign`].
+    fn mul_assign(&mut self, other: &Z) {
+        unsafe { fmpq_poly_scalar_mul_fmpz(&mut self.poly, &self.poly, &other.value) };
+    }
+}
+
+impl MulAssign<i64> for PolyOverQ {
+    /// Documentation at [`PolyOverQ::mul_assign`].
+    fn mul_assign(&mut self, other: i64) {
+        unsafe { fmpq_poly_scalar_mul_si(&mut self.poly, &self.poly, other) };
+    }
+}
+
+impl MulAssign<u64> for PolyOverQ {
+    /// Documentation at [`PolyOverQ::mul_assign`].
+    fn mul_assign(&mut self, other: u64) {
+        unsafe { fmpq_poly_scalar_mul_ui(&mut self.poly, &self.poly, other) };
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, PolyOverQ, Q);
+arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, PolyOverQ, Z);
+arithmetic_assign_between_types!(MulAssign, mul_assign, PolyOverQ, i64, i32 i16 i8);
+arithmetic_assign_between_types!(MulAssign, mul_assign, PolyOverQ, u64, u32 u16 u8);
+
 #[cfg(test)]
 mod test_mul_z {
     use super::PolyOverQ;
     use crate::integer::Z;
     use std::str::FromStr;
 
-    /// Checks if polynomial multiplication works fine for both borrowed
+    /// Checks if scalar multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
         let poly_1 = PolyOverQ::from_str(&format!("3  1/2 2/5 {}", i64::MAX)).unwrap();
@@ -153,7 +214,7 @@ mod test_mul_q {
     use crate::rational::{PolyOverQ, Q};
     use std::str::FromStr;
 
-    /// Checks if polynomial multiplication works fine for both borrowed
+    /// Checks if scalar multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
         let poly_1 = PolyOverQ::from_str(&format!("3  1 2 {}", (i64::MAX as u64) * 2)).unwrap();
@@ -182,5 +243,63 @@ mod test_mul_q {
         _ = q.clone() * &poly;
         _ = &q * poly.clone();
         _ = poly.clone() * &q;
+    }
+}
+
+#[cfg(test)]
+mod test_mul_assign {
+    use crate::integer::Z;
+    use crate::rational::{PolyOverQ, Q};
+    use std::str::FromStr;
+
+    /// Ensure that `mul_assign` works for small numbers.
+    #[test]
+    fn correct_small() {
+        let mut a = PolyOverQ::from_str("3  1 2 -3/2").unwrap();
+        let b = Z::from(2);
+        let c = Q::from((2, 5));
+        let d = Z::ZERO;
+
+        a *= &b;
+        assert_eq!(PolyOverQ::from_str("3  2 4 -3").unwrap(), a);
+
+        a *= &c;
+        assert_eq!(PolyOverQ::from_str("3  4/5 8/5 -6/5").unwrap(), a);
+        a *= &d;
+        assert_eq!(PolyOverQ::from(0), a);
+    }
+
+    /// Ensure that `mul_assign` works for large numbers.
+    #[test]
+    fn correct_large() {
+        let mut a = PolyOverQ::from_str("2  2 -1").unwrap();
+        let b = Q::from((1, i32::MAX));
+        let cmp =
+            PolyOverQ::from_str(&format!("2  2/{} 1/{}", i32::MAX, -(i32::MAX as i64))).unwrap();
+
+        a *= b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `mul_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let mut a = PolyOverQ::from_str("3  1 2 -1/3").unwrap();
+        let b = Z::from(2);
+        let c = Q::from((2, 3));
+
+        a *= &b;
+        a *= b;
+        a *= &c;
+        a *= c;
+        a *= 1_u8;
+        a *= 1_u16;
+        a *= 1_u32;
+        a *= 1_u64;
+        a *= 1_i8;
+        a *= 1_i16;
+        a *= 1_i32;
+        a *= 1_i64;
     }
 }

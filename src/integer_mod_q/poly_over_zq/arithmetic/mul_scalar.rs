@@ -1,4 +1,4 @@
-// Copyright © 2025 Marcel Luca Schmidt
+// Copyright © 2025 Marcel Luca Schmidt, Marvin Beckmann
 //
 // This file is part of qFALL-math.
 //
@@ -13,13 +13,14 @@ use crate::error::MathError;
 use crate::integer::Z;
 use crate::integer_mod_q::Zq;
 use crate::macros::arithmetics::{
+    arithmetic_assign_between_types, arithmetic_assign_trait_borrowed_to_owned,
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
     arithmetic_trait_reverse,
 };
 use crate::macros::for_others::implement_for_others;
 use crate::traits::CompareBase;
-use flint_sys::fmpz_mod_poly::fmpz_mod_poly_scalar_mul_fmpz;
-use std::ops::Mul;
+use flint_sys::fmpz_mod_poly::{fmpz_mod_poly_scalar_mul_fmpz, fmpz_mod_poly_scalar_mul_ui};
+use std::ops::{Mul, MulAssign};
 
 impl Mul<&Z> for &PolyOverZq {
     type Output = PolyOverZq;
@@ -143,13 +144,106 @@ impl PolyOverZq {
     }
 }
 
+impl MulAssign<&Z> for PolyOverZq {
+    /// Computes the scalar multiplication of `self` and `other` reusing
+    /// the memory of `self`.
+    ///
+    /// Parameters:
+    /// - `other`: specifies the value to multiply to `self`
+    ///
+    /// Returns the scalar of the polynomial as a [`PolyOverZq`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::integer_mod_q::{PolyOverZq, Zq};
+    /// use std::str::FromStr;
+    ///
+    /// let mut a = PolyOverZq::from_str("3  1 2 -3 mod 5").unwrap();
+    /// let b = Z::from(2);
+    /// let c = Zq::from((17, 5));
+    ///
+    /// a *= &b;
+    /// a *= &c;
+    /// a *= b;
+    /// a *= c;
+    /// a *= 2;
+    /// a *= -2;
+    /// ```
+    fn mul_assign(&mut self, scalar: &Z) {
+        unsafe {
+            fmpz_mod_poly_scalar_mul_fmpz(
+                &mut self.poly,
+                &self.poly,
+                &scalar.value,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
+    }
+}
+
+impl MulAssign<&Zq> for PolyOverZq {
+    /// Documentation at [`PolyOverZq::mul_assign`]
+    ///
+    /// # Panics ...
+    /// - if the moduli are different.
+    fn mul_assign(&mut self, scalar: &Zq) {
+        if !self.compare_base(scalar) {
+            panic!("{}", self.call_compare_base_error(scalar).unwrap())
+        }
+        unsafe {
+            fmpz_mod_poly_scalar_mul_fmpz(
+                &mut self.poly,
+                &self.poly,
+                &scalar.value.value,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, PolyOverZq, Zq);
+
+impl MulAssign<i64> for PolyOverZq {
+    /// Documentation at [`PolyOverZq::mul_assign`].
+    fn mul_assign(&mut self, other: i64) {
+        let z = Z::from(other);
+        unsafe {
+            fmpz_mod_poly_scalar_mul_fmpz(
+                &mut self.poly,
+                &self.poly,
+                &z.value,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
+    }
+}
+
+impl MulAssign<u64> for PolyOverZq {
+    /// Documentation at [`PolyOverZq::mul_assign`].
+    fn mul_assign(&mut self, other: u64) {
+        unsafe {
+            fmpz_mod_poly_scalar_mul_ui(
+                &mut self.poly,
+                &self.poly,
+                other,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, PolyOverZq, Z);
+arithmetic_assign_between_types!(MulAssign, mul_assign, PolyOverZq, i64, i32 i16 i8);
+arithmetic_assign_between_types!(MulAssign, mul_assign, PolyOverZq, u64, u32 u16 u8);
+
 #[cfg(test)]
 mod test_mul_z {
     use super::PolyOverZq;
     use crate::integer::Z;
     use std::str::FromStr;
 
-    /// Checks if polynomial multiplication works fine for both borrowed
+    /// Checks if scalar multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
         let poly_1 =
@@ -207,7 +301,7 @@ mod test_mul_zq {
     use crate::integer_mod_q::Zq;
     use std::str::FromStr;
 
-    /// Checks if polynomial multiplication works fine for both borrowed
+    /// Checks if scalar multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
         let poly_1 =
@@ -261,5 +355,59 @@ mod test_mul_zq {
         let z = Zq::from((2, 16));
 
         assert!(poly.mul_scalar_zq_safe(&z).is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_mul_assign {
+    use crate::integer::{PolyOverZ, Z};
+    use crate::integer_mod_q::{PolyOverZq, Zq};
+    use std::str::FromStr;
+
+    /// Ensure that `mul_assign` produces same output as normal multiply.
+    #[test]
+    fn consistency() {
+        let mut a = PolyOverZq::from_str(&format!("2  2 -1 mod {}", u64::MAX - 1)).unwrap();
+        let cmp = &a * i32::MAX;
+
+        a *= i32::MAX;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `mul_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let mut poly_zq = PolyOverZq::from_str("3  1 2 -3 mod 8").unwrap();
+
+        let z = Z::from(2);
+        let zq = Zq::from((2, 8));
+        let poly_z = PolyOverZ::from_str("2  3 1").unwrap();
+
+        poly_zq *= &z;
+        poly_zq *= z;
+        poly_zq *= &zq;
+        poly_zq *= zq;
+        poly_zq *= &poly_z;
+        poly_zq *= poly_z;
+        poly_zq *= 1_u8;
+        poly_zq *= 1_u16;
+        poly_zq *= 1_u32;
+        poly_zq *= 1_u64;
+        poly_zq *= 1_i8;
+        poly_zq *= 1_i16;
+        poly_zq *= 1_i32;
+        poly_zq *= 1_i64;
+    }
+
+    /// Ensure that `mul_assign` panics if the moduli mismatch.
+    #[test]
+    #[should_panic]
+    fn mismatching_modulus_zq() {
+        let mut poly_zq = PolyOverZq::from_str("3  1 2 -3 mod 8").unwrap();
+
+        let zq = Zq::from((2, u64::MAX - 1));
+
+        poly_zq *= &zq;
     }
 }
