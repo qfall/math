@@ -19,7 +19,7 @@ impl PolynomialRingZq {
     /// This algorithm transforms an element from the polynomial ring using NTT.
     /// The algorithm will output `None`, if the base is not defined.
     ///
-    /// Returns the NTT version of the polynomial if the [`NTTBasisPolynomialRingZq`](super::NTTBasisPolynomialRingZq)
+    /// Returns the NTT version of the polynomial if the [`NTTBasisPolynomialRingZq`](super::super::NTTBasisPolynomialRingZq)
     /// is set, and otherwise it returns `None`.
     ///
     /// # Examples
@@ -62,7 +62,7 @@ impl PolynomialRingZq {
     /// - `vector`: the polynomial in NTT form
     /// - `modulus`: the modulus under which the intt is to be computed
     ///
-    /// Returns the INTT version of the input if the [`NTTBasisPolynomialRingZq`](super::NTTBasisPolynomialRingZq)
+    /// Returns the INTT version of the input if the [`NTTBasisPolynomialRingZq`](super::super::NTTBasisPolynomialRingZq)
     /// is set, and otherwise it returns `None`.
     ///
     /// # Examples
@@ -138,7 +138,7 @@ impl PolynomialRingZq {
     ///
     /// # Panics...
     /// - if the the moduli are different,
-    /// - if the [`NTTBasisPolynomialRingZq`](super::NTTBasisPolynomialRingZq) is not set.
+    /// - if the [`NTTBasisPolynomialRingZq`](super::super::NTTBasisPolynomialRingZq) is not set.
     pub fn mul_ntt(&self, other: &Self) -> Self {
         assert_eq!(self.get_mod(), other.get_mod());
         let ntt1 = self.ntt().unwrap();
