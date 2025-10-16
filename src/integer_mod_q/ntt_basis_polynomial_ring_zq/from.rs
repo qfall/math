@@ -22,7 +22,7 @@ impl NTTBasisPolynomialRingZq {
     /// This function allows to initialize a [`NTTBasisPolynomialRingZq`]
     /// object.
     /// We currently only allow for two kinds of moduli to accompany the construction:
-    /// It must be either cyclotomic (`X^n - 1`) or negacyclic (`X^n + 1`) convoluted wrapping (also submitted in the algorithm)
+    /// It must be either cyclic (`X^n - 1`) or negacyclic (`X^n + 1`) convoluted wrapping (also submitted in the algorithm)
     /// and the degree of the polynomial must be a power of two.
     /// Only then can we compute a full-split of the polynomial ring.
     /// Accordingly, the `root_of_unity` must be a `n`th root of unity or respectively a `2n`th root of unity.
@@ -32,7 +32,7 @@ impl NTTBasisPolynomialRingZq {
     /// Parameters:
     /// - `n`: the degree of the polynomial
     /// - `root_of_unity`: the `n`-th or `2n`-th root of unity
-    /// - `q`: the modulus of the cyclotomic polynomial
+    /// - `q`: the modulus of the polynomial
     /// - `convolution_type`: defines whether convolution is cyclic or negacyclic
     ///
     /// # Examples

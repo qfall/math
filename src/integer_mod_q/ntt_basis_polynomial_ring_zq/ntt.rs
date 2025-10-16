@@ -7,7 +7,8 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! This module contains implementations to perform the NTT for [`PolyOverZq`]
-//! in the respective polynomialring
+//! in the respective polynomial ring.
+//! The implementation mostly follows the description in <https://higashi.blog/2023/06/23/ntt-02/>.
 //!
 //! The explicit functions contain the documentation.
 
@@ -125,10 +126,10 @@ impl NTTBasisPolynomialRingZq {
     }
 }
 
-/// This function essentially computes the included butterliy computations for each provided
+/// This function essentially computes the included butterfly computations for each provided
 /// chunk.
 /// The chunk is double the size of the stride.
-/// The computation currently performs the standard butterly operation from Cooley-Tukey
+/// The computation currently performs the standard butterfly operation from Cooley-Tukey
 unsafe fn ntt_stride_steps(
     chunk: &mut [&mut Z],
     stride: usize,

@@ -7,7 +7,8 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! This module contains implementations to compute the inverse of the
-//! NTT-transform for [`PolyOverZq`] objects in the polynomialring.
+//! NTT-transform for [`PolyOverZq`] objects in the polynomial ring.
+//! The implementation mostly follows the description in <https://higashi.blog/2023/06/23/ntt-02/>.
 //!
 //! The explicit functions contain the documentation.
 
@@ -130,10 +131,10 @@ impl NTTBasisPolynomialRingZq {
     }
 }
 
-/// This function essentially computes the included butterliy computations for each provided
+/// This function essentially computes the included butterfly computations for each provided
 /// chunk.
 /// The chunk is double the size of the stride.
-/// The computation currently performs the standard butterly operation from Gentleman-Sande.
+/// The computation currently performs the standard butterlfy operation from Gentleman-Sande.
 unsafe fn intt_stride_steps(
     chunk: &mut [&mut Z],
     stride: usize,
@@ -225,7 +226,29 @@ fn iterative_intt(coefficients: Vec<Zq>, powers_of_omega_inv: &[Zq], n_inv: &Zq)
 
 #[cfg(test)]
 mod test_intt {
-    use crate::integer_mod_q::{ConvolutionType, Modulus, NTTBasisPolynomialRingZq, Zq};
+    use std::str::FromStr;
+
+    use crate::integer_mod_q::{
+        ConvolutionType, Modulus, NTTBasisPolynomialRingZq, PolyOverZq, Zq,
+    };
+
+    /// This example is taken from: https://eprint.iacr.org/2024/585.pdf Example 3.4
+    #[test]
+    fn example_34_intt() {
+        let cmp_poly = PolyOverZq::from_str("4  1 2 3 4 mod 7681").unwrap();
+        let modulus = Modulus::from(7681);
+
+        let ntt_basis = NTTBasisPolynomialRingZq::init(4, 3383, &modulus, ConvolutionType::Cyclic);
+
+        let ghat = vec![
+            Zq::from((10, &modulus)),
+            Zq::from((913, &modulus)),
+            Zq::from((7679, &modulus)),
+            Zq::from((6764, &modulus)),
+        ];
+        let poly = ntt_basis.intt(ghat);
+        assert_eq!(cmp_poly, poly);
+    }
 
     /// Ensure that INTT panics, if the degree of the polynomial is too low compared to the number of provided entries.
     #[test]
@@ -264,5 +287,24 @@ mod test_intt {
         ];
 
         let _ = ntt_basis.intt(ghat_ntt);
+    }
+
+    /// Ensure that INTT works for smaller degree polynomials
+    #[test]
+    fn small_degree() {
+        let cmp_poly = PolyOverZq::from_str("2  1 2 mod 7681").unwrap();
+        let modulus = Modulus::from(7681);
+
+        let ntt_basis =
+            NTTBasisPolynomialRingZq::init(4, 1925, &modulus, ConvolutionType::Negacyclic);
+
+        let ghat = vec![
+            Zq::from((3851, &modulus)),
+            Zq::from((5256, &modulus)),
+            Zq::from((3832, &modulus)),
+            Zq::from((2427, &modulus)),
+        ];
+        let poly = ntt_basis.intt(ghat);
+        assert_eq!(cmp_poly, poly);
     }
 }
