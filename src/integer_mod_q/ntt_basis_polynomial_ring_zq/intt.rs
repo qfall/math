@@ -232,6 +232,17 @@ mod test_intt {
         ConvolutionType, Modulus, NTTBasisPolynomialRingZq, PolyOverZq, Zq,
     };
 
+    /// Tests a loop of NTT and INTT application.
+    #[test]
+    fn example_loop_ntt_intt() {
+        let poly = PolyOverZq::from_str("4  2532 2542 653 8 mod 7681").unwrap();
+        let modulus = Modulus::from(7681);
+
+        let ntt_basis = NTTBasisPolynomialRingZq::init(4, 3383, &modulus, ConvolutionType::Cyclic);
+
+        assert_eq!(poly, ntt_basis.intt(ntt_basis.ntt(&poly)));
+    }
+
     /// This example is taken from: https://eprint.iacr.org/2024/585.pdf Example 3.4
     #[test]
     fn example_34_intt() {
