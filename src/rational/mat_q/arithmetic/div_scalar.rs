@@ -55,8 +55,8 @@ impl Div<&Z> for &MatQ {
     }
 }
 
-arithmetic_trait_borrowed_to_owned!(Div, div, MatQ, Q, MatQ);
-arithmetic_trait_mixed_borrowed_owned!(Div, div, MatQ, Q, MatQ);
+arithmetic_trait_borrowed_to_owned!(Div, div, MatQ, Z, MatQ);
+arithmetic_trait_mixed_borrowed_owned!(Div, div, MatQ, Z, MatQ);
 
 implement_for_others!(Z, MatQ, Div Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
 
@@ -92,8 +92,8 @@ impl Div<&Q> for &MatQ {
     }
 }
 
-arithmetic_trait_borrowed_to_owned!(Div, div, MatQ, Z, MatQ);
-arithmetic_trait_mixed_borrowed_owned!(Div, div, MatQ, Z, MatQ);
+arithmetic_trait_borrowed_to_owned!(Div, div, MatQ, Q, MatQ);
+arithmetic_trait_mixed_borrowed_owned!(Div, div, MatQ, Q, MatQ);
 
 implement_for_others!(Q, MatQ, Div Scalar for f32 f64);
 
@@ -104,7 +104,7 @@ impl DivAssign<&Q> for MatQ {
     /// Parameters:
     /// - `other`: specifies the value to multiply to `self`
     ///
-    /// Returns the scalar of the matrix as a [`MatQ`].
+    /// Divides `self` coordinate-wise by `other` returning a [`MatQ`].
     ///
     /// # Examples
     /// ```
@@ -116,12 +116,12 @@ impl DivAssign<&Q> for MatQ {
     /// let q = Q::from((3, 4));
     /// let z = Z::from(5);
     ///
-    /// matq *= &q;
-    /// matq *= q;
-    /// matq *= &z;
-    /// matq *= z;
-    /// matq *= -1;
-    /// matq *= 2;
+    /// matq /= &q;
+    /// matq /= q;
+    /// matq /= &z;
+    /// matq /= z;
+    /// matq /= -1;
+    /// matq /= 2;
     /// ```
     ///
     /// # Panics ...
@@ -220,7 +220,7 @@ mod test_div_z {
         assert_eq!(mat_2, mat_4 / integer);
     }
 
-    /// Checks if matrix division works fine for large values
+    /// Checks if scalar division works fine for large values
     #[test]
     fn large_entries() {
         let mat_1 = MatQ::from_str(&format!("[[1],[{}],[1/{}]]", i64::MAX, i64::MAX)).unwrap();
@@ -252,12 +252,11 @@ mod test_div_z {
 
 #[cfg(test)]
 mod test_mul_q {
-
     use super::MatQ;
     use crate::rational::Q;
     use std::str::FromStr;
 
-    /// Checks if matrix division works fine for both borrowed
+    /// Checks if scalar division works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
         let mat = MatQ::from_str("[[1, 3/2],[3/4, 3]]").unwrap();
@@ -316,7 +315,7 @@ mod test_mul_q {
         assert_eq!(mat_4, rational * mat_2);
     }
 
-    /// Checks if matrix division works fine for large values
+    /// Checks if scalar division works fine for large values
     #[test]
     fn large_entries() {
         let mat_1 = MatQ::from_str(&format!("[[1],[{}],[1/{}]]", i64::MAX, i64::MAX)).unwrap();

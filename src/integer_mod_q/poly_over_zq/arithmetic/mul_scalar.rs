@@ -189,7 +189,7 @@ impl MulAssign<&Zq> for PolyOverZq {
     /// - if the moduli are different.
     fn mul_assign(&mut self, scalar: &Zq) {
         if !self.compare_base(scalar) {
-            panic!("{:?}", self.call_compare_base_error(scalar).unwrap())
+            panic!("{}", self.call_compare_base_error(scalar).unwrap())
         }
         unsafe {
             fmpz_mod_poly_scalar_mul_fmpz(
@@ -243,7 +243,7 @@ mod test_mul_z {
     use crate::integer::Z;
     use std::str::FromStr;
 
-    /// Checks if polynomial multiplication works fine for both borrowed
+    /// Checks if scalar multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
         let poly_1 =
@@ -301,7 +301,7 @@ mod test_mul_zq {
     use crate::integer_mod_q::Zq;
     use std::str::FromStr;
 
-    /// Checks if polynomial multiplication works fine for both borrowed
+    /// Checks if scalar multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
         let poly_1 =

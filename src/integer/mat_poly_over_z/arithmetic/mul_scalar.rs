@@ -168,11 +168,11 @@ arithmetic_trait_mixed_borrowed_owned!(
 );
 
 impl MulAssign<&Z> for MatPolyOverZ {
-    /// Computes the scalar multiplication of `self` and `other` reusing
+    /// Computes the scalar multiplication of `self` and `scalar` reusing
     /// the memory of `self`.
     ///
     /// Parameters:
-    /// - `other`: specifies the value to multiply to `self`
+    /// - `scalar`: specifies the value to multiply to `self`
     ///
     /// Returns the scalar of the matrix as a [`MatPolyOverZ`].
     ///
@@ -199,23 +199,23 @@ impl MulAssign<&Z> for MatPolyOverZ {
 
 impl MulAssign<&PolyOverZ> for MatPolyOverZ {
     /// Documentation at [`MatPolyOverZ::mul_assign`].
-    fn mul_assign(&mut self, other: &PolyOverZ) {
-        unsafe { fmpz_poly_mat_scalar_mul_fmpz_poly(&mut self.matrix, &self.matrix, &other.poly) };
+    fn mul_assign(&mut self, scalar: &PolyOverZ) {
+        unsafe { fmpz_poly_mat_scalar_mul_fmpz_poly(&mut self.matrix, &self.matrix, &scalar.poly) };
     }
 }
 
 impl MulAssign<i64> for MatPolyOverZ {
     /// Documentation at [`MatPolyOverZ::mul_assign`].
-    fn mul_assign(&mut self, other: i64) {
-        let scalar = Z::from(other);
+    fn mul_assign(&mut self, scalar: i64) {
+        let scalar = Z::from(scalar);
         unsafe { fmpz_poly_mat_scalar_mul_fmpz(&mut self.matrix, &self.matrix, &scalar.value) };
     }
 }
 
 impl MulAssign<u64> for MatPolyOverZ {
     /// Documentation at [`MatPolyOverZ::mul_assign`].
-    fn mul_assign(&mut self, other: u64) {
-        let scalar = Z::from(other);
+    fn mul_assign(&mut self, scalar: u64) {
+        let scalar = Z::from(scalar);
         unsafe { fmpz_poly_mat_scalar_mul_fmpz(&mut self.matrix, &self.matrix, &scalar.value) };
     }
 }
@@ -231,7 +231,7 @@ mod test_mul_z {
     use crate::integer::Z;
     use std::str::FromStr;
 
-    /// Checks if matrix multiplication works fine for both borrowed
+    /// Checks if scalar multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
         let mat_1 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  1 2]]").unwrap();
@@ -316,7 +316,7 @@ mod test_mul_z {
         assert_eq!(mat_4, integer * mat_2);
     }
 
-    /// Checks if matrix multiplication works fine for large values
+    /// Checks if scalar multiplication works fine for large values
     #[test]
     fn large_entries() {
         let mat_1 = MatPolyOverZ::from_str(&format!("[[1  1],[1  {}],[1  4]]", i64::MAX)).unwrap();
@@ -339,7 +339,7 @@ mod test_mul_poly_over_z {
     use crate::integer::PolyOverZ;
     use std::str::FromStr;
 
-    /// Checks if matrix multiplication works fine for both borrowed
+    /// Checks if scalar multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
         let mat_1 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  1 2]]").unwrap();
@@ -406,7 +406,7 @@ mod test_mul_poly_over_z {
         assert_eq!(mat_4, scalar * mat_2);
     }
 
-    /// Checks if matrix multiplication works fine for large values
+    /// Checks if scalar multiplication works fine for large values
     #[test]
     fn large_entries() {
         let mat_1 = MatPolyOverZ::from_str(&format!("[[1  1],[1  {}],[1  4]]", i64::MAX)).unwrap();
@@ -502,7 +502,7 @@ mod test_mul_poly_ring_zq {
         assert_eq!(cmp_poly_ring_mat2, &poly_mat2 * &poly_ring);
     }
 
-    /// Checks if matrix multiplication works fine for large values.
+    /// Checks if scalar multiplication works fine for large values.
     #[test]
     fn large_entries() {
         let modulus =

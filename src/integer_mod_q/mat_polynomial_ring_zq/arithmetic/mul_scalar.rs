@@ -435,9 +435,9 @@ where
     MatPolyOverZ: MulAssign<T>,
 {
     /// Documentation at [`MatPolynomialRingZq::mul_assign`].
-    /// Uses underlying polynomial multiplication as [`PolyOverZ`] and then applies the reduction.
-    fn mul_assign(&mut self, rhs: T) {
-        self.matrix.mul_assign(rhs);
+    /// Performs underlying scalar multiplication as [`PolyOverZ`] and then applies the reduction.
+    fn mul_assign(&mut self, scalar: T) {
+        self.matrix.mul_assign(scalar);
         self.reduce();
     }
 }
@@ -447,32 +447,32 @@ impl MulAssign<&Zq> for MatPolynomialRingZq {
     ///
     /// # Panics ...
     /// - if the moduli are different.
-    fn mul_assign(&mut self, rhs: &Zq) {
-        if !self.compare_base(rhs) {
-            panic!("{:?}", self.call_compare_base_error(rhs))
+    fn mul_assign(&mut self, scalar: &Zq) {
+        if !self.compare_base(scalar) {
+            panic!("{}", self.call_compare_base_error(scalar).unwrap())
         }
-        self.mul_assign(&rhs.value);
+        self.mul_assign(&scalar.value);
     }
 }
 impl MulAssign<&PolyOverZq> for MatPolynomialRingZq {
     /// Documentation at [`MatPolynomialRingZq::mul_assign`].
-    /// Uses underlying polynomial multiplication as [`PolyOverZ`] and then applies the reduction.
+    /// Performs underlying scalar multiplication as [`PolyOverZ`] and then applies the reduction.
     ///
     /// # Panics ...
     /// - if the moduli are different.
-    fn mul_assign(&mut self, rhs: &PolyOverZq) {
-        if !self.compare_base(rhs) {
-            panic!("{:?}", self.call_compare_base_error(rhs))
+    fn mul_assign(&mut self, scalar: &PolyOverZq) {
+        if !self.compare_base(scalar) {
+            panic!("{}", self.call_compare_base_error(scalar).unwrap())
         }
-        self.mul_assign(&rhs.get_representative_least_nonnegative_residue());
+        self.mul_assign(&scalar.get_representative_least_nonnegative_residue());
     }
 }
 impl MulAssign<&PolynomialRingZq> for MatPolynomialRingZq {
-    /// Computes the scalar multiplication of `self` and `other` reusing
+    /// Computes the scalar multiplication of `self` and `scalar` reusing
     /// the memory of `self`.
     ///
     /// Parameters:
-    /// - `other`: specifies the value to multiply to `self`
+    /// - `scalar`: specifies the value to multiply to `self`
     ///
     /// Returns the scalar of the matrix as a [`MatPolynomialRingZq`].
     ///
@@ -500,11 +500,11 @@ impl MulAssign<&PolynomialRingZq> for MatPolynomialRingZq {
     ///
     /// # Panics ...
     /// - if the moduli are different.
-    fn mul_assign(&mut self, rhs: &PolynomialRingZq) {
-        if !self.compare_base(rhs) {
-            panic!("{:?}", self.call_compare_base_error(rhs))
+    fn mul_assign(&mut self, scalar: &PolynomialRingZq) {
+        if !self.compare_base(scalar) {
+            panic!("{}", self.call_compare_base_error(scalar).unwrap())
         }
-        self.mul_assign(&rhs.poly);
+        self.mul_assign(&scalar.poly);
     }
 }
 
@@ -611,7 +611,7 @@ mod test_mul_z {
         assert_eq!(cmp_poly_ring_mat2, &poly_ring_mat2 * &integer);
     }
 
-    /// Checks if matrix multiplication works fine for large values.
+    /// Checks if scalar multiplication works fine for large values.
     #[test]
     fn large_entries() {
         let modulus =
@@ -716,7 +716,7 @@ mod test_mul_zq {
         assert_eq!(cmp_poly_ring_mat2, &poly_ring_mat2 * &integer);
     }
 
-    /// Checks if matrix multiplication works fine for large values.
+    /// Checks if scalar multiplication works fine for large values.
     #[test]
     fn large_entries() {
         let modulus =
@@ -842,7 +842,7 @@ mod test_mul_poly_over_z {
         assert_eq!(cmp_poly_ring_mat2, &poly_ring_mat2 * &poly);
     }
 
-    /// Checks if matrix multiplication works fine for large values.
+    /// Checks if scalar multiplication works fine for large values.
     #[test]
     fn large_entries() {
         let modulus =
@@ -947,7 +947,7 @@ mod test_mul_poly_over_zq {
         assert_eq!(cmp_poly_ring_mat2, &poly_ring_mat2 * &poly);
     }
 
-    /// Checks if matrix multiplication works fine for large values.
+    /// Checks if scalar multiplication works fine for large values.
     #[test]
     fn large_entries() {
         let modulus =
@@ -1080,7 +1080,7 @@ mod test_mul_poly_ring_zq {
         assert_eq!(cmp_poly_ring_mat2, &poly_ring_mat2 * &poly_ring);
     }
 
-    /// Checks if matrix multiplication works fine for large values.
+    /// Checks if scalar multiplication works fine for large values.
     #[test]
     fn large_entries() {
         let modulus =
@@ -1139,14 +1139,13 @@ mod test_mul_poly_ring_zq {
 
 #[cfg(test)]
 mod test_mul_assign {
-    use std::str::FromStr;
-
     use crate::{
         integer::{MatPolyOverZ, PolyOverZ, Z},
         integer_mod_q::{
             MatPolynomialRingZq, ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq, Zq,
         },
     };
+    use std::str::FromStr;
 
     /// Ensure that `mul_assign` produces same output as normal multiply.
     #[test]

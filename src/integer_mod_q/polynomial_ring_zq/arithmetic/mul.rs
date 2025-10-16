@@ -84,9 +84,12 @@ where
 }
 impl MulAssign<&PolyOverZq> for PolynomialRingZq {
     /// Documentation at [`PolynomialRingZq::mul_assign`].
+    ///
+    /// # Panics ...
+    /// - if the moduli are different.
     fn mul_assign(&mut self, other: &PolyOverZq) {
         if !self.compare_base(other) {
-            panic!("{:?}", self.call_compare_base_error(other))
+            panic!("{}", self.call_compare_base_error(other).unwrap())
         }
         // get a fmpz_poly_struct from a fmpz_mod_poly_struct
         let other = other.get_representative_least_nonnegative_residue();
@@ -219,11 +222,8 @@ impl Mul<&PolyOverZq> for &PolynomialRingZq {
     /// # Panics ...
     /// - if the moduli mismatch.
     fn mul(self, other: &PolyOverZq) -> Self::Output {
-        if self.modulus.get_q() != other.modulus {
-            panic!(
-                "Tried to multiply polynomial with modulus '{}' and polynomial with modulus '{}'.",
-                self.modulus, other.modulus
-            );
+        if !self.compare_base(other) {
+            panic!("{}", self.call_compare_base_error(other).unwrap())
         }
 
         let mut out = PolynomialRingZq::from((&PolyOverZ::default(), &self.modulus));

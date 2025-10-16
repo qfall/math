@@ -135,11 +135,11 @@ impl MatZq {
 }
 
 impl MulAssign<&Z> for MatZq {
-    /// Computes the scalar multiplication of `self` and `other` reusing
+    /// Computes the scalar multiplication of `self` and `scalar` reusing
     /// the memory of `self`.
     ///
     /// Parameters:
-    /// - `other`: specifies the value to multiply to `self`
+    /// - `scalar`: specifies the value to multiply to `self`
     ///
     /// Returns the scalar of the matrix as a [`MatZq`].
     ///
@@ -172,7 +172,7 @@ impl MulAssign<&Zq> for MatZq {
     /// - if the moduli are different.
     fn mul_assign(&mut self, scalar: &Zq) {
         if !self.compare_base(scalar) {
-            panic!("{:?}", self.call_compare_base_error(scalar).unwrap())
+            panic!("{}", self.call_compare_base_error(scalar).unwrap())
         }
         unsafe {
             fmpz_mod_mat_scalar_mul_fmpz(&mut self.matrix, &self.matrix, &scalar.value.value)
@@ -206,7 +206,7 @@ mod test_mul_z {
     use crate::integer_mod_q::MatZq;
     use std::str::FromStr;
 
-    /// Checks if matrix multiplication works fine for both borrowed
+    /// Checks if scalar multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
         let mat_1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
@@ -296,7 +296,7 @@ mod test_mul_z {
         assert_eq!(mat_4, integer * mat_2);
     }
 
-    /// Checks if matrix multiplication works fine for large values
+    /// Checks if scalar multiplication works fine for large values
     #[test]
     fn large_entries() {
         let mat_1 = MatZq::from_str(&format!("[[1],[{}],[4]] mod {}", i64::MAX, u64::MAX)).unwrap();
@@ -317,7 +317,7 @@ mod test_mul_zq {
     use crate::integer_mod_q::{MatZq, Zq};
     use std::str::FromStr;
 
-    /// Checks if matrix multiplication works fine for both borrowed
+    /// Checks if scalar multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
         let mat_1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
@@ -383,7 +383,7 @@ mod test_mul_zq {
         assert_eq!(mat_4, integer * mat_2);
     }
 
-    /// Checks if matrix multiplication works fine for large values
+    /// Checks if scalar multiplication works fine for large values
     #[test]
     fn large_entries() {
         let mat_1 = MatZq::from_str(&format!("[[1],[{}],[4]] mod {}", i64::MAX, u64::MAX)).unwrap();

@@ -20,7 +20,7 @@ use flint_sys::fmpq_poly::{
     fmpq_poly_scalar_div_fmpq, fmpq_poly_scalar_div_fmpz, fmpq_poly_scalar_div_si,
     fmpq_poly_scalar_div_ui,
 };
-use std::ops::{Div, DivAssign, MulAssign};
+use std::ops::{Div, DivAssign};
 
 impl Div<&Z> for &PolyOverQ {
     type Output = PolyOverQ;
@@ -41,7 +41,10 @@ impl Div<&Z> for &PolyOverQ {
     /// let poly_1 = PolyOverQ::from_str("4  1/2 2 3/4 4").unwrap();
     /// let integer = Z::from(2);
     ///
-    /// let poly_2 = &poly_1 / &integer;
+    /// &poly_1 / &integer;
+    /// &poly_1 / integer;
+    /// &poly_1 / 2;
+    /// &poly_1 / -2;
     /// ```
     ///
     /// # Panics ...
@@ -80,7 +83,10 @@ impl Div<&Q> for &PolyOverQ {
     /// let poly_1 = PolyOverQ::from_str("4  1/2 2 3/4 4").unwrap();
     /// let rational = Q::from((2,3));
     ///
-    /// let poly_2 = &poly_1 / &rational;
+    /// &poly_1 / &rational;
+    /// &poly_1 / rational;
+    /// &poly_1 / 2.0_f32;
+    /// &poly_1 / -2.0_f64;
     /// ```
     ///
     /// # Panics ...
@@ -102,13 +108,12 @@ arithmetic_trait_mixed_borrowed_owned!(Div, div, PolyOverQ, Q, PolyOverQ);
 implement_for_others!(Q, PolyOverQ, Div Scalar for f32 f64);
 
 impl DivAssign<&Q> for PolyOverQ {
-    /// Computes the scalar multiplication of `self` and `other` reusing
-    /// the memory of `self`.
+    /// Divides the polynomial coefficient-wise.
     ///
     /// Parameters:
-    /// - `other`: specifies the value to multiply to `self`
+    /// - `scalar`: specifies the value to multiply to `self`
     ///
-    /// Returns the scalar of the matrix as a [`PolyOverQ`].
+    /// Divides `self` coefficient-wise by `scalar` returning a [`PolyOverQ`].
     ///
     /// # Examples
     /// ```
@@ -119,18 +124,22 @@ impl DivAssign<&Q> for PolyOverQ {
     /// let q = Q::from((3, 4));
     ///
     /// polyq /= &q;
+    /// polyq /= q;
+    /// polyq /= 2_f32;
+    /// polyq /= -2_f64;
     /// ```
     ///
     /// # Panics ...
     /// - if the `scalar` is `0`.
     fn div_assign(&mut self, scalar: &Q) {
-        let scalar = scalar.inverse().unwrap();
-        self.mul_assign(scalar);
+        assert!(!scalar.is_zero(), "Tried to divide {self} by zero.");
+
+        unsafe { fmpq_poly_scalar_div_fmpq(&mut self.poly, &self.poly, &scalar.value) }
     }
 }
 
 impl DivAssign<&Z> for PolyOverQ {
-    /// Documentation at [`PolyOverQ::mul_assign`].
+    /// Documentation at [`PolyOverQ::div_assign`].
     fn div_assign(&mut self, scalar: &Z) {
         assert!(!scalar.is_zero(), "Tried to divide {self} by zero.");
 
@@ -139,7 +148,7 @@ impl DivAssign<&Z> for PolyOverQ {
 }
 
 impl DivAssign<u64> for PolyOverQ {
-    /// Documentation at [`PolyOverQ::mul_assign`].
+    /// Documentation at [`PolyOverQ::div_assign`].
     fn div_assign(&mut self, scalar: u64) {
         assert!(scalar != 0, "Tried to divide {self} by zero.");
 
@@ -148,7 +157,7 @@ impl DivAssign<u64> for PolyOverQ {
 }
 
 impl DivAssign<i64> for PolyOverQ {
-    /// Documentation at [`PolyOverQ::mul_assign`].
+    /// Documentation at [`PolyOverQ::div_assign`].
     fn div_assign(&mut self, scalar: i64) {
         assert!(scalar != 0, "Tried to divide {self} by zero.");
 
@@ -168,7 +177,7 @@ mod test_mul_z {
     use crate::integer::Z;
     use std::str::FromStr;
 
-    /// Checks if polynomial multiplication works fine for both borrowed
+    /// Checks if scalar division works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
         let poly_1 = PolyOverQ::from_str(&format!("3  1 4/5 {}", (i64::MAX as u64) * 2)).unwrap();

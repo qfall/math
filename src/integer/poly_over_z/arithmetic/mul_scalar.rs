@@ -147,11 +147,11 @@ arithmetic_trait_mixed_borrowed_owned!(Mul, mul, PolyOverZ, Q, PolyOverQ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Q, PolyOverZ, PolyOverQ);
 
 impl MulAssign<&Z> for PolyOverZ {
-    /// Computes the scalar multiplication of `self` and `other` reusing
+    /// Computes the scalar multiplication of `self` and `scalar` reusing
     /// the memory of `self`.
     ///
     /// Parameters:
-    /// - `other`: specifies the value to multiply to `self`
+    /// - `scalar`: specifies the value to multiply to `self`
     ///
     /// Returns the scalar of the polynomial as a [`PolyOverZ`].
     ///
@@ -175,15 +175,15 @@ impl MulAssign<&Z> for PolyOverZ {
 
 impl MulAssign<i64> for PolyOverZ {
     /// Documentation at [`PolyOverZ::mul_assign`].
-    fn mul_assign(&mut self, other: i64) {
-        unsafe { fmpz_poly_scalar_mul_si(&mut self.poly, &self.poly, other) };
+    fn mul_assign(&mut self, scalar: i64) {
+        unsafe { fmpz_poly_scalar_mul_si(&mut self.poly, &self.poly, scalar) };
     }
 }
 
 impl MulAssign<u64> for PolyOverZ {
     /// Documentation at [`PolyOverZ::mul_assign`].
-    fn mul_assign(&mut self, other: u64) {
-        unsafe { fmpz_poly_scalar_mul_ui(&mut self.poly, &self.poly, other) };
+    fn mul_assign(&mut self, scalar: u64) {
+        unsafe { fmpz_poly_scalar_mul_ui(&mut self.poly, &self.poly, scalar) };
     }
 }
 
@@ -197,7 +197,7 @@ mod test_mul_z {
     use crate::integer::Z;
     use std::str::FromStr;
 
-    /// Checks if polynomial multiplication works fine for both borrowed
+    /// Checks if scalar multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
         let poly_1 = PolyOverZ::from_str(&format!("3  1 2 {}", i64::MAX)).unwrap();
@@ -249,7 +249,7 @@ mod test_mul_zq {
     use crate::integer_mod_q::{PolyOverZq, Zq};
     use std::str::FromStr;
 
-    /// Checks if polynomial multiplication works fine for both borrowed
+    /// Checks if scalar multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
         let poly_1 = PolyOverZ::from_str(&format!("3  1 2 {}", i64::MAX)).unwrap();
@@ -346,7 +346,7 @@ mod test_mul_q {
     use crate::rational::{PolyOverQ, Q};
     use std::str::FromStr;
 
-    /// Checks if polynomial multiplication works fine for both borrowed
+    /// Checks if scalar multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
         let poly_1 = PolyOverZ::from_str(&format!("3  1 2 {}", (i64::MAX as u64) * 2)).unwrap();

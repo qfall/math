@@ -147,7 +147,7 @@ mod test_mul_z {
     use crate::integer::Z;
     use std::str::FromStr;
 
-    /// Checks if matrix multiplication works fine for both borrowed
+    /// Checks if scalar multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
         let mat_1 = MatQ::from_str("[[2/3, 1],[1/2, 2]]").unwrap();
@@ -237,7 +237,7 @@ mod test_mul_z {
         assert_eq!(mat_4, integer * mat_2);
     }
 
-    /// Checks if matrix multiplication works fine for large values
+    /// Checks if scalar multiplication works fine for large values
     #[test]
     fn large_entries() {
         let mat_1 = MatQ::from_str(&format!("[[1],[{}],[1/{}]]", i64::MAX, i64::MAX)).unwrap();
@@ -259,12 +259,11 @@ mod test_mul_z {
 
 #[cfg(test)]
 mod test_mul_q {
-
     use super::MatQ;
     use crate::rational::Q;
     use std::str::FromStr;
 
-    /// Checks if matrix multiplication works fine for both borrowed
+    /// Checks if scalar multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
         let mat_1 = MatQ::from_str("[[2/3, 1],[1/2, 2]]").unwrap();
@@ -345,7 +344,7 @@ mod test_mul_q {
         assert_eq!(mat_4, rational * mat_2);
     }
 
-    /// Checks if matrix multiplication works fine for large values
+    /// Checks if scalar multiplication works fine for large values
     #[test]
     fn large_entries() {
         let mat_1 = MatQ::from_str(&format!("[[1],[{}],[1/{}]]", i64::MAX, i64::MAX)).unwrap();

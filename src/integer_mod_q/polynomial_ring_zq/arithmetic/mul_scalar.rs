@@ -130,7 +130,7 @@ impl MulAssign<&Zq> for PolynomialRingZq {
     /// - if the moduli are different.
     fn mul_assign(&mut self, rhs: &Zq) {
         if !self.compare_base(rhs) {
-            panic!("{:?}", self.call_compare_base_error(rhs))
+            panic!("{}", self.call_compare_base_error(rhs).unwrap())
         }
         self.mul_assign(&rhs.value);
     }
@@ -181,7 +181,7 @@ mod test_mul_z {
     use crate::integer::Z;
     use std::str::FromStr;
 
-    /// Checks if polynomial multiplication works fine for both borrowed
+    /// Checks if scalar multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
         let poly_1 = PolynomialRingZq::from_str(&format!(
@@ -243,7 +243,7 @@ mod test_mul_zq {
     use crate::integer_mod_q::Zq;
     use std::str::FromStr;
 
-    /// Checks if polynomial multiplication works fine for both borrowed
+    /// Checks if scalar multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
         let poly_1 = PolynomialRingZq::from_str(&format!(
@@ -306,12 +306,11 @@ mod test_mul_zq {
 
 #[cfg(test)]
 mod test_mul_assign {
-    use std::str::FromStr;
-
     use crate::{
         integer::{PolyOverZ, Z},
         integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq, Zq},
     };
+    use std::str::FromStr;
 
     /// Ensure that `mul_assign` produces same output as normal multiply.
     #[test]
