@@ -45,8 +45,7 @@ impl MatZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    ///   if the given `upper_bound` isn't at least larger than `lower_bound + 1`,
-    ///   i.e. the interval size is at most `1`.
+    ///   if the given `upper_bound` isn't at least larger than `lower_bound`.
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
@@ -122,7 +121,7 @@ mod test_sample_uniform {
     /// Checks whether providing an invalid interval results in an error.
     #[test]
     fn invalid_interval() {
-        let lb_0 = Z::from(i64::MIN) - Z::ONE;
+        let lb_0 = Z::from(i64::MIN);
         let lb_1 = Z::from(i64::MIN);
         let lb_2 = Z::ZERO;
         let upper_bound = Z::from(i64::MIN);

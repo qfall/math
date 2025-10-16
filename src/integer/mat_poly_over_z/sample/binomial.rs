@@ -32,7 +32,7 @@ impl MatPolyOverZ {
     ///
     /// Returns a new [`MatPolyOverZ`] instance with entries chosen
     /// according to the binomial distribution or a [`MathError`]
-    /// if `n < 1`, `p ∉ (0,1)`, `n` does not fit into an [`i64`],
+    /// if `n < 0`, `p ∉ (0,1)`, `n` does not fit into an [`i64`],
     /// or the dimensions of the matrix were chosen too small.
     ///
     /// # Examples
@@ -44,7 +44,7 @@ impl MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///   if `n < 1` or `p ∉ (0,1)`.
+    ///   if `n < 0` or `p ∉ (0,1)`.
     /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
     ///   if `n` does not fit into an [`i64`].
     ///
@@ -76,7 +76,7 @@ impl MatPolyOverZ {
     ///
     /// Returns a new [`MatPolyOverZ`] instance with entries chosen
     /// according to the binomial distribution or a [`MathError`]
-    /// if `n < 1`, `p ∉ (0,1)`, `n` does not fit into an [`i64`],
+    /// if `n < 0`, `p ∉ (0,1)`, `n` does not fit into an [`i64`],
     /// or the dimensions of the matrix were chosen too small.
     ///
     /// # Examples
@@ -88,7 +88,7 @@ impl MatPolyOverZ {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///   if `n < 1` or `p ∉ (0,1)`.
+    ///   if `n < 0` or `p ∉ (0,1)`.
     /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
     ///   if `n` does not fit into an [`i64`].
     /// - Returns a [`MathError`] of type [`OutOfBounds`](MathError::OutOfBounds) if

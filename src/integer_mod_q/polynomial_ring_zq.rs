@@ -21,6 +21,7 @@ use crate::integer::{PolyOverZ, Z};
 use derive_more::Display;
 use flint_sys::fmpz_mod::fmpz_mod_mul;
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 mod arithmetic;
 mod cmp;
@@ -69,11 +70,21 @@ mod unsafe_functions;
 ///
 /// # Ok::<(), MathError>(())
 /// ```
-#[derive(PartialEq, Eq, Debug, Serialize, Deserialize, Display, Clone)]
+#[derive(PartialEq, Eq, Serialize, Deserialize, Display, Clone)]
 #[display("{poly} / {modulus}")]
 pub struct PolynomialRingZq {
     pub(crate) poly: PolyOverZ,
     pub(crate) modulus: ModulusPolynomialRingZq,
+}
+
+impl fmt::Debug for PolynomialRingZq {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "PolynomialRingZq {{poly: {}, modulus {}, storage: {{poly: {:?}, modulus: {:?}}}}}",
+            self.poly, self.modulus, self.poly, self.modulus
+        )
+    }
 }
 
 impl PolynomialRingZq {

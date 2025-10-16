@@ -81,7 +81,7 @@ impl DiscreteGaussianIntegerSampler {
     ///
     /// Returns a sample chosen according to the specified discrete Gaussian distribution or
     /// a [`MathError`] if the specified parameters were not chosen appropriately,
-    /// i.e. `n > 1` or `s > 0` or `s * log_2(n) < 1`.
+    /// i.e. `n > 1` or `s > 0`.
     ///
     /// # Examples
     /// ```
@@ -96,7 +96,7 @@ impl DiscreteGaussianIntegerSampler {
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///   if `n <= 1` or `s <= 0` or `s * log_2(n) < 1`.
+    ///   if `n <= 1` or `s <= 0`.
     pub fn init(n: &Z, center: &Q, s: &Q) -> Result<Self, MathError> {
         if n <= &Z::ONE {
             return Err(MathError::InvalidIntegerInput(format!(
@@ -108,13 +108,6 @@ impl DiscreteGaussianIntegerSampler {
             return Err(MathError::InvalidIntegerInput(format!(
                 "The value {s} was provided for parameter s of the function sample_z.
                 This function expects this input to be larger than 0."
-            )));
-        }
-        if s * n.log(2).unwrap() < Q::ONE {
-            return Err(MathError::InvalidIntegerInput(format!(
-                "The size {s} * log_2({n}) is smaller than 1.
-                Hence, the interval to sample from is of size 1.
-                Please provide larger parameters to sample discrete Gaussian."
             )));
         }
 
@@ -290,7 +283,7 @@ pub(crate) fn sample_d(basis: &MatZ, n: &Z, center: &MatQ, s: &Q) -> Result<MatZ
 /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
 ///   if `center` is not a column vector.
 ///
-/// # Panics...
+/// # Panics ...
 /// - if the number of rows/columns of `basis_gso` and `basis` mismatch.
 pub(crate) fn sample_d_precomputed_gso(
     basis: &MatZ,

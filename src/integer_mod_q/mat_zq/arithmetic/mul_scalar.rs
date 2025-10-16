@@ -13,13 +13,16 @@ use crate::error::MathError;
 use crate::integer::Z;
 use crate::integer_mod_q::Zq;
 use crate::macros::arithmetics::{
+    arithmetic_assign_between_types, arithmetic_assign_trait_borrowed_to_owned,
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
     arithmetic_trait_reverse,
 };
 use crate::macros::for_others::implement_for_others;
 use crate::traits::{CompareBase, MatrixDimensions};
-use flint_sys::fmpz_mod_mat::fmpz_mod_mat_scalar_mul_fmpz;
-use std::ops::Mul;
+use flint_sys::fmpz_mod_mat::{
+    fmpz_mod_mat_scalar_mul_fmpz, fmpz_mod_mat_scalar_mul_si, fmpz_mod_mat_scalar_mul_ui,
+};
+use std::ops::{Mul, MulAssign};
 
 impl Mul<&Z> for &MatZq {
     type Output = MatZq;
@@ -131,13 +134,79 @@ impl MatZq {
     }
 }
 
+impl MulAssign<&Z> for MatZq {
+    /// Computes the scalar multiplication of `self` and `scalar` reusing
+    /// the memory of `self`.
+    ///
+    /// Parameters:
+    /// - `scalar`: specifies the value to multiply to `self`
+    ///
+    /// Returns the scalar of the matrix as a [`MatZq`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::integer_mod_q::{MatZq, Zq};
+    /// use std::str::FromStr;
+    ///
+    /// let mut a = MatZq::from_str("[[2, 1],[1, 2]] mod 61").unwrap();
+    /// let b = Z::from(2);
+    /// let c = Zq::from((17, 61));
+    ///
+    /// a *= &b;
+    /// a *= b;
+    /// a *= 2;
+    /// a *= -2;
+    /// a *= &c;
+    /// a *= c;
+    /// ```
+    fn mul_assign(&mut self, scalar: &Z) {
+        unsafe { fmpz_mod_mat_scalar_mul_fmpz(&mut self.matrix, &self.matrix, &scalar.value) };
+    }
+}
+
+impl MulAssign<&Zq> for MatZq {
+    /// Documentation at [`MatZq::mul_assign`]
+    ///
+    /// # Panics ...
+    /// - if the moduli are different.
+    fn mul_assign(&mut self, scalar: &Zq) {
+        if !self.compare_base(scalar) {
+            panic!("{}", self.call_compare_base_error(scalar).unwrap())
+        }
+        unsafe {
+            fmpz_mod_mat_scalar_mul_fmpz(&mut self.matrix, &self.matrix, &scalar.value.value)
+        };
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, MatZq, Zq);
+
+impl MulAssign<i64> for MatZq {
+    /// Documentation at [`MatZq::mul_assign`].
+    fn mul_assign(&mut self, other: i64) {
+        unsafe { fmpz_mod_mat_scalar_mul_si(&mut self.matrix, &self.matrix, other) };
+    }
+}
+
+impl MulAssign<u64> for MatZq {
+    /// Documentation at [`MatZq::mul_assign`].
+    fn mul_assign(&mut self, other: u64) {
+        unsafe { fmpz_mod_mat_scalar_mul_ui(&mut self.matrix, &self.matrix, other) };
+    }
+}
+
+arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, MatZq, Z);
+arithmetic_assign_between_types!(MulAssign, mul_assign, MatZq, i64, i32 i16 i8);
+arithmetic_assign_between_types!(MulAssign, mul_assign, MatZq, u64, u32 u16 u8);
+
 #[cfg(test)]
 mod test_mul_z {
     use crate::integer::Z;
     use crate::integer_mod_q::MatZq;
     use std::str::FromStr;
 
-    /// Checks if matrix multiplication works fine for both borrowed
+    /// Checks if scalar multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
         let mat_1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
@@ -227,7 +296,7 @@ mod test_mul_z {
         assert_eq!(mat_4, integer * mat_2);
     }
 
-    /// Checks if matrix multiplication works fine for large values
+    /// Checks if scalar multiplication works fine for large values
     #[test]
     fn large_entries() {
         let mat_1 = MatZq::from_str(&format!("[[1],[{}],[4]] mod {}", i64::MAX, u64::MAX)).unwrap();
@@ -248,7 +317,7 @@ mod test_mul_zq {
     use crate::integer_mod_q::{MatZq, Zq};
     use std::str::FromStr;
 
-    /// Checks if matrix multiplication works fine for both borrowed
+    /// Checks if scalar multiplication works fine for both borrowed
     #[test]
     fn borrowed_correctness() {
         let mat_1 = MatZq::from_str("[[42, 17],[8, 6]] mod 61").unwrap();
@@ -314,7 +383,7 @@ mod test_mul_zq {
         assert_eq!(mat_4, integer * mat_2);
     }
 
-    /// Checks if matrix multiplication works fine for large values
+    /// Checks if scalar multiplication works fine for large values
     #[test]
     fn large_entries() {
         let mat_1 = MatZq::from_str(&format!("[[1],[{}],[4]] mod {}", i64::MAX, u64::MAX)).unwrap();
@@ -348,5 +417,56 @@ mod test_mul_zq {
         let mat_2 = &mat_1.mul_scalar_safe(&integer);
 
         assert!(mat_2.is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_mul_assign {
+    use crate::integer::Z;
+    use crate::integer_mod_q::{MatZq, Zq};
+    use std::str::FromStr;
+
+    /// Ensure that `mul_assign` produces same output as normal multiply.
+    #[test]
+    fn consistency() {
+        let mut a = MatZq::from_str(&format!("[[2, 1],[-1, 0]] mod {}", u64::MAX - 1)).unwrap();
+        let b = i32::MAX;
+        let cmp = &a * b;
+
+        a *= b;
+
+        assert_eq!(cmp, a);
+    }
+
+    /// Ensure that `mul_assign` is available for all types.
+    #[test]
+    fn availability() {
+        let mut mat_zq = MatZq::from_str("[[2, 1],[1, 2]] mod 7").unwrap();
+        let z = Z::from(2);
+        let zq = Zq::from((2, 7));
+
+        mat_zq *= &z;
+        mat_zq *= z;
+        mat_zq *= &zq;
+        mat_zq *= zq;
+        mat_zq *= 1_u8;
+        mat_zq *= 1_u16;
+        mat_zq *= 1_u32;
+        mat_zq *= 1_u64;
+        mat_zq *= 1_i8;
+        mat_zq *= 1_i16;
+        mat_zq *= 1_i32;
+        mat_zq *= 1_i64;
+    }
+
+    /// Ensure that `mul_assign` panics if the moduli mismatch.
+    #[test]
+    #[should_panic]
+    fn mismatching_modulus_zq() {
+        let mut mat_zq = MatZq::from_str("[[2, 1],[1, 2]] mod 7").unwrap();
+
+        let zq = Zq::from((2, u64::MAX - 1));
+
+        mat_zq *= &zq;
     }
 }

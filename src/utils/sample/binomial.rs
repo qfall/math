@@ -19,7 +19,7 @@ use rand_distr::{Binomial, Distribution};
 /// - `p`: specifies the probability of success
 ///
 /// Returns a sample as a [`u64`] chosen from the specified binomial distribution
-/// or a [`MathError`] if `n < 1`, `p ∉ (0,1)`, or `n` does not fit into an [`i64`].
+/// or a [`MathError`] if `n < 0`, `p ∉ (0,1)`, or `n` does not fit into an [`i64`].
 ///
 /// # Examples
 /// ```compile_fail
@@ -33,7 +33,7 @@ use rand_distr::{Binomial, Distribution};
 ///
 /// # Errors and Failures
 /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-///   if `n < 1`.
+///   if `n < 0`.
 /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
 ///   if `p ∉ (0,1)`.
 /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
@@ -46,9 +46,9 @@ pub(crate) fn sample_binomial(n: &Z, p: &Q) -> Result<u64, MathError> {
             Hence, the interval to sample from is invalid and contains only exactly one number."
         )));
     }
-    if n <= &Z::ZERO {
+    if n < &Z::ZERO {
         return Err(MathError::InvalidIntegerInput(format!(
-            "n (the number of trials for binomial sampling) must be larger than 0. Currently it is {n}."
+            "n (the number of trials for binomial sampling) must be no smaller than 0. Currently it is {n}."
         )));
     }
 
@@ -123,7 +123,6 @@ mod test_sample_binomial {
     fn invalid_n() {
         let p = Q::from((1, 2));
 
-        assert!(sample_binomial(&Z::ZERO, &p).is_err());
         assert!(sample_binomial(&Z::MINUS_ONE, &p).is_err());
         assert!(sample_binomial(&Z::from(i64::MIN), &p).is_err());
     }

@@ -80,12 +80,12 @@ impl SubAssign<&PolyOverZ> for PolynomialRingZq {
 }
 impl SubAssign<&PolyOverZq> for PolynomialRingZq {
     /// Documentation at [`PolynomialRingZq::sub_assign`].
+    ///
+    /// # Panics ...
+    /// - if the moduli are different.
     fn sub_assign(&mut self, other: &PolyOverZq) {
-        if self.modulus.get_q() != other.modulus {
-            panic!(
-                "Tried to sub polynomial with modulus '{}' and polynomial with modulus '{}'.",
-                self.modulus, other.modulus
-            );
+        if !self.compare_base(other) {
+            panic!("{}", self.call_compare_base_error(other).unwrap())
         }
         // get a fmpz_poly_struct from a fmpz_mod_poly_struct
         let other = other.get_representative_least_nonnegative_residue();

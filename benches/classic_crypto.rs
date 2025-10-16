@@ -49,7 +49,7 @@ pub fn gen_prime_order_group_plus_generator(security_lvl: u32) -> (Modulus, Zq) 
     }
 
     // choose generator s.t. `g^2 != 1 mod p` and `g^q != 1 mod p`
-    let mut generator = Zq::sample_uniform(&modulus).unwrap();
+    let mut generator = Zq::sample_uniform(&modulus);
     while generator
         .pow(&two)
         .unwrap()
@@ -65,7 +65,7 @@ pub fn gen_prime_order_group_plus_generator(security_lvl: u32) -> (Modulus, Zq) 
             .get_representative_least_nonnegative_residue()
             == Z::ZERO
     {
-        generator = Zq::sample_uniform(&modulus).unwrap();
+        generator = Zq::sample_uniform(&modulus);
     }
 
     (Modulus::from(modulus), generator)

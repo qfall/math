@@ -95,9 +95,6 @@ impl PolyOverQ {
     ///
     /// let decimal_repr = poly.to_string_decimal(3);
     /// ```
-    ///
-    /// # Panics ...
-    /// - if any entry of the polynomial can't be represented as a [`f64`].
     pub fn to_string_decimal(&self, nr_decimal_digits: usize) -> String {
         let degree = self.get_degree() + 1;
         let mut poly_string = format!("{degree}  ");
@@ -143,6 +140,15 @@ mod test_to_string_decimal {
         assert_eq!("1  0.33", b_2);
         assert_eq!("3  0 0 -2", c_0);
         assert_eq!("3  0.3 0.0 -1.7", c_1);
+    }
+
+    /// Ensures that [`PolyOverQ::to_string_decimal`] does not panic if it is given a
+    /// value it can not fully represent.
+    #[test]
+    fn panic_precision() {
+        let a = PolyOverQ::from_str(&format!("1  {}", u64::MAX)).unwrap();
+
+        let _ = a.to_string_decimal(1);
     }
 }
 

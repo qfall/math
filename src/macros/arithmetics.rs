@@ -303,7 +303,7 @@ pub(crate) use arithmetic_assign_trait_borrowed_to_owned;
 ///   (e.g. add for [`Add`](std::ops::Add), ...).
 /// - `type`: the type the trait is implemented for
 ///   (e.g. [`Z`](crate::integer::Z),[`Q`](crate::rational::Q))
-/// - `transfer_type`: the type to convert `other_type` to before
+/// - `bridge_type`: the type to convert `other_type` to before
 ///   it's input to the `trait_function`
 ///   (e.g. [`i64`] or [`u64`])
 /// - `other_type`: the type the second part of the computation.
@@ -313,13 +313,13 @@ pub(crate) use arithmetic_assign_trait_borrowed_to_owned;
 ///
 /// ```impl *trait<*other_type*>* for *type*```
 macro_rules! arithmetic_assign_between_types {
-    ($trait:ident, $trait_function:ident, $type:ident, $transfer_type:ident, $($other_type:ident)*) => {
+    ($trait:ident, $trait_function:ident, $type:ident, $bridge_type:ident, $($other_type:ident)*) => {
         $(
             impl $trait<$other_type> for $type {
                 paste::paste! {
                     #[doc = "Documentation at [` " $type "::" $trait_function "`]."]
                     fn $trait_function(&mut self, other: $other_type) {
-                        self.$trait_function(other as $transfer_type);
+                        self.$trait_function($bridge_type::from(other));
                     }
                 }
             }

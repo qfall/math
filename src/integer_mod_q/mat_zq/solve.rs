@@ -592,7 +592,7 @@ mod test_solve_gauss {
                 } else {
                     false_count += 1;
                     println!("{i}: False");
-                    println!("\t Matrix: {} \n\t y: {} \n\t x: {}", &mat, y, &x);
+                    println!("\t Matrix: {mat} \n\t y: {y} \n\t x: {x}");
                 }
             } else {
                 none_count += 1;

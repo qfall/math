@@ -13,8 +13,9 @@
 //! To avoid unnecessary checks and reductions, always return canonical/reduced
 //! values. The end-user should be unable to obtain a non-reduced value.
 
-use crate::integer_mod_q::Modulus;
+use crate::{integer_mod_q::Modulus, utils::parse::partial_string};
 use flint_sys::fmpz_mod_mat::fmpz_mod_mat_struct;
+use std::fmt;
 
 mod arithmetic;
 mod cmp;
@@ -82,7 +83,6 @@ mod vector;
 /// assert!(row_vec.is_row_vector());
 /// assert!(col_vec.is_column_vector());
 /// ```
-#[derive(Debug)]
 pub struct MatZq {
     pub(crate) matrix: fmpz_mod_mat_struct,
 
@@ -93,4 +93,18 @@ pub struct MatZq {
     // do not need to care about conformity of the modulus stored in the `matrix`
     // attribute and `modulus` attribute, if they are both initalized from the same value.
     modulus: Modulus,
+}
+
+impl fmt::Debug for MatZq {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "MatZq: {{matrix: {}, modulus: {}, storage: {{matrix: {:?}, modulus: {:?}}}}}",
+            // printing the entire matrix is not meaningful for large matrices
+            partial_string(&self.get_representative_least_nonnegative_residue(), 3, 3),
+            self.modulus,
+            self.matrix,
+            self.modulus
+        )
+    }
 }
