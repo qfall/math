@@ -168,16 +168,20 @@ impl Zq {
         if !self.compare_base(other) {
             return Err(self.call_compare_base_error(other).unwrap());
         }
-        let mut out = Zq::from((1, &self.modulus));
+        let mut out_z = Z::ZERO;
         unsafe {
             fmpz_mod_mul(
-                &mut out.value.value,
+                &mut out_z.value,
                 &self.value.value,
                 &other.value.value,
                 self.modulus.get_fmpz_mod_ctx_struct(),
-            );
-        }
-        Ok(out)
+            )
+        };
+
+        Ok(Self {
+            value: out_z,
+            modulus: self.modulus.clone(),
+        })
     }
 }
 

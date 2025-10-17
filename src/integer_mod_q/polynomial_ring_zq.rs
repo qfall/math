@@ -28,6 +28,7 @@ mod coefficient_embedding;
 mod from;
 mod get;
 mod norm;
+mod ntt;
 mod properties;
 mod reduce;
 mod sample;

@@ -10,6 +10,7 @@
 //! [`PolynomialRingZq`](super::PolynomialRingZq).
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
+use super::ntt_basis_polynomial_ring_zq::NTTBasisPolynomialRingZq;
 use flint_sys::fq::fq_ctx_struct;
 use std::{fmt, rc::Rc};
 
@@ -18,6 +19,7 @@ mod coefficient_embedding;
 mod from;
 mod get;
 mod norm;
+mod ntt_basis;
 mod ownership;
 mod serialize;
 mod to_string;
@@ -42,6 +44,7 @@ mod unsafe_functions;
 /// ```
 pub struct ModulusPolynomialRingZq {
     modulus: Rc<fq_ctx_struct>,
+    pub(crate) ntt_basis: Rc<Option<NTTBasisPolynomialRingZq>>,
 }
 
 impl fmt::Debug for ModulusPolynomialRingZq {

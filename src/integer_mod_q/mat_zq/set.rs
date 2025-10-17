@@ -1167,7 +1167,7 @@ mod test_set_submatrix {
         assert_eq!(identity, mat);
     }
 
-    /// Ensure that matrix access out of bounds leadss to an error.
+    /// Ensure that matrix access out of bounds leads to an error.
     #[test]
     fn out_of_bounds() {
         let modulus = Modulus::from(u64::MAX);

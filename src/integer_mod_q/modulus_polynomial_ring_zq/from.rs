@@ -129,6 +129,7 @@ impl From<&PolyOverZq> for ModulusPolynomialRingZq {
             );
             Self {
                 modulus: Rc::new(modulus.assume_init()),
+                ntt_basis: Rc::new(None),
             }
         }
     }

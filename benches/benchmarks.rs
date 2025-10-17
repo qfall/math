@@ -15,6 +15,7 @@ pub mod cholesky_decomposition;
 pub mod classic_crypto;
 pub mod integer;
 pub mod matrix_arith;
+pub mod ntt_multiplication;
 pub mod sample_z;
 pub mod sampling;
 pub mod solve;
@@ -30,4 +31,5 @@ criterion_main! {
     basis_reductions::benches,
     matrix_arith::benches,
     uniform::benches,
+    ntt_multiplication::benches
 }
