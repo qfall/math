@@ -148,7 +148,7 @@ impl PolynomialRingZq {
         PolynomialRingZq::intt(ntt3, &self.get_mod()).unwrap()
     }
 
-    pub fn real_mul_ntt(ntt1: &Vec<Z>, ntt2: &Vec<Z>, modulus: &Modulus) -> Vec<Z> {
+    pub fn real_mul_ntt(ntt1: &Vec<Z>, ntt2: &[Z], modulus: &Modulus) -> Vec<Z> {
         let mod_q = modulus.get_fmpz_mod_ctx_struct();
 
         let mut ntt3 = Vec::with_capacity(ntt1.capacity());

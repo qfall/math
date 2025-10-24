@@ -15,7 +15,7 @@
 use super::{from::ConvolutionType, NTTBasisPolynomialRingZq};
 use crate::{
     integer::Z,
-    integer_mod_q::{PolyOverZq, Zq},
+    integer_mod_q::{Modulus, PolyOverZq},
     utils::index::bit_reverse_permutation,
 };
 use flint_sys::{
@@ -90,7 +90,12 @@ impl NTTBasisPolynomialRingZq {
     ///     Proceedings of the November 7-10, 1966, fall joint computer conference. 1966.
     pub fn intt(&self, vector: Vec<Z>) -> PolyOverZq {
         assert_eq!(vector.len(), self.n as usize);
-        let mut res = iterative_intt(vector, &self.powers_of_omega_inv, &self.n_inv);
+        let mut res = iterative_intt(
+            vector,
+            &self.powers_of_omega_inv,
+            &self.n_inv,
+            &self.modulus,
+        );
 
         // Negacyclic: perform postprocessing
         if self.convolution_type == ConvolutionType::Negacyclic {
@@ -99,7 +104,7 @@ impl NTTBasisPolynomialRingZq {
                     fmpz_mod_mul(
                         &mut x.value,
                         &x.value,
-                        &self.powers_of_psi_inv[i].value.value,
+                        &self.powers_of_psi_inv[i].value,
                         self.modulus.get_fmpz_mod_ctx_struct(),
                     )
                 };
@@ -131,11 +136,11 @@ unsafe fn intt_stride_steps(
     stride: usize,
     power_pointer: usize,
     modulus_pointer: &fmpz_mod_ctx,
-    powers_of_omega_inv_pointers: &[&Z],
+    powers_of_omega_inv_pointers: &[Z],
 ) {
     for i in 0..stride {
         // compute power of the current level
-        let current_power = powers_of_omega_inv_pointers[2_usize.pow(power_pointer as u32) * (i)];
+        let current_power = &powers_of_omega_inv_pointers[2_usize.pow(power_pointer as u32) * (i)];
 
         // GS butterfly
         // by using Z, we can manage not to initialize additional modulus objects in this part
@@ -173,13 +178,16 @@ unsafe fn intt_stride_steps(
 ///
 /// The algorithm possesses the option to be multi-threaded, but benchmarking has shown,
 /// that it makes the algorithm less efficient, so we turned it off.
-fn iterative_intt(coefficients: Vec<Z>, powers_of_omega_inv: &[Zq], n_inv: &Zq) -> Vec<Z> {
+fn iterative_intt(
+    coefficients: Vec<Z>,
+    powers_of_omega_inv: &[Z],
+    n_inv: &Z,
+    modulus: &Modulus,
+) -> Vec<Z> {
     let n = coefficients.len();
 
     let mut res = coefficients;
-    let modulus_pointer = n_inv.modulus.get_fmpz_mod_ctx_struct();
-    let powers_of_omega_inv_pointers: Vec<&Z> =
-        powers_of_omega_inv.iter().map(|x| &x.value).collect();
+    let modulus_pointer = modulus.get_fmpz_mod_ctx_struct();
 
     let mut power_pointer = 0;
     let mut stride = n / 2;
@@ -191,7 +199,7 @@ fn iterative_intt(coefficients: Vec<Z>, powers_of_omega_inv: &[Zq], n_inv: &Zq) 
                 stride,
                 power_pointer,
                 modulus_pointer,
-                &powers_of_omega_inv_pointers,
+                powers_of_omega_inv,
             );
         });
 
@@ -206,8 +214,8 @@ fn iterative_intt(coefficients: Vec<Z>, powers_of_omega_inv: &[Zq], n_inv: &Zq) 
             fmpz_mod_mul(
                 &mut x.value,
                 &x.value,
-                &n_inv.value.value,
-                n_inv.modulus.get_fmpz_mod_ctx_struct(),
+                &n_inv.value,
+                modulus.get_fmpz_mod_ctx_struct(),
             )
         }
     }

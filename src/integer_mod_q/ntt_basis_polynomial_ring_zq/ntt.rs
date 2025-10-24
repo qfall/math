@@ -15,7 +15,7 @@
 use super::{from::ConvolutionType, NTTBasisPolynomialRingZq};
 use crate::{
     integer::Z,
-    integer_mod_q::{PolyOverZq, Zq},
+    integer_mod_q::{Modulus, PolyOverZq},
     traits::GetCoefficient,
     utils::index::bit_reverse_permutation,
 };
@@ -103,14 +103,14 @@ impl NTTBasisPolynomialRingZq {
                     fmpz_mod_mul(
                         &mut x.value,
                         &x.value,
-                        &self.powers_of_psi[i].value.value,
+                        &self.powers_of_psi[i].value,
                         self.modulus.get_fmpz_mod_ctx_struct(),
                     );
                 }
             }
         }
 
-        iterative_ntt(poly_coeffs, &self.powers_of_omega)
+        iterative_ntt(poly_coeffs, &self.powers_of_omega, &self.modulus)
     }
 }
 
@@ -123,11 +123,11 @@ unsafe fn ntt_stride_steps(
     stride: usize,
     power_pointer: i64,
     modulus_pointer: &fmpz_mod_ctx,
-    powers_of_omega_pointers: &[&Z],
+    powers_of_omega_pointers: &[Z],
 ) {
     for i in 0..stride {
         // compute power of the current level
-        let current_power = powers_of_omega_pointers[2_usize.pow(power_pointer as u32) * (i)];
+        let current_power = &powers_of_omega_pointers[2_usize.pow(power_pointer as u32) * (i)];
 
         // CT butterfly
         // by using Z, we can manage not to initialize additional modulus objects in this part
@@ -165,15 +165,14 @@ unsafe fn ntt_stride_steps(
 ///
 /// The algorithm possesses the option to be multi-threaded, but benchmarking has shown,
 /// that it makes the algorithm less efficient, so we turned it off.
-fn iterative_ntt(coefficients: Vec<Z>, powers_of_omega: &[Zq]) -> Vec<Z> {
+fn iterative_ntt(coefficients: Vec<Z>, powers_of_omega: &[Z], modulus: &Modulus) -> Vec<Z> {
     let n = coefficients.len();
     let nr_iterations = n.ilog2() as i64;
 
     // compute the bit reversed order of the coefficients
     let mut res = coefficients;
     bit_reverse_permutation(&mut res);
-    let modulus_pointer = powers_of_omega[0].modulus.get_fmpz_mod_ctx_struct();
-    let powers_of_omega_pointers: Vec<&Z> = powers_of_omega.iter().map(|x| &x.value).collect();
+    let modulus_pointer = modulus.get_fmpz_mod_ctx_struct();
 
     let mut power_pointer: i64 = nr_iterations - 1;
     let mut stride = 1;
@@ -186,7 +185,7 @@ fn iterative_ntt(coefficients: Vec<Z>, powers_of_omega: &[Zq]) -> Vec<Z> {
                 stride,
                 power_pointer,
                 modulus_pointer,
-                &powers_of_omega_pointers,
+                powers_of_omega,
             )
         });
         stride *= 2;
