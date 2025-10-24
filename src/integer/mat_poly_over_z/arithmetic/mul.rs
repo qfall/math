@@ -15,7 +15,7 @@ use crate::macros::arithmetics::{
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
 };
 use crate::traits::MatrixDimensions;
-use flint_sys::fmpz_poly_mat::fmpz_poly_mat_mul;
+use flint_sys::fmpz_poly_mat::fmpz_poly_mat_mul_KS;
 use std::ops::Mul;
 
 impl Mul for &MatPolyOverZ {
@@ -130,7 +130,10 @@ impl MatPolyOverZ {
         }
 
         let mut new = MatPolyOverZ::new(self.get_num_rows(), other.get_num_columns());
-        unsafe { fmpz_poly_mat_mul(&mut new.matrix, &self.matrix, &other.matrix) };
+        // Testing shows that `fmpz_poly_mat_mul_KS` should almost always be more efficient for parameter sets
+        // relevant in lattice-based crypto than `fmpz_poly_mat_mul_classical`. Thus, we can spare ourselves
+        // the evaluation time in `fmpz_poly_mat_mul` to determine which algorithm performs better
+        unsafe { fmpz_poly_mat_mul_KS(&mut new.matrix, &self.matrix, &other.matrix) };
         Ok(new)
     }
 
