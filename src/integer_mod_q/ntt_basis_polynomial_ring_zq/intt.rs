@@ -80,9 +80,9 @@ impl NTTBasisPolynomialRingZq {
     /// assert_eq!(g_poly, ghat_intt);
     /// ```
     ///
-    /// # Panics if ...
-    /// - it is not reduced, i.e. has a coefficient of degree > n
-    /// - the modulus differs from the modulus over which we view the polynomial
+    /// # Panics ...
+    /// - if it is not reduced, i.e. has a coefficient of degree > n.
+    /// - if the modulus differs from the modulus over which we view the polynomial.
     ///
     /// The algorithm is based on the Gentleman-Sande algorithm:
     /// -\[1\] Gentleman, W. Morven, and Gordon Sande.
