@@ -63,6 +63,20 @@ pub fn bench_ntt_dilithium_params_with_ntt(c: &mut Criterion) {
     );
 }
 
+/// benchmark multiplication in typical dilithium parameter set with NTT & Transforms
+/// `n=256`, `q = 2^23 - 2^13 + 1` and `zeta = 1753`
+pub fn bench_ntt_dilithium_params_with_ntt_and_transforms(c: &mut Criterion) {
+    let modulus = get_dilithium_setup();
+
+    let p1 = PolynomialRingZq::sample_uniform(&modulus);
+    let p2 = PolynomialRingZq::sample_uniform(&modulus);
+
+    c.bench_function(
+        "PolynomialRingZq Multiplication with NTT + Transforms (Dilithium)",
+        |b| b.iter(|| PolynomialRingZq::mul_ntt(&p1, &p2)),
+    );
+}
+
 /// benchmark multiplication in typical dilithium parameter set without NTT
 /// `n=1024`, `q = 2^23 - 2^13 + 1` and `zeta = 1735`
 pub fn bench_ntt_dilithium_params_without_ntt(c: &mut Criterion) {
@@ -94,6 +108,19 @@ pub fn bench_ntt_hawk1024_params_with_ntt(c: &mut Criterion) {
     });
 }
 
+/// benchmark multiplication in typical HAWK1024 parameter set with NTT and Transforms
+/// `n=256`, `q = 12289` and `zeta = 1945`
+pub fn bench_ntt_hawk1024_params_with_ntt_and_transforms(c: &mut Criterion) {
+    let modulus = get_hawk1024_setup();
+
+    let p1 = PolynomialRingZq::sample_uniform(&modulus);
+    let p2 = PolynomialRingZq::sample_uniform(&modulus);
+
+    c.bench_function("PolynomialRingZq Multiplication with NTT + Transforms (HAWK1024)", |b| {
+        b.iter(|| PolynomialRingZq::mul_ntt(&p1, &p2))
+    });
+}
+
 /// benchmark multiplication in typical HAWK1024 parameter set without NTT
 /// `n=256`, `q = 12289` and `zeta = 1945`
 pub fn bench_ntt_hawk1024_params_without_ntt(c: &mut Criterion) {
@@ -111,7 +138,9 @@ pub fn bench_ntt_hawk1024_params_without_ntt(c: &mut Criterion) {
 criterion_group!(
     benches,
     bench_ntt_dilithium_params_with_ntt,
+    bench_ntt_dilithium_params_with_ntt_and_transforms,
     bench_ntt_dilithium_params_without_ntt,
     bench_ntt_hawk1024_params_with_ntt,
-    bench_ntt_hawk1024_params_without_ntt
+    bench_ntt_hawk1024_params_with_ntt_and_transforms,
+    bench_ntt_hawk1024_params_without_ntt,
 );
