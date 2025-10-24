@@ -8,11 +8,11 @@
 
 //! Implementations perform NTT-related operations on [`PolynomialRingZq`].
 
-use flint_sys::fmpz_mod::fmpz_mod_mul;
 use crate::{
     integer::Z,
     integer_mod_q::{Modulus, ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq},
 };
+use flint_sys::fmpz_mod::fmpz_mod_mul;
 
 impl PolynomialRingZq {
     /// This algorithm transforms an element from the polynomial ring using NTT.
@@ -155,12 +155,7 @@ impl PolynomialRingZq {
         for i in 0..ntt1.len() {
             let mut z_i = Z::ZERO;
             unsafe {
-                fmpz_mod_mul(
-                    &mut z_i.value,
-                    &ntt1[i].value,
-                    &ntt2[i].value,
-                    mod_q,
-                );
+                fmpz_mod_mul(&mut z_i.value, &ntt1[i].value, &ntt2[i].value, mod_q);
             }
             ntt3.push(z_i)
         }

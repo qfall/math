@@ -216,10 +216,11 @@ fn iterative_intt(coefficients: Vec<Z>, powers_of_omega_inv: &[Zq], n_inv: &Zq) 
 
 #[cfg(test)]
 mod test_intt {
+    use crate::{
+        integer::Z,
+        integer_mod_q::{ConvolutionType, Modulus, NTTBasisPolynomialRingZq, PolyOverZq},
+    };
     use std::str::FromStr;
-    use crate::{integer::Z, integer_mod_q::{
-        ConvolutionType, Modulus, NTTBasisPolynomialRingZq, PolyOverZq,
-    }};
 
     /// Tests a loop of NTT and INTT application.
     #[test]
@@ -240,12 +241,7 @@ mod test_intt {
 
         let ntt_basis = NTTBasisPolynomialRingZq::init(4, 3383, &modulus, ConvolutionType::Cyclic);
 
-        let ghat = vec![
-            Z::from(10),
-            Z::from(913),
-            Z::from(7679),
-            Z::from(6764),
-        ];
+        let ghat = vec![Z::from(10), Z::from(913), Z::from(7679), Z::from(6764)];
         let poly = ntt_basis.intt(ghat);
         assert_eq!(cmp_poly, poly);
     }
@@ -260,7 +256,7 @@ mod test_intt {
             NTTBasisPolynomialRingZq::init(4, 1925, &modulus, ConvolutionType::Negacyclic);
 
         let ghat_ntt = vec![
-            Z::from(1467,),
+            Z::from(1467),
             Z::from(2807),
             Z::from(3471),
             Z::from(7621),
@@ -279,12 +275,7 @@ mod test_intt {
         let ntt_basis =
             NTTBasisPolynomialRingZq::init(4, 1925, &modulus, ConvolutionType::Negacyclic);
 
-        let ghat = vec![
-            Z::from(3851),
-            Z::from(5256),
-            Z::from(3832),
-            Z::from(2427),
-        ];
+        let ghat = vec![Z::from(3851), Z::from(5256), Z::from(3832), Z::from(2427)];
         let poly = ntt_basis.intt(ghat);
         assert_eq!(cmp_poly, poly);
     }

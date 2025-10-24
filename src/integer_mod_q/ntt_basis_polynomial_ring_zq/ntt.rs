@@ -197,9 +197,10 @@ fn iterative_ntt(coefficients: Vec<Z>, powers_of_omega: &[Zq]) -> Vec<Z> {
 
 #[cfg(test)]
 mod test_ntt {
-    use crate::{integer::Z, integer_mod_q::{
-        ConvolutionType, Modulus, NTTBasisPolynomialRingZq, PolyOverZq,
-    }};
+    use crate::{
+        integer::Z,
+        integer_mod_q::{ConvolutionType, Modulus, NTTBasisPolynomialRingZq, PolyOverZq},
+    };
     use std::str::FromStr;
 
     /// This example is taken from: https://eprint.iacr.org/2024/585.pdf Example 3.4
@@ -211,12 +212,7 @@ mod test_ntt {
         let ntt_basis = NTTBasisPolynomialRingZq::init(4, 3383, &modulus, ConvolutionType::Cyclic);
 
         let ghat = ntt_basis.ntt(&g_poly);
-        let cmp_ghat = vec![
-            Z::from(10),
-            Z::from(913),
-            Z::from(7679),
-            Z::from(6764),
-        ];
+        let cmp_ghat = vec![Z::from(10), Z::from(913), Z::from(7679), Z::from(6764)];
         assert_eq!(cmp_ghat, ghat);
     }
 
@@ -254,12 +250,7 @@ mod test_ntt {
             NTTBasisPolynomialRingZq::init(4, 1925, &modulus, ConvolutionType::Negacyclic);
 
         let ghat = ntt_basis.ntt(&g_poly);
-        let cmp_ghat = vec![
-            Z::from(3851),
-            Z::from(5256),
-            Z::from(3832),
-            Z::from(2427),
-        ];
+        let cmp_ghat = vec![Z::from(3851), Z::from(5256), Z::from(3832), Z::from(2427)];
         assert_eq!(cmp_ghat, ghat);
     }
 }
