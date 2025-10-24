@@ -9,10 +9,9 @@
 //! Implementations perform NTT-related operations on [`PolynomialRingZq`].
 
 use flint_sys::fmpz_mod::fmpz_mod_mul;
-
 use crate::{
     integer::Z,
-    integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq, Zq},
+    integer_mod_q::{Modulus, ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq},
 };
 
 impl PolynomialRingZq {
@@ -43,7 +42,7 @@ impl PolynomialRingZq {
     ///
     /// let ntt = sample.ntt().unwrap();
     /// ```
-    pub fn ntt(&self) -> Option<Vec<Zq>> {
+    pub fn ntt(&self) -> Option<Vec<Z>> {
         if let Some(ntt_basis) = self.modulus.ntt_basis.as_ref() {
             let value = PolyOverZq::from((
                 &self.get_representative_least_nonnegative_residue(),
@@ -55,7 +54,7 @@ impl PolynomialRingZq {
         }
     }
 
-    /// This algorithm transforms an element in NTT form and transfors it into its polynomial representation.
+    /// This algorithm transforms an element in NTT form and transfers it into its polynomial representation.
     /// The algorithm will output `None`, if the base is not defined.
     ///
     /// # Parameters
@@ -87,7 +86,7 @@ impl PolynomialRingZq {
     /// let ntt = sample.ntt().unwrap();
     /// let sample_in_polynomial_form = PolynomialRingZq::intt(ntt, &polynomial_modulus);
     /// ```
-    pub fn intt(vector: Vec<Zq>, modulus: &ModulusPolynomialRingZq) -> Option<Self> {
+    pub fn intt(vector: Vec<Z>, modulus: &ModulusPolynomialRingZq) -> Option<Self> {
         modulus
             .ntt_basis
             .as_ref()
@@ -137,13 +136,20 @@ impl PolynomialRingZq {
     /// ```
     ///
     /// # Panics...
-    /// - if the the moduli are different,
+    /// - if the the moduli are different.
     /// - if the [`NTTBasisPolynomialRingZq`](super::super::NTTBasisPolynomialRingZq) is not set.
     pub fn mul_ntt(&self, other: &Self) -> Self {
         assert_eq!(self.get_mod(), other.get_mod());
         let ntt1 = self.ntt().unwrap();
         let ntt2 = other.ntt().unwrap();
-        let modulus = ntt1[0].get_mod();
+
+        let ntt3 = Self::real_mul_ntt(&ntt1, &ntt2, &Modulus::from(self.get_mod().get_q()));
+
+        PolynomialRingZq::intt(ntt3, &self.get_mod()).unwrap()
+    }
+
+    pub fn real_mul_ntt(ntt1: &Vec<Z>, ntt2: &Vec<Z>, modulus: &Modulus) -> Vec<Z> {
+        let mod_q = modulus.get_fmpz_mod_ctx_struct();
 
         let mut ntt3 = Vec::with_capacity(ntt1.capacity());
         for i in 0..ntt1.len() {
@@ -151,18 +157,14 @@ impl PolynomialRingZq {
             unsafe {
                 fmpz_mod_mul(
                     &mut z_i.value,
-                    &ntt1[i].value.value,
-                    &ntt2[i].value.value,
-                    modulus.get_fmpz_mod_ctx_struct(),
+                    &ntt1[i].value,
+                    &ntt2[i].value,
+                    mod_q,
                 );
             }
-            ntt3.push(Zq {
-                value: z_i,
-                modulus: modulus.clone(),
-            });
+            ntt3.push(z_i)
         }
-
-        PolynomialRingZq::intt(ntt3, &self.get_mod()).unwrap()
+        ntt3
     }
 }
 
