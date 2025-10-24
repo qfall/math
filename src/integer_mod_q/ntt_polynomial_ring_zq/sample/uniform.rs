@@ -16,7 +16,7 @@ use crate::{
 use std::fmt::Display;
 
 impl NTTPolynomialRingZq {
-    /// Generates a [`NTTPolynomialRingZq`] instance with maximum degree `nr_entries`
+    /// Generates a [`NTTPolynomialRingZq`] instance with degree `modulus_degree - 1`
     /// and entries chosen uniform at random in `[0, modulus)`.
     ///
     /// The internally used uniform at random chosen bytes are generated
@@ -24,11 +24,12 @@ impl NTTPolynomialRingZq {
     /// is considered cryptographically secure.
     ///
     /// Parameters:
-    /// - `nr_entries`: specifies the largest number of sampled entries
+    /// - `modulus_degree`: specifies the degree of the modulus polynomial, i.e. the maximum number
+    ///   of sampled coefficients is `modulus_degree - 1`
     /// - `modulus`: specifies the modulus of the values and thus,
     ///   the interval size over which is sampled
     ///
-    /// Returns a fresh [`NTTPolynomialRingZq`] instance of length `nr_entries` with entries
+    /// Returns a fresh [`NTTPolynomialRingZq`] instance of length `modulus_degree` with entries
     /// chosen uniform at random in `[0, modulus)`.
     ///
     /// # Examples
@@ -40,19 +41,23 @@ impl NTTPolynomialRingZq {
     ///
     /// # Panics ...
     /// - if `modulus` is smaller than `2`.
-    /// - the `nr_entries` is negative or it does not fit into an [`i64`].
+    /// - the `modulus_degree` is smaller than `2` or it does not fit into an [`i64`].
     pub fn sample_uniform(
-        nr_entries: impl TryInto<i64> + Display + Copy,
+        modulus_degree: impl TryInto<i64> + Display + Copy,
         modulus: impl Into<Z>,
     ) -> Self {
-        let max_degree = evaluate_index(nr_entries)
-            .expect("`nr_entries` can't be smaller negative and must fit into an i64.");
+        let modulus_degree = evaluate_index(modulus_degree)
+            .expect("`modulus_degree` can't be smaller than 2 and must fit into an i64.");
+        assert!(
+            modulus_degree > 0,
+            "`modulus_degree` can't be smaller than 2 and must fit into an i64."
+        );
         let interval_size = modulus.into();
         assert!(interval_size > 1);
 
         let mut uis = UniformIntegerSampler::init(&interval_size).unwrap();
 
-        let vector = (0..max_degree).map(|_| uis.sample()).collect();
+        let vector = (0..modulus_degree).map(|_| uis.sample()).collect();
         Self { poly: vector }
     }
 }
@@ -125,8 +130,8 @@ mod test_sample_uniform {
     /// Checks whether providing a length smaller than `1` results in an error.
     #[test]
     #[should_panic]
-    fn invalid_max_degree() {
-        let _ = NTTPolynomialRingZq::sample_uniform(-1, 15);
+    fn invalid_modulus_degree() {
+        let _ = NTTPolynomialRingZq::sample_uniform(1, 15);
         let _ = NTTPolynomialRingZq::sample_uniform(i64::MIN, 15);
     }
 

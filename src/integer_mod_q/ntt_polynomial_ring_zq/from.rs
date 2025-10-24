@@ -17,7 +17,7 @@ impl From<&PolynomialRingZq> for NTTPolynomialRingZq {
     /// Computes the NTT representation of `poly`.
     ///
     /// Parameters:
-    /// - `poly`: the modulus that is applied to the polynomial ring element.
+    /// - `poly`: the polynomial that's going to be represented in NTT form.
     ///
     /// Returns the NTT representation as a [`NTTPolynomialRingZq`] of `poly`.
     ///

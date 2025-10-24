@@ -8,10 +8,7 @@
 
 //! Implementation of subtraction for [`NTTPolynomialRingZq`].
 
-use crate::{
-    integer::Z,
-    integer_mod_q::{Modulus, NTTPolynomialRingZq},
-};
+use crate::integer_mod_q::{Modulus, NTTPolynomialRingZq};
 use flint_sys::fmpz_mod::fmpz_mod_sub;
 
 impl NTTPolynomialRingZq {
@@ -32,31 +29,27 @@ impl NTTPolynomialRingZq {
     /// let n = 4;
     /// let q = Modulus::from(257);
     ///
-    /// let a = NTTPolynomialRingZq::sample_uniform(n, &q);
+    /// let mut a = NTTPolynomialRingZq::sample_uniform(n, &q);
     /// let b = NTTPolynomialRingZq::sample_uniform(n, &q);
     ///
-    /// a.sub(&b, &q);
+    /// a.sub_assign(&b, &q);
     /// ```
     ///
     /// # Panics ...
     /// - if the `modulus` is smaller than `2`.
-    pub fn sub(&self, other: &Self, modulus: &Modulus) -> Self {
+    pub fn sub_assign(&mut self, other: &Self, modulus: &Modulus) {
         let mod_q = modulus.get_fmpz_mod_ctx_struct();
 
-        let mut res = Vec::with_capacity(self.poly.capacity());
         for i in 0..self.poly.len() {
-            let mut z_i = Z::ZERO;
             unsafe {
                 fmpz_mod_sub(
-                    &mut z_i.value,
+                    &mut self.poly[i].value,
                     &self.poly[i].value,
                     &other.poly[i].value,
                     mod_q,
                 );
             }
-            res.push(z_i)
         }
-        Self { poly: res }
     }
 }
 
@@ -87,14 +80,14 @@ mod test_sub {
         let p1 = PolynomialRingZq::sample_uniform(&polynomial_modulus);
         let p2 = PolynomialRingZq::sample_uniform(&polynomial_modulus);
 
-        let ntt1 = NTTPolynomialRingZq::from(&p1);
+        let mut ntt1 = NTTPolynomialRingZq::from(&p1);
         let ntt2 = NTTPolynomialRingZq::from(&p2);
 
-        let ntt_res = ntt1.sub(&ntt2, &Modulus::from(modulus));
+        ntt1.sub_assign(&ntt2, &Modulus::from(modulus));
 
         assert_eq!(
             &p1 - &p2,
-            PolynomialRingZq::from((ntt_res, &polynomial_modulus))
+            PolynomialRingZq::from((ntt1, &polynomial_modulus))
         )
     }
 
@@ -116,14 +109,14 @@ mod test_sub {
         let p1 = PolynomialRingZq::sample_uniform(&polynomial_modulus);
         let p2 = PolynomialRingZq::sample_uniform(&polynomial_modulus);
 
-        let ntt1 = NTTPolynomialRingZq::from(&p1);
+        let mut ntt1 = NTTPolynomialRingZq::from(&p1);
         let ntt2 = NTTPolynomialRingZq::from(&p2);
 
-        let ntt_res = ntt1.sub(&ntt2, &Modulus::from(modulus));
+        ntt1.sub_assign(&ntt2, &Modulus::from(modulus));
 
         assert_eq!(
             &p1 - &p2,
-            PolynomialRingZq::from((ntt_res, &polynomial_modulus))
+            PolynomialRingZq::from((ntt1, &polynomial_modulus))
         )
     }
 }
