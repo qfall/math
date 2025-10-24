@@ -14,9 +14,54 @@ use super::MatPolynomialRingZq;
 use crate::{
     error::{MathError, StringConversionError},
     integer::MatPolyOverZ,
-    integer_mod_q::ModulusPolynomialRingZq,
+    integer_mod_q::{MatNTTPolynomialRingZq, ModulusPolynomialRingZq, PolynomialRingZq},
+    traits::MatrixSetEntry,
 };
 use std::str::FromStr;
+
+impl From<(MatNTTPolynomialRingZq, &ModulusPolynomialRingZq)> for MatPolynomialRingZq {
+    /// Creates a polynomial ring matrix of type [`MatPolynomialRingZq`] from
+    /// a value that implements [`Into<MatPolyOverZ>`] and a value that
+    /// implements [`Into<ModulusPolynomialRingZq>`].
+    ///
+    /// Parameters:
+    /// - `matrix`: the polynomial matrix defining each entry.
+    /// - `modulus`: the modulus that is applied to each polynomial.
+    ///
+    /// Returns a new [`MatPolynomialRingZq`] with the entries from `matrix`
+    /// under the modulus `modulus`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
+    ///
+    /// let poly_ring_mat = MatPolynomialRingZq::from((poly_mat, modulus));
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq)
+    ///   is not set.
+    /// - if the modulus differs from the modulus over which we view the polynomial.
+    fn from((mut matrix, modulus): (MatNTTPolynomialRingZq, &ModulusPolynomialRingZq)) -> Self {
+        let height = matrix.get_num_rows();
+        let width = matrix.get_num_columns();
+
+        let mut res = MatPolynomialRingZq::new(height, width, modulus);
+        for column in 0..width {
+            for row in (0..height).rev() {
+                let entry = PolynomialRingZq::from((matrix.matrix[column].pop().unwrap(), modulus));
+                unsafe { res.set_entry_unchecked(row as i64, column as i64, entry) };
+            }
+        }
+        res
+    }
+}
 
 impl FromStr for MatPolynomialRingZq {
     type Err = MathError;

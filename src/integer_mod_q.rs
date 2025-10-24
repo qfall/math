@@ -19,6 +19,7 @@
 //!   "Exact Solution of Linear Equations Using P-Adic Expansions"
 //!   <https://link.springer.com/article/10.1007/BF01459082>
 
+mod mat_ntt_polynomial_ring_zq;
 mod mat_polynomial_ring_zq;
 mod mat_zq;
 mod modulus;
@@ -29,6 +30,7 @@ mod poly_over_zq;
 mod polynomial_ring_zq;
 mod z_q;
 
+pub use mat_ntt_polynomial_ring_zq::MatNTTPolynomialRingZq;
 pub use mat_polynomial_ring_zq::MatPolynomialRingZq;
 pub use mat_zq::MatZq;
 pub use modulus::Modulus;
