@@ -25,7 +25,7 @@ mod sample;
 ///
 /// # Examples
 /// ```
-/// 
+///
 /// ```
 /// TODO
 #[derive(PartialEq, Eq, Serialize, Deserialize, Display, Clone)]

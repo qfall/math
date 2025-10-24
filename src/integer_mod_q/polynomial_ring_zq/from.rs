@@ -16,10 +16,61 @@ use super::PolynomialRingZq;
 use crate::{
     error::{MathError, StringConversionError},
     integer::PolyOverZ,
-    integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq},
+    integer_mod_q::{ModulusPolynomialRingZq, NTTPolynomialRingZq, PolyOverZq},
     macros::for_others::implement_for_owned,
 };
 use std::str::FromStr;
+
+impl From<(NTTPolynomialRingZq, &ModulusPolynomialRingZq)> for PolynomialRingZq {
+    /// Creates a polynomial from [`NTTPolynomialRingZq`] generated with respect to the
+    /// [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq) as part of
+    /// [`ModulusPolynomialRingZq`].
+    ///
+    /// Parameters:
+    /// - `ntt`: the NTT representation of the polynomial.
+    /// - `modulus`: the modulus that is applied to the polynomial ring element.
+    ///
+    /// Returns a new [`PolynomialRingZq`] with the specified [`ModulusPolynomialRingZq`] and
+    /// values as defined in `ntt`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{PolynomialRingZq, PolyOverZq, ModulusPolynomialRingZq, NTTPolynomialRingZq};
+    /// use qfall_math::traits::SetCoefficient;
+    ///
+    /// let n = 4;
+    /// let modulus = 7681;
+    ///
+    /// let mut mod_poly = PolyOverZq::from(modulus);
+    /// mod_poly.set_coeff(0, 1).unwrap();
+    /// mod_poly.set_coeff(n, 1).unwrap();
+    ///
+    /// let mut polynomial_modulus = ModulusPolynomialRingZq::from(&mod_poly);
+    /// polynomial_modulus.set_ntt_unchecked(1925);
+    ///
+    /// let ntt = NTTPolynomialRingZq::sample_uniform(n, modulus);
+    ///
+    /// let res = PolynomialRingZq::from((ntt, &polynomial_modulus));
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq)
+    ///   is not set.
+    /// - if the modulus differs from the modulus over which we view the polynomial.
+    fn from((ntt, modulus): (NTTPolynomialRingZq, &ModulusPolynomialRingZq)) -> Self {
+        modulus
+            .ntt_basis
+            .as_ref()
+            .as_ref()
+            .map(|basis| PolynomialRingZq {
+                poly: basis
+                    .intt(ntt.poly)
+                    .get_representative_least_nonnegative_residue(),
+                modulus: modulus.clone(),
+            })
+            .unwrap()
+    }
+}
 
 impl From<&ModulusPolynomialRingZq> for PolynomialRingZq {
     /// Creates a zero polynomial with a given [`ModulusPolynomialRingZq`].
@@ -231,6 +282,36 @@ impl FromStr for PolynomialRingZq {
         let modulus = ModulusPolynomialRingZq::from_str(modulus)?;
 
         Ok(Self::from((&poly_over_z, &modulus)))
+    }
+}
+
+#[cfg(test)]
+mod test_from_ntt_modulus_polynomial_ring_zq {
+    use crate::{
+        integer::{PolyOverZ, Z},
+        integer_mod_q::{ModulusPolynomialRingZq, NTTPolynomialRingZq, PolynomialRingZq},
+    };
+    use std::str::FromStr;
+
+    /// Ensures that `intt` works properly and that we can make a round trip and get to the same ntt representation.
+    #[test]
+    fn round_trip() {
+        let mut mod_poly = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+        mod_poly.set_ntt_unchecked(64);
+
+        let poly = PolyOverZ::from_str("4  103 182 146 116").unwrap();
+        let poly_ring_zq = PolynomialRingZq::from((poly, &mod_poly));
+        let cmp_ntt = NTTPolynomialRingZq {
+            poly: vec![Z::from(113), Z::from(54), Z::from(47), Z::from(198)],
+        };
+
+        let ntt = NTTPolynomialRingZq::from(&poly_ring_zq);
+
+        assert_eq!(ntt, cmp_ntt);
+
+        let res_poly_ring_zq = PolynomialRingZq::from((ntt, &mod_poly));
+
+        assert_eq!(res_poly_ring_zq, poly_ring_zq);
     }
 }
 
