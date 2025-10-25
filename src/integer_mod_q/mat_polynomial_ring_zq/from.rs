@@ -33,15 +33,15 @@ impl From<(MatNTTPolynomialRingZq, &ModulusPolynomialRingZq)> for MatPolynomialR
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
-    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
-    /// use qfall_math::integer::MatPolyOverZ;
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, MatNTTPolynomialRingZq, ModulusPolynomialRingZq};
     /// use std::str::FromStr;
     ///
-    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-    /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
+    /// let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+    /// modulus.set_ntt_unchecked(64);
+    /// let ntt_mat = MatNTTPolynomialRingZq::sample_uniform(1, 1, 4, 257);
+    /// println!("{ntt_mat}");
     ///
-    /// let poly_ring_mat = MatPolynomialRingZq::from((poly_mat, modulus));
+    /// let poly_ring_mat = MatPolynomialRingZq::from((ntt_mat, &modulus));
     /// ```
     ///
     /// # Panics ...

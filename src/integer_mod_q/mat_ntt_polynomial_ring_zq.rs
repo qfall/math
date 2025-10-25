@@ -28,9 +28,26 @@ mod sample;
 ///
 /// # Examples
 /// ```
+/// use qfall_math::integer_mod_q::{Modulus, MatPolynomialRingZq, MatNTTPolynomialRingZq, ModulusPolynomialRingZq};
+/// use std::str::FromStr;
 ///
+/// // sample random matrix
+/// let mat_rnd = MatNTTPolynomialRingZq::sample_uniform(2, 2, 4, 257);
+/// // or instantiate matrix from MatPolynomialRingZq
+/// let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+/// modulus.set_ntt_unchecked(64);
+/// let mat_poly_ring = MatPolynomialRingZq::identity(2, 2, &modulus);
+/// let mat_ntt_poly_ring = MatNTTPolynomialRingZq::from(&mat_poly_ring);
+///
+/// // multiply, add and subtract objects
+/// let mod_q = Modulus::from(modulus.get_q());
+/// let mut tmp_mat_ntt = mat_ntt_poly_ring.mul(&mat_rnd, &mod_q);
+/// tmp_mat_ntt.add_assign(&mat_rnd, &mod_q);
+/// tmp_mat_ntt.sub_assign(&mat_rnd, &mod_q);
+///
+/// // Return to MatPolynomialRingZq
+/// let res = MatPolynomialRingZq::from((tmp_mat_ntt, &modulus));
 /// ```
-/// TODO
 #[derive(PartialEq, Eq, Serialize, Deserialize, Display, Clone)]
 #[display("{:?}", {let x: Vec<String> = matrix.iter().map(|x| x.iter().map(|y| y.to_string()).collect()).collect(); x})]
 pub struct MatNTTPolynomialRingZq {

@@ -25,9 +25,26 @@ mod sample;
 ///
 /// # Examples
 /// ```
+/// use qfall_math::integer_mod_q::{Modulus, PolynomialRingZq, NTTPolynomialRingZq, ModulusPolynomialRingZq};
+/// use std::str::FromStr;
 ///
+/// // sample random polynomial
+/// let rnd = NTTPolynomialRingZq::sample_uniform(4, 257);
+/// // or instantiate polynomial from PolynomialRingZq (or PolyOverZq)
+/// let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+/// modulus.set_ntt_unchecked(64);
+/// let poly_ring = PolynomialRingZq::sample_uniform(&modulus);
+/// let ntt_poly_ring = NTTPolynomialRingZq::from(&poly_ring);
+///
+/// // multiply, add and subtract objects
+/// let mod_q = Modulus::from(modulus.get_q());
+/// let mut tmp_ntt = ntt_poly_ring.mul(&rnd, &mod_q);
+/// tmp_ntt.add_assign(&rnd, &mod_q);
+/// tmp_ntt.sub_assign(&rnd, &mod_q);
+///
+/// // Return to PolynomialRingZq
+/// let res = PolynomialRingZq::from((tmp_ntt, &modulus));
 /// ```
-/// TODO
 #[derive(PartialEq, Eq, Serialize, Deserialize, Display, Clone)]
 #[display("{:?}", {let x: Vec<String> = poly.iter().map(|x| x.to_string()).collect(); x})]
 pub struct NTTPolynomialRingZq {
