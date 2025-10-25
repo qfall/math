@@ -12,7 +12,8 @@
 use criterion::*;
 use qfall_math::{
     integer_mod_q::{
-        Modulus, ModulusPolynomialRingZq, NTTPolynomialRingZq, PolyOverZq, PolynomialRingZq,
+        MatNTTPolynomialRingZq, MatPolynomialRingZq, Modulus, ModulusPolynomialRingZq,
+        NTTPolynomialRingZq, PolyOverZq, PolynomialRingZq,
     },
     traits::*,
 };
@@ -158,6 +159,118 @@ pub fn bench_ntt_hawk1024_params_without_ntt(c: &mut Criterion) {
     );
 }
 
+/// benchmark multiplication in typical dilithium parameter set with NTT
+/// `n=256`, `q = 2^23 - 2^13 + 1` and `zeta = 1753`
+pub fn bench_mat_ntt_dilithium_params_with_ntt(c: &mut Criterion) {
+    let modulus = get_dilithium_setup();
+    let mod_q = Modulus::from(modulus.get_q());
+
+    let p1 = MatPolynomialRingZq::sample_uniform(4, 4, &modulus);
+    let p2 = MatPolynomialRingZq::sample_uniform(4, 1, &modulus);
+
+    let ntt1 = MatNTTPolynomialRingZq::from(&p1);
+    let ntt2 = MatNTTPolynomialRingZq::from(&p2);
+
+    c.bench_function(
+        "MatPolynomialRingZq Multiplication with NTT (Dilithium)",
+        |b| b.iter(|| ntt1.mul(&ntt2, &mod_q)),
+    );
+}
+
+/// benchmark multiplication in typical dilithium parameter set with NTT & Transforms
+/// `n=256`, `q = 2^23 - 2^13 + 1` and `zeta = 1753`
+pub fn bench_mat_ntt_dilithium_params_with_ntt_and_transforms(c: &mut Criterion) {
+    let modulus = get_dilithium_setup();
+    let mod_q = Modulus::from(modulus.get_q());
+
+    let p1 = MatPolynomialRingZq::sample_uniform(4, 4, &modulus);
+    let p2 = MatPolynomialRingZq::sample_uniform(4, 1, &modulus);
+
+    c.bench_function(
+        "MatPolynomialRingZq Multiplication with NTT + Transforms (Dilithium)",
+        |b| {
+            b.iter(|| {
+                let ntt1 = MatNTTPolynomialRingZq::from(&p1);
+                let ntt2 = MatNTTPolynomialRingZq::from(&p2);
+
+                let ntt_res = ntt1.mul(&ntt2, &mod_q);
+
+                let _ = MatPolynomialRingZq::from((ntt_res, &modulus));
+            })
+        },
+    );
+}
+
+/// benchmark multiplication in typical dilithium parameter set without NTT
+/// `n=1024`, `q = 2^23 - 2^13 + 1` and `zeta = 1735`
+pub fn bench_mat_ntt_dilithium_params_without_ntt(c: &mut Criterion) {
+    let modulus = get_dilithium_setup();
+
+    let p1 = MatPolynomialRingZq::sample_uniform(4, 4, &modulus);
+    let p2 = MatPolynomialRingZq::sample_uniform(4, 1, &modulus);
+
+    c.bench_function(
+        "MatPolynomialRingZq Multiplication without NTT (Dilithium)",
+        |b| b.iter(|| &p1 * &p2),
+    );
+}
+
+/// benchmark multiplication in typical HAWK1024 parameter set with NTT
+/// `n=256`, `q = 12289` and `zeta = 1945`
+pub fn bench_mat_ntt_hawk1024_params_with_ntt(c: &mut Criterion) {
+    let modulus = get_hawk1024_setup();
+    let mod_q = Modulus::from(modulus.get_q());
+
+    let p1 = MatPolynomialRingZq::sample_uniform(2, 2, &modulus);
+    let p2 = MatPolynomialRingZq::sample_uniform(2, 1, &modulus);
+
+    let ntt1 = MatNTTPolynomialRingZq::from(&p1);
+    let ntt2 = MatNTTPolynomialRingZq::from(&p2);
+
+    c.bench_function(
+        "MatPolynomialRingZq Multiplication with NTT (HAWK1024)",
+        |b| b.iter(|| ntt1.mul(&ntt2, &mod_q)),
+    );
+}
+
+/// benchmark multiplication in typical HAWK1024 parameter set with NTT and Transforms
+/// `n=256`, `q = 12289` and `zeta = 1945`
+pub fn bench_mat_ntt_hawk1024_params_with_ntt_and_transforms(c: &mut Criterion) {
+    let modulus = get_hawk1024_setup();
+    let mod_q = Modulus::from(modulus.get_q());
+
+    let p1 = MatPolynomialRingZq::sample_uniform(2, 2, &modulus);
+    let p2 = MatPolynomialRingZq::sample_uniform(2, 1, &modulus);
+
+    c.bench_function(
+        "MatPolynomialRingZq Multiplication with NTT + Transforms (HAWK1024)",
+        |b| {
+            b.iter(|| {
+                let ntt1 = MatNTTPolynomialRingZq::from(&p1);
+                let ntt2 = MatNTTPolynomialRingZq::from(&p2);
+
+                let ntt_res = ntt1.mul(&ntt2, &mod_q);
+
+                let _ = MatPolynomialRingZq::from((ntt_res, &modulus));
+            })
+        },
+    );
+}
+
+/// benchmark multiplication in typical HAWK1024 parameter set without NTT
+/// `n=256`, `q = 12289` and `zeta = 1945`
+pub fn bench_mat_ntt_hawk1024_params_without_ntt(c: &mut Criterion) {
+    let modulus = get_hawk1024_setup();
+
+    let p1 = MatPolynomialRingZq::sample_uniform(2, 2, &modulus);
+    let p2 = MatPolynomialRingZq::sample_uniform(2, 1, &modulus);
+
+    c.bench_function(
+        "MatPolynomialRingZq Multiplication without NTT (HAWK1024)",
+        |b| b.iter(|| &p1 * &p2),
+    );
+}
+
 criterion_group!(
     benches,
     bench_ntt_dilithium_params_with_ntt,
@@ -166,4 +279,10 @@ criterion_group!(
     bench_ntt_hawk1024_params_with_ntt,
     bench_ntt_hawk1024_params_with_ntt_and_transforms,
     bench_ntt_hawk1024_params_without_ntt,
+    bench_mat_ntt_dilithium_params_with_ntt,
+    bench_mat_ntt_dilithium_params_with_ntt_and_transforms,
+    bench_mat_ntt_dilithium_params_without_ntt,
+    bench_mat_ntt_hawk1024_params_with_ntt,
+    bench_mat_ntt_hawk1024_params_with_ntt_and_transforms,
+    bench_mat_ntt_hawk1024_params_without_ntt,
 );
