@@ -28,8 +28,8 @@ impl MatNTTPolynomialRingZq {
     /// let n = 4;
     /// let q = Modulus::from(257);
     ///
-    /// let a = MatNTTPolynomialRingZq::sample_uniform(2, 3, n, &q);
-    /// let b = MatNTTPolynomialRingZq::sample_uniform(3, 4, n, &q);
+    /// let mut a = MatNTTPolynomialRingZq::sample_uniform(2, 3, n, &q);
+    /// let b = MatNTTPolynomialRingZq::sample_uniform(2, 3, n, &q);
     ///
     /// a.add_assign(&b, &q);
     /// ```
