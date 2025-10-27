@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! [`NTTPolynomialRingZq`] containts the NTT representations of polynomials.
+//! [`MatNTTPolynomialRingZq`] containts the NTT representations of matrices over polynomials.
 
 use crate::integer::Z;
 use derive_more::Display;
@@ -18,7 +18,7 @@ mod from;
 mod get;
 mod sample;
 
-/// [`NTTPolynomialRingZq`] contains the NTT representation of some polynomial with respect to
+/// [`MatNTTPolynomialRingZq`] contains the NTT representation of a matrix over polynomials with respect to
 /// a [`NTTBasisPolynomialRingZq`](super::NTTBasisPolynomialRingZq) that itself isn't aware of.
 ///
 /// Any polynomial in NTT representation in row `i` and column `j` can be accessed via `matrix[j * nr_columns + i]`.
