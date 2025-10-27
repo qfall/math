@@ -8,7 +8,7 @@
 
 //! [`NTTPolynomialRingZq`] containts the NTT representations of polynomials.
 
-use crate::integer_mod_q::NTTPolynomialRingZq;
+use crate::integer::Z;
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
 use std::fmt;
@@ -21,10 +21,10 @@ mod sample;
 /// [`NTTPolynomialRingZq`] contains the NTT representation of some polynomial with respect to
 /// a [`NTTBasisPolynomialRingZq`](super::NTTBasisPolynomialRingZq) that itself isn't aware of.
 ///
-/// Any polynomial in NTT representation in row `i` and column `j` can be accessed via `matrix[j][i]`.
+/// Any polynomial in NTT representation in row `i` and column `j` can be accessed via `matrix[j * nr_columns + i]`.
 ///
 /// Attributes
-/// - `mat`: holds the matrix entries with its coefficients
+/// - `matrix`: holds the matrix entries with its coefficients
 ///
 /// # Examples
 /// ```
@@ -46,20 +46,23 @@ mod sample;
 /// tmp_mat_ntt.sub_assign(&mat_rnd, &mod_q);
 ///
 /// // Return to MatPolynomialRingZq
-/// let res = MatPolynomialRingZq::from((tmp_mat_ntt, &modulus));
+/// let res = MatPolynomialRingZq::from((&mut tmp_mat_ntt, &modulus));
 /// ```
 #[derive(PartialEq, Eq, Serialize, Deserialize, Display, Clone)]
-#[display("{:?}", {let x: Vec<String> = matrix.iter().map(|x| x.iter().map(|y| y.to_string()).collect()).collect(); x})]
+#[display("{:?}", {let x: Vec<String> = matrix.iter().map(|x| x.to_string()).collect(); x})]
 pub struct MatNTTPolynomialRingZq {
-    pub matrix: Vec<Vec<NTTPolynomialRingZq>>,
+    pub matrix: Vec<Z>,
+    pub d: usize, // modulus degree
+    pub nr_rows: usize,
+    pub nr_columns: usize,
 }
 
 impl fmt::Debug for MatNTTPolynomialRingZq {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "PolynomialRingZq {{poly: {:?}, storage: {{poly: {:?}}}}}",
-            self.matrix, self.matrix
+            "MatNTTPolynomialRingZq {{matrix: {:?}, d: {}, nr_rows: {}, nr_columns: {} storage: {{poly: {:?}}}}}",
+            self.matrix, self.d, self.nr_rows, self.nr_columns, self.matrix
         )
     }
 }

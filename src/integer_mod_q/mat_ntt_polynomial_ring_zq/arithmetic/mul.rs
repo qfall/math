@@ -8,7 +8,11 @@
 
 //! Implementation of multipliation for [`MatNTTPolynomialRingZq`].
 
-use crate::integer_mod_q::{MatNTTPolynomialRingZq, Modulus};
+use crate::{
+    integer::Z,
+    integer_mod_q::{MatNTTPolynomialRingZq, Modulus},
+};
+use flint_sys::fmpz_mod::{fmpz_mod_add_fmpz, fmpz_mod_ctx, fmpz_mod_mul};
 
 impl MatNTTPolynomialRingZq {
     /// Multiplies `self` with `other` using component-wise (NTT) multiplication.
@@ -40,25 +44,69 @@ impl MatNTTPolynomialRingZq {
     pub fn mul(&self, other: &Self, modulus: &Modulus) -> Self {
         assert_eq!(self.get_num_columns(), other.get_num_rows(),
             "The number of rows of `self` and the number of columns of `other` has to be equal for matrix multiplication.");
+        assert_eq!(
+            self.d, other.d,
+            "The degree of both polynomials has to be equal for multiplication."
+        );
 
-        let mut res = Vec::with_capacity(other.get_num_columns());
+        let mod_ctx = modulus.get_fmpz_mod_ctx_struct();
+
+        let mut res = Vec::with_capacity(other.matrix.len());
 
         for col in 0..other.get_num_columns() {
-            let mut col_vec = Vec::with_capacity(self.get_num_rows());
             for row in 0..self.get_num_rows() {
-                let mut entry = self.matrix[0][row].mul(&other.matrix[col][0], modulus);
+                let mut entry = self.mul_entry(other, mod_ctx, row, col, 0);
                 for i in 1..self.get_num_columns() {
-                    entry.add_assign(
-                        &self.matrix[i][row].mul(&other.matrix[col][i], modulus),
-                        modulus,
-                    );
+                    let add_value = self.mul_entry(other, mod_ctx, row, col, i);
+
+                    for j in 0..self.d {
+                        unsafe {
+                            fmpz_mod_add_fmpz(
+                                &mut entry[j].value,
+                                &entry[j].value,
+                                &add_value[j].value,
+                                mod_ctx,
+                            )
+                        };
+                    }
                 }
-                col_vec.push(entry);
+
+                res.append(&mut entry);
             }
-            res.push(col_vec);
         }
 
-        MatNTTPolynomialRingZq { matrix: res }
+        MatNTTPolynomialRingZq {
+            matrix: res,
+            d: self.d,
+            nr_rows: self.nr_rows,
+            nr_columns: other.nr_columns,
+        }
+    }
+
+    fn mul_entry(
+        &self,
+        other: &Self,
+        mod_ctx: &fmpz_mod_ctx,
+        row: usize,
+        col: usize,
+        index: usize,
+    ) -> Vec<Z> {
+        let mut entry = vec![Z::default(); self.d];
+        let entry_self = self.get_entry(row, index);
+        let entry_other = other.get_entry(index, col);
+
+        for i in 0..self.d {
+            unsafe {
+                fmpz_mod_mul(
+                    &mut entry[i].value,
+                    &entry_self[i].value,
+                    &entry_other[i].value,
+                    mod_ctx,
+                );
+            }
+        }
+
+        entry
     }
 }
 
@@ -93,11 +141,11 @@ mod test_mul {
         let ntt1 = MatNTTPolynomialRingZq::from(&p1);
         let ntt2 = MatNTTPolynomialRingZq::from(&p2);
 
-        let ntt_res = ntt1.mul(&ntt2, &Modulus::from(modulus));
+        let mut ntt_res = ntt1.mul(&ntt2, &Modulus::from(modulus));
 
         assert_eq!(
             &p1 * &p2,
-            MatPolynomialRingZq::from((ntt_res, &polynomial_modulus))
+            MatPolynomialRingZq::from((&mut ntt_res, &polynomial_modulus))
         )
     }
 
@@ -122,11 +170,11 @@ mod test_mul {
         let ntt1 = MatNTTPolynomialRingZq::from(&p1);
         let ntt2 = MatNTTPolynomialRingZq::from(&p2);
 
-        let ntt_res = ntt1.mul(&ntt2, &Modulus::from(modulus));
+        let mut ntt_res = ntt1.mul(&ntt2, &Modulus::from(modulus));
 
         assert_eq!(
             &p1 * &p2,
-            MatPolynomialRingZq::from((ntt_res, &polynomial_modulus))
+            MatPolynomialRingZq::from((&mut ntt_res, &polynomial_modulus))
         )
     }
 
@@ -151,11 +199,11 @@ mod test_mul {
         let ntt1 = MatNTTPolynomialRingZq::from(&p1);
         let ntt2 = MatNTTPolynomialRingZq::from(&p2);
 
-        let ntt_res = ntt1.mul(&ntt2, &Modulus::from(modulus));
+        let mut ntt_res = ntt1.mul(&ntt2, &Modulus::from(modulus));
 
         assert_eq!(
             &p1 * &p2,
-            MatPolynomialRingZq::from((ntt_res, &polynomial_modulus))
+            MatPolynomialRingZq::from((&mut ntt_res, &polynomial_modulus))
         )
     }
 }

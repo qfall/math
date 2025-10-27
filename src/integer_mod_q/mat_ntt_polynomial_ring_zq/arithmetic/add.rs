@@ -9,6 +9,7 @@
 //! Implementation of addition for [`MatNTTPolynomialRingZq`].
 
 use crate::integer_mod_q::{MatNTTPolynomialRingZq, Modulus};
+use flint_sys::fmpz_mod::fmpz_mod_add_fmpz;
 
 impl MatNTTPolynomialRingZq {
     /// Adds `self` with `other` using component-wise (NTT) addition.
@@ -48,10 +49,16 @@ impl MatNTTPolynomialRingZq {
             other.get_num_columns(),
             "The number of columns of `self` and `other` has to be equal for matrix addition."
         );
+        let mod_ctx = modulus.get_fmpz_mod_ctx_struct();
 
-        for col in 0..other.get_num_columns() {
-            for row in 0..self.get_num_rows() {
-                self.matrix[col][row].add_assign(&other.matrix[col][row], modulus);
+        for i in 0..self.matrix.len() {
+            unsafe {
+                fmpz_mod_add_fmpz(
+                    &mut self.matrix[i].value,
+                    &self.matrix[i].value,
+                    &other.matrix[i].value,
+                    mod_ctx,
+                );
             }
         }
     }
@@ -92,7 +99,7 @@ mod test_add {
 
         assert_eq!(
             &p1 + &p2,
-            MatPolynomialRingZq::from((ntt1, &polynomial_modulus))
+            MatPolynomialRingZq::from((&mut ntt1, &polynomial_modulus))
         )
     }
 
@@ -121,7 +128,7 @@ mod test_add {
 
         assert_eq!(
             &p1 + &p2,
-            MatPolynomialRingZq::from((ntt1, &polynomial_modulus))
+            MatPolynomialRingZq::from((&mut ntt1, &polynomial_modulus))
         )
     }
 
@@ -150,7 +157,7 @@ mod test_add {
 
         assert_eq!(
             &p1 + &p2,
-            MatPolynomialRingZq::from((ntt1, &polynomial_modulus))
+            MatPolynomialRingZq::from((&mut ntt1, &polynomial_modulus))
         )
     }
 }

@@ -55,7 +55,7 @@ impl fmt::Debug for NTTPolynomialRingZq {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "PolynomialRingZq {{poly: {:?}, storage: {{poly: {:?}}}}}",
+            "NTTPolynomialRingZq {{poly: {:?}, storage: {{poly: {:?}}}}}",
             self.poly, self.poly
         )
     }

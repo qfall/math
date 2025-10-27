@@ -49,22 +49,26 @@ impl From<&MatPolynomialRingZq> for MatNTTPolynomialRingZq {
     /// - if the [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq)
     ///   is not set.
     fn from(matrix: &MatPolynomialRingZq) -> Self {
-        let width = matrix.get_num_columns();
-        let height = matrix.get_num_rows();
+        let degree = matrix.get_mod().get_degree();
+        let nr_rows = matrix.get_num_rows();
+        let nr_columns = matrix.get_num_columns();
 
-        let mut res = Vec::with_capacity(width as usize);
+        let mut res = Vec::with_capacity((degree * nr_rows * nr_columns) as usize);
 
-        for col in 0..width {
-            let mut col_vec = Vec::with_capacity(height as usize);
-            for row in 0..height {
+        for col in 0..nr_columns {
+            for row in 0..nr_rows {
                 let entry = unsafe { matrix.get_entry_unchecked(row, col) };
-                let ntt_poly = NTTPolynomialRingZq::from(&entry);
-                col_vec.push(ntt_poly);
+                let mut ntt_poly = NTTPolynomialRingZq::from(&entry);
+                res.append(&mut ntt_poly.poly);
             }
-            res.push(col_vec);
         }
 
-        MatNTTPolynomialRingZq { matrix: res }
+        MatNTTPolynomialRingZq {
+            matrix: res,
+            d: degree as usize,
+            nr_rows: nr_rows as usize,
+            nr_columns: nr_columns as usize,
+        }
     }
 }
 
@@ -81,9 +85,9 @@ mod test_from {
         modulus.set_ntt_unchecked(64);
         let matrix = MatPolynomialRingZq::sample_uniform(3, 5, &modulus);
 
-        let ntt_matrix = MatNTTPolynomialRingZq::from(&matrix);
+        let mut ntt_matrix = MatNTTPolynomialRingZq::from(&matrix);
 
-        let cmp_matrix = MatPolynomialRingZq::from((ntt_matrix, &modulus));
+        let cmp_matrix = MatPolynomialRingZq::from((&mut ntt_matrix, &modulus));
 
         assert_eq!(matrix, cmp_matrix);
     }

@@ -8,7 +8,7 @@
 
 //! Implementations to get information about a [`MatNTTPolynomialRingZq`] matrix.
 
-use crate::integer_mod_q::MatNTTPolynomialRingZq;
+use crate::{integer::Z, integer_mod_q::MatNTTPolynomialRingZq};
 
 impl MatNTTPolynomialRingZq {
     /// Returns the number of rows of the matrix as a [`usize`].
@@ -22,7 +22,7 @@ impl MatNTTPolynomialRingZq {
     /// let rows = matrix.get_num_rows();
     /// ```
     pub fn get_num_rows(&self) -> usize {
-        self.matrix[0].len()
+        self.nr_rows
     }
 
     /// Returns the number of columns of the matrix as a [`usize`].
@@ -36,6 +36,11 @@ impl MatNTTPolynomialRingZq {
     /// let rows = matrix.get_num_columns();
     /// ```
     pub fn get_num_columns(&self) -> usize {
-        self.matrix.len()
+        self.nr_columns
+    }
+
+    pub fn get_entry(&self, row: usize, column: usize) -> &[Z] {
+        let index = self.d * row + self.d * self.nr_rows * column;
+        &self.matrix[index..index + self.d]
     }
 }

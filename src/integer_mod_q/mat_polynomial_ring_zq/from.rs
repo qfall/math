@@ -13,13 +13,15 @@
 use super::MatPolynomialRingZq;
 use crate::{
     error::{MathError, StringConversionError},
-    integer::MatPolyOverZ,
-    integer_mod_q::{MatNTTPolynomialRingZq, ModulusPolynomialRingZq, PolynomialRingZq},
+    integer::{MatPolyOverZ, Z},
+    integer_mod_q::{
+        MatNTTPolynomialRingZq, ModulusPolynomialRingZq, NTTPolynomialRingZq, PolynomialRingZq,
+    },
     traits::MatrixSetEntry,
 };
 use std::str::FromStr;
 
-impl From<(MatNTTPolynomialRingZq, &ModulusPolynomialRingZq)> for MatPolynomialRingZq {
+impl From<(&mut MatNTTPolynomialRingZq, &ModulusPolynomialRingZq)> for MatPolynomialRingZq {
     /// Creates a polynomial ring matrix of type [`MatPolynomialRingZq`] from
     /// a value that implements [`Into<MatPolyOverZ>`] and a value that
     /// implements [`Into<ModulusPolynomialRingZq>`].
@@ -38,24 +40,30 @@ impl From<(MatNTTPolynomialRingZq, &ModulusPolynomialRingZq)> for MatPolynomialR
     ///
     /// let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
     /// modulus.set_ntt_unchecked(64);
-    /// let ntt_mat = MatNTTPolynomialRingZq::sample_uniform(1, 1, 4, 257);
+    /// let mut ntt_mat = MatNTTPolynomialRingZq::sample_uniform(1, 1, 4, 257);
     /// println!("{ntt_mat}");
     ///
-    /// let poly_ring_mat = MatPolynomialRingZq::from((ntt_mat, &modulus));
+    /// let poly_ring_mat = MatPolynomialRingZq::from((&mut ntt_mat, &modulus));
     /// ```
     ///
     /// # Panics ...
     /// - if the [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq)
     ///   is not set.
     /// - if the modulus differs from the modulus over which we view the polynomial.
-    fn from((mut matrix, modulus): (MatNTTPolynomialRingZq, &ModulusPolynomialRingZq)) -> Self {
+    fn from((matrix, modulus): (&mut MatNTTPolynomialRingZq, &ModulusPolynomialRingZq)) -> Self {
         let height = matrix.get_num_rows();
         let width = matrix.get_num_columns();
 
         let mut res = MatPolynomialRingZq::new(height, width, modulus);
-        for column in 0..width {
+        for column in (0..width).rev() {
             for row in (0..height).rev() {
-                let entry = PolynomialRingZq::from((matrix.matrix[column].pop().unwrap(), modulus));
+                let index = matrix.d * row + matrix.d * matrix.nr_rows * column;
+                let entry = PolynomialRingZq::from((
+                    NTTPolynomialRingZq {
+                        poly: matrix.matrix.split_off(index).iter().map(Z::from).collect(),
+                    },
+                    modulus,
+                ));
                 unsafe { res.set_entry_unchecked(row as i64, column as i64, entry) };
             }
         }

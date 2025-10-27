@@ -10,8 +10,8 @@
 
 use crate::{
     integer::Z,
-    integer_mod_q::{MatNTTPolynomialRingZq, NTTPolynomialRingZq},
-    utils::index::evaluate_index,
+    integer_mod_q::MatNTTPolynomialRingZq,
+    utils::{index::evaluate_index, sample::uniform::UniformIntegerSampler},
 };
 use std::fmt::Display;
 
@@ -55,21 +55,24 @@ impl MatNTTPolynomialRingZq {
         assert!(nr_columns > 0);
         let modulus_degree = evaluate_index(modulus_degree)
             .expect("`modulus_degree` can't be smaller negative and must fit into an i64.");
+        assert!(
+            modulus_degree > 1,
+            "`modulus_degree` can't be smaller than 2 and must fit into an i64."
+        );
         let interval_size = modulus.into();
-        assert!(interval_size > 1);
+        assert!(interval_size > Z::ONE);
 
-        let mut res = Vec::with_capacity(nr_columns);
+        let mut uis = UniformIntegerSampler::init(&interval_size).unwrap();
 
-        for _ in 0..nr_columns {
-            let mut col_vec = Vec::with_capacity(nr_rows);
-            for _ in 0..nr_rows {
-                let ntt_poly = NTTPolynomialRingZq::sample_uniform(modulus_degree, &interval_size);
-                col_vec.push(ntt_poly);
-            }
-            res.push(col_vec);
+        let vector = (0..modulus_degree as usize * nr_rows * nr_columns)
+            .map(|_| uis.sample())
+            .collect();
+        Self {
+            matrix: vector,
+            d: modulus_degree as usize,
+            nr_rows,
+            nr_columns,
         }
-
-        MatNTTPolynomialRingZq { matrix: res }
     }
 }
 
@@ -81,8 +84,8 @@ mod test_sample_uniform {
     #[test]
     fn boundaries_kept_small() {
         for _ in 0..32 {
-            let matrix = MatNTTPolynomialRingZq::sample_uniform(1, 1, 1, 17);
-            let sample = matrix.matrix[0][0].poly[0].clone();
+            let matrix = MatNTTPolynomialRingZq::sample_uniform(1, 1, 2, 17);
+            let sample = matrix.matrix[0].clone();
 
             assert!(Z::ZERO <= sample);
             assert!(sample < 17);
@@ -93,24 +96,11 @@ mod test_sample_uniform {
     #[test]
     fn boundaries_kept_large() {
         for _ in 0..256 {
-            let matrix = MatNTTPolynomialRingZq::sample_uniform(1, 1, 1, 17);
-            let sample = matrix.matrix[0][0].poly[0].clone();
+            let matrix = MatNTTPolynomialRingZq::sample_uniform(1, 1, 2, u64::MAX);
+            let sample = matrix.matrix[0].clone();
 
             assert!(Z::ZERO <= sample);
             assert!(sample < u64::MAX);
-        }
-    }
-
-    /// Checks whether the number of coefficients is correct.
-    #[test]
-    fn nr_coeffs() {
-        let degrees = [1, 3, 7, 15, 32, 120];
-
-        for degree in degrees {
-            let matrix = MatNTTPolynomialRingZq::sample_uniform(1, 1, degree, 17);
-            let poly = matrix.matrix[0][0].clone();
-
-            assert_eq!(degree, poly.poly.len(),);
         }
     }
 
@@ -127,24 +117,5 @@ mod test_sample_uniform {
     #[should_panic]
     fn invalid_modulus() {
         let _ = MatNTTPolynomialRingZq::sample_uniform(1, 1, 1, 1);
-    }
-
-    /// Checks whether the size of uniformly random sampled matrices
-    /// fits the specified dimensions.
-    #[test]
-    fn matrix_size() {
-        let mat_0 = MatNTTPolynomialRingZq::sample_uniform(3, 3, 2, 2);
-        let mat_1 = MatNTTPolynomialRingZq::sample_uniform(4, 1, 2, 2);
-        let mat_2 = MatNTTPolynomialRingZq::sample_uniform(1, 5, 2, 2);
-        let mat_3 = MatNTTPolynomialRingZq::sample_uniform(15, 20, 2, 2);
-
-        assert_eq!(3, mat_0.matrix[0].len());
-        assert_eq!(3, mat_0.matrix.len());
-        assert_eq!(4, mat_1.matrix[0].len());
-        assert_eq!(1, mat_1.matrix.len());
-        assert_eq!(1, mat_2.matrix[0].len());
-        assert_eq!(5, mat_2.matrix.len());
-        assert_eq!(15, mat_3.matrix[0].len());
-        assert_eq!(20, mat_3.matrix.len());
     }
 }
