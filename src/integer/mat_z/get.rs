@@ -170,7 +170,8 @@ impl MatZ {
     /// let fmpz_entries = mat.collect_entries();
     /// ```
     pub(crate) fn collect_entries(&self) -> Vec<fmpz> {
-        let mut entries: Vec<fmpz> = vec![];
+        let mut entries: Vec<fmpz> =
+            Vec::with_capacity((self.get_num_rows() * self.get_num_columns()) as usize);
 
         for row in 0..self.get_num_rows() {
             for col in 0..self.get_num_columns() {

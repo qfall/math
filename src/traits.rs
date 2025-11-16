@@ -209,7 +209,8 @@ where
     /// }
     /// ```
     fn get_entries(&self) -> Vec<Vec<T>> {
-        let mut entries = vec![vec![]; self.get_num_rows() as usize];
+        let mut entries =
+            vec![Vec::with_capacity(self.get_num_columns() as usize); self.get_num_rows() as usize];
 
         for i in 0..self.get_num_rows() {
             for j in 0..self.get_num_columns() {
@@ -236,7 +237,8 @@ where
     /// }
     /// ```
     fn get_entries_rowwise(&self) -> Vec<T> {
-        let mut entries = vec![];
+        let mut entries =
+            Vec::with_capacity((self.get_num_rows() * self.get_num_columns()) as usize);
 
         for i in 0..self.get_num_rows() {
             for j in 0..self.get_num_columns() {
@@ -263,7 +265,8 @@ where
     /// }
     /// ```
     fn get_entries_columnwise(&self) -> Vec<T> {
-        let mut entries = vec![];
+        let mut entries =
+            Vec::with_capacity((self.get_num_rows() * self.get_num_columns()) as usize);
 
         for j in 0..self.get_num_columns() {
             for i in 0..self.get_num_rows() {
@@ -450,7 +453,7 @@ where
     /// }
     /// ```
     fn get_rows(&self) -> Vec<Self> {
-        let mut rows = vec![];
+        let mut rows = Vec::with_capacity(self.get_num_rows() as usize);
 
         for i in 0..self.get_num_rows() {
             let entry = unsafe { self.get_row_unchecked(i) };
@@ -486,7 +489,7 @@ where
     /// }
     /// ```
     fn get_columns(&self) -> Vec<Self> {
-        let mut columns = vec![];
+        let mut columns = Vec::with_capacity(self.get_num_columns() as usize);
 
         for i in 0..self.get_num_columns() {
             let entry = unsafe { self.get_column_unchecked(i) };

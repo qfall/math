@@ -53,14 +53,14 @@ pub(crate) fn parse_matrix_string(string: &str) -> Result<Vec<Vec<String>>, Math
 
     // delete `[[` in front and `]]` in the end and split the matrix into rows
     let string = string.replace("], [", "],[");
-    let rows = string[2..string.len() - 2].split("],[");
+    let rows: Vec<&str> = string[2..string.len() - 2].split("],[").collect();
 
-    let mut matrix: Vec<Vec<String>> = Vec::new();
+    let mut matrix: Vec<Vec<String>> = Vec::with_capacity(rows.len());
     for row in rows {
         //split the row into entries of the matrix
-        let entries = row.split(',');
+        let entries: Vec<&str> = row.split(',').collect();
 
-        let mut row_vec: Vec<String> = Vec::new();
+        let mut row_vec: Vec<String> = Vec::with_capacity(entries.len());
         for entry in entries {
             // delete leading and trailing whitespaces from the entry and
             // adds it to the row vector
@@ -140,7 +140,7 @@ pub(crate) fn matrix_from_utf8_fill_bytes(message: &str, nr_entries: usize) -> (
     let num_bytes_to_fill =
         ((bytes_per_entry.ceil() - bytes_per_entry) * nr_entries as f64).round() as usize;
 
-    let mut bytes: Vec<u8> = vec![];
+    let mut bytes: Vec<u8> = Vec::with_capacity(msg_bytes.len() + num_bytes_to_fill);
     for msg_byte in msg_bytes {
         bytes.push(*msg_byte);
     }
