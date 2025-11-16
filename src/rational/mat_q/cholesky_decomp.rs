@@ -108,6 +108,7 @@ impl MatQ {
     /// # Panics ...
     /// - if `self` is not a symmetric matrix,
     /// - if `self` has eigenvalues smaller than `0`.
+    #[allow(clippy::needless_range_loop)]
     pub fn cholesky_decomposition_flint(&self) -> MatQ {
         assert!(self.is_symmetric(), "The provided matrix is not symmetric.");
         let mat_dimension = self.get_num_rows() as usize;

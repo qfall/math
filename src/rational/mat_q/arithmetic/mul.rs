@@ -128,6 +128,7 @@ impl MatQ {
     /// - if the dimensions of `self` and `other` do not match for multiplication.
     /// - if any result during the naive computation of matrix multiplication
     ///   is larger than [`f64::MAX`] or smaller than [`f64::MIN`].
+    #[allow(clippy::needless_range_loop)]
     pub fn mul_f64_unchecked(&self, other: &Self) -> MatQ {
         let num_rows = self.get_num_rows() as usize;
         let num_cols = other.get_num_columns() as usize;

@@ -41,12 +41,13 @@ impl MatNTTPolynomialRingZq {
     /// # Panics ...
     /// - if the `modulus` is smaller than `2`.
     /// - if the number of rows of `self` and the number of columns of `other` does not match up.
+    /// - if the degree of the matrices is not equal.
     pub fn mul(&self, other: &Self, modulus: &Modulus) -> Self {
         assert_eq!(self.get_num_columns(), other.get_num_rows(),
             "The number of rows of `self` and the number of columns of `other` has to be equal for matrix multiplication.");
         assert_eq!(
             self.d, other.d,
-            "The degree of both polynomials has to be equal for multiplication."
+            "The degree of both matrices' modulus has to be equal for multiplication."
         );
 
         let mod_ctx = modulus.get_fmpz_mod_ctx_struct();

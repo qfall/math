@@ -37,7 +37,13 @@ impl NTTPolynomialRingZq {
     ///
     /// # Panics ...
     /// - if the `modulus` is smaller than `2`.
+    /// - if the degree of the polynomials is not equal.
     pub fn sub_assign(&mut self, other: &Self, modulus: &Modulus) {
+        assert_eq!(
+            self.poly.len(),
+            other.poly.len(),
+            "The degree of both polynomials has to be equal for multiplication."
+        );
         let mod_q = modulus.get_fmpz_mod_ctx_struct();
 
         for i in 0..self.poly.len() {

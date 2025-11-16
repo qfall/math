@@ -38,6 +38,7 @@ impl MatNTTPolynomialRingZq {
     /// # Panics ...
     /// - if the `modulus` is smaller than `2`.
     /// - if the number of rows of `self` and `other` or their number of columns is not equal.
+    /// - if the degree of the matrices is not equal.
     pub fn sub_assign(&mut self, other: &Self, modulus: &Modulus) {
         assert_eq!(
             self.get_num_rows(),
@@ -48,6 +49,10 @@ impl MatNTTPolynomialRingZq {
             self.get_num_columns(),
             other.get_num_columns(),
             "The number of columns of `self` and `other` has to be equal for matrix subtraction."
+        );
+        assert_eq!(
+            self.d, other.d,
+            "The degree of both matrices' modulus has to be equal for multiplication."
         );
         let mod_q = modulus.get_fmpz_mod_ctx_struct();
 

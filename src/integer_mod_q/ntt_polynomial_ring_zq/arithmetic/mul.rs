@@ -40,7 +40,13 @@ impl NTTPolynomialRingZq {
     ///
     /// # Panics ...
     /// - if the `modulus` is smaller than `2`.
+    /// - if the degree of the polynomials is not equal.
     pub fn mul(&self, other: &Self, modulus: &Modulus) -> Self {
+        assert_eq!(
+            self.poly.len(),
+            other.poly.len(),
+            "The degree of both polynomials has to be equal for multiplication."
+        );
         let mod_q = modulus.get_fmpz_mod_ctx_struct();
 
         let mut res = Vec::with_capacity(self.poly.capacity());
