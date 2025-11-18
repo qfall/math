@@ -54,7 +54,7 @@ impl From<(NTTPolynomialRingZq, &ModulusPolynomialRingZq)> for PolynomialRingZq 
     /// ```
     ///
     /// # Panics ...
-    /// - if the [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq)
+    /// - if the [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq) in `modulus`
     ///   is not set.
     /// - if the modulus differs from the modulus over which we view the polynomial.
     fn from((ntt, modulus): (NTTPolynomialRingZq, &ModulusPolynomialRingZq)) -> Self {

@@ -10,7 +10,7 @@
 //! This includes checks such as reducibility.
 
 use super::PolynomialRingZq;
-use crate::integer_mod_q::PolyOverZq;
+use crate::integer_mod_q::{NTTPolynomialRingZq, PolyOverZq};
 
 impl PolynomialRingZq {
     /// Checks if a [`PolynomialRingZq`] is irreducible.
@@ -64,6 +64,37 @@ impl PolynomialRingZq {
     /// ```
     pub fn is_zero(&self) -> bool {
         self.poly.is_zero()
+    }
+
+    /// Computes the NTT representation of `self`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{NTTPolynomialRingZq, PolynomialRingZq, ModulusPolynomialRingZq, PolyOverZq};
+    /// use crate::qfall_math::traits::SetCoefficient;
+    /// use std::str::FromStr;
+    ///
+    /// let n = 4;
+    /// let modulus = 7681;
+    ///
+    /// let mut mod_poly = PolyOverZq::from(modulus);
+    /// mod_poly.set_coeff(0, 1).unwrap();
+    /// mod_poly.set_coeff(n, 1).unwrap();
+    ///
+    /// let mut polynomial_modulus = ModulusPolynomialRingZq::from(&mod_poly);
+    /// polynomial_modulus.set_ntt_unchecked(1925);
+    ///
+    /// let poly_ring = PolynomialRingZq::sample_uniform(&polynomial_modulus);
+    ///
+    /// let ntt_poly_ring = poly_ring.ntt();
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq),
+    ///   which is part of the [`ModulusPolynomialRingZq`](crate::integer_mod_q::ModulusPolynomialRingZq) in `self`
+    ///   is not set.
+    pub fn ntt(&self) -> NTTPolynomialRingZq {
+        NTTPolynomialRingZq::from(self)
     }
 }
 

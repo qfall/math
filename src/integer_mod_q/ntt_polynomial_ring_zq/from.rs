@@ -11,7 +11,9 @@
 //! `from_<type_name>` and the [`From`] trait should be implemented.
 
 use super::NTTPolynomialRingZq;
-use crate::integer_mod_q::{NTTBasisPolynomialRingZq, PolyOverZq, PolynomialRingZq};
+use crate::integer_mod_q::{
+    ModulusPolynomialRingZq, NTTBasisPolynomialRingZq, PolyOverZq, PolynomialRingZq,
+};
 
 impl From<&PolynomialRingZq> for NTTPolynomialRingZq {
     /// Computes the NTT representation of `poly`.
@@ -43,7 +45,8 @@ impl From<&PolynomialRingZq> for NTTPolynomialRingZq {
     /// ```
     ///
     /// # Panics ...
-    /// - if the [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq)
+    /// - if the [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq),
+    ///   which is part of the [`ModulusPolynomialRingZq`](crate::integer_mod_q::ModulusPolynomialRingZq) in `poly`
     ///   is not set.
     fn from(poly: &PolynomialRingZq) -> Self {
         if let Some(ntt_basis) = poly.modulus.ntt_basis.as_ref() {
@@ -92,6 +95,44 @@ impl From<(&PolyOverZq, &NTTBasisPolynomialRingZq)> for NTTPolynomialRingZq {
         NTTPolynomialRingZq {
             poly: ntt_basis.ntt(poly),
         }
+    }
+}
+
+impl NTTPolynomialRingZq {
+    /// Computes the inverse NTT of `self` with respect to the given `modulus`.
+    ///
+    /// Parameters:
+    /// - `modulus`: the modulus that is applied to the polynomial ring element.
+    ///
+    /// Returns a new [`PolynomialRingZq`] with the specified [`ModulusPolynomialRingZq`] and
+    /// values as defined in `self`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{PolynomialRingZq, PolyOverZq, ModulusPolynomialRingZq, NTTPolynomialRingZq};
+    /// use qfall_math::traits::SetCoefficient;
+    ///
+    /// let n = 4;
+    /// let modulus = 7681;
+    ///
+    /// let mut mod_poly = PolyOverZq::from(modulus);
+    /// mod_poly.set_coeff(0, 1).unwrap();
+    /// mod_poly.set_coeff(n, 1).unwrap();
+    ///
+    /// let mut polynomial_modulus = ModulusPolynomialRingZq::from(&mod_poly);
+    /// polynomial_modulus.set_ntt_unchecked(1925);
+    ///
+    /// let ntt = NTTPolynomialRingZq::sample_uniform(n, modulus);
+    ///
+    /// let res = ntt.inv_ntt(&polynomial_modulus);
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq) in `modulus`
+    ///   is not set.
+    /// - if the modulus differs from the modulus over which we view the polynomial.
+    pub fn inv_ntt(self, modulus: &ModulusPolynomialRingZq) -> PolynomialRingZq {
+        PolynomialRingZq::from((self, modulus))
     }
 }
 

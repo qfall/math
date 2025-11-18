@@ -12,7 +12,7 @@
 
 use super::MatNTTPolynomialRingZq;
 use crate::{
-    integer_mod_q::{MatPolynomialRingZq, NTTPolynomialRingZq},
+    integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq, NTTPolynomialRingZq},
     traits::{MatrixDimensions, MatrixGetEntry},
 };
 
@@ -28,7 +28,6 @@ impl From<&MatPolynomialRingZq> for MatNTTPolynomialRingZq {
     /// ```
     /// use qfall_math::integer_mod_q::{MatNTTPolynomialRingZq, MatPolynomialRingZq, ModulusPolynomialRingZq, PolyOverZq};
     /// use crate::qfall_math::traits::SetCoefficient;
-    /// use std::str::FromStr;
     ///
     /// let n = 4;
     /// let modulus = 7681;
@@ -46,8 +45,8 @@ impl From<&MatPolynomialRingZq> for MatNTTPolynomialRingZq {
     /// ```
     ///
     /// # Panics ...
-    /// - if the [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq)
-    ///   is not set.
+    /// - if the [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq),
+    ///   which is part of the [`ModulusPolynomialRingZq`] in `matrix` is not set.
     fn from(matrix: &MatPolynomialRingZq) -> Self {
         let degree = matrix.get_mod().get_degree();
         let nr_rows = matrix.get_num_rows();
@@ -69,6 +68,36 @@ impl From<&MatPolynomialRingZq> for MatNTTPolynomialRingZq {
             nr_rows: nr_rows as usize,
             nr_columns: nr_columns as usize,
         }
+    }
+}
+
+impl MatNTTPolynomialRingZq {
+    /// Computes the inverse NTT of `self` with respect to the given `modulus`.
+    ///
+    /// Parameters:
+    /// - `modulus`: the modulus that is applied to each polynomial.
+    ///
+    /// Returns a new [`MatPolynomialRingZq`] with the entries from `self`
+    /// with respect to the modulus `modulus`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, MatNTTPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
+    ///
+    /// let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+    /// modulus.set_ntt_unchecked(64);
+    /// let mut ntt_mat = MatNTTPolynomialRingZq::sample_uniform(1, 1, 4, 257);
+    ///
+    /// let poly_ring_mat = ntt_mat.inv_ntt(&modulus);
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq) in `modulus`
+    ///   is not set.
+    /// - if the modulus differs from the modulus over which we view the polynomial.
+    pub fn inv_ntt(&mut self, modulus: &ModulusPolynomialRingZq) -> MatPolynomialRingZq {
+        MatPolynomialRingZq::from((self, modulus))
     }
 }
 
