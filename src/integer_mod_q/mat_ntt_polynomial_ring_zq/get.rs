@@ -102,7 +102,6 @@ mod test_matrix_dimensions {
         let matrix = MatPolynomialRingZq::from((&mat_poly, &modulus));
 
         let ntt_matrix = MatNTTPolynomialRingZq::from(&matrix);
-        println!("{}", ntt_matrix);
 
         assert_eq!(
             [Z::from(112), Z::from(189), Z::from(81), Z::from(192)],

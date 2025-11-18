@@ -287,7 +287,6 @@ mod test_add {
         let cmp_1 = MatQ::from_str("[[5, 5],[-6, 0]]").unwrap();
 
         let res_0 = a + b;
-        println!("{res_0}");
         let res_1 = c + d;
 
         assert_eq!(cmp_0, res_0);
