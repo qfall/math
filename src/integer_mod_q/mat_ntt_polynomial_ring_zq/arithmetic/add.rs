@@ -44,13 +44,11 @@ impl MatNTTPolynomialRingZq {
     /// - if the degree of the matrices is not equal.
     pub fn add(&self, other: &Self, modulus: &Modulus) -> MatNTTPolynomialRingZq {
         assert_eq!(
-            self.get_num_rows(),
-            other.get_num_rows(),
+            self.nr_rows, other.nr_rows,
             "The number of rows of `self` and `other` has to be equal for matrix addition."
         );
         assert_eq!(
-            self.get_num_columns(),
-            other.get_num_columns(),
+            self.nr_columns, other.nr_columns,
             "The number of columns of `self` and `other` has to be equal for matrix addition."
         );
         assert_eq!(
@@ -60,7 +58,7 @@ impl MatNTTPolynomialRingZq {
         let mod_ctx = modulus.get_fmpz_mod_ctx_struct();
 
         let mut out = MatNTTPolynomialRingZq {
-            matrix: vec![Z::default(); self.d * self.get_num_rows() * self.get_num_columns()],
+            matrix: vec![Z::default(); self.d * self.nr_rows * self.nr_columns],
             d: self.d,
             nr_rows: self.nr_rows,
             nr_columns: self.nr_columns,
@@ -109,13 +107,11 @@ impl MatNTTPolynomialRingZq {
     /// - if the degree of the matrices is not equal.
     pub fn add_assign(&mut self, other: &Self, modulus: &Modulus) {
         assert_eq!(
-            self.get_num_rows(),
-            other.get_num_rows(),
+            self.nr_rows, other.nr_rows,
             "The number of rows of `self` and `other` has to be equal for matrix addition."
         );
         assert_eq!(
-            self.get_num_columns(),
-            other.get_num_columns(),
+            self.nr_columns, other.nr_columns,
             "The number of columns of `self` and `other` has to be equal for matrix addition."
         );
         assert_eq!(

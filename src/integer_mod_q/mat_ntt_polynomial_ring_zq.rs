@@ -49,7 +49,7 @@ mod sample;
 /// let res = MatPolynomialRingZq::from((&mut tmp_mat_ntt, &modulus));
 /// ```
 #[derive(PartialEq, Eq, Serialize, Deserialize, Display, Clone)]
-#[display("{:?}", {let x: Vec<String> = matrix.iter().map(|x| x.to_string()).collect(); x})]
+#[display("{}", print_vec_z(&self.matrix))]
 pub struct MatNTTPolynomialRingZq {
     pub matrix: Vec<Z>,
     pub d: usize, // modulus degree
@@ -59,10 +59,26 @@ pub struct MatNTTPolynomialRingZq {
 
 impl fmt::Debug for MatNTTPolynomialRingZq {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let short_print = print_vec_z(&self.matrix);
+        let a: Vec<&str> = short_print.split_whitespace().collect();
+        let short_print = format!("{}{} ..., {}{}", a[0], a[1], a[a.len() - 2], a[a.len() - 1]);
+
         write!(
             f,
-            "MatNTTPolynomialRingZq {{matrix: {:?}, d: {}, nr_rows: {}, nr_columns: {} storage: {{poly: {:?}}}}}",
-            self.matrix, self.d, self.nr_rows, self.nr_columns, self.matrix
+            "MatNTTPolynomialRingZq {{matrix: {}, d: {}, nr_rows: {}, nr_columns: {} storage: {{matrix: {:?}}}}}",
+            short_print, self.d, self.nr_rows, self.nr_columns, self.matrix
         )
     }
+}
+
+/// Quick solution to print a vector of [`Z`] values in the format `[1, 2, 3, 4, 5]`.
+pub(crate) fn print_vec_z(vector: &Vec<Z>) -> String {
+    let mut out = String::new();
+    for v in vector {
+        out.push_str(&format!("{}, ", v.to_string()));
+    }
+    // Remove last whitespace and comma
+    out.pop().unwrap();
+    out.pop().unwrap();
+    format!("[{out}]")
 }

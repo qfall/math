@@ -50,8 +50,8 @@ impl From<(&mut MatNTTPolynomialRingZq, &ModulusPolynomialRingZq)> for MatPolyno
     ///   is not set.
     /// - if the modulus differs from the modulus over which we view the polynomial.
     fn from((matrix, modulus): (&mut MatNTTPolynomialRingZq, &ModulusPolynomialRingZq)) -> Self {
-        let height = matrix.get_num_rows();
-        let width = matrix.get_num_columns();
+        let height = matrix.nr_rows;
+        let width = matrix.nr_columns;
 
         let mut res = MatPolynomialRingZq::new(height, width, modulus);
         for column in (0..width).rev() {

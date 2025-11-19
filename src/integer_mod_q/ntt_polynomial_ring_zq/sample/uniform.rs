@@ -49,7 +49,7 @@ impl NTTPolynomialRingZq {
         let modulus_degree = evaluate_index(modulus_degree)
             .expect("`modulus_degree` can't be smaller than 2 and must fit into an i64.");
         assert!(
-            modulus_degree > 0,
+            modulus_degree > 1,
             "`modulus_degree` can't be smaller than 2 and must fit into an i64."
         );
         let interval_size = modulus.into();
@@ -100,7 +100,7 @@ mod test_sample_uniform {
     /// Checks whether the number of coefficients is correct.
     #[test]
     fn nr_coeffs() {
-        let degrees = [1, 3, 7, 15, 32, 120];
+        let degrees = [2, 3, 7, 15, 32, 120];
         for degree in degrees {
             let res = NTTPolynomialRingZq::sample_uniform(degree, u64::MAX);
 
@@ -142,16 +142,16 @@ mod test_sample_uniform {
         let modulus = Modulus::from(10);
         let z = Z::from(10);
 
-        let _ = NTTPolynomialRingZq::sample_uniform(1u64, 10u16);
-        let _ = NTTPolynomialRingZq::sample_uniform(1i64, 10u32);
-        let _ = NTTPolynomialRingZq::sample_uniform(1u8, 10u64);
-        let _ = NTTPolynomialRingZq::sample_uniform(1u16, 10i8);
-        let _ = NTTPolynomialRingZq::sample_uniform(1u32, 10i16);
-        let _ = NTTPolynomialRingZq::sample_uniform(1i32, 10i32);
-        let _ = NTTPolynomialRingZq::sample_uniform(1i16, 10i64);
-        let _ = NTTPolynomialRingZq::sample_uniform(1i8, &z);
-        let _ = NTTPolynomialRingZq::sample_uniform(1, z);
-        let _ = NTTPolynomialRingZq::sample_uniform(1, &modulus);
-        let _ = NTTPolynomialRingZq::sample_uniform(1, modulus);
+        let _ = NTTPolynomialRingZq::sample_uniform(2u64, 10u16);
+        let _ = NTTPolynomialRingZq::sample_uniform(2i64, 10u32);
+        let _ = NTTPolynomialRingZq::sample_uniform(2u8, 10u64);
+        let _ = NTTPolynomialRingZq::sample_uniform(2u16, 10i8);
+        let _ = NTTPolynomialRingZq::sample_uniform(2u32, 10i16);
+        let _ = NTTPolynomialRingZq::sample_uniform(2i32, 10i32);
+        let _ = NTTPolynomialRingZq::sample_uniform(2i16, 10i64);
+        let _ = NTTPolynomialRingZq::sample_uniform(2i8, &z);
+        let _ = NTTPolynomialRingZq::sample_uniform(2, z);
+        let _ = NTTPolynomialRingZq::sample_uniform(2, &modulus);
+        let _ = NTTPolynomialRingZq::sample_uniform(2, modulus);
     }
 }

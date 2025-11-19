@@ -8,36 +8,38 @@
 
 //! Implementations to get information about a [`MatNTTPolynomialRingZq`] matrix.
 
-use crate::{integer::Z, integer_mod_q::MatNTTPolynomialRingZq};
+use crate::{integer::Z, integer_mod_q::MatNTTPolynomialRingZq, traits::MatrixDimensions};
 
 // Doesn't implement MatrixDimensions as these require `i64` as a return value.
-impl MatNTTPolynomialRingZq {
+impl MatrixDimensions for MatNTTPolynomialRingZq {
     /// Returns the number of rows of the matrix as a [`usize`].
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatNTTPolynomialRingZq;
+    /// use qfall_math::{integer_mod_q::MatNTTPolynomialRingZq, traits::MatrixDimensions};
     ///
     /// let matrix = MatNTTPolynomialRingZq::sample_uniform(3, 2, 3, 17);
     /// let nr_rows = matrix.get_num_rows();
     /// ```
-    pub fn get_num_rows(&self) -> usize {
-        self.nr_rows
+    fn get_num_rows(&self) -> i64 {
+        self.nr_rows as i64
     }
 
     /// Returns the number of columns of the matrix as a [`usize`].
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatNTTPolynomialRingZq;
+    /// use qfall_math::{integer_mod_q::MatNTTPolynomialRingZq, traits::MatrixDimensions};
     ///
     /// let matrix = MatNTTPolynomialRingZq::sample_uniform(3, 2, 3, 17);
     /// let nr_columns = matrix.get_num_columns();
     /// ```
-    pub fn get_num_columns(&self) -> usize {
-        self.nr_columns
+    fn get_num_columns(&self) -> i64 {
+        self.nr_columns as i64
     }
+}
 
+impl MatNTTPolynomialRingZq {
     /// Returns the number of columns of the matrix as a [`usize`].
     ///
     /// # Examples
@@ -72,6 +74,7 @@ mod test_matrix_dimensions {
     use crate::{
         integer::{MatPolyOverZ, Z},
         integer_mod_q::{MatNTTPolynomialRingZq, MatPolynomialRingZq, ModulusPolynomialRingZq},
+        traits::MatrixDimensions,
     };
     use std::str::FromStr;
 

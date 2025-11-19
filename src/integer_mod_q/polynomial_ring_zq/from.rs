@@ -7,8 +7,6 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! Implementations to create a [`PolynomialRingZq`] value from other types.
-//! For each reasonable type, an explicit function with the format
-//! `from_<type_name>` and the [`From`] trait should be implemented.
 //!
 //! The explicit functions contain the documentation.
 
@@ -64,7 +62,7 @@ impl From<(NTTPolynomialRingZq, &ModulusPolynomialRingZq)> for PolynomialRingZq 
             .as_ref()
             .map(|basis| PolynomialRingZq {
                 poly: basis
-                    .intt(ntt.poly)
+                    .inv_ntt(ntt.poly)
                     .get_representative_least_nonnegative_residue(),
                 modulus: modulus.clone(),
             })
@@ -293,7 +291,7 @@ mod test_from_ntt_modulus_polynomial_ring_zq {
     };
     use std::str::FromStr;
 
-    /// Ensures that `intt` works properly and that we can make a round trip and get to the same ntt representation.
+    /// Ensures that `inv_ntt` works properly and that we can make a round trip and get to the same ntt representation.
     #[test]
     fn round_trip() {
         let mut mod_poly = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();

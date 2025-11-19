@@ -8,7 +8,7 @@
 
 //! [`NTTPolynomialRingZq`] containts the NTT representations of polynomials.
 
-use crate::integer::Z;
+use crate::{integer::Z, integer_mod_q::mat_ntt_polynomial_ring_zq::print_vec_z};
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
 use std::fmt;
@@ -46,17 +46,21 @@ mod sample;
 /// let res = PolynomialRingZq::from((tmp_ntt, &modulus));
 /// ```
 #[derive(PartialEq, Eq, Serialize, Deserialize, Display, Clone)]
-#[display("{:?}", {let x: Vec<String> = poly.iter().map(|x| x.to_string()).collect(); x})]
+#[display("{}", print_vec_z(&self.poly))]
 pub struct NTTPolynomialRingZq {
     pub poly: Vec<Z>,
 }
 
 impl fmt::Debug for NTTPolynomialRingZq {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let short_print = print_vec_z(&self.poly);
+        let a: Vec<&str> = short_print.split_whitespace().collect();
+        let short_print = format!("{}{} ..., {}{}", a[0], a[1], a[a.len() - 2], a[a.len() - 1]);
+
         write!(
             f,
-            "NTTPolynomialRingZq {{poly: {:?}, storage: {{poly: {:?}}}}}",
-            self.poly, self.poly
+            "NTTPolynomialRingZq {{poly: {}, storage: {{poly: {:?}}}}}",
+            short_print, self.poly
         )
     }
 }

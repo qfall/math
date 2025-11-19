@@ -43,7 +43,7 @@ impl MatNTTPolynomialRingZq {
     /// - if the number of rows of `self` and the number of columns of `other` does not match up.
     /// - if the degree of the matrices is not equal.
     pub fn mul(&self, other: &Self, modulus: &Modulus) -> Self {
-        assert_eq!(self.get_num_columns(), other.get_num_rows(),
+        assert_eq!(self.nr_columns, other.nr_rows,
             "The number of rows of `self` and the number of columns of `other` has to be equal for matrix multiplication.");
         assert_eq!(
             self.d, other.d,
@@ -54,10 +54,10 @@ impl MatNTTPolynomialRingZq {
 
         let mut res = Vec::with_capacity(other.matrix.len());
 
-        for col in 0..other.get_num_columns() {
-            for row in 0..self.get_num_rows() {
+        for col in 0..other.nr_columns {
+            for row in 0..self.nr_rows {
                 let mut entry = self.mul_entry(other, mod_ctx, row, col, 0);
-                for i in 1..self.get_num_columns() {
+                for i in 1..self.nr_columns {
                     let add_value = self.mul_entry(other, mod_ctx, row, col, i);
 
                     for j in 0..self.d {
@@ -84,6 +84,14 @@ impl MatNTTPolynomialRingZq {
         }
     }
 
+    /// Instantiates a new vector with the result of multiplying two entries / polynomials.
+    /// 
+    /// Parameters:
+    /// - `other`: the other [`MatNTTPolynomialRingZq`] that contains the polynomial to multiply with
+    /// - `mod_ctx`: the [`fmpz_mod_ctx`] to reduce every coefficent by
+    /// - `row`: refers to the row, where the resulting entry will be
+    /// - `col`: refers to the resulting column, where the resulting will be
+    /// - `index`: defines the summand to compute
     fn mul_entry(
         &self,
         other: &Self,

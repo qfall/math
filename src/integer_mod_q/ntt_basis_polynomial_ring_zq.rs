@@ -15,7 +15,7 @@ use crate::integer::Z;
 pub use from::ConvolutionType;
 
 mod from;
-mod intt;
+mod inv_ntt;
 mod ntt;
 
 /// [`NTTBasisPolynomialRingZq`] is an object, that given a polynomial
@@ -61,7 +61,7 @@ mod ntt;
 ///     ghat_hhat.push(&ghat[i] * &hhat[i]);
 /// }
 ///
-/// let g_h_poly = ntt_basis.intt(ghat_hhat);
+/// let g_h_poly = ntt_basis.inv_ntt(ghat_hhat);
 ///
 /// let g_h_poly_ring = PolynomialRingZq::from((
 ///     g_h_poly.get_representative_least_nonnegative_residue(),
@@ -104,7 +104,7 @@ mod ntt;
 ///     ghat_hhat.push(&ghat[i] * &hhat[i])
 /// }
 ///
-/// let g_h_poly = ntt_basis.intt(ghat_hhat);
+/// let g_h_poly = ntt_basis.inv_ntt(ghat_hhat);
 ///
 /// let g_h_poly_ring = PolynomialRingZq::from((
 ///     g_h_poly.get_representative_least_nonnegative_residue(),

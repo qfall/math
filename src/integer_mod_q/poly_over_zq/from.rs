@@ -52,7 +52,7 @@ impl From<(NTTPolynomialRingZq, &NTTBasisPolynomialRingZq)> for PolyOverZq {
     /// - if it is not reduced, i.e. has a coefficient of degree > n.
     /// - if the modulus differs from the modulus over which we view the polynomial.
     fn from((ntt, ntt_basis): (NTTPolynomialRingZq, &NTTBasisPolynomialRingZq)) -> Self {
-        ntt_basis.intt(ntt.poly)
+        ntt_basis.inv_ntt(ntt.poly)
     }
 }
 
