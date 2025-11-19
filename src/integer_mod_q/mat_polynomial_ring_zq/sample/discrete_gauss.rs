@@ -10,7 +10,7 @@
 
 use crate::{
     error::MathError,
-    integer::{MatPolyOverZ, Z},
+    integer::MatPolyOverZ,
     integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
     rational::{PolyOverQ, Q},
 };
@@ -32,7 +32,7 @@ impl MatPolynomialRingZq {
     ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a [`MatPolynomialRingZq`] with each entry sampled independently from the
-    /// specified discrete Gaussian distribution or an error if `n <= 1` or `s <= 0`.
+    /// specified discrete Gaussian distribution or an error if `s < 0`.
     ///
     /// # Examples
     /// ```
@@ -40,12 +40,12 @@ impl MatPolynomialRingZq {
     /// use std::str::FromStr;
     /// let modulus = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
     ///
-    /// let matrix = MatPolynomialRingZq::sample_discrete_gauss(3, 1, &modulus, 128, 0, 1.25f32).unwrap();
+    /// let matrix = MatPolynomialRingZq::sample_discrete_gauss(3, 1, &modulus, 0, 1.25f32).unwrap();
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///   if `n <= 1` or `s <= 0`.
+    ///   if `s < 0`.
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
@@ -56,7 +56,6 @@ impl MatPolynomialRingZq {
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
         modulus: impl Into<ModulusPolynomialRingZq>,
-        n: impl Into<Z>,
         center: impl Into<Q>,
         s: impl Into<Q>,
     ) -> Result<MatPolynomialRingZq, MathError> {
@@ -65,7 +64,6 @@ impl MatPolynomialRingZq {
             num_rows,
             num_cols,
             modulus.get_degree() - 1,
-            n,
             center,
             s,
         )?;
@@ -87,7 +85,7 @@ impl MatPolynomialRingZq {
     ///
     /// Returns a vector of polynomials sampled according to the
     /// discrete Gaussian distribution or an error if the basis is not a row vector,
-    /// `n <= 1` or `s <= 0`, or the number of rows of the `basis` and `center` differ.
+    /// `s < 0`, or the number of rows of the `basis` and `center` differ.
     ///
     /// # Example
     /// ```
@@ -105,16 +103,15 @@ impl MatPolynomialRingZq {
     /// let poly_mat = MatPolyOverZ::from_str("[[1  1, 3  0 0 1, 2  0 1]]").unwrap();
     /// let basis = MatPolynomialRingZq::from((&poly_mat, &modulus));
     /// let center = vec![PolyOverQ::default()];
-    /// let n = Z::from(1024);
     /// let s = Q::from(8);
     ///
-    /// let sample = MatPolynomialRingZq::sample_d(&basis, 3, 16, &center, s);
+    /// let sample = MatPolynomialRingZq::sample_d(&basis, 3, &center, s);
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`VectorFunctionCalledOnNonVector`](MathError::VectorFunctionCalledOnNonVector), if the basis is not a row vector
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///   if `n <= 1` or `s <= 0`.
+    ///   if `s < 0`.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     ///   if the number of rows of the `basis` and `center` differ.
     ///
@@ -129,11 +126,10 @@ impl MatPolynomialRingZq {
     pub fn sample_d(
         basis: &Self,
         k: impl Into<i64>,
-        n: impl Into<Z>,
         center: &[PolyOverQ],
         s: impl Into<Q>,
     ) -> Result<MatPolynomialRingZq, MathError> {
-        let sample = MatPolyOverZ::sample_d(&basis.matrix, k, n, center, s)?;
+        let sample = MatPolyOverZ::sample_d(&basis.matrix, k, center, s)?;
         Ok(MatPolynomialRingZq::from((&sample, &basis.get_mod())))
     }
 }
@@ -155,8 +151,8 @@ mod test_sample_discrete_gauss {
             coeff_emb_mod.set_entry(0, 0, 1).unwrap();
             coeff_emb_mod.set_entry(degree, 0, 1).unwrap();
             let modulus = ModulusPolynomialRingZq::from_coefficient_embedding(&coeff_emb_mod);
-            let res = MatPolynomialRingZq::sample_discrete_gauss(1, 1, modulus, 1024, i32::MAX, 1)
-                .unwrap();
+            let res =
+                MatPolynomialRingZq::sample_discrete_gauss(1, 1, modulus, i32::MAX, 1).unwrap();
 
             let entry: PolyOverZ = res.get_entry(0, 0).unwrap();
             assert_eq!(
@@ -187,7 +183,7 @@ mod test_sample_d {
         let center = vec![PolyOverQ::default()];
 
         for _ in 0..10 {
-            let sample = MatPolynomialRingZq::sample_d(&base, 3, 100, &center, 20.5_f64).unwrap();
+            let sample = MatPolynomialRingZq::sample_d(&base, 3, &center, 20.5_f64).unwrap();
             let sample: PolyOverZ = sample.get_entry(0, 0).unwrap();
             let sample_vec = MatZq::from((&sample.into_coefficient_embedding(3), 17));
             let orthogonal = MatZq::from_str("[[0],[1],[1]] mod 17").unwrap();
@@ -211,18 +207,18 @@ mod test_sample_d {
         let n = Z::from(1024);
         let s = Q::from(8);
 
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, 16u16, &center, 1u16);
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, 2u32, &center, 1u8);
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, 2u64, &center, 1u32);
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, 2i8, &center, 1u64);
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, 2i16, &center, 1i64);
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, 2i32, &center, 1i32);
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, 2i64, &center, 1i16);
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &n, &center, 1i8);
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, 2u8, &center, 1i64);
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, 2, &center, &n);
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, 2, &center, &s);
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, 2, &center, 1.25f64);
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, 2, &center, 15.75f32);
+        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, 1u16);
+        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, 1u8);
+        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, 1u32);
+        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, 1u64);
+        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, 1i64);
+        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, 1i32);
+        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, 1i16);
+        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, 1i8);
+        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, 1i64);
+        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, &n);
+        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, &s);
+        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, 1.25f64);
+        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, 15.75f32);
     }
 }

@@ -11,7 +11,7 @@
 use super::PolyOverQ;
 use crate::{
     error::MathError,
-    integer::{PolyOverZ, Z},
+    integer::PolyOverZ,
     rational::Q,
     traits::{GetCoefficient, SetCoefficient},
 };
@@ -98,11 +98,10 @@ impl PolyOverQ {
     /// by `self` with gaussian parameter `r`.
     ///
     /// Parameters:
-    /// - `n`: the security parameter; also specifies the range from which is sampled
     /// - `r`: specifies the Gaussian parameter, which is proportional
     ///   to the standard deviation `sigma * sqrt(2 * pi) = r`
     ///
-    /// Returns the rounded polynomial as a [`PolyOverZ`] or an error if `n <= 1` or `r <= 0`.
+    /// Returns the rounded polynomial as a [`PolyOverZ`] or an error if `r < 0`.
     ///
     /// # Examples
     /// ```
@@ -110,29 +109,24 @@ impl PolyOverQ {
     /// use std::str::FromStr;
     ///
     /// let value = PolyOverQ::from_str("2  5/2 1").unwrap();
-    /// let rounded = value.randomized_rounding(3,5).unwrap();
+    /// let rounded = value.randomized_rounding(3).unwrap();
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///   if `n <= 1` or `r <= 0`.
+    ///   if `r < 0`.
     ///
     /// This function implements randomized rounding according to:
     /// - \[1\] Peikert, C. (2010, August).
     ///   An efficient and parallel Gaussian sampler for lattices.
     ///   In: Annual Cryptology Conference (pp. 80-97).
     ///   <https://link.springer.com/chapter/10.1007/978-3-642-14623-7_5>
-    pub fn randomized_rounding(
-        &self,
-        r: impl Into<Q>,
-        n: impl Into<Z>,
-    ) -> Result<PolyOverZ, MathError> {
+    pub fn randomized_rounding(&self, r: impl Into<Q>) -> Result<PolyOverZ, MathError> {
         let r = r.into();
-        let n = n.into();
         let mut out =
-            PolyOverZ::from(unsafe { self.get_coeff_unchecked(0).randomized_rounding(&r, &n)? });
+            PolyOverZ::from(unsafe { self.get_coeff_unchecked(0).randomized_rounding(&r)? });
         for i in 1..self.get_degree() + 1 {
-            let coeff = unsafe { self.get_coeff_unchecked(i).randomized_rounding(&r, &n)? };
+            let coeff = unsafe { self.get_coeff_unchecked(i).randomized_rounding(&r)? };
             unsafe { out.set_coeff_unchecked(i, coeff) };
         }
 
@@ -217,19 +211,10 @@ mod test_randomized_rounding {
     use crate::rational::PolyOverQ;
     use std::str::FromStr;
 
-    /// Ensure that a `n <= 1` throws an error
-    #[test]
-    fn small_n() {
-        let value = PolyOverQ::from_str("2  5/2 1").unwrap();
-        assert!(value.randomized_rounding(3, 1).is_err());
-        assert!(value.randomized_rounding(3, -3).is_err());
-    }
-
-    /// Ensure that a `r <= 0` throws an error
+    /// Ensure that a `r < 0` throws an error
     #[test]
     fn negative_r() {
         let value = PolyOverQ::from_str("2  5/2 1").unwrap();
-        assert!(value.randomized_rounding(0, 5).is_err());
-        assert!(value.randomized_rounding(-1, 5).is_err());
+        assert!(value.randomized_rounding(-1).is_err());
     }
 }

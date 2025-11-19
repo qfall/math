@@ -10,13 +10,16 @@
 
 use crate::{
     error::MathError,
-    integer::{MatPolyOverZ, MatZ, PolyOverZ, Z},
+    integer::{MatPolyOverZ, MatZ, PolyOverZ},
     rational::{PolyOverQ, Q},
     traits::{
         Concatenate, FromCoefficientEmbedding, IntoCoefficientEmbedding, MatrixDimensions,
         MatrixSetEntry, SetCoefficient,
     },
-    utils::{index::evaluate_index, sample::discrete_gauss::DiscreteGaussianIntegerSampler},
+    utils::{
+        index::evaluate_index,
+        sample::discrete_gauss::{DiscreteGaussianIntegerSampler, LookupTableSetting},
+    },
 };
 use std::fmt::Display;
 
@@ -29,24 +32,23 @@ impl MatPolyOverZ {
     /// - `num_rows`: specifies the number of rows the new matrix should have
     /// - `num_cols`: specifies the number of columns the new matrix should have
     /// - `max_degree`: specifies the included maximal degree the created [`PolyOverZ`] should have
-    /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
     /// - `center`: specifies the positions of the center with peak probability
     /// - `s`: specifies the Gaussian parameter, which is proportional
     ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a [`MatPolyOverZ`] with each entry sampled independently from the
-    /// specified discrete Gaussian distribution or an error if `n <= 1` or `s <= 0`.
+    /// specified discrete Gaussian distribution or an error if `s < 0`.
     ///
     /// # Examples
     /// ```
     /// use qfall_math::integer::MatPolyOverZ;
     ///
-    /// let matrix = MatPolyOverZ::sample_discrete_gauss(3, 1, 5, 1024, 0, 1.25f32).unwrap();
+    /// let matrix = MatPolyOverZ::sample_discrete_gauss(3, 1, 5, 0, 1.25f32).unwrap();
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///   if `n <= 1` or `s <= 0`.
+    ///   if `s < 0`.
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns are not suited to create a matrix.
@@ -56,17 +58,14 @@ impl MatPolyOverZ {
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
         max_degree: impl TryInto<i64> + Display,
-        n: impl Into<Z>,
         center: impl Into<Q>,
         s: impl Into<Q>,
     ) -> Result<MatPolyOverZ, MathError> {
-        let n = n.into();
-        let center = center.into();
-        let s = s.into();
         let max_degree = evaluate_index(max_degree).unwrap();
         let mut matrix = MatPolyOverZ::new(num_rows, num_cols);
 
-        let mut dgis = DiscreteGaussianIntegerSampler::init(&n, &center, &s)?;
+        let mut dgis =
+            DiscreteGaussianIntegerSampler::init(center, s, 6.0, LookupTableSetting::FillOnTheFly)?;
 
         for row in 0..matrix.get_num_rows() {
             for col in 0..matrix.get_num_columns() {
@@ -91,14 +90,13 @@ impl MatPolyOverZ {
     /// Parameters:
     /// - `basis`: specifies a basis for the lattice from which is sampled
     /// - `k`: the maximal length the polynomial can have
-    /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
     /// - `center`: specifies the positions of the center with peak probability
     /// - `s`: specifies the Gaussian parameter, which is proportional
     ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a vector of polynomials sampled according to the
     /// discrete Gaussian distribution or an error if the basis is not a row vector,
-    /// `n <= 1` or `s <= 0`, or the number of rows of the `basis` and `center` differ.
+    /// `s < 0`, or the number of rows of the `basis` and `center` differ.
     ///
     /// # Example
     /// ```
@@ -111,14 +109,14 @@ impl MatPolyOverZ {
     /// let basis = MatPolyOverZ::from_str("[[1  1, 3  0 1 -1, 2  2 2]]").unwrap();
     /// let center = vec![PolyOverQ::default()];
     ///
-    /// let sample = MatPolyOverZ::sample_d(&basis, 3, 100, &center, 10.5_f64).unwrap();
+    /// let sample = MatPolyOverZ::sample_d(&basis, 3, &center, 10.5_f64).unwrap();
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`VectorFunctionCalledOnNonVector`](MathError::VectorFunctionCalledOnNonVector),
     ///   if the basis is not a row vector.
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///   if `n <= 1` or `s <= 0`.
+    ///   if `s < 0`.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     ///   if the number of rows of the `basis` and `center` differ.
     ///
@@ -133,7 +131,6 @@ impl MatPolyOverZ {
     pub fn sample_d(
         basis: &Self,
         k: impl Into<i64>,
-        n: impl Into<Z>,
         center: &[PolyOverQ],
         s: impl Into<Q>,
     ) -> Result<MatPolyOverZ, MathError> {
@@ -148,7 +145,7 @@ impl MatPolyOverZ {
             center_embedded = center_embedded.concat_vertical(&c_row)?;
         }
 
-        let sample = MatZ::sample_d(&basis_embedded, n, &center_embedded, s)?;
+        let sample = MatZ::sample_d(&basis_embedded, &center_embedded, s)?;
 
         Ok(MatPolyOverZ::from_coefficient_embedding((&sample, k - 1)))
     }
@@ -163,19 +160,19 @@ mod test_sample_discrete_gauss {
     /// or [`Into<Q>`], i.e. u8, i16, f32, Z, Q, ...
     #[test]
     fn availability() {
-        let _ = MatPolyOverZ::sample_discrete_gauss(2, 3, 16u16, 128, 1u16, 2);
-        let _ = MatPolyOverZ::sample_discrete_gauss(1, 3, 2u32, 128, 1u8, 2.0);
-        let _ = MatPolyOverZ::sample_discrete_gauss(2_i64, 3, 2u64, 128, 1u32, 2.0_f64);
-        let _ = MatPolyOverZ::sample_discrete_gauss(2_i32, 3, 2i8, 128, 1u64, 1);
-        let _ = MatPolyOverZ::sample_discrete_gauss(2_i16, 3, 2i16, 128, 1i64, 3_u64);
-        let _ = MatPolyOverZ::sample_discrete_gauss(2_i8, 3, 2i32, 128, 1i32, 1);
-        let _ = MatPolyOverZ::sample_discrete_gauss(2_u64, 3, 2i64, 128, 1i16, 1);
-        let _ = MatPolyOverZ::sample_discrete_gauss(2_u32, 3, 4, 128, 1i8, 1);
-        let _ = MatPolyOverZ::sample_discrete_gauss(2_u16, 3, 2u8, 128, 1i64, 2);
-        let _ = MatPolyOverZ::sample_discrete_gauss(2_u8, 3, 2, 128, -2, 3);
-        let _ = MatPolyOverZ::sample_discrete_gauss(1, 3, 2, 128, 4, 3);
-        let _ = MatPolyOverZ::sample_discrete_gauss(3, 3, 2, 128, 1.25f64, 3);
-        let _ = MatPolyOverZ::sample_discrete_gauss(4, 3, 2, 128, 15.75f32, 3);
+        let _ = MatPolyOverZ::sample_discrete_gauss(2, 3, 128, 1u16, 2);
+        let _ = MatPolyOverZ::sample_discrete_gauss(1, 3, 128, 1u8, 2.0);
+        let _ = MatPolyOverZ::sample_discrete_gauss(2_i64, 3, 128, 1u32, 2.0_f64);
+        let _ = MatPolyOverZ::sample_discrete_gauss(2_i32, 3, 128, 1u64, 1);
+        let _ = MatPolyOverZ::sample_discrete_gauss(2_i16, 3, 128, 1i64, 3_u64);
+        let _ = MatPolyOverZ::sample_discrete_gauss(2_i8, 3, 128, 1i32, 1);
+        let _ = MatPolyOverZ::sample_discrete_gauss(2_u64, 3, 128, 1i16, 1);
+        let _ = MatPolyOverZ::sample_discrete_gauss(2_u32, 3, 128, 1i8, 1);
+        let _ = MatPolyOverZ::sample_discrete_gauss(2_u16, 3, 128, 1i64, 2);
+        let _ = MatPolyOverZ::sample_discrete_gauss(2_u8, 3, 128, -2, 3);
+        let _ = MatPolyOverZ::sample_discrete_gauss(1, 3, 128, 4, 3);
+        let _ = MatPolyOverZ::sample_discrete_gauss(3, 3, 128, 1.25f64, 3);
+        let _ = MatPolyOverZ::sample_discrete_gauss(4, 3, 128, 15.75f32, 3);
     }
 
     /// Ensures that the resulting entries have correct degree.
@@ -183,7 +180,7 @@ mod test_sample_discrete_gauss {
     fn correct_degree_entries() {
         let degrees = [1, 3, 7, 15, 32, 120];
         for degree in degrees {
-            let res = MatPolyOverZ::sample_discrete_gauss(1, 1, degree, 1024, i64::MAX, 1).unwrap();
+            let res = MatPolyOverZ::sample_discrete_gauss(1, 1, degree, i64::MAX, 1).unwrap();
 
             assert_eq!(
                 res.get_entry(0, 0).unwrap().get_degree(),
@@ -197,7 +194,7 @@ mod test_sample_discrete_gauss {
     #[test]
     #[should_panic]
     fn invalid_max_degree() {
-        let _ = MatPolyOverZ::sample_discrete_gauss(2, 2, -1, 1024, 0, 1).unwrap();
+        let _ = MatPolyOverZ::sample_discrete_gauss(2, 2, -1, 0, 1).unwrap();
     }
 }
 
@@ -217,7 +214,7 @@ mod test_sample_d {
         let center = vec![PolyOverQ::default()];
 
         for _ in 0..10 {
-            let sample = MatPolyOverZ::sample_d(&base, 3, 100, &center, 10.5_f64).unwrap();
+            let sample = MatPolyOverZ::sample_d(&base, 3, &center, 10.5_f64).unwrap();
             let sample_vec = sample.into_coefficient_embedding(3);
             let orthogonal = MatZ::from_str("[[0],[1],[1]]").unwrap();
 
@@ -237,7 +234,7 @@ mod test_sample_d {
 
         let orthogonal = MatZ::from_str("[[0, 1, 1, 0, 1, 1, 0 , 0, 0]]").unwrap();
         for _ in 0..10 {
-            let sample = MatPolyOverZ::sample_d(&base, 3, 100, &center, 10.5_f64).unwrap();
+            let sample = MatPolyOverZ::sample_d(&base, 3, &center, 10.5_f64).unwrap();
             let sample_embedded = sample.into_coefficient_embedding(3);
 
             assert_eq!(MatZ::new(1, 1), &orthogonal * &sample_embedded);
@@ -254,18 +251,18 @@ mod test_sample_d {
         let n = Z::from(1024);
         let s = Q::ONE;
 
-        let _ = MatPolyOverZ::sample_d(&basis, 3, 16u16, &center, 1u16);
-        let _ = MatPolyOverZ::sample_d(&basis, 3, 2u32, &center, 1u8);
-        let _ = MatPolyOverZ::sample_d(&basis, 3, 2u64, &center, 1u32);
-        let _ = MatPolyOverZ::sample_d(&basis, 3, 2i8, &center, 1u64);
-        let _ = MatPolyOverZ::sample_d(&basis, 3, 2i16, &center, 1i64);
-        let _ = MatPolyOverZ::sample_d(&basis, 3, 2i32, &center, 1i32);
-        let _ = MatPolyOverZ::sample_d(&basis, 3, 2i64, &center, 1i16);
-        let _ = MatPolyOverZ::sample_d(&basis, 3, &n, &center, 1i8);
-        let _ = MatPolyOverZ::sample_d(&basis, 3, 2u8, &center, 1i64);
-        let _ = MatPolyOverZ::sample_d(&basis, 3, 2, &center, &n);
-        let _ = MatPolyOverZ::sample_d(&basis, 3, 2, &center, &s);
-        let _ = MatPolyOverZ::sample_d(&basis, 3, 2, &center, 1.25f64);
-        let _ = MatPolyOverZ::sample_d(&basis, 3, 2, &center, 15.75f32);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, &center, 1u16);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, &center, 1u8);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, &center, 1u32);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, &center, 1u64);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, &center, 1i64);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, &center, 1i32);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, &center, 1i16);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, &center, 1i8);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, &center, 1i64);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, &center, &n);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, &center, &s);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, &center, 1.25f64);
+        let _ = MatPolyOverZ::sample_d(&basis, 3, &center, 15.75f32);
     }
 }

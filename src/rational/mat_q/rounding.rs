@@ -11,7 +11,7 @@
 use super::MatQ;
 use crate::{
     error::MathError,
-    integer::{MatZ, Z},
+    integer::MatZ,
     rational::Q,
     traits::{MatrixDimensions, MatrixGetEntry, MatrixSetEntry},
 };
@@ -173,11 +173,10 @@ impl MatQ {
     /// by `self` with gaussian parameter `r`.
     ///
     /// Parameters:
-    /// - `n`: the security parameter; also specifies the range from which is sampled
     /// - `r`: specifies the Gaussian parameter, which is proportional
     ///   to the standard deviation `sigma * sqrt(2 * pi) = r`
     ///
-    /// Returns the rounded matrix as a [`MatZ`] or an error if `n <= 1` or `r <= 0`.
+    /// Returns the rounded matrix as a [`MatZ`] or an error if `r < 0`.
     ///
     /// # Examples
     /// ```
@@ -185,26 +184,24 @@ impl MatQ {
     /// use std::str::FromStr;
     ///
     /// let value = MatQ::from_str("[[5/2, 1]]").unwrap();
-    /// let rounded = value.randomized_rounding(3,5).unwrap();
+    /// let rounded = value.randomized_rounding(3).unwrap();
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///   if `n <= 1` or `r <= 0`.
+    ///   if `r < 0`.
     ///
     /// This function implements randomized rounding according to:
     /// - \[1\] Peikert, C. (2010, August).
     ///   An efficient and parallel Gaussian sampler for lattices.
     ///   In: Annual Cryptology Conference (pp. 80-97).
     ///   <https://link.springer.com/chapter/10.1007/978-3-642-14623-7_5>
-    pub fn randomized_rounding(&self, r: impl Into<Q>, n: impl Into<Z>) -> Result<MatZ, MathError> {
+    pub fn randomized_rounding(&self, r: impl Into<Q>) -> Result<MatZ, MathError> {
         let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
         let r = r.into();
-        let n = n.into();
         for i in 0..out.get_num_rows() {
             for j in 0..out.get_num_columns() {
-                let entry =
-                    unsafe { self.get_entry_unchecked(i, j) }.randomized_rounding(&r, &n)?;
+                let entry = unsafe { self.get_entry_unchecked(i, j) }.randomized_rounding(&r)?;
                 unsafe { out.set_entry_unchecked(i, j, entry) };
             }
         }
@@ -289,19 +286,10 @@ mod test_randomized_rounding {
     use crate::rational::MatQ;
     use std::str::FromStr;
 
-    /// Ensure that a `n <= 1` throws an error
-    #[test]
-    fn small_n() {
-        let value = MatQ::from_str("[[5/2, 1]]").unwrap();
-        assert!(value.randomized_rounding(3, 1).is_err());
-        assert!(value.randomized_rounding(3, -3).is_err());
-    }
-
-    /// Ensure that a `r <= 0` throws an error
+    /// Ensure that a `r < 0` throws an error
     #[test]
     fn negative_r() {
         let value = MatQ::from_str("[[5/2, 1]]").unwrap();
-        assert!(value.randomized_rounding(0, 5).is_err());
-        assert!(value.randomized_rounding(-1, 5).is_err());
+        assert!(value.randomized_rounding(-1).is_err());
     }
 }
