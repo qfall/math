@@ -49,6 +49,24 @@ Arithmetic operations, comparisons, and conversions are supported across several
 - [`MatQ`](TODO_Link_to_documentation): Represents matrices over $\mathbb Q$.
 - [`PolyOverQ`](TODO_Link_to_documentation): Represents polynomials with coefficients over $\mathbb Q$.
 
+## Quick Example
+```rust
+use qfall_math::{integer_mod_q::MatZq, integer::MatZ};
+
+# parameters: nr_rows, nr_columns, modulus
+let mat_a = MatZq::sample_uniform(2, 3, 257);
+# parameters: nr_rows, nr_columns, lower_bound, upper_bound
+let vec_s = MatZ::sample_uniform(1, 2, 0, 2);
+# parameters: nr_rows, nr_columns, center, Gaussian parameter
+let vec_e = MatZ::sample_discrete_gauss(1, 3, 0, 4.0);
+
+# SIS-instance: t = A * e^T mod 257
+let vec_t = mat_a * vec_e.transpose();
+
+# LWE-instance: b = s * A + e mod 257
+let vec_b = vec_s * mat_a + vec_e;
+```
+
 ## Bugs
 Please report bugs through the [GitHub issue tracker](https://github.com/qfall/math/issues).
 
@@ -78,5 +96,5 @@ Furthermore, we utilized [serde](https://crates.io/crates/serde) and [serde_json
 
 ## License
 
-This library is distributed under the **Mozilla Public License Version 2.0** which can be found [here](https://github.com/qfall/math/blob/dev/LICENSE).
+This library is distributed under the [Mozilla Public License Version 2.0]((https://github.com/qfall/math/blob/dev/LICENSE)).
 Permissions of this weak copyleft license are conditioned on making the source code of licensed files and modifications of those files available under the same license (or in certain cases, under one of the GNU licenses). Copyright and license notices must be preserved. Contributors provide an express grant of patent rights. However, a larger work using the licensed work may be distributed under different terms and without source code for files added to the larger work.
