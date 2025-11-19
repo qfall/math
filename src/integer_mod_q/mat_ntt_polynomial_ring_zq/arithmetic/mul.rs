@@ -15,7 +15,7 @@ use crate::{
 use flint_sys::fmpz_mod::{fmpz_mod_add_fmpz, fmpz_mod_ctx, fmpz_mod_mul};
 
 impl MatNTTPolynomialRingZq {
-    /// Multiplies `self` with `other` using component-wise (NTT) multiplication.
+    /// Multiplies `self` with `other`.
     ///
     /// Paramters:
     /// - `other`: specifies the NTT-representation of the polynomial to multiply to `self`
