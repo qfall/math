@@ -11,7 +11,7 @@
 
 use crate::{
     error::MathError,
-    integer::{PolyOverZ, Z},
+    integer::PolyOverZ,
     integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq},
     rational::Q,
 };
@@ -24,14 +24,13 @@ impl PolynomialRingZq {
     /// Parameters:
     /// - `modulus`: specifies the [`ModulusPolynomialRingZq`] over which the
     ///   ring of polynomials modulo `modulus.get_q()` is defined
-    /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
     /// - `center`: specifies the positions of the center with peak probability
     /// - `s`: specifies the Gaussian parameter, which is proportional
     ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a fresh [`PolynomialRingZq`] instance of length `modulus.get_degree() - 1`
     /// with coefficients chosen independently according the discrete Gaussian distribution or
-    /// a [`MathError`] if `n <= 1` or `s <= 0`.
+    /// a [`MathError`] if `s < 0`.
     ///
     /// # Examples
     /// ```
@@ -39,18 +38,17 @@ impl PolynomialRingZq {
     /// use std::str::FromStr;
     /// let modulus = ModulusPolynomialRingZq::from_str("3  1 2 3 mod 17").unwrap();
     ///
-    /// let sample = PolynomialRingZq::sample_discrete_gauss(&modulus, 1024, 0, 1).unwrap();
+    /// let sample = PolynomialRingZq::sample_discrete_gauss(&modulus, 0, 1).unwrap();
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///   if `n <= 1` or `s <= 0`.
+    ///   if `s < 0`.
     ///
     /// # Panics ...
     /// - if the provided [`ModulusPolynomialRingZq`] has degree `0` or smaller.
     pub fn sample_discrete_gauss(
         modulus: impl Into<ModulusPolynomialRingZq>,
-        n: impl Into<Z>,
         center: impl Into<Q>,
         s: impl Into<Q>,
     ) -> Result<Self, MathError> {
@@ -60,7 +58,7 @@ impl PolynomialRingZq {
             "ModulusPolynomial of degree 0 is insufficient to sample over."
         );
 
-        let poly_z = PolyOverZ::sample_discrete_gauss(modulus.get_degree() - 1, n, center, s)?;
+        let poly_z = PolyOverZ::sample_discrete_gauss(modulus.get_degree() - 1, center, s)?;
         let mut poly_ringzq = PolynomialRingZq {
             poly: poly_z,
             modulus,
@@ -86,21 +84,20 @@ mod test_sample_discrete_gauss {
     /// or [`Into<Q>`], i.e. u8, i16, f32, Z, Q, ...
     #[test]
     fn availability() {
-        let n = Z::from(1024);
         let center = Q::ZERO;
         let s = Q::ONE;
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
 
-        let _ = PolynomialRingZq::sample_discrete_gauss(&modulus, 16u8, 0f32, 1u8);
-        let _ = PolynomialRingZq::sample_discrete_gauss(&modulus, 16u16, 0f64, 1u16);
-        let _ = PolynomialRingZq::sample_discrete_gauss(&modulus, 16u32, 0f32, 1u32);
-        let _ = PolynomialRingZq::sample_discrete_gauss(&modulus, 16u64, 0f64, 1u64);
-        let _ = PolynomialRingZq::sample_discrete_gauss(&modulus, 16u8, 0f32, 1i8);
-        let _ = PolynomialRingZq::sample_discrete_gauss(&modulus, 16i16, 0f32, 1i16);
-        let _ = PolynomialRingZq::sample_discrete_gauss(&modulus, 16i32, 0f32, 1i32);
-        let _ = PolynomialRingZq::sample_discrete_gauss(&modulus, 16i64, 0f64, 1i64);
-        let _ = PolynomialRingZq::sample_discrete_gauss(&modulus, n, center, s);
-        let _ = PolynomialRingZq::sample_discrete_gauss(&modulus, 16i64, 0f32, 1f64);
+        let _ = PolynomialRingZq::sample_discrete_gauss(&modulus, 0f32, 1u8);
+        let _ = PolynomialRingZq::sample_discrete_gauss(&modulus, 0f64, 1u16);
+        let _ = PolynomialRingZq::sample_discrete_gauss(&modulus, 0f32, 1u32);
+        let _ = PolynomialRingZq::sample_discrete_gauss(&modulus, 0f64, 1u64);
+        let _ = PolynomialRingZq::sample_discrete_gauss(&modulus, 0f32, 1i8);
+        let _ = PolynomialRingZq::sample_discrete_gauss(&modulus, 0f32, 1i16);
+        let _ = PolynomialRingZq::sample_discrete_gauss(&modulus, 0f32, 1i32);
+        let _ = PolynomialRingZq::sample_discrete_gauss(&modulus, 0f64, 1i64);
+        let _ = PolynomialRingZq::sample_discrete_gauss(&modulus, center, s);
+        let _ = PolynomialRingZq::sample_discrete_gauss(&modulus, 0f32, 1f64);
     }
 
     /// Checks whether the boundaries of the interval are kept for small moduli.
@@ -109,7 +106,7 @@ mod test_sample_discrete_gauss {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
 
         for _ in 0..32 {
-            let poly = PolynomialRingZq::sample_discrete_gauss(&modulus, 1024, 15, 1).unwrap();
+            let poly = PolynomialRingZq::sample_discrete_gauss(&modulus, 15, 1).unwrap();
 
             for i in 0..3 {
                 let sample: Z = poly.get_coeff(i).unwrap();
@@ -126,7 +123,7 @@ mod test_sample_discrete_gauss {
             ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
 
         for _ in 0..256 {
-            let poly = PolynomialRingZq::sample_discrete_gauss(&modulus, 1024, 1, 1).unwrap();
+            let poly = PolynomialRingZq::sample_discrete_gauss(&modulus, 1, 1).unwrap();
 
             for i in 0..3 {
                 let sample: Z = poly.get_coeff(i).unwrap();
@@ -145,7 +142,7 @@ mod test_sample_discrete_gauss {
             modulus.set_coeff(degree, 1).unwrap();
             let modulus = ModulusPolynomialRingZq::from(&modulus);
 
-            let res = PolynomialRingZq::sample_discrete_gauss(&modulus, 1024, i64::MAX, 1).unwrap();
+            let res = PolynomialRingZq::sample_discrete_gauss(&modulus, i64::MAX, 1).unwrap();
 
             assert_eq!(
                 res.get_degree() + 1,
@@ -161,6 +158,6 @@ mod test_sample_discrete_gauss {
     fn invalid_modulus() {
         let modulus = ModulusPolynomialRingZq::from_str("1  1 mod 17").unwrap();
 
-        let _ = PolynomialRingZq::sample_discrete_gauss(&modulus, 1024, 0, 1).unwrap();
+        let _ = PolynomialRingZq::sample_discrete_gauss(&modulus, 0, 1).unwrap();
     }
 }

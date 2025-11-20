@@ -9,13 +9,15 @@
 //! This module contains algorithms for sampling according to the discrete Gaussian distribution.
 
 use crate::{
-    error::MathError, integer::Z, rational::Q,
-    utils::sample::discrete_gauss::DiscreteGaussianIntegerSampler,
+    error::MathError,
+    integer::Z,
+    rational::Q,
+    utils::sample::discrete_gauss::{DiscreteGaussianIntegerSampler, LookupTableSetting, TAILCUT},
 };
 
 impl Z {
     /// Chooses a [`Z`] instance according to the discrete Gaussian distribution
-    /// in `[center - ⌈s * log_2(n)⌉ , center + ⌊s * log_2(n)⌋ ]`.
+    /// in `[center - ⌈6 * s⌉ , center + ⌊6 * s⌋ ]`.
     ///
     /// This function samples discrete Gaussians according to the definition of
     /// SampleZ in [GPV08](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=d9f54077d568784c786f7b1d030b00493eb3ae35).
@@ -28,34 +30,34 @@ impl Z {
     ///
     /// Returns new [`Z`] sample chosen according to the specified discrete Gaussian
     /// distribution or a [`MathError`] if the specified parameters were not chosen
-    /// appropriately, i.e. `n > 1` and `s > 0`.
+    /// appropriately, i.e. `s < 0`.
     ///
     /// # Examples
     /// ```
     /// use qfall_math::integer::Z;
     ///
-    /// let sample = Z::sample_discrete_gauss(128, 0, 1).unwrap();
+    /// let sample = Z::sample_discrete_gauss(0, 1).unwrap();
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///   if `n <= 1` or `s <= 0`.
+    ///   if `s < 0`.
     ///
     /// This function implements SampleZ according to:
     /// - \[1\] Gentry, Craig and Peikert, Chris and Vaikuntanathan, Vinod (2008).
     ///   Trapdoors for hard lattices and new cryptographic constructions.
     ///   In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
     ///   <https://dl.acm.org/doi/pdf/10.1145/1374376.1374407>
-    pub fn sample_discrete_gauss(
-        n: impl Into<Z>,
-        center: impl Into<Q>,
-        s: impl Into<Q>,
-    ) -> Result<Self, MathError> {
-        let n: Z = n.into();
+    pub fn sample_discrete_gauss(center: impl Into<Q>, s: impl Into<Q>) -> Result<Self, MathError> {
         let center: Q = center.into();
         let s: Q = s.into();
 
-        let mut dgis = DiscreteGaussianIntegerSampler::init(&n, &center, &s)?;
+        let mut dgis = DiscreteGaussianIntegerSampler::init(
+            &center,
+            &s,
+            unsafe { TAILCUT },
+            LookupTableSetting::NoLookup,
+        )?;
 
         Ok(dgis.sample_z())
     }
@@ -76,19 +78,19 @@ mod test_sample_discrete_gauss {
         let z = Z::from(2);
         let q = Q::from(2);
 
-        let _ = Z::sample_discrete_gauss(16u16, 7u8, 1u16);
-        let _ = Z::sample_discrete_gauss(2u32, 7u16, 1u8);
-        let _ = Z::sample_discrete_gauss(2u64, 7u32, 1u32);
-        let _ = Z::sample_discrete_gauss(2i8, 7u64, 1u64);
-        let _ = Z::sample_discrete_gauss(2i16, 7i8, 1i64);
-        let _ = Z::sample_discrete_gauss(2i32, 7i16, 1i32);
-        let _ = Z::sample_discrete_gauss(2i64, 7i32, 1i16);
-        let _ = Z::sample_discrete_gauss(&z, 7i64, 1i8);
-        let _ = Z::sample_discrete_gauss(2u8, &q, 1i64);
-        let _ = Z::sample_discrete_gauss(2, 0i8, &z);
-        let _ = Z::sample_discrete_gauss(2, &z, &q);
-        let _ = Z::sample_discrete_gauss(2, 1f32, 1f64);
-        let _ = Z::sample_discrete_gauss(2, 1f64, 1f32);
+        let _ = Z::sample_discrete_gauss(7u8, 1u16);
+        let _ = Z::sample_discrete_gauss(7u16, 1u8);
+        let _ = Z::sample_discrete_gauss(7u32, 1u32);
+        let _ = Z::sample_discrete_gauss(7u64, 1u64);
+        let _ = Z::sample_discrete_gauss(7i8, 1i64);
+        let _ = Z::sample_discrete_gauss(7i16, 1i32);
+        let _ = Z::sample_discrete_gauss(7i32, 1i16);
+        let _ = Z::sample_discrete_gauss(7i64, 1i8);
+        let _ = Z::sample_discrete_gauss(&q, 1i64);
+        let _ = Z::sample_discrete_gauss(0i8, &z);
+        let _ = Z::sample_discrete_gauss(&z, &q);
+        let _ = Z::sample_discrete_gauss(1f32, 1f64);
+        let _ = Z::sample_discrete_gauss(1f64, 1f32);
     }
 
     /// Roughly checks the collected samples are distributed
@@ -101,7 +103,7 @@ mod test_sample_discrete_gauss {
         let mut counts = [0; 20];
         // count sampled instances
         for _ in 0..200 {
-            let sample = Z::sample_discrete_gauss(1024, 10, 2).unwrap();
+            let sample = Z::sample_discrete_gauss(10, 2).unwrap();
             let sample_int = i64::try_from(&sample).unwrap() as usize;
             counts[sample_int] += 1;
         }

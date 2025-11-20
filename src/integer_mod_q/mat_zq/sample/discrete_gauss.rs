@@ -10,12 +10,12 @@
 
 use crate::{
     error::MathError,
-    integer::Z,
     integer_mod_q::{MatZq, Modulus},
     rational::{MatQ, Q},
     traits::{MatrixDimensions, MatrixSetEntry},
     utils::sample::discrete_gauss::{
-        sample_d, sample_d_precomputed_gso, DiscreteGaussianIntegerSampler,
+        sample_d, sample_d_precomputed_gso, DiscreteGaussianIntegerSampler, LookupTableSetting,
+        TAILCUT,
     },
 };
 use std::fmt::Display;
@@ -23,29 +23,28 @@ use std::fmt::Display;
 impl MatZq {
     /// Initializes a new matrix with dimensions `num_rows` x `num_columns` and with each entry
     /// sampled independently according to the discrete Gaussian distribution,
-    /// using [`Z::sample_discrete_gauss`].
+    /// using [`Z::sample_discrete_gauss`](crate::integer::Z::sample_discrete_gauss).
     ///
     /// Parameters:
     /// - `num_rows`: specifies the number of rows the new matrix should have
     /// - `num_cols`: specifies the number of columns the new matrix should have
-    /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
     /// - `center`: specifies the positions of the center with peak probability
     /// - `s`: specifies the Gaussian parameter, which is proportional
     ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a matrix with each entry sampled independently from the
-    /// specified discrete Gaussian distribution or an error if `n <= 1` or `s <= 0`.
+    /// specified discrete Gaussian distribution or an error if `s < 0`.
     ///
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::MatZq;
     ///
-    /// let sample = MatZq::sample_discrete_gauss(3, 1, 83, 1024, 0, 1.25f32).unwrap();
+    /// let sample = MatZq::sample_discrete_gauss(3, 1, 83, 0, 1.25f32).unwrap();
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///   if `n <= 1` or `s <= 0`.
+    ///   if `s < 0`.
     ///
     /// # Panics ...
     /// - if the provided number of rows and columns or the modulus are not suited to create a matrix.
@@ -55,16 +54,19 @@ impl MatZq {
         num_rows: impl TryInto<i64> + Display,
         num_cols: impl TryInto<i64> + Display,
         modulus: impl Into<Modulus>,
-        n: impl Into<Z>,
         center: impl Into<Q>,
         s: impl Into<Q>,
     ) -> Result<MatZq, MathError> {
-        let n: Z = n.into();
         let center: Q = center.into();
         let s: Q = s.into();
         let mut out = Self::new(num_rows, num_cols, modulus);
 
-        let mut dgis = DiscreteGaussianIntegerSampler::init(&n, &center, &s)?;
+        let mut dgis = DiscreteGaussianIntegerSampler::init(
+            &center,
+            &s,
+            unsafe { TAILCUT },
+            LookupTableSetting::FillOnTheFly,
+        )?;
 
         for row in 0..out.get_num_rows() {
             for col in 0..out.get_num_columns() {
@@ -83,13 +85,12 @@ impl MatZq {
     ///
     /// Parameters:
     /// - `basis`: specifies a basis for the lattice from which is sampled
-    /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
     /// - `center`: specifies the positions of the center with peak probability
     /// - `s`: specifies the Gaussian parameter, which is proportional
     ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a lattice vector sampled according to the discrete Gaussian distribution
-    /// or an error if `n <= 1` or `s <= 0`, the number of rows of the `basis` and `center` differ,
+    /// or an error if `s < 0`, the number of rows of the `basis` and `center` differ,
     /// or if `center` is not a column vector.
     ///
     /// # Examples
@@ -98,12 +99,12 @@ impl MatZq {
     /// let basis = MatZq::identity(5, 5, 17);
     /// let center = MatQ::new(5, 1);
     ///
-    /// let sample = MatZq::sample_d(&basis, 1024, &center, 1.25f32).unwrap();
+    /// let sample = MatZq::sample_d(&basis, &center, 1.25f32).unwrap();
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///   if `n <= 1` or `s <= 0`.
+    ///   if `s < 0`.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     ///   if the number of rows of the `basis` and `center` differ.
     /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
@@ -114,53 +115,16 @@ impl MatZq {
     ///   Trapdoors for hard lattices and new cryptographic constructions.
     ///   In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
     ///   <https://dl.acm.org/doi/pdf/10.1145/1374376.1374407>
-    pub fn sample_d(
-        basis: &MatZq,
-        n: impl Into<Z>,
-        center: &MatQ,
-        s: impl Into<Q>,
-    ) -> Result<Self, MathError> {
-        let n: Z = n.into();
+    pub fn sample_d(basis: &MatZq, center: &MatQ, s: impl Into<Q>) -> Result<Self, MathError> {
         let s: Q = s.into();
 
         let sample = sample_d(
             &basis.get_representative_least_nonnegative_residue(),
-            &n,
             center,
             &s,
         )?;
 
         Ok(MatZq::from((&sample, basis.get_mod())))
-    }
-
-    /// Runs [`MatZq::sample_d`] with identity basis and center vector `0`.
-    /// The full documentation can be found at [`MatZq::sample_d`].
-    ///
-    /// Parameters:
-    /// - `dimension`: specifies the number of rows and columns
-    ///   that the identity basis should have
-    /// - `modulus`: specifies the modulus of the new matrix
-    /// - `n`: specifies the range from which
-    ///   [`Zq::sample_discrete_gauss`](crate::integer_mod_q::Zq::sample_discrete_gauss) samples
-    /// - `s`: specifies the Gaussian parameter, which is proportional
-    ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
-    ///
-    /// Returns a lattice vector sampled according to the discrete Gaussian distribution.
-    /// The lattice specified as `Z^m` for `m = dimension` and its center fixed to `0^m`.
-    ///
-    /// # Panics
-    /// - if the provided `dimension` is smaller than 1 or does not fit into an [`i64`].
-    /// - if `modulus < 2`.
-    pub fn sample_d_common(
-        dimension: impl TryInto<i64> + Display + Clone,
-        modulus: impl Into<Modulus>,
-        n: impl Into<Z>,
-        s: impl Into<Q>,
-    ) -> Result<Self, MathError> {
-        let basis = MatZq::identity(dimension.clone(), dimension, modulus);
-        let center = MatQ::new(basis.get_num_rows(), 1);
-
-        Self::sample_d(&basis, n, &center, s)
     }
 
     /// SampleD samples a discrete Gaussian from the lattice with a provided `basis`.
@@ -172,13 +136,12 @@ impl MatZq {
     /// Parameters:
     /// - `basis`: specifies a basis for the lattice from which is sampled
     /// - `basis_gso`: specifies the precomputed gso for `basis`
-    /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
     /// - `center`: specifies the positions of the center with peak probability
     /// - `s`: specifies the Gaussian parameter, which is proportional
     ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
     ///
     /// Returns a lattice vector sampled according to the discrete Gaussian distribution
-    /// or an error if `n <= 1` or `s <= 0`, the number of rows of the `basis` and `center` differ,
+    /// or an error if `s < 0`, the number of rows of the `basis` and `center` differ,
     /// or if `center` is not a column vector.
     ///
     /// # Examples
@@ -188,12 +151,12 @@ impl MatZq {
     /// let center = MatQ::new(5, 1);
     /// let basis_gso = MatQ::from(&basis.get_representative_least_nonnegative_residue()).gso();
     ///
-    /// let sample = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, 1024, &center, 1.25f32).unwrap();
+    /// let sample = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, 1.25f32).unwrap();
     /// ```
     ///
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///   if `n <= 1` or `s <= 0`.
+    ///   if `s < 0`.
     /// - Returns a [`MathError`] of type [`MismatchingMatrixDimension`](MathError::MismatchingMatrixDimension)
     ///   if the number of rows of the `basis` and `center` differ.
     /// - Returns a [`MathError`] of type [`StringConversionError`](MathError::StringConversionError)
@@ -210,17 +173,14 @@ impl MatZq {
     pub fn sample_d_precomputed_gso(
         basis: &MatZq,
         basis_gso: &MatQ,
-        n: impl Into<Z>,
         center: &MatQ,
         s: impl Into<Q>,
     ) -> Result<Self, MathError> {
-        let n: Z = n.into();
         let s: Q = s.into();
 
         let sample = sample_d_precomputed_gso(
             &basis.get_representative_least_nonnegative_residue(),
             basis_gso,
-            &n,
             center,
             &s,
         )?;
@@ -249,20 +209,20 @@ mod test_sample_discrete_gauss {
         let s = Q::ONE;
         let modulus = Modulus::from(83);
 
-        let _ = MatZq::sample_discrete_gauss(2u64, 3i8, &modulus, 16u16, 0f32, 1u16);
-        let _ = MatZq::sample_discrete_gauss(3u8, 2i16, 83u8, 2u32, &center, 1u8);
-        let _ = MatZq::sample_discrete_gauss(1, 1, &n, 2u64, &center, 1u32);
-        let _ = MatZq::sample_discrete_gauss(1, 1, 83i8, 2i8, &center, 1u64);
-        let _ = MatZq::sample_discrete_gauss(1, 1, 83, 2i16, &center, 1i64);
-        let _ = MatZq::sample_discrete_gauss(1, 1, 83, 2i32, &center, 1i32);
-        let _ = MatZq::sample_discrete_gauss(1, 1, 83, 2i64, &center, 1i16);
-        let _ = MatZq::sample_discrete_gauss(1, 1, 83, &n, &center, 1i8);
-        let _ = MatZq::sample_discrete_gauss(1, 1, 83, 2u8, &center, 1i64);
-        let _ = MatZq::sample_discrete_gauss(1, 1, 83, 2, &center, &n);
-        let _ = MatZq::sample_discrete_gauss(1, 1, 83, 2, &center, &s);
-        let _ = MatZq::sample_discrete_gauss(1, 1, 83, 2, &center, 1.25f64);
-        let _ = MatZq::sample_discrete_gauss(1, 1, 83, 2, 0, 1.25f64);
-        let _ = MatZq::sample_discrete_gauss(1, 1, 83, 2, center, 15.75f32);
+        let _ = MatZq::sample_discrete_gauss(2u64, 3i8, &modulus, 0f32, 1u16);
+        let _ = MatZq::sample_discrete_gauss(3u8, 2i16, 83u8, &center, 1u8);
+        let _ = MatZq::sample_discrete_gauss(1, 1, &n, &center, 1u32);
+        let _ = MatZq::sample_discrete_gauss(1, 1, 83i8, &center, 1u64);
+        let _ = MatZq::sample_discrete_gauss(1, 1, 83, &center, 1i64);
+        let _ = MatZq::sample_discrete_gauss(1, 1, 83, &center, 1i32);
+        let _ = MatZq::sample_discrete_gauss(1, 1, 83, &center, 1i16);
+        let _ = MatZq::sample_discrete_gauss(1, 1, 83, &center, 1i8);
+        let _ = MatZq::sample_discrete_gauss(1, 1, 83, &center, 1i64);
+        let _ = MatZq::sample_discrete_gauss(1, 1, 83, &center, &n);
+        let _ = MatZq::sample_discrete_gauss(1, 1, 83, &center, &s);
+        let _ = MatZq::sample_discrete_gauss(1, 1, 83, &center, 1.25f64);
+        let _ = MatZq::sample_discrete_gauss(1, 1, 83, 0, 1.25f64);
+        let _ = MatZq::sample_discrete_gauss(1, 1, 83, center, 15.75f32);
     }
 }
 
@@ -270,7 +230,7 @@ mod test_sample_discrete_gauss {
 mod test_sample_d {
     use crate::{
         integer::Z,
-        integer_mod_q::{MatZq, Modulus},
+        integer_mod_q::MatZq,
         rational::{MatQ, Q},
     };
 
@@ -287,19 +247,19 @@ mod test_sample_d {
         let center = MatQ::new(5, 1);
         let s = Q::ONE;
 
-        let _ = MatZq::sample_d(&basis, 16u16, &center, 1u16);
-        let _ = MatZq::sample_d(&basis, 2u32, &center, 1u8);
-        let _ = MatZq::sample_d(&basis, 2u64, &center, 1u32);
-        let _ = MatZq::sample_d(&basis, 2i8, &center, 1u64);
-        let _ = MatZq::sample_d(&basis, 2i16, &center, 1i64);
-        let _ = MatZq::sample_d(&basis, 2i32, &center, 1i32);
-        let _ = MatZq::sample_d(&basis, 2i64, &center, 1i16);
-        let _ = MatZq::sample_d(&basis, &n, &center, 1i8);
-        let _ = MatZq::sample_d(&basis, 2u8, &center, 1i64);
-        let _ = MatZq::sample_d(&basis, 2, &center, &n);
-        let _ = MatZq::sample_d(&basis, 2, &center, &s);
-        let _ = MatZq::sample_d(&basis, 2, &center, 1.25f64);
-        let _ = MatZq::sample_d(&basis, 2, &center, 15.75f32);
+        let _ = MatZq::sample_d(&basis, &center, 1u16);
+        let _ = MatZq::sample_d(&basis, &center, 1u8);
+        let _ = MatZq::sample_d(&basis, &center, 1u32);
+        let _ = MatZq::sample_d(&basis, &center, 1u64);
+        let _ = MatZq::sample_d(&basis, &center, 1i64);
+        let _ = MatZq::sample_d(&basis, &center, 1i32);
+        let _ = MatZq::sample_d(&basis, &center, 1i16);
+        let _ = MatZq::sample_d(&basis, &center, 1i8);
+        let _ = MatZq::sample_d(&basis, &center, 1i64);
+        let _ = MatZq::sample_d(&basis, &center, &n);
+        let _ = MatZq::sample_d(&basis, &center, &s);
+        let _ = MatZq::sample_d(&basis, &center, 1.25f64);
+        let _ = MatZq::sample_d(&basis, &center, 15.75f32);
     }
 
     /// Checks whether `sample_d_precomputed_gso` is available for all types
@@ -313,29 +273,18 @@ mod test_sample_d {
         let s = Q::ONE;
         let basis_gso = MatQ::from(&basis.get_representative_least_nonnegative_residue());
 
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, 16u16, &center, 1u16);
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, 2u32, &center, 1u8);
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, 2u64, &center, 1u32);
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, 2i8, &center, 1u64);
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, 2i16, &center, 1i64);
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, 2i32, &center, 1i32);
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, 2i64, &center, 1i16);
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &n, &center, 1i8);
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, 2u8, &center, 1i64);
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, 2, &center, &n);
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, 2, &center, &s);
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, 2, &center, 1.25f64);
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, 2, &center, 15.75f32);
-    }
-
-    // As `sample_d_common` just calls `MatZq::sample_d` with identity basis
-    // and center 0, further tests are omitted.
-
-    /// Ensures that `sample_d_common` works properly.
-    #[test]
-    fn common() {
-        let modulus = Modulus::from(17);
-
-        let _ = MatZq::sample_d_common(10, &modulus, 1024, 1.25f32).unwrap();
+        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, 1u16);
+        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, 1u8);
+        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, 1u32);
+        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, 1u64);
+        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, 1i64);
+        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, 1i32);
+        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, 1i16);
+        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, 1i8);
+        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, 1i64);
+        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, &n);
+        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, &s);
+        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, 1.25f64);
+        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, 15.75f32);
     }
 }

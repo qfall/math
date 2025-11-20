@@ -15,6 +15,11 @@ use crate::{
     traits::SetCoefficient,
     utils::index::evaluate_index,
 };
+use probability::{
+    prelude::{Gaussian, Sample},
+    source,
+};
+use rand::RngCore;
 use std::fmt::Display;
 
 impl PolyOverQ {
@@ -56,8 +61,21 @@ impl PolyOverQ {
         let sigma: f64 = sigma.into();
         let mut poly = PolyOverQ::default();
 
+        if sigma <= 0.0 {
+            return Err(MathError::NonPositive(format!(
+                "The sigma has to be positive and not zero, but the provided value is {sigma}."
+            )));
+        }
+        let mut rng = rand::rng();
+        let mut source = source::default(rng.next_u64());
+
+        // Instead of sampling with a center of c, we sample with center 0 and add the
+        // center later. These are equivalent and this way we can sample in larger ranges
+        let sampler = Gaussian::new(0.0, sigma);
+
         for index in 0..=max_degree {
-            let sample: Q = Q::sample_gauss(&center, sigma)?;
+            let mut sample = Q::from(sampler.sample(&mut source));
+            sample += &center;
             unsafe { poly.set_coeff_unchecked(index, &sample) };
         }
         Ok(poly)

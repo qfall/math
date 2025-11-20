@@ -15,11 +15,10 @@ use qfall_math::{integer::*, rational::*};
 /// Sample a [`MatZ`] with `sample_d`.
 pub fn sample_d() {
     let basis = MatZ::identity(5, 5);
-    let n = Z::from(1024);
     let center = MatQ::new(5, 1);
     let gaussian_parameter = Q::ONE;
 
-    let _ = MatZ::sample_d(&basis, &n, &center, &gaussian_parameter).unwrap();
+    let _ = MatZ::sample_d(&basis, &center, &gaussian_parameter).unwrap();
 }
 
 /// benchmark [sample_d]
