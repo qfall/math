@@ -15,7 +15,7 @@
 use super::{from::ConvolutionType, NTTBasisPolynomialRingZq};
 use crate::{
     integer::Z,
-    integer_mod_q::{PolyOverZq, Zq},
+    integer_mod_q::{Modulus, PolyOverZq},
     utils::index::bit_reverse_permutation,
 };
 use flint_sys::{
@@ -36,12 +36,9 @@ impl NTTBasisPolynomialRingZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::Zq;
-    /// use qfall_math::integer_mod_q::Modulus;
-    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::integer_mod_q::{Modulus, PolyOverZq, NTTBasisPolynomialRingZq, ConvolutionType};
     /// use std::str::FromStr;
-    /// use qfall_math::integer_mod_q::NTTBasisPolynomialRingZq;
-    /// use qfall_math::integer_mod_q::ConvolutionType;
     ///
     /// let g_poly = PolyOverZq::from_str("4  1 2 3 4 mod 7681").unwrap();
     /// let modulus = Modulus::from(7681);
@@ -50,23 +47,20 @@ impl NTTBasisPolynomialRingZq {
     ///     NTTBasisPolynomialRingZq::init(4, 3383, &modulus, ConvolutionType::Cyclic);
     ///
     /// let ghat_ntt = vec![
-    ///     Zq::from((10, &modulus)),
-    ///     Zq::from((913, &modulus)),
-    ///     Zq::from((7679, &modulus)),
-    ///     Zq::from((6764, &modulus)),
+    ///     Z::from(10),
+    ///     Z::from(913),
+    ///     Z::from(7679),
+    ///     Z::from(6764),
     /// ];
     ///
-    /// let ghat_intt = ntt_basis.intt(ghat_ntt);
+    /// let ghat_inv_ntt = ntt_basis.inv_ntt(ghat_ntt);
     ///
-    /// assert_eq!(g_poly, ghat_intt);
+    /// assert_eq!(g_poly, ghat_inv_ntt);
     /// ```
     /// ```
-    /// use qfall_math::integer_mod_q::Zq;
-    /// use qfall_math::integer_mod_q::Modulus;
-    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::integer_mod_q::{Modulus, PolyOverZq, NTTBasisPolynomialRingZq, ConvolutionType};
     /// use std::str::FromStr;
-    /// use qfall_math::integer_mod_q::NTTBasisPolynomialRingZq;
-    /// use qfall_math::integer_mod_q::ConvolutionType;
     ///
     /// let g_poly = PolyOverZq::from_str("4  1 2 3 4 mod 7681").unwrap();
     /// let modulus = Modulus::from(7681);
@@ -75,40 +69,42 @@ impl NTTBasisPolynomialRingZq {
     ///     NTTBasisPolynomialRingZq::init(4, 1925, &modulus, ConvolutionType::Negacyclic);
     ///
     /// let ghat_ntt = vec![
-    ///     Zq::from((1467, &modulus)),
-    ///     Zq::from((2807, &modulus)),
-    ///     Zq::from((3471, &modulus)),
-    ///     Zq::from((7621, &modulus)),
+    ///     Z::from(1467),
+    ///     Z::from(2807),
+    ///     Z::from(3471),
+    ///     Z::from(7621),
     /// ];
     ///
-    /// let ghat_intt = ntt_basis.intt(ghat_ntt);
+    /// let ghat_inv_ntt = ntt_basis.inv_ntt(ghat_ntt);
     ///
-    /// assert_eq!(g_poly, ghat_intt);
+    /// assert_eq!(g_poly, ghat_inv_ntt);
     /// ```
     ///
-    /// # Panics if ...
-    /// - it is not reduced, i.e. has a coefficient of degree > n
-    /// - the modulus differs from the modulus over which we view the polynomial
+    /// # Panics ...
+    /// - if it is not reduced, i.e. has a coefficient of degree > n.
+    /// - if the modulus differs from the modulus over which we view the polynomial.
     ///
     /// The algorithm is based on the Gentleman-Sande algorithm:
     /// -\[1\] Gentleman, W. Morven, and Gordon Sande.
     ///     "Fast fourier transforms: for fun and profit."
     ///     Proceedings of the November 7-10, 1966, fall joint computer conference. 1966.
-    pub fn intt(&self, vector: Vec<Zq>) -> PolyOverZq {
+    pub fn inv_ntt(&self, vector: Vec<Z>) -> PolyOverZq {
         assert_eq!(vector.len(), self.n as usize);
-        for x in &vector {
-            assert_eq!(x.modulus, self.modulus);
-        }
-        let mut res = iterative_intt(vector, &self.powers_of_omega_inv, &self.n_inv);
+        let mut res = iterative_inv_ntt(
+            vector,
+            &self.powers_of_omega_inv,
+            &self.n_inv,
+            &self.modulus,
+        );
 
         // Negacyclic: perform postprocessing
         if self.convolution_type == ConvolutionType::Negacyclic {
             for (i, x) in res.iter_mut().enumerate() {
                 unsafe {
                     fmpz_mod_mul(
-                        &mut x.value.value,
-                        &x.value.value,
-                        &self.powers_of_psi_inv[i].value.value,
+                        &mut x.value,
+                        &x.value,
+                        &self.powers_of_psi_inv[i].value,
                         self.modulus.get_fmpz_mod_ctx_struct(),
                     )
                 };
@@ -121,7 +117,7 @@ impl NTTBasisPolynomialRingZq {
                 fmpz_mod_poly_set_coeff_fmpz(
                     &mut out.poly,
                     i as i64,
-                    &x.value.value,
+                    &x.value,
                     self.modulus.get_fmpz_mod_ctx_struct(),
                 );
             }
@@ -135,16 +131,16 @@ impl NTTBasisPolynomialRingZq {
 /// chunk.
 /// The chunk is double the size of the stride.
 /// The computation currently performs the standard butterlfy operation from Gentleman-Sande.
-unsafe fn intt_stride_steps(
-    chunk: &mut [&mut Z],
+unsafe fn inv_ntt_stride_steps(
+    chunk: &mut [Z],
     stride: usize,
     power_pointer: usize,
     modulus_pointer: &fmpz_mod_ctx,
-    powers_of_omega_inv_pointers: &[&Z],
+    powers_of_omega_inv_pointers: &[Z],
 ) {
     for i in 0..stride {
         // compute power of the current level
-        let current_power = powers_of_omega_inv_pointers[2_usize.pow(power_pointer as u32) * (i)];
+        let current_power = &powers_of_omega_inv_pointers[2_usize.pow(power_pointer as u32) * (i)];
 
         // GS butterfly
         // by using Z, we can manage not to initialize additional modulus objects in this part
@@ -182,26 +178,28 @@ unsafe fn intt_stride_steps(
 ///
 /// The algorithm possesses the option to be multi-threaded, but benchmarking has shown,
 /// that it makes the algorithm less efficient, so we turned it off.
-fn iterative_intt(coefficients: Vec<Zq>, powers_of_omega_inv: &[Zq], n_inv: &Zq) -> Vec<Zq> {
+fn iterative_inv_ntt(
+    coefficients: Vec<Z>,
+    powers_of_omega_inv: &[Z],
+    n_inv: &Z,
+    modulus: &Modulus,
+) -> Vec<Z> {
     let n = coefficients.len();
 
     let mut res = coefficients;
-    let modulus_pointer = n_inv.modulus.get_fmpz_mod_ctx_struct();
-    let mut res_z: Vec<&mut Z> = res.iter_mut().map(|x| &mut x.value).collect();
-    let powers_of_omega_inv_pointers: Vec<&Z> =
-        powers_of_omega_inv.iter().map(|x| &x.value).collect();
+    let modulus_pointer = modulus.get_fmpz_mod_ctx_struct();
 
     let mut power_pointer = 0;
     let mut stride = n / 2;
     while stride > 0 {
         // split into strides and perform action for each respective stride
-        res_z.chunks_mut(2 * stride).for_each(|chunk| unsafe {
-            intt_stride_steps(
+        res.chunks_mut(2 * stride).for_each(|chunk| unsafe {
+            inv_ntt_stride_steps(
                 chunk,
                 stride,
                 power_pointer,
                 modulus_pointer,
-                &powers_of_omega_inv_pointers,
+                powers_of_omega_inv,
             );
         });
 
@@ -214,10 +212,10 @@ fn iterative_intt(coefficients: Vec<Zq>, powers_of_omega_inv: &[Zq], n_inv: &Zq)
     for x in res.iter_mut() {
         unsafe {
             fmpz_mod_mul(
-                &mut x.value.value,
-                &x.value.value,
-                &n_inv.value.value,
-                n_inv.modulus.get_fmpz_mod_ctx_struct(),
+                &mut x.value,
+                &x.value,
+                &n_inv.value,
+                modulus.get_fmpz_mod_ctx_struct(),
             )
         }
     }
@@ -225,43 +223,38 @@ fn iterative_intt(coefficients: Vec<Zq>, powers_of_omega_inv: &[Zq], n_inv: &Zq)
 }
 
 #[cfg(test)]
-mod test_intt {
-    use std::str::FromStr;
-
-    use crate::integer_mod_q::{
-        ConvolutionType, Modulus, NTTBasisPolynomialRingZq, PolyOverZq, Zq,
+mod test_inv_ntt {
+    use crate::{
+        integer::Z,
+        integer_mod_q::{ConvolutionType, Modulus, NTTBasisPolynomialRingZq, PolyOverZq},
     };
+    use std::str::FromStr;
 
     /// Tests a loop of NTT and INTT application.
     #[test]
-    fn example_loop_ntt_intt() {
+    fn example_loop_ntt_inv_ntt() {
         let poly = PolyOverZq::from_str("4  2532 2542 653 8 mod 7681").unwrap();
         let modulus = Modulus::from(7681);
 
         let ntt_basis = NTTBasisPolynomialRingZq::init(4, 3383, &modulus, ConvolutionType::Cyclic);
 
-        assert_eq!(poly, ntt_basis.intt(ntt_basis.ntt(&poly)));
+        assert_eq!(poly, ntt_basis.inv_ntt(ntt_basis.ntt(&poly)));
     }
 
     /// This example is taken from: https://eprint.iacr.org/2024/585.pdf Example 3.4
     #[test]
-    fn example_34_intt() {
+    fn example_34_inv_ntt() {
         let cmp_poly = PolyOverZq::from_str("4  1 2 3 4 mod 7681").unwrap();
         let modulus = Modulus::from(7681);
 
         let ntt_basis = NTTBasisPolynomialRingZq::init(4, 3383, &modulus, ConvolutionType::Cyclic);
 
-        let ghat = vec![
-            Zq::from((10, &modulus)),
-            Zq::from((913, &modulus)),
-            Zq::from((7679, &modulus)),
-            Zq::from((6764, &modulus)),
-        ];
-        let poly = ntt_basis.intt(ghat);
+        let ghat = vec![Z::from(10), Z::from(913), Z::from(7679), Z::from(6764)];
+        let poly = ntt_basis.inv_ntt(ghat);
         assert_eq!(cmp_poly, poly);
     }
 
-    /// Ensure that INTT panics, if the degree of the polynomial is too low compared to the number of provided entries.
+    /// Ensure that Inverse NTT panics, if the degree of the polynomial is too low compared to the number of provided entries.
     #[test]
     #[should_panic]
     fn degree_too_high() {
@@ -271,33 +264,14 @@ mod test_intt {
             NTTBasisPolynomialRingZq::init(4, 1925, &modulus, ConvolutionType::Negacyclic);
 
         let ghat_ntt = vec![
-            Zq::from((1467, &modulus)),
-            Zq::from((2807, &modulus)),
-            Zq::from((3471, &modulus)),
-            Zq::from((7621, &modulus)),
-            Zq::from((1, &modulus)),
+            Z::from(1467),
+            Z::from(2807),
+            Z::from(3471),
+            Z::from(7621),
+            Z::from(1),
         ];
 
-        let _ = ntt_basis.intt(ghat_ntt);
-    }
-
-    /// Ensure that INTT panics, if the modulus of the polynomial is different
-    #[test]
-    #[should_panic]
-    fn different_modulus() {
-        let modulus = Modulus::from(7681);
-
-        let ntt_basis =
-            NTTBasisPolynomialRingZq::init(4, 1925, &modulus, ConvolutionType::Negacyclic);
-
-        let ghat_ntt = vec![
-            Zq::from((1467, 5000)),
-            Zq::from((2807, &modulus)),
-            Zq::from((3471, &modulus)),
-            Zq::from((7621, &modulus)),
-        ];
-
-        let _ = ntt_basis.intt(ghat_ntt);
+        let _ = ntt_basis.inv_ntt(ghat_ntt);
     }
 
     /// Ensure that INTT works for smaller degree polynomials
@@ -309,13 +283,8 @@ mod test_intt {
         let ntt_basis =
             NTTBasisPolynomialRingZq::init(4, 1925, &modulus, ConvolutionType::Negacyclic);
 
-        let ghat = vec![
-            Zq::from((3851, &modulus)),
-            Zq::from((5256, &modulus)),
-            Zq::from((3832, &modulus)),
-            Zq::from((2427, &modulus)),
-        ];
-        let poly = ntt_basis.intt(ghat);
+        let ghat = vec![Z::from(3851), Z::from(5256), Z::from(3832), Z::from(2427)];
+        let poly = ntt_basis.inv_ntt(ghat);
         assert_eq!(cmp_poly, poly);
     }
 }

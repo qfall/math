@@ -10,11 +10,12 @@
 //! [`PolynomialRingZq`](super::PolynomialRingZq). If it is set for the matrix, then the multiplication of polynomials
 //! is performed using the NTT, and otherwise the multiplication is kept as it is.
 
-use super::{Modulus, Zq};
+use super::Modulus;
+use crate::integer::Z;
 pub use from::ConvolutionType;
 
 mod from;
-mod intt;
+mod inv_ntt;
 mod ntt;
 
 /// [`NTTBasisPolynomialRingZq`] is an object, that given a polynomial
@@ -60,7 +61,7 @@ mod ntt;
 ///     ghat_hhat.push(&ghat[i] * &hhat[i]);
 /// }
 ///
-/// let g_h_poly = ntt_basis.intt(ghat_hhat);
+/// let g_h_poly = ntt_basis.inv_ntt(ghat_hhat);
 ///
 /// let g_h_poly_ring = PolynomialRingZq::from((
 ///     g_h_poly.get_representative_least_nonnegative_residue(),
@@ -103,7 +104,7 @@ mod ntt;
 ///     ghat_hhat.push(&ghat[i] * &hhat[i])
 /// }
 ///
-/// let g_h_poly = ntt_basis.intt(ghat_hhat);
+/// let g_h_poly = ntt_basis.inv_ntt(ghat_hhat);
 ///
 /// let g_h_poly_ring = PolynomialRingZq::from((
 ///     g_h_poly.get_representative_least_nonnegative_residue(),
@@ -126,11 +127,11 @@ mod ntt;
 #[derive(Debug)]
 pub struct NTTBasisPolynomialRingZq {
     pub n: i64,
-    pub n_inv: Zq,
-    pub powers_of_omega: Vec<Zq>,
-    pub powers_of_omega_inv: Vec<Zq>,
-    pub powers_of_psi: Vec<Zq>,
-    pub powers_of_psi_inv: Vec<Zq>,
+    pub n_inv: Z,
+    pub powers_of_omega: Vec<Z>,
+    pub powers_of_omega_inv: Vec<Z>,
+    pub powers_of_psi: Vec<Z>,
+    pub powers_of_psi_inv: Vec<Z>,
     pub modulus: Modulus,
     pub convolution_type: ConvolutionType,
 }

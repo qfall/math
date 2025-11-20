@@ -199,7 +199,8 @@ impl MatZq {
     /// let fmpz_entries = mat.collect_entries();
     /// ```
     pub(crate) fn collect_entries(&self) -> Vec<fmpz> {
-        let mut entries: Vec<fmpz> = vec![];
+        let mut entries: Vec<fmpz> =
+            Vec::with_capacity((self.get_num_rows() * self.get_num_columns()) as usize);
 
         for row in 0..self.get_num_rows() {
             for col in 0..self.get_num_columns() {
@@ -228,7 +229,7 @@ impl MatZq {
         let entries_fmpz = self.collect_entries();
 
         let modulus_fmpz = self.matrix.mod_[0];
-        let mut entry_lengths = vec![];
+        let mut entry_lengths = Vec::with_capacity(entries_fmpz.len());
         for value in entries_fmpz {
             entry_lengths.push(length(&value, &modulus_fmpz));
         }

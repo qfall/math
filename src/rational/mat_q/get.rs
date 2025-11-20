@@ -173,7 +173,8 @@ impl MatQ {
     /// The user has to ensure that all entries are within the matrix dimensions.
     /// Otherwise, memory leaks can occur and no guarantees are given.
     pub(crate) fn collect_entries(&self) -> Vec<fmpq> {
-        let mut entries: Vec<fmpq> = vec![];
+        let mut entries: Vec<fmpq> =
+            Vec::with_capacity((self.get_num_rows() * self.get_num_columns()) as usize);
 
         for row in 0..self.get_num_rows() {
             for col in 0..self.get_num_columns() {
@@ -210,7 +211,7 @@ impl MatQ {
         let num_rows = self.get_num_rows() as usize;
         let num_cols = self.get_num_columns() as usize;
 
-        let mut entries: Vec<Vec<f64>> = vec![vec![]; num_rows];
+        let mut entries: Vec<Vec<f64>> = vec![Vec::with_capacity(num_cols); num_rows];
 
         for (i, row) in entries.iter_mut().enumerate() {
             for j in 0..num_cols {

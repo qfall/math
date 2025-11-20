@@ -65,7 +65,7 @@ impl MatZq {
         &self,
         cond_func: fn(&Self) -> Result<T, MathError>,
     ) -> Result<Self, MathError> {
-        let mut condition_values = vec![];
+        let mut condition_values = Vec::with_capacity(self.get_num_columns() as usize);
         for col in 0..self.get_num_columns() {
             condition_values.push(cond_func(&unsafe { self.get_column_unchecked(col) })?);
         }
@@ -132,7 +132,7 @@ impl MatZq {
         &self,
         cond_func: fn(&Self) -> Result<T, MathError>,
     ) -> Result<Self, MathError> {
-        let mut condition_values = vec![];
+        let mut condition_values = Vec::with_capacity(self.get_num_rows() as usize);
         for row in 0..self.get_num_rows() {
             condition_values.push(cond_func(&unsafe { self.get_row_unchecked(row) })?);
         }

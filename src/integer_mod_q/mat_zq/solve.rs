@@ -66,7 +66,7 @@ impl MatZq {
 
         // Saves the indices of row and column, where we created a 1 entry
         // such that we do not have to go through the matrix afterwards.
-        let mut indices = Vec::new();
+        let mut indices = Vec::with_capacity(self.get_num_columns() as usize);
 
         for column_nr in 0..self.get_num_columns() {
             let used_rows: Vec<i64> = indices.iter().map(|(row, _)| *row).collect();
@@ -161,7 +161,7 @@ impl MatZq {
         let fac_vec = Vec::<(Z, u64)>::from(&fac);
 
         // Solve the equation under the different moduli.
-        let mut solutions: Vec<MatZq> = vec![];
+        let mut solutions: Vec<MatZq> = Vec::with_capacity(fac_vec.len());
         for factor in fac_vec.iter() {
             let mut matrix = self.clone();
             let mut y = y.clone();
@@ -254,12 +254,12 @@ impl MatZq {
 
         // Saves the indices of row and column, where we created a 1 entry
         // such that we do not have to go through the matrix afterwards.
-        let mut indices: Vec<(i64, i64)> = Vec::new();
-        let mut used_rows: Vec<i64> = Vec::new();
+        let mut indices: Vec<(i64, i64)> = Vec::with_capacity(self.get_num_columns() as usize);
+        let mut used_rows: Vec<i64> = Vec::with_capacity(self.get_num_columns() as usize);
         let mut row_count = 0;
 
         // Saves the permutation of the gaussian elimination.
-        let mut permutation: Vec<i64> = vec![];
+        let mut permutation: Vec<i64> = Vec::with_capacity(self.get_num_rows() as usize);
         for i in 0..self.get_num_rows() {
             permutation.push(i);
         }

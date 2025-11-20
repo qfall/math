@@ -7,7 +7,7 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! This module contains implementations to construct [`NTTBasisPolynomialRingZq`] for the
-//! NTT-transform for [`PolyOverZq`] objects in the polynomialring.
+//! NTT-transform for [`PolyOverZq`](crate::integer_mod_q::PolyOverZq) objects in the polynomialring.
 //!
 //! The explicit functions contain the documentation.
 
@@ -80,24 +80,51 @@ impl NTTBasisPolynomialRingZq {
         };
 
         // precompute powers of `n`th root of unity
-        let powers_of_omega = (0..n).map(|i| omega.pow(i).unwrap()).collect();
-        let powers_of_omega_inv = (0..n).map(|i| omega_inv.pow(i).unwrap()).collect();
+        let powers_of_omega = (0..n)
+            .map(|i| {
+                omega
+                    .pow(i)
+                    .unwrap()
+                    .get_representative_least_nonnegative_residue()
+            })
+            .collect();
+        let powers_of_omega_inv = (0..n)
+            .map(|i| {
+                omega_inv
+                    .pow(i)
+                    .unwrap()
+                    .get_representative_least_nonnegative_residue()
+            })
+            .collect();
 
         // precompute powers of `2n`th root of unity
         let powers_of_psi = match convolution_type {
             ConvolutionType::Cyclic => Vec::new(),
-            ConvolutionType::Negacyclic => (0..n).map(|i| psi.unwrap().pow(i).unwrap()).collect(),
+            ConvolutionType::Negacyclic => (0..n)
+                .map(|i| {
+                    psi.unwrap()
+                        .pow(i)
+                        .unwrap()
+                        .get_representative_least_nonnegative_residue()
+                })
+                .collect(),
         };
         let powers_of_psi_inv = match convolution_type {
             ConvolutionType::Cyclic => Vec::new(),
-            ConvolutionType::Negacyclic => {
-                (0..n).map(|i| psi_inv.unwrap().pow(i).unwrap()).collect()
-            }
+            ConvolutionType::Negacyclic => (0..n)
+                .map(|i| {
+                    psi_inv
+                        .unwrap()
+                        .pow(i)
+                        .unwrap()
+                        .get_representative_least_nonnegative_residue()
+                })
+                .collect(),
         };
 
         Self {
             n,
-            n_inv,
+            n_inv: n_inv.get_representative_least_nonnegative_residue(),
             powers_of_omega,
             powers_of_omega_inv,
             powers_of_psi,
@@ -122,7 +149,7 @@ mod test_init {
     use super::ConvolutionType;
     use crate::{
         integer::Z,
-        integer_mod_q::{Modulus, NTTBasisPolynomialRingZq, Zq},
+        integer_mod_q::{Modulus, NTTBasisPolynomialRingZq},
     };
 
     /// Our algorithm only supports complete splits as of right now, so other inputs should be prohibited for now.
@@ -140,30 +167,15 @@ mod test_init {
         assert_eq!(ConvolutionType::Cyclic, ntt_basis.convolution_type);
         assert_eq!(Modulus::from(7681), ntt_basis.modulus);
         assert_eq!(4, ntt_basis.n);
-        assert_eq!(
-            Z::from(5761),
-            ntt_basis
-                .n_inv
-                .get_representative_least_nonnegative_residue()
-        );
+        assert_eq!(Z::from(5761), ntt_basis.n_inv);
         assert!(ntt_basis.powers_of_psi.is_empty());
         assert!(ntt_basis.powers_of_psi_inv.is_empty());
         assert_eq!(
-            vec![
-                Zq::from((1, 7681)),
-                Zq::from((3383, 7681)),
-                Zq::from((7680, 7681)),
-                Zq::from((4298, 7681))
-            ],
+            vec![Z::from(1), Z::from(3383), Z::from(7680), Z::from(4298)],
             ntt_basis.powers_of_omega
         );
         assert_eq!(
-            vec![
-                Zq::from((1, 7681)),
-                Zq::from((4298, 7681)),
-                Zq::from((7680, 7681)),
-                Zq::from((3383, 7681))
-            ],
+            vec![Z::from(1), Z::from(4298), Z::from(7680), Z::from(3383)],
             ntt_basis.powers_of_omega_inv
         );
     }
@@ -176,46 +188,21 @@ mod test_init {
         assert_eq!(ConvolutionType::Negacyclic, ntt_basis.convolution_type);
         assert_eq!(Modulus::from(7681), ntt_basis.modulus);
         assert_eq!(4, ntt_basis.n);
+        assert_eq!(Z::from(5761), ntt_basis.n_inv);
         assert_eq!(
-            Z::from(5761),
-            ntt_basis
-                .n_inv
-                .get_representative_least_nonnegative_residue()
-        );
-        assert_eq!(
-            vec![
-                Zq::from((1, 7681)),
-                Zq::from((1925, 7681)),
-                Zq::from((3383, 7681)),
-                Zq::from((6468, 7681))
-            ],
+            vec![Z::from(1), Z::from(1925), Z::from(3383), Z::from(6468)],
             ntt_basis.powers_of_psi
         );
         assert_eq!(
-            vec![
-                Zq::from((1, 7681)),
-                Zq::from((1213, 7681)),
-                Zq::from((4298, 7681)),
-                Zq::from((5756, 7681))
-            ],
+            vec![Z::from(1), Z::from(1213), Z::from(4298), Z::from(5756)],
             ntt_basis.powers_of_psi_inv
         );
         assert_eq!(
-            vec![
-                Zq::from((1, 7681)),
-                Zq::from((3383, 7681)),
-                Zq::from((7680, 7681)),
-                Zq::from((4298, 7681))
-            ],
+            vec![Z::from(1), Z::from(3383), Z::from(7680), Z::from(4298)],
             ntt_basis.powers_of_omega
         );
         assert_eq!(
-            vec![
-                Zq::from((1, 7681)),
-                Zq::from((4298, 7681)),
-                Zq::from((7680, 7681)),
-                Zq::from((3383, 7681))
-            ],
+            vec![Z::from(1), Z::from(4298), Z::from(7680), Z::from(3383)],
             ntt_basis.powers_of_omega_inv
         );
     }

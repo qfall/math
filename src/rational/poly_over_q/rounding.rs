@@ -77,7 +77,6 @@ impl PolyOverQ {
     /// use std::str::FromStr;
     ///
     /// let value = PolyOverQ::from_str("2  5/2 1").unwrap();
-    /// println!("{}", value.round());
     /// assert_eq!(PolyOverZ::from_str("2  3 1").unwrap(), value.round());
     ///
     /// let value = PolyOverQ::from_str("2  -5/2 1").unwrap();

@@ -150,7 +150,7 @@ impl Z {
         // compute absolute value
         let value = self.clone().abs();
         // resulting bit-vector
-        let mut bits = vec![];
+        let mut bits = Vec::with_capacity(value.bits() as usize);
         for i in 0..value.bits() {
             // get i-th bit of value
             let bit_i = unsafe { fmpz_tstbit(&value.value, i) };

@@ -79,7 +79,7 @@ impl From<&Factorization> for Vec<(Z, u64)> {
     /// let vec = Vec::<(Z, u64)>::from(&fac);
     /// ```
     fn from(factors: &Factorization) -> Self {
-        let mut out = Vec::new();
+        let mut out = Vec::with_capacity(factors.factors.num as usize + 1);
 
         if factors.factors.sign == -1 {
             out.push((Z::MINUS_ONE, 1));

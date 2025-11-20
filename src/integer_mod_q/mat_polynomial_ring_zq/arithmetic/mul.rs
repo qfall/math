@@ -151,8 +151,12 @@ impl MatPolynomialRingZq {
             return Err(self.call_compare_base_error(other).unwrap());
         }
 
-        let mut new =
-            MatPolynomialRingZq::from((&self.matrix.mul_safe(&other.matrix)?, &self.modulus));
+        // We create a new `MatPolyOverZ` struct inside `mul_safe`.
+        // Thus, we can spare the cloning operation in `MatPolynomialRingZq::from`
+        let mut new = MatPolynomialRingZq {
+            matrix: self.matrix.mul_safe(&other.matrix)?,
+            modulus: self.modulus.clone(),
+        };
 
         new.reduce();
 

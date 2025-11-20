@@ -102,7 +102,8 @@ impl MatZq {
     /// - Returns a [`FromUtf8Error`] if the integer's byte sequence contains
     ///   invalid UTF8-characters.
     pub fn to_utf8(&self) -> Result<String, FromUtf8Error> {
-        let mut byte_vectors: Vec<Vec<u8>> = vec![];
+        let mut byte_vectors: Vec<Vec<u8>> =
+            Vec::with_capacity((self.get_num_rows() * self.get_num_columns()) as usize);
         let mut max_length = 0;
 
         // Fill byte vector
@@ -123,7 +124,7 @@ impl MatZq {
         // Pad every entry to the same length with `0`s
         // to ensure any matrix given a string provides the same matrix
         // and append them in the same iteration
-        let mut bytes = vec![];
+        let mut bytes = Vec::with_capacity(byte_vectors.len() * max_length);
         for mut byte_vector in byte_vectors {
             // 0 encodes a control character �, which can be followed by anything
             // Hence, this might change the encoding of any trailing sequences

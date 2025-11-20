@@ -15,7 +15,7 @@
 use super::{from::ConvolutionType, NTTBasisPolynomialRingZq};
 use crate::{
     integer::Z,
-    integer_mod_q::{PolyOverZq, Zq},
+    integer_mod_q::{Modulus, PolyOverZq},
     traits::GetCoefficient,
     utils::index::bit_reverse_permutation,
 };
@@ -34,12 +34,9 @@ impl NTTBasisPolynomialRingZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::Zq;
-    /// use qfall_math::integer_mod_q::Modulus;
-    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::integer_mod_q::{Modulus, PolyOverZq, NTTBasisPolynomialRingZq, ConvolutionType};
     /// use std::str::FromStr;
-    /// use qfall_math::integer_mod_q::NTTBasisPolynomialRingZq;
-    /// use qfall_math::integer_mod_q::ConvolutionType;
     ///
     /// let g_poly = PolyOverZq::from_str("4  1 2 3 4 mod 7681").unwrap();
     /// let modulus = Modulus::from(7681);
@@ -50,20 +47,17 @@ impl NTTBasisPolynomialRingZq {
     /// let ghat = ntt_basis.ntt(&g_poly);
     ///
     /// let cmp_ghat = vec![
-    ///     Zq::from((10, &modulus)),
-    ///     Zq::from((913, &modulus)),
-    ///     Zq::from((7679, &modulus)),
-    ///     Zq::from((6764, &modulus)),
+    ///     Z::from(10),
+    ///     Z::from(913),
+    ///     Z::from(7679),
+    ///     Z::from(6764),
     /// ];
     /// assert_eq!(cmp_ghat, ghat);
     /// ```
     /// ```
-    /// use qfall_math::integer_mod_q::Zq;
-    /// use qfall_math::integer_mod_q::Modulus;
-    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use qfall_math::integer::Z;
+    /// use qfall_math::integer_mod_q::{Modulus, PolyOverZq, NTTBasisPolynomialRingZq, ConvolutionType};
     /// use std::str::FromStr;
-    /// use qfall_math::integer_mod_q::NTTBasisPolynomialRingZq;
-    /// use qfall_math::integer_mod_q::ConvolutionType;
     ///
     /// let g_poly = PolyOverZq::from_str("4  1 2 3 4 mod 7681").unwrap();
     /// let modulus = Modulus::from(7681);
@@ -74,10 +68,10 @@ impl NTTBasisPolynomialRingZq {
     /// let ghat = ntt_basis.ntt(&g_poly);
     ///
     /// let cmp_ghat = vec![
-    ///     Zq::from((1467, &modulus)),
-    ///     Zq::from((2807, &modulus)),
-    ///     Zq::from((3471, &modulus)),
-    ///     Zq::from((7621, &modulus)),
+    ///     Z::from(1467),
+    ///     Z::from(2807),
+    ///     Z::from(3471),
+    ///     Z::from(7621),
     /// ];
     /// assert_eq!(cmp_ghat, ghat);
     /// ```
@@ -90,22 +84,16 @@ impl NTTBasisPolynomialRingZq {
     /// -\[1\] Cooley, James W., and John W. Tukey.
     ///     "An algorithm for the machine calculation of complex Fourier series."
     ///     Mathematics of computation 19.90 (1965): 297-301.
-    pub fn ntt(&self, poly: &PolyOverZq) -> Vec<Zq> {
+    pub fn ntt(&self, poly: &PolyOverZq) -> Vec<Z> {
         assert!(poly.get_degree() < self.n);
         assert_eq!(poly.get_mod(), self.modulus);
         // we use the unsafe getter, because we know that all indices are in the range
         // and no error can occur here
-        let mut poly_coeffs: Vec<Zq> = (0..self.n)
-            .map(|i| Zq {
-                value: unsafe { poly.get_coeff_unchecked(i) },
-                modulus: self.modulus.clone(),
-            })
+        let mut poly_coeffs: Vec<Z> = (0..self.n)
+            .map(|i| unsafe { poly.get_coeff_unchecked(i) })
             .collect();
         for _ in poly_coeffs.len()..(self.n as usize) {
-            poly_coeffs.push(Zq {
-                value: Z::default(),
-                modulus: self.modulus.clone(),
-            });
+            poly_coeffs.push(Z::default());
         }
 
         // Negacyclic: perform preprocessing
@@ -113,16 +101,16 @@ impl NTTBasisPolynomialRingZq {
             for (i, x) in poly_coeffs.iter_mut().enumerate() {
                 unsafe {
                     fmpz_mod_mul(
-                        &mut x.value.value,
-                        &x.value.value,
-                        &self.powers_of_psi[i].value.value,
+                        &mut x.value,
+                        &x.value,
+                        &self.powers_of_psi[i].value,
                         self.modulus.get_fmpz_mod_ctx_struct(),
                     );
                 }
             }
         }
 
-        iterative_ntt(poly_coeffs, &self.powers_of_omega)
+        iterative_ntt(poly_coeffs, &self.powers_of_omega, &self.modulus)
     }
 }
 
@@ -131,15 +119,15 @@ impl NTTBasisPolynomialRingZq {
 /// The chunk is double the size of the stride.
 /// The computation currently performs the standard butterfly operation from Cooley-Tukey
 unsafe fn ntt_stride_steps(
-    chunk: &mut [&mut Z],
+    chunk: &mut [Z],
     stride: usize,
     power_pointer: i64,
     modulus_pointer: &fmpz_mod_ctx,
-    powers_of_omega_pointers: &[&Z],
+    powers_of_omega_pointers: &[Z],
 ) {
     for i in 0..stride {
         // compute power of the current level
-        let current_power = powers_of_omega_pointers[2_usize.pow(power_pointer as u32) * (i)];
+        let current_power = &powers_of_omega_pointers[2_usize.pow(power_pointer as u32) * (i)];
 
         // CT butterfly
         // by using Z, we can manage not to initialize additional modulus objects in this part
@@ -177,29 +165,27 @@ unsafe fn ntt_stride_steps(
 ///
 /// The algorithm possesses the option to be multi-threaded, but benchmarking has shown,
 /// that it makes the algorithm less efficient, so we turned it off.
-fn iterative_ntt(coefficients: Vec<Zq>, powers_of_omega: &[Zq]) -> Vec<Zq> {
+fn iterative_ntt(coefficients: Vec<Z>, powers_of_omega: &[Z], modulus: &Modulus) -> Vec<Z> {
     let n = coefficients.len();
     let nr_iterations = n.ilog2() as i64;
 
     // compute the bit reversed order of the coefficients
     let mut res = coefficients;
     bit_reverse_permutation(&mut res);
-    let modulus_pointer = powers_of_omega[0].modulus.get_fmpz_mod_ctx_struct();
-    let mut res_z: Vec<&mut Z> = res.iter_mut().map(|x| &mut x.value).collect();
-    let powers_of_omega_pointers: Vec<&Z> = powers_of_omega.iter().map(|x| &x.value).collect();
+    let modulus_pointer = modulus.get_fmpz_mod_ctx_struct();
 
     let mut power_pointer: i64 = nr_iterations - 1;
     let mut stride = 1;
     // iterate through all layers
     while stride < n {
         // split into strides and perform action for each respective stride
-        res_z.chunks_mut(2 * stride).for_each(|chunk| unsafe {
+        res.chunks_mut(2 * stride).for_each(|chunk| unsafe {
             ntt_stride_steps(
                 chunk,
                 stride,
                 power_pointer,
                 modulus_pointer,
-                &powers_of_omega_pointers,
+                powers_of_omega,
             )
         });
         stride *= 2;
@@ -210,8 +196,9 @@ fn iterative_ntt(coefficients: Vec<Zq>, powers_of_omega: &[Zq]) -> Vec<Zq> {
 
 #[cfg(test)]
 mod test_ntt {
-    use crate::integer_mod_q::{
-        ConvolutionType, Modulus, NTTBasisPolynomialRingZq, PolyOverZq, Zq,
+    use crate::{
+        integer::Z,
+        integer_mod_q::{ConvolutionType, Modulus, NTTBasisPolynomialRingZq, PolyOverZq},
     };
     use std::str::FromStr;
 
@@ -224,12 +211,7 @@ mod test_ntt {
         let ntt_basis = NTTBasisPolynomialRingZq::init(4, 3383, &modulus, ConvolutionType::Cyclic);
 
         let ghat = ntt_basis.ntt(&g_poly);
-        let cmp_ghat = vec![
-            Zq::from((10, &modulus)),
-            Zq::from((913, &modulus)),
-            Zq::from((7679, &modulus)),
-            Zq::from((6764, &modulus)),
-        ];
+        let cmp_ghat = vec![Z::from(10), Z::from(913), Z::from(7679), Z::from(6764)];
         assert_eq!(cmp_ghat, ghat);
     }
 
@@ -267,12 +249,7 @@ mod test_ntt {
             NTTBasisPolynomialRingZq::init(4, 1925, &modulus, ConvolutionType::Negacyclic);
 
         let ghat = ntt_basis.ntt(&g_poly);
-        let cmp_ghat = vec![
-            Zq::from((3851, &modulus)),
-            Zq::from((5256, &modulus)),
-            Zq::from((3832, &modulus)),
-            Zq::from((2427, &modulus)),
-        ];
+        let cmp_ghat = vec![Z::from(3851), Z::from(5256), Z::from(3832), Z::from(2427)];
         assert_eq!(cmp_ghat, ghat);
     }
 }

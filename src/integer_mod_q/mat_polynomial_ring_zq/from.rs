@@ -14,9 +14,37 @@ use super::MatPolynomialRingZq;
 use crate::{
     error::{MathError, StringConversionError},
     integer::MatPolyOverZ,
-    integer_mod_q::ModulusPolynomialRingZq,
+    integer_mod_q::{MatNTTPolynomialRingZq, ModulusPolynomialRingZq},
 };
 use std::str::FromStr;
+
+impl From<MatNTTPolynomialRingZq> for MatPolynomialRingZq {
+    /// Creates a polynomial ring matrix of type [`MatPolynomialRingZq`] from
+    /// the corresponding [`MatNTTPolynomialRingZq`].
+    ///
+    /// Parameters:
+    /// - `matrix`: the polynomial matrix defining each entry.
+    ///
+    /// Returns a new [`MatPolynomialRingZq`] with the entries from `matrix`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, MatNTTPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
+    /// let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+    /// modulus.set_ntt_unchecked(64);
+    /// let ntt_mat = MatNTTPolynomialRingZq::sample_uniform(1, 1, &modulus);
+    ///
+    /// let poly_ring_mat = MatPolynomialRingZq::from(ntt_mat);
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if the [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq) in `modulus`
+    ///   is not set.
+    fn from(matrix: MatNTTPolynomialRingZq) -> Self {
+        matrix.inv_ntt()
+    }
+}
 
 impl FromStr for MatPolynomialRingZq {
     type Err = MathError;
