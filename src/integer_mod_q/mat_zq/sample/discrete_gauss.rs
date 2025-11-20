@@ -22,7 +22,7 @@ use std::fmt::Display;
 impl MatZq {
     /// Initializes a new matrix with dimensions `num_rows` x `num_columns` and with each entry
     /// sampled independently according to the discrete Gaussian distribution,
-    /// using [`Z::sample_discrete_gauss`].
+    /// using [`Z::sample_discrete_gauss`](crate::integer::Z::sample_discrete_gauss).
     ///
     /// Parameters:
     /// - `num_rows`: specifies the number of rows the new matrix should have

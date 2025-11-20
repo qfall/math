@@ -8,13 +8,17 @@
 
 //! This module contains sampling algorithms for Gaussian distributions over [`MatQ`].
 
-use std::fmt::Display;
-
 use crate::{
     error::MathError,
     rational::{MatQ, Q},
     traits::{MatrixDimensions, MatrixGetEntry, MatrixSetEntry},
 };
+use probability::{
+    prelude::{Gaussian, Sample},
+    source,
+};
+use rand::RngCore;
+use std::fmt::Display;
 
 impl MatQ {
     /// Chooses a [`MatQ`] instance according to the continuous Gaussian distribution.
@@ -90,10 +94,22 @@ impl MatQ {
     ) -> Result<MatQ, MathError> {
         let mut out = MatQ::new(num_rows, num_cols);
         let (center, sigma) = (center.into(), sigma.into());
+        if sigma <= 0.0 {
+            return Err(MathError::NonPositive(format!(
+                "The sigma has to be positive and not zero, but the provided value is {sigma}."
+            )));
+        }
+        let mut rng = rand::rng();
+        let mut source = source::default(rng.next_u64());
+
+        // Instead of sampling with a center of c, we sample with center 0 and add the
+        // center later. These are equivalent and this way we can sample in larger ranges
+        let sampler = Gaussian::new(0.0, sigma);
 
         for i in 0..out.get_num_rows() {
             for j in 0..out.get_num_columns() {
-                let sample = Q::sample_gauss(&center, sigma)?;
+                let mut sample = Q::from(sampler.sample(&mut source));
+                sample += &center;
                 unsafe { out.set_entry_unchecked(i, j, sample) };
             }
         }

@@ -26,7 +26,7 @@ impl MatPolynomialRingZq {
     /// - `num_cols`: specifies the number of columns the new matrix should have
     /// - `modulus`: specifies the Modulus for the matrix and the maximum degree
     ///   any discrete Gaussian polynomial can have
-    /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
+    /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`](crate::integer::Z::sample_discrete_gauss) samples
     /// - `center`: specifies the positions of the center with peak probability
     /// - `s`: specifies the Gaussian parameter, which is proportional
     ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
@@ -78,7 +78,7 @@ impl MatPolynomialRingZq {
     /// Parameters:
     /// - `basis`: specifies a basis for the lattice from which is sampled
     /// - `k`: the maximal length the polynomial can have
-    /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
+    /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`](crate::integer::Z::sample_discrete_gauss) samples
     /// - `center`: specifies the positions of the center with peak probability
     /// - `s`: specifies the Gaussian parameter, which is proportional
     ///   to the standard deviation `sigma * sqrt(2 * pi) = s`

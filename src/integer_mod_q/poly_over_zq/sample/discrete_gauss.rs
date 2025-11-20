@@ -24,7 +24,7 @@ use std::fmt::Display;
 impl PolyOverZq {
     /// Initializes a new [`PolyOverZq`] with maximum degree `max_degree`
     /// and with each entry sampled independently according to the
-    /// discrete Gaussian distribution, using [`Z::sample_discrete_gauss`].
+    /// discrete Gaussian distribution, using [`Z::sample_discrete_gauss`](crate::integer::Z::sample_discrete_gauss).
     ///
     /// Parameters:
     /// - `max_degree`: specifies the included maximal degree the created [`PolyOverZq`] should have

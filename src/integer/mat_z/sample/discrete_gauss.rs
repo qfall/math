@@ -22,7 +22,7 @@ use std::fmt::Display;
 impl MatZ {
     /// Initializes a new matrix with dimensions `num_rows` x `num_columns` and with each entry
     /// sampled independently according to the discrete Gaussian distribution,
-    /// using [`Z::sample_discrete_gauss`].
+    /// using [`Z::sample_discrete_gauss`](crate::integer::Z::sample_discrete_gauss).
     ///
     /// Parameters:
     /// - `num_rows`: specifies the number of rows the new matrix should have
@@ -76,7 +76,7 @@ impl MatZ {
     ///
     /// Parameters:
     /// - `basis`: specifies a basis for the lattice from which is sampled
-    /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`] samples
+    /// - `n`: specifies the range from which [`Z::sample_discrete_gauss`](crate::integer::Z::sample_discrete_gauss) samples
     /// - `center`: specifies the positions of the center with peak probability
     /// - `s`: specifies the Gaussian parameter, which is proportional
     ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
@@ -117,10 +117,10 @@ impl MatZ {
     /// `sigma_sqrt` using the standard basis and center `0`.
     ///
     /// Parameters:
-    /// - `sigma_sqrt`: specifies the positive definite Gaussian convolution matrix
+    /// - `sigma_sqrt`: specifies the positive definite Gaussian covariance matrix
     ///   with which the *intermediate* continuous Gaussian is sampled before
     ///   the randomized rounding is applied. Here `sigma_sqrt = sqrt(sigma^2 - r^2*I)`
-    ///   where sigma is the target convolution matrix. The root can be computed using
+    ///   where sigma is the target covariance matrix. The root can be computed using
     ///   the [`MatQ::cholesky_decomposition`].
     /// - `r`: specifies the rounding parameter for [`MatQ::randomized_rounding`].
     ///
@@ -133,10 +133,10 @@ impl MatZ {
     /// use std::str::FromStr;
     /// use crate::qfall_math::traits::Pow;
     ///
-    /// let convolution_matrix = MatQ::from_str("[[100,1],[1,17]]").unwrap();
+    /// let covariance_matrix = MatQ::from_str("[[100,1],[1,17]]").unwrap();
     /// let r = Q::from(4);
     ///
-    /// let sigma_sqrt = convolution_matrix - r.pow(2).unwrap() * MatQ::identity(2, 2);
+    /// let sigma_sqrt = covariance_matrix - r.pow(2).unwrap() * MatQ::identity(2, 2);
     ///
     /// let sample = MatZ::sample_d_common_non_spherical(&sigma_sqrt.cholesky_decomposition(), r).unwrap();
     /// ```
@@ -167,7 +167,7 @@ impl MatZ {
         let d_1 = MatQ::sample_gauss_same_center(sigma_sqrt.get_num_columns(), 1, 0, 1)?;
 
         // compute a continuous Gaussian centered around `0` in every dimension with
-        // convolution matrix `b_2` (the cholesky decomposition we computed)
+        // covariance matrix `b_2` (the cholesky decomposition we computed)
         let x_2 = sigma_sqrt * d_1;
 
         // perform randomized rounding
@@ -343,50 +343,50 @@ mod test_sample_d_common_non_spherical {
     #[test]
     fn availability() {
         let r = Q::from(8);
-        let convolution_matrix = MatQ::from_str("[[100,1],[1,65]]").unwrap();
-        let convolution_matrix = (convolution_matrix - r.pow(2).unwrap() * MatQ::identity(2, 2))
-            .cholesky_decomposition();
+        let covariance_matrix = MatQ::from_str("[[100,1],[1,65]]").unwrap();
+        let covariance_matrix =
+            (covariance_matrix - r.pow(2).unwrap() * MatQ::identity(2, 2)).cholesky_decomposition();
 
-        let _ = MatZ::sample_d_common_non_spherical(&convolution_matrix, 8).unwrap();
+        let _ = MatZ::sample_d_common_non_spherical(&covariance_matrix, 8).unwrap();
 
-        let _ = MatZ::sample_d_common_non_spherical(&convolution_matrix, 8_u16).unwrap();
-        let _ = MatZ::sample_d_common_non_spherical(&convolution_matrix, 8_u32).unwrap();
-        let _ = MatZ::sample_d_common_non_spherical(&convolution_matrix, 8_u64).unwrap();
-        let _ = MatZ::sample_d_common_non_spherical(&convolution_matrix, 8_i8).unwrap();
-        let _ = MatZ::sample_d_common_non_spherical(&convolution_matrix, 8_i16).unwrap();
-        let _ = MatZ::sample_d_common_non_spherical(&convolution_matrix, 8_i32).unwrap();
-        let _ = MatZ::sample_d_common_non_spherical(&convolution_matrix, 8_i64).unwrap();
-        let _ = MatZ::sample_d_common_non_spherical(&convolution_matrix, Q::from(8)).unwrap();
-        let _ = MatZ::sample_d_common_non_spherical(&convolution_matrix, Z::from(8)).unwrap();
-        let _ = MatZ::sample_d_common_non_spherical(&convolution_matrix, 8f32).unwrap();
-        let _ = MatZ::sample_d_common_non_spherical(&convolution_matrix, 8f64).unwrap();
+        let _ = MatZ::sample_d_common_non_spherical(&covariance_matrix, 8_u16).unwrap();
+        let _ = MatZ::sample_d_common_non_spherical(&covariance_matrix, 8_u32).unwrap();
+        let _ = MatZ::sample_d_common_non_spherical(&covariance_matrix, 8_u64).unwrap();
+        let _ = MatZ::sample_d_common_non_spherical(&covariance_matrix, 8_i8).unwrap();
+        let _ = MatZ::sample_d_common_non_spherical(&covariance_matrix, 8_i16).unwrap();
+        let _ = MatZ::sample_d_common_non_spherical(&covariance_matrix, 8_i32).unwrap();
+        let _ = MatZ::sample_d_common_non_spherical(&covariance_matrix, 8_i64).unwrap();
+        let _ = MatZ::sample_d_common_non_spherical(&covariance_matrix, Q::from(8)).unwrap();
+        let _ = MatZ::sample_d_common_non_spherical(&covariance_matrix, Z::from(8)).unwrap();
+        let _ = MatZ::sample_d_common_non_spherical(&covariance_matrix, 8f32).unwrap();
+        let _ = MatZ::sample_d_common_non_spherical(&covariance_matrix, 8f64).unwrap();
     }
 
     /// Checks whether the function panics if a non-square matrix is provided.
     /// anymore
     #[test]
     fn not_square() {
-        let convolution_matrix = MatQ::from_str("[[100,1,1],[1,64,2]]").unwrap();
+        let covariance_matrix = MatQ::from_str("[[100,1,1],[1,64,2]]").unwrap();
 
-        assert!(MatZ::sample_d_common_non_spherical(&convolution_matrix, 8).is_err());
+        assert!(MatZ::sample_d_common_non_spherical(&covariance_matrix, 8).is_err());
     }
 
     /// Checks whether the function returns an error if `r` is too small.
     #[test]
     fn too_small_parameters() {
-        let convolution_matrix = MatQ::from_str("[[100, 1],[1, 65]]").unwrap();
+        let covariance_matrix = MatQ::from_str("[[100, 1],[1, 65]]").unwrap();
 
-        assert!(MatZ::sample_d_common_non_spherical(&convolution_matrix, -1).is_err());
+        assert!(MatZ::sample_d_common_non_spherical(&covariance_matrix, -1).is_err());
     }
 
-    /// Checks whether the dimension of the output matches the provided convolution matrix
+    /// Checks whether the dimension of the output matches the provided covariance matrix
     #[test]
     fn correct_dimensions() {
-        let convolution_matrix_1 = MatQ::from_str("[[100,1],[1,65]]").unwrap();
-        let convolution_matrix_2 = MatQ::from_str("[[100,1,0],[1,65,0],[0,0,10000]]").unwrap();
+        let covariance_matrix_1 = MatQ::from_str("[[100,1],[1,65]]").unwrap();
+        let covariance_matrix_2 = MatQ::from_str("[[100,1,0],[1,65,0],[0,0,10000]]").unwrap();
 
-        let sample_1 = MatZ::sample_d_common_non_spherical(&convolution_matrix_1, 8).unwrap();
-        let sample_2 = MatZ::sample_d_common_non_spherical(&convolution_matrix_2, 8).unwrap();
+        let sample_1 = MatZ::sample_d_common_non_spherical(&covariance_matrix_1, 8).unwrap();
+        let sample_2 = MatZ::sample_d_common_non_spherical(&covariance_matrix_2, 8).unwrap();
 
         assert_eq!(2, sample_1.get_num_rows());
         assert!(sample_1.is_column_vector());
