@@ -12,7 +12,7 @@ use crate::{
     error::MathError,
     integer_mod_q::{Modulus, Zq},
     rational::Q,
-    utils::sample::discrete_gauss::{DiscreteGaussianIntegerSampler, LookupTableSetting},
+    utils::sample::discrete_gauss::{DiscreteGaussianIntegerSampler, LookupTableSetting, TAILCUT},
 };
 
 impl Zq {
@@ -60,8 +60,12 @@ impl Zq {
         let center: Q = center.into();
         let s: Q = s.into();
 
-        let mut dgis =
-            DiscreteGaussianIntegerSampler::init(&center, &s, 6.0, LookupTableSetting::NoLookup)?;
+        let mut dgis = DiscreteGaussianIntegerSampler::init(
+            &center,
+            &s,
+            unsafe { TAILCUT },
+            LookupTableSetting::NoLookup,
+        )?;
 
         let sample = dgis.sample_z();
         Ok(Zq::from((&sample, &modulus)))

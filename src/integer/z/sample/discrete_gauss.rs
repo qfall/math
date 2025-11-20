@@ -12,7 +12,7 @@ use crate::{
     error::MathError,
     integer::Z,
     rational::Q,
-    utils::sample::discrete_gauss::{DiscreteGaussianIntegerSampler, LookupTableSetting},
+    utils::sample::discrete_gauss::{DiscreteGaussianIntegerSampler, LookupTableSetting, TAILCUT},
 };
 
 impl Z {
@@ -52,8 +52,12 @@ impl Z {
         let center: Q = center.into();
         let s: Q = s.into();
 
-        let mut dgis =
-            DiscreteGaussianIntegerSampler::init(&center, &s, 6.0, LookupTableSetting::NoLookup)?;
+        let mut dgis = DiscreteGaussianIntegerSampler::init(
+            &center,
+            &s,
+            unsafe { TAILCUT },
+            LookupTableSetting::NoLookup,
+        )?;
 
         Ok(dgis.sample_z())
     }

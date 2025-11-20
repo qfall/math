@@ -36,6 +36,19 @@ pub enum LookupTableSetting {
     NoLookup,
 }
 
+/// This is the global variable used in all `sample_discrete_gauss` and `sample_d`
+/// functions. Its value should be in `ω(log(sqrt(n)))`. We set it (as most other libraries)
+/// statically to `6.0`.
+///
+/// You can use and change in an `unsafe` environment.
+/// ```compile_fail
+/// unsafe { TAILCUT = 4.0 };
+/// ```
+/// Make sure that the tailcut stays positive and large enough for your purposes.
+/// If you use multi-threading, read up on the behaviour of a `static mut` variable.
+/// Our tests only cover cases where `TAILCUT = 6.0`.
+pub static mut TAILCUT: f64 = 6.0;
+
 /// Enables for discrete Gaussian sampling out of
 /// `[⌈center - s * tailcut⌉ , ⌊center + s * tailcut⌋ ]`.
 ///
@@ -393,7 +406,7 @@ pub(crate) fn sample_d_precomputed_gso(
         let mut dgis = DiscreteGaussianIntegerSampler::init(
             &c_2,
             &s_2,
-            6.0,
+            unsafe { TAILCUT },
             LookupTableSetting::FillOnTheFly,
         )?;
         let z = dgis.sample_z();
@@ -412,27 +425,10 @@ pub(crate) fn sample_d_precomputed_gso(
 #[cfg(test)]
 mod test_discrete_gaussian_integer_sampler {
     use super::DiscreteGaussianIntegerSampler;
-    use crate::{rational::Q, utils::sample::discrete_gauss::LookupTableSetting};
-
-    /// Ensures that the doc tests works correctly.
-    #[test]
-    fn doc_test() {
-        let center = Q::ZERO;
-        let gaussian_parameter = Q::ONE;
-
-        let mut dgis = DiscreteGaussianIntegerSampler::init(
-            &center,
-            &gaussian_parameter,
-            6.0,
-            LookupTableSetting::FillOnTheFly,
-        )
-        .unwrap();
-
-        let sample = dgis.sample_z();
-
-        assert!(-10 <= sample);
-        assert!(sample <= 10);
-    }
+    use crate::{
+        rational::Q,
+        utils::sample::discrete_gauss::{LookupTableSetting, TAILCUT},
+    };
 
     /// Checks whether samples are kept in correct interval for a small interval.
     #[test]
@@ -443,7 +439,7 @@ mod test_discrete_gaussian_integer_sampler {
         let mut dgis = DiscreteGaussianIntegerSampler::init(
             &center,
             &gaussian_parameter,
-            6.0,
+            8.0,
             LookupTableSetting::FillOnTheFly,
         )
         .unwrap();
@@ -465,7 +461,7 @@ mod test_discrete_gaussian_integer_sampler {
         let mut dgis = DiscreteGaussianIntegerSampler::init(
             &center,
             &gaussian_parameter,
-            6.0,
+            unsafe { TAILCUT },
             LookupTableSetting::FillOnTheFly,
         )
         .unwrap();

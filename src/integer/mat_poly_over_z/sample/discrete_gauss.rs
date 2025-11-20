@@ -18,7 +18,7 @@ use crate::{
     },
     utils::{
         index::evaluate_index,
-        sample::discrete_gauss::{DiscreteGaussianIntegerSampler, LookupTableSetting},
+        sample::discrete_gauss::{DiscreteGaussianIntegerSampler, LookupTableSetting, TAILCUT},
     },
 };
 use std::fmt::Display;
@@ -64,8 +64,12 @@ impl MatPolyOverZ {
         let max_degree = evaluate_index(max_degree).unwrap();
         let mut matrix = MatPolyOverZ::new(num_rows, num_cols);
 
-        let mut dgis =
-            DiscreteGaussianIntegerSampler::init(center, s, 6.0, LookupTableSetting::FillOnTheFly)?;
+        let mut dgis = DiscreteGaussianIntegerSampler::init(
+            center,
+            s,
+            unsafe { TAILCUT },
+            LookupTableSetting::FillOnTheFly,
+        )?;
 
         for row in 0..matrix.get_num_rows() {
             for col in 0..matrix.get_num_columns() {

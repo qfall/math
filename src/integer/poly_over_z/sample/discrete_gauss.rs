@@ -16,7 +16,7 @@ use crate::{
     traits::SetCoefficient,
     utils::{
         index::evaluate_index,
-        sample::discrete_gauss::{DiscreteGaussianIntegerSampler, LookupTableSetting},
+        sample::discrete_gauss::{DiscreteGaussianIntegerSampler, LookupTableSetting, TAILCUT},
     },
 };
 use std::fmt::Display;
@@ -63,7 +63,7 @@ impl PolyOverZ {
         let mut dgis = DiscreteGaussianIntegerSampler::init(
             &center,
             &s,
-            6.0,
+            unsafe { TAILCUT },
             LookupTableSetting::FillOnTheFly,
         )?;
 

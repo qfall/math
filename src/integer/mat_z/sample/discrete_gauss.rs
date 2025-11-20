@@ -14,7 +14,8 @@ use crate::{
     rational::{MatQ, Q},
     traits::{MatrixDimensions, MatrixSetEntry},
     utils::sample::discrete_gauss::{
-        sample_d, sample_d_precomputed_gso, {DiscreteGaussianIntegerSampler, LookupTableSetting},
+        sample_d, sample_d_precomputed_gso, DiscreteGaussianIntegerSampler, LookupTableSetting,
+        TAILCUT,
     },
 };
 use std::fmt::Display;
@@ -56,8 +57,12 @@ impl MatZ {
     ) -> Result<MatZ, MathError> {
         let mut out = Self::new(num_rows, num_cols);
 
-        let mut dgis =
-            DiscreteGaussianIntegerSampler::init(center, s, 6.0, LookupTableSetting::FillOnTheFly)?;
+        let mut dgis = DiscreteGaussianIntegerSampler::init(
+            center,
+            s,
+            unsafe { TAILCUT },
+            LookupTableSetting::FillOnTheFly,
+        )?;
 
         for row in 0..out.get_num_rows() {
             for col in 0..out.get_num_columns() {

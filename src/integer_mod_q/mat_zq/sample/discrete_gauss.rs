@@ -15,6 +15,7 @@ use crate::{
     traits::{MatrixDimensions, MatrixSetEntry},
     utils::sample::discrete_gauss::{
         sample_d, sample_d_precomputed_gso, DiscreteGaussianIntegerSampler, LookupTableSetting,
+        TAILCUT,
     },
 };
 use std::fmt::Display;
@@ -63,7 +64,7 @@ impl MatZq {
         let mut dgis = DiscreteGaussianIntegerSampler::init(
             &center,
             &s,
-            6.0,
+            unsafe { TAILCUT },
             LookupTableSetting::FillOnTheFly,
         )?;
 
