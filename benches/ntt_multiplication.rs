@@ -187,9 +187,9 @@ pub fn bench_mat_ntt_dilithium_params_with_ntt_and_transforms(c: &mut Criterion)
                 let ntt1 = MatNTTPolynomialRingZq::from(&p1);
                 let ntt2 = MatNTTPolynomialRingZq::from(&p2);
 
-                let mut ntt_res = &ntt1 * &ntt2;
+                let ntt_res = &ntt1 * &ntt2;
 
-                let _ = MatPolynomialRingZq::from(&mut ntt_res);
+                let _ = MatPolynomialRingZq::from(ntt_res);
             })
         },
     );
@@ -241,9 +241,9 @@ pub fn bench_mat_ntt_hawk1024_params_with_ntt_and_transforms(c: &mut Criterion) 
                 let ntt1 = MatNTTPolynomialRingZq::from(&p1);
                 let ntt2 = MatNTTPolynomialRingZq::from(&p2);
 
-                let mut ntt_res = &ntt1 * &ntt2;
+                let ntt_res = &ntt1 * &ntt2;
 
-                let _ = MatPolynomialRingZq::from(&mut ntt_res);
+                let _ = MatPolynomialRingZq::from(ntt_res);
             })
         },
     );
@@ -310,9 +310,9 @@ pub fn bench_mat_ntt_rbe_params_with_ntt_and_transforms(c: &mut Criterion) {
                 let ntt1 = MatNTTPolynomialRingZq::from(&p1);
                 let ntt2 = MatNTTPolynomialRingZq::from(&p2);
 
-                let mut ntt_res = &ntt1 * &ntt2;
+                let ntt_res = &ntt1 * &ntt2;
 
-                let _ = MatPolynomialRingZq::from(&mut ntt_res);
+                let _ = MatPolynomialRingZq::from(ntt_res);
             })
         },
     );

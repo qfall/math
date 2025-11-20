@@ -8,7 +8,11 @@
 
 //! Implementations to get information about a [`MatNTTPolynomialRingZq`] matrix.
 
-use crate::{integer::Z, integer_mod_q::MatNTTPolynomialRingZq, traits::MatrixDimensions};
+use crate::{
+    integer::Z,
+    integer_mod_q::{MatNTTPolynomialRingZq, ModulusPolynomialRingZq},
+    traits::MatrixDimensions,
+};
 
 impl MatrixDimensions for MatNTTPolynomialRingZq {
     /// Returns the number of rows of the matrix as an [`i64`].
@@ -45,6 +49,22 @@ impl MatrixDimensions for MatNTTPolynomialRingZq {
 }
 
 impl MatNTTPolynomialRingZq {
+    /// Returns the modulus of the matrix in NTT representation as a [`ModulusPolynomialRingZq`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{MatNTTPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 17").unwrap();
+    /// let matrix = MatNTTPolynomialRingZq::sample_uniform(2, 2, &modulus);
+    ///
+    /// let modulus = matrix.get_mod();
+    /// ```
+    pub fn get_mod(&self) -> ModulusPolynomialRingZq {
+        self.modulus.clone()
+    }
+
     /// Returns the slice of `matrix` corresponding to the entry in row `row` and column `column`.
     ///
     /// Parameters:

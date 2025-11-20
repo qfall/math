@@ -10,8 +10,9 @@
 
 use super::MatNTTPolynomialRingZq;
 use crate::{
-    integer_mod_q::{MatPolynomialRingZq, NTTPolynomialRingZq},
-    traits::{MatrixDimensions, MatrixGetEntry},
+    integer::Z,
+    integer_mod_q::{MatPolynomialRingZq, NTTPolynomialRingZq, PolynomialRingZq},
+    traits::{MatrixDimensions, MatrixGetEntry, MatrixSetEntry},
 };
 
 impl From<&MatPolynomialRingZq> for MatNTTPolynomialRingZq {
@@ -72,7 +73,7 @@ impl MatNTTPolynomialRingZq {
     /// use std::str::FromStr;
     /// let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
     /// modulus.set_ntt_unchecked(64);
-    /// let mut ntt_mat = MatNTTPolynomialRingZq::sample_uniform(1, 1, &modulus);
+    /// let ntt_mat = MatNTTPolynomialRingZq::sample_uniform(1, 1, &modulus);
     ///
     /// let poly_ring_mat = ntt_mat.inv_ntt();
     /// ```
@@ -80,8 +81,23 @@ impl MatNTTPolynomialRingZq {
     /// # Panics ...
     /// - if the [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq) in `modulus`
     ///   is not set.
-    pub fn inv_ntt(&mut self) -> MatPolynomialRingZq {
-        MatPolynomialRingZq::from(self)
+    pub fn inv_ntt(mut self) -> MatPolynomialRingZq {
+        let height = self.nr_rows;
+        let width = self.nr_columns;
+
+        let mut res = MatPolynomialRingZq::new(height, width, &self.modulus);
+        for column in (0..width).rev() {
+            for row in (0..height).rev() {
+                let index = self.modulus.get_degree() as usize * row
+                    + self.modulus.get_degree() as usize * self.nr_rows * column;
+                let entry = PolynomialRingZq::from(NTTPolynomialRingZq {
+                    poly: self.matrix.split_off(index).iter().map(Z::from).collect(),
+                    modulus: self.modulus.clone(),
+                });
+                unsafe { res.set_entry_unchecked(row as i64, column as i64, entry) };
+            }
+        }
+        res
     }
 }
 
@@ -98,9 +114,9 @@ mod test_from {
         modulus.set_ntt_unchecked(64);
         let matrix = MatPolynomialRingZq::sample_uniform(3, 5, &modulus);
 
-        let mut ntt_matrix = MatNTTPolynomialRingZq::from(&matrix);
+        let ntt_matrix = MatNTTPolynomialRingZq::from(&matrix);
 
-        let cmp_matrix = MatPolynomialRingZq::from(&mut ntt_matrix);
+        let cmp_matrix = MatPolynomialRingZq::from(ntt_matrix);
 
         assert_eq!(matrix, cmp_matrix);
     }

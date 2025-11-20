@@ -15,6 +15,7 @@ use crate::{
         arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
         arithmetic_trait_mixed_borrowed_owned,
     },
+    traits::CompareBase,
 };
 use flint_sys::fmpz_mod::fmpz_mod_add;
 use std::ops::{Add, AddAssign};
@@ -45,10 +46,9 @@ impl Add for &NTTPolynomialRingZq {
     /// # Panics ...
     /// - if the moduli are not equal.
     fn add(self, other: Self) -> Self::Output {
-        assert_eq!(
-            self.modulus, other.modulus,
-            "The moduli of both polynomials have to be equal for addition."
-        );
+        if !self.compare_base(other) {
+            panic!("{}", self.call_compare_base_error(other).unwrap());
+        }
         let mod_q = &self.modulus.get_fq_ctx().ctxp[0];
 
         let mut out = NTTPolynomialRingZq {
@@ -110,10 +110,9 @@ impl AddAssign<&NTTPolynomialRingZq> for NTTPolynomialRingZq {
     /// # Panics ...
     /// - if the moduli are not equal.
     fn add_assign(&mut self, other: &Self) {
-        assert_eq!(
-            self.modulus, other.modulus,
-            "The moduli of both polynomials have to be equal for addition."
-        );
+        if !self.compare_base(other) {
+            panic!("{}", self.call_compare_base_error(other).unwrap());
+        }
         let mod_q = &self.modulus.get_fq_ctx().ctxp[0];
 
         for i in 0..self.poly.len() {
@@ -138,14 +137,13 @@ arithmetic_assign_trait_borrowed_to_owned!(
 
 #[cfg(test)]
 mod test_add {
-    use std::ops::Add;
-
     use crate::{
         integer_mod_q::{
             ModulusPolynomialRingZq, NTTPolynomialRingZq, PolyOverZq, PolynomialRingZq,
         },
         traits::SetCoefficient,
     };
+    use std::{ops::Add, str::FromStr};
 
     /// Ensure that the entrywise addition and the intuitive addition yields
     /// the same results for the parameters from Dilithium.
@@ -198,18 +196,32 @@ mod test_add {
 
         assert_eq!(&p1 + &p2, PolynomialRingZq::from(res))
     }
+
+    /// Ensures that the function panics for differing moduli.
+    #[test]
+    #[should_panic]
+    fn different_moduli() {
+        let mut modulus0 = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+        modulus0.set_ntt_unchecked(64);
+        let mut modulus1 = ModulusPolynomialRingZq::from_str("6  1 0 0 0 0 1 mod 257").unwrap();
+        modulus1.set_ntt_unchecked(64);
+
+        let a = NTTPolynomialRingZq::sample_uniform(&modulus0);
+        let b = NTTPolynomialRingZq::sample_uniform(&modulus1);
+
+        let _ = a + b;
+    }
 }
 
 #[cfg(test)]
 mod test_add_assign {
-    use std::ops::AddAssign;
-
     use crate::{
         integer_mod_q::{
             ModulusPolynomialRingZq, NTTPolynomialRingZq, PolyOverZq, PolynomialRingZq,
         },
         traits::SetCoefficient,
     };
+    use std::{ops::AddAssign, str::FromStr};
 
     /// Ensure that the entrywise addition and the intuitive addition yields
     /// the same results for the parameters from Dilithium.
@@ -261,5 +273,20 @@ mod test_add_assign {
         ntt1.add_assign(&ntt2);
 
         assert_eq!(&p1 + &p2, PolynomialRingZq::from(ntt1))
+    }
+
+    /// Ensures that the function panics for differing moduli.
+    #[test]
+    #[should_panic]
+    fn different_moduli() {
+        let mut modulus0 = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+        modulus0.set_ntt_unchecked(64);
+        let mut modulus1 = ModulusPolynomialRingZq::from_str("6  1 0 0 0 0 1 mod 257").unwrap();
+        modulus1.set_ntt_unchecked(64);
+
+        let mut a = NTTPolynomialRingZq::sample_uniform(&modulus0);
+        let b = NTTPolynomialRingZq::sample_uniform(&modulus1);
+
+        a += b;
     }
 }

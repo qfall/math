@@ -14,6 +14,7 @@ use crate::{
     macros::arithmetics::{
         arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
     },
+    traits::CompareBase,
 };
 use flint_sys::fmpz_mod::{fmpz_mod_add_fmpz, fmpz_mod_ctx, fmpz_mod_mul};
 use std::ops::Mul;
@@ -48,10 +49,9 @@ impl Mul for &MatNTTPolynomialRingZq {
     fn mul(self, other: Self) -> Self::Output {
         assert_eq!(self.nr_columns, other.nr_rows,
             "The number of rows of `self` and the number of columns of `other` has to be equal for matrix multiplication.");
-        assert_eq!(
-            self.modulus, other.modulus,
-            "The moduli of both matrices have to be equal for multiplication."
-        );
+        if !self.compare_base(other) {
+            panic!("{}", self.call_compare_base_error(other).unwrap());
+        }
 
         let mod_ctx = &self.modulus.get_fq_ctx().ctxp[0];
 
@@ -147,7 +147,7 @@ mod test_mul {
         },
         traits::SetCoefficient,
     };
-    use std::ops::Mul;
+    use std::{ops::Mul, str::FromStr};
 
     /// Ensure that the entrywise multiplication and the intuitive multiplication yields
     /// the same results for small parameters.
@@ -170,9 +170,9 @@ mod test_mul {
         let ntt1 = MatNTTPolynomialRingZq::from(&p1);
         let ntt2 = MatNTTPolynomialRingZq::from(&p2);
 
-        let mut ntt_res = ntt1.mul(&ntt2);
+        let ntt_res = ntt1.mul(&ntt2);
 
-        assert_eq!(&p1 * &p2, MatPolynomialRingZq::from(&mut ntt_res))
+        assert_eq!(&p1 * &p2, MatPolynomialRingZq::from(ntt_res))
     }
 
     /// Ensure that the entrywise multiplication and the intuitive multiplication yields
@@ -196,9 +196,9 @@ mod test_mul {
         let ntt1 = MatNTTPolynomialRingZq::from(&p1);
         let ntt2 = MatNTTPolynomialRingZq::from(&p2);
 
-        let mut ntt_res = ntt1.mul(&ntt2);
+        let ntt_res = ntt1.mul(&ntt2);
 
-        assert_eq!(&p1 * &p2, MatPolynomialRingZq::from(&mut ntt_res))
+        assert_eq!(&p1 * &p2, MatPolynomialRingZq::from(ntt_res))
     }
 
     /// Ensure that the entrywise multiplication and the intuitive multiplication yields
@@ -222,8 +222,36 @@ mod test_mul {
         let ntt1 = MatNTTPolynomialRingZq::from(&p1);
         let ntt2 = MatNTTPolynomialRingZq::from(&p2);
 
-        let mut ntt_res = ntt1.mul(&ntt2);
+        let ntt_res = ntt1.mul(&ntt2);
 
-        assert_eq!(&p1 * &p2, MatPolynomialRingZq::from(&mut ntt_res))
+        assert_eq!(&p1 * &p2, MatPolynomialRingZq::from(ntt_res))
+    }
+
+    /// Ensures that the function panics for differing moduli.
+    #[test]
+    #[should_panic]
+    fn different_moduli() {
+        let mut modulus0 = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+        modulus0.set_ntt_unchecked(64);
+        let mut modulus1 = ModulusPolynomialRingZq::from_str("6  1 0 0 0 0 1 mod 257").unwrap();
+        modulus1.set_ntt_unchecked(64);
+
+        let a = MatNTTPolynomialRingZq::sample_uniform(2, 2, &modulus0);
+        let b = MatNTTPolynomialRingZq::sample_uniform(2, 2, &modulus1);
+
+        let _ = a * b;
+    }
+
+    /// Ensures that the function panics for differing dimensions.
+    #[test]
+    #[should_panic]
+    fn different_dimensions() {
+        let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+        modulus.set_ntt_unchecked(64);
+
+        let a = MatNTTPolynomialRingZq::sample_uniform(2, 3, &modulus);
+        let b = MatNTTPolynomialRingZq::sample_uniform(2, 2, &modulus);
+
+        let _ = a * b;
     }
 }

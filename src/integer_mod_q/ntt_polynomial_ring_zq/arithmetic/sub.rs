@@ -15,6 +15,7 @@ use crate::{
         arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
         arithmetic_trait_mixed_borrowed_owned,
     },
+    traits::CompareBase,
 };
 use flint_sys::fmpz_mod::fmpz_mod_sub;
 use std::ops::{Sub, SubAssign};
@@ -110,10 +111,9 @@ impl SubAssign<&NTTPolynomialRingZq> for NTTPolynomialRingZq {
     /// # Panics ...
     /// - if the moduli are not equal.
     fn sub_assign(&mut self, other: &Self) {
-        assert_eq!(
-            self.modulus, other.modulus,
-            "The moduli of both polynomials have to be equal for subtraction."
-        );
+        if !self.compare_base(other) {
+            panic!("{}", self.call_compare_base_error(other).unwrap());
+        }
         let mod_q = &self.modulus.get_fq_ctx().ctxp[0];
 
         for i in 0..self.poly.len() {
@@ -144,7 +144,7 @@ mod test_sub {
         },
         traits::SetCoefficient,
     };
-    use std::ops::Sub;
+    use std::{ops::Sub, str::FromStr};
 
     /// Ensure that the entrywise subtraction and the intuitive subtraction yields
     /// the same results for the parameters from Dilithium.
@@ -197,6 +197,21 @@ mod test_sub {
 
         assert_eq!(&p1 - &p2, PolynomialRingZq::from(res))
     }
+
+    /// Ensures that the function panics for differing moduli.
+    #[test]
+    #[should_panic]
+    fn different_moduli() {
+        let mut modulus0 = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+        modulus0.set_ntt_unchecked(64);
+        let mut modulus1 = ModulusPolynomialRingZq::from_str("6  1 0 0 0 0 1 mod 257").unwrap();
+        modulus1.set_ntt_unchecked(64);
+
+        let a = NTTPolynomialRingZq::sample_uniform(&modulus0);
+        let b = NTTPolynomialRingZq::sample_uniform(&modulus1);
+
+        let _ = a - b;
+    }
 }
 
 #[cfg(test)]
@@ -207,7 +222,7 @@ mod test_sub_assign {
         },
         traits::SetCoefficient,
     };
-    use std::ops::SubAssign;
+    use std::{ops::SubAssign, str::FromStr};
 
     /// Ensure that the entrywise subtraction and the intuitive subtraction yields
     /// the same results for the parameters from Dilithium.
@@ -259,5 +274,20 @@ mod test_sub_assign {
         ntt1.sub_assign(ntt2);
 
         assert_eq!(&p1 - &p2, PolynomialRingZq::from(ntt1))
+    }
+
+    /// Ensures that the function panics for differing moduli.
+    #[test]
+    #[should_panic]
+    fn different_moduli() {
+        let mut modulus0 = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+        modulus0.set_ntt_unchecked(64);
+        let mut modulus1 = ModulusPolynomialRingZq::from_str("6  1 0 0 0 0 1 mod 257").unwrap();
+        modulus1.set_ntt_unchecked(64);
+
+        let mut a = NTTPolynomialRingZq::sample_uniform(&modulus0);
+        let b = NTTPolynomialRingZq::sample_uniform(&modulus1);
+
+        a -= b;
     }
 }

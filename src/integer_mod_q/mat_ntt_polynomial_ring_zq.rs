@@ -14,6 +14,7 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 
 mod arithmetic;
+mod cmp;
 mod from;
 mod get;
 mod sample;

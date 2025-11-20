@@ -55,17 +55,7 @@ impl From<NTTPolynomialRingZq> for PolynomialRingZq {
     /// - if the [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq) in `modulus`
     ///   is not set.
     fn from(ntt: NTTPolynomialRingZq) -> Self {
-        ntt.modulus
-            .ntt_basis
-            .as_ref()
-            .as_ref()
-            .map(|basis| PolynomialRingZq {
-                poly: basis
-                    .inv_ntt(ntt.poly)
-                    .get_representative_least_nonnegative_residue(),
-                modulus: ntt.modulus.clone(),
-            })
-            .unwrap()
+        ntt.inv_ntt()
     }
 }
 
