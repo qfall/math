@@ -9,11 +9,9 @@
 //! This module contains algorithms for sampling according to the uniform distribution.
 
 use crate::{
-    integer::Z,
-    integer_mod_q::NTTPolynomialRingZq,
-    utils::{index::evaluate_index, sample::uniform::UniformIntegerSampler},
+    integer_mod_q::{ModulusPolynomialRingZq, NTTPolynomialRingZq},
+    utils::sample::uniform::UniformIntegerSampler,
 };
-use std::fmt::Display;
 
 impl NTTPolynomialRingZq {
     /// Generates a [`NTTPolynomialRingZq`] instance with degree `modulus_degree - 1`
@@ -34,31 +32,24 @@ impl NTTPolynomialRingZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::NTTPolynomialRingZq;
+    /// use qfall_math::integer_mod_q::{NTTPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
+    /// let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+    /// modulus.set_ntt_unchecked(64);
     ///
-    /// let sample = NTTPolynomialRingZq::sample_uniform(3, 17);
+    /// let sample = NTTPolynomialRingZq::sample_uniform(&modulus);
     /// ```
-    ///
-    /// # Panics ...
-    /// - if `modulus` is smaller than `2`.
-    /// - the `modulus_degree` is smaller than `2` or it does not fit into an [`i64`].
-    pub fn sample_uniform(
-        modulus_degree: impl TryInto<i64> + Display + Copy,
-        modulus: impl Into<Z>,
-    ) -> Self {
-        let modulus_degree = evaluate_index(modulus_degree)
-            .expect("`modulus_degree` can't be smaller than 2 and must fit into an i64.");
-        assert!(
-            modulus_degree > 1,
-            "`modulus_degree` can't be smaller than 2 and must fit into an i64."
-        );
-        let interval_size = modulus.into();
+    pub fn sample_uniform(modulus: &ModulusPolynomialRingZq) -> Self {
+        let interval_size = modulus.get_q();
         assert!(interval_size > 1);
 
         let mut uis = UniformIntegerSampler::init(&interval_size).unwrap();
 
-        let vector = (0..modulus_degree).map(|_| uis.sample()).collect();
-        Self { poly: vector }
+        let vector = (0..modulus.get_degree()).map(|_| uis.sample()).collect();
+        Self {
+            poly: vector,
+            modulus: modulus.clone(),
+        }
     }
 }
 
@@ -66,92 +57,33 @@ impl NTTPolynomialRingZq {
 mod test_sample_uniform {
     use crate::{
         integer::Z,
-        integer_mod_q::{Modulus, NTTPolynomialRingZq},
+        integer_mod_q::{ModulusPolynomialRingZq, NTTPolynomialRingZq},
     };
+    use std::str::FromStr;
 
-    /// Checks whether the boundaries of the interval are kept for small moduli.
+    /// Checks whether the boundaries of the interval are kept.
     #[test]
-    fn boundaries_kept_small() {
-        let modulus = Z::from(17);
+    fn boundaries_kept() {
+        let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+        modulus.set_ntt_unchecked(64);
 
-        let poly = NTTPolynomialRingZq::sample_uniform(32, &modulus);
+        let poly = NTTPolynomialRingZq::sample_uniform(&modulus);
 
-        for i in 0..32 {
+        for i in 0..4 {
             let sample = &poly.poly[i];
             assert!(&Z::ZERO <= sample);
-            assert!(sample < &modulus);
-        }
-    }
-
-    /// Checks whether the boundaries of the interval are kept for large moduli.
-    #[test]
-    fn boundaries_kept_large() {
-        let modulus = Z::from(i64::MAX);
-
-        let poly = NTTPolynomialRingZq::sample_uniform(256, &modulus);
-
-        for i in 0..256 {
-            let sample = &poly.poly[i];
-            assert!(&Z::ZERO <= sample);
-            assert!(sample < &modulus);
+            assert!(sample < &Z::from(257));
         }
     }
 
     /// Checks whether the number of coefficients is correct.
     #[test]
     fn nr_coeffs() {
-        let degrees = [2, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let res = NTTPolynomialRingZq::sample_uniform(degree, u64::MAX);
+        let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+        modulus.set_ntt_unchecked(64);
 
-            assert_eq!(
-                degree,
-                res.poly.len(),
-                "Could fail with probability 1/{}.",
-                u64::MAX
-            );
-        }
-    }
+        let res = NTTPolynomialRingZq::sample_uniform(&modulus);
 
-    /// Checks whether providing an invalid interval/ modulus results in an error.
-    #[test]
-    #[should_panic]
-    fn invalid_modulus_negative() {
-        let _ = NTTPolynomialRingZq::sample_uniform(1, i64::MIN);
-    }
-
-    /// Checks whether providing an invalid interval/ modulus results in an error.
-    #[test]
-    #[should_panic]
-    fn invalid_modulus_one() {
-        let _ = NTTPolynomialRingZq::sample_uniform(1, 1);
-    }
-
-    /// Checks whether providing a length smaller than `1` results in an error.
-    #[test]
-    #[should_panic]
-    fn invalid_modulus_degree() {
-        let _ = NTTPolynomialRingZq::sample_uniform(1, 15);
-        let _ = NTTPolynomialRingZq::sample_uniform(i64::MIN, 15);
-    }
-
-    /// Checks whether `sample_uniform` is available for all types
-    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
-    #[test]
-    fn availability() {
-        let modulus = Modulus::from(10);
-        let z = Z::from(10);
-
-        let _ = NTTPolynomialRingZq::sample_uniform(2u64, 10u16);
-        let _ = NTTPolynomialRingZq::sample_uniform(2i64, 10u32);
-        let _ = NTTPolynomialRingZq::sample_uniform(2u8, 10u64);
-        let _ = NTTPolynomialRingZq::sample_uniform(2u16, 10i8);
-        let _ = NTTPolynomialRingZq::sample_uniform(2u32, 10i16);
-        let _ = NTTPolynomialRingZq::sample_uniform(2i32, 10i32);
-        let _ = NTTPolynomialRingZq::sample_uniform(2i16, 10i64);
-        let _ = NTTPolynomialRingZq::sample_uniform(2i8, &z);
-        let _ = NTTPolynomialRingZq::sample_uniform(2, z);
-        let _ = NTTPolynomialRingZq::sample_uniform(2, &modulus);
-        let _ = NTTPolynomialRingZq::sample_uniform(2, modulus);
+        assert_eq!(4, res.poly.len(),);
     }
 }

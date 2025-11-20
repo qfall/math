@@ -9,11 +9,9 @@
 //! This module contains algorithms for sampling according to the uniform distribution.
 
 use crate::{
-    integer::Z,
-    integer_mod_q::MatNTTPolynomialRingZq,
-    utils::{index::evaluate_index, sample::uniform::UniformIntegerSampler},
+    integer_mod_q::{MatNTTPolynomialRingZq, ModulusPolynomialRingZq},
+    utils::sample::uniform::UniformIntegerSampler,
 };
-use std::fmt::Display;
 
 impl MatNTTPolynomialRingZq {
     /// Generates a [`MatNTTPolynomialRingZq`] instance with maximum degree `modulus_degree`
@@ -36,71 +34,62 @@ impl MatNTTPolynomialRingZq {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatNTTPolynomialRingZq;
+    /// use qfall_math::integer_mod_q::{MatNTTPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
+    /// let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+    /// modulus.set_ntt_unchecked(64);
     ///
-    /// let sample = MatNTTPolynomialRingZq::sample_uniform(3, 2, 3, 17);
+    /// let sample = MatNTTPolynomialRingZq::sample_uniform(3, 2, &modulus);
     /// ```
     ///
     /// # Panics ...
     /// - if `nr_rows` or `nr_columns` is `0`.
-    /// - if `modulus` is smaller than `2`.
-    /// - the `modulus_degree` is smaller than `2` or it does not fit into an [`i64`].
     pub fn sample_uniform(
         nr_rows: usize,
         nr_columns: usize,
-        modulus_degree: impl TryInto<i64> + Display + Copy,
-        modulus: impl Into<Z>,
+        modulus: &ModulusPolynomialRingZq,
     ) -> Self {
-        assert!(nr_rows > 0);
-        assert!(nr_columns > 0);
-        let modulus_degree = evaluate_index(modulus_degree)
-            .expect("`modulus_degree` can't be smaller negative and must fit into an i64.");
+        assert!(nr_rows > 0, "Number of rows needs to be larger than 0.");
         assert!(
-            modulus_degree > 1,
-            "`modulus_degree` can't be smaller than 2 and must fit into an i64."
+            nr_columns > 0,
+            "Number of columns needs to be larger than 0."
         );
-        let interval_size = modulus.into();
-        assert!(interval_size > Z::ONE);
+        let interval_size = modulus.get_q();
 
         let mut uis = UniformIntegerSampler::init(&interval_size).unwrap();
 
-        let vector = (0..modulus_degree as usize * nr_rows * nr_columns)
+        let vector = (0..modulus.get_degree() as usize * nr_rows * nr_columns)
             .map(|_| uis.sample())
             .collect();
         Self {
             matrix: vector,
-            d: modulus_degree as usize,
             nr_rows,
             nr_columns,
+            modulus: modulus.clone(),
         }
     }
 }
 
 #[cfg(test)]
 mod test_sample_uniform {
-    use crate::{integer::Z, integer_mod_q::MatNTTPolynomialRingZq};
+    use crate::{
+        integer::Z,
+        integer_mod_q::{MatNTTPolynomialRingZq, ModulusPolynomialRingZq},
+    };
+    use std::str::FromStr;
 
     /// Checks whether the boundaries of the interval are kept for small intervals.
     #[test]
-    fn boundaries_kept_small() {
+    fn boundaries_kept() {
+        let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+        modulus.set_ntt_unchecked(64);
+
         for _ in 0..32 {
-            let matrix = MatNTTPolynomialRingZq::sample_uniform(1, 1, 2, 17);
+            let matrix = MatNTTPolynomialRingZq::sample_uniform(1, 1, &modulus);
             let sample = matrix.matrix[0].clone();
 
             assert!(Z::ZERO <= sample);
-            assert!(sample < 17);
-        }
-    }
-
-    /// Checks whether the boundaries of the interval are kept for large intervals.
-    #[test]
-    fn boundaries_kept_large() {
-        for _ in 0..256 {
-            let matrix = MatNTTPolynomialRingZq::sample_uniform(1, 1, 2, u64::MAX);
-            let sample = matrix.matrix[0].clone();
-
-            assert!(Z::ZERO <= sample);
-            assert!(sample < u64::MAX);
+            assert!(sample < 257);
         }
     }
 
@@ -109,13 +98,9 @@ mod test_sample_uniform {
     #[should_panic]
     #[test]
     fn false_size() {
-        let _ = MatNTTPolynomialRingZq::sample_uniform(0, 1, 2, 3);
-    }
+        let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+        modulus.set_ntt_unchecked(64);
 
-    /// Checks whether 0 modulus polynomial is insufficient.
-    #[test]
-    #[should_panic]
-    fn invalid_modulus() {
-        let _ = MatNTTPolynomialRingZq::sample_uniform(1, 1, 1, 1);
+        let _ = MatNTTPolynomialRingZq::sample_uniform(0, 1, &modulus);
     }
 }

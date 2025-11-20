@@ -12,8 +12,8 @@
 use criterion::*;
 use qfall_math::{
     integer_mod_q::{
-        MatNTTPolynomialRingZq, MatPolynomialRingZq, Modulus, ModulusPolynomialRingZq,
-        NTTPolynomialRingZq, PolyOverZq, PolynomialRingZq,
+        MatNTTPolynomialRingZq, MatPolynomialRingZq, ModulusPolynomialRingZq, NTTPolynomialRingZq,
+        PolyOverZq, PolynomialRingZq,
     },
     traits::*,
 };
@@ -52,7 +52,6 @@ pub fn get_hawk1024_setup() -> ModulusPolynomialRingZq {
 /// `n=256`, `q = 2^23 - 2^13 + 1` and `zeta = 1753`
 pub fn bench_ntt_dilithium_params_with_ntt(c: &mut Criterion) {
     let modulus = get_dilithium_setup();
-    let mod_q = Modulus::from(modulus.get_q());
 
     let p1 = PolynomialRingZq::sample_uniform(&modulus);
     let p2 = PolynomialRingZq::sample_uniform(&modulus);
@@ -62,7 +61,7 @@ pub fn bench_ntt_dilithium_params_with_ntt(c: &mut Criterion) {
 
     c.bench_function(
         "PolynomialRingZq Multiplication with NTT (Dilithium)",
-        |b| b.iter(|| ntt1.mul(&ntt2, &mod_q)),
+        |b| b.iter(|| &ntt1 * &ntt2),
     );
 }
 
@@ -70,7 +69,6 @@ pub fn bench_ntt_dilithium_params_with_ntt(c: &mut Criterion) {
 /// `n=256`, `q = 2^23 - 2^13 + 1` and `zeta = 1753`
 pub fn bench_ntt_dilithium_params_with_ntt_and_transforms(c: &mut Criterion) {
     let modulus = get_dilithium_setup();
-    let mod_q = Modulus::from(modulus.get_q());
 
     let p1 = PolynomialRingZq::sample_uniform(&modulus);
     let p2 = PolynomialRingZq::sample_uniform(&modulus);
@@ -82,9 +80,9 @@ pub fn bench_ntt_dilithium_params_with_ntt_and_transforms(c: &mut Criterion) {
                 let ntt1 = NTTPolynomialRingZq::from(&p1);
                 let ntt2 = NTTPolynomialRingZq::from(&p2);
 
-                let ntt_res = ntt1.mul(&ntt2, &mod_q);
+                let ntt_res = &ntt1 * &ntt2;
 
-                let _ = PolynomialRingZq::from((ntt_res, &modulus));
+                let _ = PolynomialRingZq::from(ntt_res);
             })
         },
     );
@@ -108,7 +106,6 @@ pub fn bench_ntt_dilithium_params_without_ntt(c: &mut Criterion) {
 /// `n=256`, `q = 12289` and `zeta = 1945`
 pub fn bench_ntt_hawk1024_params_with_ntt(c: &mut Criterion) {
     let modulus = get_hawk1024_setup();
-    let mod_q = Modulus::from(modulus.get_q());
 
     let p1 = PolynomialRingZq::sample_uniform(&modulus);
     let p2 = PolynomialRingZq::sample_uniform(&modulus);
@@ -117,7 +114,7 @@ pub fn bench_ntt_hawk1024_params_with_ntt(c: &mut Criterion) {
     let ntt2 = NTTPolynomialRingZq::from(&p2);
 
     c.bench_function("PolynomialRingZq Multiplication with NTT (HAWK1024)", |b| {
-        b.iter(|| ntt1.mul(&ntt2, &mod_q))
+        b.iter(|| &ntt1 * &ntt2)
     });
 }
 
@@ -125,7 +122,6 @@ pub fn bench_ntt_hawk1024_params_with_ntt(c: &mut Criterion) {
 /// `n=256`, `q = 12289` and `zeta = 1945`
 pub fn bench_ntt_hawk1024_params_with_ntt_and_transforms(c: &mut Criterion) {
     let modulus = get_hawk1024_setup();
-    let mod_q = Modulus::from(modulus.get_q());
 
     let p1 = PolynomialRingZq::sample_uniform(&modulus);
     let p2 = PolynomialRingZq::sample_uniform(&modulus);
@@ -137,9 +133,9 @@ pub fn bench_ntt_hawk1024_params_with_ntt_and_transforms(c: &mut Criterion) {
                 let ntt1 = NTTPolynomialRingZq::from(&p1);
                 let ntt2 = NTTPolynomialRingZq::from(&p2);
 
-                let ntt_res = ntt1.mul(&ntt2, &mod_q);
+                let ntt_res = &ntt1 * &ntt2;
 
-                let _ = PolynomialRingZq::from((ntt_res, &modulus));
+                let _ = PolynomialRingZq::from(ntt_res);
             })
         },
     );
@@ -163,7 +159,6 @@ pub fn bench_ntt_hawk1024_params_without_ntt(c: &mut Criterion) {
 /// `n=256`, `q = 2^23 - 2^13 + 1` and `zeta = 1753`
 pub fn bench_mat_ntt_dilithium_params_with_ntt(c: &mut Criterion) {
     let modulus = get_dilithium_setup();
-    let mod_q = Modulus::from(modulus.get_q());
 
     let p1 = MatPolynomialRingZq::sample_uniform(4, 4, &modulus);
     let p2 = MatPolynomialRingZq::sample_uniform(4, 1, &modulus);
@@ -173,7 +168,7 @@ pub fn bench_mat_ntt_dilithium_params_with_ntt(c: &mut Criterion) {
 
     c.bench_function(
         "MatPolynomialRingZq Multiplication with NTT (Dilithium)",
-        |b| b.iter(|| ntt1.mul(&ntt2, &mod_q)),
+        |b| b.iter(|| &ntt1 * &ntt2),
     );
 }
 
@@ -181,7 +176,6 @@ pub fn bench_mat_ntt_dilithium_params_with_ntt(c: &mut Criterion) {
 /// `n=256`, `q = 2^23 - 2^13 + 1` and `zeta = 1753`
 pub fn bench_mat_ntt_dilithium_params_with_ntt_and_transforms(c: &mut Criterion) {
     let modulus = get_dilithium_setup();
-    let mod_q = Modulus::from(modulus.get_q());
 
     let p1 = MatPolynomialRingZq::sample_uniform(4, 4, &modulus);
     let p2 = MatPolynomialRingZq::sample_uniform(4, 1, &modulus);
@@ -193,9 +187,9 @@ pub fn bench_mat_ntt_dilithium_params_with_ntt_and_transforms(c: &mut Criterion)
                 let ntt1 = MatNTTPolynomialRingZq::from(&p1);
                 let ntt2 = MatNTTPolynomialRingZq::from(&p2);
 
-                let mut ntt_res = ntt1.mul(&ntt2, &mod_q);
+                let mut ntt_res = &ntt1 * &ntt2;
 
-                let _ = MatPolynomialRingZq::from((&mut ntt_res, &modulus));
+                let _ = MatPolynomialRingZq::from(&mut ntt_res);
             })
         },
     );
@@ -219,7 +213,6 @@ pub fn bench_mat_ntt_dilithium_params_without_ntt(c: &mut Criterion) {
 /// `n=256`, `q = 12289` and `zeta = 1945`
 pub fn bench_mat_ntt_hawk1024_params_with_ntt(c: &mut Criterion) {
     let modulus = get_hawk1024_setup();
-    let mod_q = Modulus::from(modulus.get_q());
 
     let p1 = MatPolynomialRingZq::sample_uniform(1, 2, &modulus);
     let p2 = MatPolynomialRingZq::sample_uniform(2, 2, &modulus);
@@ -229,7 +222,7 @@ pub fn bench_mat_ntt_hawk1024_params_with_ntt(c: &mut Criterion) {
 
     c.bench_function(
         "MatPolynomialRingZq Multiplication with NTT (HAWK1024)",
-        |b| b.iter(|| ntt1.mul(&ntt2, &mod_q)),
+        |b| b.iter(|| &ntt1 * &ntt2),
     );
 }
 
@@ -237,7 +230,6 @@ pub fn bench_mat_ntt_hawk1024_params_with_ntt(c: &mut Criterion) {
 /// `n=256`, `q = 12289` and `zeta = 1945`
 pub fn bench_mat_ntt_hawk1024_params_with_ntt_and_transforms(c: &mut Criterion) {
     let modulus = get_hawk1024_setup();
-    let mod_q = Modulus::from(modulus.get_q());
 
     let p1 = MatPolynomialRingZq::sample_uniform(2, 2, &modulus);
     let p2 = MatPolynomialRingZq::sample_uniform(2, 1, &modulus);
@@ -249,9 +241,9 @@ pub fn bench_mat_ntt_hawk1024_params_with_ntt_and_transforms(c: &mut Criterion) 
                 let ntt1 = MatNTTPolynomialRingZq::from(&p1);
                 let ntt2 = MatNTTPolynomialRingZq::from(&p2);
 
-                let mut ntt_res = ntt1.mul(&ntt2, &mod_q);
+                let mut ntt_res = &ntt1 * &ntt2;
 
-                let _ = MatPolynomialRingZq::from((&mut ntt_res, &modulus));
+                let _ = MatPolynomialRingZq::from(&mut ntt_res);
             })
         },
     );
@@ -291,7 +283,6 @@ pub fn get_rbe_setup() -> ModulusPolynomialRingZq {
 /// `n=256`, `q = 12289` and `zeta = 1945`
 pub fn bench_mat_ntt_rbe_params_with_ntt(c: &mut Criterion) {
     let modulus = get_rbe_setup();
-    let mod_q = Modulus::from(modulus.get_q());
 
     let p1 = MatPolynomialRingZq::sample_uniform(1, 2, &modulus);
     let p2 = MatPolynomialRingZq::sample_uniform(2, 12, &modulus);
@@ -300,7 +291,7 @@ pub fn bench_mat_ntt_rbe_params_with_ntt(c: &mut Criterion) {
     let ntt2 = MatNTTPolynomialRingZq::from(&p2);
 
     c.bench_function("MatPolynomialRingZq Multiplication with NTT (RBE)", |b| {
-        b.iter(|| ntt1.mul(&ntt2, &mod_q))
+        b.iter(|| &ntt1 * &ntt2)
     });
 }
 
@@ -308,7 +299,6 @@ pub fn bench_mat_ntt_rbe_params_with_ntt(c: &mut Criterion) {
 /// `n=256`, `q = 12289` and `zeta = 1945`
 pub fn bench_mat_ntt_rbe_params_with_ntt_and_transforms(c: &mut Criterion) {
     let modulus = get_rbe_setup();
-    let mod_q = Modulus::from(modulus.get_q());
 
     let p1 = MatPolynomialRingZq::sample_uniform(1, 2, &modulus);
     let p2 = MatPolynomialRingZq::sample_uniform(2, 12, &modulus);
@@ -320,9 +310,9 @@ pub fn bench_mat_ntt_rbe_params_with_ntt_and_transforms(c: &mut Criterion) {
                 let ntt1 = MatNTTPolynomialRingZq::from(&p1);
                 let ntt2 = MatNTTPolynomialRingZq::from(&p2);
 
-                let mut ntt_res = ntt1.mul(&ntt2, &mod_q);
+                let mut ntt_res = &ntt1 * &ntt2;
 
-                let _ = MatPolynomialRingZq::from((&mut ntt_res, &modulus));
+                let _ = MatPolynomialRingZq::from(&mut ntt_res);
             })
         },
     );

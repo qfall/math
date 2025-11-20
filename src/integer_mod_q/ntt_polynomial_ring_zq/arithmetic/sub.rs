@@ -10,47 +10,50 @@
 
 use crate::{
     integer::Z,
-    integer_mod_q::{Modulus, NTTPolynomialRingZq},
+    integer_mod_q::NTTPolynomialRingZq,
+    macros::arithmetics::{
+        arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
+        arithmetic_trait_mixed_borrowed_owned,
+    },
 };
 use flint_sys::fmpz_mod::fmpz_mod_sub;
+use std::ops::{Sub, SubAssign};
 
-impl NTTPolynomialRingZq {
+impl Sub for &NTTPolynomialRingZq {
+    type Output = NTTPolynomialRingZq;
+
     /// Subtracts `other` from `self`.
     ///
     /// Paramters:
     /// - `other`: specifies the NTT-representation of the polynomial to subtract from `self`
-    /// - `modulus`: defines the modulus `q`
     ///
-    /// Returns the NTT-representation of the subtraction of `other` from `self` generated
-    /// with respect to `modulus`.
+    /// Returns the NTT-representation of the subtraction of `other` from `self`.
     ///
     /// # Example
     /// ```
-    /// use qfall_math::integer_mod_q::{NTTPolynomialRingZq, Modulus};
-    /// use crate::qfall_math::traits::SetCoefficient;
+    /// use qfall_math::integer_mod_q::{NTTPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
+    /// let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+    /// modulus.set_ntt_unchecked(64);
     ///
-    /// let n = 4;
-    /// let q = Modulus::from(257);
+    /// let a = NTTPolynomialRingZq::sample_uniform(&modulus);
+    /// let b = NTTPolynomialRingZq::sample_uniform(&modulus);
     ///
-    /// let mut a = NTTPolynomialRingZq::sample_uniform(n, &q);
-    /// let b = NTTPolynomialRingZq::sample_uniform(n, &q);
-    ///
-    /// let c = a.sub(&b, &q);
+    /// let c = a - b;
     /// ```
     ///
     /// # Panics ...
-    /// - if the `modulus` is smaller than `2`.
-    /// - if the degree of the polynomials is not equal.
-    pub fn sub(&self, other: &Self, modulus: &Modulus) -> Self {
+    /// - if the moduli are not equal.
+    fn sub(self, other: Self) -> Self::Output {
         assert_eq!(
-            self.poly.len(),
-            other.poly.len(),
-            "The degree of both polynomials has to be equal for subtraction."
+            self.modulus, other.modulus,
+            "The moduli of both polynomials have to be equal for subtraction."
         );
-        let mod_q = modulus.get_fmpz_mod_ctx_struct();
+        let mod_q = &self.modulus.get_fq_ctx().ctxp[0];
 
         let mut out = NTTPolynomialRingZq {
             poly: vec![Z::default(); self.poly.len()],
+            modulus: self.modulus.clone(),
         };
 
         for i in 0..self.poly.len() {
@@ -66,40 +69,52 @@ impl NTTPolynomialRingZq {
 
         out
     }
+}
 
+arithmetic_trait_borrowed_to_owned!(
+    Sub,
+    sub,
+    NTTPolynomialRingZq,
+    NTTPolynomialRingZq,
+    NTTPolynomialRingZq
+);
+arithmetic_trait_mixed_borrowed_owned!(
+    Sub,
+    sub,
+    NTTPolynomialRingZq,
+    NTTPolynomialRingZq,
+    NTTPolynomialRingZq
+);
+
+impl SubAssign<&NTTPolynomialRingZq> for NTTPolynomialRingZq {
     /// Subtracts `other` from `self` reusing the memory of `self`.
     ///
     /// Paramters:
     /// - `other`: specifies the NTT-representation of the polynomial to subtract from `self`
-    /// - `modulus`: defines the modulus `q`
     ///
-    /// Computes the NTT-representation of the subtraction of `other` from `self` generated
-    /// with respect to `modulus`.
+    /// Computes the NTT-representation of the subtraction of `other` from `self`.
     ///
     /// # Example
     /// ```
-    /// use qfall_math::integer_mod_q::{NTTPolynomialRingZq, Modulus};
-    /// use crate::qfall_math::traits::SetCoefficient;
+    /// use qfall_math::integer_mod_q::{NTTPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
+    /// let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+    /// modulus.set_ntt_unchecked(64);
     ///
-    /// let n = 4;
-    /// let q = Modulus::from(257);
+    /// let mut a = NTTPolynomialRingZq::sample_uniform(&modulus);
+    /// let b = NTTPolynomialRingZq::sample_uniform(&modulus);
     ///
-    /// let mut a = NTTPolynomialRingZq::sample_uniform(n, &q);
-    /// let b = NTTPolynomialRingZq::sample_uniform(n, &q);
-    ///
-    /// a.sub_assign(&b, &q);
+    /// a -= b;
     /// ```
     ///
     /// # Panics ...
-    /// - if the `modulus` is smaller than `2`.
-    /// - if the degree of the polynomials is not equal.
-    pub fn sub_assign(&mut self, other: &Self, modulus: &Modulus) {
+    /// - if the moduli are not equal.
+    fn sub_assign(&mut self, other: &Self) {
         assert_eq!(
-            self.poly.len(),
-            other.poly.len(),
-            "The degree of both polynomials has to be equal for subtraction."
+            self.modulus, other.modulus,
+            "The moduli of both polynomials have to be equal for subtraction."
         );
-        let mod_q = modulus.get_fmpz_mod_ctx_struct();
+        let mod_q = &self.modulus.get_fq_ctx().ctxp[0];
 
         for i in 0..self.poly.len() {
             unsafe {
@@ -114,14 +129,22 @@ impl NTTPolynomialRingZq {
     }
 }
 
+arithmetic_assign_trait_borrowed_to_owned!(
+    SubAssign,
+    sub_assign,
+    NTTPolynomialRingZq,
+    NTTPolynomialRingZq
+);
+
 #[cfg(test)]
 mod test_sub {
     use crate::{
         integer_mod_q::{
-            Modulus, ModulusPolynomialRingZq, NTTPolynomialRingZq, PolyOverZq, PolynomialRingZq,
+            ModulusPolynomialRingZq, NTTPolynomialRingZq, PolyOverZq, PolynomialRingZq,
         },
         traits::SetCoefficient,
     };
+    use std::ops::Sub;
 
     /// Ensure that the entrywise subtraction and the intuitive subtraction yields
     /// the same results for the parameters from Dilithium.
@@ -144,12 +167,9 @@ mod test_sub {
         let ntt1 = NTTPolynomialRingZq::from(&p1);
         let ntt2 = NTTPolynomialRingZq::from(&p2);
 
-        let res = ntt1.sub(&ntt2, &Modulus::from(modulus));
+        let res = ntt1.sub(ntt2);
 
-        assert_eq!(
-            &p1 - &p2,
-            PolynomialRingZq::from((res, &polynomial_modulus))
-        )
+        assert_eq!(&p1 - &p2, PolynomialRingZq::from(res))
     }
 
     /// Ensure that the entrywise subtraction and the intuitive subtraction yields
@@ -173,12 +193,9 @@ mod test_sub {
         let ntt1 = NTTPolynomialRingZq::from(&p1);
         let ntt2 = NTTPolynomialRingZq::from(&p2);
 
-        let res = ntt1.sub(&ntt2, &Modulus::from(modulus));
+        let res = ntt1.sub(&ntt2);
 
-        assert_eq!(
-            &p1 - &p2,
-            PolynomialRingZq::from((res, &polynomial_modulus))
-        )
+        assert_eq!(&p1 - &p2, PolynomialRingZq::from(res))
     }
 }
 
@@ -186,10 +203,11 @@ mod test_sub {
 mod test_sub_assign {
     use crate::{
         integer_mod_q::{
-            Modulus, ModulusPolynomialRingZq, NTTPolynomialRingZq, PolyOverZq, PolynomialRingZq,
+            ModulusPolynomialRingZq, NTTPolynomialRingZq, PolyOverZq, PolynomialRingZq,
         },
         traits::SetCoefficient,
     };
+    use std::ops::SubAssign;
 
     /// Ensure that the entrywise subtraction and the intuitive subtraction yields
     /// the same results for the parameters from Dilithium.
@@ -212,12 +230,9 @@ mod test_sub_assign {
         let mut ntt1 = NTTPolynomialRingZq::from(&p1);
         let ntt2 = NTTPolynomialRingZq::from(&p2);
 
-        ntt1.sub_assign(&ntt2, &Modulus::from(modulus));
+        ntt1.sub_assign(&ntt2);
 
-        assert_eq!(
-            &p1 - &p2,
-            PolynomialRingZq::from((ntt1, &polynomial_modulus))
-        )
+        assert_eq!(&p1 - &p2, PolynomialRingZq::from(ntt1))
     }
 
     /// Ensure that the entrywise subtraction and the intuitive subtraction yields
@@ -241,11 +256,8 @@ mod test_sub_assign {
         let mut ntt1 = NTTPolynomialRingZq::from(&p1);
         let ntt2 = NTTPolynomialRingZq::from(&p2);
 
-        ntt1.sub_assign(&ntt2, &Modulus::from(modulus));
+        ntt1.sub_assign(ntt2);
 
-        assert_eq!(
-            &p1 - &p2,
-            PolynomialRingZq::from((ntt1, &polynomial_modulus))
-        )
+        assert_eq!(&p1 - &p2, PolynomialRingZq::from(ntt1))
     }
 }

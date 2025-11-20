@@ -10,28 +10,33 @@
 
 use crate::{integer::Z, integer_mod_q::MatNTTPolynomialRingZq, traits::MatrixDimensions};
 
-// Doesn't implement MatrixDimensions as these require `i64` as a return value.
 impl MatrixDimensions for MatNTTPolynomialRingZq {
-    /// Returns the number of rows of the matrix as a [`usize`].
+    /// Returns the number of rows of the matrix as an [`i64`].
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::{integer_mod_q::MatNTTPolynomialRingZq, traits::MatrixDimensions};
+    /// use qfall_math::{integer_mod_q::{MatNTTPolynomialRingZq, ModulusPolynomialRingZq}, traits::MatrixDimensions};
+    /// use std::str::FromStr;
+    /// let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+    /// modulus.set_ntt_unchecked(64);
     ///
-    /// let matrix = MatNTTPolynomialRingZq::sample_uniform(3, 2, 3, 17);
+    /// let matrix = MatNTTPolynomialRingZq::sample_uniform(3, 2, &modulus);
     /// let nr_rows = matrix.get_num_rows();
     /// ```
     fn get_num_rows(&self) -> i64 {
         self.nr_rows as i64
     }
 
-    /// Returns the number of columns of the matrix as a [`usize`].
+    /// Returns the number of columns of the matrix as an [`i64`].
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::{integer_mod_q::MatNTTPolynomialRingZq, traits::MatrixDimensions};
+    /// use qfall_math::{integer_mod_q::{MatNTTPolynomialRingZq, ModulusPolynomialRingZq}, traits::MatrixDimensions};
+    /// use std::str::FromStr;
+    /// let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+    /// modulus.set_ntt_unchecked(64);
     ///
-    /// let matrix = MatNTTPolynomialRingZq::sample_uniform(3, 2, 3, 17);
+    /// let matrix = MatNTTPolynomialRingZq::sample_uniform(3, 2, &modulus);
     /// let nr_columns = matrix.get_num_columns();
     /// ```
     fn get_num_columns(&self) -> i64 {
@@ -40,16 +45,25 @@ impl MatrixDimensions for MatNTTPolynomialRingZq {
 }
 
 impl MatNTTPolynomialRingZq {
-    /// Returns the number of columns of the matrix as a [`usize`].
+    /// Returns the slice of `matrix` corresponding to the entry in row `row` and column `column`.
+    ///
+    /// Parameters:
+    /// - `row`: defines the row where the entry to fetch is located
+    /// - `column`: defines the column where the entry to fetch is located
+    ///
+    /// Returns a slice `&[Z]` containing the requested entry.
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::integer_mod_q::MatNTTPolynomialRingZq;
+    /// use qfall_math::integer_mod_q::{MatNTTPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
+    /// let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+    /// modulus.set_ntt_unchecked(64);
     ///
-    /// let matrix = MatNTTPolynomialRingZq::sample_uniform(2, 2, 3, 17);
+    /// let matrix = MatNTTPolynomialRingZq::sample_uniform(2, 2, &modulus);
     /// let entry = matrix.get_entry(0, 0);
     ///
-    /// assert_eq!(3, entry.len());
+    /// assert_eq!(4, entry.len());
     /// ```
     ///
     /// # Panics ...
@@ -64,8 +78,9 @@ impl MatNTTPolynomialRingZq {
             "`column` needs to be smaller than `nr_columns`."
         );
 
-        let index = self.d * row + self.d * self.nr_rows * column;
-        &self.matrix[index..index + self.d]
+        let index = self.modulus.get_degree() as usize * row
+            + self.modulus.get_degree() as usize * self.nr_rows * column;
+        &self.matrix[index..index + self.modulus.get_degree() as usize]
     }
 }
 
@@ -81,7 +96,10 @@ mod test_matrix_dimensions {
     /// Ensures that the correct number of rows is returned.
     #[test]
     fn nr_rows() {
-        let matrix = MatNTTPolynomialRingZq::sample_uniform(17, 2, 3, 17);
+        let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+        modulus.set_ntt_unchecked(64);
+
+        let matrix = MatNTTPolynomialRingZq::sample_uniform(17, 2, &modulus);
         let nr_rows = matrix.get_num_rows();
 
         assert_eq!(17, nr_rows);
@@ -90,7 +108,10 @@ mod test_matrix_dimensions {
     /// Ensures that the correct number of columns is returned.
     #[test]
     fn nr_columns() {
-        let matrix = MatNTTPolynomialRingZq::sample_uniform(2, 13, 3, 17);
+        let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+        modulus.set_ntt_unchecked(64);
+
+        let matrix = MatNTTPolynomialRingZq::sample_uniform(2, 13, &modulus);
         let nr_columns = matrix.get_num_columns();
 
         assert_eq!(13, nr_columns);

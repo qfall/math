@@ -8,7 +8,7 @@
 
 //! [`MatNTTPolynomialRingZq`] containts the NTT representations of matrices over polynomials.
 
-use crate::integer::Z;
+use crate::{integer::Z, integer_mod_q::ModulusPolynomialRingZq};
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
 use std::fmt;
@@ -25,36 +25,41 @@ mod sample;
 ///
 /// Attributes
 /// - `matrix`: holds the matrix entries with its coefficients
+/// - `nr_rows`: the number of rows of the matrix
+/// - `nr_columns`: the number of columns of the matrix
+/// - `modulus`: the [`ModulusPolynomialRingZq`] defining the modulus `q`, the ring `Z_q[X]/f(X)`, and
+///   the NTT transform [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq)
 ///
 /// # Examples
 /// ```
 /// use qfall_math::integer_mod_q::{Modulus, MatPolynomialRingZq, MatNTTPolynomialRingZq, ModulusPolynomialRingZq};
 /// use std::str::FromStr;
 ///
-/// // sample random matrix
-/// let mat_rnd = MatNTTPolynomialRingZq::sample_uniform(2, 2, 4, 257);
-/// // or instantiate matrix from MatPolynomialRingZq
+/// // setup modulus with ability to transform to NTT
 /// let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
 /// modulus.set_ntt_unchecked(64);
+///
+/// // sample random matrix
+/// let mat_rnd = MatNTTPolynomialRingZq::sample_uniform(2, 2, &modulus);
+/// // or instantiate matrix from MatPolynomialRingZq
 /// let mat_poly_ring = MatPolynomialRingZq::identity(2, 2, &modulus);
 /// let mat_ntt_poly_ring = MatNTTPolynomialRingZq::from(&mat_poly_ring);
 ///
 /// // multiply, add and subtract objects
-/// let mod_q = Modulus::from(modulus.get_q());
-/// let mut tmp_mat_ntt = mat_ntt_poly_ring.mul(&mat_rnd, &mod_q);
-/// tmp_mat_ntt.add_assign(&mat_rnd, &mod_q);
-/// tmp_mat_ntt.sub_assign(&mat_rnd, &mod_q);
+/// let mut tmp_mat_ntt = mat_ntt_poly_ring * &mat_rnd;
+/// tmp_mat_ntt += &mat_rnd;
+/// tmp_mat_ntt -= &mat_rnd;
 ///
 /// // Return to MatPolynomialRingZq
-/// let res = MatPolynomialRingZq::from((&mut tmp_mat_ntt, &modulus));
+/// let res = tmp_mat_ntt.inv_ntt();
 /// ```
 #[derive(PartialEq, Eq, Serialize, Deserialize, Display, Clone)]
-#[display("{}", print_vec_z(&self.matrix))]
+#[display("{} / {}", print_vec_z(&self.matrix), self.modulus)]
 pub struct MatNTTPolynomialRingZq {
     pub matrix: Vec<Z>,
-    pub d: usize, // modulus degree
     pub nr_rows: usize,
     pub nr_columns: usize,
+    pub modulus: ModulusPolynomialRingZq,
 }
 
 impl fmt::Debug for MatNTTPolynomialRingZq {
@@ -65,8 +70,8 @@ impl fmt::Debug for MatNTTPolynomialRingZq {
 
         write!(
             f,
-            "MatNTTPolynomialRingZq {{matrix: {}, d: {}, nr_rows: {}, nr_columns: {} storage: {{matrix: {:?}}}}}",
-            short_print, self.d, self.nr_rows, self.nr_columns, self.matrix
+            "MatNTTPolynomialRingZq {{matrix: {}, nr_rows: {}, nr_columns: {}, modulus: {}, storage: {{matrix: {:?}, modulus: {:?}}}}}",
+            short_print, self.nr_rows, self.nr_columns, self.modulus, self.matrix, self.modulus
         )
     }
 }
@@ -75,7 +80,7 @@ impl fmt::Debug for MatNTTPolynomialRingZq {
 pub(crate) fn print_vec_z(vector: &Vec<Z>) -> String {
     let mut out = String::new();
     for v in vector {
-        out.push_str(&format!("{}, ", v.to_string()));
+        out.push_str(&format!("{}, ", v));
     }
     // Remove last whitespace and comma
     out.pop().unwrap();

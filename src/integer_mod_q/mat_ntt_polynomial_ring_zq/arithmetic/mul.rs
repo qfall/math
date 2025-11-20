@@ -10,47 +10,50 @@
 
 use crate::{
     integer::Z,
-    integer_mod_q::{MatNTTPolynomialRingZq, Modulus},
+    integer_mod_q::MatNTTPolynomialRingZq,
+    macros::arithmetics::{
+        arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
+    },
 };
 use flint_sys::fmpz_mod::{fmpz_mod_add_fmpz, fmpz_mod_ctx, fmpz_mod_mul};
+use std::ops::Mul;
 
-impl MatNTTPolynomialRingZq {
+impl Mul for &MatNTTPolynomialRingZq {
+    type Output = MatNTTPolynomialRingZq;
+
     /// Multiplies `self` with `other`.
     ///
     /// Paramters:
     /// - `other`: specifies the NTT-representation of the polynomial to multiply to `self`
-    /// - `modulus`: defines the modulus `q`
     ///
-    /// Returns the NTT-representation of the multiplication of `self` and `other` generated
-    /// with respect to `modulus`.
+    /// Returns the NTT-representation of the multiplication of `self` and `other`.
     ///
     /// # Example
     /// ```
-    /// use qfall_math::integer_mod_q::{MatNTTPolynomialRingZq, Modulus};
+    /// use qfall_math::integer_mod_q::{MatNTTPolynomialRingZq, ModulusPolynomialRingZq};
     /// use crate::qfall_math::traits::SetCoefficient;
+    /// use std::str::FromStr;
+    /// let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+    /// modulus.set_ntt_unchecked(64);
     ///
-    /// let n = 4;
-    /// let q = Modulus::from(257);
+    /// let a = MatNTTPolynomialRingZq::sample_uniform(2, 3, &modulus);
+    /// let b = MatNTTPolynomialRingZq::sample_uniform(3, 4, &modulus);
     ///
-    /// let a = MatNTTPolynomialRingZq::sample_uniform(2, 3, n, &q);
-    /// let b = MatNTTPolynomialRingZq::sample_uniform(3, 4, n, &q);
-    ///
-    /// a.mul(&b, &q);
+    /// let c = a * b;
     /// ```
     ///
     /// # Panics ...
-    /// - if the `modulus` is smaller than `2`.
     /// - if the number of rows of `self` and the number of columns of `other` does not match up.
-    /// - if the degree of the matrices is not equal.
-    pub fn mul(&self, other: &Self, modulus: &Modulus) -> Self {
+    /// - if their moduli do not match.
+    fn mul(self, other: Self) -> Self::Output {
         assert_eq!(self.nr_columns, other.nr_rows,
             "The number of rows of `self` and the number of columns of `other` has to be equal for matrix multiplication.");
         assert_eq!(
-            self.d, other.d,
-            "The degree of both matrices' modulus has to be equal for multiplication."
+            self.modulus, other.modulus,
+            "The moduli of both matrices have to be equal for multiplication."
         );
 
-        let mod_ctx = modulus.get_fmpz_mod_ctx_struct();
+        let mod_ctx = &self.modulus.get_fq_ctx().ctxp[0];
 
         let mut res = Vec::with_capacity(other.matrix.len());
 
@@ -60,7 +63,7 @@ impl MatNTTPolynomialRingZq {
                 for i in 1..self.nr_columns {
                     let add_value = self.mul_entry(other, mod_ctx, row, col, i);
 
-                    for j in 0..self.d {
+                    for j in 0..self.modulus.get_degree() as usize {
                         unsafe {
                             fmpz_mod_add_fmpz(
                                 &mut entry[j].value,
@@ -78,14 +81,16 @@ impl MatNTTPolynomialRingZq {
 
         MatNTTPolynomialRingZq {
             matrix: res,
-            d: self.d,
             nr_rows: self.nr_rows,
             nr_columns: other.nr_columns,
+            modulus: self.modulus.clone(),
         }
     }
+}
 
+impl MatNTTPolynomialRingZq {
     /// Instantiates a new vector with the result of multiplying two entries / polynomials.
-    /// 
+    ///
     /// Parameters:
     /// - `other`: the other [`MatNTTPolynomialRingZq`] that contains the polynomial to multiply with
     /// - `mod_ctx`: the [`fmpz_mod_ctx`] to reduce every coefficent by
@@ -100,11 +105,11 @@ impl MatNTTPolynomialRingZq {
         col: usize,
         index: usize,
     ) -> Vec<Z> {
-        let mut entry = vec![Z::default(); self.d];
+        let mut entry = vec![Z::default(); self.modulus.get_degree() as usize];
         let entry_self = self.get_entry(row, index);
         let entry_other = other.get_entry(index, col);
 
-        for i in 0..self.d {
+        for i in 0..self.modulus.get_degree() as usize {
             unsafe {
                 fmpz_mod_mul(
                     &mut entry[i].value,
@@ -119,15 +124,30 @@ impl MatNTTPolynomialRingZq {
     }
 }
 
+arithmetic_trait_borrowed_to_owned!(
+    Mul,
+    mul,
+    MatNTTPolynomialRingZq,
+    MatNTTPolynomialRingZq,
+    MatNTTPolynomialRingZq
+);
+arithmetic_trait_mixed_borrowed_owned!(
+    Mul,
+    mul,
+    MatNTTPolynomialRingZq,
+    MatNTTPolynomialRingZq,
+    MatNTTPolynomialRingZq
+);
+
 #[cfg(test)]
 mod test_mul {
     use crate::{
         integer_mod_q::{
-            MatNTTPolynomialRingZq, MatPolynomialRingZq, Modulus, ModulusPolynomialRingZq,
-            PolyOverZq,
+            MatNTTPolynomialRingZq, MatPolynomialRingZq, ModulusPolynomialRingZq, PolyOverZq,
         },
         traits::SetCoefficient,
     };
+    use std::ops::Mul;
 
     /// Ensure that the entrywise multiplication and the intuitive multiplication yields
     /// the same results for small parameters.
@@ -150,12 +170,9 @@ mod test_mul {
         let ntt1 = MatNTTPolynomialRingZq::from(&p1);
         let ntt2 = MatNTTPolynomialRingZq::from(&p2);
 
-        let mut ntt_res = ntt1.mul(&ntt2, &Modulus::from(modulus));
+        let mut ntt_res = ntt1.mul(&ntt2);
 
-        assert_eq!(
-            &p1 * &p2,
-            MatPolynomialRingZq::from((&mut ntt_res, &polynomial_modulus))
-        )
+        assert_eq!(&p1 * &p2, MatPolynomialRingZq::from(&mut ntt_res))
     }
 
     /// Ensure that the entrywise multiplication and the intuitive multiplication yields
@@ -179,12 +196,9 @@ mod test_mul {
         let ntt1 = MatNTTPolynomialRingZq::from(&p1);
         let ntt2 = MatNTTPolynomialRingZq::from(&p2);
 
-        let mut ntt_res = ntt1.mul(&ntt2, &Modulus::from(modulus));
+        let mut ntt_res = ntt1.mul(&ntt2);
 
-        assert_eq!(
-            &p1 * &p2,
-            MatPolynomialRingZq::from((&mut ntt_res, &polynomial_modulus))
-        )
+        assert_eq!(&p1 * &p2, MatPolynomialRingZq::from(&mut ntt_res))
     }
 
     /// Ensure that the entrywise multiplication and the intuitive multiplication yields
@@ -208,11 +222,8 @@ mod test_mul {
         let ntt1 = MatNTTPolynomialRingZq::from(&p1);
         let ntt2 = MatNTTPolynomialRingZq::from(&p2);
 
-        let mut ntt_res = ntt1.mul(&ntt2, &Modulus::from(modulus));
+        let mut ntt_res = ntt1.mul(&ntt2);
 
-        assert_eq!(
-            &p1 * &p2,
-            MatPolynomialRingZq::from((&mut ntt_res, &polynomial_modulus))
-        )
+        assert_eq!(&p1 * &p2, MatPolynomialRingZq::from(&mut ntt_res))
     }
 }

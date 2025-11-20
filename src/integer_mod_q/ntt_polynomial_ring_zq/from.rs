@@ -9,9 +9,7 @@
 //! Implementations to create a [`NTTPolynomialRingZq`] value from other types.
 
 use super::NTTPolynomialRingZq;
-use crate::integer_mod_q::{
-    ModulusPolynomialRingZq, NTTBasisPolynomialRingZq, PolyOverZq, PolynomialRingZq,
-};
+use crate::integer_mod_q::{PolyOverZq, PolynomialRingZq};
 
 impl From<&PolynomialRingZq> for NTTPolynomialRingZq {
     /// Computes the NTT representation of `poly`.
@@ -54,6 +52,7 @@ impl From<&PolynomialRingZq> for NTTPolynomialRingZq {
             ));
             NTTPolynomialRingZq {
                 poly: ntt_basis.ntt(&value),
+                modulus: poly.modulus.clone(),
             }
         } else {
             panic!("The NTTBasisPolynomialRingZq is not set.")
@@ -61,49 +60,11 @@ impl From<&PolynomialRingZq> for NTTPolynomialRingZq {
     }
 }
 
-impl From<(&PolyOverZq, &NTTBasisPolynomialRingZq)> for NTTPolynomialRingZq {
-    /// Computes the NTT representation of `poly`.
-    ///
-    /// Parameters:
-    /// - `poly`: the modulus that is applied to the polynomial ring element.
-    /// - `ntt_basis`: the [`NTTBasisPolynomialRingZq`] that the NTT representation depends on.
-    ///
-    /// Returns the NTT representation as a [`NTTPolynomialRingZq`] of `poly`.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer_mod_q::{NTTPolynomialRingZq, NTTBasisPolynomialRingZq, PolyOverZq};
-    /// use qfall_math::integer_mod_q::ConvolutionType;
-    /// use std::str::FromStr;
-    ///
-    /// let n = 4;
-    /// let modulus = 7681;
-    ///
-    /// // Initializes the NTT for `X^4 + 1 mod 7681`
-    /// let ntt_basis = NTTBasisPolynomialRingZq::init(4, 1925, &modulus, ConvolutionType::Negacyclic);
-    /// let poly_zq = PolyOverZq::sample_uniform(n-1, modulus).unwrap();
-    ///
-    /// let ntt_poly = NTTPolynomialRingZq::from((&poly_zq, &ntt_basis));
-    /// ```
-    ///
-    /// # Panics ...
-    /// - if `poly` is not reduced, i.e. has a coefficient of degree > n.
-    /// - if the modulus of the [`NTTBasisPolynomialRingZq`] differs from the modulus over which we view the polynomial.
-    fn from((poly, ntt_basis): (&PolyOverZq, &NTTBasisPolynomialRingZq)) -> Self {
-        NTTPolynomialRingZq {
-            poly: ntt_basis.ntt(poly),
-        }
-    }
-}
-
 impl NTTPolynomialRingZq {
     /// Computes the inverse NTT of `self` with respect to the given `modulus`.
     ///
-    /// Parameters:
-    /// - `modulus`: the modulus that is applied to the polynomial ring element.
-    ///
-    /// Returns a new [`PolynomialRingZq`] with the specified [`ModulusPolynomialRingZq`] and
-    /// values as defined in `self`.
+    /// Returns a new [`PolynomialRingZq`] with the specified [`ModulusPolynomialRingZq`](crate::integer_mod_q::ModulusPolynomialRingZq)
+    /// and values as defined in `self`.
     ///
     /// # Examples
     /// ```
@@ -120,17 +81,16 @@ impl NTTPolynomialRingZq {
     /// let mut polynomial_modulus = ModulusPolynomialRingZq::from(&mod_poly);
     /// polynomial_modulus.set_ntt_unchecked(1925);
     ///
-    /// let ntt = NTTPolynomialRingZq::sample_uniform(n, modulus);
+    /// let ntt = NTTPolynomialRingZq::sample_uniform(&polynomial_modulus);
     ///
-    /// let res = ntt.inv_ntt(&polynomial_modulus);
+    /// let res = ntt.inv_ntt();
     /// ```
     ///
     /// # Panics ...
     /// - if the [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq) in `modulus`
     ///   is not set.
-    /// - if the modulus differs from the modulus over which we view the polynomial.
-    pub fn inv_ntt(self, modulus: &ModulusPolynomialRingZq) -> PolynomialRingZq {
-        PolynomialRingZq::from((self, modulus))
+    pub fn inv_ntt(self) -> PolynomialRingZq {
+        PolynomialRingZq::from(self)
     }
 }
 
@@ -138,28 +98,9 @@ impl NTTPolynomialRingZq {
 mod test_from {
     use crate::{
         integer::{PolyOverZ, Z},
-        integer_mod_q::{
-            ConvolutionType, ModulusPolynomialRingZq, NTTBasisPolynomialRingZq,
-            NTTPolynomialRingZq, PolyOverZq, PolynomialRingZq,
-        },
+        integer_mod_q::{ModulusPolynomialRingZq, NTTPolynomialRingZq, PolynomialRingZq},
     };
     use std::str::FromStr;
-
-    /// Ensures that from [`PolyOverZq`] works properly.
-    #[test]
-    fn from_poly_over_zq() {
-        let modulus = 7681;
-
-        // Initializes the NTT for `X^4 + 1 mod 7681`
-        let ntt_basis =
-            NTTBasisPolynomialRingZq::init(4, 1925, &modulus, ConvolutionType::Negacyclic);
-        let poly_zq = PolyOverZq::from_str("4  1316 2231 6804 5952 mod 7681").unwrap();
-        let cmp = vec![Z::from(651), Z::from(6079), Z::from(5612), Z::from(603)];
-
-        let ntt_poly = NTTPolynomialRingZq::from((&poly_zq, &ntt_basis));
-
-        assert_eq!(ntt_poly.poly, cmp);
-    }
 
     /// Ensures that from [`PolynomialRingZq`] works properly.
     #[test]

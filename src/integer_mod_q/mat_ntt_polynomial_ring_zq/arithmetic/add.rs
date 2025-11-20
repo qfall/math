@@ -10,39 +10,43 @@
 
 use crate::{
     integer::Z,
-    integer_mod_q::{MatNTTPolynomialRingZq, Modulus},
+    integer_mod_q::MatNTTPolynomialRingZq,
+    macros::arithmetics::{
+        arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
+        arithmetic_trait_mixed_borrowed_owned,
+    },
 };
 use flint_sys::fmpz_mod::fmpz_mod_add_fmpz;
+use std::ops::{Add, AddAssign};
 
-impl MatNTTPolynomialRingZq {
+impl Add for &MatNTTPolynomialRingZq {
+    type Output = MatNTTPolynomialRingZq;
+
     /// Adds `self` with `other`.
     ///
     /// Paramters:
     /// - `other`: specifies the NTT-representation of the polynomial to add to `self`
-    /// - `modulus`: defines the modulus `q`
     ///
-    /// Returns the NTT-representation of the sum of `self` and `other` generated
-    /// with respect to `modulus`.
+    /// Returns the NTT-representation of the sum of `self` and `other`.
     ///
     /// # Example
     /// ```
-    /// use qfall_math::integer_mod_q::{MatNTTPolynomialRingZq, Modulus};
+    /// use qfall_math::integer_mod_q::{MatNTTPolynomialRingZq, ModulusPolynomialRingZq};
     /// use crate::qfall_math::traits::SetCoefficient;
+    /// use std::str::FromStr;
+    /// let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+    /// modulus.set_ntt_unchecked(64);
     ///
-    /// let n = 4;
-    /// let q = Modulus::from(257);
+    /// let a = MatNTTPolynomialRingZq::sample_uniform(2, 3, &modulus);
+    /// let b = MatNTTPolynomialRingZq::sample_uniform(2, 3, &modulus);
     ///
-    /// let mut a = MatNTTPolynomialRingZq::sample_uniform(2, 3, n, &q);
-    /// let b = MatNTTPolynomialRingZq::sample_uniform(2, 3, n, &q);
-    ///
-    /// let c = a.add(&b, &q);
+    /// let c = a + b;
     /// ```
     ///
     /// # Panics ...
-    /// - if the `modulus` is smaller than `2`.
     /// - if the number of rows of `self` and `other` or their number of columns is not equal.
-    /// - if the degree of the matrices is not equal.
-    pub fn add(&self, other: &Self, modulus: &Modulus) -> MatNTTPolynomialRingZq {
+    /// - if their moduli do not match.
+    fn add(self, other: Self) -> Self::Output {
         assert_eq!(
             self.nr_rows, other.nr_rows,
             "The number of rows of `self` and `other` has to be equal for matrix addition."
@@ -52,16 +56,19 @@ impl MatNTTPolynomialRingZq {
             "The number of columns of `self` and `other` has to be equal for matrix addition."
         );
         assert_eq!(
-            self.d, other.d,
-            "The degree of both matrices' modulus has to be equal for multiplication."
+            self.modulus, other.modulus,
+            "The moduli of both matrices have to be equal for addition."
         );
-        let mod_ctx = modulus.get_fmpz_mod_ctx_struct();
+        let mod_ctx = &self.modulus.get_fq_ctx().ctxp[0];
 
         let mut out = MatNTTPolynomialRingZq {
-            matrix: vec![Z::default(); self.d * self.nr_rows * self.nr_columns],
-            d: self.d,
+            matrix: vec![
+                Z::default();
+                self.modulus.get_degree() as usize * self.nr_rows * self.nr_columns
+            ],
             nr_rows: self.nr_rows,
             nr_columns: self.nr_columns,
+            modulus: self.modulus.clone(),
         };
 
         for i in 0..self.matrix.len() {
@@ -77,35 +84,49 @@ impl MatNTTPolynomialRingZq {
 
         out
     }
+}
 
+arithmetic_trait_borrowed_to_owned!(
+    Add,
+    add,
+    MatNTTPolynomialRingZq,
+    MatNTTPolynomialRingZq,
+    MatNTTPolynomialRingZq
+);
+arithmetic_trait_mixed_borrowed_owned!(
+    Add,
+    add,
+    MatNTTPolynomialRingZq,
+    MatNTTPolynomialRingZq,
+    MatNTTPolynomialRingZq
+);
+
+impl AddAssign<&MatNTTPolynomialRingZq> for MatNTTPolynomialRingZq {
     /// Adds `self` with `other` reusing the memory of `self`.
     ///
     /// Paramters:
     /// - `other`: specifies the NTT-representation of the polynomial to add to `self`
-    /// - `modulus`: defines the modulus `q`
     ///
-    /// Computes the NTT-representation of the sum of `self` and `other` generated
-    /// with respect to `modulus`.
+    /// Computes the NTT-representation of the sum of `self` and `other`.
     ///
     /// # Example
     /// ```
-    /// use qfall_math::integer_mod_q::{MatNTTPolynomialRingZq, Modulus};
+    /// use qfall_math::integer_mod_q::{MatNTTPolynomialRingZq, ModulusPolynomialRingZq};
     /// use crate::qfall_math::traits::SetCoefficient;
+    /// use std::str::FromStr;
+    /// let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+    /// modulus.set_ntt_unchecked(64);
     ///
-    /// let n = 4;
-    /// let q = Modulus::from(257);
+    /// let mut a = MatNTTPolynomialRingZq::sample_uniform(2, 3, &modulus);
+    /// let b = MatNTTPolynomialRingZq::sample_uniform(2, 3, &modulus);
     ///
-    /// let mut a = MatNTTPolynomialRingZq::sample_uniform(2, 3, n, &q);
-    /// let b = MatNTTPolynomialRingZq::sample_uniform(2, 3, n, &q);
-    ///
-    /// a.add_assign(&b, &q);
+    /// a += b;
     /// ```
     ///
     /// # Panics ...
-    /// - if the `modulus` is smaller than `2`.
     /// - if the number of rows of `self` and `other` or their number of columns is not equal.
-    /// - if the degree of the matrices is not equal.
-    pub fn add_assign(&mut self, other: &Self, modulus: &Modulus) {
+    /// - if their moduli do not match.
+    fn add_assign(&mut self, other: &Self) {
         assert_eq!(
             self.nr_rows, other.nr_rows,
             "The number of rows of `self` and `other` has to be equal for matrix addition."
@@ -115,10 +136,10 @@ impl MatNTTPolynomialRingZq {
             "The number of columns of `self` and `other` has to be equal for matrix addition."
         );
         assert_eq!(
-            self.d, other.d,
-            "The degree of both matrices' modulus has to be equal for multiplication."
+            self.modulus, other.modulus,
+            "The moduli of both matrices have to be equal for addition."
         );
-        let mod_ctx = modulus.get_fmpz_mod_ctx_struct();
+        let mod_ctx = &self.modulus.get_fq_ctx().ctxp[0];
 
         for i in 0..self.matrix.len() {
             unsafe {
@@ -133,15 +154,22 @@ impl MatNTTPolynomialRingZq {
     }
 }
 
+arithmetic_assign_trait_borrowed_to_owned!(
+    AddAssign,
+    add_assign,
+    MatNTTPolynomialRingZq,
+    MatNTTPolynomialRingZq
+);
+
 #[cfg(test)]
 mod test_add {
     use crate::{
         integer_mod_q::{
-            MatNTTPolynomialRingZq, MatPolynomialRingZq, Modulus, ModulusPolynomialRingZq,
-            PolyOverZq,
+            MatNTTPolynomialRingZq, MatPolynomialRingZq, ModulusPolynomialRingZq, PolyOverZq,
         },
         traits::SetCoefficient,
     };
+    use std::ops::Add;
 
     /// Ensure that the entrywise addition and the intuitive addition yields
     /// the same results for small parameters.
@@ -164,12 +192,9 @@ mod test_add {
         let ntt1 = MatNTTPolynomialRingZq::from(&p1);
         let ntt2 = MatNTTPolynomialRingZq::from(&p2);
 
-        let mut res = ntt1.add(&ntt2, &Modulus::from(modulus));
+        let mut res = ntt1.add(&ntt2);
 
-        assert_eq!(
-            &p1 + &p2,
-            MatPolynomialRingZq::from((&mut res, &polynomial_modulus))
-        )
+        assert_eq!(&p1 + &p2, MatPolynomialRingZq::from(&mut res))
     }
 
     /// Ensure that the entrywise addition and the intuitive addition yields
@@ -193,12 +218,9 @@ mod test_add {
         let ntt1 = MatNTTPolynomialRingZq::from(&p1);
         let ntt2 = MatNTTPolynomialRingZq::from(&p2);
 
-        let mut res = ntt1.add(&ntt2, &Modulus::from(modulus));
+        let mut res = ntt1.add(&ntt2);
 
-        assert_eq!(
-            &p1 + &p2,
-            MatPolynomialRingZq::from((&mut res, &polynomial_modulus))
-        )
+        assert_eq!(&p1 + &p2, MatPolynomialRingZq::from(&mut res))
     }
 
     /// Ensure that the entrywise addition and the intuitive addition yields
@@ -222,12 +244,9 @@ mod test_add {
         let ntt1 = MatNTTPolynomialRingZq::from(&p1);
         let ntt2 = MatNTTPolynomialRingZq::from(&p2);
 
-        let mut res = ntt1.add(&ntt2, &Modulus::from(modulus));
+        let mut res = ntt1.add(&ntt2);
 
-        assert_eq!(
-            &p1 + &p2,
-            MatPolynomialRingZq::from((&mut res, &polynomial_modulus))
-        )
+        assert_eq!(&p1 + &p2, MatPolynomialRingZq::from(&mut res))
     }
 }
 
@@ -235,11 +254,11 @@ mod test_add {
 mod test_add_assign {
     use crate::{
         integer_mod_q::{
-            MatNTTPolynomialRingZq, MatPolynomialRingZq, Modulus, ModulusPolynomialRingZq,
-            PolyOverZq,
+            MatNTTPolynomialRingZq, MatPolynomialRingZq, ModulusPolynomialRingZq, PolyOverZq,
         },
         traits::SetCoefficient,
     };
+    use std::ops::AddAssign;
 
     /// Ensure that the entrywise addition and the intuitive addition yields
     /// the same results for small parameters.
@@ -262,12 +281,9 @@ mod test_add_assign {
         let mut ntt1 = MatNTTPolynomialRingZq::from(&p1);
         let ntt2 = MatNTTPolynomialRingZq::from(&p2);
 
-        ntt1.add_assign(&ntt2, &Modulus::from(modulus));
+        ntt1.add_assign(&ntt2);
 
-        assert_eq!(
-            &p1 + &p2,
-            MatPolynomialRingZq::from((&mut ntt1, &polynomial_modulus))
-        )
+        assert_eq!(&p1 + &p2, MatPolynomialRingZq::from(&mut ntt1))
     }
 
     /// Ensure that the entrywise addition and the intuitive addition yields
@@ -291,12 +307,9 @@ mod test_add_assign {
         let mut ntt1 = MatNTTPolynomialRingZq::from(&p1);
         let ntt2 = MatNTTPolynomialRingZq::from(&p2);
 
-        ntt1.add_assign(&ntt2, &Modulus::from(modulus));
+        ntt1.add_assign(&ntt2);
 
-        assert_eq!(
-            &p1 + &p2,
-            MatPolynomialRingZq::from((&mut ntt1, &polynomial_modulus))
-        )
+        assert_eq!(&p1 + &p2, MatPolynomialRingZq::from(&mut ntt1))
     }
 
     /// Ensure that the entrywise addition and the intuitive addition yields
@@ -320,11 +333,8 @@ mod test_add_assign {
         let mut ntt1 = MatNTTPolynomialRingZq::from(&p1);
         let ntt2 = MatNTTPolynomialRingZq::from(&p2);
 
-        ntt1.add_assign(&ntt2, &Modulus::from(modulus));
+        ntt1.add_assign(&ntt2);
 
-        assert_eq!(
-            &p1 + &p2,
-            MatPolynomialRingZq::from((&mut ntt1, &polynomial_modulus))
-        )
+        assert_eq!(&p1 + &p2, MatPolynomialRingZq::from(&mut ntt1))
     }
 }

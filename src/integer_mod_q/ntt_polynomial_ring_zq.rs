@@ -8,7 +8,10 @@
 
 //! [`NTTPolynomialRingZq`] containts the NTT representations of polynomials.
 
-use crate::{integer::Z, integer_mod_q::mat_ntt_polynomial_ring_zq::print_vec_z};
+use crate::{
+    integer::Z,
+    integer_mod_q::{mat_ntt_polynomial_ring_zq::print_vec_z, ModulusPolynomialRingZq},
+};
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
 use std::fmt;
@@ -22,33 +25,38 @@ mod sample;
 ///
 /// Attributes
 /// - `poly`: holds the coefficients
+/// - `modulus`: the [`ModulusPolynomialRingZq`] defining the modulus `q`, the ring `Z_q[X]/f(X)`, and
+///   the NTT transform [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq)
 ///
 /// # Examples
 /// ```
 /// use qfall_math::integer_mod_q::{Modulus, PolynomialRingZq, NTTPolynomialRingZq, ModulusPolynomialRingZq};
 /// use std::str::FromStr;
-///
-/// // sample random polynomial
-/// let rnd = NTTPolynomialRingZq::sample_uniform(4, 257);
-/// // or instantiate polynomial from PolynomialRingZq (or PolyOverZq)
+/// // Setup modulus with capability to perform NTT transform
 /// let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
 /// modulus.set_ntt_unchecked(64);
+///
+/// // sample random polynomial
+/// let rnd = NTTPolynomialRingZq::sample_uniform(&modulus);
+/// // or instantiate polynomial from PolynomialRingZq (or PolyOverZq)
+///
 /// let poly_ring = PolynomialRingZq::sample_uniform(&modulus);
 /// let ntt_poly_ring = NTTPolynomialRingZq::from(&poly_ring);
 ///
 /// // multiply, add and subtract objects
 /// let mod_q = Modulus::from(modulus.get_q());
-/// let mut tmp_ntt = ntt_poly_ring.mul(&rnd, &mod_q);
-/// tmp_ntt.add_assign(&rnd, &mod_q);
-/// tmp_ntt.sub_assign(&rnd, &mod_q);
+/// let mut tmp_ntt = ntt_poly_ring * &rnd;
+/// tmp_ntt += &rnd;
+/// tmp_ntt -= &rnd;
 ///
 /// // Return to PolynomialRingZq
-/// let res = PolynomialRingZq::from((tmp_ntt, &modulus));
+/// let res = tmp_ntt.inv_ntt();
 /// ```
 #[derive(PartialEq, Eq, Serialize, Deserialize, Display, Clone)]
-#[display("{}", print_vec_z(&self.poly))]
+#[display("{} / {}", print_vec_z(&self.poly), self.modulus)]
 pub struct NTTPolynomialRingZq {
     pub poly: Vec<Z>,
+    pub modulus: ModulusPolynomialRingZq,
 }
 
 impl fmt::Debug for NTTPolynomialRingZq {
@@ -59,8 +67,8 @@ impl fmt::Debug for NTTPolynomialRingZq {
 
         write!(
             f,
-            "NTTPolynomialRingZq {{poly: {}, storage: {{poly: {:?}}}}}",
-            short_print, self.poly
+            "NTTPolynomialRingZq {{poly: {}, modulus: {}, storage: {{poly: {:?}, modulus: {:?}}}}}",
+            short_print, self.modulus, self.poly, self.modulus
         )
     }
 }

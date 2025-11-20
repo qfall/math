@@ -10,47 +10,50 @@
 
 use crate::{
     integer::Z,
-    integer_mod_q::{Modulus, NTTPolynomialRingZq},
+    integer_mod_q::NTTPolynomialRingZq,
+    macros::arithmetics::{
+        arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
+        arithmetic_trait_mixed_borrowed_owned,
+    },
 };
 use flint_sys::fmpz_mod::fmpz_mod_add;
+use std::ops::{Add, AddAssign};
 
-impl NTTPolynomialRingZq {
+impl Add for &NTTPolynomialRingZq {
+    type Output = NTTPolynomialRingZq;
+
     /// Adds `self` with `other`.
     ///
     /// Paramters:
     /// - `other`: specifies the NTT-representation of the polynomial to add to `self`
-    /// - `modulus`: defines the modulus `q`
     ///
-    /// Returns the NTT-representation of the sum of `self` and `other` generated
-    /// with respect to `modulus`.
+    /// Returns the NTT-representation of the sum of `self` and `other`.
     ///
     /// # Example
     /// ```
-    /// use qfall_math::integer_mod_q::{NTTPolynomialRingZq, Modulus};
-    /// use crate::qfall_math::traits::SetCoefficient;
+    /// use qfall_math::integer_mod_q::{NTTPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
+    /// let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+    /// modulus.set_ntt_unchecked(64);
     ///
-    /// let n = 4;
-    /// let q = Modulus::from(257);
+    /// let a = NTTPolynomialRingZq::sample_uniform(&modulus);
+    /// let b = NTTPolynomialRingZq::sample_uniform(&modulus);
     ///
-    /// let a = NTTPolynomialRingZq::sample_uniform(n, &q);
-    /// let b = NTTPolynomialRingZq::sample_uniform(n, &q);
-    ///
-    /// let c = a.add(&b, &q);
+    /// let c = a + b;
     /// ```
     ///
     /// # Panics ...
-    /// - if the `modulus` is smaller than `2`.
-    /// - if the degree of the polynomials is not equal.
-    pub fn add(&self, other: &Self, modulus: &Modulus) -> Self {
+    /// - if the moduli are not equal.
+    fn add(self, other: Self) -> Self::Output {
         assert_eq!(
-            self.poly.len(),
-            other.poly.len(),
-            "The degree of both polynomials has to be equal for addition."
+            self.modulus, other.modulus,
+            "The moduli of both polynomials have to be equal for addition."
         );
-        let mod_q = modulus.get_fmpz_mod_ctx_struct();
+        let mod_q = &self.modulus.get_fq_ctx().ctxp[0];
 
         let mut out = NTTPolynomialRingZq {
             poly: vec![Z::default(); self.poly.len()],
+            modulus: self.modulus.clone(),
         };
 
         for i in 0..self.poly.len() {
@@ -66,40 +69,52 @@ impl NTTPolynomialRingZq {
 
         out
     }
+}
 
+arithmetic_trait_borrowed_to_owned!(
+    Add,
+    add,
+    NTTPolynomialRingZq,
+    NTTPolynomialRingZq,
+    NTTPolynomialRingZq
+);
+arithmetic_trait_mixed_borrowed_owned!(
+    Add,
+    add,
+    NTTPolynomialRingZq,
+    NTTPolynomialRingZq,
+    NTTPolynomialRingZq
+);
+
+impl AddAssign<&NTTPolynomialRingZq> for NTTPolynomialRingZq {
     /// Adds `self` with `other` reusing the memory of `self`.
     ///
     /// Paramters:
     /// - `other`: specifies the NTT-representation of the polynomial to add to `self`
-    /// - `modulus`: defines the modulus `q`
     ///
-    /// Computes the NTT-representation of the sum of `self` and `other` generated
-    /// with respect to `modulus`.
+    /// Computes the NTT-representation of the sum of `self` and `other`.
     ///
     /// # Example
     /// ```
-    /// use qfall_math::integer_mod_q::{NTTPolynomialRingZq, Modulus};
-    /// use crate::qfall_math::traits::SetCoefficient;
+    /// use qfall_math::integer_mod_q::{NTTPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
+    /// let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+    /// modulus.set_ntt_unchecked(64);
     ///
-    /// let n = 4;
-    /// let q = Modulus::from(257);
+    /// let mut a = NTTPolynomialRingZq::sample_uniform(&modulus);
+    /// let b = NTTPolynomialRingZq::sample_uniform(&modulus);
     ///
-    /// let mut a = NTTPolynomialRingZq::sample_uniform(n, &q);
-    /// let b = NTTPolynomialRingZq::sample_uniform(n, &q);
-    ///
-    /// a.add_assign(&b, &q);
+    /// a += b;
     /// ```
     ///
     /// # Panics ...
-    /// - if the `modulus` is smaller than `2`.
-    /// - if the degree of the polynomials is not equal.
-    pub fn add_assign(&mut self, other: &Self, modulus: &Modulus) {
+    /// - if the moduli are not equal.
+    fn add_assign(&mut self, other: &Self) {
         assert_eq!(
-            self.poly.len(),
-            other.poly.len(),
-            "The degree of both polynomials has to be equal for addition."
+            self.modulus, other.modulus,
+            "The moduli of both polynomials have to be equal for addition."
         );
-        let mod_q = modulus.get_fmpz_mod_ctx_struct();
+        let mod_q = &self.modulus.get_fq_ctx().ctxp[0];
 
         for i in 0..self.poly.len() {
             unsafe {
@@ -114,11 +129,20 @@ impl NTTPolynomialRingZq {
     }
 }
 
+arithmetic_assign_trait_borrowed_to_owned!(
+    AddAssign,
+    add_assign,
+    NTTPolynomialRingZq,
+    NTTPolynomialRingZq
+);
+
 #[cfg(test)]
 mod test_add {
+    use std::ops::Add;
+
     use crate::{
         integer_mod_q::{
-            Modulus, ModulusPolynomialRingZq, NTTPolynomialRingZq, PolyOverZq, PolynomialRingZq,
+            ModulusPolynomialRingZq, NTTPolynomialRingZq, PolyOverZq, PolynomialRingZq,
         },
         traits::SetCoefficient,
     };
@@ -144,12 +168,9 @@ mod test_add {
         let ntt1 = NTTPolynomialRingZq::from(&p1);
         let ntt2 = NTTPolynomialRingZq::from(&p2);
 
-        let res = ntt1.add(&ntt2, &Modulus::from(modulus));
+        let res = (&ntt1).add(ntt2);
 
-        assert_eq!(
-            &p1 + &p2,
-            PolynomialRingZq::from((res, &polynomial_modulus))
-        )
+        assert_eq!(&p1 + &p2, PolynomialRingZq::from(res))
     }
 
     /// Ensure that the entrywise addition and the intuitive addition yields
@@ -173,20 +194,19 @@ mod test_add {
         let ntt1 = NTTPolynomialRingZq::from(&p1);
         let ntt2 = NTTPolynomialRingZq::from(&p2);
 
-        let res = ntt1.add(&ntt2, &Modulus::from(modulus));
+        let res = ntt1.add(ntt2);
 
-        assert_eq!(
-            &p1 + &p2,
-            PolynomialRingZq::from((res, &polynomial_modulus))
-        )
+        assert_eq!(&p1 + &p2, PolynomialRingZq::from(res))
     }
 }
 
 #[cfg(test)]
 mod test_add_assign {
+    use std::ops::AddAssign;
+
     use crate::{
         integer_mod_q::{
-            Modulus, ModulusPolynomialRingZq, NTTPolynomialRingZq, PolyOverZq, PolynomialRingZq,
+            ModulusPolynomialRingZq, NTTPolynomialRingZq, PolyOverZq, PolynomialRingZq,
         },
         traits::SetCoefficient,
     };
@@ -212,12 +232,9 @@ mod test_add_assign {
         let mut ntt1 = NTTPolynomialRingZq::from(&p1);
         let ntt2 = NTTPolynomialRingZq::from(&p2);
 
-        ntt1.add_assign(&ntt2, &Modulus::from(modulus));
+        ntt1.add_assign(ntt2);
 
-        assert_eq!(
-            &p1 + &p2,
-            PolynomialRingZq::from((ntt1, &polynomial_modulus))
-        )
+        assert_eq!(&p1 + &p2, PolynomialRingZq::from(ntt1))
     }
 
     /// Ensure that the entrywise addition and the intuitive addition yields
@@ -241,11 +258,8 @@ mod test_add_assign {
         let mut ntt1 = NTTPolynomialRingZq::from(&p1);
         let ntt2 = NTTPolynomialRingZq::from(&p2);
 
-        ntt1.add_assign(&ntt2, &Modulus::from(modulus));
+        ntt1.add_assign(&ntt2);
 
-        assert_eq!(
-            &p1 + &p2,
-            PolynomialRingZq::from((ntt1, &polynomial_modulus))
-        )
+        assert_eq!(&p1 + &p2, PolynomialRingZq::from(ntt1))
     }
 }

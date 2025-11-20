@@ -13,10 +13,7 @@
 use crate::{
     error::{MathError, StringConversionError},
     integer::{PolyOverZ, Z},
-    integer_mod_q::{
-        modulus::Modulus, ModulusPolynomialRingZq, NTTBasisPolynomialRingZq, NTTPolynomialRingZq,
-        PolyOverZq, Zq,
-    },
+    integer_mod_q::{modulus::Modulus, ModulusPolynomialRingZq, PolyOverZq, Zq},
     macros::for_others::implement_for_owned,
 };
 use flint_sys::fmpz_mod_poly::{
@@ -24,37 +21,6 @@ use flint_sys::fmpz_mod_poly::{
     fmpz_mod_poly_set_fmpz_poly,
 };
 use std::{mem::MaybeUninit, str::FromStr};
-
-impl From<(NTTPolynomialRingZq, &NTTBasisPolynomialRingZq)> for PolyOverZq {
-    /// Creates a polynomial from [`NTTPolynomialRingZq`] generated with respect to the
-    /// [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq) as part of
-    /// [`ModulusPolynomialRingZq`].
-    ///
-    /// Parameters:
-    /// - `ntt`: the NTT representation of the polynomial.
-    /// - `ntt_basis`: the NTT basis that `ntt` was computed with.
-    ///
-    /// Returns a new [`PolyOverZq`] with the specified [`ModulusPolynomialRingZq`] and
-    /// values as defined in `ntt`.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer_mod_q::{PolyOverZq, NTTPolynomialRingZq, NTTBasisPolynomialRingZq, ConvolutionType};
-    /// use qfall_math::traits::SetCoefficient;
-    ///
-    /// let ntt_basis = NTTBasisPolynomialRingZq::init(4, 1925, 7681, ConvolutionType::Negacyclic);
-    /// let ntt = NTTPolynomialRingZq::sample_uniform(4, 7681);
-    ///
-    /// let res = PolyOverZq::from((ntt, &ntt_basis));
-    /// ```
-    ///
-    /// # Panics ...
-    /// - if it is not reduced, i.e. has a coefficient of degree > n.
-    /// - if the modulus differs from the modulus over which we view the polynomial.
-    fn from((ntt, ntt_basis): (NTTPolynomialRingZq, &NTTBasisPolynomialRingZq)) -> Self {
-        ntt_basis.inv_ntt(ntt.poly)
-    }
-}
 
 impl<Mod: Into<Modulus>> From<Mod> for PolyOverZq {
     /// Creates a zero polynomial with a given [`Modulus`].

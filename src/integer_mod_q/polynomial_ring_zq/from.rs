@@ -19,7 +19,7 @@ use crate::{
 };
 use std::str::FromStr;
 
-impl From<(NTTPolynomialRingZq, &ModulusPolynomialRingZq)> for PolynomialRingZq {
+impl From<NTTPolynomialRingZq> for PolynomialRingZq {
     /// Creates a polynomial from [`NTTPolynomialRingZq`] generated with respect to the
     /// [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq) as part of
     /// [`ModulusPolynomialRingZq`].
@@ -46,17 +46,16 @@ impl From<(NTTPolynomialRingZq, &ModulusPolynomialRingZq)> for PolynomialRingZq 
     /// let mut polynomial_modulus = ModulusPolynomialRingZq::from(&mod_poly);
     /// polynomial_modulus.set_ntt_unchecked(1925);
     ///
-    /// let ntt = NTTPolynomialRingZq::sample_uniform(n, modulus);
+    /// let ntt = NTTPolynomialRingZq::sample_uniform(&polynomial_modulus);
     ///
-    /// let res = PolynomialRingZq::from((ntt, &polynomial_modulus));
+    /// let res = PolynomialRingZq::from(ntt);
     /// ```
     ///
     /// # Panics ...
     /// - if the [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq) in `modulus`
     ///   is not set.
-    /// - if the modulus differs from the modulus over which we view the polynomial.
-    fn from((ntt, modulus): (NTTPolynomialRingZq, &ModulusPolynomialRingZq)) -> Self {
-        modulus
+    fn from(ntt: NTTPolynomialRingZq) -> Self {
+        ntt.modulus
             .ntt_basis
             .as_ref()
             .as_ref()
@@ -64,7 +63,7 @@ impl From<(NTTPolynomialRingZq, &ModulusPolynomialRingZq)> for PolynomialRingZq 
                 poly: basis
                     .inv_ntt(ntt.poly)
                     .get_representative_least_nonnegative_residue(),
-                modulus: modulus.clone(),
+                modulus: ntt.modulus.clone(),
             })
             .unwrap()
     }
@@ -301,13 +300,14 @@ mod test_from_ntt_modulus_polynomial_ring_zq {
         let poly_ring_zq = PolynomialRingZq::from((poly, &mod_poly));
         let cmp_ntt = NTTPolynomialRingZq {
             poly: vec![Z::from(113), Z::from(54), Z::from(47), Z::from(198)],
+            modulus: mod_poly.clone(),
         };
 
         let ntt = NTTPolynomialRingZq::from(&poly_ring_zq);
 
         assert_eq!(ntt, cmp_ntt);
 
-        let res_poly_ring_zq = PolynomialRingZq::from((ntt, &mod_poly));
+        let res_poly_ring_zq = PolynomialRingZq::from(ntt);
 
         assert_eq!(res_poly_ring_zq, poly_ring_zq);
     }

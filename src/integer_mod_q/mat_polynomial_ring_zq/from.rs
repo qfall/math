@@ -21,48 +21,42 @@ use crate::{
 };
 use std::str::FromStr;
 
-impl From<(&mut MatNTTPolynomialRingZq, &ModulusPolynomialRingZq)> for MatPolynomialRingZq {
+impl From<&mut MatNTTPolynomialRingZq> for MatPolynomialRingZq {
     /// Creates a polynomial ring matrix of type [`MatPolynomialRingZq`] from
-    /// the corresponding [`MatNTTPolynomialRingZq`] and a [`ModulusPolynomialRingZq`] with its
-    /// [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq) set.
+    /// the corresponding [`MatNTTPolynomialRingZq`].
     ///
     /// Parameters:
     /// - `matrix`: the polynomial matrix defining each entry.
-    /// - `modulus`: the modulus that is applied to each polynomial.
     ///
-    /// Returns a new [`MatPolynomialRingZq`] with the entries from `matrix`
-    /// under the modulus `modulus`.
+    /// Returns a new [`MatPolynomialRingZq`] with the entries from `matrix`.
     ///
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, MatNTTPolynomialRingZq, ModulusPolynomialRingZq};
     /// use std::str::FromStr;
-    ///
     /// let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
     /// modulus.set_ntt_unchecked(64);
-    /// let mut ntt_mat = MatNTTPolynomialRingZq::sample_uniform(1, 1, 4, 257);
+    /// let mut ntt_mat = MatNTTPolynomialRingZq::sample_uniform(1, 1, &modulus);
     ///
-    /// let poly_ring_mat = MatPolynomialRingZq::from((&mut ntt_mat, &modulus));
+    /// let poly_ring_mat = MatPolynomialRingZq::from(&mut ntt_mat);
     /// ```
     ///
     /// # Panics ...
     /// - if the [`NTTBasisPolynomialRingZq`](crate::integer_mod_q::NTTBasisPolynomialRingZq) in `modulus`
     ///   is not set.
-    /// - if the modulus differs from the modulus over which we view the polynomial.
-    fn from((matrix, modulus): (&mut MatNTTPolynomialRingZq, &ModulusPolynomialRingZq)) -> Self {
+    fn from(matrix: &mut MatNTTPolynomialRingZq) -> Self {
         let height = matrix.nr_rows;
         let width = matrix.nr_columns;
 
-        let mut res = MatPolynomialRingZq::new(height, width, modulus);
+        let mut res = MatPolynomialRingZq::new(height, width, &matrix.modulus);
         for column in (0..width).rev() {
             for row in (0..height).rev() {
-                let index = matrix.d * row + matrix.d * matrix.nr_rows * column;
-                let entry = PolynomialRingZq::from((
-                    NTTPolynomialRingZq {
-                        poly: matrix.matrix.split_off(index).iter().map(Z::from).collect(),
-                    },
-                    modulus,
-                ));
+                let index = matrix.modulus.get_degree() as usize * row
+                    + matrix.modulus.get_degree() as usize * matrix.nr_rows * column;
+                let entry = PolynomialRingZq::from(NTTPolynomialRingZq {
+                    poly: matrix.matrix.split_off(index).iter().map(Z::from).collect(),
+                    modulus: matrix.modulus.clone(),
+                });
                 unsafe { res.set_entry_unchecked(row as i64, column as i64, entry) };
             }
         }
