@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementation of multipliation for [`MatNTTPolynomialRingZq`].
+//! Implementation of multiplication for [`MatNTTPolynomialRingZq`].
 
 use crate::{
     integer::Z,
@@ -89,7 +89,7 @@ impl Mul for &MatNTTPolynomialRingZq {
 }
 
 impl MatNTTPolynomialRingZq {
-    /// Instantiates a new vector with the result of multiplying two entries / polynomials.
+    /// Instantiates a new vector with the result of multiplying two entries/polynomials.
     ///
     /// Parameters:
     /// - `other`: the other [`MatNTTPolynomialRingZq`] that contains the polynomial to multiply with
