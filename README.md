@@ -59,18 +59,18 @@ Arithmetic operations, comparisons, and conversions are supported across several
 ```rust
 use qfall_math::{integer_mod_q::MatZq, integer::MatZ};
 
-# parameters: nr_rows, nr_columns, modulus
-let mat_a = MatZq::sample_uniform(2, 3, 257);
-# parameters: nr_rows, nr_columns, lower_bound, upper_bound
-let vec_s = MatZ::sample_uniform(1, 2, 0, 2);
-# parameters: nr_rows, nr_columns, center, Gaussian parameter
-let vec_e = MatZ::sample_discrete_gauss(1, 3, 0, 4.0);
+let (n, m, q) = (256, 1024, 3329);
+let (center, sigma) = (0.0, 8.0);
 
-# SIS-instance: t = A * e^T mod 257
-let vec_t = mat_a * vec_e.transpose();
+let mat_a = MatZq::sample_uniform(n, m, q);
+let vec_s = MatZ::sample_uniform(n, 1, 0, 2).unwrap();
+let vec_e = MatZ::sample_discrete_gauss(m, 1, center, sigma).unwrap();
 
-# LWE-instance: b = s * A + e mod 257
-let vec_b = vec_s * mat_a + vec_e;
+// SIS-Instance: t = A * e mod q
+let vec_t = &mat_a * &vec_e;
+
+// LWE-Instance: b^T = s^T * A + e^T mod q
+let vec_b = vec_s.transpose() * mat_a + vec_e.transpose();
 ```
 
 ## Bugs
