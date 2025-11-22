@@ -12,7 +12,7 @@
 //!
 //! The explicit functions contain the documentation.
 
-use super::{from::ConvolutionType, NTTBasisPolynomialRingZq};
+use super::{NTTBasisPolynomialRingZq, from::ConvolutionType};
 use crate::{
     integer::Z,
     integer_mod_q::{Modulus, PolyOverZq},

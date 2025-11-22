@@ -13,7 +13,7 @@
 use crate::{
     error::{MathError, StringConversionError},
     integer::{PolyOverZ, Z},
-    integer_mod_q::{modulus::Modulus, ModulusPolynomialRingZq, PolyOverZq, Zq},
+    integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq, Zq, modulus::Modulus},
     macros::for_others::implement_for_owned,
 };
 use flint_sys::fmpz_mod_poly::{
@@ -298,7 +298,7 @@ impl FromStr for PolyOverZq {
             None => {
                 return Err(StringConversionError::InvalidStringToPolyModulusInput(
                     s.to_owned(),
-                ))?
+                ))?;
             }
         };
 
@@ -586,7 +586,9 @@ mod test_from_str {
     /// Ensure that the input works with strings that have to be trimmed
     #[test]
     fn trim_input() {
-        let poly = PolyOverZq::from_str("                   4  1 2 3 -4                  mod              17                     ");
+        let poly = PolyOverZq::from_str(
+            "                   4  1 2 3 -4                  mod              17                     ",
+        );
         assert!(poly.is_ok());
         assert_eq!(
             PolyOverZq::from_str("4  1 2 3 -4 mod 17").unwrap(),

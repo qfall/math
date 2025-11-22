@@ -10,7 +10,7 @@
 //! by reducing a [`PolyOverZ`] by a [`PolyOverZ`] that
 //! has a leading coefficient of `1`.
 
-use super::{fmpz_poly_helpers::reduce_fmpz_poly_by_poly_over_z, PolyOverZ};
+use super::{PolyOverZ, fmpz_poly_helpers::reduce_fmpz_poly_by_poly_over_z};
 
 impl PolyOverZ {
     /// Reduces a polynomial by a polynomial `modulus`.

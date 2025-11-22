@@ -255,9 +255,11 @@ mod test_compare_base {
         assert!(one_1.compare_base(&0_u64));
 
         assert!(one_1.call_compare_base_error(&MatZ::new(1, 1)).is_none());
-        assert!(one_1
-            .call_compare_base_error(&MatPolyOverZ::new(1, 1))
-            .is_none());
+        assert!(
+            one_1
+                .call_compare_base_error(&MatPolyOverZ::new(1, 1))
+                .is_none()
+        );
         assert!(one_1.call_compare_base_error(&Z::ONE).is_none());
         assert!(one_1.call_compare_base_error(&0_i8).is_none());
         assert!(one_1.call_compare_base_error(&0_i16).is_none());

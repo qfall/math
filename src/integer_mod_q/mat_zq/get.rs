@@ -11,7 +11,7 @@
 use super::MatZq;
 use crate::{
     integer::{MatZ, Z},
-    integer_mod_q::{fmpz_mod_helpers::length, Modulus, Zq},
+    integer_mod_q::{Modulus, Zq, fmpz_mod_helpers::length},
     traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix, MatrixSetEntry},
 };
 use flint_sys::{

@@ -236,7 +236,7 @@ macro_rules! implement_for_owned {
                 index: i64,
                 value: $source_type,
             ) {
-                self.set_coeff_unchecked(index, &value)
+                unsafe { self.set_coeff_unchecked(index, &value) }
             }
             }
         }
@@ -263,7 +263,7 @@ macro_rules! implement_for_owned {
                     column: i64,
                     value: $source_type,
                 ) {
-                    self.set_entry_unchecked(row, column, &value);
+                    unsafe { self.set_entry_unchecked(row, column, &value) };
                 }
             }
         }

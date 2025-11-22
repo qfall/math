@@ -289,7 +289,7 @@ mod test_log_floor {
 #[cfg(test)]
 mod test_natural_ln {
     use crate::{integer::Z, rational::Q};
-    use std::f64::consts::{LN_10, LN_2};
+    use std::f64::consts::{LN_2, LN_10};
 
     /// Ensure that an error is returned if `self` is too small
     #[test]

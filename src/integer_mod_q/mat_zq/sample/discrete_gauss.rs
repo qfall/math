@@ -14,8 +14,8 @@ use crate::{
     rational::{MatQ, Q},
     traits::{MatrixDimensions, MatrixSetEntry},
     utils::sample::discrete_gauss::{
-        sample_d, sample_d_precomputed_gso, DiscreteGaussianIntegerSampler, LookupTableSetting,
-        TAILCUT,
+        DiscreteGaussianIntegerSampler, LookupTableSetting, TAILCUT, sample_d,
+        sample_d_precomputed_gso,
     },
 };
 use std::fmt::Display;

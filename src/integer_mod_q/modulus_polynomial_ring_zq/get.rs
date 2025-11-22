@@ -52,7 +52,7 @@ impl GetCoefficient<Zq> for ModulusPolynomialRingZq {
     /// To use this function safely, make sure that the selected index
     /// is greater or equal than `0`.
     unsafe fn get_coeff_unchecked(&self, index: i64) -> Zq {
-        let out_z: Z = self.get_coeff_unchecked(index);
+        let out_z: Z = unsafe { self.get_coeff_unchecked(index) };
 
         let mut ctx = MaybeUninit::uninit();
         unsafe {

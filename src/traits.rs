@@ -316,7 +316,7 @@ where
     /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
     /// occur.
     unsafe fn get_row_unchecked(&self, row: i64) -> Self {
-        self.get_submatrix_unchecked(row, row + 1, 0, self.get_num_columns())
+        unsafe { self.get_submatrix_unchecked(row, row + 1, 0, self.get_num_columns()) }
     }
 
     /// Outputs the column vector of the specified column.
@@ -351,7 +351,7 @@ where
     /// of the matrix. If it is not, memory leaks, unexpected panics, etc. might
     /// occur.
     unsafe fn get_column_unchecked(&self, column: i64) -> Self {
-        self.get_submatrix_unchecked(0, self.get_num_rows(), column, column + 1)
+        unsafe { self.get_submatrix_unchecked(0, self.get_num_rows(), column, column + 1) }
     }
 
     /// Returns a deep copy of the submatrix defined by the given parameters.
@@ -771,14 +771,14 @@ where
             evaluate_indices_for_matrix(other, row_other_end, col_other_end)?;
 
         assert!(
-                row_other_end >= row_other_start,
-                "The number of rows must be positive, i.e. row_other_end ({row_other_end}) must be greater or equal row_other_start ({row_other_start})"
-            );
+            row_other_end >= row_other_start,
+            "The number of rows must be positive, i.e. row_other_end ({row_other_end}) must be greater or equal row_other_start ({row_other_start})"
+        );
 
         assert!(
-                col_other_end >= col_other_start,
-                "The number of columns must be positive, i.e. col_other_end ({col_other_end}) must be greater or equal col_other_start ({col_other_start})"
-            );
+            col_other_end >= col_other_start,
+            "The number of columns must be positive, i.e. col_other_end ({col_other_end}) must be greater or equal col_other_start ({col_other_start})"
+        );
 
         // increase both values to have an inclusive capturing of the matrix entries
         let nr_rows = row_other_end - row_other_start;

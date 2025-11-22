@@ -53,7 +53,7 @@ impl MatPolynomialRingZq {
 mod test_reduced {
     use crate::{
         integer::MatPolyOverZ,
-        integer_mod_q::{mat_polynomial_ring_zq::MatPolynomialRingZq, ModulusPolynomialRingZq},
+        integer_mod_q::{ModulusPolynomialRingZq, mat_polynomial_ring_zq::MatPolynomialRingZq},
     };
     use std::str::FromStr;
 

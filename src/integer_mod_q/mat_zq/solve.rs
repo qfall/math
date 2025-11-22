@@ -638,7 +638,7 @@ mod test_solve_gauss {
 mod test_find_invertible_entry_column {
     use crate::{
         integer::Z,
-        integer_mod_q::{mat_zq::solve::find_invertible_entry_column, MatZq},
+        integer_mod_q::{MatZq, mat_zq::solve::find_invertible_entry_column},
     };
     use std::str::FromStr;
 
@@ -669,7 +669,7 @@ mod test_find_invertible_entry_column {
 
 #[cfg(test)]
 mod test_find_uninvertible_entry_column {
-    use crate::integer_mod_q::{mat_zq::solve::find_not_invertible_entry_column, MatZq};
+    use crate::integer_mod_q::{MatZq, mat_zq::solve::find_not_invertible_entry_column};
     use std::str::FromStr;
 
     /// Ensure that the first element is returned, that is not invertible

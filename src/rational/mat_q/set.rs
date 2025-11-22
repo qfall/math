@@ -995,9 +995,10 @@ mod test_set_submatrix {
     fn submatrix_too_large() {
         let mut mat = MatQ::new(10, 10);
 
-        assert!(mat
-            .set_submatrix(0, 0, &MatQ::identity(11, 11), 0, 0, 10, 10)
-            .is_err());
+        assert!(
+            mat.set_submatrix(0, 0, &MatQ::identity(11, 11), 0, 0, 10, 10)
+                .is_err()
+        );
         assert!(mat.set_submatrix(1, 2, &mat.clone(), 0, 0, 9, 9).is_err());
     }
 

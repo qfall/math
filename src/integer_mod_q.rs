@@ -39,5 +39,5 @@ pub use ntt_basis_polynomial_ring_zq::{ConvolutionType, NTTBasisPolynomialRingZq
 pub use ntt_polynomial_ring_zq::NTTPolynomialRingZq;
 pub use poly_over_zq::PolyOverZq;
 pub use polynomial_ring_zq::PolynomialRingZq;
-pub(crate) use z_q::fmpz_mod_helpers;
 pub use z_q::Zq;
+pub(crate) use z_q::fmpz_mod_helpers;

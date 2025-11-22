@@ -1194,9 +1194,10 @@ mod test_set_submatrix {
         let modulus = Modulus::from(u64::MAX);
         let mut mat = MatZq::identity(10, 10, &modulus);
 
-        assert!(mat
-            .set_submatrix(0, 0, &MatZq::identity(11, 11, &modulus), 0, 0, 10, 10)
-            .is_err());
+        assert!(
+            mat.set_submatrix(0, 0, &MatZq::identity(11, 11, &modulus), 0, 0, 10, 10)
+                .is_err()
+        );
         assert!(mat.set_submatrix(1, 2, &mat.clone(), 0, 0, 9, 9).is_err());
     }
 

@@ -84,7 +84,7 @@ impl FromStr for MatZq {
             None => {
                 return Err(StringConversionError::InvalidMatrix(format!(
                     "The word 'mod' could not be found: {string}"
-                )))?
+                )))?;
             }
         };
 

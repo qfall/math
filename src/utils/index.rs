@@ -43,7 +43,7 @@ pub fn evaluate_index(index: impl TryInto<i64> + Display) -> Result<i64, MathErr
                 return Err(MathError::OutOfBounds(
                     "fit into a i64".to_owned(),
                     index_str,
-                ))
+                ));
             }
         }
     } else {
@@ -54,7 +54,7 @@ pub fn evaluate_index(index: impl TryInto<i64> + Display) -> Result<i64, MathErr
                 return Err(MathError::OutOfBounds(
                     "fit into a i64".to_owned(),
                     "rerun in debug mode to obtain the incorrect index".to_owned(),
-                ))
+                ));
             }
         }
     };
@@ -122,7 +122,7 @@ pub fn evaluate_index_for_vector(
             return Err(MathError::OutOfBounds(
                 "fit into a i64".to_owned(),
                 "unknown for performance reasons".to_owned(),
-            ))
+            ));
         }
     };
 
@@ -170,7 +170,7 @@ pub fn evaluate_indices_for_matrix<S: MatrixDimensions + MatrixDimensions>(
             return Err(MathError::OutOfBounds(
                 "fit into a i64".to_owned(),
                 "unknown for performance reasons".to_owned(),
-            ))
+            ));
         }
     };
 
@@ -180,7 +180,7 @@ pub fn evaluate_indices_for_matrix<S: MatrixDimensions + MatrixDimensions>(
             return Err(MathError::OutOfBounds(
                 "fit into a i64".to_owned(),
                 "unknown for performance reasons".to_owned(),
-            ))
+            ));
         }
     };
 

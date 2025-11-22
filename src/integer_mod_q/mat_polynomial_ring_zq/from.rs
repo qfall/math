@@ -115,7 +115,7 @@ impl FromStr for MatPolynomialRingZq {
             None => {
                 return Err(StringConversionError::InvalidMatrix(format!(
                     "The delimiter '/' could not be found: {string}"
-                )))?
+                )))?;
             }
         };
 

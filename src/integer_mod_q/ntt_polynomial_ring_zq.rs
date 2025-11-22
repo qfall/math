@@ -10,7 +10,7 @@
 
 use crate::{
     integer::Z,
-    integer_mod_q::{mat_ntt_polynomial_ring_zq::print_vec_z, ModulusPolynomialRingZq},
+    integer_mod_q::{ModulusPolynomialRingZq, mat_ntt_polynomial_ring_zq::print_vec_z},
 };
 use derive_more::Display;
 use serde::{Deserialize, Serialize};

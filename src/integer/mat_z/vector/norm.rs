@@ -12,7 +12,7 @@
 use super::super::MatZ;
 use crate::{
     error::MathError,
-    integer::{fmpz_helpers::find_max_abs, Z},
+    integer::{Z, fmpz_helpers::find_max_abs},
     rational::Q,
     traits::MatrixDimensions,
 };

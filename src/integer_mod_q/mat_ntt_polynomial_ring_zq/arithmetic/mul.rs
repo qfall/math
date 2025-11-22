@@ -47,8 +47,10 @@ impl Mul for &MatNTTPolynomialRingZq {
     /// - if the number of rows of `self` and the number of columns of `other` does not match up.
     /// - if their moduli do not match.
     fn mul(self, other: Self) -> Self::Output {
-        assert_eq!(self.nr_columns, other.nr_rows,
-            "The number of rows of `self` and the number of columns of `other` has to be equal for matrix multiplication.");
+        assert_eq!(
+            self.nr_columns, other.nr_rows,
+            "The number of rows of `self` and the number of columns of `other` has to be equal for matrix multiplication."
+        );
         if !self.compare_base(other) {
             panic!("{}", self.call_compare_base_error(other).unwrap());
         }

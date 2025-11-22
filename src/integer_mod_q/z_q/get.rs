@@ -80,7 +80,7 @@ impl Zq {
 
 #[cfg(test)]
 mod test_get_representative_least_nonnegative_residue {
-    use super::{Zq, Z};
+    use super::{Z, Zq};
 
     /// Check whether `get_representative_least_nonnegative_residue` outputs the correct value for small values
     #[test]
@@ -111,7 +111,7 @@ mod test_get_representative_least_nonnegative_residue {
 
 #[cfg(test)]
 mod test_get_representative_least_absolute_residue {
-    use super::{Zq, Z};
+    use super::{Z, Zq};
 
     /// Check whether `get_representative_least_absolute_residue` outputs the correct value for small values
     #[test]

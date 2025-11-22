@@ -8,7 +8,7 @@
 
 //! Create benchmark for matrix arithmetic in this file.
 
-use criterion::{criterion_group, Criterion};
+use criterion::{Criterion, criterion_group};
 use qfall_math::rational::MatQ;
 
 /// Benchmark [`MatQ::mul_f64_unchecked`].

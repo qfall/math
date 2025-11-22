@@ -368,12 +368,14 @@ mod test_from_str {
     /// Ensure that large coefficients work
     #[test]
     fn working_large_entries() {
-        assert!(ModulusPolynomialRingZq::from_str(&format!(
-            "4  0 1 3 {} mod {}",
-            u64::MAX,
-            2_i32.pow(16) + 1
-        ))
-        .is_ok());
+        assert!(
+            ModulusPolynomialRingZq::from_str(&format!(
+                "4  0 1 3 {} mod {}",
+                u64::MAX,
+                2_i32.pow(16) + 1
+            ))
+            .is_ok()
+        );
     }
 
     /// Ensure that primes and non-primes work as modulus

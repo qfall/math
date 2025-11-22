@@ -31,7 +31,7 @@ pub(crate) fn find_matrix_dimensions<T>(matrix: &Vec<Vec<T>>) -> Result<(i64, i6
         _ => {
             return Err(StringConversionError::InvalidMatrix(
                 "Number of rows is too large (must fit into [`i64`]).".to_owned(),
-            ))?
+            ))?;
         }
     };
 

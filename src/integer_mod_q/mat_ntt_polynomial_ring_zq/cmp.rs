@@ -60,13 +60,17 @@ mod test_compare_base {
         assert!(one_1.compare_base(&0_u64));
 
         assert!(one_1.call_compare_base_error(&MatZ::new(1, 1)).is_none());
-        assert!(one_1
-            .call_compare_base_error(&MatPolyOverZ::new(1, 1))
-            .is_none());
+        assert!(
+            one_1
+                .call_compare_base_error(&MatPolyOverZ::new(1, 1))
+                .is_none()
+        );
         assert!(one_1.call_compare_base_error(&Z::ONE).is_none());
-        assert!(one_1
-            .call_compare_base_error(&PolyOverZ::from_str("1  3").unwrap())
-            .is_none());
+        assert!(
+            one_1
+                .call_compare_base_error(&PolyOverZ::from_str("1  3").unwrap())
+                .is_none()
+        );
         assert!(one_1.call_compare_base_error(&0_i8).is_none());
         assert!(one_1.call_compare_base_error(&0_i16).is_none());
         assert!(one_1.call_compare_base_error(&0_i32).is_none());
@@ -98,18 +102,26 @@ mod test_compare_base {
         assert!(one_1.compare_base(&PolynomialRingZq::from(&modulus)));
         assert!(!one_1.compare_base(&PolynomialRingZq::from(&modulus_other)));
 
-        assert!(one_1
-            .call_compare_base_error(&MatPolynomialRingZq::identity(10, 7, &modulus_other))
-            .is_some());
+        assert!(
+            one_1
+                .call_compare_base_error(&MatPolynomialRingZq::identity(10, 7, &modulus_other))
+                .is_some()
+        );
         assert!(one_1.call_compare_base_error(&Zq::from((3, 18))).is_some());
-        assert!(one_1
-            .call_compare_base_error(&PolyOverZq::from_str("1  3 mod 18").unwrap())
-            .is_some());
-        assert!(one_1
-            .call_compare_base_error(&MatZq::new(1, 1, 18))
-            .is_some());
-        assert!(one_1
-            .call_compare_base_error(&PolynomialRingZq::from(&modulus_other))
-            .is_some());
+        assert!(
+            one_1
+                .call_compare_base_error(&PolyOverZq::from_str("1  3 mod 18").unwrap())
+                .is_some()
+        );
+        assert!(
+            one_1
+                .call_compare_base_error(&MatZq::new(1, 1, 18))
+                .is_some()
+        );
+        assert!(
+            one_1
+                .call_compare_base_error(&PolynomialRingZq::from(&modulus_other))
+                .is_some()
+        );
     }
 }

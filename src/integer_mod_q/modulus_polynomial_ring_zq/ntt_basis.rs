@@ -18,8 +18,8 @@ use super::ModulusPolynomialRingZq;
 use crate::{
     integer::Z,
     integer_mod_q::{
-        ntt_basis_polynomial_ring_zq::{ConvolutionType, NTTBasisPolynomialRingZq},
         Modulus,
+        ntt_basis_polynomial_ring_zq::{ConvolutionType, NTTBasisPolynomialRingZq},
     },
     traits::GetCoefficient,
 };
