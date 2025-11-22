@@ -1,7 +1,10 @@
 # qFALL-math
-[![made-with-rust](https://img.shields.io/badge/Made%20with-Rust-1f425f.svg)](https://www.rust-lang.org/)
-[![Pipeline](https://github.com/qfall/math/actions/workflows/push.yml/badge.svg)](https://github.com/qfall/math/actions/workflows/push.yml)
-[![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-blue.svg)](https://opensource.org/licenses/MPL-2.0)
+[<img alt="github" src="https://img.shields.io/badge/qfall--math-github?style=for-the-badge&logo=github&label=github&color=8da0cb" height="20">](https://github.com/qfall/math)
+[<img alt="crates.io" src="https://img.shields.io/badge/qfall--math-cratesio?style=for-the-badge&logo=rust&label=crates&color=fc8d62" height="20">](https://crates.io/crates/qfall-math)
+[<img alt="docs.rs" src="https://img.shields.io/badge/qfall--math-docs?style=for-the-badge&logo=docs.rs&label=docs.rs&color=66c2a5" height="20">](https://docs.rs/qfall-math)
+[<img alt="tutorial" src="https://img.shields.io/badge/book-tutorial?style=for-the-badge&logo=mdBook&label=Tutorial&color=ffd92f" height="20">](https://qfall.github.io/book)
+[<img alt="build" src="https://img.shields.io/github/actions/workflow/status/qfall/math/push.yml?style=for-the-badge" height="20">](https://github.com/qfall/math/actions/workflows/push.yml)
+[<img alt="license" src="https://img.shields.io/badge/License-MPL_2.0-blue.svg?style=for-the-badge" height="20">](https://opensource.org/licenses/MPL-2.0)
 
 `qFALL` is a prototyping library for lattice-based constructions.
 The `math`-crate is a memory-safe wrapper of [FLINT](https://flintlib.org/) in Rust, which provides several additional features often used in lattice-based cryptography.
@@ -15,9 +18,10 @@ Then, add you can add this crate to your project by executing the following comm
 ```bash
 cargo add qfall-math
 ```
+This crate requires `rustc --version >= 1.85`. As it depends on FLINT, this crate requires a Linux or Mac operating system to compile.
 - Find further information on [our website](https://qfall.github.io/).
 - We recommend [our tutorial](https://qfall.github.io/book) to start working with qFALL.
-- Read the [documentation of this crate](TODO).
+- Read the [documentation of this crate](https://docs.rs/qfall-math).
 
 ## What does qFALL-math offer?
 We would like to point out a few supported features which are specifically important for lattice-based cryptography.
