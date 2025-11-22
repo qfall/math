@@ -7,7 +7,7 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! Contains our central error enum for easy error propagation.
-//! 
+//!
 //! This module contains this crate's error enum. This enum can hold all sorts
 //! of errors occurring in this crate s.t. error propagation is simple for
 //! developers of this crate and all sorts of thrown errors and error types can

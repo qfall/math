@@ -7,7 +7,7 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! Rational-based types based on [`Q`].
-//! 
+//!
 //! This module contains the type [`Q`] for rationals with arbitrary length and
 //! constructions over it.
 //! Each struct provides examples regarding usage.

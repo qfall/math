@@ -7,7 +7,7 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! Types for residue classes over integers with arbitrary length based on [`Zq`].
-//! 
+//!
 //! This module contains the type [`Zq`] for integers with arbitrary length
 //! modulus `q` and constructions over it.
 //! Each struct provides examples regarding usage.

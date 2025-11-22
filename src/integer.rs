@@ -7,7 +7,7 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! Integer-based types with arbitrary length based on [`Z`].
-//! 
+//!
 //! This module contains the type [`Z`] for integers with arbitrary length and
 //! constructions over it.
 //! Each struct provides examples regarding usage.

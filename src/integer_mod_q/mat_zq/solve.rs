@@ -48,7 +48,7 @@ impl MatZq {
     /// - if the the number of rows of the matrix and the syndrome are different.
     /// - if the syndrome is not a column vector.
     /// - if the moduli mismatch.
-    /// 
+    ///
     /// # Reference
     /// - \[1\] John D. Dixon.
     ///   "Exact Solution of Linear Equations Using P-Adic Expansions"
