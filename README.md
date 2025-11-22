@@ -3,14 +3,17 @@
 [<img alt="crates.io" src="https://img.shields.io/badge/qfall--math-cratesio?style=for-the-badge&logo=rust&label=crates&color=fc8d62" height="20">](https://crates.io/crates/qfall-math)
 [<img alt="docs.rs" src="https://img.shields.io/badge/qfall--math-docs?style=for-the-badge&logo=docs.rs&label=docs.rs&color=66c2a5" height="20">](https://docs.rs/qfall-math)
 [<img alt="tutorial" src="https://img.shields.io/badge/book-tutorial?style=for-the-badge&logo=mdBook&label=Tutorial&color=ffd92f" height="20">](https://qfall.github.io/book)
-[<img alt="build" src="https://img.shields.io/github/actions/workflow/status/qfall/math/push.yml?style=for-the-badge" height="20">](https://github.com/qfall/math/actions/workflows/push.yml)
-[<img alt="license" src="https://img.shields.io/badge/License-MPL_2.0-blue.svg?style=for-the-badge" height="20">](https://opensource.org/licenses/MPL-2.0)
+[<img alt="build" src="https://img.shields.io/github/actions/workflow/status/qfall/math/push.yml?branch=main&style=for-the-badge" height="20">](https://github.com/qfall/math/actions/workflows/push.yml)
+[<img alt="license" src="https://img.shields.io/badge/License-MPL_2.0-blue.svg?style=for-the-badge" height="20">](https://github.com/qfall/math/blob/dev/LICENSE)
 
 `qFALL` is a prototyping library for lattice-based constructions.
-The `math`-crate is a memory-safe wrapper of [FLINT](https://flintlib.org/) in Rust, which provides several additional features often used in lattice-based cryptography.
+This `math`-crate is a memory-safe wrapper of [FLINT](https://flintlib.org/) in Rust, which provides several additional features often used in lattice-based cryptography. This crate is the foundation of the [qFALL project](https://qfall.github.io) containing further crates for prototyping of lattice-based cryptography.
 
 ## Quick-Start
-To use this crate, make sure that `m4`, a C-compiler such as `gcc`, and `make` are installed by running
+First, ensure that you use a Unix-like distribution (Linux or MacOS). Setup [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) if you're using Windows. This is required due to this crate's dependency on FLINT.
+Then, make sure your `rustc --version` is `1.85` or newer. 
+
+Furthermore, it's required that `m4`, a C-compiler such as `gcc`, and `make` are installed.
 ```bash
 sudo apt-get install m4 gcc make
 ```
@@ -18,10 +21,9 @@ Then, add you can add this crate to your project by executing the following comm
 ```bash
 cargo add qfall-math
 ```
-This crate requires `rustc --version >= 1.85`. As it depends on FLINT, this crate requires a Linux or Mac operating system to compile.
-- Find further information on [our website](https://qfall.github.io/).
-- We recommend [our tutorial](https://qfall.github.io/book) to start working with qFALL.
+- Find further information on [our website](https://qfall.github.io/). Also check out [`qfall-tools`](https://github.com/qfall/tools) and [`qfall-schemes`](https://github.com/qfall/schemes).
 - Read the [documentation of this crate](https://docs.rs/qfall-math).
+- We recommend [our tutorial](https://qfall.github.io/book) to start working with qFALL.
 
 ## What does qFALL-math offer?
 We would like to point out a few supported features which are specifically important for lattice-based cryptography.
@@ -34,24 +36,24 @@ Furthermore, this crate simplifies the implementation of your prototype by suppo
 Arithmetic operations, comparisons, and conversions are supported across several types. You can find all supported data-types below.
 
 ### Integers
-- [`Z`](TODO_Link_to_documentation): Represents $\mathbb Z$.
-- [`MatZ`](TODO_Link_to_documentation): Represents matrices over $\mathbb Z$.
-- [`PolyOverZ`](TODO_Link_to_documentation): Represents polynomials with coefficients over $\mathbb Z$.
-- [`MatPolyOverZ`](TODO_Link_to_documentation): Represents matrices of polynomials with coefficients over $\mathbb Z$.
+- [`Z`](https://docs.rs/qfall-math/latest/qfall_math/integer/struct.Z.html): Represents $\mathbb Z$.
+- [`MatZ`](https://docs.rs/qfall-math/latest/qfall_math/integer/struct.MatZ.html): Represents matrices over $\mathbb Z$.
+- [`PolyOverZ`](https://docs.rs/qfall-math/latest/qfall_math/integer/struct.PolyOverZ.html): Represents polynomials with coefficients over $\mathbb Z$.
+- [`MatPolyOverZ`](https://docs.rs/qfall-math/latest/qfall_math/integer/struct.MatPolyOverZ.html): Represents matrices of polynomials with coefficients over $\mathbb Z$.
 
 ### Integers mod q
-- [`Zq`](TODO_Link_to_documentation): Represents $\mathbb Z_q$.
-- [`MatZq`](TODO_Link_to_documentation): Represents matrices over $\mathbb Z_q$.
-- [`PolyOverZq`](TODO_Link_to_documentation): Represents polynomials with coefficients over $\mathbb Z_q$.
-- [`PolynomialRingZq`](TODO_Link_to_documentation): Represents quotient rings $\mathbb Z_q[X]/f(X)$.
-- [`MatPolynomialRingZq`](TODO_Link_to_documentation): Represents matrices over quotient rings $\mathbb Z_q[X]/f(X)$.
-- [`NTTPolynomialRingZq`](TODO_Link_to_documentation): Represents quotient rings $\mathbb Z_q[X]/f(X)$ in NTT form.
-- [`MatNTTPolynomialRingZq`](TODO_Link_to_documentation): Represents matrices over quotient rings $\mathbb Z_q[X]/f(X)$ in NTT form.
+- [`Zq`](https://docs.rs/qfall-math/latest/qfall_math/integer_mod_q/struct.Zq.html): Represents $\mathbb Z_q$.
+- [`MatZq`](https://docs.rs/qfall-math/latest/qfall_math/integer_mod_q/struct.MatZq.html): Represents matrices over $\mathbb Z_q$.
+- [`PolyOverZq`](https://docs.rs/qfall-math/latest/qfall_math/integer_mod_q/struct.PolyOverZq.html): Represents polynomials with coefficients over $\mathbb Z_q$.
+- [`PolynomialRingZq`](https://docs.rs/qfall-math/latest/qfall_math/integer_mod_q/struct.PolynomialRingZq.html): Represents quotient rings $\mathbb Z_q[X]/f(X)$.
+- [`MatPolynomialRingZq`](https://docs.rs/qfall-math/latest/qfall_math/integer_mod_q/struct.MatPolynomialRingZq.html): Represents matrices over quotient rings $\mathbb Z_q[X]/f(X)$.
+- [`NTTPolynomialRingZq`](https://docs.rs/qfall-math/latest/qfall_math/integer_mod_q/struct.NTTPolynomialRingZq.html): Represents quotient rings $\mathbb Z_q[X]/f(X)$ in NTT form.
+- [`MatNTTPolynomialRingZq`](https://docs.rs/qfall-math/latest/qfall_math/integer_mod_q/struct.MatNTTPolynomialRingZq.html): Represents matrices over quotient rings $\mathbb Z_q[X]/f(X)$ in NTT form.
 
 ### Rationals
-- [`Q`](TODO_Link_to_documentation): Represents $\mathbb Q$.
-- [`MatQ`](TODO_Link_to_documentation): Represents matrices over $\mathbb Q$.
-- [`PolyOverQ`](TODO_Link_to_documentation): Represents polynomials with coefficients over $\mathbb Q$.
+- [`Q`](https://docs.rs/qfall-math/latest/qfall_math/rational/struct.Q.html): Represents $\mathbb Q$.
+- [`MatQ`](https://docs.rs/qfall-math/latest/qfall_math/rational/struct.MatQ.html): Represents matrices over $\mathbb Q$.
+- [`PolyOverQ`](https://docs.rs/qfall-math/latest/qfall_math/rational/struct.PolyOverQ.html): Represents polynomials with coefficients over $\mathbb Q$.
 
 ## Quick Example
 ```rust
@@ -89,7 +91,7 @@ See [Contributing](TODO_Contribute_file) for details on how to contribute.
 Please use the following bibtex entry to cite [qFALL](https://qfall.github.io).
 
 ```text
-Update to eprint
+TODO: Update to eprint
 ```
 
 ## Dependencies
@@ -100,5 +102,5 @@ Furthermore, we utilized [serde](https://crates.io/crates/serde) and [serde_json
 
 ## License
 
-This library is distributed under the [Mozilla Public License Version 2.0]((https://github.com/qfall/math/blob/dev/LICENSE)).
+This library is distributed under the [Mozilla Public License Version 2.0](https://github.com/qfall/math/blob/dev/LICENSE).
 Permissions of this weak copyleft license are conditioned on making the source code of licensed files and modifications of those files available under the same license (or in certain cases, under one of the GNU licenses). Copyright and license notices must be preserved. Contributors provide an express grant of patent rights. However, a larger work using the licensed work may be distributed under different terms and without source code for files added to the larger work.
