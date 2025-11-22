@@ -8,10 +8,10 @@
 
 //! [`Q`] is a type for rationals of arbitrary length.
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
-//!
-//! For **DEVELOPERS**: Many functions assume that the [`Q`] instances are reduced.
-//! To avoid unnecessary checks and reductions, always return canonical/reduced
-//! values. The end-user should be unable to obtain a non-reduced value.
+
+// For **DEVELOPERS**: Many functions assume that the [`Q`] instances are reduced.
+// To avoid unnecessary checks and reductions, always return canonical/reduced
+// values. The end-user should be unable to obtain a non-reduced value.
 
 use flint_sys::fmpq::fmpq;
 use std::fmt;

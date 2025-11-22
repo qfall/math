@@ -8,10 +8,10 @@
 
 //! [`MatQ`] is a type of matrix with rational entries of arbitrary length.
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
-//!
-//! For **DEVELOPERS**: Many functions assume that the [`MatQ`] instances are reduced.
-//! To avoid unnecessary checks and reductions, always return canonical/reduced
-//! values. The end-user should be unable to obtain a non-reduced value.
+
+// For **DEVELOPERS**: Many functions assume that the [`MatQ`] instances are reduced.
+// To avoid unnecessary checks and reductions, always return canonical/reduced
+// values. The end-user should be unable to obtain a non-reduced value.
 
 use crate::utils::parse::partial_string;
 use flint_sys::fmpq_mat::fmpq_mat_struct;

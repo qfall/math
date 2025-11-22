@@ -19,7 +19,7 @@ impl MatZq {
     /// The function uses Gaussian elimination together with Factor refinement
     /// to split the modulus and the Chinese remainder theorem and Hensel lifting
     /// to combine solutions under the split modulus.
-    /// For Hensel lifting we use the method from [\[1\]](<index.html#:~:text=[1]>).
+    /// For Hensel lifting we use the method from [\[1\]].
     ///
     /// Note that this function does not compute a solution whenever there is one.
     /// If the matrix has not full rank under a modulus that divides the given one,
@@ -48,6 +48,11 @@ impl MatZq {
     /// - if the the number of rows of the matrix and the syndrome are different.
     /// - if the syndrome is not a column vector.
     /// - if the moduli mismatch.
+    /// 
+    /// # Reference
+    /// - \[1\] John D. Dixon.
+    ///   "Exact Solution of Linear Equations Using P-Adic Expansions"
+    ///   <https://link.springer.com/article/10.1007/BF01459082>
     pub fn solve_gaussian_elimination(&self, y: &MatZq) -> Option<MatZq> {
         assert!(y.is_column_vector(), "The syndrome is not a column vector.");
         assert_eq!(
@@ -217,7 +222,7 @@ impl MatZq {
     }
 
     /// Computes a solution for a system of linear equations under a modulus
-    /// of the form `z^a` with the help of [\[1\]](<index.html#:~:text=[1]>).
+    /// of the form `z^a` with the help of [\[1\]].
     /// It solves `Ax = y` for `x` with `A` being a [`MatZq`] value.
     /// If no solution is found, `None` is returned.
     ///
@@ -339,7 +344,7 @@ impl MatZq {
             };
         }
 
-        // Use the method from [\[1\]](<index.html#:~:text=[1]>)
+        // Use the method from [\[1\]]
         // to compute a solution for the original system.
         let mut b_i = y.clone();
         let mut x_i = &matrix_base_inv * &b_i;

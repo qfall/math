@@ -6,32 +6,37 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! # What is qFALL-math?
-//! qFall-math is a high level interface to the library [FLINT](https://flintlib.org/).
-//! It uses the FFI [flint-sys](https://docs.rs/flint-sys/latest/flint_sys/index.html)
-//! to access the functionality of FLINT.
-//! qFALL-math provides a memory-safe and easy to use interface that is ideal for
-//! prototyping. It supports the basic types with arbitrary precision and length:
-//! - Integers which are represented as [Z](integer::Z),
-//! - Residue Classes over Integers which are represented as [Zq](integer_mod_q::Zq),
-//! - Rationals which are represented as [Q](rational::Q).
+//! `qFALL` is a prototyping library for lattice-based cryptography.
+//! `qFALL-math` yields the mathematical foundation by providing an easy to use, high-level API based on [FLINT](https://flintlib.org/)
+//! as well as several additional features often used in lattice-based cryptography.
+//! At a high level, it provides the following classes of datatypes:
+//! - Integer-based types such as [`Z`](integer::Z), [`MatZ`](integer::MatZ), [`PolyOverZ`](integer::PolyOverZ), [`MatPolyOverZ`](integer::MatPolyOverZ),
+//! - Residue Classes over Integers such as [`Zq`](integer_mod_q::Zq), [`MatZq`](integer_mod_q::MatZq), [`PolyOverZq`](integer_mod_q::PolyOverZq), [`PolynomialRingZq`](integer_mod_q::PolynomialRingZq), [`MatPolynomialRingZq`](integer_mod_q::MatPolynomialRingZq), [`NTTPolynomialRingZq`](integer_mod_q::NTTPolynomialRingZq), [`MatNTTPolynomialRingZq`](integer_mod_q::MatNTTPolynomialRingZq),
+//! - Rationals such as [Q](rational::Q), [`MatQ`](rational::MatQ), [`PolyOverQ`](rational::PolyOverQ).
+//! 
+//! The `qFALL` project contains two more crates called [`qFALL-tools`](https://crates.io/crates/qfall-tools)
+//! and [`qFALL-schemes`](https://github.com/qfall/schemes) to support prototyping.
+//! - Find further information on [our website](https://qfall.github.io/).
+//! - We recommend [our tutorial](https://qfall.github.io/book) to start working with qFALL.
+//! 
 //!
-//! Each of these types also has a matrix and a polynomial version.
-//! Further a polynomial ring is supported with
-//! [PolynomialRingZq](integer_mod_q::PolynomialRingZq).
-//!
-//! qFALL-math is free software: you can redistribute it and/or modify it under
-//! the terms of the Mozilla Public License Version 2.0 as published by the
-//! Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
-//!
-//! ## Tutorial + Website
-//! You can find a dedicated [tutorial](https://qfall.github.io/book/index.html) to qFALL-math on our [website](https://qfall.github.io/).
-//! The tutorial explains the basic steps starting from installation and
-//! continues with basic usage.
-//! qFALL-math is co-developed together with qFALL-crypto.
-//! qFALL-crypto uses qFALL-math to implement cryptographic primitives and can act
-//! as inspiration for prototyping and an intuition on how qFALL-math can be used
-//! for prototyping.
+//! ## Quick Example
+//! ```
+//! use qfall_math::{integer_mod_q::MatZq, integer::MatZ};
+//! 
+//! let (n, m, q) = (256, 1024, 3329);
+//! let (center, sigma) = (0.0, 8.0);
+//! 
+//! let mat_a = MatZq::sample_uniform(n, m, q);
+//! let vec_s = MatZ::sample_uniform(n, 1, 0, 2).unwrap();
+//! let vec_e = MatZ::sample_discrete_gauss(m, 1, center, sigma).unwrap();
+//! 
+//! // SIS-Instance: t = A * e mod q
+//! let vec_t = &mat_a * &vec_e;
+//! 
+//! // LWE-Instance: b^T = s^T * A + e^T mod q
+//! let vec_b = vec_s.transpose() * mat_a + vec_e.transpose();
+//! ```
 
 pub mod error;
 pub mod integer;

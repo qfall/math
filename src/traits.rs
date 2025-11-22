@@ -6,6 +6,8 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
+//! Definitions of traits implemented and used in this crate.
+//! 
 //! This module contains basic traits for this library. These include
 //! specific traits for matrices and polynomials.
 

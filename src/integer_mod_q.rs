@@ -6,6 +6,8 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
+//! Types for residue classes over integers with arbitrary length based on [`Zq`].
+//! 
 //! This module contains the type [`Zq`] for integers with arbitrary length
 //! modulus `q` and constructions over it.
 //! Each struct provides examples regarding usage.
@@ -14,10 +16,6 @@
 //! e.g. the standard rust integers.
 //! The [`Modulus`] is constructed as an explicit struct and can be shared across several
 //! [`Zq`], [`MatZq`] and [`PolyOverZq`] instances with efficient memory usage.
-//!
-//! - \[1\] John D. Dixon.
-//!   "Exact Solution of Linear Equations Using P-Adic Expansions"
-//!   <https://link.springer.com/article/10.1007/BF01459082>
 
 mod mat_ntt_polynomial_ring_zq;
 mod mat_polynomial_ring_zq;

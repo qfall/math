@@ -8,11 +8,11 @@
 
 //! Implementations to reduce a [`PolynomialRingZq`] with the
 //! [`ModulusPolynomialRingZq`](crate::integer_mod_q::ModulusPolynomialRingZq).
-//!
-//! **For Developers** note: The [`ModulusPolynomialRingZq`](crate::integer_mod_q::ModulusPolynomialRingZq)
-//! is not applied automatically, and has to be called in the functions individually.
-//! Additionally the comparisons assume that the entries are reduced,
-//! hence no reduction is performed in the check.
+
+// **For Developers** note: The [`ModulusPolynomialRingZq`](crate::integer_mod_q::ModulusPolynomialRingZq)
+// is not applied automatically, and has to be called in the functions individually.
+// Additionally the comparisons assume that the entries are reduced,
+// hence no reduction is performed in the check.
 
 use super::PolynomialRingZq;
 use flint_sys::fq::fq_reduce;
