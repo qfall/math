@@ -84,7 +84,7 @@ Contributors are:
 - Marcel Luca Schmidt
 - Jan Niklas Siemer
 
-See [Contributing](TODO_Contribute_file) for details on how to contribute.
+See [Contributing](https://github.com/qfall/math/blob/dev/CONTRIBUTING.md) for details on how to contribute.
 
 ## Citing
 
