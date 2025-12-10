@@ -12,6 +12,7 @@ use criterion::*;
 use qfall_math::{
     integer::{MatZ, Z},
     rational::Q,
+    utils::sample::discrete_gauss::{DiscreteGaussianIntegerSampler, LookupTableSetting},
 };
 
 /// benchmark creating a matrix of size 100x100 sampled by a comparatively wide discrete Gaussian distribution.
@@ -54,10 +55,29 @@ pub fn bench_sample_z_narrow_single(c: &mut Criterion) {
     });
 }
 
+/// benchmark discrete Gaussian sampling using [`DiscreteGaussianIntegerSampler::sample_z`] for a variety of widths.
+pub fn bench_sample_z(c: &mut Criterion) {
+    let center = 0;
+    let gaussian_widths = [
+        8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768,
+    ];
+
+    for s in gaussian_widths {
+        let mut dgis =
+            DiscreteGaussianIntegerSampler::init(center, s, 6.0, LookupTableSetting::Precompute)
+                .unwrap();
+
+        c.bench_function("DiscreteGauss RejectionSampling", |b| {
+            b.iter(|| dgis.sample_z())
+        });
+    }
+}
+
 criterion_group!(
     benches,
     bench_sample_z_wide,
     bench_sample_z_narrow,
     bench_sample_z_wide_single,
-    bench_sample_z_narrow_single
+    bench_sample_z_narrow_single,
+    bench_sample_z,
 );
