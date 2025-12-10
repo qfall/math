@@ -14,7 +14,7 @@ use crate::{
     integer::Z,
     integer_mod_q::{Modulus, Zq},
     rational::Q,
-    utils::sample::binomial::sample_binomial,
+    utils::sample::binomial::BinomialSampler,
 };
 
 impl Zq {
@@ -53,10 +53,9 @@ impl Zq {
         p: impl Into<Q>,
     ) -> Result<Self, MathError> {
         let modulus: Modulus = modulus.into();
-        let n: Z = n.into();
-        let p: Q = p.into();
+        let mut bin_sampler = BinomialSampler::init(n, p)?;
 
-        let sample = sample_binomial(&n, &p)?;
+        let sample = bin_sampler.sample();
         Ok(Zq::from((sample, modulus)))
     }
 }

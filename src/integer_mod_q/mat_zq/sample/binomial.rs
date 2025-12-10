@@ -15,7 +15,7 @@ use crate::{
     integer_mod_q::{MatZq, Modulus},
     rational::Q,
     traits::{MatrixDimensions, MatrixSetEntry},
-    utils::sample::binomial::sample_binomial,
+    utils::sample::binomial::BinomialSampler,
 };
 use std::fmt::Display;
 
@@ -109,14 +109,14 @@ impl MatZq {
         p: impl Into<Q>,
     ) -> Result<Self, MathError> {
         let offset: Z = offset.into();
-        let n: Z = n.into();
-        let p: Q = p.into();
+        let mut bin_sampler = BinomialSampler::init(n, p)?;
         let mut matrix = MatZq::new(num_rows, num_cols, modulus);
 
         for row in 0..matrix.get_num_rows() {
             for col in 0..matrix.get_num_columns() {
-                let sample = sample_binomial(&n, &p)?;
-                unsafe { matrix.set_entry_unchecked(row, col, &offset + sample) };
+                let mut sample = bin_sampler.sample();
+                sample += &offset;
+                unsafe { matrix.set_entry_unchecked(row, col, sample) };
             }
         }
 

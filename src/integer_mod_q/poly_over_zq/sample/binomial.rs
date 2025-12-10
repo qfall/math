@@ -15,7 +15,7 @@ use crate::{
     integer_mod_q::{Modulus, PolyOverZq},
     rational::Q,
     traits::SetCoefficient,
-    utils::{index::evaluate_index, sample::binomial::sample_binomial},
+    utils::{index::evaluate_index, sample::binomial::BinomialSampler},
 };
 use std::fmt::Display;
 
@@ -108,14 +108,14 @@ impl PolyOverZq {
         let max_degree = evaluate_index(max_degree)?;
         let offset: Z = offset.into();
         let modulus: Modulus = modulus.into();
-        let n: Z = n.into();
-        let p: Q = p.into();
+        let mut bin_sampler = BinomialSampler::init(n, p)?;
 
         let mut poly_z = PolyOverZq::from(&modulus);
 
         for index in 0..=max_degree {
-            let sample = sample_binomial(&n, &p)?;
-            unsafe { poly_z.set_coeff_unchecked(index, &offset + sample) };
+            let mut sample = bin_sampler.sample();
+            sample += &offset;
+            unsafe { poly_z.set_coeff_unchecked(index, sample) };
         }
 
         Ok(poly_z)
