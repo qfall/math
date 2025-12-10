@@ -6,15 +6,14 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! This module contains algorithms for sampling
-//! according to the binomial distribution.
+//! This module contains algorithms for sampling according to the binomial distribution.
 
 use crate::{
     error::MathError,
     integer::{PolyOverZ, Z},
     rational::Q,
     traits::SetCoefficient,
-    utils::{index::evaluate_index, sample::binomial::sample_binomial},
+    utils::{index::evaluate_index, sample::binomial::BinomialSampler},
 };
 use std::fmt::Display;
 
@@ -99,14 +98,15 @@ impl PolyOverZ {
     ) -> Result<Self, MathError> {
         let max_degree = evaluate_index(max_degree)?;
         let offset: Z = offset.into();
-        let n: Z = n.into();
-        let p: Q = p.into();
 
         let mut poly_z = PolyOverZ::default();
 
+        let mut bin_sampler = BinomialSampler::init(n, p)?;
+
         for index in 0..=max_degree {
-            let sample = sample_binomial(&n, &p)?;
-            unsafe { poly_z.set_coeff_unchecked(index, &offset + sample) };
+            let mut sample = bin_sampler.sample();
+            sample += &offset;
+            unsafe { poly_z.set_coeff_unchecked(index, sample) };
         }
 
         Ok(poly_z)

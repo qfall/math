@@ -156,18 +156,13 @@ impl DiscreteGaussianIntegerSampler {
 
         let mut table = HashMap::new();
 
-        if lookup_table_setting == LookupTableSetting::FillOnTheFly && interval_size > u16::MAX {
+        if lookup_table_setting != LookupTableSetting::NoLookup && interval_size > u16::MAX {
             println!(
                 "WARNING: A completely filled lookup table will exceed 2^16 entries. You should reconsider your sampling method for discrete Gaussians."
             )
         }
 
         if lookup_table_setting == LookupTableSetting::Precompute {
-            assert!(
-                interval_size <= u16::MAX,
-                "The interval size {interval_size} for discrete Gaussian sampling exceeds 2^16 entries. You should reconsider your sampling method."
-            );
-
             let mut i = lower_bound.clone();
             while i <= upper_bound {
                 let evaluated_gauss_function = gaussian_function(&i, &center, &s);

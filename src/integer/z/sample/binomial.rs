@@ -9,7 +9,7 @@
 //! This module contains algorithms for sampling
 //! according to the binomial distribution.
 
-use crate::{error::MathError, integer::Z, rational::Q, utils::sample::binomial::sample_binomial};
+use crate::{error::MathError, integer::Z, rational::Q, utils::sample::binomial::BinomialSampler};
 
 impl Z {
     /// Chooses a [`Z`] instance according to the binomial distribution
@@ -38,11 +38,9 @@ impl Z {
     /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
     ///   if `n` does not fit into an [`i64`].
     pub fn sample_binomial(n: impl Into<Z>, p: impl Into<Q>) -> Result<Self, MathError> {
-        let n: Z = n.into();
-        let p: Q = p.into();
+        let mut bin_sampler = BinomialSampler::init(n, p)?;
 
-        let sample = sample_binomial(&n, &p)?;
-        Ok(Z::from(sample))
+        Ok(bin_sampler.sample())
     }
 }
 

@@ -35,10 +35,6 @@ use rand::{RngCore, rngs::ThreadRng};
 /// assert!(Z::ZERO <= sample);
 /// assert!(sample < interval_size);
 /// ```
-///
-/// # Errors and Failures
-/// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-///   if the interval is chosen smaller than or equal to `1`.
 pub struct UniformIntegerSampler {
     interval_size: Z,
     two_pow_32: u64,

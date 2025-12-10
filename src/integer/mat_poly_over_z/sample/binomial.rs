@@ -13,8 +13,8 @@ use crate::{
     error::MathError,
     integer::{MatPolyOverZ, PolyOverZ, Z},
     rational::Q,
-    traits::{MatrixDimensions, MatrixSetEntry},
-    utils::index::evaluate_index,
+    traits::{MatrixDimensions, MatrixSetEntry, SetCoefficient},
+    utils::{index::evaluate_index, sample::binomial::BinomialSampler},
 };
 use std::fmt::Display;
 
@@ -107,14 +107,20 @@ impl MatPolyOverZ {
     ) -> Result<Self, MathError> {
         let max_degree = evaluate_index(max_degree)?;
         let offset: Z = offset.into();
-        let n: Z = n.into();
-        let p: Q = p.into();
+        let mut bin_sampler = BinomialSampler::init(n, p)?;
         let mut matrix = MatPolyOverZ::new(num_rows, num_cols);
 
         for row in 0..matrix.get_num_rows() {
             for col in 0..matrix.get_num_columns() {
-                let sample = PolyOverZ::sample_binomial_with_offset(max_degree, &offset, &n, &p)?;
-                unsafe { matrix.set_entry_unchecked(row, col, sample) };
+                let mut poly_z = PolyOverZ::default();
+
+                for index in 0..=max_degree {
+                    let mut sample = bin_sampler.sample();
+                    sample += &offset;
+                    unsafe { poly_z.set_coeff_unchecked(index, sample) };
+                }
+
+                unsafe { matrix.set_entry_unchecked(row, col, poly_z) };
             }
         }
 
