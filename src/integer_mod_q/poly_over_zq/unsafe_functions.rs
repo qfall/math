@@ -43,7 +43,7 @@ impl PolyOverZq {
     /// that Rust and our Wrapper provide.
     /// Thus, using functions of [`flint_sys`] can introduce memory leaks.
     pub unsafe fn set_fmpz_mod_poly_struct(&mut self, flint_struct: fmpz_mod_poly_struct) {
-        fmpz_mod_poly_clear(&mut self.poly, self.modulus.get_fmpz_mod_ctx_struct());
+        unsafe { fmpz_mod_poly_clear(&mut self.poly, self.modulus.get_fmpz_mod_ctx_struct()) };
 
         self.poly = flint_struct;
     }

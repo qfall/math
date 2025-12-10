@@ -197,8 +197,10 @@ mod test_compare_base {
         assert!(!one_1.compare_base(&MatZq::new(1, 1, 18)));
 
         assert!(one_1.call_compare_base_error(&Zq::from((3, 18))).is_some());
-        assert!(one_1
-            .call_compare_base_error(&MatZq::new(1, 1, 18))
-            .is_some());
+        assert!(
+            one_1
+                .call_compare_base_error(&MatZq::new(1, 1, 18))
+                .is_some()
+        );
     }
 }

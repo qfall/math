@@ -261,7 +261,7 @@ impl FromStr for PolynomialRingZq {
             None => {
                 return Err(StringConversionError::InvalidStringToPolyRingZqInput(
                     s.to_owned(),
-                ))?
+                ))?;
             }
         };
 
@@ -554,7 +554,9 @@ mod test_from_str {
     /// Ensure that the input works with strings that have to be trimmed
     #[test]
     fn trim_input() {
-        let poly = PolynomialRingZq::from_str("        4  -1 0 1 1     /            4  1 2 3 -4                  mod              17                     ");
+        let poly = PolynomialRingZq::from_str(
+            "        4  -1 0 1 1     /            4  1 2 3 -4                  mod              17                     ",
+        );
         assert!(poly.is_ok());
         assert_eq!(
             PolynomialRingZq::from_str("4  -1 0 1 1 / 4  1 2 3 -4 mod 17").unwrap(),

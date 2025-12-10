@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! This module contains common functions that are used by several crates.
+//! Common functions useful across several datatypes and crates.
 //!
 //! This can include functions to pre-process inputs
 //! and similar tasks.

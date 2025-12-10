@@ -15,9 +15,9 @@ use super::PolyOverZq;
 use crate::macros::serialize::{deserialize, serialize};
 use core::fmt;
 use serde::{
+    Deserialize, Serialize,
     de::{Error, MapAccess, Unexpected, Visitor},
     ser::SerializeStruct,
-    Deserialize, Serialize,
 };
 use std::str::FromStr;
 

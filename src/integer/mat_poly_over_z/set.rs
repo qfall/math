@@ -1000,9 +1000,10 @@ mod test_set_submatrix {
     fn submatrix_too_large() {
         let mut mat = MatPolyOverZ::sample_uniform(10, 10, 5, -100, 100).unwrap();
 
-        assert!(mat
-            .set_submatrix(0, 0, &MatPolyOverZ::identity(11, 11), 0, 0, 10, 10)
-            .is_err());
+        assert!(
+            mat.set_submatrix(0, 0, &MatPolyOverZ::identity(11, 11), 0, 0, 10, 10)
+                .is_err()
+        );
         assert!(mat.set_submatrix(1, 2, &mat.clone(), 0, 0, 9, 9).is_err());
     }
 

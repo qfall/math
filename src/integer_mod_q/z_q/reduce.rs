@@ -7,11 +7,11 @@
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
 //! Implementations to reduce a [`Z`](crate::integer::Z) with the [`Modulus`](crate::integer_mod_q::Modulus).
-//!
-//! **For Developers** note: The [`Modulus`](crate::integer_mod_q::Modulus)
-//! is not applied automatically, and has to be called in the functions individually.
-//! Additionally the comparisons assume that the entries are reduced,
-//! hence no reduction is performed in the check.
+
+// **For Developers** note: The [`Modulus`](crate::integer_mod_q::Modulus)
+// is not applied automatically, and has to be called in the functions individually.
+// Additionally the comparisons assume that the entries are reduced,
+// hence no reduction is performed in the check.
 
 use super::Zq;
 use flint_sys::fmpz_mod::fmpz_mod_set_fmpz;

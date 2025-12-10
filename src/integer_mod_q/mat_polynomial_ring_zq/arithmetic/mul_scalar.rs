@@ -1131,9 +1131,11 @@ mod test_mul_poly_ring_zq {
         let poly = PolyOverZ::from_str("2  1 1").unwrap();
         let poly_ring = PolynomialRingZq::from((&poly, &modulus2));
 
-        assert!(&poly_ring_mat1
-            .mul_scalar_poly_ring_zq_safe(&poly_ring)
-            .is_err())
+        assert!(
+            &poly_ring_mat1
+                .mul_scalar_poly_ring_zq_safe(&poly_ring)
+                .is_err()
+        )
     }
 }
 

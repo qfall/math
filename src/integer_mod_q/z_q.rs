@@ -13,10 +13,10 @@
 //! FLINT uses a `fmpz_mod_ctx_struct` to store functions and data used for
 //! optimizing modulo operations.
 //! This struct is wrapped in [`Modulus`] for easy use.
-//!
-//! For **DEVELOPERS**: Many functions assume that the [`Zq`] instances are reduced.
-//! To avoid unnecessary checks and reductions, always return canonical/reduced
-//! values. The end-user should be unable to obtain a non-reduced value.
+
+// For **DEVELOPERS**: Many functions assume that the [`Zq`] instances are reduced.
+// To avoid unnecessary checks and reductions, always return canonical/reduced
+// values. The end-user should be unable to obtain a non-reduced value.
 
 use super::Modulus;
 use crate::integer::Z;

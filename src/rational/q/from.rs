@@ -723,7 +723,7 @@ mod test_from_z {
 mod test_from_float {
     use super::Q;
     use std::{
-        f64::consts::{E, LN_10, LN_2},
+        f64::consts::{E, LN_2, LN_10},
         str::FromStr,
     };
 

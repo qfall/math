@@ -90,7 +90,7 @@ impl MatZq {
 
 #[cfg(test)]
 mod test_dot_product {
-    use super::{MatZq, Zq, Z};
+    use super::{MatZq, Z, Zq};
     use std::str::FromStr;
 
     /// Check whether the dot product is calculated correctly for the combination:

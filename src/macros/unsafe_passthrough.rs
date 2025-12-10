@@ -123,7 +123,7 @@ macro_rules! unsafe_getter_indirect {
                 /// that Rust and our Wrapper provide.
                 /// Thus, using functions of [`flint_sys`] can introduce memory leaks.
                 pub unsafe fn [<get_ $attribute_type>](&mut self) -> &mut $attribute_type {
-                    self.$attribute_name.$function_name()
+                    unsafe { self.$attribute_name.$function_name() }
                 }
             }
         }
@@ -168,7 +168,7 @@ macro_rules! unsafe_setter {
                 /// that Rust and our Wrapper provide.
                 /// Thus, using functions of [`flint_sys`] can introduce memory leaks.
                 pub unsafe fn [<set_ $attribute_type>](&mut self, flint_struct: $attribute_type) {
-                    $clear_function(&mut self.$attribute_name);
+                    unsafe { $clear_function(&mut self.$attribute_name) };
 
                     self.$attribute_name = flint_struct;
                 }
@@ -214,7 +214,7 @@ macro_rules! unsafe_setter_indirect {
                 /// that Rust and our Wrapper provide.
                 /// Thus, using functions of [`flint_sys`] can introduce memory leaks.
                 pub unsafe fn [<set_ $attribute_type>](&mut self, flint_struct: $attribute_type) {
-                    self.$attribute_name.$function_name(flint_struct)
+                    unsafe { self.$attribute_name.$function_name(flint_struct) }
                 }
             }
         }

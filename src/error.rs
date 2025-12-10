@@ -6,28 +6,30 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
+//! Contains our central error enum for easy error propagation.
+//!
 //! This module contains this crate's error enum. This enum can hold all sorts
 //! of errors occurring in this crate s.t. error propagation is simple for
 //! developers of this crate and all sorts of thrown errors and error types can
 //! be easily found and accessed by developers using this crate. Furthermore,
 //! the actual errors are wrapped s.t. all information about the error can be
 //! unwrapped again.
-//!
-//! **For developers:**
-//! - How to add an error to an `enum`? First of all, find a name
-//!   that is not too specific for your current case s.t. it could be used in other
-//!   contexts afterwards as well. Then, find the spot according to your chosen error
-//!   name in a alphanumerically sorted way in the list of supported errors in the doc
-//!   comment and inside the `enum` itself.
-//!   Afterwards, add the error to the list of implemented error
-//!   types in the doc comment of the `enum` with a short description when it is thrown.
-//!   Probably use this description for the doc comment above the implementation of
-//!   error in the `enum`. Then, add `#[error(<error msg>)]` to define the error message
-//!   output once your error is thrown. Below, write down `<error name>(<input>),` to
-//!   define the error with its name and possibly some inputs. The input can be of the
-//!   form [`String`], but also another error, whose conversion must be declared via
-//!   `#[from] OtherError`. It is best to use the existing structure as a guide. For any
-//!   further information, check out the here used [`thiserror`]-crate.
+
+// **For developers:**
+// - How to add an error to an `enum`? First of all, find a name
+//   that is not too specific for your current case s.t. it could be used in other
+//   contexts afterwards as well. Then, find the spot according to your chosen error
+//   name in a alphanumerically sorted way in the list of supported errors in the doc
+//   comment and inside the `enum` itself.
+//   Afterwards, add the error to the list of implemented error
+//   types in the doc comment of the `enum` with a short description when it is thrown.
+//   Probably use this description for the doc comment above the implementation of
+//   error in the `enum`. Then, add `#[error(<error msg>)]` to define the error message
+//   output once your error is thrown. Below, write down `<error name>(<input>),` to
+//   define the error with its name and possibly some inputs. The input can be of the
+//   form [`String`], but also another error, whose conversion must be declared via
+//   `#[from] OtherError`. It is best to use the existing structure as a guide. For any
+//   further information, check out the here used [`thiserror`]-crate.
 
 use std::ffi::NulError;
 use thiserror::Error;

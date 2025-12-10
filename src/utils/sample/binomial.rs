@@ -65,7 +65,7 @@ pub(crate) fn sample_binomial(n: &Z, p: &Q) -> Result<u64, MathError> {
 
 #[cfg(test)]
 mod test_sample_binomial {
-    use super::{sample_binomial, Q, Z};
+    use super::{Q, Z, sample_binomial};
 
     /// Ensures that the doc tests works correctly.
     #[test]

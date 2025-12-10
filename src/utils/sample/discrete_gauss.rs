@@ -157,11 +157,16 @@ impl DiscreteGaussianIntegerSampler {
         let mut table = HashMap::new();
 
         if lookup_table_setting == LookupTableSetting::FillOnTheFly && interval_size > u16::MAX {
-            println!("WARNING: A completely filled lookup table will exceed 2^16 entries. You should reconsider your sampling method for discrete Gaussians.")
+            println!(
+                "WARNING: A completely filled lookup table will exceed 2^16 entries. You should reconsider your sampling method for discrete Gaussians."
+            )
         }
 
         if lookup_table_setting == LookupTableSetting::Precompute {
-            assert!(interval_size <= u16::MAX, "The interval size {interval_size} for discrete Gaussian sampling exceeds 2^16 entries. You should reconsider your sampling method.");
+            assert!(
+                interval_size <= u16::MAX,
+                "The interval size {interval_size} for discrete Gaussian sampling exceeds 2^16 entries. You should reconsider your sampling method."
+            );
 
             let mut i = lower_bound.clone();
             while i <= upper_bound {
@@ -369,11 +374,11 @@ pub(crate) fn sample_d_precomputed_gso(
         as they do not have the same number of columns."
     );
     if center.get_num_rows() != basis.get_num_rows() {
-        return Err( MathError::MismatchingMatrixDimension(format!(
+        return Err(MathError::MismatchingMatrixDimension(format!(
             "sample_d requires center and basis to have the same number of columns, but they were {} and {}.",
             center.get_num_rows(),
-            basis.get_num_rows())
-        ));
+            basis.get_num_rows()
+        )));
     }
     if !center.is_column_vector() {
         Err(StringConversionError::InvalidMatrix(format!(
@@ -479,20 +484,24 @@ mod test_discrete_gaussian_integer_sampler {
     fn invalid_gaussian_parameter() {
         let center = Q::ZERO;
 
-        assert!(DiscreteGaussianIntegerSampler::init(
-            &center,
-            &Q::MINUS_ONE,
-            6.0,
-            LookupTableSetting::FillOnTheFly
-        )
-        .is_err());
-        assert!(DiscreteGaussianIntegerSampler::init(
-            &center,
-            &Q::from(i64::MIN),
-            6.0,
-            LookupTableSetting::FillOnTheFly
-        )
-        .is_err());
+        assert!(
+            DiscreteGaussianIntegerSampler::init(
+                &center,
+                &Q::MINUS_ONE,
+                6.0,
+                LookupTableSetting::FillOnTheFly
+            )
+            .is_err()
+        );
+        assert!(
+            DiscreteGaussianIntegerSampler::init(
+                &center,
+                &Q::from(i64::MIN),
+                6.0,
+                LookupTableSetting::FillOnTheFly
+            )
+            .is_err()
+        );
     }
 
     /// Checks whether `sample_z` returns an error if `n < 0`.
@@ -501,26 +510,30 @@ mod test_discrete_gaussian_integer_sampler {
         let center = Q::MINUS_ONE;
         let gaussian_parameter = Q::ONE;
 
-        assert!(DiscreteGaussianIntegerSampler::init(
-            &center,
-            &gaussian_parameter,
-            -0.1,
-            LookupTableSetting::FillOnTheFly
-        )
-        .is_err());
-        assert!(DiscreteGaussianIntegerSampler::init(
-            &center,
-            &gaussian_parameter,
-            i64::MIN,
-            LookupTableSetting::FillOnTheFly
-        )
-        .is_err());
+        assert!(
+            DiscreteGaussianIntegerSampler::init(
+                &center,
+                &gaussian_parameter,
+                -0.1,
+                LookupTableSetting::FillOnTheFly
+            )
+            .is_err()
+        );
+        assert!(
+            DiscreteGaussianIntegerSampler::init(
+                &center,
+                &gaussian_parameter,
+                i64::MIN,
+                LookupTableSetting::FillOnTheFly
+            )
+            .is_err()
+        );
     }
 }
 
 #[cfg(test)]
 mod test_gaussian_function {
-    use super::{gaussian_function, Q, Z};
+    use super::{Q, Z, gaussian_function};
     use crate::traits::Distance;
 
     /// Ensures that the doc test would run properly.
@@ -690,10 +703,12 @@ mod test_sample_d {
         );
         // check whether last vector is zero, i.e. was linearly dependent and part of lattice
         assert!(hnf_basis_concat_sample.get_column(2).unwrap().is_zero());
-        assert!(hnf_basis_concat_sample_prec
-            .get_column(2)
-            .unwrap()
-            .is_zero());
+        assert!(
+            hnf_basis_concat_sample_prec
+                .get_column(2)
+                .unwrap()
+                .is_zero()
+        );
     }
 
     /// Checks whether `sample_d` returns an error if the gaussian parameter `s < 0`.

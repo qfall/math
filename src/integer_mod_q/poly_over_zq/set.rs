@@ -86,7 +86,7 @@ impl SetCoefficient<&Zq> for PolyOverZq {
     /// is greater or equal than `0` and that the provided value has
     /// the same base so that they have a matching base.
     unsafe fn set_coeff_unchecked(&mut self, index: i64, value: &Zq) {
-        self.set_coeff_unchecked(index, &value.value)
+        unsafe { self.set_coeff_unchecked(index, &value.value) }
     }
 }
 

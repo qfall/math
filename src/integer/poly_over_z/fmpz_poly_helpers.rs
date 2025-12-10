@@ -42,7 +42,7 @@ pub(crate) unsafe fn reduce_fmpz_poly_by_poly_over_z(
     poly: *mut fmpz_poly_struct,
     modulus: &PolyOverZ,
 ) {
-    let self_nr_coeff = (*poly).length + 1;
+    let self_nr_coeff = unsafe { *poly }.length + 1;
     let modulus_nr_coeff = modulus.get_degree();
 
     assert_eq!(
@@ -65,7 +65,7 @@ pub(crate) unsafe fn reduce_fmpz_poly_by_poly_over_z(
 #[cfg(test)]
 mod test_reduce_fmpz_poly_by_poly_over_z {
     use crate::integer::{
-        poly_over_z::fmpz_poly_helpers::reduce_fmpz_poly_by_poly_over_z, PolyOverZ,
+        PolyOverZ, poly_over_z::fmpz_poly_helpers::reduce_fmpz_poly_by_poly_over_z,
     };
     use std::str::FromStr;
 

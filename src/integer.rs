@@ -6,6 +6,8 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
+//! Integer-based types with arbitrary length based on [`Z`].
+//!
 //! This module contains the type [`Z`] for integers with arbitrary length and
 //! constructions over it.
 //! Each struct provides examples regarding usage.
@@ -21,5 +23,5 @@ mod z;
 pub use mat_poly_over_z::MatPolyOverZ;
 pub use mat_z::MatZ;
 pub use poly_over_z::PolyOverZ;
-pub(crate) use z::fmpz_helpers;
 pub use z::Z;
+pub(crate) use z::fmpz_helpers;

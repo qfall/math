@@ -11,7 +11,7 @@
 
 use crate::{error::MathError, integer::Z};
 use flint_sys::fmpz::{fmpz_addmul_ui, fmpz_set_ui};
-use rand::{rngs::ThreadRng, RngCore};
+use rand::{RngCore, rngs::ThreadRng};
 
 /// Enables uniformly random sampling a [`Z`] in `[0, interval_size)`.
 ///

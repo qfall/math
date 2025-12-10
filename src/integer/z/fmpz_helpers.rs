@@ -81,7 +81,7 @@ pub(crate) fn distance(value_1: &fmpz, value_2: &fmpz) -> Z {
 unsafe impl AsInteger for u64 {
     /// Documentation at [`AsInteger::into_fmpz`]
     unsafe fn into_fmpz(self) -> fmpz {
-        (&self).into_fmpz()
+        unsafe { (&self).into_fmpz() }
     }
 }
 
@@ -89,7 +89,7 @@ unsafe impl AsInteger for &u64 {
     /// Documentation at [`AsInteger::into_fmpz`]
     unsafe fn into_fmpz(self) -> fmpz {
         let mut ret_value = fmpz(0);
-        fmpz_init_set_ui(&mut ret_value, *self);
+        unsafe { fmpz_init_set_ui(&mut ret_value, *self) };
         ret_value
     }
 }
@@ -103,7 +103,7 @@ macro_rules! implement_as_integer_over_i64 {
         /// Documentation at [`AsInteger::into_fmpz`]
         unsafe impl AsInteger for $type {
             unsafe fn into_fmpz(self) -> fmpz {
-                (&self).into_fmpz()
+                unsafe { (&self).into_fmpz() }
             }
         }
 
@@ -111,7 +111,7 @@ macro_rules! implement_as_integer_over_i64 {
         unsafe impl AsInteger for &$type {
             unsafe fn into_fmpz(self) -> fmpz {
                 let mut ret_value = fmpz(0);
-                fmpz_init_set_si(&mut ret_value, *self as i64);
+                unsafe { fmpz_init_set_si(&mut ret_value, *self as i64) };
                 ret_value
             }
         }
@@ -125,7 +125,7 @@ unsafe impl AsInteger for Z {
     /// Documentation at [`AsInteger::into_fmpz`]
     unsafe fn into_fmpz(mut self) -> fmpz {
         let mut out = fmpz(0);
-        fmpz_swap(&mut out, &mut self.value);
+        unsafe { fmpz_swap(&mut out, &mut self.value) };
         out
     }
 
@@ -139,7 +139,7 @@ unsafe impl AsInteger for &Z {
     /// Documentation at [`AsInteger::into_fmpz`]
     unsafe fn into_fmpz(self) -> fmpz {
         let mut value = fmpz(0);
-        fmpz_init_set(&mut value, &self.value);
+        unsafe { fmpz_init_set(&mut value, &self.value) };
         value
     }
 
@@ -152,7 +152,7 @@ unsafe impl AsInteger for &Z {
 unsafe impl AsInteger for fmpz {
     /// Documentation at [`AsInteger::into_fmpz`]
     unsafe fn into_fmpz(self) -> fmpz {
-        (&self).into_fmpz()
+        unsafe { (&self).into_fmpz() }
     }
 
     /// Documentation at [`AsInteger::get_fmpz_ref`]
@@ -165,7 +165,7 @@ unsafe impl AsInteger for &fmpz {
     /// Documentation at [`AsInteger::into_fmpz`]
     unsafe fn into_fmpz(self) -> fmpz {
         let mut value = fmpz(0);
-        fmpz_init_set(&mut value, self);
+        unsafe { fmpz_init_set(&mut value, self) };
         value
     }
 
@@ -336,8 +336,8 @@ mod test_find_max_abs {
 
 #[cfg(test)]
 mod test_distance {
-    use super::distance;
     use super::Z;
+    use super::distance;
     use flint_sys::fmpz::fmpz;
 
     /// Checks if distance is correctly output for small [`Z`] values

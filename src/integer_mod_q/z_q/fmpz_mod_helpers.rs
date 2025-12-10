@@ -10,7 +10,7 @@
 
 use super::Zq;
 use crate::{
-    integer::{fmpz_helpers::distance, Z},
+    integer::{Z, fmpz_helpers::distance},
     traits::AsInteger,
 };
 use flint_sys::fmpz::fmpz;
@@ -50,7 +50,7 @@ pub(crate) fn length(value: &fmpz, modulus: &fmpz) -> Z {
 unsafe impl AsInteger for Zq {
     /// Documentation at [`AsInteger::into_fmpz`]
     unsafe fn into_fmpz(self) -> fmpz {
-        AsInteger::into_fmpz(self.value)
+        unsafe { AsInteger::into_fmpz(self.value) }
     }
 
     /// Documentation at [`AsInteger::get_fmpz_ref`]
@@ -62,7 +62,7 @@ unsafe impl AsInteger for Zq {
 unsafe impl AsInteger for &Zq {
     /// Documentation at [`AsInteger::into_fmpz`]
     unsafe fn into_fmpz(self) -> fmpz {
-        AsInteger::into_fmpz(&self.value)
+        unsafe { AsInteger::into_fmpz(&self.value) }
     }
 
     /// Documentation at [`AsInteger::get_fmpz_ref`]

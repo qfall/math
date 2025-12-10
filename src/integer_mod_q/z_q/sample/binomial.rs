@@ -63,7 +63,7 @@ impl Zq {
 
 #[cfg(test)]
 mod test_sample_binomial {
-    use super::{Zq, Q, Z};
+    use super::{Q, Z, Zq};
 
     // As all major tests regarding an appropriate binomial distribution,
     // whether the correct interval is kept, and if the errors are thrown correctly,

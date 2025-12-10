@@ -11,7 +11,7 @@
 
 use crate::{
     integer::Z,
-    integer_mod_q::{fmpz_mod_helpers::length, PolyOverZq},
+    integer_mod_q::{PolyOverZq, fmpz_mod_helpers::length},
     traits::{GetCoefficient, Pow},
 };
 use std::cmp::max;

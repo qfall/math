@@ -120,7 +120,7 @@ impl FromCoefficientEmbedding<(&MatZq, &ModulusPolynomialRingZq, i64)> for MatPo
         let num_columns = embedding.0.get_num_columns();
 
         assert_eq!(
-            num_rows % (degree+1),
+            num_rows % (degree + 1),
             0,
             "The provided degree of polynomials ({degree}) +1 must divide the number of rows of the embedding ({num_rows})."
         );

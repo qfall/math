@@ -964,8 +964,8 @@ mod test_set_submatrix {
             ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
         let mut mat = MatPolynomialRingZq::identity(10, 10, &modulus);
 
-        assert!(mat
-            .set_submatrix(
+        assert!(
+            mat.set_submatrix(
                 0,
                 0,
                 &MatPolynomialRingZq::identity(11, 11, &modulus),
@@ -974,7 +974,8 @@ mod test_set_submatrix {
                 10,
                 10
             )
-            .is_err());
+            .is_err()
+        );
         assert!(mat.set_submatrix(1, 2, &mat.clone(), 0, 0, 9, 9).is_err());
     }
 

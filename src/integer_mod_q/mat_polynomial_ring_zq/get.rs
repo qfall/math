@@ -138,7 +138,7 @@ impl MatrixGetEntry<PolyOverZ> for MatPolynomialRingZq {
     /// assert_eq!(entry_2, PolyOverZ::from(42));
     /// ```
     unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> PolyOverZ {
-        self.matrix.get_entry_unchecked(row, column)
+        unsafe { self.matrix.get_entry_unchecked(row, column) }
     }
 }
 
@@ -178,7 +178,7 @@ impl MatrixGetEntry<PolynomialRingZq> for MatPolynomialRingZq {
     /// ```
     unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> PolynomialRingZq {
         PolynomialRingZq {
-            poly: self.matrix.get_entry_unchecked(row, column),
+            poly: unsafe { self.matrix.get_entry_unchecked(row, column) },
             modulus: self.get_mod(),
         }
     }
@@ -230,9 +230,10 @@ impl MatrixGetSubmatrix for MatPolynomialRingZq {
         col_2: i64,
     ) -> Self {
         MatPolynomialRingZq {
-            matrix: self
-                .matrix
-                .get_submatrix_unchecked(row_1, row_2, col_1, col_2),
+            matrix: unsafe {
+                self.matrix
+                    .get_submatrix_unchecked(row_1, row_2, col_1, col_2)
+            },
             modulus: self.get_mod(),
         }
     }

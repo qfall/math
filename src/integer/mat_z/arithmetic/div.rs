@@ -50,7 +50,7 @@ impl MatZ {
         let divisor: Z = divisor.into();
         assert!(!divisor.is_zero(), "Tried to divide {self} by zero.");
 
-        fmpz_mat_scalar_divexact_fmpz(&mut self.matrix, &self.matrix, &divisor.value);
+        unsafe { fmpz_mat_scalar_divexact_fmpz(&mut self.matrix, &self.matrix, &divisor.value) };
 
         self
     }
@@ -86,7 +86,7 @@ impl MatZ {
         assert!(!divisor.is_zero(), "Tried to divide {self} by zero.");
 
         let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
-        fmpz_mat_scalar_divexact_fmpz(&mut out.matrix, &self.matrix, &divisor.value);
+        unsafe { fmpz_mat_scalar_divexact_fmpz(&mut out.matrix, &self.matrix, &divisor.value) };
 
         out
     }
