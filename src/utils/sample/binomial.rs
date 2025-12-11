@@ -91,8 +91,7 @@ impl BinomialSampler {
         Ok(Self { distr, rng })
     }
 
-    /// Computes a uniformly chosen [`Z`] sample in `[0, interval_size)`
-    /// using rejection sampling that accepts samples with probability at least 1/2.
+    /// Samples a [`Z`] according to the binomial distribution `Bin(n, p)`.
     ///
     /// # Examples
     /// ```
