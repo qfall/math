@@ -30,7 +30,7 @@ use rand_distr::{Binomial, Distribution};
 /// let sample = bin_sampler.sample();
 ///
 /// assert!(0 <= sample);
-/// assert!(sample < n);
+/// assert!(sample <= n);
 /// ```
 pub struct BinomialSampler {
     distr: Binomial,
@@ -105,7 +105,7 @@ impl BinomialSampler {
     /// let sample = bin_sampler.sample();
     ///
     /// assert!(0 <= sample);
-    /// assert!(sample < n);
+    /// assert!(sample <= n);
     /// ```
     pub fn sample(&mut self) -> Z {
         Z::from(self.distr.sample(&mut self.rng))
