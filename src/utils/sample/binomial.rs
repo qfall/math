@@ -30,7 +30,7 @@ use rand_distr::{Binomial, Distribution};
 /// let sample = bin_sampler.sample();
 ///
 /// assert!(0 <= sample);
-/// assert!(sample < n);
+/// assert!(sample <= n);
 /// ```
 pub struct BinomialSampler {
     distr: Binomial,
@@ -91,8 +91,7 @@ impl BinomialSampler {
         Ok(Self { distr, rng })
     }
 
-    /// Computes a uniformly chosen [`Z`] sample in `[0, interval_size)`
-    /// using rejection sampling that accepts samples with probability at least 1/2.
+    /// Samples a [`Z`] according to the binomial distribution `Bin(n, p)`.
     ///
     /// # Examples
     /// ```
@@ -105,7 +104,7 @@ impl BinomialSampler {
     /// let sample = bin_sampler.sample();
     ///
     /// assert!(0 <= sample);
-    /// assert!(sample < n);
+    /// assert!(sample <= n);
     /// ```
     pub fn sample(&mut self) -> Z {
         Z::from(self.distr.sample(&mut self.rng))
