@@ -6,7 +6,7 @@
 [<img alt="build" src="https://img.shields.io/github/actions/workflow/status/qfall/math/push.yml?branch=main&style=for-the-badge" height="20">](https://github.com/qfall/math/actions/workflows/push.yml)
 [<img alt="license" src="https://img.shields.io/badge/License-MPL_2.0-blue.svg?style=for-the-badge" height="20">](https://github.com/qfall/math/blob/dev/LICENSE)
 
-`qFALL` is a prototyping library for lattice-based constructions.
+`qFALL` is a prototyping library for lattice-based cryptography.
 This `math`-crate is a memory-safe wrapper of [FLINT](https://flintlib.org/) in Rust, which provides several additional features often used in lattice-based cryptography. This crate is the foundation of the [qFALL project](https://qfall.github.io) containing further crates for prototyping of lattice-based cryptography.
 
 ## Quick-Start
