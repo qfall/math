@@ -21,7 +21,7 @@ Then, add you can add this crate to your project by executing the following comm
 ```bash
 cargo add qfall-math
 ```
-- Find further information on [our website](https://qfall.github.io/). Also check out [`qfall-tools`](https://github.com/qfall/tools) and [`qfall-schemes`](https://github.com/qfall/schemes).
+- Find further information on [our website](https://qfall.github.io/). Also check out [`qfall-tools`](https://crates.io/crates/qfall-tools) and [`qfall-schemes`](https://crates.io/crates/qfall-schemes).
 - Read the [documentation of this crate](https://docs.rs/qfall-math).
 - We recommend [our tutorial](https://qfall.github.io/book) to start working with qFALL.
 
@@ -95,10 +95,10 @@ TODO: Update to eprint
 ```
 
 ## Dependencies
-This project uses the C-based, optimized math-library [FLINT](https://flintlib.org/). We tested our use of FLINT extensively to ensure that you can not introduce memory-leaks by using our library.
-If you need a function supported by FLINT that is not supported by this crate, we have created an `unsafe` passthrough to access and operate on FLINT's structs directly.
+This project uses the C-based, optimised math-library [FLINT](https://flintlib.org/). We tested our use of FLINT extensively to ensure that you can not introduce memory-leaks by using our crate.
+If you need a function supported by FLINT that is not supported by this crate, this crate offers an `unsafe` passthrough to access and operate on FLINT's structs directly.
 
-Furthermore, we utilized [serde](https://crates.io/crates/serde) and [serde_json](https://crates.io/crates/serde_json) to (de-)serialize objects to and from JSON. Last, but not least, our sampling algorithms use the [rand](https://crates.io/crates/rand)-crate to generate uniformly random bits. An extensive list can be found in our `Cargo.toml` file.
+Furthermore, we utilise [serde](https://crates.io/crates/serde) and [serde_json](https://crates.io/crates/serde_json) to (de-)serialize objects to and from JSON. This crate relies on [criterion](https://crates.io/crates/criterion) for benchmarking purposes. Last, but not least, our sampling algorithms use the [rand](https://crates.io/crates/rand)-crate to generate uniformly random bits. An extensive list can be found in our `Cargo.toml` file.
 
 ## License
 
