@@ -58,7 +58,7 @@ impl Div<&Z> for &MatQ {
 arithmetic_trait_borrowed_to_owned!(Div, div, MatQ, Z, MatQ);
 arithmetic_trait_mixed_borrowed_owned!(Div, div, MatQ, Z, MatQ);
 
-implement_for_others!(Z, MatQ, Div Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
+implement_for_others!(Z, MatQ, MatQ, Div Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
 
 impl Div<&Q> for &MatQ {
     type Output = MatQ;
@@ -95,7 +95,7 @@ impl Div<&Q> for &MatQ {
 arithmetic_trait_borrowed_to_owned!(Div, div, MatQ, Q, MatQ);
 arithmetic_trait_mixed_borrowed_owned!(Div, div, MatQ, Q, MatQ);
 
-implement_for_others!(Q, MatQ, Div Scalar for f32 f64);
+implement_for_others!(Q, MatQ, MatQ, Div Scalar for f32 f64);
 
 impl DivAssign<&Q> for MatQ {
     /// Computes the scalar multiplication of `self` and `other` reusing

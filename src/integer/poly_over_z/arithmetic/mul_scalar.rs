@@ -63,7 +63,7 @@ arithmetic_trait_borrowed_to_owned!(Mul, mul, Z, PolyOverZ, PolyOverZ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, PolyOverZ, Z, PolyOverZ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Z, PolyOverZ, PolyOverZ);
 
-implement_for_others!(Z, PolyOverZ, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
+implement_for_others!(Z, PolyOverZ, PolyOverZ, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
 
 impl Mul<&Zq> for &PolyOverZ {
     type Output = PolyOverZq;
@@ -145,6 +145,8 @@ arithmetic_trait_borrowed_to_owned!(Mul, mul, PolyOverZ, Q, PolyOverQ);
 arithmetic_trait_borrowed_to_owned!(Mul, mul, Q, PolyOverZ, PolyOverQ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, PolyOverZ, Q, PolyOverQ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Q, PolyOverZ, PolyOverQ);
+
+implement_for_others!(Q, PolyOverZ, PolyOverQ, Mul Scalar for f32 f64);
 
 impl MulAssign<&Z> for PolyOverZ {
     /// Computes the scalar multiplication of `self` and `scalar` reusing
@@ -375,5 +377,7 @@ mod test_mul_q {
         _ = q.clone() * &poly;
         _ = &q * poly.clone();
         _ = poly.clone() * &q;
+        _ = &poly * 1.0f32;
+        _ = &poly * 1.0f64;
     }
 }

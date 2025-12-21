@@ -61,7 +61,7 @@ arithmetic_trait_borrowed_to_owned!(Mul, mul, Z, PolyOverQ, PolyOverQ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, PolyOverQ, Z, PolyOverQ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Z, PolyOverQ, PolyOverQ);
 
-implement_for_others!(Z, PolyOverQ, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
+implement_for_others!(Z, PolyOverQ, PolyOverQ, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
 
 impl Mul<&Q> for &PolyOverQ {
     type Output = PolyOverQ;
@@ -99,6 +99,8 @@ arithmetic_trait_borrowed_to_owned!(Mul, mul, PolyOverQ, Q, PolyOverQ);
 arithmetic_trait_borrowed_to_owned!(Mul, mul, Q, PolyOverQ, PolyOverQ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, PolyOverQ, Q, PolyOverQ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Q, PolyOverQ, PolyOverQ);
+
+implement_for_others!(Q, PolyOverQ, PolyOverQ, Mul Scalar for f32 f64);
 
 impl MulAssign<&Q> for PolyOverQ {
     /// Computes the scalar multiplication of `self` and `other` reusing
@@ -156,6 +158,7 @@ arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, PolyOverQ, Q);
 arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, PolyOverQ, Z);
 arithmetic_assign_between_types!(MulAssign, mul_assign, PolyOverQ, i64, i32 i16 i8);
 arithmetic_assign_between_types!(MulAssign, mul_assign, PolyOverQ, u64, u32 u16 u8);
+arithmetic_assign_between_types!(MulAssign, mul_assign, PolyOverQ, Q, f64 f32);
 
 #[cfg(test)]
 mod test_mul_z {
@@ -243,6 +246,8 @@ mod test_mul_q {
         _ = q.clone() * &poly;
         _ = &q * poly.clone();
         _ = poly.clone() * &q;
+        _ = &poly * 1.0_f32;
+        _ = &poly * 1.0_f64;
     }
 }
 
@@ -301,5 +306,7 @@ mod test_mul_assign {
         a *= 1_i16;
         a *= 1_i32;
         a *= 1_i64;
+        a *= 1.0_f32;
+        a *= 1.0_f64;
     }
 }

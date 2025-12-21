@@ -60,7 +60,7 @@ arithmetic_trait_borrowed_to_owned!(Mul, mul, Z, MatZ, MatZ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatZ, Z, MatZ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Z, MatZ, MatZ);
 
-implement_for_others!(Z, MatZ, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
+implement_for_others!(Z, MatZ, MatZ, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
 
 impl Mul<&Q> for &MatZ {
     type Output = MatQ;
@@ -95,6 +95,8 @@ arithmetic_trait_borrowed_to_owned!(Mul, mul, MatZ, Q, MatQ);
 arithmetic_trait_borrowed_to_owned!(Mul, mul, Q, MatZ, MatQ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatZ, Q, MatQ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Q, MatZ, MatQ);
+
+implement_for_others!(Q, MatZ, MatQ, Mul Scalar for f32 f64);
 
 impl MulAssign<&Z> for MatZ {
     /// Computes the scalar multiplication of `self` and `scalar` reusing
@@ -243,6 +245,24 @@ mod test_mul {
         assert_eq!(mat_3, integer_1 * mat_1);
         assert_eq!(mat_4, integer_2 * mat_2);
     }
+
+    /// Checks if scalar multiplication is available for any integer type
+    #[test]
+    fn availability() {
+        let mat = MatZ::from_str("[[2, 1],[1, 2]]").unwrap();
+        let integer = Z::from(3);
+
+        let _ = &mat * 1u8;
+        let _ = &mat * 1u16;
+        let _ = &mat * 1u32;
+        let _ = &mat * 1u64;
+        let _ = &mat * 1i8;
+        let _ = &mat * 1i16;
+        let _ = &mat * 1i32;
+        let _ = &mat * 1i64;
+        let _ = &mat * &integer;
+        let _ = &mat * integer;
+    }
 }
 
 #[cfg(test)]
@@ -327,6 +347,18 @@ mod test_mul_q {
 
         assert_eq!(mat_3, rational_1 * mat_1);
         assert_eq!(mat_4, rational_2 * mat_2);
+    }
+
+    /// Checks if scalar multiplication is available for any rational type
+    #[test]
+    fn availability() {
+        let mat = MatZ::from_str("[[2, 1],[1, 2]]").unwrap();
+        let rational = Q::from(3);
+
+        let _ = &mat * 1.0f32;
+        let _ = &mat * 1.0f64;
+        let _ = &mat * &rational;
+        let _ = &mat * rational;
     }
 }
 

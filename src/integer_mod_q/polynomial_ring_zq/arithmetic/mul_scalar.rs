@@ -59,7 +59,7 @@ arithmetic_trait_borrowed_to_owned!(Mul, mul, Z, PolynomialRingZq, PolynomialRin
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, PolynomialRingZq, Z, PolynomialRingZq);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Z, PolynomialRingZq, PolynomialRingZq);
 
-implement_for_others!(Z, PolynomialRingZq, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
+implement_for_others!(Z, PolynomialRingZq, PolynomialRingZq, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
 
 impl Mul<&Zq> for &PolynomialRingZq {
     type Output = PolynomialRingZq;
