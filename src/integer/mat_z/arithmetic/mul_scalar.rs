@@ -408,8 +408,8 @@ mod test_mul_zq {
     fn borrowed_correctness() {
         let mat_1 = MatZ::from_str("[[2, 1],[1, 2]]").unwrap();
         let mat_2 = mat_1.clone();
-        let mat_3 = MatZq::from_str("[[2, 1],[1, 2]] mod 3").unwrap();
-        let zq = Zq::from((1, 3));
+        let mat_3 = MatZq::from_str("[[1, 2],[2, 1]] mod 3").unwrap();
+        let zq = Zq::from((2, 3));
 
         let mat_1 = &mat_1 * &zq;
         let mat_2 = &zq * &mat_2;
