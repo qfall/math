@@ -61,7 +61,7 @@ arithmetic_trait_borrowed_to_owned!(Mul, mul, Z, MatZq, MatZq);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatZq, Z, MatZq);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Z, MatZq, MatZq);
 
-implement_for_others!(Z, MatZq, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
+implement_for_others!(Z, MatZq, MatZq, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
 
 impl Mul<&Zq> for &MatZq {
     type Output = MatZq;

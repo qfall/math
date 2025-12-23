@@ -10,6 +10,7 @@
 
 use super::super::MatZ;
 use crate::integer::Z;
+use crate::integer_mod_q::{MatZq, Zq};
 use crate::macros::arithmetics::{
     arithmetic_assign_between_types, arithmetic_assign_trait_borrowed_to_owned,
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
@@ -60,7 +61,7 @@ arithmetic_trait_borrowed_to_owned!(Mul, mul, Z, MatZ, MatZ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatZ, Z, MatZ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Z, MatZ, MatZ);
 
-implement_for_others!(Z, MatZ, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
+implement_for_others!(Z, MatZ, MatZ, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
 
 impl Mul<&Q> for &MatZ {
     type Output = MatQ;
@@ -75,7 +76,7 @@ impl Mul<&Q> for &MatZ {
     /// # Examples
     /// ```
     /// use qfall_math::integer::MatZ;
-    /// use qfall_math::rational::{MatQ, Q};
+    /// use qfall_math::rational::Q;
     /// use std::str::FromStr;
     ///
     /// let mat_1 = MatZ::from_str("[[2, 1],[1, 2]]").unwrap();
@@ -95,6 +96,42 @@ arithmetic_trait_borrowed_to_owned!(Mul, mul, MatZ, Q, MatQ);
 arithmetic_trait_borrowed_to_owned!(Mul, mul, Q, MatZ, MatQ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatZ, Q, MatQ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Q, MatZ, MatQ);
+
+implement_for_others!(Q, MatZ, MatQ, Mul Scalar for f32 f64);
+
+impl Mul<&Zq> for &MatZ {
+    type Output = MatZq;
+    /// Implements the [`Mul`] trait for a [`MatZ`] matrix with a [`Zq`] representative of a residue class.
+    /// [`Mul`] is implemented for any combination of owned and borrowed values.
+    ///
+    /// Parameters:
+    /// - `scalar`: specifies the scalar by which the matrix is multiplied
+    ///
+    /// Returns the product of `self` and `scalar` as a [`MatZq`].
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::MatZ;
+    /// use qfall_math::integer_mod_q::Zq;
+    /// use std::str::FromStr;
+    ///
+    /// let mat_1 = MatZ::from_str("[[2, 1],[1, 2]]").unwrap();
+    /// let zq = Zq::from((1,3));
+    ///
+    /// let mat_2 = &mat_1 * &zq;
+    /// ```
+    fn mul(self, scalar: &Zq) -> Self::Output {
+        let out = MatZq::from((self, scalar.get_mod()));
+        out * scalar
+    }
+}
+
+arithmetic_trait_reverse!(Mul, mul, Zq, MatZ, MatZq);
+
+arithmetic_trait_borrowed_to_owned!(Mul, mul, MatZ, Zq, MatZq);
+arithmetic_trait_borrowed_to_owned!(Mul, mul, Zq, MatZ, MatZq);
+arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatZ, Zq, MatZq);
+arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Zq, MatZ, MatZq);
 
 impl MulAssign<&Z> for MatZ {
     /// Computes the scalar multiplication of `self` and `scalar` reusing
@@ -243,6 +280,24 @@ mod test_mul {
         assert_eq!(mat_3, integer_1 * mat_1);
         assert_eq!(mat_4, integer_2 * mat_2);
     }
+
+    /// Checks if scalar multiplication is available for any integer type
+    #[test]
+    fn availability() {
+        let mat = MatZ::from_str("[[2, 1],[1, 2]]").unwrap();
+        let integer = Z::from(3);
+
+        let _ = &mat * 1u8;
+        let _ = &mat * 1u16;
+        let _ = &mat * 1u32;
+        let _ = &mat * 1u64;
+        let _ = &mat * 1i8;
+        let _ = &mat * 1i16;
+        let _ = &mat * 1i32;
+        let _ = &mat * 1i64;
+        let _ = &mat * &integer;
+        let _ = &mat * integer;
+    }
 }
 
 #[cfg(test)]
@@ -327,6 +382,99 @@ mod test_mul_q {
 
         assert_eq!(mat_3, rational_1 * mat_1);
         assert_eq!(mat_4, rational_2 * mat_2);
+    }
+
+    /// Checks if scalar multiplication is available for any rational type
+    #[test]
+    fn availability() {
+        let mat = MatZ::from_str("[[2, 1],[1, 2]]").unwrap();
+        let rational = Q::from(3);
+
+        let _ = &mat * 1.0f32;
+        let _ = &mat * 1.0f64;
+        let _ = &mat * &rational;
+        let _ = &mat * rational;
+    }
+}
+
+#[cfg(test)]
+mod test_mul_zq {
+    use super::MatZ;
+    use crate::integer_mod_q::{MatZq, Zq};
+    use std::str::FromStr;
+
+    /// Checks if scalar multiplication works fine for both borrowed
+    #[test]
+    fn borrowed_correctness() {
+        let mat_1 = MatZ::from_str("[[2, 1],[1, 2]]").unwrap();
+        let mat_2 = mat_1.clone();
+        let mat_3 = MatZq::from_str("[[1, 2],[2, 1]] mod 3").unwrap();
+        let zq = Zq::from((2, 3));
+
+        let mat_1 = &mat_1 * &zq;
+        let mat_2 = &zq * &mat_2;
+
+        assert_eq!(mat_3, mat_1);
+        assert_eq!(mat_3, mat_2);
+    }
+
+    /// Checks if scalar multiplication works fine for both owned
+    #[test]
+    fn owned_correctness() {
+        let mat_1 = MatZ::from_str("[[2, 1],[1, 2]]").unwrap();
+        let mat_2 = mat_1.clone();
+        let mat_3 = MatZq::from_str("[[2, 1],[1, 2]] mod 3").unwrap();
+        let zq = Zq::from((1, 3));
+
+        let mat_1 = mat_1 * zq.clone();
+        let mat_2 = zq * mat_2;
+
+        assert_eq!(mat_3, mat_1);
+        assert_eq!(mat_3, mat_2);
+    }
+
+    /// Checks if scalar multiplication works fine for half owned/borrowed
+    #[test]
+    fn half_correctness() {
+        let mat_1 = MatZ::from_str("[[2, 1],[1, 2]]").unwrap();
+        let mat_2 = mat_1.clone();
+        let mat_3 = mat_1.clone();
+        let mat_4 = mat_1.clone();
+        let mat_5 = MatZq::from_str("[[2, 1],[1, 2]] mod 3").unwrap();
+        let zq = Zq::from((1, 3));
+
+        let mat_1 = mat_1 * &zq;
+        let mat_2 = &zq * mat_2;
+        let mat_3 = &mat_3 * zq.clone();
+        let mat_4 = zq * &mat_4;
+
+        assert_eq!(mat_5, mat_1);
+        assert_eq!(mat_5, mat_2);
+        assert_eq!(mat_5, mat_3);
+        assert_eq!(mat_5, mat_4);
+    }
+
+    /// Checks if scalar multiplication works fine for matrices of different dimensions
+    #[test]
+    fn different_dimensions_correctness() {
+        let mat_1 = MatZ::from_str("[[1],[0],[4]]").unwrap();
+        let mat_2 = MatZ::from_str("[[2, 5, 6],[1, 3, 1]]").unwrap();
+        let mat_3 = MatZq::from_str("[[1],[0],[1]] mod 3").unwrap();
+        let mat_4 = MatZq::from_str("[[2, 2, 0],[1, 0, 1]] mod 3").unwrap();
+        let integer = Zq::from((1, 3));
+
+        assert_eq!(mat_3, &integer * mat_1);
+        assert_eq!(mat_4, integer * mat_2);
+    }
+
+    /// Checks if scalar multiplication is available for any rational type
+    #[test]
+    fn availability() {
+        let mat = MatZ::from_str("[[2, 1],[1, 2]]").unwrap();
+        let zq = Zq::from((1, 3));
+
+        let _ = &mat * &zq;
+        let _ = &mat * zq;
     }
 }
 

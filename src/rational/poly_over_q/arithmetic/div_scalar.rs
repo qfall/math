@@ -63,7 +63,7 @@ impl Div<&Z> for &PolyOverQ {
 arithmetic_trait_borrowed_to_owned!(Div, div, PolyOverQ, Z, PolyOverQ);
 arithmetic_trait_mixed_borrowed_owned!(Div, div, PolyOverQ, Z, PolyOverQ);
 
-implement_for_others!(Z, PolyOverQ, Div Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
+implement_for_others!(Z, PolyOverQ, PolyOverQ, Div Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
 
 impl Div<&Q> for &PolyOverQ {
     type Output = PolyOverQ;
@@ -105,7 +105,7 @@ impl Div<&Q> for &PolyOverQ {
 arithmetic_trait_borrowed_to_owned!(Div, div, PolyOverQ, Q, PolyOverQ);
 arithmetic_trait_mixed_borrowed_owned!(Div, div, PolyOverQ, Q, PolyOverQ);
 
-implement_for_others!(Q, PolyOverQ, Div Scalar for f32 f64);
+implement_for_others!(Q, PolyOverQ, PolyOverQ, Div Scalar for f32 f64);
 
 impl DivAssign<&Q> for PolyOverQ {
     /// Divides the polynomial coefficient-wise.

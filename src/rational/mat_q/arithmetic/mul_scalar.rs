@@ -58,7 +58,7 @@ arithmetic_trait_borrowed_to_owned!(Mul, mul, Q, MatQ, MatQ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatQ, Q, MatQ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Q, MatQ, MatQ);
 
-implement_for_others!(Z, MatQ, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
+implement_for_others!(Z, MatQ, MatQ, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
 
 impl Mul<&Q> for &MatQ {
     type Output = MatQ;
@@ -97,7 +97,7 @@ arithmetic_trait_borrowed_to_owned!(Mul, mul, Z, MatQ, MatQ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatQ, Z, MatQ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Z, MatQ, MatQ);
 
-implement_for_others!(Q, MatQ, Mul Scalar for f32 f64);
+implement_for_others!(Q, MatQ, MatQ, Mul Scalar for f32 f64);
 
 impl MulAssign<&Q> for MatQ {
     /// Computes the scalar multiplication of `self` and `other` reusing
@@ -140,6 +140,7 @@ impl MulAssign<&Z> for MatQ {
 arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, MatQ, Q);
 arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, MatQ, Z);
 arithmetic_assign_between_types!(MulAssign, mul_assign, MatQ, Z, u64 u32 u16 u8 i64 i32 i16 i8);
+arithmetic_assign_between_types!(MulAssign, mul_assign, MatQ, Q, f32 f64);
 
 #[cfg(test)]
 mod test_mul_z {
@@ -404,5 +405,7 @@ mod test_mul_assign {
         a *= 1_i16;
         a *= 1_i32;
         a *= 1_i64;
+        a *= 1.0_f32;
+        a *= 1.0_f64;
     }
 }

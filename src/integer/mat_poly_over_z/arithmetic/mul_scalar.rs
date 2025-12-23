@@ -58,7 +58,7 @@ arithmetic_trait_borrowed_to_owned!(Mul, mul, Z, MatPolyOverZ, MatPolyOverZ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, MatPolyOverZ, Z, MatPolyOverZ);
 arithmetic_trait_mixed_borrowed_owned!(Mul, mul, Z, MatPolyOverZ, MatPolyOverZ);
 
-implement_for_others!(Z, MatPolyOverZ, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
+implement_for_others!(Z, MatPolyOverZ, MatPolyOverZ, Mul Scalar for i8 i16 i32 i64 u8 u16 u32 u64);
 
 impl Mul<&PolyOverZ> for &MatPolyOverZ {
     type Output = MatPolyOverZ;
