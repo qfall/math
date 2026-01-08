@@ -36,7 +36,17 @@ You can also run the benchmarks using the profiler flamegraph. Details can be fo
 - [Flamegraph GitHub](https://github.com/flamegraph-rs/flamegraph).
 This provides insights on the where execution time is spent.
 
-TODO: Check how to run it in WSL2
+### Installing Flamegraph
+
+Installing Flamegraph in Linux and macOS is easy, since you only need to install flamegraph using `cargo install flamegraph`.
+But in WSL you need some more steps, since you need to install "perf" manually.
+
+So after `cargo install flamegraph`, you need to update "apt" with `sudo apt update` and install "build-essential's" by `sudo apt install -y build-essential libelf-dev libnuma-dev flex bison libdw-dev libunwind-dev libaudit-dev libslang2-dev libperl-dev python3-dev binutils-dev liblzma-dev libiberty-dev`.<br>
+Then you go into the home directory with `cd ~` and install the linux kernel with<br>
+`wget - https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.15.5.tar.xz` (Adjust the version as needed).<br>
+After that you extract it with `tar -xvf linux-5.15.5.tar.xz` and move into "perf" with `cd linux-5.15.5/tools/perf`
+there you use `make` to compile it.
+The last step is to make "perf" visible by e.g. `sudo cp ./perf /usr/local/bin/`.
 
 ### Command
 ```cargo flamegraph --freq 63300 --bench benchmarks -- --bench --profile-time 5 <benchmark name regex>```  
