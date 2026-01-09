@@ -33,6 +33,10 @@ impl MatZq {
     /// assert!(id.is_identity());
     /// ```
     pub fn inverse(&self) -> Option<MatZq> {
+        if self.modulus.is_prime() {
+            return self.inverse_prime();
+        }
+
         // Check if the matrix is square and compute the determinant.
         if let Ok(det) = self.get_representative_least_nonnegative_residue().det() {
             // Check whether the square matrix is invertible or not.
@@ -66,7 +70,7 @@ impl MatZq {
     }
 
     /// Returns the inverse of the matrix if it exists (is square and
-    /// has a determinant unequal to `0`) and `None` otherwise.
+    /// has a determinant co-prime to the modulus) and `None` otherwise.
     ///
     /// Note that the modulus is assumed to be prime, otherwise the function panics.
     ///
@@ -94,7 +98,7 @@ impl MatZq {
 
         // Check if the matrix is square and compute the determinant.
         if let Ok(det) = self.get_representative_least_nonnegative_residue().det() {
-            if det == Z::ZERO {
+            if det == Z::ZERO || det.gcd(self.get_mod()) != Z::ONE {
                 None
             } else {
                 let dimensions = self.get_num_rows();
@@ -108,9 +112,20 @@ impl MatZq {
 
                 // The inverse is now the right half of the matrix `identity_inverse`.
                 let mut inverse = MatZq::new(dimensions, dimensions, self.get_mod());
-                for i in 0..dimensions {
-                    unsafe { inverse.set_column_unchecked(i, &identity_inverse, dimensions + i) };
+                unsafe {
+                    inverse.set_submatrix_unchecked(
+                        0,
+                        0,
+                        dimensions,
+                        dimensions,
+                        &identity_inverse,
+                        0,
+                        dimensions,
+                        dimensions,
+                        2 * dimensions,
+                    );
                 }
+
                 Some(inverse)
             }
         } else {
@@ -143,8 +158,7 @@ impl MatZq {
         );
 
         // Since we only want the echelon form, the permutation `perm` is not relevant.
-        let mut perm: i64 = 1;
-        unsafe { fmpz_mod_mat_rref(&mut perm, &self.matrix) };
+        let _ = unsafe { fmpz_mod_mat_rref(std::ptr::null_mut(), &self.matrix) };
 
         self
     }
@@ -155,6 +169,7 @@ mod test_inverse {
     use crate::{
         integer::Z,
         integer_mod_q::{MatZq, Modulus},
+        traits::Gcd,
     };
     use std::str::FromStr;
 
@@ -200,6 +215,31 @@ mod test_inverse {
         let cmp_inv =
             MatZq::from_str(&format!("[[{}, 0],[0, 1]] mod {}", u64::MAX - 2, u64::MAX)).unwrap();
         assert_eq!(cmp_inv, inv);
+    }
+
+    /// Check if matrix inversion works for slightly larger dimensions.
+    #[test]
+    fn slightly_larger_dimension() {
+        let n = 30;
+        let q = 6;
+
+        let mut matrix = MatZq::sample_uniform(n, n, q);
+        let mut det_matrix = matrix
+            .get_representative_least_nonnegative_residue()
+            .det()
+            .unwrap();
+        while det_matrix == Z::ZERO || det_matrix.gcd(q) != Z::ONE {
+            matrix = MatZq::sample_uniform(n, n, q);
+            det_matrix = matrix
+                .get_representative_least_nonnegative_residue()
+                .det()
+                .unwrap();
+        }
+
+        let inv = matrix.inverse().unwrap();
+
+        let diag = matrix * inv;
+        assert!(diag.is_identity());
     }
 
     /// Ensure that a matrix that is not square yields `None` on inversion.
@@ -267,7 +307,7 @@ mod test_inverse {
 
 #[cfg(test)]
 mod test_inverse_prime {
-    use crate::integer_mod_q::MatZq;
+    use crate::{integer_mod_q::MatZq, traits::Gcd};
     use std::str::FromStr;
 
     /// Test whether `inverse_prime` correctly calculates an inverse matrix.
@@ -300,6 +340,31 @@ mod test_inverse_prime {
         let inv = mat.inverse_prime().unwrap();
 
         let diag = mat * inv;
+        assert!(diag.is_identity());
+    }
+
+    /// Check if matrix inversion works for slightly larger dimensions.
+    #[test]
+    fn slightly_larger_dimension() {
+        let n = 30;
+        let q = 7;
+
+        let mut matrix = MatZq::sample_uniform(n, n, q);
+        let mut det_matrix = matrix
+            .get_representative_least_nonnegative_residue()
+            .det()
+            .unwrap();
+        while det_matrix == 0 || det_matrix.gcd(q) != 1 {
+            matrix = MatZq::sample_uniform(n, n, q);
+            det_matrix = matrix
+                .get_representative_least_nonnegative_residue()
+                .det()
+                .unwrap();
+        }
+
+        let inv = matrix.inverse_prime().unwrap();
+
+        let diag = matrix * inv;
         assert!(diag.is_identity());
     }
 

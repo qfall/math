@@ -59,7 +59,7 @@ pub fn bench_sample_z_narrow_single(c: &mut Criterion) {
 pub fn bench_sample_z(c: &mut Criterion) {
     let center = 0;
     let gaussian_widths = [
-        8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768,
+        8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, //8192, 16384, 32768,
     ];
 
     for s in gaussian_widths {

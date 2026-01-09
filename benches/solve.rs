@@ -38,4 +38,27 @@ pub fn bench_solve(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, bench_solve);
+/// Benchmark [`MatZq::inverse`]
+///
+/// We uniformly sample a matrix `A` of dimension `300x300` and invert it.
+/// Only the inversion time is benchmarked.
+pub fn bench_inverse(c: &mut Criterion) {
+    let n = 300;
+    let q = 7;
+
+    c.bench_function("Inverse Matrix", |b| {
+        b.iter_batched(
+            || {
+                let mut matrix = MatZq::sample_uniform(n, n, q);
+                while matrix.get_representative_least_absolute_residue().rank() < n {
+                    matrix = MatZq::sample_uniform(n, n, q);
+                }
+                matrix
+            },
+            |matrix| matrix.inverse(),
+            BatchSize::SmallInput,
+        );
+    });
+}
+
+criterion_group!(benches, bench_solve, bench_inverse);
