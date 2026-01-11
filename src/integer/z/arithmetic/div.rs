@@ -166,7 +166,17 @@ impl Div for &Z {
 
 arithmetic_trait_borrowed_to_owned!(Div, div, Z, Z, Q);
 arithmetic_trait_mixed_borrowed_owned!(Div, div, Z, Z, Q);
-arithmetic_between_types!(Div, div, Z, Q, i64 i32 i16 i8 u64 u32 u16 u8);
+arithmetic_between_types!(Div, div, Z, Q, i64 i32 i16 i8 u64 u32 u16 u8 f32 f64);
+
+#[test]
+fn same() {
+    let a = Z::from(4) / 2;
+    let b = 4 / Z::from(2);
+
+    println!("{a}, {b}");
+
+    assert_eq!(a, b);
+}
 
 impl Div<&Q> for &Z {
     type Output = Q;
@@ -582,6 +592,35 @@ mod test_div {
 mod test_div_between_z_and_q {
     use super::Z;
     use crate::rational::Q;
+
+    /// Ensuring division between different types is available
+    #[test]
+    fn availability() {
+        let a: Z = Z::from(42);
+        let b: Q = Q::from((5, 7));
+
+        let _: Q = &a / &b;
+        let _: Q = &a / b.clone();
+        let _: Q = a.clone() / &b;
+        let _: Q = a.clone() / b;
+        let _: Q = &a / 0.5_f32;
+        let _: Q = &a / 0.5_f64;
+        let _: Q = a.clone() / 0.5_f32;
+        let _: Q = a.clone() / 0.5_f64;
+        let _: Q = 0.5_f32 / &a;
+        let _: Q = 0.5_f64 / &a;
+        let _: Q = 0.5_f32 / a.clone();
+        let _: Q = 0.5_f64 / a.clone();
+    }
+
+    /// Ensures that division is performed the right way around
+    #[test]
+    fn order_retained() {
+        let a = Z::from(4);
+
+        assert_eq!(2, &a / 2);
+        assert_eq!(Q::from((1, 2)), 2 / &a);
+    }
 
     /// Testing division for [`Z`] and [`Q`]
     #[test]

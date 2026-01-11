@@ -140,6 +140,7 @@ impl Add<&Q> for &Z {
 
 arithmetic_trait_borrowed_to_owned!(Add, add, Z, Q, Q);
 arithmetic_trait_mixed_borrowed_owned!(Add, add, Z, Q, Q);
+arithmetic_between_types!(Add, add, Z, Q, f32 f64);
 
 impl Add<&Zq> for &Z {
     type Output = Zq;
@@ -380,6 +381,26 @@ mod test_add_between_types {
 mod test_add_between_z_and_q {
     use super::Z;
     use crate::rational::Q;
+
+    /// Ensuring addition between different types is available
+    #[test]
+    fn availability() {
+        let a: Z = Z::from(42);
+        let b: Q = Q::from((5, 7));
+
+        let _: Q = &a + &b;
+        let _: Q = &a + b.clone();
+        let _: Q = a.clone() + &b;
+        let _: Q = a.clone() + b;
+        let _: Q = &a + 0.5_f32;
+        let _: Q = &a + 0.5_f64;
+        let _: Q = a.clone() + 0.5_f32;
+        let _: Q = a.clone() + 0.5_f64;
+        let _: Q = 0.5_f32 + &a;
+        let _: Q = 0.5_f64 + &a;
+        let _: Q = 0.5_f32 + a.clone();
+        let _: Q = 0.5_f64 + a.clone();
+    }
 
     /// Testing addition for [`Z`] and [`Q`]
     #[test]

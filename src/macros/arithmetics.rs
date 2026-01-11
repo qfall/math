@@ -131,7 +131,7 @@ macro_rules! arithmetic_between_types {
                 paste::paste! {
                     #[doc = "Documentation at [`" $type "::" $trait_function "`]."]
                     fn $trait_function(self, other: &$other_type) -> Self::Output {
-                    self.$trait_function($type::from(*other))
+                    self.$trait_function($output_type::from(*other))
                     }
                 }
             }
@@ -145,7 +145,7 @@ macro_rules! arithmetic_between_types {
                 paste::paste! {
                     #[doc = "Documentation at [`" $type "::" $trait_function "`]."]
                     fn $trait_function(self, other: &$type) -> Self::Output {
-                        $type::from(*self).$trait_function(other)
+                        $output_type::from(*self).$trait_function(other)
                     }
                 }
             }
