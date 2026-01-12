@@ -2,23 +2,18 @@
 # Visit https://bit.ly/cffinit to generate yours today!
 
 cff-version: 1.2.0
-title: qFALL-math
-message: 'University Paderborn,  Codes and Cryptography'
+title: qFALL
 type: software
 authors:
   - given-names: Laurens
     family-names: Porzenheim
   - given-names: Marvin
     family-names: Beckmann
-  - given-names: Paul
-    family-names: Kramer
   - given-names: Phil
     family-names: Milewski
-  - given-names: Sven
-    family-names: Moog
-  - given-names: Marcel
+  - given-names: Marcel Luca
     family-names: Schmidt
-  - given-names: Niklas
+  - given-names: Jan Niklas
     family-names: Siemer
-repository-code: 'https://github.com/qfall/math'
+repository-code: 'https://github.com/qfall'
 license: MPL-2.0
