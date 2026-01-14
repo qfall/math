@@ -49,7 +49,8 @@ impl Add for &NTTPolynomialRingZq {
         if !self.compare_base(other) {
             panic!("{}", self.call_compare_base_error(other).unwrap());
         }
-        let mod_q = &self.modulus.get_fq_ctx().ctxp[0];
+        let binding = &self.modulus.get_q_as_modulus();
+        let mod_q = binding.get_fmpz_mod_ctx_struct();
 
         let mut out = NTTPolynomialRingZq {
             poly: vec![Z::default(); self.poly.len()],
@@ -113,7 +114,8 @@ impl AddAssign<&NTTPolynomialRingZq> for NTTPolynomialRingZq {
         if !self.compare_base(other) {
             panic!("{}", self.call_compare_base_error(other).unwrap());
         }
-        let mod_q = &self.modulus.get_fq_ctx().ctxp[0];
+        let binding = &self.modulus.get_q_as_modulus();
+        let mod_q = binding.get_fmpz_mod_ctx_struct();
 
         for i in 0..self.poly.len() {
             unsafe {

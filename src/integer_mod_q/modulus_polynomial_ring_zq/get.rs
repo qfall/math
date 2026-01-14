@@ -54,16 +54,9 @@ impl GetCoefficient<Zq> for ModulusPolynomialRingZq {
     unsafe fn get_coeff_unchecked(&self, index: i64) -> Zq {
         let out_z: Z = unsafe { self.get_coeff_unchecked(index) };
 
-        let mut ctx = MaybeUninit::uninit();
-        unsafe {
-            fmpz_mod_ctx_init(ctx.as_mut_ptr(), &self.get_fq_ctx().ctxp[0].n[0]);
+        let modulus = self.modulus.modulus.clone();
 
-            let modulus = Modulus {
-                modulus: Rc::new(ctx.assume_init()),
-            };
-
-            Zq::from((out_z, modulus))
-        }
+        Zq::from((out_z, modulus))
     }
 }
 
@@ -102,12 +95,14 @@ impl GetCoefficient<Z> for ModulusPolynomialRingZq {
     unsafe fn get_coeff_unchecked(&self, index: i64) -> Z {
         let mut out = Z::default();
 
+        let modulus = self.get_q_as_modulus();
+
         unsafe {
             fmpz_mod_poly_get_coeff_fmpz(
                 &mut out.value,
-                &self.modulus.modulus[0],
+                &self.modulus.poly,
                 index,
-                &self.get_fq_ctx().ctxp[0],
+                modulus.get_fmpz_mod_ctx_struct(),
             )
         }
 
@@ -116,9 +111,8 @@ impl GetCoefficient<Z> for ModulusPolynomialRingZq {
 }
 
 impl ModulusPolynomialRingZq {
-    /// Returns the [`fq_ctx_struct`] of a modulus and is only used internally.
-    pub(crate) fn get_fq_ctx(&self) -> &fq_ctx_struct {
-        self.modulus.as_ref()
+    pub fn get_q_as_modulus(&self) -> Modulus {
+        self.modulus.modulus.clone()
     }
 
     /// Returns the context integer as a [`Z`].
@@ -137,11 +131,7 @@ impl ModulusPolynomialRingZq {
     /// assert_eq!(cmp_modulus, modulus);
     /// ```
     pub fn get_q(&self) -> Z {
-        let mut out = Z::default();
-        unsafe {
-            fmpz_init_set(&mut out.value, &self.get_fq_ctx().ctxp[0].n[0]);
-        }
-        out
+        Z::from(&self.modulus.modulus)
     }
 
     /// Returns the degree of a polynomial [`ModulusPolynomialRingZq`] as a [`i64`].
@@ -157,7 +147,7 @@ impl ModulusPolynomialRingZq {
     /// let degree = poly.get_degree(); // This would only return 3
     /// ```
     pub fn get_degree(&self) -> i64 {
-        unsafe { fq_ctx_degree(self.get_fq_ctx()) }
+        self.modulus.get_degree()
     }
 
     /// Returns a representative polynomial of the [`ModulusPolynomialRingZq`] element.

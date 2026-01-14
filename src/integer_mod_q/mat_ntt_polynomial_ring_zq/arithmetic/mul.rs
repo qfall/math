@@ -55,7 +55,8 @@ impl Mul for &MatNTTPolynomialRingZq {
             panic!("{}", self.call_compare_base_error(other).unwrap());
         }
 
-        let mod_ctx = &self.modulus.get_fq_ctx().ctxp[0];
+        let binding = self.modulus.get_q_as_modulus();
+        let mod_ctx = binding.get_fmpz_mod_ctx_struct();
 
         let mut res = Vec::with_capacity(other.matrix.len());
 

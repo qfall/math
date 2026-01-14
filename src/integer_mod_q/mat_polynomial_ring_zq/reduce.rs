@@ -14,13 +14,9 @@
 // Additionally the comparisons assume that the entries are reduced,
 // hence no reduction is performed in the check.
 
-use std::cmp::min;
-
 use super::MatPolynomialRingZq;
-use crate::traits::MatrixDimensions;
-use flint_sys::{
-    fmpz_poly::_fmpz_poly_normalise, fmpz_poly_mat::fmpz_poly_mat_entry, fq::_fq_sparse_reduce,
-};
+use crate::{traits::MatrixDimensions, utils::reduce::internal_reduce};
+use flint_sys::{fmpz_poly::_fmpz_poly_normalise, fmpz_poly_mat::fmpz_poly_mat_entry};
 
 impl MatPolynomialRingZq {
     /// This function manually applies the modulus
@@ -69,21 +65,21 @@ impl MatPolynomialRingZq {
     /// poly_ring_mat.reduce_entry(0, 0)
     /// ```
     pub(crate) fn reduce_entry(&mut self, row: i64, column: i64) {
-        // use the sparse reduce instead of the normal reduce
-        // the normal reduce switches between a dense and a sparse reduce
-        // without further assumptions on the context, the dense reduce does
-        // not work, so we always use the sparse reduce.
-        unsafe {
-            let entry = fmpz_poly_mat_entry(&self.matrix.matrix, row, column);
-            let nr_coeffs = (*entry).length;
-            // fq_reduce(entry, self.modulus.get_fq_ctx())
-
-            // this is what is called in fq_reduce, when it is a sparse modulus
-            // here it is done explicitly to avoid the dense reduce that can cause problems.
-            _fq_sparse_reduce((*entry).coeffs, nr_coeffs, self.modulus.get_fq_ctx());
-            (*entry).length = min(nr_coeffs, self.modulus.get_fq_ctx().modulus[0].length);
-            _fmpz_poly_normalise(entry);
-        };
+        let entry = unsafe { fmpz_poly_mat_entry(&self.matrix.matrix, row, column) };
+        if (unsafe { *entry }).length > 0 {
+            unsafe {
+                internal_reduce(
+                    &mut *entry,
+                    ((*entry).length - 1) as usize,
+                    &self.modulus.modulus.poly,
+                    self.modulus.get_degree() as usize,
+                    self.modulus.get_q_as_modulus().get_fmpz_mod_ctx_struct(),
+                )
+            }
+            unsafe {
+                _fmpz_poly_normalise(entry);
+            };
+        }
     }
 }
 

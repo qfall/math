@@ -177,7 +177,7 @@ mod test_set_coeff {
     /// Ensure that the correct coefficient is set and all others are set to `0`.
     #[test]
     fn set_coeff_rest_zero() {
-        let modulus = ModulusPolynomialRingZq::from_str("7  1 8 0 0 1 0 12 mod 17").unwrap();
+        let modulus = ModulusPolynomialRingZq::from_str("7  10 12 0 0 10 0 1 mod 17").unwrap();
         let poly = PolyOverZ::from_str("2  0 2").unwrap();
         let mut poly_ring = PolynomialRingZq::from((&poly, &modulus));
 

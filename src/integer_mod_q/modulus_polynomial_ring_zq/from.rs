@@ -13,11 +13,19 @@
 use super::ModulusPolynomialRingZq;
 use crate::{
     error::MathError,
-    integer::PolyOverZ,
-    integer_mod_q::{Modulus, PolyOverZq},
+    integer::{PolyOverZ, Z},
+    integer_mod_q::{Modulus, PolyOverZq, modulus},
     macros::for_others::implement_for_owned,
+    traits::GetCoefficient,
 };
-use flint_sys::fq::fq_ctx_init_modulus;
+use flint_sys::{
+    flint::flint_malloc,
+    fmpz::{fmpz, fmpz_init},
+    fmpz_mod::fmpz_mod_ctx_set_modulus,
+    fmpz_mod_poly::{fmpz_mod_poly_set, fmpz_mod_poly_struct},
+    fmpz_vec::_fmpz_vec_init,
+    fq::{fq_ctx_init_modulus, fq_ctx_struct},
+};
 use std::{ffi::CString, mem::MaybeUninit, rc::Rc, str::FromStr};
 
 impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for ModulusPolynomialRingZq {
@@ -117,18 +125,9 @@ impl From<&PolyOverZq> for ModulusPolynomialRingZq {
     /// - if the modulus polynomial is of degree smaller than `1`.
     fn from(poly: &PolyOverZq) -> Self {
         check_poly_mod(poly).unwrap();
-
-        let mut modulus = MaybeUninit::uninit();
-        let c_string = CString::new("X").unwrap();
         unsafe {
-            fq_ctx_init_modulus(
-                modulus.as_mut_ptr(),
-                &poly.poly,
-                poly.modulus.get_fmpz_mod_ctx_struct(),
-                c_string.as_ptr(),
-            );
             Self {
-                modulus: Rc::new(modulus.assume_init()),
+                modulus: Rc::new(poly.clone()),
                 ntt_basis: Rc::new(None),
             }
         }

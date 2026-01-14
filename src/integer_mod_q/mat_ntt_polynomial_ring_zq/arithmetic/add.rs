@@ -59,7 +59,7 @@ impl Add for &MatNTTPolynomialRingZq {
         if !self.compare_base(other) {
             panic!("{}", self.call_compare_base_error(other).unwrap());
         }
-        let mod_ctx = &self.modulus.get_fq_ctx().ctxp[0];
+        let mod_ctx = &self.modulus.get_q_as_modulus();
 
         let mut out = MatNTTPolynomialRingZq {
             matrix: vec![
@@ -77,7 +77,7 @@ impl Add for &MatNTTPolynomialRingZq {
                     &mut out.matrix[i].value,
                     &self.matrix[i].value,
                     &other.matrix[i].value,
-                    mod_ctx,
+                    mod_ctx.get_fmpz_mod_ctx_struct(),
                 );
             }
         }
@@ -138,7 +138,7 @@ impl AddAssign<&MatNTTPolynomialRingZq> for MatNTTPolynomialRingZq {
         if !self.compare_base(other) {
             panic!("{}", self.call_compare_base_error(other).unwrap());
         }
-        let mod_ctx = &self.modulus.get_fq_ctx().ctxp[0];
+        let mod_ctx = &self.modulus.get_q_as_modulus();
 
         for i in 0..self.matrix.len() {
             unsafe {
@@ -146,7 +146,7 @@ impl AddAssign<&MatNTTPolynomialRingZq> for MatNTTPolynomialRingZq {
                     &mut self.matrix[i].value,
                     &self.matrix[i].value,
                     &other.matrix[i].value,
-                    mod_ctx,
+                    mod_ctx.get_fmpz_mod_ctx_struct(),
                 );
             }
         }

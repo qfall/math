@@ -12,7 +12,6 @@
 //! The explicit functions contain the documentation.
 
 use super::ModulusPolynomialRingZq;
-use flint_sys::fq::fq_ctx_clear;
 use std::rc::Rc;
 
 impl Clone for ModulusPolynomialRingZq {
@@ -34,36 +33,6 @@ impl Clone for ModulusPolynomialRingZq {
         Self {
             modulus: Rc::clone(&self.modulus),
             ntt_basis: Rc::clone(&self.ntt_basis),
-        }
-    }
-}
-
-impl Drop for ModulusPolynomialRingZq {
-    /// Drops the given reference to the [`fq_ctx_struct`](flint_sys::fq::fq_ctx_struct) element
-    /// and frees the allocated memory if no references are left.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
-    /// use std::str::FromStr;
-    /// {
-    ///     let a = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
-    /// } // as a's scope ends here, it get's dropped
-    /// ```
-    ///
-    /// ```
-    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
-    /// use std::str::FromStr;
-    ///
-    /// let a = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
-    /// drop(a); // explicitly drops a's value
-    /// ```
-    fn drop(&mut self) {
-        if Rc::strong_count(&self.modulus) <= 1 {
-            let mut a = *self.modulus;
-            unsafe {
-                fq_ctx_clear(&mut a);
-            }
         }
     }
 }
@@ -91,37 +60,13 @@ mod test_clone {
         assert_eq!(Rc::strong_count(&b.modulus), 3);
         assert_eq!(Rc::strong_count(&c.modulus), 3);
     }
-
-    /// Check if clone points to same point in memory
-    #[test]
-    fn same_reference() {
-        let a = ModulusPolynomialRingZq::from_str(&format!(
-            "3  {} 0 -{} mod {}",
-            u64::MAX,
-            u64::MAX,
-            u64::MAX - 58 // closest prime number smaller than u64, but larger than 2^62
-        ))
-        .unwrap();
-
-        let b = a.clone();
-
-        assert_eq!(
-            unsafe { *a.get_fq_ctx().a }.0,
-            unsafe { *b.get_fq_ctx().a }.0,
-        );
-        assert_eq!(a.get_fq_ctx().ctxp[0].n[0].0, b.get_fq_ctx().ctxp[0].n[0].0,);
-        assert_eq!(
-            unsafe { *a.get_fq_ctx().modulus[0].coeffs.offset(0) }.0,
-            unsafe { *b.get_fq_ctx().modulus[0].coeffs.offset(0) }.0,
-        );
-    }
 }
 
 /// Test that the [`Drop`] trait is correctly implemented.
 #[cfg(test)]
 mod test_drop {
     use super::ModulusPolynomialRingZq;
-    use std::{collections::HashSet, rc::Rc, str::FromStr};
+    use std::{rc::Rc, str::FromStr};
 
     /// Check whether references are decreased when dropping instances
     #[test]
@@ -149,31 +94,5 @@ mod test_drop {
 
         drop(a);
         assert_eq!(Rc::strong_count(&b.modulus), 2);
-    }
-
-    /// Creates and drops a [`ModulusPolynomialRingZq`] object, and outputs
-    /// the storage point in memory of that [`ModulusPolynomialRingZq`]
-    fn create_and_drop_modulus() -> (i64, i64, i64) {
-        let a = ModulusPolynomialRingZq::from_str(
-            "3  184467440739018 0 -184467440739018 mod 184467440739019",
-        )
-        .unwrap();
-        (
-            unsafe { *a.get_fq_ctx().a }.0,
-            a.get_fq_ctx().ctxp[0].n[0].0,
-            unsafe { *a.get_fq_ctx().modulus[0].coeffs.offset(0) }.0,
-        )
-    }
-
-    /// Check whether freed memory is reused afterwards
-    #[test]
-    fn free_memory() {
-        let mut storage_addresses = HashSet::new();
-
-        for _i in 0..5 {
-            storage_addresses.insert(create_and_drop_modulus());
-        }
-
-        assert!(storage_addresses.len() < 5);
     }
 }

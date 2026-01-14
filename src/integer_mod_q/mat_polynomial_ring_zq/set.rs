@@ -420,8 +420,9 @@ mod test_setter {
     fn set_entry_reduced() {
         let id_mat = MatPolyOverZ::identity(2, 2);
         let modulus = PolyOverZq::from_str("5  1 0 0 0 1 mod 17").unwrap();
+        let poly_mod = ModulusPolynomialRingZq::from(modulus);
 
-        let mut poly_mat = MatPolynomialRingZq::from((id_mat, modulus));
+        let mut poly_mat = MatPolynomialRingZq::from((id_mat, &poly_mod));
 
         poly_mat
             .set_entry(0, 0, PolyOverZ::from_str("5  -1 0 0 0 16").unwrap())

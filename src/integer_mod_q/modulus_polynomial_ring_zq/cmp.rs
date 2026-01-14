@@ -11,7 +11,9 @@
 
 use super::ModulusPolynomialRingZq;
 use crate::{
-    integer::Z, integer_mod_q::PolyOverZq, macros::for_others::implement_trait_reverse,
+    integer::Z,
+    integer_mod_q::{PolyOverZq, modulus},
+    macros::for_others::implement_trait_reverse,
     traits::GetCoefficient,
 };
 use flint_sys::{fmpz::fmpz_equal, fmpz_mod_poly::fmpz_mod_poly_equal};
@@ -46,19 +48,7 @@ impl PartialEq for ModulusPolynomialRingZq {
     /// # assert!(!compared);
     /// ```
     fn eq(&self, other: &Self) -> bool {
-        unsafe {
-            // compares the modulus `q`
-            1 == fmpz_equal(
-                &self.get_fq_ctx().ctxp[0].n[0],
-                &other.get_fq_ctx().ctxp[0].n[0],
-            ) &&
-            // compares the polynomial under `q`
-            1 == fmpz_mod_poly_equal(
-                    &self.get_fq_ctx().modulus[0],
-                    &other.get_fq_ctx().modulus[0],
-                    &self.get_fq_ctx().ctxp[0],
-                )
-        }
+        self.modulus == other.modulus
     }
 }
 

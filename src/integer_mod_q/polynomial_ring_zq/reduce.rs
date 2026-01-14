@@ -16,8 +16,10 @@
 
 use std::cmp::min;
 
+use crate::utils::reduce::internal_reduce;
+
 use super::PolynomialRingZq;
-use flint_sys::{fmpz_poly::_fmpz_poly_normalise, fq::_fq_sparse_reduce};
+use flint_sys::fmpz_poly::_fmpz_poly_normalise;
 
 impl PolynomialRingZq {
     /// This function manually applies the modulus
@@ -39,19 +41,23 @@ impl PolynomialRingZq {
     /// poly_ring.reduce()
     /// ```
     pub(crate) fn reduce(&mut self) {
-        // use the sparse reduce instead of the normal reduce
-        // the normal reduce switches between a dense and a sparse reduce
-        // without further assumptions on the context, the dense reduce does
-        // not work, so we always use the sparse reduce.
-        // unsafe { fq_reduce(&mut self.poly.poly, self.modulus.get_fq_ctx()) }
-        unsafe {
-            let nr_coeffs = self.poly.poly.length;
-            // this is what is called in fq_reduce, when it is a sparse modulus
-            // here it is done explicitly to avoid the dense reduce that can cause problems.
-            _fq_sparse_reduce(self.poly.poly.coeffs, nr_coeffs, self.modulus.get_fq_ctx());
-            self.poly.poly.length = min(nr_coeffs, self.modulus.get_fq_ctx().modulus[0].length);
-            _fmpz_poly_normalise(&mut self.poly.poly);
-        };
+        let degree = self.get_degree();
+        if degree >= 0 {
+            unsafe {
+                internal_reduce(
+                    &mut self.poly.poly,
+                    degree as usize,
+                    &self.modulus.modulus.poly,
+                    self.modulus.get_degree() as usize,
+                    self.modulus.get_q_as_modulus().get_fmpz_mod_ctx_struct(),
+                )
+            };
+            unsafe {
+                // let nr_coeffs = self.poly.poly.length;
+                // self.poly.poly.length = min(nr_coeffs, self.modulus.get_degree());
+                _fmpz_poly_normalise(&mut self.poly.poly);
+            };
+        }
     }
 }
 
