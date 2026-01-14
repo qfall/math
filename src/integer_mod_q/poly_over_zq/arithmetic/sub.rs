@@ -19,7 +19,7 @@ use crate::{
     },
     traits::CompareBase,
 };
-use flint_sys::{fmpz_mod_poly::fmpz_mod_poly_sub, fq::fq_sub};
+use flint_sys::fmpz_mod_poly::fmpz_mod_poly_sub;
 use std::{
     ops::{Sub, SubAssign},
     str::FromStr,
@@ -180,21 +180,8 @@ impl Sub<&PolynomialRingZq> for &PolyOverZq {
     /// # Panics ...
     /// - if the moduli mismatch.
     fn sub(self, other: &PolynomialRingZq) -> Self::Output {
-        assert_eq!(
-            self.modulus,
-            other.modulus.get_q(),
-            "Tried to subtract polynomials with different moduli."
-        );
-
-        let mut out = PolynomialRingZq::from((&PolyOverZ::default(), &other.modulus));
-        unsafe {
-            fq_sub(
-                &mut out.poly.poly,
-                &self.get_representative_least_nonnegative_residue().poly,
-                &other.poly.poly,
-                other.modulus.get_fq_ctx(),
-            );
-        }
+        let mut out = PolynomialRingZq::from((self, &other.modulus));
+        out -= other;
         out
     }
 }

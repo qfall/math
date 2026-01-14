@@ -14,7 +14,7 @@ use crate::{
     integer::PolyOverZ,
     traits::{CompareBase, MatrixDimensions, MatrixGetEntry, Tensor},
 };
-use flint_sys::{fmpz_poly_mat::fmpz_poly_mat_entry, fq::fq_mul};
+use flint_sys::{fmpz_poly::fmpz_poly_mul, fmpz_poly_mat::fmpz_poly_mat_entry};
 
 impl Tensor for MatPolynomialRingZq {
     /// Computes the tensor product of `self` with `other`.
@@ -146,7 +146,7 @@ unsafe fn set_matrix_window_mul(
     for i_other in 0..rows_other {
         for j_other in 0..columns_other {
             unsafe {
-                fq_mul(
+                fmpz_poly_mul(
                     fmpz_poly_mat_entry(
                         &out.matrix.matrix,
                         row_left * rows_other + i_other,
@@ -154,9 +154,12 @@ unsafe fn set_matrix_window_mul(
                     ),
                     &scalar.poly,
                     fmpz_poly_mat_entry(&matrix.matrix.matrix, i_other, j_other),
-                    matrix.modulus.get_fq_ctx(),
                 )
             }
+            out.reduce_entry(
+                row_left * rows_other + i_other,
+                column_upper * columns_other + j_other,
+            );
         }
     }
 }

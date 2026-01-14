@@ -14,9 +14,13 @@
 // Additionally the comparisons assume that the entries are reduced,
 // hence no reduction is performed in the check.
 
+use std::cmp::min;
+
 use super::MatPolynomialRingZq;
 use crate::traits::MatrixDimensions;
-use flint_sys::{fmpz_poly_mat::fmpz_poly_mat_entry, fq::fq_reduce};
+use flint_sys::{
+    fmpz_poly::_fmpz_poly_normalise, fmpz_poly_mat::fmpz_poly_mat_entry, fq::_fq_sparse_reduce,
+};
 
 impl MatPolynomialRingZq {
     /// This function manually applies the modulus
@@ -40,12 +44,46 @@ impl MatPolynomialRingZq {
     pub(crate) fn reduce(&mut self) {
         for row_num in 0..self.matrix.get_num_rows() {
             for column_num in 0..self.matrix.get_num_columns() {
-                unsafe {
-                    let entry = fmpz_poly_mat_entry(&self.matrix.matrix, row_num, column_num);
-                    fq_reduce(entry, self.modulus.get_fq_ctx())
-                };
+                self.reduce_entry(row_num, column_num);
             }
         }
+    }
+
+    /// This function manually applies the modulus
+    /// [`ModulusPolynomialRingZq`](crate::integer_mod_q::ModulusPolynomialRingZq)
+    /// to the entry (`row`, `column`) of the given polynomial matrix [`MatPolyOverZ`](crate::integer::MatPolyOverZ)
+    /// in the [`MatPolynomialRingZq`]. The function does not check if `row` and `column`
+    /// is within the matrix dimensions.
+    ///
+    /// # Examples
+    /// ```compile_fail
+    /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
+    /// let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
+    ///
+    /// poly_ring_mat.reduce_entry(0, 0)
+    /// ```
+    pub(crate) fn reduce_entry(&mut self, row: i64, column: i64) {
+        // use the sparse reduce instead of the normal reduce
+        // the normal reduce switches between a dense and a sparse reduce
+        // without further assumptions on the context, the dense reduce does
+        // not work, so we always use the sparse reduce.
+        unsafe {
+            let entry = fmpz_poly_mat_entry(&self.matrix.matrix, row, column);
+            let nr_coeffs = (*entry).length;
+            // fq_reduce(entry, self.modulus.get_fq_ctx())
+
+            // this is what is called in fq_reduce, when it is a sparse modulus
+            // here it is done explicitly to avoid the dense reduce that can cause problems.
+            _fq_sparse_reduce((*entry).coeffs, nr_coeffs, self.modulus.get_fq_ctx());
+            (*entry).length = min(nr_coeffs, self.modulus.get_fq_ctx().modulus[0].length);
+            _fmpz_poly_normalise(entry);
+        };
     }
 }
 

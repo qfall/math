@@ -12,7 +12,7 @@ use crate::error::MathError;
 use crate::integer::PolyOverZ;
 use crate::integer_mod_q::{MatPolynomialRingZq, PolynomialRingZq};
 use crate::traits::MatrixDimensions;
-use flint_sys::fq::{fq_add, fq_mul};
+use flint_sys::fmpz_poly::fmpz_poly_mul;
 
 impl MatPolynomialRingZq {
     /// Returns the dot product of two vectors of type [`MatPolynomialRingZq`].
@@ -77,20 +77,10 @@ impl MatPolynomialRingZq {
         for i in 0..self_entries.len() {
             // sets result = result + self.entry[i] * other.entry[i] without cloned PolyOverZ element
             unsafe {
-                fq_mul(
-                    &mut temp.poly,
-                    &self_entries[i],
-                    &other_entries[i],
-                    self.modulus.get_fq_ctx(),
-                );
-
-                fq_add(
-                    &mut result.poly.poly,
-                    &result.poly.poly,
-                    &temp.poly,
-                    self.modulus.get_fq_ctx(),
-                )
+                fmpz_poly_mul(&mut temp.poly, &self_entries[i], &other_entries[i]);
             }
+            // reduce is applied in here
+            result += &temp;
         }
 
         Ok(result)

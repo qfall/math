@@ -19,7 +19,6 @@ use crate::{
     },
     traits::CompareBase,
 };
-use flint_sys::fq::fq_mul;
 use std::ops::{Mul, MulAssign};
 
 impl MulAssign<&PolynomialRingZq> for PolynomialRingZq {
@@ -61,14 +60,8 @@ impl MulAssign<&PolynomialRingZq> for PolynomialRingZq {
             panic!("{}", self.call_compare_base_error(other).unwrap());
         }
 
-        unsafe {
-            fq_mul(
-                &mut self.poly.poly,
-                &self.poly.poly,
-                &other.poly.poly,
-                self.modulus.get_fq_ctx(),
-            );
-        };
+        self.poly *= &other.poly;
+        self.reduce();
     }
 }
 impl<T> MulAssign<T> for PolynomialRingZq
@@ -91,17 +84,10 @@ impl MulAssign<&PolyOverZq> for PolynomialRingZq {
         if !self.compare_base(other) {
             panic!("{}", self.call_compare_base_error(other).unwrap())
         }
-        // get a fmpz_poly_struct from a fmpz_mod_poly_struct
         let other = other.get_representative_least_nonnegative_residue();
 
-        unsafe {
-            fq_mul(
-                &mut self.poly.poly,
-                &self.poly.poly,
-                &other.poly,
-                self.modulus.get_fq_ctx(),
-            );
-        };
+        self.poly *= &other;
+        self.reduce();
     }
 }
 
@@ -174,15 +160,8 @@ impl Mul<&PolyOverZ> for &PolynomialRingZq {
     /// let c: PolynomialRingZq = &a * &b;
     /// ```
     fn mul(self, other: &PolyOverZ) -> Self::Output {
-        let mut out = PolynomialRingZq::from((&PolyOverZ::default(), &self.modulus));
-        unsafe {
-            fq_mul(
-                &mut out.poly.poly,
-                &self.poly.poly,
-                &other.poly,
-                self.modulus.get_fq_ctx(),
-            );
-        }
+        let mut out = self.clone();
+        out *= other;
         out
     }
 }
@@ -222,19 +201,8 @@ impl Mul<&PolyOverZq> for &PolynomialRingZq {
     /// # Panics ...
     /// - if the moduli mismatch.
     fn mul(self, other: &PolyOverZq) -> Self::Output {
-        if !self.compare_base(other) {
-            panic!("{}", self.call_compare_base_error(other).unwrap())
-        }
-
-        let mut out = PolynomialRingZq::from((&PolyOverZ::default(), &self.modulus));
-        unsafe {
-            fq_mul(
-                &mut out.poly.poly,
-                &self.poly.poly,
-                &other.get_representative_least_nonnegative_residue().poly,
-                self.modulus.get_fq_ctx(),
-            );
-        }
+        let mut out = self.clone();
+        out *= other;
         out
     }
 }
@@ -277,15 +245,11 @@ impl PolynomialRingZq {
         if !self.compare_base(other) {
             return Err(self.call_compare_base_error(other).unwrap());
         }
-        let mut out = PolynomialRingZq::from((&PolyOverZ::default(), &self.modulus));
-        unsafe {
-            fq_mul(
-                &mut out.poly.poly,
-                &self.poly.poly,
-                &other.poly.poly,
-                self.modulus.get_fq_ctx(),
-            );
-        }
+
+        let mut out = self.clone();
+
+        out.poly *= &other.get_representative_least_nonnegative_residue();
+        out.reduce();
         Ok(out)
     }
 }

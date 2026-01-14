@@ -19,7 +19,6 @@ use crate::{
 };
 use flint_sys::{
     fmpq_poly::fmpq_poly_sub, fmpz_mod_poly::fmpz_mod_poly_sub, fmpz_poly::fmpz_poly_sub,
-    fq::fq_sub,
 };
 use std::ops::{Sub, SubAssign};
 
@@ -148,15 +147,8 @@ impl Sub<&PolynomialRingZq> for &PolyOverZ {
     /// let c: PolynomialRingZq = &b - &a;
     /// ```
     fn sub(self, other: &PolynomialRingZq) -> Self::Output {
-        let mut out = PolynomialRingZq::from((&PolyOverZ::default(), &other.modulus));
-        unsafe {
-            fq_sub(
-                &mut out.poly.poly,
-                &self.poly,
-                &other.poly.poly,
-                other.modulus.get_fq_ctx(),
-            );
-        }
+        let mut out = PolynomialRingZq::from((self, &other.modulus));
+        out -= other;
         out
     }
 }

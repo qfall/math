@@ -14,8 +14,10 @@
 // Additionally the comparisons assume that the entries are reduced,
 // hence no reduction is performed in the check.
 
+use std::cmp::min;
+
 use super::PolynomialRingZq;
-use flint_sys::fq::fq_reduce;
+use flint_sys::{fmpz_poly::_fmpz_poly_normalise, fq::_fq_sparse_reduce};
 
 impl PolynomialRingZq {
     /// This function manually applies the modulus
@@ -37,7 +39,19 @@ impl PolynomialRingZq {
     /// poly_ring.reduce()
     /// ```
     pub(crate) fn reduce(&mut self) {
-        unsafe { fq_reduce(&mut self.poly.poly, self.modulus.get_fq_ctx()) }
+        // use the sparse reduce instead of the normal reduce
+        // the normal reduce switches between a dense and a sparse reduce
+        // without further assumptions on the context, the dense reduce does
+        // not work, so we always use the sparse reduce.
+        // unsafe { fq_reduce(&mut self.poly.poly, self.modulus.get_fq_ctx()) }
+        unsafe {
+            let nr_coeffs = self.poly.poly.length;
+            // this is what is called in fq_reduce, when it is a sparse modulus
+            // here it is done explicitly to avoid the dense reduce that can cause problems.
+            _fq_sparse_reduce(self.poly.poly.coeffs, nr_coeffs, self.modulus.get_fq_ctx());
+            self.poly.poly.length = min(nr_coeffs, self.modulus.get_fq_ctx().modulus[0].length);
+            _fmpz_poly_normalise(&mut self.poly.poly);
+        };
     }
 }
 
