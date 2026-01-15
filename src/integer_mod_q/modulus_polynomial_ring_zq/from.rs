@@ -22,6 +22,7 @@ use std::{rc::Rc, str::FromStr};
 
 impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for ModulusPolynomialRingZq {
     /// Creates a [`ModulusPolynomialRingZq`] from a [`PolyOverZ`] and a value that implements [`Into<Modulus>`].
+    /// It requires that the leading coefficient is `1`.
     ///
     /// Parameters:
     /// - `poly`: the coefficients of the polynomial.
@@ -58,6 +59,7 @@ impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for ModulusPolynomialRingZq {
 
 impl<Mod: Into<Modulus>> From<(PolyOverZ, Mod)> for ModulusPolynomialRingZq {
     /// Creates a [`ModulusPolynomialRingZq`] from a [`PolyOverZ`] and a value that implements [`Into<Modulus>`].
+    /// It requires that the leading coefficient is `1`.
     ///
     /// Parameters:
     /// - `poly`: the coefficients of the polynomial.
@@ -149,6 +151,7 @@ impl FromStr for ModulusPolynomialRingZq {
     /// Creates a Modulus object of type [`ModulusPolynomialRingZq`]
     /// for [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq). This first
     /// converts the provided string into a [`PolyOverZq`] and then into the Modulus object.
+    /// It requires that the leading coefficient is `1`.
     ///
     /// **Warning**: If the input string starts with a correctly formatted
     /// [`PolyOverZ`](crate::integer::PolyOverZ) object, the rest of the string
