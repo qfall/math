@@ -293,7 +293,7 @@ mod test_sub_assign {
         let poly_2 = PolyOverZ::from_str(&format!("4  -{} 0 1 -{}", i64::MAX, i64::MAX)).unwrap();
         let b = PolynomialRingZq::from((&poly_2, &modulus));
         let cmp = PolynomialRingZq::from((
-            &PolyOverZ::from_str(&"1  9223372036854775923".to_string()).unwrap(),
+            &PolyOverZ::from_str("1  9223372036854775923").unwrap(),
             &modulus,
         ));
 
