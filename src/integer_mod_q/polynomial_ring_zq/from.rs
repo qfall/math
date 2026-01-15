@@ -239,7 +239,7 @@ impl FromStr for PolynomialRingZq {
     /// use qfall_math::integer_mod_q::PolynomialRingZq;
     /// use std::str::FromStr;
     ///
-    /// let poly = PolynomialRingZq::from_str("4  -1 0 1 1 / 4  0 1 -2 3 mod 42").unwrap();
+    /// let poly = PolynomialRingZq::from_str("4  -1 0 1 1 / 4  0 1 -2 1 mod 42").unwrap();
     /// ```
     /// # Errors and Failures
     /// - Returns a [`MathError`] of type
@@ -504,20 +504,20 @@ mod test_from_str {
     /// error
     #[test]
     fn modulus_zero_throws_error() {
-        assert!(PolynomialRingZq::from_str("4  -1 0 1 1 / 4  0 1 -2 3 mod 0").is_err());
+        assert!(PolynomialRingZq::from_str("4  -1 0 1 1 / 4  0 1 -2 1 mod 0").is_err());
     }
 
     /// tests whether a false string (negative modulus) returns an error
     #[test]
     fn false_sign() {
-        assert!(PolynomialRingZq::from_str("4  0 1 -2 3 mod -42").is_err());
+        assert!(PolynomialRingZq::from_str("4  0 1 -2 1 mod -42").is_err());
     }
 
     /// tests whether a falsely formatted string (wrong whitespaces) returns an
     /// error
     #[test]
     fn whitespaces_in_modulus() {
-        assert!(PolynomialRingZq::from_str("4  -1 0 1 1 / 4  0 1 -2 3 mod 4 2").is_err());
+        assert!(PolynomialRingZq::from_str("4  -1 0 1 1 / 4  0 1 -2 1 mod 4 2").is_err());
     }
 
     /// tests whether a falsely formatted string (wrong symbols) returns an error
@@ -532,34 +532,34 @@ mod test_from_str {
     /// an error
     #[test]
     fn false_format() {
-        assert!(PolynomialRingZq::from_str("4  -1 0 1 1 / 4 0 1 -2 3 mod 42").is_err());
-        assert!(PolynomialRingZq::from_str("4 -1 0 1 1 / 4  0 1 -2 3 mod 42").is_err());
+        assert!(PolynomialRingZq::from_str("4  -1 0 1 1 / 4 0 1 -2 1 mod 42").is_err());
+        assert!(PolynomialRingZq::from_str("4 -1 0 1 1 / 4  0 1 -2 1 mod 42").is_err());
     }
 
     /// tests whether a falsely formatted string (wrong number of total
     /// coefficients) returns an error
     #[test]
     fn false_number_of_coefficient() {
-        assert!(PolynomialRingZq::from_str("4  -1 0 1 1 / 5  0 1 -2 3 mod 42").is_err());
-        assert!(PolynomialRingZq::from_str("5  -1 0 1 1 / 4  0 1 -2 3 mod 42").is_err());
+        assert!(PolynomialRingZq::from_str("4  -1 0 1 1 / 5  0 1 -2 1 mod 42").is_err());
+        assert!(PolynomialRingZq::from_str("5  -1 0 1 1 / 4  0 1 -2 1 mod 42").is_err());
     }
 
     /// tests whether a falsely formatted string (too many whitespaces) returns
     /// an error
     #[test]
     fn too_many_whitespaces() {
-        assert!(PolynomialRingZq::from_str("4  -1  0  1  1 / 4  0  1  -2  3 mod 42").is_err());
+        assert!(PolynomialRingZq::from_str("4  -1  0  1  1 / 4  0  1  -2  1 mod 42").is_err());
     }
 
     /// Ensure that the input works with strings that have to be trimmed
     #[test]
     fn trim_input() {
         let poly = PolynomialRingZq::from_str(
-            "        4  -1 0 1 1     /            4  1 2 3 -4                  mod              17                     ",
+            "        4  -1 0 1 1     /            4  1 2 3 1                  mod              17                     ",
         );
         assert!(poly.is_ok());
         assert_eq!(
-            PolynomialRingZq::from_str("4  -1 0 1 1 / 4  1 2 3 -4 mod 17").unwrap(),
+            PolynomialRingZq::from_str("4  -1 0 1 1 / 4  1 2 3 1 mod 17").unwrap(),
             poly.unwrap()
         );
     }
@@ -567,7 +567,7 @@ mod test_from_str {
     /// Ensure that a string resulting from to_string, can be used in from_str
     #[test]
     fn roundtrip() {
-        let poly = PolynomialRingZq::from_str("2  1 1 / 4  1 1 -2 3 mod 42").unwrap();
+        let poly = PolynomialRingZq::from_str("2  1 1 / 4  1 1 -2 1 mod 42").unwrap();
         let poly2 = PolynomialRingZq::from_str(&poly.to_string()).unwrap();
         assert_eq!(poly, poly2);
     }

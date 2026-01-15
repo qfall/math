@@ -14,11 +14,8 @@
 // Additionally the comparisons assume that the entries are reduced,
 // hence no reduction is performed in the check.
 
-use std::cmp::min;
-
-use crate::utils::reduce::internal_reduce;
-
 use super::PolynomialRingZq;
+use crate::utils::reduce::internal_reduce;
 use flint_sys::fmpz_poly::_fmpz_poly_normalise;
 
 impl PolynomialRingZq {
@@ -50,6 +47,7 @@ impl PolynomialRingZq {
                     &self.modulus.modulus.poly,
                     self.modulus.get_degree() as usize,
                     self.modulus.get_q_as_modulus().get_fmpz_mod_ctx_struct(),
+                    &self.modulus.non_zero,
                 )
             };
             unsafe {

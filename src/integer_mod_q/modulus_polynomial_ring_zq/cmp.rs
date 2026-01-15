@@ -11,12 +11,9 @@
 
 use super::ModulusPolynomialRingZq;
 use crate::{
-    integer::Z,
-    integer_mod_q::{PolyOverZq, modulus},
-    macros::for_others::implement_trait_reverse,
+    integer::Z, integer_mod_q::PolyOverZq, macros::for_others::implement_trait_reverse,
     traits::GetCoefficient,
 };
-use flint_sys::{fmpz::fmpz_equal, fmpz_mod_poly::fmpz_mod_poly_equal};
 
 impl PartialEq for ModulusPolynomialRingZq {
     /// Checks if two modulus objects of type over [`ModulusPolynomialRingZq`] are equal.
@@ -69,8 +66,8 @@ impl PartialEq<PolyOverZq> for ModulusPolynomialRingZq {
     /// ```
     /// use qfall_math::integer_mod_q::{PolyOverZq, ModulusPolynomialRingZq};
     /// use std::str::FromStr;
-    /// let a: ModulusPolynomialRingZq = ModulusPolynomialRingZq::from_str("3  1 2 3 mod 17").unwrap();
-    /// let b: PolyOverZq = PolyOverZq::from_str("3  1 2 3 mod 17").unwrap();
+    /// let a: ModulusPolynomialRingZq = ModulusPolynomialRingZq::from_str("3  1 2 1 mod 17").unwrap();
+    /// let b: PolyOverZq = PolyOverZq::from_str("3  1 2 1 mod 17").unwrap();
     ///
     /// // These are all equivalent and return true.
     /// let compared: bool = (a == b);
@@ -135,8 +132,8 @@ mod test_partial_eq {
     #[test]
     #[allow(clippy::op_ref)]
     fn equal_call_methods() {
-        let one_1 = ModulusPolynomialRingZq::from_str("2  42 -1 mod 17").unwrap();
-        let one_2 = ModulusPolynomialRingZq::from_str("2  42 -1 mod 17").unwrap();
+        let one_1 = ModulusPolynomialRingZq::from_str("2  42 1 mod 17").unwrap();
+        let one_2 = ModulusPolynomialRingZq::from_str("2  42 1 mod 17").unwrap();
 
         assert!(one_1 == one_2);
         assert!(&one_1 == &one_2);
@@ -150,7 +147,7 @@ mod test_partial_eq {
     #[test]
     #[allow(clippy::op_ref)]
     fn not_equal_call_methods_different_num_coeffs() {
-        let one = ModulusPolynomialRingZq::from_str("2  42 -1 mod 17").unwrap();
+        let one = ModulusPolynomialRingZq::from_str("2  42 1 mod 17").unwrap();
         let two = ModulusPolynomialRingZq::from_str("3  42 -1 1 mod 17").unwrap();
 
         assert!(one != two);
@@ -160,40 +157,23 @@ mod test_partial_eq {
         assert_ne!(one, two);
     }
 
-    /// Test equal with small positive and negative constant polynomials.
+    /// Test equal with small positive constant polynomials.
     #[test]
     fn equal_small() {
-        let small_1 = ModulusPolynomialRingZq::from_str("2  1 10 mod 17").unwrap();
-        let small_2 = ModulusPolynomialRingZq::from_str("2  1 10 mod 17").unwrap();
-        let negative = ModulusPolynomialRingZq::from_str("2  1 -2 mod 17").unwrap();
+        let small_1 = ModulusPolynomialRingZq::from_str("2  1 1 mod 17").unwrap();
+        let small_2 = ModulusPolynomialRingZq::from_str("2  1 1 mod 17").unwrap();
 
         assert!(small_1 == small_2);
         assert!(small_2 == small_1);
         assert!(small_1 == small_1);
-        assert!(!(small_1 == negative));
-        assert!(!(negative == small_1));
-    }
-
-    /// Test not equal with small positive and negative constant polynomials.
-    #[test]
-    fn not_equal_small() {
-        let small_1 = ModulusPolynomialRingZq::from_str("2  1 10 mod 17").unwrap();
-        let small_2 = ModulusPolynomialRingZq::from_str("2  1 10 mod 17").unwrap();
-        let negative = ModulusPolynomialRingZq::from_str("2  1 -1 mod 17").unwrap();
-
-        assert!(!(small_1 != small_2));
-        assert!(!(small_2 != small_1));
-        assert!(!(small_1 != small_1));
-        assert!(small_1 != negative);
-        assert!(negative != small_1);
     }
 
     /// Test equal with a large [`ModulusPolynomialRingZq`]
     /// (uses FLINT's pointer representation)
     #[test]
     fn equal_large() {
-        let max_str = format!("2  1 {} mod {LARGE_PRIME}", u64::MAX);
-        let min_str = format!("2  1 {} mod {LARGE_PRIME}", i64::MIN);
+        let max_str = format!("2  {} 1 mod {LARGE_PRIME}", u64::MAX);
+        let min_str = format!("2  {} 1 mod {LARGE_PRIME}", i64::MIN);
 
         let max_1 = ModulusPolynomialRingZq::from_str(&max_str).unwrap();
         let max_2 = ModulusPolynomialRingZq::from_str(&max_str).unwrap();
@@ -211,8 +191,8 @@ mod test_partial_eq {
     /// (uses FLINT's pointer representation)
     #[test]
     fn not_equal_large() {
-        let max_str = format!("2  1 {} mod {LARGE_PRIME}", u64::MAX);
-        let min_str = format!("2  1 {} mod {LARGE_PRIME}", i64::MIN);
+        let max_str = format!("2  {} 1 mod {LARGE_PRIME}", u64::MAX);
+        let min_str = format!("2  {} 1 mod {LARGE_PRIME}", i64::MIN);
 
         let max_1 = ModulusPolynomialRingZq::from_str(&max_str).unwrap();
         let max_2 = ModulusPolynomialRingZq::from_str(&max_str).unwrap();
@@ -230,14 +210,14 @@ mod test_partial_eq {
     /// and small polynomial with a small [`ModulusPolynomialRingZq`] (no pointer representation).
     #[test]
     fn equal_large_small() {
-        let max_str = format!("2  1 {} mod {LARGE_PRIME}", u64::MAX);
-        let min_str = format!("2  1 {} mod {LARGE_PRIME}", i64::MIN);
+        let max_str = format!("2  {} 1 mod {LARGE_PRIME}", u64::MAX);
+        let min_str = format!("2  {} 1 mod {LARGE_PRIME}", i64::MIN);
 
         let max = ModulusPolynomialRingZq::from_str(&max_str).unwrap();
         let min = ModulusPolynomialRingZq::from_str(&min_str).unwrap();
 
-        let small_positive = ModulusPolynomialRingZq::from_str("2  1 2 mod 17").unwrap();
-        let small_negative = ModulusPolynomialRingZq::from_str("2  1 -2 mod 17").unwrap();
+        let small_positive = ModulusPolynomialRingZq::from_str("2  1 1 mod 17").unwrap();
+        let small_negative = ModulusPolynomialRingZq::from_str("2  -1 1 mod 17").unwrap();
 
         assert!(!(max == small_negative));
         assert!(!(small_negative == max));
@@ -254,14 +234,14 @@ mod test_partial_eq {
     /// and small [`ModulusPolynomialRingZq`] (no pointer representation).
     #[test]
     fn not_equal_large_small() {
-        let max_str = format!("2  1 {} mod {LARGE_PRIME}", u64::MAX);
-        let min_str = format!("2  1 {} mod {LARGE_PRIME}", i64::MIN);
+        let max_str = format!("2  {} 1 mod {LARGE_PRIME}", u64::MAX);
+        let min_str = format!("2  {} 1 mod {LARGE_PRIME}", i64::MIN);
 
         let max = ModulusPolynomialRingZq::from_str(&max_str).unwrap();
         let min = ModulusPolynomialRingZq::from_str(&min_str).unwrap();
 
-        let small_positive = ModulusPolynomialRingZq::from_str("2  1 2 mod 17").unwrap();
-        let small_negative = ModulusPolynomialRingZq::from_str("2  1 -2 mod 17").unwrap();
+        let small_positive = ModulusPolynomialRingZq::from_str("2  1 1 mod 17").unwrap();
+        let small_negative = ModulusPolynomialRingZq::from_str("2  -1 1 mod 17").unwrap();
 
         assert!(max != small_negative);
         assert!(small_negative != max);
@@ -277,8 +257,8 @@ mod test_partial_eq {
     /// Test not equal for the same polynomial but with a different modulus
     #[test]
     fn different_modulus() {
-        let first_str = "2  1 2 mod 17";
-        let second_str = "2  1 2 mod 19";
+        let first_str = "2  1 1 mod 17";
+        let second_str = "2  1 1 mod 19";
 
         let first = ModulusPolynomialRingZq::from_str(first_str).unwrap();
         let second = ModulusPolynomialRingZq::from_str(second_str).unwrap();
@@ -297,8 +277,8 @@ mod test_partial_eq_q_other {
     #[test]
     #[allow(clippy::op_ref)]
     fn availability() {
-        let q = ModulusPolynomialRingZq::from_str("4  1 2 3 4 mod 17").unwrap();
-        let z = PolyOverZq::from_str("4  1 2 3 4 mod 17").unwrap();
+        let q = ModulusPolynomialRingZq::from_str("4  1 2 3 1 mod 17").unwrap();
+        let z = PolyOverZq::from_str("4  1 2 3 1 mod 17").unwrap();
 
         assert!(q == z);
         assert!(z == q);
@@ -309,10 +289,9 @@ mod test_partial_eq_q_other {
     /// Ensure that equal values are compared correctly.
     #[test]
     fn equal() {
-        let q = ModulusPolynomialRingZq::from_str(&format!("3  1 2 {} mod {}", i64::MAX, u64::MAX))
-            .unwrap();
-        let z_1 = PolyOverZq::from_str(&format!("3  1 2 {} mod {}", i64::MAX, u64::MAX)).unwrap();
-        let z_2 = PolyOverZq::from_str(&format!("4  1 2 {} 0 mod {}", i64::MAX, u64::MAX)).unwrap();
+        let q = ModulusPolynomialRingZq::from_str(&format!("3  1 2 1 mod {}", u64::MAX)).unwrap();
+        let z_1 = PolyOverZq::from_str(&format!("3  1 2 1 mod {}", u64::MAX)).unwrap();
+        let z_2 = PolyOverZq::from_str(&format!("4  1 2 1 0 mod {}", u64::MAX)).unwrap();
 
         assert!(q == z_1);
         assert!(q == z_2);
@@ -321,8 +300,7 @@ mod test_partial_eq_q_other {
     /// Ensure that unequal values are compared correctly.
     #[test]
     fn unequal() {
-        let q = ModulusPolynomialRingZq::from_str(&format!("3  1 2 {} mod {}", i64::MAX, u64::MAX))
-            .unwrap();
+        let q = ModulusPolynomialRingZq::from_str(&format!("3  1 2 1 mod {}", u64::MAX)).unwrap();
         let z_1 = PolyOverZq::from_str(&format!("3  1 3 {} mod {}", i64::MAX, u64::MAX)).unwrap();
         let z_2 = PolyOverZq::from_str(&format!("4  1 2 {} 1 mod {}", i64::MAX, u64::MAX)).unwrap();
         let z_3 =

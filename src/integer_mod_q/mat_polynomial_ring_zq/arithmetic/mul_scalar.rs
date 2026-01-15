@@ -332,7 +332,7 @@ impl MatPolynomialRingZq {
     /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, Zq};
     /// use std::str::FromStr;
     ///
-    /// let mat_1 = MatPolynomialRingZq::from_str("[[1  42, 1  17],[2  1 8, 1  6]] / 3  1 2 3 mod 61").unwrap();
+    /// let mat_1 = MatPolynomialRingZq::from_str("[[1  42, 1  17],[2  1 8, 1  6]] / 3  1 2 1 mod 61").unwrap();
     /// let integer = Zq::from((2, 61));
     ///
     /// let mat_2 = &mat_1.mul_scalar_zq_safe(&integer).unwrap();
@@ -745,7 +745,7 @@ mod test_mul_zq {
     #[test]
     #[should_panic]
     fn different_moduli_error() {
-        let mat_1 = MatPolynomialRingZq::from_str("[[1  42],[0],[1  2]] / 2  1 2 mod 61").unwrap();
+        let mat_1 = MatPolynomialRingZq::from_str("[[1  42],[0],[1  2]] / 2  1 1 mod 61").unwrap();
         let integer = Zq::from((2, 3));
 
         _ = &integer * mat_1;
@@ -754,7 +754,7 @@ mod test_mul_zq {
     /// Checks if scalar multiplication returns an error if the moduli mismatch
     #[test]
     fn different_moduli_error_safe() {
-        let mat_1 = MatPolynomialRingZq::from_str("[[1  42],[0],[1  2]] / 2  1 2 mod 61").unwrap();
+        let mat_1 = MatPolynomialRingZq::from_str("[[1  42],[0],[1  2]] / 2  1 1 mod 61").unwrap();
         let integer = Zq::from((2, 3));
 
         let mat_2 = &mat_1.mul_scalar_zq_safe(&integer);
@@ -914,7 +914,7 @@ mod test_mul_poly_over_zq {
     /// Checks if scalar multiplication reduction works.
     #[test]
     fn reduction_correct() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  2 0 0 2 mod 17").unwrap();
+        let modulus = ModulusPolynomialRingZq::from_str("4  2 0 0 1 mod 17").unwrap();
         let poly_mat1 = MatPolyOverZ::from_str("[[0, 1  10],[0, 2  1 2]]").unwrap();
         let poly_ring_mat1 = MatPolynomialRingZq::from((&poly_mat1, &modulus));
         let poly = PolyOverZq::from((2, 17));
@@ -1045,7 +1045,7 @@ mod test_mul_poly_ring_zq {
     /// Checks if scalar multiplication reduction works.
     #[test]
     fn reduction_correct() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  2 0 0 2 mod 17").unwrap();
+        let modulus = ModulusPolynomialRingZq::from_str("4  2 0 0 1 mod 17").unwrap();
         let poly_mat1 = MatPolyOverZ::from_str("[[0, 1  10],[0, 2  1 2]]").unwrap();
         let poly_ring_mat1 = MatPolynomialRingZq::from((&poly_mat1, &modulus));
         let poly = PolyOverZ::from(2);

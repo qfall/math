@@ -31,8 +31,8 @@ impl MatPolynomialRingZq {
     /// ```
     /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
     /// use std::str::FromStr;
-    /// let mat = MatPolynomialRingZq::from_str("[[2  3 4, 1  2, 1  1]] / 3  1 2 3 mod 17").unwrap();
-    /// let cmp = MatPolynomialRingZq::from_str("[[1  1, 1  2, 2  3 4]] / 3  1 2 3 mod 17").unwrap();
+    /// let mat = MatPolynomialRingZq::from_str("[[2  3 4, 1  2, 1  1]] / 3  1 2 1 mod 17").unwrap();
+    /// let cmp = MatPolynomialRingZq::from_str("[[1  1, 1  2, 2  3 4]] / 3  1 2 1 mod 17").unwrap();
     ///
     /// let sorted = mat.sort_by_column(MatPolynomialRingZq::norm_eucl_sqrd).unwrap();
     ///
@@ -44,8 +44,8 @@ impl MatPolynomialRingZq {
     /// use qfall_math::{integer_mod_q::MatPolynomialRingZq, integer::{PolyOverZ, Z}, error::MathError, traits::{MatrixDimensions, MatrixGetEntry}};
     /// use crate::qfall_math::traits::GetCoefficient;
     /// use std::str::FromStr;
-    /// let mat = MatPolynomialRingZq::from_str("[[2  0 4, 1  2, 1  1]] / 3  1 2 3 mod 17").unwrap();
-    /// let cmp = MatPolynomialRingZq::from_str("[[2  0 4, 1  1, 1  2]] / 3  1 2 3 mod 17").unwrap();
+    /// let mat = MatPolynomialRingZq::from_str("[[2  0 4, 1  2, 1  1]] / 3  1 2 1 mod 17").unwrap();
+    /// let cmp = MatPolynomialRingZq::from_str("[[2  0 4, 1  1, 1  2]] / 3  1 2 1 mod 17").unwrap();
     ///
     /// fn custom_cond_func(matrix: &MatPolynomialRingZq) -> Result<Z, MathError> {
     ///     let mut sum = Z::ZERO;
@@ -99,8 +99,8 @@ impl MatPolynomialRingZq {
     /// ```
     /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
     /// use std::str::FromStr;
-    /// let mat = MatPolynomialRingZq::from_str("[[2  3 4],[1  2],[1  1]] / 3  1 2 3 mod 17").unwrap();
-    /// let cmp = MatPolynomialRingZq::from_str("[[1  1],[1  2],[2  3 4]] / 3  1 2 3 mod 17").unwrap();
+    /// let mat = MatPolynomialRingZq::from_str("[[2  3 4],[1  2],[1  1]] / 3  1 2 1 mod 17").unwrap();
+    /// let cmp = MatPolynomialRingZq::from_str("[[1  1],[1  2],[2  3 4]] / 3  1 2 1 mod 17").unwrap();
     ///
     /// let sorted = mat.sort_by_row(MatPolynomialRingZq::norm_infty).unwrap();
     ///
@@ -112,8 +112,8 @@ impl MatPolynomialRingZq {
     /// use qfall_math::{integer_mod_q::MatPolynomialRingZq, integer::{PolyOverZ, Z}, error::MathError, traits::{MatrixDimensions, MatrixGetEntry}};
     /// use crate::qfall_math::traits::GetCoefficient;
     /// use std::str::FromStr;
-    /// let mat = MatPolynomialRingZq::from_str("[[2  0 4],[1  2],[1  1]] / 3  1 2 3 mod 17").unwrap();
-    /// let cmp = MatPolynomialRingZq::from_str("[[2  0 4],[1  1],[1  2]] / 3  1 2 3 mod 17").unwrap();
+    /// let mat = MatPolynomialRingZq::from_str("[[2  0 4],[1  2],[1  1]] / 3  1 2 1 mod 17").unwrap();
+    /// let cmp = MatPolynomialRingZq::from_str("[[2  0 4],[1  1],[1  2]] / 3  1 2 1 mod 17").unwrap();
     ///
     /// fn custom_cond_func(matrix: &MatPolynomialRingZq) -> Result<Z, MathError> {
     ///     let mut sum = Z::ZERO;
@@ -174,11 +174,11 @@ mod test_sort_by_length {
     #[test]
     fn column_norm_eucl_sqrd_small_entries() {
         let mat = MatPolynomialRingZq::from_str(
-            "[[1  3, 0, 1  2, 1  -1],[1  2, 1  2, 1  2, 1  2]] / 3  1 2 3 mod 17",
+            "[[1  3, 0, 1  2, 1  -1],[1  2, 1  2, 1  2, 1  2]] / 3  1 2 1 mod 17",
         )
         .unwrap();
         let cmp = MatPolynomialRingZq::from_str(
-            "[[0, 1  -1, 1  2, 1  3],[1  2, 1  2, 1  2, 1  2]] / 3  1 2 3 mod 17",
+            "[[0, 1  -1, 1  2, 1  3],[1  2, 1  2, 1  2, 1  2]] / 3  1 2 1 mod 17",
         )
         .unwrap();
 
@@ -193,13 +193,13 @@ mod test_sort_by_length {
     #[test]
     fn column_norm_eucl_sqrd_large_entries() {
         let mat = MatPolynomialRingZq::from_str(&format!(
-            "[[1  1, 1  {}, 1  5],[1  1, 1  2, 1  5],[0, 0, 0]] / 3  1 2 3 mod {}",
+            "[[1  1, 1  {}, 1  5],[1  1, 1  2, 1  5],[0, 0, 0]] / 3  1 2 1 mod {}",
             i64::MAX,
             u64::MAX
         ))
         .unwrap();
         let cmp = MatPolynomialRingZq::from_str(&format!(
-            "[[1  1, 1  5, 1  {}],[1  1, 1  5, 1  2],[0, 0, 0]] / 3  1 2 3 mod {}",
+            "[[1  1, 1  5, 1  {}],[1  1, 1  5, 1  2],[0, 0, 0]] / 3  1 2 1 mod {}",
             i64::MAX,
             u64::MAX
         ))
@@ -217,11 +217,11 @@ mod test_sort_by_length {
     #[test]
     fn many_columns() {
         let mat = MatPolynomialRingZq::from_str(
-            "[[1  3, 1  4, 1  1, 1  7, 1  2, 0, 1  9, 1  -8, 1  6, 1  5]] / 3  1 2 3 mod 17",
+            "[[1  3, 1  4, 1  1, 1  7, 1  2, 0, 1  9, 1  -8, 1  6, 1  5]] / 3  1 2 1 mod 17",
         )
         .unwrap();
         let cmp = MatPolynomialRingZq::from_str(
-            "[[0, 1  1, 1  2, 1  3, 1  4, 1  5, 1  6, 1  7, 1  -8, 1  9]] / 3  1 2 3 mod 17",
+            "[[0, 1  1, 1  2, 1  3, 1  4, 1  5, 1  6, 1  7, 1  -8, 1  9]] / 3  1 2 1 mod 17",
         )
         .unwrap();
 
@@ -236,7 +236,7 @@ mod test_sort_by_length {
     #[test]
     fn column_error_cond_func() {
         let mat =
-            MatPolynomialRingZq::from_str("[[1  1, 1  2],[1  3, 1  4]] / 3  1 2 3 mod 17").unwrap();
+            MatPolynomialRingZq::from_str("[[1  1, 1  2],[1  3, 1  4]] / 3  1 2 1 mod 17").unwrap();
 
         let res = mat.sort_by_column(failing_func);
 
@@ -247,11 +247,11 @@ mod test_sort_by_length {
     #[test]
     fn row_norm_eucl_sqrd_small_entries() {
         let mat = MatPolynomialRingZq::from_str(
-            "[[1  3, 0, 1  2, 1  -1],[1  2, 1  2, 1  2, 1  2]] / 3  1 2 3 mod 17",
+            "[[1  3, 0, 1  2, 1  -1],[1  2, 1  2, 1  2, 1  2]] / 3  1 2 1 mod 17",
         )
         .unwrap();
         let cmp = MatPolynomialRingZq::from_str(
-            "[[1  3, 0, 1  2, 1  -1],[1  2, 1  2, 1  2, 1  2]] / 3  1 2 3 mod 17",
+            "[[1  3, 0, 1  2, 1  -1],[1  2, 1  2, 1  2, 1  2]] / 3  1 2 1 mod 17",
         )
         .unwrap();
 
@@ -266,13 +266,13 @@ mod test_sort_by_length {
     #[test]
     fn row_norm_eucl_sqrd_large_entries() {
         let mat = MatPolynomialRingZq::from_str(&format!(
-            "[[1  1, 0, 1  5],[1  {}, 1  2, 1  5],[0, 0, 0]] / 3  1 2 3 mod {}",
+            "[[1  1, 0, 1  5],[1  {}, 1  2, 1  5],[0, 0, 0]] / 3  1 2 1 mod {}",
             i64::MAX,
             u64::MAX
         ))
         .unwrap();
         let cmp = MatPolynomialRingZq::from_str(&format!(
-            "[[0, 0, 0],[1  1, 0, 1  5],[1  {}, 1  2, 1  5]] / 3  1 2 3 mod {}",
+            "[[0, 0, 0],[1  1, 0, 1  5],[1  {}, 1  2, 1  5]] / 3  1 2 1 mod {}",
             i64::MAX,
             u64::MAX
         ))
@@ -290,9 +290,9 @@ mod test_sort_by_length {
     #[test]
     fn many_rows() {
         let mat =
-            MatPolynomialRingZq::from_str("[[1  3],[0],[1  -1],[1  -7],[1  2],[1  9],[1  4],[1  8],[1  6],[1  5]] / 3  1 2 3 mod 82").unwrap();
+            MatPolynomialRingZq::from_str("[[1  3],[0],[1  -1],[1  -7],[1  2],[1  9],[1  4],[1  8],[1  6],[1  5]] / 3  1 2 1 mod 82").unwrap();
         let cmp =
-            MatPolynomialRingZq::from_str("[[0],[1  -1],[1  2],[1  3],[1  4],[1  5],[1  6],[1  -7],[1  8],[1  9]] / 3  1 2 3 mod 82").unwrap();
+            MatPolynomialRingZq::from_str("[[0],[1  -1],[1  2],[1  3],[1  4],[1  5],[1  6],[1  -7],[1  8],[1  9]] / 3  1 2 1 mod 82").unwrap();
 
         let res = mat
             .sort_by_row(MatPolynomialRingZq::norm_eucl_sqrd)
@@ -305,7 +305,7 @@ mod test_sort_by_length {
     #[test]
     fn row_error_cond_func() {
         let mat =
-            MatPolynomialRingZq::from_str("[[1  1, 1  2],[1  3, 1  4]] / 3  1 2 3 mod 17").unwrap();
+            MatPolynomialRingZq::from_str("[[1  1, 1  2],[1  3, 1  4]] / 3  1 2 1 mod 17").unwrap();
 
         let res = mat.sort_by_row(failing_func);
 

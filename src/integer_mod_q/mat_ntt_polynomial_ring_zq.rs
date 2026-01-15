@@ -81,7 +81,7 @@ impl fmt::Debug for MatNTTPolynomialRingZq {
 pub(crate) fn print_vec_z(vector: &Vec<Z>) -> String {
     let mut out = String::new();
     for v in vector {
-        out.push_str(&format!("{}, ", v));
+        out.push_str(&format!("{v}, "));
     }
     // Remove last whitespace and comma
     out.pop().unwrap();

@@ -203,7 +203,7 @@ mod test_get_coeff {
     #[test]
     fn large_coeff() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("5  1 0 4 1 9 mod {}", u64::MAX)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("5  1 0 4 1 1 mod {}", u64::MAX)).unwrap();
         let poly = PolyOverZ::from_str(&format!("3  0 {} 1", i64::MAX)).unwrap();
         let poly_ring = PolynomialRingZq::from((&poly, &modulus));
 

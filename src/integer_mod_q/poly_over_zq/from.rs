@@ -17,8 +17,7 @@ use crate::{
     macros::for_others::implement_for_owned,
 };
 use flint_sys::fmpz_mod_poly::{
-    fmpz_mod_poly_init, fmpz_mod_poly_set, fmpz_mod_poly_set_coeff_fmpz,
-    fmpz_mod_poly_set_fmpz_poly,
+    fmpz_mod_poly_init, fmpz_mod_poly_set_coeff_fmpz, fmpz_mod_poly_set_fmpz_poly,
 };
 use std::{mem::MaybeUninit, str::FromStr};
 

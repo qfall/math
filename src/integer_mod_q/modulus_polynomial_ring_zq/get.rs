@@ -13,13 +13,7 @@ use crate::{
     integer_mod_q::{Modulus, ModulusPolynomialRingZq, PolyOverZq, Zq},
     traits::GetCoefficient,
 };
-use flint_sys::{
-    fmpz::fmpz_init_set,
-    fmpz_mod::fmpz_mod_ctx_init,
-    fmpz_mod_poly::fmpz_mod_poly_get_coeff_fmpz,
-    fq::{fq_ctx_degree, fq_ctx_struct},
-};
-use std::{mem::MaybeUninit, rc::Rc};
+use flint_sys::fmpz_mod_poly::fmpz_mod_poly_get_coeff_fmpz;
 
 impl GetCoefficient<Zq> for ModulusPolynomialRingZq {
     /// Returns the coefficient of a polynomial [`ModulusPolynomialRingZq`] as a [`Zq`].
@@ -37,7 +31,7 @@ impl GetCoefficient<Zq> for ModulusPolynomialRingZq {
     /// use qfall_math::integer_mod_q::{Zq, ModulusPolynomialRingZq};
     /// use std::str::FromStr;
     ///
-    /// let poly = ModulusPolynomialRingZq::from_str("4  0 1 2 3 mod 17").unwrap();
+    /// let poly = ModulusPolynomialRingZq::from_str("4  0 1 2 1 mod 17").unwrap();
     ///
     /// let coeff_0: Zq = poly.get_coeff(0).unwrap();
     /// let coeff_1: Zq = unsafe{ poly.get_coeff_unchecked(1) };
@@ -78,7 +72,7 @@ impl GetCoefficient<Z> for ModulusPolynomialRingZq {
     /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
     ///
-    /// let poly = ModulusPolynomialRingZq::from_str("4  0 1 2 3 mod 17").unwrap();
+    /// let poly = ModulusPolynomialRingZq::from_str("4  0 1 2 1 mod 17").unwrap();
     ///
     /// let coeff_0: Z = poly.get_coeff(0).unwrap();
     /// let coeff_1: Z = unsafe{ poly.get_coeff_unchecked(1) };
@@ -142,7 +136,7 @@ impl ModulusPolynomialRingZq {
     /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
     /// use std::str::FromStr;
     ///
-    /// let poly = ModulusPolynomialRingZq::from_str("4  0 1 2 3 mod 7").unwrap();
+    /// let poly = ModulusPolynomialRingZq::from_str("4  0 1 2 1 mod 7").unwrap();
     ///
     /// let degree = poly.get_degree(); // This would only return 3
     /// ```
@@ -185,7 +179,7 @@ mod test_get_coeff_z {
     /// Ensure that `0` is returned if the provided index is not yet set.
     #[test]
     fn index_out_of_range() {
-        let poly = ModulusPolynomialRingZq::from_str("4  0 1 2 3 mod 17").unwrap();
+        let poly = ModulusPolynomialRingZq::from_str("4  0 1 2 1 mod 17").unwrap();
 
         let zero_coeff_1: Z = poly.get_coeff(4).unwrap();
         let zero_coeff_2 = poly.get_coeff(4).unwrap();
@@ -197,7 +191,7 @@ mod test_get_coeff_z {
     /// Tests if coefficients are returned correctly.
     #[test]
     fn positive_coeff() {
-        let poly = ModulusPolynomialRingZq::from_str("4  0 1 2 3 mod 17").unwrap();
+        let poly = ModulusPolynomialRingZq::from_str("4  0 1 2 1 mod 17").unwrap();
 
         let coeff_1: Z = poly.get_coeff(2).unwrap();
         let coeff_2 = poly.get_coeff(2).unwrap();
@@ -210,11 +204,11 @@ mod test_get_coeff_z {
     #[test]
     fn large_coeff() {
         let poly =
-            ModulusPolynomialRingZq::from_str(&format!("2  1 {} mod {}", u64::MAX - 1, u64::MAX))
+            ModulusPolynomialRingZq::from_str(&format!("2  {} 1 mod {}", u64::MAX - 1, u64::MAX))
                 .unwrap();
 
-        let coefficient_1: Z = poly.get_coeff(1).unwrap();
-        let coefficient_2: Zq = poly.get_coeff(1).unwrap();
+        let coefficient_1: Z = poly.get_coeff(0).unwrap();
+        let coefficient_2: Zq = poly.get_coeff(0).unwrap();
 
         assert_eq!(u64::MAX - 1, coefficient_1);
         assert_eq!(Zq::from((u64::MAX - 1, u64::MAX)), coefficient_2);
@@ -224,7 +218,7 @@ mod test_get_coeff_z {
     #[test]
     #[should_panic]
     fn negative_index_error_z() {
-        let poly = ModulusPolynomialRingZq::from_str("4  0 1 2 3 mod 17").unwrap();
+        let poly = ModulusPolynomialRingZq::from_str("4  0 1 2 1 mod 17").unwrap();
 
         let _: Z = poly.get_coeff(-1).unwrap();
     }
@@ -233,7 +227,7 @@ mod test_get_coeff_z {
     #[test]
     #[should_panic]
     fn negative_index_error_zq() {
-        let poly = ModulusPolynomialRingZq::from_str("4  0 1 2 3 mod 17").unwrap();
+        let poly = ModulusPolynomialRingZq::from_str("4  0 1 2 1 mod 17").unwrap();
 
         let _: Zq = poly.get_coeff(-1).unwrap();
     }
@@ -250,7 +244,7 @@ mod test_get_degree {
         let degrees = [1, 3, 7, 15, 32, 120];
         for degree in degrees {
             let modulus_ring = ModulusPolynomialRingZq::from_str(&format!(
-                "{}  {}2 mod 17",
+                "{}  {}1 mod 17",
                 degree + 1,
                 "0 ".repeat(degree)
             ))
@@ -274,11 +268,10 @@ mod test_get_degree {
     /// flint does not reduce the exponent due to computational cost.
     #[test]
     fn degree_many_coefficients() {
-        let poly_1 = ModulusPolynomialRingZq::from_str("7  1 2 3 4 8 1 3 mod 2").unwrap();
+        let poly_1 = ModulusPolynomialRingZq::from_str("7  1 2 3 4 8 1 1 mod 2").unwrap();
         let poly_2 = ModulusPolynomialRingZq::from_str(&format!(
-            "7  1 2 3 4 8 {} {} mod {}",
+            "7  1 2 3 4 8 {} 1 mod {}",
             u64::MAX,
-            i64::MAX,
             u128::MAX
         ))
         .unwrap();

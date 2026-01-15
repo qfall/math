@@ -147,7 +147,7 @@ mod test_set_coeff {
     /// Ensure that a general case is working.
     #[test]
     fn set_coeff_working() {
-        let modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 1 5 mod 17").unwrap();
+        let modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 1 1 mod 17").unwrap();
         let poly = PolyOverZ::from_str("3  0 2 1").unwrap();
         let mut poly_ring = PolynomialRingZq::from((&poly, &modulus));
         let value = 10000;

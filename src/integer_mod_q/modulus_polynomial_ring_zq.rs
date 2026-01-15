@@ -43,6 +43,7 @@ mod to_string;
 pub struct ModulusPolynomialRingZq {
     pub(crate) modulus: Rc<PolyOverZq>,
     pub(crate) ntt_basis: Rc<Option<NTTBasisPolynomialRingZq>>,
+    pub(crate) non_zero: Vec<usize>,
 }
 
 impl fmt::Debug for ModulusPolynomialRingZq {

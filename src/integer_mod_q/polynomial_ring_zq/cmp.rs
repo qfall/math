@@ -79,15 +79,15 @@ mod test_compare_base {
         assert!(one_1.compare_base(&one_1));
         assert!(one_1.compare_base(&Zq::from((3, 17))));
         assert!(!one_1.compare_base(&Zq::from((3, 18))));
-        assert!(one_1.compare_base(&PolyOverZq::from_str("1  3 mod 17").unwrap()));
-        assert!(!one_1.compare_base(&PolyOverZq::from_str("1  3 mod 18").unwrap()));
+        assert!(one_1.compare_base(&PolyOverZq::from_str("1  1 mod 17").unwrap()));
+        assert!(!one_1.compare_base(&PolyOverZq::from_str("1  1 mod 18").unwrap()));
         assert!(one_1.compare_base(&PolynomialRingZq::from(&modulus)));
         assert!(!one_1.compare_base(&PolynomialRingZq::from(&modulus_other)));
 
         assert!(one_1.call_compare_base_error(&Zq::from((3, 18))).is_some());
         assert!(
             one_1
-                .call_compare_base_error(&PolyOverZq::from_str("1  3 mod 18").unwrap())
+                .call_compare_base_error(&PolyOverZq::from_str("1  1 mod 18").unwrap())
                 .is_some()
         );
         assert!(

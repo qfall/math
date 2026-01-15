@@ -283,9 +283,8 @@ mod test_sub_assign {
     #[test]
     fn correct_large() {
         let modulus = ModulusPolynomialRingZq::from_str(&format!(
-            "4  {} 0 0 {} mod {}",
+            "4  {} 0 0 1 mod {}",
             u64::MAX,
-            i64::MIN,
             u64::MAX - 58
         ))
         .unwrap();
@@ -294,7 +293,7 @@ mod test_sub_assign {
         let poly_2 = PolyOverZ::from_str(&format!("4  -{} 0 1 -{}", i64::MAX, i64::MAX)).unwrap();
         let b = PolynomialRingZq::from((&poly_2, &modulus));
         let cmp = PolynomialRingZq::from((
-            &PolyOverZ::from_str(&format!("4  {} 0 0 {}", (u64::MAX - 1) / 2 + 58, -1)).unwrap(),
+            &PolyOverZ::from_str(&"1  9223372036854775923".to_string()).unwrap(),
             &modulus,
         ));
 
@@ -328,7 +327,7 @@ mod test_sub_assign {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly_1 = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
         let mut a = PolynomialRingZq::from((&poly_1, &modulus));
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
+        let modulus = ModulusPolynomialRingZq::from_str("4  2 0 0 1 mod 17").unwrap();
         let poly_2 = PolyOverZ::from_str("4  2 0 3 1").unwrap();
         let b = PolynomialRingZq::from((&poly_2, &modulus));
 
@@ -422,9 +421,8 @@ mod test_sub {
     #[test]
     fn sub_large_numbers() {
         let modulus = ModulusPolynomialRingZq::from_str(&format!(
-            "4  {} 0 0 {} mod {}",
+            "4  {} 0 0 1 mod {}",
             u64::MAX,
-            i64::MIN + 12,
             u64::MAX - 58
         ))
         .unwrap();
@@ -458,7 +456,7 @@ mod test_sub {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly_1 = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
         let a = PolynomialRingZq::from((&poly_1, &modulus));
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
+        let modulus = ModulusPolynomialRingZq::from_str("4  2 0 0 1 mod 17").unwrap();
         let poly_2 = PolyOverZ::from_str("4  2 0 3 1").unwrap();
         let b = PolynomialRingZq::from((&poly_2, &modulus));
         let _ = a - b;
@@ -470,7 +468,7 @@ mod test_sub {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly_1 = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
         let a = PolynomialRingZq::from((&poly_1, &modulus));
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
+        let modulus = ModulusPolynomialRingZq::from_str("4  2 0 0 1 mod 17").unwrap();
         let poly_2 = PolyOverZ::from_str("4  2 0 3 1").unwrap();
         let b = PolynomialRingZq::from((&poly_2, &modulus));
 
@@ -488,10 +486,10 @@ mod test_sub_poly_over_z {
     #[test]
     fn borrowed_correctness() {
         let poly_1 =
-            PolynomialRingZq::from_str(&format!("2  2 {} / 4  1 2 3 4 mod {}", i64::MAX, u64::MAX))
+            PolynomialRingZq::from_str(&format!("2  2 {} / 4  1 2 3 1 mod {}", i64::MAX, u64::MAX))
                 .unwrap();
         let poly_2 = PolynomialRingZq::from_str(&format!(
-            "2  1 {} / 4  1 2 3 4 mod {}",
+            "2  1 {} / 4  1 2 3 1 mod {}",
             i64::MAX as u64 - 2,
             u64::MAX
         ))
@@ -506,7 +504,7 @@ mod test_sub_poly_over_z {
     /// Checks if subtraction works fine for different types
     #[test]
     fn availability() {
-        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 17").unwrap();
+        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 1 mod 17").unwrap();
         let z = PolyOverZ::from(2);
 
         _ = poly.clone() - z.clone();
@@ -526,15 +524,15 @@ mod test_sub_poly_over_zq {
     #[test]
     fn borrowed_correctness() {
         let poly_1 =
-            PolynomialRingZq::from_str(&format!("2  2 {} / 4  1 2 3 4 mod {}", i64::MAX, u64::MAX))
+            PolynomialRingZq::from_str(&format!("2  2 {} / 4  1 2 3 1 mod {}", i64::MAX, u64::MAX))
                 .unwrap();
         let poly_2 = PolynomialRingZq::from_str(&format!(
-            "2  1 {} / 4  1 2 3 4 mod {}",
-            i64::MAX as u64 - 2,
+            "2  1 {} / 4  1 2 3 1 mod {}",
+            i64::MAX as u64 - 1,
             u64::MAX
         ))
         .unwrap();
-        let poly = PolyOverZq::from_str(&format!("2  1 2 mod {}", u64::MAX)).unwrap();
+        let poly = PolyOverZq::from_str(&format!("2  1 1 mod {}", u64::MAX)).unwrap();
 
         let poly_1 = &poly_1 - &poly;
 
@@ -544,7 +542,7 @@ mod test_sub_poly_over_zq {
     /// Checks if subtraction works fine for different types
     #[test]
     fn availability() {
-        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 17").unwrap();
+        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 1 mod 17").unwrap();
         let zq = PolyOverZq::from((2, 17));
 
         _ = poly.clone() - zq.clone();
@@ -557,7 +555,7 @@ mod test_sub_poly_over_zq {
     #[test]
     #[should_panic]
     fn different_moduli_panic() {
-        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 17").unwrap();
+        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 1 mod 17").unwrap();
         let zq = PolyOverZq::from((2, 16));
 
         _ = &poly - &zq;

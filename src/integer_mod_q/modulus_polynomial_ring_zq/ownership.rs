@@ -33,6 +33,7 @@ impl Clone for ModulusPolynomialRingZq {
         Self {
             modulus: Rc::clone(&self.modulus),
             ntt_basis: Rc::clone(&self.ntt_basis),
+            non_zero: self.non_zero.clone(),
         }
     }
 }

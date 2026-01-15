@@ -74,6 +74,7 @@ impl MatPolynomialRingZq {
                     &self.modulus.modulus.poly,
                     self.modulus.get_degree() as usize,
                     self.modulus.get_q_as_modulus().get_fmpz_mod_ctx_struct(),
+                    &self.modulus.non_zero,
                 )
             }
             unsafe {

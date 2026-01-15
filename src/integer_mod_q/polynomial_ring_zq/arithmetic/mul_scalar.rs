@@ -37,7 +37,7 @@ impl Mul<&Z> for &PolynomialRingZq {
     /// use qfall_math::integer::Z;
     /// use std::str::FromStr;
     ///
-    /// let poly_1 = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 17").unwrap();
+    /// let poly_1 = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 1 mod 17").unwrap();
     /// let integer = Z::from(3);
     ///
     /// let poly_2 = &poly_1 * &integer;
@@ -77,7 +77,7 @@ impl Mul<&Zq> for &PolynomialRingZq {
     /// use qfall_math::integer_mod_q::{PolynomialRingZq, Zq};
     /// use std::str::FromStr;
     ///
-    /// let poly_1 = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 17").unwrap();
+    /// let poly_1 = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 1 mod 17").unwrap();
     /// let integer = Zq::from((3,17));
     ///
     /// let poly_2 = &poly_1 * &integer;
@@ -152,7 +152,7 @@ impl PolynomialRingZq {
     /// use qfall_math::integer_mod_q::{PolynomialRingZq, Zq};
     /// use std::str::FromStr;
     ///
-    /// let poly_1 = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 17").unwrap();
+    /// let poly_1 = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 1 mod 17").unwrap();
     /// let integer = Zq::from((3,17));
     ///
     /// let poly_2 = poly_1.mul_scalar_zq_safe(&integer).unwrap();
@@ -185,14 +185,14 @@ mod test_mul_z {
     #[test]
     fn borrowed_correctness() {
         let poly_1 = PolynomialRingZq::from_str(&format!(
-            "3  1 2 {} / 4  1 2 3 4 mod {}",
+            "3  1 2 {} / 4  1 2 3 1 mod {}",
             i64::MAX,
             u64::MAX
         ))
         .unwrap();
         let poly_2 = poly_1.clone();
         let poly_3 = PolynomialRingZq::from_str(&format!(
-            "3  2 4 {} / 4  1 2 3 4 mod {}",
+            "3  2 4 {} / 4  1 2 3 1 mod {}",
             (i64::MAX as u64) * 2,
             u64::MAX
         ))
@@ -209,7 +209,7 @@ mod test_mul_z {
     /// Checks if scalar multiplication works fine for different types
     #[test]
     fn availability() {
-        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 17").unwrap();
+        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 1 mod 17").unwrap();
         let z = Z::from(2);
 
         _ = poly.clone() * z.clone();
@@ -247,14 +247,14 @@ mod test_mul_zq {
     #[test]
     fn borrowed_correctness() {
         let poly_1 = PolynomialRingZq::from_str(&format!(
-            "3  1 2 {} / 4  1 2 3 4 mod {}",
+            "3  1 2 {} / 4  1 2 3 1 mod {}",
             i64::MAX,
             u64::MAX
         ))
         .unwrap();
         let poly_2 = poly_1.clone();
         let poly_3 = PolynomialRingZq::from_str(&format!(
-            "3  2 4 {} / 4  1 2 3 4 mod {}",
+            "3  2 4 {} / 4  1 2 3 1 mod {}",
             (i64::MAX as u64) * 2,
             u64::MAX
         ))
@@ -271,7 +271,7 @@ mod test_mul_zq {
     /// Checks if scalar multiplication works fine for different types
     #[test]
     fn availability() {
-        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 17").unwrap();
+        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 1 mod 17").unwrap();
         let z = Zq::from((2, 17));
 
         _ = poly.clone() * z.clone();
@@ -288,7 +288,7 @@ mod test_mul_zq {
     #[test]
     #[should_panic]
     fn different_moduli_panic() {
-        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 17").unwrap();
+        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 1 mod 17").unwrap();
         let z = Zq::from((2, 16));
 
         _ = &poly * &z;
@@ -297,7 +297,7 @@ mod test_mul_zq {
     /// Checks if scalar multiplication panics if the moduli mismatch
     #[test]
     fn different_moduli_error() {
-        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 17").unwrap();
+        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 1 mod 17").unwrap();
         let z = Zq::from((2, 16));
 
         assert!(poly.mul_scalar_zq_safe(&z).is_err());

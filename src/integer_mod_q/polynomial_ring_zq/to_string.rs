@@ -29,7 +29,7 @@ impl From<&PolynomialRingZq> for String {
     /// ```
     /// use qfall_math::integer_mod_q::PolynomialRingZq;
     /// use std::str::FromStr;
-    /// let poly = PolynomialRingZq::from_str("2  2 1 / 3  2 2 2 mod 3").unwrap();
+    /// let poly = PolynomialRingZq::from_str("2  2 1 / 3  2 2 1 mod 3").unwrap();
     ///
     /// let string: String = poly.into();
     /// ```
@@ -49,7 +49,7 @@ mod test_to_string {
     /// same string, when it is converted back to a string
     #[test]
     fn working_keeps_same_string() {
-        let cmp_str = "2  1 1 / 3  1 2 2 mod 5";
+        let cmp_str = "2  1 1 / 3  1 2 1 mod 5";
         let cmp = PolynomialRingZq::from_str(cmp_str).unwrap();
 
         assert_eq!(cmp_str, cmp.to_string());
@@ -59,7 +59,7 @@ mod test_to_string {
     /// string that can be used to create a polynomial
     #[test]
     fn working_use_result_of_to_string_as_input() {
-        let cmp_str = "2  1 1 / 3  1 2 2 mod 5";
+        let cmp_str = "2  1 1 / 3  1 2 1 mod 5";
         let cmp = PolynomialRingZq::from_str(cmp_str).unwrap();
 
         let cmp_str_2 = cmp.to_string();
@@ -70,16 +70,16 @@ mod test_to_string {
     /// Test applied modulus if initialized with negative values
     #[test]
     fn initialized_neg() {
-        let cmp_str = "2  -1 1 / 3  -1 -2 -3 mod 5";
+        let cmp_str = "2  -1 1 / 3  -1 -2 1 mod 5";
         let cmp = PolynomialRingZq::from_str(cmp_str).unwrap();
 
-        assert_eq!("2  4 1 / 3  4 3 2 mod 5", cmp.to_string());
+        assert_eq!("2  4 1 / 3  4 3 1 mod 5", cmp.to_string());
     }
 
     /// Tests that large entries and large moduli work with to_string()
     #[test]
     fn large_entries_modulus() {
-        let cmp_str = format!("2  1 {} / 3  1 2 {} mod 1{}", u64::MAX, u64::MAX, u64::MAX);
+        let cmp_str = format!("2  1 {} / 3  1 2 1 mod 1{}", u64::MAX, u64::MAX);
         let cmp = PolynomialRingZq::from_str(&cmp_str).unwrap();
 
         assert_eq!(cmp_str, cmp.to_string());

@@ -287,7 +287,7 @@ mod test_get_entry {
     /// Ensure that getting entries works on the edge.
     #[test]
     fn get_edges() {
-        let modulus = ModulusPolynomialRingZq::from_str("2  42 17 mod 89").unwrap();
+        let modulus = ModulusPolynomialRingZq::from_str("2  42 1 mod 89").unwrap();
         let matrix = MatPolynomialRingZq::new(5, 10, &modulus);
 
         let entry_1: PolyOverZ = matrix.get_entry(0, 0).unwrap();
@@ -301,7 +301,7 @@ mod test_get_entry {
     #[test]
     fn large_positive() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("5  42 17 1 2 3 mod {LARGE_PRIME}"))
+            ModulusPolynomialRingZq::from_str(&format!("5  42 17 1 2 1 mod {LARGE_PRIME}"))
                 .unwrap();
         let poly_mat =
             MatPolyOverZ::from_str(&format!("[[4  1 0 {} 1, 1  42],[0, 2  1 2]]", i64::MAX))
@@ -320,7 +320,7 @@ mod test_get_entry {
     #[test]
     fn error_wrong_row() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("5  42 17 1 2 3 mod {LARGE_PRIME}"))
+            ModulusPolynomialRingZq::from_str(&format!("5  42 17 1 2 1 mod {LARGE_PRIME}"))
                 .unwrap();
         let matrix = MatPolynomialRingZq::new(5, 10, &modulus);
 
@@ -334,7 +334,7 @@ mod test_get_entry {
     #[test]
     fn error_wrong_column() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("5  42 17 1 2 3 mod {LARGE_PRIME}"))
+            ModulusPolynomialRingZq::from_str(&format!("5  42 17 1 2 1 mod {LARGE_PRIME}"))
                 .unwrap();
         let matrix = MatPolynomialRingZq::new(5, 10, &modulus);
 
@@ -348,7 +348,7 @@ mod test_get_entry {
     #[test]
     fn diff_types() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("5  42 17 1 2 3 mod {LARGE_PRIME}"))
+            ModulusPolynomialRingZq::from_str(&format!("5  42 17 1 2 1 mod {LARGE_PRIME}"))
                 .unwrap();
         let matrix = MatPolynomialRingZq::new(5, 10, &modulus);
 
@@ -368,7 +368,7 @@ mod test_get_num {
     /// Ensure that the getter for number of rows works correctly.
     #[test]
     fn num_rows() {
-        let modulus = ModulusPolynomialRingZq::from_str("2  42 17 mod 89").unwrap();
+        let modulus = ModulusPolynomialRingZq::from_str("2  42 1 mod 89").unwrap();
         let matrix = MatPolynomialRingZq::new(5, 10, &modulus);
 
         assert_eq!(matrix.get_num_rows(), 5);
@@ -377,7 +377,7 @@ mod test_get_num {
     /// Ensure that the getter for number of columns works correctly.
     #[test]
     fn num_columns() {
-        let modulus = ModulusPolynomialRingZq::from_str("2  42 17 mod 89").unwrap();
+        let modulus = ModulusPolynomialRingZq::from_str("2  42 1 mod 89").unwrap();
         let matrix = MatPolynomialRingZq::new(5, 10, &modulus);
 
         assert_eq!(matrix.get_num_columns(), 10);
@@ -397,13 +397,13 @@ mod test_mod {
     /// Ensure that the getter for modulus works correctly.
     #[test]
     fn get_mod() {
-        let modulus = ModulusPolynomialRingZq::from_str("2  42 17 mod 89").unwrap();
+        let modulus = ModulusPolynomialRingZq::from_str("2  42 1 mod 89").unwrap();
         let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
         let matrix = MatPolynomialRingZq::from((&poly_mat, &modulus));
 
         assert_eq!(
             matrix.get_mod(),
-            ModulusPolynomialRingZq::from_str("2  42 17 mod 89").unwrap()
+            ModulusPolynomialRingZq::from_str("2  42 1 mod 89").unwrap()
         );
     }
 
@@ -411,13 +411,13 @@ mod test_mod {
     #[test]
     fn get_mod_large() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("2  42 17 mod {LARGE_PRIME}")).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("2  42 1 mod {LARGE_PRIME}")).unwrap();
         let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
         let matrix = MatPolynomialRingZq::from((&poly_mat, &modulus));
 
         assert_eq!(
             matrix.get_mod(),
-            ModulusPolynomialRingZq::from_str(&format!("2  42 17 mod {LARGE_PRIME}")).unwrap()
+            ModulusPolynomialRingZq::from_str(&format!("2  42 1 mod {LARGE_PRIME}")).unwrap()
         );
     }
 
@@ -425,17 +425,17 @@ mod test_mod {
     #[test]
     fn get_mod_memory() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("2  42 17 mod {LARGE_PRIME}")).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("2  42 1 mod {LARGE_PRIME}")).unwrap();
         let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
         let matrix = MatPolynomialRingZq::from((&poly_mat, &modulus));
         let _ = matrix.get_mod();
-        let _ = ModulusPolynomialRingZq::from_str(&format!("2  42 17 mod {LARGE_PRIME}")).unwrap();
+        let _ = ModulusPolynomialRingZq::from_str(&format!("2  42 1 mod {LARGE_PRIME}")).unwrap();
 
         let modulus = matrix.get_mod();
 
         assert_eq!(
             modulus,
-            ModulusPolynomialRingZq::from_str(&format!("2  42 17 mod {LARGE_PRIME}")).unwrap()
+            ModulusPolynomialRingZq::from_str(&format!("2  42 1 mod {LARGE_PRIME}")).unwrap()
         );
     }
 }

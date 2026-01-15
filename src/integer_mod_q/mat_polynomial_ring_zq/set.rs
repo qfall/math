@@ -542,7 +542,7 @@ mod test_setter {
     #[test]
     fn modulus_error() {
         let modulus_1 = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-        let modulus_2 = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
+        let modulus_2 = ModulusPolynomialRingZq::from_str("4  1 0 2 1 mod 17").unwrap();
         let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
         let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus_1));
         let value = PolynomialRingZq::from((&PolyOverZ::default(), &modulus_2));
@@ -771,11 +771,11 @@ mod test_swaps {
     #[test]
     fn entries_swapping() {
         let mut matrix = MatPolynomialRingZq::from_str(
-            "[[1  1, 1  2, 1  3],[1  4, 2  5 6, 0]] / 3  1 2 3 mod 17",
+            "[[1  1, 1  2, 1  3],[1  4, 2  5 6, 0]] / 3  1 2 1 mod 17",
         )
         .unwrap();
         let cmp = MatPolynomialRingZq::from_str(
-            "[[1  1, 2  5 6, 1  3],[1  4, 1  2, 0]] / 3  1 2 3 mod 17",
+            "[[1  1, 2  5 6, 1  3],[1  4, 1  2, 0]] / 3  1 2 1 mod 17",
         )
         .unwrap();
 
@@ -813,12 +813,12 @@ mod test_swaps {
     #[test]
     fn columns_swapping() {
         let mut matrix = MatPolynomialRingZq::from_str(
-            "[[1  1, 1  2, 1  3],[1  4, 1  5, 1  6]] / 3  1 2 3 mod 17",
+            "[[1  1, 1  2, 1  3],[1  4, 1  5, 1  6]] / 3  1 2 1 mod 17",
         )
         .unwrap();
-        let cmp_vec_0 = MatPolynomialRingZq::from_str("[[1  1],[1  4]] / 3  1 2 3 mod 17").unwrap();
-        let cmp_vec_1 = MatPolynomialRingZq::from_str("[[1  3],[1  6]] / 3  1 2 3 mod 17").unwrap();
-        let cmp_vec_2 = MatPolynomialRingZq::from_str("[[1  2],[1  5]] / 3  1 2 3 mod 17").unwrap();
+        let cmp_vec_0 = MatPolynomialRingZq::from_str("[[1  1],[1  4]] / 3  1 2 1 mod 17").unwrap();
+        let cmp_vec_1 = MatPolynomialRingZq::from_str("[[1  3],[1  6]] / 3  1 2 1 mod 17").unwrap();
+        let cmp_vec_2 = MatPolynomialRingZq::from_str("[[1  2],[1  5]] / 3  1 2 1 mod 17").unwrap();
 
         let _ = matrix.swap_columns(1, 2);
 
@@ -843,11 +843,11 @@ mod test_swaps {
     #[test]
     fn rows_swapping() {
         let mut matrix =
-            MatPolynomialRingZq::from_str("[[1  1, 1  2],[1  3, 2  4 5]] / 3  1 2 3 mod 17")
+            MatPolynomialRingZq::from_str("[[1  1, 1  2],[1  3, 2  4 5]] / 3  1 2 1 mod 17")
                 .unwrap();
         let cmp_vec_0 =
-            MatPolynomialRingZq::from_str("[[1  3, 2  4 5]] / 3  1 2 3 mod 17").unwrap();
-        let cmp_vec_1 = MatPolynomialRingZq::from_str("[[1  1, 1  2]] / 3  1 2 3 mod 17").unwrap();
+            MatPolynomialRingZq::from_str("[[1  3, 2  4 5]] / 3  1 2 1 mod 17").unwrap();
+        let cmp_vec_1 = MatPolynomialRingZq::from_str("[[1  1, 1  2]] / 3  1 2 1 mod 17").unwrap();
 
         let _ = matrix.swap_rows(1, 0);
 
@@ -881,13 +881,13 @@ mod test_reverses {
     #[test]
     fn columns_reversing() {
         let mut matrix = MatPolynomialRingZq::from_str(
-            "[[1  1, 1  2, 2  3 4],[0, 1  5, 1  6]] / 3  1 2 3 mod 17",
+            "[[1  1, 1  2, 2  3 4],[0, 1  5, 1  6]] / 3  1 2 1 mod 17",
         )
         .unwrap();
-        let cmp_vec_0 = MatPolynomialRingZq::from_str("[[1  1],[0]] / 3  1 2 3 mod 17").unwrap();
-        let cmp_vec_1 = MatPolynomialRingZq::from_str("[[1  2],[1  5]] / 3  1 2 3 mod 17").unwrap();
+        let cmp_vec_0 = MatPolynomialRingZq::from_str("[[1  1],[0]] / 3  1 2 1 mod 17").unwrap();
+        let cmp_vec_1 = MatPolynomialRingZq::from_str("[[1  2],[1  5]] / 3  1 2 1 mod 17").unwrap();
         let cmp_vec_2 =
-            MatPolynomialRingZq::from_str("[[2  3 4],[1  6]] / 3  1 2 3 mod 17").unwrap();
+            MatPolynomialRingZq::from_str("[[2  3 4],[1  6]] / 3  1 2 1 mod 17").unwrap();
 
         matrix.reverse_columns();
 
@@ -900,9 +900,9 @@ mod test_reverses {
     #[test]
     fn rows_reversing() {
         let mut matrix =
-            MatPolynomialRingZq::from_str("[[1  1, 1  2],[2  3 4, 0]] / 3  1 2 3 mod 17").unwrap();
-        let cmp_vec_0 = MatPolynomialRingZq::from_str("[[1  1, 1  2]] / 3  1 2 3 mod 17").unwrap();
-        let cmp_vec_1 = MatPolynomialRingZq::from_str("[[2  3 4, 0]] / 3  1 2 3 mod 17").unwrap();
+            MatPolynomialRingZq::from_str("[[1  1, 1  2],[2  3 4, 0]] / 3  1 2 1 mod 17").unwrap();
+        let cmp_vec_0 = MatPolynomialRingZq::from_str("[[1  1, 1  2]] / 3  1 2 1 mod 17").unwrap();
+        let cmp_vec_1 = MatPolynomialRingZq::from_str("[[2  3 4, 0]] / 3  1 2 1 mod 17").unwrap();
 
         matrix.reverse_rows();
 
@@ -1023,7 +1023,7 @@ mod test_set_submatrix {
         let mut mat1 = MatPolynomialRingZq::identity(10, 10, &modulus1);
 
         let modulus2 =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 2 mod {}", u64::MAX - 1)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("4  2 0 0 1 mod {}", u64::MAX - 1)).unwrap();
         let mat2 = MatPolynomialRingZq::identity(10, 10, &modulus2);
 
         assert!(mat1.set_submatrix(0, 0, &mat2.clone(), 0, 9, 0, 9).is_err());

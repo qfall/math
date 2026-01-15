@@ -78,7 +78,7 @@ mod test_to_string {
     /// Test whether a roundtrip works
     #[test]
     fn working_keeps_same_string() {
-        let cmp_str = "3  1 2 2 mod 5";
+        let cmp_str = "3  1 2 1 mod 5";
         let cmp = ModulusPolynomialRingZq::from_str(cmp_str).unwrap();
 
         assert_eq!(cmp_str, cmp.to_string());
@@ -87,7 +87,7 @@ mod test_to_string {
     /// Test whether a string returned from to_string can be used to construct a [`ModulusPolynomialRingZq`]
     #[test]
     fn working_use_result_of_to_string() {
-        let cmp_str = "3  1 2 2 mod 5";
+        let cmp_str = "3  1 2 1 mod 5";
         let cmp = ModulusPolynomialRingZq::from_str(cmp_str).unwrap();
         let str_1 = cmp.to_string();
 

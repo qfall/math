@@ -44,7 +44,7 @@ impl IntoCoefficientEmbedding<(MatZq, ModulusPolynomialRingZq)> for &MatPolynomi
     ///     traits::IntoCoefficientEmbedding,
     /// };
     ///
-    /// let poly = MatPolynomialRingZq::from_str("[[1  1, 2  1 2],[1  -1, 2  -1 -2]] / 3  1 2 3 mod 17").unwrap();
+    /// let poly = MatPolynomialRingZq::from_str("[[1  1, 2  1 2],[1  -1, 2  -1 -2]] / 3  1 2 1 mod 17").unwrap();
     /// let embedding = poly.into_coefficient_embedding(2);
     /// let cmp_mat = MatZq::from_str("[[1, 1],[0, 2],[-1, -1],[0, -2]] mod 17").unwrap();
     /// assert_eq!((cmp_mat, poly.get_mod()), embedding);
@@ -105,9 +105,9 @@ impl FromCoefficientEmbedding<(&MatZq, &ModulusPolynomialRingZq, i64)> for MatPo
     /// };
     ///
     /// let matrix = MatZq::from_str("[[17, 1],[3, 2],[-5, 3],[1, 2]] mod 19").unwrap();
-    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 2 3 4 mod 19").unwrap();
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 2 3 1 mod 19").unwrap();
     /// let mat = MatPolynomialRingZq::from_coefficient_embedding((&matrix, &modulus, 1));
-    /// let cmp_mat = MatPolynomialRingZq::from_str("[[2  17 3, 2  1 2],[2  -5 1, 2  3 2]] / 4  1 2 3 4 mod 19").unwrap();
+    /// let cmp_mat = MatPolynomialRingZq::from_str("[[2  17 3, 2  1 2],[2  -5 1, 2  3 2]] / 4  1 2 3 1 mod 19").unwrap();
     /// assert_eq!(cmp_mat, mat);
     /// ```
     ///
@@ -164,7 +164,7 @@ mod test_into_coefficient_embedding {
     #[test]
     fn standard_basis() {
         let standard_basis = MatPolynomialRingZq::from_str(
-            "[[1  1, 2  0 1, 3  0 0 1],[1  1, 2  0 1, 3  0 0 1]] / 4  1 2 3 4 mod 17",
+            "[[1  1, 2  0 1, 3  0 0 1],[1  1, 2  0 1, 3  0 0 1]] / 4  1 2 3 1 mod 17",
         )
         .unwrap();
 
@@ -184,7 +184,7 @@ mod test_into_coefficient_embedding {
     #[test]
     fn standard_basis_vector() {
         let standard_basis =
-            MatPolynomialRingZq::from_str("[[1  1, 2  0 1]] / 3  1 2 3 mod 17").unwrap();
+            MatPolynomialRingZq::from_str("[[1  1, 2  0 1]] / 3  1 2 1 mod 17").unwrap();
 
         let basis = standard_basis.into_coefficient_embedding(3);
 
@@ -195,7 +195,7 @@ mod test_into_coefficient_embedding {
     #[test]
     fn large_entries() {
         let poly = MatPolynomialRingZq::from_str(&format!(
-            "[[3  17 {} {}, 1  1],[1  1, 2  0 1]] / 4  1 2 3 4 mod {}",
+            "[[3  17 {} {}, 1  1],[1  1, 2  0 1]] / 4  1 2 3 1 mod {}",
             i64::MAX,
             i64::MIN,
             u64::MAX
@@ -220,7 +220,7 @@ mod test_into_coefficient_embedding {
     #[test]
     fn large_entries_vector() {
         let poly = MatPolynomialRingZq::from_str(&format!(
-            "[[3  17 {} {}, 1  1]] / 4  1 2 3 4 mod {}",
+            "[[3  17 {} {}, 1  1]] / 4  1 2 3 1 mod {}",
             i64::MAX,
             i64::MIN,
             u64::MAX
@@ -244,7 +244,7 @@ mod test_into_coefficient_embedding {
     #[should_panic]
     fn size_too_small() {
         let poly =
-            MatPolynomialRingZq::from_str("[[3  17 5 7, 2  0 1],[1  1, 1  1]] / 4  1 2 3 4 mod 19")
+            MatPolynomialRingZq::from_str("[[3  17 5 7, 2  0 1],[1  1, 1  1]] / 4  1 2 3 1 mod 19")
                 .unwrap();
 
         let _ = poly.into_coefficient_embedding(2);
@@ -255,7 +255,7 @@ mod test_into_coefficient_embedding {
     #[should_panic]
     fn size_too_small_vector() {
         let poly =
-            MatPolynomialRingZq::from_str("[[3  17 5 7, 2  0 1]] / 4  1 2 3 4 mod 19").unwrap();
+            MatPolynomialRingZq::from_str("[[3  17 5 7, 2  0 1]] / 4  1 2 3 1 mod 19").unwrap();
 
         let _ = poly.into_coefficient_embedding(2);
     }
@@ -278,12 +278,12 @@ mod test_from_coefficient_embedding {
         ))
         .unwrap();
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 2 3 4 mod {}", u64::MAX)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("4  1 2 3 1 mod {}", u64::MAX)).unwrap();
 
         let poly = MatPolynomialRingZq::from_coefficient_embedding((&matrix, &modulus, 0));
 
         let cmp_poly = MatPolynomialRingZq::from_str(&format!(
-            "[[1  17, 0],[1  {}, 1  -1],[1  {}, 0]] / 4  1 2 3 4 mod {}",
+            "[[1  17, 0],[1  {}, 1  -1],[1  {}, 0]] / 4  1 2 3 1 mod {}",
             i64::MAX,
             i64::MIN,
             u64::MAX
@@ -303,12 +303,12 @@ mod test_from_coefficient_embedding {
         ))
         .unwrap();
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 2 3 4 mod {}", u64::MAX)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("4  1 2 3 1 mod {}", u64::MAX)).unwrap();
 
         let poly = MatPolynomialRingZq::from_coefficient_embedding((&matrix, &modulus, 2));
 
         let cmp_poly = MatPolynomialRingZq::from_str(&format!(
-            "[[3  17 {} {}, 2  0 -1]] / 4  1 2 3 4 mod {}",
+            "[[3  17 {} {}, 2  0 -1]] / 4  1 2 3 1 mod {}",
             i64::MAX,
             i64::MIN,
             u64::MAX
@@ -330,7 +330,7 @@ mod test_from_coefficient_embedding {
         ))
         .unwrap();
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 2 3 4 mod {}", u64::MAX)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("4  1 2 3 1 mod {}", u64::MAX)).unwrap();
 
         let _ = MatPolynomialRingZq::from_coefficient_embedding((&matrix, &modulus, 1));
     }
@@ -346,7 +346,7 @@ mod test_from_coefficient_embedding {
         ))
         .unwrap();
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 2 3 4 mod {}", u64::MAX)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("4  1 2 3 1 mod {}", u64::MAX)).unwrap();
 
         let _ = MatPolynomialRingZq::from_coefficient_embedding((&matrix, &modulus, 3));
     }

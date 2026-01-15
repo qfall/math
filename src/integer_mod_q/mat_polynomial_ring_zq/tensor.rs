@@ -30,14 +30,14 @@ impl Tensor for MatPolynomialRingZq {
     /// use qfall_math::traits::Tensor;
     /// use std::str::FromStr;
     ///
-    /// let mat_1 = MatPolynomialRingZq::from_str("[[1  1, 2  1 1]] / 3  1 2 3 mod 17").unwrap();
-    /// let mat_2 = MatPolynomialRingZq::from_str("[[1  1, 1  2]] / 3  1 2 3 mod 17").unwrap();
+    /// let mat_1 = MatPolynomialRingZq::from_str("[[1  1, 2  1 1]] / 3  1 2 1 mod 17").unwrap();
+    /// let mat_2 = MatPolynomialRingZq::from_str("[[1  1, 1  2]] / 3  1 2 1 mod 17").unwrap();
     ///
     /// let mat_ab = mat_1.tensor_product(&mat_2);
     /// let mat_ba = mat_2.tensor_product(&mat_1);
     ///
-    /// let res_ab = "[[1  1, 1  2, 2  1 1, 2  2 2]] / 3  1 2 3 mod 17";
-    /// let res_ba = "[[1  1, 2  1 1, 1  2, 2  2 2]] / 3  1 2 3 mod 17";
+    /// let res_ab = "[[1  1, 1  2, 2  1 1, 2  2 2]] / 3  1 2 1 mod 17";
+    /// let res_ba = "[[1  1, 2  1 1, 1  2, 2  2 2]] / 3  1 2 1 mod 17";
     /// assert_eq!(mat_ab, MatPolynomialRingZq::from_str(res_ab).unwrap());
     /// assert_eq!(mat_ba, MatPolynomialRingZq::from_str(res_ba).unwrap());
     /// ```
@@ -64,14 +64,14 @@ impl MatPolynomialRingZq {
     /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
     /// use std::str::FromStr;
     ///
-    /// let mat_1 = MatPolynomialRingZq::from_str("[[1  1, 2  1 1]] / 3  1 2 3 mod 17").unwrap();
-    /// let mat_2 = MatPolynomialRingZq::from_str("[[1  1, 1  2]] / 3  1 2 3 mod 17").unwrap();
+    /// let mat_1 = MatPolynomialRingZq::from_str("[[1  1, 2  1 1]] / 3  1 2 1 mod 17").unwrap();
+    /// let mat_2 = MatPolynomialRingZq::from_str("[[1  1, 1  2]] / 3  1 2 1 mod 17").unwrap();
     ///
     /// let mat_ab = mat_1.tensor_product_safe(&mat_2).unwrap();
     /// let mat_ba = mat_2.tensor_product_safe(&mat_1).unwrap();
     ///
-    /// let res_ab = "[[1  1, 1  2, 2  1 1, 2  2 2]] / 3  1 2 3 mod 17";
-    /// let res_ba = "[[1  1, 2  1 1, 1  2, 2  2 2]] / 3  1 2 3 mod 17";
+    /// let res_ab = "[[1  1, 1  2, 2  1 1, 2  2 2]] / 3  1 2 1 mod 17";
+    /// let res_ba = "[[1  1, 2  1 1, 1  2, 2  2 2]] / 3  1 2 1 mod 17";
     /// assert_eq!(mat_ab, MatPolynomialRingZq::from_str(res_ab).unwrap());
     /// assert_eq!(mat_ba, MatPolynomialRingZq::from_str(res_ba).unwrap());
     /// ```
@@ -175,7 +175,7 @@ mod test_tensor {
     /// Ensure that the dimensions of the tensor product are taken over correctly.
     #[test]
     fn dimensions_fit() {
-        let mod_poly = ModulusPolynomialRingZq::from_str("3  1 2 3 mod 17").unwrap();
+        let mod_poly = ModulusPolynomialRingZq::from_str("3  1 2 1 mod 17").unwrap();
         let mat_1 = MatPolynomialRingZq::new(17, 13, &mod_poly);
         let mat_2 = MatPolynomialRingZq::new(3, 4, &mod_poly);
 
@@ -189,10 +189,10 @@ mod test_tensor {
     #[test]
     fn identity() {
         let mod_poly =
-            ModulusPolynomialRingZq::from_str(&format!("3  1 2 3 mod {}", u64::MAX)).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("3  1 2 1 mod {}", u64::MAX)).unwrap();
         let identity = MatPolynomialRingZq::identity(2, 2, &mod_poly);
         let mat_1 = MatPolynomialRingZq::from_str(&format!(
-            "[[1  1, 1  {}, 1  1],[0, 1  {}, 1  -1]] / 3  1 2 3 mod {}",
+            "[[1  1, 1  {}, 1  1],[0, 1  {}, 1  -1]] / 3  1 2 1 mod {}",
             i64::MAX,
             i64::MIN,
             u64::MAX
@@ -203,7 +203,7 @@ mod test_tensor {
         let mat_3 = mat_1.tensor_product(&identity);
 
         let cmp_mat_2 = MatPolynomialRingZq::from_str(&format!(
-            "[[1  1, 1  {}, 1  1, 0, 0, 0],[0, 1  {}, 1  -1, 0, 0, 0],[0, 0, 0, 1  1, 1  {}, 1  1],[0, 0, 0, 0, 1  {}, 1  -1]] / 3  1 2 3 mod {}",
+            "[[1  1, 1  {}, 1  1, 0, 0, 0],[0, 1  {}, 1  -1, 0, 0, 0],[0, 0, 0, 1  1, 1  {}, 1  1],[0, 0, 0, 0, 1  {}, 1  -1]] / 3  1 2 1 mod {}",
             i64::MAX,
             i64::MIN,
             i64::MAX,
@@ -212,7 +212,7 @@ mod test_tensor {
         ))
         .unwrap();
         let cmp_mat_3 = MatPolynomialRingZq::from_str(&format!(
-            "[[1  1, 0, 1  {}, 0, 1  1, 0],[0, 1  1, 0, 1  {}, 0, 1  1],[0, 0, 1  {}, 0, 1  -1, 0],[0, 0, 0, 1  {}, 0, 1  -1]] / 3  1 2 3 mod {}",
+            "[[1  1, 0, 1  {}, 0, 1  1, 0],[0, 1  1, 0, 1  {}, 0, 1  1],[0, 0, 1  {}, 0, 1  -1, 0],[0, 0, 0, 1  {}, 0, 1  -1]] / 3  1 2 1 mod {}",
             i64::MAX,
             i64::MAX,
             i64::MIN,
@@ -229,10 +229,10 @@ mod test_tensor {
     #[test]
     fn vector_matrix() {
         let vector =
-            MatPolynomialRingZq::from_str(&format!("[[1  1],[1  -1]] / 3  1 2 3 mod {}", u64::MAX))
+            MatPolynomialRingZq::from_str(&format!("[[1  1],[1  -1]] / 3  1 2 1 mod {}", u64::MAX))
                 .unwrap();
         let mat_1 = MatPolynomialRingZq::from_str(&format!(
-            "[[1  1, 1  {}, 1  1],[0, 1  {}, 1  -1]] / 3  1 2 3 mod {}",
+            "[[1  1, 1  {}, 1  1],[0, 1  {}, 1  -1]] / 3  1 2 1 mod {}",
             i64::MAX,
             i64::MAX,
             u64::MAX
@@ -243,7 +243,7 @@ mod test_tensor {
         let mat_3 = mat_1.tensor_product(&vector);
 
         let cmp_mat_2 = MatPolynomialRingZq::from_str(&format!(
-            "[[1  1, 1  {}, 1  1],[0, 1  {}, 1  -1],[1  -1, 1  -{}, 1  -1],[0, 1  -{}, 1  1]] / 3  1 2 3 mod {}",
+            "[[1  1, 1  {}, 1  1],[0, 1  {}, 1  -1],[1  -1, 1  -{}, 1  -1],[0, 1  -{}, 1  1]] / 3  1 2 1 mod {}",
             i64::MAX,
             i64::MAX,
             i64::MAX,
@@ -252,7 +252,7 @@ mod test_tensor {
         ))
         .unwrap();
         let cmp_mat_3 = MatPolynomialRingZq::from_str(&format!(
-            "[[1  1, 1  {}, 1  1],[1  -1, 1  -{}, 1  -1],[0, 1  {}, 1  -1],[0, 1  -{}, 1  1]] / 3  1 2 3 mod {}",
+            "[[1  1, 1  {}, 1  1],[1  -1, 1  -{}, 1  -1],[0, 1  {}, 1  -1],[0, 1  -{}, 1  1]] / 3  1 2 1 mod {}",
             i64::MAX,
             i64::MAX,
             i64::MAX,
@@ -269,10 +269,10 @@ mod test_tensor {
     #[test]
     fn vector_vector() {
         let vec_1 =
-            MatPolynomialRingZq::from_str(&format!("[[1  2],[1  1]] / 3  1 2 3 mod {}", u64::MAX))
+            MatPolynomialRingZq::from_str(&format!("[[1  2],[1  1]] / 3  1 2 1 mod {}", u64::MAX))
                 .unwrap();
         let vec_2 = MatPolynomialRingZq::from_str(&format!(
-            "[[1  {}],[1  {}]] / 3  1 2 3 mod {}",
+            "[[1  {}],[1  {}]] / 3  1 2 1 mod {}",
             (u64::MAX - 1) / 2,
             i64::MIN / 2,
             u64::MAX
@@ -283,7 +283,7 @@ mod test_tensor {
         let vec_4 = vec_2.tensor_product(&vec_1);
 
         let cmp_vec_3 = MatPolynomialRingZq::from_str(&format!(
-            "[[1  {}],[1  {}],[1  {}],[1  {}]] / 3  1 2 3 mod {}",
+            "[[1  {}],[1  {}],[1  {}],[1  {}]] / 3  1 2 1 mod {}",
             u64::MAX - 1,
             i64::MIN,
             (u64::MAX - 1) / 2,
@@ -292,7 +292,7 @@ mod test_tensor {
         ))
         .unwrap();
         let cmp_vec_4 = MatPolynomialRingZq::from_str(&format!(
-            "[[1  {}],[1  {}],[1  {}],[1  {}]] / 3  1 2 3 mod {}",
+            "[[1  {}],[1  {}],[1  {}],[1  {}]] / 3  1 2 1 mod {}",
             u64::MAX - 1,
             (u64::MAX - 1) / 2,
             i64::MIN,
@@ -309,12 +309,12 @@ mod test_tensor {
     #[test]
     fn higher_degree() {
         let higher_degree = MatPolynomialRingZq::from_str(&format!(
-            "[[1  1, 2  0 1, 2  1 1]] / 3  1 2 3 mod {}",
+            "[[1  1, 2  0 1, 2  1 1]] / 3  1 2 1 mod {}",
             u64::MAX
         ))
         .unwrap();
         let mat_1 = MatPolynomialRingZq::from_str(&format!(
-            "[[1  1, 1  {}, 2  1 {}]] / 3  1 2 3 mod {}",
+            "[[1  1, 1  {}, 2  1 {}]] / 3  1 2 1 mod {}",
             i64::MAX,
             i64::MIN,
             u64::MAX
@@ -324,7 +324,7 @@ mod test_tensor {
         let mat_2 = higher_degree.tensor_product(&mat_1);
 
         let cmp_mat_2 = MatPolynomialRingZq::from_str(&format!(
-            "[[1  1, 1  {}, 2  1 {}, 2  0 1, 2  0 {}, 3  0 1 {}, 2  1 1, 2  {} {}, 3  1 {} {}]] / 3  1 2 3 mod {}",
+            "[[1  1, 1  {}, 2  1 {}, 2  0 1, 2  0 {}, 3  0 1 {}, 2  1 1, 2  {} {}, 3  1 {} {}]] / 3  1 2 1 mod {}",
             i64::MAX,
             i64::MIN,
             i64::MAX,
@@ -344,8 +344,8 @@ mod test_tensor {
     #[test]
     #[should_panic]
     fn moduli_mismatch_panic() {
-        let mod_poly_1 = ModulusPolynomialRingZq::from_str("3  1 2 3 mod 17").unwrap();
-        let mod_poly_2 = ModulusPolynomialRingZq::from_str("3  1 2 3 mod 16").unwrap();
+        let mod_poly_1 = ModulusPolynomialRingZq::from_str("3  1 2 1 mod 17").unwrap();
+        let mod_poly_2 = ModulusPolynomialRingZq::from_str("3  1 2 1 mod 16").unwrap();
         let mat_1 = MatPolynomialRingZq::new(17, 13, &mod_poly_1);
         let mat_2 = MatPolynomialRingZq::new(3, 4, &mod_poly_2);
 
@@ -355,8 +355,8 @@ mod test_tensor {
     /// Ensure that the safe version of the tensor product returns an error, if the moduli mismatch.
     #[test]
     fn moduli_mismatch_error() {
-        let mod_poly_1 = ModulusPolynomialRingZq::from_str("3  1 2 3 mod 17").unwrap();
-        let mod_poly_2 = ModulusPolynomialRingZq::from_str("3  1 2 3 mod 16").unwrap();
+        let mod_poly_1 = ModulusPolynomialRingZq::from_str("3  1 2 1 mod 17").unwrap();
+        let mod_poly_2 = ModulusPolynomialRingZq::from_str("3  1 2 1 mod 16").unwrap();
         let mat_1 = MatPolynomialRingZq::new(17, 13, &mod_poly_1);
         let mat_2 = MatPolynomialRingZq::new(3, 4, &mod_poly_2);
 

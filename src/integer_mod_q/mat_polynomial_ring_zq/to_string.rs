@@ -18,13 +18,13 @@ impl From<&MatPolynomialRingZq> for String {
     /// Parameters:
     /// - `value`: specifies the matrix that will be represented as a [`String`]
     ///
-    /// Returns a [`String`] of the form `"[[poly_1, poly_2, poly_3],[poly_4, poly_5, poly_6]] / poly_7 mod q"`.
+    /// Returns a [`String`] of the form `"[[poly_1, poly_2, poly_3],[poly_4, poly_5, poly_6]] / poly_1 mod q"`.
     ///
     /// # Examples
     /// ```
     /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
     /// use std::str::FromStr;
-    /// let matrix = MatPolynomialRingZq::from_str("[[2  2 2, 1  2],[0, 1  3]] / 2  4 4 mod 3").unwrap();
+    /// let matrix = MatPolynomialRingZq::from_str("[[2  2 2, 1  2],[0, 1  3]] / 2  4 1 mod 3").unwrap();
     ///
     /// let string: String = matrix.into();
     /// ```
@@ -95,7 +95,7 @@ mod test_to_string {
     #[test]
     fn reduced() {
         let cmp =
-            MatPolynomialRingZq::from_str("[[2  2 2, 1  1, 0],[1  5, 1  6, 1  7]] / 2  4 4 mod 3")
+            MatPolynomialRingZq::from_str("[[2  2 2, 1  1, 0],[1  5, 1  6, 1  7]] / 2  4 1 mod 3")
                 .unwrap();
 
         assert_eq!(
