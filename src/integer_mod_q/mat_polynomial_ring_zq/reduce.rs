@@ -40,7 +40,7 @@ impl MatPolynomialRingZq {
     pub(crate) fn reduce(&mut self) {
         for row_num in 0..self.matrix.get_num_rows() {
             for column_num in 0..self.matrix.get_num_columns() {
-                self.reduce_entry(row_num, column_num);
+                unsafe { self.reduce_entry(row_num, column_num) };
             }
         }
     }
@@ -62,9 +62,9 @@ impl MatPolynomialRingZq {
     /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
     /// let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
     ///
-    /// poly_ring_mat.reduce_entry(0, 0)
+    /// unsafe { poly_ring_mat.reduce_entry(0, 0) };
     /// ```
-    pub(crate) fn reduce_entry(&mut self, row: i64, column: i64) {
+    pub(crate) unsafe fn reduce_entry(&mut self, row: i64, column: i64) {
         let entry = unsafe { fmpz_poly_mat_entry(&self.matrix.matrix, row, column) };
         if (unsafe { *entry }).length > 0 {
             unsafe {

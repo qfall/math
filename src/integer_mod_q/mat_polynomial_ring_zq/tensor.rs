@@ -154,12 +154,12 @@ unsafe fn set_matrix_window_mul(
                     ),
                     &scalar.poly,
                     fmpz_poly_mat_entry(&matrix.matrix.matrix, i_other, j_other),
-                )
+                );
+                out.reduce_entry(
+                    row_left * rows_other + i_other,
+                    column_upper * columns_other + j_other,
+                );
             }
-            out.reduce_entry(
-                row_left * rows_other + i_other,
-                column_upper * columns_other + j_other,
-            );
         }
     }
 }

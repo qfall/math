@@ -6,7 +6,7 @@
 // the terms of the Mozilla Public License Version 2.0 as published by the
 // Mozilla Foundation. See <https://mozilla.org/en-US/MPL/2.0/>.
 
-//! Implementations to reduce a [`MatPolynomialRingZq`] with the
+//! Implementations to reduce a [`MatPolynomialRingZq`](crate::integer_mod_q::MatPolynomialRingZq) with the
 //! [`ModulusPolynomialRingZq`](crate::integer_mod_q::ModulusPolynomialRingZq).
 //! Only contains internal functions for reductions.
 

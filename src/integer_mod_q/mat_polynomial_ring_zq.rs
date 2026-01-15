@@ -31,6 +31,7 @@ mod sort;
 mod tensor;
 mod to_string;
 mod transpose;
+mod unsafe_functions;
 mod vector;
 
 /// [`MatPolynomialRingZq`] is a matrix with entries of type [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq).
