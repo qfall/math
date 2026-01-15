@@ -37,7 +37,7 @@ impl IntoCoefficientEmbedding<MatZq> for &ModulusPolynomialRingZq {
     ///
     /// let poly = ModulusPolynomialRingZq::from_str("3  17 3 1 mod 19").unwrap();
     /// let vector = poly.into_coefficient_embedding(4);
-    /// let cmp_vector = MatZq::from_str("[[17],[3],[-5],[0]] mod 19").unwrap();
+    /// let cmp_vector = MatZq::from_str("[[17],[3],[1],[0]] mod 19").unwrap();
     /// assert_eq!(cmp_vector, vector);
     /// ```
     ///
@@ -82,7 +82,7 @@ impl FromCoefficientEmbedding<&MatZq> for ModulusPolynomialRingZq {
     ///     traits::FromCoefficientEmbedding,
     /// };
     ///
-    /// let vector = MatZq::from_str("[[17],[3],[-5]] mod 19").unwrap();
+    /// let vector = MatZq::from_str("[[17],[3],[1]] mod 19").unwrap();
     /// let poly = ModulusPolynomialRingZq::from_coefficient_embedding(&vector);
     /// let cmp_poly = ModulusPolynomialRingZq::from_str("3  17 3 1 mod 19").unwrap();
     /// assert_eq!(cmp_poly, poly);

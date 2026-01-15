@@ -22,7 +22,7 @@ impl ModulusPolynomialRingZq {
     /// use qfall_math::{integer::Z, integer_mod_q::ModulusPolynomialRingZq};
     /// use std::str::FromStr;
     ///
-    /// let poly = ModulusPolynomialRingZq::from_str("3  1 2 1 mod 11").unwrap();
+    /// let poly = ModulusPolynomialRingZq::from_str("3  3 2 1 mod 11").unwrap();
     ///
     /// let sqrd_2_norm = poly.norm_eucl_sqrd();
     ///
@@ -43,7 +43,7 @@ impl ModulusPolynomialRingZq {
     /// use qfall_math::{integer::Z, integer_mod_q::ModulusPolynomialRingZq};
     /// use std::str::FromStr;
     ///
-    /// let poly = ModulusPolynomialRingZq::from_str("3  1 2 1 mod 7").unwrap();
+    /// let poly = ModulusPolynomialRingZq::from_str("3  4 2 1 mod 7").unwrap();
     ///
     /// let infty_norm = poly.norm_infty();
     ///

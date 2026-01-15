@@ -36,7 +36,7 @@ impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for ModulusPolynomialRingZq {
     /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;
     ///
-    /// let poly = PolyOverZ::from_str("4  0 1 102 3").unwrap();
+    /// let poly = PolyOverZ::from_str("4  0 1 102 1").unwrap();
     ///
     /// let mod_poly = ModulusPolynomialRingZq::from((&poly, 100));
     ///
@@ -72,7 +72,7 @@ impl<Mod: Into<Modulus>> From<(PolyOverZ, Mod)> for ModulusPolynomialRingZq {
     /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;
     ///
-    /// let poly = PolyOverZ::from_str("4  0 1 102 3").unwrap();
+    /// let poly = PolyOverZ::from_str("4  0 1 102 1").unwrap();
     ///
     /// let mod_poly = ModulusPolynomialRingZq::from((poly, 100));
     ///
