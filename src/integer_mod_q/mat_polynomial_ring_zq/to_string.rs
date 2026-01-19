@@ -18,7 +18,7 @@ impl From<&MatPolynomialRingZq> for String {
     /// Parameters:
     /// - `value`: specifies the matrix that will be represented as a [`String`]
     ///
-    /// Returns a [`String`] of the form `"[[poly_1, poly_2, poly_3],[poly_4, poly_5, poly_6]] / poly_1 mod q"`.
+    /// Returns a [`String`] of the form `"[[poly_1, poly_2, poly_3],[poly_4, poly_5, poly_6]] / poly_7 mod q"`.
     ///
     /// # Examples
     /// ```

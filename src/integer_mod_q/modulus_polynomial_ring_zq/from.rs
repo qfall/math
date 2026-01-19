@@ -300,10 +300,10 @@ mod test_try_from_integer_mod {
         let _ = ModulusPolynomialRingZq::from_str("3  3 0 1 mod 18").unwrap();
     }
 
-    /// Ensure that the function panics if the modulus polynomial is 0
+    /// Ensure that the function panics if the modulus polynomial is a constant polynomial
     #[test]
     #[should_panic]
-    fn panic_degree_1() {
+    fn panic_degree_0() {
         let poly = PolyOverZ::from_str("1 1").unwrap();
         let _ = ModulusPolynomialRingZq::from((poly, 17));
     }

@@ -15,8 +15,10 @@
 // hence no reduction is performed in the check.
 
 use super::MatPolynomialRingZq;
-use crate::{traits::MatrixDimensions, utils::reduce::internal_reduce};
-use flint_sys::{fmpz_poly::_fmpz_poly_normalise, fmpz_poly_mat::fmpz_poly_mat_entry};
+use crate::{
+    integer::fmpz_poly_helpers::reduce_fmpz_poly_by_fmpz_mod_poly_sparse, traits::MatrixDimensions,
+};
+use flint_sys::fmpz_poly_mat::fmpz_poly_mat_entry;
 
 impl MatPolynomialRingZq {
     /// This function manually applies the modulus
@@ -68,18 +70,13 @@ impl MatPolynomialRingZq {
         let entry = unsafe { fmpz_poly_mat_entry(&self.matrix.matrix, row, column) };
         if (unsafe { *entry }).length > 0 {
             unsafe {
-                internal_reduce(
+                reduce_fmpz_poly_by_fmpz_mod_poly_sparse(
                     &mut *entry,
-                    ((*entry).length - 1) as usize,
                     &self.modulus.modulus.poly,
-                    self.modulus.get_degree() as usize,
-                    self.modulus.get_q_as_modulus().get_fmpz_mod_ctx_struct(),
                     &self.modulus.non_zero,
+                    self.modulus.get_q_as_modulus().get_fmpz_mod_ctx_struct(),
                 )
             }
-            unsafe {
-                _fmpz_poly_normalise(entry);
-            };
         }
     }
 }

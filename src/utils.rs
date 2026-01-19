@@ -15,7 +15,6 @@ pub(crate) mod dimensions;
 mod factorization;
 pub mod index;
 pub(crate) mod parse;
-pub mod reduce;
 pub mod sample;
 
 pub use factorization::Factorization;

@@ -57,7 +57,7 @@ impl FromStr for MatPolynomialRingZq {
     /// string `"4  0 1 2 3"` is the same as `"4  0 1 2 3 4 5 6 7"`.
     ///
     /// Parameters:
-    /// - `string`: the matrix of form: `"[[poly_1, poly_2, poly_3],[poly_4, poly_5, poly_6]] / poly_1 mod 11"`
+    /// - `string`: the matrix of form: `"[[poly_1, poly_2, poly_3],[poly_4, poly_5, poly_6]] / poly_7 mod 11"`
     ///   for a 2x3 matrix where the first three polynomials are in the first row,
     ///   the second three are in the second row, and the seventh polynomial and 11 form the modulus.
     ///
