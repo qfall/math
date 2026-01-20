@@ -3,7 +3,7 @@
 [<img alt="crates.io" src="https://img.shields.io/badge/qfall--math-cratesio?style=for-the-badge&logo=rust&label=crates&color=fc8d62" height="20">](https://crates.io/crates/qfall-math)
 [<img alt="docs.rs" src="https://img.shields.io/badge/qfall--math-docs?style=for-the-badge&logo=docs.rs&label=docs.rs&color=66c2a5" height="20">](https://docs.rs/qfall-math)
 [<img alt="tutorial" src="https://img.shields.io/badge/book-tutorial?style=for-the-badge&logo=mdBook&label=Tutorial&color=ffd92f" height="20">](https://qfall.github.io/book)
-[<img alt="build" src="https://img.shields.io/github/actions/workflow/status/qfall/math/push.yml?branch=main&style=for-the-badge" height="20">](https://github.com/qfall/math/actions/workflows/push.yml)
+[<img alt="build" src="https://img.shields.io/github/actions/workflow/status/qfall/math/main.yml?branch=main&style=for-the-badge" height="20">](https://github.com/qfall/math/actions/workflows/main.yml)
 [<img alt="license" src="https://img.shields.io/badge/License-MPL_2.0-blue.svg?style=for-the-badge" height="20">](https://github.com/qfall/math/blob/dev/LICENSE)
 
 `qFALL` is a prototyping library for lattice-based cryptography.
