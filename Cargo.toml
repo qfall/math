@@ -3,7 +3,7 @@ name = "qfall-math"
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.85" # due to rand and rand_distr dependency
-description = "Prototyping Library for Lattice-Based Cryptography"
+description = "Mathematical foundations for rapid prototyping of lattice-based cryptography"
 readme = "README.md"
 homepage = "https://qfall.github.io"
 repository = "https://github.com/qfall/math"
@@ -14,19 +14,19 @@ autobenches = false
 
 [dependencies]
 criterion = { version = "0.8", features = ["html_reports"] }
-flint-sys = "0.7.3"
-libc = "0.2"
-paste = "1.0"
-rand = "0.9"
-rand_distr = "0.5"
+flint-sys = "0.7"
+libc = "0"
+paste = "1"
+rand = "0"
+rand_distr = "0"
 regex = "1"
-serde = {version="1.0", features=["derive"]}
-serde_json = "1.0"
+serde = {version="1", features=["derive"]}
+serde_json = "1"
 string-builder = "0.2"
-thiserror = "2.0"
-lazy_static = "1.4"
-probability = "0.20.3"
-derive_more = { version = "2.0.1", features = ["display"] }
+thiserror = "2"
+lazy_static = "1"
+probability = "0.20"
+derive_more = { version = "2.1", features = ["display"] }
 
 [profile.bench]
 debug = true

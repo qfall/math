@@ -1,4 +1,4 @@
-// Copyright © 2023 Marcel Luca Schmidt
+// Copyright © 2023 Marcel Luca Schmidt, Niklas Siemer
 //
 // This file is part of qFALL-math.
 //
@@ -15,10 +15,9 @@
 //! - Rationals such as [Q](rational::Q), [`MatQ`](rational::MatQ), [`PolyOverQ`](rational::PolyOverQ).
 //!
 //! The `qFALL` project contains two more crates called [`qFALL-tools`](https://crates.io/crates/qfall-tools)
-//! and [`qFALL-schemes`](https://github.com/qfall/schemes) to support prototyping.
+//! and [`qFALL-schemes`](https://crates.io/crates/qfall-schemes) to support prototyping.
 //! - Find further information on [our website](https://qfall.github.io/).
 //! - We recommend [our tutorial](https://qfall.github.io/book) to start working with qFALL.
-//!
 //!
 //! ## Quick Example
 //! ```

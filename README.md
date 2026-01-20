@@ -6,7 +6,7 @@
 [<img alt="build" src="https://img.shields.io/github/actions/workflow/status/qfall/math/push.yml?branch=main&style=for-the-badge" height="20">](https://github.com/qfall/math/actions/workflows/push.yml)
 [<img alt="license" src="https://img.shields.io/badge/License-MPL_2.0-blue.svg?style=for-the-badge" height="20">](https://github.com/qfall/math/blob/dev/LICENSE)
 
-`qFALL` is a prototyping library for lattice-based constructions.
+`qFALL` is a prototyping library for lattice-based cryptography.
 This `math`-crate is a memory-safe wrapper of [FLINT](https://flintlib.org/) in Rust, which provides several additional features often used in lattice-based cryptography. This crate is the foundation of the [qFALL project](https://qfall.github.io) containing further crates for prototyping of lattice-based cryptography.
 
 ## Quick-Start
@@ -21,7 +21,7 @@ Then, add you can add this crate to your project by executing the following comm
 ```bash
 cargo add qfall-math
 ```
-- Find further information on [our website](https://qfall.github.io/). Also check out [`qfall-tools`](https://github.com/qfall/tools) and [`qfall-schemes`](https://github.com/qfall/schemes).
+- Find further information on [our website](https://qfall.github.io/). Also check out [`qfall-tools`](https://crates.io/crates/qfall-tools) and [`qfall-schemes`](https://crates.io/crates/qfall-schemes).
 - Read the [documentation of this crate](https://docs.rs/qfall-math).
 - We recommend [our tutorial](https://qfall.github.io/book) to start working with qFALL.
 
@@ -90,15 +90,21 @@ See [Contributing](https://github.com/qfall/math/blob/dev/CONTRIBUTING.md) for d
 
 Please use the following bibtex entry to cite [qFALL](https://qfall.github.io).
 
-```text
-TODO: Update to eprint
+```bibtex
+@misc{qfall,
+      author = {Marvin Beckmann and Phil Milewski and Laurens Porzenheim and Marcel Luca Schmidt and Jan Niklas Siemer},
+      title = {{qFALL} – {Rapid Prototyping of Lattice-based Cryptography}},
+      howpublished = {Cryptology {ePrint} Archive, Paper 2026/069},
+      year = {2026},
+      url = {https://eprint.iacr.org/2026/069}
+}
 ```
 
 ## Dependencies
-This project uses the C-based, optimized math-library [FLINT](https://flintlib.org/). We tested our use of FLINT extensively to ensure that you can not introduce memory-leaks by using our library.
-If you need a function supported by FLINT that is not supported by this crate, we have created an `unsafe` passthrough to access and operate on FLINT's structs directly.
+This project uses the C-based, optimised math-library [FLINT](https://flintlib.org/). We tested our use of FLINT extensively to ensure that you can not introduce memory-leaks by using our crate.
+If you need a function supported by FLINT that is not supported by this crate, this crate offers an `unsafe` passthrough to access and operate on FLINT's structs directly.
 
-Furthermore, we utilized [serde](https://crates.io/crates/serde) and [serde_json](https://crates.io/crates/serde_json) to (de-)serialize objects to and from JSON. Last, but not least, our sampling algorithms use the [rand](https://crates.io/crates/rand)-crate to generate uniformly random bits. An extensive list can be found in our `Cargo.toml` file.
+Furthermore, we utilise [serde](https://crates.io/crates/serde) and [serde_json](https://crates.io/crates/serde_json) to (de-)serialize objects to and from JSON. This crate relies on [criterion](https://crates.io/crates/criterion) for benchmarking purposes. Last, but not least, our sampling algorithms use the [rand](https://crates.io/crates/rand)-crate to generate uniformly random bits. An extensive list can be found in our `Cargo.toml` file.
 
 ## License
 
