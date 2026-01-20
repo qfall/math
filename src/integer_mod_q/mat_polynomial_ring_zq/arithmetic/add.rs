@@ -150,7 +150,7 @@ impl Add<&MatPolyOverZ> for &MatPolynomialRingZq {
     /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     ///
-    /// let mat_1 = MatPolynomialRingZq::from_str("[[2  1 42, 1  17],[1  8, 2  5 6]] / 3  1 2 3 mod 17").unwrap();
+    /// let mat_1 = MatPolynomialRingZq::from_str("[[2  1 42, 1  17],[1  8, 2  5 6]] / 3  1 2 1 mod 17").unwrap();
     /// let mat_2 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  5 6]]").unwrap();
     ///
     /// let mat_3 = &mat_1 + &mat_2;
@@ -252,7 +252,7 @@ impl MatPolynomialRingZq {
     /// use qfall_math::integer::MatPolyOverZ;
     /// use std::str::FromStr;
     ///
-    /// let mat_1 = MatPolynomialRingZq::from_str("[[2  1 42, 1  17],[1  8, 2  5 6]] / 3  1 2 3 mod 17").unwrap();
+    /// let mat_1 = MatPolynomialRingZq::from_str("[[2  1 42, 1  17],[1  8, 2  5 6]] / 3  1 2 1 mod 17").unwrap();
     /// let mat_2 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  5 6]]").unwrap();
     ///
     /// let mat_3 = &mat_1.add_mat_poly_over_z_safe(&mat_2).unwrap();
@@ -468,11 +468,8 @@ mod test_add {
     /// Testing addition for large [`MatPolynomialRingZq`]
     #[test]
     fn add_large_numbers() {
-        let modulus = ModulusPolynomialRingZq::from_str(&format!(
-            "5  1 1 0 0 {} mod {LARGE_PRIME}",
-            i64::MAX
-        ))
-        .unwrap();
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("5  1 1 0 0 1 mod {LARGE_PRIME}")).unwrap();
         let poly_mat_1 = MatPolyOverZ::from_str(&format!(
             "[[4  1 {} 1 1, 1  42],[0, 2  {} 2]]",
             i64::MAX,
@@ -513,7 +510,7 @@ mod test_add {
     #[test]
     #[should_panic]
     fn add_mismatching_modulus_polynomial() {
-        let modulus_1 = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
+        let modulus_1 = ModulusPolynomialRingZq::from_str("4  2 0 0 1 mod 17").unwrap();
         let poly_mat_1 = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
         let poly_ring_mat_1 = MatPolynomialRingZq::from((&poly_mat_1, &modulus_1));
         let modulus_2 = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -527,7 +524,7 @@ mod test_add {
     #[test]
     #[should_panic]
     fn add_mismatching_dim() {
-        let modulus_1 = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
+        let modulus_1 = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly_mat_1 = MatPolyOverZ::from_str("[[1  42],[2  1 2]]").unwrap();
         let poly_ring_mat_1 = MatPolynomialRingZq::from((&poly_mat_1, &modulus_1));
         let modulus_2 = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -540,10 +537,10 @@ mod test_add {
     /// Testing whether add_safe throws an error for mismatching moduli
     #[test]
     fn add_safe_is_err_moduli() {
-        let modulus_1 = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
+        let modulus_1 = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly_mat_1 = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
         let poly_ring_mat_1 = MatPolynomialRingZq::from((&poly_mat_1, &modulus_1));
-        let modulus_2 = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        let modulus_2 = ModulusPolynomialRingZq::from_str("4  2 0 0 1 mod 17").unwrap();
         let poly_mat_2 = MatPolyOverZ::from_str("[[3  3 0 1, 1  42],[0, 1  17]]").unwrap();
         let poly_ring_mat_2 = MatPolynomialRingZq::from((&poly_mat_2, &modulus_2));
 
@@ -553,7 +550,7 @@ mod test_add {
     /// Testing whether add_safe throws an error for different dimensions
     #[test]
     fn add_safe_is_err_dim() {
-        let modulus_1 = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
+        let modulus_1 = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly_mat_1 = MatPolyOverZ::from_str("[[4  -1 0 1 1],[2  1 2]]").unwrap();
         let poly_ring_mat_1 = MatPolynomialRingZq::from((&poly_mat_1, &modulus_1));
         let modulus_2 = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();

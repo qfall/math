@@ -12,11 +12,7 @@
 //! This includes the [`Display`] trait.
 
 use super::ModulusPolynomialRingZq;
-use crate::{
-    integer::{PolyOverZ, Z},
-    macros::for_others::implement_for_owned,
-};
-use flint_sys::{fmpz::fmpz_init_set, fmpz_mod_poly::fmpz_mod_poly_get_fmpz_poly};
+use crate::macros::for_others::implement_for_owned;
 use std::fmt::Display;
 
 impl From<&ModulusPolynomialRingZq> for String {
@@ -63,18 +59,10 @@ impl Display for ModulusPolynomialRingZq {
     /// ```
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         // get the value of the modulus
-        let mut modulus = Z::default();
-        unsafe { fmpz_init_set(&mut modulus.value, &self.get_fq_ctx().ctxp[0].n[0]) };
+        let modulus = self.get_q_as_modulus();
 
         // get the value of the polynomial
-        let mut poly = PolyOverZ::default();
-        unsafe {
-            fmpz_mod_poly_get_fmpz_poly(
-                &mut poly.poly,
-                &self.get_fq_ctx().modulus[0],
-                &self.get_fq_ctx().ctxp[0],
-            )
-        };
+        let poly = self.modulus.get_representative_least_nonnegative_residue();
 
         write!(f, "{poly} mod {modulus}")
     }
@@ -90,7 +78,7 @@ mod test_to_string {
     /// Test whether a roundtrip works
     #[test]
     fn working_keeps_same_string() {
-        let cmp_str = "3  1 2 2 mod 5";
+        let cmp_str = "3  1 2 1 mod 5";
         let cmp = ModulusPolynomialRingZq::from_str(cmp_str).unwrap();
 
         assert_eq!(cmp_str, cmp.to_string());
@@ -99,7 +87,7 @@ mod test_to_string {
     /// Test whether a string returned from to_string can be used to construct a [`ModulusPolynomialRingZq`]
     #[test]
     fn working_use_result_of_to_string() {
-        let cmp_str = "3  1 2 2 mod 5";
+        let cmp_str = "3  1 2 1 mod 5";
         let cmp = ModulusPolynomialRingZq::from_str(cmp_str).unwrap();
         let str_1 = cmp.to_string();
 

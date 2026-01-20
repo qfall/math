@@ -19,7 +19,7 @@ use crate::{
     },
     traits::CompareBase,
 };
-use flint_sys::{fmpz_mod_poly::fmpz_mod_poly_sub, fq::fq_sub};
+use flint_sys::fmpz_mod_poly::fmpz_mod_poly_sub;
 use std::{
     ops::{Sub, SubAssign},
     str::FromStr,
@@ -180,21 +180,8 @@ impl Sub<&PolynomialRingZq> for &PolyOverZq {
     /// # Panics ...
     /// - if the moduli mismatch.
     fn sub(self, other: &PolynomialRingZq) -> Self::Output {
-        assert_eq!(
-            self.modulus,
-            other.modulus.get_q(),
-            "Tried to subtract polynomials with different moduli."
-        );
-
-        let mut out = PolynomialRingZq::from((&PolyOverZ::default(), &other.modulus));
-        unsafe {
-            fq_sub(
-                &mut out.poly.poly,
-                &self.get_representative_least_nonnegative_residue().poly,
-                &other.poly.poly,
-                other.modulus.get_fq_ctx(),
-            );
-        }
+        let mut out = PolynomialRingZq::from((self, &other.modulus));
+        out -= other;
         out
     }
 }
@@ -449,10 +436,10 @@ mod test_sub_poly_ring_zq {
     #[test]
     fn borrowed_correctness() {
         let poly_1 =
-            PolynomialRingZq::from_str(&format!("2  2 {} / 4  1 2 3 4 mod {}", i64::MAX, u64::MAX))
+            PolynomialRingZq::from_str(&format!("2  2 {} / 4  1 2 3 1 mod {}", i64::MAX, u64::MAX))
                 .unwrap();
         let poly_2 = PolynomialRingZq::from_str(&format!(
-            "2  -1 -{} / 4  1 2 3 4 mod {}",
+            "2  -1 -{} / 4  1 2 3 1 mod {}",
             i64::MAX as u64 - 2,
             u64::MAX
         ))
@@ -467,7 +454,7 @@ mod test_sub_poly_ring_zq {
     /// Checks if subtraction works fine for different types
     #[test]
     fn availability() {
-        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 17").unwrap();
+        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 1 mod 17").unwrap();
         let zq = PolyOverZq::from((2, 17));
 
         _ = zq.clone() - poly.clone();

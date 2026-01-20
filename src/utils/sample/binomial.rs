@@ -164,7 +164,7 @@ mod test_binomial_sampler {
         let p = 0.5;
 
         assert!(BinomialSampler::init(&Z::MINUS_ONE, p).is_err());
-        assert!(BinomialSampler::init(&Z::from(i64::MIN), p).is_err());
+        assert!(BinomialSampler::init(Z::from(i64::MIN), p).is_err());
     }
 
     /// Checks whether invalid choices for p result in an error.
@@ -175,6 +175,6 @@ mod test_binomial_sampler {
         assert!(BinomialSampler::init(n, &Q::MINUS_ONE).is_err());
         assert!(BinomialSampler::init(n, &Q::ZERO).is_err());
         assert!(BinomialSampler::init(n, &Q::ONE).is_err());
-        assert!(BinomialSampler::init(n, &Q::from(5)).is_err());
+        assert!(BinomialSampler::init(n, Q::from(5)).is_err());
     }
 }

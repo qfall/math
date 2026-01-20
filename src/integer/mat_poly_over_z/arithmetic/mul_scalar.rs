@@ -470,7 +470,7 @@ mod test_mul_poly_ring_zq {
     /// Checks if scalar multiplication reduction works.
     #[test]
     fn reduction_correct() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  2 0 0 2 mod 17").unwrap();
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly_mat1 = MatPolyOverZ::from_str("[[0, 1  10],[0, 2  1 2]]").unwrap();
         let poly = PolyOverZ::from(2);
         let poly_ring = PolynomialRingZq::from((&poly, &modulus));

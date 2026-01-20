@@ -491,7 +491,7 @@ mod test_discrete_gaussian_integer_sampler {
         assert!(
             DiscreteGaussianIntegerSampler::init(
                 &center,
-                &Q::from(i64::MIN),
+                Q::from(i64::MIN),
                 6.0,
                 LookupTableSetting::FillOnTheFly
             )

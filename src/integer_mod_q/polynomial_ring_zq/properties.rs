@@ -22,7 +22,7 @@ impl PolynomialRingZq {
     /// use qfall_math::integer_mod_q::PolynomialRingZq;
     /// use std::str::FromStr;
     ///
-    /// let poly_irr = PolynomialRingZq::from_str("2  1 1 / 3  1 2 3 mod 17").unwrap();
+    /// let poly_irr = PolynomialRingZq::from_str("2  1 1 / 3  1 0 1 mod 17").unwrap();
     /// // returns true, since X + 1 is irreducible
     /// assert!(poly_irr.is_irreducible());
     /// ```
@@ -107,14 +107,14 @@ mod test_is_irreducible {
     #[test]
     fn poly_is_irreducible() {
         // 9X^2 + 12X + 10 is irreducible over 17
-        let poly_irr = PolynomialRingZq::from_str("3  10 12 9 / 4  1 10 12 9 mod 17").unwrap();
+        let poly_irr = PolynomialRingZq::from_str("3  10 12 9 / 4  1 10 12 1 mod 17").unwrap();
         assert!(poly_irr.is_irreducible());
     }
 
     /// Ensure that a reducible [`PolynomialRingZq`] returns `false`.
     #[test]
     fn poly_is_reducible() {
-        let poly_irr = PolynomialRingZq::from_str("3  1 2 1 / 4  1 10 12 9 mod 17").unwrap();
+        let poly_irr = PolynomialRingZq::from_str("3  1 2 1 / 4  1 10 12 1 mod 17").unwrap();
         assert!(!poly_irr.is_irreducible());
     }
 }
@@ -127,21 +127,19 @@ mod test_is_one {
     /// Ensure that is_one returns `true` for the one polynomial.
     #[test]
     fn one_detection() {
-        let one = PolynomialRingZq::from_str("1  1 / 4  1 10 12 9 mod 7").unwrap();
-        let one_2 = PolynomialRingZq::from_str("2  1 14 / 4  1 10 12 9 mod 7").unwrap();
-        let one_3 = PolynomialRingZq::from_str("3  11 4 10 / 3  5 2 5 mod 11").unwrap();
+        let one = PolynomialRingZq::from_str("1  1 / 4  1 10 12 1 mod 7").unwrap();
+        let one_2 = PolynomialRingZq::from_str("2  1 14 / 4  1 10 12 1 mod 7").unwrap();
 
         assert!(one.is_one());
         assert!(one_2.is_one());
-        assert!(one_3.is_one());
     }
 
     /// Ensure that is_one returns `false` for other polynomials.
     #[test]
     fn one_rejection() {
-        let small = PolynomialRingZq::from_str("4  1 0 0 1 / 4  1 10 12 9 mod 7").unwrap();
+        let small = PolynomialRingZq::from_str("4  1 0 0 1 / 4  1 10 12 1 mod 7").unwrap();
         let large = PolynomialRingZq::from_str(&format!(
-            "1  {} / 4  1 10 12 9 mod {}",
+            "1  {} / 4  1 10 12 1 mod {}",
             (u128::MAX - 1) / 2 + 2,
             u128::MAX
         )) // 2^127 + 1 the last memory entry is `1`
@@ -162,7 +160,7 @@ mod test_is_zero {
     fn zero_detection() {
         let zero = PolynomialRingZq::from_str("0 / 2  1 1 mod 7").unwrap();
         let zero_2 = PolynomialRingZq::from_str("2  7 14 / 2  1 1  mod 7").unwrap();
-        let zero_3 = PolynomialRingZq::from_str("3  3 3 6 / 3  1 1 2 mod 11").unwrap();
+        let zero_3 = PolynomialRingZq::from_str("3  3 3 3 / 3  1 1 1 mod 11").unwrap();
 
         assert!(zero.is_zero());
         assert!(zero_2.is_zero());

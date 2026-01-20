@@ -35,7 +35,7 @@ impl MatPolynomialRingZq {
     /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
     /// use std::str::FromStr;
     ///
-    /// let vec = MatPolynomialRingZq::from_str("[[1  1],[2  2 2],[1  3]] / 3  1 2 3 mod 11").unwrap();
+    /// let vec = MatPolynomialRingZq::from_str("[[1  1],[2  2 2],[1  3]] / 3  1 2 1 mod 11").unwrap();
     ///
     /// let sqrd_2_norm = vec.norm_eucl_sqrd().unwrap();
     ///
@@ -74,7 +74,7 @@ impl MatPolynomialRingZq {
     /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
     /// use std::str::FromStr;
     ///
-    /// let vec = MatPolynomialRingZq::from_str("[[1  2],[2  2 2],[1  2]] / 3  1 2 3 mod 11").unwrap();
+    /// let vec = MatPolynomialRingZq::from_str("[[1  2],[2  2 2],[1  2]] / 3  1 2 1 mod 11").unwrap();
     ///
     /// let sqrd_2_norm = vec.norm_eucl().unwrap();
     ///
@@ -104,7 +104,7 @@ impl MatPolynomialRingZq {
     /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
     /// use std::str::FromStr;
     ///
-    /// let vec = MatPolynomialRingZq::from_str("[[1  1],[2  2 4],[1  3]] / 3  1 2 3 mod 11").unwrap();
+    /// let vec = MatPolynomialRingZq::from_str("[[1  1],[2  2 4],[1  3]] / 3  1 2 1 mod 11").unwrap();
     ///
     /// let infty_norm = vec.norm_infty().unwrap();
     ///
@@ -148,12 +148,12 @@ mod test_norm_eucl_sqrd {
     /// with small entries is calculated correctly
     #[test]
     fn row_vector_small_entries() {
-        let vec_1 = MatPolynomialRingZq::from_str("[[1  1]] / 2  1 2 mod 11").unwrap();
+        let vec_1 = MatPolynomialRingZq::from_str("[[1  1]] / 2  1 1 mod 11").unwrap();
         let vec_2 =
-            MatPolynomialRingZq::from_str("[[1  1, 2  10 3, 3  1 2 100]] / 4  1 2 3 4 mod 150")
+            MatPolynomialRingZq::from_str("[[1  1, 2  10 3, 3  1 2 100]] / 4  1 2 3 1 mod 150")
                 .unwrap();
         let vec_3 = MatPolynomialRingZq::from_str(
-            "[[2  1 3, 1  10, 3  1 2 100, 1  1000]] / 4  1 2 3 4 mod 1500",
+            "[[2  1 3, 1  10, 3  1 2 100, 1  1000]] / 4  1 2 3 1 mod 1500",
         )
         .unwrap();
 
@@ -167,7 +167,7 @@ mod test_norm_eucl_sqrd {
     #[test]
     fn row_vector_large_entries() {
         let vec = MatPolynomialRingZq::from_str(&format!(
-            "[[1  {}, 2  {} 2, 2  2 1]] / 3  1 2 3 mod {}",
+            "[[1  {}, 2  {} 2, 2  2 1]] / 3  1 2 1 mod {}",
             i64::MAX,
             i64::MIN,
             u64::MAX
@@ -186,10 +186,10 @@ mod test_norm_eucl_sqrd {
     #[test]
     fn column_vector_small_entries() {
         let vec_1 =
-            MatPolynomialRingZq::from_str("[[1  1],[2  10 3],[3  1 2 100]] / 4  1 2 3 4 mod 150")
+            MatPolynomialRingZq::from_str("[[1  1],[2  10 3],[3  1 2 100]] / 4  1 2 3 1 mod 150")
                 .unwrap();
         let vec_2 = MatPolynomialRingZq::from_str(
-            "[[2  1 3],[1  10],[3  1 2 100],[1  1000]] / 4  1 2 3 4 mod 1500",
+            "[[2  1 3],[1  10],[3  1 2 100],[1  1000]] / 4  1 2 3 1 mod 1500",
         )
         .unwrap();
 
@@ -202,7 +202,7 @@ mod test_norm_eucl_sqrd {
     #[test]
     fn column_vector_large_entries() {
         let vec = MatPolynomialRingZq::from_str(&format!(
-            "[[2  2 {}],[1  {}],[1  2]] / 3  1 2 3 mod {}",
+            "[[2  2 {}],[1  {}],[1  2]] / 3  1 2 1 mod {}",
             i64::MAX,
             i64::MIN,
             u64::MAX
@@ -220,7 +220,7 @@ mod test_norm_eucl_sqrd {
     #[test]
     fn non_vector_yield_error() {
         let mat =
-            MatPolynomialRingZq::from_str("[[2  1 20, 1  1],[1  10, 2  1 2]] / 3  1 2 3 mod 11")
+            MatPolynomialRingZq::from_str("[[2  1 20, 1  1],[1  10, 2  1 2]] / 3  1 2 1 mod 11")
                 .unwrap();
 
         assert!(mat.norm_eucl_sqrd().is_err());
@@ -236,12 +236,12 @@ mod test_norm_infty {
     /// with small entries is calculated correctly
     #[test]
     fn row_vector_small_entries() {
-        let vec_1 = MatPolynomialRingZq::from_str("[[1  1]] / 2  1 2 mod 11").unwrap();
+        let vec_1 = MatPolynomialRingZq::from_str("[[1  1]] / 2  1 1 mod 1000").unwrap();
         let vec_2 =
-            MatPolynomialRingZq::from_str("[[1  1, 2  10 3, 3  1 2 100]] / 4  1 2 3 4 mod 150")
+            MatPolynomialRingZq::from_str("[[1  1, 2  10 3, 3  1 2 100]] / 4  1 2 3 1 mod 150")
                 .unwrap();
         let vec_3 = MatPolynomialRingZq::from_str(
-            "[[2  1 3, 1  10, 3  1 2 100, 1  1000]] / 4  1 2 3 4 mod 1500",
+            "[[2  1 3, 1  10, 3  1 2 100, 1  1000]] / 4  1 2 3 1 mod 1500",
         )
         .unwrap();
 
@@ -255,7 +255,7 @@ mod test_norm_infty {
     #[test]
     fn row_vector_large_entries() {
         let vec = MatPolynomialRingZq::from_str(&format!(
-            "[[1  {}, 2  {} 2, 2  2 1]] / 3  1 2 3 mod {}",
+            "[[1  {}, 2  {} 2, 2  2 1]] / 3  1 2 1 mod {}",
             i64::MAX,
             i64::MIN,
             u64::MAX
@@ -270,10 +270,10 @@ mod test_norm_infty {
     #[test]
     fn column_vector_small_entries() {
         let vec_1 =
-            MatPolynomialRingZq::from_str("[[1  1],[2  10 3],[3  1 2 100]] / 4  1 2 3 4 mod 150")
+            MatPolynomialRingZq::from_str("[[1  1],[2  10 3],[3  1 2 100]] / 4  1 2 3 1 mod 150")
                 .unwrap();
         let vec_2 = MatPolynomialRingZq::from_str(
-            "[[2  1 3],[1  10],[3  1 2 100],[1  1000]] / 4  1 2 3 4 mod 1500",
+            "[[2  1 3],[1  10],[3  1 2 100],[1  1000]] / 4  1 2 3 1 mod 1500",
         )
         .unwrap();
 
@@ -286,7 +286,7 @@ mod test_norm_infty {
     #[test]
     fn column_vector_large_entries() {
         let vec = MatPolynomialRingZq::from_str(&format!(
-            "[[2  2 {}],[1  {}],[1  2]] / 3  1 2 3 mod {}",
+            "[[2  2 {}],[1  {}],[1  2]] / 3  1 2 1 mod {}",
             i64::MAX,
             i64::MIN,
             u64::MAX
@@ -300,7 +300,7 @@ mod test_norm_infty {
     #[test]
     fn non_vector_yield_error() {
         let mat =
-            MatPolynomialRingZq::from_str("[[2  1 20, 1  1],[1  10, 2  1 2]] / 3  1 2 3 mod 11")
+            MatPolynomialRingZq::from_str("[[2  1 20, 1  1],[1  10, 2  1 2]] / 3  1 2 1 mod 11")
                 .unwrap();
 
         assert!(mat.norm_infty().is_err());

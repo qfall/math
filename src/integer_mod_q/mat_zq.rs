@@ -91,7 +91,7 @@ pub struct MatZq {
     // is due to a reference counter in the `Modulus` object memory efficient.
     // The modulus of a `MatZq` is not able to be modified afterwards. Hence, we
     // do not need to care about conformity of the modulus stored in the `matrix`
-    // attribute and `modulus` attribute, if they are both initalized from the same value.
+    // attribute and `modulus` attribute, if they are both initialized from the same value.
     modulus: Modulus,
 }
 

@@ -67,7 +67,7 @@ impl Mul<&MatPolynomialRingZq> for &MatPolyOverZ {
     /// use std::str::FromStr;
     ///
     /// let mat_1 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  5 6]]").unwrap();
-    /// let mat_2 = MatPolynomialRingZq::from_str("[[2  1 42, 1  17],[1  8, 2  5 6]] / 3  1 2 3 mod 17").unwrap();
+    /// let mat_2 = MatPolynomialRingZq::from_str("[[2  1 42, 1  17],[1  8, 2  5 6]] / 3  1 2 1 mod 17").unwrap();
     ///
     /// let mat_3 = &mat_1 * &mat_2;
     /// ```
@@ -151,7 +151,7 @@ impl MatPolyOverZ {
     /// use std::str::FromStr;
     ///
     /// let mat_1 = MatPolyOverZ::from_str("[[2  1 42, 1  17],[1  8, 2  5 6]]").unwrap();
-    /// let mat_2 = MatPolynomialRingZq::from_str("[[2  1 42, 1  17],[1  8, 2  5 6]] / 3  1 2 3 mod 17").unwrap();
+    /// let mat_2 = MatPolynomialRingZq::from_str("[[2  1 42, 1  17],[1  8, 2  5 6]] / 3  1 2 1 mod 17").unwrap();
     ///
     /// let mat_3 = &mat_1.mul_mat_poly_ring_zq_safe(&mat_2).unwrap();
     /// ```

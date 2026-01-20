@@ -119,11 +119,8 @@ mod test_is_vector {
     /// get recognized as (row or column) vectors
     #[test]
     fn vectors_detected() {
-        let modulus = ModulusPolynomialRingZq::from_str(&format!(
-            "5  1 1 0 0 {} mod {LARGE_PRIME}",
-            i64::MAX
-        ))
-        .unwrap();
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("5  1 1 0 0 1 mod {LARGE_PRIME}")).unwrap();
         let poly_mat_1 =
             MatPolyOverZ::from_str(&format!("[[4  1 {} 1 1, 1  42]]", i64::MAX)).unwrap();
         let poly_mat_2 = MatPolyOverZ::from_str(&format!(
@@ -149,11 +146,8 @@ mod test_is_vector {
     /// don't get recognized as (row or column) vector
     #[test]
     fn non_vectors_detected() {
-        let modulus = ModulusPolynomialRingZq::from_str(&format!(
-            "5  1 1 0 0 {} mod {LARGE_PRIME}",
-            i64::MAX
-        ))
-        .unwrap();
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("5  1 1 0 0 1 mod {LARGE_PRIME}")).unwrap();
         let poly_mat_1 = MatPolyOverZ::from_str(&format!(
             "[[4  1 {} 1 1, 1  42],[3  1 1 1, 1  17]]",
             i64::MAX
@@ -180,11 +174,8 @@ mod test_is_vector {
     /// Check whether matrices with only one entry get recognized as single entry matrices
     #[test]
     fn single_entry_detected() {
-        let modulus = ModulusPolynomialRingZq::from_str(&format!(
-            "5  1 1 0 0 {} mod {LARGE_PRIME}",
-            i64::MAX
-        ))
-        .unwrap();
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("5  1 1 0 0 1 mod {LARGE_PRIME}",)).unwrap();
         let poly_mat_1 = MatPolyOverZ::from_str("[[1  42]]").unwrap();
         let poly_mat_2 = MatPolyOverZ::from_str(&format!("[[3  1 {} 1]]", i64::MAX)).unwrap();
 
@@ -209,11 +200,8 @@ mod test_is_vector {
     /// don't get recognized as single entry matrices
     #[test]
     fn non_single_entry_detected() {
-        let modulus = ModulusPolynomialRingZq::from_str(&format!(
-            "5  1 1 0 0 {} mod {LARGE_PRIME}",
-            i64::MAX
-        ))
-        .unwrap();
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("5  1 1 0 0 1 mod {LARGE_PRIME}")).unwrap();
         let poly_mat_1 =
             MatPolyOverZ::from_str(&format!("[[4  1 {} 1 1, 1  42]]", i64::MAX)).unwrap();
         let poly_mat_2 = MatPolyOverZ::from_str(&format!(

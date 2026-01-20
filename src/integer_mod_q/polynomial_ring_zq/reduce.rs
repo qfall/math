@@ -15,7 +15,7 @@
 // hence no reduction is performed in the check.
 
 use super::PolynomialRingZq;
-use flint_sys::fq::fq_reduce;
+use crate::integer::fmpz_poly_helpers::reduce_fmpz_poly_by_fmpz_mod_poly_sparse;
 
 impl PolynomialRingZq {
     /// This function manually applies the modulus
@@ -37,7 +37,17 @@ impl PolynomialRingZq {
     /// poly_ring.reduce()
     /// ```
     pub(crate) fn reduce(&mut self) {
-        unsafe { fq_reduce(&mut self.poly.poly, self.modulus.get_fq_ctx()) }
+        let degree = self.get_degree();
+        if degree >= 0 {
+            unsafe {
+                reduce_fmpz_poly_by_fmpz_mod_poly_sparse(
+                    &mut self.poly.poly,
+                    &self.modulus.modulus.poly,
+                    &self.modulus.non_zero,
+                    self.modulus.get_q_as_modulus().get_fmpz_mod_ctx_struct(),
+                )
+            };
+        }
     }
 }
 

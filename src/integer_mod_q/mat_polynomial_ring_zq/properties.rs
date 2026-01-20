@@ -273,7 +273,7 @@ mod test_is_symmetric {
     #[test]
     fn symmetric_rejection() {
         let mat_2x3 =
-            MatPolynomialRingZq::from_str("[[0, 1  6, 2  1 4],[1  2, 0, 2  1 1]] / 2  1 2 mod 17")
+            MatPolynomialRingZq::from_str("[[0, 1  6, 2  1 4],[1  2, 0, 2  1 1]] / 2  1 1 mod 17")
                 .unwrap();
         let mat_2x2 =
             MatPolynomialRingZq::from_str("[[1  9, 0],[2  1 71, 0]] / 3  1 2 1 mod 17").unwrap();
@@ -286,7 +286,7 @@ mod test_is_symmetric {
     #[test]
     fn symmetric_detection() {
         let mat_2x2 = MatPolynomialRingZq::from_str(&format!(
-            "[[2  1 {}, 2  3 {}],[2  3 {}, 3  1 {} 8]] / 2  1 2 mod {}",
+            "[[2  1 {}, 2  3 {}],[2  3 {}, 3  1 {} 8]] / 2  1 1 mod {}",
             u64::MIN,
             i64::MAX,
             i64::MAX,

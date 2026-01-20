@@ -32,7 +32,7 @@ mod test_serialize {
     /// Tests whether the serialization of a positive [`ModulusPolynomialRingZq`] works.
     #[test]
     fn serialize_output_positive() {
-        let poly_str = "2  17 42 mod 331";
+        let poly_str = "2  17 1 mod 331";
         let poly_z = ModulusPolynomialRingZq::from_str(poly_str).unwrap();
         let cmp_str = format!("{{\"poly\":\"{poly_str}\"}}");
 
@@ -82,7 +82,7 @@ mod test_deserialize {
     /// Tests whether the deserialization of a positive [`ModulusPolynomialRingZq`] works.
     #[test]
     fn deserialize_positive() {
-        let poly_str = "2  17 42 mod 331";
+        let poly_str = "2  17 1 mod 331";
         let cmp_str = format!("{{\"poly\":\"{poly_str}\"}}");
 
         let poly_mod = ModulusPolynomialRingZq::from_str(poly_str).unwrap();
@@ -135,7 +135,7 @@ mod test_deserialize {
     #[test]
     fn non_prime_q() {
         let a: Result<ModulusPolynomialRingZq, serde_json::Error> =
-            serde_json::from_str(&format!("{{\"poly\":\"2  17 42 mod {}\"}}", u64::MAX));
+            serde_json::from_str(&format!("{{\"poly\":\"2  17 1 mod {}\"}}", u64::MAX));
         assert!(a.is_ok());
     }
 
@@ -143,11 +143,11 @@ mod test_deserialize {
     #[test]
     fn negative_q() {
         let a: Result<ModulusPolynomialRingZq, serde_json::Error> =
-            serde_json::from_str(&format!("{{\"poly\":\"2  17 42 mod -{}\"}}", u64::MAX));
+            serde_json::from_str(&format!("{{\"poly\":\"2  17 1 mod -{}\"}}", u64::MAX));
         assert!(a.is_err());
 
         let b: Result<ModulusPolynomialRingZq, serde_json::Error> =
-            serde_json::from_str("{{\"poly\":\"2  17 42 mod -17\"}}");
+            serde_json::from_str("{{\"poly\":\"2  17 1 mod -17\"}}");
         assert!(b.is_err());
     }
 
@@ -155,7 +155,7 @@ mod test_deserialize {
     #[test]
     fn no_field_value() {
         let a: Result<ModulusPolynomialRingZq, serde_json::Error> =
-            serde_json::from_str("{{\"tree\":\"{2  17 42 mod 331}\"}}");
+            serde_json::from_str("{{\"tree\":\"{2  17 1 mod 331}\"}}");
         assert!(a.is_err());
 
         let b: Result<ModulusPolynomialRingZq, serde_json::Error> = serde_json::from_str("{{}}");
@@ -166,12 +166,12 @@ mod test_deserialize {
     #[test]
     fn too_many_fields() {
         let a: Result<ModulusPolynomialRingZq, serde_json::Error> = serde_json::from_str(
-            "{{\"tree\":\"{2  17 42 mod 331}\", \"poly\":\"{2  17 42 mod 331}\"}}",
+            "{{\"tree\":\"{2  17 1 mod 331}\", \"poly\":\"{2  17 1 mod 331}\"}}",
         );
         assert!(a.is_err());
 
         let b: Result<ModulusPolynomialRingZq, serde_json::Error> =
-            serde_json::from_str("{{\"poly\":\"{}\", \"poly\":\"{2  17 42 mod 331}\"}}");
+            serde_json::from_str("{{\"poly\":\"{}\", \"poly\":\"{2  17 1 mod 331}\"}}");
         assert!(b.is_err());
     }
 }

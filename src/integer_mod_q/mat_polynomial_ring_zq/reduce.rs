@@ -15,8 +15,10 @@
 // hence no reduction is performed in the check.
 
 use super::MatPolynomialRingZq;
-use crate::traits::MatrixDimensions;
-use flint_sys::{fmpz_poly_mat::fmpz_poly_mat_entry, fq::fq_reduce};
+use crate::{
+    integer::fmpz_poly_helpers::reduce_fmpz_poly_by_fmpz_mod_poly_sparse, traits::MatrixDimensions,
+};
+use flint_sys::fmpz_poly_mat::fmpz_poly_mat_entry;
 
 impl MatPolynomialRingZq {
     /// This function manually applies the modulus
@@ -40,10 +42,40 @@ impl MatPolynomialRingZq {
     pub(crate) fn reduce(&mut self) {
         for row_num in 0..self.matrix.get_num_rows() {
             for column_num in 0..self.matrix.get_num_columns() {
-                unsafe {
-                    let entry = fmpz_poly_mat_entry(&self.matrix.matrix, row_num, column_num);
-                    fq_reduce(entry, self.modulus.get_fq_ctx())
-                };
+                unsafe { self.reduce_entry(row_num, column_num) };
+            }
+        }
+    }
+
+    /// This function manually applies the modulus
+    /// [`ModulusPolynomialRingZq`](crate::integer_mod_q::ModulusPolynomialRingZq)
+    /// to the entry (`row`, `column`) of the given polynomial matrix [`MatPolyOverZ`](crate::integer::MatPolyOverZ)
+    /// in the [`MatPolynomialRingZq`]. The function does not check if `row` and `column`
+    /// is within the matrix dimensions.
+    ///
+    /// # Examples
+    /// ```compile_fail
+    /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
+    /// use qfall_math::integer_mod_q::ModulusPolynomialRingZq;
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
+    /// let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
+    ///
+    /// unsafe { poly_ring_mat.reduce_entry(0, 0) };
+    /// ```
+    pub(crate) unsafe fn reduce_entry(&mut self, row: i64, column: i64) {
+        let entry = unsafe { fmpz_poly_mat_entry(&self.matrix.matrix, row, column) };
+        if (unsafe { *entry }).length > 0 {
+            unsafe {
+                reduce_fmpz_poly_by_fmpz_mod_poly_sparse(
+                    &mut *entry,
+                    &self.modulus.modulus.poly,
+                    &self.modulus.non_zero,
+                    self.modulus.get_q_as_modulus().get_fmpz_mod_ctx_struct(),
+                )
             }
         }
     }

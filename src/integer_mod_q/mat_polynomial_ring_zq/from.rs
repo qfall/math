@@ -73,14 +73,14 @@ impl FromStr for MatPolynomialRingZq {
     /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
     /// use std::str::FromStr;
     ///
-    /// let matrix = MatPolynomialRingZq::from_str("[[2  2 2, 1  2],[0, 1  3]] / 2  3 3 mod 24").unwrap();
+    /// let matrix = MatPolynomialRingZq::from_str("[[2  2 2, 1  2],[0, 1  3]] / 2  3 1 mod 24").unwrap();
     /// ```
     ///
     /// ```
     /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
     /// use std::str::FromStr;
     ///
-    /// let str_1 = "[[2  2 2, 1  2],[0, 1  3]] / 2  3 3 mod 24";
+    /// let str_1 = "[[2  2 2, 1  2],[0, 1  3]] / 2  3 1 mod 24";
     /// let matrix = MatPolynomialRingZq::from_str(str_1).unwrap();
     /// ```
     ///
@@ -88,7 +88,7 @@ impl FromStr for MatPolynomialRingZq {
     /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
     /// use std::str::FromStr;
     ///
-    /// let string = String::from("[[2  2 2, 1  2],[0, 1  3]] / 2  3 3 mod 24");
+    /// let string = String::from("[[2  2 2, 1  2],[0, 1  3]] / 2  3 1 mod 24");
     /// let matrix = MatPolynomialRingZq::from_str(&string).unwrap();
     /// ```
     ///
@@ -336,7 +336,7 @@ mod test_from {
     #[test]
     fn different_dimensions() {
         let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("3  1 9 12 mod {LARGE_PRIME}")).unwrap();
+            ModulusPolynomialRingZq::from_str(&format!("3  1 9 1 mod {LARGE_PRIME}")).unwrap();
         let poly_mat_1 = MatPolyOverZ::from_str("[[2  1 8],[2  1 2]]").unwrap();
         let poly_mat_2 = MatPolyOverZ::from_str("[[2  1 8, 1  42, 0],[0, 2  1 2, 1  17]]").unwrap();
         let poly_mat_3 = MatPolyOverZ::from_str("[[2  1 8]]").unwrap();

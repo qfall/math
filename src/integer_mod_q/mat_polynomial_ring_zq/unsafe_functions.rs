@@ -8,10 +8,9 @@
 
 //! This module contains public functions that enable access to underlying
 //! [FLINT](https://flintlib.org/) structs. Therefore, they require to be unsafe.
-
 use super::MatPolynomialRingZq;
 use crate::macros::unsafe_passthrough::{unsafe_getter_indirect, unsafe_setter_indirect};
-use flint_sys::{fmpz_poly_mat::fmpz_poly_mat_struct, fq::fq_ctx_struct};
+use flint_sys::fmpz_poly_mat::fmpz_poly_mat_struct;
 
 unsafe_getter_indirect!(
     MatPolynomialRingZq,
@@ -19,22 +18,10 @@ unsafe_getter_indirect!(
     get_fmpz_poly_mat_struct,
     fmpz_poly_mat_struct
 );
-unsafe_getter_indirect!(
-    MatPolynomialRingZq,
-    modulus,
-    get_fq_ctx_struct,
-    fq_ctx_struct
-);
 
 unsafe_setter_indirect!(
     MatPolynomialRingZq,
     matrix,
     set_fmpz_poly_mat_struct,
     fmpz_poly_mat_struct
-);
-unsafe_setter_indirect!(
-    MatPolynomialRingZq,
-    modulus,
-    set_fq_ctx_struct,
-    fq_ctx_struct
 );

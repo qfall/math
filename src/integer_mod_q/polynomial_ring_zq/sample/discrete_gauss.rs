@@ -36,7 +36,7 @@ impl PolynomialRingZq {
     /// ```
     /// use qfall_math::integer_mod_q::{PolynomialRingZq, ModulusPolynomialRingZq};
     /// use std::str::FromStr;
-    /// let modulus = ModulusPolynomialRingZq::from_str("3  1 2 3 mod 17").unwrap();
+    /// let modulus = ModulusPolynomialRingZq::from_str("3  1 2 1 mod 17").unwrap();
     ///
     /// let sample = PolynomialRingZq::sample_discrete_gauss(&modulus, 0, 1).unwrap();
     /// ```

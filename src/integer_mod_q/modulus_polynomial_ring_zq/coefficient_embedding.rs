@@ -35,9 +35,9 @@ impl IntoCoefficientEmbedding<MatZq> for &ModulusPolynomialRingZq {
     ///     traits::IntoCoefficientEmbedding,
     /// };
     ///
-    /// let poly = ModulusPolynomialRingZq::from_str("3  17 3 -5 mod 19").unwrap();
+    /// let poly = ModulusPolynomialRingZq::from_str("3  17 3 1 mod 19").unwrap();
     /// let vector = poly.into_coefficient_embedding(4);
-    /// let cmp_vector = MatZq::from_str("[[17],[3],[-5],[0]] mod 19").unwrap();
+    /// let cmp_vector = MatZq::from_str("[[17],[3],[1],[0]] mod 19").unwrap();
     /// assert_eq!(cmp_vector, vector);
     /// ```
     ///
@@ -82,9 +82,9 @@ impl FromCoefficientEmbedding<&MatZq> for ModulusPolynomialRingZq {
     ///     traits::FromCoefficientEmbedding,
     /// };
     ///
-    /// let vector = MatZq::from_str("[[17],[3],[-5]] mod 19").unwrap();
+    /// let vector = MatZq::from_str("[[17],[3],[1]] mod 19").unwrap();
     /// let poly = ModulusPolynomialRingZq::from_coefficient_embedding(&vector);
-    /// let cmp_poly = ModulusPolynomialRingZq::from_str("3  17 3 -5 mod 19").unwrap();
+    /// let cmp_poly = ModulusPolynomialRingZq::from_str("3  17 3 1 mod 19").unwrap();
     /// assert_eq!(cmp_poly, poly);
     /// ```
     ///
@@ -106,23 +106,14 @@ mod test_into_coefficient_embedding {
     /// Ensure that the embedding works with large entries.
     #[test]
     fn large_entries() {
-        let poly = ModulusPolynomialRingZq::from_str(&format!(
-            "3  17 {} {} mod {}",
-            i64::MAX,
-            i64::MIN,
-            u64::MAX
-        ))
-        .unwrap();
+        let poly =
+            ModulusPolynomialRingZq::from_str(&format!("3  17 {} 1 mod {}", i64::MAX, u64::MAX))
+                .unwrap();
 
         let vector = poly.into_coefficient_embedding(3);
 
-        let cmp_vector = MatZq::from_str(&format!(
-            "[[17],[{}],[{}]] mod {}",
-            i64::MAX,
-            i64::MIN,
-            u64::MAX
-        ))
-        .unwrap();
+        let cmp_vector =
+            MatZq::from_str(&format!("[[17],[{}],[1]] mod {}", i64::MAX, u64::MAX)).unwrap();
         assert_eq!(cmp_vector, vector);
     }
 
@@ -130,7 +121,7 @@ mod test_into_coefficient_embedding {
     #[test]
     #[should_panic]
     fn size_too_small() {
-        let poly = ModulusPolynomialRingZq::from_str("3  17 1 2 mod 19").unwrap();
+        let poly = ModulusPolynomialRingZq::from_str("3  17 1 1 mod 19").unwrap();
 
         let _ = poly.into_coefficient_embedding(2);
     }
@@ -147,23 +138,14 @@ mod test_from_coefficient_embedding {
     /// Ensure that the embedding works with large entries.
     #[test]
     fn large_entries() {
-        let vector = MatZq::from_str(&format!(
-            "[[17],[{}],[{}]] mod {}",
-            i64::MAX,
-            i64::MIN,
-            u64::MAX
-        ))
-        .unwrap();
+        let vector =
+            MatZq::from_str(&format!("[[17],[{}],[1]] mod {}", i64::MAX, u64::MAX)).unwrap();
 
         let poly = ModulusPolynomialRingZq::from_coefficient_embedding(&vector);
 
-        let cmp_poly = ModulusPolynomialRingZq::from_str(&format!(
-            "3  17 {} {} mod {}",
-            i64::MAX,
-            i64::MIN,
-            u64::MAX
-        ))
-        .unwrap();
+        let cmp_poly =
+            ModulusPolynomialRingZq::from_str(&format!("3  17 {} 1 mod {}", i64::MAX, u64::MAX))
+                .unwrap();
         assert_eq!(cmp_poly, poly);
     }
 

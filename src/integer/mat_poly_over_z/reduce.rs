@@ -44,7 +44,9 @@ impl MatPolyOverZ {
             for j in 0..self.get_num_columns() {
                 unsafe {
                     let entry = fmpz_poly_mat_entry(&self.matrix, i, j);
-                    reduce_fmpz_poly_by_poly_over_z(entry, modulus);
+                    if (*entry).length > modulus.get_degree() {
+                        reduce_fmpz_poly_by_poly_over_z(&mut *entry, modulus);
+                    }
                 }
             }
         }
@@ -93,5 +95,14 @@ mod test_reduce_by_poly {
 
         let cmp_mat = MatPolyOverZ::from_str("[[1  1, 1  1],[1  -1, 0]]").unwrap();
         assert_eq!(cmp_mat, a);
+    }
+
+    /// Ensures that the zero polynomial does not cause problems.
+    #[test]
+    fn zero_polynomial() {
+        let mut a = MatPolyOverZ::from_str("[[0, 0]]").unwrap();
+        let modulus = PolyOverZ::from_str(&format!("2  {} 1", u64::MAX)).unwrap();
+
+        a.reduce_by_poly(&modulus);
     }
 }

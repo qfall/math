@@ -19,7 +19,6 @@ use crate::{
     },
     traits::CompareBase,
 };
-use flint_sys::fq::fq_add;
 use std::ops::{Add, AddAssign};
 
 impl AddAssign<&PolynomialRingZq> for PolynomialRingZq {
@@ -61,14 +60,8 @@ impl AddAssign<&PolynomialRingZq> for PolynomialRingZq {
             panic!("{}", self.call_compare_base_error(other).unwrap());
         }
 
-        unsafe {
-            fq_add(
-                &mut self.poly.poly,
-                &self.poly.poly,
-                &other.poly.poly,
-                self.modulus.get_fq_ctx(),
-            );
-        };
+        self.poly += &other.poly;
+        self.reduce();
     }
 }
 impl AddAssign<&PolyOverZ> for PolynomialRingZq {
@@ -87,17 +80,9 @@ impl AddAssign<&PolyOverZq> for PolynomialRingZq {
         if !self.compare_base(other) {
             panic!("{}", self.call_compare_base_error(other).unwrap())
         }
-        // get a fmpz_poly_struct from a fmpz_mod_poly_struct
-        let other = other.get_representative_least_nonnegative_residue();
 
-        unsafe {
-            fq_add(
-                &mut self.poly.poly,
-                &self.poly.poly,
-                &other.poly,
-                self.modulus.get_fq_ctx(),
-            );
-        };
+        self.poly += &other.get_representative_least_nonnegative_residue();
+        self.reduce();
     }
 }
 
@@ -171,15 +156,8 @@ impl Add<&PolyOverZ> for &PolynomialRingZq {
     /// let c: PolynomialRingZq = &a + &b;
     /// ```
     fn add(self, other: &PolyOverZ) -> Self::Output {
-        let mut out = PolynomialRingZq::from((&PolyOverZ::default(), &self.modulus));
-        unsafe {
-            fq_add(
-                &mut out.poly.poly,
-                &self.poly.poly,
-                &other.poly,
-                self.modulus.get_fq_ctx(),
-            );
-        }
+        let mut out = self.clone();
+        out += other;
         out
     }
 }
@@ -219,21 +197,12 @@ impl Add<&PolyOverZq> for &PolynomialRingZq {
     /// # Panics ...
     /// - if the moduli mismatch.
     fn add(self, other: &PolyOverZq) -> Self::Output {
-        assert_eq!(
-            self.modulus.get_q(),
-            other.modulus,
-            "Tried to add polynomials with different moduli."
-        );
-
-        let mut out = PolynomialRingZq::from((&PolyOverZ::default(), &self.modulus));
-        unsafe {
-            fq_add(
-                &mut out.poly.poly,
-                &self.poly.poly,
-                &other.get_representative_least_nonnegative_residue().poly,
-                self.modulus.get_fq_ctx(),
-            );
+        if !self.compare_base(other) {
+            panic!("{}", self.call_compare_base_error(other).unwrap())
         }
+
+        let mut out = self.clone();
+        out.poly += &other.get_representative_least_nonnegative_residue();
         out
     }
 }
@@ -276,15 +245,8 @@ impl PolynomialRingZq {
         if !self.compare_base(other) {
             return Err(self.call_compare_base_error(other).unwrap());
         }
-        let mut out = PolynomialRingZq::from((&PolyOverZ::default(), &self.modulus));
-        unsafe {
-            fq_add(
-                &mut out.poly.poly,
-                &self.poly.poly,
-                &other.poly.poly,
-                self.modulus.get_fq_ctx(),
-            );
-        }
+        let mut out = self.clone();
+        out += other;
         Ok(out)
     }
 }
@@ -329,9 +291,8 @@ mod test_add_assign {
     #[test]
     fn correct_large() {
         let modulus = ModulusPolynomialRingZq::from_str(&format!(
-            "4  {} 0 0 {} mod {}",
+            "4  {} 0 0 1 mod {}",
             u64::MAX,
-            i64::MIN,
             u64::MAX - 58
         ))
         .unwrap();
@@ -374,7 +335,7 @@ mod test_add_assign {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly_1 = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
         let mut a = PolynomialRingZq::from((&poly_1, &modulus));
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
+        let modulus = ModulusPolynomialRingZq::from_str("4  2 0 0 1 mod 17").unwrap();
         let poly_2 = PolyOverZ::from_str("4  2 0 3 1").unwrap();
         let b = PolynomialRingZq::from((&poly_2, &modulus));
 
@@ -468,9 +429,8 @@ mod test_add {
     #[test]
     fn add_large_numbers() {
         let modulus = ModulusPolynomialRingZq::from_str(&format!(
-            "4  {} 0 0 {} mod {}",
+            "4  {} 0 0 1 mod {}",
             u64::MAX,
-            i64::MIN,
             u64::MAX - 58
         ))
         .unwrap();
@@ -499,7 +459,7 @@ mod test_add {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly_1 = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
         let a = PolynomialRingZq::from((&poly_1, &modulus));
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
+        let modulus = ModulusPolynomialRingZq::from_str("4  2 0 0 1 mod 17").unwrap();
         let poly_2 = PolyOverZ::from_str("4  2 0 3 1").unwrap();
         let b = PolynomialRingZq::from((&poly_2, &modulus));
         let _ = a + b;
@@ -511,7 +471,7 @@ mod test_add {
         let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
         let poly_1 = PolyOverZ::from_str("4  -1 0 1 1").unwrap();
         let a = PolynomialRingZq::from((&poly_1, &modulus));
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 2 mod 17").unwrap();
+        let modulus = ModulusPolynomialRingZq::from_str("4  2 0 0 1 mod 17").unwrap();
         let poly_2 = PolyOverZ::from_str("4  2 0 3 1").unwrap();
         let b = PolynomialRingZq::from((&poly_2, &modulus));
 
@@ -529,10 +489,10 @@ mod test_add_poly_over_z {
     #[test]
     fn borrowed_correctness() {
         let poly_1 =
-            PolynomialRingZq::from_str(&format!("2  2 {} / 4  1 2 3 4 mod {}", i64::MAX, u64::MAX))
+            PolynomialRingZq::from_str(&format!("2  2 {} / 4  1 2 3 1 mod {}", i64::MAX, u64::MAX))
                 .unwrap();
         let poly_2 = PolynomialRingZq::from_str(&format!(
-            "2  3 {} / 4  1 2 3 4 mod {}",
+            "2  3 {} / 4  1 2 3 1 mod {}",
             i64::MAX as u64 + 2,
             u64::MAX
         ))
@@ -547,7 +507,7 @@ mod test_add_poly_over_z {
     /// Checks if addition works fine for different types
     #[test]
     fn availability() {
-        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 17").unwrap();
+        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 1 mod 17").unwrap();
         let z = PolyOverZ::from(2);
 
         _ = poly.clone() + z.clone();
@@ -571,15 +531,15 @@ mod test_add_poly_over_zq {
     #[test]
     fn borrowed_correctness() {
         let poly_1 =
-            PolynomialRingZq::from_str(&format!("2  2 {} / 4  1 2 3 4 mod {}", i64::MAX, u64::MAX))
+            PolynomialRingZq::from_str(&format!("2  2 {} / 4  1 2 3 1 mod {}", i64::MAX, u64::MAX))
                 .unwrap();
         let poly_2 = PolynomialRingZq::from_str(&format!(
-            "2  3 {} / 4  1 2 3 4 mod {}",
-            i64::MAX as u64 + 2,
+            "2  3 {} / 4  1 2 3 1 mod {}",
+            i64::MAX as u64 + 1,
             u64::MAX
         ))
         .unwrap();
-        let poly = PolyOverZq::from_str(&format!("2  1 2 mod {}", u64::MAX)).unwrap();
+        let poly = PolyOverZq::from_str(&format!("2  1 1 mod {}", u64::MAX)).unwrap();
 
         let poly_1 = &poly_1 + &poly;
 
@@ -589,7 +549,7 @@ mod test_add_poly_over_zq {
     /// Checks if addition works fine for different types
     #[test]
     fn availability() {
-        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 17").unwrap();
+        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 1 mod 17").unwrap();
         let zq = PolyOverZq::from((2, 17));
 
         _ = poly.clone() + zq.clone();
@@ -606,7 +566,7 @@ mod test_add_poly_over_zq {
     #[test]
     #[should_panic]
     fn different_moduli_panic() {
-        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 4 mod 17").unwrap();
+        let poly = PolynomialRingZq::from_str("3  1 2 3 / 4  1 2 3 1 mod 17").unwrap();
         let zq = PolyOverZq::from((2, 16));
 
         _ = &poly + &zq;

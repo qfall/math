@@ -13,15 +13,16 @@
 use super::ModulusPolynomialRingZq;
 use crate::{
     error::MathError,
-    integer::PolyOverZ,
+    integer::{PolyOverZ, Z},
     integer_mod_q::{Modulus, PolyOverZq},
     macros::for_others::implement_for_owned,
+    traits::GetCoefficient,
 };
-use flint_sys::fq::fq_ctx_init_modulus;
-use std::{ffi::CString, mem::MaybeUninit, rc::Rc, str::FromStr};
+use std::{rc::Rc, str::FromStr};
 
 impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for ModulusPolynomialRingZq {
     /// Creates a [`ModulusPolynomialRingZq`] from a [`PolyOverZ`] and a value that implements [`Into<Modulus>`].
+    /// It requires that the leading coefficient is `1`.
     ///
     /// Parameters:
     /// - `poly`: the coefficients of the polynomial.
@@ -36,11 +37,11 @@ impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for ModulusPolynomialRingZq {
     /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;
     ///
-    /// let poly = PolyOverZ::from_str("4  0 1 102 3").unwrap();
+    /// let poly = PolyOverZ::from_str("4  0 1 102 1").unwrap();
     ///
     /// let mod_poly = ModulusPolynomialRingZq::from((&poly, 100));
     ///
-    /// let poly_cmp = ModulusPolynomialRingZq::from_str("4  0 1 2 3 mod 100").unwrap();
+    /// let poly_cmp = ModulusPolynomialRingZq::from_str("4  0 1 2 1 mod 100").unwrap();
     /// assert_eq!(poly_cmp, mod_poly);
     /// ```
     ///
@@ -58,6 +59,7 @@ impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for ModulusPolynomialRingZq {
 
 impl<Mod: Into<Modulus>> From<(PolyOverZ, Mod)> for ModulusPolynomialRingZq {
     /// Creates a [`ModulusPolynomialRingZq`] from a [`PolyOverZ`] and a value that implements [`Into<Modulus>`].
+    /// It requires that the leading coefficient is `1`.
     ///
     /// Parameters:
     /// - `poly`: the coefficients of the polynomial.
@@ -72,11 +74,11 @@ impl<Mod: Into<Modulus>> From<(PolyOverZ, Mod)> for ModulusPolynomialRingZq {
     /// use qfall_math::integer::PolyOverZ;
     /// use std::str::FromStr;
     ///
-    /// let poly = PolyOverZ::from_str("4  0 1 102 3").unwrap();
+    /// let poly = PolyOverZ::from_str("4  0 1 102 1").unwrap();
     ///
     /// let mod_poly = ModulusPolynomialRingZq::from((poly, 100));
     ///
-    /// let poly_cmp = ModulusPolynomialRingZq::from_str("4  0 1 2 3 mod 100").unwrap();
+    /// let poly_cmp = ModulusPolynomialRingZq::from_str("4  0 1 2 1 mod 100").unwrap();
     /// assert_eq!(poly_cmp, mod_poly);
     /// ```
     ///
@@ -117,20 +119,17 @@ impl From<&PolyOverZq> for ModulusPolynomialRingZq {
     /// - if the modulus polynomial is of degree smaller than `1`.
     fn from(poly: &PolyOverZq) -> Self {
         check_poly_mod(poly).unwrap();
-
-        let mut modulus = MaybeUninit::uninit();
-        let c_string = CString::new("X").unwrap();
-        unsafe {
-            fq_ctx_init_modulus(
-                modulus.as_mut_ptr(),
-                &poly.poly,
-                poly.modulus.get_fmpz_mod_ctx_struct(),
-                c_string.as_ptr(),
-            );
-            Self {
-                modulus: Rc::new(modulus.assume_init()),
-                ntt_basis: Rc::new(None),
+        let mut non_zero = Vec::new();
+        for i in 0..poly.get_degree() {
+            let coeff: Z = poly.get_coeff(i).unwrap();
+            if coeff != 0 {
+                non_zero.push(i.try_into().unwrap());
             }
+        }
+        Self {
+            modulus: Rc::new(poly.clone()),
+            ntt_basis: Rc::new(None),
+            non_zero,
         }
     }
 }
@@ -152,11 +151,12 @@ impl FromStr for ModulusPolynomialRingZq {
     /// Creates a Modulus object of type [`ModulusPolynomialRingZq`]
     /// for [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq). This first
     /// converts the provided string into a [`PolyOverZq`] and then into the Modulus object.
+    /// It requires that the leading coefficient is `1`.
     ///
     /// **Warning**: If the input string starts with a correctly formatted
     /// [`PolyOverZ`](crate::integer::PolyOverZ) object, the rest of the string
     /// until the `"mod"` is ignored. This means that the input string
-    /// `"4  0 1 2 3 mod 13"` is the same as `"4  0 1 2 3 4 5 6 7 mod 13"`.
+    /// `"4  0 1 2 1 mod 13"` is the same as `"4  0 1 2 1 4 5 6 7 mod 13"`.
     ///
     /// Parameters:
     /// - `s`: has to be a valid string to create a [`PolyOverZq`].
@@ -202,6 +202,7 @@ impl FromStr for ModulusPolynomialRingZq {
 }
 
 /// Checks weather a given [`PolyOverZq`] can be used as a [`ModulusPolynomialRingZq`].
+/// It requires that the leading coefficient is `1`.
 ///
 /// Parameters:
 /// - `poly_zq`: the [`PolyOverZq`] value that should be checked.
@@ -213,7 +214,7 @@ impl FromStr for ModulusPolynomialRingZq {
 /// use qfall_math::integer_mod_q::PolyOverZq;
 /// use std::str::FromStr;
 ///
-/// let poly_zq = PolyOverZq::from_str("2  1 2 mod 17").unwrap();
+/// let poly_zq = PolyOverZq::from_str("2  1 1 mod 17").unwrap();
 ///
 /// check_poly_mod(&poly_zq)?
 /// ```
@@ -223,8 +224,14 @@ impl FromStr for ModulusPolynomialRingZq {
 ///   [`InvalidModulus`](MathError::InvalidModulus)
 ///   if the modulus polynomial is of degree less than `1`.
 pub(crate) fn check_poly_mod(poly_zq: &PolyOverZq) -> Result<(), MathError> {
+    let leading_coefficient: Z = poly_zq.get_coeff(poly_zq.get_degree())?;
     if poly_zq.get_degree() < 1 {
         return Err(MathError::InvalidModulus(poly_zq.to_string()));
+    }
+    if leading_coefficient != 1 {
+        return Err(MathError::InvalidModulus(format!(
+            ". The leading coefficient needs to be 1, but it is {leading_coefficient}"
+        )));
     }
 
     Ok(())
@@ -262,7 +269,7 @@ mod test_try_from_poly_z {
     /// Ensure that primes and non-primes work as modulus
     #[test]
     fn poly_z_primes() {
-        let poly_z = PolyOverZ::from_str("2  2 2").unwrap();
+        let poly_z = PolyOverZ::from_str("2  2 1").unwrap();
 
         let _ = ModulusPolynomialRingZq::from((&poly_z, 10));
         let _ = ModulusPolynomialRingZq::from((poly_z, 11));
@@ -293,11 +300,11 @@ mod test_try_from_integer_mod {
         let _ = ModulusPolynomialRingZq::from_str("3  3 0 1 mod 18").unwrap();
     }
 
-    /// Ensure that the function panics if the modulus polynomial is 0
+    /// Ensure that the function panics if the modulus polynomial is a constant polynomial
     #[test]
     #[should_panic]
-    fn panic_degree_1() {
-        let poly = PolyOverZ::from_str("1 5").unwrap();
+    fn panic_degree_0() {
+        let poly = PolyOverZ::from_str("1 1").unwrap();
         let _ = ModulusPolynomialRingZq::from((poly, 17));
     }
 }
@@ -313,19 +320,9 @@ mod test_try_from_poly_zq {
     #[test]
     fn working_large_entries() {
         let poly_mod =
-            PolyOverZq::from_str(&format!("4  0 1 -2 {} mod {}", u64::MAX, 2_i32.pow(16) + 1))
+            PolyOverZq::from_str(&format!("4  0 1 {} 1 mod {}", u64::MAX, 2_i32.pow(16) + 1))
                 .unwrap();
         let _ = ModulusPolynomialRingZq::from(&poly_mod);
-    }
-
-    /// Ensure that large entries work
-    #[test]
-    fn poly_zq_unchanged() {
-        let in_str = format!("4  0 1 3 {} mod {}", u64::MAX, 2_i32.pow(16) + 1);
-        let cmp_str = "3  0 1 3 mod 65537";
-        let poly_zq = PolyOverZq::from_str(&in_str).unwrap();
-        let _ = ModulusPolynomialRingZq::from(&poly_zq);
-        assert_eq!(cmp_str, poly_zq.to_string());
     }
 
     /// Ensure that primes and non-primes work as modulus
@@ -370,7 +367,7 @@ mod test_from_str {
     fn working_large_entries() {
         assert!(
             ModulusPolynomialRingZq::from_str(&format!(
-                "4  0 1 3 {} mod {}",
+                "4  0 1 {} 1 mod {}",
                 u64::MAX,
                 2_i32.pow(16) + 1
             ))
@@ -381,7 +378,7 @@ mod test_from_str {
     /// Ensure that primes and non-primes work as modulus
     #[test]
     fn poly_zq_primes() {
-        assert!(ModulusPolynomialRingZq::from_str("4  0 1 3 2 mod 10").is_ok());
-        assert!(ModulusPolynomialRingZq::from_str("4  0 1 3 2 mod 11").is_ok());
+        assert!(ModulusPolynomialRingZq::from_str("4  0 1 3 1 mod 10").is_ok());
+        assert!(ModulusPolynomialRingZq::from_str("4  0 1 3 1 mod 11").is_ok());
     }
 }

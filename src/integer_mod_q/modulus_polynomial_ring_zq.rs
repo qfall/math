@@ -11,7 +11,7 @@
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use super::ntt_basis_polynomial_ring_zq::NTTBasisPolynomialRingZq;
-use flint_sys::fq::fq_ctx_struct;
+use crate::integer_mod_q::PolyOverZq;
 use std::{fmt, rc::Rc};
 
 mod cmp;
@@ -23,14 +23,12 @@ mod ntt_basis;
 mod ownership;
 mod serialize;
 mod to_string;
-mod unsafe_functions;
 
 /// [`ModulusPolynomialRingZq`] represents the modulus object for
 /// [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq)
 ///
 /// Attributes
-/// - `modulus`: holds the specific content, i.e. the modulus `q` and f(X); it
-///   holds [FLINT](https://flintlib.org/)'s [struct](fq_ctx_struct)
+/// - `modulus`: holds the specific content, i.e. the modulus `q` and f(X)
 ///
 /// # Examples
 /// ```
@@ -43,8 +41,9 @@ mod unsafe_functions;
 /// let modulus = ModulusPolynomialRingZq::from(poly_mod);
 /// ```
 pub struct ModulusPolynomialRingZq {
-    modulus: Rc<fq_ctx_struct>,
+    pub(crate) modulus: Rc<PolyOverZq>,
     pub(crate) ntt_basis: Rc<Option<NTTBasisPolynomialRingZq>>,
+    pub(crate) non_zero: Vec<usize>,
 }
 
 impl fmt::Debug for ModulusPolynomialRingZq {
