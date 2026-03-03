@@ -13,7 +13,7 @@ use probability::{
     distribution::{Gaussian, Sample},
     source,
 };
-use rand::RngCore;
+use rand::Rng;
 
 impl Q {
     /// Chooses a [`Q`] instance according to the continuous Gaussian distribution.
