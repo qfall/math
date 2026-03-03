@@ -23,7 +23,7 @@ use crate::{
     rational::{MatQ, Q},
     traits::{MatrixDimensions, MatrixGetSubmatrix, Pow},
 };
-use rand::Rng;
+use rand::RngExt;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 

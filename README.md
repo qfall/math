@@ -11,7 +11,7 @@ This `math`-crate is a memory-safe wrapper of [FLINT](https://flintlib.org/) in 
 
 ## Quick-Start
 First, ensure that you use a Unix-like distribution (Linux or MacOS). Setup [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) if you're using Windows. This is required due to this crate's dependency on FLINT.
-Then, make sure your `rustc --version` is `1.85` or newer. 
+Then, make sure your `rustc --version` is `1.87` or newer. 
 
 Furthermore, it's required that `m4`, a C-compiler such as `gcc`, and `make` are installed.
 ```bash

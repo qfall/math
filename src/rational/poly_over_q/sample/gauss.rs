@@ -19,7 +19,7 @@ use probability::{
     prelude::{Gaussian, Sample},
     source,
 };
-use rand::RngCore;
+use rand::Rng;
 use std::fmt::Display;
 
 impl PolyOverQ {
