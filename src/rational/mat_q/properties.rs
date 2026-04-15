@@ -1,4 +1,4 @@
-// Copyright © 2023 Phil Milewski, Marvin Beckmann
+// Copyright 2023 Phil Milewski, Marvin Beckmann
 //
 // This file is part of qFALL-math.
 //

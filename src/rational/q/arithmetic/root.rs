@@ -1,4 +1,4 @@
-// Copyright © 2023 Sven Moog
+// Copyright 2023 Sven Moog
 //
 // This file is part of qFALL-math.
 //

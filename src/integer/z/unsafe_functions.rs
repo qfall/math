@@ -1,4 +1,4 @@
-// Copyright © 2025 Niklas Siemer
+// Copyright 2025 Niklas Siemer
 //
 // This file is part of qFALL-math.
 //

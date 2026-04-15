@@ -1,4 +1,4 @@
-// Copyright © 2023 Marvin Beckmann, Marcel Luca Schmidt
+// Copyright 2023 Marvin Beckmann, Marcel Luca Schmidt
 //
 // This file is part of qFALL-math.
 //
