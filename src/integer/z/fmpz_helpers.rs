@@ -1,4 +1,4 @@
-// Copyright © 2023 Niklas Siemer, Sven Moog
+// Copyright 2023 Jan Niklas Siemer, Sven Moog
 //
 // This file is part of qFALL-math.
 //

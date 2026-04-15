@@ -1,4 +1,4 @@
-// Copyright © 2023 Marvin Beckmann, Sven Moog
+// Copyright 2023 Marvin Beckmann, Sven Moog
 //
 // This file is part of qFALL-math.
 //

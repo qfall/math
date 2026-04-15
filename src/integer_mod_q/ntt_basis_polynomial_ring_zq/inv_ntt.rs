@@ -1,4 +1,4 @@
-// Copyright © 2025 Marvin Beckmann
+// Copyright 2025 Marvin Beckmann
 //
 // This file is part of qFALL-math.
 //
