@@ -1,4 +1,4 @@
-// Copyright 2023 Sven Moog, Niklas Siemer, Marcel Luca Schmidt
+// Copyright 2023 Sven Moog, Jan Niklas Siemer, Marcel Luca Schmidt
 //
 // This file is part of qFALL-math.
 //
