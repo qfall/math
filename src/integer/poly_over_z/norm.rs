@@ -11,6 +11,7 @@
 
 use crate::{
     integer::{PolyOverZ, Z},
+    rational::Q,
     traits::{GetCoefficient, Pow},
 };
 use std::cmp::max;
@@ -42,6 +43,26 @@ impl PolyOverZ {
         res
     }
 
+    /// Returns the Euclidean norm or 2-norm of the given polynomial.
+    /// The Euclidean norm for a polynomial is obtained by treating the coefficients
+    /// of the polynomial as a vector and then applying the standard Euclidean norm.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{integer::PolyOverZ, rational::Q};
+    /// use std::str::FromStr;
+    ///
+    /// let poly = PolyOverZ::from_str("1  3").unwrap();
+    ///
+    /// let norm = poly.norm_eucl();
+    ///
+    /// // sqrt(3^2) = 3
+    /// assert_eq!(Q::from(3), norm);
+    /// ```
+    pub fn norm_eucl(&self) -> Q {
+        self.norm_eucl_sqrd().sqrt()
+    }
+
     /// Returns the infinity norm or the maximal absolute value of a
     /// coefficient of the given polynomial.
     /// The infinity norm for a polynomial is obtained by treating the coefficients
@@ -67,6 +88,31 @@ impl PolyOverZ {
             }
         }
         res
+    }
+
+    /// Outputs the hamming weight of `self`, i.e. it returns the number of
+    /// non-zero coefficients in the polynomial.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::PolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let poly = PolyOverZ::from_str("5  1 2 3 0 4").unwrap();
+    ///
+    /// let hamming_weight = poly.hamming_weight();
+    ///
+    /// assert_eq!(4, hamming_weight);
+    /// ```
+    pub fn hamming_weight(&self) -> i64 {
+        let mut hamming_weight = 0;
+        for i in 0..=self.get_degree() {
+            let coeff = unsafe { self.get_coeff_unchecked(i) };
+            if !coeff.is_zero() {
+                hamming_weight += 1;
+            }
+        }
+        hamming_weight
     }
 }
 
@@ -137,5 +183,24 @@ mod test_norm_infty {
 
         assert_eq!(poly_1.norm_infty(), Z::from(u64::MAX));
         assert_eq!(poly_2.norm_infty(), Z::from(u64::MAX));
+    }
+}
+
+#[cfg(test)]
+mod test_hamming_weight {
+    use super::PolyOverZ;
+    use std::str::FromStr;
+
+    /// Ensures that the hamming weight is computed correctly.
+    #[test]
+    fn hamming_weight() {
+        let poly0 = PolyOverZ::default();
+        let poly1 = PolyOverZ::from_str("6  0 0 2 3 4 5").unwrap();
+
+        let hw0 = poly0.hamming_weight();
+        let hw1 = poly1.hamming_weight();
+
+        assert_eq!(0, hw0);
+        assert_eq!(4, hw1);
     }
 }
