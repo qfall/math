@@ -10,6 +10,7 @@
 //! such as addition or subtraction.
 
 mod add;
+mod modulo;
 mod mul;
 mod pow;
 mod sub;
