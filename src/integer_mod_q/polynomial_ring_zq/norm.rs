@@ -12,7 +12,8 @@
 use super::PolynomialRingZq;
 use crate::{
     integer::Z,
-    integer_mod_q::fmpz_mod_helpers::length,
+    integer_mod_q::{Zq, fmpz_mod_helpers::length},
+    rational::Q,
     traits::{GetCoefficient, Pow},
 };
 use std::cmp::max;
@@ -49,6 +50,30 @@ impl PolynomialRingZq {
         res
     }
 
+    /// Returns the Euclidean norm or 2-norm of the given polynomial.
+    /// The Euclidean norm for a polynomial is obtained by treating the coefficients
+    /// of the polynomial as a vector and then applying the standard Euclidean norm.
+    ///
+    /// Each length of an entry in this vector is defined as the shortest distance
+    /// to the next zero representative modulo q.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{rational::Q, integer_mod_q::PolynomialRingZq};
+    /// use std::str::FromStr;
+    ///
+    /// let poly = PolynomialRingZq::from_str("1  3 / 4  1 0 0 1 mod 7").unwrap();
+    /// println!("{poly}");
+    ///
+    /// let norm = poly.norm_eucl();
+    ///
+    /// // sqrt(3*3) = 3
+    /// assert_eq!(Q::from(3), norm);
+    /// ```
+    pub fn norm_eucl(&self) -> Q {
+        self.norm_eucl_sqrd().sqrt()
+    }
+
     /// Returns the infinity norm or the maximal absolute value of a
     /// coefficient of the given polynomial.
     /// The infinity norm for a polynomial is obtained by treating the coefficients
@@ -78,6 +103,31 @@ impl PolynomialRingZq {
             res = max(res, len);
         }
         res
+    }
+
+    /// Outputs the hamming weight of `self`, i.e. it returns the number of
+    /// non-zero coefficients in the polynomial.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::PolynomialRingZq;
+    /// use std::str::FromStr;
+    ///
+    /// let poly = PolynomialRingZq::from_str("3  1 7 3 / 4  1 0 0 1 mod 7").unwrap();
+    ///
+    /// let hamming_weight = poly.hamming_weight();
+    ///
+    /// assert_eq!(2, hamming_weight);
+    /// ```
+    pub fn hamming_weight(&self) -> i64 {
+        let mut hamming_weight = 0;
+        for i in 0..=self.get_degree() {
+            let coeff: Zq = unsafe { self.get_coeff_unchecked(i) };
+            if !coeff.is_zero() {
+                hamming_weight += 1;
+            }
+        }
+        hamming_weight
     }
 }
 
@@ -166,5 +216,25 @@ mod test_norm_infty {
 
         assert_eq!(poly_1.norm_infty(), Z::from(u64::MAX));
         assert_eq!(poly_2.norm_infty(), Z::from((u64::MAX - 1) / 2 - 57));
+    }
+}
+
+#[cfg(test)]
+mod test_hamming_weight {
+    use super::PolynomialRingZq;
+    use std::str::FromStr;
+
+    /// Ensures that the hamming weight is computed correctly.
+    #[test]
+    fn hamming_weight() {
+        let poly0 = PolynomialRingZq::from_str("0 / 4  1 0 0 1 mod 3").unwrap();
+        let poly1 =
+            PolynomialRingZq::from_str("6  0 0 2 3 4 5 / 8  1 0 0 0 0 0 0 1 mod 5").unwrap();
+
+        let hw0 = poly0.hamming_weight();
+        let hw1 = poly1.hamming_weight();
+
+        assert_eq!(0, hw0);
+        assert_eq!(3, hw1);
     }
 }
