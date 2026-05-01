@@ -11,7 +11,7 @@
 
 use super::MatPolyOverZ;
 use crate::macros::unsafe_passthrough::{unsafe_getter, unsafe_setter};
-use flint_sys::fmpz_poly_mat::{fmpz_poly_mat_clear, fmpz_poly_mat_struct};
+use flint_sys::{fmpz_poly_mat::fmpz_poly_mat_clear, fmpz_types::fmpz_poly_mat_struct};
 
 unsafe_getter!(MatPolyOverZ, matrix, fmpz_poly_mat_struct);
 unsafe_setter!(

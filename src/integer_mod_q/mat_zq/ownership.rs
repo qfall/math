@@ -35,7 +35,11 @@ impl Clone for MatZq {
             Z::from(self.get_mod()),
         );
         unsafe {
-            fmpz_mod_mat_init_set(&mut out.matrix, &self.matrix);
+            fmpz_mod_mat_init_set(
+                &mut out.matrix,
+                &self.matrix,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            );
         }
         out
     }
@@ -64,7 +68,7 @@ impl Drop for MatZq {
     /// drop(a); // explicitly drops a's value
     /// ```
     fn drop(&mut self) {
-        unsafe { fmpz_mod_mat_clear(&mut self.matrix) }
+        unsafe { fmpz_mod_mat_clear(&mut self.matrix, self.modulus.get_fmpz_mod_ctx_struct()) }
     }
 }
 
@@ -109,20 +113,20 @@ mod test_clone {
         a = b.clone();
 
         assert_ne!(
-            MatrixGetEntry::<Z>::get_entry(&a, 0, 0).unwrap().value.0,
-            MatrixGetEntry::<Z>::get_entry(&b, 0, 0).unwrap().value.0
+            MatrixGetEntry::<Z>::get_entry(&a, 0, 0).unwrap().value,
+            MatrixGetEntry::<Z>::get_entry(&b, 0, 0).unwrap().value
         );
         assert_ne!(
-            MatrixGetEntry::<Z>::get_entry(&a, 0, 1).unwrap().value.0,
-            MatrixGetEntry::<Z>::get_entry(&b, 0, 1).unwrap().value.0
+            MatrixGetEntry::<Z>::get_entry(&a, 0, 1).unwrap().value,
+            MatrixGetEntry::<Z>::get_entry(&b, 0, 1).unwrap().value
         );
         assert_ne!(
-            MatrixGetEntry::<Z>::get_entry(&a, 1, 0).unwrap().value.0,
-            MatrixGetEntry::<Z>::get_entry(&b, 1, 0).unwrap().value.0
+            MatrixGetEntry::<Z>::get_entry(&a, 1, 0).unwrap().value,
+            MatrixGetEntry::<Z>::get_entry(&b, 1, 0).unwrap().value
         );
         assert_eq!(
-            MatrixGetEntry::<Z>::get_entry(&a, 1, 1).unwrap().value.0,
-            MatrixGetEntry::<Z>::get_entry(&b, 1, 1).unwrap().value.0
+            MatrixGetEntry::<Z>::get_entry(&a, 1, 1).unwrap().value,
+            MatrixGetEntry::<Z>::get_entry(&b, 1, 1).unwrap().value
         ); // kept on stack
     }
 
@@ -147,7 +151,7 @@ mod test_clone {
 
         let a = b.clone();
 
-        assert_ne!(a.matrix.mod_[0].0, b.matrix.mod_[0].0);
+        assert_ne!(a.modulus, b.modulus);
     }
 }
 
@@ -156,7 +160,7 @@ mod test_clone {
 mod test_drop {
     use super::MatZq;
     use crate::integer::Z;
-    use crate::traits::MatrixGetEntry;
+    use crate::traits::{AsInteger, MatrixGetEntry};
     use std::collections::HashSet;
     use std::str::FromStr;
 
@@ -166,9 +170,9 @@ mod test_drop {
         let string = format!("[[{}, {}]] mod {}", i64::MAX, i64::MIN, u64::MAX);
         let a = MatZq::from_str(&string).unwrap();
 
-        let storage_mod = a.matrix.mod_[0].0;
-        let storage_0 = MatrixGetEntry::<Z>::get_entry(&a, 0, 0).unwrap().value.0;
-        let storage_1 = MatrixGetEntry::<Z>::get_entry(&a, 0, 1).unwrap().value.0;
+        let storage_mod = unsafe { a.get_mod().into_fmpz() };
+        let storage_0 = MatrixGetEntry::<Z>::get_entry(&a, 0, 0).unwrap().value;
+        let storage_1 = MatrixGetEntry::<Z>::get_entry(&a, 0, 1).unwrap().value;
 
         (storage_mod, storage_0, storage_1)
     }

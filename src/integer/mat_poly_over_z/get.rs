@@ -14,11 +14,12 @@ use crate::{
     traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix},
 };
 use flint_sys::{
-    fmpz_poly::{fmpz_poly_set, fmpz_poly_struct},
+    fmpz_poly::fmpz_poly_set,
     fmpz_poly_mat::{
         fmpz_poly_mat_entry, fmpz_poly_mat_init_set, fmpz_poly_mat_window_clear,
         fmpz_poly_mat_window_init,
     },
+    fmpz_types::fmpz_poly_struct,
 };
 use std::mem::MaybeUninit;
 
@@ -178,7 +179,7 @@ impl MatPolyOverZ {
         for row in 0..self.get_num_rows() {
             for col in 0..self.get_num_columns() {
                 // efficiently get entry without cloning the entry itself
-                let entry = unsafe { *fmpz_poly_mat_entry(&self.matrix, row, col) };
+                let entry = unsafe { std::ptr::read(fmpz_poly_mat_entry(&self.matrix, row, col)) };
                 entries.push(entry);
             }
         }
@@ -592,16 +593,16 @@ mod test_collect_entries {
         let entries_2 = mat_2.collect_entries();
 
         assert_eq!(entries_1.len(), 6);
-        assert_eq!(unsafe { *entries_1[0].coeffs }.0, 1);
-        assert!(unsafe { *entries_1[2].coeffs }.0 >= 2_i64.pow(62));
-        assert!(unsafe { *entries_1[3].coeffs }.0 >= 2_i64.pow(62));
-        assert_eq!(unsafe { *entries_1[4].coeffs }.0, -3);
+        assert_eq!(unsafe { *entries_1[0].coeffs }, 1);
+        assert!(unsafe { *entries_1[2].coeffs } >= 2_i64.pow(62));
+        assert!(unsafe { *entries_1[3].coeffs } >= 2_i64.pow(62));
+        assert_eq!(unsafe { *entries_1[4].coeffs }, -3);
 
         assert_eq!(entries_2.len(), 2);
-        assert_eq!(unsafe { *entries_2[0].coeffs.offset(0) }.0, -1);
+        assert_eq!(unsafe { *entries_2[0].coeffs.offset(0) }, -1);
         assert_eq!(entries_2[0].length, 1);
-        assert_eq!(unsafe { *entries_2[1].coeffs.offset(0) }.0, 1);
-        assert_eq!(unsafe { *entries_2[1].coeffs.offset(1) }.0, 2);
+        assert_eq!(unsafe { *entries_2[1].coeffs.offset(0) }, 1);
+        assert_eq!(unsafe { *entries_2[1].coeffs.offset(1) }, 2);
         assert_eq!(entries_2[1].length, 2);
     }
 }

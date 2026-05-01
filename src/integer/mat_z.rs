@@ -10,7 +10,7 @@
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use crate::utils::parse::partial_string;
-use flint_sys::fmpz_mat::fmpz_mat_struct;
+use flint_sys::fmpz_types::fmpz_mat_struct;
 use std::fmt;
 
 mod arithmetic;
@@ -99,10 +99,20 @@ impl fmt::Debug for MatZ {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "MatZ: {{matrix: {}, storage: {:?}}}",
+            "MatZ: {{matrix: {}, storage: {{ matrix: {}}}}}",
             // printing the entire matrix is not meaningful for large matrices
             partial_string(self, 3, 3),
-            self.matrix
+            debug_fmpz_mat_struct(&self.matrix)
         )
     }
+}
+
+pub(crate) fn debug_fmpz_mat_struct(value: &fmpz_mat_struct) -> String {
+    format!(
+        "fmpz_mat_struct {{ entries: {:#x}, r: {}, c: {}, stride: {} }}",
+        value.entries.addr(),
+        value.r,
+        value.c,
+        value.stride
+    )
 }

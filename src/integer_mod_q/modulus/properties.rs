@@ -25,7 +25,7 @@ impl Modulus {
     /// assert!(modulus.is_prime());
     /// ```
     pub fn is_prime(&self) -> bool {
-        1 == unsafe { fmpz_is_prime(&self.get_fmpz_mod_ctx_struct().n[0]) }
+        1 == unsafe { fmpz_is_prime(&self.modulus.n[0]) }
     }
 }
 

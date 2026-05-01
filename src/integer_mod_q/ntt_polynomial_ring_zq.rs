@@ -14,7 +14,6 @@ use crate::{
 };
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
-use std::fmt;
 
 mod arithmetic;
 mod cmp;
@@ -54,23 +53,9 @@ mod sample;
 /// // Return to PolynomialRingZq
 /// let res = tmp_ntt.inv_ntt();
 /// ```
-#[derive(PartialEq, Eq, Serialize, Deserialize, Display, Clone)]
+#[derive(PartialEq, Eq, Serialize, Deserialize, Display, Clone, Debug)]
 #[display("{} / {}", print_vec_z(&self.poly), self.modulus)]
 pub struct NTTPolynomialRingZq {
     pub poly: Vec<Z>,
     pub modulus: ModulusPolynomialRingZq,
-}
-
-impl fmt::Debug for NTTPolynomialRingZq {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let short_print = print_vec_z(&self.poly);
-        let a: Vec<&str> = short_print.split_whitespace().collect();
-        let short_print = format!("{}{} ..., {}{}", a[0], a[1], a[a.len() - 2], a[a.len() - 1]);
-
-        write!(
-            f,
-            "NTTPolynomialRingZq {{poly: {}, modulus: {}, storage: {{poly: {:?}, modulus: {:?}}}}}",
-            short_print, self.modulus, self.poly, self.modulus
-        )
-    }
 }

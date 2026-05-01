@@ -13,7 +13,7 @@ use crate::{
     integer::Z,
     integer_mod_q::{MatZq, Modulus, Zq},
     macros::for_others::implement_for_owned,
-    traits::{AsInteger, MatrixDimensions, MatrixSetEntry, MatrixSetSubmatrix, MatrixSwaps},
+    traits::{MatrixDimensions, MatrixSetEntry, MatrixSetSubmatrix, MatrixSwaps},
     utils::index::{evaluate_index_for_vector, evaluate_indices_for_matrix},
 };
 use flint_sys::{
@@ -23,15 +23,11 @@ use flint_sys::{
         fmpz_mat_swap_rows,
     },
     fmpz_mod_mat::{
-        _fmpz_mod_mat_reduce, _fmpz_mod_mat_set_mod, fmpz_mod_mat_set, fmpz_mod_mat_set_entry,
-        fmpz_mod_mat_window_clear, fmpz_mod_mat_window_init,
+        _fmpz_mod_mat_reduce, fmpz_mod_mat_set, fmpz_mod_mat_set_entry, fmpz_mod_mat_window_clear,
+        fmpz_mod_mat_window_init,
     },
 };
-use std::{
-    fmt::Display,
-    mem::MaybeUninit,
-    ptr::{null, null_mut},
-};
+use std::{fmt::Display, mem::MaybeUninit, ptr::null_mut};
 
 impl<Integer: Into<Z>> MatrixSetEntry<Integer> for MatZq {
     /// Sets the value of a specific matrix entry according to a given `value`
@@ -109,7 +105,13 @@ impl<Integer: Into<Z>> MatrixSetEntry<Integer> for MatZq {
 
         unsafe {
             // get entry and replace the pointed at value with the specified value
-            fmpz_mod_mat_set_entry(&mut self.matrix, row, column, &value.value)
+            fmpz_mod_mat_set_entry(
+                &mut self.matrix,
+                row,
+                column,
+                &value.value,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
         };
     }
 }
@@ -147,7 +149,13 @@ impl MatrixSetEntry<&Zq> for MatZq {
     unsafe fn set_entry_unchecked(&mut self, row: i64, column: i64, value: &Zq) {
         unsafe {
             // get entry and replace the pointed at value with the specified value
-            fmpz_mod_mat_set_entry(&mut self.matrix, row, column, &value.value.value)
+            fmpz_mod_mat_set_entry(
+                &mut self.matrix,
+                row,
+                column,
+                &value.value.value,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
         };
     }
 }
@@ -218,6 +226,7 @@ impl MatrixSetSubmatrix for MatZq {
                     col_self_start,
                     row_self_end,
                     col_self_end,
+                    self.modulus.get_fmpz_mod_ctx_struct(),
                 )
             };
             let mut window_other = MaybeUninit::uninit();
@@ -230,15 +239,26 @@ impl MatrixSetSubmatrix for MatZq {
                     col_other_start,
                     row_other_end,
                     col_other_end,
+                    self.modulus.get_fmpz_mod_ctx_struct(),
                 )
             };
             unsafe {
-                fmpz_mod_mat_set(window_self.as_mut_ptr(), window_other.as_ptr());
+                fmpz_mod_mat_set(
+                    window_self.as_mut_ptr(),
+                    window_other.as_ptr(),
+                    self.modulus.get_fmpz_mod_ctx_struct(),
+                );
 
                 // Clears the matrix window and releases any memory that it uses. Note that
                 // the memory to the underlying matrix that window points to is not freed
-                fmpz_mod_mat_window_clear(window_self.as_mut_ptr());
-                fmpz_mod_mat_window_clear(window_other.as_mut_ptr());
+                fmpz_mod_mat_window_clear(
+                    window_self.as_mut_ptr(),
+                    self.modulus.get_fmpz_mod_ctx_struct(),
+                );
+                fmpz_mod_mat_window_clear(
+                    window_other.as_mut_ptr(),
+                    self.modulus.get_fmpz_mod_ctx_struct(),
+                );
             }
         }
     }
@@ -282,8 +302,8 @@ impl MatrixSwaps for MatZq {
 
         unsafe {
             fmpz_swap(
-                fmpz_mat_entry(&self.matrix.mat[0], row_0, col_0),
-                fmpz_mat_entry(&self.matrix.mat[0], row_1, col_1),
+                fmpz_mat_entry(&self.matrix, row_0, col_0),
+                fmpz_mat_entry(&self.matrix, row_1, col_1),
             )
         };
         Ok(())
@@ -331,7 +351,7 @@ impl MatrixSwaps for MatZq {
                 },
             ));
         }
-        unsafe { fmpz_mat_swap_cols(&mut self.matrix.mat[0], null(), col_0, col_1) }
+        unsafe { fmpz_mat_swap_cols(&mut self.matrix, null_mut(), col_0, col_1) }
         Ok(())
     }
 
@@ -377,7 +397,7 @@ impl MatrixSwaps for MatZq {
                 },
             ));
         }
-        unsafe { fmpz_mat_swap_rows(&mut self.matrix.mat[0], null(), row_0, row_1) }
+        unsafe { fmpz_mat_swap_rows(&mut self.matrix, null_mut(), row_0, row_1) }
         Ok(())
     }
 }
@@ -397,7 +417,7 @@ impl MatZq {
         // If the second argument to this function is not null, the permutation
         // of the columns is also applied to this argument.
         // Hence, passing in null is justified here.
-        unsafe { fmpz_mat_invert_cols(&mut self.matrix.mat[0], null_mut()) }
+        unsafe { fmpz_mat_invert_cols(&mut self.matrix, null_mut()) }
     }
 
     /// Swaps the `i`-th row with the `n-i`-th row for all `i <= n/2`
@@ -414,7 +434,7 @@ impl MatZq {
         // If the second argument to this function is not null, the permutation
         // of the rows is also applied to this argument.
         // Hence, passing in null is justified here.
-        unsafe { fmpz_mat_invert_rows(&mut self.matrix.mat[0], null_mut()) }
+        unsafe { fmpz_mat_invert_rows(&mut self.matrix, null_mut()) }
     }
 
     /// Changes the modulus of the given matrix to the new modulus.
@@ -437,10 +457,7 @@ impl MatZq {
     /// - if `modulus` is smaller than `2`.
     pub fn change_modulus(&mut self, modulus: impl Into<Modulus>) {
         self.modulus = modulus.into();
-        unsafe {
-            _fmpz_mod_mat_set_mod(&mut self.matrix, self.modulus.get_fmpz_ref().unwrap());
-            _fmpz_mod_mat_reduce(&mut self.matrix)
-        }
+        unsafe { _fmpz_mod_mat_reduce(&mut self.matrix, self.modulus.get_fmpz_mod_ctx()) }
     }
 }
 

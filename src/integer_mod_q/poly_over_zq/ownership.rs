@@ -100,27 +100,23 @@ mod test_clone {
 
         // check that Modulus isn't stored twice
         assert_eq!(
-            a.modulus.get_fmpz_mod_ctx_struct().n[0].0,
-            b.modulus.get_fmpz_mod_ctx_struct().n[0].0
+            a.modulus.get_fmpz_mod_ctx_struct().n[0],
+            b.modulus.get_fmpz_mod_ctx_struct().n[0]
         );
 
         // check that values on heap are stored separately
-        assert_ne!(
-            unsafe { *a.poly.coeffs.offset(0) }.0,
-            unsafe { *b.poly.coeffs.offset(0) }.0
-        ); // heap
-        assert_eq!(
-            unsafe { *a.poly.coeffs.offset(1) }.0,
-            unsafe { *b.poly.coeffs.offset(1) }.0
-        ); // stack
-        assert_ne!(
-            unsafe { *a.poly.coeffs.offset(2) }.0,
-            unsafe { *b.poly.coeffs.offset(2) }.0
-        ); // heap
-        assert_eq!(
-            unsafe { *a.poly.coeffs.offset(3) }.0,
-            unsafe { *b.poly.coeffs.offset(3) }.0
-        ); // stack
+        assert_ne!(unsafe { *a.poly.coeffs.offset(0) }, unsafe {
+            *b.poly.coeffs.offset(0)
+        }); // heap
+        assert_eq!(unsafe { *a.poly.coeffs.offset(1) }, unsafe {
+            *b.poly.coeffs.offset(1)
+        }); // stack
+        assert_ne!(unsafe { *a.poly.coeffs.offset(2) }, unsafe {
+            *b.poly.coeffs.offset(2)
+        }); // heap
+        assert_eq!(unsafe { *a.poly.coeffs.offset(3) }, unsafe {
+            *b.poly.coeffs.offset(3)
+        }); // stack
 
         // check if length of polynomials is equal
         assert_eq!(a.poly.length, b.poly.length);
@@ -137,10 +133,9 @@ mod test_drop {
     fn create_and_drop_modulus() -> (i64, i64) {
         let a = PolyOverZq::from_str(&format!("2  {} -2 mod {}", i64::MAX, u64::MAX)).unwrap();
 
-        (
-            unsafe { *a.poly.coeffs.offset(0) }.0,
-            unsafe { *a.poly.coeffs.offset(1) }.0,
-        )
+        (unsafe { *a.poly.coeffs.offset(0) }, unsafe {
+            *a.poly.coeffs.offset(1)
+        })
     }
 
     /// Check whether freed memory is reused afterwards

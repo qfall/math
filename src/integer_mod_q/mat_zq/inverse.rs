@@ -158,7 +158,13 @@ impl MatZq {
         );
 
         // Since we only want the echelon form, the permutation `perm` is not relevant.
-        let _ = unsafe { fmpz_mod_mat_rref(std::ptr::null_mut(), &self.matrix) };
+        let _ = unsafe {
+            fmpz_mod_mat_rref(
+                std::ptr::null_mut(),
+                &self.matrix,
+                self.get_mod().get_fmpz_mod_ctx_struct(),
+            )
+        };
 
         self
     }

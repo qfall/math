@@ -17,7 +17,8 @@ use crate::{
     macros::for_others::implement_empty_trait_owned_ref,
     traits::AsInteger,
 };
-use flint_sys::fmpz::{fmpz, fmpz_get_si, fmpz_get_ui, fmpz_init_set, fmpz_set_str, fmpz_setbit};
+use flint_sys::flint::fmpz;
+use flint_sys::fmpz::{fmpz_get_si, fmpz_get_ui, fmpz_init_set, fmpz_set_str, fmpz_setbit};
 use std::{ffi::CString, str::FromStr};
 
 impl Z {
@@ -123,7 +124,7 @@ impl Z {
         }
 
         // since |value| = |0| < 62 bits, we do not need to free the allocated space manually
-        let mut value: fmpz = fmpz(0);
+        let mut value: fmpz = 0;
 
         let c_string = CString::new(s)?;
 
@@ -227,7 +228,7 @@ impl Z {
 /// with the default implementation for [`Z`] and also to filter out [`Zq`](crate::integer_mod_q::Zq).
 trait IntoZ {}
 impl IntoZ for &Z {}
-implement_empty_trait_owned_ref!(IntoZ for Modulus fmpz u8 u16 u32 u64 i8 i16 i32 i64);
+implement_empty_trait_owned_ref!(IntoZ for Modulus u8 u16 u32 u64 i8 i16 i32 i64);
 
 impl<Integer: AsInteger + IntoZ> From<Integer> for Z {
     /// Converts an integer to [`Z`].
@@ -772,13 +773,13 @@ mod test_from_str_b {
 #[cfg(test)]
 mod test_from_fmpz {
     use super::Z;
-    use flint_sys::fmpz::{fmpz, fmpz_set_ui};
+    use flint_sys::{flint::fmpz, fmpz::fmpz_set_ui};
 
     /// Ensure that `from_fmpz` is available for small and large numbers
     #[test]
     fn small_numbers() {
-        let fmpz_1 = fmpz(0);
-        let fmpz_2 = fmpz(100);
+        let fmpz_1: fmpz = 0;
+        let fmpz_2: fmpz = 100;
 
         assert_eq!(unsafe { Z::from_fmpz(fmpz_1) }, Z::ZERO);
         assert_eq!(unsafe { Z::from_fmpz(fmpz_2) }, Z::from(100));
@@ -787,7 +788,7 @@ mod test_from_fmpz {
     /// Ensure that `from_fmpz` is available for small and large numbers
     #[test]
     fn large_numbers() {
-        let mut fmpz_1 = fmpz(0);
+        let mut fmpz_1: fmpz = 0;
         unsafe { fmpz_set_ui(&mut fmpz_1, u64::MAX) }
 
         assert_eq!(unsafe { Z::from_fmpz(fmpz_1) }, Z::from(u64::MAX));

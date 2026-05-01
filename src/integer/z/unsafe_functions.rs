@@ -13,7 +13,7 @@ use crate::{
     integer::Z,
     macros::unsafe_passthrough::{unsafe_getter, unsafe_setter},
 };
-use flint_sys::fmpz::{fmpz, fmpz_clear};
+use flint_sys::{flint::fmpz, fmpz::fmpz_clear};
 
 unsafe_getter!(Z, value, fmpz);
 unsafe_setter!(Z, value, fmpz, fmpz_clear);
@@ -31,7 +31,7 @@ mod test_get_fmpz {
 
         let mut fmpz_int = unsafe { integer.get_fmpz() };
 
-        fmpz_int.0 = 2;
+        fmpz_int = &mut 2i64;
 
         assert_eq!(Z::from(2), integer);
     }
@@ -40,7 +40,7 @@ mod test_get_fmpz {
 #[cfg(test)]
 mod test_set_fmpz {
     use super::Z;
-    use flint_sys::fmpz::fmpz;
+    use flint_sys::flint::fmpz;
 
     /// Checks availability of the setter for [`Z::value`]
     /// and its ability to modify [`Z`].
@@ -48,7 +48,7 @@ mod test_set_fmpz {
     #[allow(unused_mut)]
     fn availability_and_modification() {
         let mut integer = Z::from(1);
-        let b = fmpz(2);
+        let b: fmpz = 2;
 
         unsafe { integer.set_fmpz(b) };
 

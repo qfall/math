@@ -14,7 +14,8 @@
 //!
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
-use flint_sys::fmpz_mod::fmpz_mod_ctx;
+use crate::integer::debug_fmpz;
+use flint_sys::{flint::nmod_t, fmpz_mod_types::fmpz_mod_ctx};
 use std::{fmt, rc::Rc};
 
 mod cmp;
@@ -71,8 +72,38 @@ impl fmt::Debug for Modulus {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "Modulus {{ modulus: {}, storage: {{modulus: {:?}}}}}",
-            self, self.modulus
+            "Modulus {{ modulus: {}, storage: {{ modulus: {}}}}}",
+            self,
+            debug_fmpz_mod_ctx(&self.modulus)
         )
     }
+}
+
+macro_rules! debug_fn_ptr {
+    ($opt_fn:expr) => {
+        match $opt_fn {
+            Some(f) => format!("Some({:#x})", f as usize),
+            None => "None".to_string(),
+        }
+    };
+}
+
+fn debug_fmpz_mod_ctx(value: &fmpz_mod_ctx) -> String {
+    format!(
+        "fmpz_mod_ctx {{ n: [{}], add_fxn: {}, sub_fxn: {}, mul_fxn: {}, mod_: {}, n_limbs: {:?}, ninv_limbs: {:?}}}",
+        debug_fmpz(&value.n[0]),
+        debug_fn_ptr!(value.add_fxn),
+        debug_fn_ptr!(value.sub_fxn),
+        debug_fn_ptr!(value.mul_fxn),
+        debug_nmod_t(&value.mod_),
+        value.n_limbs,
+        value.ninv_limbs
+    )
+}
+
+fn debug_nmod_t(value: &nmod_t) -> String {
+    format!(
+        "nmod_t {{ n: {}, ninv: {}, norm: {} }}",
+        value.n, value.ninv, value.norm
+    )
 }

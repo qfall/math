@@ -25,7 +25,7 @@ unsafe impl Sync for PolyOverQ {}
 
 impl Clone for PolyOverQ {
     /// Clones the given [`PolyOverQ`] element by returning a deep clone,
-    /// storing two separately stored [fmpz](flint_sys::fmpz::fmpz) values
+    /// storing two separately stored [fmpz](flint_sys::flint::fmpz) values
     /// for `nominator` and `denominator` in memory.
     ///
     /// # Examples
@@ -85,26 +85,22 @@ mod test_clone {
 
         // check that nominators on stack should are equal,
         // as they directly store the value in the `i64`
-        assert_eq!(
-            unsafe { *a.poly.coeffs.offset(0) }.0,
-            unsafe { *b.poly.coeffs.offset(0) }.0
-        ); // stack
+        assert_eq!(unsafe { *a.poly.coeffs.offset(0) }, unsafe {
+            *b.poly.coeffs.offset(0)
+        }); // stack
 
-        assert_eq!(
-            unsafe { *a.poly.coeffs.offset(1) }.0,
-            unsafe { *b.poly.coeffs.offset(1) }.0
-        ); // stack
-        assert_eq!(
-            unsafe { *a.poly.coeffs.offset(2) }.0,
-            unsafe { *b.poly.coeffs.offset(2) }.0
-        ); // stack
-        assert_eq!(
-            unsafe { *a.poly.coeffs.offset(3) }.0,
-            unsafe { *b.poly.coeffs.offset(3) }.0
-        ); // stack
+        assert_eq!(unsafe { *a.poly.coeffs.offset(1) }, unsafe {
+            *b.poly.coeffs.offset(1)
+        }); // stack
+        assert_eq!(unsafe { *a.poly.coeffs.offset(2) }, unsafe {
+            *b.poly.coeffs.offset(2)
+        }); // stack
+        assert_eq!(unsafe { *a.poly.coeffs.offset(3) }, unsafe {
+            *b.poly.coeffs.offset(3)
+        }); // stack
 
         // denominator should be kept on stack (since common denominator is 8)
-        assert_eq!(a.poly.den[0].0, b.poly.den[0].0); // stack
+        assert_eq!(a.poly.den[0], b.poly.den[0]); // stack
 
         // check that length is equal
         assert_eq!(a.poly.length, b.poly.length);
@@ -119,26 +115,22 @@ mod test_clone {
         let b = a.clone();
 
         // check that nominators on heap are stored separately
-        assert_ne!(
-            unsafe { *a.poly.coeffs.offset(0) }.0,
-            unsafe { *b.poly.coeffs.offset(0) }.0
-        ); // heap
-        assert_eq!(
-            unsafe { *a.poly.coeffs.offset(1) }.0,
-            unsafe { *b.poly.coeffs.offset(1) }.0
-        ); // stack
-        assert_ne!(
-            unsafe { *a.poly.coeffs.offset(2) }.0,
-            unsafe { *b.poly.coeffs.offset(2) }.0
-        ); // heap
-        assert_ne!(
-            unsafe { *a.poly.coeffs.offset(3) }.0,
-            unsafe { *b.poly.coeffs.offset(3) }.0
-        ); // heap
+        assert_ne!(unsafe { *a.poly.coeffs.offset(0) }, unsafe {
+            *b.poly.coeffs.offset(0)
+        }); // heap
+        assert_eq!(unsafe { *a.poly.coeffs.offset(1) }, unsafe {
+            *b.poly.coeffs.offset(1)
+        }); // stack
+        assert_ne!(unsafe { *a.poly.coeffs.offset(2) }, unsafe {
+            *b.poly.coeffs.offset(2)
+        }); // heap
+        assert_ne!(unsafe { *a.poly.coeffs.offset(3) }, unsafe {
+            *b.poly.coeffs.offset(3)
+        }); // heap
 
         // denominator should be kept on heap (as common denominator is at least i64::MIN)
         // hence stored separately
-        assert_ne!(a.poly.den[0].0, b.poly.den[0].0); // heap
+        assert_ne!(a.poly.den[0], b.poly.den[0]); // heap
 
         // check that length is equal
         assert_eq!(a.poly.length, b.poly.length);
@@ -156,9 +148,9 @@ mod test_drop {
         let a = PolyOverQ::from_str(&format!("2  {}/1 -2/-3", i64::MAX)).unwrap();
 
         (
-            unsafe { *a.poly.coeffs.offset(0) }.0,
-            unsafe { *a.poly.coeffs.offset(1) }.0,
-            a.poly.den[0].0,
+            unsafe { *a.poly.coeffs.offset(0) },
+            unsafe { *a.poly.coeffs.offset(1) },
+            a.poly.den[0],
         )
     }
 

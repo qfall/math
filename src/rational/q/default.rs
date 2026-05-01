@@ -9,7 +9,7 @@
 //! Define default values for [`Q`].
 
 use super::Q;
-use flint_sys::{fmpq::fmpq, fmpz::fmpz};
+use flint_sys::flint::fmpq;
 
 impl Default for Q {
     /// Returns an instantiation of [`Q`] with value `0/1`.
@@ -24,10 +24,7 @@ impl Default for Q {
     fn default() -> Self {
         // needs to stay a manual instantiation as try_from uses default inside
         Q {
-            value: fmpq {
-                num: fmpz(0),
-                den: fmpz(1),
-            },
+            value: fmpq { num: 0, den: 1 },
         }
     }
 }
@@ -42,10 +39,7 @@ impl Q {
     /// let a: Q = Q::ONE;
     /// ```
     pub const ONE: Q = Q {
-        value: fmpq {
-            num: fmpz(1),
-            den: fmpz(1),
-        },
+        value: fmpq { num: 1, den: 1 },
     };
 
     /// Returns an instantiation of [`Q`] with value `0`.
@@ -57,10 +51,7 @@ impl Q {
     /// let a: Q = Q::ZERO;
     /// ```
     pub const ZERO: Q = Q {
-        value: fmpq {
-            num: fmpz(0),
-            den: fmpz(1),
-        },
+        value: fmpq { num: 0, den: 1 },
     };
 
     /// Returns an instantiation of [`Q`] with value `-1`.
@@ -72,10 +63,7 @@ impl Q {
     /// let a: Q = Q::MINUS_ONE;
     /// ```
     pub const MINUS_ONE: Q = Q {
-        value: fmpq {
-            num: fmpz(-1),
-            den: fmpz(1),
-        },
+        value: fmpq { num: -1, den: 1 },
     };
 
     /// Returns an instantiation of [`Q`] with value `e ≈ 2.718281...`
@@ -90,8 +78,8 @@ impl Q {
     pub const E: Q = Q {
         // generated with continued fraction (40 factors)
         value: fmpq {
-            num: fmpz(2922842896378005707),
-            den: fmpz(1075253811351460636),
+            num: 2922842896378005707,
+            den: 1075253811351460636,
         },
     };
 
@@ -107,8 +95,8 @@ impl Q {
     pub const PI: Q = Q {
         // generated with continued fraction (33 factors)
         value: fmpq {
-            num: fmpz(2646693125139304345),
-            den: fmpz(842468587426513207),
+            num: 2646693125139304345,
+            den: 842468587426513207,
         },
     };
 
@@ -122,8 +110,8 @@ impl Q {
     /// ```
     pub const MAX62: Q = Q {
         value: fmpq {
-            num: fmpz(i64::pow(2, 62) - 1),
-            den: fmpz(1),
+            num: i64::pow(2, 62) - 1,
+            den: 1,
         },
     };
 
@@ -137,8 +125,8 @@ impl Q {
     /// ```
     pub const INV_MAX62: Q = Q {
         value: fmpq {
-            num: fmpz(1),
-            den: fmpz(i64::pow(2, 62) - 1),
+            num: 1,
+            den: i64::pow(2, 62) - 1,
         },
     };
 
@@ -152,8 +140,8 @@ impl Q {
     /// ```
     pub const MAX32: Q = Q {
         value: fmpq {
-            num: fmpz(i64::pow(2, 32) - 1),
-            den: fmpz(1),
+            num: i64::pow(2, 32) - 1,
+            den: 1,
         },
     };
 
@@ -167,8 +155,8 @@ impl Q {
     /// ```
     pub const INV_MAX32: Q = Q {
         value: fmpq {
-            num: fmpz(1),
-            den: fmpz(i64::pow(2, 32) - 1),
+            num: 1,
+            den: i64::pow(2, 32) - 1,
         },
     };
 
@@ -182,8 +170,8 @@ impl Q {
     /// ```
     pub const MAX16: Q = Q {
         value: fmpq {
-            num: fmpz(i64::pow(2, 16) - 1),
-            den: fmpz(1),
+            num: i64::pow(2, 16) - 1,
+            den: 1,
         },
     };
 
@@ -197,8 +185,8 @@ impl Q {
     /// ```
     pub const INV_MAX16: Q = Q {
         value: fmpq {
-            num: fmpz(1),
-            den: fmpz(i64::pow(2, 16) - 1),
+            num: 1,
+            den: i64::pow(2, 16) - 1,
         },
     };
 
@@ -212,8 +200,8 @@ impl Q {
     /// ```
     pub const MAX8: Q = Q {
         value: fmpq {
-            num: fmpz(i64::pow(2, 8) - 1),
-            den: fmpz(1),
+            num: i64::pow(2, 8) - 1,
+            den: 1,
         },
     };
 
@@ -227,8 +215,8 @@ impl Q {
     /// ```
     pub const INV_MAX8: Q = Q {
         value: fmpq {
-            num: fmpz(1),
-            den: fmpz(i64::pow(2, 8) - 1),
+            num: 1,
+            den: i64::pow(2, 8) - 1,
         },
     };
 }

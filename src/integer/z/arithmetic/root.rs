@@ -74,13 +74,13 @@ impl Z {
         }
 
         let mut integer_result = Q::default();
-        let remainder = Q::default();
+        let mut remainder = Q::default();
 
         unsafe {
             // self = integer_result^2 + remainder
             fmpz_sqrtrem(
                 &mut integer_result.value.num,
-                &remainder.value.num,
+                &mut remainder.value.num,
                 &self.value,
             );
         }

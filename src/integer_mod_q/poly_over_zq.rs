@@ -15,7 +15,7 @@
 // values. The end-user should be unable to obtain a non-reduced value.
 
 use super::modulus::Modulus;
-use flint_sys::fmpz_mod_poly::fmpz_mod_poly_struct;
+use flint_sys::fmpz_mod_types::fmpz_mod_poly_struct;
 use std::fmt;
 
 mod arithmetic;
@@ -72,8 +72,19 @@ impl fmt::Debug for PolyOverZq {
         write!(
             f,
             "PolyOverZq {{poly: {}\
-            storage: {{poly: {:?}, modulus: {:?}}}}}",
-            self, self.poly, self.modulus
+            storage: {{poly: {}, modulus: {:?}}}}}",
+            self,
+            debug_fmpz_mod_poly_struct(&self.poly),
+            self.modulus
         )
     }
+}
+
+fn debug_fmpz_mod_poly_struct(value: &fmpz_mod_poly_struct) -> String {
+    format!(
+        "fmpz_mod_poly_struct {{ coeffs: {:#x}, alloc: {}, length: {} }}",
+        value.coeffs.addr(),
+        value.alloc,
+        value.length
+    )
 }

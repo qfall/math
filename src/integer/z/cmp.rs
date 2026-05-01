@@ -11,7 +11,7 @@
 
 use super::Z;
 use crate::{integer_mod_q::Modulus, macros::for_others::implement_for_others};
-use flint_sys::fmpz::{fmpz, fmpz_cmp, fmpz_equal};
+use flint_sys::fmpz::{fmpz_cmp, fmpz_equal};
 use std::cmp::Ordering;
 
 impl PartialEq for Z {
@@ -47,7 +47,7 @@ impl PartialEq for Z {
 // This is not guaranteed by the [`PartialEq`] trait.
 impl Eq for Z {}
 
-implement_for_others!(Z, Z, PartialEq for fmpz i8 i16 i32 i64 u8 u16 u32 u64);
+implement_for_others!(Z, Z, PartialEq for i8 i16 i32 i64 u8 u16 u32 u64);
 
 impl PartialOrd for Z {
     /// Compares two [`Z`] values. Used by the `<`, `<=`, `>`, and `>=` operators.
@@ -141,7 +141,7 @@ impl PartialOrd<Modulus> for Z {
     }
 }
 
-implement_for_others!(Z, Z, PartialOrd for fmpz i8 i16 i32 i64 u8 u16 u32 u64);
+implement_for_others!(Z, Z, PartialOrd for i8 i16 i32 i64 u8 u16 u32 u64);
 
 /// Test that the [`PartialEq`] trait is correctly implemented.
 #[cfg(test)]

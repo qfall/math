@@ -65,7 +65,12 @@ impl Concatenate for &MatZq {
             self.get_mod(),
         );
         unsafe {
-            fmpz_mod_mat_concat_vertical(&mut out.matrix, &self.matrix, &other.matrix);
+            fmpz_mod_mat_concat_vertical(
+                &mut out.matrix,
+                &self.matrix,
+                &other.matrix,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            );
         }
         Ok(out)
     }
@@ -117,7 +122,12 @@ impl Concatenate for &MatZq {
             self.get_mod(),
         );
         unsafe {
-            fmpz_mod_mat_concat_horizontal(&mut out.matrix, &self.matrix, &other.matrix);
+            fmpz_mod_mat_concat_horizontal(
+                &mut out.matrix,
+                &self.matrix,
+                &other.matrix,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            );
         }
 
         Ok(out)

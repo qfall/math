@@ -16,7 +16,7 @@ use flint_sys::fmpq::{fmpq_clear, fmpq_set};
 
 impl Clone for Q {
     /// Clones the given element and returns another cloned reference
-    /// to the [`fmpq`](flint_sys::fmpq::fmpq) element.
+    /// to the [`fmpq`](flint_sys::flint::fmpq) element.
     ///
     /// # Examples
     /// ```
@@ -34,7 +34,7 @@ impl Clone for Q {
 }
 
 impl Drop for Q {
-    /// Drops the given reference to the [`fmpq`](flint_sys::fmpq::fmpq) element
+    /// Drops the given reference to the [`fmpq`](flint_sys::flint::fmpq) element
     /// and frees the allocated memory if no references are left.
     ///
     /// # Examples
@@ -94,8 +94,8 @@ mod test_clone {
             assert_eq!(val, val_clone);
 
             // check if cloned values are kept on stack
-            assert_eq!(val.value.num.0, val_clone.value.num.0);
-            assert_eq!(val.value.den.0, val_clone.value.den.0);
+            assert_eq!(val.value.num, val_clone.value.num);
+            assert_eq!(val.value.den, val_clone.value.den);
         }
     }
 
@@ -129,7 +129,7 @@ mod test_clone {
             assert_eq!(val, val_clone);
 
             // check if point in memory is different from clone
-            assert_ne!(val.value.num.0, val_clone.value.num.0);
+            assert_ne!(val.value.num, val_clone.value.num);
         }
     }
 
@@ -157,20 +157,20 @@ mod test_drop {
     fn free_memory() {
         let string = format!("{}/2", "1".repeat(65));
         let a = Q::from_str(&string).unwrap();
-        let num_point_in_memory = a.value.num.0;
-        let den_point_in_memory = a.value.den.0;
+        let num_point_in_memory = a.value.num;
+        let den_point_in_memory = a.value.den;
 
         drop(a);
 
         // instantiate different values to check if memory slot is reused for different values
         let c = Q::from_str(&string).unwrap();
-        assert_eq!(num_point_in_memory, c.value.num.0);
-        assert_eq!(den_point_in_memory, c.value.den.0);
+        assert_eq!(num_point_in_memory, c.value.num);
+        assert_eq!(den_point_in_memory, c.value.den);
 
         // memory slots differ due to previously created large integer
         assert_ne!(
             num_point_in_memory,
-            Q::from_str(&"1".repeat(65)).unwrap().value.num.0
+            Q::from_str(&"1".repeat(65)).unwrap().value.num
         );
     }
 }

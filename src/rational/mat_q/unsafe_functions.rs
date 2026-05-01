@@ -11,7 +11,7 @@
 
 use super::MatQ;
 use crate::macros::unsafe_passthrough::{unsafe_getter, unsafe_setter};
-use flint_sys::fmpq_mat::{fmpq_mat_clear, fmpq_mat_struct};
+use flint_sys::{fmpq_mat::fmpq_mat_clear, fmpq_types::fmpq_mat_struct};
 
 unsafe_getter!(MatQ, matrix, fmpq_mat_struct);
 

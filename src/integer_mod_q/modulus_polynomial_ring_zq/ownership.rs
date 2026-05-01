@@ -16,7 +16,7 @@ use std::rc::Rc;
 
 impl Clone for ModulusPolynomialRingZq {
     /// Clones the given element and returns another cloned reference
-    /// to the [`fq_ctx_struct`](flint_sys::fq::fq_ctx_struct) element.
+    /// to the [`fq_ctx_struct`](flint_sys::fq_types::fq_ctx_struct) element.
     ///
     /// # Examples
     /// ```

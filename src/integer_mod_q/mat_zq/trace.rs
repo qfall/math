@@ -37,7 +37,11 @@ impl MatZq {
 
         let mut out = Zq::from((0, self.get_mod()));
         unsafe {
-            fmpz_mod_mat_trace(&mut out.value.value, &self.matrix);
+            fmpz_mod_mat_trace(
+                &mut out.value.value,
+                &self.matrix,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            );
         }
         Ok(out)
     }

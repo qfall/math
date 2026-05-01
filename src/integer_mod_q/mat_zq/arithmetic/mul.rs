@@ -92,8 +92,8 @@ impl Mul<&MatZ> for &MatZq {
 
         let mut new = MatZq::new(self.get_num_rows(), other.get_num_columns(), self.get_mod());
         unsafe {
-            fmpz_mat_mul(&mut new.matrix.mat[0], &self.matrix.mat[0], &other.matrix);
-            _fmpz_mod_mat_reduce(&mut new.matrix)
+            fmpz_mat_mul(&mut new.matrix, &self.matrix, &other.matrix);
+            _fmpz_mod_mat_reduce(&mut new.matrix, self.modulus.get_fmpz_mod_ctx_struct())
         }
         new
     }
@@ -143,7 +143,14 @@ impl MatZq {
         }
 
         let mut new = MatZq::new(self.get_num_rows(), other.get_num_columns(), self.get_mod());
-        unsafe { fmpz_mod_mat_mul(&mut new.matrix, &self.matrix, &other.matrix) };
+        unsafe {
+            fmpz_mod_mat_mul(
+                &mut new.matrix,
+                &self.matrix,
+                &other.matrix,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
         Ok(new)
     }
 }

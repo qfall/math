@@ -14,8 +14,8 @@ use crate::macros::unsafe_passthrough::{
     unsafe_getter, unsafe_getter_indirect, unsafe_setter_indirect,
 };
 use flint_sys::{
-    fmpz_mod::fmpz_mod_ctx,
-    fmpz_mod_poly::{fmpz_mod_poly_clear, fmpz_mod_poly_struct},
+    fmpz_mod_poly::fmpz_mod_poly_clear, fmpz_mod_types::fmpz_mod_ctx,
+    fmpz_mod_types::fmpz_mod_poly_struct,
 };
 
 unsafe_getter!(PolyOverZq, poly, fmpz_mod_poly_struct);

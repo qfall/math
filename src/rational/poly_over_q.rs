@@ -15,7 +15,8 @@
 // canonical/reduced values. The end-user should be unable to obtain a
 // non-reduced value.
 
-use flint_sys::fmpq_poly::fmpq_poly_struct;
+use crate::integer::debug_fmpz;
+use flint_sys::fmpq_types::fmpq_poly_struct;
 use std::fmt;
 
 mod arithmetic;
@@ -68,10 +69,20 @@ impl fmt::Debug for PolyOverQ {
         write!(
             f,
             "PolyOverQ {{poly_f64(may be rounded; 5 decimals): {}, poly: {}, \
-            storage: {{poly: {:?}}}}}",
+            storage: {{ poly: {}}}}}",
             self.to_string_decimal(5),
             self,
-            self.poly
+            debug_fmpq_poly_struct(&self.poly)
         )
     }
+}
+
+fn debug_fmpq_poly_struct(value: &fmpq_poly_struct) -> String {
+    format!(
+        "fmpq_poly_struct {{ coeffs: {:#x}, den: [{}], alloc: {}, length: {} }}",
+        value.coeffs.addr(),
+        debug_fmpz(&value.den[0]),
+        value.alloc,
+        value.length
+    )
 }

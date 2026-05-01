@@ -61,7 +61,14 @@ impl SubAssign<&MatZq> for MatZq {
             panic!("{}", self.call_compare_base_error(other).unwrap());
         }
 
-        unsafe { fmpz_mod_mat_sub(&mut self.matrix, &self.matrix, &other.matrix) };
+        unsafe {
+            fmpz_mod_mat_sub(
+                &mut self.matrix,
+                &self.matrix,
+                &other.matrix,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
     }
 }
 impl SubAssign<&MatZ> for MatZq {
@@ -80,8 +87,8 @@ impl SubAssign<&MatZ> for MatZq {
         }
 
         unsafe {
-            fmpz_mat_sub(&mut self.matrix.mat[0], &self.matrix.mat[0], &other.matrix);
-            _fmpz_mod_mat_reduce(&mut self.matrix);
+            fmpz_mat_sub(&mut self.matrix, &self.matrix, &other.matrix);
+            _fmpz_mod_mat_reduce(&mut self.matrix, self.modulus.get_fmpz_mod_ctx_struct());
         };
     }
 }
@@ -166,8 +173,8 @@ impl Sub<&MatZ> for &MatZq {
 
         let mut out = MatZq::new(self.get_num_rows(), self.get_num_columns(), self.get_mod());
         unsafe {
-            fmpz_mat_sub(&mut out.matrix.mat[0], &self.matrix.mat[0], &other.matrix);
-            _fmpz_mod_mat_reduce(&mut out.matrix);
+            fmpz_mat_sub(&mut out.matrix, &self.matrix, &other.matrix);
+            _fmpz_mod_mat_reduce(&mut out.matrix, self.modulus.get_fmpz_mod_ctx_struct());
         }
         out
     }
@@ -218,7 +225,12 @@ impl MatZq {
         }
         let mut out = MatZq::new(self.get_num_rows(), self.get_num_columns(), self.get_mod());
         unsafe {
-            fmpz_mod_mat_sub(&mut out.matrix, &self.matrix, &other.matrix);
+            fmpz_mod_mat_sub(
+                &mut out.matrix,
+                &self.matrix,
+                &other.matrix,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            );
         }
         Ok(out)
     }

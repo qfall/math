@@ -17,7 +17,7 @@ use std::rc::Rc;
 
 impl Clone for Modulus {
     /// Clones the given element and returns another cloned reference
-    /// to the [`fmpz_mod_ctx`](flint_sys::fmpz_mod::fmpz_mod_ctx) element.
+    /// to the [`fmpz_mod_ctx`](flint_sys::fmpz_mod_types::fmpz_mod_ctx) element.
     ///
     /// # Examples
     /// ```
@@ -35,7 +35,7 @@ impl Clone for Modulus {
 }
 
 impl Drop for Modulus {
-    /// Drops the given reference to the [`fmpz_mod_ctx`](flint_sys::fmpz_mod::fmpz_mod_ctx) element
+    /// Drops the given reference to the [`fmpz_mod_ctx`](flint_sys::fmpz_mod_types::fmpz_mod_ctx) element
     /// and frees the allocated memory if no references are left.
     ///
     /// # Examples
@@ -56,7 +56,7 @@ impl Drop for Modulus {
     /// ```
     fn drop(&mut self) {
         if Rc::strong_count(&self.modulus) <= 1 {
-            let mut a = *self.modulus;
+            let mut a = unsafe { std::ptr::read(self.modulus.as_ref()) };
             unsafe {
                 fmpz_mod_ctx_clear(&mut a);
             }
@@ -96,8 +96,8 @@ mod test_clone {
         let b = a.clone();
 
         assert_eq!(
-            &a.get_fmpz_mod_ctx_struct().to_owned().n[0].0,
-            &b.get_fmpz_mod_ctx_struct().to_owned().n[0].0
+            &a.get_fmpz_mod_ctx_struct().to_owned().n[0],
+            &b.get_fmpz_mod_ctx_struct().to_owned().n[0]
         );
     }
 }
@@ -139,7 +139,7 @@ mod test_drop {
     /// the storage point in memory of that [`Modulus`]
     fn create_and_drop_modulus() -> i64 {
         let a = Modulus::from_str(&"1".repeat(65)).unwrap();
-        a.get_fmpz_mod_ctx_struct().n[0].0
+        a.get_fmpz_mod_ctx_struct().n[0]
     }
 
     /// Check whether freed memory is reused afterwards

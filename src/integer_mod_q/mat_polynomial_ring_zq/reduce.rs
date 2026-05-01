@@ -68,7 +68,7 @@ impl MatPolynomialRingZq {
     /// ```
     pub(crate) unsafe fn reduce_entry(&mut self, row: i64, column: i64) {
         let entry = unsafe { fmpz_poly_mat_entry(&self.matrix.matrix, row, column) };
-        if (unsafe { *entry }).length > 0 {
+        if (unsafe { std::ptr::read(entry) }).length > 0 {
             unsafe {
                 reduce_fmpz_poly_by_fmpz_mod_poly_sparse(
                     &mut *entry,

@@ -20,8 +20,9 @@ use crate::{
     rational::Q,
 };
 use flint_sys::{
+    flint::fmpz,
     fmpq::fmpq_add_fmpz,
-    fmpz::{fmpz, fmpz_add, fmpz_add_si, fmpz_add_ui},
+    fmpz::{fmpz_add, fmpz_add_si, fmpz_add_ui},
     fmpz_mod::fmpz_mod_add_fmpz,
 };
 use std::ops::{Add, AddAssign};
@@ -167,7 +168,7 @@ impl Add<&Zq> for &Z {
     /// let f: Zq = Z::from(42) + &e;
     /// ```
     fn add(self, other: &Zq) -> Self::Output {
-        let mut out = fmpz(0);
+        let mut out: fmpz = 0;
         unsafe {
             fmpz_mod_add_fmpz(
                 &mut out,

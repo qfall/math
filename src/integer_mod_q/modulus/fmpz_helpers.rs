@@ -10,7 +10,7 @@
 
 use super::Modulus;
 use crate::traits::AsInteger;
-use flint_sys::fmpz::{fmpz, fmpz_init_set};
+use flint_sys::{flint::fmpz, fmpz::fmpz_init_set};
 
 unsafe impl AsInteger for Modulus {
     /// Documentation at [`AsInteger::into_fmpz`]
@@ -27,7 +27,7 @@ unsafe impl AsInteger for Modulus {
 unsafe impl AsInteger for &Modulus {
     /// Documentation at [`AsInteger::into_fmpz`]
     unsafe fn into_fmpz(self) -> fmpz {
-        let mut out = fmpz(0);
+        let mut out: fmpz = 0;
         unsafe { fmpz_init_set(&mut out, &self.modulus.n[0]) };
         out
     }

@@ -10,10 +10,12 @@
 
 use super::PolyOverZ;
 use flint_sys::{
-    fmpz::{fmpz, fmpz_is_one, fmpz_is_zero, fmpz_submul, fmpz_zero},
-    fmpz_mod::{fmpz_mod_ctx_struct, fmpz_mod_set_fmpz},
-    fmpz_mod_poly::fmpz_mod_poly_struct,
-    fmpz_poly::{_fmpz_poly_normalise, fmpz_poly_struct},
+    flint::fmpz,
+    fmpz::{fmpz_is_one, fmpz_is_zero, fmpz_submul, fmpz_zero},
+    fmpz_mod::fmpz_mod_set_fmpz,
+    fmpz_mod_types::{fmpz_mod_ctx_struct, fmpz_mod_poly_struct},
+    fmpz_poly::_fmpz_poly_normalise,
+    fmpz_types::fmpz_poly_struct,
 };
 use std::cmp::min;
 
@@ -266,7 +268,7 @@ mod test_reduce_fmpz_poly_by_fmpz_poly {
         let mut poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
 
         let entry = unsafe { fmpz_poly_mat_entry(&poly_mat.matrix, 0, 0) };
-        if (unsafe { *entry }).length > 0 {
+        if (unsafe { std::ptr::read(entry) }).length > 0 {
             unsafe {
                 reduce_fmpz_poly_by_fmpz_poly_sparse(
                     (*entry).coeffs,
@@ -304,7 +306,7 @@ mod test_reduce_fmpz_poly_by_fmpz_mod_poly {
         let mut poly_ring_mat = MatPolynomialRingZq::from((&poly_mat, &modulus));
 
         let entry = unsafe { fmpz_poly_mat_entry(&poly_ring_mat.matrix.matrix, 0, 0) };
-        if (unsafe { *entry }).length > 0 {
+        if (unsafe { std::ptr::read(entry) }).length > 0 {
             unsafe {
                 reduce_fmpz_poly_by_fmpz_poly_sparse(
                     (*entry).coeffs,

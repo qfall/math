@@ -12,7 +12,8 @@
 //! The explicit functions contain the documentation.
 
 use super::Z;
-use flint_sys::fmpz::{fmpz, fmpz_clear, fmpz_init_set};
+use flint_sys::flint::fmpz;
+use flint_sys::fmpz::{fmpz_clear, fmpz_init_set};
 
 impl Clone for Z {
     /// Clones the given element and returns a deep clone of the [`Z`] element.
@@ -27,7 +28,7 @@ impl Clone for Z {
     fn clone(&self) -> Self {
         // a fresh fmpz value is created, set to the same value as the cloned one,
         // and wrapped in a new [`Z`] value. Hence, a fresh deep clone is created.
-        let mut value = fmpz(0);
+        let mut value: fmpz = 0;
         unsafe { fmpz_init_set(&mut value, &self.value) };
         Self { value }
     }
@@ -77,8 +78,8 @@ mod test_clone {
         let max_2 = max_1.clone();
         let min_2 = min_1.clone();
 
-        assert_ne!(max_1.value.0, max_2.value.0);
-        assert_ne!(min_1.value.0, min_2.value.0);
+        assert_ne!(max_1.value, max_2.value);
+        assert_ne!(min_1.value, min_2.value);
         assert_eq!(max_1, max_2);
         assert_eq!(min_1, min_2);
     }
@@ -95,9 +96,9 @@ mod test_clone {
         let zero_2 = zero_1.clone();
         let neg_2 = neg_1.clone();
 
-        assert_eq!(pos_1.value.0, pos_2.value.0);
-        assert_eq!(zero_1.value.0, zero_2.value.0);
-        assert_eq!(neg_1.value.0, neg_2.value.0);
+        assert_eq!(pos_1.value, pos_2.value);
+        assert_eq!(zero_1.value, zero_2.value);
+        assert_eq!(neg_1.value, neg_2.value);
         assert_eq!(pos_1, pos_2);
         assert_eq!(zero_1, zero_2);
         assert_eq!(neg_1, neg_2);
@@ -131,10 +132,10 @@ mod test_drop {
 
         // instantiate different [`Z`] value to check if memory slot is reused for different value
         let c = Z::from(i64::MIN);
-        assert_eq!(c.value.0, b.value.0);
+        assert_eq!(c.value, b.value);
 
         // memory slots differ due to previously created large integer
-        assert_ne!(b.value.0, Z::from(u64::MAX).value.0);
+        assert_ne!(b.value, Z::from(u64::MAX).value);
     }
 
     /// This test shows why false copies are a problem, which are prevented for users of the library

@@ -11,7 +11,7 @@
 
 use super::Modulus;
 use crate::macros::unsafe_passthrough::unsafe_getter_mod;
-use flint_sys::fmpz_mod::{fmpz_mod_ctx, fmpz_mod_ctx_clear};
+use flint_sys::{fmpz_mod::fmpz_mod_ctx_clear, fmpz_mod_types::fmpz_mod_ctx};
 
 unsafe_getter_mod!(Modulus, modulus, fmpz_mod_ctx);
 
@@ -70,7 +70,7 @@ mod test_get_fmpz_mod_ctx {
 
         let mut fmpz_mod = unsafe { modulus.get_fmpz_mod_ctx() };
 
-        fmpz_mod.n[0].0 = 2;
+        fmpz_mod.n[0] = 2;
 
         assert_eq!(Modulus::from(2), modulus);
     }
@@ -79,7 +79,7 @@ mod test_get_fmpz_mod_ctx {
 #[cfg(test)]
 mod test_set_fmpz_mod_ctx {
     use super::Modulus;
-    use flint_sys::{fmpz::fmpz, fmpz_mod::fmpz_mod_ctx_init};
+    use flint_sys::fmpz_mod::fmpz_mod_ctx_init;
     use std::mem::MaybeUninit;
 
     /// Checks availability of the setter for [`Modulus::modulus`]
@@ -91,7 +91,7 @@ mod test_set_fmpz_mod_ctx {
 
         let mut flint_struct = MaybeUninit::uninit();
         let mut flint_struct = unsafe {
-            fmpz_mod_ctx_init(flint_struct.as_mut_ptr(), &fmpz(2));
+            fmpz_mod_ctx_init(flint_struct.as_mut_ptr(), &2);
             flint_struct.assume_init()
         };
 

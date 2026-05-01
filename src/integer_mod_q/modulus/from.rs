@@ -15,7 +15,8 @@ use crate::{
     error::MathError, integer::Z, macros::for_others::implement_empty_trait_owned_ref, traits::*,
 };
 use flint_sys::{
-    fmpz::{fmpz, fmpz_clear, fmpz_cmp_si},
+    flint::fmpz,
+    fmpz::{fmpz_clear, fmpz_cmp_si},
     fmpz_mod::fmpz_mod_ctx_init,
 };
 use std::{mem::MaybeUninit, rc::Rc, str::FromStr};
@@ -68,7 +69,7 @@ impl Modulus {
 /// with the default implementation for [`Modulus`] and also to filter out
 /// [`Zq`](crate::integer_mod_q::Zq) and &[`Modulus`].
 trait IntoModulus {}
-implement_empty_trait_owned_ref!(IntoModulus for Z fmpz u8 u16 u32 u64 i8 i16 i32 i64);
+implement_empty_trait_owned_ref!(IntoModulus for Z u8 u16 u32 u64 i8 i16 i32 i64);
 
 impl<Integer: AsInteger + IntoModulus> From<Integer> for Modulus {
     /// Creates a [`Modulus`] from a positive integer.

@@ -19,7 +19,10 @@ use crate::{
     traits::GetCoefficient,
     utils::index::bit_reverse_permutation,
 };
-use flint_sys::fmpz_mod::{fmpz_mod_add, fmpz_mod_ctx, fmpz_mod_mul, fmpz_mod_sub};
+use flint_sys::{
+    fmpz_mod::{fmpz_mod_add, fmpz_mod_mul, fmpz_mod_sub},
+    fmpz_mod_types::fmpz_mod_ctx,
+};
 
 impl NTTBasisPolynomialRingZq {
     /// For a given polynomial viewed in the polynomial ring defined by the `self`, it computes the NTT.

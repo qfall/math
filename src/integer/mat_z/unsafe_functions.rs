@@ -11,7 +11,7 @@
 
 use super::MatZ;
 use crate::macros::unsafe_passthrough::{unsafe_getter, unsafe_setter};
-use flint_sys::fmpz_mat::{fmpz_mat_clear, fmpz_mat_struct};
+use flint_sys::{fmpz_mat::fmpz_mat_clear, fmpz_types::fmpz_mat_struct};
 
 unsafe_getter!(MatZ, matrix, fmpz_mat_struct);
 unsafe_setter!(MatZ, matrix, fmpz_mat_struct, fmpz_mat_clear);
@@ -20,10 +20,7 @@ unsafe_setter!(MatZ, matrix, fmpz_mat_struct, fmpz_mat_clear);
 mod test_get_fmpz_mat_struct {
     use super::MatZ;
     use crate::{integer::Z, traits::MatrixGetEntry};
-    use flint_sys::{
-        fmpz::{fmpz, fmpz_set},
-        fmpz_mat::fmpz_mat_entry,
-    };
+    use flint_sys::{flint::fmpz, fmpz::fmpz_set, fmpz_mat::fmpz_mat_entry};
     use std::str::FromStr;
 
     /// Checks availability of the getter for [`MatZ::matrix`]
@@ -34,10 +31,11 @@ mod test_get_fmpz_mat_struct {
         let mut mat = MatZ::from_str("[[1]]").unwrap();
 
         let mut fmpz_mat = unsafe { mat.get_fmpz_mat_struct() };
+        let value: fmpz = 2;
 
         unsafe {
             let entry = fmpz_mat_entry(fmpz_mat, 0, 0);
-            fmpz_set(entry, &fmpz(2))
+            fmpz_set(entry, &value)
         };
 
         assert_eq!(Z::from(2), mat.get_entry(0, 0).unwrap());

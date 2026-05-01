@@ -18,7 +18,8 @@ use crate::{
     traits::{AsInteger, Pow},
 };
 use flint_sys::{
-    fmpq::{fmpq, fmpq_canonicalise, fmpq_clear, fmpq_get_d, fmpq_set_str},
+    flint::fmpq,
+    fmpq::{fmpq_canonicalise, fmpq_clear, fmpq_get_d, fmpq_set_str},
     fmpz::{fmpz_init_set, fmpz_is_zero},
 };
 use std::{ffi::CString, str::FromStr};
@@ -100,7 +101,7 @@ impl<IntegerNumerator: AsInteger, IntegerDenominator: AsInteger>
             let num = num.into_fmpz();
             let den = den.into_fmpz();
 
-            assert_ne!(den.0, 0, "The denominator can not be zero");
+            assert_ne!(den, 0, "The denominator can not be zero");
 
             let mut value = fmpq { num, den };
             fmpq_canonicalise(&mut value);

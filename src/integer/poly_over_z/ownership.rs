@@ -79,7 +79,7 @@ mod test_clone {
         // tests where the first coefficient is stored. Since both are larger than
         // an i64, both should be a pointer and their values should differ
         unsafe {
-            assert_ne!((*poly_1.poly.coeffs).0, (*poly_2.poly.coeffs).0);
+            assert_ne!((*poly_1.poly.coeffs), (*poly_2.poly.coeffs));
         }
         assert_eq!(poly_1.to_string(), poly_2.to_string());
     }
@@ -122,7 +122,7 @@ mod test_drop {
     /// Creates and drops a [`PolyOverZ`], and returns the storage points in memory
     fn create_and_drop_poly_over_z() -> i64 {
         let a = PolyOverZ::from_str("2  36893488147419103232 36893488147419103233").unwrap();
-        unsafe { *a.poly.coeffs }.0
+        unsafe { *a.poly.coeffs }
     }
 
     /// Check whether freed memory is reused afterwards
@@ -137,10 +137,10 @@ mod test_drop {
         assert!(set.len() < 5);
 
         let a = PolyOverZ::from_str("2  36893488147419103232 36893488147419103233").unwrap();
-        let storage_point = unsafe { *a.poly.coeffs }.0;
+        let storage_point = unsafe { *a.poly.coeffs };
 
         // memory slots differ due to previously created large integer
         let d = PolyOverZ::from_str("2  36893488147419103232 36893488147419103233").unwrap();
-        assert_ne!(storage_point, unsafe { *d.poly.coeffs }.0);
+        assert_ne!(storage_point, unsafe { *d.poly.coeffs });
     }
 }

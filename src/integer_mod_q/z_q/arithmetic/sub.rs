@@ -20,7 +20,7 @@ use crate::{
     traits::CompareBase,
 };
 use flint_sys::{
-    fmpz::fmpz,
+    flint::fmpz,
     fmpz_mod::{fmpz_mod_sub, fmpz_mod_sub_fmpz, fmpz_mod_sub_si, fmpz_mod_sub_ui},
 };
 use std::ops::{Sub, SubAssign};
@@ -215,7 +215,7 @@ impl Sub<&Z> for &Zq {
     /// let f: Zq = c - &Z::from(42);
     /// ```
     fn sub(self, other: &Z) -> Self::Output {
-        let mut out = fmpz(0);
+        let mut out: fmpz = 0;
         unsafe {
             fmpz_mod_sub_fmpz(
                 &mut out,

@@ -14,7 +14,7 @@ use crate::{
     integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq},
     traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix},
 };
-use flint_sys::{fmpz_poly::fmpz_poly_struct, fmpz_poly_mat::fmpz_poly_mat_entry};
+use flint_sys::{fmpz_poly_mat::fmpz_poly_mat_entry, fmpz_types::fmpz_poly_struct};
 
 impl MatPolynomialRingZq {
     /// Returns the modulus of the matrix as a [`ModulusPolynomialRingZq`].
@@ -266,7 +266,8 @@ impl MatPolynomialRingZq {
         for row in 0..self.get_num_rows() {
             for col in 0..self.get_num_columns() {
                 // efficiently get entry without cloning the entry itself
-                let entry = unsafe { *fmpz_poly_mat_entry(&self.matrix.matrix, row, col) };
+                let entry =
+                    unsafe { std::ptr::read(fmpz_poly_mat_entry(&self.matrix.matrix, row, col)) };
                 entries.push(entry);
             }
         }

@@ -10,7 +10,7 @@
 //! [FLINT](https://flintlib.org/) structs. Therefore, they require to be unsafe.
 use super::PolynomialRingZq;
 use crate::macros::unsafe_passthrough::{unsafe_getter_indirect, unsafe_setter_indirect};
-use flint_sys::fmpz_poly::fmpz_poly_struct;
+use flint_sys::fmpz_types::fmpz_poly_struct;
 
 unsafe_getter_indirect!(
     PolynomialRingZq,

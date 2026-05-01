@@ -30,7 +30,7 @@ impl Clone for MatPolyOverZ {
         // we can unwrap since we know, that the number of rows and columns is positive and fits into an [`i64`]
         let mut clone = MatPolyOverZ::new(self.get_num_rows(), self.get_num_columns());
 
-        unsafe { fmpz_poly_mat_set(&mut clone.matrix, &mut self.matrix.to_owned()) }
+        unsafe { fmpz_poly_mat_set(&mut clone.matrix, &self.matrix) }
 
         clone
     }
@@ -78,20 +78,26 @@ mod test_clone {
         // an i64, both should be a pointer and their values should differ
         unsafe {
             assert_ne!(
-                (*(*poly_1.matrix.entries).coeffs.offset(0)).0,
-                (*(*poly_2.matrix.entries).coeffs.offset(0)).0
+                (*(*poly_1.matrix.entries).coeffs.offset(0)),
+                (*(*poly_2.matrix.entries).coeffs.offset(0))
             );
         }
         unsafe {
             assert_ne!(
-                (*(*poly_1.matrix.entries).coeffs.offset(1)).0,
-                (*(*poly_2.matrix.entries).coeffs.offset(1)).0
+                (*(*poly_1.matrix.entries).coeffs.offset(1)),
+                (*(*poly_2.matrix.entries).coeffs.offset(1))
             );
         }
 
         // check if length of polynomial is correctly cloned
-        assert_eq!(unsafe { *poly_1.matrix.entries.offset(0) }.length, 2);
-        assert_eq!(unsafe { *poly_2.matrix.entries.offset(0) }.length, 2);
+        assert_eq!(
+            unsafe { std::ptr::read(poly_1.matrix.entries.offset(0)) }.length,
+            2
+        );
+        assert_eq!(
+            unsafe { std::ptr::read(poly_2.matrix.entries.offset(0)) }.length,
+            2
+        );
 
         assert_eq!(poly_1, poly_2);
     }
@@ -110,20 +116,26 @@ mod test_clone {
             // both should be stored directly on stack and their values should be equal
             unsafe {
                 assert_eq!(
-                    (*(*poly_1.matrix.entries).coeffs.offset(0)).0,
-                    (*(*poly_2.matrix.entries).coeffs.offset(0)).0
+                    (*(*poly_1.matrix.entries).coeffs.offset(0)),
+                    (*(*poly_2.matrix.entries).coeffs.offset(0))
                 );
             }
             unsafe {
                 assert_eq!(
-                    (*(*poly_1.matrix.entries).coeffs.offset(1)).0,
-                    (*(*poly_2.matrix.entries).coeffs.offset(1)).0
+                    (*(*poly_1.matrix.entries).coeffs.offset(1)),
+                    (*(*poly_2.matrix.entries).coeffs.offset(1))
                 );
             }
 
             // check if length of polynomial is correctly cloned
-            assert_eq!(unsafe { *poly_1.matrix.entries.offset(0) }.length, 2);
-            assert_eq!(unsafe { *poly_2.matrix.entries.offset(0) }.length, 2);
+            assert_eq!(
+                unsafe { std::ptr::read(poly_1.matrix.entries.offset(0)) }.length,
+                2
+            );
+            assert_eq!(
+                unsafe { std::ptr::read(poly_2.matrix.entries.offset(0)) }.length,
+                2
+            );
 
             assert_eq!(poly_1, poly_2);
         }
@@ -151,7 +163,7 @@ mod test_drop {
     /// Creates and drops a [`MatPolyOverZ`], and returns the storage points in memory
     fn create_and_drop_poly_over_z() -> i64 {
         let a = MatPolyOverZ::from_str(&format!("[[1  {}]]", u64::MAX)).unwrap();
-        unsafe { *(*a.matrix.entries).coeffs.offset(0) }.0
+        unsafe { *(*a.matrix.entries).coeffs.offset(0) }
     }
 
     /// Check whether freed memory is reused afterwards
@@ -166,13 +178,12 @@ mod test_drop {
         assert!(set.capacity() < 5);
 
         let a = MatPolyOverZ::from_str(&format!("[[2  {} {}]]", u64::MAX - 1, u64::MAX)).unwrap();
-        let storage_point = unsafe { *(*a.matrix.entries).coeffs.offset(0) }.0;
+        let storage_point = unsafe { *(*a.matrix.entries).coeffs.offset(0) };
 
         // memory slots differ due to previously created large integer
         let d = MatPolyOverZ::from_str(&format!("[[2  {} {}]]", u64::MAX - 1, u64::MAX)).unwrap();
-        assert_ne!(
-            storage_point,
-            unsafe { *(*d.matrix.entries).coeffs.offset(0) }.0
-        );
+        assert_ne!(storage_point, unsafe {
+            *(*d.matrix.entries).coeffs.offset(0)
+        });
     }
 }

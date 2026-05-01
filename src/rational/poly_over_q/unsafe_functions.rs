@@ -11,7 +11,7 @@
 
 use super::PolyOverQ;
 use crate::macros::unsafe_passthrough::{unsafe_getter, unsafe_setter};
-use flint_sys::fmpq_poly::{fmpq_poly_clear, fmpq_poly_struct};
+use flint_sys::{fmpq_poly::fmpq_poly_clear, fmpq_types::fmpq_poly_struct};
 
 unsafe_getter!(PolyOverQ, poly, fmpq_poly_struct);
 

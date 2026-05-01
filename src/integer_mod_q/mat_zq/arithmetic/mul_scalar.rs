@@ -48,7 +48,12 @@ impl Mul<&Z> for &MatZq {
     fn mul(self, scalar: &Z) -> Self::Output {
         let mut out = MatZq::new(self.get_num_rows(), self.get_num_columns(), self.get_mod());
         unsafe {
-            fmpz_mod_mat_scalar_mul_fmpz(&mut out.matrix, &self.matrix, &scalar.value);
+            fmpz_mod_mat_scalar_mul_fmpz(
+                &mut out.matrix,
+                &self.matrix,
+                &mut std::ptr::read(scalar).value,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            );
         }
         out
     }
@@ -128,7 +133,12 @@ impl MatZq {
 
         let mut out = MatZq::new(self.get_num_rows(), self.get_num_columns(), self.get_mod());
         unsafe {
-            fmpz_mod_mat_scalar_mul_fmpz(&mut out.matrix, &self.matrix, &scalar.value.value);
+            fmpz_mod_mat_scalar_mul_fmpz(
+                &mut out.matrix,
+                &self.matrix,
+                &mut std::ptr::read(scalar).value.value,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            );
         }
         Ok(out)
     }
@@ -161,7 +171,14 @@ impl MulAssign<&Z> for MatZq {
     /// a *= c;
     /// ```
     fn mul_assign(&mut self, scalar: &Z) {
-        unsafe { fmpz_mod_mat_scalar_mul_fmpz(&mut self.matrix, &self.matrix, &scalar.value) };
+        unsafe {
+            fmpz_mod_mat_scalar_mul_fmpz(
+                &mut self.matrix,
+                &self.matrix,
+                &mut std::ptr::read(scalar).value,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
     }
 }
 
@@ -175,7 +192,12 @@ impl MulAssign<&Zq> for MatZq {
             panic!("{}", self.call_compare_base_error(scalar).unwrap())
         }
         unsafe {
-            fmpz_mod_mat_scalar_mul_fmpz(&mut self.matrix, &self.matrix, &scalar.value.value)
+            fmpz_mod_mat_scalar_mul_fmpz(
+                &mut self.matrix,
+                &self.matrix,
+                &mut std::ptr::read(scalar).value.value,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
         };
     }
 }
@@ -185,14 +207,28 @@ arithmetic_assign_trait_borrowed_to_owned!(MulAssign, mul_assign, MatZq, Zq);
 impl MulAssign<i64> for MatZq {
     /// Documentation at [`MatZq::mul_assign`].
     fn mul_assign(&mut self, other: i64) {
-        unsafe { fmpz_mod_mat_scalar_mul_si(&mut self.matrix, &self.matrix, other) };
+        unsafe {
+            fmpz_mod_mat_scalar_mul_si(
+                &mut self.matrix,
+                &self.matrix,
+                other,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
     }
 }
 
 impl MulAssign<u64> for MatZq {
     /// Documentation at [`MatZq::mul_assign`].
     fn mul_assign(&mut self, other: u64) {
-        unsafe { fmpz_mod_mat_scalar_mul_ui(&mut self.matrix, &self.matrix, other) };
+        unsafe {
+            fmpz_mod_mat_scalar_mul_ui(
+                &mut self.matrix,
+                &self.matrix,
+                other,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
     }
 }
 

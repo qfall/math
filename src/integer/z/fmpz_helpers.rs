@@ -10,9 +10,9 @@
 
 use super::Z;
 use crate::traits::AsInteger;
+use flint_sys::flint::fmpz;
 use flint_sys::fmpz::{
-    fmpz, fmpz_abs, fmpz_cmpabs, fmpz_init_set, fmpz_init_set_si, fmpz_init_set_ui, fmpz_sub,
-    fmpz_swap,
+    fmpz_abs, fmpz_cmpabs, fmpz_init_set, fmpz_init_set_si, fmpz_init_set_ui, fmpz_sub, fmpz_swap,
 };
 
 /// Efficiently finds maximum absolute value and returns
@@ -37,7 +37,7 @@ use flint_sys::fmpz::{
 pub(crate) fn find_max_abs(fmpz_vector: &Vec<fmpz>) -> Z {
     // find maximum of absolute fmpz entries
     // It's not necessary to clear `fmpz(0)` since it's small
-    let mut max = &fmpz(0);
+    let mut max: &fmpz = &0;
     for entry in fmpz_vector {
         if unsafe { fmpz_cmpabs(max, entry) } < 0 {
             max = entry;
@@ -88,7 +88,7 @@ unsafe impl AsInteger for u64 {
 unsafe impl AsInteger for &u64 {
     /// Documentation at [`AsInteger::into_fmpz`]
     unsafe fn into_fmpz(self) -> fmpz {
-        let mut ret_value = fmpz(0);
+        let mut ret_value: fmpz = 0;
         unsafe { fmpz_init_set_ui(&mut ret_value, *self) };
         ret_value
     }
@@ -110,7 +110,7 @@ macro_rules! implement_as_integer_over_i64 {
         /// Documentation at [`AsInteger::into_fmpz`]
         unsafe impl AsInteger for &$type {
             unsafe fn into_fmpz(self) -> fmpz {
-                let mut ret_value = fmpz(0);
+                let mut ret_value: fmpz = 0;
                 unsafe { fmpz_init_set_si(&mut ret_value, *self as i64) };
                 ret_value
             }
@@ -119,12 +119,12 @@ macro_rules! implement_as_integer_over_i64 {
     };
 }
 
-implement_as_integer_over_i64!(i8 u8 i16 u16 i32 u32 i64);
+implement_as_integer_over_i64!(i8 u8 i16 u16 i32 u32);
 
 unsafe impl AsInteger for Z {
     /// Documentation at [`AsInteger::into_fmpz`]
     unsafe fn into_fmpz(mut self) -> fmpz {
-        let mut out = fmpz(0);
+        let mut out: fmpz = 0;
         unsafe { fmpz_swap(&mut out, &mut self.value) };
         out
     }
@@ -138,7 +138,7 @@ unsafe impl AsInteger for Z {
 unsafe impl AsInteger for &Z {
     /// Documentation at [`AsInteger::into_fmpz`]
     unsafe fn into_fmpz(self) -> fmpz {
-        let mut value = fmpz(0);
+        let mut value: fmpz = 0;
         unsafe { fmpz_init_set(&mut value, &self.value) };
         value
     }
@@ -164,7 +164,7 @@ unsafe impl AsInteger for fmpz {
 unsafe impl AsInteger for &fmpz {
     /// Documentation at [`AsInteger::into_fmpz`]
     unsafe fn into_fmpz(self) -> fmpz {
-        let mut value = fmpz(0);
+        let mut value: fmpz = 0;
         unsafe { fmpz_init_set(&mut value, self) };
         value
     }
@@ -249,7 +249,7 @@ mod test_as_integer_z {
         let value = unsafe { (&z).into_fmpz() };
 
         // The `fmpz` values have to point to different memory locations.
-        assert_ne!(value.0, z.value.0);
+        assert_ne!(value, z.value);
     }
 
     /// Assert that `get_fmpz_ref` returns a correct reference for small values
@@ -261,8 +261,8 @@ mod test_as_integer_z {
         let z_ref_1 = z.get_fmpz_ref().unwrap();
         let z_ref_2 = (&z).get_fmpz_ref().unwrap();
 
-        assert_eq!(z.value.0, z_ref_1.0);
-        assert_eq!(z.value.0, z_ref_2.0);
+        assert_eq!(&z.value, z_ref_1);
+        assert_eq!(&z.value, z_ref_2);
     }
 
     /// Assert that `get_fmpz_ref` returns a correct reference for large values
@@ -274,8 +274,8 @@ mod test_as_integer_z {
         let z_ref_1 = z.get_fmpz_ref().unwrap();
         let z_ref_2 = (&z).get_fmpz_ref().unwrap();
 
-        assert_eq!(z.value.0, z_ref_1.0);
-        assert_eq!(z.value.0, z_ref_2.0);
+        assert_eq!(&z.value, z_ref_1);
+        assert_eq!(&z.value, z_ref_2);
     }
 }
 
@@ -338,15 +338,14 @@ mod test_find_max_abs {
 mod test_distance {
     use super::Z;
     use super::distance;
-    use flint_sys::fmpz::fmpz;
 
     /// Checks if distance is correctly output for small [`Z`] values
     /// and whether distance(a, b) == distance(b, a), distance(a, a) == 0
     #[test]
     fn small_values() {
-        let a = fmpz(1);
-        let b = fmpz(-15);
-        let zero = fmpz(0);
+        let a = 1;
+        let b = -15;
+        let zero = 0;
 
         assert_eq!(Z::ONE, distance(&a, &zero));
         assert_eq!(Z::ONE, distance(&zero, &a));
