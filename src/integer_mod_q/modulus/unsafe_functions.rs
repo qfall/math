@@ -42,7 +42,8 @@ impl Modulus {
     /// that Rust and our Wrapper provide.
     /// Thus, using functions of [`flint_sys`] can introduce memory leaks.
     pub unsafe fn set_fmpz_mod_ctx(&mut self, flint_struct: fmpz_mod_ctx) {
-        let modulus = std::rc::Rc::<fmpz_mod_ctx>::get_mut(&mut self.modulus).unwrap();
+        let ptr = std::rc::Rc::as_ptr(&self.modulus) as *mut _;
+        let modulus = unsafe { &mut *ptr };
 
         // free memory of old modulus before new values of modulus are copied
         unsafe { fmpz_mod_ctx_clear(modulus) };

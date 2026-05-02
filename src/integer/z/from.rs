@@ -657,8 +657,9 @@ mod tests_from_int {
         let large_z = Z::from(u64::MAX);
         let small_z = Z::ONE;
 
-        assert_eq!(large_z, Z::from(&large_z.value));
-        assert_eq!(large_z, Z::from(large_z.value));
+        // fmpz = i64 now
+        assert_eq!(large_z, Z::from(&u64::MAX));
+        assert_eq!(large_z, Z::from(u64::MAX));
 
         assert_eq!(small_z, Z::from(&small_z.value));
         assert_eq!(small_z, Z::from(small_z.value));

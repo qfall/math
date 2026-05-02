@@ -19,6 +19,7 @@ use crate::macros::arithmetics::{
 };
 use crate::macros::for_others::implement_for_others;
 use crate::traits::{CompareBase, MatrixDimensions};
+use flint_sys::flint::fmpz;
 use flint_sys::fmpz_mod_mat::{
     fmpz_mod_mat_scalar_mul_fmpz, fmpz_mod_mat_scalar_mul_si, fmpz_mod_mat_scalar_mul_ui,
 };
@@ -47,11 +48,14 @@ impl Mul<&Z> for &MatZq {
     /// ```
     fn mul(self, scalar: &Z) -> Self::Output {
         let mut out = MatZq::new(self.get_num_rows(), self.get_num_columns(), self.get_mod());
+
+        let scalar_ptr = &scalar.value as *const fmpz as *mut fmpz;
+
         unsafe {
             fmpz_mod_mat_scalar_mul_fmpz(
                 &mut out.matrix,
                 &self.matrix,
-                &mut std::ptr::read(scalar).value,
+                scalar_ptr,
                 self.modulus.get_fmpz_mod_ctx_struct(),
             );
         }
@@ -131,12 +135,14 @@ impl MatZq {
             return Err(self.call_compare_base_error(scalar).unwrap());
         }
 
+        let scalar_ptr = &scalar.value.value as *const fmpz as *mut fmpz;
+
         let mut out = MatZq::new(self.get_num_rows(), self.get_num_columns(), self.get_mod());
         unsafe {
             fmpz_mod_mat_scalar_mul_fmpz(
                 &mut out.matrix,
                 &self.matrix,
-                &mut std::ptr::read(scalar).value.value,
+                scalar_ptr,
                 self.modulus.get_fmpz_mod_ctx_struct(),
             );
         }
@@ -171,11 +177,13 @@ impl MulAssign<&Z> for MatZq {
     /// a *= c;
     /// ```
     fn mul_assign(&mut self, scalar: &Z) {
+        let scalar_ptr = &scalar.value as *const fmpz as *mut fmpz;
+
         unsafe {
             fmpz_mod_mat_scalar_mul_fmpz(
                 &mut self.matrix,
                 &self.matrix,
-                &mut std::ptr::read(scalar).value,
+                scalar_ptr,
                 self.modulus.get_fmpz_mod_ctx_struct(),
             )
         };
@@ -191,11 +199,14 @@ impl MulAssign<&Zq> for MatZq {
         if !self.compare_base(scalar) {
             panic!("{}", self.call_compare_base_error(scalar).unwrap())
         }
+
+        let scalar_ptr = &scalar.value.value as *const fmpz as *mut fmpz;
+
         unsafe {
             fmpz_mod_mat_scalar_mul_fmpz(
                 &mut self.matrix,
                 &self.matrix,
-                &mut std::ptr::read(scalar).value.value,
+                scalar_ptr,
                 self.modulus.get_fmpz_mod_ctx_struct(),
             )
         };

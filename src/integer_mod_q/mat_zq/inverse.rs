@@ -151,22 +151,24 @@ impl MatZq {
     ///
     /// # Panics ...
     /// - if the modulus is not prime.
-    pub fn gaussian_elimination_prime(self) -> MatZq {
+    pub fn gaussian_elimination_prime(&self) -> MatZq {
         assert!(
             self.get_mod().is_prime(),
             "The modulus of the matrix is not prime"
         );
 
+        let mut out = MatZq::new(self.get_num_rows(), self.get_num_columns(), &self.modulus);
+
         // Since we only want the echelon form, the permutation `perm` is not relevant.
         let _ = unsafe {
             fmpz_mod_mat_rref(
-                std::ptr::null_mut(),
+                &mut out.matrix,
                 &self.matrix,
-                self.get_mod().get_fmpz_mod_ctx_struct(),
+                self.modulus.get_fmpz_mod_ctx_struct(),
             )
         };
 
-        self
+        out
     }
 }
 

@@ -56,9 +56,9 @@ impl Drop for Modulus {
     /// ```
     fn drop(&mut self) {
         if Rc::strong_count(&self.modulus) <= 1 {
-            let mut a = unsafe { std::ptr::read(self.modulus.as_ref()) };
             unsafe {
-                fmpz_mod_ctx_clear(&mut a);
+                let ctx_ptr = self.modulus.as_ref() as *const _ as *mut _;
+                fmpz_mod_ctx_clear(ctx_ptr);
             }
         }
     }

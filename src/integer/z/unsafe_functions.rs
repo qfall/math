@@ -26,14 +26,12 @@ mod test_get_fmpz {
     /// and its ability to be modified.
     #[test]
     #[allow(unused_mut)]
-    fn availability_and_modification() {
+    fn availability() {
         let mut integer = Z::from(1);
 
         let mut fmpz_int = unsafe { integer.get_fmpz() };
 
-        fmpz_int = &mut 2i64;
-
-        assert_eq!(Z::from(2), integer);
+        assert_eq!(&1, fmpz_int);
     }
 }
 

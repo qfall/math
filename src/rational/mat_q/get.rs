@@ -169,15 +169,18 @@ impl MatQ {
     /// # Safety
     /// The user has to ensure that all entries are within the matrix dimensions.
     /// Otherwise, memory leaks can occur and no guarantees are given.
-    pub(crate) fn collect_entries(&self) -> Vec<fmpq> {
-        let mut entries: Vec<fmpq> =
+    pub(crate) fn collect_entries<'a>(&self) -> Vec<&'a fmpq> {
+        let mut entries: Vec<&'a fmpq> =
             Vec::with_capacity((self.get_num_rows() * self.get_num_columns()) as usize);
 
         for row in 0..self.get_num_rows() {
             for col in 0..self.get_num_columns() {
                 // efficiently get entry without cloning the entry itself
-                let entry = unsafe { std::ptr::read(fmpq_mat_entry(&self.matrix, row, col)) };
-                entries.push(entry);
+                unsafe {
+                    let entry_ptr = fmpq_mat_entry(&self.matrix, row, col);
+                    let entry_ref: &'a fmpq = &*entry_ptr;
+                    entries.push(entry_ref);
+                }
             }
         }
 

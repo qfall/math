@@ -105,6 +105,7 @@ macro_rules! implement_as_integer_over_i64 {
             unsafe fn into_fmpz(self) -> fmpz {
                 unsafe { (&self).into_fmpz() }
             }
+            fn get_fmpz_ref(&self) -> Option<&fmpz> { None }
         }
 
         /// Documentation at [`AsInteger::into_fmpz`]
@@ -114,12 +115,13 @@ macro_rules! implement_as_integer_over_i64 {
                 unsafe { fmpz_init_set_si(&mut ret_value, *self as i64) };
                 ret_value
             }
+            fn get_fmpz_ref(&self) -> Option<&fmpz> { None }
         }
     )*
     };
 }
 
-implement_as_integer_over_i64!(i8 u8 i16 u16 i32 u32);
+implement_as_integer_over_i64!(i8 u8 i16 u16 i32 u32 i64);
 
 unsafe impl AsInteger for Z {
     /// Documentation at [`AsInteger::into_fmpz`]
@@ -149,31 +151,31 @@ unsafe impl AsInteger for &Z {
     }
 }
 
-unsafe impl AsInteger for fmpz {
-    /// Documentation at [`AsInteger::into_fmpz`]
-    unsafe fn into_fmpz(self) -> fmpz {
-        unsafe { (&self).into_fmpz() }
-    }
+// unsafe impl AsInteger for fmpz {
+//     /// Documentation at [`AsInteger::into_fmpz`]
+//     unsafe fn into_fmpz(self) -> fmpz {
+//         unsafe { (&self).into_fmpz() }
+//     }
 
-    /// Documentation at [`AsInteger::get_fmpz_ref`]
-    fn get_fmpz_ref(&self) -> Option<&fmpz> {
-        Some(self)
-    }
-}
+//     /// Documentation at [`AsInteger::get_fmpz_ref`]
+//     fn get_fmpz_ref(&self) -> Option<&fmpz> {
+//         Some(self)
+//     }
+// }
 
-unsafe impl AsInteger for &fmpz {
-    /// Documentation at [`AsInteger::into_fmpz`]
-    unsafe fn into_fmpz(self) -> fmpz {
-        let mut value: fmpz = 0;
-        unsafe { fmpz_init_set(&mut value, self) };
-        value
-    }
+// unsafe impl AsInteger for &fmpz {
+//     /// Documentation at [`AsInteger::into_fmpz`]
+//     unsafe fn into_fmpz(self) -> fmpz {
+//         let mut value: fmpz = 0;
+//         unsafe { fmpz_init_set(&mut value, self) };
+//         value
+//     }
 
-    /// Documentation at [`AsInteger::get_fmpz_ref`]
-    fn get_fmpz_ref(&self) -> Option<&fmpz> {
-        Some(self)
-    }
-}
+//     /// Documentation at [`AsInteger::get_fmpz_ref`]
+//     fn get_fmpz_ref(&self) -> Option<&fmpz> {
+//         Some(self)
+//     }
+// }
 
 #[cfg(test)]
 mod test_as_integer_rust_ints {

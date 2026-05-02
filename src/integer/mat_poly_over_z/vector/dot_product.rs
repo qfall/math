@@ -72,7 +72,7 @@ impl MatPolyOverZ {
         for i in 0..self_entries.len() {
             // sets result = result + self.entry[i] * other.entry[i] without cloned PolyOverZ element
             unsafe {
-                fmpz_poly_mul(&mut temp.poly, &self_entries[i], &other_entries[i]);
+                fmpz_poly_mul(&mut temp.poly, self_entries[i], other_entries[i]);
 
                 fmpz_poly_add(&mut result.poly, &result.poly, &temp.poly)
             }

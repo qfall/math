@@ -48,7 +48,7 @@ impl MatQ {
         let mut result = Q::default();
         for entry in entries {
             // sets result = result + entry * entry without cloned Q element
-            unsafe { fmpq_addmul(&mut result.value, &entry, &entry) }
+            unsafe { fmpq_addmul(&mut result.value, entry, entry) }
         }
 
         Ok(result)
@@ -111,7 +111,7 @@ impl MatQ {
         for entry in entries {
             // compute absolute value of fmpq entry
             let mut abs_entry = Q::default();
-            unsafe { fmpq_abs(&mut abs_entry.value, &entry) };
+            unsafe { fmpq_abs(&mut abs_entry.value, entry) };
             // compare maximum to absolute value of entry and keep larger one
             if unsafe { fmpq_cmp(&max.value, &abs_entry.value) } < 0 {
                 max = abs_entry;

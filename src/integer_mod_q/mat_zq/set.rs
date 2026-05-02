@@ -1133,6 +1133,8 @@ mod test_change_modulus {
 
         matrix.change_modulus(&modulus);
 
+        println!("{}", matrix);
+
         assert_eq!("[[1, 2, 3],[4, 5, 6]] mod 8", matrix.to_string());
     }
 

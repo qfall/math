@@ -172,15 +172,18 @@ impl MatPolyOverZ {
     ///
     /// let fmpz_entries = mat.collect_entries();
     /// ```
-    pub(crate) fn collect_entries(&self) -> Vec<fmpz_poly_struct> {
-        let mut entries: Vec<fmpz_poly_struct> =
+    pub(crate) fn collect_entries<'a>(&self) -> Vec<&'a fmpz_poly_struct> {
+        let mut entries: Vec<&'a fmpz_poly_struct> =
             Vec::with_capacity((self.get_num_rows() * self.get_num_columns()) as usize);
 
         for row in 0..self.get_num_rows() {
             for col in 0..self.get_num_columns() {
                 // efficiently get entry without cloning the entry itself
-                let entry = unsafe { std::ptr::read(fmpz_poly_mat_entry(&self.matrix, row, col)) };
-                entries.push(entry);
+                unsafe {
+                    let entry_ptr = fmpz_poly_mat_entry(&self.matrix, row, col);
+                    let entry_ref: &'a fmpz_poly_struct = &*entry_ptr;
+                    entries.push(entry_ref);
+                }
             }
         }
 

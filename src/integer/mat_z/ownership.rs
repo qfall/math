@@ -138,7 +138,7 @@ mod test_drop {
         let str_1 = "[[36893488147419103232, 36893488147419103232]]";
         let a = MatZ::from_str(str_1).unwrap();
 
-        let storage_mat = unsafe { (*a.matrix.entries) };
+        let storage_mat = unsafe { *a.matrix.entries };
         let storage_0 = a.get_entry(0, 0).unwrap().value;
         let storage_1 = a.get_entry(0, 1).unwrap().value;
 

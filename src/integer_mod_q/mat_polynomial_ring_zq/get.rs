@@ -259,16 +259,19 @@ impl MatPolynomialRingZq {
     /// let fmpz_entries = poly_ring_mat.collect_entries();
     /// ```
     #[allow(dead_code)]
-    pub(crate) fn collect_entries(&self) -> Vec<fmpz_poly_struct> {
-        let mut entries: Vec<fmpz_poly_struct> =
+    pub(crate) fn collect_entries<'a>(&self) -> Vec<&'a fmpz_poly_struct> {
+        let mut entries: Vec<&'a fmpz_poly_struct> =
             Vec::with_capacity((self.get_num_rows() * self.get_num_columns()) as usize);
 
         for row in 0..self.get_num_rows() {
             for col in 0..self.get_num_columns() {
                 // efficiently get entry without cloning the entry itself
-                let entry =
-                    unsafe { std::ptr::read(fmpz_poly_mat_entry(&self.matrix.matrix, row, col)) };
-                entries.push(entry);
+                unsafe {
+                    let entry_ptr = fmpz_poly_mat_entry(&self.matrix.matrix, row, col);
+                    let entry_ref: &'a fmpz_poly_struct = &*entry_ptr;
+                    entries.push(entry_ref);
+                }
+                // let entry = fmpz_poly_mat_entry(&self.matrix.matrix, row, col);
             }
         }
 
@@ -792,9 +795,9 @@ mod test_collect_entries {
         let mut entry_2 = entry_1.clone();
         let mut entry_3 = entry_1.clone();
 
-        unsafe { fmpz_poly_set(&mut entry_1.poly, &entries_1[1]) }
-        unsafe { fmpz_poly_set(&mut entry_2.poly, &entries_1[3]) }
-        unsafe { fmpz_poly_set(&mut entry_3.poly, &entries_2[0]) }
+        unsafe { fmpz_poly_set(&mut entry_1.poly, entries_1[1]) }
+        unsafe { fmpz_poly_set(&mut entry_2.poly, entries_1[3]) }
+        unsafe { fmpz_poly_set(&mut entry_3.poly, entries_2[0]) }
 
         assert_eq!(entries_1.len(), 4);
         assert_eq!(

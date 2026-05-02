@@ -73,7 +73,7 @@ impl MatQ {
         let mut result = Q::default();
         for i in 0..self_entries.len() {
             // sets result = result + self.entry[i] * other.entry[i] without cloned Z element
-            unsafe { fmpq_addmul(&mut result.value, &self_entries[i], &other_entries[i]) }
+            unsafe { fmpq_addmul(&mut result.value, self_entries[i], other_entries[i]) }
         }
 
         Ok(result)

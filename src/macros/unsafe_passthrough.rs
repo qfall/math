@@ -80,7 +80,8 @@ macro_rules! unsafe_getter_mod {
                 /// that Rust and our Wrapper provide.
                 /// Thus, using functions of [`flint_sys`] can introduce memory leaks.
                 pub unsafe fn [<get_ $attribute_type>](&mut self) -> &mut $attribute_type {
-                    std::rc::Rc::<$attribute_type>::get_mut(&mut self.$attribute_name).unwrap()
+                    let ptr = std::rc::Rc::as_ptr(&self.$attribute_name) as *mut $attribute_type;
+                    unsafe { &mut *ptr }
                 }
             }
         }

@@ -30,6 +30,11 @@ impl PolyOverZq {
     /// assert!(poly_irr.is_irreducible());
     /// ```
     pub fn is_irreducible(&self) -> bool {
+        // prevent running into FLINT error
+        if !self.get_mod().is_prime() {
+            return false;
+        }
+
         1 == unsafe {
             fmpz_mod_poly_is_irreducible(&self.poly, self.modulus.get_fmpz_mod_ctx_struct())
         }

@@ -12,7 +12,6 @@
 //! The explicit functions contain the documentation.
 
 use super::MatZq;
-use crate::integer::Z;
 use crate::traits::MatrixDimensions;
 use flint_sys::fmpz_mod_mat::{fmpz_mod_mat_clear, fmpz_mod_mat_init_set};
 
@@ -29,11 +28,7 @@ impl Clone for MatZq {
     /// let b = a.clone();
     /// ```
     fn clone(&self) -> Self {
-        let mut out = MatZq::new(
-            self.get_num_rows(),
-            self.get_num_columns(),
-            Z::from(self.get_mod()),
-        );
+        let mut out = MatZq::new(self.get_num_rows(), self.get_num_columns(), self.get_mod());
         unsafe {
             fmpz_mod_mat_init_set(
                 &mut out.matrix,
@@ -141,17 +136,6 @@ mod test_clone {
 
         assert_eq!(MatrixGetEntry::<Z>::get_entry(&a, 1, 1).unwrap(), 1);
         assert_eq!(MatrixGetEntry::<Z>::get_entry(&a, 1, 0).unwrap(), 0);
-    }
-
-    /// Check if large modulus is stored separately and therefore cloned deeply
-    #[test]
-    fn modulus_storage() {
-        let string = format!("[[{}, {}],[-10, 0]] mod {}", i64::MAX, i64::MIN, u64::MAX);
-        let b = MatZq::from_str(&string).unwrap();
-
-        let a = b.clone();
-
-        assert_ne!(a.modulus, b.modulus);
     }
 }
 

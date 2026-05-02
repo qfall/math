@@ -27,21 +27,22 @@ unsafe_setter_indirect!(MatZq, modulus, set_fmpz_mod_ctx, fmpz_mod_ctx);
 #[cfg(test)]
 mod test_get_fmpz_mod_mat_struct {
     use super::MatZq;
+    use crate::traits::MatrixDimensions;
     use std::str::FromStr;
 
-    // / Checks availability of the getter for [`MatZq::matrix`]
-    // / and its ability to be modified.
-    // #[test]
-    // #[allow(unused_mut)]
-    // fn availability_and_modification() {
-    //     let mut mat = MatZq::from_str("[[3]] mod 7").unwrap();
+    /// Checks availability of the getter for [`MatZq::matrix`]
+    /// and its ability to be modified.
+    #[test]
+    #[allow(unused_mut)]
+    fn availability_and_modification() {
+        let mut mat = MatZq::from_str("[[3]] mod 7").unwrap();
 
-    //     let mut fmpz_mat = unsafe { mat.get_fmpz_mod_mat_struct() };
+        let mut fmpz_mat = unsafe { mat.get_fmpz_mod_mat_struct() };
 
-    //     fmpz_mat.mod_[0].0 = 5;
+        fmpz_mat.c = 5;
 
-    //     assert_eq!(MatZq::from_str("[[3]] mod 5").unwrap(), mat);
-    // }
+        assert_eq!(5, mat.get_num_columns());
+    }
 }
 
 #[cfg(test)]
