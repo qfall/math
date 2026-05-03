@@ -97,8 +97,8 @@ impl MatPolynomialRingZq {
         max_norm
     }
 
-    /// Outputs the hamming weight of `self`, i.e. it computes the sum of all non-zero
-    /// coefficients in each polynomial in the matrix.
+    /// Outputs the hamming weight of `self`, i.e. it computes the number of non-zero
+    /// coefficients across all polynomials in the matrix.
     ///
     /// # Examples
     /// ```
