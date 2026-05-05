@@ -73,6 +73,10 @@ let vec_t = &mat_a * &vec_e;
 let vec_b = vec_s.transpose() * mat_a + vec_e.transpose();
 ```
 
+## SemVer and Backward Compatibility
+While this library is not stable yet, i.e. pre-version 1.0.0, we may introduce API-breaking changes in MINOR version updates.
+Therefore, we recommend to fix the used version `version = "0.y"` in your `Cargo.toml`.
+
 ## Bugs
 Please report bugs through the [GitHub issue tracker](https://github.com/qfall/math/issues).
 
