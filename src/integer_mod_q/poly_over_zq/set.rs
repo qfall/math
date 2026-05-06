@@ -10,9 +10,12 @@
 
 use super::PolyOverZq;
 use crate::{
-    integer::Z, integer_mod_q::Zq, macros::for_others::implement_for_owned, traits::SetCoefficient,
+    integer::Z,
+    integer_mod_q::{Modulus, Zq},
+    macros::for_others::implement_for_owned,
+    traits::SetCoefficient,
 };
-use flint_sys::fmpz_mod_poly::fmpz_mod_poly_set_coeff_fmpz;
+use flint_sys::fmpz_mod_poly::{fmpz_mod_poly_set_coeff_fmpz, fmpz_mod_poly_set_fmpz_poly};
 
 impl<Integer: Into<Z>> SetCoefficient<Integer> for PolyOverZq {
     /// Sets the coefficient of a polynomial [`PolyOverZq`].
@@ -91,6 +94,41 @@ impl SetCoefficient<&Zq> for PolyOverZq {
 }
 
 implement_for_owned!(Zq, PolyOverZq, SetCoefficient);
+
+impl PolyOverZq {
+    /// Changes the modulus of the given polynomial to the new modulus.
+    /// It takes the representation of each coefficient in [0, q) as the new
+    /// coefficients and reduces them by the new [`Modulus`].
+    ///
+    /// Parameters:
+    /// - `modulus`: the new modulus of the polynomial
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use std::str::FromStr;
+    ///
+    /// let mut poly = PolyOverZq::from_str("4  5 3 7 4 mod 13").unwrap();
+    ///
+    /// poly.change_modulus(5);
+    ///
+    /// assert_eq!(PolyOverZq::from_str("4  0 3 2 4 mod 5").unwrap(), poly);
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if `modulus` is smaller than `2`.
+    pub fn change_modulus(&mut self, modulus: impl Into<Modulus>) {
+        self.modulus = modulus.into();
+        let lnr = self.get_representative_least_nonnegative_residue();
+        unsafe {
+            fmpz_mod_poly_set_fmpz_poly(
+                &mut self.poly,
+                &lnr.poly,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            );
+        }
+    }
+}
 
 #[cfg(test)]
 mod test_set_coeff_z {
@@ -193,5 +231,45 @@ mod test_set_coeff_zq {
             PolyOverZq::from_str(&format!("5  0 1 2 3 58 mod {}", u64::MAX - 58)).unwrap(),
             poly
         )
+    }
+}
+
+#[cfg(test)]
+mod test_change_modulus {
+    use super::PolyOverZq;
+    use crate::integer_mod_q::Modulus;
+    use std::str::FromStr;
+
+    /// Ensures that the modulus is changed correctly.
+    #[test]
+    fn modulus_correct() {
+        let mut poly = PolyOverZq::from_str("6  1 2 3 4 5 6 mod 7").unwrap();
+        let modulus = Modulus::from(8);
+
+        poly.change_modulus(&modulus);
+
+        assert_eq!("6  1 2 3 4 5 6 mod 8", poly.to_string());
+    }
+
+    /// Ensures that the modulus is changed correctly, if the modulus is big.
+    #[test]
+    fn big_modulus_correct() {
+        let mut poly = PolyOverZq::from_str(&format!("6  1 2 3 4 5 6 mod {}", i64::MAX)).unwrap();
+        let modulus = Modulus::from(u64::MAX);
+
+        poly.change_modulus(&modulus);
+
+        assert_eq!(format!("6  1 2 3 4 5 6 mod {}", u64::MAX), poly.to_string());
+    }
+
+    /// Ensures that the poly is reduced correctly.
+    #[test]
+    fn reduced_correct() {
+        let mut poly = PolyOverZq::from_str("6  1 2 3 4 5 6 mod 7").unwrap();
+        let modulus = Modulus::from(2);
+
+        poly.change_modulus(&modulus);
+
+        assert_eq!("5  1 0 1 0 1 mod 2", poly.to_string());
     }
 }

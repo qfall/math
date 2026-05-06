@@ -9,7 +9,7 @@
 //! Implementation to set elements of a [`MatPolynomialRingZq`] matrix.
 
 use super::MatPolynomialRingZq;
-use crate::integer_mod_q::PolynomialRingZq;
+use crate::integer_mod_q::{Modulus, ModulusPolynomialRingZq, PolynomialRingZq};
 use crate::macros::for_others::implement_for_owned;
 use crate::traits::{MatrixSetSubmatrix, MatrixSwaps};
 use crate::{error::MathError, integer::PolyOverZ, traits::MatrixSetEntry};
@@ -380,6 +380,60 @@ impl MatPolynomialRingZq {
     /// ```
     pub fn reverse_rows(&mut self) {
         self.matrix.reverse_rows()
+    }
+
+    /// Changes the modulus of the given matrix to the new modulus.
+    /// It takes the representation of each entry with coefficients in [0, q) as the new
+    /// matrix entries and reduces them by the new [`ModulusPolynomialRingZq`].
+    ///
+    /// Parameters:
+    /// - `modulus`: the new modulus of the matrix
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
+    /// let modulus0 = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let modulus1 = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 19").unwrap();
+    ///
+    /// let mut matrix = MatPolynomialRingZq::new(4, 3, modulus0);
+    ///
+    /// matrix.change_modulus(modulus1);
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if `modulus` is smaller than `2`, or
+    /// - if the modulus polynomial is of degree smaller than `1`.
+    /// - if the leading coefficient is not `1.`
+    pub fn change_modulus(&mut self, modulus: impl Into<ModulusPolynomialRingZq>) {
+        self.modulus = modulus.into();
+        self.reduce();
+    }
+
+    /// Changes the modulus `q` of the given matrix to the new modulus `q`.
+    /// It takes the representation of each entry with coefficients in `[0, q)` as the new
+    /// matrix entries and reduces them by the new [`Modulus`].
+    ///
+    /// Parameters:
+    /// - `q`: the new modulus of the matrix
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    ///
+    /// let mut matrix = MatPolynomialRingZq::new(4, 3, modulus);
+    ///
+    /// matrix.change_q(19);
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if `modulus` is smaller than `2`.
+    pub fn change_q(&mut self, q: impl Into<Modulus>) {
+        self.modulus.change_q(q);
+        self.reduce();
     }
 }
 
@@ -1027,5 +1081,126 @@ mod test_set_submatrix {
         let mat2 = MatPolynomialRingZq::identity(10, 10, &modulus2);
 
         assert!(mat1.set_submatrix(0, 0, &mat2.clone(), 0, 9, 0, 9).is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_change_modulus {
+    use super::MatPolynomialRingZq;
+    use crate::integer_mod_q::ModulusPolynomialRingZq;
+    use std::str::FromStr;
+
+    /// Ensures that the modulus is changed correctly.
+    #[test]
+    fn modulus_correct() {
+        let mut matrix = MatPolynomialRingZq::from_str(
+            "[[1  1, 1  2, 1  3],[1  4, 1  5, 1  6]] / 4  1 0 0 1 mod 7",
+        )
+        .unwrap();
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 8").unwrap();
+
+        matrix.change_modulus(&modulus);
+
+        assert_eq!(
+            "[[1  1, 1  2, 1  3],[1  4, 1  5, 1  6]] / 4  1 0 0 1 mod 8",
+            matrix.to_string()
+        );
+    }
+
+    /// Ensures that the modulus is changed correctly, if the modulus is big.
+    #[test]
+    fn big_modulus_correct() {
+        let mut matrix = MatPolynomialRingZq::from_str(&format!(
+            "[[1  1, 1  2, 1  3],[1  4, 1  5, 1  6]] / 4  1 0 0 1 mod {}",
+            i64::MAX
+        ))
+        .unwrap();
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
+
+        matrix.change_modulus(&modulus);
+
+        assert_eq!(
+            format!(
+                "[[1  1, 1  2, 1  3],[1  4, 1  5, 1  6]] / 4  1 0 0 1 mod {}",
+                u64::MAX
+            ),
+            matrix.to_string()
+        );
+    }
+
+    /// Ensures that the matrix is reduced correctly.
+    #[test]
+    fn reduced_correct() {
+        let mut matrix = MatPolynomialRingZq::from_str(
+            "[[1  1, 1  2, 1  3],[1  4, 1  5, 4  1 0 0 1]] / 8  1 0 0 0 0 0 0 1 mod 7",
+        )
+        .unwrap();
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 2").unwrap();
+
+        matrix.change_modulus(&modulus);
+
+        assert_eq!(
+            "[[1  1, 0, 1  1],[0, 1  1, 0]] / 4  1 0 0 1 mod 2",
+            matrix.to_string()
+        );
+    }
+}
+
+#[cfg(test)]
+mod test_change_q {
+    use super::MatPolynomialRingZq;
+    use std::str::FromStr;
+
+    /// Ensures that the modulus `q` is changed correctly.
+    #[test]
+    fn q_correct() {
+        let mut matrix = MatPolynomialRingZq::from_str(
+            "[[1  1, 1  2, 1  3],[1  4, 1  5, 1  6]] / 4  1 0 0 1 mod 7",
+        )
+        .unwrap();
+
+        matrix.change_q(8);
+
+        assert_eq!(
+            "[[1  1, 1  2, 1  3],[1  4, 1  5, 1  6]] / 4  1 0 0 1 mod 8",
+            matrix.to_string()
+        );
+    }
+
+    /// Ensures that the modulus `q` is changed correctly, if the modulus is big.
+    #[test]
+    fn big_q_correct() {
+        let mut matrix = MatPolynomialRingZq::from_str(&format!(
+            "[[1  1, 1  2, 1  3],[1  4, 1  5, 1  6]] / 4  1 0 0 1 mod {}",
+            i64::MAX
+        ))
+        .unwrap();
+
+        matrix.change_q(u64::MAX);
+
+        assert_eq!(
+            format!(
+                "[[1  1, 1  2, 1  3],[1  4, 1  5, 1  6]] / 4  1 0 0 1 mod {}",
+                u64::MAX
+            ),
+            matrix.to_string()
+        );
+    }
+
+    /// Ensures that the matrix is reduced correctly.
+    #[test]
+    fn reduced_correct() {
+        let mut matrix = MatPolynomialRingZq::from_str(
+            "[[1  1, 1  2, 1  3],[1  4, 1  5, 4  1 0 0 1]] / 4  1 0 0 1 mod 7",
+        )
+        .unwrap();
+
+        matrix.change_q(2);
+
+        assert_eq!(
+            "[[1  1, 0, 1  1],[0, 1  1, 0]] / 4  1 0 0 1 mod 2",
+            matrix.to_string()
+        );
     }
 }

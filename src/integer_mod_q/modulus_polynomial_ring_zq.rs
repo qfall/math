@@ -22,6 +22,7 @@ mod norm;
 mod ntt_basis;
 mod ownership;
 mod serialize;
+mod set;
 mod to_string;
 
 /// [`ModulusPolynomialRingZq`] represents the modulus object for

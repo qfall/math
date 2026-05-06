@@ -10,7 +10,10 @@
 
 use super::PolynomialRingZq;
 use crate::{
-    integer::Z, integer_mod_q::Zq, macros::for_others::implement_for_owned, traits::SetCoefficient,
+    integer::Z,
+    integer_mod_q::{Modulus, ModulusPolynomialRingZq, Zq},
+    macros::for_others::implement_for_owned,
+    traits::SetCoefficient,
 };
 use flint_sys::fmpz_poly::fmpz_poly_set_coeff_fmpz;
 
@@ -92,6 +95,64 @@ impl SetCoefficient<&Zq> for PolynomialRingZq {
 }
 
 implement_for_owned!(Zq, PolynomialRingZq, SetCoefficient);
+
+impl PolynomialRingZq {
+    /// Changes the modulus of the given polynomial to the new modulus.
+    /// It takes the representation of each entry with coefficients in [0, q) as the new
+    /// coefficients and reduces them by the new [`ModulusPolynomialRingZq`].
+    ///
+    /// Parameters:
+    /// - `modulus`: the new modulus of the polynomial
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::{PolynomialRingZq, ModulusPolynomialRingZq};
+    /// use std::str::FromStr;
+    /// let modulus0 = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+    /// let modulus1 = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 12").unwrap();
+    ///
+    /// let mut poly = PolynomialRingZq::from((13, modulus0));
+    ///
+    /// poly.change_modulus(modulus1);
+    ///
+    /// assert_eq!("1  1 / 3  1 0 1 mod 12", poly.to_string());
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if `modulus` is smaller than `2`, or
+    /// - if the modulus polynomial is of degree smaller than `1`.
+    /// - if the leading coefficient is not `1.`
+    pub fn change_modulus(&mut self, modulus: impl Into<ModulusPolynomialRingZq>) {
+        self.modulus = modulus.into();
+        self.reduce();
+    }
+
+    /// Changes the modulus `q` of the given polynomial to the new modulus `q`.
+    /// It takes the representation of each entry with coefficients in `[0, q)` as the new
+    /// coefficients and reduces them by the new [`Modulus`].
+    ///
+    /// Parameters:
+    /// - `q`: the new modulus of the polynomial
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::PolynomialRingZq;
+    /// use std::str::FromStr;
+    ///
+    /// let mut poly = PolynomialRingZq::from_str("3  12 2 13 / 4  1 0 0 1 mod 17").unwrap();
+    ///
+    /// poly.change_q(12);
+    ///
+    /// assert_eq!("3  0 2 1 / 4  1 0 0 1 mod 12", poly.to_string());
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if `modulus` is smaller than `2`.
+    pub fn change_q(&mut self, q: impl Into<Modulus>) {
+        self.modulus.change_q(q);
+        self.reduce();
+    }
+}
 
 #[cfg(test)]
 mod test_set_coeff {
@@ -211,5 +272,91 @@ mod test_set_coeff {
         let value = Zq::from((13, 18));
 
         assert!(poly_ring.set_coeff(1, &value).is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_change_modulus {
+    use super::PolynomialRingZq;
+    use crate::integer_mod_q::ModulusPolynomialRingZq;
+    use std::str::FromStr;
+
+    /// Ensures that the modulus is changed correctly.
+    #[test]
+    fn modulus_correct() {
+        let mut matrix = PolynomialRingZq::from_str("1  6 / 4  1 0 0 1 mod 7").unwrap();
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 5").unwrap();
+
+        matrix.change_modulus(&modulus);
+
+        assert_eq!("1  1 / 4  1 0 0 1 mod 5", matrix.to_string());
+    }
+
+    /// Ensures that the modulus is changed correctly, if the modulus is big.
+    #[test]
+    fn big_modulus_correct() {
+        let mut matrix =
+            PolynomialRingZq::from_str(&format!("1  6 / 4  1 0 0 1 mod {}", i64::MAX)).unwrap();
+        let modulus =
+            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
+
+        matrix.change_modulus(&modulus);
+
+        assert_eq!(
+            format!("1  6 / 4  1 0 0 1 mod {}", u64::MAX),
+            matrix.to_string()
+        );
+    }
+
+    /// Ensures that the matrix is reduced correctly.
+    #[test]
+    fn reduced_correct() {
+        let mut matrix =
+            PolynomialRingZq::from_str("4  1 0 0 1 / 8  1 0 0 0 0 0 0 1 mod 7").unwrap();
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 2").unwrap();
+
+        matrix.change_modulus(&modulus);
+
+        assert_eq!("0 / 4  1 0 0 1 mod 2", matrix.to_string());
+    }
+}
+
+#[cfg(test)]
+mod test_change_q {
+    use super::PolynomialRingZq;
+    use std::str::FromStr;
+
+    /// Ensures that the modulus `q` is changed correctly.
+    #[test]
+    fn q_correct() {
+        let mut matrix = PolynomialRingZq::from_str("1  6 / 4  1 0 0 1 mod 7").unwrap();
+
+        matrix.change_q(8);
+
+        assert_eq!("1  6 / 4  1 0 0 1 mod 8", matrix.to_string());
+    }
+
+    /// Ensures that the modulus `q` is changed correctly, if the modulus is big.
+    #[test]
+    fn big_q_correct() {
+        let mut matrix =
+            PolynomialRingZq::from_str(&format!("1  6 / 4  1 0 0 1 mod {}", i64::MAX)).unwrap();
+
+        matrix.change_q(u64::MAX);
+
+        assert_eq!(
+            format!("1  6 / 4  1 0 0 1 mod {}", u64::MAX),
+            matrix.to_string()
+        );
+    }
+
+    /// Ensures that the matrix is reduced correctly.
+    #[test]
+    fn reduced_correct() {
+        let mut matrix = PolynomialRingZq::from_str("2  5 4 / 4  1 0 0 1 mod 7").unwrap();
+
+        matrix.change_q(2);
+
+        assert_eq!("1  1 / 4  1 0 0 1 mod 2", matrix.to_string());
     }
 }
