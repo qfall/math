@@ -8,7 +8,7 @@
 
 //! Implementations to manipulate a [`ModulusPolynomialRingZq`].
 
-use crate::integer_mod_q::{Modulus, ModulusPolynomialRingZq, PolyOverZq};
+use crate::integer_mod_q::{Modulus, ModulusPolynomialRingZq, PolyOverZq, modulus_polynomial_ring_zq::from::non_zero_positions};
 use std::rc::Rc;
 
 impl ModulusPolynomialRingZq {
@@ -36,10 +36,11 @@ impl ModulusPolynomialRingZq {
     /// - if `modulus` is smaller than `2`.
     pub fn change_q(&mut self, modulus: impl Into<Modulus>) {
         self.ntt_basis = Rc::new(None);
-        self.non_zero = Vec::new();
 
         let new_poly_zq =
             PolyOverZq::from((self.get_representative_least_nonnegative_residue(), modulus));
+        self.non_zero = non_zero_positions(&new_poly_zq);
+        
         self.modulus = Rc::new(new_poly_zq);
     }
 }

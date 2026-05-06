@@ -123,13 +123,9 @@ impl From<&PolyOverZq> for ModulusPolynomialRingZq {
     /// - if the leading coefficient is not `1.`
     fn from(poly: &PolyOverZq) -> Self {
         check_poly_mod(poly).unwrap();
-        let mut non_zero = Vec::new();
-        for i in 0..poly.get_degree() {
-            let coeff: Z = poly.get_coeff(i).unwrap();
-            if coeff != 0 {
-                non_zero.push(i.try_into().unwrap());
-            }
-        }
+
+        let non_zero = non_zero_positions(poly);
+        
         Self {
             modulus: Rc::new(poly.clone()),
             ntt_basis: Rc::new(None),
@@ -204,6 +200,33 @@ impl FromStr for ModulusPolynomialRingZq {
 
         Ok(Self::from(poly_zq))
     }
+}
+
+/// Fills a vector with the position of all non-zero coefficients in a [`PolyOverZq`].
+/// 
+/// Parameters:
+/// - `poly`: defines the polynomial whose positions of non-zero coefficients are output
+/// 
+/// Returns a [`Vec<usize>`] containing the positions of all non-zero coefficients.
+/// 
+/// # Examples
+/// ```compile_fail
+/// use qfall_math::integer_mod_q::PolyOverZq;
+/// use std::str::FromStr;
+///
+/// let poly_zq = PolyOverZq::from_str("4  1 0 0 1 mod 17").unwrap();
+///
+/// let non_zero = non_zero_positions(&poly_zq);
+/// ```
+pub(crate) fn non_zero_positions(poly: &PolyOverZq) -> Vec<usize> {
+    let mut non_zero = Vec::new();
+    for i in 0..poly.get_degree() {
+        let coeff: Z = poly.get_coeff(i).unwrap();
+        if coeff != 0 {
+            non_zero.push(i.try_into().unwrap());
+        }
+    }
+    non_zero
 }
 
 /// Checks weather a given [`PolyOverZq`] can be used as a [`ModulusPolynomialRingZq`].
