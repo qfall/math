@@ -47,7 +47,8 @@ impl<Mod: Into<Modulus>> From<(&PolyOverZ, Mod)> for ModulusPolynomialRingZq {
     ///
     /// # Panics ...
     /// - if `modulus` is smaller than `2`, or
-    /// - if the degree of the polynomial is smaller than `1`.
+    /// - if the modulus polynomial is of degree smaller than `1`.
+    /// - if the leading coefficient is not `1.`
     fn from((poly, modulus): (&PolyOverZ, Mod)) -> Self {
         let poly_zq = PolyOverZq::from((poly, modulus));
 
@@ -85,6 +86,7 @@ impl<Mod: Into<Modulus>> From<(PolyOverZ, Mod)> for ModulusPolynomialRingZq {
     /// # Panics ...
     /// - if `modulus` is smaller than `2`, or
     /// - if the modulus polynomial is of degree smaller than `1`.
+    /// - if the leading coefficient is not `1.`
     fn from((poly, modulus): (PolyOverZ, Mod)) -> Self {
         let poly_zq = PolyOverZq::from((poly, modulus));
 
@@ -96,7 +98,8 @@ impl<Mod: Into<Modulus>> From<(PolyOverZ, Mod)> for ModulusPolynomialRingZq {
 
 impl From<&PolyOverZq> for ModulusPolynomialRingZq {
     /// Creates a Modulus object of type [`ModulusPolynomialRingZq`]
-    /// for [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq)
+    /// for [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq).
+    /// It requires that the leading coefficient is `1`.
     ///
     /// Parameters:
     /// - `poly`: the polynomial which is used as the modulus.
@@ -117,6 +120,7 @@ impl From<&PolyOverZq> for ModulusPolynomialRingZq {
     /// # Panics ...
     /// - if `modulus` is smaller than `2`, or
     /// - if the modulus polynomial is of degree smaller than `1`.
+    /// - if the leading coefficient is not `1.`
     fn from(poly: &PolyOverZq) -> Self {
         check_poly_mod(poly).unwrap();
         let mut non_zero = Vec::new();
@@ -192,6 +196,7 @@ impl FromStr for ModulusPolynomialRingZq {
     ///   [`InvalidModulus`](MathError::InvalidModulus)
     ///     - if `modulus` is smaller than `2`, or
     ///     - if the modulus polynomial is of degree smaller than `1`.
+    ///     - if the leading coefficient is not `1`.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let poly_zq = PolyOverZq::from_str(s)?;
 
@@ -223,6 +228,9 @@ impl FromStr for ModulusPolynomialRingZq {
 /// - Returns a [`MathError`] of type
 ///   [`InvalidModulus`](MathError::InvalidModulus)
 ///   if the modulus polynomial is of degree less than `1`.
+/// - Returns a [`MathError`] of type
+///   [`InvalidModulus`](MathError::InvalidModulus)
+///   if the leading coefficient is not `1`.
 pub(crate) fn check_poly_mod(poly_zq: &PolyOverZq) -> Result<(), MathError> {
     let leading_coefficient: Z = poly_zq.get_coeff(poly_zq.get_degree())?;
     if poly_zq.get_degree() < 1 {
@@ -340,6 +348,15 @@ mod test_try_from_poly_zq {
     #[should_panic]
     fn panic_0() {
         let poly = PolyOverZq::from((0, 17));
+
+        let _ = ModulusPolynomialRingZq::from(poly);
+    }
+
+    /// Ensure that the function panics if the leading coefficient is not `1`
+    #[test]
+    #[should_panic]
+    fn panic_leading_coefficient() {
+        let poly = PolyOverZq::from_str("2  1 2 mod 10").unwrap();
 
         let _ = ModulusPolynomialRingZq::from(poly);
     }
