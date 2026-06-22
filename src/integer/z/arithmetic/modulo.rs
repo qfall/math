@@ -8,8 +8,6 @@
 
 //! Implementation of the [`Rem`] trait for [`Z`] values.
 
-use flint_sys::{fmpz::fmpz_mod, fmpz_mod::fmpz_mod_set_fmpz};
-
 use super::super::Z;
 use crate::{
     integer_mod_q::Modulus,
@@ -18,6 +16,7 @@ use crate::{
         arithmetic_trait_mixed_borrowed_owned,
     },
 };
+use flint_sys::{fmpz::fmpz_mod, fmpz_mod::fmpz_mod_set_fmpz};
 use std::ops::Rem;
 
 impl Rem for &Z {
@@ -90,6 +89,43 @@ arithmetic_trait_mixed_borrowed_owned!(Rem, rem, Z, Z, Z);
 arithmetic_trait_borrowed_to_owned!(Rem, rem, Z, Modulus, Z);
 arithmetic_trait_mixed_borrowed_owned!(Rem, rem, Z, Modulus, Z);
 arithmetic_between_types!(Rem, rem, Z, Z, i64 i32 i16 i8 u64 u32 u16 u8);
+
+impl Z {
+    /// Computes `self` mod± `modulus` as long as `modulus` is greater than 1, i.e.
+    /// it returns a value in `[-⌈q/2⌉, ⌈q/2⌉]`.
+    ///
+    /// Parameters:
+    /// - `modulus`: specifies a non-zero integer
+    ///   over which the remainder closest to `0` is computed
+    ///
+    /// Returns `self` mod± `modulus` as a [`Z`] instance.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer::Z;
+    ///
+    /// let a = Z::from(42);
+    /// let b = 24;
+    ///
+    /// let c = a.mod_pm(b);
+    ///
+    /// assert_eq!(-6, c);
+    /// ```
+    ///
+    /// # Panics ...
+    /// - if `modulus` is smaller than `2`.
+    pub fn mod_pm(&self, modulus: impl Into<Z>) -> Self {
+        let modulus = modulus.into();
+        assert!(modulus > 1, "Modulus can not be smaller than 2.");
+
+        let mut value = self.rem(&modulus);
+
+        if value > modulus.div_floor(2) {
+            value -= modulus;
+        }
+        value
+    }
+}
 
 #[cfg(test)]
 mod test_rem {
@@ -196,5 +232,66 @@ mod test_rem {
         let _ = &Z::ONE % 2u8;
         let _ = 1u8 % Z::from(2);
         let _ = 1u8 % &Z::from(2);
+    }
+}
+
+#[cfg(test)]
+mod test_mod_pm {
+    use super::Z;
+    use crate::integer_mod_q::Modulus;
+
+    /// Testing mod± for two [`Z`]
+    #[test]
+    fn mod_pm() {
+        let a: Z = Z::from(42);
+        let b: Z = Z::from(25);
+
+        let c1 = a.mod_pm(b);
+        let c2 = a.mod_pm(25);
+
+        assert_eq!(c1, -8);
+        assert_eq!(c2, -8);
+    }
+
+    /// Testing mod± for large numbers
+    #[test]
+    fn mod_pm_large_numbers() {
+        let a: Z = Z::from(u64::MAX);
+        let b: Z = Z::from(u64::MAX - 2);
+
+        let c1: Z = a.clone().mod_pm(&b);
+        let c2: Z = a.mod_pm(&Z::from(u64::MAX - 2));
+
+        assert_eq!(c1, 2);
+        assert_eq!(c2, 2);
+    }
+
+    /// Ensures that computing mod± a negative number results in a panic
+    #[test]
+    #[should_panic]
+    fn mod_pm_negative_error() {
+        _ = Z::from(42).mod_pm(-24);
+    }
+
+    /// Ensures that computing mod± 0 results in a panic
+    #[test]
+    #[should_panic]
+    fn zero_modulus() {
+        _ = Z::from(15).mod_pm(0);
+    }
+
+    /// Ensures that `mod±` is available for several types.
+    #[test]
+    fn availability() {
+        let _ = Z::ONE.mod_pm(2u8);
+        let _ = Z::ONE.mod_pm(2u16);
+        let _ = Z::ONE.mod_pm(2u32);
+        let _ = Z::ONE.mod_pm(2u64);
+        let _ = Z::ONE.mod_pm(2i8);
+        let _ = Z::ONE.mod_pm(2i16);
+        let _ = Z::ONE.mod_pm(2i32);
+        let _ = Z::ONE.mod_pm(2i64);
+        let _ = Z::ONE.mod_pm(Z::from(2));
+        let _ = Z::ONE.mod_pm(Modulus::from(2));
     }
 }
