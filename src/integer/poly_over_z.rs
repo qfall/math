@@ -10,7 +10,7 @@
 //! [`Z`](crate::integer::Z)
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
-use flint_sys::fmpz_types::fmpz_poly_struct;
+use flint3_sys::fmpz_poly_struct;
 use std::fmt;
 
 mod arithmetic;

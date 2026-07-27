@@ -15,7 +15,7 @@
 // values. The end-user should be unable to obtain a non-reduced value.
 
 use super::modulus::Modulus;
-use flint_sys::fmpz_mod_types::fmpz_mod_poly_struct;
+use flint3_sys::fmpz_mod_poly_struct;
 use std::fmt;
 
 mod arithmetic;

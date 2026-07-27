@@ -16,7 +16,7 @@ use crate::{
         arithmetic_trait_mixed_borrowed_owned,
     },
 };
-use flint_sys::fmpq_poly::fmpq_poly_sub;
+use flint3_sys::fmpq_poly_sub;
 use std::ops::{Sub, SubAssign};
 
 impl SubAssign<&PolyOverQ> for PolyOverQ {

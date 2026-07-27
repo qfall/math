@@ -9,7 +9,7 @@
 //! Implementations to get information about a [`Modulus`].
 
 use super::Modulus;
-use flint_sys::fmpz_mod_types::fmpz_mod_ctx_struct;
+use flint3_sys::fmpz_mod_ctx_struct;
 
 impl Modulus {
     /// Returns the [`fmpz_mod_ctx_struct`] of a modulus and is only used internally.

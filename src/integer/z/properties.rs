@@ -10,10 +10,9 @@
 
 use super::Z;
 use crate::rational::Q;
-use flint_sys::{
-    flint::fmpq,
-    fmpq::fmpq_inv,
-    fmpz::{
+use flint3_sys::{
+    fmpq, fmpq_inv,
+    {
         fmpz_abs, fmpz_bits, fmpz_is_one, fmpz_is_perfect_power, fmpz_is_prime, fmpz_is_zero,
         fmpz_tstbit,
     },

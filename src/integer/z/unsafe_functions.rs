@@ -13,7 +13,7 @@ use crate::{
     integer::Z,
     macros::unsafe_passthrough::{unsafe_getter, unsafe_setter},
 };
-use flint_sys::{flint::fmpz, fmpz::fmpz_clear};
+use flint3_sys::{fmpz, fmpz_clear};
 
 unsafe_getter!(Z, value, fmpz);
 unsafe_setter!(Z, value, fmpz, fmpz_clear);
@@ -38,7 +38,7 @@ mod test_get_fmpz {
 #[cfg(test)]
 mod test_set_fmpz {
     use super::Z;
-    use flint_sys::flint::fmpz;
+    use flint3_sys::fmpz;
 
     /// Checks availability of the setter for [`Z::value`]
     /// and its ability to modify [`Z`].

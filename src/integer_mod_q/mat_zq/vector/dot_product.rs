@@ -14,7 +14,7 @@ use crate::{
     integer_mod_q::{MatZq, Zq},
     traits::{CompareBase, MatrixDimensions},
 };
-use flint_sys::fmpz::fmpz_addmul;
+use flint3_sys::fmpz_addmul;
 
 impl MatZq {
     /// Returns the dot product of two vectors of type [`MatZq`].

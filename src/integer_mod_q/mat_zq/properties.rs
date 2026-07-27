@@ -13,9 +13,8 @@ use crate::{
     integer::Z,
     traits::{MatrixDimensions, MatrixGetEntry},
 };
-use flint_sys::{
-    fmpz_mat::fmpz_mat_is_one,
-    fmpz_mod_mat::{fmpz_mod_mat_is_square, fmpz_mod_mat_is_zero},
+use flint3_sys::{
+    fmpz_mat_is_one, {fmpz_mod_mat_is_square, fmpz_mod_mat_is_zero},
 };
 
 impl MatZq {

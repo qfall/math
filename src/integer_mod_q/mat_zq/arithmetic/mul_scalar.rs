@@ -19,9 +19,8 @@ use crate::macros::arithmetics::{
 };
 use crate::macros::for_others::implement_for_others;
 use crate::traits::{CompareBase, MatrixDimensions};
-use flint_sys::flint::fmpz;
-use flint_sys::fmpz_mod_mat::{
-    fmpz_mod_mat_scalar_mul_fmpz, fmpz_mod_mat_scalar_mul_si, fmpz_mod_mat_scalar_mul_ui,
+use flint3_sys::{
+    fmpz, fmpz_mod_mat_scalar_mul_fmpz, fmpz_mod_mat_scalar_mul_si, fmpz_mod_mat_scalar_mul_ui,
 };
 use std::ops::{Mul, MulAssign};
 

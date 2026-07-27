@@ -10,7 +10,7 @@
 
 use super::MatZq;
 use crate::{integer_mod_q::Modulus, utils::index::evaluate_indices};
-use flint_sys::fmpz_mod_mat::{fmpz_mod_mat_init, fmpz_mod_mat_one};
+use flint3_sys::{fmpz_mod_mat_init, fmpz_mod_mat_one};
 use std::{fmt::Display, mem::MaybeUninit};
 
 impl MatZq {

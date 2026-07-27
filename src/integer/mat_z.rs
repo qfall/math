@@ -10,7 +10,7 @@
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use crate::utils::parse::partial_string;
-use flint_sys::fmpz_types::fmpz_mat_struct;
+use flint3_sys::fmpz_mat_struct;
 use std::fmt;
 
 mod arithmetic;

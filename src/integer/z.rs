@@ -9,7 +9,7 @@
 //! `Z` is a type for integers with arbitrary length.
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
-use flint_sys::flint::fmpz;
+use flint3_sys::fmpz;
 use std::fmt;
 
 mod arithmetic;

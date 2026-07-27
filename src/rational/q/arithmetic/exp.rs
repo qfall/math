@@ -12,7 +12,7 @@ use crate::{
     rational::{PolyOverQ, Q},
     traits::Evaluate,
 };
-use flint_sys::fmpq::fmpq_mul_2exp;
+use flint3_sys::fmpq_mul_2exp;
 
 impl Q {
     /// Computes `e^self`.
@@ -83,7 +83,7 @@ impl Q {
 #[cfg(test)]
 mod test_exp {
     use super::*;
-    use flint_sys::fmpz::fmpz_get_d_2exp;
+    use flint3_sys::fmpz_get_d_2exp;
 
     /// Ensure that `e^0 = 1`.
     #[test]

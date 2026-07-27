@@ -9,7 +9,7 @@
 //! This module contains the type [`Factorization`], which is a factorized
 //! (or partly factorized) representation of integers with arbitrary length.
 
-use flint_sys::fmpz_types::fmpz_factor_struct;
+use flint3_sys::fmpz_factor_struct;
 use std::fmt;
 
 mod default;

@@ -10,7 +10,7 @@
 
 use super::MatQ;
 use crate::{error::MathError, rational::Q, traits::MatrixDimensions};
-use flint_sys::fmpq_mat::fmpq_mat_det;
+use flint3_sys::fmpq_mat_det;
 
 impl MatQ {
     /// Returns the determinant of the matrix or an error if

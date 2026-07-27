@@ -15,7 +15,7 @@ use crate::{
     error::MathError,
     utils::index::{evaluate_index, evaluate_index_for_vector, evaluate_indices_for_matrix},
 };
-use flint_sys::flint::fmpz;
+use flint3_sys::fmpz;
 use std::fmt::Display;
 
 /// Is implemented by every type where a base-check might be needed.

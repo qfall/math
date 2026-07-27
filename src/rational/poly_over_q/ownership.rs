@@ -12,7 +12,7 @@
 //! The explicit functions contain the documentation.
 
 use super::PolyOverQ;
-use flint_sys::fmpq_poly::{fmpq_poly_clear, fmpq_poly_init, fmpq_poly_set};
+use flint3_sys::{fmpq_poly_clear, fmpq_poly_init, fmpq_poly_set};
 use std::mem::MaybeUninit;
 
 // The use of [`PolyOverQ`] should be thread safe because
@@ -25,7 +25,7 @@ unsafe impl Sync for PolyOverQ {}
 
 impl Clone for PolyOverQ {
     /// Clones the given [`PolyOverQ`] element by returning a deep clone,
-    /// storing two separately stored [fmpz](flint_sys::flint::fmpz) values
+    /// storing two separately stored [fmpz](flint3_sys::fmpz) values
     /// for `nominator` and `denominator` in memory.
     ///
     /// # Examples
@@ -143,7 +143,7 @@ mod test_drop {
     use std::{collections::HashSet, str::FromStr};
 
     /// Creates and drops a [`PolyOverQ`] object, and outputs
-    /// the storage point in memory of that [`fmpq_poly`](flint_sys::fmpz_mod_poly::fmpz_mod_poly_t) struct
+    /// the storage point in memory of that [`fmpq_poly`](flint3_sys::fmpz_mod_poly::fmpz_mod_poly_t) struct
     fn create_and_drop_modulus() -> (i64, i64, i64) {
         let a = PolyOverQ::from_str(&format!("2  {}/1 -2/-3", i64::MAX)).unwrap();
 

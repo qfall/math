@@ -13,13 +13,12 @@ use crate::{
     integer::PolyOverZ,
     traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix},
 };
-use flint_sys::{
-    fmpz_poly::fmpz_poly_set,
-    fmpz_poly_mat::{
+use flint3_sys::{
+    fmpz_poly_set, fmpz_poly_struct,
+    {
         fmpz_poly_mat_entry, fmpz_poly_mat_init_set, fmpz_poly_mat_window_clear,
         fmpz_poly_mat_window_init,
     },
-    fmpz_types::fmpz_poly_struct,
 };
 use std::mem::MaybeUninit;
 

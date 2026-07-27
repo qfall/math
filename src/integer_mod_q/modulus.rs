@@ -15,7 +15,7 @@
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
 use crate::integer::debug_fmpz;
-use flint_sys::{flint::nmod_t, fmpz_mod_types::fmpz_mod_ctx};
+use flint3_sys::{fmpz_mod_ctx, nmod_t};
 use std::{fmt, rc::Rc};
 
 mod cmp;

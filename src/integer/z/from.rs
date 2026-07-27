@@ -17,8 +17,8 @@ use crate::{
     macros::for_others::implement_empty_trait_owned_ref,
     traits::AsInteger,
 };
-use flint_sys::flint::fmpz;
-use flint_sys::fmpz::{fmpz_get_si, fmpz_get_ui, fmpz_init_set, fmpz_set_str, fmpz_setbit};
+use flint3_sys::fmpz;
+use flint3_sys::{fmpz_get_si, fmpz_get_ui, fmpz_init_set, fmpz_set_str, fmpz_setbit};
 use std::{ffi::CString, str::FromStr};
 
 impl Z {
@@ -44,7 +44,7 @@ impl Z {
     /// ```
     /// ```compile_fail
     /// use qfall_math::integer::Z;
-    /// use flint_sys::fmpz::{fmpz, fmpz_clear};
+    /// use flint3_sys::{fmpz, fmpz_clear};
     ///
     /// let value = fmpz(0);
     ///
@@ -75,7 +75,7 @@ impl Z {
     /// # Examples
     /// ```compile_fail
     /// use qfall_math::integer::Z;
-    /// use flint_sys::fmpz::fmpz;
+    /// use flint3_sys::fmpz;
     ///
     /// let value = fmpz(0);
     ///
@@ -774,7 +774,7 @@ mod test_from_str_b {
 #[cfg(test)]
 mod test_from_fmpz {
     use super::Z;
-    use flint_sys::{flint::fmpz, fmpz::fmpz_set_ui};
+    use flint3_sys::{fmpz, fmpz_set_ui};
 
     /// Ensure that `from_fmpz` is available for small and large numbers
     #[test]

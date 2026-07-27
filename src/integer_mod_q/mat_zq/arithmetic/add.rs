@@ -16,8 +16,8 @@ use crate::macros::arithmetics::{
     arithmetic_trait_mixed_borrowed_owned, arithmetic_trait_reverse,
 };
 use crate::traits::{CompareBase, MatrixDimensions};
-use flint_sys::fmpz_mat::fmpz_mat_add;
-use flint_sys::fmpz_mod_mat::{_fmpz_mod_mat_reduce, fmpz_mod_mat_add};
+use flint3_sys::fmpz_mat_add;
+use flint3_sys::{_fmpz_mod_mat_reduce, fmpz_mod_mat_add};
 use std::ops::{Add, AddAssign};
 
 impl AddAssign<&MatZq> for MatZq {

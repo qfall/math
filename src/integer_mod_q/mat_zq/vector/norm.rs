@@ -17,7 +17,7 @@ use crate::{
     rational::Q,
     traits::{AsInteger, MatrixDimensions},
 };
-use flint_sys::fmpz::fmpz_addmul;
+use flint3_sys::fmpz_addmul;
 
 impl MatZq {
     /// Returns the squared Euclidean norm or squared 2-norm of the given (row or column) vector

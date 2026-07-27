@@ -11,7 +11,7 @@
 
 use super::Q;
 use crate::macros::unsafe_passthrough::{unsafe_getter, unsafe_setter};
-use flint_sys::{flint::fmpq, fmpq::fmpq_clear};
+use flint3_sys::{fmpq, fmpq_clear};
 
 unsafe_getter!(Q, value, fmpq);
 
@@ -39,7 +39,7 @@ mod test_get_fmpq {
 #[cfg(test)]
 mod test_set_fmpq {
     use super::Q;
-    use flint_sys::flint::fmpq;
+    use flint3_sys::fmpq;
 
     /// Checks availability of the setter for [`Q::value`]
     /// and its ability to modify [`Q`].

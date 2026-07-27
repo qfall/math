@@ -18,11 +18,9 @@ use crate::{
     },
     rational::Q,
 };
-use flint_sys::{
-    flint::{fmpq, fmpz},
-    fmpq::{fmpq_set_fmpz_frac, fmpq_sub},
-    fmpz::{fmpz_sub, fmpz_sub_si, fmpz_sub_ui},
-    fmpz_mod::fmpz_mod_sub_fmpz,
+use flint3_sys::{
+    fmpz_mod_sub_fmpz, {fmpq, fmpz}, {fmpq_set_fmpz_frac, fmpq_sub},
+    {fmpz_sub, fmpz_sub_si, fmpz_sub_ui},
 };
 use std::ops::{Sub, SubAssign};
 
@@ -131,7 +129,7 @@ impl Sub<&Q> for &Z {
     /// ```
     fn sub(self, other: &Q) -> Self::Output {
         let mut out = Q::default();
-        let mut fmpq_1 = fmpq::default();
+        let mut fmpq_1 = default();
         unsafe { fmpq_set_fmpz_frac(&mut fmpq_1, &self.value, &1) }
         unsafe {
             fmpq_sub(&mut out.value, &fmpq_1, &other.value);

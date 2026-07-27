@@ -16,7 +16,7 @@ use crate::macros::arithmetics::{
     arithmetic_trait_mixed_borrowed_owned, arithmetic_trait_reverse,
 };
 use crate::traits::MatrixDimensions;
-use flint_sys::fmpq_mat::fmpq_mat_add;
+use flint3_sys::fmpq_mat_add;
 use std::ops::{Add, AddAssign};
 
 impl AddAssign<&MatQ> for MatQ {

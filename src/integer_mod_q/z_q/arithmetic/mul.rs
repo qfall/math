@@ -19,9 +19,8 @@ use crate::{
     },
     traits::CompareBase,
 };
-use flint_sys::{
-    flint::fmpz,
-    fmpz_mod::{fmpz_mod_mul, fmpz_mod_mul_fmpz, fmpz_mod_mul_si, fmpz_mod_mul_ui},
+use flint3_sys::{
+    fmpz, {fmpz_mod_mul, fmpz_mod_mul_fmpz, fmpz_mod_mul_si, fmpz_mod_mul_ui},
 };
 use std::ops::{Mul, MulAssign};
 

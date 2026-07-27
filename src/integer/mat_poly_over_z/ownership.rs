@@ -13,7 +13,7 @@
 
 use super::MatPolyOverZ;
 use crate::traits::MatrixDimensions;
-use flint_sys::fmpz_poly_mat::{fmpz_poly_mat_clear, fmpz_poly_mat_set};
+use flint3_sys::{fmpz_poly_mat_clear, fmpz_poly_mat_set};
 
 impl Clone for MatPolyOverZ {
     /// Clones the given element and returns a deep clone of the [`MatPolyOverZ`] element.

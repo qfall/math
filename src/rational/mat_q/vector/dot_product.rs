@@ -11,7 +11,7 @@
 use crate::error::MathError;
 use crate::rational::{MatQ, Q};
 use crate::traits::MatrixDimensions;
-use flint_sys::fmpq::fmpq_addmul;
+use flint3_sys::fmpq_addmul;
 
 impl MatQ {
     /// Returns the dot product of two vectors of type [`MatQ`].

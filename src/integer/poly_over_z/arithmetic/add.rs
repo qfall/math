@@ -14,7 +14,7 @@ use crate::macros::arithmetics::{
     arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
     arithmetic_trait_mixed_borrowed_owned,
 };
-use flint_sys::{fmpz::fmpz_add, fmpz_poly::fmpz_poly_add};
+use flint3_sys::{fmpz_add, fmpz_poly_add};
 use std::ops::{Add, AddAssign};
 
 impl AddAssign<&PolyOverZ> for PolyOverZ {

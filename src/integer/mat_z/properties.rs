@@ -13,7 +13,7 @@ use crate::{
     integer::Z,
     traits::{MatrixDimensions, MatrixGetEntry},
 };
-use flint_sys::fmpz_mat::{fmpz_mat_is_one, fmpz_mat_is_square, fmpz_mat_is_zero, fmpz_mat_rank};
+use flint3_sys::{fmpz_mat_is_one, fmpz_mat_is_square, fmpz_mat_is_zero, fmpz_mat_rank};
 
 impl MatZ {
     /// Checks if a [`MatZ`] is the identity matrix.

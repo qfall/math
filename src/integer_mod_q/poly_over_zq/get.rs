@@ -14,9 +14,7 @@ use crate::{
     integer_mod_q::{Modulus, Zq},
     traits::GetCoefficient,
 };
-use flint_sys::fmpz_mod_poly::{
-    fmpz_mod_poly_degree, fmpz_mod_poly_get_coeff_fmpz, fmpz_mod_poly_get_fmpz_poly,
-};
+use flint3_sys::{fmpz_mod_poly_degree, fmpz_mod_poly_get_coeff_fmpz, fmpz_mod_poly_get_fmpz_poly};
 
 impl GetCoefficient<Zq> for PolyOverZq {
     /// Returns the coefficient of a polynomial [`PolyOverZq`] as a [`Zq`].

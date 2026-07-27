@@ -10,8 +10,8 @@
 
 use super::Z;
 use crate::traits::AsInteger;
-use flint_sys::flint::fmpz;
-use flint_sys::fmpz::{
+use flint3_sys::fmpz;
+use flint3_sys::{
     fmpz_abs, fmpz_cmpabs, fmpz_init_set, fmpz_init_set_si, fmpz_init_set_ui, fmpz_sub, fmpz_swap,
 };
 
@@ -26,7 +26,7 @@ use flint_sys::fmpz::{
 ///
 /// # Examples
 /// ```compile_fail
-/// use flint_sys::fmpz::fmpz;
+/// use flint3_sys::fmpz;
 /// use qfall_math::integer::{fmpz_helpers::find_max_abs, Z};
 ///
 /// let fmpz_vec = vec![fmpz(0), fmpz(-13), fmpz(10)];
@@ -61,7 +61,7 @@ pub(crate) fn find_max_abs(fmpz_vector: &Vec<fmpz>) -> Z {
 ///
 /// # Examples
 /// ```compile_fail
-/// use flint_sys::fmpz::fmpz;
+/// use flint3_sys::fmpz;
 /// use qfall_math::integer::fmpz_helpers::distance;
 ///
 /// let a = fmpz(1);

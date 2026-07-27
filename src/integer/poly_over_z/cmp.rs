@@ -10,7 +10,7 @@
 //! This uses the traits from [`std::cmp`].
 
 use crate::{integer::Z, traits::CompareBase};
-use flint_sys::fmpz_poly::fmpz_poly_equal;
+use flint3_sys::fmpz_poly_equal;
 
 use super::PolyOverZ;
 

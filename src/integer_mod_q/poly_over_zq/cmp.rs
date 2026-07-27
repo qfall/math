@@ -17,7 +17,7 @@ use crate::{
     macros::compare_base::{compare_base_default, compare_base_get_mod, compare_base_impl},
     traits::CompareBase,
 };
-use flint_sys::fmpz_mod_poly::fmpz_mod_poly_equal;
+use flint3_sys::fmpz_mod_poly_equal;
 
 impl PartialEq for PolyOverZq {
     /// Checks if two polynomials over [`Zq`](crate::integer_mod_q::Zq) are equal.

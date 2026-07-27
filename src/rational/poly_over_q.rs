@@ -16,7 +16,7 @@
 // non-reduced value.
 
 use crate::integer::debug_fmpz;
-use flint_sys::fmpq_types::fmpq_poly_struct;
+use flint3_sys::fmpq_poly_struct;
 use std::fmt;
 
 mod arithmetic;

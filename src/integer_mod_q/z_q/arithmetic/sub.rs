@@ -19,9 +19,8 @@ use crate::{
     },
     traits::CompareBase,
 };
-use flint_sys::{
-    flint::fmpz,
-    fmpz_mod::{fmpz_mod_sub, fmpz_mod_sub_fmpz, fmpz_mod_sub_si, fmpz_mod_sub_ui},
+use flint3_sys::{
+    fmpz, {fmpz_mod_sub, fmpz_mod_sub_fmpz, fmpz_mod_sub_si, fmpz_mod_sub_ui},
 };
 use std::ops::{Sub, SubAssign};
 

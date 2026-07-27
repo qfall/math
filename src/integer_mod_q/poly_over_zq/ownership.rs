@@ -13,9 +13,7 @@
 
 use super::PolyOverZq;
 use crate::integer::PolyOverZ;
-use flint_sys::fmpz_mod_poly::{
-    fmpz_mod_poly_clear, fmpz_mod_poly_init, fmpz_mod_poly_set_fmpz_poly,
-};
+use flint3_sys::{fmpz_mod_poly_clear, fmpz_mod_poly_init, fmpz_mod_poly_set_fmpz_poly};
 use std::{mem::MaybeUninit, str::FromStr};
 
 impl Clone for PolyOverZq {
@@ -129,7 +127,7 @@ mod test_drop {
     use std::{collections::HashSet, str::FromStr};
 
     /// Creates and drops a [`PolyOverZq`] object, and outputs
-    /// the storage point in memory of that [`fmpz_mod_poly`](flint_sys::fmpz_mod_poly::fmpz_mod_poly_t) struct
+    /// the storage point in memory of that [`fmpz_mod_poly`](flint3_sys::fmpz_mod_poly::fmpz_mod_poly_t) struct
     fn create_and_drop_modulus() -> (i64, i64) {
         let a = PolyOverZq::from_str(&format!("2  {} -2 mod {}", i64::MAX, u64::MAX)).unwrap();
 

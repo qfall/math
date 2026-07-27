@@ -12,7 +12,7 @@
 //! The explicit functions contain the documentation.
 
 use super::PolyOverZ;
-use flint_sys::fmpz_poly::{fmpz_poly_clear, fmpz_poly_set};
+use flint3_sys::{fmpz_poly_clear, fmpz_poly_set};
 
 impl Clone for PolyOverZ {
     /// Clones the given element and returns a deep clone of the [`PolyOverZ`] element.

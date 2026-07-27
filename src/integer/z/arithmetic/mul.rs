@@ -18,11 +18,8 @@ use crate::{
     },
     rational::Q,
 };
-use flint_sys::{
-    flint::fmpz,
-    fmpq::fmpq_mul_fmpz,
-    fmpz::{fmpz_mul, fmpz_mul_si, fmpz_mul_ui},
-    fmpz_mod::fmpz_mod_mul_fmpz,
+use flint3_sys::{
+    fmpq_mul_fmpz, fmpz, fmpz_mod_mul_fmpz, {fmpz_mul, fmpz_mul_si, fmpz_mul_ui},
 };
 use std::ops::{Mul, MulAssign};
 

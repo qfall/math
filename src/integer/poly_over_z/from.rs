@@ -16,7 +16,7 @@ use crate::{
     integer::Z,
     traits::AsInteger,
 };
-use flint_sys::fmpz_poly::{fmpz_poly_set_fmpz, fmpz_poly_set_str};
+use flint3_sys::{fmpz_poly_set_fmpz, fmpz_poly_set_str};
 use std::{ffi::CString, str::FromStr};
 
 impl FromStr for PolyOverZ {

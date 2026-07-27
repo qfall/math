@@ -19,9 +19,8 @@ use crate::{
     },
     traits::CompareBase,
 };
-use flint_sys::{
-    flint::fmpz,
-    fmpz_mod::{fmpz_mod_add, fmpz_mod_add_fmpz, fmpz_mod_add_si, fmpz_mod_add_ui},
+use flint3_sys::{
+    fmpz, {fmpz_mod_add, fmpz_mod_add_fmpz, fmpz_mod_add_si, fmpz_mod_add_ui},
 };
 use std::ops::{Add, AddAssign};
 

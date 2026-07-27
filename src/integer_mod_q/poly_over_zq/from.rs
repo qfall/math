@@ -16,9 +16,7 @@ use crate::{
     integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq, Zq, modulus::Modulus},
     macros::for_others::implement_for_owned,
 };
-use flint_sys::fmpz_mod_poly::{
-    fmpz_mod_poly_init, fmpz_mod_poly_set_coeff_fmpz, fmpz_mod_poly_set_fmpz_poly,
-};
+use flint3_sys::{fmpz_mod_poly_init, fmpz_mod_poly_set_coeff_fmpz, fmpz_mod_poly_set_fmpz_poly};
 use std::{mem::MaybeUninit, str::FromStr};
 
 impl<Mod: Into<Modulus>> From<Mod> for PolyOverZq {

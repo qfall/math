@@ -9,7 +9,7 @@
 //! Default value for a [`PolyOverZ`].
 
 use super::PolyOverZ;
-use flint_sys::fmpz_poly::fmpz_poly_init;
+use flint3_sys::fmpz_poly_init;
 use std::mem::MaybeUninit;
 
 impl Default for PolyOverZ {

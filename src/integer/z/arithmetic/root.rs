@@ -9,7 +9,7 @@
 //! This module provides implementations for calculating roots on [`Z`].
 
 use crate::{error::MathError, integer::Z, rational::Q};
-use flint_sys::fmpz::fmpz_sqrtrem;
+use flint3_sys::fmpz_sqrtrem;
 
 impl Z {
     /// Calculate the square root with a fixed precision.

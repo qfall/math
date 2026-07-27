@@ -18,11 +18,9 @@ use crate::macros::arithmetics::{
 };
 use crate::macros::for_others::implement_for_others;
 use crate::rational::{PolyOverQ, Q};
-use flint_sys::fmpq_poly::fmpq_poly_scalar_mul_fmpq;
-use flint_sys::fmpz_mod_poly::fmpz_mod_poly_scalar_mul_fmpz;
-use flint_sys::fmpz_poly::{
-    fmpz_poly_scalar_mul_fmpz, fmpz_poly_scalar_mul_si, fmpz_poly_scalar_mul_ui,
-};
+use flint3_sys::fmpq_poly_scalar_mul_fmpq;
+use flint3_sys::fmpz_mod_poly_scalar_mul_fmpz;
+use flint3_sys::{fmpz_poly_scalar_mul_fmpz, fmpz_poly_scalar_mul_si, fmpz_poly_scalar_mul_ui};
 use std::ops::{Mul, MulAssign};
 
 impl Mul<&Z> for &PolyOverZ {

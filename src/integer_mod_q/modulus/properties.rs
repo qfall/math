@@ -10,7 +10,7 @@
 //! This includes checks such as primeness.
 
 use super::Modulus;
-use flint_sys::fmpz::fmpz_is_prime;
+use flint3_sys::fmpz_is_prime;
 
 impl Modulus {
     /// Checks if a [`Modulus`] is prime.

@@ -12,8 +12,8 @@
 //! The explicit functions contain the documentation.
 
 use super::Z;
-use flint_sys::flint::fmpz;
-use flint_sys::fmpz::{fmpz_clear, fmpz_init_set};
+use flint3_sys::fmpz;
+use flint3_sys::{fmpz_clear, fmpz_init_set};
 
 impl Clone for Z {
     /// Clones the given element and returns a deep clone of the [`Z`] element.

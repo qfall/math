@@ -11,7 +11,7 @@
 
 use super::Modulus;
 use crate::macros::unsafe_passthrough::unsafe_getter_mod;
-use flint_sys::{fmpz_mod::fmpz_mod_ctx_clear, fmpz_mod_types::fmpz_mod_ctx};
+use flint3_sys::{fmpz_mod_ctx, fmpz_mod_ctx_clear};
 
 unsafe_getter_mod!(Modulus, modulus, fmpz_mod_ctx);
 
@@ -21,12 +21,12 @@ impl Modulus {
     /// Parameters:
     /// - `flint_struct`: value to set the attribute to
     ///
-    /// **WARNING:** The set struct is part of [`flint_sys`].
+    /// **WARNING:** The set struct is part of [`flint3_sys`].
     /// Any changes to this object are unsafe and may introduce memory leaks.
     /// Please be aware that most moduli are shared across multiple instances and all
     /// modifications of this struct will affect any other instance with a reference to this object.
     ///
-    /// This function is a passthrough to enable users of this library to use [`flint_sys`]
+    /// This function is a passthrough to enable users of this library to use [`flint3_sys`]
     /// and with that [FLINT](https://flintlib.org/) functions that might not be covered in our library yet.
     /// If this is the case, please consider contributing to this open-source project
     /// by opening a Pull Request at [qfall_math](https://github.com/qfall/math)
@@ -37,10 +37,10 @@ impl Modulus {
     /// that might be used in the future. The memory of the old `modulus` is freed
     /// using this function.
     ///
-    /// Any [`flint_sys`] struct and function is part of a FFI to the C-library `FLINT`.
+    /// Any [`flint3_sys`] struct and function is part of a FFI to the C-library `FLINT`.
     /// As `FLINT` is a C-library, it does not provide all memory safety features
     /// that Rust and our Wrapper provide.
-    /// Thus, using functions of [`flint_sys`] can introduce memory leaks.
+    /// Thus, using functions of [`flint3_sys`] can introduce memory leaks.
     pub unsafe fn set_fmpz_mod_ctx(&mut self, flint_struct: fmpz_mod_ctx) {
         let ptr = std::rc::Rc::as_ptr(&self.modulus) as *mut _;
         let modulus = unsafe { &mut *ptr };
@@ -80,7 +80,7 @@ mod test_get_fmpz_mod_ctx {
 #[cfg(test)]
 mod test_set_fmpz_mod_ctx {
     use super::Modulus;
-    use flint_sys::fmpz_mod::fmpz_mod_ctx_init;
+    use flint3_sys::fmpz_mod_ctx_init;
     use std::mem::MaybeUninit;
 
     /// Checks availability of the setter for [`Modulus::modulus`]

@@ -16,11 +16,11 @@ use crate::{
     integer::Z,
     macros::for_others::{implement_for_others, implement_trait_reverse},
 };
-use flint_sys::fmpz::{fmpz_cmp, fmpz_equal};
+use flint3_sys::{fmpz_cmp, fmpz_equal};
 use std::cmp::Ordering;
 
 impl PartialEq for Modulus {
-    /// Compares the two [`fmpz`](flint_sys::flint::fmpz) structs hiding behind the
+    /// Compares the two [`fmpz`](flint3_sys::fmpz) structs hiding behind the
     /// given [`Modulus`] instances to check whether the given [`Modulus`] instances
     /// have the same value.
     ///
@@ -41,7 +41,7 @@ impl PartialEq for Modulus {
     /// ```
     fn eq(&self, other: &Self) -> bool {
         unsafe {
-            1 == flint_sys::fmpz::fmpz_equal(
+            1 == flint3_sys::fmpz_equal(
                 &self.modulus.n[0],
                 &other.get_fmpz_mod_ctx_struct().to_owned().n[0],
             )

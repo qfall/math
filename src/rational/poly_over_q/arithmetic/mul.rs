@@ -16,7 +16,7 @@ use crate::{
         arithmetic_trait_mixed_borrowed_owned, arithmetic_trait_reverse,
     },
 };
-use flint_sys::fmpq_poly::fmpq_poly_mul;
+use flint3_sys::fmpq_poly_mul;
 use std::ops::{Mul, MulAssign};
 
 impl MulAssign<&PolyOverQ> for PolyOverQ {

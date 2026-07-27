@@ -9,13 +9,10 @@
 //! This module contains helpful functions on [`fmpz_poly_struct`].
 
 use super::PolyOverZ;
-use flint_sys::{
-    flint::fmpz,
-    fmpz::{fmpz_is_one, fmpz_is_zero, fmpz_submul, fmpz_zero},
-    fmpz_mod::fmpz_mod_set_fmpz,
-    fmpz_mod_types::{fmpz_mod_ctx_struct, fmpz_mod_poly_struct},
-    fmpz_poly::_fmpz_poly_normalise,
-    fmpz_types::fmpz_poly_struct,
+use flint3_sys::{
+    _fmpz_poly_normalise, fmpz, fmpz_mod_set_fmpz, fmpz_poly_struct,
+    {fmpz_is_one, fmpz_is_zero, fmpz_submul, fmpz_zero},
+    {fmpz_mod_ctx_struct, fmpz_mod_poly_struct},
 };
 use std::cmp::min;
 
@@ -94,7 +91,7 @@ pub(crate) unsafe fn reduce_fmpz_poly_by_poly_over_z(
 ///     integer::{MatPolyOverZ, fmpz_poly_helpers::reduce_fmpz_poly_by_fmpz_poly_sparse},
 ///     integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
 /// };
-/// use flint_sys::{fmpz_poly::_fmpz_poly_normalise, fmpz_poly_mat::fmpz_poly_mat_entry};
+/// use flint3_sys::{_fmpz_poly_normalise, fmpz_poly_mat::fmpz_poly_mat_entry};
 /// use std::str::FromStr;
 /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
 /// let poly_mat = MatPolyOverZ::from_str("[[4  -1 0 1 1, 1  42],[0, 2  1 2]]").unwrap();
@@ -163,7 +160,7 @@ pub(crate) unsafe fn reduce_fmpz_poly_by_fmpz_mod_poly_sparse(
 ///     integer::{MatPolyOverZ, fmpz_poly_helpers::reduce_fmpz_poly_by_fmpz_poly_sparse},
 ///     integer_mod_q::{ModulusPolynomialRingZq},
 /// };
-/// use flint_sys::{fmpz_poly::_fmpz_poly_normalise, fmpz_poly_mat::fmpz_poly_mat_entry};
+/// use flint3_sys::{_fmpz_poly_normalise, fmpz_poly_mat::fmpz_poly_mat_entry};
 /// use std::str::FromStr;
 ///
 /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
@@ -257,7 +254,7 @@ mod test_reduce_fmpz_poly_by_fmpz_poly {
         integer::{MatPolyOverZ, fmpz_poly_helpers::reduce_fmpz_poly_by_fmpz_poly_sparse},
         integer_mod_q::ModulusPolynomialRingZq,
     };
-    use flint_sys::{fmpz_poly::_fmpz_poly_normalise, fmpz_poly_mat::fmpz_poly_mat_entry};
+    use flint3_sys::{_fmpz_poly_normalise, fmpz_poly_mat_entry};
     use std::str::FromStr;
 
     /// Ensures that the doc test example works.
@@ -294,7 +291,7 @@ mod test_reduce_fmpz_poly_by_fmpz_mod_poly {
         integer::{MatPolyOverZ, fmpz_poly_helpers::reduce_fmpz_poly_by_fmpz_poly_sparse},
         integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
     };
-    use flint_sys::{fmpz_poly::_fmpz_poly_normalise, fmpz_poly_mat::fmpz_poly_mat_entry};
+    use flint3_sys::{_fmpz_poly_normalise, fmpz_poly_mat_entry};
     use std::str::FromStr;
 
     /// Ensures that the doc test example works.

@@ -14,7 +14,7 @@
 use crate::traits::MatrixDimensions;
 
 use super::MatZ;
-use flint_sys::fmpz_mat::{fmpz_mat_clear, fmpz_mat_set};
+use flint3_sys::{fmpz_mat_clear, fmpz_mat_set};
 
 impl Clone for MatZ {
     /// Clones the given element and returns a deep clone of the [`MatZ`] element.

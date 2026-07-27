@@ -19,11 +19,8 @@ use crate::{
     },
     rational::Q,
 };
-use flint_sys::{
-    flint::fmpz,
-    fmpq::fmpq_add_fmpz,
-    fmpz::{fmpz_add, fmpz_add_si, fmpz_add_ui},
-    fmpz_mod::fmpz_mod_add_fmpz,
+use flint3_sys::{
+    fmpq_add_fmpz, fmpz, fmpz_mod_add_fmpz, {fmpz_add, fmpz_add_si, fmpz_add_ui},
 };
 use std::ops::{Add, AddAssign};
 

@@ -10,7 +10,7 @@
 
 use super::MatZ;
 use crate::{rational::MatQ, traits::MatrixDimensions};
-use flint_sys::fmpq_mat::fmpq_mat_inv;
+use flint3_sys::fmpq_mat_inv;
 
 impl MatZ {
     /// Returns the inverse of the matrix if it exists (is square and

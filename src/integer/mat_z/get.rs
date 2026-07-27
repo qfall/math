@@ -13,10 +13,9 @@ use crate::{
     integer::Z,
     traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix},
 };
-use flint_sys::{
-    flint::fmpz,
-    fmpz::fmpz_init_set,
-    fmpz_mat::{fmpz_mat_entry, fmpz_mat_init_set, fmpz_mat_window_clear, fmpz_mat_window_init},
+use flint3_sys::{
+    fmpz, fmpz_init_set,
+    {fmpz_mat_entry, fmpz_mat_init_set, fmpz_mat_window_clear, fmpz_mat_window_init},
 };
 use std::mem::MaybeUninit;
 

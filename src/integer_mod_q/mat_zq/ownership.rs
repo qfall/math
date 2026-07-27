@@ -13,7 +13,7 @@
 
 use super::MatZq;
 use crate::traits::MatrixDimensions;
-use flint_sys::fmpz_mod_mat::{fmpz_mod_mat_clear, fmpz_mod_mat_init_set};
+use flint3_sys::{fmpz_mod_mat_clear, fmpz_mod_mat_init_set};
 
 impl Clone for MatZq {
     /// Clones the given element and returns a deep clone of the [`MatZq`] element.

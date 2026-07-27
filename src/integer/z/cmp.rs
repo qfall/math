@@ -11,7 +11,7 @@
 
 use super::Z;
 use crate::{integer_mod_q::Modulus, macros::for_others::implement_for_others};
-use flint_sys::fmpz::{fmpz_cmp, fmpz_equal};
+use flint3_sys::{fmpz_cmp, fmpz_equal};
 use std::cmp::Ordering;
 
 impl PartialEq for Z {

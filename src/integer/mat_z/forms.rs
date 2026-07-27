@@ -11,9 +11,7 @@
 
 use super::MatZ;
 use crate::traits::MatrixDimensions;
-use flint_sys::fmpz_mat::{
-    fmpz_mat_hnf_transform, fmpz_mat_is_in_hnf, fmpz_mat_is_in_snf, fmpz_mat_snf,
-};
+use flint3_sys::{fmpz_mat_hnf_transform, fmpz_mat_is_in_hnf, fmpz_mat_is_in_snf, fmpz_mat_snf};
 
 impl MatZ {
     /// Computes the Hermite normal form of `self` along with

@@ -19,7 +19,7 @@ use crate::{
     traits::{MatrixDimensions, MatrixSetEntry},
     utils::{dimensions::find_matrix_dimensions, parse::parse_matrix_string},
 };
-use flint_sys::fmpq_mat::fmpq_mat_set_fmpz_mat;
+use flint3_sys::fmpq_mat_set_fmpz_mat;
 use std::str::FromStr;
 
 impl FromStr for MatQ {

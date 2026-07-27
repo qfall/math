@@ -14,10 +14,8 @@ use super::Modulus;
 use crate::{
     error::MathError, integer::Z, macros::for_others::implement_empty_trait_owned_ref, traits::*,
 };
-use flint_sys::{
-    flint::fmpz,
-    fmpz::{fmpz_clear, fmpz_cmp_si},
-    fmpz_mod::fmpz_mod_ctx_init,
+use flint3_sys::{
+    fmpz, fmpz_mod_ctx_init, {fmpz_clear, fmpz_cmp_si},
 };
 use std::{mem::MaybeUninit, rc::Rc, str::FromStr};
 

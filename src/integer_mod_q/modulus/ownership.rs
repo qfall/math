@@ -12,12 +12,12 @@
 //! The explicit functions contain the documentation.
 
 use super::Modulus;
-use flint_sys::fmpz_mod::fmpz_mod_ctx_clear;
+use flint3_sys::fmpz_mod_ctx_clear;
 use std::rc::Rc;
 
 impl Clone for Modulus {
     /// Clones the given element and returns another cloned reference
-    /// to the [`fmpz_mod_ctx`](flint_sys::fmpz_mod_types::fmpz_mod_ctx) element.
+    /// to the [`fmpz_mod_ctx`](flint3_sys::fmpz_mod_ctx) element.
     ///
     /// # Examples
     /// ```
@@ -35,7 +35,7 @@ impl Clone for Modulus {
 }
 
 impl Drop for Modulus {
-    /// Drops the given reference to the [`fmpz_mod_ctx`](flint_sys::fmpz_mod_types::fmpz_mod_ctx) element
+    /// Drops the given reference to the [`fmpz_mod_ctx`](flint3_sys::fmpz_mod_types::fmpz_mod_ctx) element
     /// and frees the allocated memory if no references are left.
     ///
     /// # Examples

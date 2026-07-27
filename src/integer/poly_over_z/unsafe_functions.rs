@@ -11,7 +11,7 @@
 
 use super::PolyOverZ;
 use crate::macros::unsafe_passthrough::{unsafe_getter, unsafe_setter};
-use flint_sys::{fmpz_poly::fmpz_poly_clear, fmpz_types::fmpz_poly_struct};
+use flint3_sys::{fmpz_poly_clear, fmpz_poly_struct};
 
 unsafe_getter!(PolyOverZ, poly, fmpz_poly_struct);
 unsafe_setter!(PolyOverZ, poly, fmpz_poly_struct, fmpz_poly_clear);
@@ -19,7 +19,7 @@ unsafe_setter!(PolyOverZ, poly, fmpz_poly_struct, fmpz_poly_clear);
 #[cfg(test)]
 mod test_get_fmpz_poly_struct {
     use super::PolyOverZ;
-    use flint_sys::{flint::fmpz, fmpz_poly::fmpz_poly_set_fmpz};
+    use flint3_sys::{fmpz, fmpz_poly_set_fmpz};
 
     /// Checks availability of the getter for [`PolyOverZ::poly`]
     /// and its ability to be modified.
@@ -40,7 +40,7 @@ mod test_get_fmpz_poly_struct {
 #[cfg(test)]
 mod test_set_fmpz_poly_struct {
     use super::PolyOverZ;
-    use flint_sys::fmpz_poly::fmpz_poly_init;
+    use flint3_sys::fmpz_poly_init;
     use std::mem::MaybeUninit;
 
     /// Checks availability of the setter for [`PolyOverZ::poly`]

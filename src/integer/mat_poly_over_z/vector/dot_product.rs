@@ -11,7 +11,7 @@
 use crate::error::MathError;
 use crate::integer::{MatPolyOverZ, PolyOverZ};
 use crate::traits::MatrixDimensions;
-use flint_sys::fmpz_poly::{fmpz_poly_add, fmpz_poly_mul};
+use flint3_sys::{fmpz_poly_add, fmpz_poly_mul};
 
 impl MatPolyOverZ {
     /// Returns the dot product of two vectors of type [`MatPolyOverZ`].

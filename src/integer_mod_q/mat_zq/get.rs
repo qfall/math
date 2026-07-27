@@ -14,14 +14,9 @@ use crate::{
     integer_mod_q::{Modulus, Zq, fmpz_mod_helpers::length},
     traits::{AsInteger, MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix, MatrixSetEntry},
 };
-use flint_sys::{
-    flint::fmpz,
-    fmpz::fmpz_init_set,
-    fmpz_mat::fmpz_mat_set,
-    fmpz_mod_mat::{
-        fmpz_mod_mat_entry, fmpz_mod_mat_init_set, fmpz_mod_mat_window_clear,
-        fmpz_mod_mat_window_init,
-    },
+use flint3_sys::{
+    fmpz, fmpz_init_set, fmpz_mat_set, fmpz_mod_mat_entry, fmpz_mod_mat_init_set,
+    fmpz_mod_mat_window_clear, fmpz_mod_mat_window_init,
 };
 use std::mem::MaybeUninit;
 

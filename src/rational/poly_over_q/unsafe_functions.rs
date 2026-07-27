@@ -11,7 +11,7 @@
 
 use super::PolyOverQ;
 use crate::macros::unsafe_passthrough::{unsafe_getter, unsafe_setter};
-use flint_sys::{fmpq_poly::fmpq_poly_clear, fmpq_types::fmpq_poly_struct};
+use flint3_sys::{fmpq_poly_clear, fmpq_poly_struct};
 
 unsafe_getter!(PolyOverQ, poly, fmpq_poly_struct);
 
@@ -21,7 +21,7 @@ unsafe_setter!(PolyOverQ, poly, fmpq_poly_struct, fmpq_poly_clear);
 mod test_get_fmpq_poly_struct {
     use super::PolyOverQ;
     use crate::rational::Q;
-    use flint_sys::fmpq_poly::fmpq_poly_set_coeff_fmpq;
+    use flint3_sys::fmpq_poly_set_coeff_fmpq;
 
     /// Checks availability of the getter for [`PolyOverQ::poly`]
     /// and its ability to be modified.
@@ -42,7 +42,7 @@ mod test_get_fmpq_poly_struct {
 #[cfg(test)]
 mod test_set_fmpq_poly_struct {
     use super::PolyOverQ;
-    use flint_sys::fmpq_poly::fmpq_poly_init;
+    use flint3_sys::fmpq_poly_init;
     use std::mem::MaybeUninit;
 
     /// Checks availability of the setter for [`PolyOverQ::poly`]

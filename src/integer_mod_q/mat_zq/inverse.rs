@@ -13,7 +13,7 @@ use crate::{
     integer::Z,
     traits::{Concatenate, Gcd, MatrixDimensions, MatrixSetSubmatrix, MatrixSwaps},
 };
-use flint_sys::fmpz_mod_mat::fmpz_mod_mat_rref;
+use flint3_sys::fmpz_mod_mat_rref;
 
 impl MatZq {
     /// Returns the inverse of the matrix if it exists (is square and

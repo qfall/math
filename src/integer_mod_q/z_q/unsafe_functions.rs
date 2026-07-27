@@ -11,7 +11,7 @@
 
 use super::Zq;
 use crate::macros::unsafe_passthrough::{unsafe_getter_indirect, unsafe_setter_indirect};
-use flint_sys::{flint::fmpz, fmpz_mod_types::fmpz_mod_ctx};
+use flint3_sys::{fmpz, fmpz_mod_ctx};
 
 unsafe_getter_indirect!(Zq, value, get_fmpz, fmpz);
 unsafe_getter_indirect!(Zq, modulus, get_fmpz_mod_ctx, fmpz_mod_ctx);

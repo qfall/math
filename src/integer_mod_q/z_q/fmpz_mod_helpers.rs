@@ -13,7 +13,7 @@ use crate::{
     integer::{Z, fmpz_helpers::distance},
     traits::AsInteger,
 };
-use flint_sys::flint::fmpz;
+use flint3_sys::fmpz;
 
 const ZERO_FMPZ: fmpz = 0;
 
@@ -25,7 +25,7 @@ const ZERO_FMPZ: fmpz = 0;
 ///
 /// # Examples
 /// ```compile_fail
-/// use flint_sys::fmpz::fmpz;
+/// use flint3_sys::fmpz;
 /// use qfall_math::integer_mod_q::fmpz_mod_helpers::length;
 ///
 /// let modulus = fmpz(15);

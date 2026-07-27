@@ -13,9 +13,8 @@ use super::MatZq;
 use crate::macros::unsafe_passthrough::{
     unsafe_getter, unsafe_getter_indirect, unsafe_setter, unsafe_setter_indirect,
 };
-use flint_sys::{
-    fmpz_mat::fmpz_mat_clear,
-    fmpz_mod_types::{fmpz_mod_ctx, fmpz_mod_mat_struct},
+use flint3_sys::{
+    fmpz_mat_clear, {fmpz_mod_ctx, fmpz_mod_mat_struct},
 };
 
 unsafe_getter!(MatZq, matrix, fmpz_mod_mat_struct);
@@ -49,7 +48,7 @@ mod test_get_fmpz_mod_mat_struct {
 mod test_set_fmpz_mod_mat_struct {
     use super::MatZq;
     use crate::integer_mod_q::Modulus;
-    use flint_sys::fmpz_mod_mat::fmpz_mod_mat_init;
+    use flint3_sys::fmpz_mod_mat_init;
     use std::{mem::MaybeUninit, str::FromStr};
 
     /// Checks availability of the setter for [`MatZq::matrix`]

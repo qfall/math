@@ -11,7 +11,7 @@
 
 use super::MatQ;
 use crate::macros::unsafe_passthrough::{unsafe_getter, unsafe_setter};
-use flint_sys::{fmpq_mat::fmpq_mat_clear, fmpq_types::fmpq_mat_struct};
+use flint3_sys::{fmpq_mat_clear, fmpq_mat_struct};
 
 unsafe_getter!(MatQ, matrix, fmpq_mat_struct);
 
@@ -21,7 +21,7 @@ unsafe_setter!(MatQ, matrix, fmpq_mat_struct, fmpq_mat_clear);
 mod test_get_fmpq_mat_struct {
     use super::MatQ;
     use crate::{rational::Q, traits::MatrixGetEntry};
-    use flint_sys::{fmpq::fmpq_set, fmpq_mat::fmpq_mat_entry};
+    use flint3_sys::{fmpq_mat_entry, fmpq_set};
     use std::str::FromStr;
 
     /// Checks availability of the getter for [`MatQ::matrix`]
@@ -47,7 +47,7 @@ mod test_get_fmpq_mat_struct {
 mod test_set_fmpq_mat_struct {
     use super::MatQ;
     use crate::{rational::Q, traits::MatrixGetEntry};
-    use flint_sys::fmpq_mat::fmpq_mat_init;
+    use flint3_sys::fmpq_mat_init;
     use std::{mem::MaybeUninit, str::FromStr};
 
     /// Checks availability of the setter for [`MatQ::matrix`]

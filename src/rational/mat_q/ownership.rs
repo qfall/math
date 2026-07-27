@@ -14,7 +14,7 @@
 use crate::traits::MatrixDimensions;
 
 use super::MatQ;
-use flint_sys::fmpq_mat::{fmpq_mat_clear, fmpq_mat_set};
+use flint3_sys::{fmpq_mat_clear, fmpq_mat_set};
 
 impl Clone for MatQ {
     /// Clones the given element and returns a deep clone of the given [`MatQ`] element.

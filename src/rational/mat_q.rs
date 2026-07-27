@@ -14,7 +14,7 @@
 // values. The end-user should be unable to obtain a non-reduced value.
 
 use crate::utils::parse::partial_string;
-use flint_sys::fmpq_types::fmpq_mat_struct;
+use flint3_sys::fmpq_mat_struct;
 use std::fmt;
 
 mod arithmetic;

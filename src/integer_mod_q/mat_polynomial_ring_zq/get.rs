@@ -14,7 +14,7 @@ use crate::{
     integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq},
     traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix},
 };
-use flint_sys::{fmpz_poly_mat::fmpz_poly_mat_entry, fmpz_types::fmpz_poly_struct};
+use flint3_sys::{fmpz_poly_mat_entry, fmpz_poly_struct};
 
 impl MatPolynomialRingZq {
     /// Returns the modulus of the matrix as a [`ModulusPolynomialRingZq`].
@@ -768,7 +768,7 @@ mod test_get_submatrix {
 mod test_collect_entries {
     use crate::integer::{MatPolyOverZ, PolyOverZ};
     use crate::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
-    use flint_sys::fmpz_poly::fmpz_poly_set;
+    use flint3_sys::fmpz_poly_set;
     use std::str::FromStr;
 
     const LARGE_PRIME: u64 = u64::MAX - 58;

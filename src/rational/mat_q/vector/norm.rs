@@ -11,7 +11,7 @@
 
 use super::super::MatQ;
 use crate::{error::MathError, rational::Q, traits::MatrixDimensions};
-use flint_sys::fmpq::{fmpq_abs, fmpq_addmul, fmpq_cmp};
+use flint3_sys::{fmpq_abs, fmpq_addmul, fmpq_cmp};
 
 impl MatQ {
     /// Returns the squared Euclidean norm or squared 2-norm of the given (row or column) vector

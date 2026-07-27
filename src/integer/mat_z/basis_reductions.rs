@@ -10,7 +10,7 @@
 
 use super::MatZ;
 use crate::{rational::Q, traits::MatrixDimensions};
-use flint_sys::fmpz_mat::{fmpz_mat_is_reduced, fmpz_mat_lll_storjohann};
+use flint3_sys::{fmpz_mat_is_reduced, fmpz_mat_lll_storjohann};
 
 impl MatZ {
     /// Performs the (modified Storjohann) LLL algorithm on the matrix `self`.

@@ -14,7 +14,7 @@ use crate::macros::arithmetics::{
     arithmetic_trait_mixed_borrowed_owned,
 };
 use crate::rational::Q;
-use flint_sys::fmpz::{fmpz_cdiv_q, fmpz_fdiv_q, fmpz_tdiv_qr};
+use flint3_sys::{fmpz_cdiv_q, fmpz_fdiv_q, fmpz_tdiv_qr};
 use std::ops::Div;
 
 impl Z {

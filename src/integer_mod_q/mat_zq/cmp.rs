@@ -16,7 +16,7 @@ use crate::{
     macros::compare_base::{compare_base_default, compare_base_get_mod, compare_base_impl},
     traits::CompareBase,
 };
-use flint_sys::fmpz_mat::fmpz_mat_equal;
+use flint3_sys::fmpz_mat_equal;
 
 impl PartialEq for MatZq {
     /// Checks if two [`MatZq`] instances are equal. Used by the `==` and `!=` operators.

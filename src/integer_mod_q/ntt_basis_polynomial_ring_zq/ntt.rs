@@ -19,9 +19,8 @@ use crate::{
     traits::GetCoefficient,
     utils::index::bit_reverse_permutation,
 };
-use flint_sys::{
-    fmpz_mod::{fmpz_mod_add, fmpz_mod_mul, fmpz_mod_sub},
-    fmpz_mod_types::fmpz_mod_ctx,
+use flint3_sys::{
+    fmpz_mod_ctx, {fmpz_mod_add, fmpz_mod_mul, fmpz_mod_sub},
 };
 
 impl NTTBasisPolynomialRingZq {

@@ -16,15 +16,15 @@ use crate::{
     traits::{MatrixDimensions, MatrixSetEntry, MatrixSetSubmatrix, MatrixSwaps},
     utils::index::{evaluate_index_for_vector, evaluate_indices_for_matrix},
 };
-use flint_sys::{
-    fmpz::fmpz_swap,
-    fmpz_mat::{
-        fmpz_mat_entry, fmpz_mat_invert_cols, fmpz_mat_invert_rows, fmpz_mat_swap_cols,
-        fmpz_mat_swap_rows,
-    },
-    fmpz_mod_mat::{
+use flint3_sys::{
+    fmpz_swap,
+    {
         _fmpz_mod_mat_reduce, fmpz_mod_mat_set, fmpz_mod_mat_set_entry, fmpz_mod_mat_window_clear,
         fmpz_mod_mat_window_init,
+    },
+    {
+        fmpz_mat_entry, fmpz_mat_invert_cols, fmpz_mat_invert_rows, fmpz_mat_swap_cols,
+        fmpz_mat_swap_rows,
     },
 };
 use std::{fmt::Display, mem::MaybeUninit, ptr::null_mut};

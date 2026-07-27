@@ -13,7 +13,7 @@ use crate::macros::arithmetics::{
     arithmetic_assign_trait_borrowed_to_owned, arithmetic_trait_borrowed_to_owned,
     arithmetic_trait_mixed_borrowed_owned,
 };
-use flint_sys::fmpz_poly::fmpz_poly_mul;
+use flint3_sys::fmpz_poly_mul;
 use std::ops::{Mul, MulAssign};
 
 impl MulAssign<&PolyOverZ> for PolyOverZ {

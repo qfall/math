@@ -15,7 +15,7 @@ use crate::{
     rational::Q,
     traits::{CompareBase, MatrixDimensions, MatrixGetEntry},
 };
-use flint_sys::fmpq_mat::{fmpq_mat_equal, fmpq_mat_set_fmpz_mat_div_fmpz};
+use flint3_sys::{fmpq_mat_equal, fmpq_mat_set_fmpz_mat_div_fmpz};
 
 impl PartialEq for MatQ {
     /// Checks if two [`MatQ`] instances are equal. Used by the `==` and `!=` operators.

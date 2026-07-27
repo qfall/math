@@ -12,11 +12,11 @@
 //! The explicit functions contain the documentation.
 
 use super::Q;
-use flint_sys::fmpq::{fmpq_clear, fmpq_set};
+use flint3_sys::{fmpq_clear, fmpq_set};
 
 impl Clone for Q {
     /// Clones the given element and returns another cloned reference
-    /// to the [`fmpq`](flint_sys::flint::fmpq) element.
+    /// to the [`fmpq`](flint3_sys::fmpq) element.
     ///
     /// # Examples
     /// ```
@@ -34,7 +34,7 @@ impl Clone for Q {
 }
 
 impl Drop for Q {
-    /// Drops the given reference to the [`fmpq`](flint_sys::flint::fmpq) element
+    /// Drops the given reference to the [`fmpq`](flint3_sys::fmpq) element
     /// and frees the allocated memory if no references are left.
     ///
     /// # Examples

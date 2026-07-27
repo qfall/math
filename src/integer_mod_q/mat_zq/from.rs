@@ -22,7 +22,7 @@ use crate::{
         parse::{matrix_from_utf8_fill_bytes, parse_matrix_string},
     },
 };
-use flint_sys::{fmpz_mat::fmpz_mat_set, fmpz_mod_mat::_fmpz_mod_mat_reduce};
+use flint3_sys::{_fmpz_mod_mat_reduce, fmpz_mat_set};
 use std::{fmt::Display, str::FromStr};
 
 impl FromStr for MatZq {

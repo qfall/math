@@ -10,9 +10,8 @@
 //! This includes checks such as reducibility.
 
 use super::PolyOverZq;
-use flint_sys::{
-    fmpz_mod_poly::{fmpz_mod_poly_degree, fmpz_mod_poly_is_one},
-    fmpz_mod_poly_factor::fmpz_mod_poly_is_irreducible,
+use flint3_sys::{
+    fmpz_mod_poly_is_irreducible, {fmpz_mod_poly_degree, fmpz_mod_poly_is_one},
 };
 
 impl PolyOverZq {

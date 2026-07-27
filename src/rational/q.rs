@@ -14,7 +14,7 @@
 // values. The end-user should be unable to obtain a non-reduced value.
 
 use crate::integer::debug_fmpz;
-use flint_sys::flint::fmpq;
+use flint3_sys::fmpq;
 use std::fmt;
 
 mod arithmetic;

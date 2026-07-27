@@ -9,7 +9,7 @@
 //! Define default values for [`Q`].
 
 use super::Q;
-use flint_sys::flint::fmpq;
+use flint3_sys::fmpq;
 
 impl Default for Q {
     /// Returns an instantiation of [`Q`] with value `0/1`.

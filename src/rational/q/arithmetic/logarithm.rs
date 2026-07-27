@@ -9,7 +9,7 @@
 //! Implementations to call the logarithm on a [`Q`] integer.
 
 use crate::{error::MathError, integer::Z, rational::Q};
-use flint_sys::fmpz::fmpz_dlog;
+use flint3_sys::fmpz_dlog;
 
 impl Q {
     /// Computes the natural logarithm of a positive rational number

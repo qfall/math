@@ -11,7 +11,7 @@
 
 use super::MatZ;
 use crate::macros::unsafe_passthrough::{unsafe_getter, unsafe_setter};
-use flint_sys::{fmpz_mat::fmpz_mat_clear, fmpz_types::fmpz_mat_struct};
+use flint3_sys::{fmpz_mat_clear, fmpz_mat_struct};
 
 unsafe_getter!(MatZ, matrix, fmpz_mat_struct);
 unsafe_setter!(MatZ, matrix, fmpz_mat_struct, fmpz_mat_clear);
@@ -20,7 +20,7 @@ unsafe_setter!(MatZ, matrix, fmpz_mat_struct, fmpz_mat_clear);
 mod test_get_fmpz_mat_struct {
     use super::MatZ;
     use crate::{integer::Z, traits::MatrixGetEntry};
-    use flint_sys::{flint::fmpz, fmpz::fmpz_set, fmpz_mat::fmpz_mat_entry};
+    use flint3_sys::{fmpz, fmpz_mat_entry, fmpz_set};
     use std::str::FromStr;
 
     /// Checks availability of the getter for [`MatZ::matrix`]
@@ -46,7 +46,7 @@ mod test_get_fmpz_mat_struct {
 mod test_set_fmpz_mat_struct {
     use super::MatZ;
     use crate::{integer::Z, traits::MatrixGetEntry};
-    use flint_sys::fmpz_mat::fmpz_mat_init;
+    use flint3_sys::fmpz_mat_init;
     use std::{mem::MaybeUninit, str::FromStr};
 
     /// Checks availability of the setter for [`MatZ::matrix`]

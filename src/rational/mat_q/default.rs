@@ -10,7 +10,7 @@
 
 use super::MatQ;
 use crate::utils::index::evaluate_indices;
-use flint_sys::fmpq_mat::{fmpq_mat_init, fmpq_mat_one};
+use flint3_sys::{fmpq_mat_init, fmpq_mat_one};
 use std::{fmt::Display, mem::MaybeUninit};
 
 impl MatQ {

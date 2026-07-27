@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     traits::{CompareBase, Concatenate, MatrixDimensions},
 };
-use flint_sys::fmpz_mod_mat::{fmpz_mod_mat_concat_horizontal, fmpz_mod_mat_concat_vertical};
+use flint3_sys::{fmpz_mod_mat_concat_horizontal, fmpz_mod_mat_concat_vertical};
 
 impl Concatenate for &MatZq {
     type Output = MatZq;

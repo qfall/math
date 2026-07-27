@@ -10,7 +10,7 @@
 
 use super::PolyOverZ;
 use crate::{integer::Z, traits::SetCoefficient};
-use flint_sys::fmpz_poly::fmpz_poly_set_coeff_fmpz;
+use flint3_sys::fmpz_poly_set_coeff_fmpz;
 
 impl<Integer: Into<Z>> SetCoefficient<Integer> for PolyOverZ {
     /// Sets the coefficient of a polynomial [`PolyOverZ`].

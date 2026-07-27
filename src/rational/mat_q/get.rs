@@ -11,8 +11,8 @@
 use super::MatQ;
 use crate::rational::Q;
 use crate::traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix};
-use flint_sys::fmpq_mat::{fmpq_mat_init_set, fmpq_mat_window_clear, fmpq_mat_window_init};
-use flint_sys::{flint::fmpq, fmpq::fmpq_set, fmpq_mat::fmpq_mat_entry};
+use flint3_sys::{fmpq_mat_init_set, fmpq_mat_window_clear, fmpq_mat_window_init};
+use flint3_sys::{fmpq, fmpq_set, fmpq_mat_entry};
 use std::mem::MaybeUninit;
 
 impl MatrixDimensions for MatQ {
@@ -217,7 +217,7 @@ impl MatQ {
             for j in 0..num_cols {
                 // efficiently get entry without cloning the entry itself
                 let entry = unsafe {
-                    flint_sys::fmpq::fmpq_get_d(fmpq_mat_entry(&self.matrix, i as i64, j as i64))
+                    flint3_sys::fmpq_get_d(fmpq_mat_entry(&self.matrix, i as i64, j as i64))
                 };
                 row.push(entry);
             }

@@ -16,9 +16,9 @@ use crate::macros::arithmetics::{
 };
 use crate::rational::MatQ;
 use crate::traits::MatrixDimensions;
-use flint_sys::fmpq_mat::fmpq_mat_mul_r_fmpz_mat;
-use flint_sys::fmpz_mat::fmpz_mat_mul;
-use flint_sys::fmpz_mod_mat::_fmpz_mod_mat_reduce;
+use flint3_sys::_fmpz_mod_mat_reduce;
+use flint3_sys::fmpq_mat_mul_r_fmpz_mat;
+use flint3_sys::fmpz_mat_mul;
 use std::ops::Mul;
 
 impl Mul for &MatZ {
