@@ -129,7 +129,7 @@ impl Sub<&Q> for &Z {
     /// ```
     fn sub(self, other: &Q) -> Self::Output {
         let mut out = Q::default();
-        let mut fmpq_1 = default();
+        let mut fmpq_1 = fmpq::default();
         unsafe { fmpq_set_fmpz_frac(&mut fmpq_1, &self.value, &1) }
         unsafe {
             fmpq_sub(&mut out.value, &fmpq_1, &other.value);

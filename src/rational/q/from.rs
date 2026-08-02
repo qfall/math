@@ -18,9 +18,7 @@ use crate::{
     traits::{AsInteger, Pow},
 };
 use flint3_sys::{
-    fmpq,
-    {fmpq_canonicalise, fmpq_clear, fmpq_get_d, fmpq_set_str},
-    {fmpz_init_set, fmpz_is_zero},
+    fmpq, {fmpq_canonicalise, fmpq_clear, fmpq_get_d, fmpq_set_str}, {fmpz_init_set, fmpz_is_zero},
 };
 use std::{ffi::CString, str::FromStr};
 
@@ -253,7 +251,7 @@ impl FromStr for Q {
         }
 
         // `default()` returns the value `0/0`
-        let mut value = default();
+        let mut value = fmpq::default();
 
         let c_string = CString::new(s)?;
 
