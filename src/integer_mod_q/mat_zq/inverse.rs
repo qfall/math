@@ -51,10 +51,9 @@ impl MatZq {
 
                 // Use solve for all unit vectors.
                 for i in 0..dimensions {
-                    if let Some(column_i) = self.solve_gaussian_elimination(&e_i) {
+                    {
+                        let column_i = self.solve_gaussian_elimination(&e_i)?;
                         inverse.set_column(i, &column_i, 0).unwrap();
-                    } else {
-                        return None;
                     }
 
                     if i != dimensions - 1 {

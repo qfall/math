@@ -69,7 +69,7 @@ impl FromStr for PolyOverZ {
         // We only have to check it once, because for every other position it checks
         // whether there is only one space.
         if !s_trimmed.contains("  ") {
-            return Err(StringConversionError::InvalidStringToPolyMissingWhitespace(
+            Err(StringConversionError::InvalidStringToPolyMissingWhitespace(
                 s.to_owned(),
             ))?;
         };

@@ -120,7 +120,7 @@ impl Z {
         }
 
         if s.contains(char::is_whitespace) {
-            return Err(StringConversionError::InvalidStringToZInput(s.to_owned()))?;
+            Err(StringConversionError::InvalidStringToZInput(s.to_owned()))?;
         }
 
         // since |value| = |0| < 62 bits, we do not need to free the allocated space manually
