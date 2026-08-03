@@ -12,7 +12,7 @@
 
 use super::PolyOverZ;
 use crate::{integer::Z, rational::Q, traits::Evaluate};
-use flint_sys::fmpz_poly::{fmpz_poly_evaluate_fmpq, fmpz_poly_evaluate_fmpz};
+use flint3_sys::{fmpz_poly_evaluate_fmpq, fmpz_poly_evaluate_fmpz};
 
 impl<Integer: Into<Z>> Evaluate<Integer, Z> for PolyOverZ {
     /// Evaluates a [`PolyOverZ`] on a given input.

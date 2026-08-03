@@ -14,7 +14,7 @@
 use super::PolyOverZ;
 use crate::macros::for_others::implement_for_owned;
 use core::fmt;
-use flint_sys::fmpz_poly::fmpz_poly_get_str;
+use flint3_sys::fmpz_poly_get_str;
 use std::ffi::CStr;
 
 impl From<&PolyOverZ> for String {

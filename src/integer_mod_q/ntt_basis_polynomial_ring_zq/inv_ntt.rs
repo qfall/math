@@ -18,10 +18,9 @@ use crate::{
     integer_mod_q::{Modulus, PolyOverZq},
     utils::index::bit_reverse_permutation,
 };
-use flint_sys::{
-    fmpz::fmpz_swap,
-    fmpz_mod::{fmpz_mod_add, fmpz_mod_ctx, fmpz_mod_mul, fmpz_mod_sub_fmpz},
-    fmpz_mod_poly::fmpz_mod_poly_set_coeff_fmpz,
+use flint3_sys::{
+    fmpz_mod_ctx, fmpz_mod_poly_set_coeff_fmpz, fmpz_swap,
+    {fmpz_mod_add, fmpz_mod_mul, fmpz_mod_sub_fmpz},
 };
 
 impl NTTBasisPolynomialRingZq {

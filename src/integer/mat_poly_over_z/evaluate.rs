@@ -7,7 +7,7 @@ use crate::{
     integer::{MatZ, Z},
     traits::{Evaluate, MatrixDimensions},
 };
-use flint_sys::fmpz_poly_mat::fmpz_poly_mat_evaluate_fmpz;
+use flint3_sys::fmpz_poly_mat_evaluate_fmpz;
 
 impl<Integer: Into<Z>> Evaluate<Integer, MatZ> for MatPolyOverZ {
     /// Evaluates a [`MatPolyOverZ`] on a given input entrywise.

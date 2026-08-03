@@ -17,7 +17,7 @@ use crate::{
     },
     traits::CompareBase,
 };
-use flint_sys::fmpz_mod::fmpz_mod_mul;
+use flint3_sys::fmpz_mod_mul;
 use std::ops::{Mul, MulAssign};
 
 impl Mul for &NTTPolynomialRingZq {

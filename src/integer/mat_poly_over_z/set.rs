@@ -16,12 +16,12 @@ use crate::{
     traits::{MatrixDimensions, MatrixSetEntry, MatrixSetSubmatrix, MatrixSwaps},
     utils::index::{evaluate_index_for_vector, evaluate_indices_for_matrix},
 };
-use flint_sys::{
-    fmpz_poly::{fmpz_poly_set, fmpz_poly_swap},
-    fmpz_poly_mat::{
+use flint3_sys::{
+    {
         fmpz_poly_mat_entry, fmpz_poly_mat_set, fmpz_poly_mat_window_clear,
         fmpz_poly_mat_window_init,
     },
+    {fmpz_poly_set, fmpz_poly_swap},
 };
 use std::{fmt::Display, mem::MaybeUninit};
 

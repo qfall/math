@@ -17,9 +17,7 @@ use crate::{
     },
     rational::PolyOverQ,
 };
-use flint_sys::{
-    fmpq_poly::fmpq_poly_sub, fmpz_mod_poly::fmpz_mod_poly_sub, fmpz_poly::fmpz_poly_sub,
-};
+use flint3_sys::{fmpq_poly_sub, fmpz_mod_poly_sub, fmpz_poly_sub};
 use std::ops::{Sub, SubAssign};
 
 impl SubAssign<&PolyOverZ> for PolyOverZ {

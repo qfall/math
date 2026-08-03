@@ -11,8 +11,8 @@
 use crate::integer_mod_q::{PolyOverZq, Zq};
 use crate::traits::CompareBase;
 use crate::{error::MathError, integer::Z};
-use flint_sys::fmpz_mod::{fmpz_mod_add, fmpz_mod_mul};
-use flint_sys::fmpz_mod_poly::fmpz_mod_poly_get_coeff_fmpz;
+use flint3_sys::fmpz_mod_poly_get_coeff_fmpz;
+use flint3_sys::{fmpz_mod_add, fmpz_mod_mul};
 
 impl PolyOverZq {
     /// Returns the dot product of two polynomials of type [`PolyOverZq`].

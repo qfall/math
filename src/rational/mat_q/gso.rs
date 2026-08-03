@@ -10,7 +10,7 @@
 
 use super::MatQ;
 use crate::traits::MatrixDimensions;
-use flint_sys::fmpq_mat::fmpq_mat_gso;
+use flint3_sys::fmpq_mat_gso;
 
 impl MatQ {
     /// Computes the Gram-Schmidt Orthogonalization of the matrix and returns a [`MatQ`] with the corresponding matrix.

@@ -14,7 +14,7 @@
 // hence no reduction is performed in the check.
 
 use super::Zq;
-use flint_sys::fmpz_mod::fmpz_mod_set_fmpz;
+use flint3_sys::fmpz_mod_set_fmpz;
 
 impl Zq {
     /// This function manually applies the

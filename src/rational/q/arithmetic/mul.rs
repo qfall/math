@@ -17,7 +17,7 @@ use crate::{
         arithmetic_trait_mixed_borrowed_owned,
     },
 };
-use flint_sys::fmpq::{fmpq_mul, fmpq_mul_fmpz, fmpq_mul_si, fmpq_mul_ui};
+use flint3_sys::{fmpq_mul, fmpq_mul_fmpz, fmpq_mul_si, fmpq_mul_ui};
 use std::ops::{Mul, MulAssign};
 
 impl MulAssign<&Q> for Q {

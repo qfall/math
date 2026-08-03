@@ -14,7 +14,7 @@
 use crate::traits::MatrixDimensions;
 
 use super::MatQ;
-use flint_sys::fmpq_mat::{fmpq_mat_clear, fmpq_mat_set};
+use flint3_sys::{fmpq_mat_clear, fmpq_mat_set};
 
 impl Clone for MatQ {
     /// Clones the given element and returns a deep clone of the given [`MatQ`] element.
@@ -114,29 +114,29 @@ mod test_clone {
         a = b.clone();
 
         assert_ne!(
-            a.get_entry(0, 0).unwrap().value.num.0,
-            b.get_entry(0, 0).unwrap().value.num.0
+            a.get_entry(0, 0).unwrap().value.num,
+            b.get_entry(0, 0).unwrap().value.num
         );
         assert_ne!(
-            a.get_entry(0, 1).unwrap().value.num.0,
-            b.get_entry(0, 1).unwrap().value.num.0
+            a.get_entry(0, 1).unwrap().value.num,
+            b.get_entry(0, 1).unwrap().value.num
         );
         assert_ne!(
-            a.get_entry(1, 0).unwrap().value.num.0,
-            b.get_entry(1, 0).unwrap().value.num.0
+            a.get_entry(1, 0).unwrap().value.num,
+            b.get_entry(1, 0).unwrap().value.num
         );
         assert_ne!(
-            a.get_entry(1, 1).unwrap().value.num.0,
-            b.get_entry(1, 1).unwrap().value.num.0
+            a.get_entry(1, 1).unwrap().value.num,
+            b.get_entry(1, 1).unwrap().value.num
         );
         assert_ne!(
-            a.get_entry(1, 1).unwrap().value.den.0,
-            b.get_entry(1, 1).unwrap().value.den.0
+            a.get_entry(1, 1).unwrap().value.den,
+            b.get_entry(1, 1).unwrap().value.den
         );
 
         assert_eq!(
-            a.get_entry(0, 1).unwrap().value.den.0,
-            b.get_entry(0, 1).unwrap().value.den.0
+            a.get_entry(0, 1).unwrap().value.den,
+            b.get_entry(0, 1).unwrap().value.den
         ); // reduction applied, hence kept on stack
     }
 }
@@ -155,10 +155,10 @@ mod test_drop {
         let string = format!("[[{}/{}, {}/{}]]", u64::MAX, i64::MIN, i64::MAX, 1);
         let a = MatQ::from_str(&string).unwrap();
 
-        let storage_num_0 = a.get_entry(0, 0).unwrap().value.num.0;
-        let storage_num_1 = a.get_entry(0, 1).unwrap().value.num.0;
-        let storage_den_0 = a.get_entry(0, 0).unwrap().value.den.0;
-        let storage_den_1 = a.get_entry(0, 1).unwrap().value.den.0;
+        let storage_num_0 = a.get_entry(0, 0).unwrap().value.num;
+        let storage_num_1 = a.get_entry(0, 1).unwrap().value.num;
+        let storage_den_0 = a.get_entry(0, 0).unwrap().value.den;
+        let storage_den_1 = a.get_entry(0, 1).unwrap().value.den;
 
         (storage_num_0, storage_num_1, storage_den_0, storage_den_1)
     }

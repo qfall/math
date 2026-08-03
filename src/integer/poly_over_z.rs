@@ -10,7 +10,7 @@
 //! [`Z`](crate::integer::Z)
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
-use flint_sys::fmpz_poly::fmpz_poly_struct;
+use flint3_sys::fmpz_poly_struct;
 use std::fmt;
 
 mod arithmetic;
@@ -67,8 +67,18 @@ impl fmt::Debug for PolyOverZ {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "PolyOverZ {{poly: {}, storage: {{poly: {:?}}}}}",
-            self, self.poly
+            "PolyOverZ {{ poly: {}, storage: {{ poly: {}}}}}",
+            self,
+            debug_fmpz_poly_struct(&self.poly)
         )
     }
+}
+
+pub(crate) fn debug_fmpz_poly_struct(value: &fmpz_poly_struct) -> String {
+    format!(
+        "fmpz_poly_struct {{ coeffs: {:#x}, alloc: {}, length: {} }}",
+        value.coeffs.addr(),
+        value.alloc,
+        value.length
+    )
 }

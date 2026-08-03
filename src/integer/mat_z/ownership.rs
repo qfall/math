@@ -14,7 +14,7 @@
 use crate::traits::MatrixDimensions;
 
 use super::MatZ;
-use flint_sys::fmpz_mat::{fmpz_mat_clear, fmpz_mat_set};
+use flint3_sys::{fmpz_mat_clear, fmpz_mat_set};
 
 impl Clone for MatZ {
     /// Clones the given element and returns a deep clone of the [`MatZ`] element.
@@ -105,20 +105,20 @@ mod test_clone {
         a = b.clone();
 
         assert_ne!(
-            a.get_entry(0, 0).unwrap().value.0,
-            b.get_entry(0, 0).unwrap().value.0
+            a.get_entry(0, 0).unwrap().value,
+            b.get_entry(0, 0).unwrap().value
         );
         assert_ne!(
-            a.get_entry(0, 1).unwrap().value.0,
-            b.get_entry(0, 1).unwrap().value.0
+            a.get_entry(0, 1).unwrap().value,
+            b.get_entry(0, 1).unwrap().value
         );
         assert_ne!(
-            a.get_entry(1, 0).unwrap().value.0,
-            b.get_entry(1, 0).unwrap().value.0
+            a.get_entry(1, 0).unwrap().value,
+            b.get_entry(1, 0).unwrap().value
         );
         assert_ne!(
-            a.get_entry(1, 1).unwrap().value.0,
-            b.get_entry(1, 1).unwrap().value.0
+            a.get_entry(1, 1).unwrap().value,
+            b.get_entry(1, 1).unwrap().value
         );
     }
 }
@@ -138,9 +138,9 @@ mod test_drop {
         let str_1 = "[[36893488147419103232, 36893488147419103232]]";
         let a = MatZ::from_str(str_1).unwrap();
 
-        let storage_mat = unsafe { (*a.matrix.entries).0 };
-        let storage_0 = a.get_entry(0, 0).unwrap().value.0;
-        let storage_1 = a.get_entry(0, 1).unwrap().value.0;
+        let storage_mat = unsafe { *a.matrix.entries };
+        let storage_0 = a.get_entry(0, 0).unwrap().value;
+        let storage_1 = a.get_entry(0, 1).unwrap().value;
 
         (storage_mat, storage_0, storage_1)
     }

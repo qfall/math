@@ -10,7 +10,7 @@
 
 use super::MatPolyOverZ;
 use crate::utils::index::evaluate_indices;
-use flint_sys::fmpz_poly_mat::{fmpz_poly_mat_init, fmpz_poly_mat_one};
+use flint3_sys::{fmpz_poly_mat_init, fmpz_poly_mat_one};
 use std::{fmt::Display, mem::MaybeUninit};
 
 impl MatPolyOverZ {

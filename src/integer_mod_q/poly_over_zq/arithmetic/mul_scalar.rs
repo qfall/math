@@ -19,7 +19,7 @@ use crate::macros::arithmetics::{
 };
 use crate::macros::for_others::implement_for_others;
 use crate::traits::CompareBase;
-use flint_sys::fmpz_mod_poly::{fmpz_mod_poly_scalar_mul_fmpz, fmpz_mod_poly_scalar_mul_ui};
+use flint3_sys::{fmpz_mod_poly_scalar_mul_fmpz, fmpz_mod_poly_scalar_mul_ui};
 use std::ops::{Mul, MulAssign};
 
 impl Mul<&Z> for &PolyOverZq {

@@ -17,7 +17,7 @@ use crate::{
     },
     traits::CompareBase,
 };
-use flint_sys::fmpz_mod::fmpz_mod_add_fmpz;
+use flint3_sys::fmpz_mod_add_fmpz;
 use std::ops::{Add, AddAssign};
 
 impl Add for &MatNTTPolynomialRingZq {

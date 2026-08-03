@@ -11,7 +11,6 @@
 use crate::{integer::Z, integer_mod_q::ModulusPolynomialRingZq};
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
-use std::fmt;
 
 mod arithmetic;
 mod cmp;
@@ -54,27 +53,13 @@ mod sample;
 /// // Return to MatPolynomialRingZq
 /// let res = tmp_mat_ntt.inv_ntt();
 /// ```
-#[derive(PartialEq, Eq, Serialize, Deserialize, Display, Clone)]
+#[derive(PartialEq, Eq, Serialize, Deserialize, Display, Clone, Debug)]
 #[display("{} / {}", print_vec_z(&self.matrix), self.modulus)]
 pub struct MatNTTPolynomialRingZq {
     pub matrix: Vec<Z>,
     pub nr_rows: usize,
     pub nr_columns: usize,
     pub modulus: ModulusPolynomialRingZq,
-}
-
-impl fmt::Debug for MatNTTPolynomialRingZq {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let short_print = print_vec_z(&self.matrix);
-        let a: Vec<&str> = short_print.split_whitespace().collect();
-        let short_print = format!("{}{} ..., {}{}", a[0], a[1], a[a.len() - 2], a[a.len() - 1]);
-
-        write!(
-            f,
-            "MatNTTPolynomialRingZq {{matrix: {}, nr_rows: {}, nr_columns: {}, modulus: {}, storage: {{matrix: {:?}, modulus: {:?}}}}}",
-            short_print, self.nr_rows, self.nr_columns, self.modulus, self.matrix, self.modulus
-        )
-    }
 }
 
 /// Quick solution to print a vector of [`Z`] values in the format `[1, 2, 3, 4, 5]`.

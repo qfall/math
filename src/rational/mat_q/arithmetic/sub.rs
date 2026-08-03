@@ -16,7 +16,7 @@ use crate::macros::arithmetics::{
     arithmetic_trait_mixed_borrowed_owned,
 };
 use crate::traits::MatrixDimensions;
-use flint_sys::fmpq_mat::fmpq_mat_sub;
+use flint3_sys::fmpq_mat_sub;
 use std::ops::{Sub, SubAssign};
 
 impl SubAssign<&MatQ> for MatQ {

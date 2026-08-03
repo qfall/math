@@ -14,7 +14,7 @@
 use super::PolyOverQ;
 use crate::{macros::for_others::implement_for_owned, traits::GetCoefficient};
 use core::fmt;
-use flint_sys::fmpq_poly::fmpq_poly_get_str;
+use flint3_sys::fmpq_poly_get_str;
 use std::ffi::CStr;
 
 impl From<&PolyOverQ> for String {

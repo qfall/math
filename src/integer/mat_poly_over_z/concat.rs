@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     traits::{Concatenate, MatrixDimensions},
 };
-use flint_sys::fmpz_poly_mat::{fmpz_poly_mat_concat_horizontal, fmpz_poly_mat_concat_vertical};
+use flint3_sys::{fmpz_poly_mat_concat_horizontal, fmpz_poly_mat_concat_vertical};
 
 impl Concatenate for &MatPolyOverZ {
     type Output = MatPolyOverZ;

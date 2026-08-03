@@ -10,9 +10,8 @@
 
 use super::Q;
 use crate::{error::MathError, integer::Z, traits::Distance};
-use flint_sys::{
-    fmpq::{fmpq_sgn, fmpq_simplest_between},
-    fmpz::{fmpz_cdiv_q, fmpz_fdiv_q},
+use flint3_sys::{
+    {fmpq_sgn, fmpq_simplest_between}, {fmpz_cdiv_q, fmpz_fdiv_q},
 };
 
 impl Q {

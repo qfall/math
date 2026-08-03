@@ -13,9 +13,9 @@ use crate::{
     integer::Z,
     traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix},
 };
-use flint_sys::{
-    fmpz::{fmpz, fmpz_init_set},
-    fmpz_mat::{fmpz_mat_entry, fmpz_mat_init_set, fmpz_mat_window_clear, fmpz_mat_window_init},
+use flint3_sys::{
+    fmpz, fmpz_init_set,
+    {fmpz_mat_entry, fmpz_mat_init_set, fmpz_mat_window_clear, fmpz_mat_window_init},
 };
 use std::mem::MaybeUninit;
 
@@ -78,7 +78,7 @@ impl MatrixGetEntry<Z> for MatZ {
     /// assert_eq!(unsafe { matrix.get_entry_unchecked(2, 1) }, Z::from(8));
     /// ```
     unsafe fn get_entry_unchecked(&self, row: i64, column: i64) -> Z {
-        let mut copy = fmpz(0);
+        let mut copy: fmpz = 0;
         let entry = unsafe { fmpz_mat_entry(&self.matrix, row, column) };
         unsafe { fmpz_init_set(&mut copy, entry) };
 
@@ -685,15 +685,15 @@ mod test_collect_entries {
         let entries_2 = mat_2.collect_entries();
 
         assert_eq!(entries_1.len(), 6);
-        assert_eq!(entries_1[0].0, 1);
-        assert_eq!(entries_1[1].0, 2);
-        assert!(entries_1[2].0 >= 2_i64.pow(62));
-        assert!(entries_1[3].0 >= 2_i64.pow(62));
-        assert_eq!(entries_1[4].0, 3);
-        assert_eq!(entries_1[5].0, 4);
+        assert_eq!(entries_1[0], 1);
+        assert_eq!(entries_1[1], 2);
+        assert!(entries_1[2] >= 2_i64.pow(62));
+        assert!(entries_1[3] >= 2_i64.pow(62));
+        assert_eq!(entries_1[4], 3);
+        assert_eq!(entries_1[5], 4);
 
         assert_eq!(entries_2.len(), 2);
-        assert_eq!(entries_2[0].0, -1);
-        assert_eq!(entries_2[1].0, 2);
+        assert_eq!(entries_2[0], -1);
+        assert_eq!(entries_2[1], 2);
     }
 }

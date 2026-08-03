@@ -9,7 +9,7 @@
 //! This module includes functionality about properties of [`PolyOverZ`] instances.
 
 use super::PolyOverZ;
-use flint_sys::fmpz_poly::{fmpz_poly_degree, fmpz_poly_is_one};
+use flint3_sys::{fmpz_poly_degree, fmpz_poly_is_one};
 
 impl PolyOverZ {
     /// Checks if a [`PolyOverZ`] is the constant polynomial with coefficient `1`.

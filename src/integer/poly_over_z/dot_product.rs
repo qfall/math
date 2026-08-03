@@ -10,8 +10,8 @@
 
 use crate::integer::PolyOverZ;
 use crate::{error::MathError, integer::Z};
-use flint_sys::fmpz::{fmpz_add, fmpz_mul};
-use flint_sys::fmpz_poly::fmpz_poly_get_coeff_fmpz;
+use flint3_sys::fmpz_poly_get_coeff_fmpz;
+use flint3_sys::{fmpz_add, fmpz_mul};
 
 impl PolyOverZ {
     /// Returns the dot product of two polynomials of type [`PolyOverZ`].

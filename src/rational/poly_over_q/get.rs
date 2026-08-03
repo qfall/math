@@ -10,7 +10,7 @@
 
 use super::PolyOverQ;
 use crate::{rational::Q, traits::GetCoefficient};
-use flint_sys::fmpq_poly::{fmpq_poly_degree, fmpq_poly_get_coeff_fmpq};
+use flint3_sys::{fmpq_poly_degree, fmpq_poly_get_coeff_fmpq};
 
 impl GetCoefficient<Q> for PolyOverQ {
     /// Returns the coefficient of a polynomial [`PolyOverQ`] as a [`Q`].

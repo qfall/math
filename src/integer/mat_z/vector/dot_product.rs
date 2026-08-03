@@ -11,7 +11,7 @@
 use crate::error::MathError;
 use crate::integer::{MatZ, Z};
 use crate::traits::MatrixDimensions;
-use flint_sys::fmpz::fmpz_addmul;
+use flint3_sys::fmpz_addmul;
 
 impl MatZ {
     /// Returns the dot product of two vectors of type [`MatZ`].

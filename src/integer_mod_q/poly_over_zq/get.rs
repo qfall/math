@@ -12,11 +12,9 @@ use super::PolyOverZq;
 use crate::{
     integer::{PolyOverZ, Z},
     integer_mod_q::{Modulus, Zq},
-    traits::GetCoefficient,
+    traits::{GetCoefficient, SetCoefficient},
 };
-use flint_sys::fmpz_mod_poly::{
-    fmpz_mod_poly_degree, fmpz_mod_poly_get_coeff_fmpz, fmpz_mod_poly_get_fmpz_poly,
-};
+use flint3_sys::{fmpz_mod_poly_degree, fmpz_mod_poly_get_coeff_fmpz, fmpz_mod_poly_get_fmpz_poly};
 
 impl GetCoefficient<Zq> for PolyOverZq {
     /// Returns the coefficient of a polynomial [`PolyOverZq`] as a [`Zq`].
@@ -133,9 +131,40 @@ impl PolyOverZq {
         self.modulus.clone()
     }
 
+    /// Returns a representative polynomial of the [`PolyOverZq`] element with coefficients centered around `0`.
+    ///
+    /// The output [`PolyOverZ`] has coefficients in the range of `[-modulus/2, modulus/2]`.
+    /// For even moduli, the positive representative is chosen for the element `modulus / 2`.
+    /// Use [`PolyOverZq::get_representative_least_nonnegative_residue`] if they should be
+    /// in the range `[0, modulus)`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::PolyOverZq;
+    /// use qfall_math::integer::PolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let value = PolyOverZq::from_str("2  10 11 mod 21").unwrap();
+    ///
+    /// let least_abs_residue = value.get_representative_least_absolute_residue();
+    ///
+    /// assert_eq!(PolyOverZ::from_str("2  10 -10").unwrap(), least_abs_residue);
+    /// ```
+    pub fn get_representative_least_absolute_residue(&self) -> PolyOverZ {
+        let mut out = PolyOverZ::default();
+        for i in 0..=self.get_degree() {
+            let coeff: Zq = unsafe { self.get_coeff_unchecked(i) };
+            let lar_coeff = coeff.get_representative_least_absolute_residue();
+            unsafe { out.set_coeff_unchecked(i, lar_coeff) };
+        }
+        out
+    }
+
     /// Returns a representative polynomial of the [`PolyOverZq`] element.
     ///
     /// The representation of the coefficients is in the range `[0, modulus)`.
+    /// Use [`PolyOverZq::get_representative_least_absolute_residue`] if they should be
+    /// in the range `[-modulus/2, modulus/2]`.
     ///
     /// # Examples
     /// ```
@@ -336,6 +365,40 @@ mod test_mod {
         let poly = PolyOverZq::from_str(&format!("2  1 2 mod {}", u64::MAX)).unwrap();
 
         assert_eq!(poly.get_mod(), Modulus::from(u64::MAX));
+    }
+}
+
+#[cfg(test)]
+mod test_get_representative_least_absolute_residue {
+    use crate::{integer::PolyOverZ, integer_mod_q::PolyOverZq};
+    use std::str::FromStr;
+
+    /// Check whether `get_representative_least_absolute_residue` outputs the correct value for large values
+    #[test]
+    fn large_numbers() {
+        let poly_zq = PolyOverZq::from_str(&format!(
+            "2  {} {} mod {}",
+            i64::MAX,
+            u64::MAX - 1,
+            u64::MAX
+        ))
+        .unwrap();
+
+        let poly_z = poly_zq.get_representative_least_absolute_residue();
+
+        let cmp_poly = PolyOverZ::from_str(&format!("2  {} -1", i64::MAX)).unwrap();
+        assert_eq!(cmp_poly, poly_z);
+    }
+
+    /// Check whether `get_representative_least_absolute_residue` outputs the correct value for special cases
+    #[test]
+    fn special_numbers() {
+        let poly_zq = PolyOverZq::from_str("3  10 0 11 mod 21").unwrap();
+
+        let poly_z = poly_zq.get_representative_least_absolute_residue();
+
+        let cmp_poly = PolyOverZ::from_str("3  10 0 -10").unwrap();
+        assert_eq!(cmp_poly, poly_z);
     }
 }
 

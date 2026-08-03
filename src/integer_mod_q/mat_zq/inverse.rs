@@ -13,7 +13,7 @@ use crate::{
     integer::Z,
     traits::{Concatenate, Gcd, MatrixDimensions, MatrixSetSubmatrix, MatrixSwaps},
 };
-use flint_sys::fmpz_mod_mat::fmpz_mod_mat_rref;
+use flint3_sys::fmpz_mod_mat_rref;
 
 impl MatZq {
     /// Returns the inverse of the matrix if it exists (is square and
@@ -51,10 +51,9 @@ impl MatZq {
 
                 // Use solve for all unit vectors.
                 for i in 0..dimensions {
-                    if let Some(column_i) = self.solve_gaussian_elimination(&e_i) {
+                    {
+                        let column_i = self.solve_gaussian_elimination(&e_i)?;
                         inverse.set_column(i, &column_i, 0).unwrap();
-                    } else {
-                        return None;
                     }
 
                     if i != dimensions - 1 {
@@ -151,16 +150,24 @@ impl MatZq {
     ///
     /// # Panics ...
     /// - if the modulus is not prime.
-    pub fn gaussian_elimination_prime(self) -> MatZq {
+    pub fn gaussian_elimination_prime(&self) -> MatZq {
         assert!(
             self.get_mod().is_prime(),
             "The modulus of the matrix is not prime"
         );
 
-        // Since we only want the echelon form, the permutation `perm` is not relevant.
-        let _ = unsafe { fmpz_mod_mat_rref(std::ptr::null_mut(), &self.matrix) };
+        let mut out = MatZq::new(self.get_num_rows(), self.get_num_columns(), &self.modulus);
 
-        self
+        // Since we only want the echelon form, the permutation `perm` is not relevant.
+        let _ = unsafe {
+            fmpz_mod_mat_rref(
+                &mut out.matrix,
+                &self.matrix,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            )
+        };
+
+        out
     }
 }
 

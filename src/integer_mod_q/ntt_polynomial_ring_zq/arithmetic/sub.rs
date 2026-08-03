@@ -17,7 +17,7 @@ use crate::{
     },
     traits::CompareBase,
 };
-use flint_sys::fmpz_mod::fmpz_mod_sub;
+use flint3_sys::fmpz_mod_sub;
 use std::ops::{Sub, SubAssign};
 
 impl Sub for &NTTPolynomialRingZq {

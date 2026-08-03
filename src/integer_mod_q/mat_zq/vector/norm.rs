@@ -11,10 +11,13 @@
 
 use super::super::MatZq;
 use crate::{
-    error::MathError, integer::Z, integer_mod_q::fmpz_mod_helpers::length, rational::Q,
-    traits::MatrixDimensions,
+    error::MathError,
+    integer::Z,
+    integer_mod_q::fmpz_mod_helpers::length,
+    rational::Q,
+    traits::{AsInteger, MatrixDimensions},
 };
-use flint_sys::fmpz::fmpz_addmul;
+use flint3_sys::fmpz_addmul;
 
 impl MatZq {
     /// Returns the squared Euclidean norm or squared 2-norm of the given (row or column) vector
@@ -131,7 +134,7 @@ impl MatZq {
 
         // compute lengths of all entries in matrix with regards to modulus
         // and find maximum length
-        let modulus = self.matrix.mod_[0];
+        let modulus = unsafe { self.get_mod().into_fmpz() };
         let mut max = Z::ZERO;
         for fmpz_entry in fmpz_entries {
             let length = length(&fmpz_entry, &modulus);

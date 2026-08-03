@@ -13,10 +13,10 @@ use crate::integer_mod_q::{Modulus, ModulusPolynomialRingZq, PolynomialRingZq};
 use crate::macros::for_others::implement_for_owned;
 use crate::traits::{MatrixSetSubmatrix, MatrixSwaps};
 use crate::{error::MathError, integer::PolyOverZ, traits::MatrixSetEntry};
-use flint_sys::fmpz_poly_mat::{
-    fmpz_poly_mat_set, fmpz_poly_mat_window_clear, fmpz_poly_mat_window_init,
+use flint3_sys::{
+    fmpz_poly_mat_entry, fmpz_poly_mat_set, fmpz_poly_mat_window_clear, fmpz_poly_mat_window_init,
+    fmpz_poly_set,
 };
-use flint_sys::{fmpz_poly::fmpz_poly_set, fmpz_poly_mat::fmpz_poly_mat_entry};
 use std::fmt::Display;
 use std::mem::MaybeUninit;
 

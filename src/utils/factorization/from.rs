@@ -10,7 +10,7 @@
 
 use super::Factorization;
 use crate::integer::Z;
-use flint_sys::fmpz_factor::{_fmpz_factor_append, fmpz_factor_get_fmpz};
+use flint3_sys::{_fmpz_factor_append, fmpz_factor_get_fmpz};
 
 impl<Integer: Into<Z>> From<Integer> for Factorization {
     /// Convert an integer into a [`Factorization`].

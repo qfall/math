@@ -12,15 +12,11 @@ use super::MatZq;
 use crate::{
     integer::{MatZ, Z},
     integer_mod_q::{Modulus, Zq, fmpz_mod_helpers::length},
-    traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix, MatrixSetEntry},
+    traits::{AsInteger, MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix, MatrixSetEntry},
 };
-use flint_sys::{
-    fmpz::{fmpz, fmpz_init_set},
-    fmpz_mat::fmpz_mat_set,
-    fmpz_mod_mat::{
-        fmpz_mod_mat_entry, fmpz_mod_mat_init_set, fmpz_mod_mat_window_clear,
-        fmpz_mod_mat_window_init,
-    },
+use flint3_sys::{
+    fmpz, fmpz_init_set, fmpz_mat_set, fmpz_mod_mat_entry, fmpz_mod_mat_init_set,
+    fmpz_mod_mat_window_clear, fmpz_mod_mat_window_init,
 };
 use std::mem::MaybeUninit;
 
@@ -48,7 +44,7 @@ impl MatZq {
     /// ```
     pub fn get_representative_least_nonnegative_residue(&self) -> MatZ {
         let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());
-        unsafe { fmpz_mat_set(&mut out.matrix, &self.matrix.mat[0]) };
+        unsafe { fmpz_mat_set(&mut out.matrix, &self.matrix) };
         out
     }
 
@@ -165,15 +161,20 @@ impl MatrixGetSubmatrix for MatZq {
                 col_1,
                 row_2,
                 col_2,
+                self.modulus.get_fmpz_mod_ctx_struct(),
             )
         };
         let mut window_copy = MaybeUninit::uninit();
         unsafe {
             // Deep clone of the content of the window
-            fmpz_mod_mat_init_set(window_copy.as_mut_ptr(), window.as_ptr());
+            fmpz_mod_mat_init_set(
+                window_copy.as_mut_ptr(),
+                window.as_ptr(),
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            );
             // Clears the matrix window and releases any memory that it uses. Note that
             // the memory to the underlying matrix that window points to is not freed
-            fmpz_mod_mat_window_clear(window.as_mut_ptr());
+            fmpz_mod_mat_window_clear(window.as_mut_ptr(), self.modulus.get_fmpz_mod_ctx_struct());
         }
         MatZq {
             matrix: unsafe { window_copy.assume_init() },
@@ -228,7 +229,7 @@ impl MatZq {
     pub(crate) fn collect_lengths(&self) -> Vec<Z> {
         let entries_fmpz = self.collect_entries();
 
-        let modulus_fmpz = self.matrix.mod_[0];
+        let modulus_fmpz = unsafe { self.get_mod().into_fmpz() };
         let mut entry_lengths = Vec::with_capacity(entries_fmpz.len());
         for value in entries_fmpz {
             entry_lengths.push(length(&value, &modulus_fmpz));
@@ -250,7 +251,7 @@ impl MatrixDimensions for MatZq {
     /// let rows = matrix.get_num_rows();
     /// ```
     fn get_num_rows(&self) -> i64 {
-        self.matrix.mat[0].r
+        self.matrix.r
     }
 
     /// Returns the number of columns of the matrix as a [`i64`].
@@ -264,7 +265,7 @@ impl MatrixDimensions for MatZq {
     /// let rows = matrix.get_num_columns();
     /// ```
     fn get_num_columns(&self) -> i64 {
-        self.matrix.mat[0].c
+        self.matrix.c
     }
 }
 
@@ -879,16 +880,16 @@ mod test_collect_entries {
         let entries_2 = mat_2.collect_entries();
 
         assert_eq!(entries_1.len(), 6);
-        assert_eq!(entries_1[0].0, 1);
-        assert_eq!(entries_1[1].0, 2);
-        assert!(entries_1[2].0 >= 2_i64.pow(62));
-        assert!(entries_1[3].0 >= 2_i64.pow(62));
-        assert_eq!(entries_1[4].0, 3);
-        assert_eq!(entries_1[5].0, 4);
+        assert_eq!(entries_1[0], 1);
+        assert_eq!(entries_1[1], 2);
+        assert!(entries_1[2] >= 2_i64.pow(62));
+        assert!(entries_1[3] >= 2_i64.pow(62));
+        assert_eq!(entries_1[4], 3);
+        assert_eq!(entries_1[5], 4);
 
         assert_eq!(entries_2.len(), 2);
-        assert_eq!(entries_2[0].0, 1);
-        assert_eq!(entries_2[1].0, 0);
+        assert_eq!(entries_2[0], 1);
+        assert_eq!(entries_2[1], 0);
     }
 }
 

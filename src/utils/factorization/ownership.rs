@@ -9,7 +9,7 @@
 //! Implementations for factorizations of [`Z`](crate::integer::Z) values.
 
 use super::Factorization;
-use flint_sys::fmpz_factor::fmpz_factor_clear;
+use flint3_sys::fmpz_factor_clear;
 
 impl Drop for Factorization {
     /// Drops the given [`Factorization`] value and frees the allocated memory.

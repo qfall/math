@@ -15,8 +15,8 @@ use crate::macros::arithmetics::{
 };
 use crate::rational::MatQ;
 use crate::traits::MatrixDimensions;
-use flint_sys::fmpq_mat::fmpq_mat_set_fmpz_mat_div_fmpz;
-use flint_sys::fmpz_mat::fmpz_mat_scalar_divexact_fmpz;
+use flint3_sys::fmpq_mat_set_fmpz_mat_div_fmpz;
+use flint3_sys::fmpz_mat_scalar_divexact_fmpz;
 use std::ops::Div;
 
 impl MatZ {

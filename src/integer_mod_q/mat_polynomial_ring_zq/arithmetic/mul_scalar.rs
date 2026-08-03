@@ -18,7 +18,7 @@ use crate::macros::arithmetics::{
 };
 use crate::macros::for_others::implement_for_others;
 use crate::traits::{CompareBase, MatrixDimensions};
-use flint_sys::fmpz_poly_mat::{fmpz_poly_mat_scalar_mul_fmpz, fmpz_poly_mat_scalar_mul_fmpz_poly};
+use flint3_sys::{fmpz_poly_mat_scalar_mul_fmpz, fmpz_poly_mat_scalar_mul_fmpz_poly};
 use std::ops::{Mul, MulAssign};
 
 impl Mul<&Z> for &MatPolynomialRingZq {

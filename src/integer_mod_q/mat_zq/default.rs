@@ -10,7 +10,7 @@
 
 use super::MatZq;
 use crate::{integer_mod_q::Modulus, utils::index::evaluate_indices};
-use flint_sys::fmpz_mod_mat::{fmpz_mod_mat_init, fmpz_mod_mat_one};
+use flint3_sys::{fmpz_mod_mat_init, fmpz_mod_mat_one};
 use std::{fmt::Display, mem::MaybeUninit};
 
 impl MatZq {
@@ -54,7 +54,7 @@ impl MatZq {
                 matrix.as_mut_ptr(),
                 num_rows_i64,
                 num_cols_i64,
-                &modulus.get_fmpz_mod_ctx_struct().n[0],
+                modulus.get_fmpz_mod_ctx_struct(),
             );
 
             MatZq {
@@ -92,8 +92,9 @@ impl MatZq {
         num_cols: impl TryInto<i64> + Display,
         modulus: impl Into<Modulus>,
     ) -> Self {
-        let mut out = MatZq::new(num_rows, num_cols, modulus);
-        unsafe { fmpz_mod_mat_one(&mut out.matrix) };
+        let modulus = modulus.into();
+        let mut out = MatZq::new(num_rows, num_cols, &modulus);
+        unsafe { fmpz_mod_mat_one(&mut out.matrix, modulus.get_fmpz_mod_ctx_struct()) };
         out
     }
 }

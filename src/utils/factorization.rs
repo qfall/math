@@ -9,7 +9,8 @@
 //! This module contains the type [`Factorization`], which is a factorized
 //! (or partly factorized) representation of integers with arbitrary length.
 
-use flint_sys::fmpz_factor::fmpz_factor_struct;
+use flint3_sys::fmpz_factor_struct;
+use std::fmt;
 
 mod default;
 mod from;
@@ -52,7 +53,28 @@ mod to_string;
 /// // to_string
 /// assert_eq!("[(3, 1), (20, 3)]", &fac_2.to_string());
 /// ```
-#[derive(Debug)]
 pub struct Factorization {
     factors: fmpz_factor_struct,
+}
+
+impl fmt::Debug for Factorization {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "Factorization {{ factors: {}, storage: {{ fmpz_factor_struct: {}}}}}",
+            self,
+            debug_fmpz_factor_struct(&self.factors)
+        )
+    }
+}
+
+fn debug_fmpz_factor_struct(value: &fmpz_factor_struct) -> String {
+    format!(
+        "fmpz_factor_struct {{ sign: {}, p: {:#x}, exp: {:#x}, alloc: {}, num: {} }}",
+        value.sign,
+        value.p.addr(),
+        value.exp.addr(),
+        value.alloc,
+        value.num
+    )
 }

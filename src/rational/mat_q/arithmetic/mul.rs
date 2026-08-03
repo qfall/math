@@ -15,7 +15,7 @@ use crate::macros::arithmetics::{
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
 };
 use crate::traits::{MatrixDimensions, MatrixSetEntry};
-use flint_sys::fmpq_mat::{fmpq_mat_mul, fmpq_mat_mul_fmpz_mat};
+use flint3_sys::{fmpq_mat_mul, fmpq_mat_mul_fmpz_mat};
 use std::ops::Mul;
 
 impl Mul for &MatQ {

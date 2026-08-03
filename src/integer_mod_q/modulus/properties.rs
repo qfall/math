@@ -10,7 +10,7 @@
 //! This includes checks such as primeness.
 
 use super::Modulus;
-use flint_sys::fmpz::fmpz_is_prime;
+use flint3_sys::fmpz_is_prime;
 
 impl Modulus {
     /// Checks if a [`Modulus`] is prime.
@@ -25,7 +25,7 @@ impl Modulus {
     /// assert!(modulus.is_prime());
     /// ```
     pub fn is_prime(&self) -> bool {
-        1 == unsafe { fmpz_is_prime(&self.get_fmpz_mod_ctx_struct().n[0]) }
+        1 == unsafe { fmpz_is_prime(&self.modulus.n[0]) }
     }
 }
 

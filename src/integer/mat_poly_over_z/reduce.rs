@@ -15,7 +15,7 @@ use crate::{
     integer::{PolyOverZ, poly_over_z::fmpz_poly_helpers::reduce_fmpz_poly_by_poly_over_z},
     traits::MatrixDimensions,
 };
-use flint_sys::fmpz_poly_mat::fmpz_poly_mat_entry;
+use flint3_sys::fmpz_poly_mat_entry;
 
 impl MatPolyOverZ {
     /// Entrywise reduces a matrix of polynomials by a polynomial `modulus`.

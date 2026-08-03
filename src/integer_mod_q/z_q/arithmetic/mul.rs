@@ -19,9 +19,8 @@ use crate::{
     },
     traits::CompareBase,
 };
-use flint_sys::{
-    fmpz::fmpz,
-    fmpz_mod::{fmpz_mod_mul, fmpz_mod_mul_fmpz, fmpz_mod_mul_si, fmpz_mod_mul_ui},
+use flint3_sys::{
+    fmpz, {fmpz_mod_mul, fmpz_mod_mul_fmpz, fmpz_mod_mul_si, fmpz_mod_mul_ui},
 };
 use std::ops::{Mul, MulAssign};
 
@@ -214,7 +213,7 @@ impl Mul<&Z> for &Zq {
     /// let f: Zq = c * &Z::from(42);
     /// ```
     fn mul(self, other: &Z) -> Self::Output {
-        let mut out = fmpz(0);
+        let mut out: fmpz = 0;
         unsafe {
             fmpz_mod_mul_fmpz(
                 &mut out,

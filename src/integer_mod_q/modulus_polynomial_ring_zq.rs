@@ -12,7 +12,7 @@
 
 use super::ntt_basis_polynomial_ring_zq::NTTBasisPolynomialRingZq;
 use crate::integer_mod_q::PolyOverZq;
-use std::{fmt, rc::Rc};
+use std::rc::Rc;
 
 mod cmp;
 mod coefficient_embedding;
@@ -42,18 +42,9 @@ mod to_string;
 /// let poly_mod = PolyOverZq::from_str("3  1 0 1 mod 17").unwrap();
 /// let modulus = ModulusPolynomialRingZq::from(poly_mod);
 /// ```
+#[derive(Debug)]
 pub struct ModulusPolynomialRingZq {
     pub(crate) modulus: Rc<PolyOverZq>,
     pub(crate) ntt_basis: Rc<Option<NTTBasisPolynomialRingZq>>,
     pub(crate) non_zero: Vec<usize>,
-}
-
-impl fmt::Debug for ModulusPolynomialRingZq {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "ModulusPolynomialRingZq {{ modulus: {}, storage: {{modulus: {:?}}}}}",
-            self, self.modulus
-        )
-    }
 }

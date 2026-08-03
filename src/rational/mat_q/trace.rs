@@ -8,7 +8,7 @@
 
 //! This module contains the implementation of the `trace` function.
 
-use flint_sys::fmpq_mat::fmpq_mat_trace;
+use flint3_sys::fmpq_mat_trace;
 
 use super::MatQ;
 use crate::{error::MathError, rational::Q, traits::MatrixDimensions};

@@ -15,7 +15,7 @@ use crate::{
     macros::compare_base::compare_base_default,
     traits::CompareBase,
 };
-use flint_sys::fmpz_poly_mat::fmpz_poly_mat_equal;
+use flint3_sys::fmpz_poly_mat_equal;
 
 impl PartialEq for MatPolyOverZ {
     /// Checks if two matrices over [`PolyOverZ`](crate::integer::PolyOverZ) are equal. Used by the `==` and `!=` operators.

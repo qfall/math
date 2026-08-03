@@ -11,7 +11,7 @@
 use crate::traits::*;
 
 use super::MatZq;
-use flint_sys::fmpz_mat::fmpz_mat_transpose;
+use flint3_sys::fmpz_mat_transpose;
 
 impl MatZq {
     /// Returns the transposed form of the given matrix, i.e. rows get transformed to columns
@@ -29,7 +29,7 @@ impl MatZq {
     /// ```
     pub fn transpose(&self) -> Self {
         let mut out = Self::new(self.get_num_columns(), self.get_num_rows(), self.get_mod());
-        unsafe { fmpz_mat_transpose(&mut out.matrix.mat[0], &self.matrix.mat[0]) };
+        unsafe { fmpz_mat_transpose(&mut out.matrix, &self.matrix) };
         out
     }
 }

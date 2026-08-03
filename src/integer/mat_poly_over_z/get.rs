@@ -13,9 +13,9 @@ use crate::{
     integer::PolyOverZ,
     traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix},
 };
-use flint_sys::{
-    fmpz_poly::{fmpz_poly_set, fmpz_poly_struct},
-    fmpz_poly_mat::{
+use flint3_sys::{
+    fmpz_poly_set, fmpz_poly_struct,
+    {
         fmpz_poly_mat_entry, fmpz_poly_mat_init_set, fmpz_poly_mat_window_clear,
         fmpz_poly_mat_window_init,
     },
@@ -171,15 +171,18 @@ impl MatPolyOverZ {
     ///
     /// let fmpz_entries = mat.collect_entries();
     /// ```
-    pub(crate) fn collect_entries(&self) -> Vec<fmpz_poly_struct> {
-        let mut entries: Vec<fmpz_poly_struct> =
+    pub(crate) fn collect_entries<'a>(&self) -> Vec<&'a fmpz_poly_struct> {
+        let mut entries: Vec<&'a fmpz_poly_struct> =
             Vec::with_capacity((self.get_num_rows() * self.get_num_columns()) as usize);
 
         for row in 0..self.get_num_rows() {
             for col in 0..self.get_num_columns() {
                 // efficiently get entry without cloning the entry itself
-                let entry = unsafe { *fmpz_poly_mat_entry(&self.matrix, row, col) };
-                entries.push(entry);
+                unsafe {
+                    let entry_ptr = fmpz_poly_mat_entry(&self.matrix, row, col);
+                    let entry_ref: &'a fmpz_poly_struct = &*entry_ptr;
+                    entries.push(entry_ref);
+                }
             }
         }
 
@@ -592,16 +595,16 @@ mod test_collect_entries {
         let entries_2 = mat_2.collect_entries();
 
         assert_eq!(entries_1.len(), 6);
-        assert_eq!(unsafe { *entries_1[0].coeffs }.0, 1);
-        assert!(unsafe { *entries_1[2].coeffs }.0 >= 2_i64.pow(62));
-        assert!(unsafe { *entries_1[3].coeffs }.0 >= 2_i64.pow(62));
-        assert_eq!(unsafe { *entries_1[4].coeffs }.0, -3);
+        assert_eq!(unsafe { *entries_1[0].coeffs }, 1);
+        assert!(unsafe { *entries_1[2].coeffs } >= 2_i64.pow(62));
+        assert!(unsafe { *entries_1[3].coeffs } >= 2_i64.pow(62));
+        assert_eq!(unsafe { *entries_1[4].coeffs }, -3);
 
         assert_eq!(entries_2.len(), 2);
-        assert_eq!(unsafe { *entries_2[0].coeffs.offset(0) }.0, -1);
+        assert_eq!(unsafe { *entries_2[0].coeffs.offset(0) }, -1);
         assert_eq!(entries_2[0].length, 1);
-        assert_eq!(unsafe { *entries_2[1].coeffs.offset(0) }.0, 1);
-        assert_eq!(unsafe { *entries_2[1].coeffs.offset(1) }.0, 2);
+        assert_eq!(unsafe { *entries_2[1].coeffs.offset(0) }, 1);
+        assert_eq!(unsafe { *entries_2[1].coeffs.offset(1) }, 2);
         assert_eq!(entries_2[1].length, 2);
     }
 }

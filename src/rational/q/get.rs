@@ -10,7 +10,7 @@
 
 use super::Q;
 use crate::integer::Z;
-use flint_sys::fmpz::fmpz_init_set;
+use flint3_sys::fmpz_init_set;
 
 impl Q {
     /// Returns the denominator

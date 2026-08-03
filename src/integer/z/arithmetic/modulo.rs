@@ -8,7 +8,7 @@
 
 //! Implementation of the [`Rem`] trait for [`Z`] values.
 
-use flint_sys::{fmpz::fmpz_mod, fmpz_mod::fmpz_mod_set_fmpz};
+use flint3_sys::{fmpz_mod, fmpz_mod_set_fmpz};
 
 use super::super::Z;
 use crate::{

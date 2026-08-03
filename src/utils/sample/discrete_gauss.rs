@@ -606,7 +606,7 @@ mod test_sample_d {
         integer::{MatZ, Z},
         rational::{MatQ, Q},
     };
-    use flint_sys::fmpz_mat::fmpz_mat_hnf;
+    use flint3_sys::fmpz_mat_hnf;
     use std::str::FromStr;
 
     /// Ensures that the doc-test compiles and runs properly.

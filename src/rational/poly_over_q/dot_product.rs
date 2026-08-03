@@ -10,8 +10,8 @@
 
 use crate::error::MathError;
 use crate::rational::{PolyOverQ, Q};
-use flint_sys::fmpq::{fmpq_add, fmpq_mul};
-use flint_sys::fmpq_poly::fmpq_poly_get_coeff_fmpq;
+use flint3_sys::fmpq_poly_get_coeff_fmpq;
+use flint3_sys::{fmpq_add, fmpq_mul};
 
 impl PolyOverQ {
     /// Returns the dot product of two polynomials of type [`PolyOverQ`].

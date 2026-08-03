@@ -14,7 +14,7 @@
 use super::Q;
 use crate::macros::for_others::implement_for_owned;
 use core::fmt;
-use flint_sys::fmpq::fmpq_get_str;
+use flint3_sys::fmpq_get_str;
 use std::{ffi::CStr, ptr::null_mut};
 
 impl From<&Q> for String {

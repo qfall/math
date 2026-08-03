@@ -9,7 +9,7 @@
 //! This module contains an implementation to compute the bit-wise complement.
 
 use crate::integer::Z;
-use flint_sys::fmpz::fmpz_complement;
+use flint3_sys::fmpz_complement;
 
 impl Z {
     /// Outputs the bit-wise complement of `self`.

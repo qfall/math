@@ -9,7 +9,7 @@
 //! `Z` is a type for integers with arbitrary length.
 //! This implementation uses the [FLINT](https://flintlib.org/) library.
 
-use flint_sys::fmpz::fmpz;
+use flint3_sys::fmpz;
 use std::fmt;
 
 mod arithmetic;
@@ -76,8 +76,13 @@ impl fmt::Debug for Z {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "Z {{value: {}, storage: {{value: {:?}}}}}",
-            self, self.value
+            "Z {{value: {}, storage: {{ value: {}}}}}",
+            self,
+            debug_fmpz(&self.value)
         )
     }
+}
+
+pub(crate) fn debug_fmpz(value: &fmpz) -> String {
+    format!("fmpz({})", value)
 }

@@ -20,7 +20,7 @@ use crate::{
     rational::{MatQ, Q},
     traits::MatrixDimensions,
 };
-use flint_sys::fmpq_mat::fmpq_mat_scalar_div_fmpz;
+use flint3_sys::fmpq_mat_scalar_div_fmpz;
 use std::ops::{Div, DivAssign, MulAssign};
 
 impl Div<&Z> for &MatQ {

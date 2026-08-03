@@ -26,3 +26,6 @@ pub use poly_over_z::PolyOverZ;
 pub(crate) use poly_over_z::fmpz_poly_helpers;
 pub use z::Z;
 pub(crate) use z::fmpz_helpers;
+
+pub(crate) use mat_z::debug_fmpz_mat_struct;
+pub(crate) use z::debug_fmpz;

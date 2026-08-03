@@ -14,7 +14,7 @@
 use super::Z;
 use crate::{error::MathError, macros::for_others::implement_for_owned};
 use core::fmt;
-use flint_sys::fmpz::{fmpz_bits, fmpz_get_str, fmpz_tstbit};
+use flint3_sys::{fmpz_bits, fmpz_get_str, fmpz_tstbit};
 use std::{ffi::CStr, ptr::null_mut, string::FromUtf8Error};
 
 impl From<&Z> for String {

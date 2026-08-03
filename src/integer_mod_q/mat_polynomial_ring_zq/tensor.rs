@@ -14,7 +14,7 @@ use crate::{
     integer::PolyOverZ,
     traits::{CompareBase, MatrixDimensions, MatrixGetEntry, Tensor},
 };
-use flint_sys::{fmpz_poly::fmpz_poly_mul, fmpz_poly_mat::fmpz_poly_mat_entry};
+use flint3_sys::{fmpz_poly_mat_entry, fmpz_poly_mul};
 
 impl Tensor for MatPolynomialRingZq {
     /// Computes the tensor product of `self` with `other`.

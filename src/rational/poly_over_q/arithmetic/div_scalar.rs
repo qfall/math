@@ -16,7 +16,7 @@ use crate::macros::arithmetics::{
 };
 use crate::macros::for_others::implement_for_others;
 use crate::rational::Q;
-use flint_sys::fmpq_poly::{
+use flint3_sys::{
     fmpq_poly_scalar_div_fmpq, fmpq_poly_scalar_div_fmpz, fmpq_poly_scalar_div_si,
     fmpq_poly_scalar_div_ui,
 };

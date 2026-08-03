@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     traits::{CompareBase, MatrixDimensions, Tensor},
 };
-use flint_sys::{fmpz_mat::fmpz_mat_kronecker_product, fmpz_mod_mat::_fmpz_mod_mat_reduce};
+use flint3_sys::{_fmpz_mod_mat_reduce, fmpz_mat_kronecker_product};
 
 impl Tensor for MatZq {
     /// Computes the tensor product of `self` with `other`.
@@ -91,15 +91,9 @@ impl MatZq {
             self.get_mod(),
         );
 
-        unsafe {
-            fmpz_mat_kronecker_product(
-                &mut out.matrix.mat[0],
-                &self.matrix.mat[0],
-                &other.matrix.mat[0],
-            )
-        };
+        unsafe { fmpz_mat_kronecker_product(&mut out.matrix, &self.matrix, &other.matrix) };
 
-        unsafe { _fmpz_mod_mat_reduce(&mut out.matrix) }
+        unsafe { _fmpz_mod_mat_reduce(&mut out.matrix, self.modulus.get_fmpz_mod_ctx_struct()) }
 
         Ok(out)
     }

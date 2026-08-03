@@ -19,9 +19,8 @@ use crate::{
     },
     traits::CompareBase,
 };
-use flint_sys::{
-    fmpz::fmpz,
-    fmpz_mod::{fmpz_mod_add, fmpz_mod_add_fmpz, fmpz_mod_add_si, fmpz_mod_add_ui},
+use flint3_sys::{
+    fmpz, {fmpz_mod_add, fmpz_mod_add_fmpz, fmpz_mod_add_si, fmpz_mod_add_ui},
 };
 use std::ops::{Add, AddAssign};
 
@@ -215,7 +214,7 @@ impl Add<&Z> for &Zq {
     /// let f: Zq = c + &Z::from(42);
     /// ```
     fn add(self, other: &Z) -> Self::Output {
-        let mut out = fmpz(0);
+        let mut out: fmpz = 0;
         unsafe {
             fmpz_mod_add_fmpz(
                 &mut out,

@@ -9,7 +9,7 @@
 //! Default values for a [`Factorization`].
 
 use super::Factorization;
-use flint_sys::fmpz_factor::fmpz_factor_init;
+use flint3_sys::fmpz_factor_init;
 use std::mem::MaybeUninit;
 
 impl Default for Factorization {

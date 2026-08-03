@@ -8,7 +8,7 @@
 
 //! This module contains the implementation of the `tensor` product.
 
-use flint_sys::fmpq_mat::fmpq_mat_kronecker_product;
+use flint3_sys::fmpq_mat_kronecker_product;
 
 use super::MatQ;
 use crate::traits::{MatrixDimensions, Tensor};

@@ -9,7 +9,7 @@
 //! This module includes functionality about properties of [`Q`] instances.
 
 use super::Q;
-use flint_sys::fmpq::{fmpq_abs, fmpq_inv, fmpq_is_one, fmpq_is_zero};
+use flint3_sys::{fmpq_abs, fmpq_inv, fmpq_is_one, fmpq_is_zero};
 
 impl Q {
     /// Returns the given [`Q`] instance with its absolute value.

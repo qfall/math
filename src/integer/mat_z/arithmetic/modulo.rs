@@ -18,7 +18,7 @@ use crate::{
     },
     traits::MatrixDimensions,
 };
-use flint_sys::{fmpz::fmpz_mod, fmpz_mat::fmpz_mat_entry, fmpz_mod::fmpz_mod_set_fmpz};
+use flint3_sys::{fmpz_mat_entry, fmpz_mod, fmpz_mod_set_fmpz};
 use std::ops::Rem;
 
 impl Rem<&Z> for &MatZ {

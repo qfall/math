@@ -15,7 +15,7 @@ use crate::{
         arithmetic_trait_mixed_borrowed_owned,
     },
 };
-use flint_sys::fmpz::fmpz_xor;
+use flint3_sys::fmpz_xor;
 use std::ops::BitXor;
 
 impl BitXor for &Z {

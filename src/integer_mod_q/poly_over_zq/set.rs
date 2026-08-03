@@ -15,7 +15,7 @@ use crate::{
     macros::for_others::implement_for_owned,
     traits::SetCoefficient,
 };
-use flint_sys::fmpz_mod_poly::{fmpz_mod_poly_set_coeff_fmpz, fmpz_mod_poly_set_fmpz_poly};
+use flint3_sys::{fmpz_mod_poly_set_coeff_fmpz, fmpz_mod_poly_set_fmpz_poly};
 
 impl<Integer: Into<Z>> SetCoefficient<Integer> for PolyOverZq {
     /// Sets the coefficient of a polynomial [`PolyOverZq`].

@@ -18,7 +18,7 @@ use crate::{
     macros::for_others::implement_for_owned,
     traits::{CompareBase, Evaluate},
 };
-use flint_sys::fmpz_mod_poly::fmpz_mod_poly_evaluate_fmpz;
+use flint3_sys::fmpz_mod_poly_evaluate_fmpz;
 
 impl<Integer: Into<Z>> Evaluate<Integer, Zq> for PolyOverZq {
     /// Evaluates a [`PolyOverZq`] on a given input that implements [`Into<Z>`].
