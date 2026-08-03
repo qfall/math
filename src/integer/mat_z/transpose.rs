@@ -11,7 +11,7 @@
 use crate::traits::MatrixDimensions;
 
 use super::MatZ;
-use flint_sys::fmpz_mat::fmpz_mat_transpose;
+use flint3_sys::fmpz_mat_transpose;
 
 impl MatZ {
     /// Returns the transposed form of the given matrix, i.e. rows get transformed to columns

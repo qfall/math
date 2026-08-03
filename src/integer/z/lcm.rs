@@ -10,7 +10,7 @@
 
 use super::Z;
 use crate::traits::Lcm;
-use flint_sys::fmpz::fmpz_lcm;
+use flint3_sys::fmpz_lcm;
 
 impl<Integer: Into<Z>> Lcm<Integer> for Z {
     type Output = Z;

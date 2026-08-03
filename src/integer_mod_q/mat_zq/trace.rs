@@ -8,7 +8,7 @@
 
 //! This module contains the implementation of the `trace` function.
 
-use flint_sys::fmpz_mod_mat::fmpz_mod_mat_trace;
+use flint3_sys::fmpz_mod_mat_trace;
 
 use super::MatZq;
 use crate::{error::MathError, integer_mod_q::Zq, traits::MatrixDimensions};
@@ -37,7 +37,11 @@ impl MatZq {
 
         let mut out = Zq::from((0, self.get_mod()));
         unsafe {
-            fmpz_mod_mat_trace(&mut out.value.value, &self.matrix);
+            fmpz_mod_mat_trace(
+                &mut out.value.value,
+                &self.matrix,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            );
         }
         Ok(out)
     }

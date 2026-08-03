@@ -21,7 +21,6 @@
 use super::Modulus;
 use crate::integer::Z;
 use serde::{Deserialize, Serialize};
-use std::fmt;
 
 mod arithmetic;
 mod cmp;
@@ -61,18 +60,8 @@ mod unsafe_functions;
 ///
 /// # Ok::<(), MathError>(())
 /// ```
-#[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Eq, Serialize, Deserialize, Debug)]
 pub struct Zq {
     pub(crate) value: Z,
     pub(crate) modulus: Modulus,
-}
-
-impl fmt::Debug for Zq {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "Zq {{value: {}, modulus: {}, storage: {{value: {:?} , modulus: {:?}}}}}",
-            self.value, self.modulus, self.value, self.modulus,
-        )
-    }
 }

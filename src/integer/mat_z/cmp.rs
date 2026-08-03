@@ -10,7 +10,7 @@
 
 use super::MatZ;
 use crate::{integer::Z, macros::compare_base::compare_base_default, traits::CompareBase};
-use flint_sys::fmpz_mat::fmpz_mat_equal;
+use flint3_sys::fmpz_mat_equal;
 
 impl PartialEq for MatZ {
     /// Checks if two [`MatZ`] instances are equal. Used by the `==` and `!=` operators.

@@ -12,7 +12,7 @@ use super::PolynomialRingZq;
 use crate::{
     integer::Z, integer_mod_q::Zq, macros::for_others::implement_for_owned, traits::SetCoefficient,
 };
-use flint_sys::fmpz_poly::fmpz_poly_set_coeff_fmpz;
+use flint3_sys::fmpz_poly_set_coeff_fmpz;
 
 impl<Integer: Into<Z>> SetCoefficient<Integer> for PolynomialRingZq {
     /// Sets the coefficient of a [`PolynomialRingZq`] element.

@@ -10,7 +10,7 @@
 
 use super::PolyOverQ;
 use crate::{rational::Q, traits::SetCoefficient};
-use flint_sys::fmpq_poly::fmpq_poly_set_coeff_fmpq;
+use flint3_sys::fmpq_poly_set_coeff_fmpq;
 
 impl<Rational: Into<Q>> SetCoefficient<Rational> for PolyOverQ {
     /// Sets the coefficient of a polynomial [`PolyOverQ`].

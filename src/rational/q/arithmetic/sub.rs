@@ -17,7 +17,7 @@ use crate::{
         arithmetic_trait_mixed_borrowed_owned,
     },
 };
-use flint_sys::fmpq::{fmpq_sub, fmpq_sub_fmpz, fmpq_sub_si, fmpq_sub_ui};
+use flint3_sys::{fmpq_sub, fmpq_sub_fmpz, fmpq_sub_si, fmpq_sub_ui};
 use std::ops::{Sub, SubAssign};
 
 impl SubAssign<&Q> for Q {

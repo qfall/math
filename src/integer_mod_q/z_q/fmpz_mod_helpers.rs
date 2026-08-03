@@ -13,9 +13,9 @@ use crate::{
     integer::{Z, fmpz_helpers::distance},
     traits::AsInteger,
 };
-use flint_sys::fmpz::fmpz;
+use flint3_sys::fmpz;
 
-const ZERO_FMPZ: fmpz = fmpz(0);
+const ZERO_FMPZ: fmpz = 0;
 
 /// Computes the shortest distance of `self` to the next zero instance
 /// regarding the `modulus`.
@@ -25,7 +25,7 @@ const ZERO_FMPZ: fmpz = fmpz(0);
 ///
 /// # Examples
 /// ```compile_fail
-/// use flint_sys::fmpz::fmpz;
+/// use flint3_sys::fmpz;
 /// use qfall_math::integer_mod_q::fmpz_mod_helpers::length;
 ///
 /// let modulus = fmpz(15);
@@ -110,7 +110,7 @@ mod test_as_integer_zq {
         let value = unsafe { (&zq).into_fmpz() };
 
         // The `fmpz` values have to point to different memory locations.
-        assert_ne!(value.0, zq.value.value.0);
+        assert_ne!(value, zq.value.value);
     }
 
     /// Assert that `get_fmpz_ref` returns a correct reference for small values
@@ -122,8 +122,8 @@ mod test_as_integer_zq {
         let zq_ref_value_1 = zq.get_fmpz_ref().unwrap();
         let zq_ref_value_2 = (&zq).get_fmpz_ref().unwrap();
 
-        assert_eq!(zq.value.value.0, zq_ref_value_1.0);
-        assert_eq!(zq.value.value.0, zq_ref_value_2.0);
+        assert_eq!(&zq.value.value, zq_ref_value_1);
+        assert_eq!(&zq.value.value, zq_ref_value_2);
     }
 
     /// Assert that `get_fmpz_ref` returns a correct reference for large values
@@ -135,8 +135,8 @@ mod test_as_integer_zq {
         let zq_ref_value_1 = zq.get_fmpz_ref().unwrap();
         let zq_ref_value_2 = (&zq).get_fmpz_ref().unwrap();
 
-        assert_eq!(zq.value.value.0, zq_ref_value_1.0);
-        assert_eq!(zq.value.value.0, zq_ref_value_2.0);
+        assert_eq!(&zq.value.value, zq_ref_value_1);
+        assert_eq!(&zq.value.value, zq_ref_value_2);
     }
 }
 
@@ -149,10 +149,10 @@ mod test_length {
     /// (shortest distance to next zero is found) for small values
     #[test]
     fn small_values() {
-        let modulus = fmpz(15);
-        let pos_1 = fmpz(10);
-        let pos_2 = fmpz(7);
-        let zero = fmpz(0);
+        let modulus = 15;
+        let pos_1 = 10;
+        let pos_2 = 7;
+        let zero = 0;
 
         assert_eq!(Z::from(5), length(&pos_1, &modulus));
         assert_eq!(Z::from(7), length(&pos_2, &modulus));

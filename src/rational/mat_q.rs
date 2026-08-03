@@ -14,7 +14,7 @@
 // values. The end-user should be unable to obtain a non-reduced value.
 
 use crate::utils::parse::partial_string;
-use flint_sys::fmpq_mat::fmpq_mat_struct;
+use flint3_sys::fmpq_mat_struct;
 use std::fmt;
 
 mod arithmetic;
@@ -94,10 +94,20 @@ impl fmt::Debug for MatQ {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "MatQ: {{matrix: {}, storage: {:?}}}",
+            "MatQ: {{matrix: {}, storage: {{ matrix: {}}}}}",
             // printing the entire matrix is not meaningful for large matrices
             partial_string(self, 3, 3),
-            self.matrix
+            debug_fmpq_mat_struct(&self.matrix)
         )
     }
+}
+
+fn debug_fmpq_mat_struct(value: &fmpq_mat_struct) -> String {
+    format!(
+        "fmpq_mat_struct {{ entries: {:#x}, r: {}, c: {}, stride: {} }}",
+        value.entries.addr(),
+        value.r,
+        value.c,
+        value.stride
+    )
 }

@@ -15,7 +15,7 @@ use crate::macros::arithmetics::{
     arithmetic_trait_borrowed_to_owned, arithmetic_trait_mixed_borrowed_owned,
 };
 use crate::traits::MatrixDimensions;
-use flint_sys::fmpz_poly_mat::fmpz_poly_mat_mul_KS;
+use flint3_sys::fmpz_poly_mat_mul_KS;
 use std::ops::Mul;
 
 impl Mul for &MatPolyOverZ {

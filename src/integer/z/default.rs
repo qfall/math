@@ -34,9 +34,7 @@ impl Z {
     ///  
     /// let a: Z = Z::ONE;
     /// ```
-    pub const ONE: Z = Z {
-        value: flint_sys::fmpz::fmpz(1),
-    };
+    pub const ONE: Z = Z { value: 1 };
 
     /// Returns an instantiation of [`Z`] with value `0`.
     ///
@@ -46,9 +44,7 @@ impl Z {
     ///  
     /// let a: Z = Z::ZERO;
     /// ```
-    pub const ZERO: Z = Z {
-        value: flint_sys::fmpz::fmpz(0),
-    };
+    pub const ZERO: Z = Z { value: 0 };
 
     /// Returns an instantiation of [`Z`] with value `-1`.
     ///
@@ -58,9 +54,7 @@ impl Z {
     ///  
     /// let a: Z = Z::MINUS_ONE;
     /// ```
-    pub const MINUS_ONE: Z = Z {
-        value: flint_sys::fmpz::fmpz(-1),
-    };
+    pub const MINUS_ONE: Z = Z { value: -1 };
 }
 
 #[cfg(test)]

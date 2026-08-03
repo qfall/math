@@ -10,7 +10,7 @@
 
 use super::PolyOverZ;
 use crate::{integer::Z, traits::GetCoefficient};
-use flint_sys::fmpz_poly::{fmpz_poly_degree, fmpz_poly_get_coeff_fmpz};
+use flint3_sys::{fmpz_poly_degree, fmpz_poly_get_coeff_fmpz};
 
 impl GetCoefficient<Z> for PolyOverZ {
     /// Returns the coefficient of a polynomial [`PolyOverZ`] as a [`Z`].

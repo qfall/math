@@ -16,9 +16,9 @@ use crate::macros::arithmetics::{
 };
 use crate::rational::MatQ;
 use crate::traits::MatrixDimensions;
-use flint_sys::fmpq_mat::fmpq_mat_mul_r_fmpz_mat;
-use flint_sys::fmpz_mat::fmpz_mat_mul;
-use flint_sys::fmpz_mod_mat::_fmpz_mod_mat_reduce;
+use flint3_sys::_fmpz_mod_mat_reduce;
+use flint3_sys::fmpq_mat_mul_r_fmpz_mat;
+use flint3_sys::fmpz_mat_mul;
 use std::ops::Mul;
 
 impl Mul for &MatZ {
@@ -97,8 +97,8 @@ impl Mul<&MatZq> for &MatZ {
             other.get_mod(),
         );
         unsafe {
-            fmpz_mat_mul(&mut new.matrix.mat[0], &self.matrix, &other.matrix.mat[0]);
-            _fmpz_mod_mat_reduce(&mut new.matrix)
+            fmpz_mat_mul(&mut new.matrix, &self.matrix, &other.matrix);
+            _fmpz_mod_mat_reduce(&mut new.matrix, other.modulus.get_fmpz_mod_ctx_struct())
         }
         new
     }

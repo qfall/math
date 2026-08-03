@@ -13,7 +13,8 @@
 // To avoid unnecessary checks and reductions, always return canonical/reduced
 // values. The end-user should be unable to obtain a non-reduced value.
 
-use flint_sys::fmpq::fmpq;
+use crate::integer::debug_fmpz;
+use flint3_sys::fmpq;
 use std::fmt;
 
 mod arithmetic;
@@ -80,10 +81,18 @@ impl fmt::Debug for Q {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "Q {{value_f64(may be rounded; 5 decimals): {}, value: {}, storage: {{value: {:?}}}}}",
+            "Q {{value_f64(may be rounded; 5 decimals): {}, value: {}, storage: {{value: {}}}}}",
             self.to_string_decimal(5),
             self,
-            self.value
+            debug_fmpq(&self.value)
         )
     }
+}
+
+fn debug_fmpq(value: &fmpq) -> String {
+    format!(
+        "fmpq {{ num: {}, den: {} }}",
+        debug_fmpz(&value.num),
+        debug_fmpz(&value.den)
+    )
 }

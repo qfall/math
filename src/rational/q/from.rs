@@ -17,9 +17,8 @@ use crate::{
     macros::from::{from_trait, from_type},
     traits::{AsInteger, Pow},
 };
-use flint_sys::{
-    fmpq::{fmpq, fmpq_canonicalise, fmpq_clear, fmpq_get_d, fmpq_set_str},
-    fmpz::{fmpz_init_set, fmpz_is_zero},
+use flint3_sys::{
+    fmpq, {fmpq_canonicalise, fmpq_clear, fmpq_get_d, fmpq_set_str}, {fmpz_init_set, fmpz_is_zero},
 };
 use std::{ffi::CString, str::FromStr};
 
@@ -60,7 +59,7 @@ impl Q {
         // -52 because the mantissa is 52 bit long
         exponent -= 1023 + 52;
         let shift = match exponent {
-            // This could be optimized with `fmpz_lshift_mpn` once it is part of flint_sys.
+            // This could be optimized with `fmpz_lshift_mpn` once it is part of flint3_sys.
             e if e >= 1 => Q::from(2).pow(e).unwrap(),
             e => Q::from((1, 2)).pow(e.abs()).unwrap(),
         };
@@ -100,7 +99,7 @@ impl<IntegerNumerator: AsInteger, IntegerDenominator: AsInteger>
             let num = num.into_fmpz();
             let den = den.into_fmpz();
 
-            assert_ne!(den.0, 0, "The denominator can not be zero");
+            assert_ne!(den, 0, "The denominator can not be zero");
 
             let mut value = fmpq { num, den };
             fmpq_canonicalise(&mut value);
@@ -248,10 +247,10 @@ impl FromStr for Q {
     ///   if the provided string has `0` as the denominator.
     fn from_str(s: &str) -> Result<Self, MathError> {
         if s.contains(char::is_whitespace) {
-            return Err(StringConversionError::InvalidStringToQInput(s.to_owned()))?;
+            Err(StringConversionError::InvalidStringToQInput(s.to_owned()))?;
         }
 
-        // `fmpq::default()` returns the value `0/0`
+        // `default()` returns the value `0/0`
         let mut value = fmpq::default();
 
         let c_string = CString::new(s)?;
@@ -265,7 +264,7 @@ impl FromStr for Q {
         // since value is set to `0`, if an error occurs, we do not need to free
         // the allocated space manually
         if -1 == unsafe { fmpq_set_str(&mut value, c_string.as_ptr(), 10) } {
-            return Err(StringConversionError::InvalidStringToQInput(s.to_owned()))?;
+            Err(StringConversionError::InvalidStringToQInput(s.to_owned()))?;
         };
 
         // canonical form is expected by other functions

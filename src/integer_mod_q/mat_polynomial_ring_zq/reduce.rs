@@ -18,7 +18,7 @@ use super::MatPolynomialRingZq;
 use crate::{
     integer::fmpz_poly_helpers::reduce_fmpz_poly_by_fmpz_mod_poly_sparse, traits::MatrixDimensions,
 };
-use flint_sys::fmpz_poly_mat::fmpz_poly_mat_entry;
+use flint3_sys::{fmpz_poly_length, fmpz_poly_mat_entry};
 
 impl MatPolynomialRingZq {
     /// This function manually applies the modulus
@@ -68,7 +68,7 @@ impl MatPolynomialRingZq {
     /// ```
     pub(crate) unsafe fn reduce_entry(&mut self, row: i64, column: i64) {
         let entry = unsafe { fmpz_poly_mat_entry(&self.matrix.matrix, row, column) };
-        if (unsafe { *entry }).length > 0 {
+        if (unsafe { fmpz_poly_length(entry) }) > 0 {
             unsafe {
                 reduce_fmpz_poly_by_fmpz_mod_poly_sparse(
                     &mut *entry,

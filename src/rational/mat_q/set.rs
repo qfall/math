@@ -14,18 +14,14 @@ use crate::{
     traits::{MatrixDimensions, MatrixSetEntry, MatrixSetSubmatrix, MatrixSwaps},
     utils::index::{evaluate_index_for_vector, evaluate_indices_for_matrix},
 };
-use flint_sys::{
-    fmpq::{fmpq_set, fmpq_swap},
-    fmpq_mat::{
+use flint3_sys::{
+    {
         fmpq_mat_entry, fmpq_mat_invert_cols, fmpq_mat_invert_rows, fmpq_mat_set,
         fmpq_mat_swap_cols, fmpq_mat_swap_rows, fmpq_mat_window_clear, fmpq_mat_window_init,
     },
+    {fmpq_set, fmpq_swap},
 };
-use std::{
-    fmt::Display,
-    mem::MaybeUninit,
-    ptr::{null, null_mut},
-};
+use std::{fmt::Display, mem::MaybeUninit, ptr::null_mut};
 
 impl<Rational: Into<Q>> MatrixSetEntry<Rational> for MatQ {
     /// Sets the value of a specific matrix entry according to a given `value`
@@ -241,7 +237,7 @@ impl MatrixSwaps for MatQ {
                 },
             ));
         }
-        unsafe { fmpq_mat_swap_cols(&mut self.matrix, null(), col_0, col_1) }
+        unsafe { fmpq_mat_swap_cols(&mut self.matrix, null_mut(), col_0, col_1) }
         Ok(())
     }
 
@@ -287,7 +283,7 @@ impl MatrixSwaps for MatQ {
                 },
             ));
         }
-        unsafe { fmpq_mat_swap_rows(&mut self.matrix, null(), row_0, row_1) }
+        unsafe { fmpq_mat_swap_rows(&mut self.matrix, null_mut(), row_0, row_1) }
         Ok(())
     }
 }

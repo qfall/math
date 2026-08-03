@@ -12,7 +12,7 @@
 
 use super::PolyOverQ;
 use crate::{rational::Q, traits::Evaluate};
-use flint_sys::fmpq_poly::fmpq_poly_evaluate_fmpq;
+use flint3_sys::fmpq_poly_evaluate_fmpq;
 
 impl<Rational: Into<Q>> Evaluate<Rational, Q> for PolyOverQ {
     /// Evaluates a [`PolyOverQ`] on a given input.

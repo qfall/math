@@ -17,7 +17,7 @@ use crate::{
     macros::for_others::implement_for_owned,
     rational::Q,
 };
-use flint_sys::fmpq_poly::{
+use flint3_sys::{
     fmpq_poly_canonicalise, fmpq_poly_set_fmpq, fmpq_poly_set_fmpz_poly, fmpq_poly_set_str,
 };
 use std::{ffi::CString, str::FromStr};

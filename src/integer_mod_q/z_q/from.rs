@@ -121,7 +121,7 @@ impl FromStr for Zq {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let input_split: Vec<&str> = s.split("mod").collect();
         if input_split.len() != 2 {
-            return Err(StringConversionError::InvalidStringToZqInput(s.to_owned()))?;
+            Err(StringConversionError::InvalidStringToZqInput(s.to_owned()))?;
         }
 
         // instantiate both parts of Zq element

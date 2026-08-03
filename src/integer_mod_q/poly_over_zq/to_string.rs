@@ -13,7 +13,7 @@
 
 use super::PolyOverZq;
 use crate::{integer::PolyOverZ, macros::for_others::implement_for_owned};
-use flint_sys::fmpz_mod_poly::fmpz_mod_poly_get_fmpz_poly;
+use flint3_sys::fmpz_mod_poly_get_fmpz_poly;
 use std::fmt;
 
 impl From<&PolyOverZq> for String {

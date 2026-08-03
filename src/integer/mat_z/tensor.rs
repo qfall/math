@@ -10,7 +10,7 @@
 
 use super::MatZ;
 use crate::traits::{MatrixDimensions, Tensor};
-use flint_sys::fmpz_mat::fmpz_mat_kronecker_product;
+use flint3_sys::fmpz_mat_kronecker_product;
 
 impl Tensor for MatZ {
     /// Computes the tensor product of `self` with `other`.

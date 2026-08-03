@@ -13,7 +13,7 @@ use crate::{
     integer_mod_q::{Modulus, ModulusPolynomialRingZq, PolyOverZq, Zq},
     traits::GetCoefficient,
 };
-use flint_sys::fmpz_mod_poly::fmpz_mod_poly_get_coeff_fmpz;
+use flint3_sys::fmpz_mod_poly_get_coeff_fmpz;
 
 impl GetCoefficient<Zq> for ModulusPolynomialRingZq {
     /// Returns the coefficient of a polynomial [`ModulusPolynomialRingZq`] as a [`Zq`].

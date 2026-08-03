@@ -11,7 +11,7 @@
 
 use super::Z;
 use crate::traits::{Gcd, Xgcd};
-use flint_sys::fmpz::{fmpz_gcd, fmpz_xgcd};
+use flint3_sys::{fmpz_gcd, fmpz_xgcd};
 
 impl<Integer: Into<Z>> Gcd<Integer> for Z {
     type Output = Z;

@@ -17,7 +17,7 @@ use crate::{
         for_others::implement_for_others,
     },
 };
-use flint_sys::fmpz_poly::fmpz_poly_scalar_mod_fmpz;
+use flint3_sys::fmpz_poly_scalar_mod_fmpz;
 use std::ops::Rem;
 
 impl Rem<&Z> for &PolyOverZ {

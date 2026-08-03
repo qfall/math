@@ -15,9 +15,8 @@ use crate::{
     integer_mod_q::Modulus,
     macros::for_others::{implement_for_others, implement_trait_reverse},
 };
-use flint_sys::{
-    fmpq::{fmpq_cmp, fmpq_equal},
-    fmpz::{fmpz, fmpz_equal},
+use flint3_sys::{
+    fmpz_equal, {fmpq_cmp, fmpq_equal},
 };
 use std::cmp::Ordering;
 
@@ -92,7 +91,7 @@ impl PartialEq<Z> for Q {
     /// ```
     fn eq(&self, other: &Z) -> bool {
         unsafe {
-            (1 == fmpz_equal(&self.value.den, &fmpz(1)))
+            (1 == fmpz_equal(&self.value.den, &1))
                 && (1 == fmpz_equal(&self.value.num, &other.value))
         }
     }
@@ -136,7 +135,7 @@ impl PartialEq<Modulus> for Q {
     /// ```
     fn eq(&self, other: &Modulus) -> bool {
         unsafe {
-            (1 == fmpz_equal(&self.value.den, &fmpz(1)))
+            (1 == fmpz_equal(&self.value.den, &1))
                 && (1 == fmpz_equal(&self.value.num, &other.modulus.n[0]))
         }
     }
@@ -144,7 +143,7 @@ impl PartialEq<Modulus> for Q {
 
 implement_trait_reverse!(PartialEq, eq, Modulus, Q, bool);
 
-implement_for_others!(Z, Q, PartialEq for fmpz i8 i16 i32 i64 u8 u16 u32 u64);
+implement_for_others!(Z, Q, PartialEq for i8 i16 i32 i64 u8 u16 u32 u64);
 
 impl PartialOrd for Q {
     /// Compares two [`Q`] values. Used by the `<`, `<=`, `>`, and `>=` operators.
@@ -215,7 +214,7 @@ impl Ord for Q {
     }
 }
 
-implement_for_others!(Q, Q, PartialOrd for Modulus Z fmpz i8 i16 i32 i64 u8 u16 u32 u64);
+implement_for_others!(Q, Q, PartialOrd for Modulus Z i8 i16 i32 i64 u8 u16 u32 u64);
 
 /// Test that the [`PartialEq`] trait is correctly implemented.
 #[cfg(test)]

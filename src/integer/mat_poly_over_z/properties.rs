@@ -14,7 +14,7 @@ use crate::{
     integer::Z,
     traits::{MatrixDimensions, MatrixGetEntry},
 };
-use flint_sys::fmpz_poly_mat::{fmpz_poly_mat_is_one, fmpz_poly_mat_is_zero, fmpz_poly_mat_rank};
+use flint3_sys::{fmpz_poly_mat_is_one, fmpz_poly_mat_is_zero, fmpz_poly_mat_rank};
 
 impl MatPolyOverZ {
     /// Checks if a [`MatPolyOverZ`] is a identity matrix, i.e.

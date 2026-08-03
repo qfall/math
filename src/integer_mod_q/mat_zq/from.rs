@@ -22,7 +22,7 @@ use crate::{
         parse::{matrix_from_utf8_fill_bytes, parse_matrix_string},
     },
 };
-use flint_sys::{fmpz_mat::fmpz_mat_set, fmpz_mod_mat::_fmpz_mod_mat_reduce};
+use flint3_sys::{_fmpz_mod_mat_reduce, fmpz_mat_set};
 use std::{fmt::Display, str::FromStr};
 
 impl FromStr for MatZq {
@@ -125,10 +125,11 @@ impl<Mod: Into<Modulus>> From<(&MatZ, Mod)> for MatZq {
     /// let a = MatZq::from((&m, 17));
     /// ```
     fn from((matrix, modulus): (&MatZ, Mod)) -> Self {
-        let mut out = MatZq::new(matrix.get_num_rows(), matrix.get_num_columns(), modulus);
+        let modulus = modulus.into();
+        let mut out = MatZq::new(matrix.get_num_rows(), matrix.get_num_columns(), &modulus);
         unsafe {
-            fmpz_mat_set(&mut out.matrix.mat[0], &matrix.matrix);
-            _fmpz_mod_mat_reduce(&mut out.matrix);
+            fmpz_mat_set(&mut out.matrix, &matrix.matrix);
+            _fmpz_mod_mat_reduce(&mut out.matrix, modulus.get_fmpz_mod_ctx_struct());
         }
         out
     }

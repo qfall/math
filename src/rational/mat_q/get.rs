@@ -11,11 +11,8 @@
 use super::MatQ;
 use crate::rational::Q;
 use crate::traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix};
-use flint_sys::fmpq_mat::{fmpq_mat_init_set, fmpq_mat_window_clear, fmpq_mat_window_init};
-use flint_sys::{
-    fmpq::{fmpq, fmpq_set},
-    fmpq_mat::fmpq_mat_entry,
-};
+use flint3_sys::{fmpq, fmpq_mat_entry, fmpq_set};
+use flint3_sys::{fmpq_mat_init_set, fmpq_mat_window_clear, fmpq_mat_window_init};
 use std::mem::MaybeUninit;
 
 impl MatrixDimensions for MatQ {
@@ -172,15 +169,18 @@ impl MatQ {
     /// # Safety
     /// The user has to ensure that all entries are within the matrix dimensions.
     /// Otherwise, memory leaks can occur and no guarantees are given.
-    pub(crate) fn collect_entries(&self) -> Vec<fmpq> {
-        let mut entries: Vec<fmpq> =
+    pub(crate) fn collect_entries<'a>(&self) -> Vec<&'a fmpq> {
+        let mut entries: Vec<&'a fmpq> =
             Vec::with_capacity((self.get_num_rows() * self.get_num_columns()) as usize);
 
         for row in 0..self.get_num_rows() {
             for col in 0..self.get_num_columns() {
                 // efficiently get entry without cloning the entry itself
-                let entry = unsafe { *fmpq_mat_entry(&self.matrix, row, col) };
-                entries.push(entry);
+                unsafe {
+                    let entry_ptr = fmpq_mat_entry(&self.matrix, row, col);
+                    let entry_ref: &'a fmpq = &*entry_ptr;
+                    entries.push(entry_ref);
+                }
             }
         }
 
@@ -217,7 +217,7 @@ impl MatQ {
             for j in 0..num_cols {
                 // efficiently get entry without cloning the entry itself
                 let entry = unsafe {
-                    flint_sys::fmpq::fmpq_get_d(fmpq_mat_entry(&self.matrix, i as i64, j as i64))
+                    flint3_sys::fmpq_get_d(fmpq_mat_entry(&self.matrix, i as i64, j as i64))
                 };
                 row.push(entry);
             }
@@ -635,24 +635,24 @@ mod test_collect_entries {
         let entries_2 = mat_2.collect_entries();
 
         assert_eq!(entries_1.len(), 6);
-        assert_eq!(entries_1[0].num.0, 1);
-        assert!(entries_1[0].den.0 >= 2_i64.pow(62));
-        assert_eq!(entries_1[1].num.0, 2);
-        assert_eq!(entries_1[1].den.0, 1);
-        assert!(entries_1[2].num.0 >= 2_i64.pow(62));
-        assert_eq!(entries_1[2].den.0, 1);
-        assert!(entries_1[3].num.0 >= 2_i64.pow(62));
-        assert_eq!(entries_1[3].den.0, 1);
-        assert_eq!(entries_1[4].num.0, 3);
-        assert_eq!(entries_1[4].den.0, 4);
-        assert_eq!(entries_1[5].num.0, 4);
-        assert_eq!(entries_1[5].den.0, 1);
+        assert_eq!(entries_1[0].num, 1);
+        assert!(entries_1[0].den >= 2_i64.pow(62));
+        assert_eq!(entries_1[1].num, 2);
+        assert_eq!(entries_1[1].den, 1);
+        assert!(entries_1[2].num >= 2_i64.pow(62));
+        assert_eq!(entries_1[2].den, 1);
+        assert!(entries_1[3].num >= 2_i64.pow(62));
+        assert_eq!(entries_1[3].den, 1);
+        assert_eq!(entries_1[4].num, 3);
+        assert_eq!(entries_1[4].den, 4);
+        assert_eq!(entries_1[5].num, 4);
+        assert_eq!(entries_1[5].den, 1);
 
         assert_eq!(entries_2.len(), 2);
-        assert_eq!(entries_2[0].num.0, -1);
-        assert_eq!(entries_2[0].den.0, 1);
-        assert_eq!(entries_2[1].num.0, -1);
-        assert_eq!(entries_2[1].den.0, 2);
+        assert_eq!(entries_2[0].num, -1);
+        assert_eq!(entries_2[0].den, 1);
+        assert_eq!(entries_2[1].num, -1);
+        assert_eq!(entries_2[1].den, 2);
     }
 
     /// Ensures that all entries from the matrices are actually collected

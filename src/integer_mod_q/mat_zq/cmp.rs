@@ -16,7 +16,7 @@ use crate::{
     macros::compare_base::{compare_base_default, compare_base_get_mod, compare_base_impl},
     traits::CompareBase,
 };
-use flint_sys::{fmpz::fmpz_equal, fmpz_mat::fmpz_mat_equal};
+use flint3_sys::fmpz_mat_equal;
 
 impl PartialEq for MatZq {
     /// Checks if two [`MatZq`] instances are equal. Used by the `==` and `!=` operators.
@@ -47,8 +47,7 @@ impl PartialEq for MatZq {
     /// ```
     fn eq(&self, other: &Self) -> bool {
         unsafe {
-            fmpz_equal(&self.matrix.mod_[0], &other.matrix.mod_[0]) != 0
-                && fmpz_mat_equal(&self.matrix.mat[0], &other.matrix.mat[0]) != 0
+            self.get_mod() == other.get_mod() && fmpz_mat_equal(&self.matrix, &other.matrix) != 0
         }
     }
 }
@@ -65,7 +64,7 @@ impl Eq for MatZq {}
 #[cfg(test)]
 mod test_partial_eq {
     use super::MatZq;
-    use crate::traits::MatrixSetEntry;
+    use crate::traits::{AsInteger, MatrixSetEntry};
     use std::str::FromStr;
 
     /// Ensures that different instantiations do not break the equality between matrices
@@ -137,7 +136,9 @@ mod test_partial_eq {
 
         let c = MatZq::from_str(&format!("[[0]] mod {}", u64::MAX)).unwrap();
         let d = MatZq::from_str(&format!("[[0]] mod {}", u64::MAX - 1)).unwrap();
-        let e = MatZq::from_str(&format!("[[0]] mod {}", c.matrix.mod_[0].0 as u64)).unwrap();
+        let e =
+            MatZq::from_str(&format!("[[0]] mod {}", unsafe { c.get_mod().into_fmpz() } as u64))
+                .unwrap();
 
         assert_ne!(a, b);
 

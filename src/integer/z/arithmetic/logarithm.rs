@@ -9,7 +9,7 @@
 //! Implementations to call the logarithm on a [`Z`] integer.
 
 use crate::{error::MathError, integer::Z, rational::Q};
-use flint_sys::fmpz::{fmpz_clog, fmpz_dlog, fmpz_flog};
+use flint3_sys::{fmpz_clog, fmpz_dlog, fmpz_flog};
 
 impl Z {
     /// Computes the logarithm of a natural number (i.e. an integer greater than `0`)

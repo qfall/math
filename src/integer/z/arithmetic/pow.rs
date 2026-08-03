@@ -9,7 +9,7 @@
 //! This module provides an implementation of the [`Pow`] trait for [`Z`].
 
 use crate::{error::MathError, integer::Z, traits::Pow};
-use flint_sys::fmpz::fmpz_pow_fmpz;
+use flint3_sys::fmpz_pow_fmpz;
 
 impl<Integer: Into<Z>> Pow<Integer> for Z {
     type Output = Z;

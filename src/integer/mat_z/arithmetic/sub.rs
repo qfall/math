@@ -17,8 +17,8 @@ use crate::macros::arithmetics::{
 };
 use crate::rational::MatQ;
 use crate::traits::MatrixDimensions;
-use flint_sys::fmpz_mat::fmpz_mat_sub;
-use flint_sys::fmpz_mod_mat::_fmpz_mod_mat_reduce;
+use flint3_sys::_fmpz_mod_mat_reduce;
+use flint3_sys::fmpz_mat_sub;
 use std::ops::{Sub, SubAssign};
 
 impl SubAssign<&MatZ> for MatZ {
@@ -135,8 +135,8 @@ impl Sub<&MatZq> for &MatZ {
 
         let mut out = MatZq::new(self.get_num_rows(), self.get_num_columns(), other.get_mod());
         unsafe {
-            fmpz_mat_sub(&mut out.matrix.mat[0], &self.matrix, &other.matrix.mat[0]);
-            _fmpz_mod_mat_reduce(&mut out.matrix);
+            fmpz_mat_sub(&mut out.matrix, &self.matrix, &other.matrix);
+            _fmpz_mod_mat_reduce(&mut out.matrix, other.modulus.get_fmpz_mod_ctx_struct());
         }
         out
     }

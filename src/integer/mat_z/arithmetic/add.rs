@@ -15,7 +15,7 @@ use crate::macros::arithmetics::{
     arithmetic_trait_mixed_borrowed_owned,
 };
 use crate::traits::MatrixDimensions;
-use flint_sys::fmpz_mat::fmpz_mat_add;
+use flint3_sys::fmpz_mat_add;
 use std::ops::{Add, AddAssign};
 
 impl AddAssign<&MatZ> for MatZ {

@@ -11,7 +11,7 @@
 
 use super::Q;
 use crate::macros::unsafe_passthrough::{unsafe_getter, unsafe_setter};
-use flint_sys::fmpq::{fmpq, fmpq_clear};
+use flint3_sys::{fmpq, fmpq_clear};
 
 unsafe_getter!(Q, value, fmpq);
 
@@ -20,7 +20,6 @@ unsafe_setter!(Q, value, fmpq, fmpq_clear);
 #[cfg(test)]
 mod test_get_fmpq {
     use super::Q;
-    use flint_sys::fmpz::fmpz;
 
     /// Checks availability of the getter for [`Q::value`]
     /// and its ability to be modified.
@@ -31,7 +30,7 @@ mod test_get_fmpq {
 
         let mut fmpq_rat = unsafe { rational.get_fmpq() };
 
-        fmpq_rat.num = fmpz(2);
+        fmpq_rat.num = 2;
 
         assert_eq!(Q::from(2), rational);
     }
@@ -40,7 +39,7 @@ mod test_get_fmpq {
 #[cfg(test)]
 mod test_set_fmpq {
     use super::Q;
-    use flint_sys::{fmpq::fmpq, fmpz::fmpz};
+    use flint3_sys::fmpq;
 
     /// Checks availability of the setter for [`Q::value`]
     /// and its ability to modify [`Q`].
@@ -48,10 +47,7 @@ mod test_set_fmpq {
     #[allow(unused_mut)]
     fn availability_and_modification() {
         let mut rational = Q::from(1);
-        let flint_struct = fmpq {
-            num: fmpz(2),
-            den: fmpz(1),
-        };
+        let flint_struct = fmpq { num: 2, den: 1 };
 
         unsafe { rational.set_fmpq(flint_struct) };
 

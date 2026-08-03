@@ -8,7 +8,7 @@
 
 //! This module includes functionality about properties of [`PolyOverQ`] instances.
 
-use flint_sys::fmpq_poly::{fmpq_poly_degree, fmpq_poly_is_one};
+use flint3_sys::{fmpq_poly_degree, fmpq_poly_is_one};
 
 use super::PolyOverQ;
 

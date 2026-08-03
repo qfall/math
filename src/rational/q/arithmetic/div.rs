@@ -18,7 +18,7 @@ use crate::{
         arithmetic_trait_mixed_borrowed_owned,
     },
 };
-use flint_sys::fmpq::{fmpq_div, fmpq_div_fmpz, fmpq_is_zero};
+use flint3_sys::{fmpq_div, fmpq_div_fmpz, fmpq_is_zero};
 use std::ops::{Div, DivAssign};
 
 impl DivAssign<&Q> for Q {

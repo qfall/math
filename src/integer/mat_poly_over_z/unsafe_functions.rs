@@ -11,7 +11,7 @@
 
 use super::MatPolyOverZ;
 use crate::macros::unsafe_passthrough::{unsafe_getter, unsafe_setter};
-use flint_sys::fmpz_poly_mat::{fmpz_poly_mat_clear, fmpz_poly_mat_struct};
+use flint3_sys::{fmpz_poly_mat_clear, fmpz_poly_mat_struct};
 
 unsafe_getter!(MatPolyOverZ, matrix, fmpz_poly_mat_struct);
 unsafe_setter!(
@@ -25,7 +25,7 @@ unsafe_setter!(
 mod test_get_fmpz_poly_mat_struct {
     use super::MatPolyOverZ;
     use crate::{integer::PolyOverZ, traits::MatrixGetEntry};
-    use flint_sys::{fmpz_poly::fmpz_poly_set, fmpz_poly_mat::fmpz_poly_mat_entry};
+    use flint3_sys::{fmpz_poly_mat_entry, fmpz_poly_set};
     use std::str::FromStr;
 
     /// Checks availability of the getter for [`MatPolyOverZ::matrix`]
@@ -51,7 +51,7 @@ mod test_get_fmpz_poly_mat_struct {
 mod test_set_fmpz_poly_mat_struct {
     use super::MatPolyOverZ;
     use crate::{integer::PolyOverZ, traits::MatrixGetEntry};
-    use flint_sys::fmpz_poly_mat::fmpz_poly_mat_init;
+    use flint3_sys::fmpz_poly_mat_init;
     use std::{mem::MaybeUninit, str::FromStr};
 
     /// Checks availability of the setter for [`MatPolyOverZ::matrix`]

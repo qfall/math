@@ -13,7 +13,7 @@ use crate::{
     error::MathError,
     traits::{Concatenate, MatrixDimensions},
 };
-use flint_sys::fmpq_mat::{fmpq_mat_concat_horizontal, fmpq_mat_concat_vertical};
+use flint3_sys::{fmpq_mat_concat_horizontal, fmpq_mat_concat_vertical};
 
 impl Concatenate for &MatQ {
     type Output = MatQ;

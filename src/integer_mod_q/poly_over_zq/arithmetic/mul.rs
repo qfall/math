@@ -19,7 +19,7 @@ use crate::{
     traits::CompareBase,
 };
 use core::panic;
-use flint_sys::fmpz_mod_poly::fmpz_mod_poly_mul;
+use flint3_sys::fmpz_mod_poly_mul;
 use std::{
     ops::{Mul, MulAssign},
     str::FromStr,

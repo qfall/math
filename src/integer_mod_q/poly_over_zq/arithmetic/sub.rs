@@ -19,7 +19,7 @@ use crate::{
     },
     traits::CompareBase,
 };
-use flint_sys::fmpz_mod_poly::fmpz_mod_poly_sub;
+use flint3_sys::fmpz_mod_poly_sub;
 use std::{
     ops::{Sub, SubAssign},
     str::FromStr,

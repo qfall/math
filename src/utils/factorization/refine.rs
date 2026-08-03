@@ -9,7 +9,7 @@
 //! Implementations for Factorizations of [`Z`](crate::integer::Z) values.
 
 use super::Factorization;
-use flint_sys::fmpz_factor::fmpz_factor_refine;
+use flint3_sys::fmpz_factor_refine;
 
 impl Factorization {
     /// Allows to refine a partial factorization of type [`Factorization`] to a more

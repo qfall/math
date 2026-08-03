@@ -10,10 +10,10 @@
 
 use super::Z;
 use crate::rational::Q;
-use flint_sys::{
-    fmpq::{fmpq, fmpq_inv},
-    fmpz::{
-        fmpz, fmpz_abs, fmpz_bits, fmpz_is_one, fmpz_is_perfect_power, fmpz_is_prime, fmpz_is_zero,
+use flint3_sys::{
+    fmpq, fmpq_inv,
+    {
+        fmpz_abs, fmpz_bits, fmpz_is_one, fmpz_is_perfect_power, fmpz_is_prime, fmpz_is_zero,
         fmpz_tstbit,
     },
 };
@@ -107,7 +107,7 @@ impl Z {
         // dropped automatically, but the numerator/ self's value is kept alive
         let self_fmpq = fmpq {
             num: self.value,
-            den: fmpz(1),
+            den: 1,
         };
         unsafe { fmpq_inv(&mut out.value, &self_fmpq) };
         Some(out)

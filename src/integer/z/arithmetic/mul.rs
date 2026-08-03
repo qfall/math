@@ -18,10 +18,8 @@ use crate::{
     },
     rational::Q,
 };
-use flint_sys::{
-    fmpq::fmpq_mul_fmpz,
-    fmpz::{fmpz, fmpz_mul, fmpz_mul_si, fmpz_mul_ui},
-    fmpz_mod::fmpz_mod_mul_fmpz,
+use flint3_sys::{
+    fmpq_mul_fmpz, fmpz, fmpz_mod_mul_fmpz, {fmpz_mul, fmpz_mul_si, fmpz_mul_ui},
 };
 use std::ops::{Mul, MulAssign};
 
@@ -166,7 +164,7 @@ impl Mul<&Zq> for &Z {
     /// let f: Zq = Z::from(42) * &e;
     /// ```
     fn mul(self, other: &Zq) -> Self::Output {
-        let mut out = fmpz(0);
+        let mut out: fmpz = 0;
         unsafe {
             fmpz_mod_mul_fmpz(
                 &mut out,

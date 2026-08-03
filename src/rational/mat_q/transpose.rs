@@ -11,7 +11,7 @@
 use crate::traits::*;
 
 use super::MatQ;
-use flint_sys::fmpq_mat::fmpq_mat_transpose;
+use flint3_sys::fmpq_mat_transpose;
 
 impl MatQ {
     /// Returns the transposed form of the given matrix, i.e. rows get transformed to columns

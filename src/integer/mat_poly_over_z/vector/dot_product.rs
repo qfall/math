@@ -11,7 +11,7 @@
 use crate::error::MathError;
 use crate::integer::{MatPolyOverZ, PolyOverZ};
 use crate::traits::MatrixDimensions;
-use flint_sys::fmpz_poly::{fmpz_poly_add, fmpz_poly_mul};
+use flint3_sys::{fmpz_poly_add, fmpz_poly_mul};
 
 impl MatPolyOverZ {
     /// Returns the dot product of two vectors of type [`MatPolyOverZ`].
@@ -72,7 +72,7 @@ impl MatPolyOverZ {
         for i in 0..self_entries.len() {
             // sets result = result + self.entry[i] * other.entry[i] without cloned PolyOverZ element
             unsafe {
-                fmpz_poly_mul(&mut temp.poly, &self_entries[i], &other_entries[i]);
+                fmpz_poly_mul(&mut temp.poly, self_entries[i], other_entries[i]);
 
                 fmpz_poly_add(&mut result.poly, &result.poly, &temp.poly)
             }

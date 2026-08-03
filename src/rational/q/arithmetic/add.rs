@@ -17,7 +17,7 @@ use crate::{
         arithmetic_trait_mixed_borrowed_owned,
     },
 };
-use flint_sys::fmpq::{fmpq_add, fmpq_add_fmpz, fmpq_add_si, fmpq_add_ui};
+use flint3_sys::{fmpq_add, fmpq_add_fmpz, fmpq_add_si, fmpq_add_ui};
 use std::ops::{Add, AddAssign};
 
 impl AddAssign<&Q> for Q {

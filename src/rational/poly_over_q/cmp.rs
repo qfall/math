@@ -16,7 +16,7 @@ use crate::{
     rational::Q,
     traits::{CompareBase, GetCoefficient},
 };
-use flint_sys::fmpq_poly::fmpq_poly_equal;
+use flint3_sys::fmpq_poly_equal;
 
 impl PartialEq for PolyOverQ {
     /// Checks if two polynomials over [`Q`](crate::rational::Q) are equal. Used by the `==` and `!=` operators.

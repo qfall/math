@@ -10,9 +10,8 @@
 //! This includes checks such as reducibility.
 
 use super::PolyOverZq;
-use flint_sys::{
-    fmpz_mod_poly::{fmpz_mod_poly_degree, fmpz_mod_poly_is_one},
-    fmpz_mod_poly_factor::fmpz_mod_poly_is_irreducible,
+use flint3_sys::{
+    fmpz_mod_poly_is_irreducible, {fmpz_mod_poly_degree, fmpz_mod_poly_is_one},
 };
 
 impl PolyOverZq {
@@ -30,6 +29,11 @@ impl PolyOverZq {
     /// assert!(poly_irr.is_irreducible());
     /// ```
     pub fn is_irreducible(&self) -> bool {
+        // prevent running into FLINT error
+        if !self.get_mod().is_prime() {
+            return false;
+        }
+
         1 == unsafe {
             fmpz_mod_poly_is_irreducible(&self.poly, self.modulus.get_fmpz_mod_ctx_struct())
         }

@@ -10,7 +10,7 @@
 
 use super::MatPolynomialRingZq;
 use crate::traits::MatrixDimensions;
-use flint_sys::fmpz_poly_mat::fmpz_poly_mat_transpose;
+use flint3_sys::fmpz_poly_mat_transpose;
 
 impl MatPolynomialRingZq {
     /// Returns the transposed form of the given matrix, i.e. rows get transformed to columns

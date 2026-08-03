@@ -9,7 +9,7 @@
 //! Implementations to approximate the exponential function using a [`PolyOverQ`] polynomial.
 
 use crate::rational::PolyOverQ;
-use flint_sys::fmpq_poly::fmpq_poly_exp_series;
+use flint3_sys::fmpq_poly_exp_series;
 use std::str::FromStr;
 
 impl PolyOverQ {

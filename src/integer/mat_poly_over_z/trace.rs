@@ -8,7 +8,7 @@
 
 //! This module contains the implementation of the `trace` function.
 
-use flint_sys::fmpz_poly_mat::fmpz_poly_mat_trace;
+use flint3_sys::fmpz_poly_mat_trace;
 
 use super::MatPolyOverZ;
 use crate::{error::MathError, integer::PolyOverZ, traits::MatrixDimensions};

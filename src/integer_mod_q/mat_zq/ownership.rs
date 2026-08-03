@@ -12,9 +12,8 @@
 //! The explicit functions contain the documentation.
 
 use super::MatZq;
-use crate::integer::Z;
 use crate::traits::MatrixDimensions;
-use flint_sys::fmpz_mod_mat::{fmpz_mod_mat_clear, fmpz_mod_mat_init_set};
+use flint3_sys::{fmpz_mod_mat_clear, fmpz_mod_mat_init_set};
 
 impl Clone for MatZq {
     /// Clones the given element and returns a deep clone of the [`MatZq`] element.
@@ -29,13 +28,13 @@ impl Clone for MatZq {
     /// let b = a.clone();
     /// ```
     fn clone(&self) -> Self {
-        let mut out = MatZq::new(
-            self.get_num_rows(),
-            self.get_num_columns(),
-            Z::from(self.get_mod()),
-        );
+        let mut out = MatZq::new(self.get_num_rows(), self.get_num_columns(), self.get_mod());
         unsafe {
-            fmpz_mod_mat_init_set(&mut out.matrix, &self.matrix);
+            fmpz_mod_mat_init_set(
+                &mut out.matrix,
+                &self.matrix,
+                self.modulus.get_fmpz_mod_ctx_struct(),
+            );
         }
         out
     }
@@ -64,7 +63,7 @@ impl Drop for MatZq {
     /// drop(a); // explicitly drops a's value
     /// ```
     fn drop(&mut self) {
-        unsafe { fmpz_mod_mat_clear(&mut self.matrix) }
+        unsafe { fmpz_mod_mat_clear(&mut self.matrix, self.modulus.get_fmpz_mod_ctx_struct()) }
     }
 }
 
@@ -109,20 +108,20 @@ mod test_clone {
         a = b.clone();
 
         assert_ne!(
-            MatrixGetEntry::<Z>::get_entry(&a, 0, 0).unwrap().value.0,
-            MatrixGetEntry::<Z>::get_entry(&b, 0, 0).unwrap().value.0
+            MatrixGetEntry::<Z>::get_entry(&a, 0, 0).unwrap().value,
+            MatrixGetEntry::<Z>::get_entry(&b, 0, 0).unwrap().value
         );
         assert_ne!(
-            MatrixGetEntry::<Z>::get_entry(&a, 0, 1).unwrap().value.0,
-            MatrixGetEntry::<Z>::get_entry(&b, 0, 1).unwrap().value.0
+            MatrixGetEntry::<Z>::get_entry(&a, 0, 1).unwrap().value,
+            MatrixGetEntry::<Z>::get_entry(&b, 0, 1).unwrap().value
         );
         assert_ne!(
-            MatrixGetEntry::<Z>::get_entry(&a, 1, 0).unwrap().value.0,
-            MatrixGetEntry::<Z>::get_entry(&b, 1, 0).unwrap().value.0
+            MatrixGetEntry::<Z>::get_entry(&a, 1, 0).unwrap().value,
+            MatrixGetEntry::<Z>::get_entry(&b, 1, 0).unwrap().value
         );
         assert_eq!(
-            MatrixGetEntry::<Z>::get_entry(&a, 1, 1).unwrap().value.0,
-            MatrixGetEntry::<Z>::get_entry(&b, 1, 1).unwrap().value.0
+            MatrixGetEntry::<Z>::get_entry(&a, 1, 1).unwrap().value,
+            MatrixGetEntry::<Z>::get_entry(&b, 1, 1).unwrap().value
         ); // kept on stack
     }
 
@@ -138,17 +137,6 @@ mod test_clone {
         assert_eq!(MatrixGetEntry::<Z>::get_entry(&a, 1, 1).unwrap(), 1);
         assert_eq!(MatrixGetEntry::<Z>::get_entry(&a, 1, 0).unwrap(), 0);
     }
-
-    /// Check if large modulus is stored separately and therefore cloned deeply
-    #[test]
-    fn modulus_storage() {
-        let string = format!("[[{}, {}],[-10, 0]] mod {}", i64::MAX, i64::MIN, u64::MAX);
-        let b = MatZq::from_str(&string).unwrap();
-
-        let a = b.clone();
-
-        assert_ne!(a.matrix.mod_[0].0, b.matrix.mod_[0].0);
-    }
 }
 
 /// Test that the [`Drop`] trait is correctly implemented.
@@ -156,7 +144,7 @@ mod test_clone {
 mod test_drop {
     use super::MatZq;
     use crate::integer::Z;
-    use crate::traits::MatrixGetEntry;
+    use crate::traits::{AsInteger, MatrixGetEntry};
     use std::collections::HashSet;
     use std::str::FromStr;
 
@@ -166,9 +154,9 @@ mod test_drop {
         let string = format!("[[{}, {}]] mod {}", i64::MAX, i64::MIN, u64::MAX);
         let a = MatZq::from_str(&string).unwrap();
 
-        let storage_mod = a.matrix.mod_[0].0;
-        let storage_0 = MatrixGetEntry::<Z>::get_entry(&a, 0, 0).unwrap().value.0;
-        let storage_1 = MatrixGetEntry::<Z>::get_entry(&a, 0, 1).unwrap().value.0;
+        let storage_mod = unsafe { a.get_mod().into_fmpz() };
+        let storage_0 = MatrixGetEntry::<Z>::get_entry(&a, 0, 0).unwrap().value;
+        let storage_1 = MatrixGetEntry::<Z>::get_entry(&a, 0, 1).unwrap().value;
 
         (storage_mod, storage_0, storage_1)
     }

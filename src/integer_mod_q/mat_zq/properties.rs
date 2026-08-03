@@ -13,9 +13,8 @@ use crate::{
     integer::Z,
     traits::{MatrixDimensions, MatrixGetEntry},
 };
-use flint_sys::{
-    fmpz_mat::fmpz_mat_is_one,
-    fmpz_mod_mat::{fmpz_mod_mat_is_square, fmpz_mod_mat_is_zero},
+use flint3_sys::{
+    fmpz_mat_is_one, {fmpz_mod_mat_is_square, fmpz_mod_mat_is_zero},
 };
 
 impl MatZq {
@@ -41,7 +40,7 @@ impl MatZq {
     /// assert!(value.is_identity());
     /// ```
     pub fn is_identity(&self) -> bool {
-        unsafe { 1 == fmpz_mat_is_one(&self.matrix.mat[0]) }
+        unsafe { 1 == fmpz_mat_is_one(&self.matrix) }
     }
 
     /// Checks if a [`MatZq`] is a square matrix.
@@ -57,7 +56,7 @@ impl MatZq {
     /// assert!(value.is_square());
     /// ```
     pub fn is_square(&self) -> bool {
-        1 == unsafe { fmpz_mod_mat_is_square(&self.matrix) }
+        1 == unsafe { fmpz_mod_mat_is_square(&self.matrix, self.modulus.get_fmpz_mod_ctx_struct()) }
     }
 
     /// Checks if every entry of a [`MatZq`] is `0`.
@@ -73,7 +72,7 @@ impl MatZq {
     /// assert!(value.is_zero());
     /// ```
     pub fn is_zero(&self) -> bool {
-        1 == unsafe { fmpz_mod_mat_is_zero(&self.matrix) }
+        1 == unsafe { fmpz_mod_mat_is_zero(&self.matrix, self.modulus.get_fmpz_mod_ctx_struct()) }
     }
 
     /// Checks if a [`MatZq`] is symmetric.

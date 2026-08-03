@@ -9,7 +9,7 @@
 //! Default value for a [`PolyOverQ`].
 
 use super::PolyOverQ;
-use flint_sys::fmpq_poly::fmpq_poly_init;
+use flint3_sys::fmpq_poly_init;
 use std::mem::MaybeUninit;
 
 impl Default for PolyOverQ {
