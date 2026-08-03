@@ -16,8 +16,7 @@ use crate::{
     macros::for_others::{implement_for_others, implement_trait_reverse},
 };
 use flint3_sys::{
-    {fmpq_cmp, fmpq_equal},
-    fmpz_equal,
+    fmpz_equal, {fmpq_cmp, fmpq_equal},
 };
 use std::cmp::Ordering;
 

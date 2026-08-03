@@ -11,8 +11,8 @@
 use super::MatQ;
 use crate::rational::Q;
 use crate::traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix};
+use flint3_sys::{fmpq, fmpq_mat_entry, fmpq_set};
 use flint3_sys::{fmpq_mat_init_set, fmpq_mat_window_clear, fmpq_mat_window_init};
-use flint3_sys::{fmpq, fmpq_set, fmpq_mat_entry};
 use std::mem::MaybeUninit;
 
 impl MatrixDimensions for MatQ {

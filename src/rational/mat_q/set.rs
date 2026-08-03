@@ -15,11 +15,11 @@ use crate::{
     utils::index::{evaluate_index_for_vector, evaluate_indices_for_matrix},
 };
 use flint3_sys::{
-    {fmpq_set, fmpq_swap},
     {
         fmpq_mat_entry, fmpq_mat_invert_cols, fmpq_mat_invert_rows, fmpq_mat_set,
         fmpq_mat_swap_cols, fmpq_mat_swap_rows, fmpq_mat_window_clear, fmpq_mat_window_init,
     },
+    {fmpq_set, fmpq_swap},
 };
 use std::{fmt::Display, mem::MaybeUninit, ptr::null_mut};
 
