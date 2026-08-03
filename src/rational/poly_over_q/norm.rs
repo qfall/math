@@ -68,6 +68,31 @@ impl PolyOverQ {
         }
         res
     }
+
+    /// Outputs the hamming weight of `self`, i.e. it returns the number of
+    /// non-zero coefficients in the polynomial.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::PolyOverQ;
+    /// use std::str::FromStr;
+    ///
+    /// let poly = PolyOverQ::from_str("5  1 2/3 3/2 0 4").unwrap();
+    ///
+    /// let hamming_weight = poly.hamming_weight();
+    ///
+    /// assert_eq!(4, hamming_weight);
+    /// ```
+    pub fn hamming_weight(&self) -> i64 {
+        let mut hamming_weight = 0;
+        for i in 0..=self.get_degree() {
+            let coeff = unsafe { self.get_coeff_unchecked(i) };
+            if !coeff.is_zero() {
+                hamming_weight += 1;
+            }
+        }
+        hamming_weight
+    }
 }
 
 #[cfg(test)]
@@ -140,5 +165,24 @@ mod test_norm_infty {
 
         assert_eq!(poly_1.norm_infty(), Q::from(u64::MAX));
         assert_eq!(poly_2.norm_infty(), Q::from(i64::MAX));
+    }
+}
+
+#[cfg(test)]
+mod test_hamming_weight {
+    use super::PolyOverQ;
+    use std::str::FromStr;
+
+    /// Ensures that the hamming weight is computed correctly.
+    #[test]
+    fn hamming_weight() {
+        let poly0 = PolyOverQ::default();
+        let poly1 = PolyOverQ::from_str("6  0 0 2/2 3/2 4 5/7").unwrap();
+
+        let hw0 = poly0.hamming_weight();
+        let hw1 = poly1.hamming_weight();
+
+        assert_eq!(0, hw0);
+        assert_eq!(4, hw1);
     }
 }

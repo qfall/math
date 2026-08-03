@@ -49,14 +49,15 @@ impl Zq {
     ///
     /// let z_value = zq_value.get_representative_least_absolute_residue();
     ///
-    /// assert_eq!(Z::from(2), z_value);
+    /// assert_eq!(Z::from(-2), z_value);
     /// ```
     pub fn get_representative_least_absolute_residue(&self) -> Z {
         let mod_z = Z::from(&self.modulus);
-        if self.value < mod_z.div_ceil(2) {
-            self.value.clone()
+        let mod_half = mod_z.div_floor(2);
+        if self.value > mod_half {
+            &self.value - mod_z
         } else {
-            Z::from(self.modulus.clone()) - self.value.clone()
+            self.value.clone()
         }
     }
 
@@ -123,7 +124,7 @@ mod test_get_representative_least_absolute_residue {
         let res_1 = value_1.get_representative_least_absolute_residue();
 
         assert_eq!(res_0, Z::from(2));
-        assert_eq!(res_1, Z::from(2));
+        assert_eq!(res_1, Z::from(-2));
     }
 
     /// Check whether `get_representative_least_absolute_residue` outputs the correct value for large values
@@ -136,7 +137,7 @@ mod test_get_representative_least_absolute_residue {
         let res_1 = value_1.get_representative_least_absolute_residue();
 
         assert_eq!(res_0, Z::from(i64::MAX));
-        assert_eq!(res_1, Z::from(1));
+        assert_eq!(res_1, Z::from(-1));
     }
 
     /// Check whether `get_representative_least_absolute_residue` outputs the correct value for special cases
@@ -144,12 +145,15 @@ mod test_get_representative_least_absolute_residue {
     fn get_special() {
         let value_0 = Zq::from((10, 20));
         let value_1 = Zq::from((0, 20));
+        let value_2 = Zq::from((11, 21));
 
         let res_0 = value_0.get_representative_least_absolute_residue();
         let res_1 = value_1.get_representative_least_absolute_residue();
+        let res_2 = value_2.get_representative_least_absolute_residue();
 
         assert_eq!(res_0, Z::from(10));
         assert_eq!(res_1, Z::from(0));
+        assert_eq!(res_2, Z::from(-10));
     }
 }
 

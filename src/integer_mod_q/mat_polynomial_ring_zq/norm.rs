@@ -11,9 +11,9 @@
 
 use super::MatPolynomialRingZq;
 use crate::{
-    integer::Z,
+    integer::{PolyOverZ, Z},
     rational::Q,
-    traits::{MatrixDimensions, MatrixGetSubmatrix},
+    traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix},
 };
 
 impl MatPolynomialRingZq {
@@ -96,6 +96,33 @@ impl MatPolynomialRingZq {
         }
         max_norm
     }
+
+    /// Outputs the hamming weight of `self`, i.e. it computes the number of non-zero
+    /// coefficients across all polynomials in the matrix.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::{integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq}, integer::{Z, MatPolyOverZ}};
+    /// use std::str::FromStr;
+    ///
+    /// let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 7").unwrap();
+    /// let mat = MatPolyOverZ::from_str("[[2  2 1, 2  3 0],[1  2, 0]]").unwrap();
+    /// let mat = MatPolynomialRingZq::from((&mat, &modulus));
+    ///
+    /// let hamming_weight = mat.hamming_weight();
+    ///
+    /// assert_eq!(4, hamming_weight);
+    /// ```
+    pub fn hamming_weight(&self) -> i64 {
+        let mut hamming_weight = 0;
+        for row in 0..self.get_num_rows() {
+            for col in 0..self.get_num_columns() {
+                let entry: PolyOverZ = unsafe { self.get_entry_unchecked(row, col) };
+                hamming_weight += entry.hamming_weight();
+            }
+        }
+        hamming_weight
+    }
 }
 
 #[cfg(test)]
@@ -143,5 +170,28 @@ mod test_matrix_norms {
         let infty_norm = mat.norm_l_infty_infty();
 
         assert_eq!(Z::from(3), infty_norm);
+    }
+}
+
+#[cfg(test)]
+mod test_hamming_weight {
+    use super::MatPolynomialRingZq;
+    use crate::{integer::MatPolyOverZ, integer_mod_q::ModulusPolynomialRingZq};
+    use std::str::FromStr;
+
+    /// Ensures that the hamming weight is computed correctly.
+    #[test]
+    fn hamming_weight() {
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 8").unwrap();
+        let mat0 = MatPolyOverZ::new(3, 4);
+        let mat0 = MatPolynomialRingZq::from((&mat0, &modulus));
+        let mat1 = MatPolyOverZ::from_str("[[1  -2, 2  3 2],[2  2 0, 1  -5],[1  -2, 0]]").unwrap();
+        let mat1 = MatPolynomialRingZq::from((&mat1, &modulus));
+
+        let hw0 = mat0.hamming_weight();
+        let hw1 = mat1.hamming_weight();
+
+        assert_eq!(0, hw0);
+        assert_eq!(6, hw1);
     }
 }

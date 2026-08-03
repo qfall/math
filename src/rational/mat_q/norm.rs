@@ -12,7 +12,7 @@
 use super::MatQ;
 use crate::{
     rational::Q,
-    traits::{MatrixDimensions, MatrixGetSubmatrix},
+    traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix},
 };
 
 impl MatQ {
@@ -88,6 +88,33 @@ impl MatQ {
         }
         max_norm
     }
+
+    /// Outputs the hamming weight of `self`, i.e. it returns the number of
+    /// non-zero entries in the matrix.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::rational::MatQ;
+    /// use std::str::FromStr;
+    ///
+    /// let mat = MatQ::from_str("[[2, 3/2],[2/3, 0]]").unwrap();
+    ///
+    /// let hamming_weight = mat.hamming_weight();
+    ///
+    /// assert_eq!(3, hamming_weight);
+    /// ```
+    pub fn hamming_weight(&self) -> i64 {
+        let mut hamming_weight = 0;
+        for row in 0..self.get_num_rows() {
+            for col in 0..self.get_num_columns() {
+                let entry = unsafe { self.get_entry_unchecked(row, col) };
+                if !entry.is_zero() {
+                    hamming_weight += 1;
+                }
+            }
+        }
+        hamming_weight
+    }
 }
 
 #[cfg(test)]
@@ -123,5 +150,24 @@ mod test_matrix_norms {
         let infty_norm = mat.norm_l_infty_infty();
 
         assert_eq!(Q::from(5), infty_norm);
+    }
+}
+
+#[cfg(test)]
+mod test_hamming_weight {
+    use super::MatQ;
+    use std::str::FromStr;
+
+    /// Ensures that the hamming weight is computed correctly.
+    #[test]
+    fn hamming_weight() {
+        let mat0 = MatQ::new(10, 8);
+        let mat1 = MatQ::from_str("[[-2/5, 3/4],[2, -5/2],[-2, 0]]").unwrap();
+
+        let hw0 = mat0.hamming_weight();
+        let hw1 = mat1.hamming_weight();
+
+        assert_eq!(0, hw0);
+        assert_eq!(5, hw1);
     }
 }

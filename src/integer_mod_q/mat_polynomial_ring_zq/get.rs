@@ -12,7 +12,7 @@ use super::MatPolynomialRingZq;
 use crate::{
     integer::{MatPolyOverZ, PolyOverZ},
     integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq},
-    traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix},
+    traits::{MatrixDimensions, MatrixGetEntry, MatrixGetSubmatrix, MatrixSetEntry},
 };
 use flint3_sys::{fmpz_poly_mat_entry, fmpz_poly_struct};
 
@@ -38,10 +38,45 @@ impl MatPolynomialRingZq {
 
 impl MatPolynomialRingZq {
     /// Creates a [`MatPolyOverZ`] where each entry is a representative of the
+    /// equivalence class of each entry from a [`MatPolynomialRingZq`] with coefficients centered around `0`.
+    ///
+    /// The representation of the coefficients is in the range `[-modulus/2, modulus/2]` and
+    /// the representation of the polynomials is in the range `[0, modulus_polynomial)`.
+    /// Use [`MatPolynomialRingZq::get_representative_least_nonnegative_residue`] if they should be
+    /// in the range `[0, modulus)`.
+    ///
+    /// # Examples
+    /// ```
+    /// use qfall_math::integer_mod_q::MatPolynomialRingZq;
+    /// use qfall_math::integer::MatPolyOverZ;
+    /// use std::str::FromStr;
+    ///
+    /// let poly_ring_mat = MatPolynomialRingZq::from_str("[[1  10, 1  11]] / 4  1 0 0 1 mod 21").unwrap();
+    ///
+    /// let matrix = poly_ring_mat.get_representative_least_absolute_residue();
+    ///
+    /// let cmp_poly_mat = MatPolyOverZ::from_str("[[1  10, 1  -10]]").unwrap();
+    /// assert_eq!(cmp_poly_mat, matrix);
+    /// ```
+    pub fn get_representative_least_absolute_residue(&self) -> MatPolyOverZ {
+        let mut out = MatPolyOverZ::new(self.get_num_rows(), self.get_num_columns());
+        for row in 0..self.get_num_rows() {
+            for col in 0..self.get_num_columns() {
+                let poly: PolynomialRingZq = unsafe { self.get_entry_unchecked(row, col) };
+                let lar_poly = poly.get_representative_least_absolute_residue();
+                unsafe { out.set_entry_unchecked(row, col, lar_poly) };
+            }
+        }
+        out
+    }
+
+    /// Creates a [`MatPolyOverZ`] where each entry is a representative of the
     /// equivalence class of each entry from a [`MatPolynomialRingZq`].
     ///
     /// The representation of the coefficients is in the range `[0, modulus)` and
     /// the representation of the polynomials is in the range `[0, modulus_polynomial)`.
+    /// Use [`MatPolynomialRingZq::get_representative_least_absolute_residue`] if they should be
+    /// in the range `[-modulus/2, modulus/2]`.
     ///
     /// # Examples
     /// ```
@@ -441,6 +476,40 @@ mod test_mod {
             modulus,
             ModulusPolynomialRingZq::from_str(&format!("2  42 1 mod {LARGE_PRIME}")).unwrap()
         );
+    }
+}
+
+#[cfg(test)]
+mod test_get_representative_least_absolute_residue {
+    use crate::{integer::MatPolyOverZ, integer_mod_q::MatPolynomialRingZq};
+    use std::str::FromStr;
+
+    /// Check whether `get_representative_least_absolute_residue` outputs the correct value for large values
+    #[test]
+    fn large_numbers() {
+        let poly_ring = MatPolynomialRingZq::from_str(&format!(
+            "[[2  {} {}]] / 4  1 0 0 1 mod {}",
+            i64::MAX,
+            u64::MAX - 1,
+            u64::MAX
+        ))
+        .unwrap();
+
+        let lar_mat = poly_ring.get_representative_least_absolute_residue();
+
+        let cmp_mat = MatPolyOverZ::from_str(&format!("[[2  {} -1]]", i64::MAX)).unwrap();
+        assert_eq!(cmp_mat, lar_mat);
+    }
+
+    /// Check whether `get_representative_least_absolute_residue` outputs the correct value for special cases
+    #[test]
+    fn special_numbers() {
+        let mat = MatPolynomialRingZq::from_str("[[3  10 0 11]] / 4  1 0 0 1 mod 21").unwrap();
+
+        let lar_mat = mat.get_representative_least_absolute_residue();
+
+        let cmp_mat = MatPolyOverZ::from_str("[[3  10 0 -10]]").unwrap();
+        assert_eq!(cmp_mat, lar_mat);
     }
 }
 
