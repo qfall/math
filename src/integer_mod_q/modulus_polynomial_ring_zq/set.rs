@@ -99,7 +99,7 @@ mod test_change_q {
 
         modulus.change_q(&q);
 
-        assert_eq!(vec![0, 2, 4, 5], modulus.non_zero);
+        assert_eq!(vec![0, 2, 4], modulus.non_zero);
         assert!(modulus.ntt_basis.is_none());
     }
 }

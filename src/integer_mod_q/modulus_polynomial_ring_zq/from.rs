@@ -202,12 +202,12 @@ impl FromStr for ModulusPolynomialRingZq {
     }
 }
 
-/// Fills a vector with the position of all non-zero coefficients in a [`PolyOverZq`].
+/// Fills a vector with the position of all non-zero coefficients in a [`PolyOverZq`] except the leading coefficient.
 ///
 /// Parameters:
 /// - `poly`: defines the polynomial whose positions of non-zero coefficients are output
 ///
-/// Returns a [`Vec<usize>`] containing the positions of all non-zero coefficients.
+/// Returns a [`Vec<usize>`] containing the positions of all non-zero coefficients except the leading coefficient.
 ///
 /// # Examples
 /// ```compile_fail
@@ -220,7 +220,7 @@ impl FromStr for ModulusPolynomialRingZq {
 /// ```
 pub(crate) fn non_zero_positions(poly: &PolyOverZq) -> Vec<usize> {
     let mut non_zero = Vec::new();
-    for i in 0..=poly.get_degree() {
+    for i in 0..poly.get_degree() {
         let coeff: Z = poly.get_coeff(i).unwrap();
         if coeff != 0 {
             non_zero.push(i.try_into().unwrap());
