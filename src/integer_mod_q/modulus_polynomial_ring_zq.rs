@@ -22,10 +22,12 @@ mod norm;
 mod ntt_basis;
 mod ownership;
 mod serialize;
+mod set;
 mod to_string;
 
 /// [`ModulusPolynomialRingZq`] represents the modulus object for
-/// [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq)
+/// [`PolynomialRingZq`](crate::integer_mod_q::PolynomialRingZq).
+/// The underlying polynomials need to be monic, i.e. the leading coefficient needs to be `1`.
 ///
 /// Attributes
 /// - `modulus`: holds the specific content, i.e. the modulus `q` and f(X)

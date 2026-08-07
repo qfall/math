@@ -30,6 +30,7 @@ mod get;
 mod properties;
 mod reduce;
 mod sample;
+mod set;
 mod to_string;
 mod unsafe_functions;
 
