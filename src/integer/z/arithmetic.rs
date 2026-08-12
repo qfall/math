@@ -15,6 +15,7 @@ mod exp;
 mod logarithm;
 mod modulo;
 mod mul;
+mod neg;
 mod pow;
 mod root;
 mod sub;

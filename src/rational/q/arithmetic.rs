@@ -14,6 +14,7 @@ mod div;
 mod exp;
 mod logarithm;
 mod mul;
+mod neg;
 mod pow;
 mod root;
 mod sub;
