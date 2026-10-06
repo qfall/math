@@ -13,7 +13,7 @@
 
 use super::MatZq;
 use crate::traits::MatrixDimensions;
-use flint3_sys::{fmpz_mod_mat_clear, fmpz_mod_mat_init_set};
+use flint3_sys::{fmpz_mod_mat_clear, fmpz_mod_mat_set};
 
 impl Clone for MatZq {
     /// Clones the given element and returns a deep clone of the [`MatZq`] element.
@@ -30,7 +30,7 @@ impl Clone for MatZq {
     fn clone(&self) -> Self {
         let mut out = MatZq::new(self.get_num_rows(), self.get_num_columns(), self.get_mod());
         unsafe {
-            fmpz_mod_mat_init_set(
+            fmpz_mod_mat_set(
                 &mut out.matrix,
                 &self.matrix,
                 self.modulus.get_fmpz_mod_ctx_struct(),
@@ -73,7 +73,7 @@ mod test_clone {
     use super::MatZq;
     use crate::integer::Z;
     use crate::traits::{MatrixDimensions, MatrixGetEntry};
-    use std::str::FromStr;
+    use std::{collections::HashSet, str::FromStr};
 
     /// check if a cloned value is still alive after the original value ran out of scope
     #[test]
@@ -136,6 +136,23 @@ mod test_clone {
 
         assert_eq!(MatrixGetEntry::<Z>::get_entry(&a, 1, 1).unwrap(), 1);
         assert_eq!(MatrixGetEntry::<Z>::get_entry(&a, 1, 0).unwrap(), 0);
+    }
+
+    /// Ensure that cloning does not leak the memory allocated for the entries.
+    /// If the clone re-initializes its already allocated entries, e.g. via
+    /// `fmpz_mod_mat_init_set`, the previous allocation is never freed and
+    /// every clone's entries are stored at a fresh address.
+    #[test]
+    fn no_memory_leak() {
+        let a = MatZq::from_str("[[1, 2, 3],[4, 5, 6]] mod 7").unwrap();
+        let mut storage_addresses = HashSet::new();
+
+        for _i in 0..5 {
+            let b = a.clone();
+            storage_addresses.insert(b.matrix.entries as usize);
+        }
+
+        assert!(storage_addresses.len() < 5);
     }
 }
 

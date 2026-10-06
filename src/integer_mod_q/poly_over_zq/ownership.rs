@@ -12,9 +12,7 @@
 //! The explicit functions contain the documentation.
 
 use super::PolyOverZq;
-use crate::integer::PolyOverZ;
-use flint3_sys::{fmpz_mod_poly_clear, fmpz_mod_poly_init, fmpz_mod_poly_set_fmpz_poly};
-use std::{mem::MaybeUninit, str::FromStr};
+use flint3_sys::{fmpz_mod_poly_clear, fmpz_mod_poly_set};
 
 impl Clone for PolyOverZq {
     /// Clones the given [`PolyOverZq`] element by returning a deep clone,
@@ -30,28 +28,17 @@ impl Clone for PolyOverZq {
     /// let b = a.clone();
     /// ```
     fn clone(&self) -> Self {
-        let string = self.to_string();
-        let poly_over_z = PolyOverZ::from_str(&string).unwrap();
+        let mut out = PolyOverZq::from(&self.modulus);
 
-        let mut poly_zq = MaybeUninit::uninit();
         unsafe {
-            // init new fmpz_mod_poly_struct
-            fmpz_mod_poly_init(poly_zq.as_mut_ptr(), self.modulus.get_fmpz_mod_ctx_struct());
-
-            // set fmpz_mod_poly_struct to actual value
-            let mut poly_zq = poly_zq.assume_init();
-            fmpz_mod_poly_set_fmpz_poly(
-                &mut poly_zq,
-                &poly_over_z.poly,
+            fmpz_mod_poly_set(
+                &mut out.poly,
+                &self.poly,
                 self.modulus.get_fmpz_mod_ctx_struct(),
-            );
+            )
+        };
 
-            // return clone
-            Self {
-                poly: poly_zq,
-                modulus: self.modulus.clone(),
-            }
-        }
+        out
     }
 }
 
@@ -118,6 +105,28 @@ mod test_clone {
 
         // check if length of polynomials is equal
         assert_eq!(a.poly.length, b.poly.length);
+    }
+
+    /// Ensure that the zero polynomial can be cloned.
+    #[test]
+    fn zero_polynomial() {
+        let a = PolyOverZq::from_str("0 mod 17").unwrap();
+        let b = PolyOverZq::from_str("1  17 mod 17").unwrap();
+
+        assert_eq!(a, a.clone());
+        assert_eq!(b, b.clone());
+        assert_eq!(a.get_mod(), a.clone().get_mod());
+    }
+
+    /// Ensure that cloning preserves the value and modulus.
+    #[test]
+    fn correct_value() {
+        let a = PolyOverZq::from_str(&format!("4  {} 1 -2 3 mod {}", i64::MAX, u64::MAX)).unwrap();
+
+        let b = a.clone();
+
+        assert_eq!(a, b);
+        assert_eq!(a.get_mod(), b.get_mod());
     }
 }
 
