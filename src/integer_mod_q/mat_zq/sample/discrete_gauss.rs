@@ -197,7 +197,7 @@ mod test_sample_discrete_gauss {
         integer::Z,
         integer_mod_q::{MatZq, Modulus},
         rational::Q,
-        traits::MatrixGetEntry
+        traits::MatrixGetEntry,
     };
 
     // This function only allows for a broader availability, which is tested here.
