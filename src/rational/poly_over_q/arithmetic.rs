@@ -14,4 +14,5 @@ mod div_scalar;
 mod exp;
 mod mul;
 mod mul_scalar;
+mod neg;
 mod sub;
