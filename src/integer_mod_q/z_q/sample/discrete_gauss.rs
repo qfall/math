@@ -65,6 +65,7 @@ impl Zq {
             &s,
             unsafe { TAILCUT },
             LookupTableSetting::NoLookup,
+            None,
         )?;
 
         let sample = dgis.sample_z();

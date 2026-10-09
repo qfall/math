@@ -56,7 +56,7 @@ impl MatNTTPolynomialRingZq {
         );
         let interval_size = modulus.get_q();
 
-        let mut uis = UniformIntegerSampler::init(&interval_size).unwrap();
+        let mut uis = UniformIntegerSampler::init(&interval_size, None).unwrap();
 
         let vector = (0..modulus.get_degree() as usize * nr_rows * nr_columns)
             .map(|_| uis.sample())

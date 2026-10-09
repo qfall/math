@@ -35,7 +35,7 @@ impl Zq {
     /// - if the given modulus is smaller than or equal to `1`.
     pub fn sample_uniform(modulus: impl Into<Z>) -> Self {
         let modulus: Z = modulus.into();
-        let mut uis = UniformIntegerSampler::init(&modulus).unwrap();
+        let mut uis = UniformIntegerSampler::init(&modulus, None).unwrap();
 
         let random = uis.sample();
         Zq::from((random, modulus))

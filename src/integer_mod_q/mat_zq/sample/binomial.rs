@@ -110,7 +110,7 @@ impl MatZq {
     ) -> Result<Self, MathError> {
         let offset: Z = offset.into();
         let modulus: Modulus = modulus.into();
-        let mut bin_sampler = BinomialSampler::init(n, p)?;
+        let mut bin_sampler = BinomialSampler::init(n, p, None)?;
         let mut matrix = MatZq::new(num_rows, num_cols, &modulus);
 
         for row in 0..matrix.get_num_rows() {

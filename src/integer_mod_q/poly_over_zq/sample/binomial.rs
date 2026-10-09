@@ -108,7 +108,7 @@ impl PolyOverZq {
         let max_degree = evaluate_index(max_degree)?;
         let offset: Z = offset.into();
         let modulus: Modulus = modulus.into();
-        let mut bin_sampler = BinomialSampler::init(n, p)?;
+        let mut bin_sampler = BinomialSampler::init(n, p, None)?;
 
         let mut poly_z = PolyOverZq::from(&modulus);
 

@@ -57,6 +57,7 @@ impl Z {
             &s,
             unsafe { TAILCUT },
             LookupTableSetting::NoLookup,
+            None,
         )?;
 
         Ok(dgis.sample_z())

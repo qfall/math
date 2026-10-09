@@ -53,7 +53,7 @@ impl Zq {
         p: impl Into<Q>,
     ) -> Result<Self, MathError> {
         let modulus: Modulus = modulus.into();
-        let mut bin_sampler = BinomialSampler::init(n, p)?;
+        let mut bin_sampler = BinomialSampler::init(n, p, None)?;
 
         let sample = bin_sampler.sample();
         Ok(Zq::from((sample, modulus)))

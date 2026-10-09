@@ -61,7 +61,7 @@ impl MatZ {
         let mut matrix = MatZ::new(num_rows, num_cols);
 
         let interval_size = &upper_bound - &lower_bound;
-        let mut uis = UniformIntegerSampler::init(&interval_size)?;
+        let mut uis = UniformIntegerSampler::init(&interval_size, None)?;
         for row in 0..matrix.get_num_rows() {
             for col in 0..matrix.get_num_columns() {
                 let sample = uis.sample();

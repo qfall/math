@@ -38,7 +38,7 @@ impl Z {
     /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
     ///   if `n` does not fit into an [`i64`].
     pub fn sample_binomial(n: impl Into<Z>, p: impl Into<Q>) -> Result<Self, MathError> {
-        let mut bin_sampler = BinomialSampler::init(n, p)?;
+        let mut bin_sampler = BinomialSampler::init(n, p, None)?;
 
         Ok(bin_sampler.sample())
     }

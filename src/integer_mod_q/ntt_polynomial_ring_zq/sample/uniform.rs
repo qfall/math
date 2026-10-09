@@ -43,7 +43,7 @@ impl NTTPolynomialRingZq {
         let interval_size = modulus.get_q();
         assert!(interval_size > 1);
 
-        let mut uis = UniformIntegerSampler::init(&interval_size).unwrap();
+        let mut uis = UniformIntegerSampler::init(&interval_size, None).unwrap();
 
         let vector = (0..modulus.get_degree()).map(|_| uis.sample()).collect();
         Self {

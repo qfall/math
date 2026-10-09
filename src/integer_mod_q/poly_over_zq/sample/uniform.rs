@@ -59,7 +59,7 @@ impl PolyOverZq {
         let modulus = Modulus::from(&interval_size);
         let mut poly_zq = PolyOverZq::from(&modulus);
 
-        let mut uis = UniformIntegerSampler::init(&interval_size)?;
+        let mut uis = UniformIntegerSampler::init(&interval_size, None)?;
 
         for index in 0..=max_degree {
             let sample = uis.sample();

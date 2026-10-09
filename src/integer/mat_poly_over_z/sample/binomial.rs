@@ -107,7 +107,7 @@ impl MatPolyOverZ {
     ) -> Result<Self, MathError> {
         let max_degree = evaluate_index(max_degree)?;
         let offset: Z = offset.into();
-        let mut bin_sampler = BinomialSampler::init(n, p)?;
+        let mut bin_sampler = BinomialSampler::init(n, p, None)?;
         let mut matrix = MatPolyOverZ::new(num_rows, num_cols);
 
         for row in 0..matrix.get_num_rows() {

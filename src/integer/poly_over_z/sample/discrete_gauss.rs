@@ -65,6 +65,7 @@ impl PolyOverZ {
             &s,
             unsafe { TAILCUT },
             LookupTableSetting::FillOnTheFly,
+            None,
         )?;
 
         for index in 0..=max_degree {

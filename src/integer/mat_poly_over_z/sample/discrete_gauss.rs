@@ -69,6 +69,7 @@ impl MatPolyOverZ {
             s,
             unsafe { TAILCUT },
             LookupTableSetting::FillOnTheFly,
+            None,
         )?;
 
         for row in 0..matrix.get_num_rows() {

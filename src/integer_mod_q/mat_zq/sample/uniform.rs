@@ -49,7 +49,7 @@ impl MatZq {
         modulus: impl Into<Z>,
     ) -> Self {
         let modulus: Z = modulus.into();
-        let mut uis = UniformIntegerSampler::init(&modulus).unwrap();
+        let mut uis = UniformIntegerSampler::init(&modulus, None).unwrap();
         let mut matrix = MatZq::new(num_rows, num_cols, modulus);
 
         for row in 0..matrix.get_num_rows() {

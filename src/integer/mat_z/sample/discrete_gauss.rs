@@ -62,6 +62,7 @@ impl MatZ {
             s,
             unsafe { TAILCUT },
             LookupTableSetting::FillOnTheFly,
+            None,
         )?;
 
         for row in 0..out.get_num_rows() {

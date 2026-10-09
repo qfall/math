@@ -16,7 +16,7 @@
 //!   In: Proceedings of the fortieth annual ACM symposium on Theory of computing.
 //!   <https://citeseerx.ist.psu.edu/document?doi=d9f54077d568784c786f7b1d030b00493eb3ae35>
 
-use super::uniform::UniformIntegerSampler;
+use super::uniform::{SamplerRng, UniformIntegerSampler};
 use crate::{
     error::{MathError, StringConversionError},
     integer::{MatZ, Z},
@@ -66,6 +66,8 @@ pub static mut TAILCUT: f64 = 6.0;
 /// - `lookup_table_setting`: Specifies whether a lookup-table should be used and
 ///   how it should be filled, i.e. lazily on-the-fly (impacting sampling time slightly) or precomputed
 /// - `table`: the lookup-table if one is used
+/// - `rng`: defines the [`ThreadRng`](rand::rngs::ThreadRng) or seeded
+///   [`StdRng`](rand::rngs::StdRng) that's used for sampling.
 ///
 /// # Examples
 /// ```
@@ -76,7 +78,7 @@ pub static mut TAILCUT: f64 = 6.0;
 /// let gaussian_parameter = 1.0;
 /// let tailcut = 6.0;
 ///
-/// let mut dgis = DiscreteGaussianIntegerSampler::init(center, gaussian_parameter, tailcut, LookupTableSetting::NoLookup).unwrap();
+/// let mut dgis = DiscreteGaussianIntegerSampler::init(center, gaussian_parameter, tailcut, LookupTableSetting::NoLookup, None).unwrap();
 ///
 /// let sample = dgis.sample_z();
 /// ```
@@ -88,6 +90,8 @@ pub struct DiscreteGaussianIntegerSampler {
     pub interval_size: Z,
     pub lookup_table_setting: LookupTableSetting,
     pub table: HashMap<Z, f64>,
+    #[serde(skip)]
+    rng: SamplerRng,
 }
 
 impl DiscreteGaussianIntegerSampler {
@@ -97,27 +101,37 @@ impl DiscreteGaussianIntegerSampler {
     ///   to the standard deviation `sigma * sqrt(2 * pi) = s`,
     /// - `lower_bound` as `⌈center - 6 * s⌉`,
     /// - `interval_size` as `⌊center + 6 * s⌋ - ⌈center - 6 * s⌉ + 1`, and
-    /// - `table` as an empty [`HashMap`] to store evaluations of the Gaussian function.
+    /// - `table` as an empty [`HashMap`] to store evaluations of the Gaussian function, and
+    /// - `rng` as a [`StdRng`](rand::rngs::StdRng) seeded with `seed` if `seed` is provided,
+    ///   and as a fresh [`ThreadRng`](rand::rngs::ThreadRng) otherwise.
     ///
     /// Parameters:
-    /// - `n`: specifies the range from which is sampled
     /// - `center`: as the center of the discrete Gaussian to sample from
     /// - `s`: specifies the Gaussian parameter, which is proportional
     ///   to the standard deviation `sigma * sqrt(2 * pi) = s`
+    /// - `tailcut`: specifies the number of Gaussian parameters `s` the interval
+    ///   to sample from reaches from `center` to both sides
+    /// - `lookup_table_setting`: specifies whether a lookup-table should be used and
+    ///   how it should be filled
+    /// - `seed`: specifies an optional 256-bit seed for the internal [`StdRng`](rand::rngs::StdRng).
+    ///   If `None` is provided, a fresh [`ThreadRng`](rand::rngs::ThreadRng) is used instead.
     ///
-    /// Returns a sample chosen according to the specified discrete Gaussian distribution or
-    /// a [`MathError`] if the specified parameters were not chosen appropriately,
-    /// i.e. `n > 1` or `s > 0`.
+    /// Returns a [`DiscreteGaussianIntegerSampler`] or a [`MathError`]
+    /// if the specified parameters were not chosen appropriately,
+    /// i.e. `tailcut < 0` or `s < 0`.
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::{integer::Z, rational::Q};
     /// use qfall_math::utils::sample::discrete_gauss::{DiscreteGaussianIntegerSampler, LookupTableSetting};
     /// let center = 0.0;
     /// let gaussian_parameter = 1.0;
     /// let tailcut = 6.0;
     ///
-    /// let mut dgis = DiscreteGaussianIntegerSampler::init(center, gaussian_parameter, tailcut, LookupTableSetting::Precompute).unwrap();
+    /// let mut dgis = DiscreteGaussianIntegerSampler::init(center, gaussian_parameter, tailcut, LookupTableSetting::Precompute, None).unwrap();
+    ///
+    /// let mut dgis_seeded_0 = DiscreteGaussianIntegerSampler::init(center, gaussian_parameter, tailcut, LookupTableSetting::Precompute, Some([42; 32])).unwrap();
+    /// let mut dgis_seeded_1 = DiscreteGaussianIntegerSampler::init(center, gaussian_parameter, tailcut, LookupTableSetting::Precompute, Some([42; 32])).unwrap();
+    /// assert_eq!(dgis_seeded_0.sample_z(), dgis_seeded_1.sample_z());
     /// ```
     ///
     /// # Errors and Failures
@@ -128,6 +142,7 @@ impl DiscreteGaussianIntegerSampler {
         s: impl Into<Q>,
         tailcut: impl Into<Q>,
         lookup_table_setting: LookupTableSetting,
+        seed: Option<[u8; 32]>,
     ) -> Result<Self, MathError> {
         let center = center.into();
         let mut s = s.into();
@@ -178,6 +193,7 @@ impl DiscreteGaussianIntegerSampler {
             interval_size,
             lookup_table_setting,
             table,
+            rng: SamplerRng::new(seed),
         })
     }
 
@@ -195,13 +211,14 @@ impl DiscreteGaussianIntegerSampler {
     /// let gaussian_parameter = 1.0;
     /// let tailcut = 6.0;
     ///
-    /// let mut dgis = DiscreteGaussianIntegerSampler::init(center, gaussian_parameter, tailcut, LookupTableSetting::Precompute).unwrap();
+    /// let mut dgis = DiscreteGaussianIntegerSampler::init(center, gaussian_parameter, tailcut, LookupTableSetting::Precompute, None).unwrap();
     ///
     /// let sample = dgis.sample_z();
     /// ```
     pub fn sample_z(&mut self) -> Z {
-        let mut rng = rand::rng();
-        let mut uis = UniformIntegerSampler::init(&self.interval_size).unwrap();
+        // the clone of `self.rng` shares its state with `self.rng`
+        let mut uis =
+            UniformIntegerSampler::init_with_rng(&self.interval_size, self.rng.clone()).unwrap();
         loop {
             // sample x in [c - s * tailcut, c + s * tailcut]
             let sample = &self.lower_bound + uis.sample();
@@ -224,7 +241,7 @@ impl DiscreteGaussianIntegerSampler {
                 LookupTableSetting::Precompute => self.table.get(&sample).unwrap(),
             };
 
-            let random_f64: f64 = rng.random();
+            let random_f64: f64 = self.rng.random();
             if evaluated_gauss_function >= &random_f64 {
                 return sample;
             }
@@ -408,6 +425,7 @@ pub(crate) fn sample_d_precomputed_gso(
             &s_2,
             unsafe { TAILCUT },
             LookupTableSetting::FillOnTheFly,
+            None,
         )?;
         let z = dgis.sample_z();
 
@@ -441,6 +459,7 @@ mod test_discrete_gaussian_integer_sampler {
             &gaussian_parameter,
             8.0,
             LookupTableSetting::FillOnTheFly,
+            None,
         )
         .unwrap();
 
@@ -463,6 +482,7 @@ mod test_discrete_gaussian_integer_sampler {
             &gaussian_parameter,
             unsafe { TAILCUT },
             LookupTableSetting::FillOnTheFly,
+            None,
         )
         .unwrap();
 
@@ -484,7 +504,8 @@ mod test_discrete_gaussian_integer_sampler {
                 &center,
                 &Q::MINUS_ONE,
                 6.0,
-                LookupTableSetting::FillOnTheFly
+                LookupTableSetting::FillOnTheFly,
+                None
             )
             .is_err()
         );
@@ -493,7 +514,8 @@ mod test_discrete_gaussian_integer_sampler {
                 &center,
                 Q::from(i64::MIN),
                 6.0,
-                LookupTableSetting::FillOnTheFly
+                LookupTableSetting::FillOnTheFly,
+                None
             )
             .is_err()
         );
@@ -510,7 +532,8 @@ mod test_discrete_gaussian_integer_sampler {
                 &center,
                 &gaussian_parameter,
                 -0.1,
-                LookupTableSetting::FillOnTheFly
+                LookupTableSetting::FillOnTheFly,
+                None
             )
             .is_err()
         );
@@ -519,7 +542,161 @@ mod test_discrete_gaussian_integer_sampler {
                 &center,
                 &gaussian_parameter,
                 i64::MIN,
-                LookupTableSetting::FillOnTheFly
+                LookupTableSetting::FillOnTheFly,
+                None
+            )
+            .is_err()
+        );
+    }
+
+    /// Checks whether a serialized and deserialized sampler still samples
+    /// from the same interval.
+    #[test]
+    fn serialize_deserialize() {
+        let dgis = DiscreteGaussianIntegerSampler::init(
+            Q::from(15),
+            Q::from((1, 2)),
+            8.0,
+            LookupTableSetting::NoLookup,
+            Some([42; 32]),
+        )
+        .unwrap();
+
+        let string = serde_json::to_string(&dgis).unwrap();
+        let mut dgis: DiscreteGaussianIntegerSampler = serde_json::from_str(&string).unwrap();
+
+        for _ in 0..64 {
+            let sample = dgis.sample_z();
+
+            assert!(10 <= sample);
+            assert!(sample <= 20);
+        }
+    }
+}
+
+#[cfg(test)]
+mod test_discrete_gaussian_integer_sampler_seeded {
+    use super::DiscreteGaussianIntegerSampler;
+    use crate::{integer::Z, rational::Q, utils::sample::discrete_gauss::LookupTableSetting};
+
+    /// Checks whether two samplers with the same seed output the same samples
+    /// for every [`LookupTableSetting`].
+    #[test]
+    fn same_seed_same_samples() {
+        let settings = [
+            LookupTableSetting::NoLookup,
+            LookupTableSetting::FillOnTheFly,
+            LookupTableSetting::Precompute,
+        ];
+
+        for setting in settings {
+            let mut dgis_0 =
+                DiscreteGaussianIntegerSampler::init(Q::MINUS_ONE, 4, 6, setting, Some([42; 32]))
+                    .unwrap();
+            let mut dgis_1 =
+                DiscreteGaussianIntegerSampler::init(Q::MINUS_ONE, 4, 6, setting, Some([42; 32]))
+                    .unwrap();
+
+            for _ in 0..u8::MAX {
+                assert_eq!(dgis_0.sample_z(), dgis_1.sample_z());
+            }
+        }
+    }
+
+    /// Checks whether two samplers with different seeds output different samples.
+    #[test]
+    fn different_seed_different_samples() {
+        let mut dgis_0 = DiscreteGaussianIntegerSampler::init(
+            0,
+            1024,
+            6,
+            LookupTableSetting::NoLookup,
+            Some([0; 32]),
+        )
+        .unwrap();
+        let mut dgis_1 = DiscreteGaussianIntegerSampler::init(
+            0,
+            1024,
+            6,
+            LookupTableSetting::NoLookup,
+            Some([1; 32]),
+        )
+        .unwrap();
+
+        let samples_0: Vec<Z> = (0..16).map(|_| dgis_0.sample_z()).collect();
+        let samples_1: Vec<Z> = (0..16).map(|_| dgis_1.sample_z()).collect();
+
+        assert_ne!(samples_0, samples_1);
+    }
+
+    /// Checks whether a clone of a seeded sampler continues the stream of its original,
+    /// i.e. alternating between both yields the same samples as a single seeded sampler.
+    #[test]
+    fn clone_shares_state() {
+        let mut dgis = DiscreteGaussianIntegerSampler::init(
+            0,
+            16,
+            6,
+            LookupTableSetting::NoLookup,
+            Some([42; 32]),
+        )
+        .unwrap();
+        let mut dgis_clone = dgis.clone();
+        let mut dgis_cmp = DiscreteGaussianIntegerSampler::init(
+            0,
+            16,
+            6,
+            LookupTableSetting::NoLookup,
+            Some([42; 32]),
+        )
+        .unwrap();
+
+        for _ in 0..16 {
+            assert_eq!(dgis_cmp.sample_z(), dgis.sample_z());
+            assert_eq!(dgis_cmp.sample_z(), dgis_clone.sample_z());
+        }
+    }
+
+    /// Checks whether seeded samples are kept in the correct interval.
+    #[test]
+    fn keeps_range() {
+        let mut dgis = DiscreteGaussianIntegerSampler::init(
+            Q::from(15),
+            Q::from((1, 2)),
+            8.0,
+            LookupTableSetting::FillOnTheFly,
+            Some([42; 32]),
+        )
+        .unwrap();
+
+        for _ in 0..64 {
+            let sample = dgis.sample_z();
+
+            assert!(10 <= sample);
+            assert!(sample <= 20);
+        }
+    }
+
+    /// Checks whether invalid choices for `s` and `tailcut` result in an error.
+    #[test]
+    fn invalid_parameters() {
+        assert!(
+            DiscreteGaussianIntegerSampler::init(
+                0,
+                &Q::MINUS_ONE,
+                6.0,
+                LookupTableSetting::FillOnTheFly,
+                Some([42; 32])
+            )
+            .is_err()
+        );
+        assert!(
+            DiscreteGaussianIntegerSampler::init(
+                0,
+                1,
+                -0.1,
+                LookupTableSetting::FillOnTheFly,
+                Some([42; 32])
             )
             .is_err()
         );

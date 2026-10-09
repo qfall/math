@@ -101,7 +101,7 @@ impl PolyOverZ {
 
         let mut poly_z = PolyOverZ::default();
 
-        let mut bin_sampler = BinomialSampler::init(n, p)?;
+        let mut bin_sampler = BinomialSampler::init(n, p, None)?;
 
         for index in 0..=max_degree {
             let mut sample = bin_sampler.sample();

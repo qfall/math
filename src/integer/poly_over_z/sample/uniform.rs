@@ -58,7 +58,7 @@ impl PolyOverZ {
         let upper_bound: Z = upper_bound.into();
 
         let interval_size = &upper_bound - &lower_bound;
-        let mut uis = UniformIntegerSampler::init(&interval_size)?;
+        let mut uis = UniformIntegerSampler::init(&interval_size, None)?;
 
         let mut poly_z = PolyOverZ::default();
         for index in 0..=max_degree {

@@ -46,7 +46,7 @@ impl Z {
         let upper_bound: Z = upper_bound.into();
 
         let interval_size = &upper_bound - &lower_bound;
-        let mut uis = UniformIntegerSampler::init(&interval_size)?;
+        let mut uis = UniformIntegerSampler::init(&interval_size, None)?;
 
         let sample = uis.sample();
         Ok(&lower_bound + sample)
@@ -98,7 +98,7 @@ impl Z {
         }
 
         let interval_size = &upper_bound - &lower_bound;
-        let mut uis = UniformIntegerSampler::init(&interval_size)?;
+        let mut uis = UniformIntegerSampler::init(&interval_size, None)?;
         let mut sample = &lower_bound + uis.sample();
 
         // after 2 * size of interval many uniform random samples, a suitable prime should have been
