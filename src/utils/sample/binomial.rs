@@ -59,7 +59,7 @@ impl BinomialSampler {
     /// let n = 2;
     /// let p = 0.5;
     ///
-    /// let mut bin_sampler = BinomialSampler::init(n, p, None).unwrap();
+    /// let bin_sampler = BinomialSampler::init(n, p, None).unwrap();
     ///
     /// let mut bin_sampler_seeded_0 = BinomialSampler::init(n, p, Some([42; 32])).unwrap();
     /// let mut bin_sampler_seeded_1 = BinomialSampler::init(n, p, Some([42; 32])).unwrap();

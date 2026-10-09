@@ -12,7 +12,7 @@
 use crate::{error::MathError, integer::Z};
 use flint3_sys::{fmpz_addmul_ui, fmpz_set_ui};
 use rand::{
-    Rng, SeedableRng, TryCryptoRng, TryRng,
+    Rng, RngExt, SeedableRng, TryCryptoRng, TryRng,
     rngs::{StdRng, ThreadRng},
 };
 use std::{cell::RefCell, convert::Infallible, rc::Rc};
@@ -46,6 +46,15 @@ impl SamplerRng {
         match seed {
             Some(seed) => Self::Seeded(Rc::new(RefCell::new(StdRng::from_seed(seed)))),
             None => Self::Thread(rand::rng()),
+        }
+    }
+
+    /// Returns a fresh seed drawn from this [`SamplerRng`] if it is seeded, and `None` otherwise.
+    /// This allows to derive independent seeds for several subroutines of one seeded function.
+    pub(crate) fn derive_seed(&mut self) -> Option<[u8; 32]> {
+        match self {
+            Self::Thread(_) => None,
+            Self::Seeded(_) => Some(self.random()),
         }
     }
 }
@@ -138,7 +147,7 @@ impl UniformIntegerSampler {
     /// use qfall_math::{utils::sample::uniform::UniformIntegerSampler, integer::Z};
     /// let interval_size = Z::from(20);
     ///
-    /// let mut uis = UniformIntegerSampler::init(&interval_size, None).unwrap();
+    /// let uis = UniformIntegerSampler::init(&interval_size, None).unwrap();
     ///
     /// let mut uis_seeded_0 = UniformIntegerSampler::init(&interval_size, Some([42; 32])).unwrap();
     /// let mut uis_seeded_1 = UniformIntegerSampler::init(&interval_size, Some([42; 32])).unwrap();

@@ -11,56 +11,76 @@
 use crate::{
     integer::Z,
     integer_mod_q::MatZq,
+    macros::seeded::seedable_function,
     traits::{MatrixDimensions, MatrixSetEntry},
     utils::sample::uniform::UniformIntegerSampler,
 };
 use std::fmt::Display;
 
 impl MatZq {
-    /// Outputs a [`MatZq`] instance with entries chosen uniform at random
-    /// in `[0, modulus)`.
-    ///
-    /// The internally used uniform at random chosen bytes are generated
-    /// by [`ThreadRng`](rand::rngs::ThreadRng), which uses ChaCha12 and
-    /// is considered cryptographically secure.
-    ///
-    /// Parameters:
-    /// - `num_rows`: specifies the number of rows the new matrix should have
-    /// - `num_cols`: specifies the number of columns the new matrix should have
-    /// - `modulus`: specifies the modulus of the matrix and defines the interval
-    ///   over which is sampled
-    ///
-    /// Returns a new [`MatZq`] instance with entries chosen
-    /// uniformly at random in `[0, modulus)`.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer_mod_q::MatZq;
-    ///
-    /// let matrix = MatZq::sample_uniform(3, 3, 17);
-    /// ```
-    ///
-    /// # Panics ...
-    /// - if the provided number of rows and columns or the modulus are not suited to create a matrix.
-    ///   For further information see [`MatZq::new`].
-    pub fn sample_uniform(
-        num_rows: impl TryInto<i64> + Display,
-        num_cols: impl TryInto<i64> + Display,
-        modulus: impl Into<Z>,
-    ) -> Self {
-        let modulus: Z = modulus.into();
-        let mut uis = UniformIntegerSampler::init(&modulus, None).unwrap();
-        let mut matrix = MatZq::new(num_rows, num_cols, modulus);
+    seedable_function!(
+        /// Outputs a [`MatZq`] instance with entries chosen uniform at random
+        /// in `[0, modulus)`.
+        ///
+        /// The internally used uniform at random chosen bytes are generated
+        #[unseeded]
+        /// by [`ThreadRng`](rand::rngs::ThreadRng), which uses ChaCha12 and is
+        #[seeded]
+        /// by a [`StdRng`](rand::rngs::StdRng) seeded with `seed`, which uses ChaCha12 and is
+        #[optionally_seeded]
+        /// by a [`StdRng`](rand::rngs::StdRng) seeded with `seed` or by [`ThreadRng`](rand::rngs::ThreadRng)
+        #[optionally_seeded]
+        /// if `seed` is `None`. Both use ChaCha12 and are
+        /// considered cryptographically secure.
+        ///
+        /// Parameters:
+        /// - `num_rows`: specifies the number of rows the new matrix should have
+        /// - `num_cols`: specifies the number of columns the new matrix should have
+        /// - `modulus`: specifies the modulus of the matrix and defines the interval
+        ///   over which is sampled
+        #[seeded]
+        /// - `seed`: specifies the 256-bit seed of the PRNG used for sampling
+        #[optionally_seeded]
+        /// - `seed`: specifies an optional 256-bit seed of the PRNG used for sampling.
+        #[optionally_seeded]
+        ///   If `None` is provided, a fresh [`ThreadRng`](rand::rngs::ThreadRng) is used instead.
+        ///
+        /// Returns a new [`MatZq`] instance with entries chosen
+        /// uniformly at random in `[0, modulus)`.
+        ///
+        /// # Examples
+        /// ```
+        /// use qfall_math::integer_mod_q::MatZq;
+        ///
+        #[unseeded]
+        /// let matrix = MatZq::sample_uniform(3, 3, 17);
+        #[seeded]
+        /// let matrix = MatZq::sample_uniform_seeded(3, 3, 17, [42; 32]);
+        /// ```
+        ///
+        /// # Panics ...
+        /// - if the provided number of rows and columns or the modulus are not suited to create a matrix.
+        ///   For further information see [`MatZq::new`].
+        pub(crate) fn sample_uniform(
+            num_rows: impl TryInto<i64> + Display,
+            num_cols: impl TryInto<i64> + Display,
+            modulus: impl Into<Z>,
+            seed: Option<[u8; 32]>,
+        ) -> Self {
+            let modulus: Z = modulus.into();
+            let mut uis = UniformIntegerSampler::init(&modulus, seed).unwrap();
+            let mut matrix = MatZq::new(num_rows, num_cols, modulus);
 
-        for row in 0..matrix.get_num_rows() {
-            for col in 0..matrix.get_num_columns() {
-                let sample = uis.sample();
-                unsafe { matrix.set_entry_unchecked(row, col, sample) };
+            for row in 0..matrix.get_num_rows() {
+                for col in 0..matrix.get_num_columns() {
+                    let sample = uis.sample();
+                    unsafe { matrix.set_entry_unchecked(row, col, sample) };
+                }
             }
-        }
 
-        matrix
-    }
+            matrix
+        }
+    );
 }
 
 #[cfg(test)]
@@ -149,5 +169,105 @@ mod test_sample_uniform {
         assert_eq!(5, mat_2.get_num_columns());
         assert_eq!(15, mat_3.get_num_rows());
         assert_eq!(20, mat_3.get_num_columns());
+    }
+}
+
+#[cfg(test)]
+mod test_sample_uniform_seeded {
+    use crate::traits::{MatrixDimensions, MatrixGetEntry};
+    use crate::utils::sample::test_seed;
+    use crate::{
+        integer::Z,
+        integer_mod_q::{MatZq, Modulus},
+    };
+
+    /// Checks whether the boundaries of the interval are kept for small moduli.
+    #[test]
+    fn boundaries_kept_small() {
+        for _ in 0..32 {
+            let matrix = MatZq::sample_uniform_seeded(1, 1, 17, test_seed());
+            let sample: Z = matrix.get_entry(0, 0).unwrap();
+            assert!(Z::ZERO <= sample);
+            assert!(sample < 17);
+        }
+    }
+
+    /// Checks whether the boundaries of the interval are kept for large moduli.
+    #[test]
+    fn boundaries_kept_large() {
+        let modulus = Z::from(u64::MAX);
+        for _ in 0..256 {
+            let matrix = MatZq::sample_uniform_seeded(1, 1, &modulus, test_seed());
+            let sample: Z = matrix.get_entry(0, 0).unwrap();
+            assert!(Z::ZERO <= sample);
+            assert!(sample < modulus);
+        }
+    }
+
+    /// Checks whether matrices with at least one dimension chosen smaller than `1`
+    /// or too large for an [`i64`] results in a panic.
+    #[should_panic]
+    #[test]
+    fn false_size() {
+        let modulus = Z::from(15);
+
+        let _ = MatZq::sample_uniform_seeded(0, 3, &modulus, test_seed());
+    }
+
+    /// Checks whether providing an invalid interval/ modulus results in a panic.
+    #[should_panic]
+    #[test]
+    fn invalid_modulus() {
+        let _ = MatZq::sample_uniform_seeded(4, 1, 1, test_seed());
+    }
+
+    /// Checks whether `sample_uniform` is available for all types
+    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
+    #[test]
+    fn availability() {
+        let modulus = Modulus::from(7);
+        let z = Z::from(7);
+
+        let _ = MatZq::sample_uniform_seeded(1, 1, 7u8, test_seed());
+        let _ = MatZq::sample_uniform_seeded(1, 1, 7u16, test_seed());
+        let _ = MatZq::sample_uniform_seeded(1, 1, 7u32, test_seed());
+        let _ = MatZq::sample_uniform_seeded(1, 1, 7u64, test_seed());
+        let _ = MatZq::sample_uniform_seeded(1, 1, 7i8, test_seed());
+        let _ = MatZq::sample_uniform_seeded(1, 1, 7i16, test_seed());
+        let _ = MatZq::sample_uniform_seeded(1, 1, 7i32, test_seed());
+        let _ = MatZq::sample_uniform_seeded(1, 1, 7i64, test_seed());
+        let _ = MatZq::sample_uniform_seeded(1, 1, &modulus, test_seed());
+        let _ = MatZq::sample_uniform_seeded(1, 1, &z, test_seed());
+    }
+
+    /// Checks whether the size of uniformly random sampled matrices
+    /// fits the specified dimensions.
+    #[test]
+    fn matrix_size() {
+        let modulus = Z::from(15);
+
+        let mat_0 = MatZq::sample_uniform_seeded(3, 3, &modulus, test_seed());
+        let mat_1 = MatZq::sample_uniform_seeded(4, 1, &modulus, test_seed());
+        let mat_2 = MatZq::sample_uniform_seeded(1, 5, &modulus, test_seed());
+        let mat_3 = MatZq::sample_uniform_seeded(15, 20, &modulus, test_seed());
+
+        assert_eq!(3, mat_0.get_num_rows());
+        assert_eq!(3, mat_0.get_num_columns());
+        assert_eq!(4, mat_1.get_num_rows());
+        assert_eq!(1, mat_1.get_num_columns());
+        assert_eq!(1, mat_2.get_num_rows());
+        assert_eq!(5, mat_2.get_num_columns());
+        assert_eq!(15, mat_3.get_num_rows());
+        assert_eq!(20, mat_3.get_num_columns());
+    }
+
+    /// Checks whether the same seed results in the same sample.
+    #[test]
+    fn same_seed_same_sample() {
+        use crate::integer_mod_q::MatZq;
+        let sample_0 = MatZq::sample_uniform_seeded(3, 3, 17, [42; 32]);
+        let sample_1 = MatZq::sample_uniform_seeded(3, 3, 17, [42; 32]);
+
+        assert_eq!(sample_0, sample_1);
     }
 }

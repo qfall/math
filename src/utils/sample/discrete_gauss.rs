@@ -23,7 +23,7 @@ use crate::{
     rational::{MatQ, Q},
     traits::{MatrixDimensions, MatrixGetSubmatrix, Pow},
 };
-use rand::{RngExt, SeedableRng, rngs::StdRng};
+use rand::RngExt;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -71,9 +71,7 @@ pub static mut TAILCUT: f64 = 6.0;
 ///
 /// # Examples
 /// ```
-/// use qfall_math::{integer::Z, rational::Q};
 /// use qfall_math::utils::sample::discrete_gauss::{DiscreteGaussianIntegerSampler, LookupTableSetting};
-/// let n = Z::from(1024);
 /// let center = 0.0;
 /// let gaussian_parameter = 1.0;
 /// let tailcut = 6.0;
@@ -89,6 +87,7 @@ pub struct DiscreteGaussianIntegerSampler {
     pub lower_bound: Z,
     pub interval_size: Z,
     pub lookup_table_setting: LookupTableSetting,
+    #[serde(with = "table_as_pairs")]
     pub table: HashMap<Z, f64>,
     #[serde(skip)]
     pub rng: SamplerRng,
@@ -127,7 +126,7 @@ impl DiscreteGaussianIntegerSampler {
     /// let gaussian_parameter = 1.0;
     /// let tailcut = 6.0;
     ///
-    /// let mut dgis = DiscreteGaussianIntegerSampler::init(center, gaussian_parameter, tailcut, LookupTableSetting::Precompute, None).unwrap();
+    /// let dgis = DiscreteGaussianIntegerSampler::init(center, gaussian_parameter, tailcut, LookupTableSetting::Precompute, None).unwrap();
     ///
     /// let mut dgis_seeded_0 = DiscreteGaussianIntegerSampler::init(center, gaussian_parameter, tailcut, LookupTableSetting::Precompute, Some([42; 32])).unwrap();
     /// let mut dgis_seeded_1 = DiscreteGaussianIntegerSampler::init(center, gaussian_parameter, tailcut, LookupTableSetting::Precompute, Some([42; 32])).unwrap();
@@ -205,7 +204,6 @@ impl DiscreteGaussianIntegerSampler {
     ///
     /// # Examples
     /// ```
-    /// use qfall_math::{integer::Z, rational::Q};
     /// use qfall_math::utils::sample::discrete_gauss::{DiscreteGaussianIntegerSampler, LookupTableSetting};
     /// let center = 0.0;
     /// let gaussian_parameter = 1.0;
@@ -246,6 +244,30 @@ impl DiscreteGaussianIntegerSampler {
                 return sample;
             }
         }
+    }
+}
+
+/// Serializes and deserializes the lookup table of a [`DiscreteGaussianIntegerSampler`]
+/// as a sequence of pairs, as [`Z`] can not be used as a key of a map in every format, e.g. JSON.
+mod table_as_pairs {
+    use crate::integer::Z;
+    use serde::{Deserialize, Deserializer, Serializer};
+    use std::collections::HashMap;
+
+    /// Serializes `table` as a sequence of `(key, value)` pairs.
+    pub(super) fn serialize<S: Serializer>(
+        table: &HashMap<Z, f64>,
+        serializer: S,
+    ) -> Result<S::Ok, S::Error> {
+        serializer.collect_seq(table.iter())
+    }
+
+    /// Deserializes a sequence of `(key, value)` pairs into a [`HashMap`].
+    pub(super) fn deserialize<'de, D: Deserializer<'de>>(
+        deserializer: D,
+    ) -> Result<HashMap<Z, f64>, D::Error> {
+        let pairs = Vec::<(Z, f64)>::deserialize(deserializer)?;
+        Ok(pairs.into_iter().collect())
     }
 }
 
@@ -419,7 +441,7 @@ pub(crate) fn sample_d_precomputed_gso(
     let mut out = MatZ::new(basis_gso.get_num_rows(), 1);
 
     // derives an independent seed for the sampler of each dimension if a seed is provided
-    let mut seed_rng = seed.map(StdRng::from_seed);
+    let mut rng = SamplerRng::new(seed);
 
     for i in (0..basis_gso.get_num_columns()).rev() {
         // basisvector_i = b_tilde[i]
@@ -438,7 +460,7 @@ pub(crate) fn sample_d_precomputed_gso(
             &s_2,
             unsafe { TAILCUT },
             LookupTableSetting::FillOnTheFly,
-            seed_rng.as_mut().map(|rng| rng.random()),
+            rng.derive_seed(),
         )?;
         let z = dgis.sample_z();
 
@@ -562,21 +584,26 @@ mod test_discrete_gaussian_integer_sampler {
         );
     }
 
-    /// Checks whether a serialized and deserialized sampler still samples
-    /// from the same interval.
+    /// Checks whether a serialized and deserialized sampler keeps its lookup table
+    /// and still samples from the same interval.
     #[test]
     fn serialize_deserialize() {
         let dgis = DiscreteGaussianIntegerSampler::init(
             Q::from(15),
             Q::from((1, 2)),
             8.0,
-            LookupTableSetting::NoLookup,
+            LookupTableSetting::Precompute,
             Some([42; 32]),
         )
         .unwrap();
 
         let string = serde_json::to_string(&dgis).unwrap();
-        let mut dgis: DiscreteGaussianIntegerSampler = serde_json::from_str(&string).unwrap();
+        let dgis_deserialized: DiscreteGaussianIntegerSampler =
+            serde_json::from_str(&string).unwrap();
+
+        assert!(!dgis.table.is_empty());
+        assert_eq!(dgis.table, dgis_deserialized.table);
+        let mut dgis = dgis_deserialized;
 
         for _ in 0..64 {
             let sample = dgis.sample_z();

@@ -13,5 +13,6 @@ pub(crate) mod arithmetics;
 pub(crate) mod compare_base;
 pub(crate) mod for_others;
 pub(crate) mod from;
+pub(crate) mod seeded;
 pub(crate) mod serialize;
 pub(crate) mod unsafe_passthrough;
