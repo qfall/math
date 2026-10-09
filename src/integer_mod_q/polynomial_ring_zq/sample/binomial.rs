@@ -13,105 +13,135 @@ use crate::{
     error::MathError,
     integer::{PolyOverZ, Z},
     integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq},
+    macros::seeded::seedable_function,
     rational::Q,
 };
 
 impl PolynomialRingZq {
-    /// Generates a [`PolynomialRingZq`] instance of maximum degree `modulus.get_degree() - 1` and
-    /// coefficients chosen according to the binomial distribution
-    /// parameterized by `n` and `p`.
-    ///
-    /// Parameters:
-    /// - `modulus`: specifies the [`ModulusPolynomialRingZq`] over which the
-    ///   ring of polynomials modulo `modulus.get_q()` is defined
-    /// - `n`: specifies the number of trials
-    /// - `p`: specifies the probability of success
-    ///
-    /// Returns a fresh [`PolynomialRingZq`] instance of length `modulus.get_degree() - 1`
-    /// with coefficients chosen according to the binomial distribution or a [`MathError`]
-    /// if `n < 0`, `p ∉ (0,1)`, `n` does not fit into an [`i64`].
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer_mod_q::{PolynomialRingZq, ModulusPolynomialRingZq};
-    /// use std::str::FromStr;
-    /// let modulus = ModulusPolynomialRingZq::from_str("3  1 2 1 mod 17").unwrap();
-    ///
-    /// let sample = PolynomialRingZq::sample_binomial(&modulus, 2, 0.5).unwrap();
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///   if `n < 0`.
-    /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    ///   if `p ∉ (0,1)`.
-    /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
-    ///   if `n` does not fit into an [`i64`].
-    ///
-    /// # Panics ...
-    /// - if the provided [`ModulusPolynomialRingZq`] has degree `0` or smaller.
-    pub fn sample_binomial(
-        modulus: &ModulusPolynomialRingZq,
-        n: impl Into<Z>,
-        p: impl Into<Q>,
-    ) -> Result<Self, MathError> {
-        Self::sample_binomial_with_offset(modulus, 0, n, p)
-    }
+    seedable_function!(
+        /// Generates a [`PolynomialRingZq`] instance of maximum degree `modulus.get_degree() - 1` and
+        /// coefficients chosen according to the binomial distribution
+        /// parameterized by `n` and `p`.
+        ///
+        /// Parameters:
+        /// - `modulus`: specifies the [`ModulusPolynomialRingZq`] over which the
+        ///   ring of polynomials modulo `modulus.get_q()` is defined
+        /// - `n`: specifies the number of trials
+        /// - `p`: specifies the probability of success
+        #[seeded]
+        /// - `seed`: specifies the 256-bit seed of the PRNG used for sampling
+        #[optionally_seeded]
+        /// - `seed`: specifies an optional 256-bit seed of the PRNG used for sampling.
+        #[optionally_seeded]
+        ///   If `None` is provided, a fresh [`ThreadRng`](rand::rngs::ThreadRng) is used instead.
+        ///
+        /// Returns a fresh [`PolynomialRingZq`] instance of length `modulus.get_degree() - 1`
+        /// with coefficients chosen according to the binomial distribution or a [`MathError`]
+        /// if `n < 0`, `p ∉ (0,1)`, `n` does not fit into an [`i64`].
+        ///
+        /// # Examples
+        /// ```
+        /// use qfall_math::integer_mod_q::{PolynomialRingZq, ModulusPolynomialRingZq};
+        /// use std::str::FromStr;
+        /// let modulus = ModulusPolynomialRingZq::from_str("3  1 2 1 mod 17").unwrap();
+        ///
+        #[unseeded]
+        /// let sample = PolynomialRingZq::sample_binomial(&modulus, 2, 0.5).unwrap();
+        #[seeded]
+        /// let sample = PolynomialRingZq::sample_binomial_seeded(&modulus, 2, 0.5, [42; 32]).unwrap();
+        /// ```
+        ///
+        /// # Errors and Failures
+        /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
+        ///   if `n < 0`.
+        /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
+        ///   if `p ∉ (0,1)`.
+        /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
+        ///   if `n` does not fit into an [`i64`].
+        ///
+        /// # Panics ...
+        /// - if the provided [`ModulusPolynomialRingZq`] has degree `0` or smaller.
+        pub(crate) fn sample_binomial(
+            modulus: &ModulusPolynomialRingZq,
+            n: impl Into<Z>,
+            p: impl Into<Q>,
+            seed: Option<[u8; 32]>,
+        ) -> Result<Self, MathError> {
+            Self::sample_binomial_with_offset_optionally_seeded(modulus, 0, n, p, seed)
+        }
+    );
 
-    /// Generates a [`PolynomialRingZq`] instance of maximum degree `modulus.get_degree() - 1` and
-    /// coefficients chosen according to the binomial distribution
-    /// parameterized by `n` and `p` with given `offset`.
-    ///
-    /// Parameters:
-    /// - `modulus`: specifies the [`ModulusPolynomialRingZq`] over which the
-    ///   ring of polynomials modulo `modulus.get_q()` is defined
-    /// - `offset`: specifies an offset applied to each sample
-    ///   collected from the binomial distribution
-    /// - `n`: specifies the number of trials
-    /// - `p`: specifies the probability of success
-    ///
-    /// Returns a fresh [`PolynomialRingZq`] instance of length `modulus.get_degree() - 1`
-    /// with coefficients chosen according to the binomial distribution or a [`MathError`]
-    /// if `n < 0`, `p ∉ (0,1)`, `n` does not fit into an [`i64`].
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer_mod_q::{PolynomialRingZq, ModulusPolynomialRingZq};
-    /// use std::str::FromStr;
-    /// let modulus = ModulusPolynomialRingZq::from_str("3  1 2 1 mod 17").unwrap();
-    ///
-    /// let sample = PolynomialRingZq::sample_binomial_with_offset(&modulus, -1, 2, 0.5).unwrap();
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///   if `n < 0`.
-    /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    ///   if `p ∉ (0,1)`.
-    /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
-    ///   if `n` does not fit into an [`i64`].
-    ///
-    /// # Panics ...
-    /// - if the provided [`ModulusPolynomialRingZq`] has degree `0` or smaller.
-    pub fn sample_binomial_with_offset(
-        modulus: &ModulusPolynomialRingZq,
-        offset: impl Into<Z>,
-        n: impl Into<Z>,
-        p: impl Into<Q>,
-    ) -> Result<Self, MathError> {
-        assert!(
-            modulus.get_degree() > 0,
-            "ModulusPolynomial of degree 0 is insufficient to sample over."
-        );
+    seedable_function!(
+        /// Generates a [`PolynomialRingZq`] instance of maximum degree `modulus.get_degree() - 1` and
+        /// coefficients chosen according to the binomial distribution
+        /// parameterized by `n` and `p` with given `offset`.
+        ///
+        /// Parameters:
+        /// - `modulus`: specifies the [`ModulusPolynomialRingZq`] over which the
+        ///   ring of polynomials modulo `modulus.get_q()` is defined
+        /// - `offset`: specifies an offset applied to each sample
+        ///   collected from the binomial distribution
+        /// - `n`: specifies the number of trials
+        /// - `p`: specifies the probability of success
+        #[seeded]
+        /// - `seed`: specifies the 256-bit seed of the PRNG used for sampling
+        #[optionally_seeded]
+        /// - `seed`: specifies an optional 256-bit seed of the PRNG used for sampling.
+        #[optionally_seeded]
+        ///   If `None` is provided, a fresh [`ThreadRng`](rand::rngs::ThreadRng) is used instead.
+        ///
+        /// Returns a fresh [`PolynomialRingZq`] instance of length `modulus.get_degree() - 1`
+        /// with coefficients chosen according to the binomial distribution or a [`MathError`]
+        /// if `n < 0`, `p ∉ (0,1)`, `n` does not fit into an [`i64`].
+        ///
+        /// # Examples
+        /// ```
+        /// use qfall_math::integer_mod_q::{PolynomialRingZq, ModulusPolynomialRingZq};
+        /// use std::str::FromStr;
+        /// let modulus = ModulusPolynomialRingZq::from_str("3  1 2 1 mod 17").unwrap();
+        ///
+        #[unseeded]
+        /// let sample = PolynomialRingZq::sample_binomial_with_offset(&modulus, -1, 2, 0.5).unwrap();
+        #[seeded]
+        /// let sample = PolynomialRingZq::sample_binomial_with_offset_seeded(&modulus, -1, 2, 0.5, [42; 32]).unwrap();
+        /// ```
+        ///
+        /// # Errors and Failures
+        /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
+        ///   if `n < 0`.
+        /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
+        ///   if `p ∉ (0,1)`.
+        /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
+        ///   if `n` does not fit into an [`i64`].
+        ///
+        /// # Panics ...
+        /// - if the provided [`ModulusPolynomialRingZq`] has degree `0` or smaller.
+        pub(crate) fn sample_binomial_with_offset(
+            modulus: &ModulusPolynomialRingZq,
+            offset: impl Into<Z>,
+            n: impl Into<Z>,
+            p: impl Into<Q>,
+            seed: Option<[u8; 32]>,
+        ) -> Result<Self, MathError> {
+            assert!(
+                modulus.get_degree() > 0,
+                "ModulusPolynomial of degree 0 is insufficient to sample over."
+            );
 
-        let poly_z =
-            PolyOverZ::sample_binomial_with_offset(modulus.get_degree() - 1, offset, n, p)?;
+            let poly_z = PolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                modulus.get_degree() - 1,
+                offset,
+                n,
+                p,
+                seed,
+            )?;
 
-        Ok(PolynomialRingZq {
-            poly: poly_z,
-            modulus: modulus.clone(),
-        })
-    }
+            Ok(PolynomialRingZq {
+                poly: poly_z,
+                modulus: modulus.clone(),
+            })
+        }
+    );
 }
 
 #[cfg(test)]
@@ -169,6 +199,77 @@ mod test_sample_binomial {
 }
 
 #[cfg(test)]
+mod test_sample_binomial_seeded {
+    use super::{PolynomialRingZq, Z};
+    use crate::utils::sample::test_seed;
+    use crate::{
+        integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq},
+        traits::{GetCoefficient, SetCoefficient},
+    };
+    use std::str::FromStr;
+
+    // As all major tests regarding an appropriate binomial distribution,
+    // whether the correct interval is kept, and if the errors are thrown correctly,
+    // are performed in the `utils` module, we omit these tests here.
+
+    /// Checks whether the boundaries of the interval are kept.
+    #[test]
+    fn boundaries_kept() {
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+
+        for _ in 0..8 {
+            let poly =
+                PolynomialRingZq::sample_binomial_seeded(&modulus, 2, 0.5, test_seed()).unwrap();
+            let sample: Z = poly.get_coeff(0).unwrap();
+            assert!(Z::ZERO <= sample || sample <= 2);
+        }
+    }
+
+    /// Checks whether the number of coefficients is correct.
+    #[test]
+    fn nr_coeffs() {
+        let degrees = [1, 3, 7, 15, 32, 120];
+        for degree in degrees {
+            let mut modulus = PolyOverZq::from((1, u64::MAX));
+            modulus.set_coeff(degree, 1).unwrap();
+            let modulus = ModulusPolynomialRingZq::from(&modulus);
+
+            let res = PolynomialRingZq::sample_binomial_seeded(&modulus, 256, 0.99999, test_seed())
+                .unwrap();
+
+            assert_eq!(
+                modulus.get_degree(),
+                res.get_degree() + 1,
+                "This test can fail with probability close to 0."
+            );
+        }
+    }
+
+    /// Checks whether 0 modulus polynomial is insufficient.
+    #[test]
+    #[should_panic]
+    fn invalid_modulus() {
+        let modulus = ModulusPolynomialRingZq::from_str("1  1 mod 17").unwrap();
+
+        let _ = PolynomialRingZq::sample_binomial_seeded(&modulus, 2, 0.5, test_seed());
+    }
+
+    /// Checks whether the same seed results in the same sample.
+    #[test]
+    fn same_seed_same_sample() {
+        use crate::integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq};
+        use std::str::FromStr;
+        let modulus = ModulusPolynomialRingZq::from_str("3  1 2 1 mod 17").unwrap();
+        let sample_0 =
+            PolynomialRingZq::sample_binomial_seeded(&modulus, 2, 0.5, [42; 32]).unwrap();
+        let sample_1 =
+            PolynomialRingZq::sample_binomial_seeded(&modulus, 2, 0.5, [42; 32]).unwrap();
+
+        assert_eq!(sample_0, sample_1);
+    }
+}
+
+#[cfg(test)]
 mod test_sample_binomial_with_offset {
     use super::{PolynomialRingZq, Z};
     use crate::{
@@ -215,5 +316,87 @@ mod test_sample_binomial_with_offset {
         let modulus = ModulusPolynomialRingZq::from_str("1  1 mod 17").unwrap();
 
         let _ = PolynomialRingZq::sample_binomial_with_offset(&modulus, -1, 2, 0.5);
+    }
+}
+
+#[cfg(test)]
+mod test_sample_binomial_with_offset_seeded {
+    use super::{PolynomialRingZq, Z};
+    use crate::utils::sample::test_seed;
+    use crate::{
+        integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq},
+        traits::{GetCoefficient, SetCoefficient},
+    };
+    use std::str::FromStr;
+
+    // As all major tests regarding an appropriate binomial distribution,
+    // whether the correct interval is kept, and if the errors are thrown correctly,
+    // are performed in the `utils` module, we omit these tests here.
+
+    /// Checks whether the boundaries of the interval are kept.
+    #[test]
+    fn boundaries_kept() {
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+
+        for _ in 0..8 {
+            let poly = PolynomialRingZq::sample_binomial_with_offset_seeded(
+                &modulus,
+                -1,
+                2,
+                0.5,
+                test_seed(),
+            )
+            .unwrap();
+            let sample: Z = poly.get_coeff(0).unwrap();
+            assert!(Z::MINUS_ONE <= sample || sample <= Z::ONE);
+        }
+    }
+
+    /// Checks whether the number of coefficients is correct.
+    #[test]
+    fn nr_coeffs() {
+        let degrees = [1, 3, 7, 15, 32, 120];
+        for degree in degrees {
+            let mut modulus = PolyOverZq::from((1, u64::MAX));
+            modulus.set_coeff(degree, 1).unwrap();
+            let modulus = ModulusPolynomialRingZq::from(&modulus);
+
+            let res = PolynomialRingZq::sample_binomial_with_offset_seeded(
+                &modulus,
+                1,
+                2,
+                0.5,
+                test_seed(),
+            )
+            .unwrap();
+
+            assert_eq!(modulus.get_degree(), res.get_degree() + 1);
+        }
+    }
+
+    /// Checks whether 0 modulus polynomial is insufficient.
+    #[test]
+    #[should_panic]
+    fn invalid_modulus() {
+        let modulus = ModulusPolynomialRingZq::from_str("1  1 mod 17").unwrap();
+
+        let _ =
+            PolynomialRingZq::sample_binomial_with_offset_seeded(&modulus, -1, 2, 0.5, test_seed());
+    }
+
+    /// Checks whether the same seed results in the same sample.
+    #[test]
+    fn same_seed_same_sample() {
+        use crate::integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq};
+        use std::str::FromStr;
+        let modulus = ModulusPolynomialRingZq::from_str("3  1 2 1 mod 17").unwrap();
+        let sample_0 =
+            PolynomialRingZq::sample_binomial_with_offset_seeded(&modulus, -1, 2, 0.5, [42; 32])
+                .unwrap();
+        let sample_1 =
+            PolynomialRingZq::sample_binomial_with_offset_seeded(&modulus, -1, 2, 0.5, [42; 32])
+                .unwrap();
+
+        assert_eq!(sample_0, sample_1);
     }
 }

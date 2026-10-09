@@ -12,8 +12,10 @@ use super::PolyOverQ;
 use crate::{
     error::MathError,
     integer::PolyOverZ,
+    macros::seeded::seedable_function,
     rational::Q,
     traits::{GetCoefficient, SetCoefficient},
+    utils::sample::uniform::SamplerRng,
 };
 
 impl PolyOverQ {
@@ -93,45 +95,67 @@ impl PolyOverQ {
         out
     }
 
-    /// Performs the randomized rounding algorithm coefficient-wise
-    /// by sampling from a discrete Gaussian over the integers shifted
-    /// by `self` with gaussian parameter `r`.
-    ///
-    /// Parameters:
-    /// - `r`: specifies the Gaussian parameter, which is proportional
-    ///   to the standard deviation `sigma * sqrt(2 * pi) = r`
-    ///
-    /// Returns the rounded polynomial as a [`PolyOverZ`] or an error if `r < 0`.
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::rational::PolyOverQ;
-    /// use std::str::FromStr;
-    ///
-    /// let value = PolyOverQ::from_str("2  5/2 1").unwrap();
-    /// let rounded = value.randomized_rounding(3).unwrap();
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///   if `r < 0`.
-    ///
-    /// This function implements randomized rounding according to:
-    /// - \[1\] Peikert, C. (2010, August).
-    ///   An efficient and parallel Gaussian sampler for lattices.
-    ///   In: Annual Cryptology Conference (pp. 80-97).
-    ///   <https://link.springer.com/chapter/10.1007/978-3-642-14623-7_5>
-    pub fn randomized_rounding(&self, r: impl Into<Q>) -> Result<PolyOverZ, MathError> {
-        let r = r.into();
-        let mut out =
-            PolyOverZ::from(unsafe { self.get_coeff_unchecked(0).randomized_rounding(&r)? });
-        for i in 1..self.get_degree() + 1 {
-            let coeff = unsafe { self.get_coeff_unchecked(i).randomized_rounding(&r)? };
-            unsafe { out.set_coeff_unchecked(i, coeff) };
-        }
+    seedable_function!(
+        /// Performs the randomized rounding algorithm coefficient-wise
+        /// by sampling from a discrete Gaussian over the integers shifted
+        /// by `self` with gaussian parameter `r`.
+        ///
+        /// Parameters:
+        /// - `r`: specifies the Gaussian parameter, which is proportional
+        ///   to the standard deviation `sigma * sqrt(2 * pi) = r`
+        #[seeded]
+        /// - `seed`: specifies the 256-bit seed of the PRNG used for sampling
+        #[optionally_seeded]
+        /// - `seed`: specifies an optional 256-bit seed of the PRNG used for sampling.
+        #[optionally_seeded]
+        ///   If `None` is provided, a fresh [`ThreadRng`](rand::rngs::ThreadRng) is used instead.
+        ///
+        /// Returns the rounded polynomial as a [`PolyOverZ`] or an error if `r < 0`.
+        ///
+        /// # Examples
+        /// ```
+        /// use qfall_math::rational::PolyOverQ;
+        /// use std::str::FromStr;
+        ///
+        /// let value = PolyOverQ::from_str("2  5/2 1").unwrap();
+        #[unseeded]
+        /// let rounded = value.randomized_rounding(3).unwrap();
+        #[seeded]
+        /// let rounded = value.randomized_rounding_seeded(3, [42; 32]).unwrap();
+        /// ```
+        ///
+        /// # Errors and Failures
+        /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
+        ///   if `r < 0`.
+        ///
+        /// This function implements randomized rounding according to:
+        /// - \[1\] Peikert, C. (2010, August).
+        ///   An efficient and parallel Gaussian sampler for lattices.
+        ///   In: Annual Cryptology Conference (pp. 80-97).
+        ///   <https://link.springer.com/chapter/10.1007/978-3-642-14623-7_5>
+        pub(crate) fn randomized_rounding(
+            &self,
+            r: impl Into<Q>,
+            seed: Option<[u8; 32]>,
+        ) -> Result<PolyOverZ, MathError> {
+            let mut rng = SamplerRng::new(seed);
 
-        Ok(out)
-    }
+            let r = r.into();
+            let mut out = PolyOverZ::from(unsafe {
+                self.get_coeff_unchecked(0)
+                    .randomized_rounding_optionally_seeded(&r, rng.derive_seed())?
+            });
+            for i in 1..self.get_degree() + 1 {
+                let coeff = unsafe {
+                    self.get_coeff_unchecked(i)
+                        .randomized_rounding_optionally_seeded(&r, rng.derive_seed())?
+                };
+                unsafe { out.set_coeff_unchecked(i, coeff) };
+            }
+
+            Ok(out)
+        }
+    );
 }
 
 #[cfg(test)]
@@ -216,5 +240,31 @@ mod test_randomized_rounding {
     fn negative_r() {
         let value = PolyOverQ::from_str("2  5/2 1").unwrap();
         assert!(value.randomized_rounding(-1).is_err());
+    }
+}
+
+#[cfg(test)]
+mod test_randomized_rounding_seeded {
+    use crate::rational::PolyOverQ;
+    use crate::utils::sample::test_seed;
+    use std::str::FromStr;
+
+    /// Ensure that a `r < 0` throws an error
+    #[test]
+    fn negative_r() {
+        let value = PolyOverQ::from_str("2  5/2 1").unwrap();
+        assert!(value.randomized_rounding_seeded(-1, test_seed()).is_err());
+    }
+
+    /// Checks whether the same seed results in the same sample.
+    #[test]
+    fn same_seed_same_sample() {
+        use crate::rational::PolyOverQ;
+        use std::str::FromStr;
+        let value = PolyOverQ::from_str("2  5/2 1").unwrap();
+        let sample_0 = value.randomized_rounding_seeded(3, [42; 32]).unwrap();
+        let sample_1 = value.randomized_rounding_seeded(3, [42; 32]).unwrap();
+
+        assert_eq!(sample_0, sample_1);
     }
 }
