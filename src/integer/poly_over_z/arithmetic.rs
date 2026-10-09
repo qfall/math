@@ -13,4 +13,5 @@ mod add;
 mod modulo;
 mod mul;
 mod mul_scalar;
+mod neg;
 mod sub;
