@@ -125,6 +125,7 @@ impl MatZq {
             &basis.get_representative_least_nonnegative_residue(),
             center,
             &s,
+            None,
         )?;
 
         Ok(MatZq::from((&sample, basis.get_mod())))
@@ -186,6 +187,7 @@ impl MatZq {
             basis_gso,
             center,
             &s,
+            None,
         )?;
 
         Ok(MatZq::from((&sample, basis.get_mod())))

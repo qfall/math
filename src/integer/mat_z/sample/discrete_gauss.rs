@@ -116,7 +116,7 @@ impl MatZ {
     pub fn sample_d(basis: &MatZ, center: &MatQ, s: impl Into<Q>) -> Result<Self, MathError> {
         let s: Q = s.into();
 
-        sample_d(basis, center, &s)
+        sample_d(basis, center, &s, None)
     }
 
     /// Samples a non-spherical discrete Gaussian depending on your choice of
@@ -231,7 +231,7 @@ impl MatZ {
     ) -> Result<Self, MathError> {
         let s: Q = s.into();
 
-        sample_d_precomputed_gso(basis, basis_gso, center, &s)
+        sample_d_precomputed_gso(basis, basis_gso, center, &s, None)
     }
 }
 

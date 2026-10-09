@@ -34,8 +34,8 @@ use rand_distr::{Binomial, Distribution};
 /// assert!(sample <= n);
 /// ```
 pub struct BinomialSampler {
-    distr: Binomial,
-    rng: SamplerRng,
+    pub distr: Binomial,
+    pub rng: SamplerRng,
 }
 
 impl BinomialSampler {

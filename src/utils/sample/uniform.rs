@@ -31,7 +31,7 @@ use std::{cell::RefCell, convert::Infallible, rc::Rc};
 /// - `Thread`: a handle to the [`ThreadRng`] of the current thread
 /// - `Seeded`: a shared [`StdRng`] that was explicitly seeded
 #[derive(Debug, Clone)]
-pub(crate) enum SamplerRng {
+pub enum SamplerRng {
     Thread(ThreadRng),
     Seeded(Rc<RefCell<StdRng>>),
 }
@@ -108,11 +108,11 @@ impl TryCryptoRng for SamplerRng {}
 /// assert!(sample < interval_size);
 /// ```
 pub struct UniformIntegerSampler {
-    interval_size: Z,
-    two_pow_32: u64,
-    nr_iterations: u32,
-    upper_modulo: u32,
-    rng: SamplerRng,
+    pub interval_size: Z,
+    pub two_pow_32: u64,
+    pub nr_iterations: u32,
+    pub upper_modulo: u32,
+    pub rng: SamplerRng,
 }
 
 impl UniformIntegerSampler {
