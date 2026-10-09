@@ -57,9 +57,10 @@ impl MatZq {
         center: impl Into<Q>,
         s: impl Into<Q>,
     ) -> Result<MatZq, MathError> {
+        let modulus: Modulus = modulus.into();
         let center: Q = center.into();
         let s: Q = s.into();
-        let mut out = Self::new(num_rows, num_cols, modulus);
+        let mut out = Self::new(num_rows, num_cols, &modulus);
 
         let mut dgis = DiscreteGaussianIntegerSampler::init(
             &center,
@@ -70,7 +71,8 @@ impl MatZq {
 
         for row in 0..out.get_num_rows() {
             for col in 0..out.get_num_columns() {
-                let sample = dgis.sample_z();
+                let mut sample = dgis.sample_z();
+                sample = sample % &modulus;
                 unsafe { out.set_entry_unchecked(row, col, sample) };
             }
         }
@@ -195,9 +197,18 @@ mod test_sample_discrete_gauss {
         integer::Z,
         integer_mod_q::{MatZq, Modulus},
         rational::Q,
+        traits::MatrixGetEntry,
     };
 
     // This function only allows for a broader availability, which is tested here.
+
+    /// Checks if entries are properly reduced.
+    #[test]
+    fn reduced() {
+        let matrix = MatZq::sample_discrete_gauss(1, 1, 3, 0, 15.0).unwrap();
+        let value: Z = matrix.get_entry(0, 0).unwrap();
+        assert!(Z::ZERO <= value && value <= 3)
+    }
 
     /// Checks whether `sample_discrete_gauss` is available for all types
     /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...

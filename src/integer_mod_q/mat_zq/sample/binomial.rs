@@ -109,13 +109,15 @@ impl MatZq {
         p: impl Into<Q>,
     ) -> Result<Self, MathError> {
         let offset: Z = offset.into();
+        let modulus: Modulus = modulus.into();
         let mut bin_sampler = BinomialSampler::init(n, p)?;
-        let mut matrix = MatZq::new(num_rows, num_cols, modulus);
+        let mut matrix = MatZq::new(num_rows, num_cols, &modulus);
 
         for row in 0..matrix.get_num_rows() {
             for col in 0..matrix.get_num_columns() {
                 let mut sample = bin_sampler.sample();
                 sample += &offset;
+                sample = sample % &modulus;
                 unsafe { matrix.set_entry_unchecked(row, col, sample) };
             }
         }
@@ -141,6 +143,14 @@ mod test_sample_binomial {
             let sample: Z = matrix.get_entry(0, 0).unwrap();
             assert!(Z::ZERO <= sample || sample <= 2);
         }
+    }
+
+    /// Checks if entries are properly reduced.
+    #[test]
+    fn reduced() {
+        let matrix = MatZq::sample_binomial(1, 1, 3, 7, 0.5).unwrap();
+        let value: Z = matrix.get_entry(0, 0).unwrap();
+        assert!(Z::ZERO <= value && value <= 3)
     }
 
     /// Checks whether matrices with at least one dimension chosen smaller than `1`
