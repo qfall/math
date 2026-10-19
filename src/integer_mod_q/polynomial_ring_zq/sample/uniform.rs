@@ -87,78 +87,6 @@ impl PolynomialRingZq {
 
 #[cfg(test)]
 mod test_sample_uniform {
-    use crate::{
-        integer::Z,
-        integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq, PolynomialRingZq},
-        traits::{GetCoefficient, SetCoefficient},
-    };
-    use std::str::FromStr;
-
-    /// Checks whether the boundaries of the interval are kept for small moduli.
-    #[test]
-    fn boundaries_kept_small() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-
-        for _ in 0..32 {
-            let poly = PolynomialRingZq::sample_uniform(&modulus);
-
-            for i in 0..3 {
-                let sample: Z = poly.get_coeff(i).unwrap();
-                assert!(Z::ZERO <= sample);
-                assert!(sample < modulus.get_q());
-            }
-        }
-    }
-
-    /// Checks whether the boundaries of the interval are kept for large moduli.
-    #[test]
-    fn boundaries_kept_large() {
-        let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
-
-        for _ in 0..256 {
-            let poly = PolynomialRingZq::sample_uniform(&modulus);
-
-            for i in 0..3 {
-                let sample: Z = poly.get_coeff(i).unwrap();
-                assert!(Z::ZERO <= sample);
-                assert!(sample < modulus.get_q());
-            }
-        }
-    }
-
-    /// Checks whether the number of coefficients is correct.
-    #[test]
-    fn nr_coeffs() {
-        let degrees = [1, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let mut modulus = PolyOverZq::from((1, u64::MAX));
-            modulus.set_coeff(degree, 1).unwrap();
-            let modulus = ModulusPolynomialRingZq::from(&modulus);
-
-            let res = PolynomialRingZq::sample_uniform(&modulus);
-
-            assert_eq!(
-                res.get_degree() + 1,
-                modulus.get_degree(),
-                "Could fail with probability 1/{}.",
-                u64::MAX
-            );
-        }
-    }
-
-    /// Checks whether 0 modulus polynomial is insufficient.
-    #[test]
-    #[should_panic]
-    fn invalid_modulus() {
-        let modulus = ModulusPolynomialRingZq::from_str("1  1 mod 17").unwrap();
-
-        let _ = PolynomialRingZq::sample_uniform(&modulus);
-    }
-}
-
-#[cfg(test)]
-mod test_sample_uniform_seeded {
     use crate::utils::sample::test_seed;
     use crate::{
         integer::Z,
@@ -170,15 +98,20 @@ mod test_sample_uniform_seeded {
     /// Checks whether the boundaries of the interval are kept for small moduli.
     #[test]
     fn boundaries_kept_small() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        for seeded in [false, true] {
+            let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
 
-        for _ in 0..32 {
-            let poly = PolynomialRingZq::sample_uniform_seeded(&modulus, test_seed());
+            for _ in 0..32 {
+                let poly = PolynomialRingZq::sample_uniform_optionally_seeded(
+                    &modulus,
+                    seeded.then(test_seed),
+                );
 
-            for i in 0..3 {
-                let sample: Z = poly.get_coeff(i).unwrap();
-                assert!(Z::ZERO <= sample);
-                assert!(sample < modulus.get_q());
+                for i in 0..3 {
+                    let sample: Z = poly.get_coeff(i).unwrap();
+                    assert!(Z::ZERO <= sample);
+                    assert!(sample < modulus.get_q());
+                }
             }
         }
     }
@@ -186,16 +119,21 @@ mod test_sample_uniform_seeded {
     /// Checks whether the boundaries of the interval are kept for large moduli.
     #[test]
     fn boundaries_kept_large() {
-        let modulus =
-            ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
+        for seeded in [false, true] {
+            let modulus =
+                ModulusPolynomialRingZq::from_str(&format!("4  1 0 0 1 mod {}", u64::MAX)).unwrap();
 
-        for _ in 0..256 {
-            let poly = PolynomialRingZq::sample_uniform_seeded(&modulus, test_seed());
+            for _ in 0..256 {
+                let poly = PolynomialRingZq::sample_uniform_optionally_seeded(
+                    &modulus,
+                    seeded.then(test_seed),
+                );
 
-            for i in 0..3 {
-                let sample: Z = poly.get_coeff(i).unwrap();
-                assert!(Z::ZERO <= sample);
-                assert!(sample < modulus.get_q());
+                for i in 0..3 {
+                    let sample: Z = poly.get_coeff(i).unwrap();
+                    assert!(Z::ZERO <= sample);
+                    assert!(sample < modulus.get_q());
+                }
             }
         }
     }
@@ -203,30 +141,42 @@ mod test_sample_uniform_seeded {
     /// Checks whether the number of coefficients is correct.
     #[test]
     fn nr_coeffs() {
-        let degrees = [1, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let mut modulus = PolyOverZq::from((1, u64::MAX));
-            modulus.set_coeff(degree, 1).unwrap();
-            let modulus = ModulusPolynomialRingZq::from(&modulus);
+        for seeded in [false, true] {
+            let degrees = [1, 3, 7, 15, 32, 120];
+            for degree in degrees {
+                let mut modulus = PolyOverZq::from((1, u64::MAX));
+                modulus.set_coeff(degree, 1).unwrap();
+                let modulus = ModulusPolynomialRingZq::from(&modulus);
 
-            let res = PolynomialRingZq::sample_uniform_seeded(&modulus, test_seed());
+                let res = PolynomialRingZq::sample_uniform_optionally_seeded(
+                    &modulus,
+                    seeded.then(test_seed),
+                );
 
-            assert_eq!(
-                res.get_degree() + 1,
-                modulus.get_degree(),
-                "Could fail with probability 1/{}.",
-                u64::MAX
-            );
+                assert_eq!(
+                    res.get_degree() + 1,
+                    modulus.get_degree(),
+                    "Could fail with probability 1/{}.",
+                    u64::MAX
+                );
+            }
         }
     }
 
     /// Checks whether 0 modulus polynomial is insufficient.
     #[test]
-    #[should_panic]
     fn invalid_modulus() {
-        let modulus = ModulusPolynomialRingZq::from_str("1  1 mod 17").unwrap();
+        for seeded in [false, true] {
+            let result = std::panic::catch_unwind(|| {
+                let modulus = ModulusPolynomialRingZq::from_str("1  1 mod 17").unwrap();
 
-        let _ = PolynomialRingZq::sample_uniform_seeded(&modulus, test_seed());
+                let _ = PolynomialRingZq::sample_uniform_optionally_seeded(
+                    &modulus,
+                    seeded.then(test_seed),
+                );
+            });
+            assert!(result.is_err());
+        }
     }
 
     /// Checks whether the same seed results in the same sample.
@@ -239,5 +189,28 @@ mod test_sample_uniform_seeded {
         let sample_1 = PolynomialRingZq::sample_uniform_seeded(&modulus, [42; 32]);
 
         assert_eq!(sample_0, sample_1);
+    }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer() {
+        use crate::integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq};
+        use std::str::FromStr;
+        let modulus = ModulusPolynomialRingZq::from_str("3  1 2 1 mod 17").unwrap();
+        let sample = PolynomialRingZq::sample_uniform_seeded(&modulus, [42; 32]);
+
+        assert_eq!("2  2 16 / 3  1 2 1 mod 17", sample.to_string());
+    }
+
+    /// Checks whether the unseeded and the seeded function are available.
+    #[test]
+    fn availability() {
+        use crate::integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq};
+        use std::str::FromStr;
+        let modulus = ModulusPolynomialRingZq::from_str("3  1 2 1 mod 17").unwrap();
+
+        // explicitly checks the existence of the unseeded and the seeded function
+        let _ = PolynomialRingZq::sample_uniform(&modulus);
+        let _ = PolynomialRingZq::sample_uniform_seeded(&modulus, test_seed());
     }
 }

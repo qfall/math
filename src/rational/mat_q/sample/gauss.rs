@@ -155,51 +155,35 @@ impl MatQ {
 
 #[cfg(test)]
 mod test_sample_gauss {
-    use crate::{rational::MatQ, traits::MatrixDimensions};
-
-    /// Ensure that an error is returned if `sigma` is not positive
-    #[test]
-    fn non_positive_sigma() {
-        let center = MatQ::new(5, 5);
-        for sigma in [0, -1] {
-            assert!(MatQ::sample_gauss(&center, sigma).is_err())
-        }
-    }
-
-    /// Ensure that the samples are of correct dimension
-    #[test]
-    fn correct_dimension() {
-        for (x, y) in [(5, 5), (1, 10), (10, 1)] {
-            let center = MatQ::new(x, y);
-            let sample = MatQ::sample_gauss(&center, 1).unwrap();
-            assert_eq!(center.get_num_rows(), sample.get_num_rows());
-            assert_eq!(center.get_num_columns(), sample.get_num_columns());
-        }
-    }
-}
-
-#[cfg(test)]
-mod test_sample_gauss_seeded {
     use crate::utils::sample::test_seed;
     use crate::{rational::MatQ, traits::MatrixDimensions};
 
     /// Ensure that an error is returned if `sigma` is not positive
     #[test]
     fn non_positive_sigma() {
-        let center = MatQ::new(5, 5);
-        for sigma in [0, -1] {
-            assert!(MatQ::sample_gauss_seeded(&center, sigma, test_seed()).is_err())
+        for seeded in [false, true] {
+            let center = MatQ::new(5, 5);
+            for sigma in [0, -1] {
+                assert!(
+                    MatQ::sample_gauss_optionally_seeded(&center, sigma, seeded.then(test_seed))
+                        .is_err()
+                )
+            }
         }
     }
 
     /// Ensure that the samples are of correct dimension
     #[test]
     fn correct_dimension() {
-        for (x, y) in [(5, 5), (1, 10), (10, 1)] {
-            let center = MatQ::new(x, y);
-            let sample = MatQ::sample_gauss_seeded(&center, 1, test_seed()).unwrap();
-            assert_eq!(center.get_num_rows(), sample.get_num_rows());
-            assert_eq!(center.get_num_columns(), sample.get_num_columns());
+        for seeded in [false, true] {
+            for (x, y) in [(5, 5), (1, 10), (10, 1)] {
+                let center = MatQ::new(x, y);
+                let sample =
+                    MatQ::sample_gauss_optionally_seeded(&center, 1, seeded.then(test_seed))
+                        .unwrap();
+                assert_eq!(center.get_num_rows(), sample.get_num_rows());
+                assert_eq!(center.get_num_columns(), sample.get_num_columns());
+            }
         }
     }
 
@@ -212,48 +196,32 @@ mod test_sample_gauss_seeded {
 
         assert_eq!(sample_0, sample_1);
     }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer() {
+        use crate::rational::MatQ;
+        let sample = MatQ::sample_gauss_seeded(&MatQ::new(5, 5), 1, [42; 32]).unwrap();
+
+        assert_eq!(
+            "[[-4945271350741753/2251799813685248, 1117106275816641/2251799813685248, 4434555541986695/4503599627370496, -6539644456987479/4503599627370496, -4677571318743725/9007199254740992],[3908611230479557/4503599627370496, 5573654194347613/9007199254740992, 5403302998575453/9007199254740992, 2430733040590187/9007199254740992, 1031578748721027/4503599627370496],[-4883384444105643/9007199254740992, -3764944878914815/2251799813685248, -7161261431757703/2251799813685248, -5092217727994081/9007199254740992, -2353868661553283/4503599627370496],[4063319294552583/9007199254740992, 2715651668966247/2251799813685248, -7464330407867217/9007199254740992, -8311230105715239/72057594037927936, -4329275745410667/2251799813685248],[-3100112952240901/18014398509481984, 3412362636860941/576460752303423488, -4689787695738317/4503599627370496, 3370477389923299/2251799813685248, 1145812122695171/4503599627370496]]",
+            sample.to_string()
+        );
+    }
+
+    /// Checks whether the unseeded and the seeded function are available.
+    #[test]
+    fn availability() {
+        use crate::rational::MatQ;
+
+        // explicitly checks the existence of the unseeded and the seeded function
+        let _ = MatQ::sample_gauss(&MatQ::new(5, 5), 1);
+        let _ = MatQ::sample_gauss_seeded(&MatQ::new(5, 5), 1, test_seed());
+    }
 }
 
 #[cfg(test)]
 mod test_sample_gauss_same_center {
-
-    use crate::{rational::MatQ, traits::MatrixDimensions};
-
-    /// Ensure that an error is returned if `sigma` is not positive
-    #[test]
-    fn non_positive_sigma() {
-        for sigma in [0, -1] {
-            assert!(MatQ::sample_gauss_same_center(5, 5, 0, sigma).is_err())
-        }
-    }
-
-    /// Ensure that the samples are of correct dimension
-    #[test]
-    fn correct_dimension() {
-        for (x, y) in [(5, 5), (1, 10), (10, 1)] {
-            let sample = MatQ::sample_gauss_same_center(x, y, 0, 1).unwrap();
-            assert_eq!(x, sample.get_num_rows());
-            assert_eq!(y, sample.get_num_columns());
-        }
-    }
-
-    /// Ensure that a negative number of rows causes a panic
-    #[test]
-    #[should_panic]
-    fn negative_number_rows() {
-        let _ = MatQ::sample_gauss_same_center(-1, 1, 0, 1).unwrap();
-    }
-
-    /// Ensure that a negative number of columns causes a panic
-    #[test]
-    #[should_panic]
-    fn negative_number_columns() {
-        let _ = MatQ::sample_gauss_same_center(1, -1, 0, 1).unwrap();
-    }
-}
-
-#[cfg(test)]
-mod test_sample_gauss_same_center_seeded {
     use crate::utils::sample::test_seed;
 
     use crate::{rational::MatQ, traits::MatrixDimensions};
@@ -261,33 +229,75 @@ mod test_sample_gauss_same_center_seeded {
     /// Ensure that an error is returned if `sigma` is not positive
     #[test]
     fn non_positive_sigma() {
-        for sigma in [0, -1] {
-            assert!(MatQ::sample_gauss_same_center_seeded(5, 5, 0, sigma, test_seed()).is_err())
+        for seeded in [false, true] {
+            for sigma in [0, -1] {
+                assert!(
+                    MatQ::sample_gauss_same_center_optionally_seeded(
+                        5,
+                        5,
+                        0,
+                        sigma,
+                        seeded.then(test_seed)
+                    )
+                    .is_err()
+                )
+            }
         }
     }
 
     /// Ensure that the samples are of correct dimension
     #[test]
     fn correct_dimension() {
-        for (x, y) in [(5, 5), (1, 10), (10, 1)] {
-            let sample = MatQ::sample_gauss_same_center_seeded(x, y, 0, 1, test_seed()).unwrap();
-            assert_eq!(x, sample.get_num_rows());
-            assert_eq!(y, sample.get_num_columns());
+        for seeded in [false, true] {
+            for (x, y) in [(5, 5), (1, 10), (10, 1)] {
+                let sample = MatQ::sample_gauss_same_center_optionally_seeded(
+                    x,
+                    y,
+                    0,
+                    1,
+                    seeded.then(test_seed),
+                )
+                .unwrap();
+                assert_eq!(x, sample.get_num_rows());
+                assert_eq!(y, sample.get_num_columns());
+            }
         }
     }
 
     /// Ensure that a negative number of rows causes a panic
     #[test]
-    #[should_panic]
     fn negative_number_rows() {
-        let _ = MatQ::sample_gauss_same_center_seeded(-1, 1, 0, 1, test_seed()).unwrap();
+        for seeded in [false, true] {
+            let result = std::panic::catch_unwind(|| {
+                let _ = MatQ::sample_gauss_same_center_optionally_seeded(
+                    -1,
+                    1,
+                    0,
+                    1,
+                    seeded.then(test_seed),
+                )
+                .unwrap();
+            });
+            assert!(result.is_err());
+        }
     }
 
     /// Ensure that a negative number of columns causes a panic
     #[test]
-    #[should_panic]
     fn negative_number_columns() {
-        let _ = MatQ::sample_gauss_same_center_seeded(1, -1, 0, 1, test_seed()).unwrap();
+        for seeded in [false, true] {
+            let result = std::panic::catch_unwind(|| {
+                let _ = MatQ::sample_gauss_same_center_optionally_seeded(
+                    1,
+                    -1,
+                    0,
+                    1,
+                    seeded.then(test_seed),
+                )
+                .unwrap();
+            });
+            assert!(result.is_err());
+        }
     }
 
     /// Checks whether the same seed results in the same sample.
@@ -299,5 +309,29 @@ mod test_sample_gauss_same_center_seeded {
         let sample_1 = MatQ::sample_gauss_same_center_seeded(5, 5, &center, 1, [42; 32]).unwrap();
 
         assert_eq!(sample_0, sample_1);
+    }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer() {
+        use crate::rational::{MatQ, Q};
+        let center = Q::from((5, 2));
+        let sample = MatQ::sample_gauss_same_center_seeded(5, 5, &center, 1, [42; 32]).unwrap();
+
+        assert_eq!(
+            "[[8525870560382491/2251799813685248, 17119947174636167/4503599627370496, 1259641011116081/1125899906842624, 39499623190823409/18014398509481984, 3385362557569009/4503599627370496],[3938234223310835/2251799813685248, 17542906212059721/4503599627370496, 16597635972078743/4503599627370496, 8266208908835155/2251799813685248, 39314002964552041/18014398509481984],[881046098121435/562949953421312, 29287177467398541/9007199254740992, 2413886157177875/562949953421312, 981581273026087/281474976710656, 43488189713909861/18014398509481984],[6127343065657779/4503599627370496, 30937068457746009/9007199254740992, 27849268867401663/9007199254740992, 2727502571816845/2251799813685248, 27040028183639271/9007199254740992],[13289162739536831/4503599627370496, 87685859291908515/36028797018963968, 93185871850127433/36028797018963968, 2111809547791415/1125899906842624, 4077230155367515/2251799813685248]]",
+            sample.to_string()
+        );
+    }
+
+    /// Checks whether the unseeded and the seeded function are available.
+    #[test]
+    fn availability() {
+        use crate::rational::{MatQ, Q};
+        let center = Q::from((5, 2));
+
+        // explicitly checks the existence of the unseeded and the seeded function
+        let _ = MatQ::sample_gauss_same_center(5, 5, &center, 1);
+        let _ = MatQ::sample_gauss_same_center_seeded(5, 5, &center, 1, test_seed());
     }
 }

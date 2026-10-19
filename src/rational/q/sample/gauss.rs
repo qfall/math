@@ -77,50 +77,35 @@ impl Q {
 #[cfg(test)]
 mod test_sample_gauss {
     use crate::rational::Q;
-
-    /// Test correct distribution with a confidence level of 99.7% -> 3 standard
-    /// deviations.
-    #[test]
-    fn in_concentration_bound() {
-        let range = 3;
-        for (mu, sigma) in [(i64::MAX, 1), (0, 20), (i64::MIN, 100)] {
-            assert!(range * sigma >= (Q::from(mu) - Q::sample_gauss(mu, sigma).unwrap()).abs())
-        }
-    }
-
-    /// Ensure that an error is returned if `sigma` is not positive
-    #[test]
-    fn non_positive_sigma() {
-        for (mu, sigma) in [(0, 0), (0, -1)] {
-            assert!(Q::sample_gauss(mu, sigma).is_err())
-        }
-    }
-}
-
-#[cfg(test)]
-mod test_sample_gauss_seeded {
-    use crate::rational::Q;
     use crate::utils::sample::test_seed;
 
     /// Test correct distribution with a confidence level of 99.7% -> 3 standard
     /// deviations.
     #[test]
     fn in_concentration_bound() {
-        let range = 3;
-        for (mu, sigma) in [(i64::MAX, 1), (0, 20), (i64::MIN, 100)] {
-            assert!(
-                range * sigma
-                    >= (Q::from(mu) - Q::sample_gauss_seeded(mu, sigma, test_seed()).unwrap())
+        for seeded in [false, true] {
+            let range = 3;
+            for (mu, sigma) in [(i64::MAX, 1), (0, 20), (i64::MIN, 100)] {
+                assert!(
+                    range * sigma
+                        >= (Q::from(mu)
+                            - Q::sample_gauss_optionally_seeded(mu, sigma, seeded.then(test_seed))
+                                .unwrap())
                         .abs()
-            )
+                )
+            }
         }
     }
 
     /// Ensure that an error is returned if `sigma` is not positive
     #[test]
     fn non_positive_sigma() {
-        for (mu, sigma) in [(0, 0), (0, -1)] {
-            assert!(Q::sample_gauss_seeded(mu, sigma, test_seed()).is_err())
+        for seeded in [false, true] {
+            for (mu, sigma) in [(0, 0), (0, -1)] {
+                assert!(
+                    Q::sample_gauss_optionally_seeded(mu, sigma, seeded.then(test_seed)).is_err()
+                )
+            }
         }
     }
 
@@ -132,5 +117,24 @@ mod test_sample_gauss_seeded {
         let sample_1 = Q::sample_gauss_seeded(0, 1, [42; 32]).unwrap();
 
         assert_eq!(sample_0, sample_1);
+    }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer() {
+        use crate::rational::Q;
+        let sample = Q::sample_gauss_seeded(0, 1, [42; 32]).unwrap();
+
+        assert_eq!("2896371026169371/2251799813685248", sample.to_string());
+    }
+
+    /// Checks whether the unseeded and the seeded function are available.
+    #[test]
+    fn availability() {
+        use crate::rational::Q;
+
+        // explicitly checks the existence of the unseeded and the seeded function
+        let _ = Q::sample_gauss(0, 1);
+        let _ = Q::sample_gauss_seeded(0, 1, test_seed());
     }
 }

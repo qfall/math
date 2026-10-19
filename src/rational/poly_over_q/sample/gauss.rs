@@ -98,63 +98,6 @@ impl PolyOverQ {
 
 #[cfg(test)]
 mod test_sample_gauss {
-    use crate::{
-        integer::Z,
-        rational::{PolyOverQ, Q},
-    };
-
-    /// Checks whether `sample_gauss` is available for all types
-    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
-    /// or [`Into<Q>`], i.e. u8, i16, f32, Z, Q, ...
-    #[test]
-    fn availability() {
-        let center_q = Q::ZERO;
-        let center_z = Z::ZERO;
-
-        let _ = PolyOverQ::sample_gauss(1u8, 16u8, 0f32);
-        let _ = PolyOverQ::sample_gauss(1u16, 16u16, 0f64);
-        let _ = PolyOverQ::sample_gauss(1u32, 16u32, 0f32);
-        let _ = PolyOverQ::sample_gauss(1u64, 16u64, 0f64);
-        let _ = PolyOverQ::sample_gauss(1i8, 16u8, 0f32);
-        let _ = PolyOverQ::sample_gauss(1i16, 16i16, 0f32);
-        let _ = PolyOverQ::sample_gauss(1i32, 16i32, 0f32);
-        let _ = PolyOverQ::sample_gauss(1i64, 16i64, 0f64);
-        let _ = PolyOverQ::sample_gauss(1u8, center_q, 0f32);
-        let _ = PolyOverQ::sample_gauss(1u8, center_z, 0f64);
-    }
-
-    /// Checks whether the number of coefficients is correct.
-    #[test]
-    fn nr_coeffs() {
-        let degrees = [1, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let res = PolyOverQ::sample_gauss(degree, i64::MAX, 1).unwrap();
-
-            assert_eq!(
-                res.get_degree(),
-                degree,
-                "Could fail with negligible probability."
-            );
-        }
-    }
-
-    /// Checks is as error is returned, if sigma is less than 1.
-    #[test]
-    fn invalid_sigma() {
-        assert!(PolyOverQ::sample_gauss(1, 0, 0).is_err());
-        assert!(PolyOverQ::sample_gauss(1, 0, -1).is_err());
-    }
-
-    /// Checks whether the maximum degree needs to be at least 0.
-    #[test]
-    #[should_panic]
-    fn invalid_max_degree() {
-        let _ = PolyOverQ::sample_gauss(-1, 0, 1).unwrap();
-    }
-}
-
-#[cfg(test)]
-mod test_sample_gauss_seeded {
     use crate::utils::sample::test_seed;
     use crate::{
         integer::Z,
@@ -166,48 +109,119 @@ mod test_sample_gauss_seeded {
     /// or [`Into<Q>`], i.e. u8, i16, f32, Z, Q, ...
     #[test]
     fn availability() {
-        let center_q = Q::ZERO;
-        let center_z = Z::ZERO;
+        for seeded in [false, true] {
+            let center_q = Q::ZERO;
+            let center_z = Z::ZERO;
 
-        let _ = PolyOverQ::sample_gauss_seeded(1u8, 16u8, 0f32, test_seed());
-        let _ = PolyOverQ::sample_gauss_seeded(1u16, 16u16, 0f64, test_seed());
-        let _ = PolyOverQ::sample_gauss_seeded(1u32, 16u32, 0f32, test_seed());
-        let _ = PolyOverQ::sample_gauss_seeded(1u64, 16u64, 0f64, test_seed());
-        let _ = PolyOverQ::sample_gauss_seeded(1i8, 16u8, 0f32, test_seed());
-        let _ = PolyOverQ::sample_gauss_seeded(1i16, 16i16, 0f32, test_seed());
-        let _ = PolyOverQ::sample_gauss_seeded(1i32, 16i32, 0f32, test_seed());
-        let _ = PolyOverQ::sample_gauss_seeded(1i64, 16i64, 0f64, test_seed());
-        let _ = PolyOverQ::sample_gauss_seeded(1u8, center_q, 0f32, test_seed());
-        let _ = PolyOverQ::sample_gauss_seeded(1u8, center_z, 0f64, test_seed());
+            let _ =
+                PolyOverQ::sample_gauss_optionally_seeded(1u8, 16u8, 0f32, seeded.then(test_seed));
+            let _ = PolyOverQ::sample_gauss_optionally_seeded(
+                1u16,
+                16u16,
+                0f64,
+                seeded.then(test_seed),
+            );
+            let _ = PolyOverQ::sample_gauss_optionally_seeded(
+                1u32,
+                16u32,
+                0f32,
+                seeded.then(test_seed),
+            );
+            let _ = PolyOverQ::sample_gauss_optionally_seeded(
+                1u64,
+                16u64,
+                0f64,
+                seeded.then(test_seed),
+            );
+            let _ =
+                PolyOverQ::sample_gauss_optionally_seeded(1i8, 16u8, 0f32, seeded.then(test_seed));
+            let _ = PolyOverQ::sample_gauss_optionally_seeded(
+                1i16,
+                16i16,
+                0f32,
+                seeded.then(test_seed),
+            );
+            let _ = PolyOverQ::sample_gauss_optionally_seeded(
+                1i32,
+                16i32,
+                0f32,
+                seeded.then(test_seed),
+            );
+            let _ = PolyOverQ::sample_gauss_optionally_seeded(
+                1i64,
+                16i64,
+                0f64,
+                seeded.then(test_seed),
+            );
+            let _ = PolyOverQ::sample_gauss_optionally_seeded(
+                1u8,
+                center_q,
+                0f32,
+                seeded.then(test_seed),
+            );
+            let _ = PolyOverQ::sample_gauss_optionally_seeded(
+                1u8,
+                center_z,
+                0f64,
+                seeded.then(test_seed),
+            );
+
+            // explicitly checks the existence of the unseeded and the seeded function
+            if seeded {
+                let _ = PolyOverQ::sample_gauss_seeded(1u8, 16u8, 0f32, test_seed());
+            } else {
+                let _ = PolyOverQ::sample_gauss(1u8, 16u8, 0f32);
+            }
+        }
     }
 
     /// Checks whether the number of coefficients is correct.
     #[test]
     fn nr_coeffs() {
-        let degrees = [1, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let res = PolyOverQ::sample_gauss_seeded(degree, i64::MAX, 1, test_seed()).unwrap();
+        for seeded in [false, true] {
+            let degrees = [1, 3, 7, 15, 32, 120];
+            for degree in degrees {
+                let res = PolyOverQ::sample_gauss_optionally_seeded(
+                    degree,
+                    i64::MAX,
+                    1,
+                    seeded.then(test_seed),
+                )
+                .unwrap();
 
-            assert_eq!(
-                res.get_degree(),
-                degree,
-                "Could fail with negligible probability."
-            );
+                assert_eq!(
+                    res.get_degree(),
+                    degree,
+                    "Could fail with negligible probability."
+                );
+            }
         }
     }
 
     /// Checks is as error is returned, if sigma is less than 1.
     #[test]
     fn invalid_sigma() {
-        assert!(PolyOverQ::sample_gauss_seeded(1, 0, 0, test_seed()).is_err());
-        assert!(PolyOverQ::sample_gauss_seeded(1, 0, -1, test_seed()).is_err());
+        for seeded in [false, true] {
+            assert!(
+                PolyOverQ::sample_gauss_optionally_seeded(1, 0, 0, seeded.then(test_seed)).is_err()
+            );
+            assert!(
+                PolyOverQ::sample_gauss_optionally_seeded(1, 0, -1, seeded.then(test_seed))
+                    .is_err()
+            );
+        }
     }
 
     /// Checks whether the maximum degree needs to be at least 0.
     #[test]
-    #[should_panic]
     fn invalid_max_degree() {
-        let _ = PolyOverQ::sample_gauss_seeded(-1, 0, 1, test_seed()).unwrap();
+        for seeded in [false, true] {
+            let result = std::panic::catch_unwind(|| {
+                let _ = PolyOverQ::sample_gauss_optionally_seeded(-1, 0, 1, seeded.then(test_seed))
+                    .unwrap();
+            });
+            assert!(result.is_err());
+        }
     }
 
     /// Checks whether the same seed results in the same sample.
@@ -218,5 +232,17 @@ mod test_sample_gauss_seeded {
         let sample_1 = PolyOverQ::sample_gauss_seeded(2, 0, 1, [42; 32]).unwrap();
 
         assert_eq!(sample_0, sample_1);
+    }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer() {
+        use crate::rational::PolyOverQ;
+        let sample = PolyOverQ::sample_gauss_seeded(2, 0, 1, [42; 32]).unwrap();
+
+        assert_eq!(
+            "3  2896371026169371/2251799813685248 5860948106209927/4503599627370496 -1555108755990479/1125899906842624",
+            sample.to_string()
+        );
     }
 }

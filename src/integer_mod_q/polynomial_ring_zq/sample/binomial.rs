@@ -147,60 +147,6 @@ impl PolynomialRingZq {
 #[cfg(test)]
 mod test_sample_binomial {
     use super::{PolynomialRingZq, Z};
-    use crate::{
-        integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq},
-        traits::{GetCoefficient, SetCoefficient},
-    };
-    use std::str::FromStr;
-
-    // As all major tests regarding an appropriate binomial distribution,
-    // whether the correct interval is kept, and if the errors are thrown correctly,
-    // are performed in the `utils` module, we omit these tests here.
-
-    /// Checks whether the boundaries of the interval are kept.
-    #[test]
-    fn boundaries_kept() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-
-        for _ in 0..8 {
-            let poly = PolynomialRingZq::sample_binomial(&modulus, 2, 0.5).unwrap();
-            let sample: Z = poly.get_coeff(0).unwrap();
-            assert!(Z::ZERO <= sample || sample <= 2);
-        }
-    }
-
-    /// Checks whether the number of coefficients is correct.
-    #[test]
-    fn nr_coeffs() {
-        let degrees = [1, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let mut modulus = PolyOverZq::from((1, u64::MAX));
-            modulus.set_coeff(degree, 1).unwrap();
-            let modulus = ModulusPolynomialRingZq::from(&modulus);
-
-            let res = PolynomialRingZq::sample_binomial(&modulus, 256, 0.99999).unwrap();
-
-            assert_eq!(
-                modulus.get_degree(),
-                res.get_degree() + 1,
-                "This test can fail with probability close to 0."
-            );
-        }
-    }
-
-    /// Checks whether 0 modulus polynomial is insufficient.
-    #[test]
-    #[should_panic]
-    fn invalid_modulus() {
-        let modulus = ModulusPolynomialRingZq::from_str("1  1 mod 17").unwrap();
-
-        let _ = PolynomialRingZq::sample_binomial(&modulus, 2, 0.5);
-    }
-}
-
-#[cfg(test)]
-mod test_sample_binomial_seeded {
-    use super::{PolynomialRingZq, Z};
     use crate::utils::sample::test_seed;
     use crate::{
         integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq},
@@ -215,43 +161,66 @@ mod test_sample_binomial_seeded {
     /// Checks whether the boundaries of the interval are kept.
     #[test]
     fn boundaries_kept() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        for seeded in [false, true] {
+            let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
 
-        for _ in 0..8 {
-            let poly =
-                PolynomialRingZq::sample_binomial_seeded(&modulus, 2, 0.5, test_seed()).unwrap();
-            let sample: Z = poly.get_coeff(0).unwrap();
-            assert!(Z::ZERO <= sample || sample <= 2);
+            for _ in 0..8 {
+                let poly = PolynomialRingZq::sample_binomial_optionally_seeded(
+                    &modulus,
+                    2,
+                    0.5,
+                    seeded.then(test_seed),
+                )
+                .unwrap();
+                let sample: Z = poly.get_coeff(0).unwrap();
+                assert!(Z::ZERO <= sample || sample <= 2);
+            }
         }
     }
 
     /// Checks whether the number of coefficients is correct.
     #[test]
     fn nr_coeffs() {
-        let degrees = [1, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let mut modulus = PolyOverZq::from((1, u64::MAX));
-            modulus.set_coeff(degree, 1).unwrap();
-            let modulus = ModulusPolynomialRingZq::from(&modulus);
+        for seeded in [false, true] {
+            let degrees = [1, 3, 7, 15, 32, 120];
+            for degree in degrees {
+                let mut modulus = PolyOverZq::from((1, u64::MAX));
+                modulus.set_coeff(degree, 1).unwrap();
+                let modulus = ModulusPolynomialRingZq::from(&modulus);
 
-            let res = PolynomialRingZq::sample_binomial_seeded(&modulus, 256, 0.99999, test_seed())
+                let res = PolynomialRingZq::sample_binomial_optionally_seeded(
+                    &modulus,
+                    256,
+                    0.99999,
+                    seeded.then(test_seed),
+                )
                 .unwrap();
 
-            assert_eq!(
-                modulus.get_degree(),
-                res.get_degree() + 1,
-                "This test can fail with probability close to 0."
-            );
+                assert_eq!(
+                    modulus.get_degree(),
+                    res.get_degree() + 1,
+                    "This test can fail with probability close to 0."
+                );
+            }
         }
     }
 
     /// Checks whether 0 modulus polynomial is insufficient.
     #[test]
-    #[should_panic]
     fn invalid_modulus() {
-        let modulus = ModulusPolynomialRingZq::from_str("1  1 mod 17").unwrap();
+        for seeded in [false, true] {
+            let result = std::panic::catch_unwind(|| {
+                let modulus = ModulusPolynomialRingZq::from_str("1  1 mod 17").unwrap();
 
-        let _ = PolynomialRingZq::sample_binomial_seeded(&modulus, 2, 0.5, test_seed());
+                let _ = PolynomialRingZq::sample_binomial_optionally_seeded(
+                    &modulus,
+                    2,
+                    0.5,
+                    seeded.then(test_seed),
+                );
+            });
+            assert!(result.is_err());
+        }
     }
 
     /// Checks whether the same seed results in the same sample.
@@ -266,62 +235,35 @@ mod test_sample_binomial_seeded {
             PolynomialRingZq::sample_binomial_seeded(&modulus, 2, 0.5, [42; 32]).unwrap();
 
         assert_eq!(sample_0, sample_1);
+    }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer() {
+        use crate::integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq};
+        use std::str::FromStr;
+        let modulus = ModulusPolynomialRingZq::from_str("3  1 2 1 mod 17").unwrap();
+        let sample = PolynomialRingZq::sample_binomial_seeded(&modulus, 2, 0.5, [42; 32]).unwrap();
+
+        assert_eq!("2  0 2 / 3  1 2 1 mod 17", sample.to_string());
+    }
+
+    /// Checks whether the unseeded and the seeded function are available.
+    #[test]
+    fn availability() {
+        use crate::integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq};
+        use std::str::FromStr;
+        let modulus = ModulusPolynomialRingZq::from_str("3  1 2 1 mod 17").unwrap();
+
+        // explicitly checks the existence of the unseeded and the seeded function
+        let _ = PolynomialRingZq::sample_binomial(&modulus, 2, 0.5);
+        let _ = PolynomialRingZq::sample_binomial_seeded(&modulus, 2, 0.5, test_seed());
     }
 }
 
 #[cfg(test)]
 mod test_sample_binomial_with_offset {
     use super::{PolynomialRingZq, Z};
-    use crate::{
-        integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq},
-        traits::{GetCoefficient, SetCoefficient},
-    };
-    use std::str::FromStr;
-
-    // As all major tests regarding an appropriate binomial distribution,
-    // whether the correct interval is kept, and if the errors are thrown correctly,
-    // are performed in the `utils` module, we omit these tests here.
-
-    /// Checks whether the boundaries of the interval are kept.
-    #[test]
-    fn boundaries_kept() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-
-        for _ in 0..8 {
-            let poly = PolynomialRingZq::sample_binomial_with_offset(&modulus, -1, 2, 0.5).unwrap();
-            let sample: Z = poly.get_coeff(0).unwrap();
-            assert!(Z::MINUS_ONE <= sample || sample <= Z::ONE);
-        }
-    }
-
-    /// Checks whether the number of coefficients is correct.
-    #[test]
-    fn nr_coeffs() {
-        let degrees = [1, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let mut modulus = PolyOverZq::from((1, u64::MAX));
-            modulus.set_coeff(degree, 1).unwrap();
-            let modulus = ModulusPolynomialRingZq::from(&modulus);
-
-            let res = PolynomialRingZq::sample_binomial_with_offset(&modulus, 1, 2, 0.5).unwrap();
-
-            assert_eq!(modulus.get_degree(), res.get_degree() + 1);
-        }
-    }
-
-    /// Checks whether 0 modulus polynomial is insufficient.
-    #[test]
-    #[should_panic]
-    fn invalid_modulus() {
-        let modulus = ModulusPolynomialRingZq::from_str("1  1 mod 17").unwrap();
-
-        let _ = PolynomialRingZq::sample_binomial_with_offset(&modulus, -1, 2, 0.5);
-    }
-}
-
-#[cfg(test)]
-mod test_sample_binomial_with_offset_seeded {
-    use super::{PolynomialRingZq, Z};
     use crate::utils::sample::test_seed;
     use crate::{
         integer_mod_q::{ModulusPolynomialRingZq, PolyOverZq},
@@ -336,52 +278,65 @@ mod test_sample_binomial_with_offset_seeded {
     /// Checks whether the boundaries of the interval are kept.
     #[test]
     fn boundaries_kept() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        for seeded in [false, true] {
+            let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
 
-        for _ in 0..8 {
-            let poly = PolynomialRingZq::sample_binomial_with_offset_seeded(
-                &modulus,
-                -1,
-                2,
-                0.5,
-                test_seed(),
-            )
-            .unwrap();
-            let sample: Z = poly.get_coeff(0).unwrap();
-            assert!(Z::MINUS_ONE <= sample || sample <= Z::ONE);
+            for _ in 0..8 {
+                let poly = PolynomialRingZq::sample_binomial_with_offset_optionally_seeded(
+                    &modulus,
+                    -1,
+                    2,
+                    0.5,
+                    seeded.then(test_seed),
+                )
+                .unwrap();
+                let sample: Z = poly.get_coeff(0).unwrap();
+                assert!(Z::MINUS_ONE <= sample || sample <= Z::ONE);
+            }
         }
     }
 
     /// Checks whether the number of coefficients is correct.
     #[test]
     fn nr_coeffs() {
-        let degrees = [1, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let mut modulus = PolyOverZq::from((1, u64::MAX));
-            modulus.set_coeff(degree, 1).unwrap();
-            let modulus = ModulusPolynomialRingZq::from(&modulus);
+        for seeded in [false, true] {
+            let degrees = [1, 3, 7, 15, 32, 120];
+            for degree in degrees {
+                let mut modulus = PolyOverZq::from((1, u64::MAX));
+                modulus.set_coeff(degree, 1).unwrap();
+                let modulus = ModulusPolynomialRingZq::from(&modulus);
 
-            let res = PolynomialRingZq::sample_binomial_with_offset_seeded(
-                &modulus,
-                1,
-                2,
-                0.5,
-                test_seed(),
-            )
-            .unwrap();
+                let res = PolynomialRingZq::sample_binomial_with_offset_optionally_seeded(
+                    &modulus,
+                    1,
+                    2,
+                    0.5,
+                    seeded.then(test_seed),
+                )
+                .unwrap();
 
-            assert_eq!(modulus.get_degree(), res.get_degree() + 1);
+                assert_eq!(modulus.get_degree(), res.get_degree() + 1);
+            }
         }
     }
 
     /// Checks whether 0 modulus polynomial is insufficient.
     #[test]
-    #[should_panic]
     fn invalid_modulus() {
-        let modulus = ModulusPolynomialRingZq::from_str("1  1 mod 17").unwrap();
+        for seeded in [false, true] {
+            let result = std::panic::catch_unwind(|| {
+                let modulus = ModulusPolynomialRingZq::from_str("1  1 mod 17").unwrap();
 
-        let _ =
-            PolynomialRingZq::sample_binomial_with_offset_seeded(&modulus, -1, 2, 0.5, test_seed());
+                let _ = PolynomialRingZq::sample_binomial_with_offset_optionally_seeded(
+                    &modulus,
+                    -1,
+                    2,
+                    0.5,
+                    seeded.then(test_seed),
+                );
+            });
+            assert!(result.is_err());
+        }
     }
 
     /// Checks whether the same seed results in the same sample.
@@ -398,5 +353,31 @@ mod test_sample_binomial_with_offset_seeded {
                 .unwrap();
 
         assert_eq!(sample_0, sample_1);
+    }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer() {
+        use crate::integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq};
+        use std::str::FromStr;
+        let modulus = ModulusPolynomialRingZq::from_str("3  1 2 1 mod 17").unwrap();
+        let sample =
+            PolynomialRingZq::sample_binomial_with_offset_seeded(&modulus, -1, 2, 0.5, [42; 32])
+                .unwrap();
+
+        assert_eq!("2  -1 1 / 3  1 2 1 mod 17", sample.to_string());
+    }
+
+    /// Checks whether the unseeded and the seeded function are available.
+    #[test]
+    fn availability() {
+        use crate::integer_mod_q::{ModulusPolynomialRingZq, PolynomialRingZq};
+        use std::str::FromStr;
+        let modulus = ModulusPolynomialRingZq::from_str("3  1 2 1 mod 17").unwrap();
+
+        // explicitly checks the existence of the unseeded and the seeded function
+        let _ = PolynomialRingZq::sample_binomial_with_offset(&modulus, -1, 2, 0.5);
+        let _ =
+            PolynomialRingZq::sample_binomial_with_offset_seeded(&modulus, -1, 2, 0.5, test_seed());
     }
 }

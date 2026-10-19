@@ -91,105 +91,6 @@ impl PolyOverZq {
 
 #[cfg(test)]
 mod test_sample_uniform {
-    use crate::{
-        integer::Z,
-        integer_mod_q::{Modulus, PolyOverZq},
-        traits::GetCoefficient,
-    };
-
-    /// Checks whether the boundaries of the interval are kept for small moduli.
-    #[test]
-    fn boundaries_kept_small() {
-        let modulus = Z::from(17);
-
-        let poly_zq = PolyOverZq::sample_uniform(32, &modulus).unwrap();
-
-        for i in 0..32 {
-            let sample: Z = poly_zq.get_coeff(i).unwrap();
-            assert!(Z::ZERO <= sample);
-            assert!(sample < modulus);
-        }
-    }
-
-    /// Checks whether the boundaries of the interval are kept for large moduli.
-    #[test]
-    fn boundaries_kept_large() {
-        let modulus = Z::from(i64::MAX);
-
-        let poly_zq = PolyOverZq::sample_uniform(256, &modulus).unwrap();
-
-        for i in 0..256 {
-            let sample: Z = poly_zq.get_coeff(i).unwrap();
-            assert!(Z::ZERO <= sample);
-            assert!(sample < modulus);
-        }
-    }
-
-    /// Checks whether the number of coefficients is correct.
-    #[test]
-    fn nr_coeffs() {
-        let degrees = [1, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let res = PolyOverZq::sample_uniform(degree, u64::MAX).unwrap();
-
-            assert_eq!(
-                degree,
-                res.get_degree(),
-                "Could fail with probability 1/{}.",
-                u64::MAX
-            );
-        }
-    }
-
-    /// Checks whether providing an invalid interval/ modulus results in an error.
-    #[test]
-    #[should_panic]
-    fn invalid_modulus_negative() {
-        let _ = PolyOverZq::sample_uniform(1, i64::MIN);
-    }
-
-    /// Checks whether providing an invalid interval/ modulus results in an error.
-    #[test]
-    #[should_panic]
-    fn invalid_modulus_one() {
-        let _ = PolyOverZq::sample_uniform(1, 1);
-    }
-
-    /// Checks whether providing a length smaller than `1` results in an error.
-    #[test]
-    fn invalid_max_degree() {
-        let modulus = Z::from(15);
-
-        let res_0 = PolyOverZq::sample_uniform(-1, &modulus);
-        let res_1 = PolyOverZq::sample_uniform(i64::MIN, &modulus);
-
-        assert!(res_0.is_err());
-        assert!(res_1.is_err());
-    }
-
-    /// Checks whether `sample_uniform` is available for all types
-    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
-    #[test]
-    fn availability() {
-        let modulus = Modulus::from(10);
-        let z = Z::from(10);
-
-        let _ = PolyOverZq::sample_uniform(1u64, 10u16).unwrap();
-        let _ = PolyOverZq::sample_uniform(1i64, 10u32).unwrap();
-        let _ = PolyOverZq::sample_uniform(1u8, 10u64).unwrap();
-        let _ = PolyOverZq::sample_uniform(1u16, 10i8).unwrap();
-        let _ = PolyOverZq::sample_uniform(1u32, 10i16).unwrap();
-        let _ = PolyOverZq::sample_uniform(1i32, 10i32).unwrap();
-        let _ = PolyOverZq::sample_uniform(1i16, 10i64).unwrap();
-        let _ = PolyOverZq::sample_uniform(1i8, &z).unwrap();
-        let _ = PolyOverZq::sample_uniform(1, z).unwrap();
-        let _ = PolyOverZq::sample_uniform(1, &modulus).unwrap();
-        let _ = PolyOverZq::sample_uniform(1, modulus).unwrap();
-    }
-}
-
-#[cfg(test)]
-mod test_sample_uniform_seeded {
     use crate::utils::sample::test_seed;
     use crate::{
         integer::Z,
@@ -200,91 +101,154 @@ mod test_sample_uniform_seeded {
     /// Checks whether the boundaries of the interval are kept for small moduli.
     #[test]
     fn boundaries_kept_small() {
-        let modulus = Z::from(17);
+        for seeded in [false, true] {
+            let modulus = Z::from(17);
 
-        let poly_zq = PolyOverZq::sample_uniform_seeded(32, &modulus, test_seed()).unwrap();
+            let poly_zq =
+                PolyOverZq::sample_uniform_optionally_seeded(32, &modulus, seeded.then(test_seed))
+                    .unwrap();
 
-        for i in 0..32 {
-            let sample: Z = poly_zq.get_coeff(i).unwrap();
-            assert!(Z::ZERO <= sample);
-            assert!(sample < modulus);
+            for i in 0..32 {
+                let sample: Z = poly_zq.get_coeff(i).unwrap();
+                assert!(Z::ZERO <= sample);
+                assert!(sample < modulus);
+            }
         }
     }
 
     /// Checks whether the boundaries of the interval are kept for large moduli.
     #[test]
     fn boundaries_kept_large() {
-        let modulus = Z::from(i64::MAX);
+        for seeded in [false, true] {
+            let modulus = Z::from(i64::MAX);
 
-        let poly_zq = PolyOverZq::sample_uniform_seeded(256, &modulus, test_seed()).unwrap();
+            let poly_zq =
+                PolyOverZq::sample_uniform_optionally_seeded(256, &modulus, seeded.then(test_seed))
+                    .unwrap();
 
-        for i in 0..256 {
-            let sample: Z = poly_zq.get_coeff(i).unwrap();
-            assert!(Z::ZERO <= sample);
-            assert!(sample < modulus);
+            for i in 0..256 {
+                let sample: Z = poly_zq.get_coeff(i).unwrap();
+                assert!(Z::ZERO <= sample);
+                assert!(sample < modulus);
+            }
         }
     }
 
     /// Checks whether the number of coefficients is correct.
     #[test]
     fn nr_coeffs() {
-        let degrees = [1, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let res = PolyOverZq::sample_uniform_seeded(degree, u64::MAX, test_seed()).unwrap();
+        for seeded in [false, true] {
+            let degrees = [1, 3, 7, 15, 32, 120];
+            for degree in degrees {
+                let res = PolyOverZq::sample_uniform_optionally_seeded(
+                    degree,
+                    u64::MAX,
+                    seeded.then(test_seed),
+                )
+                .unwrap();
 
-            assert_eq!(
-                degree,
-                res.get_degree(),
-                "Could fail with probability 1/{}.",
-                u64::MAX
-            );
+                assert_eq!(
+                    degree,
+                    res.get_degree(),
+                    "Could fail with probability 1/{}.",
+                    u64::MAX
+                );
+            }
         }
     }
 
     /// Checks whether providing an invalid interval/ modulus results in an error.
     #[test]
-    #[should_panic]
     fn invalid_modulus_negative() {
-        let _ = PolyOverZq::sample_uniform_seeded(1, i64::MIN, test_seed());
+        for seeded in [false, true] {
+            let result = std::panic::catch_unwind(|| {
+                let _ = PolyOverZq::sample_uniform_optionally_seeded(
+                    1,
+                    i64::MIN,
+                    seeded.then(test_seed),
+                );
+            });
+            assert!(result.is_err());
+        }
     }
 
     /// Checks whether providing an invalid interval/ modulus results in an error.
     #[test]
-    #[should_panic]
     fn invalid_modulus_one() {
-        let _ = PolyOverZq::sample_uniform_seeded(1, 1, test_seed());
+        for seeded in [false, true] {
+            let result = std::panic::catch_unwind(|| {
+                let _ = PolyOverZq::sample_uniform_optionally_seeded(1, 1, seeded.then(test_seed));
+            });
+            assert!(result.is_err());
+        }
     }
 
     /// Checks whether providing a length smaller than `1` results in an error.
     #[test]
     fn invalid_max_degree() {
-        let modulus = Z::from(15);
+        for seeded in [false, true] {
+            let modulus = Z::from(15);
 
-        let res_0 = PolyOverZq::sample_uniform_seeded(-1, &modulus, test_seed());
-        let res_1 = PolyOverZq::sample_uniform_seeded(i64::MIN, &modulus, test_seed());
+            let res_0 =
+                PolyOverZq::sample_uniform_optionally_seeded(-1, &modulus, seeded.then(test_seed));
+            let res_1 = PolyOverZq::sample_uniform_optionally_seeded(
+                i64::MIN,
+                &modulus,
+                seeded.then(test_seed),
+            );
 
-        assert!(res_0.is_err());
-        assert!(res_1.is_err());
+            assert!(res_0.is_err());
+            assert!(res_1.is_err());
+        }
     }
 
     /// Checks whether `sample_uniform` is available for all types
     /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
     #[test]
     fn availability() {
-        let modulus = Modulus::from(10);
-        let z = Z::from(10);
+        for seeded in [false, true] {
+            let modulus = Modulus::from(10);
+            let z = Z::from(10);
 
-        let _ = PolyOverZq::sample_uniform_seeded(1u64, 10u16, test_seed()).unwrap();
-        let _ = PolyOverZq::sample_uniform_seeded(1i64, 10u32, test_seed()).unwrap();
-        let _ = PolyOverZq::sample_uniform_seeded(1u8, 10u64, test_seed()).unwrap();
-        let _ = PolyOverZq::sample_uniform_seeded(1u16, 10i8, test_seed()).unwrap();
-        let _ = PolyOverZq::sample_uniform_seeded(1u32, 10i16, test_seed()).unwrap();
-        let _ = PolyOverZq::sample_uniform_seeded(1i32, 10i32, test_seed()).unwrap();
-        let _ = PolyOverZq::sample_uniform_seeded(1i16, 10i64, test_seed()).unwrap();
-        let _ = PolyOverZq::sample_uniform_seeded(1i8, &z, test_seed()).unwrap();
-        let _ = PolyOverZq::sample_uniform_seeded(1, z, test_seed()).unwrap();
-        let _ = PolyOverZq::sample_uniform_seeded(1, &modulus, test_seed()).unwrap();
-        let _ = PolyOverZq::sample_uniform_seeded(1, modulus, test_seed()).unwrap();
+            let _ =
+                PolyOverZq::sample_uniform_optionally_seeded(1u64, 10u16, seeded.then(test_seed))
+                    .unwrap();
+            let _ =
+                PolyOverZq::sample_uniform_optionally_seeded(1i64, 10u32, seeded.then(test_seed))
+                    .unwrap();
+            let _ =
+                PolyOverZq::sample_uniform_optionally_seeded(1u8, 10u64, seeded.then(test_seed))
+                    .unwrap();
+            let _ =
+                PolyOverZq::sample_uniform_optionally_seeded(1u16, 10i8, seeded.then(test_seed))
+                    .unwrap();
+            let _ =
+                PolyOverZq::sample_uniform_optionally_seeded(1u32, 10i16, seeded.then(test_seed))
+                    .unwrap();
+            let _ =
+                PolyOverZq::sample_uniform_optionally_seeded(1i32, 10i32, seeded.then(test_seed))
+                    .unwrap();
+            let _ =
+                PolyOverZq::sample_uniform_optionally_seeded(1i16, 10i64, seeded.then(test_seed))
+                    .unwrap();
+            let _ = PolyOverZq::sample_uniform_optionally_seeded(1i8, &z, seeded.then(test_seed))
+                .unwrap();
+            let _ =
+                PolyOverZq::sample_uniform_optionally_seeded(1, z, seeded.then(test_seed)).unwrap();
+            let _ =
+                PolyOverZq::sample_uniform_optionally_seeded(1, &modulus, seeded.then(test_seed))
+                    .unwrap();
+            let _ =
+                PolyOverZq::sample_uniform_optionally_seeded(1, modulus, seeded.then(test_seed))
+                    .unwrap();
+
+            // explicitly checks the existence of the unseeded and the seeded function
+            if seeded {
+                let _ = PolyOverZq::sample_uniform_seeded(1u64, 10u16, test_seed());
+            } else {
+                let _ = PolyOverZq::sample_uniform(1u64, 10u16);
+            }
+        }
     }
 
     /// Checks whether the same seed results in the same sample.
@@ -295,5 +259,14 @@ mod test_sample_uniform_seeded {
         let sample_1 = PolyOverZq::sample_uniform_seeded(3, 17, [42; 32]).unwrap();
 
         assert_eq!(sample_0, sample_1);
+    }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer() {
+        use crate::integer_mod_q::PolyOverZq;
+        let sample = PolyOverZq::sample_uniform_seeded(3, 17, [42; 32]).unwrap();
+
+        assert_eq!("4  2 16 3 7 mod 17", sample.to_string());
     }
 }

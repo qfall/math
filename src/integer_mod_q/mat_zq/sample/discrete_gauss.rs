@@ -237,52 +237,6 @@ impl MatZq {
 
 #[cfg(test)]
 mod test_sample_discrete_gauss {
-    use crate::{
-        integer::Z,
-        integer_mod_q::{MatZq, Modulus},
-        rational::Q,
-        traits::MatrixGetEntry,
-    };
-
-    // This function only allows for a broader availability, which is tested here.
-
-    /// Checks if entries are properly reduced.
-    #[test]
-    fn reduced() {
-        let matrix = MatZq::sample_discrete_gauss(1, 1, 3, 0, 15.0).unwrap();
-        let value: Z = matrix.get_entry(0, 0).unwrap();
-        assert!(Z::ZERO <= value && value <= 3)
-    }
-
-    /// Checks whether `sample_discrete_gauss` is available for all types
-    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
-    /// or [`Into<Q>`], i.e. u8, i16, f32, Z, Q, ...
-    #[test]
-    fn availability() {
-        let n = Z::from(1024);
-        let center = Q::ZERO;
-        let s = Q::ONE;
-        let modulus = Modulus::from(83);
-
-        let _ = MatZq::sample_discrete_gauss(2u64, 3i8, &modulus, 0f32, 1u16);
-        let _ = MatZq::sample_discrete_gauss(3u8, 2i16, 83u8, &center, 1u8);
-        let _ = MatZq::sample_discrete_gauss(1, 1, &n, &center, 1u32);
-        let _ = MatZq::sample_discrete_gauss(1, 1, 83i8, &center, 1u64);
-        let _ = MatZq::sample_discrete_gauss(1, 1, 83, &center, 1i64);
-        let _ = MatZq::sample_discrete_gauss(1, 1, 83, &center, 1i32);
-        let _ = MatZq::sample_discrete_gauss(1, 1, 83, &center, 1i16);
-        let _ = MatZq::sample_discrete_gauss(1, 1, 83, &center, 1i8);
-        let _ = MatZq::sample_discrete_gauss(1, 1, 83, &center, 1i64);
-        let _ = MatZq::sample_discrete_gauss(1, 1, 83, &center, &n);
-        let _ = MatZq::sample_discrete_gauss(1, 1, 83, &center, &s);
-        let _ = MatZq::sample_discrete_gauss(1, 1, 83, &center, 1.25f64);
-        let _ = MatZq::sample_discrete_gauss(1, 1, 83, 0, 1.25f64);
-        let _ = MatZq::sample_discrete_gauss(1, 1, 83, center, 15.75f32);
-    }
-}
-
-#[cfg(test)]
-mod test_sample_discrete_gauss_seeded {
     use crate::utils::sample::test_seed;
     use crate::{
         integer::Z,
@@ -296,9 +250,19 @@ mod test_sample_discrete_gauss_seeded {
     /// Checks if entries are properly reduced.
     #[test]
     fn reduced() {
-        let matrix = MatZq::sample_discrete_gauss_seeded(1, 1, 3, 0, 15.0, test_seed()).unwrap();
-        let value: Z = matrix.get_entry(0, 0).unwrap();
-        assert!(Z::ZERO <= value && value <= 3)
+        for seeded in [false, true] {
+            let matrix = MatZq::sample_discrete_gauss_optionally_seeded(
+                1,
+                1,
+                3,
+                0,
+                15.0,
+                seeded.then(test_seed),
+            )
+            .unwrap();
+            let value: Z = matrix.get_entry(0, 0).unwrap();
+            assert!(Z::ZERO <= value && value <= 3)
+        }
     }
 
     /// Checks whether `sample_discrete_gauss` is available for all types
@@ -306,25 +270,139 @@ mod test_sample_discrete_gauss_seeded {
     /// or [`Into<Q>`], i.e. u8, i16, f32, Z, Q, ...
     #[test]
     fn availability() {
-        let n = Z::from(1024);
-        let center = Q::ZERO;
-        let s = Q::ONE;
-        let modulus = Modulus::from(83);
+        for seeded in [false, true] {
+            let n = Z::from(1024);
+            let center = Q::ZERO;
+            let s = Q::ONE;
+            let modulus = Modulus::from(83);
 
-        let _ = MatZq::sample_discrete_gauss_seeded(2u64, 3i8, &modulus, 0f32, 1u16, test_seed());
-        let _ = MatZq::sample_discrete_gauss_seeded(3u8, 2i16, 83u8, &center, 1u8, test_seed());
-        let _ = MatZq::sample_discrete_gauss_seeded(1, 1, &n, &center, 1u32, test_seed());
-        let _ = MatZq::sample_discrete_gauss_seeded(1, 1, 83i8, &center, 1u64, test_seed());
-        let _ = MatZq::sample_discrete_gauss_seeded(1, 1, 83, &center, 1i64, test_seed());
-        let _ = MatZq::sample_discrete_gauss_seeded(1, 1, 83, &center, 1i32, test_seed());
-        let _ = MatZq::sample_discrete_gauss_seeded(1, 1, 83, &center, 1i16, test_seed());
-        let _ = MatZq::sample_discrete_gauss_seeded(1, 1, 83, &center, 1i8, test_seed());
-        let _ = MatZq::sample_discrete_gauss_seeded(1, 1, 83, &center, 1i64, test_seed());
-        let _ = MatZq::sample_discrete_gauss_seeded(1, 1, 83, &center, &n, test_seed());
-        let _ = MatZq::sample_discrete_gauss_seeded(1, 1, 83, &center, &s, test_seed());
-        let _ = MatZq::sample_discrete_gauss_seeded(1, 1, 83, &center, 1.25f64, test_seed());
-        let _ = MatZq::sample_discrete_gauss_seeded(1, 1, 83, 0, 1.25f64, test_seed());
-        let _ = MatZq::sample_discrete_gauss_seeded(1, 1, 83, center, 15.75f32, test_seed());
+            let _ = MatZq::sample_discrete_gauss_optionally_seeded(
+                2u64,
+                3i8,
+                &modulus,
+                0f32,
+                1u16,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_discrete_gauss_optionally_seeded(
+                3u8,
+                2i16,
+                83u8,
+                &center,
+                1u8,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_discrete_gauss_optionally_seeded(
+                1,
+                1,
+                &n,
+                &center,
+                1u32,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_discrete_gauss_optionally_seeded(
+                1,
+                1,
+                83i8,
+                &center,
+                1u64,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_discrete_gauss_optionally_seeded(
+                1,
+                1,
+                83,
+                &center,
+                1i64,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_discrete_gauss_optionally_seeded(
+                1,
+                1,
+                83,
+                &center,
+                1i32,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_discrete_gauss_optionally_seeded(
+                1,
+                1,
+                83,
+                &center,
+                1i16,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_discrete_gauss_optionally_seeded(
+                1,
+                1,
+                83,
+                &center,
+                1i8,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_discrete_gauss_optionally_seeded(
+                1,
+                1,
+                83,
+                &center,
+                1i64,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_discrete_gauss_optionally_seeded(
+                1,
+                1,
+                83,
+                &center,
+                &n,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_discrete_gauss_optionally_seeded(
+                1,
+                1,
+                83,
+                &center,
+                &s,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_discrete_gauss_optionally_seeded(
+                1,
+                1,
+                83,
+                &center,
+                1.25f64,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_discrete_gauss_optionally_seeded(
+                1,
+                1,
+                83,
+                0,
+                1.25f64,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_discrete_gauss_optionally_seeded(
+                1,
+                1,
+                83,
+                center,
+                15.75f32,
+                seeded.then(test_seed),
+            );
+
+            // explicitly checks the existence of the unseeded and the seeded function
+            if seeded {
+                let _ = MatZq::sample_discrete_gauss_seeded(
+                    2u64,
+                    3i8,
+                    &modulus,
+                    0f32,
+                    1u16,
+                    test_seed(),
+                );
+            } else {
+                let _ = MatZq::sample_discrete_gauss(2u64, 3i8, &modulus, 0f32, 1u16);
+            }
+        }
     }
 
     /// Checks whether the same seed results in the same sample.
@@ -336,73 +414,19 @@ mod test_sample_discrete_gauss_seeded {
 
         assert_eq!(sample_0, sample_1);
     }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer() {
+        use crate::integer_mod_q::MatZq;
+        let sample = MatZq::sample_discrete_gauss_seeded(3, 1, 83, 0, 1.25f32, [42; 32]).unwrap();
+
+        assert_eq!("[[1],[82],[0]] mod 83", sample.to_string());
+    }
 }
 
 #[cfg(test)]
 mod test_sample_d {
-    use crate::{
-        integer::Z,
-        integer_mod_q::MatZq,
-        rational::{MatQ, Q},
-    };
-
-    // Appropriate inputs were tested in utils and thus omitted here.
-    // This function only allows for a broader availability, which is tested here.
-
-    /// Checks whether `sample_d` is available for all types
-    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
-    /// or [`Into<Q>`], i.e. u8, i16, f32, Z, Q, ...
-    #[test]
-    fn availability() {
-        let basis = MatZq::identity(5, 5, 17);
-        let n = Z::from(1024);
-        let center = MatQ::new(5, 1);
-        let s = Q::ONE;
-
-        let _ = MatZq::sample_d(&basis, &center, 1u16);
-        let _ = MatZq::sample_d(&basis, &center, 1u8);
-        let _ = MatZq::sample_d(&basis, &center, 1u32);
-        let _ = MatZq::sample_d(&basis, &center, 1u64);
-        let _ = MatZq::sample_d(&basis, &center, 1i64);
-        let _ = MatZq::sample_d(&basis, &center, 1i32);
-        let _ = MatZq::sample_d(&basis, &center, 1i16);
-        let _ = MatZq::sample_d(&basis, &center, 1i8);
-        let _ = MatZq::sample_d(&basis, &center, 1i64);
-        let _ = MatZq::sample_d(&basis, &center, &n);
-        let _ = MatZq::sample_d(&basis, &center, &s);
-        let _ = MatZq::sample_d(&basis, &center, 1.25f64);
-        let _ = MatZq::sample_d(&basis, &center, 15.75f32);
-    }
-
-    /// Checks whether `sample_d_precomputed_gso` is available for all types
-    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
-    /// or [`Into<Q>`], i.e. u8, i16, f32, Z, Q, ...
-    #[test]
-    fn availability_prec_gso() {
-        let basis = MatZq::identity(5, 5, 17);
-        let n = Z::from(1024);
-        let center = MatQ::new(5, 1);
-        let s = Q::ONE;
-        let basis_gso = MatQ::from(&basis.get_representative_least_nonnegative_residue());
-
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, 1u16);
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, 1u8);
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, 1u32);
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, 1u64);
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, 1i64);
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, 1i32);
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, 1i16);
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, 1i8);
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, 1i64);
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, &n);
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, &s);
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, 1.25f64);
-        let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, 15.75f32);
-    }
-}
-
-#[cfg(test)]
-mod test_sample_d_seeded {
     use crate::utils::sample::test_seed;
     use crate::{
         integer::Z,
@@ -418,24 +442,46 @@ mod test_sample_d_seeded {
     /// or [`Into<Q>`], i.e. u8, i16, f32, Z, Q, ...
     #[test]
     fn availability() {
-        let basis = MatZq::identity(5, 5, 17);
-        let n = Z::from(1024);
-        let center = MatQ::new(5, 1);
-        let s = Q::ONE;
+        for seeded in [false, true] {
+            let basis = MatZq::identity(5, 5, 17);
+            let n = Z::from(1024);
+            let center = MatQ::new(5, 1);
+            let s = Q::ONE;
 
-        let _ = MatZq::sample_d_seeded(&basis, &center, 1u16, test_seed());
-        let _ = MatZq::sample_d_seeded(&basis, &center, 1u8, test_seed());
-        let _ = MatZq::sample_d_seeded(&basis, &center, 1u32, test_seed());
-        let _ = MatZq::sample_d_seeded(&basis, &center, 1u64, test_seed());
-        let _ = MatZq::sample_d_seeded(&basis, &center, 1i64, test_seed());
-        let _ = MatZq::sample_d_seeded(&basis, &center, 1i32, test_seed());
-        let _ = MatZq::sample_d_seeded(&basis, &center, 1i16, test_seed());
-        let _ = MatZq::sample_d_seeded(&basis, &center, 1i8, test_seed());
-        let _ = MatZq::sample_d_seeded(&basis, &center, 1i64, test_seed());
-        let _ = MatZq::sample_d_seeded(&basis, &center, &n, test_seed());
-        let _ = MatZq::sample_d_seeded(&basis, &center, &s, test_seed());
-        let _ = MatZq::sample_d_seeded(&basis, &center, 1.25f64, test_seed());
-        let _ = MatZq::sample_d_seeded(&basis, &center, 15.75f32, test_seed());
+            let _ =
+                MatZq::sample_d_optionally_seeded(&basis, &center, 1u16, seeded.then(test_seed));
+            let _ = MatZq::sample_d_optionally_seeded(&basis, &center, 1u8, seeded.then(test_seed));
+            let _ =
+                MatZq::sample_d_optionally_seeded(&basis, &center, 1u32, seeded.then(test_seed));
+            let _ =
+                MatZq::sample_d_optionally_seeded(&basis, &center, 1u64, seeded.then(test_seed));
+            let _ =
+                MatZq::sample_d_optionally_seeded(&basis, &center, 1i64, seeded.then(test_seed));
+            let _ =
+                MatZq::sample_d_optionally_seeded(&basis, &center, 1i32, seeded.then(test_seed));
+            let _ =
+                MatZq::sample_d_optionally_seeded(&basis, &center, 1i16, seeded.then(test_seed));
+            let _ = MatZq::sample_d_optionally_seeded(&basis, &center, 1i8, seeded.then(test_seed));
+            let _ =
+                MatZq::sample_d_optionally_seeded(&basis, &center, 1i64, seeded.then(test_seed));
+            let _ = MatZq::sample_d_optionally_seeded(&basis, &center, &n, seeded.then(test_seed));
+            let _ = MatZq::sample_d_optionally_seeded(&basis, &center, &s, seeded.then(test_seed));
+            let _ =
+                MatZq::sample_d_optionally_seeded(&basis, &center, 1.25f64, seeded.then(test_seed));
+            let _ = MatZq::sample_d_optionally_seeded(
+                &basis,
+                &center,
+                15.75f32,
+                seeded.then(test_seed),
+            );
+
+            // explicitly checks the existence of the unseeded and the seeded function
+            if seeded {
+                let _ = MatZq::sample_d_seeded(&basis, &center, 1u16, test_seed());
+            } else {
+                let _ = MatZq::sample_d(&basis, &center, 1u16);
+            }
+        }
     }
 
     /// Checks whether `sample_d_precomputed_gso` is available for all types
@@ -443,48 +489,118 @@ mod test_sample_d_seeded {
     /// or [`Into<Q>`], i.e. u8, i16, f32, Z, Q, ...
     #[test]
     fn availability_prec_gso() {
-        let basis = MatZq::identity(5, 5, 17);
-        let n = Z::from(1024);
-        let center = MatQ::new(5, 1);
-        let s = Q::ONE;
-        let basis_gso = MatQ::from(&basis.get_representative_least_nonnegative_residue());
+        for seeded in [false, true] {
+            let basis = MatZq::identity(5, 5, 17);
+            let n = Z::from(1024);
+            let center = MatQ::new(5, 1);
+            let s = Q::ONE;
+            let basis_gso = MatQ::from(&basis.get_representative_least_nonnegative_residue());
 
-        let _ =
-            MatZq::sample_d_precomputed_gso_seeded(&basis, &basis_gso, &center, 1u16, test_seed());
-        let _ =
-            MatZq::sample_d_precomputed_gso_seeded(&basis, &basis_gso, &center, 1u8, test_seed());
-        let _ =
-            MatZq::sample_d_precomputed_gso_seeded(&basis, &basis_gso, &center, 1u32, test_seed());
-        let _ =
-            MatZq::sample_d_precomputed_gso_seeded(&basis, &basis_gso, &center, 1u64, test_seed());
-        let _ =
-            MatZq::sample_d_precomputed_gso_seeded(&basis, &basis_gso, &center, 1i64, test_seed());
-        let _ =
-            MatZq::sample_d_precomputed_gso_seeded(&basis, &basis_gso, &center, 1i32, test_seed());
-        let _ =
-            MatZq::sample_d_precomputed_gso_seeded(&basis, &basis_gso, &center, 1i16, test_seed());
-        let _ =
-            MatZq::sample_d_precomputed_gso_seeded(&basis, &basis_gso, &center, 1i8, test_seed());
-        let _ =
-            MatZq::sample_d_precomputed_gso_seeded(&basis, &basis_gso, &center, 1i64, test_seed());
-        let _ =
-            MatZq::sample_d_precomputed_gso_seeded(&basis, &basis_gso, &center, &n, test_seed());
-        let _ =
-            MatZq::sample_d_precomputed_gso_seeded(&basis, &basis_gso, &center, &s, test_seed());
-        let _ = MatZq::sample_d_precomputed_gso_seeded(
-            &basis,
-            &basis_gso,
-            &center,
-            1.25f64,
-            test_seed(),
-        );
-        let _ = MatZq::sample_d_precomputed_gso_seeded(
-            &basis,
-            &basis_gso,
-            &center,
-            15.75f32,
-            test_seed(),
-        );
+            let _ = MatZq::sample_d_precomputed_gso_optionally_seeded(
+                &basis,
+                &basis_gso,
+                &center,
+                1u16,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_d_precomputed_gso_optionally_seeded(
+                &basis,
+                &basis_gso,
+                &center,
+                1u8,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_d_precomputed_gso_optionally_seeded(
+                &basis,
+                &basis_gso,
+                &center,
+                1u32,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_d_precomputed_gso_optionally_seeded(
+                &basis,
+                &basis_gso,
+                &center,
+                1u64,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_d_precomputed_gso_optionally_seeded(
+                &basis,
+                &basis_gso,
+                &center,
+                1i64,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_d_precomputed_gso_optionally_seeded(
+                &basis,
+                &basis_gso,
+                &center,
+                1i32,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_d_precomputed_gso_optionally_seeded(
+                &basis,
+                &basis_gso,
+                &center,
+                1i16,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_d_precomputed_gso_optionally_seeded(
+                &basis,
+                &basis_gso,
+                &center,
+                1i8,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_d_precomputed_gso_optionally_seeded(
+                &basis,
+                &basis_gso,
+                &center,
+                1i64,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_d_precomputed_gso_optionally_seeded(
+                &basis,
+                &basis_gso,
+                &center,
+                &n,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_d_precomputed_gso_optionally_seeded(
+                &basis,
+                &basis_gso,
+                &center,
+                &s,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_d_precomputed_gso_optionally_seeded(
+                &basis,
+                &basis_gso,
+                &center,
+                1.25f64,
+                seeded.then(test_seed),
+            );
+            let _ = MatZq::sample_d_precomputed_gso_optionally_seeded(
+                &basis,
+                &basis_gso,
+                &center,
+                15.75f32,
+                seeded.then(test_seed),
+            );
+
+            // explicitly checks the existence of the unseeded and the seeded function
+            if seeded {
+                let _ = MatZq::sample_d_precomputed_gso_seeded(
+                    &basis,
+                    &basis_gso,
+                    &center,
+                    1u16,
+                    test_seed(),
+                );
+            } else {
+                let _ = MatZq::sample_d_precomputed_gso(&basis, &basis_gso, &center, 1u16);
+            }
+        }
     }
 
     /// Checks whether the same seed results in the same sample.
@@ -514,5 +630,30 @@ mod test_sample_d_seeded {
                 .unwrap();
 
         assert_eq!(sample_0, sample_1);
+    }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer_d() {
+        use crate::{integer_mod_q::MatZq, rational::MatQ};
+        let basis = MatZq::identity(5, 5, 17);
+        let center = MatQ::new(5, 1);
+        let sample = MatZq::sample_d_seeded(&basis, &center, 1.25f32, [42; 32]).unwrap();
+
+        assert_eq!("[[0],[16],[0],[0],[0]] mod 17", sample.to_string());
+    }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer_d_precomputed_gso() {
+        use crate::{integer_mod_q::MatZq, rational::MatQ};
+        let basis = MatZq::identity(5, 5, 17);
+        let center = MatQ::new(5, 1);
+        let basis_gso = MatQ::from(&basis.get_representative_least_nonnegative_residue()).gso();
+        let sample =
+            MatZq::sample_d_precomputed_gso_seeded(&basis, &basis_gso, &center, 1.25f32, [42; 32])
+                .unwrap();
+
+        assert_eq!("[[0],[16],[0],[0],[0]] mod 17", sample.to_string());
     }
 }

@@ -478,6 +478,7 @@ pub(crate) fn sample_d_precomputed_gso(
 #[cfg(test)]
 mod test_discrete_gaussian_integer_sampler {
     use super::DiscreteGaussianIntegerSampler;
+    use crate::utils::sample::test_seed;
     use crate::{
         rational::Q,
         utils::sample::discrete_gauss::{LookupTableSetting, TAILCUT},
@@ -486,102 +487,110 @@ mod test_discrete_gaussian_integer_sampler {
     /// Checks whether samples are kept in correct interval for a small interval.
     #[test]
     fn small_interval() {
-        let center = Q::from(15);
-        let gaussian_parameter = Q::from((1, 2));
+        for seeded in [false, true] {
+            let center = Q::from(15);
+            let gaussian_parameter = Q::from((1, 2));
 
-        let mut dgis = DiscreteGaussianIntegerSampler::init(
-            &center,
-            &gaussian_parameter,
-            8.0,
-            LookupTableSetting::FillOnTheFly,
-            None,
-        )
-        .unwrap();
+            let mut dgis = DiscreteGaussianIntegerSampler::init(
+                &center,
+                &gaussian_parameter,
+                8.0,
+                LookupTableSetting::FillOnTheFly,
+                seeded.then(test_seed),
+            )
+            .unwrap();
 
-        for _ in 0..64 {
-            let sample = dgis.sample_z();
+            for _ in 0..64 {
+                let sample = dgis.sample_z();
 
-            assert!(10 <= sample);
-            assert!(sample <= 20);
+                assert!(10 <= sample);
+                assert!(sample <= 20);
+            }
         }
     }
 
     /// Checks whether samples are kept in correct interval for a large interval.
     #[test]
     fn large_interval() {
-        let center = Q::MINUS_ONE;
-        let gaussian_parameter = Q::ONE;
+        for seeded in [false, true] {
+            let center = Q::MINUS_ONE;
+            let gaussian_parameter = Q::ONE;
 
-        let mut dgis = DiscreteGaussianIntegerSampler::init(
-            &center,
-            &gaussian_parameter,
-            unsafe { TAILCUT },
-            LookupTableSetting::FillOnTheFly,
-            None,
-        )
-        .unwrap();
+            let mut dgis = DiscreteGaussianIntegerSampler::init(
+                &center,
+                &gaussian_parameter,
+                unsafe { TAILCUT },
+                LookupTableSetting::FillOnTheFly,
+                seeded.then(test_seed),
+            )
+            .unwrap();
 
-        for _ in 0..256 {
-            let sample = dgis.sample_z();
+            for _ in 0..256 {
+                let sample = dgis.sample_z();
 
-            assert!(-64 <= sample);
-            assert!(sample <= 62);
+                assert!(-64 <= sample);
+                assert!(sample <= 62);
+            }
         }
     }
 
     /// Checks whether `sample_z` returns an error if the gaussian parameter `s < 0`.
     #[test]
     fn invalid_gaussian_parameter() {
-        let center = Q::ZERO;
+        for seeded in [false, true] {
+            let center = Q::ZERO;
 
-        assert!(
-            DiscreteGaussianIntegerSampler::init(
-                &center,
-                &Q::MINUS_ONE,
-                6.0,
-                LookupTableSetting::FillOnTheFly,
-                None
-            )
-            .is_err()
-        );
-        assert!(
-            DiscreteGaussianIntegerSampler::init(
-                &center,
-                Q::from(i64::MIN),
-                6.0,
-                LookupTableSetting::FillOnTheFly,
-                None
-            )
-            .is_err()
-        );
+            assert!(
+                DiscreteGaussianIntegerSampler::init(
+                    &center,
+                    &Q::MINUS_ONE,
+                    6.0,
+                    LookupTableSetting::FillOnTheFly,
+                    seeded.then(test_seed)
+                )
+                .is_err()
+            );
+            assert!(
+                DiscreteGaussianIntegerSampler::init(
+                    &center,
+                    Q::from(i64::MIN),
+                    6.0,
+                    LookupTableSetting::FillOnTheFly,
+                    seeded.then(test_seed)
+                )
+                .is_err()
+            );
+        }
     }
 
     /// Checks whether `sample_z` returns an error if `n < 0`.
     #[test]
     fn invalid_tailcut() {
-        let center = Q::MINUS_ONE;
-        let gaussian_parameter = Q::ONE;
+        for seeded in [false, true] {
+            let center = Q::MINUS_ONE;
+            let gaussian_parameter = Q::ONE;
 
-        assert!(
-            DiscreteGaussianIntegerSampler::init(
-                &center,
-                &gaussian_parameter,
-                -0.1,
-                LookupTableSetting::FillOnTheFly,
-                None
-            )
-            .is_err()
-        );
-        assert!(
-            DiscreteGaussianIntegerSampler::init(
-                &center,
-                &gaussian_parameter,
-                i64::MIN,
-                LookupTableSetting::FillOnTheFly,
-                None
-            )
-            .is_err()
-        );
+            assert!(
+                DiscreteGaussianIntegerSampler::init(
+                    &center,
+                    &gaussian_parameter,
+                    -0.1,
+                    LookupTableSetting::FillOnTheFly,
+                    seeded.then(test_seed)
+                )
+                .is_err()
+            );
+            assert!(
+                DiscreteGaussianIntegerSampler::init(
+                    &center,
+                    &gaussian_parameter,
+                    i64::MIN,
+                    LookupTableSetting::FillOnTheFly,
+                    seeded.then(test_seed)
+                )
+                .is_err()
+            );
+        }
     }
 
     /// Checks whether a serialized and deserialized sampler keeps its lookup table
@@ -612,12 +621,6 @@ mod test_discrete_gaussian_integer_sampler {
             assert!(sample <= 20);
         }
     }
-}
-
-#[cfg(test)]
-mod test_discrete_gaussian_integer_sampler_seeded {
-    use super::DiscreteGaussianIntegerSampler;
-    use crate::{integer::Z, rational::Q, utils::sample::discrete_gauss::LookupTableSetting};
 
     /// Checks whether two samplers with the same seed output the same samples
     /// for every [`LookupTableSetting`].
@@ -641,32 +644,6 @@ mod test_discrete_gaussian_integer_sampler_seeded {
                 assert_eq!(dgis_0.sample_z(), dgis_1.sample_z());
             }
         }
-    }
-
-    /// Checks whether two samplers with different seeds output different samples.
-    #[test]
-    fn different_seed_different_samples() {
-        let mut dgis_0 = DiscreteGaussianIntegerSampler::init(
-            0,
-            1024,
-            6,
-            LookupTableSetting::NoLookup,
-            Some([0; 32]),
-        )
-        .unwrap();
-        let mut dgis_1 = DiscreteGaussianIntegerSampler::init(
-            0,
-            1024,
-            6,
-            LookupTableSetting::NoLookup,
-            Some([1; 32]),
-        )
-        .unwrap();
-
-        let samples_0: Vec<Z> = (0..16).map(|_| dgis_0.sample_z()).collect();
-        let samples_1: Vec<Z> = (0..16).map(|_| dgis_1.sample_z()).collect();
-
-        assert_ne!(samples_0, samples_1);
     }
 
     /// Checks whether a clone of a seeded sampler continues the stream of its original,
@@ -697,49 +674,21 @@ mod test_discrete_gaussian_integer_sampler_seeded {
         }
     }
 
-    /// Checks whether seeded samples are kept in the correct interval.
+    /// Checks whether the seeded sampler outputs the known samples for a fixed seed.
     #[test]
-    fn keeps_range() {
+    fn known_answer() {
         let mut dgis = DiscreteGaussianIntegerSampler::init(
-            Q::from(15),
-            Q::from((1, 2)),
-            8.0,
+            Q::MINUS_ONE,
+            16,
+            6,
             LookupTableSetting::FillOnTheFly,
             Some([42; 32]),
         )
         .unwrap();
 
-        for _ in 0..64 {
-            let sample = dgis.sample_z();
+        let samples: Vec<String> = (0..8).map(|_| dgis.sample_z().to_string()).collect();
 
-            assert!(10 <= sample);
-            assert!(sample <= 20);
-        }
-    }
-
-    /// Checks whether invalid choices for `s` and `tailcut` result in an error.
-    #[test]
-    fn invalid_parameters() {
-        assert!(
-            DiscreteGaussianIntegerSampler::init(
-                0,
-                &Q::MINUS_ONE,
-                6.0,
-                LookupTableSetting::FillOnTheFly,
-                Some([42; 32])
-            )
-            .is_err()
-        );
-        assert!(
-            DiscreteGaussianIntegerSampler::init(
-                0,
-                1,
-                -0.1,
-                LookupTableSetting::FillOnTheFly,
-                Some([42; 32])
-            )
-            .is_err()
-        );
+        assert_eq!("3, -3, 5, 3, -12, 13, -1, 0", samples.join(", "));
     }
 }
 
@@ -819,6 +768,7 @@ mod test_sample_d {
     use super::sample_d_precomputed_gso;
     use crate::traits::{Concatenate, MatrixDimensions, MatrixGetSubmatrix, Pow};
     use crate::utils::sample::discrete_gauss::sample_d;
+    use crate::utils::sample::test_seed;
     use crate::{
         integer::{MatZ, Z},
         rational::{MatQ, Q},
@@ -829,40 +779,64 @@ mod test_sample_d {
     /// Ensures that the doc-test compiles and runs properly.
     #[test]
     fn doc_test() {
-        let basis = MatZ::identity(5, 5);
-        let center = MatQ::new(5, 1);
-        let gaussian_parameter = Q::ONE;
-        let basis_gso = MatQ::from(&basis).gso();
+        for seeded in [false, true] {
+            let basis = MatZ::identity(5, 5);
+            let center = MatQ::new(5, 1);
+            let gaussian_parameter = Q::ONE;
+            let basis_gso = MatQ::from(&basis).gso();
 
-        let _ = sample_d(&basis, &center, &gaussian_parameter, None).unwrap();
-        let _ = sample_d_precomputed_gso(&basis, &basis_gso, &center, &gaussian_parameter, None)
+            let _ = sample_d(&basis, &center, &gaussian_parameter, seeded.then(test_seed)).unwrap();
+            let _ = sample_d_precomputed_gso(
+                &basis,
+                &basis_gso,
+                &center,
+                &gaussian_parameter,
+                seeded.then(test_seed),
+            )
             .unwrap();
+        }
     }
 
     /// Ensures that `sample_d` works properly for a non-zero center.
     #[test]
     fn non_zero_center() {
-        let basis = MatZ::identity(5, 5);
-        let center = MatQ::identity(5, 1);
-        let gaussian_parameter = Q::ONE;
-        let basis_gso = MatQ::from(&basis).gso();
+        for seeded in [false, true] {
+            let basis = MatZ::identity(5, 5);
+            let center = MatQ::identity(5, 1);
+            let gaussian_parameter = Q::ONE;
+            let basis_gso = MatQ::from(&basis).gso();
 
-        let _ = sample_d(&basis, &center, &gaussian_parameter, None).unwrap();
-        let _ = sample_d_precomputed_gso(&basis, &basis_gso, &center, &gaussian_parameter, None)
+            let _ = sample_d(&basis, &center, &gaussian_parameter, seeded.then(test_seed)).unwrap();
+            let _ = sample_d_precomputed_gso(
+                &basis,
+                &basis_gso,
+                &center,
+                &gaussian_parameter,
+                seeded.then(test_seed),
+            )
             .unwrap();
+        }
     }
 
     /// Ensures that `sample_d` works properly for a different basis.
     #[test]
     fn non_identity_basis() {
-        let basis = MatZ::from_str("[[2, 1],[1, 2]]").unwrap();
-        let center = MatQ::new(2, 1);
-        let gaussian_parameter = Q::ONE;
-        let basis_gso = MatQ::from(&basis).gso();
+        for seeded in [false, true] {
+            let basis = MatZ::from_str("[[2, 1],[1, 2]]").unwrap();
+            let center = MatQ::new(2, 1);
+            let gaussian_parameter = Q::ONE;
+            let basis_gso = MatQ::from(&basis).gso();
 
-        let _ = sample_d(&basis, &center, &gaussian_parameter, None).unwrap();
-        let _ = sample_d_precomputed_gso(&basis, &basis_gso, &center, &gaussian_parameter, None)
+            let _ = sample_d(&basis, &center, &gaussian_parameter, seeded.then(test_seed)).unwrap();
+            let _ = sample_d_precomputed_gso(
+                &basis,
+                &basis_gso,
+                &center,
+                &gaussian_parameter,
+                seeded.then(test_seed),
+            )
             .unwrap();
+        }
     }
 
     /// Ensures that `sample_d` outputs a vector that's part of the specified lattice.
@@ -872,150 +846,196 @@ mod test_sample_d {
     /// should become a zero vector at the end of the matrix.
     #[test]
     fn point_of_lattice() {
-        let basis = MatZ::from_str("[[7, 0],[7, 3]]").unwrap();
-        let center = MatQ::new(2, 1);
-        let gaussian_parameter = Q::ONE;
-        let basis_gso = MatQ::from(&basis).gso();
+        for seeded in [false, true] {
+            let basis = MatZ::from_str("[[7, 0],[7, 3]]").unwrap();
+            let center = MatQ::new(2, 1);
+            let gaussian_parameter = Q::ONE;
+            let basis_gso = MatQ::from(&basis).gso();
 
-        let sample = sample_d(&basis, &center, &gaussian_parameter, None).unwrap();
-        let sample_prec =
-            sample_d_precomputed_gso(&basis, &basis_gso, &center, &gaussian_parameter, None)
-                .unwrap();
+            let sample =
+                sample_d(&basis, &center, &gaussian_parameter, seeded.then(test_seed)).unwrap();
+            let sample_prec = sample_d_precomputed_gso(
+                &basis,
+                &basis_gso,
+                &center,
+                &gaussian_parameter,
+                seeded.then(test_seed),
+            )
+            .unwrap();
 
-        // check whether hermite normal form of HNF(b) = HNF([b|sample_vector])
-        let basis_concat_sample = basis.concat_horizontal(&sample).unwrap();
-        let basis_concat_sample_prec = basis.concat_horizontal(&sample_prec).unwrap();
-        let mut hnf_basis = MatZ::new(2, 2);
-        unsafe { fmpz_mat_hnf(&mut hnf_basis.matrix, &basis.matrix) };
-        let mut hnf_basis_concat_sample = MatZ::new(2, 3);
-        let mut hnf_basis_concat_sample_prec = MatZ::new(2, 3);
-        unsafe {
-            fmpz_mat_hnf(
-                &mut hnf_basis_concat_sample.matrix,
-                &basis_concat_sample.matrix,
-            )
-        };
-        unsafe {
-            fmpz_mat_hnf(
-                &mut hnf_basis_concat_sample_prec.matrix,
-                &basis_concat_sample_prec.matrix,
-            )
-        };
-        assert_eq!(
-            hnf_basis.get_column(0).unwrap(),
-            hnf_basis_concat_sample.get_column(0).unwrap()
-        );
-        assert_eq!(
-            hnf_basis.get_column(0).unwrap(),
-            hnf_basis_concat_sample_prec.get_column(0).unwrap()
-        );
-        assert_eq!(
-            hnf_basis.get_column(1).unwrap(),
-            hnf_basis_concat_sample.get_column(1).unwrap()
-        );
-        assert_eq!(
-            hnf_basis.get_column(1).unwrap(),
-            hnf_basis_concat_sample_prec.get_column(1).unwrap()
-        );
-        // check whether last vector is zero, i.e. was linearly dependent and part of lattice
-        assert!(hnf_basis_concat_sample.get_column(2).unwrap().is_zero());
-        assert!(
-            hnf_basis_concat_sample_prec
-                .get_column(2)
-                .unwrap()
-                .is_zero()
-        );
+            // check whether hermite normal form of HNF(b) = HNF([b|sample_vector])
+            let basis_concat_sample = basis.concat_horizontal(&sample).unwrap();
+            let basis_concat_sample_prec = basis.concat_horizontal(&sample_prec).unwrap();
+            let mut hnf_basis = MatZ::new(2, 2);
+            unsafe { fmpz_mat_hnf(&mut hnf_basis.matrix, &basis.matrix) };
+            let mut hnf_basis_concat_sample = MatZ::new(2, 3);
+            let mut hnf_basis_concat_sample_prec = MatZ::new(2, 3);
+            unsafe {
+                fmpz_mat_hnf(
+                    &mut hnf_basis_concat_sample.matrix,
+                    &basis_concat_sample.matrix,
+                )
+            };
+            unsafe {
+                fmpz_mat_hnf(
+                    &mut hnf_basis_concat_sample_prec.matrix,
+                    &basis_concat_sample_prec.matrix,
+                )
+            };
+            assert_eq!(
+                hnf_basis.get_column(0).unwrap(),
+                hnf_basis_concat_sample.get_column(0).unwrap()
+            );
+            assert_eq!(
+                hnf_basis.get_column(0).unwrap(),
+                hnf_basis_concat_sample_prec.get_column(0).unwrap()
+            );
+            assert_eq!(
+                hnf_basis.get_column(1).unwrap(),
+                hnf_basis_concat_sample.get_column(1).unwrap()
+            );
+            assert_eq!(
+                hnf_basis.get_column(1).unwrap(),
+                hnf_basis_concat_sample_prec.get_column(1).unwrap()
+            );
+            // check whether last vector is zero, i.e. was linearly dependent and part of lattice
+            assert!(hnf_basis_concat_sample.get_column(2).unwrap().is_zero());
+            assert!(
+                hnf_basis_concat_sample_prec
+                    .get_column(2)
+                    .unwrap()
+                    .is_zero()
+            );
+        }
     }
 
     /// Checks whether `sample_d` returns an error if the gaussian parameter `s < 0`.
     #[test]
     fn invalid_gaussian_parameter() {
-        let basis = MatZ::identity(5, 5);
-        let center = MatQ::new(5, 1);
-        let basis_gso = MatQ::from(&basis).gso();
+        for seeded in [false, true] {
+            let basis = MatZ::identity(5, 5);
+            let center = MatQ::new(5, 1);
+            let basis_gso = MatQ::from(&basis).gso();
 
-        assert!(sample_d(&basis, &center, &Q::MINUS_ONE, None).is_err());
-        assert!(sample_d(&basis, &center, &Q::from(i64::MIN), None).is_err());
+            assert!(sample_d(&basis, &center, &Q::MINUS_ONE, seeded.then(test_seed)).is_err());
+            assert!(sample_d(&basis, &center, &Q::from(i64::MIN), seeded.then(test_seed)).is_err());
 
-        assert!(
-            sample_d_precomputed_gso(&basis, &basis_gso, &center, &Q::MINUS_ONE, None).is_err()
-        );
-        assert!(
-            sample_d_precomputed_gso(&basis, &basis_gso, &center, &Q::from(i64::MIN), None)
+            assert!(
+                sample_d_precomputed_gso(
+                    &basis,
+                    &basis_gso,
+                    &center,
+                    &Q::MINUS_ONE,
+                    seeded.then(test_seed)
+                )
                 .is_err()
-        );
+            );
+            assert!(
+                sample_d_precomputed_gso(
+                    &basis,
+                    &basis_gso,
+                    &center,
+                    &Q::from(i64::MIN),
+                    seeded.then(test_seed)
+                )
+                .is_err()
+            );
+        }
     }
 
     /// Checks whether `sample_d` returns an error if the basis and center number of rows differs.
     #[test]
     fn mismatching_matrix_dimensions() {
-        let basis = MatZ::identity(3, 5);
-        let center = MatQ::new(4, 1);
-        let gaussian_parameter = Q::ONE;
-        let basis_gso = MatQ::from(&basis).gso();
+        for seeded in [false, true] {
+            let basis = MatZ::identity(3, 5);
+            let center = MatQ::new(4, 1);
+            let gaussian_parameter = Q::ONE;
+            let basis_gso = MatQ::from(&basis).gso();
 
-        let res = sample_d(&basis, &center, &gaussian_parameter, None);
-        let res_prec =
-            sample_d_precomputed_gso(&basis, &basis_gso, &center, &gaussian_parameter, None);
+            let res = sample_d(&basis, &center, &gaussian_parameter, seeded.then(test_seed));
+            let res_prec = sample_d_precomputed_gso(
+                &basis,
+                &basis_gso,
+                &center,
+                &gaussian_parameter,
+                seeded.then(test_seed),
+            );
 
-        assert!(res.is_err());
-        assert!(res_prec.is_err());
+            assert!(res.is_err());
+            assert!(res_prec.is_err());
+        }
     }
 
     /// Checks whether `sample_d` returns an error if center isn't a column vector.
     #[test]
     fn center_not_column_vector() {
-        let basis = MatZ::identity(2, 2);
-        let center = MatQ::new(2, 2);
-        let gaussian_parameter = Q::ONE;
-        let basis_gso = MatQ::from(&basis).gso();
+        for seeded in [false, true] {
+            let basis = MatZ::identity(2, 2);
+            let center = MatQ::new(2, 2);
+            let gaussian_parameter = Q::ONE;
+            let basis_gso = MatQ::from(&basis).gso();
 
-        let res = sample_d(&basis, &center, &gaussian_parameter, None);
-        let res_prec =
-            sample_d_precomputed_gso(&basis, &basis_gso, &center, &gaussian_parameter, None);
+            let res = sample_d(&basis, &center, &gaussian_parameter, seeded.then(test_seed));
+            let res_prec = sample_d_precomputed_gso(
+                &basis,
+                &basis_gso,
+                &center,
+                &gaussian_parameter,
+                seeded.then(test_seed),
+            );
 
-        assert!(res.is_err());
-        assert!(res_prec.is_err());
+            assert!(res.is_err());
+            assert!(res_prec.is_err());
+        }
     }
 
     /// Ensures that the concentration bound holds.
     #[test]
     fn concentration_bound() {
-        let n = Z::from(20);
-        let basis = MatZ::sample_uniform(&n, &n, 0, 5000).unwrap();
-        let orth = MatQ::from(&basis).gso();
-        let mut len = Q::ZERO;
-        for i in 0..orth.get_num_columns() {
-            let column = orth.get_column(i).unwrap();
-            let column_len = column.norm_eucl_sqrd().unwrap().sqrt();
-            if column_len > len {
-                len = column_len
+        for seeded in [false, true] {
+            let n = Z::from(20);
+            let basis = MatZ::sample_uniform(&n, &n, 0, 5000).unwrap();
+            let orth = MatQ::from(&basis).gso();
+            let mut len = Q::ZERO;
+            for i in 0..orth.get_num_columns() {
+                let column = orth.get_column(i).unwrap();
+                let column_len = column.norm_eucl_sqrd().unwrap().sqrt();
+                if column_len > len {
+                    len = column_len
+                }
             }
-        }
 
-        let expl_text = String::from("This test can fail with probability close to 0. 
+            let expl_text = String::from("This test can fail with probability close to 0. 
         It fails if the length of the sampled is longer than expected. 
         If this happens, rerun the tests several times and check whether this issue comes up again.");
 
-        let center = MatQ::new(&n, 1);
-        let gaussian_parameter =
-            len * n.log(2).unwrap().sqrt() * (n.log(2).unwrap().log(2).unwrap());
+            let center = MatQ::new(&n, 1);
+            let gaussian_parameter =
+                len * n.log(2).unwrap().sqrt() * (n.log(2).unwrap().log(2).unwrap());
 
-        for _ in 0..20 {
-            let res = sample_d(&basis, &center, &gaussian_parameter, None).unwrap();
-            let res_prec =
-                sample_d_precomputed_gso(&basis, &orth, &center, &gaussian_parameter, None)
-                    .unwrap();
+            for _ in 0..20 {
+                let res =
+                    sample_d(&basis, &center, &gaussian_parameter, seeded.then(test_seed)).unwrap();
+                let res_prec = sample_d_precomputed_gso(
+                    &basis,
+                    &orth,
+                    &center,
+                    &gaussian_parameter,
+                    seeded.then(test_seed),
+                )
+                .unwrap();
 
-            assert!(
-                res.norm_eucl_sqrd().unwrap() <= gaussian_parameter.pow(2).unwrap().round() * &n,
-                "{expl_text}"
-            );
-            assert!(
-                res_prec.norm_eucl_sqrd().unwrap()
-                    <= gaussian_parameter.pow(2).unwrap().round() * &n,
-                "{expl_text}"
-            );
+                assert!(
+                    res.norm_eucl_sqrd().unwrap()
+                        <= gaussian_parameter.pow(2).unwrap().round() * &n,
+                    "{expl_text}"
+                );
+                assert!(
+                    res_prec.norm_eucl_sqrd().unwrap()
+                        <= gaussian_parameter.pow(2).unwrap().round() * &n,
+                    "{expl_text}"
+                );
+            }
         }
     }
 
@@ -1043,59 +1063,59 @@ mod test_sample_d {
         assert_eq!(sample_0, sample_prec);
     }
 
-    /// Ensures that `sample_d` outputs different vectors for different seeds.
-    #[test]
-    fn different_seed_different_sample() {
-        let basis = MatZ::identity(5, 5);
-        let center = MatQ::new(5, 1);
-        let gaussian_parameter = Q::from(1024);
-
-        let sample_0 = sample_d(&basis, &center, &gaussian_parameter, Some([0; 32])).unwrap();
-        let sample_1 = sample_d(&basis, &center, &gaussian_parameter, Some([1; 32])).unwrap();
-
-        assert_ne!(sample_0, sample_1);
-    }
-
-    /// Ensures that seeded samples are still part of the specified lattice.
-    #[test]
-    fn seeded_point_of_lattice() {
-        use crate::traits::MatrixGetEntry;
-
-        let basis = MatZ::from_str("[[7, 0],[7, 3]]").unwrap();
-        let center = MatQ::new(2, 1);
-        let gaussian_parameter = Q::from(10);
-
-        let sample = sample_d(&basis, &center, &gaussian_parameter, Some([42; 32])).unwrap();
-
-        // the basis is invertible, i.e. sample is a lattice point iff
-        // its coefficients w.r.t. the basis are integral
-        let coefficients = MatQ::from(&basis).inverse().unwrap() * MatQ::from(&sample);
-        for i in 0..coefficients.get_num_rows() {
-            let entry: Q = coefficients.get_entry(i, 0).unwrap();
-            assert_eq!(entry.get_denominator(), Z::ONE);
-        }
-    }
-
     /// Ensure that an orthogonalized base with not matching rows panics.
     #[test]
-    #[should_panic]
     fn precomputed_gso_mismatching_rows() {
-        let n = Z::from(20);
-        let basis = MatZ::sample_uniform(&n, &n, 0, 5000).unwrap();
-        let center = MatQ::new(&n, 1);
-        let false_gso = MatQ::new(basis.get_num_rows() + 1, basis.get_num_columns());
+        for seeded in [false, true] {
+            let result = std::panic::catch_unwind(|| {
+                let n = Z::from(20);
+                let basis = MatZ::sample_uniform(&n, &n, 0, 5000).unwrap();
+                let center = MatQ::new(&n, 1);
+                let false_gso = MatQ::new(basis.get_num_rows() + 1, basis.get_num_columns());
 
-        let _ = sample_d_precomputed_gso(&basis, &false_gso, &center, &Q::from(5), None).unwrap();
+                let _ = sample_d_precomputed_gso(
+                    &basis,
+                    &false_gso,
+                    &center,
+                    &Q::from(5),
+                    seeded.then(test_seed),
+                )
+                .unwrap();
+            });
+            assert!(result.is_err());
+        }
     }
     /// Ensure that an orthogonalized base with not matching columns panics.
     #[test]
-    #[should_panic]
     fn precomputed_gso_mismatching_columns() {
-        let n = Z::from(20);
-        let basis = MatZ::sample_uniform(&n, &n, 0, 5000).unwrap();
-        let center = MatQ::new(&n, 1);
-        let false_gso = MatQ::new(basis.get_num_rows(), basis.get_num_columns() + 1);
+        for seeded in [false, true] {
+            let result = std::panic::catch_unwind(|| {
+                let n = Z::from(20);
+                let basis = MatZ::sample_uniform(&n, &n, 0, 5000).unwrap();
+                let center = MatQ::new(&n, 1);
+                let false_gso = MatQ::new(basis.get_num_rows(), basis.get_num_columns() + 1);
 
-        let _ = sample_d_precomputed_gso(&basis, &false_gso, &center, &Q::from(5), None).unwrap();
+                let _ = sample_d_precomputed_gso(
+                    &basis,
+                    &false_gso,
+                    &center,
+                    &Q::from(5),
+                    seeded.then(test_seed),
+                )
+                .unwrap();
+            });
+            assert!(result.is_err());
+        }
+    }
+
+    /// Checks whether `sample_d` outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer() {
+        let basis = MatZ::from_str("[[7, 0, 1],[7, 3, 2],[0, 1, 5]]").unwrap();
+        let center = MatQ::from_str("[[1/2],[-3],[5]]").unwrap();
+
+        let sample = sample_d(&basis, &center, &Q::from(100), Some([42; 32])).unwrap();
+
+        assert_eq!("[[28],[-44],[-24]]", sample.to_string());
     }
 }

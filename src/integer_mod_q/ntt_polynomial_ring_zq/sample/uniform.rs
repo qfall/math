@@ -77,41 +77,6 @@ impl NTTPolynomialRingZq {
 
 #[cfg(test)]
 mod test_sample_uniform {
-    use crate::{
-        integer::Z,
-        integer_mod_q::{ModulusPolynomialRingZq, NTTPolynomialRingZq},
-    };
-    use std::str::FromStr;
-
-    /// Checks whether the boundaries of the interval are kept.
-    #[test]
-    fn boundaries_kept() {
-        let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
-        modulus.set_ntt_unchecked(64);
-
-        let poly = NTTPolynomialRingZq::sample_uniform(&modulus);
-
-        for i in 0..4 {
-            let sample = &poly.poly[i];
-            assert!(&Z::ZERO <= sample);
-            assert!(sample < &Z::from(257));
-        }
-    }
-
-    /// Checks whether the number of coefficients is correct.
-    #[test]
-    fn nr_coeffs() {
-        let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
-        modulus.set_ntt_unchecked(64);
-
-        let res = NTTPolynomialRingZq::sample_uniform(&modulus);
-
-        assert_eq!(4, res.poly.len(),);
-    }
-}
-
-#[cfg(test)]
-mod test_sample_uniform_seeded {
     use crate::utils::sample::test_seed;
     use crate::{
         integer::Z,
@@ -122,27 +87,37 @@ mod test_sample_uniform_seeded {
     /// Checks whether the boundaries of the interval are kept.
     #[test]
     fn boundaries_kept() {
-        let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
-        modulus.set_ntt_unchecked(64);
+        for seeded in [false, true] {
+            let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+            modulus.set_ntt_unchecked(64);
 
-        let poly = NTTPolynomialRingZq::sample_uniform_seeded(&modulus, test_seed());
+            let poly = NTTPolynomialRingZq::sample_uniform_optionally_seeded(
+                &modulus,
+                seeded.then(test_seed),
+            );
 
-        for i in 0..4 {
-            let sample = &poly.poly[i];
-            assert!(&Z::ZERO <= sample);
-            assert!(sample < &Z::from(257));
+            for i in 0..4 {
+                let sample = &poly.poly[i];
+                assert!(&Z::ZERO <= sample);
+                assert!(sample < &Z::from(257));
+            }
         }
     }
 
     /// Checks whether the number of coefficients is correct.
     #[test]
     fn nr_coeffs() {
-        let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
-        modulus.set_ntt_unchecked(64);
+        for seeded in [false, true] {
+            let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+            modulus.set_ntt_unchecked(64);
 
-        let res = NTTPolynomialRingZq::sample_uniform_seeded(&modulus, test_seed());
+            let res = NTTPolynomialRingZq::sample_uniform_optionally_seeded(
+                &modulus,
+                seeded.then(test_seed),
+            );
 
-        assert_eq!(4, res.poly.len(),);
+            assert_eq!(4, res.poly.len(),);
+        }
     }
 
     /// Checks whether the same seed results in the same sample.
@@ -156,5 +131,33 @@ mod test_sample_uniform_seeded {
         let sample_1 = NTTPolynomialRingZq::sample_uniform_seeded(&modulus, [42; 32]);
 
         assert_eq!(sample_0, sample_1);
+    }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer() {
+        use crate::integer_mod_q::{ModulusPolynomialRingZq, NTTPolynomialRingZq};
+        use std::str::FromStr;
+        let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+        modulus.set_ntt_unchecked(64);
+        let sample = NTTPolynomialRingZq::sample_uniform_seeded(&modulus, [42; 32]);
+
+        assert_eq!(
+            "[27, 144, 210, 163] / 5  1 0 0 0 1 mod 257",
+            sample.to_string()
+        );
+    }
+
+    /// Checks whether the unseeded and the seeded function are available.
+    #[test]
+    fn availability() {
+        use crate::integer_mod_q::{ModulusPolynomialRingZq, NTTPolynomialRingZq};
+        use std::str::FromStr;
+        let mut modulus = ModulusPolynomialRingZq::from_str("5  1 0 0 0 1 mod 257").unwrap();
+        modulus.set_ntt_unchecked(64);
+
+        // explicitly checks the existence of the unseeded and the seeded function
+        let _ = NTTPolynomialRingZq::sample_uniform(&modulus);
+        let _ = NTTPolynomialRingZq::sample_uniform_seeded(&modulus, test_seed());
     }
 }

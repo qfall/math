@@ -88,79 +88,6 @@ impl Zq {
 
 #[cfg(test)]
 mod test_sample_discrete_gauss {
-    use crate::{integer::Z, integer_mod_q::Zq, rational::Q};
-
-    // Appropriate interval and invalid inputs were tested in
-    // utils::sample::discrete_gauss::test_sample_z and are thus omitted here.
-
-    /// Checks whether `sample_discrete_gauss` is available for all types
-    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
-    /// or [`Into<Q>`], i.e. u8, i16, f32, Z, Q, ...
-    #[test]
-    fn availability() {
-        let z = Z::from(2);
-        let q = Q::from(2);
-
-        let _ = Zq::sample_discrete_gauss(17u64, 7u8, 1u16);
-        let _ = Zq::sample_discrete_gauss(17u16, 7u16, 1u8);
-        let _ = Zq::sample_discrete_gauss(17u8, 7u32, 1u32);
-        let _ = Zq::sample_discrete_gauss(17u32, 7u64, 1u64);
-        let _ = Zq::sample_discrete_gauss(17i16, 7i8, 1i64);
-        let _ = Zq::sample_discrete_gauss(17i8, 7i16, 1i32);
-        let _ = Zq::sample_discrete_gauss(17i64, 7i32, 1i16);
-        let _ = Zq::sample_discrete_gauss(17i32, 7i64, 1i8);
-        let _ = Zq::sample_discrete_gauss(17, q.clone(), 1i64);
-        let _ = Zq::sample_discrete_gauss(z.clone(), 0i8, z.clone());
-        let _ = Zq::sample_discrete_gauss(17, z.clone(), q.clone());
-        let _ = Zq::sample_discrete_gauss(17, 1f32, 1f64);
-        let _ = Zq::sample_discrete_gauss(17, 1f64, 1f32);
-
-        // With references
-        let _ = Zq::sample_discrete_gauss(17i64, 7i32, 1i16);
-        let _ = Zq::sample_discrete_gauss(17i32, 7i64, 1i8);
-        let _ = Zq::sample_discrete_gauss(17, &q, 1i64);
-        let _ = Zq::sample_discrete_gauss(&z, 0i8, &z);
-        let _ = Zq::sample_discrete_gauss(17, &z, &q);
-    }
-
-    /// Roughly checks the collected samples are distributed
-    /// according to the discrete Gaussian distribution.
-    ///
-    /// This test could possibly fail for a truly uniform distribution
-    /// with probability smaller than 1/1000.
-    #[test]
-    fn distribution() {
-        let mut counts = [0; 20];
-        // count sampled instances
-        for _ in 0..200 {
-            let sample = Zq::sample_discrete_gauss(20, 0, 2).unwrap();
-            let sample_int = i64::try_from(&sample.get_representative_least_nonnegative_residue())
-                .unwrap() as usize;
-            counts[sample_int] += 1;
-        }
-
-        let expl_text = String::from("This test can fail with probability close to 0. 
-        It fails if the sampled occurrences do not look like a typical discrete Gaussian random distribution. 
-        If this happens, rerun the tests several times and check whether this issue comes up again.");
-
-        // Check that the sampled occurrences roughly look
-        // like a discrete Gaussian distribution
-        assert!(counts[0] > 70, "{expl_text}");
-        assert!(counts[0] < 130, "{expl_text}");
-        assert!(counts[19] > 20, "{expl_text}");
-        assert!(counts[19] < 70, "{expl_text}");
-        assert!(counts[1] > 20, "{expl_text}");
-        assert!(counts[1] < 70, "{expl_text}");
-        assert!(counts[18] < 20, "{expl_text}");
-        assert!(counts[2] < 20, "{expl_text}");
-        for count in counts.iter().take(18).skip(3) {
-            assert!(count < &10, "{expl_text}");
-        }
-    }
-}
-
-#[cfg(test)]
-mod test_sample_discrete_gauss_seeded {
     use crate::utils::sample::test_seed;
     use crate::{integer::Z, integer_mod_q::Zq, rational::Q};
 
@@ -172,29 +99,107 @@ mod test_sample_discrete_gauss_seeded {
     /// or [`Into<Q>`], i.e. u8, i16, f32, Z, Q, ...
     #[test]
     fn availability() {
-        let z = Z::from(2);
-        let q = Q::from(2);
+        for seeded in [false, true] {
+            let z = Z::from(2);
+            let q = Q::from(2);
 
-        let _ = Zq::sample_discrete_gauss_seeded(17u64, 7u8, 1u16, test_seed());
-        let _ = Zq::sample_discrete_gauss_seeded(17u16, 7u16, 1u8, test_seed());
-        let _ = Zq::sample_discrete_gauss_seeded(17u8, 7u32, 1u32, test_seed());
-        let _ = Zq::sample_discrete_gauss_seeded(17u32, 7u64, 1u64, test_seed());
-        let _ = Zq::sample_discrete_gauss_seeded(17i16, 7i8, 1i64, test_seed());
-        let _ = Zq::sample_discrete_gauss_seeded(17i8, 7i16, 1i32, test_seed());
-        let _ = Zq::sample_discrete_gauss_seeded(17i64, 7i32, 1i16, test_seed());
-        let _ = Zq::sample_discrete_gauss_seeded(17i32, 7i64, 1i8, test_seed());
-        let _ = Zq::sample_discrete_gauss_seeded(17, q.clone(), 1i64, test_seed());
-        let _ = Zq::sample_discrete_gauss_seeded(z.clone(), 0i8, z.clone(), test_seed());
-        let _ = Zq::sample_discrete_gauss_seeded(17, z.clone(), q.clone(), test_seed());
-        let _ = Zq::sample_discrete_gauss_seeded(17, 1f32, 1f64, test_seed());
-        let _ = Zq::sample_discrete_gauss_seeded(17, 1f64, 1f32, test_seed());
+            let _ = Zq::sample_discrete_gauss_optionally_seeded(
+                17u64,
+                7u8,
+                1u16,
+                seeded.then(test_seed),
+            );
+            let _ = Zq::sample_discrete_gauss_optionally_seeded(
+                17u16,
+                7u16,
+                1u8,
+                seeded.then(test_seed),
+            );
+            let _ = Zq::sample_discrete_gauss_optionally_seeded(
+                17u8,
+                7u32,
+                1u32,
+                seeded.then(test_seed),
+            );
+            let _ = Zq::sample_discrete_gauss_optionally_seeded(
+                17u32,
+                7u64,
+                1u64,
+                seeded.then(test_seed),
+            );
+            let _ = Zq::sample_discrete_gauss_optionally_seeded(
+                17i16,
+                7i8,
+                1i64,
+                seeded.then(test_seed),
+            );
+            let _ = Zq::sample_discrete_gauss_optionally_seeded(
+                17i8,
+                7i16,
+                1i32,
+                seeded.then(test_seed),
+            );
+            let _ = Zq::sample_discrete_gauss_optionally_seeded(
+                17i64,
+                7i32,
+                1i16,
+                seeded.then(test_seed),
+            );
+            let _ = Zq::sample_discrete_gauss_optionally_seeded(
+                17i32,
+                7i64,
+                1i8,
+                seeded.then(test_seed),
+            );
+            let _ = Zq::sample_discrete_gauss_optionally_seeded(
+                17,
+                q.clone(),
+                1i64,
+                seeded.then(test_seed),
+            );
+            let _ = Zq::sample_discrete_gauss_optionally_seeded(
+                z.clone(),
+                0i8,
+                z.clone(),
+                seeded.then(test_seed),
+            );
+            let _ = Zq::sample_discrete_gauss_optionally_seeded(
+                17,
+                z.clone(),
+                q.clone(),
+                seeded.then(test_seed),
+            );
+            let _ =
+                Zq::sample_discrete_gauss_optionally_seeded(17, 1f32, 1f64, seeded.then(test_seed));
+            let _ =
+                Zq::sample_discrete_gauss_optionally_seeded(17, 1f64, 1f32, seeded.then(test_seed));
 
-        // With references
-        let _ = Zq::sample_discrete_gauss_seeded(17i64, 7i32, 1i16, test_seed());
-        let _ = Zq::sample_discrete_gauss_seeded(17i32, 7i64, 1i8, test_seed());
-        let _ = Zq::sample_discrete_gauss_seeded(17, &q, 1i64, test_seed());
-        let _ = Zq::sample_discrete_gauss_seeded(&z, 0i8, &z, test_seed());
-        let _ = Zq::sample_discrete_gauss_seeded(17, &z, &q, test_seed());
+            // With references
+            let _ = Zq::sample_discrete_gauss_optionally_seeded(
+                17i64,
+                7i32,
+                1i16,
+                seeded.then(test_seed),
+            );
+            let _ = Zq::sample_discrete_gauss_optionally_seeded(
+                17i32,
+                7i64,
+                1i8,
+                seeded.then(test_seed),
+            );
+            let _ =
+                Zq::sample_discrete_gauss_optionally_seeded(17, &q, 1i64, seeded.then(test_seed));
+            let _ =
+                Zq::sample_discrete_gauss_optionally_seeded(&z, 0i8, &z, seeded.then(test_seed));
+            let _ = Zq::sample_discrete_gauss_optionally_seeded(17, &z, &q, seeded.then(test_seed));
+
+            // explicitly checks the existence of the unseeded and the seeded function
+            if seeded {
+                let _ = Zq::sample_discrete_gauss_seeded(17u64, 7u8, 1u16, test_seed());
+            } else {
+                let _ = Zq::sample_discrete_gauss(17u64, 7u8, 1u16);
+            }
+        }
     }
 
     /// Roughly checks the collected samples are distributed
@@ -204,31 +209,36 @@ mod test_sample_discrete_gauss_seeded {
     /// with probability smaller than 1/1000.
     #[test]
     fn distribution() {
-        let mut counts = [0; 20];
-        // count sampled instances
-        for _ in 0..200 {
-            let sample = Zq::sample_discrete_gauss_seeded(20, 0, 2, test_seed()).unwrap();
-            let sample_int = i64::try_from(&sample.get_representative_least_nonnegative_residue())
-                .unwrap() as usize;
-            counts[sample_int] += 1;
-        }
+        for seeded in [false, true] {
+            let mut counts = [0; 20];
+            // count sampled instances
+            for _ in 0..200 {
+                let sample =
+                    Zq::sample_discrete_gauss_optionally_seeded(20, 0, 2, seeded.then(test_seed))
+                        .unwrap();
+                let sample_int =
+                    i64::try_from(&sample.get_representative_least_nonnegative_residue()).unwrap()
+                        as usize;
+                counts[sample_int] += 1;
+            }
 
-        let expl_text = String::from("This test can fail with probability close to 0. 
+            let expl_text = String::from("This test can fail with probability close to 0. 
         It fails if the sampled occurrences do not look like a typical discrete Gaussian random distribution. 
         If this happens, rerun the tests several times and check whether this issue comes up again.");
 
-        // Check that the sampled occurrences roughly look
-        // like a discrete Gaussian distribution
-        assert!(counts[0] > 70, "{expl_text}");
-        assert!(counts[0] < 130, "{expl_text}");
-        assert!(counts[19] > 20, "{expl_text}");
-        assert!(counts[19] < 70, "{expl_text}");
-        assert!(counts[1] > 20, "{expl_text}");
-        assert!(counts[1] < 70, "{expl_text}");
-        assert!(counts[18] < 20, "{expl_text}");
-        assert!(counts[2] < 20, "{expl_text}");
-        for count in counts.iter().take(18).skip(3) {
-            assert!(count < &10, "{expl_text}");
+            // Check that the sampled occurrences roughly look
+            // like a discrete Gaussian distribution
+            assert!(counts[0] > 70, "{expl_text}");
+            assert!(counts[0] < 130, "{expl_text}");
+            assert!(counts[19] > 20, "{expl_text}");
+            assert!(counts[19] < 70, "{expl_text}");
+            assert!(counts[1] > 20, "{expl_text}");
+            assert!(counts[1] < 70, "{expl_text}");
+            assert!(counts[18] < 20, "{expl_text}");
+            assert!(counts[2] < 20, "{expl_text}");
+            for count in counts.iter().take(18).skip(3) {
+                assert!(count < &10, "{expl_text}");
+            }
         }
     }
 
@@ -240,5 +250,14 @@ mod test_sample_discrete_gauss_seeded {
         let sample_1 = Zq::sample_discrete_gauss_seeded(17, 0, 1, [42; 32]).unwrap();
 
         assert_eq!(sample_0, sample_1);
+    }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer() {
+        use crate::integer_mod_q::Zq;
+        let sample = Zq::sample_discrete_gauss_seeded(17, 0, 1, [42; 32]).unwrap();
+
+        assert_eq!("1 mod 17", sample.to_string());
     }
 }

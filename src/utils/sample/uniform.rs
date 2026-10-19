@@ -275,108 +275,115 @@ impl UniformIntegerSampler {
 #[cfg(test)]
 mod test_uis {
     use super::{UniformIntegerSampler, Z};
+    use crate::utils::sample::test_seed;
     use std::collections::HashSet;
 
     /// Checks whether sampling works fine for small interval sizes.
     #[test]
     fn small_interval() {
-        let size_2 = Z::from(2);
-        let size_7 = Z::from(7);
+        for seeded in [false, true] {
+            let size_2 = Z::from(2);
+            let size_7 = Z::from(7);
 
-        let mut uis_2 = UniformIntegerSampler::init(&size_2, None).unwrap();
-        let mut uis_7 = UniformIntegerSampler::init(&size_7, None).unwrap();
+            let mut uis_2 = UniformIntegerSampler::init(&size_2, seeded.then(test_seed)).unwrap();
+            let mut uis_7 = UniformIntegerSampler::init(&size_7, seeded.then(test_seed)).unwrap();
 
-        for _ in 0..3 {
-            let sample_2 = uis_2.sample();
-            let sample_7 = uis_7.sample();
+            for _ in 0..3 {
+                let sample_2 = uis_2.sample();
+                let sample_7 = uis_7.sample();
 
-            assert!(Z::ZERO <= sample_2);
-            assert!(sample_2 < size_2);
-            assert!(Z::ZERO <= sample_7);
-            assert!(sample_7 < size_7)
+                assert!(Z::ZERO <= sample_2);
+                assert!(sample_2 < size_2);
+                assert!(Z::ZERO <= sample_7);
+                assert!(sample_7 < size_7)
+            }
         }
     }
 
     /// Checks whether sampling works fine for large interval sizes.
     #[test]
     fn large_interval() {
-        let size_0 = Z::from(u64::MAX);
-        let size_1 = Z::from(u64::MAX) * 2 + 1;
+        for seeded in [false, true] {
+            let size_0 = Z::from(u64::MAX);
+            let size_1 = Z::from(u64::MAX) * 2 + 1;
 
-        let mut uis_0 = UniformIntegerSampler::init(&size_0, None).unwrap();
-        let mut uis_1 = UniformIntegerSampler::init(&size_1, None).unwrap();
+            let mut uis_0 = UniformIntegerSampler::init(&size_0, seeded.then(test_seed)).unwrap();
+            let mut uis_1 = UniformIntegerSampler::init(&size_1, seeded.then(test_seed)).unwrap();
 
-        for _i in 0..u8::MAX {
-            let sample_0 = uis_0.sample();
-            let sample_1 = uis_1.sample();
+            for _i in 0..u8::MAX {
+                let sample_0 = uis_0.sample();
+                let sample_1 = uis_1.sample();
 
-            assert!(Z::ZERO <= sample_0);
-            assert!(sample_0 < size_0);
-            assert!(Z::ZERO <= sample_1);
-            assert!(sample_1 < size_1);
+                assert!(Z::ZERO <= sample_0);
+                assert!(sample_0 < size_0);
+                assert!(Z::ZERO <= sample_1);
+                assert!(sample_1 < size_1);
+            }
         }
     }
 
     /// Checks whether it samples from the entire interval.
     #[test]
     fn entire_interval() {
-        let interval_sizes = vec![6, 7, 16];
+        for seeded in [false, true] {
+            let interval_sizes = vec![6, 7, 16];
 
-        for interval_size in interval_sizes {
-            let interval = Z::from(interval_size);
+            for interval_size in interval_sizes {
+                let interval = Z::from(interval_size);
 
-            let mut uis = UniformIntegerSampler::init(&interval, None).unwrap();
+                let mut uis =
+                    UniformIntegerSampler::init(&interval, seeded.then(test_seed)).unwrap();
 
-            let mut samples = HashSet::new();
-            for _ in 0..2_u32.pow(interval_size) {
-                samples.insert(uis.sample());
+                let mut samples = HashSet::new();
+                for _ in 0..2_u32.pow(interval_size) {
+                    samples.insert(uis.sample());
+                }
+                // if len(samples) == interval_size, then every element in [0, interval_size)
+                // needs to be represented in samples
+                assert_eq!(
+                    interval_size,
+                    samples.len() as u32,
+                    "This test may fail with low probability."
+                );
             }
-            // if len(samples) == interval_size, then every element in [0, interval_size)
-            // needs to be represented in samples
-            assert_eq!(
-                interval_size,
-                samples.len() as u32,
-                "This test may fail with low probability."
-            );
         }
     }
 
     /// Checks whether interval sizes smaller than 2 result in an error.
     #[test]
     fn invalid_interval() {
-        assert!(UniformIntegerSampler::init(&Z::ZERO, None).is_err());
-        assert!(UniformIntegerSampler::init(&Z::MINUS_ONE, None).is_err());
+        for seeded in [false, true] {
+            assert!(UniformIntegerSampler::init(&Z::ZERO, seeded.then(test_seed)).is_err());
+            assert!(UniformIntegerSampler::init(&Z::MINUS_ONE, seeded.then(test_seed)).is_err());
+        }
     }
 
     /// Checks whether random bit sampling doesn't fill more bits than required.
     #[test]
     fn sample_bits_uniform_necessary_nr_bytes() {
-        let size_0 = Z::from(8);
-        let size_1 = Z::from(256);
-        let size_2 = Z::from(u32::MAX) + Z::ONE;
+        for seeded in [false, true] {
+            let size_0 = Z::from(8);
+            let size_1 = Z::from(256);
+            let size_2 = Z::from(u32::MAX) + Z::ONE;
 
-        let mut uis_0 = UniformIntegerSampler::init(&size_0, None).unwrap();
-        let mut uis_1 = UniformIntegerSampler::init(&size_1, None).unwrap();
-        let mut uis_2 = UniformIntegerSampler::init(&size_2, None).unwrap();
+            let mut uis_0 = UniformIntegerSampler::init(&size_0, seeded.then(test_seed)).unwrap();
+            let mut uis_1 = UniformIntegerSampler::init(&size_1, seeded.then(test_seed)).unwrap();
+            let mut uis_2 = UniformIntegerSampler::init(&size_2, seeded.then(test_seed)).unwrap();
 
-        for _ in 0..u8::MAX {
-            let sample_0 = uis_0.sample_bits_uniform();
-            let sample_1 = uis_1.sample_bits_uniform();
-            let sample_2 = uis_2.sample_bits_uniform();
+            for _ in 0..u8::MAX {
+                let sample_0 = uis_0.sample_bits_uniform();
+                let sample_1 = uis_1.sample_bits_uniform();
+                let sample_2 = uis_2.sample_bits_uniform();
 
-            assert!(Z::ZERO <= sample_0);
-            assert!(sample_0 < size_0);
-            assert!(Z::ZERO <= sample_1);
-            assert!(sample_1 < size_1);
-            assert!(Z::ZERO <= sample_2);
-            assert!(sample_2 < size_2);
+                assert!(Z::ZERO <= sample_0);
+                assert!(sample_0 < size_0);
+                assert!(Z::ZERO <= sample_1);
+                assert!(sample_1 < size_1);
+                assert!(Z::ZERO <= sample_2);
+                assert!(sample_2 < size_2);
+            }
         }
     }
-}
-
-#[cfg(test)]
-mod test_uis_seeded {
-    use super::{UniformIntegerSampler, Z};
 
     /// Checks whether two samplers with the same seed output the same samples
     /// for small and large interval sizes.
@@ -394,38 +401,17 @@ mod test_uis_seeded {
         }
     }
 
-    /// Checks whether two samplers with different seeds output different samples.
+    /// Checks whether the seeded sampler outputs the known samples for a fixed seed.
     #[test]
-    fn different_seed_different_samples() {
-        let interval_size = Z::from(u64::MAX);
-
-        let mut uis_0 = UniformIntegerSampler::init(&interval_size, Some([0; 32])).unwrap();
-        let mut uis_1 = UniformIntegerSampler::init(&interval_size, Some([1; 32])).unwrap();
-
-        let samples_0: Vec<Z> = (0..16).map(|_| uis_0.sample()).collect();
-        let samples_1: Vec<Z> = (0..16).map(|_| uis_1.sample()).collect();
-
-        assert_ne!(samples_0, samples_1);
-    }
-
-    /// Checks whether seeded samples are kept in the interval.
-    #[test]
-    fn keeps_range() {
-        let interval_size = Z::from(7);
+    fn known_answer() {
+        let interval_size = Z::from(u64::MAX) * 2 + 1;
         let mut uis = UniformIntegerSampler::init(&interval_size, Some([42; 32])).unwrap();
 
-        for _ in 0..u8::MAX {
-            let sample = uis.sample();
+        let samples: Vec<String> = (0..4).map(|_| uis.sample().to_string()).collect();
 
-            assert!(Z::ZERO <= sample);
-            assert!(sample < interval_size);
-        }
-    }
-
-    /// Checks whether interval sizes smaller than 1 result in an error.
-    #[test]
-    fn invalid_interval() {
-        assert!(UniformIntegerSampler::init(&Z::ZERO, Some([42; 32])).is_err());
-        assert!(UniformIntegerSampler::init(&Z::MINUS_ONE, Some([42; 32])).is_err());
+        assert_eq!(
+            "22821106978489223123, 9739806954439942819, 36580328303367661063, 5398446775404852435",
+            samples.join(", ")
+        );
     }
 }

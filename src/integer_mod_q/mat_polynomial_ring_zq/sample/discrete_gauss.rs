@@ -163,36 +163,6 @@ impl MatPolynomialRingZq {
 
 #[cfg(test)]
 mod test_sample_discrete_gauss {
-    use crate::{
-        integer::PolyOverZ,
-        integer_mod_q::{MatPolynomialRingZq, MatZq, ModulusPolynomialRingZq},
-        traits::{FromCoefficientEmbedding, MatrixGetEntry, MatrixSetEntry},
-    };
-
-    /// Ensures that the resulting entries have correct degree.
-    #[test]
-    fn correct_degree_entries() {
-        let degrees = [1, 2, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let mut coeff_emb_mod = MatZq::new(degree + 1, 1, i64::MAX);
-            coeff_emb_mod.set_entry(0, 0, 1).unwrap();
-            coeff_emb_mod.set_entry(degree, 0, 1).unwrap();
-            let modulus = ModulusPolynomialRingZq::from_coefficient_embedding(&coeff_emb_mod);
-            let res =
-                MatPolynomialRingZq::sample_discrete_gauss(1, 1, modulus, i32::MAX, 1).unwrap();
-
-            let entry: PolyOverZ = res.get_entry(0, 0).unwrap();
-            assert_eq!(
-                entry.get_degree(),
-                degree - 1,
-                "Could fail with negligible probability."
-            );
-        }
-    }
-}
-
-#[cfg(test)]
-mod test_sample_discrete_gauss_seeded {
     use crate::utils::sample::test_seed;
     use crate::{
         integer::PolyOverZ,
@@ -203,28 +173,30 @@ mod test_sample_discrete_gauss_seeded {
     /// Ensures that the resulting entries have correct degree.
     #[test]
     fn correct_degree_entries() {
-        let degrees = [1, 2, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let mut coeff_emb_mod = MatZq::new(degree + 1, 1, i64::MAX);
-            coeff_emb_mod.set_entry(0, 0, 1).unwrap();
-            coeff_emb_mod.set_entry(degree, 0, 1).unwrap();
-            let modulus = ModulusPolynomialRingZq::from_coefficient_embedding(&coeff_emb_mod);
-            let res = MatPolynomialRingZq::sample_discrete_gauss_seeded(
-                1,
-                1,
-                modulus,
-                i32::MAX,
-                1,
-                test_seed(),
-            )
-            .unwrap();
+        for seeded in [false, true] {
+            let degrees = [1, 2, 3, 7, 15, 32, 120];
+            for degree in degrees {
+                let mut coeff_emb_mod = MatZq::new(degree + 1, 1, i64::MAX);
+                coeff_emb_mod.set_entry(0, 0, 1).unwrap();
+                coeff_emb_mod.set_entry(degree, 0, 1).unwrap();
+                let modulus = ModulusPolynomialRingZq::from_coefficient_embedding(&coeff_emb_mod);
+                let res = MatPolynomialRingZq::sample_discrete_gauss_optionally_seeded(
+                    1,
+                    1,
+                    modulus,
+                    i32::MAX,
+                    1,
+                    seeded.then(test_seed),
+                )
+                .unwrap();
 
-            let entry: PolyOverZ = res.get_entry(0, 0).unwrap();
-            assert_eq!(
-                entry.get_degree(),
-                degree - 1,
-                "Could fail with negligible probability."
-            );
+                let entry: PolyOverZ = res.get_entry(0, 0).unwrap();
+                assert_eq!(
+                    entry.get_degree(),
+                    degree - 1,
+                    "Could fail with negligible probability."
+                );
+            }
         }
     }
 
@@ -243,69 +215,45 @@ mod test_sample_discrete_gauss_seeded {
 
         assert_eq!(sample_0, sample_1);
     }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer() {
+        use crate::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+        use std::str::FromStr;
+        let modulus = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
+        let sample =
+            MatPolynomialRingZq::sample_discrete_gauss_seeded(3, 1, &modulus, 0, 1.25f32, [42; 32])
+                .unwrap();
+
+        assert_eq!(
+            "[[2  1 16],[2  0 1],[0]] / 3  1 0 1 mod 17",
+            sample.to_string()
+        );
+    }
+
+    /// Checks whether the unseeded and the seeded function are available.
+    #[test]
+    fn availability() {
+        use crate::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+        use std::str::FromStr;
+        let modulus = ModulusPolynomialRingZq::from_str("3  1 0 1 mod 17").unwrap();
+
+        // explicitly checks the existence of the unseeded and the seeded function
+        let _ = MatPolynomialRingZq::sample_discrete_gauss(3, 1, &modulus, 0, 1.25f32);
+        let _ = MatPolynomialRingZq::sample_discrete_gauss_seeded(
+            3,
+            1,
+            &modulus,
+            0,
+            1.25f32,
+            test_seed(),
+        );
+    }
 }
 
 #[cfg(test)]
 mod test_sample_d {
-    use crate::{
-        integer::{MatPolyOverZ, PolyOverZ, Z},
-        integer_mod_q::{MatPolynomialRingZq, MatZq, ModulusPolynomialRingZq, Zq},
-        rational::{PolyOverQ, Q},
-        traits::{IntoCoefficientEmbedding, MatrixGetEntry},
-    };
-    use std::str::FromStr;
-
-    /// Ensure that the sample is from the base.
-    #[test]
-    fn ensure_sampled_from_base() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-        let poly_mat = MatPolyOverZ::from_str("[[1  1, 3  0 1 -1]]").unwrap();
-        let base = MatPolynomialRingZq::from((&poly_mat, &modulus));
-        let center = vec![PolyOverQ::default()];
-
-        for _ in 0..10 {
-            let sample = MatPolynomialRingZq::sample_d(&base, 3, &center, 20.5_f64).unwrap();
-            let sample: PolyOverZ = sample.get_entry(0, 0).unwrap();
-            let sample_vec = MatZq::from((&sample.into_coefficient_embedding(3), 17));
-            let orthogonal = MatZq::from_str("[[0],[1],[1]] mod 17").unwrap();
-
-            assert_eq!(
-                Zq::from((0, 17)),
-                sample_vec.dot_product(&orthogonal).unwrap()
-            )
-        }
-    }
-
-    /// Checks whether `sample_d` is available for all types
-    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
-    /// or [`Into<Q>`], i.e. u8, i16, f32, Z, Q, ...
-    #[test]
-    fn availability() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-        let poly_mat = MatPolyOverZ::from_str("[[1  1, 3  0 0 1, 2  0 1]]").unwrap();
-        let basis = MatPolynomialRingZq::from((&poly_mat, &modulus));
-        let center = vec![PolyOverQ::default()];
-        let n = Z::from(1024);
-        let s = Q::from(8);
-
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, 1u16);
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, 1u8);
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, 1u32);
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, 1u64);
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, 1i64);
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, 1i32);
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, 1i16);
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, 1i8);
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, 1i64);
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, &n);
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, &s);
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, 1.25f64);
-        let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, 15.75f32);
-    }
-}
-
-#[cfg(test)]
-mod test_sample_d_seeded {
     use crate::utils::sample::test_seed;
     use crate::{
         integer::{MatPolyOverZ, PolyOverZ, Z},
@@ -318,23 +266,30 @@ mod test_sample_d_seeded {
     /// Ensure that the sample is from the base.
     #[test]
     fn ensure_sampled_from_base() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-        let poly_mat = MatPolyOverZ::from_str("[[1  1, 3  0 1 -1]]").unwrap();
-        let base = MatPolynomialRingZq::from((&poly_mat, &modulus));
-        let center = vec![PolyOverQ::default()];
+        for seeded in [false, true] {
+            let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+            let poly_mat = MatPolyOverZ::from_str("[[1  1, 3  0 1 -1]]").unwrap();
+            let base = MatPolynomialRingZq::from((&poly_mat, &modulus));
+            let center = vec![PolyOverQ::default()];
 
-        for _ in 0..10 {
-            let sample =
-                MatPolynomialRingZq::sample_d_seeded(&base, 3, &center, 20.5_f64, test_seed())
-                    .unwrap();
-            let sample: PolyOverZ = sample.get_entry(0, 0).unwrap();
-            let sample_vec = MatZq::from((&sample.into_coefficient_embedding(3), 17));
-            let orthogonal = MatZq::from_str("[[0],[1],[1]] mod 17").unwrap();
+            for _ in 0..10 {
+                let sample = MatPolynomialRingZq::sample_d_optionally_seeded(
+                    &base,
+                    3,
+                    &center,
+                    20.5_f64,
+                    seeded.then(test_seed),
+                )
+                .unwrap();
+                let sample: PolyOverZ = sample.get_entry(0, 0).unwrap();
+                let sample_vec = MatZq::from((&sample.into_coefficient_embedding(3), 17));
+                let orthogonal = MatZq::from_str("[[0],[1],[1]] mod 17").unwrap();
 
-            assert_eq!(
-                Zq::from((0, 17)),
-                sample_vec.dot_product(&orthogonal).unwrap()
-            )
+                assert_eq!(
+                    Zq::from((0, 17)),
+                    sample_vec.dot_product(&orthogonal).unwrap()
+                )
+            }
         }
     }
 
@@ -343,26 +298,113 @@ mod test_sample_d_seeded {
     /// or [`Into<Q>`], i.e. u8, i16, f32, Z, Q, ...
     #[test]
     fn availability() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-        let poly_mat = MatPolyOverZ::from_str("[[1  1, 3  0 0 1, 2  0 1]]").unwrap();
-        let basis = MatPolynomialRingZq::from((&poly_mat, &modulus));
-        let center = vec![PolyOverQ::default()];
-        let n = Z::from(1024);
-        let s = Q::from(8);
+        for seeded in [false, true] {
+            let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+            let poly_mat = MatPolyOverZ::from_str("[[1  1, 3  0 0 1, 2  0 1]]").unwrap();
+            let basis = MatPolynomialRingZq::from((&poly_mat, &modulus));
+            let center = vec![PolyOverQ::default()];
+            let n = Z::from(1024);
+            let s = Q::from(8);
 
-        let _ = MatPolynomialRingZq::sample_d_seeded(&basis, 3, &center, 1u16, test_seed());
-        let _ = MatPolynomialRingZq::sample_d_seeded(&basis, 3, &center, 1u8, test_seed());
-        let _ = MatPolynomialRingZq::sample_d_seeded(&basis, 3, &center, 1u32, test_seed());
-        let _ = MatPolynomialRingZq::sample_d_seeded(&basis, 3, &center, 1u64, test_seed());
-        let _ = MatPolynomialRingZq::sample_d_seeded(&basis, 3, &center, 1i64, test_seed());
-        let _ = MatPolynomialRingZq::sample_d_seeded(&basis, 3, &center, 1i32, test_seed());
-        let _ = MatPolynomialRingZq::sample_d_seeded(&basis, 3, &center, 1i16, test_seed());
-        let _ = MatPolynomialRingZq::sample_d_seeded(&basis, 3, &center, 1i8, test_seed());
-        let _ = MatPolynomialRingZq::sample_d_seeded(&basis, 3, &center, 1i64, test_seed());
-        let _ = MatPolynomialRingZq::sample_d_seeded(&basis, 3, &center, &n, test_seed());
-        let _ = MatPolynomialRingZq::sample_d_seeded(&basis, 3, &center, &s, test_seed());
-        let _ = MatPolynomialRingZq::sample_d_seeded(&basis, 3, &center, 1.25f64, test_seed());
-        let _ = MatPolynomialRingZq::sample_d_seeded(&basis, 3, &center, 15.75f32, test_seed());
+            let _ = MatPolynomialRingZq::sample_d_optionally_seeded(
+                &basis,
+                3,
+                &center,
+                1u16,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_d_optionally_seeded(
+                &basis,
+                3,
+                &center,
+                1u8,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_d_optionally_seeded(
+                &basis,
+                3,
+                &center,
+                1u32,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_d_optionally_seeded(
+                &basis,
+                3,
+                &center,
+                1u64,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_d_optionally_seeded(
+                &basis,
+                3,
+                &center,
+                1i64,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_d_optionally_seeded(
+                &basis,
+                3,
+                &center,
+                1i32,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_d_optionally_seeded(
+                &basis,
+                3,
+                &center,
+                1i16,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_d_optionally_seeded(
+                &basis,
+                3,
+                &center,
+                1i8,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_d_optionally_seeded(
+                &basis,
+                3,
+                &center,
+                1i64,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_d_optionally_seeded(
+                &basis,
+                3,
+                &center,
+                &n,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_d_optionally_seeded(
+                &basis,
+                3,
+                &center,
+                &s,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_d_optionally_seeded(
+                &basis,
+                3,
+                &center,
+                1.25f64,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_d_optionally_seeded(
+                &basis,
+                3,
+                &center,
+                15.75f32,
+                seeded.then(test_seed),
+            );
+
+            // explicitly checks the existence of the unseeded and the seeded function
+            if seeded {
+                let _ = MatPolynomialRingZq::sample_d_seeded(&basis, 3, &center, 1u16, test_seed());
+            } else {
+                let _ = MatPolynomialRingZq::sample_d(&basis, 3, &center, 1u16);
+            }
+        }
     }
 
     /// Checks whether the same seed results in the same sample.
@@ -385,5 +427,25 @@ mod test_sample_d_seeded {
             MatPolynomialRingZq::sample_d_seeded(&basis, 3, &center, &s, [42; 32]).unwrap();
 
         assert_eq!(sample_0, sample_1);
+    }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer() {
+        use crate::{
+            integer::MatPolyOverZ,
+            integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq},
+            rational::{PolyOverQ, Q},
+        };
+        use std::str::FromStr;
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        let poly_mat = MatPolyOverZ::from_str("[[1  1, 3  0 0 1, 2  0 1]]").unwrap();
+        let basis = MatPolynomialRingZq::from((&poly_mat, &modulus));
+        let center = vec![PolyOverQ::default()];
+        let s = Q::from(8);
+        let sample =
+            MatPolynomialRingZq::sample_d_seeded(&basis, 3, &center, &s, [42; 32]).unwrap();
+
+        assert_eq!("[[2  16 4]] / 4  1 0 0 1 mod 17", sample.to_string());
     }
 }

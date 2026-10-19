@@ -76,34 +76,6 @@ impl Zq {
 #[cfg(test)]
 mod test_sample_binomial {
     use super::{Q, Z, Zq};
-
-    // As all major tests regarding an appropriate binomial distribution,
-    // whether the correct interval is kept, and if the errors are thrown correctly,
-    // are performed in the `utils` module, we omit these tests here.
-
-    /// Checks whether `sample_binomial` is available for all types
-    /// implementing [`Into<Zq>`], i.e. u8, u16, u32, u64, i8, ...
-    /// and [`Into<Q>`], i.e. u8, u16, i8, i16, f32, f64, ...
-    /// and [`Into<Modulus>`], i.e. u8, u16, u32, u64, i8, ...
-    #[test]
-    fn availability() {
-        let _ = Zq::sample_binomial(7u8, 1u16, 7u8);
-        let _ = Zq::sample_binomial(7u16, 1u32, 7u16);
-        let _ = Zq::sample_binomial(7u32, 1u64, 7u32);
-        let _ = Zq::sample_binomial(7u64, 1i8, 7u64);
-        let _ = Zq::sample_binomial(7i8, 1i16, 7i8);
-        let _ = Zq::sample_binomial(7i16, 1i32, 7i16);
-        let _ = Zq::sample_binomial(7i32, 1i64, 7i32);
-        let _ = Zq::sample_binomial(7i64, Z::ONE, 7i64);
-        let _ = Zq::sample_binomial(7, 1u8, 0.5f32);
-        let _ = Zq::sample_binomial(7, 1u8, 0.5f64);
-        let _ = Zq::sample_binomial(7, 1, Q::from((1, 2)));
-    }
-}
-
-#[cfg(test)]
-mod test_sample_binomial_seeded {
-    use super::{Q, Z, Zq};
     use crate::utils::sample::test_seed;
 
     // As all major tests regarding an appropriate binomial distribution,
@@ -116,17 +88,32 @@ mod test_sample_binomial_seeded {
     /// and [`Into<Modulus>`], i.e. u8, u16, u32, u64, i8, ...
     #[test]
     fn availability() {
-        let _ = Zq::sample_binomial_seeded(7u8, 1u16, 7u8, test_seed());
-        let _ = Zq::sample_binomial_seeded(7u16, 1u32, 7u16, test_seed());
-        let _ = Zq::sample_binomial_seeded(7u32, 1u64, 7u32, test_seed());
-        let _ = Zq::sample_binomial_seeded(7u64, 1i8, 7u64, test_seed());
-        let _ = Zq::sample_binomial_seeded(7i8, 1i16, 7i8, test_seed());
-        let _ = Zq::sample_binomial_seeded(7i16, 1i32, 7i16, test_seed());
-        let _ = Zq::sample_binomial_seeded(7i32, 1i64, 7i32, test_seed());
-        let _ = Zq::sample_binomial_seeded(7i64, Z::ONE, 7i64, test_seed());
-        let _ = Zq::sample_binomial_seeded(7, 1u8, 0.5f32, test_seed());
-        let _ = Zq::sample_binomial_seeded(7, 1u8, 0.5f64, test_seed());
-        let _ = Zq::sample_binomial_seeded(7, 1, Q::from((1, 2)), test_seed());
+        for seeded in [false, true] {
+            let _ = Zq::sample_binomial_optionally_seeded(7u8, 1u16, 7u8, seeded.then(test_seed));
+            let _ = Zq::sample_binomial_optionally_seeded(7u16, 1u32, 7u16, seeded.then(test_seed));
+            let _ = Zq::sample_binomial_optionally_seeded(7u32, 1u64, 7u32, seeded.then(test_seed));
+            let _ = Zq::sample_binomial_optionally_seeded(7u64, 1i8, 7u64, seeded.then(test_seed));
+            let _ = Zq::sample_binomial_optionally_seeded(7i8, 1i16, 7i8, seeded.then(test_seed));
+            let _ = Zq::sample_binomial_optionally_seeded(7i16, 1i32, 7i16, seeded.then(test_seed));
+            let _ = Zq::sample_binomial_optionally_seeded(7i32, 1i64, 7i32, seeded.then(test_seed));
+            let _ =
+                Zq::sample_binomial_optionally_seeded(7i64, Z::ONE, 7i64, seeded.then(test_seed));
+            let _ = Zq::sample_binomial_optionally_seeded(7, 1u8, 0.5f32, seeded.then(test_seed));
+            let _ = Zq::sample_binomial_optionally_seeded(7, 1u8, 0.5f64, seeded.then(test_seed));
+            let _ = Zq::sample_binomial_optionally_seeded(
+                7,
+                1,
+                Q::from((1, 2)),
+                seeded.then(test_seed),
+            );
+
+            // explicitly checks the existence of the unseeded and the seeded function
+            if seeded {
+                let _ = Zq::sample_binomial_seeded(7u8, 1u16, 7u8, test_seed());
+            } else {
+                let _ = Zq::sample_binomial(7u8, 1u16, 7u8);
+            }
+        }
     }
 
     /// Checks whether the same seed results in the same sample.
@@ -137,5 +124,14 @@ mod test_sample_binomial_seeded {
         let sample_1 = Zq::sample_binomial_seeded(7, 2, 0.5, [42; 32]).unwrap();
 
         assert_eq!(sample_0, sample_1);
+    }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer() {
+        use crate::integer_mod_q::Zq;
+        let sample = Zq::sample_binomial_seeded(7, 2, 0.5, [42; 32]).unwrap();
+
+        assert_eq!("0 mod 7", sample.to_string());
     }
 }

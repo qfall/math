@@ -159,100 +159,6 @@ impl MatPolyOverZ {
 mod test_sample_binomial {
     use super::{MatPolyOverZ, Q, Z};
     use crate::traits::{GetCoefficient, MatrixDimensions, MatrixGetEntry};
-
-    // As all major tests regarding an appropriate binomial distribution,
-    // whether the correct interval is kept, and if the errors are thrown correctly,
-    // are performed in the `utils` module, we omit these tests here.
-
-    /// Checks whether the boundaries of the interval are kept.
-    #[test]
-    fn boundaries_kept() {
-        for _ in 0..8 {
-            let matrix = MatPolyOverZ::sample_binomial(1, 1, 0, 2, 0.5).unwrap();
-            let entry = matrix.get_entry(0, 0).unwrap();
-            let poly = entry.get_coeff(0).unwrap();
-
-            assert!(Z::ZERO <= poly);
-            assert!(poly <= 2);
-        }
-    }
-
-    /// Checks whether the number of coefficients is correct.
-    #[test]
-    fn nr_coeffs() {
-        let degrees = [1, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let matrix = MatPolyOverZ::sample_binomial(1, 1, degree, 256, 0.99999).unwrap();
-            let poly = matrix.get_entry(0, 0).unwrap();
-
-            assert_eq!(
-                degree,
-                poly.get_degree(),
-                "This test can fail with probability close to 0."
-            );
-        }
-    }
-
-    /// Checks whether matrices with at least one dimension chosen smaller than `1`
-    /// or too big for an [`i64`] results in an error.
-    #[should_panic]
-    #[test]
-    fn false_size() {
-        let _ = MatPolyOverZ::sample_binomial(0, 3, 0, 1, 0.5);
-    }
-
-    /// Checks whether providing a length smaller than `0` results in an error.
-    #[test]
-    fn invalid_max_degree() {
-        let res_0 = MatPolyOverZ::sample_binomial(1, 1, -1, 2, 0.5);
-        let res_1 = MatPolyOverZ::sample_binomial(1, 1, i64::MIN, 2, 0.5);
-
-        assert!(res_0.is_err());
-        assert!(res_1.is_err());
-    }
-
-    /// Checks whether `sample_binomial` is available for all types
-    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
-    /// and [`Into<Q>`], i.e. u8, u16, i8, i16, f32, f64, ...
-    #[test]
-    fn availability() {
-        let _ = MatPolyOverZ::sample_binomial(1, 1, 0u8, 1u16, 7u8);
-        let _ = MatPolyOverZ::sample_binomial(1, 1, 0u16, 1u32, 7u16);
-        let _ = MatPolyOverZ::sample_binomial(1, 1, 0u32, 1u64, 7u32);
-        let _ = MatPolyOverZ::sample_binomial(1, 1, 0u64, 1i8, 7u64);
-        let _ = MatPolyOverZ::sample_binomial(1, 1, 0i8, 1i16, 7i8);
-        let _ = MatPolyOverZ::sample_binomial(1, 1, 0i16, 1i32, 7i16);
-        let _ = MatPolyOverZ::sample_binomial(1, 1, 0i32, 1i64, 7i32);
-        let _ = MatPolyOverZ::sample_binomial(1, 1, 0i64, Z::ONE, 7i64);
-        let _ = MatPolyOverZ::sample_binomial(1, 1, 0, 1u8, 0.5f32);
-        let _ = MatPolyOverZ::sample_binomial(1, 1, Z::ZERO, 1u8, 0.5f64);
-        let _ = MatPolyOverZ::sample_binomial(1, 1, 0, 1, Q::from((1, 2)));
-    }
-
-    /// Checks whether the size of uniformly random sampled matrices
-    /// fits the specified dimensions.
-    #[test]
-    fn matrix_size() {
-        let mat_0 = MatPolyOverZ::sample_binomial(3, 3, 0, 1, 0.5).unwrap();
-        let mat_1 = MatPolyOverZ::sample_binomial(4, 1, 0, 1, 0.5).unwrap();
-        let mat_2 = MatPolyOverZ::sample_binomial(1, 5, 0, 1, 0.5).unwrap();
-        let mat_3 = MatPolyOverZ::sample_binomial(15, 20, 0, 1, 0.5).unwrap();
-
-        assert_eq!(3, mat_0.get_num_rows());
-        assert_eq!(3, mat_0.get_num_columns());
-        assert_eq!(4, mat_1.get_num_rows());
-        assert_eq!(1, mat_1.get_num_columns());
-        assert_eq!(1, mat_2.get_num_rows());
-        assert_eq!(5, mat_2.get_num_columns());
-        assert_eq!(15, mat_3.get_num_rows());
-        assert_eq!(20, mat_3.get_num_columns());
-    }
-}
-
-#[cfg(test)]
-mod test_sample_binomial_seeded {
-    use super::{MatPolyOverZ, Q, Z};
-    use crate::traits::{GetCoefficient, MatrixDimensions, MatrixGetEntry};
     use crate::utils::sample::test_seed;
 
     // As all major tests regarding an appropriate binomial distribution,
@@ -262,51 +168,95 @@ mod test_sample_binomial_seeded {
     /// Checks whether the boundaries of the interval are kept.
     #[test]
     fn boundaries_kept() {
-        for _ in 0..8 {
-            let matrix =
-                MatPolyOverZ::sample_binomial_seeded(1, 1, 0, 2, 0.5, test_seed()).unwrap();
-            let entry = matrix.get_entry(0, 0).unwrap();
-            let poly = entry.get_coeff(0).unwrap();
+        for seeded in [false, true] {
+            for _ in 0..8 {
+                let matrix = MatPolyOverZ::sample_binomial_optionally_seeded(
+                    1,
+                    1,
+                    0,
+                    2,
+                    0.5,
+                    seeded.then(test_seed),
+                )
+                .unwrap();
+                let entry = matrix.get_entry(0, 0).unwrap();
+                let poly = entry.get_coeff(0).unwrap();
 
-            assert!(Z::ZERO <= poly);
-            assert!(poly <= 2);
+                assert!(Z::ZERO <= poly);
+                assert!(poly <= 2);
+            }
         }
     }
 
     /// Checks whether the number of coefficients is correct.
     #[test]
     fn nr_coeffs() {
-        let degrees = [1, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let matrix =
-                MatPolyOverZ::sample_binomial_seeded(1, 1, degree, 256, 0.99999, test_seed())
-                    .unwrap();
-            let poly = matrix.get_entry(0, 0).unwrap();
+        for seeded in [false, true] {
+            let degrees = [1, 3, 7, 15, 32, 120];
+            for degree in degrees {
+                let matrix = MatPolyOverZ::sample_binomial_optionally_seeded(
+                    1,
+                    1,
+                    degree,
+                    256,
+                    0.99999,
+                    seeded.then(test_seed),
+                )
+                .unwrap();
+                let poly = matrix.get_entry(0, 0).unwrap();
 
-            assert_eq!(
-                degree,
-                poly.get_degree(),
-                "This test can fail with probability close to 0."
-            );
+                assert_eq!(
+                    degree,
+                    poly.get_degree(),
+                    "This test can fail with probability close to 0."
+                );
+            }
         }
     }
 
     /// Checks whether matrices with at least one dimension chosen smaller than `1`
     /// or too big for an [`i64`] results in an error.
-    #[should_panic]
     #[test]
     fn false_size() {
-        let _ = MatPolyOverZ::sample_binomial_seeded(0, 3, 0, 1, 0.5, test_seed());
+        for seeded in [false, true] {
+            let result = std::panic::catch_unwind(|| {
+                let _ = MatPolyOverZ::sample_binomial_optionally_seeded(
+                    0,
+                    3,
+                    0,
+                    1,
+                    0.5,
+                    seeded.then(test_seed),
+                );
+            });
+            assert!(result.is_err());
+        }
     }
 
     /// Checks whether providing a length smaller than `0` results in an error.
     #[test]
     fn invalid_max_degree() {
-        let res_0 = MatPolyOverZ::sample_binomial_seeded(1, 1, -1, 2, 0.5, test_seed());
-        let res_1 = MatPolyOverZ::sample_binomial_seeded(1, 1, i64::MIN, 2, 0.5, test_seed());
+        for seeded in [false, true] {
+            let res_0 = MatPolyOverZ::sample_binomial_optionally_seeded(
+                1,
+                1,
+                -1,
+                2,
+                0.5,
+                seeded.then(test_seed),
+            );
+            let res_1 = MatPolyOverZ::sample_binomial_optionally_seeded(
+                1,
+                1,
+                i64::MIN,
+                2,
+                0.5,
+                seeded.then(test_seed),
+            );
 
-        assert!(res_0.is_err());
-        assert!(res_1.is_err());
+            assert!(res_0.is_err());
+            assert!(res_1.is_err());
+        }
     }
 
     /// Checks whether `sample_binomial` is available for all types
@@ -314,36 +264,156 @@ mod test_sample_binomial_seeded {
     /// and [`Into<Q>`], i.e. u8, u16, i8, i16, f32, f64, ...
     #[test]
     fn availability() {
-        let _ = MatPolyOverZ::sample_binomial_seeded(1, 1, 0u8, 1u16, 7u8, test_seed());
-        let _ = MatPolyOverZ::sample_binomial_seeded(1, 1, 0u16, 1u32, 7u16, test_seed());
-        let _ = MatPolyOverZ::sample_binomial_seeded(1, 1, 0u32, 1u64, 7u32, test_seed());
-        let _ = MatPolyOverZ::sample_binomial_seeded(1, 1, 0u64, 1i8, 7u64, test_seed());
-        let _ = MatPolyOverZ::sample_binomial_seeded(1, 1, 0i8, 1i16, 7i8, test_seed());
-        let _ = MatPolyOverZ::sample_binomial_seeded(1, 1, 0i16, 1i32, 7i16, test_seed());
-        let _ = MatPolyOverZ::sample_binomial_seeded(1, 1, 0i32, 1i64, 7i32, test_seed());
-        let _ = MatPolyOverZ::sample_binomial_seeded(1, 1, 0i64, Z::ONE, 7i64, test_seed());
-        let _ = MatPolyOverZ::sample_binomial_seeded(1, 1, 0, 1u8, 0.5f32, test_seed());
-        let _ = MatPolyOverZ::sample_binomial_seeded(1, 1, Z::ZERO, 1u8, 0.5f64, test_seed());
-        let _ = MatPolyOverZ::sample_binomial_seeded(1, 1, 0, 1, Q::from((1, 2)), test_seed());
+        for seeded in [false, true] {
+            let _ = MatPolyOverZ::sample_binomial_optionally_seeded(
+                1,
+                1,
+                0u8,
+                1u16,
+                7u8,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolyOverZ::sample_binomial_optionally_seeded(
+                1,
+                1,
+                0u16,
+                1u32,
+                7u16,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolyOverZ::sample_binomial_optionally_seeded(
+                1,
+                1,
+                0u32,
+                1u64,
+                7u32,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolyOverZ::sample_binomial_optionally_seeded(
+                1,
+                1,
+                0u64,
+                1i8,
+                7u64,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolyOverZ::sample_binomial_optionally_seeded(
+                1,
+                1,
+                0i8,
+                1i16,
+                7i8,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolyOverZ::sample_binomial_optionally_seeded(
+                1,
+                1,
+                0i16,
+                1i32,
+                7i16,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolyOverZ::sample_binomial_optionally_seeded(
+                1,
+                1,
+                0i32,
+                1i64,
+                7i32,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolyOverZ::sample_binomial_optionally_seeded(
+                1,
+                1,
+                0i64,
+                Z::ONE,
+                7i64,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolyOverZ::sample_binomial_optionally_seeded(
+                1,
+                1,
+                0,
+                1u8,
+                0.5f32,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolyOverZ::sample_binomial_optionally_seeded(
+                1,
+                1,
+                Z::ZERO,
+                1u8,
+                0.5f64,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolyOverZ::sample_binomial_optionally_seeded(
+                1,
+                1,
+                0,
+                1,
+                Q::from((1, 2)),
+                seeded.then(test_seed),
+            );
+
+            // explicitly checks the existence of the unseeded and the seeded function
+            if seeded {
+                let _ = MatPolyOverZ::sample_binomial_seeded(1, 1, 0u8, 1u16, 7u8, test_seed());
+            } else {
+                let _ = MatPolyOverZ::sample_binomial(1, 1, 0u8, 1u16, 7u8);
+            }
+        }
     }
 
     /// Checks whether the size of uniformly random sampled matrices
     /// fits the specified dimensions.
     #[test]
     fn matrix_size() {
-        let mat_0 = MatPolyOverZ::sample_binomial_seeded(3, 3, 0, 1, 0.5, test_seed()).unwrap();
-        let mat_1 = MatPolyOverZ::sample_binomial_seeded(4, 1, 0, 1, 0.5, test_seed()).unwrap();
-        let mat_2 = MatPolyOverZ::sample_binomial_seeded(1, 5, 0, 1, 0.5, test_seed()).unwrap();
-        let mat_3 = MatPolyOverZ::sample_binomial_seeded(15, 20, 0, 1, 0.5, test_seed()).unwrap();
+        for seeded in [false, true] {
+            let mat_0 = MatPolyOverZ::sample_binomial_optionally_seeded(
+                3,
+                3,
+                0,
+                1,
+                0.5,
+                seeded.then(test_seed),
+            )
+            .unwrap();
+            let mat_1 = MatPolyOverZ::sample_binomial_optionally_seeded(
+                4,
+                1,
+                0,
+                1,
+                0.5,
+                seeded.then(test_seed),
+            )
+            .unwrap();
+            let mat_2 = MatPolyOverZ::sample_binomial_optionally_seeded(
+                1,
+                5,
+                0,
+                1,
+                0.5,
+                seeded.then(test_seed),
+            )
+            .unwrap();
+            let mat_3 = MatPolyOverZ::sample_binomial_optionally_seeded(
+                15,
+                20,
+                0,
+                1,
+                0.5,
+                seeded.then(test_seed),
+            )
+            .unwrap();
 
-        assert_eq!(3, mat_0.get_num_rows());
-        assert_eq!(3, mat_0.get_num_columns());
-        assert_eq!(4, mat_1.get_num_rows());
-        assert_eq!(1, mat_1.get_num_columns());
-        assert_eq!(1, mat_2.get_num_rows());
-        assert_eq!(5, mat_2.get_num_columns());
-        assert_eq!(15, mat_3.get_num_rows());
-        assert_eq!(20, mat_3.get_num_columns());
+            assert_eq!(3, mat_0.get_num_rows());
+            assert_eq!(3, mat_0.get_num_columns());
+            assert_eq!(4, mat_1.get_num_rows());
+            assert_eq!(1, mat_1.get_num_columns());
+            assert_eq!(1, mat_2.get_num_rows());
+            assert_eq!(5, mat_2.get_num_columns());
+            assert_eq!(15, mat_3.get_num_rows());
+            assert_eq!(20, mat_3.get_num_columns());
+        }
     }
 
     /// Checks whether the same seed results in the same sample.
@@ -355,105 +425,22 @@ mod test_sample_binomial_seeded {
 
         assert_eq!(sample_0, sample_1);
     }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer() {
+        use crate::integer::MatPolyOverZ;
+        let sample = MatPolyOverZ::sample_binomial_seeded(2, 2, 5, 2, 0.5, [42; 32]).unwrap();
+
+        assert_eq!(
+            "[[6  0 2 1 2 0 1, 6  0 1 0 1 0 1],[6  0 2 2 1 2 1, 5  1 1 1 2 1]]",
+            sample.to_string()
+        );
+    }
 }
 
 #[cfg(test)]
 mod test_sample_binomial_with_offset {
-    use super::{MatPolyOverZ, Q, Z};
-    use crate::traits::{GetCoefficient, MatrixDimensions, MatrixGetEntry};
-
-    // As all major tests regarding an appropriate binomial distribution,
-    // whether the correct interval is kept, and if the errors are thrown correctly,
-    // are performed in the `utils` module, we omit these tests here.
-
-    /// Checks whether the boundaries of the interval are kept.
-    #[test]
-    fn boundaries_kept() {
-        for _ in 0..8 {
-            let matrix = MatPolyOverZ::sample_binomial_with_offset(1, 1, 0, -1, 2, 0.5).unwrap();
-            let entry = matrix.get_entry(0, 0).unwrap();
-            let poly = entry.get_coeff(0).unwrap();
-
-            assert!(Z::MINUS_ONE <= poly);
-            assert!(poly <= Z::ONE);
-        }
-    }
-
-    /// Checks whether the number of coefficients is correct.
-    #[test]
-    fn nr_coeffs() {
-        let degrees = [1, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let matrix =
-                MatPolyOverZ::sample_binomial_with_offset(1, 1, degree, -1, 256, 0.99999).unwrap();
-            let poly = matrix.get_entry(0, 0).unwrap();
-
-            assert_eq!(
-                degree,
-                poly.get_degree(),
-                "This test can fail with probability close to 0."
-            );
-        }
-    }
-
-    /// Checks whether matrices with at least one dimension chosen smaller than `1`
-    /// or too big for an [`i64`] results in an error.
-    #[should_panic]
-    #[test]
-    fn false_size() {
-        let _ = MatPolyOverZ::sample_binomial_with_offset(0, 3, 0, 0, 1, 0.5);
-    }
-
-    /// Checks whether providing a length smaller than `0` results in an error.
-    #[test]
-    fn invalid_max_degree() {
-        let res_0 = MatPolyOverZ::sample_binomial_with_offset(1, 1, -1, -1, 2, 0.5);
-        let res_1 = MatPolyOverZ::sample_binomial_with_offset(1, 1, i64::MIN, -1, 2, 0.5);
-
-        assert!(res_0.is_err());
-        assert!(res_1.is_err());
-    }
-
-    /// Checks whether `sample_binomial_with_offset` is available for all types
-    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
-    /// and [`Into<Q>`], i.e. u8, u16, i8, i16, f32, f64, ...
-    #[test]
-    fn availability() {
-        let _ = MatPolyOverZ::sample_binomial_with_offset(1, 1, 0u8, -1, 1u16, 7u8);
-        let _ = MatPolyOverZ::sample_binomial_with_offset(1, 1, 0u16, 0, 1u32, 7u16);
-        let _ = MatPolyOverZ::sample_binomial_with_offset(1, 1, 0u32, Z::ONE, 1u64, 7u32);
-        let _ = MatPolyOverZ::sample_binomial_with_offset(1, 1, 0u64, Z::MINUS_ONE, 1i8, 7u64);
-        let _ = MatPolyOverZ::sample_binomial_with_offset(1, 1, 0i8, -1, 1i16, 7i8);
-        let _ = MatPolyOverZ::sample_binomial_with_offset(1, 1, 0i16, -1, 1i32, 7i16);
-        let _ = MatPolyOverZ::sample_binomial_with_offset(1, 1, 0i32, -1, 1i64, 7i32);
-        let _ = MatPolyOverZ::sample_binomial_with_offset(1, 1, 0i64, -1, Z::ONE, 7i64);
-        let _ = MatPolyOverZ::sample_binomial_with_offset(1, 1, 0, -1, 1u8, 0.5f32);
-        let _ = MatPolyOverZ::sample_binomial_with_offset(1, 1, Z::ZERO, -1, 1u8, 0.5f64);
-        let _ = MatPolyOverZ::sample_binomial_with_offset(1, 1, 0, -1, 1, Q::from((1, 2)));
-    }
-
-    /// Checks whether the size of uniformly random sampled matrices
-    /// fits the specified dimensions.
-    #[test]
-    fn matrix_size() {
-        let mat_0 = MatPolyOverZ::sample_binomial_with_offset(3, 3, 0, -1, 1, 0.5).unwrap();
-        let mat_1 = MatPolyOverZ::sample_binomial_with_offset(4, 1, 0, -1, 1, 0.5).unwrap();
-        let mat_2 = MatPolyOverZ::sample_binomial_with_offset(1, 5, 0, -1, 1, 0.5).unwrap();
-        let mat_3 = MatPolyOverZ::sample_binomial_with_offset(15, 20, 0, -1, 1, 0.5).unwrap();
-
-        assert_eq!(3, mat_0.get_num_rows());
-        assert_eq!(3, mat_0.get_num_columns());
-        assert_eq!(4, mat_1.get_num_rows());
-        assert_eq!(1, mat_1.get_num_columns());
-        assert_eq!(1, mat_2.get_num_rows());
-        assert_eq!(5, mat_2.get_num_columns());
-        assert_eq!(15, mat_3.get_num_rows());
-        assert_eq!(20, mat_3.get_num_columns());
-    }
-}
-
-#[cfg(test)]
-mod test_sample_binomial_with_offset_seeded {
     use super::{MatPolyOverZ, Q, Z};
     use crate::traits::{GetCoefficient, MatrixDimensions, MatrixGetEntry};
     use crate::utils::sample::test_seed;
@@ -465,68 +452,100 @@ mod test_sample_binomial_with_offset_seeded {
     /// Checks whether the boundaries of the interval are kept.
     #[test]
     fn boundaries_kept() {
-        for _ in 0..8 {
-            let matrix =
-                MatPolyOverZ::sample_binomial_with_offset_seeded(1, 1, 0, -1, 2, 0.5, test_seed())
-                    .unwrap();
-            let entry = matrix.get_entry(0, 0).unwrap();
-            let poly = entry.get_coeff(0).unwrap();
+        for seeded in [false, true] {
+            for _ in 0..8 {
+                let matrix = MatPolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                    1,
+                    1,
+                    0,
+                    -1,
+                    2,
+                    0.5,
+                    seeded.then(test_seed),
+                )
+                .unwrap();
+                let entry = matrix.get_entry(0, 0).unwrap();
+                let poly = entry.get_coeff(0).unwrap();
 
-            assert!(Z::MINUS_ONE <= poly);
-            assert!(poly <= Z::ONE);
+                assert!(Z::MINUS_ONE <= poly);
+                assert!(poly <= Z::ONE);
+            }
         }
     }
 
     /// Checks whether the number of coefficients is correct.
     #[test]
     fn nr_coeffs() {
-        let degrees = [1, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let matrix = MatPolyOverZ::sample_binomial_with_offset_seeded(
-                1,
-                1,
-                degree,
-                -1,
-                256,
-                0.99999,
-                test_seed(),
-            )
-            .unwrap();
-            let poly = matrix.get_entry(0, 0).unwrap();
+        for seeded in [false, true] {
+            let degrees = [1, 3, 7, 15, 32, 120];
+            for degree in degrees {
+                let matrix = MatPolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                    1,
+                    1,
+                    degree,
+                    -1,
+                    256,
+                    0.99999,
+                    seeded.then(test_seed),
+                )
+                .unwrap();
+                let poly = matrix.get_entry(0, 0).unwrap();
 
-            assert_eq!(
-                degree,
-                poly.get_degree(),
-                "This test can fail with probability close to 0."
-            );
+                assert_eq!(
+                    degree,
+                    poly.get_degree(),
+                    "This test can fail with probability close to 0."
+                );
+            }
         }
     }
 
     /// Checks whether matrices with at least one dimension chosen smaller than `1`
     /// or too big for an [`i64`] results in an error.
-    #[should_panic]
     #[test]
     fn false_size() {
-        let _ = MatPolyOverZ::sample_binomial_with_offset_seeded(0, 3, 0, 0, 1, 0.5, test_seed());
+        for seeded in [false, true] {
+            let result = std::panic::catch_unwind(|| {
+                let _ = MatPolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                    0,
+                    3,
+                    0,
+                    0,
+                    1,
+                    0.5,
+                    seeded.then(test_seed),
+                );
+            });
+            assert!(result.is_err());
+        }
     }
 
     /// Checks whether providing a length smaller than `0` results in an error.
     #[test]
     fn invalid_max_degree() {
-        let res_0 =
-            MatPolyOverZ::sample_binomial_with_offset_seeded(1, 1, -1, -1, 2, 0.5, test_seed());
-        let res_1 = MatPolyOverZ::sample_binomial_with_offset_seeded(
-            1,
-            1,
-            i64::MIN,
-            -1,
-            2,
-            0.5,
-            test_seed(),
-        );
+        for seeded in [false, true] {
+            let res_0 = MatPolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                1,
+                -1,
+                -1,
+                2,
+                0.5,
+                seeded.then(test_seed),
+            );
+            let res_1 = MatPolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                1,
+                i64::MIN,
+                -1,
+                2,
+                0.5,
+                seeded.then(test_seed),
+            );
 
-        assert!(res_0.is_err());
-        assert!(res_1.is_err());
+            assert!(res_0.is_err());
+            assert!(res_1.is_err());
+        }
     }
 
     /// Checks whether `sample_binomial_with_offset` is available for all types
@@ -534,111 +553,179 @@ mod test_sample_binomial_with_offset_seeded {
     /// and [`Into<Q>`], i.e. u8, u16, i8, i16, f32, f64, ...
     #[test]
     fn availability() {
-        let _ =
-            MatPolyOverZ::sample_binomial_with_offset_seeded(1, 1, 0u8, -1, 1u16, 7u8, test_seed());
-        let _ = MatPolyOverZ::sample_binomial_with_offset_seeded(
-            1,
-            1,
-            0u16,
-            0,
-            1u32,
-            7u16,
-            test_seed(),
-        );
-        let _ = MatPolyOverZ::sample_binomial_with_offset_seeded(
-            1,
-            1,
-            0u32,
-            Z::ONE,
-            1u64,
-            7u32,
-            test_seed(),
-        );
-        let _ = MatPolyOverZ::sample_binomial_with_offset_seeded(
-            1,
-            1,
-            0u64,
-            Z::MINUS_ONE,
-            1i8,
-            7u64,
-            test_seed(),
-        );
-        let _ =
-            MatPolyOverZ::sample_binomial_with_offset_seeded(1, 1, 0i8, -1, 1i16, 7i8, test_seed());
-        let _ = MatPolyOverZ::sample_binomial_with_offset_seeded(
-            1,
-            1,
-            0i16,
-            -1,
-            1i32,
-            7i16,
-            test_seed(),
-        );
-        let _ = MatPolyOverZ::sample_binomial_with_offset_seeded(
-            1,
-            1,
-            0i32,
-            -1,
-            1i64,
-            7i32,
-            test_seed(),
-        );
-        let _ = MatPolyOverZ::sample_binomial_with_offset_seeded(
-            1,
-            1,
-            0i64,
-            -1,
-            Z::ONE,
-            7i64,
-            test_seed(),
-        );
-        let _ =
-            MatPolyOverZ::sample_binomial_with_offset_seeded(1, 1, 0, -1, 1u8, 0.5f32, test_seed());
-        let _ = MatPolyOverZ::sample_binomial_with_offset_seeded(
-            1,
-            1,
-            Z::ZERO,
-            -1,
-            1u8,
-            0.5f64,
-            test_seed(),
-        );
-        let _ = MatPolyOverZ::sample_binomial_with_offset_seeded(
-            1,
-            1,
-            0,
-            -1,
-            1,
-            Q::from((1, 2)),
-            test_seed(),
-        );
+        for seeded in [false, true] {
+            let _ = MatPolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                1,
+                0u8,
+                -1,
+                1u16,
+                7u8,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                1,
+                0u16,
+                0,
+                1u32,
+                7u16,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                1,
+                0u32,
+                Z::ONE,
+                1u64,
+                7u32,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                1,
+                0u64,
+                Z::MINUS_ONE,
+                1i8,
+                7u64,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                1,
+                0i8,
+                -1,
+                1i16,
+                7i8,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                1,
+                0i16,
+                -1,
+                1i32,
+                7i16,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                1,
+                0i32,
+                -1,
+                1i64,
+                7i32,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                1,
+                0i64,
+                -1,
+                Z::ONE,
+                7i64,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                1,
+                0,
+                -1,
+                1u8,
+                0.5f32,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                1,
+                Z::ZERO,
+                -1,
+                1u8,
+                0.5f64,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                1,
+                0,
+                -1,
+                1,
+                Q::from((1, 2)),
+                seeded.then(test_seed),
+            );
+
+            // explicitly checks the existence of the unseeded and the seeded function
+            if seeded {
+                let _ = MatPolyOverZ::sample_binomial_with_offset_seeded(
+                    1,
+                    1,
+                    0u8,
+                    -1,
+                    1u16,
+                    7u8,
+                    test_seed(),
+                );
+            } else {
+                let _ = MatPolyOverZ::sample_binomial_with_offset(1, 1, 0u8, -1, 1u16, 7u8);
+            }
+        }
     }
 
     /// Checks whether the size of uniformly random sampled matrices
     /// fits the specified dimensions.
     #[test]
     fn matrix_size() {
-        let mat_0 =
-            MatPolyOverZ::sample_binomial_with_offset_seeded(3, 3, 0, -1, 1, 0.5, test_seed())
-                .unwrap();
-        let mat_1 =
-            MatPolyOverZ::sample_binomial_with_offset_seeded(4, 1, 0, -1, 1, 0.5, test_seed())
-                .unwrap();
-        let mat_2 =
-            MatPolyOverZ::sample_binomial_with_offset_seeded(1, 5, 0, -1, 1, 0.5, test_seed())
-                .unwrap();
-        let mat_3 =
-            MatPolyOverZ::sample_binomial_with_offset_seeded(15, 20, 0, -1, 1, 0.5, test_seed())
-                .unwrap();
+        for seeded in [false, true] {
+            let mat_0 = MatPolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                3,
+                3,
+                0,
+                -1,
+                1,
+                0.5,
+                seeded.then(test_seed),
+            )
+            .unwrap();
+            let mat_1 = MatPolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                4,
+                1,
+                0,
+                -1,
+                1,
+                0.5,
+                seeded.then(test_seed),
+            )
+            .unwrap();
+            let mat_2 = MatPolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                5,
+                0,
+                -1,
+                1,
+                0.5,
+                seeded.then(test_seed),
+            )
+            .unwrap();
+            let mat_3 = MatPolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                15,
+                20,
+                0,
+                -1,
+                1,
+                0.5,
+                seeded.then(test_seed),
+            )
+            .unwrap();
 
-        assert_eq!(3, mat_0.get_num_rows());
-        assert_eq!(3, mat_0.get_num_columns());
-        assert_eq!(4, mat_1.get_num_rows());
-        assert_eq!(1, mat_1.get_num_columns());
-        assert_eq!(1, mat_2.get_num_rows());
-        assert_eq!(5, mat_2.get_num_columns());
-        assert_eq!(15, mat_3.get_num_rows());
-        assert_eq!(20, mat_3.get_num_columns());
+            assert_eq!(3, mat_0.get_num_rows());
+            assert_eq!(3, mat_0.get_num_columns());
+            assert_eq!(4, mat_1.get_num_rows());
+            assert_eq!(1, mat_1.get_num_columns());
+            assert_eq!(1, mat_2.get_num_rows());
+            assert_eq!(5, mat_2.get_num_columns());
+            assert_eq!(15, mat_3.get_num_rows());
+            assert_eq!(20, mat_3.get_num_columns());
+        }
     }
 
     /// Checks whether the same seed results in the same sample.
@@ -653,5 +740,19 @@ mod test_sample_binomial_with_offset_seeded {
                 .unwrap();
 
         assert_eq!(sample_0, sample_1);
+    }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer() {
+        use crate::integer::MatPolyOverZ;
+        let sample =
+            MatPolyOverZ::sample_binomial_with_offset_seeded(2, 2, 5, -1, 2, 0.5, [42; 32])
+                .unwrap();
+
+        assert_eq!(
+            "[[5  -1 1 0 1 -1, 5  -1 0 -1 0 -1],[5  -1 1 1 0 1, 6  0 0 0 1 0 -1]]",
+            sample.to_string()
+        );
     }
 }

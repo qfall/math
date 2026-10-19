@@ -126,74 +126,78 @@ impl BinomialSampler {
 #[cfg(test)]
 mod test_binomial_sampler {
     use super::{BinomialSampler, Q, Z};
+    use crate::utils::sample::test_seed;
 
     /// Checks whether the range is kept,
     /// i.e. if any result is at least 0 and smaller than or equal to `n`.
     #[test]
     fn keeps_range() {
-        let n = 16;
-        let p = 0.5;
-        let mut bin_sampler = BinomialSampler::init(n, p, None).unwrap();
+        for seeded in [false, true] {
+            let n = 16;
+            let p = 0.5;
+            let mut bin_sampler = BinomialSampler::init(n, p, seeded.then(test_seed)).unwrap();
 
-        for _ in 0..16 {
-            let sample = bin_sampler.sample();
-            // sample >= 0 check is not required as sample is a u64
-            assert!(sample <= n);
+            for _ in 0..16 {
+                let sample = bin_sampler.sample();
+                // sample >= 0 check is not required as sample is a u64
+                assert!(sample <= n);
+            }
         }
     }
 
     /// Roughly checks that the collected samples are distributed according to the binomial distribution.
     #[test]
     fn distribution() {
-        let n = 2;
-        let p = 0.5;
-        let mut bin_sampler = BinomialSampler::init(n, p, None).unwrap();
+        for seeded in [false, true] {
+            let n = 2;
+            let p = 0.5;
+            let mut bin_sampler = BinomialSampler::init(n, p, seeded.then(test_seed)).unwrap();
 
-        let mut counts = [0; 3];
-        // count sampled instances
-        for _ in 0..1000 {
-            let sample = u64::try_from(bin_sampler.sample()).unwrap() as usize;
-            counts[sample] += 1;
-        }
+            let mut counts = [0; 3];
+            // count sampled instances
+            for _ in 0..1000 {
+                let sample = u64::try_from(bin_sampler.sample()).unwrap() as usize;
+                counts[sample] += 1;
+            }
 
-        let expl_text = String::from("This test can fail with probability close to 0. 
+            let expl_text = String::from("This test can fail with probability close to 0. 
         It fails if the sampled occurrences do not look like a typical binomial random distribution. 
         If this happens, rerun the tests several times and check whether this issue comes up again.");
 
-        // Check that the sampled occurrences roughly look
-        // like a binomial distribution
-        assert!(counts[0] > 100, "{expl_text}");
-        assert!(counts[0] < 400, "{expl_text}");
-        assert!(counts[1] > 300, "{expl_text}");
-        assert!(counts[1] < 700, "{expl_text}");
-        assert!(counts[2] > 100, "{expl_text}");
-        assert!(counts[2] < 400, "{expl_text}");
+            // Check that the sampled occurrences roughly look
+            // like a binomial distribution
+            assert!(counts[0] > 100, "{expl_text}");
+            assert!(counts[0] < 400, "{expl_text}");
+            assert!(counts[1] > 300, "{expl_text}");
+            assert!(counts[1] < 700, "{expl_text}");
+            assert!(counts[2] > 100, "{expl_text}");
+            assert!(counts[2] < 400, "{expl_text}");
+        }
     }
 
     /// Checks whether invalid choices for n result in an error.
     #[test]
     fn invalid_n() {
-        let p = 0.5;
+        for seeded in [false, true] {
+            let p = 0.5;
 
-        assert!(BinomialSampler::init(&Z::MINUS_ONE, p, None).is_err());
-        assert!(BinomialSampler::init(Z::from(i64::MIN), p, None).is_err());
+            assert!(BinomialSampler::init(&Z::MINUS_ONE, p, seeded.then(test_seed)).is_err());
+            assert!(BinomialSampler::init(Z::from(i64::MIN), p, seeded.then(test_seed)).is_err());
+        }
     }
 
     /// Checks whether invalid choices for p result in an error.
     #[test]
     fn invalid_p() {
-        let n = 2;
+        for seeded in [false, true] {
+            let n = 2;
 
-        assert!(BinomialSampler::init(n, &Q::MINUS_ONE, None).is_err());
-        assert!(BinomialSampler::init(n, &Q::ZERO, None).is_err());
-        assert!(BinomialSampler::init(n, &Q::ONE, None).is_err());
-        assert!(BinomialSampler::init(n, Q::from(5), None).is_err());
+            assert!(BinomialSampler::init(n, &Q::MINUS_ONE, seeded.then(test_seed)).is_err());
+            assert!(BinomialSampler::init(n, &Q::ZERO, seeded.then(test_seed)).is_err());
+            assert!(BinomialSampler::init(n, &Q::ONE, seeded.then(test_seed)).is_err());
+            assert!(BinomialSampler::init(n, Q::from(5), seeded.then(test_seed)).is_err());
+        }
     }
-}
-
-#[cfg(test)]
-mod test_binomial_sampler_seeded {
-    use super::{BinomialSampler, Q, Z};
 
     /// Checks whether two samplers with the same seed output the same samples.
     #[test]
@@ -208,40 +212,13 @@ mod test_binomial_sampler_seeded {
         }
     }
 
-    /// Checks whether two samplers with different seeds output different samples.
+    /// Checks whether the seeded sampler outputs the known samples for a fixed seed.
     #[test]
-    fn different_seed_different_samples() {
-        let n = 1024;
-        let p = 0.5;
-        let mut bin_sampler_0 = BinomialSampler::init(n, p, Some([0; 32])).unwrap();
-        let mut bin_sampler_1 = BinomialSampler::init(n, p, Some([1; 32])).unwrap();
+    fn known_answer() {
+        let mut bin_sampler = BinomialSampler::init(1024, 0.5, Some([42; 32])).unwrap();
 
-        let samples_0: Vec<Z> = (0..16).map(|_| bin_sampler_0.sample()).collect();
-        let samples_1: Vec<Z> = (0..16).map(|_| bin_sampler_1.sample()).collect();
+        let samples: Vec<String> = (0..8).map(|_| bin_sampler.sample().to_string()).collect();
 
-        assert_ne!(samples_0, samples_1);
-    }
-
-    /// Checks whether seeded samples are kept in range.
-    #[test]
-    fn keeps_range() {
-        let n = 16;
-        let p = 0.5;
-        let mut bin_sampler = BinomialSampler::init(n, p, Some([42; 32])).unwrap();
-
-        for _ in 0..u8::MAX {
-            let sample = bin_sampler.sample();
-
-            assert!(Z::ZERO <= sample);
-            assert!(sample <= n);
-        }
-    }
-
-    /// Checks whether invalid choices for n and p result in an error.
-    #[test]
-    fn invalid_parameters() {
-        assert!(BinomialSampler::init(&Z::MINUS_ONE, 0.5, Some([42; 32])).is_err());
-        assert!(BinomialSampler::init(2, &Q::ZERO, Some([42; 32])).is_err());
-        assert!(BinomialSampler::init(2, &Q::ONE, Some([42; 32])).is_err());
+        assert_eq!("495, 492, 500, 489, 491, 510, 489, 555", samples.join(", "));
     }
 }

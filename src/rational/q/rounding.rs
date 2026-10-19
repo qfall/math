@@ -344,25 +344,19 @@ mod test_simplify {
 #[cfg(test)]
 mod test_randomized_rounding {
     use crate::rational::Q;
-
-    /// Ensure that a `r < 0` throws an error
-    #[test]
-    fn negative_r() {
-        let value = Q::from((2, 3));
-        assert!(value.randomized_rounding(-1).is_err());
-    }
-}
-
-#[cfg(test)]
-mod test_randomized_rounding_seeded {
-    use crate::rational::Q;
     use crate::utils::sample::test_seed;
 
     /// Ensure that a `r < 0` throws an error
     #[test]
     fn negative_r() {
-        let value = Q::from((2, 3));
-        assert!(value.randomized_rounding_seeded(-1, test_seed()).is_err());
+        for seeded in [false, true] {
+            let value = Q::from((2, 3));
+            assert!(
+                value
+                    .randomized_rounding_optionally_seeded(-1, seeded.then(test_seed))
+                    .is_err()
+            );
+        }
     }
 
     /// Checks whether the same seed results in the same sample.
@@ -374,5 +368,26 @@ mod test_randomized_rounding_seeded {
         let sample_1 = value.randomized_rounding_seeded(3, [42; 32]).unwrap();
 
         assert_eq!(sample_0, sample_1);
+    }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer() {
+        use crate::rational::Q;
+        let value = Q::from((5, 2));
+        let sample = value.randomized_rounding_seeded(3, [42; 32]).unwrap();
+
+        assert_eq!("1", sample.to_string());
+    }
+
+    /// Checks whether the unseeded and the seeded function are available.
+    #[test]
+    fn availability() {
+        use crate::rational::Q;
+        let value = Q::from((5, 2));
+
+        // explicitly checks the existence of the unseeded and the seeded function
+        let _ = value.randomized_rounding(3);
+        let _ = value.randomized_rounding_seeded(3, test_seed());
     }
 }

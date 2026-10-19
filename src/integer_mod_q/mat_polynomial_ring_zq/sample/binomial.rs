@@ -157,116 +157,6 @@ impl MatPolynomialRingZq {
 #[cfg(test)]
 mod test_sample_binomial {
     use super::{MatPolynomialRingZq, ModulusPolynomialRingZq, Q, Z};
-    use crate::{
-        integer::PolyOverZ,
-        integer_mod_q::PolyOverZq,
-        traits::{GetCoefficient, MatrixDimensions, MatrixGetEntry, SetCoefficient},
-    };
-    use std::str::FromStr;
-
-    // As all major tests regarding an appropriate binomial distribution,
-    // whether the correct interval is kept, and if the errors are thrown correctly,
-    // are performed in the `utils` module, we omit these tests here.
-
-    /// Checks whether the boundaries of the interval are kept.
-    #[test]
-    fn boundaries_kept() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-
-        for _ in 0..8 {
-            let matrix = MatPolynomialRingZq::sample_binomial(1, 1, &modulus, 2, 0.5).unwrap();
-            let entry: PolyOverZ = matrix.get_entry(0, 0).unwrap();
-            let poly = entry.get_coeff(0).unwrap();
-
-            assert!(Z::ZERO <= poly);
-            assert!(poly <= 2);
-        }
-    }
-
-    /// Checks whether the number of coefficients is correct.
-    #[test]
-    fn nr_coeffs() {
-        let degrees = [1, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let mut modulus = PolyOverZq::from((1, u64::MAX));
-            modulus.set_coeff(degree, 1).unwrap();
-            let modulus = ModulusPolynomialRingZq::from(&modulus);
-
-            let matrix = MatPolynomialRingZq::sample_binomial(1, 1, modulus, 256, 0.99999).unwrap();
-            let poly: PolyOverZ = matrix.get_entry(0, 0).unwrap();
-
-            assert_eq!(
-                degree,
-                poly.get_degree() + 1,
-                "This test can fail with probability close to 0."
-            );
-        }
-    }
-
-    /// Checks whether matrices with at least one dimension chosen smaller than `1`
-    /// or too big for an [`i64`] results in an error.
-    #[should_panic]
-    #[test]
-    fn false_size() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-
-        let _ = MatPolynomialRingZq::sample_binomial(0, 3, modulus, 1, 0.5);
-    }
-
-    /// Checks whether 0 modulus polynomial is insufficient.
-    #[test]
-    #[should_panic]
-    fn invalid_modulus() {
-        let modulus = ModulusPolynomialRingZq::from_str("1  1 mod 17").unwrap();
-
-        let _ = MatPolynomialRingZq::sample_binomial(1, 1, modulus, 1, 0.5);
-    }
-
-    /// Checks whether `sample_binomial` is available for all types
-    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
-    /// and [`Into<Q>`], i.e. u8, u16, i8, i16, f32, f64, ...
-    #[test]
-    fn availability() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-
-        let _ = MatPolynomialRingZq::sample_binomial(1, 1, &modulus, 1u16, 7u8);
-        let _ = MatPolynomialRingZq::sample_binomial(1, 1, &modulus, 1u32, 7u16);
-        let _ = MatPolynomialRingZq::sample_binomial(1, 1, &modulus, 1u64, 7u32);
-        let _ = MatPolynomialRingZq::sample_binomial(1, 1, &modulus, 1i8, 7u64);
-        let _ = MatPolynomialRingZq::sample_binomial(1, 1, &modulus, 1i16, 7i8);
-        let _ = MatPolynomialRingZq::sample_binomial(1, 1, &modulus, 1i32, 7i16);
-        let _ = MatPolynomialRingZq::sample_binomial(1, 1, &modulus, 1i64, 7i32);
-        let _ = MatPolynomialRingZq::sample_binomial(1, 1, &modulus, Z::ONE, 7i64);
-        let _ = MatPolynomialRingZq::sample_binomial(1, 1, &modulus, 1u8, 0.5f32);
-        let _ = MatPolynomialRingZq::sample_binomial(1, 1, &modulus, 1u8, 0.5f64);
-        let _ = MatPolynomialRingZq::sample_binomial(1, 1, &modulus, 1, Q::from((1, 2)));
-    }
-
-    /// Checks whether the size of uniformly random sampled matrices
-    /// fits the specified dimensions.
-    #[test]
-    fn matrix_size() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-
-        let mat_0 = MatPolynomialRingZq::sample_binomial(3, 3, &modulus, 1, 0.5).unwrap();
-        let mat_1 = MatPolynomialRingZq::sample_binomial(4, 1, &modulus, 1, 0.5).unwrap();
-        let mat_2 = MatPolynomialRingZq::sample_binomial(1, 5, &modulus, 1, 0.5).unwrap();
-        let mat_3 = MatPolynomialRingZq::sample_binomial(15, 20, &modulus, 1, 0.5).unwrap();
-
-        assert_eq!(3, mat_0.get_num_rows());
-        assert_eq!(3, mat_0.get_num_columns());
-        assert_eq!(4, mat_1.get_num_rows());
-        assert_eq!(1, mat_1.get_num_columns());
-        assert_eq!(1, mat_2.get_num_rows());
-        assert_eq!(5, mat_2.get_num_columns());
-        assert_eq!(15, mat_3.get_num_rows());
-        assert_eq!(20, mat_3.get_num_columns());
-    }
-}
-
-#[cfg(test)]
-mod test_sample_binomial_seeded {
-    use super::{MatPolynomialRingZq, ModulusPolynomialRingZq, Q, Z};
     use crate::utils::sample::test_seed;
     use crate::{
         integer::PolyOverZ,
@@ -282,65 +172,97 @@ mod test_sample_binomial_seeded {
     /// Checks whether the boundaries of the interval are kept.
     #[test]
     fn boundaries_kept() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        for seeded in [false, true] {
+            let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
 
-        for _ in 0..8 {
-            let matrix =
-                MatPolynomialRingZq::sample_binomial_seeded(1, 1, &modulus, 2, 0.5, test_seed())
-                    .unwrap();
-            let entry: PolyOverZ = matrix.get_entry(0, 0).unwrap();
-            let poly = entry.get_coeff(0).unwrap();
+            for _ in 0..8 {
+                let matrix = MatPolynomialRingZq::sample_binomial_optionally_seeded(
+                    1,
+                    1,
+                    &modulus,
+                    2,
+                    0.5,
+                    seeded.then(test_seed),
+                )
+                .unwrap();
+                let entry: PolyOverZ = matrix.get_entry(0, 0).unwrap();
+                let poly = entry.get_coeff(0).unwrap();
 
-            assert!(Z::ZERO <= poly);
-            assert!(poly <= 2);
+                assert!(Z::ZERO <= poly);
+                assert!(poly <= 2);
+            }
         }
     }
 
     /// Checks whether the number of coefficients is correct.
     #[test]
     fn nr_coeffs() {
-        let degrees = [1, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let mut modulus = PolyOverZq::from((1, u64::MAX));
-            modulus.set_coeff(degree, 1).unwrap();
-            let modulus = ModulusPolynomialRingZq::from(&modulus);
+        for seeded in [false, true] {
+            let degrees = [1, 3, 7, 15, 32, 120];
+            for degree in degrees {
+                let mut modulus = PolyOverZq::from((1, u64::MAX));
+                modulus.set_coeff(degree, 1).unwrap();
+                let modulus = ModulusPolynomialRingZq::from(&modulus);
 
-            let matrix = MatPolynomialRingZq::sample_binomial_seeded(
-                1,
-                1,
-                modulus,
-                256,
-                0.99999,
-                test_seed(),
-            )
-            .unwrap();
-            let poly: PolyOverZ = matrix.get_entry(0, 0).unwrap();
+                let matrix = MatPolynomialRingZq::sample_binomial_optionally_seeded(
+                    1,
+                    1,
+                    modulus,
+                    256,
+                    0.99999,
+                    seeded.then(test_seed),
+                )
+                .unwrap();
+                let poly: PolyOverZ = matrix.get_entry(0, 0).unwrap();
 
-            assert_eq!(
-                degree,
-                poly.get_degree() + 1,
-                "This test can fail with probability close to 0."
-            );
+                assert_eq!(
+                    degree,
+                    poly.get_degree() + 1,
+                    "This test can fail with probability close to 0."
+                );
+            }
         }
     }
 
     /// Checks whether matrices with at least one dimension chosen smaller than `1`
     /// or too big for an [`i64`] results in an error.
-    #[should_panic]
     #[test]
     fn false_size() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        for seeded in [false, true] {
+            let result = std::panic::catch_unwind(|| {
+                let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
 
-        let _ = MatPolynomialRingZq::sample_binomial_seeded(0, 3, modulus, 1, 0.5, test_seed());
+                let _ = MatPolynomialRingZq::sample_binomial_optionally_seeded(
+                    0,
+                    3,
+                    modulus,
+                    1,
+                    0.5,
+                    seeded.then(test_seed),
+                );
+            });
+            assert!(result.is_err());
+        }
     }
 
     /// Checks whether 0 modulus polynomial is insufficient.
     #[test]
-    #[should_panic]
     fn invalid_modulus() {
-        let modulus = ModulusPolynomialRingZq::from_str("1  1 mod 17").unwrap();
+        for seeded in [false, true] {
+            let result = std::panic::catch_unwind(|| {
+                let modulus = ModulusPolynomialRingZq::from_str("1  1 mod 17").unwrap();
 
-        let _ = MatPolynomialRingZq::sample_binomial_seeded(1, 1, modulus, 1, 0.5, test_seed());
+                let _ = MatPolynomialRingZq::sample_binomial_optionally_seeded(
+                    1,
+                    1,
+                    modulus,
+                    1,
+                    0.5,
+                    seeded.then(test_seed),
+                );
+            });
+            assert!(result.is_err());
+        }
     }
 
     /// Checks whether `sample_binomial` is available for all types
@@ -348,62 +270,167 @@ mod test_sample_binomial_seeded {
     /// and [`Into<Q>`], i.e. u8, u16, i8, i16, f32, f64, ...
     #[test]
     fn availability() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        for seeded in [false, true] {
+            let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
 
-        let _ = MatPolynomialRingZq::sample_binomial_seeded(1, 1, &modulus, 1u16, 7u8, test_seed());
-        let _ =
-            MatPolynomialRingZq::sample_binomial_seeded(1, 1, &modulus, 1u32, 7u16, test_seed());
-        let _ =
-            MatPolynomialRingZq::sample_binomial_seeded(1, 1, &modulus, 1u64, 7u32, test_seed());
-        let _ = MatPolynomialRingZq::sample_binomial_seeded(1, 1, &modulus, 1i8, 7u64, test_seed());
-        let _ = MatPolynomialRingZq::sample_binomial_seeded(1, 1, &modulus, 1i16, 7i8, test_seed());
-        let _ =
-            MatPolynomialRingZq::sample_binomial_seeded(1, 1, &modulus, 1i32, 7i16, test_seed());
-        let _ =
-            MatPolynomialRingZq::sample_binomial_seeded(1, 1, &modulus, 1i64, 7i32, test_seed());
-        let _ =
-            MatPolynomialRingZq::sample_binomial_seeded(1, 1, &modulus, Z::ONE, 7i64, test_seed());
-        let _ =
-            MatPolynomialRingZq::sample_binomial_seeded(1, 1, &modulus, 1u8, 0.5f32, test_seed());
-        let _ =
-            MatPolynomialRingZq::sample_binomial_seeded(1, 1, &modulus, 1u8, 0.5f64, test_seed());
-        let _ = MatPolynomialRingZq::sample_binomial_seeded(
-            1,
-            1,
-            &modulus,
-            1,
-            Q::from((1, 2)),
-            test_seed(),
-        );
+            let _ = MatPolynomialRingZq::sample_binomial_optionally_seeded(
+                1,
+                1,
+                &modulus,
+                1u16,
+                7u8,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_binomial_optionally_seeded(
+                1,
+                1,
+                &modulus,
+                1u32,
+                7u16,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_binomial_optionally_seeded(
+                1,
+                1,
+                &modulus,
+                1u64,
+                7u32,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_binomial_optionally_seeded(
+                1,
+                1,
+                &modulus,
+                1i8,
+                7u64,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_binomial_optionally_seeded(
+                1,
+                1,
+                &modulus,
+                1i16,
+                7i8,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_binomial_optionally_seeded(
+                1,
+                1,
+                &modulus,
+                1i32,
+                7i16,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_binomial_optionally_seeded(
+                1,
+                1,
+                &modulus,
+                1i64,
+                7i32,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_binomial_optionally_seeded(
+                1,
+                1,
+                &modulus,
+                Z::ONE,
+                7i64,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_binomial_optionally_seeded(
+                1,
+                1,
+                &modulus,
+                1u8,
+                0.5f32,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_binomial_optionally_seeded(
+                1,
+                1,
+                &modulus,
+                1u8,
+                0.5f64,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_binomial_optionally_seeded(
+                1,
+                1,
+                &modulus,
+                1,
+                Q::from((1, 2)),
+                seeded.then(test_seed),
+            );
+
+            // explicitly checks the existence of the unseeded and the seeded function
+            if seeded {
+                let _ = MatPolynomialRingZq::sample_binomial_seeded(
+                    1,
+                    1,
+                    &modulus,
+                    1u16,
+                    7u8,
+                    test_seed(),
+                );
+            } else {
+                let _ = MatPolynomialRingZq::sample_binomial(1, 1, &modulus, 1u16, 7u8);
+            }
+        }
     }
 
     /// Checks whether the size of uniformly random sampled matrices
     /// fits the specified dimensions.
     #[test]
     fn matrix_size() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        for seeded in [false, true] {
+            let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
 
-        let mat_0 =
-            MatPolynomialRingZq::sample_binomial_seeded(3, 3, &modulus, 1, 0.5, test_seed())
-                .unwrap();
-        let mat_1 =
-            MatPolynomialRingZq::sample_binomial_seeded(4, 1, &modulus, 1, 0.5, test_seed())
-                .unwrap();
-        let mat_2 =
-            MatPolynomialRingZq::sample_binomial_seeded(1, 5, &modulus, 1, 0.5, test_seed())
-                .unwrap();
-        let mat_3 =
-            MatPolynomialRingZq::sample_binomial_seeded(15, 20, &modulus, 1, 0.5, test_seed())
-                .unwrap();
+            let mat_0 = MatPolynomialRingZq::sample_binomial_optionally_seeded(
+                3,
+                3,
+                &modulus,
+                1,
+                0.5,
+                seeded.then(test_seed),
+            )
+            .unwrap();
+            let mat_1 = MatPolynomialRingZq::sample_binomial_optionally_seeded(
+                4,
+                1,
+                &modulus,
+                1,
+                0.5,
+                seeded.then(test_seed),
+            )
+            .unwrap();
+            let mat_2 = MatPolynomialRingZq::sample_binomial_optionally_seeded(
+                1,
+                5,
+                &modulus,
+                1,
+                0.5,
+                seeded.then(test_seed),
+            )
+            .unwrap();
+            let mat_3 = MatPolynomialRingZq::sample_binomial_optionally_seeded(
+                15,
+                20,
+                &modulus,
+                1,
+                0.5,
+                seeded.then(test_seed),
+            )
+            .unwrap();
 
-        assert_eq!(3, mat_0.get_num_rows());
-        assert_eq!(3, mat_0.get_num_columns());
-        assert_eq!(4, mat_1.get_num_rows());
-        assert_eq!(1, mat_1.get_num_columns());
-        assert_eq!(1, mat_2.get_num_rows());
-        assert_eq!(5, mat_2.get_num_columns());
-        assert_eq!(15, mat_3.get_num_rows());
-        assert_eq!(20, mat_3.get_num_columns());
+            assert_eq!(3, mat_0.get_num_rows());
+            assert_eq!(3, mat_0.get_num_columns());
+            assert_eq!(4, mat_1.get_num_rows());
+            assert_eq!(1, mat_1.get_num_columns());
+            assert_eq!(1, mat_2.get_num_rows());
+            assert_eq!(5, mat_2.get_num_columns());
+            assert_eq!(15, mat_3.get_num_rows());
+            assert_eq!(20, mat_3.get_num_columns());
+        }
     }
 
     /// Checks whether the same seed results in the same sample.
@@ -419,130 +446,25 @@ mod test_sample_binomial_seeded {
 
         assert_eq!(sample_0, sample_1);
     }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer() {
+        use crate::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+        use std::str::FromStr;
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        let sample =
+            MatPolynomialRingZq::sample_binomial_seeded(2, 2, &modulus, 2, 0.5, [42; 32]).unwrap();
+
+        assert_eq!(
+            "[[3  0 2 1, 3  2 0 1],[2  0 1, 3  1 0 1]] / 4  1 0 0 1 mod 17",
+            sample.to_string()
+        );
+    }
 }
 
 #[cfg(test)]
 mod test_sample_binomial_with_offset {
-    use super::{MatPolynomialRingZq, ModulusPolynomialRingZq, Q, Z};
-    use crate::{
-        integer::PolyOverZ,
-        integer_mod_q::PolyOverZq,
-        traits::{GetCoefficient, MatrixDimensions, MatrixGetEntry, SetCoefficient},
-    };
-    use std::str::FromStr;
-
-    // As all major tests regarding an appropriate binomial distribution,
-    // whether the correct interval is kept, and if the errors are thrown correctly,
-    // are performed in the `utils` module, we omit these tests here.
-
-    /// Checks whether the boundaries of the interval are kept.
-    #[test]
-    fn boundaries_kept() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-
-        for _ in 0..8 {
-            let matrix =
-                MatPolynomialRingZq::sample_binomial_with_offset(1, 1, &modulus, -1, 2, 0.5)
-                    .unwrap();
-            let poly: PolyOverZ = matrix.get_entry(0, 0).unwrap();
-            let value = poly.get_coeff(0).unwrap();
-
-            assert!(16 <= value || value <= Z::ONE);
-        }
-    }
-
-    /// Checks whether the number of coefficients is correct.
-    #[test]
-    fn nr_coeffs() {
-        let degrees = [1, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let mut modulus = PolyOverZq::from((1, u64::MAX));
-            modulus.set_coeff(degree, 1).unwrap();
-            let modulus = ModulusPolynomialRingZq::from(&modulus);
-
-            let matrix =
-                MatPolynomialRingZq::sample_binomial_with_offset(1, 1, modulus, 1, 256, 0.99999)
-                    .unwrap();
-            let poly: PolyOverZ = matrix.get_entry(0, 0).unwrap();
-
-            assert_eq!(degree, poly.get_degree() + 1,);
-        }
-    }
-
-    /// Checks whether matrices with at least one dimension chosen smaller than `1`
-    /// or too big for an [`i64`] results in an error.
-    #[should_panic]
-    #[test]
-    fn false_size() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset(0, 3, modulus, -1, 1, 0.5);
-    }
-
-    /// Checks whether 0 modulus polynomial is insufficient.
-    #[test]
-    #[should_panic]
-    fn invalid_modulus() {
-        let modulus = ModulusPolynomialRingZq::from_str("1  1 mod 17").unwrap();
-
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset(1, 1, modulus, -1, 1, 0.5);
-    }
-
-    /// Checks whether `sample_binomial_with_offset` is available for all types
-    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
-    /// and [`Into<Q>`], i.e. u8, u16, i8, i16, f32, f64, ...
-    #[test]
-    fn availability() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset(1, 1, &modulus, -1, 1u16, 7u8);
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset(1, 1, &modulus, 0, 1u32, 7u16);
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset(1, 1, &modulus, -1, 1u64, 7u32);
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset(1, 1, &modulus, -1, 1i8, 7u64);
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset(1, 1, &modulus, -1, 1i16, 7i8);
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset(1, 1, &modulus, -1, 1i32, 7i16);
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset(1, 1, &modulus, -1, 1i64, 7i32);
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset(1, 1, &modulus, -1, Z::ONE, 7i64);
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset(1, 1, &modulus, -1, 1u8, 0.5f32);
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset(1, 1, &modulus, 1, 1u8, 0.5f64);
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset(
-            1,
-            1,
-            &modulus,
-            Z::ONE,
-            1,
-            Q::from((1, 2)),
-        );
-    }
-
-    /// Checks whether the size of uniformly random sampled matrices
-    /// fits the specified dimensions.
-    #[test]
-    fn matrix_size() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
-
-        let mat_0 =
-            MatPolynomialRingZq::sample_binomial_with_offset(3, 3, &modulus, -1, 1, 0.5).unwrap();
-        let mat_1 =
-            MatPolynomialRingZq::sample_binomial_with_offset(4, 1, &modulus, -1, 1, 0.5).unwrap();
-        let mat_2 =
-            MatPolynomialRingZq::sample_binomial_with_offset(1, 5, &modulus, -1, 1, 0.5).unwrap();
-        let mat_3 =
-            MatPolynomialRingZq::sample_binomial_with_offset(15, 20, &modulus, -1, 1, 0.5).unwrap();
-
-        assert_eq!(3, mat_0.get_num_rows());
-        assert_eq!(3, mat_0.get_num_columns());
-        assert_eq!(4, mat_1.get_num_rows());
-        assert_eq!(1, mat_1.get_num_columns());
-        assert_eq!(1, mat_2.get_num_rows());
-        assert_eq!(5, mat_2.get_num_columns());
-        assert_eq!(15, mat_3.get_num_rows());
-        assert_eq!(20, mat_3.get_num_columns());
-    }
-}
-
-#[cfg(test)]
-mod test_sample_binomial_with_offset_seeded {
     use super::{MatPolynomialRingZq, ModulusPolynomialRingZq, Q, Z};
     use crate::utils::sample::test_seed;
     use crate::{
@@ -559,84 +481,96 @@ mod test_sample_binomial_with_offset_seeded {
     /// Checks whether the boundaries of the interval are kept.
     #[test]
     fn boundaries_kept() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        for seeded in [false, true] {
+            let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
 
-        for _ in 0..8 {
-            let matrix = MatPolynomialRingZq::sample_binomial_with_offset_seeded(
-                1,
-                1,
-                &modulus,
-                -1,
-                2,
-                0.5,
-                test_seed(),
-            )
-            .unwrap();
-            let poly: PolyOverZ = matrix.get_entry(0, 0).unwrap();
-            let value = poly.get_coeff(0).unwrap();
+            for _ in 0..8 {
+                let matrix = MatPolynomialRingZq::sample_binomial_with_offset_optionally_seeded(
+                    1,
+                    1,
+                    &modulus,
+                    -1,
+                    2,
+                    0.5,
+                    seeded.then(test_seed),
+                )
+                .unwrap();
+                let poly: PolyOverZ = matrix.get_entry(0, 0).unwrap();
+                let value = poly.get_coeff(0).unwrap();
 
-            assert!(16 <= value || value <= Z::ONE);
+                assert!(16 <= value || value <= Z::ONE);
+            }
         }
     }
 
     /// Checks whether the number of coefficients is correct.
     #[test]
     fn nr_coeffs() {
-        let degrees = [1, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let mut modulus = PolyOverZq::from((1, u64::MAX));
-            modulus.set_coeff(degree, 1).unwrap();
-            let modulus = ModulusPolynomialRingZq::from(&modulus);
+        for seeded in [false, true] {
+            let degrees = [1, 3, 7, 15, 32, 120];
+            for degree in degrees {
+                let mut modulus = PolyOverZq::from((1, u64::MAX));
+                modulus.set_coeff(degree, 1).unwrap();
+                let modulus = ModulusPolynomialRingZq::from(&modulus);
 
-            let matrix = MatPolynomialRingZq::sample_binomial_with_offset_seeded(
-                1,
-                1,
-                modulus,
-                1,
-                256,
-                0.99999,
-                test_seed(),
-            )
-            .unwrap();
-            let poly: PolyOverZ = matrix.get_entry(0, 0).unwrap();
+                let matrix = MatPolynomialRingZq::sample_binomial_with_offset_optionally_seeded(
+                    1,
+                    1,
+                    modulus,
+                    1,
+                    256,
+                    0.99999,
+                    seeded.then(test_seed),
+                )
+                .unwrap();
+                let poly: PolyOverZ = matrix.get_entry(0, 0).unwrap();
 
-            assert_eq!(degree, poly.get_degree() + 1,);
+                assert_eq!(degree, poly.get_degree() + 1,);
+            }
         }
     }
 
     /// Checks whether matrices with at least one dimension chosen smaller than `1`
     /// or too big for an [`i64`] results in an error.
-    #[should_panic]
     #[test]
     fn false_size() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        for seeded in [false, true] {
+            let result = std::panic::catch_unwind(|| {
+                let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
 
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset_seeded(
-            0,
-            3,
-            modulus,
-            -1,
-            1,
-            0.5,
-            test_seed(),
-        );
+                let _ = MatPolynomialRingZq::sample_binomial_with_offset_optionally_seeded(
+                    0,
+                    3,
+                    modulus,
+                    -1,
+                    1,
+                    0.5,
+                    seeded.then(test_seed),
+                );
+            });
+            assert!(result.is_err());
+        }
     }
 
     /// Checks whether 0 modulus polynomial is insufficient.
     #[test]
-    #[should_panic]
     fn invalid_modulus() {
-        let modulus = ModulusPolynomialRingZq::from_str("1  1 mod 17").unwrap();
+        for seeded in [false, true] {
+            let result = std::panic::catch_unwind(|| {
+                let modulus = ModulusPolynomialRingZq::from_str("1  1 mod 17").unwrap();
 
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset_seeded(
-            1,
-            1,
-            modulus,
-            -1,
-            1,
-            0.5,
-            test_seed(),
-        );
+                let _ = MatPolynomialRingZq::sample_binomial_with_offset_optionally_seeded(
+                    1,
+                    1,
+                    modulus,
+                    -1,
+                    1,
+                    0.5,
+                    seeded.then(test_seed),
+                );
+            });
+            assert!(result.is_err());
+        }
     }
 
     /// Checks whether `sample_binomial_with_offset` is available for all types
@@ -644,164 +578,184 @@ mod test_sample_binomial_with_offset_seeded {
     /// and [`Into<Q>`], i.e. u8, u16, i8, i16, f32, f64, ...
     #[test]
     fn availability() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        for seeded in [false, true] {
+            let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
 
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset_seeded(
-            1,
-            1,
-            &modulus,
-            -1,
-            1u16,
-            7u8,
-            test_seed(),
-        );
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset_seeded(
-            1,
-            1,
-            &modulus,
-            0,
-            1u32,
-            7u16,
-            test_seed(),
-        );
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset_seeded(
-            1,
-            1,
-            &modulus,
-            -1,
-            1u64,
-            7u32,
-            test_seed(),
-        );
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset_seeded(
-            1,
-            1,
-            &modulus,
-            -1,
-            1i8,
-            7u64,
-            test_seed(),
-        );
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset_seeded(
-            1,
-            1,
-            &modulus,
-            -1,
-            1i16,
-            7i8,
-            test_seed(),
-        );
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset_seeded(
-            1,
-            1,
-            &modulus,
-            -1,
-            1i32,
-            7i16,
-            test_seed(),
-        );
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset_seeded(
-            1,
-            1,
-            &modulus,
-            -1,
-            1i64,
-            7i32,
-            test_seed(),
-        );
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset_seeded(
-            1,
-            1,
-            &modulus,
-            -1,
-            Z::ONE,
-            7i64,
-            test_seed(),
-        );
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset_seeded(
-            1,
-            1,
-            &modulus,
-            -1,
-            1u8,
-            0.5f32,
-            test_seed(),
-        );
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset_seeded(
-            1,
-            1,
-            &modulus,
-            1,
-            1u8,
-            0.5f64,
-            test_seed(),
-        );
-        let _ = MatPolynomialRingZq::sample_binomial_with_offset_seeded(
-            1,
-            1,
-            &modulus,
-            Z::ONE,
-            1,
-            Q::from((1, 2)),
-            test_seed(),
-        );
+            let _ = MatPolynomialRingZq::sample_binomial_with_offset_optionally_seeded(
+                1,
+                1,
+                &modulus,
+                -1,
+                1u16,
+                7u8,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_binomial_with_offset_optionally_seeded(
+                1,
+                1,
+                &modulus,
+                0,
+                1u32,
+                7u16,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_binomial_with_offset_optionally_seeded(
+                1,
+                1,
+                &modulus,
+                -1,
+                1u64,
+                7u32,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_binomial_with_offset_optionally_seeded(
+                1,
+                1,
+                &modulus,
+                -1,
+                1i8,
+                7u64,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_binomial_with_offset_optionally_seeded(
+                1,
+                1,
+                &modulus,
+                -1,
+                1i16,
+                7i8,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_binomial_with_offset_optionally_seeded(
+                1,
+                1,
+                &modulus,
+                -1,
+                1i32,
+                7i16,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_binomial_with_offset_optionally_seeded(
+                1,
+                1,
+                &modulus,
+                -1,
+                1i64,
+                7i32,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_binomial_with_offset_optionally_seeded(
+                1,
+                1,
+                &modulus,
+                -1,
+                Z::ONE,
+                7i64,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_binomial_with_offset_optionally_seeded(
+                1,
+                1,
+                &modulus,
+                -1,
+                1u8,
+                0.5f32,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_binomial_with_offset_optionally_seeded(
+                1,
+                1,
+                &modulus,
+                1,
+                1u8,
+                0.5f64,
+                seeded.then(test_seed),
+            );
+            let _ = MatPolynomialRingZq::sample_binomial_with_offset_optionally_seeded(
+                1,
+                1,
+                &modulus,
+                Z::ONE,
+                1,
+                Q::from((1, 2)),
+                seeded.then(test_seed),
+            );
+
+            // explicitly checks the existence of the unseeded and the seeded function
+            if seeded {
+                let _ = MatPolynomialRingZq::sample_binomial_with_offset_seeded(
+                    1,
+                    1,
+                    &modulus,
+                    -1,
+                    1u16,
+                    7u8,
+                    test_seed(),
+                );
+            } else {
+                let _ =
+                    MatPolynomialRingZq::sample_binomial_with_offset(1, 1, &modulus, -1, 1u16, 7u8);
+            }
+        }
     }
 
     /// Checks whether the size of uniformly random sampled matrices
     /// fits the specified dimensions.
     #[test]
     fn matrix_size() {
-        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        for seeded in [false, true] {
+            let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
 
-        let mat_0 = MatPolynomialRingZq::sample_binomial_with_offset_seeded(
-            3,
-            3,
-            &modulus,
-            -1,
-            1,
-            0.5,
-            test_seed(),
-        )
-        .unwrap();
-        let mat_1 = MatPolynomialRingZq::sample_binomial_with_offset_seeded(
-            4,
-            1,
-            &modulus,
-            -1,
-            1,
-            0.5,
-            test_seed(),
-        )
-        .unwrap();
-        let mat_2 = MatPolynomialRingZq::sample_binomial_with_offset_seeded(
-            1,
-            5,
-            &modulus,
-            -1,
-            1,
-            0.5,
-            test_seed(),
-        )
-        .unwrap();
-        let mat_3 = MatPolynomialRingZq::sample_binomial_with_offset_seeded(
-            15,
-            20,
-            &modulus,
-            -1,
-            1,
-            0.5,
-            test_seed(),
-        )
-        .unwrap();
+            let mat_0 = MatPolynomialRingZq::sample_binomial_with_offset_optionally_seeded(
+                3,
+                3,
+                &modulus,
+                -1,
+                1,
+                0.5,
+                seeded.then(test_seed),
+            )
+            .unwrap();
+            let mat_1 = MatPolynomialRingZq::sample_binomial_with_offset_optionally_seeded(
+                4,
+                1,
+                &modulus,
+                -1,
+                1,
+                0.5,
+                seeded.then(test_seed),
+            )
+            .unwrap();
+            let mat_2 = MatPolynomialRingZq::sample_binomial_with_offset_optionally_seeded(
+                1,
+                5,
+                &modulus,
+                -1,
+                1,
+                0.5,
+                seeded.then(test_seed),
+            )
+            .unwrap();
+            let mat_3 = MatPolynomialRingZq::sample_binomial_with_offset_optionally_seeded(
+                15,
+                20,
+                &modulus,
+                -1,
+                1,
+                0.5,
+                seeded.then(test_seed),
+            )
+            .unwrap();
 
-        assert_eq!(3, mat_0.get_num_rows());
-        assert_eq!(3, mat_0.get_num_columns());
-        assert_eq!(4, mat_1.get_num_rows());
-        assert_eq!(1, mat_1.get_num_columns());
-        assert_eq!(1, mat_2.get_num_rows());
-        assert_eq!(5, mat_2.get_num_columns());
-        assert_eq!(15, mat_3.get_num_rows());
-        assert_eq!(20, mat_3.get_num_columns());
+            assert_eq!(3, mat_0.get_num_rows());
+            assert_eq!(3, mat_0.get_num_columns());
+            assert_eq!(4, mat_1.get_num_rows());
+            assert_eq!(1, mat_1.get_num_columns());
+            assert_eq!(1, mat_2.get_num_rows());
+            assert_eq!(5, mat_2.get_num_columns());
+            assert_eq!(15, mat_3.get_num_rows());
+            assert_eq!(20, mat_3.get_num_columns());
+        }
     }
 
     /// Checks whether the same seed results in the same sample.
@@ -820,5 +774,22 @@ mod test_sample_binomial_with_offset_seeded {
         .unwrap();
 
         assert_eq!(sample_0, sample_1);
+    }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer() {
+        use crate::integer_mod_q::{MatPolynomialRingZq, ModulusPolynomialRingZq};
+        use std::str::FromStr;
+        let modulus = ModulusPolynomialRingZq::from_str("4  1 0 0 1 mod 17").unwrap();
+        let sample = MatPolynomialRingZq::sample_binomial_with_offset_seeded(
+            2, 2, &modulus, -1, 2, 0.5, [42; 32],
+        )
+        .unwrap();
+
+        assert_eq!(
+            "[[2  16 1, 2  1 16],[3  16 0 16, 2  0 16]] / 4  1 0 0 1 mod 17",
+            sample.to_string()
+        );
     }
 }

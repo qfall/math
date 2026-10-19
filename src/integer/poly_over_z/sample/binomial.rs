@@ -142,70 +142,6 @@ impl PolyOverZ {
 mod test_sample_binomial {
     use super::{PolyOverZ, Q, Z};
     use crate::traits::GetCoefficient;
-
-    // As all major tests regarding an appropriate binomial distribution,
-    // whether the correct interval is kept, and if the errors are thrown correctly,
-    // are performed in the `utils` module, we omit these tests here.
-
-    /// Checks whether the boundaries of the interval are kept.
-    #[test]
-    fn boundaries_kept() {
-        for _ in 0..8 {
-            let poly = PolyOverZ::sample_binomial(0, 2, 0.5).unwrap();
-            let sample = poly.get_coeff(0).unwrap();
-            assert!(Z::ZERO <= sample);
-            assert!(sample <= 2);
-        }
-    }
-
-    /// Checks whether the number of coefficients is correct.
-    #[test]
-    fn nr_coeffs() {
-        let degrees = [1, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let res = PolyOverZ::sample_binomial(degree, 256, 0.99999).unwrap();
-
-            assert_eq!(
-                degree,
-                res.get_degree(),
-                "This test can fail with probability close to 0."
-            );
-        }
-    }
-
-    /// Checks whether providing a length smaller than `0` results in an error.
-    #[test]
-    fn invalid_max_degree() {
-        let res_0 = PolyOverZ::sample_binomial(-1, 2, 0.5);
-        let res_1 = PolyOverZ::sample_binomial(i64::MIN, 2, 0.5);
-
-        assert!(res_0.is_err());
-        assert!(res_1.is_err());
-    }
-
-    /// Checks whether `sample_binomial` is available for all types
-    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
-    /// and [`Into<Q>`], i.e. u8, u16, i8, i16, f32, f64, ...
-    #[test]
-    fn availability() {
-        let _ = PolyOverZ::sample_binomial(1, 1u16, 7u8);
-        let _ = PolyOverZ::sample_binomial(1, 1u32, 7u16);
-        let _ = PolyOverZ::sample_binomial(1, 1u64, 7u32);
-        let _ = PolyOverZ::sample_binomial(1, 1i8, 7u64);
-        let _ = PolyOverZ::sample_binomial(1, 1i16, 7i8);
-        let _ = PolyOverZ::sample_binomial(1, 1i32, 7i16);
-        let _ = PolyOverZ::sample_binomial(1, 1i64, 7i32);
-        let _ = PolyOverZ::sample_binomial(1, Z::ONE, 7i64);
-        let _ = PolyOverZ::sample_binomial(1, 1u8, 0.5f32);
-        let _ = PolyOverZ::sample_binomial(1, 1u8, 0.5f64);
-        let _ = PolyOverZ::sample_binomial(1, 1, Q::from((1, 2)));
-    }
-}
-
-#[cfg(test)]
-mod test_sample_binomial_seeded {
-    use super::{PolyOverZ, Q, Z};
-    use crate::traits::GetCoefficient;
     use crate::utils::sample::test_seed;
 
     // As all major tests regarding an appropriate binomial distribution,
@@ -215,37 +151,57 @@ mod test_sample_binomial_seeded {
     /// Checks whether the boundaries of the interval are kept.
     #[test]
     fn boundaries_kept() {
-        for _ in 0..8 {
-            let poly = PolyOverZ::sample_binomial_seeded(0, 2, 0.5, test_seed()).unwrap();
-            let sample = poly.get_coeff(0).unwrap();
-            assert!(Z::ZERO <= sample);
-            assert!(sample <= 2);
+        for seeded in [false, true] {
+            for _ in 0..8 {
+                let poly =
+                    PolyOverZ::sample_binomial_optionally_seeded(0, 2, 0.5, seeded.then(test_seed))
+                        .unwrap();
+                let sample = poly.get_coeff(0).unwrap();
+                assert!(Z::ZERO <= sample);
+                assert!(sample <= 2);
+            }
         }
     }
 
     /// Checks whether the number of coefficients is correct.
     #[test]
     fn nr_coeffs() {
-        let degrees = [1, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let res = PolyOverZ::sample_binomial_seeded(degree, 256, 0.99999, test_seed()).unwrap();
+        for seeded in [false, true] {
+            let degrees = [1, 3, 7, 15, 32, 120];
+            for degree in degrees {
+                let res = PolyOverZ::sample_binomial_optionally_seeded(
+                    degree,
+                    256,
+                    0.99999,
+                    seeded.then(test_seed),
+                )
+                .unwrap();
 
-            assert_eq!(
-                degree,
-                res.get_degree(),
-                "This test can fail with probability close to 0."
-            );
+                assert_eq!(
+                    degree,
+                    res.get_degree(),
+                    "This test can fail with probability close to 0."
+                );
+            }
         }
     }
 
     /// Checks whether providing a length smaller than `0` results in an error.
     #[test]
     fn invalid_max_degree() {
-        let res_0 = PolyOverZ::sample_binomial_seeded(-1, 2, 0.5, test_seed());
-        let res_1 = PolyOverZ::sample_binomial_seeded(i64::MIN, 2, 0.5, test_seed());
+        for seeded in [false, true] {
+            let res_0 =
+                PolyOverZ::sample_binomial_optionally_seeded(-1, 2, 0.5, seeded.then(test_seed));
+            let res_1 = PolyOverZ::sample_binomial_optionally_seeded(
+                i64::MIN,
+                2,
+                0.5,
+                seeded.then(test_seed),
+            );
 
-        assert!(res_0.is_err());
-        assert!(res_1.is_err());
+            assert!(res_0.is_err());
+            assert!(res_1.is_err());
+        }
     }
 
     /// Checks whether `sample_binomial` is available for all types
@@ -253,17 +209,53 @@ mod test_sample_binomial_seeded {
     /// and [`Into<Q>`], i.e. u8, u16, i8, i16, f32, f64, ...
     #[test]
     fn availability() {
-        let _ = PolyOverZ::sample_binomial_seeded(1, 1u16, 7u8, test_seed());
-        let _ = PolyOverZ::sample_binomial_seeded(1, 1u32, 7u16, test_seed());
-        let _ = PolyOverZ::sample_binomial_seeded(1, 1u64, 7u32, test_seed());
-        let _ = PolyOverZ::sample_binomial_seeded(1, 1i8, 7u64, test_seed());
-        let _ = PolyOverZ::sample_binomial_seeded(1, 1i16, 7i8, test_seed());
-        let _ = PolyOverZ::sample_binomial_seeded(1, 1i32, 7i16, test_seed());
-        let _ = PolyOverZ::sample_binomial_seeded(1, 1i64, 7i32, test_seed());
-        let _ = PolyOverZ::sample_binomial_seeded(1, Z::ONE, 7i64, test_seed());
-        let _ = PolyOverZ::sample_binomial_seeded(1, 1u8, 0.5f32, test_seed());
-        let _ = PolyOverZ::sample_binomial_seeded(1, 1u8, 0.5f64, test_seed());
-        let _ = PolyOverZ::sample_binomial_seeded(1, 1, Q::from((1, 2)), test_seed());
+        for seeded in [false, true] {
+            let _ =
+                PolyOverZ::sample_binomial_optionally_seeded(1, 1u16, 7u8, seeded.then(test_seed));
+            let _ =
+                PolyOverZ::sample_binomial_optionally_seeded(1, 1u32, 7u16, seeded.then(test_seed));
+            let _ =
+                PolyOverZ::sample_binomial_optionally_seeded(1, 1u64, 7u32, seeded.then(test_seed));
+            let _ =
+                PolyOverZ::sample_binomial_optionally_seeded(1, 1i8, 7u64, seeded.then(test_seed));
+            let _ =
+                PolyOverZ::sample_binomial_optionally_seeded(1, 1i16, 7i8, seeded.then(test_seed));
+            let _ =
+                PolyOverZ::sample_binomial_optionally_seeded(1, 1i32, 7i16, seeded.then(test_seed));
+            let _ =
+                PolyOverZ::sample_binomial_optionally_seeded(1, 1i64, 7i32, seeded.then(test_seed));
+            let _ = PolyOverZ::sample_binomial_optionally_seeded(
+                1,
+                Z::ONE,
+                7i64,
+                seeded.then(test_seed),
+            );
+            let _ = PolyOverZ::sample_binomial_optionally_seeded(
+                1,
+                1u8,
+                0.5f32,
+                seeded.then(test_seed),
+            );
+            let _ = PolyOverZ::sample_binomial_optionally_seeded(
+                1,
+                1u8,
+                0.5f64,
+                seeded.then(test_seed),
+            );
+            let _ = PolyOverZ::sample_binomial_optionally_seeded(
+                1,
+                1,
+                Q::from((1, 2)),
+                seeded.then(test_seed),
+            );
+
+            // explicitly checks the existence of the unseeded and the seeded function
+            if seeded {
+                let _ = PolyOverZ::sample_binomial_seeded(1, 1u16, 7u8, test_seed());
+            } else {
+                let _ = PolyOverZ::sample_binomial(1, 1u16, 7u8);
+            }
+        }
     }
 
     /// Checks whether the same seed results in the same sample.
@@ -275,70 +267,19 @@ mod test_sample_binomial_seeded {
 
         assert_eq!(sample_0, sample_1);
     }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer() {
+        use crate::integer::PolyOverZ;
+        let sample = PolyOverZ::sample_binomial_seeded(2, 2, 0.5, [42; 32]).unwrap();
+
+        assert_eq!("3  0 2 1", sample.to_string());
+    }
 }
 
 #[cfg(test)]
 mod test_sample_binomial_with_offset {
-    use super::{PolyOverZ, Q, Z};
-    use crate::traits::GetCoefficient;
-
-    // As all major tests regarding an appropriate binomial distribution,
-    // whether the correct interval is kept, and if the errors are thrown correctly,
-    // are performed in the `utils` module, we omit these tests here.
-
-    /// Checks whether the boundaries of the interval are kept.
-    #[test]
-    fn boundaries_kept() {
-        for _ in 0..8 {
-            let poly = PolyOverZ::sample_binomial_with_offset(0, -1, 2, 0.5).unwrap();
-            let sample = poly.get_coeff(0).unwrap();
-            assert!(Z::MINUS_ONE <= sample);
-            assert!(sample <= Z::ONE);
-        }
-    }
-
-    /// Checks whether the number of coefficients is correct.
-    #[test]
-    fn nr_coeffs() {
-        let degrees = [1, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let res = PolyOverZ::sample_binomial_with_offset(degree, 1, 2, 0.5).unwrap();
-
-            assert_eq!(degree, res.get_degree());
-        }
-    }
-
-    /// Checks whether providing a length smaller than `0` results in an error.
-    #[test]
-    fn invalid_max_degree() {
-        let res_0 = PolyOverZ::sample_binomial_with_offset(-1, -1, 2, 0.5);
-        let res_1 = PolyOverZ::sample_binomial_with_offset(i64::MIN, -1, 2, 0.5);
-
-        assert!(res_0.is_err());
-        assert!(res_1.is_err());
-    }
-
-    /// Checks whether `sample_binomial_with_offset` is available for all types
-    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
-    /// and [`Into<Q>`], i.e. u8, u16, i8, i16, f32, f64, ...
-    #[test]
-    fn availability() {
-        let _ = PolyOverZ::sample_binomial_with_offset(1, 0, 1u16, 7u8);
-        let _ = PolyOverZ::sample_binomial_with_offset(1, 0, 1u32, 7u16);
-        let _ = PolyOverZ::sample_binomial_with_offset(1, 0, 1u64, 7u32);
-        let _ = PolyOverZ::sample_binomial_with_offset(1, 0, 1i8, 7u64);
-        let _ = PolyOverZ::sample_binomial_with_offset(1, 0, 1i16, 7i8);
-        let _ = PolyOverZ::sample_binomial_with_offset(1, 0, 1i32, 7i16);
-        let _ = PolyOverZ::sample_binomial_with_offset(1, 0, 1i64, 7i32);
-        let _ = PolyOverZ::sample_binomial_with_offset(1, 0, Z::ONE, 7i64);
-        let _ = PolyOverZ::sample_binomial_with_offset(1, 0, 1u8, 0.5f32);
-        let _ = PolyOverZ::sample_binomial_with_offset(1, 0, 1u8, 0.5f64);
-        let _ = PolyOverZ::sample_binomial_with_offset(1, 0, 1, Q::from((1, 2)));
-    }
-}
-
-#[cfg(test)]
-mod test_sample_binomial_with_offset_seeded {
     use super::{PolyOverZ, Q, Z};
     use crate::traits::GetCoefficient;
     use crate::utils::sample::test_seed;
@@ -350,36 +291,65 @@ mod test_sample_binomial_with_offset_seeded {
     /// Checks whether the boundaries of the interval are kept.
     #[test]
     fn boundaries_kept() {
-        for _ in 0..8 {
-            let poly =
-                PolyOverZ::sample_binomial_with_offset_seeded(0, -1, 2, 0.5, test_seed()).unwrap();
-            let sample = poly.get_coeff(0).unwrap();
-            assert!(Z::MINUS_ONE <= sample);
-            assert!(sample <= Z::ONE);
+        for seeded in [false, true] {
+            for _ in 0..8 {
+                let poly = PolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                    0,
+                    -1,
+                    2,
+                    0.5,
+                    seeded.then(test_seed),
+                )
+                .unwrap();
+                let sample = poly.get_coeff(0).unwrap();
+                assert!(Z::MINUS_ONE <= sample);
+                assert!(sample <= Z::ONE);
+            }
         }
     }
 
     /// Checks whether the number of coefficients is correct.
     #[test]
     fn nr_coeffs() {
-        let degrees = [1, 3, 7, 15, 32, 120];
-        for degree in degrees {
-            let res = PolyOverZ::sample_binomial_with_offset_seeded(degree, 1, 2, 0.5, test_seed())
+        for seeded in [false, true] {
+            let degrees = [1, 3, 7, 15, 32, 120];
+            for degree in degrees {
+                let res = PolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                    degree,
+                    1,
+                    2,
+                    0.5,
+                    seeded.then(test_seed),
+                )
                 .unwrap();
 
-            assert_eq!(degree, res.get_degree());
+                assert_eq!(degree, res.get_degree());
+            }
         }
     }
 
     /// Checks whether providing a length smaller than `0` results in an error.
     #[test]
     fn invalid_max_degree() {
-        let res_0 = PolyOverZ::sample_binomial_with_offset_seeded(-1, -1, 2, 0.5, test_seed());
-        let res_1 =
-            PolyOverZ::sample_binomial_with_offset_seeded(i64::MIN, -1, 2, 0.5, test_seed());
+        for seeded in [false, true] {
+            let res_0 = PolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                -1,
+                -1,
+                2,
+                0.5,
+                seeded.then(test_seed),
+            );
+            let res_1 = PolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                i64::MIN,
+                -1,
+                2,
+                0.5,
+                seeded.then(test_seed),
+            );
 
-        assert!(res_0.is_err());
-        assert!(res_1.is_err());
+            assert!(res_0.is_err());
+            assert!(res_1.is_err());
+        }
     }
 
     /// Checks whether `sample_binomial_with_offset` is available for all types
@@ -387,18 +357,92 @@ mod test_sample_binomial_with_offset_seeded {
     /// and [`Into<Q>`], i.e. u8, u16, i8, i16, f32, f64, ...
     #[test]
     fn availability() {
-        let _ = PolyOverZ::sample_binomial_with_offset_seeded(1, 0, 1u16, 7u8, test_seed());
-        let _ = PolyOverZ::sample_binomial_with_offset_seeded(1, 0, 1u32, 7u16, test_seed());
-        let _ = PolyOverZ::sample_binomial_with_offset_seeded(1, 0, 1u64, 7u32, test_seed());
-        let _ = PolyOverZ::sample_binomial_with_offset_seeded(1, 0, 1i8, 7u64, test_seed());
-        let _ = PolyOverZ::sample_binomial_with_offset_seeded(1, 0, 1i16, 7i8, test_seed());
-        let _ = PolyOverZ::sample_binomial_with_offset_seeded(1, 0, 1i32, 7i16, test_seed());
-        let _ = PolyOverZ::sample_binomial_with_offset_seeded(1, 0, 1i64, 7i32, test_seed());
-        let _ = PolyOverZ::sample_binomial_with_offset_seeded(1, 0, Z::ONE, 7i64, test_seed());
-        let _ = PolyOverZ::sample_binomial_with_offset_seeded(1, 0, 1u8, 0.5f32, test_seed());
-        let _ = PolyOverZ::sample_binomial_with_offset_seeded(1, 0, 1u8, 0.5f64, test_seed());
-        let _ =
-            PolyOverZ::sample_binomial_with_offset_seeded(1, 0, 1, Q::from((1, 2)), test_seed());
+        for seeded in [false, true] {
+            let _ = PolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                0,
+                1u16,
+                7u8,
+                seeded.then(test_seed),
+            );
+            let _ = PolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                0,
+                1u32,
+                7u16,
+                seeded.then(test_seed),
+            );
+            let _ = PolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                0,
+                1u64,
+                7u32,
+                seeded.then(test_seed),
+            );
+            let _ = PolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                0,
+                1i8,
+                7u64,
+                seeded.then(test_seed),
+            );
+            let _ = PolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                0,
+                1i16,
+                7i8,
+                seeded.then(test_seed),
+            );
+            let _ = PolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                0,
+                1i32,
+                7i16,
+                seeded.then(test_seed),
+            );
+            let _ = PolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                0,
+                1i64,
+                7i32,
+                seeded.then(test_seed),
+            );
+            let _ = PolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                0,
+                Z::ONE,
+                7i64,
+                seeded.then(test_seed),
+            );
+            let _ = PolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                0,
+                1u8,
+                0.5f32,
+                seeded.then(test_seed),
+            );
+            let _ = PolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                0,
+                1u8,
+                0.5f64,
+                seeded.then(test_seed),
+            );
+            let _ = PolyOverZ::sample_binomial_with_offset_optionally_seeded(
+                1,
+                0,
+                1,
+                Q::from((1, 2)),
+                seeded.then(test_seed),
+            );
+
+            // explicitly checks the existence of the unseeded and the seeded function
+            if seeded {
+                let _ = PolyOverZ::sample_binomial_with_offset_seeded(1, 0, 1u16, 7u8, test_seed());
+            } else {
+                let _ = PolyOverZ::sample_binomial_with_offset(1, 0, 1u16, 7u8);
+            }
+        }
     }
 
     /// Checks whether the same seed results in the same sample.
@@ -411,5 +455,15 @@ mod test_sample_binomial_with_offset_seeded {
             PolyOverZ::sample_binomial_with_offset_seeded(2, -1, 2, 0.5, [42; 32]).unwrap();
 
         assert_eq!(sample_0, sample_1);
+    }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer() {
+        use crate::integer::PolyOverZ;
+        let sample =
+            PolyOverZ::sample_binomial_with_offset_seeded(2, -1, 2, 0.5, [42; 32]).unwrap();
+
+        assert_eq!("2  -1 1", sample.to_string());
     }
 }

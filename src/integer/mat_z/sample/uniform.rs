@@ -96,110 +96,6 @@ impl MatZ {
 #[cfg(test)]
 mod test_sample_uniform {
     use crate::traits::{MatrixDimensions, MatrixGetEntry};
-    use crate::{
-        integer::{MatZ, Z},
-        integer_mod_q::Modulus,
-    };
-
-    /// Checks whether the boundaries of the interval are kept for small intervals.
-    #[test]
-    fn boundaries_kept_small() {
-        let lower_bound = Z::from(17);
-        let upper_bound = Z::from(32);
-        for _ in 0..32 {
-            let matrix = MatZ::sample_uniform(1, 1, &lower_bound, &upper_bound).unwrap();
-            let sample = matrix.get_entry(0, 0).unwrap();
-            assert!(lower_bound <= sample);
-            assert!(sample < upper_bound);
-        }
-    }
-
-    /// Checks whether the boundaries of the interval are kept for large intervals.
-    #[test]
-    fn boundaries_kept_large() {
-        let lower_bound = Z::from(i64::MIN) - Z::from(u64::MAX);
-        let upper_bound = Z::from(i64::MIN);
-        for _ in 0..256 {
-            let matrix = MatZ::sample_uniform(1, 1, &lower_bound, &upper_bound).unwrap();
-            let sample = matrix.get_entry(0, 0).unwrap();
-            assert!(lower_bound <= sample);
-            assert!(sample < upper_bound);
-        }
-    }
-
-    /// Checks whether matrices with at least one dimension chosen smaller than `1`
-    /// or too large for an [`i64`] results in an error.
-    #[should_panic]
-    #[test]
-    fn false_size() {
-        let lower_bound = Z::from(-15);
-        let upper_bound = Z::from(15);
-
-        let _ = MatZ::sample_uniform(0, 3, &lower_bound, &upper_bound);
-    }
-
-    /// Checks whether providing an invalid interval results in an error.
-    #[test]
-    fn invalid_interval() {
-        let lb_0 = Z::from(i64::MIN);
-        let lb_1 = Z::from(i64::MIN);
-        let lb_2 = Z::ZERO;
-        let upper_bound = Z::from(i64::MIN);
-
-        let mat_0 = MatZ::sample_uniform(3, 3, &lb_0, &upper_bound);
-        let mat_1 = MatZ::sample_uniform(4, 1, &lb_1, &upper_bound);
-        let mat_2 = MatZ::sample_uniform(1, 5, &lb_2, &upper_bound);
-
-        assert!(mat_0.is_err());
-        assert!(mat_1.is_err());
-        assert!(mat_2.is_err());
-    }
-
-    /// Checks whether `sample_uniform` is available for all types
-    /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
-    #[test]
-    fn availability() {
-        let modulus = Modulus::from(7);
-        let z = Z::from(7);
-
-        let _ = MatZ::sample_uniform(1, 1, 0u16, 7u8);
-        let _ = MatZ::sample_uniform(1, 1, 0u32, 7u16);
-        let _ = MatZ::sample_uniform(1, 1, 0u64, 7u32);
-        let _ = MatZ::sample_uniform(1, 1, 0i8, 7u64);
-        let _ = MatZ::sample_uniform(1, 1, 0i16, 7i8);
-        let _ = MatZ::sample_uniform(1, 1, 0i32, 7i16);
-        let _ = MatZ::sample_uniform(1, 1, 0i64, 7i32);
-        let _ = MatZ::sample_uniform(1, 1, &Z::ZERO, 7i64);
-        let _ = MatZ::sample_uniform(1, 1, 0u8, &modulus);
-        let _ = MatZ::sample_uniform(1, 1, 0, &z);
-    }
-
-    /// Checks whether the size of uniformly random sampled matrices
-    /// fits the specified dimensions.
-    #[test]
-    fn matrix_size() {
-        let lower_bound = Z::from(-15);
-        let upper_bound = Z::from(15);
-
-        let mat_0 = MatZ::sample_uniform(3, 3, &lower_bound, &upper_bound).unwrap();
-        let mat_1 = MatZ::sample_uniform(4, 1, &lower_bound, &upper_bound).unwrap();
-        let mat_2 = MatZ::sample_uniform(1, 5, &lower_bound, &upper_bound).unwrap();
-        let mat_3 = MatZ::sample_uniform(15, 20, &lower_bound, &upper_bound).unwrap();
-
-        assert_eq!(3, mat_0.get_num_rows());
-        assert_eq!(3, mat_0.get_num_columns());
-        assert_eq!(4, mat_1.get_num_rows());
-        assert_eq!(1, mat_1.get_num_columns());
-        assert_eq!(1, mat_2.get_num_rows());
-        assert_eq!(5, mat_2.get_num_columns());
-        assert_eq!(15, mat_3.get_num_rows());
-        assert_eq!(20, mat_3.get_num_columns());
-    }
-}
-
-#[cfg(test)]
-mod test_sample_uniform_seeded {
-    use crate::traits::{MatrixDimensions, MatrixGetEntry};
     use crate::utils::sample::test_seed;
     use crate::{
         integer::{MatZ, Z},
@@ -209,102 +105,194 @@ mod test_sample_uniform_seeded {
     /// Checks whether the boundaries of the interval are kept for small intervals.
     #[test]
     fn boundaries_kept_small() {
-        let lower_bound = Z::from(17);
-        let upper_bound = Z::from(32);
-        for _ in 0..32 {
-            let matrix =
-                MatZ::sample_uniform_seeded(1, 1, &lower_bound, &upper_bound, test_seed()).unwrap();
-            let sample = matrix.get_entry(0, 0).unwrap();
-            assert!(lower_bound <= sample);
-            assert!(sample < upper_bound);
+        for seeded in [false, true] {
+            let lower_bound = Z::from(17);
+            let upper_bound = Z::from(32);
+            for _ in 0..32 {
+                let matrix = MatZ::sample_uniform_optionally_seeded(
+                    1,
+                    1,
+                    &lower_bound,
+                    &upper_bound,
+                    seeded.then(test_seed),
+                )
+                .unwrap();
+                let sample = matrix.get_entry(0, 0).unwrap();
+                assert!(lower_bound <= sample);
+                assert!(sample < upper_bound);
+            }
         }
     }
 
     /// Checks whether the boundaries of the interval are kept for large intervals.
     #[test]
     fn boundaries_kept_large() {
-        let lower_bound = Z::from(i64::MIN) - Z::from(u64::MAX);
-        let upper_bound = Z::from(i64::MIN);
-        for _ in 0..256 {
-            let matrix =
-                MatZ::sample_uniform_seeded(1, 1, &lower_bound, &upper_bound, test_seed()).unwrap();
-            let sample = matrix.get_entry(0, 0).unwrap();
-            assert!(lower_bound <= sample);
-            assert!(sample < upper_bound);
+        for seeded in [false, true] {
+            let lower_bound = Z::from(i64::MIN) - Z::from(u64::MAX);
+            let upper_bound = Z::from(i64::MIN);
+            for _ in 0..256 {
+                let matrix = MatZ::sample_uniform_optionally_seeded(
+                    1,
+                    1,
+                    &lower_bound,
+                    &upper_bound,
+                    seeded.then(test_seed),
+                )
+                .unwrap();
+                let sample = matrix.get_entry(0, 0).unwrap();
+                assert!(lower_bound <= sample);
+                assert!(sample < upper_bound);
+            }
         }
     }
 
     /// Checks whether matrices with at least one dimension chosen smaller than `1`
     /// or too large for an [`i64`] results in an error.
-    #[should_panic]
     #[test]
     fn false_size() {
-        let lower_bound = Z::from(-15);
-        let upper_bound = Z::from(15);
+        for seeded in [false, true] {
+            let result = std::panic::catch_unwind(|| {
+                let lower_bound = Z::from(-15);
+                let upper_bound = Z::from(15);
 
-        let _ = MatZ::sample_uniform_seeded(0, 3, &lower_bound, &upper_bound, test_seed());
+                let _ = MatZ::sample_uniform_optionally_seeded(
+                    0,
+                    3,
+                    &lower_bound,
+                    &upper_bound,
+                    seeded.then(test_seed),
+                );
+            });
+            assert!(result.is_err());
+        }
     }
 
     /// Checks whether providing an invalid interval results in an error.
     #[test]
     fn invalid_interval() {
-        let lb_0 = Z::from(i64::MIN);
-        let lb_1 = Z::from(i64::MIN);
-        let lb_2 = Z::ZERO;
-        let upper_bound = Z::from(i64::MIN);
+        for seeded in [false, true] {
+            let lb_0 = Z::from(i64::MIN);
+            let lb_1 = Z::from(i64::MIN);
+            let lb_2 = Z::ZERO;
+            let upper_bound = Z::from(i64::MIN);
 
-        let mat_0 = MatZ::sample_uniform_seeded(3, 3, &lb_0, &upper_bound, test_seed());
-        let mat_1 = MatZ::sample_uniform_seeded(4, 1, &lb_1, &upper_bound, test_seed());
-        let mat_2 = MatZ::sample_uniform_seeded(1, 5, &lb_2, &upper_bound, test_seed());
+            let mat_0 = MatZ::sample_uniform_optionally_seeded(
+                3,
+                3,
+                &lb_0,
+                &upper_bound,
+                seeded.then(test_seed),
+            );
+            let mat_1 = MatZ::sample_uniform_optionally_seeded(
+                4,
+                1,
+                &lb_1,
+                &upper_bound,
+                seeded.then(test_seed),
+            );
+            let mat_2 = MatZ::sample_uniform_optionally_seeded(
+                1,
+                5,
+                &lb_2,
+                &upper_bound,
+                seeded.then(test_seed),
+            );
 
-        assert!(mat_0.is_err());
-        assert!(mat_1.is_err());
-        assert!(mat_2.is_err());
+            assert!(mat_0.is_err());
+            assert!(mat_1.is_err());
+            assert!(mat_2.is_err());
+        }
     }
 
     /// Checks whether `sample_uniform` is available for all types
     /// implementing [`Into<Z>`], i.e. u8, u16, u32, u64, i8, ...
     #[test]
     fn availability() {
-        let modulus = Modulus::from(7);
-        let z = Z::from(7);
+        for seeded in [false, true] {
+            let modulus = Modulus::from(7);
+            let z = Z::from(7);
 
-        let _ = MatZ::sample_uniform_seeded(1, 1, 0u16, 7u8, test_seed());
-        let _ = MatZ::sample_uniform_seeded(1, 1, 0u32, 7u16, test_seed());
-        let _ = MatZ::sample_uniform_seeded(1, 1, 0u64, 7u32, test_seed());
-        let _ = MatZ::sample_uniform_seeded(1, 1, 0i8, 7u64, test_seed());
-        let _ = MatZ::sample_uniform_seeded(1, 1, 0i16, 7i8, test_seed());
-        let _ = MatZ::sample_uniform_seeded(1, 1, 0i32, 7i16, test_seed());
-        let _ = MatZ::sample_uniform_seeded(1, 1, 0i64, 7i32, test_seed());
-        let _ = MatZ::sample_uniform_seeded(1, 1, &Z::ZERO, 7i64, test_seed());
-        let _ = MatZ::sample_uniform_seeded(1, 1, 0u8, &modulus, test_seed());
-        let _ = MatZ::sample_uniform_seeded(1, 1, 0, &z, test_seed());
+            let _ = MatZ::sample_uniform_optionally_seeded(1, 1, 0u16, 7u8, seeded.then(test_seed));
+            let _ =
+                MatZ::sample_uniform_optionally_seeded(1, 1, 0u32, 7u16, seeded.then(test_seed));
+            let _ =
+                MatZ::sample_uniform_optionally_seeded(1, 1, 0u64, 7u32, seeded.then(test_seed));
+            let _ = MatZ::sample_uniform_optionally_seeded(1, 1, 0i8, 7u64, seeded.then(test_seed));
+            let _ = MatZ::sample_uniform_optionally_seeded(1, 1, 0i16, 7i8, seeded.then(test_seed));
+            let _ =
+                MatZ::sample_uniform_optionally_seeded(1, 1, 0i32, 7i16, seeded.then(test_seed));
+            let _ =
+                MatZ::sample_uniform_optionally_seeded(1, 1, 0i64, 7i32, seeded.then(test_seed));
+            let _ = MatZ::sample_uniform_optionally_seeded(
+                1,
+                1,
+                &Z::ZERO,
+                7i64,
+                seeded.then(test_seed),
+            );
+            let _ =
+                MatZ::sample_uniform_optionally_seeded(1, 1, 0u8, &modulus, seeded.then(test_seed));
+            let _ = MatZ::sample_uniform_optionally_seeded(1, 1, 0, &z, seeded.then(test_seed));
+
+            // explicitly checks the existence of the unseeded and the seeded function
+            if seeded {
+                let _ = MatZ::sample_uniform_seeded(1, 1, 0u16, 7u8, test_seed());
+            } else {
+                let _ = MatZ::sample_uniform(1, 1, 0u16, 7u8);
+            }
+        }
     }
 
     /// Checks whether the size of uniformly random sampled matrices
     /// fits the specified dimensions.
     #[test]
     fn matrix_size() {
-        let lower_bound = Z::from(-15);
-        let upper_bound = Z::from(15);
+        for seeded in [false, true] {
+            let lower_bound = Z::from(-15);
+            let upper_bound = Z::from(15);
 
-        let mat_0 =
-            MatZ::sample_uniform_seeded(3, 3, &lower_bound, &upper_bound, test_seed()).unwrap();
-        let mat_1 =
-            MatZ::sample_uniform_seeded(4, 1, &lower_bound, &upper_bound, test_seed()).unwrap();
-        let mat_2 =
-            MatZ::sample_uniform_seeded(1, 5, &lower_bound, &upper_bound, test_seed()).unwrap();
-        let mat_3 =
-            MatZ::sample_uniform_seeded(15, 20, &lower_bound, &upper_bound, test_seed()).unwrap();
+            let mat_0 = MatZ::sample_uniform_optionally_seeded(
+                3,
+                3,
+                &lower_bound,
+                &upper_bound,
+                seeded.then(test_seed),
+            )
+            .unwrap();
+            let mat_1 = MatZ::sample_uniform_optionally_seeded(
+                4,
+                1,
+                &lower_bound,
+                &upper_bound,
+                seeded.then(test_seed),
+            )
+            .unwrap();
+            let mat_2 = MatZ::sample_uniform_optionally_seeded(
+                1,
+                5,
+                &lower_bound,
+                &upper_bound,
+                seeded.then(test_seed),
+            )
+            .unwrap();
+            let mat_3 = MatZ::sample_uniform_optionally_seeded(
+                15,
+                20,
+                &lower_bound,
+                &upper_bound,
+                seeded.then(test_seed),
+            )
+            .unwrap();
 
-        assert_eq!(3, mat_0.get_num_rows());
-        assert_eq!(3, mat_0.get_num_columns());
-        assert_eq!(4, mat_1.get_num_rows());
-        assert_eq!(1, mat_1.get_num_columns());
-        assert_eq!(1, mat_2.get_num_rows());
-        assert_eq!(5, mat_2.get_num_columns());
-        assert_eq!(15, mat_3.get_num_rows());
-        assert_eq!(20, mat_3.get_num_columns());
+            assert_eq!(3, mat_0.get_num_rows());
+            assert_eq!(3, mat_0.get_num_columns());
+            assert_eq!(4, mat_1.get_num_rows());
+            assert_eq!(1, mat_1.get_num_columns());
+            assert_eq!(1, mat_2.get_num_rows());
+            assert_eq!(5, mat_2.get_num_columns());
+            assert_eq!(15, mat_3.get_num_rows());
+            assert_eq!(20, mat_3.get_num_columns());
+        }
     }
 
     /// Checks whether the same seed results in the same sample.
@@ -315,5 +303,17 @@ mod test_sample_uniform_seeded {
         let sample_1 = MatZ::sample_uniform_seeded(3, 3, 17, 26, [42; 32]).unwrap();
 
         assert_eq!(sample_0, sample_1);
+    }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer() {
+        use crate::integer::MatZ;
+        let sample = MatZ::sample_uniform_seeded(3, 3, 17, 26, [42; 32]).unwrap();
+
+        assert_eq!(
+            "[[19, 20, 17],[19, 20, 22],[24, 24, 19]]",
+            sample.to_string()
+        );
     }
 }
