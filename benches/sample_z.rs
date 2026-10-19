@@ -63,9 +63,14 @@ pub fn bench_sample_z(c: &mut Criterion) {
     ];
 
     for s in gaussian_widths {
-        let mut dgis =
-            DiscreteGaussianIntegerSampler::init(center, s, 6.0, LookupTableSetting::Precompute)
-                .unwrap();
+        let mut dgis = DiscreteGaussianIntegerSampler::init(
+            center,
+            s,
+            6.0,
+            LookupTableSetting::Precompute,
+            None,
+        )
+        .unwrap();
 
         c.bench_function("DiscreteGauss RejectionSampling", |b| {
             b.iter(|| dgis.sample_z())

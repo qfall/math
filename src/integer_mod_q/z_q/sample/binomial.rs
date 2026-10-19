@@ -13,56 +13,70 @@ use crate::{
     error::MathError,
     integer::Z,
     integer_mod_q::{Modulus, Zq},
+    macros::seeded::seedable_function,
     rational::Q,
     utils::sample::binomial::BinomialSampler,
 };
 
 impl Zq {
-    /// Chooses a [`Zq`] instance according to the binomial distribution
-    /// parameterized by `n` and `p`.
-    ///
-    /// Parameters:
-    /// - `modulus`: specifies the [`Modulus`] of the new [`Zq`] instance
-    /// - `n`: specifies the number of trials
-    /// - `p`: specifies the probability of success
-    ///
-    /// Returns a fresh [`Zq`] instance with a value sampled
-    /// according to the binomial distribution or a [`MathError`]
-    /// if `n < 0`, `p ∉ (0,1)`, or `n` does not fit into an [`i64`].
-    ///
-    /// # Examples
-    /// ```
-    /// use qfall_math::integer_mod_q::Zq;
-    ///
-    /// let sample = Zq::sample_binomial(7, 2, 0.5).unwrap();
-    /// ```
-    ///
-    /// # Errors and Failures
-    /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
-    ///   if `n < 0`.
-    /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
-    ///   if `p ∉ (0,1)`.
-    /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
-    ///   if `n` does not fit into an [`i64`].
-    ///
-    /// # Panics ...
-    /// - if `modulus` is smaller than `2`.
-    pub fn sample_binomial(
-        modulus: impl Into<Modulus>,
-        n: impl Into<Z>,
-        p: impl Into<Q>,
-    ) -> Result<Self, MathError> {
-        let modulus: Modulus = modulus.into();
-        let mut bin_sampler = BinomialSampler::init(n, p)?;
+    seedable_function!(
+        /// Chooses a [`Zq`] instance according to the binomial distribution
+        /// parameterized by `n` and `p`.
+        ///
+        /// Parameters:
+        /// - `modulus`: specifies the [`Modulus`] of the new [`Zq`] instance
+        /// - `n`: specifies the number of trials
+        /// - `p`: specifies the probability of success
+        #[seeded]
+        /// - `seed`: specifies the 256-bit seed of the PRNG used for sampling
+        #[optionally_seeded]
+        /// - `seed`: specifies an optional 256-bit seed of the PRNG used for sampling.
+        #[optionally_seeded]
+        ///   If `None` is provided, a fresh [`ThreadRng`](rand::rngs::ThreadRng) is used instead.
+        ///
+        /// Returns a fresh [`Zq`] instance with a value sampled
+        /// according to the binomial distribution or a [`MathError`]
+        /// if `n < 0`, `p ∉ (0,1)`, or `n` does not fit into an [`i64`].
+        ///
+        /// # Examples
+        /// ```
+        /// use qfall_math::integer_mod_q::Zq;
+        ///
+        #[unseeded]
+        /// let sample = Zq::sample_binomial(7, 2, 0.5).unwrap();
+        #[seeded]
+        /// let sample = Zq::sample_binomial_seeded(7, 2, 0.5, [42; 32]).unwrap();
+        /// ```
+        ///
+        /// # Errors and Failures
+        /// - Returns a [`MathError`] of type [`InvalidIntegerInput`](MathError::InvalidIntegerInput)
+        ///   if `n < 0`.
+        /// - Returns a [`MathError`] of type [`InvalidInterval`](MathError::InvalidInterval)
+        ///   if `p ∉ (0,1)`.
+        /// - Returns a [`MathError`] of type [`ConversionError`](MathError::ConversionError)
+        ///   if `n` does not fit into an [`i64`].
+        ///
+        /// # Panics ...
+        /// - if `modulus` is smaller than `2`.
+        pub(crate) fn sample_binomial(
+            modulus: impl Into<Modulus>,
+            n: impl Into<Z>,
+            p: impl Into<Q>,
+            seed: Option<[u8; 32]>,
+        ) -> Result<Self, MathError> {
+            let modulus: Modulus = modulus.into();
+            let mut bin_sampler = BinomialSampler::init(n, p, seed)?;
 
-        let sample = bin_sampler.sample();
-        Ok(Zq::from((sample, modulus)))
-    }
+            let sample = bin_sampler.sample();
+            Ok(Zq::from((sample, modulus)))
+        }
+    );
 }
 
 #[cfg(test)]
 mod test_sample_binomial {
     use super::{Q, Z, Zq};
+    use crate::utils::sample::test_seed;
 
     // As all major tests regarding an appropriate binomial distribution,
     // whether the correct interval is kept, and if the errors are thrown correctly,
@@ -74,16 +88,50 @@ mod test_sample_binomial {
     /// and [`Into<Modulus>`], i.e. u8, u16, u32, u64, i8, ...
     #[test]
     fn availability() {
-        let _ = Zq::sample_binomial(7u8, 1u16, 7u8);
-        let _ = Zq::sample_binomial(7u16, 1u32, 7u16);
-        let _ = Zq::sample_binomial(7u32, 1u64, 7u32);
-        let _ = Zq::sample_binomial(7u64, 1i8, 7u64);
-        let _ = Zq::sample_binomial(7i8, 1i16, 7i8);
-        let _ = Zq::sample_binomial(7i16, 1i32, 7i16);
-        let _ = Zq::sample_binomial(7i32, 1i64, 7i32);
-        let _ = Zq::sample_binomial(7i64, Z::ONE, 7i64);
-        let _ = Zq::sample_binomial(7, 1u8, 0.5f32);
-        let _ = Zq::sample_binomial(7, 1u8, 0.5f64);
-        let _ = Zq::sample_binomial(7, 1, Q::from((1, 2)));
+        for seeded in [false, true] {
+            let _ = Zq::sample_binomial_optionally_seeded(7u8, 1u16, 7u8, seeded.then(test_seed));
+            let _ = Zq::sample_binomial_optionally_seeded(7u16, 1u32, 7u16, seeded.then(test_seed));
+            let _ = Zq::sample_binomial_optionally_seeded(7u32, 1u64, 7u32, seeded.then(test_seed));
+            let _ = Zq::sample_binomial_optionally_seeded(7u64, 1i8, 7u64, seeded.then(test_seed));
+            let _ = Zq::sample_binomial_optionally_seeded(7i8, 1i16, 7i8, seeded.then(test_seed));
+            let _ = Zq::sample_binomial_optionally_seeded(7i16, 1i32, 7i16, seeded.then(test_seed));
+            let _ = Zq::sample_binomial_optionally_seeded(7i32, 1i64, 7i32, seeded.then(test_seed));
+            let _ =
+                Zq::sample_binomial_optionally_seeded(7i64, Z::ONE, 7i64, seeded.then(test_seed));
+            let _ = Zq::sample_binomial_optionally_seeded(7, 1u8, 0.5f32, seeded.then(test_seed));
+            let _ = Zq::sample_binomial_optionally_seeded(7, 1u8, 0.5f64, seeded.then(test_seed));
+            let _ = Zq::sample_binomial_optionally_seeded(
+                7,
+                1,
+                Q::from((1, 2)),
+                seeded.then(test_seed),
+            );
+
+            // explicitly checks the existence of the unseeded and the seeded function
+            if seeded {
+                let _ = Zq::sample_binomial_seeded(7u8, 1u16, 7u8, test_seed());
+            } else {
+                let _ = Zq::sample_binomial(7u8, 1u16, 7u8);
+            }
+        }
+    }
+
+    /// Checks whether the same seed results in the same sample.
+    #[test]
+    fn same_seed_same_sample() {
+        use crate::integer_mod_q::Zq;
+        let sample_0 = Zq::sample_binomial_seeded(7, 2, 0.5, [42; 32]).unwrap();
+        let sample_1 = Zq::sample_binomial_seeded(7, 2, 0.5, [42; 32]).unwrap();
+
+        assert_eq!(sample_0, sample_1);
+    }
+
+    /// Checks whether the seeded variant outputs the known sample for a fixed seed.
+    #[test]
+    fn known_answer() {
+        use crate::integer_mod_q::Zq;
+        let sample = Zq::sample_binomial_seeded(7, 2, 0.5, [42; 32]).unwrap();
+
+        assert_eq!("0 mod 7", sample.to_string());
     }
 }
