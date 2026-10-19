@@ -59,6 +59,8 @@ impl MatQ {
             sigma: impl Into<f64>,
             seed: Option<[u8; 32]>,
         ) -> Result<MatQ, MathError> {
+            // derives an independent seed for every call of a seedable function below,
+            // see the documentation of `seedable_function` in `src/macros/seeded.rs`
             let mut rng = SamplerRng::new(seed);
 
             let mut out = MatQ::new(center.get_num_rows(), center.get_num_columns());

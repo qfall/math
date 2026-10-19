@@ -213,6 +213,8 @@ impl MatQ {
             r: impl Into<Q>,
             seed: Option<[u8; 32]>,
         ) -> Result<MatZ, MathError> {
+            // derives an independent seed for every call of a seedable function below,
+            // see the documentation of `seedable_function` in `src/macros/seeded.rs`
             let mut rng = SamplerRng::new(seed);
 
             let mut out = MatZ::new(self.get_num_rows(), self.get_num_columns());

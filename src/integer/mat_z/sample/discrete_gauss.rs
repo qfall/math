@@ -204,6 +204,8 @@ impl MatZ {
             r: impl Into<Q>,
             seed: Option<[u8; 32]>,
         ) -> Result<Self, MathError> {
+            // derives an independent seed for every call of a seedable function below,
+            // see the documentation of `seedable_function` in `src/macros/seeded.rs`
             let mut rng = SamplerRng::new(seed);
 
             if !sigma_sqrt.is_square() {

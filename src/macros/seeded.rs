@@ -17,6 +17,8 @@
 /// - the public function `name_seeded`, which takes `seed: [u8; 32]` as its last parameter
 ///   and forwards `Some(seed)`.
 ///
+/// The datatype `[u8; 32]` is defined by the [rand]-crate and enables random seeding with up to 256 random bits.
+///
 /// All three functions share the provided doc-comment. Every doc line (and any other attribute)
 /// is added to all three functions, except for the doc lines preceded by
 /// - `#[unseeded]`, which are only added to `name`,
@@ -53,6 +55,30 @@
 ///             ...
 ///         }
 ///     );
+/// }
+/// ```
+///
+/// ## Using seedable functions and samplers inside a seedable function
+/// The implementation needs to pass `seed` on to every seedable function or sampler it calls,
+/// treating them as black boxes. Therefore, it calls the `name_optionally_seeded` variant of a
+/// seedable function, e.g. `PolyOverZ::sample_uniform_optionally_seeded`, or passes the seed to
+/// the `init` function of a sampler, e.g. [`UniformIntegerSampler::init`](crate::utils::sample::uniform::UniformIntegerSampler::init),
+/// instead of calling the public functions, which would ignore `seed`.
+/// - If exactly one call of a seedable function or sampler is made, `seed` is passed on directly.
+/// - If several calls are made, e.g. one per entry of a matrix, every call needs to receive
+///   an independent seed. Otherwise, every call would output the same sample for a provided seed.
+///   These seeds are derived via `let mut rng = SamplerRng::new(seed);` and `rng.derive_seed()`
+///   for each call, which returns a fresh seed drawn from `rng` if `seed` is provided
+///   and `None` otherwise, i.e. every call uses a fresh [`ThreadRng`](rand::rngs::ThreadRng) then.
+///
+/// ```compile_fail
+/// pub(crate) fn sample_gauss(center: &MatQ, sigma: f64, seed: Option<[u8; 32]>) -> Result<MatQ, MathError> {
+///     let mut rng = SamplerRng::new(seed);
+///     ...
+///     for (i, j) in entries {
+///         let sample = Q::sample_gauss_optionally_seeded(center_ij, sigma, rng.derive_seed())?;
+///         ...
+///     }
 /// }
 /// ```
 macro_rules! seedable_function {

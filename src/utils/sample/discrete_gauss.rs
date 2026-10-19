@@ -440,7 +440,8 @@ pub(crate) fn sample_d_precomputed_gso(
 
     let mut out = MatZ::new(basis_gso.get_num_rows(), 1);
 
-    // derives an independent seed for the sampler of each dimension if a seed is provided
+    // derives an independent seed for the sampler of each dimension if a seed is provided,
+    // see the documentation of `seedable_function` in `src/macros/seeded.rs`
     let mut rng = SamplerRng::new(seed);
 
     for i in (0..basis_gso.get_num_columns()).rev() {

@@ -83,6 +83,8 @@ impl MatPolyOverZ {
             upper_bound: impl Into<Z>,
             seed: Option<[u8; 32]>,
         ) -> Result<Self, MathError> {
+            // derives an independent seed for every call of a seedable function below,
+            // see the documentation of `seedable_function` in `src/macros/seeded.rs`
             let mut rng = SamplerRng::new(seed);
 
             let lower_bound: Z = lower_bound.into();
