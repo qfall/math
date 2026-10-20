@@ -26,7 +26,7 @@ impl MatZq {
     ///
     /// The values in the output matrix are in the range of `[0, modulus)`.
     /// Use [`MatZq::get_representative_least_absolute_residue`] if they should be
-    /// in the range `[-modulus/2, modulus/2]`.
+    /// in the range `(-⌈modulus/2⌉, ⌊modulus/2⌋]`.
     ///
     /// Returns the matrix as a [`MatZ`].
     ///
@@ -52,8 +52,9 @@ impl MatZq {
     /// equivalence class of each entry from a [`MatZq`] with the
     /// representatives close to `0`.
     ///
-    /// The values in the output matrix are in the range of `[-modulus/2, modulus/2]`.
-    /// For even moduli, the positive representative is chosen for the element `modulus / 2`.
+    /// The values in the output matrix are in the range `(-⌈modulus/2⌉, ⌊modulus/2⌋]`,
+    /// i.e. `[-(modulus-1)/2, (modulus-1)/2]` for odd moduli and `(-modulus/2, modulus/2]` for even moduli.
+    /// Hence, the positive representative is chosen for the element `modulus/2` of even moduli.
     /// Use [`MatZq::get_representative_least_nonnegative_residue`] if they should be
     /// in the range `[0, modulus)`.
     ///
@@ -963,5 +964,25 @@ mod test_get_representative_least_absolute_residue {
 
         let mat_cmp = MatZ::from_str("[[0,1,2,3,4,5,-5,-4,-3,-2,-1,0]]").unwrap();
         assert_eq!(mat_z.to_string(), mat_cmp.to_string());
+    }
+
+    /// Checks whether every entry is mapped to the same representative as by
+    /// [`Zq::get_representative_least_absolute_residue`] for an odd and an even modulus.
+    #[test]
+    fn consistent_with_zq() {
+        for modulus in [256, 257] {
+            let mut mat_zq = MatZq::new(1, modulus, modulus);
+            for value in 0..modulus {
+                mat_zq.set_entry(0, value, value).unwrap();
+            }
+
+            let mat_z = mat_zq.get_representative_least_absolute_residue();
+
+            for value in 0..modulus {
+                let entry: Z = mat_z.get_entry(0, value).unwrap();
+                let cmp = Zq::from((value, modulus)).get_representative_least_absolute_residue();
+                assert_eq!(cmp, entry);
+            }
+        }
     }
 }
