@@ -9,6 +9,14 @@ on:
     branches:
       - "**"
 
+permissions:
+  contents: read
+
+# a new run for the same branch or pull request cancels the outdated run
+concurrency:
+  group: ${{ github.workflow_ref }}
+  cancel-in-progress: true
+
 env:
   CARGO_TERM_COLOR: always
   RUSTDOCFLAGS: "-Dwarnings"
@@ -17,29 +25,30 @@ jobs:
   pipeline:
     name: Pipeline - code coverage + dependency check
     runs-on: ubuntu-latest
+    timeout-minutes: 90
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
 
       - name: Setup dtolnay/rust-toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
           components: clippy, rustfmt
 
-      # load project cache to reduce compilation time
+      # The native FLINT library is compiled for the CPU of the runner it is built on.
+      # Hence, the cache may only be reused on runners with the same CPU (model and features).
+      - name: Determine CPU of the runner
+        id: cpu
+        run: |
+          grep -m1 'model name' /proc/cpuinfo
+          echo "hash=$({ grep -m1 'model name' /proc/cpuinfo; grep -m1 '^flags' /proc/cpuinfo; } | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
+
+      # load project cache to reduce compilation time, whose key additionally covers
+      # the Rust version, the Cargo.toml files, and build-relevant environment variables
       - name: Setup project cache
-        uses: actions/cache@v3
-        continue-on-error: false
+        uses: Swatinem/rust-cache@v2
         with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
-          restore-keys: ${{ runner.os }}-cargo-
+          key: ${{ steps.cpu.outputs.hash }}
 
       - name: Set environment variables
         run: |
@@ -51,18 +60,18 @@ jobs:
       - name: Build
         run: cargo build
       - name: Generate docs
-        run: cargo doc
+        run: cargo doc --no-deps
       - name: Run doc tests # Unit tests are run by tarpaulin
         run: cargo test --doc --verbose
 
       - name: Install cargo-tarpaulin
-        uses: baptiste0928/cargo-install@v2
+        uses: baptiste0928/cargo-install@v3
         with:
           crate: cargo-tarpaulin
       - name: Calculate test coverage
         run: cargo tarpaulin --out Html
       - name: Archive code coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ env.PROJECT_NAME }}-code_coverage_report-v${{ env.PROJECT_VERSION }}
           path: tarpaulin-report.html
@@ -75,7 +84,7 @@ jobs:
 
       # Cargo check for security issues
       - name: Install cargo-audit
-        uses: baptiste0928/cargo-install@v2
+        uses: baptiste0928/cargo-install@v3
         with:
           crate: cargo-audit
       - name: Security audit
