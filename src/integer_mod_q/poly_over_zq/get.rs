@@ -133,8 +133,9 @@ impl PolyOverZq {
 
     /// Returns a representative polynomial of the [`PolyOverZq`] element with coefficients centered around `0`.
     ///
-    /// The output [`PolyOverZ`] has coefficients in the range of `[-modulus/2, modulus/2]`.
-    /// For even moduli, the positive representative is chosen for the element `modulus / 2`.
+    /// The output [`PolyOverZ`] has coefficients in the range `(-⌈modulus/2⌉, ⌊modulus/2⌋]`,
+    /// i.e. `[-(modulus-1)/2, (modulus-1)/2]` for odd moduli and `(-modulus/2, modulus/2]` for even moduli.
+    /// Hence, the positive representative is chosen for the element `modulus/2` of even moduli.
     /// Use [`PolyOverZq::get_representative_least_nonnegative_residue`] if they should be
     /// in the range `[0, modulus)`.
     ///
@@ -164,7 +165,7 @@ impl PolyOverZq {
     ///
     /// The representation of the coefficients is in the range `[0, modulus)`.
     /// Use [`PolyOverZq::get_representative_least_absolute_residue`] if they should be
-    /// in the range `[-modulus/2, modulus/2]`.
+    /// in the range `(-⌈modulus/2⌉, ⌊modulus/2⌋]`.
     ///
     /// # Examples
     /// ```
@@ -399,6 +400,39 @@ mod test_get_representative_least_absolute_residue {
 
         let cmp_poly = PolyOverZ::from_str("3  10 0 -10").unwrap();
         assert_eq!(cmp_poly, poly_z);
+    }
+
+    /// Returns the coefficients `0, 1, ..., modulus - 1` and their representatives
+    /// according to `mod±` as defined in FIPS 204 as strings.
+    fn coefficients_and_representatives(modulus: i64) -> (String, String) {
+        let coefficients: Vec<String> = (0..modulus).map(|value| value.to_string()).collect();
+        let representatives: Vec<String> = (0..modulus)
+            .map(|value| {
+                if value > modulus / 2 {
+                    value - modulus
+                } else {
+                    value
+                }
+                .to_string()
+            })
+            .collect();
+        (coefficients.join(" "), representatives.join(" "))
+    }
+
+    /// Checks whether every coefficient is mapped into `(-⌈modulus/2⌉, ⌊modulus/2⌋]`
+    /// for an odd and an even modulus, i.e. `modulus/2` is mapped to the positive representative.
+    #[test]
+    fn full_range() {
+        for modulus in [10, 11] {
+            let (coefficients, representatives) = coefficients_and_representatives(modulus);
+            let poly_zq =
+                PolyOverZq::from_str(&format!("{modulus}  {coefficients} mod {modulus}")).unwrap();
+
+            let poly_z = poly_zq.get_representative_least_absolute_residue();
+
+            let cmp_poly = PolyOverZ::from_str(&format!("{modulus}  {representatives}")).unwrap();
+            assert_eq!(cmp_poly, poly_z);
+        }
     }
 }
 

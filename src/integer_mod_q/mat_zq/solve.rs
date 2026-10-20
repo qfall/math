@@ -412,10 +412,10 @@ fn find_invertible_entry_column(
 fn find_not_invertible_entry_column(matrix: &MatZq, column: i64, used_rows: &[i64]) -> Option<i64> {
     for i in (0..matrix.get_num_rows()).filter(|x| !used_rows.contains(x)) {
         let entry: Zq = unsafe { matrix.get_entry_unchecked(i, column) };
-        if !entry.is_zero() {
-            if let Err(_inv) = entry.pow(-1) {
-                return Some(i);
-            }
+        if !entry.is_zero()
+            && let Err(_inv) = entry.pow(-1)
+        {
+            return Some(i);
         }
     }
     None

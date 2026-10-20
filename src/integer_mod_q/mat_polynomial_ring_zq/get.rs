@@ -40,8 +40,10 @@ impl MatPolynomialRingZq {
     /// Creates a [`MatPolyOverZ`] where each entry is a representative of the
     /// equivalence class of each entry from a [`MatPolynomialRingZq`] with coefficients centered around `0`.
     ///
-    /// The representation of the coefficients is in the range `[-modulus/2, modulus/2]` and
-    /// the representation of the polynomials is in the range `[0, modulus_polynomial)`.
+    /// Each polynomial is reduced modulo the modulus polynomial and
+    /// each of its coefficients is in the range `(-⌈modulus/2⌉, ⌊modulus/2⌋]`,
+    /// i.e. `[-(modulus-1)/2, (modulus-1)/2]` for odd moduli and `(-modulus/2, modulus/2]` for even moduli.
+    /// Hence, the positive representative is chosen for the element `modulus/2` of even moduli.
     /// Use [`MatPolynomialRingZq::get_representative_least_nonnegative_residue`] if they should be
     /// in the range `[0, modulus)`.
     ///
@@ -76,7 +78,7 @@ impl MatPolynomialRingZq {
     /// The representation of the coefficients is in the range `[0, modulus)` and
     /// the representation of the polynomials is in the range `[0, modulus_polynomial)`.
     /// Use [`MatPolynomialRingZq::get_representative_least_absolute_residue`] if they should be
-    /// in the range `[-modulus/2, modulus/2]`.
+    /// in the range `(-⌈modulus/2⌉, ⌊modulus/2⌋]`.
     ///
     /// # Examples
     /// ```
@@ -510,6 +512,45 @@ mod test_get_representative_least_absolute_residue {
 
         let cmp_mat = MatPolyOverZ::from_str("[[3  10 0 -10]]").unwrap();
         assert_eq!(cmp_mat, lar_mat);
+    }
+
+    /// Returns the coefficients `0, 1, ..., modulus - 1` and their representatives
+    /// according to `mod±` as defined in FIPS 204 as strings.
+    fn coefficients_and_representatives(modulus: i64) -> (String, String) {
+        let coefficients: Vec<String> = (0..modulus).map(|value| value.to_string()).collect();
+        let representatives: Vec<String> = (0..modulus)
+            .map(|value| {
+                if value > modulus / 2 {
+                    value - modulus
+                } else {
+                    value
+                }
+                .to_string()
+            })
+            .collect();
+        (coefficients.join(" "), representatives.join(" "))
+    }
+
+    /// Checks whether every coefficient is mapped into `(-⌈modulus/2⌉, ⌊modulus/2⌋]`
+    /// for an odd and an even modulus, i.e. `modulus/2` is mapped to the positive representative for even `modulus`.
+    #[test]
+    fn full_range() {
+        for modulus in [10, 11] {
+            let (coefficients, representatives) = coefficients_and_representatives(modulus);
+            // modulus polynomial `X^modulus + 1` s.t. no coefficient is reduced
+            let mat = MatPolynomialRingZq::from_str(&format!(
+                "[[{modulus}  {coefficients}]] / {}  1 {}1 mod {modulus}",
+                modulus + 1,
+                "0 ".repeat(modulus as usize - 1)
+            ))
+            .unwrap();
+
+            let lar_mat = mat.get_representative_least_absolute_residue();
+
+            let cmp_mat =
+                MatPolyOverZ::from_str(&format!("[[{modulus}  {representatives}]]")).unwrap();
+            assert_eq!(cmp_mat, lar_mat);
+        }
     }
 }
 

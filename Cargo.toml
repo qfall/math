@@ -1,8 +1,8 @@
 [package]
 name = "qfall-math"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2024"
-rust-version = "1.86"
+rust-version = "1.88"
 description = "Mathematical foundations for rapid prototyping of lattice-based cryptography"
 readme = "README.md"
 homepage = "https://qfall.github.io"

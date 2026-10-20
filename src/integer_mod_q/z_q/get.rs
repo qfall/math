@@ -18,7 +18,7 @@ impl Zq {
     ///
     /// The representation in the range `[0, modulus)` is returned.
     /// Use [`Zq::get_representative_least_absolute_residue`] if they should be
-    /// in the range `[-modulus/2, modulus/2]`.
+    /// in the range `(-⌈modulus/2⌉, ⌊modulus/2⌋]`.
     ///
     /// # Examples
     /// ```
@@ -36,8 +36,9 @@ impl Zq {
 
     /// Returns the [`Z`] value of the [`Zq`] element with the representatives close to `0`.
     ///
-    /// The output value is in the range of `[-modulus/2, modulus/2]`.
-    /// For even moduli, the positive representative is chosen for the element `modulus / 2`.
+    /// The output value is in the range `(-⌈modulus/2⌉, ⌊modulus/2⌋]`,
+    /// i.e. `[-(modulus-1)/2, (modulus-1)/2]` for odd moduli and `(-modulus/2, modulus/2]` for even moduli.
+    /// Hence, the positive representative is chosen for the element `modulus/2` of even moduli.
     /// Use [`Zq::get_representative_least_nonnegative_residue`] if they should be
     /// in the range `[0, modulus)`.
     ///
@@ -154,6 +155,36 @@ mod test_get_representative_least_absolute_residue {
         assert_eq!(res_0, Z::from(10));
         assert_eq!(res_1, Z::from(0));
         assert_eq!(res_2, Z::from(-10));
+    }
+
+    /// Checks whether an element of the upper half is mapped to its negative representative,
+    /// i.e. `256 mod 257` to `-1`.
+    #[test]
+    fn upper_half_negative() {
+        let value = Zq::from((256, 257));
+
+        let res = value.get_representative_least_absolute_residue();
+
+        assert_eq!(Z::MINUS_ONE, res);
+    }
+
+    /// Checks whether every element is mapped into `(-⌈modulus/2⌉, ⌊modulus/2⌋]`
+    /// according to `mod±` as defined in FIPS 204 for an odd and an even modulus.
+    #[test]
+    fn full_range() {
+        for modulus in [256, 257] {
+            for value in 0..modulus {
+                let expected = if value > modulus / 2 {
+                    value - modulus
+                } else {
+                    value
+                };
+
+                let res = Zq::from((value, modulus)).get_representative_least_absolute_residue();
+
+                assert_eq!(Z::from(expected), res);
+            }
+        }
     }
 }
 
