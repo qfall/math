@@ -532,7 +532,7 @@ mod test_get_representative_least_absolute_residue {
     }
 
     /// Checks whether every coefficient is mapped into `(-⌈modulus/2⌉, ⌊modulus/2⌋]`
-    /// for an odd and an even modulus, i.e. `modulus/2` is mapped to the positive representative.
+    /// for an odd and an even modulus, i.e. `modulus/2` is mapped to the positive representative for even `modulus`.
     #[test]
     fn full_range() {
         for modulus in [10, 11] {
